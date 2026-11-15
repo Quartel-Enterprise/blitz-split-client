@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_title">Convida o pessoal para o grupo %s</string>
+    <string name="invite_who_picks">Quem abrir o link escolhe quem é na lista: %s. Não é preciso criar conta.</string>
+    <string name="invite_anyone_joins">Quem abrir o link entra no grupo. Não é preciso criar conta.</string>
+    <string name="invite_pending_offline">É gerado assim que estiveres online.</string>
+    <string name="invite_pending_online">A gerar o link…</string>
+    <string name="invite_failed_title">Não foi possível criar o link</string>
+    <string name="invite_failed_body">Algo correu mal ao sincronizar o grupo.</string>
+    <string name="invite_share">Partilhar link</string>
+    <string name="invite_add_person">Adicionar quem não tem a app</string>
+    <string name="invite_change_link_failed">Não foi possível trocar o link. Tenta de novo.</string>
+    <string name="invite_share_message">Vamos dividir as contas do grupo %1$s no Blitz Split? Entra pelo link: %2$s</string>
+</resources>

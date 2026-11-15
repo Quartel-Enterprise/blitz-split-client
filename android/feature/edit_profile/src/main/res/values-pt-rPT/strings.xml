@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_save">Guardar</string>
+    <string name="edit_profile_photo_error">Não foi possível usar essa foto. Tenta outra.</string>
+    <string name="edit_profile_avatar_color_hint">Aparece quando estás sem foto.</string>
+    <string name="edit_profile_name_label">O teu nome</string>
+    <string name="edit_profile_name_too_short">Escreve pelo menos %d letras.</string>
+    <string name="edit_profile_name_too_long">Usa até %d caracteres.</string>
+    <string name="edit_profile_account_notice">O nome e a foto vieram da tua conta %1$s. Alterar aqui só vale no Blitz Split e não altera a tua conta %1$s.</string>
+    <string name="edit_profile_footer">Os teus grupos e quem tiver o link do teu perfil veem o teu nome e a tua foto.</string>
+    <string name="profile_photo_camera">Câmara</string>
+</resources>

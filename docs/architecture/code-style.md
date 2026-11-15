@@ -285,10 +285,11 @@ No linter runs on Swift yet; follow what the app already does.
 - `///` doc comments explain a type's role and the why, as the Kotlin `// Why:` does; inline `//` comments only
   for a reason.
 - User-facing text is an English literal in `Text`, `Label`, `Tab` or `.navigationTitle`, with its pt-BR,
-  es, (where Spain differs) es-ES, fr, de, it, pl, nl, ja, tr and id translations in `Localizable.xcstrings` (the development language is English).
-  Never copy an es word into es-ES: Xcode compiles `es-ES.lproj` with only Spain's words, and the build's "Fill the
-  regional tables with their language's" phase (`iosApp/merge-regional-strings.py`) fills it with the rest of `es`,
-  since an es-ES app reads its tables from `es-ES.lproj` alone and would show English for the missing keys.
+  (where Portugal differs) pt-PT, es, (where Spain differs) es-ES, fr, de, it, pl, nl, ja, tr and id translations in `Localizable.xcstrings` (the development language is English).
+  Never copy an es word into es-ES, nor a pt-BR word into pt-PT: Xcode compiles `es-ES.lproj` and `pt-PT.lproj` with
+  only Spain's and Portugal's words, and the build's "Fill the regional tables with their language's" phase
+  (`iosApp/merge-regional-strings.py`) fills them with the rest of `es` and `pt-BR`, since an es-ES or pt-PT app
+  reads its tables from its own `.lproj` alone and would show English for the missing keys.
 - A Kotlin `Int` is a Swift `Int32`: interpolate it as `Int(count)` in a localized literal, and a Kotlin `Float` as
   `Double(value)`. An `Int32` makes the key `%d …` and a `Float` `%f …`, which miss the catalog's `%lld …` and
   `%lf …` entries and their pt-BR and plural forms, so the build's "Check the localized keys" phase

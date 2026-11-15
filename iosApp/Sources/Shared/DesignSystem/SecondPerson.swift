@@ -4,7 +4,8 @@ import SwiftUI
 /// but "Du hast geteilt", Italian "Ana ha diviso" but "Tu hai diviso", Dutch "Ana heeft verdeeld" but "Jij hebt
 /// verdeeld", Polish "Ana podzielił(a)" but "Ty podzieliłeś(-aś)" and Turkish "Ana böldü" but "Sen böldün": one
 /// localized sentence serves every actor, so when the actor is this device's user the verb of the "Tú", "Tu", "Du",
-/// "Jij", "Ty" or "Sen" is conjugated to the second person. Other languages are left as they are.
+/// "Jij", "Ty" or "Sen" is conjugated to the second person, and so is Portugal's Portuguese ("Ana dividiu", "Tu
+/// dividiste"). Other languages are left as they are, Brazil's Portuguese too ("Você dividiu").
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -12,6 +13,13 @@ enum SecondPerson {
     /// Stand-ins for the actor and the object while the sentence is localized: private-use characters no copy has.
     static let actor = "\u{E000}"
     static let object = "\u{E001}"
+
+    private static let portugueseIrregular = ["fez": "fizeste", "desfez": "desfizeste", "saiu": "saíste", "pôs": "puseste"]
+
+    /// The language the verb is conjugated for: its two letters, but Portugal's Portuguese is told from Brazil's.
+    private static var appSecondPersonLanguage: String? {
+        Bundle.appLanguageIdentifier == "pt-PT" ? "pt-PT" : Bundle.appLanguageCode
+    }
 
     private static let irregular = [
         "deshizo": "deshiciste", "cambió": "cambiaste",
@@ -35,12 +43,14 @@ enum SecondPerson {
     /// French, German, Italian and Dutch: every verb phrase is a perfect that starts with its auxiliary, so "a divisé" →
     /// "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten", "ha diviso" → "hai diviso",
     /// "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden".
+    /// Portugal's Portuguese: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste".
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
     /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
     /// "böldün:". Another language keeps the verb as it is.
-    static func verbForYou(_ verb: String, language: String? = Bundle.appLanguageCode) -> String {
+    static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
+        case "pt-PT": return portugueseVerbForYou(verb)
         case "tr": return turkishVerbForYou(verb)
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
@@ -70,6 +80,16 @@ enum SecondPerson {
         let clause = verb[..<end]
         guard clause.range(of: "[dt][ıiuü]$", options: .regularExpression) != nil else { return verb }
         return String(clause) + "n" + String(verb[end...])
+    }
+
+    private static func portugueseVerbForYou(_ verb: String) -> String {
+        replacingFirstWord(of: verb) { first in
+            if let known = portugueseIrregular[first] { return known }
+            for (suffix, ending) in [("ou", "aste"), ("eu", "este"), ("iu", "iste")] where first.hasSuffix(suffix) {
+                return String(first.dropLast(suffix.count)) + ending
+            }
+            return nil
+        }
     }
 
     private static func spanishVerbForYou(_ verb: String) -> String {

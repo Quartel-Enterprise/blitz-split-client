@@ -87,15 +87,16 @@ extension BillCopy {
         return "\(label), \(String(localized: "waiting to go up", bundle: .appLanguage, comment: "A bill's photo not on the server yet"))"
     }
 
-    /// "bora-rachar-foto-2.jpg" in Portuguese and "blitz-split-photo-2.jpg" in any other language, as the data export
-    /// names its file.
+    /// "bora-rachar-foto-2.jpg" in Brazil's Portuguese, "blitz-split-foto-2.jpg" in Portugal's and "blitz-split-photo-2.jpg"
+    /// in any other language, as the data export names its file.
     static func attachmentFileName(_ attachment: BillAttachmentTile) -> String {
-        let isPortuguese = Bundle.main.preferredLocalizations.first?.hasPrefix("pt") == true
+        let language = DataExport.language
+        let receipt = language.isBrazil ? "cupom" : "talao"
         let name = switch attachment.photoNumber?.intValue {
-        case let number?: isPortuguese ? "foto-\(number)" : "photo-\(number)"
-        case nil: isPortuguese ? "cupom" : "receipt"
+        case let number?: language.isPortuguese ? "foto-\(number)" : "photo-\(number)"
+        case nil: language.isPortuguese ? receipt : "receipt"
         }
-        return (isPortuguese ? "bora-rachar-" : "blitz-split-") + name + ".jpg"
+        return (language.isBrazil ? "bora-rachar-" : "blitz-split-") + name + ".jpg"
     }
 }
 

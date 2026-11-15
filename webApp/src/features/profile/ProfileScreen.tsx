@@ -40,6 +40,7 @@ const themes: { code: string; label: MessageKey }[] = [
 const nativeLanguageNames: Record<string, string> = {
   en: 'English',
   'pt-BR': 'Português (Brasil)',
+  'pt-PT': 'Português (Portugal)',
   es: 'Español',
   fr: 'Français',
   de: 'Deutsch',
@@ -55,6 +56,7 @@ const nativeLanguageNames: Record<string, string> = {
 const languageNames: Record<string, MessageKey> = {
   en: 'profile_languageEnglish',
   'pt-BR': 'profile_languagePortuguese',
+  'pt-PT': 'profile_languagePortuguesePortugal',
   es: 'profile_languageSpanish',
   fr: 'profile_languageFrench',
   de: 'profile_languageGerman',

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- True only in values-pt-rPT: the strings drawn are Portugal's Portuguese, whichever locale picked them -->
+    <bool name="designsystem_portugal_portuguese">false</bool>
+</resources>

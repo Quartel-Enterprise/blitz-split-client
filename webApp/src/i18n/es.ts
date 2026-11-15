@@ -815,6 +815,7 @@ export const es: Record<MessageKey, string> = {
   profile_languageSystem: 'Sistema',
   profile_languageEnglish: 'Inglés',
   profile_languagePortuguese: 'Portugués (Brasil)',
+  profile_languagePortuguesePortugal: 'Portugués (Portugal)',
   profile_languageSpanish: 'Español',
   profile_languageFrench: 'Francés',
   profile_languageGerman: 'Alemán',

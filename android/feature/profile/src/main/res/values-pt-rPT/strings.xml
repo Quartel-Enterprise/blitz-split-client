@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_pending">Alterado · a aguardar envio</string>
+    <string name="profile_offline_body">Podes editar à vontade: fica guardado neste aparelho e é enviado quando a ligação voltar.</string>
+    <string name="profile_email_info">Sobre o teu e-mail</string>
+    <string name="profile_email_info_title">Só tu vês o teu e-mail</string>
+    <string name="profile_email_info_body">Aparece aqui para saberes com que conta iniciaste sessão. As pessoas dos teus grupos veem o teu nome e a tua foto, nunca o teu e-mail.</string>
+    <string name="profile_account_none_detail">ID anónimo deste aparelho</string>
+    <string name="profile_account_local_detail">Fica guardado só neste aparelho por enquanto</string>
+    <string name="profile_connect">Ligar</string>
+    <string name="profile_connect_failed">Não foi possível ligar. Tenta de novo.</string>
+    <string name="profile_recovery_code_detail">Ver e guardar · recupera noutro aparelho</string>
+    <string name="profile_sync_waiting_empty">A aguardar sincronização</string>
+    <string name="profile_sync_syncing">A sincronizar…</string>
+    <string name="profile_sign_out_scheduled">Fim de sessão agendado</string>
+    <string name="profile_sign_out_scheduled_detail">Termina a sessão assim que tudo for enviado</string>
+    <string name="profile_payment_keys_subtitle">Quem te deve vê a chave predefinida no momento do acerto.</string>
+    <string name="profile_payment_key_phone">Pix · Telemóvel</string>
+    <string name="profile_payment_key_default">Predefinida</string>
+    <string name="profile_language_search">Pesquisar idioma</string>
+    <string name="profile_language_search_clear">Limpar pesquisa</string>
+    <string name="profile_dynamic_colors_detail">Usa as cores do teu fundo de ecrã na app</string>
+    <string name="profile_dynamic_colors_info_body">As cores dinâmicas combinam a app com o teu fundo de ecrã: botões, fundos e destaques usam as cores que o Android extrai dele, e mudam quando o fundo de ecrã muda.</string>
+    <string name="profile_dynamic_colors_info_note">Grupos, avatares e categorias mantêm as próprias cores, para continuares a distinguir cada um. Só vale neste aparelho.</string>
+    <string name="profile_info_ok">Percebi</string>
+    <string name="profile_check_for_updates">Procurar atualizações</string>
+    <string name="profile_check_for_updates_checking">A verificar…</string>
+    <string name="profile_check_for_updates_up_to_date">Já tens a versão mais recente.</string>
+    <string name="profile_check_for_updates_downloading">A atualização já está a ser transferida.</string>
+    <string name="profile_check_for_updates_failed">Não foi possível procurar atualizações. Verifica a ligação e tenta de novo.</string>
+    <string name="profile_sign_out">Terminar sessão</string>
+    <string name="profile_erase_and_sign_out">Apagar perfil e terminar sessão</string>
+    <string name="profile_sign_out_title">Terminar sessão?</string>
+    <string name="profile_sign_out_body">Está tudo sincronizado com a tua conta %1$s. Ao terminares sessão, apagamos a cópia deste aparelho. Os teus grupos voltam quando iniciares sessão de novo.</string>
+    <plurals name="profile_sign_out_pending_title">
+        <item quantity="one">%d alteração ainda não foi enviada</item>
+        <item quantity="many">%d alterações ainda não foram enviadas</item>
+        <item quantity="other">%d alterações ainda não foram enviadas</item>
+    </plurals>
+    <string name="profile_sign_out_pending_body_offline">Estás sem internet. Os teus dados ficam neste aparelho até a sincronização terminar. Assim que tudo for enviado, terminamos a sessão e apagamos a cópia local.</string>
+    <string name="profile_sign_out_pending_body">Os teus dados ficam neste aparelho até a sincronização terminar. Assim que tudo for enviado, terminamos a sessão e apagamos a cópia local.</string>
+    <string name="profile_sign_out_when_synced">Terminar sessão ao sincronizar</string>
+    <string name="profile_sign_out_now">Terminar sessão agora e perder as alterações</string>
+    <string name="profile_sign_out_failed">Não foi possível terminar a sessão. Tenta de novo.</string>
+    <string name="profile_erase_body">A tua conta não tem Google nem Apple. Ao terminares sessão, apagamos a cópia deste aparelho. Para voltares, só com o código de recuperação.</string>
+    <string name="profile_erase_body_no_code">Usas a app sem conta e ainda não sincronizaste, por isso não há código de recuperação. Ao terminares sessão, o teu perfil desaparece de vez.</string>
+    <string name="profile_erase_code_saved">Guardei o código num lugar seguro</string>
+    <string name="profile_erase_no_code_ack">Percebo que não é possível recuperar</string>
+    <string name="profile_erase_connect_instead">Ligar Google ou Apple em vez disso</string>
+    <string name="profile_erase_confirm">Apagar e terminar sessão</string>
+    <plurals name="profile_erase_pending_warning">
+        <item quantity="one">%d alteração ainda não foi enviada e será perdida.</item>
+        <item quantity="many">%d alterações ainda não foram enviadas e serão perdidas.</item>
+        <item quantity="other">%d alterações ainda não foram enviadas e serão perdidas.</item>
+    </plurals>
+    <string name="profile_export">Exportar os meus dados</string>
+    <string name="profile_export_detail">Ficheiro JSON com o teu perfil e as tuas chaves</string>
+    <string name="profile_delete_account">Eliminar conta e dados</string>
+    <string name="profile_delete_account_detail">Apaga a tua conta do Blitz Split. Não é possível desfazer.</string>
+    <string name="profile_bitcoin_in_sats_detail">Mostra e escreve valores em bitcoin em sats (1 ₿ = 100.000.000 sats).</string>
+    <string name="profile_share">Partilhar perfil</string>
+    <string name="profile_share_message">Este é o meu perfil no Blitz Split: %1$s</string>
+    <string name="profile_share_usage_data">Partilhar dados de utilização</string>
+    <string name="profile_share_usage_data_detail">Ecrãs e toques, para melhorar a app. Nunca nomes nem valores.</string>
+    <string name="profile_paying_methods_subtitle">Só tu vês. Marca com qual pagaste cada conta.</string>
+</resources>

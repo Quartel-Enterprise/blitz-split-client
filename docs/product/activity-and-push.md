@@ -43,6 +43,13 @@ The feed, unread state, real time and push notifications.
     lists each pair in its own, the group's first); a bill edited into another currency writes its "Amount" from the
     old currency to the new one. An event the server wrote before that, and a pair with none, reads in the group's
     currency (`ActivityEvent.currency`, `ActivityDebt.currency`; the push does the same on the server).
+  - Portugal's Portuguese (pt-PT) talks to the user as "tu", so the verb of an Activity row and of a bill's History
+    line is conjugated to the second person singular preterite when the user is the actor ("Tu dividiste Jantar",
+    "Tu saíste do grupo"), on every platform: the first word of the verb phrase ends in "-ou", "-eu" or "-iu" and
+    becomes "-aste", "-este" or "-iste" ("dividiu" to "dividiste", "leu" to "leste"), with "fez", "desfez", "saiu" and
+    "pôs" as the few irregulars ("fizeste", "desfizeste", "saíste", "puseste"). The deleted-item notice starts with who
+    deleted it ("Tu apagaste Jantar…"). Brazil's Portuguese says "Você dividiu" and needs no rule, so it keeps the verb
+    as it is; the rule only runs for the pt-PT row, told from pt-BR by its region on Android and by its `.lproj` on Apple.
   - In Spanish the verb of an Activity row and of a bill's History line is conjugated to "tú" when the user is the
     actor ("Tú dividiste Cena", "Tú te uniste a Viaje", "Tú cambiaste la categoría"), on every platform: the first word
     of the verb phrase moves to the second person singular preterite ("dividió" to "dividiste", "se unió a" to "te

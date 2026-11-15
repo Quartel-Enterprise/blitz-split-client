@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_default">Forma predefinida</string>
+    <string name="paying_method_default_hint">As novas contas que pagares já vêm com ela.</string>
+    <string name="paying_method_delete">Eliminar forma de pagamento</string>
+    <string name="paying_method_delete_title">Eliminar esta forma de pagamento?</string>
+    <string name="paying_method_delete_confirm">Eliminar</string>
+    <string name="paying_method_save">Guardar</string>
+</resources>

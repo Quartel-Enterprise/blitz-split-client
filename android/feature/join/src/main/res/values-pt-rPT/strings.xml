@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="join_title">%1$s convidou-te para o grupo %2$s</string>
+    <string name="join_title_no_creator">Recebeste um convite para o grupo %s</string>
+    <string name="join_hint">Não precisas de criar conta. No próximo ecrã escolhes quem és.</string>
+    <string name="join_personal_title">%1$s convidou-te como %2$s</string>
+    <string name="join_personal_title_no_inviter">Entras como %s</string>
+    <string name="join_personal_hint">Este link é só teu. Entras como %s, sem escolher na lista.</string>
+    <string name="join_invalid_title">Este convite já não é válido</string>
+    <string name="join_invalid_message">O link foi trocado ou o grupo foi apagado. Pede um link novo a quem te convidou.</string>
+    <string name="join_invalid_personal_message">Alguém já entrou por este link, ou ele foi trocado. Pede um novo a quem te enviou.</string>
+    <string name="join_scan_another">Ler outro QR</string>
+    <string name="join_offline_message">Guardámos o link. Assim que o aparelho tiver ligação, o convite abre sozinho.</string>
+    <string name="join_failed_title">Não foi possível abrir o convite</string>
+    <string name="join_failed_message">Tenta de novo.</string>
+    <string name="join_pick_title">Quem és tu no grupo?</string>
+    <string name="join_pick_subtitle">Escolhe o teu nome. Vais ver as despesas que já foram lançadas para essa pessoa.</string>
+    <string name="join_pick_taken_message">Se eras tu, pede a %s para libertar o nome em Membros.</string>
+    <string name="join_pick_taken_message_no_creator">Se eras tu, fala com quem te convidou.</string>
+    <string name="join_pick_choose">Escolhe um nome</string>
+    <string name="join_pick_new_message">Entras como um membro novo. As despesas lançadas antes não te incluem.</string>
+    <string name="join_pick_new_name">O teu nome</string>
+    <string name="join_pick_error">Não foi possível entrar. Verifica a internet e tenta de novo.</string>
+    <string name="join_scan_viewfinder">Visor da câmara</string>
+    <string name="join_scan_hint">Aponta a câmara para o QR do convite</string>
+    <string name="join_scan_invalid_qr">Esse QR não é um convite do Blitz Split</string>
+    <string name="join_scan_invalid_qr_hint">Tenta outro QR ou cola o link aqui em baixo.</string>
+    <string name="join_scan_denied_title">Sem acesso à câmara</string>
+    <string name="join_scan_denied_message">Para ler o QR, permite a câmara do Blitz Split nas definições do aparelho. Ou cola o link aqui em baixo.</string>
+    <string name="join_scan_open_settings">Abrir definições</string>
+    <string name="join_scan_camera_failed">Não foi possível abrir a câmara. Cola o link aqui em baixo.</string>
+    <string name="join_scan_prompt_title">Lê o QR do convite</string>
+    <string name="join_scan_prompt_message">A câmara só abre quando tocares no botão.</string>
+    <string name="join_scan_open_camera">Abrir câmara</string>
+    <string name="join_scan_no_camera">Este aparelho não tem câmara. Cola o link aqui em baixo.</string>
+    <string name="join_scan_paste_title">Tens o link?</string>
+    <string name="join_scan_paste_subtitle">Cola o link que te enviaram por mensagem.</string>
+    <string name="join_scan_invalid_link">Esse link não é um convite do Blitz Split</string>
+</resources>

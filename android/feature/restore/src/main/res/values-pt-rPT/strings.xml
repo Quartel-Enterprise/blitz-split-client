@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Trazer os teus grupos</string>
+    <string name="restore_subtitle">Já iniciaste sessão com uma conta? Basta iniciares sessão de novo. Se não, usa o código de recuperação ou o QR do dispositivo antigo.</string>
+    <string name="restore_no_connection_title">Sem ligação</string>
+    <string name="restore_no_connection_body">Iniciar sessão com conta ou código precisa de internet para transferir os teus grupos. O que escreveste fica guardado.</string>
+    <string name="restore_code_label">Ou usa o código de recuperação</string>
+    <string name="restore_scan_qr_title">Ler o QR do dispositivo antigo</string>
+    <string name="restore_start_fresh">Começar do zero neste dispositivo</string>
+    <string name="restore_error_invalid_code">Código não encontrado. Verifica as letras e tenta novamente.</string>
+    <string name="restore_error_too_many_attempts">Demasiadas tentativas. Aguarda alguns minutos e tenta novamente.</string>
+    <string name="restore_error_sign_in_failed">Não foi possível iniciar sessão agora. Tenta novamente.</string>
+    <string name="restore_error_unknown">Algo correu mal. Tenta novamente.</string>
+</resources>

@@ -55,6 +55,7 @@
     <string name="profile_language_system">System</string>
     <string name="profile_language_english">English</string>
     <string name="profile_language_portuguese">Portuguese (Brazil)</string>
+    <string name="profile_language_portuguese_portugal">Portuguese (Portugal)</string>
     <string name="profile_language_spanish">Spanish</string>
     <string name="profile_language_french">French</string>
     <string name="profile_language_german">German</string>
@@ -68,6 +69,7 @@
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English</string>
     <string name="profile_language_native_portuguese" translatable="false">Português (Brasil)</string>
+    <string name="profile_language_native_portuguese_portugal" translatable="false">Português (Portugal)</string>
     <string name="profile_language_native_spanish" translatable="false">Español</string>
     <string name="profile_language_native_french" translatable="false">Français</string>
     <string name="profile_language_native_german" translatable="false">Deutsch</string>

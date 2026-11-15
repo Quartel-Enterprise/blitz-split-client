@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_group_save">Guardar</string>
+    <string name="edit_group_photo_error">Não foi possível usar essa foto. Tenta outra.</string>
+    <string name="edit_group_name_help">Todas as pessoas do grupo veem o nome novo.</string>
+    <string name="edit_group_name_error">Dá um nome ao grupo, com um máximo de 40 caracteres.</string>
+    <string name="edit_group_currency">Moeda predefinida</string>
+    <string name="edit_group_offline_note">Sem internet: a alteração vale neste dispositivo agora e chega aos outros quando este voltar a ligar-se. Uma foto nova segue junto.</string>
+    <string name="edit_group_save_error">Não foi possível guardar o grupo. Tenta de novo.</string>
+    <string name="edit_group_default_split">Divisão predefinida</string>
+    <string name="default_split_title">Divisão predefinida</string>
+    <string name="default_split_back">Voltar a Editar grupo</string>
+    <string name="default_split_note">Vale para as despesas novas. Em cada despesa podes alterar na hora. As despesas já registadas não mudam.</string>
+    <string name="default_split_offline_note">Sem internet: a divisão nova vale neste dispositivo agora e chega aos outros quando este voltar a ligar-se.</string>
+    <string name="default_split_save_error">Não foi possível guardar a divisão. Tenta de novo.</string>
+    <string name="default_split_joined_sentence">%1$s. %2$s; ajusta se precisares.</string>
+    <string name="default_split_hint_income">A parte de cada um segue o rendimento</string>
+    <string name="default_split_list_percent">Percentagem de cada um</string>
+    <string name="default_split_list_income">Rendimento de cada um</string>
+    <string name="default_split_income_note">Quem está no grupo vê estes rendimentos e pode dividir contas com base neles.</string>
+    <string name="default_split_percent_of">Percentagem de %s</string>
+    <string name="default_split_income_of">Rendimento de %s</string>
+    <string name="default_split_sum_help">Ajusta as percentagens até somarem 100% para guardar.</string>
+    <string name="default_split_example_equal_help">Quem não estiver numa despesa fica de fora ao dividir.</string>
+    <string name="default_split_row_out">Fica de fora por predefinição</string>
+    <string name="default_split_row_income">Rendimento por mês · %d%% de cada conta</string>
+    <string name="default_split_me">%s (tu)</string>
+    <string name="default_split_exception_lead">As despesas desta categoria dividem-se de outra forma.</string>
+    <string name="default_split_exception_percent">Percentagem, %s</string>
+    <string name="default_split_exception_pick">Escolhe uma categoria para a exceção.</string>
+    <string name="default_split_exception_save">Guardar exceção</string>
+    <string name="default_split_exception_mode_percent">Percentagem</string>
+    <string name="simplify_status_pending_on">Ligado neste dispositivo · a aguardar envio</string>
+    <string name="simplify_status_pending_off">Desligado neste dispositivo · a aguardar envio</string>
+    <string name="simplify_offline_note">Sem internet: os pagamentos sugeridos já mudaram neste dispositivo. O grupo vê quando este voltar a ligar-se.</string>
+    <string name="simplify_confirm_body_on">Cada pessoa continua a pagar ou a receber o mesmo total. Só muda quem paga a quem.</string>
+    <string name="simplify_confirm_body_minimal">%s já está no mínimo. Liga mesmo assim, e as próximas contas já entram simplificadas.</string>
+    <string name="simplify_change_amount_to_you">%s a ti</string>
+    <string name="simplify_change_stops_paying">Deixa de pagar %s.</string>
+    <string name="simplify_change_stops_paying_me">Deixa de pagar %s.</string>
+    <string name="simplify_change_stops_receiving">Deixa de receber de %s.</string>
+    <string name="simplify_change_stops_receiving_me">Deixa de receber de %s.</string>
+    <string name="simplify_change_guest_note">Não tem a app: avisa através de Cobrar.</string>
+    <string name="simplify_you_lowercase">tu</string>
+    <string name="simplify_queued_one">Tens 1 pagamento na fila: %s. A simplificação conta com ele; se este mudar, os pagamentos sugeridos ajustam-se sozinhos.</string>
+    <string name="simplify_queued_paid_you">%1$s pagou-te %2$s</string>
+    <string name="simplify_queued_you_paid">pagaste %1$s a %2$s</string>
+    <plurals name="simplify_queued_several">
+        <item quantity="one">Tens %d pagamento na fila. A simplificação conta com ele; se este mudar, os pagamentos sugeridos ajustam-se sozinhos.</item>
+        <item quantity="other">Tens %d pagamentos na fila. A simplificação conta com eles; se mudarem, os pagamentos sugeridos ajustam-se sozinhos.</item>
+    </plurals>
+    <string name="simplify_confirm_foot_on">Toda a gente vê na Atividade. Quem passa a pagar ou a receber de outra pessoa recebe um aviso. Podes desligar quando quiseres.</string>
+    <string name="simplify_confirm_foot_minimal">Toda a gente vê na Atividade. Podes desligar quando quiseres.</string>
+    <string name="simplify_confirm_foot_off_none">Toda a gente vê na Atividade.</string>
+    <plurals name="simplify_confirm_foot_off">
+        <item quantity="one">Mais %d pessoa muda. Toda a gente vê na Atividade, e quem muda recebe um aviso.</item>
+        <item quantity="other">Mais %d pessoas mudam. Toda a gente vê na Atividade, e quem muda recebe um aviso.</item>
+    </plurals>
+    <string name="simplify_info_example_text">Carla deve %1$s a Elisa, e Elisa deve %1$s a ti.</string>
+    <string name="simplify_info_before_a11y">Antes: Carla paga %1$s a Elisa e Elisa paga %1$s a ti. 2 pagamentos.</string>
+    <string name="simplify_info_after_a11y">Simplificado: Carla paga %1$s diretamente a ti. Elisa não paga nada. 1 pagamento.</string>
+    <string name="simplify_info_example_result">Simplificado, Carla paga %s diretamente a ti, e Elisa não paga nada.</string>
+    <string name="simplify_info_stranger_title">Podes dever a quem não dividiu contas contigo</string>
+    <string name="simplify_info_undo_text">Os pagamentos voltam a ser entre quem dividiu cada conta. Nenhuma despesa nem pagamento registado muda.</string>
+    <string name="group_photo_camera">Câmara</string>
+    <string name="simplify_info_total_text">Quem devia %1$s no grupo continua a dever %1$s. Só muda a quem vai o dinheiro.</string>
+</resources>

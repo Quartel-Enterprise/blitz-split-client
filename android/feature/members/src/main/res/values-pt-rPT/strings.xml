@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_share">Partilhar</string>
+    <string name="members_me">%s (tu)</string>
+    <string name="members_personal_share">Partilhar com %s</string>
+    <string name="members_personal_share_message">Entra no grupo %1$s como %2$s no Blitz Split: %3$s</string>
+    <string name="members_remove_message">%s ainda não entrou. Podes adicionar de novo mais tarde.</string>
+    <string name="members_release">Libertar nome</string>
+    <string name="members_release_title">Libertar o nome %s?</string>
+    <string name="members_release_message">Quem entrou como %1$s sai do grupo. O nome, a cor e as contas de %1$s ficam, e é possível escolher %1$s de novo pelo link do grupo.</string>
+    <string name="members_release_confirm">Libertar</string>
+    <string name="members_release_error">Não foi possível libertar o nome. Verifica a internet e tenta de novo.</string>
+    <string name="members_invite_instead">Tens a app? Convida pelo link</string>
+    <string name="members_save">Guardar</string>
+    <string name="members_change_error">Não foi possível guardar a alteração. Tenta de novo.</string>
+    <string name="members_balance_settled">Liquidado</string>
+</resources>

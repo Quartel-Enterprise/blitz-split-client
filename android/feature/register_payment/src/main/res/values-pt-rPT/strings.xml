@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="register_payment_title_received">%s pagou-te?</string>
+    <string name="register_payment_title_paid">Pagaste a %s?</string>
+    <string name="register_payment_title_between">%1$s pagou a %2$s?</string>
+    <string name="register_payment_debt_received">%1$s deve-te %2$s</string>
+    <string name="register_payment_debt_paid">Deves %2$s a %1$s</string>
+    <string name="register_payment_over_debt">%s. Usa até esse valor.</string>
+    <string name="register_payment_remaining_received">%1$s ainda vai dever-te %2$s</string>
+    <string name="register_payment_remaining_paid">Ainda vais dever %2$s a %1$s</string>
+    <string name="register_payment_info">Passa a ser um acerto no grupo: aparece em Despesas e podes desfazê-lo.</string>
+    <string name="register_payment_for_others">Estás a registar por %1$s e %2$s.</string>
+    <string name="register_payment_offline_message">fica guardado no aparelho e sincroniza ao voltar a ligação.</string>
+    <string name="register_payment_confirm_received">Confirmar receção</string>
+    <string name="register_payment_confirm_between">Registar pagamento</string>
+    <string name="register_payment_screen_title">Registar pagamento</string>
+    <string name="register_payment_save_error">Não foi possível registar o pagamento. Tenta de novo.</string>
+    <string name="register_payment_one_per_group">A app regista um pagamento em cada grupo.</string>
+    <string name="register_payment_pay_group">%s · deves</string>
+    <plurals name="register_payment_pay_groups">
+        <item quantity="one">%d grupo · deves</item>
+        <item quantity="many">%d grupos · deves</item>
+        <item quantity="other">%d grupos · deves</item>
+    </plurals>
+    <string name="register_payment_pay_default_key">Chave predefinida de %s</string>
+    <string name="register_payment_pay_note_pix">Paga na app do teu banco e volta para marcar como pago. Confirma se o banco mostra o nome de %s.</string>
+    <string name="register_payment_pay_note_bitcoin">Paga na tua carteira e volta para marcar como pago.</string>
+    <string name="register_payment_pay_type_phone">Telemóvel</string>
+    <string name="register_payment_pay_otherwise">Paguei outro valor ou de outra forma</string>
+    <string name="register_payment_no_pix_key">%s não tem chave Pix na app.</string>
+    <string name="register_payment_simplified_new_you_pay">Dívida simplificada: pagas a %1$s o que devias a %2$s.</string>
+    <string name="register_payment_simplified_new_pays_you">Dívida simplificada: %1$s paga-te o que devia a %2$s.</string>
+    <string name="register_payment_simplified_grown_you">Dívida simplificada: inclui o que devias a %s.</string>
+    <string name="register_payment_you_owed">tu</string>
+    <string name="register_payment_simplify_on_paid">%1$s simplificou as dívidas há pouco. Já não deves a %2$s na %3$s.</string>
+    <string name="register_payment_simplify_off_paid">%1$s desligou Simplificar dívidas há pouco. Já não deves a %2$s na %3$s.</string>
+    <string name="register_payment_simplify_on_received">%1$s simplificou as dívidas há pouco. %2$s já não te deve na %3$s.</string>
+    <string name="register_payment_simplify_off_received">%1$s desligou Simplificar dívidas há pouco. %2$s já não te deve na %3$s.</string>
+    <string name="register_payment_simplify_on_between">%1$s simplificou as dívidas há pouco. %2$s já não deve a %3$s na %4$s.</string>
+    <string name="register_payment_simplify_off_between">%1$s desligou Simplificar dívidas há pouco. %2$s já não deve a %3$s na %4$s.</string>
+    <string name="register_payment_simplify_hint">Se já enviaste o Pix, marca como pago na mesma: a app refaz a conta.</string>
+    <string name="register_payment_simplify_was_paid">%s · era o que devias</string>
+    <string name="register_payment_simplify_paid_anyway">Já paguei na mesma</string>
+</resources>

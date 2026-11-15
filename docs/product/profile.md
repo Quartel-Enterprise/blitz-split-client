@@ -180,11 +180,13 @@ The profile, its photo, appearance, in-app update and Adjust photo.
   - Profile › Preferences › "Language", as Bible Planner's (Pierre's call): "System" first, the default, which follows
     the device's language (English for one the app doesn't have), then each language in its own name, the way its
     speakers look for it, with its name in the app's language as a smaller line under it (Pierre's call, beta feedback,
-    back from only translated names): "English", "Português (Brasil)", "Español", "Français", "Deutsch", "Italiano",
+    back from only translated names): "English", "Português (Brasil)", "Português (Portugal)", "Español", "Français", "Deutsch", "Italiano",
     "Polski", "Nederlands", "日本語", "Türkçe" and "Bahasa Indonesia", the same in every language, under them "Portuguese
-    (Brazil)", "Spanish"… in English and "Inglês", "Espanhol"… in Portuguese, the smaller line left out where both read
+    (Brazil)", "Portuguese (Portugal)", "Spanish"… in English and "Inglês", "Espanhol"… in Portuguese, the smaller line left out where both read
     the same (Italian's "Italiano" in Portuguese, Portuguese's own row). A region is spelled out, never a code:
-    "Português (Brasil)", "Portuguese (Brazil)". "Spanish" is Spain's Spanish (es-ES) on a device whose region is Spain,
+    "Português (Brasil)", "Portuguese (Brazil)", and the Portuguese of Portugal is its own row, not picked by the
+    device's region as Spain's Spanish is (Pierre's call), so a Brazilian living in Portugal still picks Brazil's. Its
+    chip reads "PT" and Brazil's "BR" (every other chip is its language's code), and a search for "pt" finds both. "Spanish" is Spain's Spanish (es-ES) on a device whose region is Spain,
     the neutral one anywhere else, so it carries no region. Each own name is marked with its language, so a screen
     reader reads "日本語" as Japanese and the font draws it as Japan's. Kept per device and
     never synced, still there after a sign out, and kept by each platform's own per-app language
