@@ -54,7 +54,7 @@ import com.quare.blitzsplit.feature.welcome.di.welcomeModule
 import com.quare.blitzsplit.shared.app.AnalyticsChoices
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
-import com.quare.blitzsplit.shared.app.PrefetchSiteTexts
+import com.quare.blitzsplit.shared.app.SiteTextUseCases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -72,7 +72,7 @@ private val appModule = module {
     single<RandomCode> { SecureRandomCode() }
     single<MinuteTicks> { SystemMinuteTicks(get()) }
     single { LinkInbox() }
-    factoryOf(::PrefetchSiteTexts)
+    factoryOf(::SiteTextUseCases)
     viewModelOf(::AppViewModel)
     // Why: a single that owns its scope, following the choices for the app's whole life, as SyncCoordinator does.
     single {

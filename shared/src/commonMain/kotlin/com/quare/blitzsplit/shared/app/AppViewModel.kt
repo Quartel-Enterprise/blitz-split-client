@@ -38,6 +38,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -81,7 +82,7 @@ class AppViewModel(
     private val observeAppForeground: ObserveAppForeground,
     private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
     private val startScreenViews: StartScreenViews,
-    private val prefetchSiteTexts: PrefetchSiteTexts,
+    private val siteTexts: SiteTextUseCases,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -195,7 +196,11 @@ class AppViewModel(
             .distinctUntilChanged()
             .onEach {
                 uiState.first { it == AppUiState.READY }
-                prefetchSiteTexts()
+                // Why: side by side, so a legal text stalling offline until its timeout doesn't hold the notes back.
+                coroutineScope {
+                    launch { siteTexts.prefetchLegalDocuments() }
+                    launch { siteTexts.prefetchReleaseNotes() }
+                }
             }.launchIn(viewModelScope)
     }
 

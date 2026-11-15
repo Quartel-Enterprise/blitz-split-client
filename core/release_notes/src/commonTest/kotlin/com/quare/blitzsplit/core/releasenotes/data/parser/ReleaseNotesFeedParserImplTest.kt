@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.releasenotes.domain.model.PublishedRelease
 import com.quare.blitzsplit.core.releasenotes.domain.model.ReleaseDate
 import com.quare.blitzsplit.core.releasenotes.feedJson
 import com.quare.blitzsplit.core.releasenotes.noteJson
+import com.quare.blitzsplit.core.releasenotes.published
 import com.quare.blitzsplit.core.releasenotes.releaseJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -398,7 +399,7 @@ class ReleaseNotesFeedParserImplTest {
     }
 
     @Test
-    fun `GIVEN a version missing its notes among readable ones WHEN reading the feed THEN it is not the feed`() {
+    fun `GIVEN a version missing its notes among readable ones WHEN reading the feed THEN gives only the others`() {
         // Given
         val json = feedJson(
             releaseJson("3.1.0"),
@@ -409,11 +410,11 @@ class ReleaseNotesFeedParserImplTest {
         val releases = parser.parse(json)
 
         // Then
-        assertNull(releases)
+        assertEquals(listOf(published("3.1.0")), releases)
     }
 
     @Test
-    fun `GIVEN a version or a note missing one of its keys WHEN reading each feed THEN none is the feed`() {
+    fun `GIVEN a version or a note missing one of its keys WHEN reading each feed THEN each gives no version`() {
         // Given
         val texts = listOf(
             """{"releases":[{"date":"2026-11-20","notes":[]}]}""",
@@ -426,7 +427,7 @@ class ReleaseNotesFeedParserImplTest {
         val read = texts.associateWith(parser::parse)
 
         // Then
-        assertEquals(emptyMap(), read.filterValues { it != null })
+        assertEquals(emptyMap(), read.filterValues { it != emptyList<PublishedRelease>() })
     }
 
     @Test

@@ -106,7 +106,9 @@ class ReleaseNotesViewModel(
         }
     }
 
+    // Why: the switch moves at once, so a second tap before the device saved the first is one that changes nothing.
     private fun toggleBeta(isOn: Boolean) {
+        uiState.update { it.copy(showsBeta = isOn) }
         viewModelScope.launch { updateBetaReleaseNotesChoice(isOn) }
     }
 }
