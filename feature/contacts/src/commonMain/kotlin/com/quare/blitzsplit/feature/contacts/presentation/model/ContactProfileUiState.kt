@@ -18,6 +18,8 @@ data class ContactProfileUiState(
     val isLoaded: Boolean,
     // Why: "Ocultar Felipe?" is open.
     val isHideConfirmOpen: Boolean,
+    // Why: the face opened big, as the profile's and the group's photo, with nothing to change it: it isn't theirs.
+    val isPhotoOpen: Boolean,
     // Why: "Adicionar Carla a um grupo" (11.5) is open.
     val addToGroup: AddToGroupDraft?,
     // Why: "Juntar Diego com a conta dele" (11.2h) is open.

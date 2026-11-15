@@ -10,6 +10,7 @@ sealed interface ContactProfileUiEvent : UiEvent {
             OnBackClicked,
             OnAddToGroupDismissed,
             OnMergeDismissed,
+            OnPhotoDismissed,
             -> EventAnalytics.NotTracked
 
             // Why: "Em breve", which the tap always shows.
@@ -64,6 +65,8 @@ sealed interface ContactProfileUiEvent : UiEvent {
             OnCancelMergeClicked -> EventAnalytics.Manual("contact_merge_cancel_clicked")
 
             OnShareProfileClicked -> EventAnalytics.Manual("contact_profile_share_clicked")
+
+            OnPhotoClicked -> EventAnalytics.Manual("contact_photo_clicked")
         }
 
     data object OnBackClicked : ContactProfileUiEvent
@@ -137,4 +140,10 @@ sealed interface ContactProfileUiEvent : UiEvent {
 
     // Why: "Share profile" in the bar, the person's profile link, as they would share it from their own Profile.
     data object OnShareProfileClicked : ContactProfileUiEvent
+
+    // Why: the face in the header, which opens it big, as the profile's avatar and the group's photo do.
+    data object OnPhotoClicked : ContactProfileUiEvent
+
+    // Why: ✕, a tap outside, back or Esc on the photo opened big.
+    data object OnPhotoDismissed : ContactProfileUiEvent
 }

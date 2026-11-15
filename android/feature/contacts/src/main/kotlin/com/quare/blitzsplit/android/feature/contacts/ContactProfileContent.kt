@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.contacts
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -44,6 +46,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -51,6 +54,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
@@ -188,6 +192,7 @@ internal fun ContactProfileContent(
                 contact = contact,
                 avatarSize = if (isInPane || layout.isLandscape) 72.dp else 88.dp,
                 fold = { headerFold },
+                onEvent = onEvent,
                 modifier = Modifier.onSizeChanged { headerHeight = it.height },
             )
         }
@@ -509,6 +514,7 @@ private fun ProfileHeader(
     contact: Contact,
     avatarSize: Dp,
     fold: () -> Float,
+    onEvent: (ContactProfileUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -516,19 +522,26 @@ private fun ProfileHeader(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+        // Why: the face opens big, as the profile's avatar and the group's photo do.
         AvatarBadge(
             initial = state.initials,
             color = contact.color,
             photoUrl = contact.photoUrl,
             size = avatarSize,
-            modifier = Modifier.graphicsLayer {
-                val progress = fold()
-                val scale = 1f - progress * 0.5f
-                scaleX = scale
-                scaleY = scale
-                alpha = 1f - progress
-                transformOrigin = TransformOrigin(0.5f, 1f)
-            },
+            modifier = Modifier
+                .graphicsLayer {
+                    val progress = fold()
+                    val scale = 1f - progress * 0.5f
+                    scaleX = scale
+                    scaleY = scale
+                    alpha = 1f - progress
+                    transformOrigin = TransformOrigin(0.5f, 1f)
+                }.clip(CircleShape)
+                .clickable(
+                    onClickLabel = stringResource(R.string.contacts_profile_photo_open),
+                    role = Role.Button,
+                    onClick = { onEvent(ContactProfileUiEvent.OnPhotoClicked) },
+                ),
         )
         Column(
             modifier = Modifier.graphicsLayer { alpha = (1f - fold() * 1.5f).coerceIn(0f, 1f) },

@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.contacts.domain.model.HiddenContact
 import com.quare.blitzsplit.core.contacts.domain.usecase.AddContactToGroup
 import com.quare.blitzsplit.core.contacts.domain.usecase.CancelGuestMerge
 import com.quare.blitzsplit.core.contacts.domain.usecase.FindPendingGuestMerge
+import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.CancelGuestMergeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.FindPendingGuestMergeUseCase
 import com.quare.blitzsplit.core.contacts.domain.usecase.impl.RequestGuestMergeUseCase
@@ -37,6 +38,7 @@ import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -2750,6 +2752,290 @@ class ContactProfileViewModelTest {
 
     // endregion
 
+    // region Photo
+
+    @Test
+    fun `GIVEN Carla with an account and a photo WHEN her face is tapped THEN opens her photo big`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                storedGroups = defaultGroups().map(::withCarlaPhoto),
+            )
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isPhotoOpen)
+            assertEquals(
+                CARLA_PHOTO,
+                viewModel.uiState.value.contact
+                    ?.photoUrl,
+            )
+        }
+
+    @Test
+    fun `GIVEN her profile just opened WHEN nothing is tapped THEN her photo is closed`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = CARLA_KEY,
+            storedGroups = defaultGroups().map(::withCarlaPhoto),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.isPhotoOpen)
+    }
+
+    @Test
+    fun `GIVEN Carla with a photo WHEN her face is tapped THEN sends the contact photo clicked once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                storedGroups = defaultGroups().map(::withCarlaPhoto),
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertEquals(listOf("contact_photo_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Carla without a photo WHEN her face is tapped THEN still opens it to show her initials`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertNull(
+                viewModel.uiState.value.contact
+                    ?.photoUrl,
+            )
+            assertTrue(viewModel.uiState.value.isPhotoOpen)
+            assertEquals(listOf("contact_photo_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Diego a guest WHEN his face is tapped THEN opens it and sends the contact photo clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = DIEGO_KEY)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isPhotoOpen)
+            assertEquals(listOf("contact_photo_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN her profile WHEN her face is tapped THEN navigates nowhere and sends no action`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                storedGroups = defaultGroups().map(::withCarlaPhoto),
+            )
+            val stackBefore = navigator.backStack.value
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertEquals(stackBefore, navigator.backStack.value)
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN her photo already open WHEN her face is tapped again THEN changes nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                storedGroups = defaultGroups().map(::withCarlaPhoto),
+            )
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+            val stateBefore = viewModel.uiState.value
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertEquals(stateBefore, viewModel.uiState.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the contact not read from the device yet WHEN the face is tapped THEN opens and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                bookAnswered = false,
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.contact)
+            assertFalse(viewModel.uiState.value.isPhotoOpen)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a person key nobody matches WHEN the face is tapped THEN opens nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = NOBODY_KEY,
+                inPane = true,
+            )
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isPhotoOpen)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN her photo open WHEN it is dismissed THEN closes it and sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = CARLA_KEY,
+            storedGroups = defaultGroups().map(::withCarlaPhoto),
+        )
+        viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(ContactProfileUiEvent.OnPhotoDismissed)
+
+        // Then
+        assertFalse(viewModel.uiState.value.isPhotoOpen)
+        assertTrue(trackedEvents.isEmpty())
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN her photo closed WHEN a dismiss arrives THEN changes nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            val stateBefore = viewModel.uiState.value
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoDismissed)
+
+            // Then
+            assertEquals(stateBefore, viewModel.uiState.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN her photo dismissed WHEN her face is tapped again THEN opens it and sends the click again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoDismissed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isPhotoOpen)
+            assertEquals(listOf("contact_photo_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN her photo open in the pane WHEN a sync takes Carla away THEN the photo closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                personKey = CARLA_KEY,
+                inPane = true,
+                storedGroups = defaultGroups().map(::withCarlaPhoto),
+            )
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // When
+            groups.groups.value = listOf(futebol())
+
+            // Then
+            assertNull(viewModel.uiState.value.contact)
+            assertFalse(viewModel.uiState.value.isPhotoOpen)
+        }
+
+    @Test
+    fun `GIVEN her photo open WHEN a sync keeps Carla THEN the photo stays open`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            personKey = CARLA_KEY,
+            storedGroups = defaultGroups().map(::withCarlaPhoto),
+        )
+        viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+        // When
+        expenses.expenses.value += owes(APE, memberId("carla", APE), meId(APE), 1_000L, id = "rent")
+
+        // Then
+        assertTrue(viewModel.uiState.value.isPhotoOpen)
+    }
+
+    @Test
+    fun `GIVEN the face tap WHEN reading its analytics THEN the ViewModel sends the contact photo clicked`() {
+        // Given
+        val event = ContactProfileUiEvent.OnPhotoClicked
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.Manual("contact_photo_clicked"), analytics)
+    }
+
+    @Test
+    fun `GIVEN the photo dismissed WHEN reading its analytics THEN it is not tracked`() {
+        // Given
+        val event = ContactProfileUiEvent.OnPhotoDismissed
+
+        // When
+        val analytics = event.analytics
+
+        // Then
+        assertEquals(EventAnalytics.NotTracked, analytics)
+    }
+
+    // endregion
+
+    // Why: Carla's photo in every group she is in, which her profile shows over her initials.
+    private fun withCarlaPhoto(group: Group): Group = group.copy(
+        members = group.members.map { member ->
+            if (member.userId == "carla") member.copy(photoUrl = CARLA_PHOTO) else member
+        },
+    )
+
     private val carlaCode: Map<String, String> = mapOf("carla" to CARLA_CODE)
 
     private val profileSource: Map<String, Any> = mapOf("source" to "contact_profile")
@@ -2800,6 +3086,7 @@ class ContactProfileViewModelTest {
         claimAnswered: Boolean = true,
         storedCategories: CategoryTree = CategoryTree.appOnly,
         shareCodes: Map<String, String> = emptyMap(),
+        bookAnswered: Boolean = true,
     ) {
         claimedContacts.clear()
         categories = MutableStateFlow(storedCategories)
@@ -2844,7 +3131,11 @@ class ContactProfileViewModelTest {
             },
             observeSpokenLanguage = { flowOf("pt") },
             observeMemberShareCode = ObserveMemberShareCodeUseCase(groups),
-            observeContactBook = observeContactBookOf(groups, expenses, FakeSettlementRepository(), hidden),
+            observeContactBook = if (bookAnswered) {
+                observeContactBookOf(groups, expenses, FakeSettlementRepository(), hidden)
+            } else {
+                ObserveContactBook { flow { awaitCancellation() } }
+            },
             observeMapCategories = { categories },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
@@ -2859,5 +3150,10 @@ class ContactProfileViewModelTest {
 
         // Why: as ProfileLink builds it, without the app's language.
         const val CARLA_LINK = "https://blitzsplit.com/u/CARLA12345"
+
+        const val CARLA_PHOTO = "https://example.com/carla.jpg"
+
+        // Why: a key no contact in the book has.
+        const val NOBODY_KEY = "user:nobody"
     }
 }

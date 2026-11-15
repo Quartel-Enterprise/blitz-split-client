@@ -87,6 +87,7 @@ class ContactProfileViewModel(
                 isOnline = true,
                 isLoaded = false,
                 isHideConfirmOpen = false,
+                isPhotoOpen = false,
                 addToGroup = null,
                 merge = null,
                 pendingMerge = Loadable.Loading,
@@ -269,6 +270,13 @@ class ContactProfileViewModel(
             ContactProfileUiEvent.OnCancelMergeClicked -> cancelMerge()
 
             ContactProfileUiEvent.OnShareProfileClicked -> shareProfile()
+
+            ContactProfileUiEvent.OnPhotoClicked -> if (uiState.value.contact != null && !uiState.value.isPhotoOpen) {
+                trackEvent("contact_photo_clicked", emptyMap())
+                uiState.update { it.copy(isPhotoOpen = true) }
+            }
+
+            ContactProfileUiEvent.OnPhotoDismissed -> uiState.update { it.copy(isPhotoOpen = false) }
         }
     }
 
@@ -286,6 +294,8 @@ class ContactProfileViewModel(
                 hasMoreHistory = history.size > HISTORY_SIZE,
                 isLoaded = true,
                 isHideConfirmOpen = state.isHideConfirmOpen && state.canHideWith(contact),
+                // Why: a person a sync took away takes their photo with them.
+                isPhotoOpen = state.isPhotoOpen && contact != null,
                 addToGroup = state.addToGroup?.takeIf { contact != null }?.let { draft ->
                     draftOf(contact!!, snapshot, draft.selectedGroupId)
                 },
