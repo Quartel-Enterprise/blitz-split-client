@@ -406,6 +406,41 @@ builds and the web site all do. Whether the app asks first, or offers an opt-out
 App Store privacy labels, before a build reaches testers. The workflow does not enforce it. Until it is settled, a beta
 for people other than the team is a decision to make knowingly.
 
+## Apple's privacy manifest
+
+[`iosApp/Resources/PrivacyInfo.xcprivacy`](../iosApp/Resources/PrivacyInfo.xcprivacy) goes into the iOS and the Mac
+app. It says the app doesn't track, and gives Apple's reason for each
+[required reason API](https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api)
+the app's binary calls, the libraries linked into it included: the Kotlin ones ship no manifest of their own, so the
+app's is where their calls are declared.
+
+| API | Who calls it | Reason |
+| --- | --- | --- |
+| User defaults | The app's language, multiplatform-settings, Firebase | `CA92.1`: values the app itself wrote. `AppLocale.systemLanguage` also reads the device's language list from the global domain, which no reason names: the list `Locale.preferredLanguages` gives every app |
+| File timestamps (`stat`, `fstat`, `lstat`) | The linked libraries | `C617.1`: files in the app's own container, where the database is |
+| Disk space (`statfs`, `fstatfs`) | The linked libraries | `E174.1`: whether there is room to write |
+
+A library added later may call another one. After adding one, build both apps (the Apple check of the `create-pr`
+skill: the iOS simulator and the Mac), since the Mac links its own Kotlin target and Swift sources, then list what
+each binary asks the system for and compare with the table. The `nm` line prints the C functions and the Foundation
+classes and keys, the `strings` line the ones that are only method names:
+
+```bash
+for BIN in \
+  iosApp/build/DerivedData/Build/Products/Debug-iphonesimulator/BoraRachar.app/BoraRachar.debug.dylib \
+  iosApp/build/DerivedData/Build/Products/Debug/BoraRachar.app/Contents/MacOS/BoraRachar.debug.dylib; do
+  echo "== $BIN"
+  nm -u "$BIN" | grep -E '^_[fl]?stat(at|fs|vfs)?$|getattrlist|mach_absolute_time|NSUserDefaults|NSURL(Creation|ContentModification)DateKey|NSFile(Creation|Modification)Date|NSFileSystem(Free)?Size|NSURLVolume.*CapacityKey'
+  strings - "$BIN" | grep -xE 'systemUptime|activeInputModes|fileCreationDate|fileModificationDate'
+done
+```
+
+Apple also writes to the account's e-mail after an upload that misses one (`ITMS-91053`), naming the API.
+
+The manifest doesn't list the data the app collects (`NSPrivacyCollectedDataTypes`) yet: it has to say what App
+Store Connect's App Privacy says, and those answers, like the ones of Play's Data safety form, wait for Pierre to
+confirm them. [analytics/README.md](analytics/README.md#consent) holds the ones Analytics already settled.
+
 ## Google sign in
 
 The Android beta signs in with Google through Credential Manager, which needs three things outside the code:

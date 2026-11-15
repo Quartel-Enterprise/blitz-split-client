@@ -117,9 +117,11 @@ targetTemplates:
         product: FirebaseCore
       - package: Firebase
         product: FirebaseCrashlytics
-      # Without FirebaseAnalyticsIdentitySupport, so no advertising id is ever collected
+      # The product without the advertising id: the plain FirebaseAnalytics links GoogleAppMeasurementIdentitySupport
+      # and GoogleAdsOnDeviceConversion, and FirebaseAnalyticsCore leaves both out. The module the code imports is
+      # still FirebaseAnalytics
       - package: Firebase
-        product: FirebaseAnalytics
+        product: FirebaseAnalyticsCore
     info:
       properties:
         # borarachar://auth-callback brings back the browser sign in (Google)
