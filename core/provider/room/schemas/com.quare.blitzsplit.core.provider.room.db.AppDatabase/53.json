@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 53,
-    "identityHash": "164d6e61c59c5cd2d38dd689773d0653",
+    "identityHash": "01be22b317f3c5c3e5e23fd9d0c7aeec",
     "entities": [
       {
         "tableName": "profile",
@@ -71,7 +71,7 @@
       },
       {
         "tableName": "account",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `userId` TEXT, `provider` TEXT, `recoveryCode` TEXT, `recoveryCodePrompt` TEXT NOT NULL, `pendingLinkProvider` TEXT, `browserSignInProvider` TEXT, `browserSignInFromProfile` INTEGER NOT NULL DEFAULT 0, `email` TEXT DEFAULT NULL, `signOutWhenSynced` INTEGER NOT NULL DEFAULT 0, `awaitsFullSync` INTEGER NOT NULL DEFAULT 0, `lastSyncedAt` INTEGER DEFAULT NULL, `inactivityExpiry` TEXT DEFAULT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `userId` TEXT, `provider` TEXT, `recoveryCode` TEXT, `recoveryCodePrompt` TEXT NOT NULL, `pendingLinkProvider` TEXT, `browserSignInProvider` TEXT, `browserSignInFromProfile` INTEGER NOT NULL DEFAULT 0, `email` TEXT DEFAULT NULL, `signOutWhenSynced` INTEGER NOT NULL DEFAULT 0, `awaitsFullSync` INTEGER NOT NULL DEFAULT 0, `lostAnonymousUserId` TEXT DEFAULT NULL, `inactivityExpiry` TEXT DEFAULT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -138,9 +138,9 @@
             "defaultValue": "0"
           },
           {
-            "fieldPath": "lastSyncedAt",
-            "columnName": "lastSyncedAt",
-            "affinity": "INTEGER",
+            "fieldPath": "lostAnonymousUserId",
+            "columnName": "lostAnonymousUserId",
+            "affinity": "TEXT",
             "defaultValue": "NULL"
           },
           {
@@ -2211,7 +2211,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '164d6e61c59c5cd2d38dd689773d0653')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '01be22b317f3c5c3e5e23fd9d0c7aeec')"
     ]
   }
 }

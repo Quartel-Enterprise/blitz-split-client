@@ -209,7 +209,6 @@ class SyncCoordinator(
         if (account.awaitsFullSync && account.status.userIdOrNull() == userId) {
             accountRepository.updateAwaitsFullSync(false)
         }
-        accountRepository.recordSync()
     }.also { result ->
         outcomes.onSyncEnded(result)
     }

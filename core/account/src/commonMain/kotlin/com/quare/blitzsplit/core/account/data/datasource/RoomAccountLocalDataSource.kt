@@ -26,7 +26,7 @@ class RoomAccountLocalDataSource(
         email = null,
         signOutWhenSynced = false,
         awaitsFullSync = false,
-        lastSyncedAt = null,
+        lostAnonymousUserId = null,
         inactivityExpiry = null,
     )
 

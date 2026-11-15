@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.account.data.dto.AppleTokenRequestDto
 import com.quare.blitzsplit.core.account.data.dto.RecoverRequestDto
 import com.quare.blitzsplit.core.account.data.dto.RecoverResponseDto
 import com.quare.blitzsplit.core.account.data.dto.RecoveryCodeResponseDto
+import com.quare.blitzsplit.core.account.data.dto.WasAccountExpiredParamsDto
 import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.IdentityAlreadyLinkedException
 import com.quare.blitzsplit.core.account.domain.model.InvalidRecoveryCodeException
@@ -25,6 +26,8 @@ import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
+import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.postgrest.rpc
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
@@ -44,6 +47,7 @@ import kotlin.time.Duration.Companion.seconds
 class SupabaseAccountRemoteDataSource(
     private val auth: Auth,
     private val functions: Functions,
+    private val postgrest: Postgrest,
 ) : AccountRemoteDataSource {
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -201,6 +205,12 @@ class SupabaseAccountRemoteDataSource(
         functions.invoke(function = DELETE_ACCOUNT_FUNCTION)
     }
 
+    override suspend fun wasAccountExpired(userId: String): Boolean = postgrest
+        .rpc(
+            function = WAS_ACCOUNT_EXPIRED_FUNCTION,
+            parameters = WasAccountExpiredParamsDto(userId = userId),
+        ).decodeAs<Boolean>()
+
     override suspend fun clearLocalSession() {
         auth.clearSession()
     }
@@ -242,6 +252,7 @@ class SupabaseAccountRemoteDataSource(
         const val RECOVERY_CODE_FUNCTION = "recovery-code"
         const val APPLE_TOKEN_FUNCTION = "apple-token"
         const val DELETE_ACCOUNT_FUNCTION = "delete-account"
+        const val WAS_ACCOUNT_EXPIRED_FUNCTION = "was_account_expired"
         const val HTTP_BAD_REQUEST = 400
         const val HTTP_NOT_FOUND = 404
         const val HTTP_CONFLICT = 409

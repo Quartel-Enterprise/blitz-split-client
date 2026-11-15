@@ -62,9 +62,6 @@ interface AccountRepository {
 
     suspend fun updateAwaitsFullSync(awaits: Boolean)
 
-    // Why: a sync of the account settled now, which is what the server counts its 30 days of inactivity from.
-    suspend fun recordSync()
-
     // Why: the device's copy of an account deleted for inactivity is erased, so only the welcome's notice is left.
     suspend fun endExpiredSession()
 

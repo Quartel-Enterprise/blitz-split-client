@@ -20,15 +20,18 @@ internal class SyncFailure(
 /*
  * Why: a request that never got an answer, a timeout or a connection that dropped, which the device may still call
  * online (supabase-kt wraps every failure in HttpRequestException except Ktor's request timeout, which it rethrows);
- * and a session whose token refresh got no answer the same way, so the sync didn't ask the server anything. Nor did
- * one of an account the server deleted for inactivity, which waits for the device to be erased.
+ * and a session whose token refresh got no answer the same way, so the sync didn't ask the server anything.
  */
 internal fun Throwable.isConnectionFailure(): Boolean = getCauses().any { cause ->
-    cause is HttpRequestException ||
-        cause is HttpRequestTimeoutException ||
-        cause is SessionRefreshingException ||
-        cause is AccountExpiredException
+    cause is HttpRequestException || cause is HttpRequestTimeoutException || cause is SessionRefreshingException
 }
+
+/*
+ * Why: what a failed sync doesn't report: a connection failure, and the sync of an account the server deleted for
+ * inactivity, which only waits for the device to be erased.
+ */
+internal fun Throwable.isExpectedFailure(): Boolean =
+    isConnectionFailure() || getCauses().any { cause -> cause is AccountExpiredException }
 
 private fun codesOf(failure: Throwable): String = failure.getCauses().joinToString(separator = " ← ") { cause ->
     val name = cause::class.simpleName ?: "Throwable"

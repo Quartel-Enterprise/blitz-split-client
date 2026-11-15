@@ -91,7 +91,6 @@ class FakeAccountRepository(
     var appResumeCount = 0
     var signOutCount = 0
     var endedDeletedSessions = 0
-    var recordedSyncs = 0
     var deleteAccountCount = 0
     var keepAppleTokensCount = 0
 
@@ -246,10 +245,6 @@ class FakeAccountRepository(
         deleteAccountCount++
         deleteAccountError?.let { return Result.failure(it) }
         return Result.success(Unit)
-    }
-
-    override suspend fun recordSync() {
-        recordedSyncs++
     }
 
     // Why: like the real one, only an account still waiting to be erased leaves the welcome's notice.

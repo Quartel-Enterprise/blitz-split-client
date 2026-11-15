@@ -20,7 +20,6 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
-import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +33,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicReference
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalAtomicApi::class)
@@ -43,7 +41,6 @@ class AccountRepositoryImpl(
     private val remote: AccountRemoteDataSource,
     // Why: the app's, for work a sign in starts but needn't wait for.
     private val scope: CoroutineScope,
-    private val currentTimeMillis: CurrentTimeMillis,
 ) : AccountRepository {
     // Why: in memory, since a browser trip doesn't outlive the process that opened it.
     private val browserTrip = AtomicReference(BrowserTrip.NONE)
@@ -97,16 +94,7 @@ class AccountRepositoryImpl(
     override fun observeSessionRecoveries(): Flow<Unit> = remote.observeSessionRecoveries()
 
     override suspend fun ensureRegistered(): Result<String> = suspendRunCatching {
-        val current = getUserUnlessRefreshing()
-        /*
-         * Why: at launch the sync may get here before the mirror has seen the session the server refused, so the row
-         * is mirrored first: an account deleted for inactivity is marked in that write, and nobody is signed in over it.
-         */
-        val user = current ?: run {
-            local.update { account -> account.toMirrorOf(user = null) }
-            if (local.get().inactivityExpiry == InactivityExpiry.PENDING.code) throw AccountExpiredException()
-            remote.signInAnonymously()
-        }
+        val user = getUserUnlessRefreshing() ?: signInAnonymouslyUnlessExpired()
         local.update { account -> account.toMirrorOf(user) }
         user.userId
     }
@@ -118,6 +106,7 @@ class AccountRepositoryImpl(
         fullName: String?,
         authorizationCode: String?,
     ): Result<ConnectResult> = suspendRunCatching {
+        failWhileExpiring()
         val current = getUserUnlessRefreshing()
         val result = when {
             current == null -> {
@@ -159,6 +148,7 @@ class AccountRepositoryImpl(
         provider: AccountProvider,
         isFromProfile: Boolean,
     ): Result<Unit> = suspendRunCatching {
+        failWhileExpiring()
         val current = getUserUnlessRefreshing()
         if (current != null && current.socialProvider == null) {
             linkWithBrowser(
@@ -227,6 +217,7 @@ class AccountRepositoryImpl(
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> = suspendRunCatching {
         val normalized = RecoveryCodeFormat.normalize(code) ?: throw InvalidRecoveryCodeException()
+        failWhileExpiring()
         val credentials = remote.fetchRecoveryCredentials(normalized)
         remote.signInWithPassword(credentials)
         val user = requireNotNull(remote.getCurrentUserOrNull())
@@ -279,11 +270,6 @@ class AccountRepositoryImpl(
         local.clear()
     }
 
-    override suspend fun recordSync() {
-        val syncedAt = currentTimeMillis()
-        local.update { account -> if (account.userId == null) account else account.copy(lastSyncedAt = syncedAt) }
-    }
-
     // Why: a sign out that erased the device meanwhile leaves no expiry, and so no notice for the welcome.
     override suspend fun endExpiredSession() {
         local.update { account ->
@@ -293,7 +279,7 @@ class AccountRepositoryImpl(
                     recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE.code,
                     browserSignInProvider = null,
                     browserSignInFromProfile = false,
-                    lastSyncedAt = null,
+                    lostAnonymousUserId = null,
                     inactivityExpiry = InactivityExpiry.NOTICE.code,
                 )
             } else {
@@ -468,7 +454,8 @@ class AccountRepositoryImpl(
             email = null,
             signOutWhenSynced = false,
             awaitsFullSync = false,
-            inactivityExpiry = if (wasDeletedForInactivity()) InactivityExpiry.PENDING.code else inactivityExpiry,
+            // Why: kept to ask the server, before anyone else is signed in, whether it deleted that account.
+            lostAnonymousUserId = if (userId != null && provider == null) userId else lostAnonymousUserId,
         )
 
         user.socialProvider != null -> copy(
@@ -480,7 +467,7 @@ class AccountRepositoryImpl(
             email = user.email,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
             awaitsFullSync = awaitsFullSync || (userId != null && userId != user.userId),
-            lastSyncedAt = lastSyncedAt.takeIf { userId == user.userId },
+            lostAnonymousUserId = null,
             inactivityExpiry = null,
         )
 
@@ -499,22 +486,30 @@ class AccountRepositoryImpl(
             email = null,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
             awaitsFullSync = awaitsFullSync || (userId != null && userId != user.userId),
-            lastSyncedAt = lastSyncedAt.takeIf { userId == user.userId },
+            lostAnonymousUserId = null,
             inactivityExpiry = null,
         )
     }
 
     /*
-     * Why: the server refuses the session of an account it deleted, and it deletes one without Google or Apple that no
-     * device synced for 30 days. A session that ends sooner after this device's last sync was lost for another reason,
-     * as is one of an account that never synced here, and the device keeps its profile as before. A day short of the
-     * 30, since the server counts from its own clock.
+     * Why: the server refuses the session of an account it deleted for inactivity, as it does one lost for any other
+     * reason, so the device asks which it was before a new user takes over its copy. Read from the row as it is,
+     * since at launch the sync may get here before the mirror has seen the session go. A deleted account is marked
+     * and nobody is signed in: the copy is erased first. Any other keeps the old path, a new anonymous user.
      */
-    private fun AccountEntity.wasDeletedForInactivity(): Boolean {
-        val syncedAt = lastSyncedAt ?: return false
-        val isAnonymous = userId != null && provider == null
-        return isAnonymous &&
-            currentTimeMillis() - syncedAt >= (InactivityExpiry.IDLE_DAYS - 1).days.inWholeMilliseconds
+    private suspend fun signInAnonymouslyUnlessExpired(): SessionUser {
+        val account = local.get()
+        val lostUserId = account.lostAnonymousUserId ?: account.userId.takeIf { account.provider == null }
+        val isExpired = account.inactivityExpiry == InactivityExpiry.PENDING.code ||
+            (lostUserId != null && remote.wasAccountExpired(lostUserId))
+        if (!isExpired) return remote.signInAnonymously()
+        local.update { row -> row.toMirrorOf(user = null).copy(inactivityExpiry = InactivityExpiry.PENDING.code) }
+        throw AccountExpiredException()
+    }
+
+    // Why: a sign in over an account waiting to be erased would hand its copy to the new user.
+    private suspend fun failWhileExpiring() {
+        if (local.get().inactivityExpiry == InactivityExpiry.PENDING.code) throw AccountExpiredException()
     }
 
     private val appleTokenRetryDelay = 2.seconds

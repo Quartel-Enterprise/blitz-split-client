@@ -44,9 +44,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class AccountRepositoryImplTest {
@@ -54,8 +51,6 @@ class AccountRepositoryImplTest {
     private lateinit var remote: FakeAccountRemoteDataSource
     private lateinit var repository: AccountRepositoryImpl
 
-    // Why: the clock the repository reads, which a case moves to tell an idle account from a fresh one.
-    private var now = 0L
     private var abandonedSignIns = 0
     private val abandoned = mutableListOf<AbandonedBrowserSignIn>()
 
@@ -2517,318 +2512,457 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN an anonymous account WHEN a sync of it settles THEN remembers when`() = runTest {
-        // Given
-        prepareScenario(currentUser = anonymousUser)
-        repository.ensureRegistered()
-        now = 42L
-
-        // When
-        repository.recordSync()
-
-        // Then
-        assertEquals(42L, local.get().lastSyncedAt)
-    }
-
-    @Test
-    fun `GIVEN a Google account WHEN a sync of it settles THEN remembers when`() = runTest {
-        // Given
-        prepareScenario(currentUser = googleUser)
-        repository.ensureRegistered()
-        now = 42L
-
-        // When
-        repository.recordSync()
-
-        // Then
-        assertEquals(42L, local.get().lastSyncedAt)
-    }
-
-    @Test
-    fun `GIVEN a device with no account WHEN a sync settles THEN records nothing`() = runTest {
-        // Given
-        prepareScenario(currentUser = null)
-        now = 42L
-
-        // When
-        repository.recordSync()
-
-        // Then
-        assertNull(local.get().lastSyncedAt)
-    }
-
-    @Test
-    fun `GIVEN an account that synced before WHEN a second sync settles THEN remembers the later time`() = runTest {
-        // Given
-        prepareScenario(currentUser = anonymousUser)
-        repository.ensureRegistered()
-        now = 42L
-        repository.recordSync()
-        now = 99L
-
-        // When
-        repository.recordSync()
-
-        // Then
-        assertEquals(99L, local.get().lastSyncedAt)
-    }
-
-    @Test
-    fun `GIVEN an anonymous account that synced WHEN its session refreshes THEN keeps the time of the sync`() =
+    fun `GIVEN an anonymous account WHEN its session ends on its own THEN remembers that user without expiring it`() =
         runTest {
             // Given
             prepareScenario(currentUser = null)
-            now = 42L
-            startAccountLastSynced(anonymousUser, ago = 1.days)
+            startMirroring()
+            sessions.emit(lostUser)
+            runCurrent()
+
+            // When
+            sessions.emit(null)
+            runCurrent()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(account.inactivityExpiry)
+            assertEquals("lost-anonymous", local.get().lostAnonymousUserId)
+            assertTrue(remote.expiryQuestions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a Google account WHEN its session ends on its own THEN remembers no lost user`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startMirroring()
+        sessions.emit(googleUser)
+        runCurrent()
+
+        // When
+        sessions.emit(null)
+        runCurrent()
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(account.inactivityExpiry)
+        assertNull(local.get().lostAnonymousUserId)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account that linked Apple WHEN its session ends on its own THEN remembers no lost user`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startMirroring()
+            sessions.emit(lostUser)
+            runCurrent()
+            sessions.emit(lostUser.copy(socialProvider = AccountProvider.APPLE))
+            runCurrent()
+
+            // When
+            sessions.emit(null)
+            runCurrent()
+
+            // Then
+            assertNull(local.get().lostAnonymousUserId)
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN a device with no account WHEN no session is mirrored THEN remembers no lost user`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startMirroring()
+
+        // When
+        sessions.emit(null)
+        runCurrent()
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertNull(account.inactivityExpiry)
+        assertNull(local.get().lostAnonymousUserId)
+    }
+
+    @Test
+    fun `GIVEN a lost anonymous account WHEN no session is mirrored again THEN still remembers that user`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startLostAnonymousAccount()
+
+        // When
+        sessions.emit(null)
+        runCurrent()
+
+        // Then
+        assertEquals("lost-anonymous", local.get().lostAnonymousUserId)
+        assertNull(repository.observeAccount().first().inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN a lost anonymous account WHEN a new anonymous session is mirrored THEN forgets the lost user`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startLostAnonymousAccount()
 
             // When
             sessions.emit(anonymousUser)
             runCurrent()
 
             // Then
-            assertEquals(42L, local.get().lastSyncedAt)
+            assertNull(local.get().lostAnonymousUserId)
+            assertEquals(AccountStatus.Anonymous("anonymous"), repository.observeStatus().first())
         }
 
     @Test
-    fun `GIVEN an anonymous account that synced WHEN the same user comes with Google THEN keeps the sync time`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = null)
-            now = 42L
-            startAccountLastSynced(anonymousUser, ago = 1.days)
-
-            // When
-            sessions.emit(anonymousUser.copy(socialProvider = AccountProvider.GOOGLE))
-            runCurrent()
-
-            // Then
-            assertEquals(42L, local.get().lastSyncedAt)
-            assertEquals(
-                AccountStatus.Connected("anonymous", AccountProvider.GOOGLE),
-                repository.observeStatus().first(),
-            )
-        }
-
-    @Test
-    fun `GIVEN an anonymous account that synced WHEN it links Apple THEN keeps the time of the sync`() = runTest {
+    fun `GIVEN a lost anonymous account WHEN a Google session is mirrored THEN forgets the lost user`() = runTest {
         // Given
-        prepareScenario(currentUser = anonymousUser)
-        repository.ensureRegistered()
-        now = 42L
-        repository.recordSync()
+        prepareScenario(currentUser = null)
+        startLostAnonymousAccount()
+
+        // When
+        sessions.emit(googleUser)
+        runCurrent()
+
+        // Then
+        assertNull(local.get().lostAnonymousUserId)
+        assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), repository.observeStatus().first())
+    }
+
+    @Test
+    fun `GIVEN a lost anonymous account WHEN signing in with Apple THEN forgets the lost user`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            idTokenUser = appleUserWithName,
+        )
+        startLostAnonymousAccount()
 
         // When
         val result = signInWithApple()
 
         // Then
-        assertEquals(ConnectResult.LINKED, result.getOrNull())
-        assertEquals(42L, local.get().lastSyncedAt)
+        assertEquals(ConnectResult.SIGNED_IN, result.getOrNull())
+        assertNull(local.get().lostAnonymousUserId)
+        assertNull(repository.observeAccount().first().inactivityExpiry)
     }
 
     @Test
-    fun `GIVEN an anonymous account that synced WHEN ensuring registration again THEN keeps the time of the sync`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = anonymousUser)
-            repository.ensureRegistered()
-            now = 42L
-            repository.recordSync()
+    fun `GIVEN a lost anonymous account WHEN restoring with a code THEN forgets the lost user`() = runTest {
+        // Given
+        prepareScenario(currentUser = null)
+        startLostAnonymousAccount()
 
-            // When
-            repository.ensureRegistered()
+        // When
+        val result = repository.restoreWithRecoveryCode("k7qm-4xpa-9tre")
 
-            // Then
-            assertEquals(42L, local.get().lastSyncedAt)
-        }
-
-    @Test
-    fun `GIVEN an anonymous account that synced WHEN the session becomes a Google user THEN forgets the time`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = null)
-            startAccountLastSynced(anonymousUser, ago = 1.days)
-
-            // When
-            sessions.emit(googleUser)
-            runCurrent()
-
-            // Then
-            assertNull(local.get().lastSyncedAt)
-        }
+        // Then
+        assertTrue(result.isSuccess)
+        assertNull(local.get().lostAnonymousUserId)
+        assertEquals(AccountStatus.Anonymous("restored"), repository.observeStatus().first())
+    }
 
     @Test
-    fun `GIVEN a Google account that synced WHEN the session becomes another anonymous user THEN forgets the time`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = null)
-            startAccountLastSynced(googleUser, ago = 1.days)
+    fun `GIVEN an anonymous session WHEN ensuring registration THEN asks the server nothing`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = anonymousUser,
+            wasAccountExpired = true,
+        )
 
-            // When
-            sessions.emit(anonymousUser)
-            runCurrent()
+        // When
+        val result = repository.ensureRegistered()
 
-            // Then
-            assertNull(local.get().lastSyncedAt)
-        }
+        // Then
+        assertEquals("anonymous", result.getOrNull())
+        assertTrue(remote.expiryQuestions.isEmpty())
+        assertNull(repository.observeAccount().first().inactivityExpiry)
+    }
 
     @Test
-    fun `GIVEN an anonymous account that synced WHEN its Apple identity has another owner THEN forgets the time`() =
+    fun `GIVEN a lost anonymous account and a new session WHEN ensuring registration THEN registers it unasked`() =
         runTest {
             // Given
             prepareScenario(
-                currentUser = anonymousUser,
-                linkError = IdentityAlreadyLinkedException(),
-                idTokenUser = appleUserWithName,
+                currentUser = null,
+                wasAccountExpired = true,
             )
-            repository.ensureRegistered()
-            repository.recordSync()
+            startLostAnonymousAccount()
+            remote.sessionUsers.value = googleUser
 
             // When
-            val result = signInWithApple()
-
-            // Then
-            assertEquals(ConnectResult.SWITCHED, result.getOrNull())
-            assertNull(local.get().lastSyncedAt)
-        }
-
-    @Test
-    fun `GIVEN an anonymous account last synced 29 days ago WHEN its session ends on its own THEN it is pending`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = null)
-            startAccountLastSynced(anonymousUser, ago = 29.days)
-
-            // When
-            sessions.emit(null)
-            runCurrent()
+            val result = repository.ensureRegistered()
 
             // Then
             val account = repository.observeAccount().first()
+            assertEquals("user-1", result.getOrNull())
+            assertTrue(remote.expiryQuestions.isEmpty())
+            assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), account.status)
+            assertNull(account.inactivityExpiry)
+            assertNull(local.get().lostAnonymousUserId)
+        }
+
+    @Test
+    fun `GIVEN a device with no account WHEN ensuring registration THEN signs in anonymously without asking`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+
+            // When
+            val result = repository.ensureRegistered()
+
+            // Then
+            assertEquals("anonymous", result.getOrNull())
+            assertEquals(1, remote.anonymousSignIns)
+            assertTrue(remote.expiryQuestions.isEmpty())
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN a lost Google account WHEN ensuring registration THEN signs in anonymously without asking`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            wasAccountExpired = true,
+        )
+        startMirroring()
+        sessions.emit(googleUser)
+        runCurrent()
+        sessions.emit(null)
+        runCurrent()
+
+        // When
+        val result = repository.ensureRegistered()
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertEquals("anonymous", result.getOrNull())
+        assertEquals(1, remote.anonymousSignIns)
+        assertTrue(remote.expiryQuestions.isEmpty())
+        assertEquals(AccountStatus.Anonymous("anonymous"), account.status)
+        assertNull(account.inactivityExpiry)
+    }
+
+    // Why: at launch the sync may ask for the user before the mirror has seen the refused session.
+    @Test
+    fun `GIVEN a Google account whose lost session is not mirrored yet WHEN ensuring registration THEN asks nothing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+            startMirroring()
+            sessions.emit(googleUser)
+            runCurrent()
+
+            // When
+            val result = repository.ensureRegistered()
+
+            // Then
+            assertEquals("anonymous", result.getOrNull())
+            assertEquals(1, remote.anonymousSignIns)
+            assertTrue(remote.expiryQuestions.isEmpty())
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN a lost anonymous account the server deleted WHEN ensuring registration THEN it is pending its expiry`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+            startLostAnonymousAccount()
+
+            // When
+            val result = repository.ensureRegistered()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertIs<AccountExpiredException>(result.exceptionOrNull())
+            assertEquals(listOf("lost-anonymous"), remote.expiryQuestions)
+            assertEquals(0, remote.anonymousSignIns)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertEquals(InactivityExpiry.PENDING, account.inactivityExpiry)
+        }
+
+    // Why: at launch the sync may ask for the user before the mirror has seen the refused session.
+    @Test
+    fun `GIVEN a deleted account whose refused session is not mirrored yet WHEN ensuring registration THEN pending`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+            startMirroring()
+            sessions.emit(lostUser)
+            runCurrent()
+
+            // When
+            val result = repository.ensureRegistered()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertIs<AccountExpiredException>(result.exceptionOrNull())
+            assertEquals(listOf("lost-anonymous"), remote.expiryQuestions)
+            assertEquals(0, remote.anonymousSignIns)
             assertEquals(AccountStatus.LocalOnly, account.status)
             assertEquals(InactivityExpiry.PENDING, account.inactivityExpiry)
         }
 
     @Test
-    fun `GIVEN an anonymous account last synced 45 days ago WHEN its session ends on its own THEN it is pending`() =
+    fun `GIVEN a lost anonymous account the server still has WHEN ensuring registration THEN signs in a new user`() =
         runTest {
             // Given
-            prepareScenario(currentUser = null)
-            startAccountLastSynced(anonymousUser, ago = 45.days)
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = false,
+            )
+            startLostAnonymousAccount()
 
             // When
-            sessions.emit(null)
-            runCurrent()
-
-            // Then
-            assertEquals(InactivityExpiry.PENDING, repository.observeAccount().first().inactivityExpiry)
-        }
-
-    @Test
-    fun `GIVEN an anonymous account synced just under 29 days ago WHEN its session ends THEN it has no expiry`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = null)
-            startAccountLastSynced(anonymousUser, ago = 29.days - 1.milliseconds)
-
-            // When
-            sessions.emit(null)
-            runCurrent()
+            val result = repository.ensureRegistered()
 
             // Then
             val account = repository.observeAccount().first()
-            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertEquals("anonymous", result.getOrNull())
+            assertEquals(listOf("lost-anonymous"), remote.expiryQuestions)
+            assertEquals(1, remote.anonymousSignIns)
+            assertEquals(AccountStatus.Anonymous("anonymous"), account.status)
             assertNull(account.inactivityExpiry)
+            assertNull(local.get().lostAnonymousUserId)
         }
 
     @Test
-    fun `GIVEN an anonymous account that synced yesterday WHEN its session ends THEN it has no expiry`() = runTest {
-        // Given
-        prepareScenario(currentUser = null)
-        startAccountLastSynced(anonymousUser, ago = 1.days)
-
-        // When
-        sessions.emit(null)
-        runCurrent()
-
-        // Then
-        assertNull(repository.observeAccount().first().inactivityExpiry)
-    }
-
-    @Test
-    fun `GIVEN an anonymous account that never synced here WHEN its session ends long after THEN it has no expiry`() =
+    fun `GIVEN a kept account whose lost session is not mirrored yet WHEN a new user registers THEN awaits a sync`() =
         runTest {
             // Given
-            prepareScenario(currentUser = null)
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = false,
+            )
             startMirroring()
-            sessions.emit(anonymousUser)
+            sessions.emit(lostUser)
             runCurrent()
-            now += 45.days.inWholeMilliseconds
 
             // When
-            sessions.emit(null)
-            runCurrent()
+            val result = repository.ensureRegistered()
 
             // Then
             val account = repository.observeAccount().first()
-            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertEquals("anonymous", result.getOrNull())
+            assertEquals(listOf("lost-anonymous"), remote.expiryQuestions)
+            assertEquals(AccountStatus.Anonymous("anonymous"), account.status)
+            assertTrue(account.awaitsFullSync)
             assertNull(account.inactivityExpiry)
         }
 
     @Test
-    fun `GIVEN a Google account last synced 45 days ago WHEN its session ends THEN it has no expiry`() = runTest {
-        // Given
-        prepareScenario(currentUser = null)
-        startAccountLastSynced(googleUser, ago = 45.days)
-
-        // When
-        sessions.emit(null)
-        runCurrent()
-
-        // Then
-        val account = repository.observeAccount().first()
-        assertEquals(AccountStatus.LocalOnly, account.status)
-        assertNull(account.inactivityExpiry)
-    }
-
-    @Test
-    fun `GIVEN an anonymous account that linked Apple and synced 45 days ago WHEN its session ends THEN no expiry`() =
+    fun `GIVEN a lost anonymous account and the server unreachable WHEN ensuring registration THEN fails as it was`() =
         runTest {
             // Given
-            prepareScenario(currentUser = null)
-            startAccountLastSynced(anonymousUser, ago = 45.days)
-            sessions.emit(anonymousUser.copy(socialProvider = AccountProvider.APPLE))
-            runCurrent()
+            prepareScenario(
+                currentUser = null,
+                expiryQuestionError = IllegalStateException("offline"),
+            )
+            startLostAnonymousAccount()
+            val before = local.get()
 
             // When
-            sessions.emit(null)
-            runCurrent()
+            val result = repository.ensureRegistered()
 
             // Then
+            val account = repository.observeAccount().first()
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(0, remote.anonymousSignIns)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertNull(account.inactivityExpiry)
+            assertEquals(before, local.get())
+            assertEquals("lost-anonymous", local.get().lostAnonymousUserId)
+        }
+
+    @Test
+    fun `GIVEN an unmirrored lost session and a server error WHEN ensuring registration THEN fails as it was`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                expiryQuestionError = IllegalStateException("server error"),
+            )
+            startMirroring()
+            sessions.emit(lostUser)
+            runCurrent()
+            val before = local.get()
+
+            // When
+            val result = repository.ensureRegistered()
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(0, remote.anonymousSignIns)
+            assertEquals(before, local.get())
             assertNull(repository.observeAccount().first().inactivityExpiry)
         }
 
     @Test
-    fun `GIVEN a device with no account WHEN no session is mirrored THEN it has no expiry`() = runTest {
-        // Given
-        prepareScenario(currentUser = null)
-        startMirroring()
-        repository.recordSync()
-        now += 45.days.inWholeMilliseconds
+    fun `GIVEN a question to the server that failed WHEN ensuring registration again THEN asks the server again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                expiryQuestionError = IllegalStateException("offline"),
+            )
+            startLostAnonymousAccount()
+            repository.ensureRegistered()
 
-        // When
-        sessions.emit(null)
-        runCurrent()
+            // When
+            val result = repository.ensureRegistered()
 
-        // Then
-        val account = repository.observeAccount().first()
-        assertEquals(AccountStatus.LocalOnly, account.status)
-        assertNull(account.inactivityExpiry)
-    }
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(listOf("lost-anonymous", "lost-anonymous"), remote.expiryQuestions)
+            assertEquals(0, remote.anonymousSignIns)
+        }
+
+    @Test
+    fun `GIVEN a lost anonymous account and a session waiting for its refresh WHEN ensuring registration THEN waits`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+            startLostAnonymousAccount()
+            remote.isRefreshing = true
+
+            // When
+            val result = repository.ensureRegistered()
+
+            // Then
+            assertIs<SessionRefreshingException>(result.exceptionOrNull())
+            assertTrue(remote.expiryQuestions.isEmpty())
+            assertEquals(0, remote.anonymousSignIns)
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+        }
 
     @Test
     fun `GIVEN an account pending its expiry WHEN no session is mirrored again THEN it stays pending`() = runTest {
         // Given
-        prepareScenario(currentUser = null)
+        prepareScenario(
+            currentUser = null,
+            wasAccountExpired = true,
+        )
         startExpiredAccount()
 
         // When
@@ -2840,29 +2974,14 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN an account pending its expiry WHEN ensuring registration THEN fails and signs nobody in`() = runTest {
-        // Given
-        prepareScenario(currentUser = null)
-        startExpiredAccount()
-
-        // When
-        val result = repository.ensureRegistered()
-
-        // Then
-        val account = repository.observeAccount().first()
-        assertIs<AccountExpiredException>(result.exceptionOrNull())
-        assertEquals(0, remote.anonymousSignIns)
-        assertEquals(AccountStatus.LocalOnly, account.status)
-        assertEquals(InactivityExpiry.PENDING, account.inactivityExpiry)
-    }
-
-    // Why: at launch the sync may ask for the user before the mirror has seen the refused session.
-    @Test
-    fun `GIVEN an idle account whose refused session is not mirrored yet WHEN ensuring registration THEN expires it`() =
+    fun `GIVEN an account pending its expiry WHEN ensuring registration THEN fails without asking the server again`() =
         runTest {
             // Given
-            prepareScenario(currentUser = null)
-            startAccountLastSynced(anonymousUser, ago = 45.days)
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+            startExpiredAccount()
 
             // When
             val result = repository.ensureRegistered()
@@ -2870,18 +2989,116 @@ class AccountRepositoryImplTest {
             // Then
             val account = repository.observeAccount().first()
             assertIs<AccountExpiredException>(result.exceptionOrNull())
+            assertEquals(listOf("lost-anonymous"), remote.expiryQuestions)
             assertEquals(0, remote.anonymousSignIns)
             assertEquals(AccountStatus.LocalOnly, account.status)
             assertEquals(InactivityExpiry.PENDING, account.inactivityExpiry)
         }
 
     @Test
+    fun `GIVEN an account pending its expiry WHEN signing in with Google THEN fails and signs nobody in`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            idTokenUser = googleUser,
+            wasAccountExpired = true,
+        )
+        startExpiredAccount()
+
+        // When
+        val result = repository.signInWithIdToken(
+            AccountProvider.GOOGLE,
+            idToken = "token",
+            rawNonce = null,
+            fullName = null,
+            authorizationCode = null,
+        )
+
+        // Then
+        val account = repository.observeAccount().first()
+        assertIs<AccountExpiredException>(result.exceptionOrNull())
+        assertTrue(remote.signedInTokens.isEmpty())
+        assertTrue(remote.linkedTokens.isEmpty())
+        assertEquals(AccountStatus.LocalOnly, account.status)
+        assertEquals(InactivityExpiry.PENDING, account.inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN signing in with Apple natively THEN keeps no name nor token`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                idTokenUser = appleUserWithoutName,
+                wasAccountExpired = true,
+            )
+            startExpiredAccount()
+
+            // When
+            val result = signInWithApple(
+                fullName = appleName,
+                authorizationCode = appleAuthorizationCode,
+            )
+
+            // Then
+            assertIs<AccountExpiredException>(result.exceptionOrNull())
+            assertTrue(remote.signedInTokens.isEmpty())
+            assertTrue(remote.savedDisplayNames.isEmpty())
+            assertTrue(remote.keptAppleTokens.isEmpty())
+            assertEquals(InactivityExpiry.PENDING, repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN signing in with Google in the browser THEN fails without leaving`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+            startExpiredAccount()
+            val before = local.get()
+
+            // When
+            val result = repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = true)
+
+            // Then
+            assertIs<AccountExpiredException>(result.exceptionOrNull())
+            assertTrue(remote.browserSignIns.isEmpty())
+            assertTrue(remote.browserLinks.isEmpty())
+            assertEquals(before, local.get())
+        }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN restoring with a code THEN fails and signs nobody in`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = null,
+            wasAccountExpired = true,
+        )
+        startExpiredAccount()
+        val before = local.get()
+
+        // When
+        val result = repository.restoreWithRecoveryCode("k7qm-4xpa-9tre")
+
+        // Then
+        assertIs<AccountExpiredException>(result.exceptionOrNull())
+        assertTrue(remote.exchangedCodes.isEmpty())
+        assertNull(repository.getCurrentUserOrNull())
+        assertEquals(before, local.get())
+    }
+
+    @Test
     fun `GIVEN an account pending its expiry and a new session WHEN ensuring registration THEN registers its user`() =
         runTest {
             // Given
-            prepareScenario(currentUser = null)
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
             startExpiredAccount()
-            remote.sessionUsers.value = SessionUser("user-1", AccountProvider.GOOGLE, "Pierre", null, null)
+            remote.sessionUsers.value = googleUser
 
             // When
             val result = repository.ensureRegistered()
@@ -2891,20 +3108,61 @@ class AccountRepositoryImplTest {
             assertEquals("user-1", result.getOrNull())
             assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), account.status)
             assertNull(account.inactivityExpiry)
+            assertEquals(listOf("lost-anonymous"), remote.expiryQuestions)
+        }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN a Google session is mirrored THEN the account has no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+            startExpiredAccount()
+
+            // When
+            sessions.emit(googleUser)
+            runCurrent()
+
+            // Then
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+            assertNull(local.get().lostAnonymousUserId)
+        }
+
+    @Test
+    fun `GIVEN an account pending its expiry WHEN an anonymous session is mirrored THEN the account has no expiry`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+            startExpiredAccount()
+
+            // When
+            sessions.emit(anonymousUser)
+            runCurrent()
+
+            // Then
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+            assertNull(local.get().lostAnonymousUserId)
         }
 
     @Test
     fun `GIVEN an account pending its expiry WHEN its session is ended THEN leaves only the notice`() = runTest {
         // Given
-        prepareScenario(currentUser = null)
+        prepareScenario(
+            currentUser = null,
+            wasAccountExpired = true,
+        )
         startMirroring()
-        sessions.emit(anonymousUser)
+        sessions.emit(lostUser)
         runCurrent()
         repository.createRecoveryCode()
-        repository.recordSync()
-        now += 45.days.inWholeMilliseconds
         sessions.emit(null)
         runCurrent()
+        repository.ensureRegistered()
 
         // When
         repository.endExpiredSession()
@@ -2915,14 +3173,17 @@ class AccountRepositoryImplTest {
         assertEquals(AccountStatus.LocalOnly, account.status)
         assertNull(account.recoveryCode)
         assertEquals(RecoveryCodePrompt.NOT_DUE, account.recoveryCodePrompt)
-        assertNull(local.get().lastSyncedAt)
+        assertNull(local.get().lostAnonymousUserId)
     }
 
     @Test
     fun `GIVEN a sign out that got ahead of the expiry WHEN the expired session is ended THEN leaves no notice`() =
         runTest {
             // Given
-            prepareScenario(currentUser = null)
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
             startExpiredAccount()
             repository.signOut()
             val before = local.get()
@@ -2941,7 +3202,6 @@ class AccountRepositoryImplTest {
         prepareScenario(currentUser = anonymousUser)
         repository.ensureRegistered()
         repository.createRecoveryCode()
-        repository.recordSync()
         val before = local.get()
 
         // When
@@ -2953,10 +3213,35 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN the notice of an expired account WHEN the expired session is ended again THEN keeps the notice`() =
+    fun `GIVEN a lost anonymous account not asked about yet WHEN the expired session is ended THEN changes nothing`() =
         runTest {
             // Given
             prepareScenario(currentUser = null)
+            startMirroring()
+            sessions.emit(lostUser)
+            runCurrent()
+            repository.createRecoveryCode()
+            sessions.emit(null)
+            runCurrent()
+            val before = local.get()
+
+            // When
+            repository.endExpiredSession()
+
+            // Then
+            assertEquals(before, local.get())
+            assertEquals("lost-anonymous", local.get().lostAnonymousUserId)
+            assertNull(repository.observeAccount().first().inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN the notice of an expired account WHEN the expired session is ended again THEN keeps the notice`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
             startExpiredAccount()
             repository.endExpiredSession()
 
@@ -2970,7 +3255,10 @@ class AccountRepositoryImplTest {
     @Test
     fun `GIVEN the notice of an expired account WHEN it is dismissed THEN the account has no expiry`() = runTest {
         // Given
-        prepareScenario(currentUser = null)
+        prepareScenario(
+            currentUser = null,
+            wasAccountExpired = true,
+        )
         startExpiredAccount()
         repository.endExpiredSession()
 
@@ -2984,7 +3272,10 @@ class AccountRepositoryImplTest {
     @Test
     fun `GIVEN an account pending its expiry WHEN the notice is dismissed THEN it stays pending`() = runTest {
         // Given
-        prepareScenario(currentUser = null)
+        prepareScenario(
+            currentUser = null,
+            wasAccountExpired = true,
+        )
         startExpiredAccount()
         val before = local.get()
 
@@ -3001,7 +3292,6 @@ class AccountRepositoryImplTest {
         // Given
         prepareScenario(currentUser = anonymousUser)
         repository.ensureRegistered()
-        repository.recordSync()
         val before = local.get()
 
         // When
@@ -3012,10 +3302,13 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN the notice of an expired account WHEN ensuring registration THEN the new user has no expiry`() =
+    fun `GIVEN the notice of an expired account WHEN ensuring registration THEN signs in a new user unasked`() =
         runTest {
             // Given
-            prepareScenario(currentUser = null)
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
             startExpiredAccount()
             repository.endExpiredSession()
 
@@ -3026,6 +3319,7 @@ class AccountRepositoryImplTest {
             val account = repository.observeAccount().first()
             assertEquals("anonymous", result.getOrNull())
             assertEquals(1, remote.anonymousSignIns)
+            assertEquals(listOf("lost-anonymous"), remote.expiryQuestions)
             assertEquals(AccountStatus.Anonymous("anonymous"), account.status)
             assertNull(account.inactivityExpiry)
         }
@@ -3037,6 +3331,7 @@ class AccountRepositoryImplTest {
             prepareScenario(
                 currentUser = null,
                 idTokenUser = googleUser,
+                wasAccountExpired = true,
             )
             startExpiredAccount()
             repository.endExpiredSession()
@@ -3058,10 +3353,32 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN the notice of an expired account WHEN signing in with Google in the browser THEN opens the browser`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
+            startExpiredAccount()
+            repository.endExpiredSession()
+
+            // When
+            val result = repository.signInWithBrowser(AccountProvider.GOOGLE, isFromProfile = false)
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(AccountProvider.GOOGLE), remote.browserSignIns)
+        }
+
+    @Test
     fun `GIVEN the notice of an expired account WHEN an Apple session is mirrored THEN the account has no expiry`() =
         runTest {
             // Given
-            prepareScenario(currentUser = null)
+            prepareScenario(
+                currentUser = null,
+                wasAccountExpired = true,
+            )
             startExpiredAccount()
             repository.endExpiredSession()
 
@@ -3076,7 +3393,10 @@ class AccountRepositoryImplTest {
     @Test
     fun `GIVEN the notice of an expired account WHEN restoring with a code THEN the account has no expiry`() = runTest {
         // Given
-        prepareScenario(currentUser = null)
+        prepareScenario(
+            currentUser = null,
+            wasAccountExpired = true,
+        )
         startExpiredAccount()
         repository.endExpiredSession()
 
@@ -3090,36 +3410,6 @@ class AccountRepositoryImplTest {
         assertNull(account.inactivityExpiry)
     }
 
-    @Test
-    fun `GIVEN an account pending its expiry WHEN a Google session is mirrored THEN the account has no expiry`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = null)
-            startExpiredAccount()
-
-            // When
-            sessions.emit(googleUser)
-            runCurrent()
-
-            // Then
-            assertNull(repository.observeAccount().first().inactivityExpiry)
-        }
-
-    @Test
-    fun `GIVEN an account pending its expiry WHEN an anonymous session is mirrored THEN the account has no expiry`() =
-        runTest {
-            // Given
-            prepareScenario(currentUser = null)
-            startExpiredAccount()
-
-            // When
-            sessions.emit(anonymousUser)
-            runCurrent()
-
-            // Then
-            assertNull(repository.observeAccount().first().inactivityExpiry)
-        }
-
     private val anonymousUser =
         SessionUser(
             "anonymous",
@@ -3128,6 +3418,9 @@ class AccountRepositoryImplTest {
             photoUrl = null,
             email = null,
         )
+
+    // Why: not the id of the user an anonymous sign in creates, so a case tells the lost user from the new one.
+    private val lostUser = anonymousUser.copy(userId = "lost-anonymous")
 
     private val googleUser =
         SessionUser(
@@ -3192,23 +3485,19 @@ class AccountRepositoryImplTest {
         runCurrent()
     }
 
-    // Why: a mirrored account whose last sync on this device settled that long before the clock's time.
-    private suspend fun TestScope.startAccountLastSynced(
-        user: SessionUser,
-        ago: Duration,
-    ) {
+    // Why: an anonymous account whose session ended on its own, as the mirror saw it.
+    private suspend fun TestScope.startLostAnonymousAccount() {
         startMirroring()
-        sessions.emit(user)
+        sessions.emit(lostUser)
         runCurrent()
-        repository.recordSync()
-        now += ago.inWholeMilliseconds
-    }
-
-    // Why: an anonymous account idle for longer than the server keeps one, whose session then ended on its own.
-    private suspend fun TestScope.startExpiredAccount() {
-        startAccountLastSynced(anonymousUser, ago = 45.days)
         sessions.emit(null)
         runCurrent()
+    }
+
+    // Why: a lost anonymous account the server said it deleted, in a scenario whose server answers so.
+    private suspend fun TestScope.startExpiredAccount() {
+        startLostAnonymousAccount()
+        repository.ensureRegistered()
     }
 
     private val signInCallbackUrl = "borarachar://auth-callback?code=abc"
@@ -3251,6 +3540,8 @@ class AccountRepositoryImplTest {
         browserSignInError: Throwable? = null,
         idTokenUser: SessionUser? = null,
         saveDisplayNameError: Throwable? = null,
+        wasAccountExpired: Boolean = false,
+        expiryQuestionError: Throwable? = null,
     ) {
         local = FakeAccountLocalDataSource(
             pendingLinkProvider = pendingLinkProvider?.code,
@@ -3264,13 +3555,14 @@ class AccountRepositoryImplTest {
             callback = callback,
             browserSignInError = browserSignInError,
             idTokenUser = idTokenUser,
+            wasAccountExpired = wasAccountExpired,
+            expiryQuestionError = expiryQuestionError,
         ).also { it.saveDisplayNameError = saveDisplayNameError }
         repository = AccountRepositoryImpl(
             local = local,
             remote = remote,
             // Why: runs what a sign in leaves to the app's scope right away, so a test reads it on return.
             scope = CoroutineScope(Dispatchers.Unconfined),
-            currentTimeMillis = { now },
         )
     }
 }
@@ -3301,7 +3593,7 @@ private class FakeAccountLocalDataSource(
             email = null,
             signOutWhenSynced = false,
             awaitsFullSync = false,
-            lastSyncedAt = null,
+            lostAnonymousUserId = null,
             inactivityExpiry = null,
         ),
     )
@@ -3329,7 +3621,7 @@ private class FakeAccountLocalDataSource(
             browserSignInProvider = null,
             email = null,
             signOutWhenSynced = false,
-            lastSyncedAt = null,
+            lostAnonymousUserId = null,
             inactivityExpiry = null,
         )
     }
@@ -3343,7 +3635,11 @@ private class FakeAccountRemoteDataSource(
     private val browserSignInError: Throwable?,
     // Why: the user the ID token belongs to, whom a sign in switches the session to; null keeps the session as is.
     private val idTokenUser: SessionUser?,
+    // Why: what the server answers when asked whether it deleted an account for inactivity.
+    private val wasAccountExpired: Boolean,
+    private val expiryQuestionError: Throwable?,
 ) : AccountRemoteDataSource {
+    val expiryQuestions = mutableListOf<String>()
     val sessionUsers = MutableStateFlow<SessionUser?>(null)
     val linkedTokens = mutableListOf<String>()
     val signedInTokens = mutableListOf<String>()
@@ -3463,5 +3759,11 @@ private class FakeAccountRemoteDataSource(
         signOutCount++
         currentUser = null
         sessionUsers.value = null
+    }
+
+    override suspend fun wasAccountExpired(userId: String): Boolean {
+        expiryQuestions += userId
+        expiryQuestionError?.let { throw it }
+        return wasAccountExpired
     }
 }

@@ -49,12 +49,13 @@ import kotlinx.coroutines.test.runTest
 import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /*
- * An account without Google or Apple that the server deleted after 30 days without a sync: what SyncCoordinator tells
- * the account of each sync, and how it erases the device's copy of an expired one.
+ * An account without Google or Apple that the server deleted after 30 days without a sync: what a sync of it tells
+ * Crashlytics, and how SyncCoordinator erases the device's copy of an expired one.
  */
 class SyncCoordinatorExpiryTest {
     private lateinit var account: FakeAccountRepository
@@ -74,114 +75,66 @@ class SyncCoordinatorExpiryTest {
     private val reportedFailures = mutableListOf<Throwable>()
 
     @Test
-    fun `GIVEN a profile WHEN a sync succeeds THEN tells the account it synced`() = runTest {
-        // Given
-        prepareScenario()
+    fun `GIVEN an expired account WHEN syncing online THEN fails without sending it nor telling Crashlytics`() =
+        runTest {
+            // Given
+            prepareScenario(expiry = InactivityExpiry.PENDING)
+            account.registerError = AccountExpiredException()
 
-        // When
-        val result = coordinator.syncNow()
+            // When
+            val result = coordinator.syncNow()
 
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(1, account.recordedSyncs)
-    }
-
-    @Test
-    fun `GIVEN a sync already told to the account WHEN another one succeeds THEN tells the account again`() = runTest {
-        // Given
-        prepareScenario()
-        coordinator.syncNow()
-
-        // When
-        coordinator.syncNow()
-
-        // Then
-        assertEquals(2, account.recordedSyncs)
-    }
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(emptyList(), reportedFailures)
+            assertEquals(emptyList(), profile.uploadedUserIds)
+        }
 
     @Test
-    fun `GIVEN no profile WHEN syncing THEN tells the account of no sync`() = runTest {
-        // Given
-        prepareScenario(storedProfile = null)
+    fun `GIVEN a sync failure caused by an expired account WHEN syncing online THEN does not tell Crashlytics`() =
+        runTest {
+            // Given
+            prepareScenario(expiry = InactivityExpiry.PENDING)
+            account.registerError = IllegalStateException("sync refused", AccountExpiredException())
 
-        // When
-        coordinator.syncNow()
+            // When
+            val result = coordinator.syncNow()
 
-        // Then
-        assertEquals(0, account.recordedSyncs)
-    }
+            // Then
+            assertTrue(result.isFailure)
+            assertEquals(emptyList(), reportedFailures)
+        }
 
     @Test
-    fun `GIVEN the profile fails to come down WHEN syncing THEN tells the account of no sync`() = runTest {
+    fun `GIVEN a sync that fails for another reason WHEN syncing online THEN tells Crashlytics`() = runTest {
         // Given
         prepareScenario()
-        profile.pullError = IllegalStateException("server down")
+        account.registerError = IllegalStateException("server down")
 
         // When
         val result = coordinator.syncNow()
 
         // Then
         assertTrue(result.isFailure)
-        assertEquals(0, account.recordedSyncs)
+        assertEquals(1, reportedFailures.size)
+        assertIs<SyncFailure>(reportedFailures.single())
     }
 
     @Test
-    fun `GIVEN only the last part fails to sync WHEN syncing THEN tells the account of no sync`() = runTest {
-        // Given
-        prepareScenario()
-        hiddenContacts.pullError = IllegalStateException("server down")
+    fun `GIVEN a sync of an expired account that failed WHEN the next one fails for another reason THEN tells it`() =
+        runTest {
+            // Given
+            prepareScenario()
+            account.registerError = AccountExpiredException()
+            coordinator.syncNow()
+            account.registerError = IllegalStateException("server down")
 
-        // When
-        val result = coordinator.syncNow()
+            // When
+            coordinator.syncNow()
 
-        // Then
-        assertTrue(result.isFailure)
-        assertEquals(0, account.recordedSyncs)
-    }
-
-    @Test
-    fun `GIVEN the device is offline and the sync fails WHEN syncing THEN tells the account of no sync`() = runTest {
-        // Given
-        prepareScenario(online = false)
-        account.registerError = IllegalStateException("no internet")
-
-        // When
-        coordinator.syncNow()
-
-        // Then
-        assertEquals(0, account.recordedSyncs)
-    }
-
-    @Test
-    fun `GIVEN a sync that failed WHEN the next one succeeds THEN tells the account of that one only`() = runTest {
-        // Given
-        prepareScenario()
-        profile.pullError = IllegalStateException("server down")
-        coordinator.syncNow()
-        profile.pullError = null
-
-        // When
-        coordinator.syncNow()
-
-        // Then
-        assertEquals(1, account.recordedSyncs)
-    }
-
-    @Test
-    fun `GIVEN an expired account WHEN syncing THEN fails without telling the account nor Crashlytics`() = runTest {
-        // Given
-        prepareScenario(expiry = InactivityExpiry.PENDING)
-        account.registerError = AccountExpiredException()
-
-        // When
-        val result = coordinator.syncNow()
-
-        // Then
-        assertTrue(result.isFailure)
-        assertEquals(0, account.recordedSyncs)
-        assertEquals(emptyList(), reportedFailures)
-        assertEquals(emptyList(), profile.uploadedUserIds)
-    }
+            // Then
+            assertEquals(1, reportedFailures.size)
+        }
 
     @Test
     fun `GIVEN an account that expires while the app runs WHEN it is marked THEN erases the whole device copy`() =
@@ -261,7 +214,6 @@ class SyncCoordinatorExpiryTest {
 
             // Then
             assertEquals(emptyList(), profile.uploadedUserIds)
-            assertEquals(0, account.recordedSyncs)
             assertEquals(emptyList(), reportedFailures)
         }
 
@@ -373,13 +325,86 @@ class SyncCoordinatorExpiryTest {
     }
 
     @Test
-    fun `GIVEN the notice fails to be left WHEN an expired account is erased THEN the device copy is still erased`() =
+    fun `GIVEN the notice is left at once WHEN an expired account is erased THEN leaves it a single time`() = runTest {
+        // Given
+        prepareScenario(expiry = InactivityExpiry.PENDING)
+
+        // When
+        coordinator.start()
+        runCurrent()
+
+        // Then
+        assertEquals(1, steps.noticeAttempts)
+        assertEquals(InactivityExpiry.NOTICE, account.snapshot.value.inactivityExpiry)
+    }
+
+    @Test
+    fun `GIVEN leaving the notice fails once WHEN an expired account is erased THEN the second try leaves it`() =
         runTest {
             // Given
             prepareScenario(
                 expiry = InactivityExpiry.PENDING,
-                failingSteps = setOf("account end expired session"),
+                noticeFailures = 1,
             )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertEquals(2, steps.noticeAttempts)
+            assertEquals(InactivityExpiry.NOTICE, account.snapshot.value.inactivityExpiry)
+            assertEquals(deviceCopy, steps.attempts)
+        }
+
+    @Test
+    fun `GIVEN leaving the notice fails twice WHEN an expired account is erased THEN the third try leaves it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                expiry = InactivityExpiry.PENDING,
+                noticeFailures = 2,
+            )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertEquals(3, steps.noticeAttempts)
+            assertEquals(InactivityExpiry.NOTICE, account.snapshot.value.inactivityExpiry)
+            assertEquals(deviceCopy, steps.attempts)
+        }
+
+    @Test
+    fun `GIVEN leaving the notice always fails WHEN an expired account is erased THEN gives up after three tries`() =
+        runTest {
+            // Given
+            prepareScenario(
+                expiry = InactivityExpiry.PENDING,
+                noticeFailures = Int.MAX_VALUE,
+            )
+            account.registerError = AccountExpiredException()
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertEquals(3, steps.noticeAttempts)
+            assertEquals(InactivityExpiry.PENDING, account.snapshot.value.inactivityExpiry)
+        }
+
+    @Test
+    fun `GIVEN leaving the notice always fails WHEN an expired account is erased THEN the copy is erased only once`() =
+        runTest {
+            // Given
+            prepareScenario(
+                expiry = InactivityExpiry.PENDING,
+                storedKeys = listOf(pixKey),
+                noticeFailures = Int.MAX_VALUE,
+            )
+            account.registerError = AccountExpiredException()
 
             // When
             coordinator.start()
@@ -388,6 +413,52 @@ class SyncCoordinatorExpiryTest {
             // Then
             assertEquals(deviceCopy, steps.attempts)
             assertNull(profile.profile.value)
+            assertTrue(paymentKeys.keys.value.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN clearing the profile fails WHEN an expired account is erased THEN never tries to leave the notice`() =
+        runTest {
+            // Given
+            prepareScenario(
+                expiry = InactivityExpiry.PENDING,
+                failingSteps = setOf("profile"),
+            )
+            account.registerError = AccountExpiredException()
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
+            assertEquals(0, steps.noticeAttempts)
+            assertEquals(pierre, profile.profile.value)
+            assertEquals(emptyList(), profile.uploadedUserIds)
+        }
+
+    @Test
+    fun `GIVEN a profile that failed to clear at the last launch WHEN the app starts again THEN erases it then`() =
+        runTest {
+            // Given
+            prepareScenario(
+                expiry = InactivityExpiry.PENDING,
+                failingSteps = setOf("profile"),
+            )
+            account.registerError = AccountExpiredException()
+            coordinator.start()
+            runCurrent()
+            steps.failing = emptySet()
+            steps.attempts.clear()
+            val relaunched = newCoordinator()
+
+            // When
+            relaunched.start()
+            runCurrent()
+
+            // Then
+            assertEquals(deviceCopy, steps.attempts)
+            assertNull(profile.profile.value)
+            assertEquals(InactivityExpiry.NOTICE, account.snapshot.value.inactivityExpiry)
         }
 
     @Test
@@ -550,6 +621,7 @@ class SyncCoordinatorExpiryTest {
             // Then
             assertEquals(listOf("account sign out") + deviceCopy, steps.attempts)
             assertEquals(1, profile.clearCount)
+            assertEquals(0, steps.noticeAttempts)
             assertNull(account.snapshot.value.inactivityExpiry)
             assertEquals(AccountStatus.LocalOnly, account.status)
         }
@@ -651,6 +723,44 @@ class SyncCoordinatorExpiryTest {
         "profile",
     )
 
+    // Why: another launch of the app over the same device: what it stored stays, the coordinator is new.
+    private fun TestScope.newCoordinator(
+        online: Boolean = true,
+        syncHangs: Boolean = false,
+    ): SyncCoordinator = SyncCoordinator(
+        accountRepository = StepAccountRepository(account, steps),
+        profileRepository = StepProfileRepository(
+            delegate = profile,
+            steps = steps,
+            downloadGate = syncGate.takeIf { syncHangs },
+        ),
+        paymentKeyRepository = StepPaymentKeyRepository(paymentKeys, steps),
+        notificationPreferencesRepository = StepNotificationPreferencesRepository(notificationPreferences, steps),
+        appInviteRepository = StepAppInviteRepository(appInvite, steps),
+        groupRepository = StepGroupRepository(groups, steps),
+        groupPinRepository = FakeGroupPinRepository(),
+        groupIncomeRepository = FakeGroupIncomeRepository(),
+        expenseRepository = FakeExpenseRepository(),
+        settlementRepository = FakeSettlementRepository(),
+        categoryRepository = FakeCategoryRepository(),
+        personalCategoryData = PersonalCategoryData(
+            StepCategoryTermRepository(categoryTerms, steps),
+            StepCustomColorRepository(customColors, steps),
+        ),
+        payingMethodRepository = StepPayingMethodRepository(payingMethods, steps),
+        billCommentRepository = FakeBillCommentRepository(),
+        billAttachmentRepository = FakeBillAttachmentRepository(),
+        activityRepository = StepActivityRepository(activity, steps),
+        hiddenContactRepository = StepHiddenContactRepository(hiddenContacts, steps),
+        pushDeviceRepository = FakePushDeviceRepository(),
+        remoteChangeRepository = FakeRemoteChangeRepository(),
+        firstDownload = FirstDownload(),
+        appForeground = AppForeground(),
+        connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
+        crashReporter = CrashReporter { reportedFailures += it },
+        scope = backgroundScope,
+    )
+
     private fun TestScope.prepareScenario(
         storedProfile: UserProfile? = pierre,
         status: AccountStatus = anonymous,
@@ -659,9 +769,10 @@ class SyncCoordinatorExpiryTest {
         pendingChanges: Boolean = false,
         storedKeys: List<PaymentKey> = emptyList(),
         failingSteps: Set<String> = emptySet(),
+        noticeFailures: Int = 0,
         syncHangs: Boolean = false,
     ) {
-        steps = EraseSteps(failingSteps)
+        steps = EraseSteps(failingSteps, noticeFailures)
         syncGate = CompletableDeferred()
         account = FakeAccountRepository(initialStatus = status).also { fake ->
             fake.snapshot.update { it.copy(inactivityExpiry = expiry) }
@@ -678,39 +789,7 @@ class SyncCoordinatorExpiryTest {
         groups = FakeGroupRepository()
         activity = FakeActivityRepository()
         hiddenContacts = FakeHiddenContactRepository()
-        coordinator = SyncCoordinator(
-            accountRepository = StepAccountRepository(account, steps),
-            profileRepository = StepProfileRepository(
-                delegate = profile,
-                steps = steps,
-                downloadGate = syncGate.takeIf { syncHangs },
-            ),
-            paymentKeyRepository = StepPaymentKeyRepository(paymentKeys, steps),
-            notificationPreferencesRepository = StepNotificationPreferencesRepository(notificationPreferences, steps),
-            appInviteRepository = StepAppInviteRepository(appInvite, steps),
-            groupRepository = StepGroupRepository(groups, steps),
-            groupPinRepository = FakeGroupPinRepository(),
-            groupIncomeRepository = FakeGroupIncomeRepository(),
-            expenseRepository = FakeExpenseRepository(),
-            settlementRepository = FakeSettlementRepository(),
-            categoryRepository = FakeCategoryRepository(),
-            personalCategoryData = PersonalCategoryData(
-                StepCategoryTermRepository(categoryTerms, steps),
-                StepCustomColorRepository(customColors, steps),
-            ),
-            payingMethodRepository = StepPayingMethodRepository(payingMethods, steps),
-            billCommentRepository = FakeBillCommentRepository(),
-            billAttachmentRepository = FakeBillAttachmentRepository(),
-            activityRepository = StepActivityRepository(activity, steps),
-            hiddenContactRepository = StepHiddenContactRepository(hiddenContacts, steps),
-            pushDeviceRepository = FakePushDeviceRepository(),
-            remoteChangeRepository = FakeRemoteChangeRepository(),
-            firstDownload = FirstDownload(),
-            appForeground = AppForeground(),
-            connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
-            crashReporter = CrashReporter { reportedFailures += it },
-            scope = backgroundScope,
-        )
+        coordinator = newCoordinator(online, syncHangs)
     }
 }
 
@@ -719,9 +798,19 @@ class SyncCoordinatorExpiryTest {
  * the ones a case makes fail, so a test sees which ones were still tried after a failure.
  */
 private class EraseSteps(
-    val failing: Set<String>,
+    var failing: Set<String>,
+    private val noticeFailures: Int,
 ) {
     val attempts = mutableListOf<String>()
+    var noticeAttempts = 0
+        private set
+
+    // Why: apart from the log, so the log of an expiry holds only the device's copy; the first tries fail when a
+    // case asks.
+    fun attemptNotice() {
+        noticeAttempts++
+        if (noticeAttempts <= noticeFailures) throw IllegalStateException("database closed")
+    }
 
     fun attempt(step: String) {
         attempts += step
@@ -748,9 +837,8 @@ private class StepAccountRepository(
         delegate.endDeletedSession()
     }
 
-    // Why: not logged, so the log of an expiry holds only the device's copy; it only fails when a case asks.
     override suspend fun endExpiredSession() {
-        if ("account end expired session" in steps.failing) throw IllegalStateException("database closed")
+        steps.attemptNotice()
         delegate.endExpiredSession()
     }
 }

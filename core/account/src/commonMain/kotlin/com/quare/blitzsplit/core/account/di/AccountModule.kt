@@ -56,7 +56,6 @@ val accountModule = module {
             local = get(),
             remote = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
-            currentTimeMillis = get(),
         )
     }
     factoryOf(::ObserveAccountStatusUseCase).bind<ObserveAccountStatus>()

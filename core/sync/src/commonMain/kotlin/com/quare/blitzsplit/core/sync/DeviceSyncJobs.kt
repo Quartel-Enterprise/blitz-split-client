@@ -25,6 +25,7 @@ import kotlin.time.Duration.Companion.seconds
 
 // Why: how long a failed call waits before each try again; after the last one it waits for the next change.
 private val pushRetryDelays = listOf(30.seconds, 2.minutes, 10.minutes)
+private const val EXPIRED_NOTICE_ATTEMPTS = 3
 
 /*
  * Why: Atividade's push notifications go to the devices of the account signed in, so this device's token goes to
@@ -125,8 +126,18 @@ internal suspend fun eraseExpiredAccount(
                 if (account.inactivityExpiry == InactivityExpiry.PENDING) {
                     eraseDeviceCopy()
                     val isErased = suspendRunCatching { profileRepository.observeProfile().first() == null }
-                    if (isErased.getOrDefault(false)) suspendRunCatching { accountRepository.endExpiredSession() }
+                    if (isErased.getOrDefault(false)) leaveExpiredNotice(accountRepository)
                 }
             }
         }
+}
+
+/*
+ * Why: with the copy erased, an account left pending would refuse every sync of a profile made on the welcome and
+ * erase it at the next launch, so a write that fails is tried again before it is given up.
+ */
+private suspend fun leaveExpiredNotice(accountRepository: AccountRepository) {
+    repeat(EXPIRED_NOTICE_ATTEMPTS) {
+        if (suspendRunCatching { accountRepository.endExpiredSession() }.isSuccess) return
+    }
 }
