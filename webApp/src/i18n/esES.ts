@@ -130,4 +130,5 @@ export const esES: Partial<Record<MessageKey, string>> = {
   payingMethod_deleteBody: 'Los gastos que has marcado con él dejarán de mostrarlo.',
   contactSupport_description: 'Abriremos tu app de correo con un mensaje listo. Describe lo que ha pasado y envíalo: personas reales leen cada mensaje.',
   contactSupport_noticeNoApp: 'No se ha encontrado ninguna app de correo. Se ha copiado la dirección.',
+  profile_rateApp: 'Valorar la app',
 }

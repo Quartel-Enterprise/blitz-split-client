@@ -60,7 +60,7 @@ import kotlinx.coroutines.SupervisorJob
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import software.quare.connectivity.connectivityModule
 import com.quare.blitzsplit.feature.profile.di.profileModule as profileScreenModule
@@ -70,7 +70,36 @@ private val appModule = module {
     single<RandomCode> { SecureRandomCode() }
     single<MinuteTicks> { SystemMinuteTicks(get()) }
     single { LinkInbox() }
-    viewModelOf(::AppViewModel)
+    // Why: spelled out, as the ViewModel takes more than viewModelOf's 22 parameters.
+    viewModel {
+        AppViewModel(
+            observeProfile = get(),
+            navigator = get(),
+            observeBrowserSignInReturningToProfile = get(),
+            observeThemePreference = get(),
+            observeDynamicColors = get(),
+            observeBitcoinInSats = get(),
+            observeAppLanguage = get(),
+            refreshAppLanguage = get(),
+            linkInbox = get(),
+            sharedBillLeftForSignIn = get(),
+            markActivityRead = get(),
+            findActivityEvent = get(),
+            observeGroup = get(),
+            observeExpense = get(),
+            syncNow = get(),
+            locateBill = get(),
+            noticeBillGone = get(),
+            observeAppForeground = get(),
+            requestUpdatePromptIfNeeded = get(),
+            startScreenViews = get(),
+            prefetchLegalDocuments = get(),
+            observeReviewMoments = get(),
+            requestReviewIfNeeded = get(),
+            trackEvent = get(),
+            startSync = get(),
+        )
+    }
     // Why: a single that owns its scope, following the choices for the app's whole life, as SyncCoordinator does.
     single {
         AnalyticsChoices(

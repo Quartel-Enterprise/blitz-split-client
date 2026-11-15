@@ -44,6 +44,8 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnContactSupportClicked -> EventAnalytics.Automatic("profile_contact_support_clicked")
 
+            OnRateAppClicked -> EventAnalytics.Automatic("profile_rate_app_clicked")
+
             OnAppInviteClicked -> EventAnalytics.Automatic("app_invite_code_clicked", mapOf("source" to PROFILE_SOURCE))
 
             OnAppLinkClicked -> EventAnalytics.Automatic("app_link_clicked", mapOf("source" to PROFILE_SOURCE))
@@ -185,6 +187,9 @@ sealed interface ProfileUiEvent : UiEvent {
 
     // Why: "Contact support", the first row of "Support and feedback".
     data object OnContactSupportClicked : ProfileUiEvent
+
+    // Why: "Rate the app", which opens the store's listing.
+    data object OnRateAppClicked : ProfileUiEvent
 
     data object OnRetrySyncClicked : ProfileUiEvent
 

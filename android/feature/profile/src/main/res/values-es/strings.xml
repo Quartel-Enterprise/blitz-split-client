@@ -81,6 +81,7 @@
     <string name="profile_info_ok">Entendido</string>
     <string name="profile_section_support">Soporte y comentarios</string>
     <string name="profile_contact_support">Contactar con soporte</string>
+    <string name="profile_rate_app">Calificar la app</string>
     <string name="profile_section_about">Privacidad y acerca de</string>
     <string name="profile_privacy_policy">Política de Privacidad</string>
     <string name="profile_terms">Términos de Servicio</string>

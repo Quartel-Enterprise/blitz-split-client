@@ -162,7 +162,10 @@ private fun ProfileSingleColumn(
                 state = state,
                 onEvent = onEvent,
             )
-            SupportSection(onEvent = onEvent)
+            SupportSection(
+                state = state,
+                onEvent = onEvent,
+            )
             AboutSection(
                 state = state,
                 appVersion = appVersion,
@@ -270,7 +273,10 @@ private fun ProfileStartColumn(
             onEvent = onEvent,
         )
         // Why: with the preferences in the other column, it still comes right before "Privacy and about".
-        SupportSection(onEvent = onEvent)
+        SupportSection(
+            state = state,
+            onEvent = onEvent,
+        )
         AboutSection(
             state = state,
             appVersion = appVersion,

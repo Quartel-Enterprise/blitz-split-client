@@ -49,6 +49,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateUsageDataSharing
+import com.quare.blitzsplit.core.support.domain.usecase.FindRateAppLink
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
 import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
@@ -98,6 +99,7 @@ class ProfileViewModel(
     private val validatePaymentKey: ValidatePaymentKey,
     private val exportUserData: ExportUserData,
     private val openLegalPage: OpenLegalPage,
+    private val findRateAppLink: FindRateAppLink,
     checkForUpdate: CheckForUpdate,
     showUpdatePrompt: ShowUpdatePrompt,
     dismissAppInvite: DismissAppInvite,
@@ -132,6 +134,7 @@ class ProfileViewModel(
             createInitialProfileUiState(
                 showsDynamicColors = dynamicColorSupport(),
                 showsCheckForUpdates = updateMechanism != UpdateMechanism.NONE,
+                showsRateApp = findRateAppLink() != null,
             ),
         )
 
@@ -321,6 +324,8 @@ class ProfileViewModel(
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
 
             ProfileUiEvent.OnContactSupportClicked -> navigator.navigate(Route.ContactSupport)
+
+            ProfileUiEvent.OnRateAppClicked -> findRateAppLink()?.let { emit(ProfileUiAction.OpenUrl(it)) }
 
             ProfileUiEvent.OnCategoryMapClicked -> navigator.navigate(Route.CategoryMap)
 

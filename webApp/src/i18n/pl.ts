@@ -840,6 +840,7 @@ export const pl: Record<MessageKey, string> = {
   profile_themeDark: 'Ciemny',
   profile_support: 'Pomoc i opinie',
   profile_contactSupport: 'Skontaktuj się z pomocą',
+  profile_rateApp: 'Oceń aplikację',
   profile_about: 'Prywatność i informacje',
   profile_privacyPolicy: 'Polityka prywatności',
   profile_terms: 'Warunki korzystania',

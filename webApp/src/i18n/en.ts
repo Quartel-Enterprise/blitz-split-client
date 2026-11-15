@@ -835,6 +835,7 @@ export const en = {
   profile_themeDark: 'Dark',
   profile_support: 'Support and feedback',
   profile_contactSupport: 'Contact support',
+  profile_rateApp: 'Rate the app',
   profile_about: 'Privacy and about',
   profile_privacyPolicy: 'Privacy Policy',
   profile_terms: 'Terms of Service',

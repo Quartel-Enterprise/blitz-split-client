@@ -94,6 +94,7 @@
     <string name="profile_info_ok">Got it</string>
     <string name="profile_section_support">Support and feedback</string>
     <string name="profile_contact_support">Contact support</string>
+    <string name="profile_rate_app">Rate the app</string>
     <string name="profile_section_about">Privacy and about</string>
     <string name="profile_privacy_policy">Privacy Policy</string>
     <string name="profile_terms">Terms of Service</string>

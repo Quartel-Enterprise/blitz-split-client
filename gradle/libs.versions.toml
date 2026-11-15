@@ -50,6 +50,7 @@ crashkios = "0.10.1"
 play-services-mlkit-barcode-scanning = "18.3.1"
 kermit = "2.2.0"
 play-app-update = "2.1.0"
+play-review = "2.0.2"
 koin = "4.2.2"
 ktor = "3.6.1"
 quare-connectivity = "1.2.0"
@@ -87,6 +88,7 @@ androidx-lifecycle-viewmodelNavigation3 = { module = "androidx.lifecycle:lifecyc
 androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidx-graphics-shapes" }
 # Google Play's in-app updates: the flexible flow that downloads the new version while the app is in use
 play-app-update = { module = "com.google.android.play:app-update", version.ref = "play-app-update" }
+play-review = { module = "com.google.android.play:review-ktx", version.ref = "play-review" }
 play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "play-services-code-scanner" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }

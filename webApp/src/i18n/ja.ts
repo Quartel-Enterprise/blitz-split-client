@@ -837,6 +837,7 @@ export const ja: Record<MessageKey, string> = {
   profile_themeDark: 'ダーク',
   profile_support: 'サポートとフィードバック',
   profile_contactSupport: 'サポートに問い合わせる',
+  profile_rateApp: 'アプリを評価',
   profile_about: 'プライバシーと情報',
   profile_privacyPolicy: 'プライバシーポリシー',
   profile_terms: '利用規約',

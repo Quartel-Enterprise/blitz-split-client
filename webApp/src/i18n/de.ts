@@ -838,6 +838,7 @@ export const de: Record<MessageKey, string> = {
   profile_themeDark: 'Dunkel',
   profile_support: 'Support und Feedback',
   profile_contactSupport: 'Support kontaktieren',
+  profile_rateApp: 'App bewerten',
   profile_about: 'Datenschutz und Info',
   profile_privacyPolicy: 'Datenschutzerklärung',
   profile_terms: 'Nutzungsbedingungen',

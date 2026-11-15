@@ -24,6 +24,7 @@ import com.quare.blitzsplit.core.provider.room.dao.PayingMethodDao
 import com.quare.blitzsplit.core.provider.room.dao.PaymentKeyDao
 import com.quare.blitzsplit.core.provider.room.dao.ProfileDao
 import com.quare.blitzsplit.core.provider.room.dao.PushSettingsDao
+import com.quare.blitzsplit.core.provider.room.dao.ReviewPromptDao
 import com.quare.blitzsplit.core.provider.room.dao.SettlementDao
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.utils.ioDispatcher
@@ -57,6 +58,7 @@ val roomModule: Module = module {
     single<CategoryTermDao> { get<AppDatabase>().categoryTermDao() }
     single<CustomColorDao> { get<AppDatabase>().customColorDao() }
     single<PayingMethodDao> { get<AppDatabase>().payingMethodDao() }
+    single<ReviewPromptDao> { get<AppDatabase>().reviewPromptDao() }
     single<MemberPaymentKeyDao> { get<AppDatabase>().memberPaymentKeyDao() }
     single<BillCommentDao> { get<AppDatabase>().billCommentDao() }
     single<BillCommentLikeDao> { get<AppDatabase>().billCommentLikeDao() }

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Sell
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material.icons.outlined.SupportAgent
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.Translate
@@ -36,6 +37,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -142,21 +144,45 @@ internal fun PreferencesSection(
 
 // Why: "Support and feedback", between the preferences and "Privacy and about": how to reach whoever makes the app.
 @Composable
-internal fun SupportSection(onEvent: (ProfileUiEvent) -> Unit) {
+internal fun SupportSection(
+    state: ProfileUiState,
+    onEvent: (ProfileUiEvent) -> Unit,
+) {
     Section(title = R.string.profile_section_support) {
-        SectionRow(
+        SupportRow(
             icon = Icons.Outlined.SupportAgent,
-            headline = stringResource(R.string.profile_contact_support),
-            modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnContactSupportClicked) },
-            trailing = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            },
+            headline = R.string.profile_contact_support,
+            onClick = { onEvent(ProfileUiEvent.OnContactSupportClicked) },
         )
+        if (state.showsRateApp) {
+            HorizontalDivider()
+            SupportRow(
+                icon = Icons.Outlined.StarOutline,
+                headline = R.string.profile_rate_app,
+                onClick = { onEvent(ProfileUiEvent.OnRateAppClicked) },
+            )
+        }
     }
+}
+
+@Composable
+private fun SupportRow(
+    icon: ImageVector,
+    @StringRes headline: Int,
+    onClick: () -> Unit,
+) {
+    SectionRow(
+        icon = icon,
+        headline = stringResource(headline),
+        modifier = Modifier.clickable(onClick = onClick),
+        trailing = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+    )
 }
 
 @Composable

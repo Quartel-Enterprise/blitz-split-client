@@ -41,6 +41,10 @@ final class AppModel {
     private var hasForward = false
     #endif
 
+    /// Goes up each time the shared code says the moment is right to ask for a review (a payment that settles a
+    /// group, the third bill saved); the root asks the App Store, which decides whether its card shows.
+    private(set) var reviewRequestCount = 0
+
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createAppViewModel()
     @ObservationIgnored private let watches = WatchBag()
 
@@ -80,6 +84,9 @@ final class AppModel {
         })
         watches.add(viewModel.bitcoinInSatsWatcher.observe { showsSats in
             BitcoinUnit.shared.showsSats = showsSats.boolValue
+        })
+        watches.add(viewModel.reviewRequestWatcher.observe { [weak self] _ in
+            self?.reviewRequestCount += 1
         })
     }
 

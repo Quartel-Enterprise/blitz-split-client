@@ -109,6 +109,7 @@ dependencies {
     implementation(projects.core.provider.crashlytics)
     implementation(projects.core.provider.analytics)
     implementation(projects.core.sync)
+    implementation(projects.core.support)
     implementation(projects.core.inAppUpdate)
     implementation(projects.android.platform)
 

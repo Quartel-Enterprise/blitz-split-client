@@ -30,16 +30,22 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.model.ProfileLink
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.StartScreenViews
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.RefreshAppLanguage
+import com.quare.blitzsplit.core.support.domain.usecase.ObserveReviewMoments
+import com.quare.blitzsplit.core.support.domain.usecase.RequestReviewIfNeeded
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -83,6 +89,9 @@ class AppViewModel(
     private val requestUpdatePromptIfNeeded: RequestUpdatePromptIfNeeded,
     private val startScreenViews: StartScreenViews,
     private val prefetchLegalDocuments: PrefetchLegalDocuments,
+    private val observeReviewMoments: ObserveReviewMoments,
+    private val requestReviewIfNeeded: RequestReviewIfNeeded,
+    private val trackEvent: TrackEvent,
     startSync: StartSync,
 ) : ViewModel() {
     val uiState: StateFlow<AppUiState>
@@ -126,6 +135,15 @@ class AppViewModel(
 
     val billLinkNoticeWatcher: FlowWatcher<BillLinkNoticeState> = FlowWatcher(billLinkNotice)
 
+    /*
+     * Why: the moment to ask the store for its review card (Google Play's in-app review, the App Store's
+     * requestReview), which each native app does its own way; the stores decide whether it shows.
+     */
+    val reviewRequests: SharedFlow<Unit>
+        field = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    val reviewRequestWatcher: FlowWatcher<Unit> = FlowWatcher(reviewRequests)
+
     // Why: the Mac's mouse back and forward buttons, and Go › Back and Forward.
     private val forwardHistory = ForwardHistory(navigator, viewModelScope)
 
@@ -142,6 +160,7 @@ class AppViewModel(
         reopenSharedBillLeftForWelcome()
         offerUpdatesInFront()
         prefetchLegalTexts()
+        askForReviewAfterGoodMoments()
     }
 
     fun goBack() {
@@ -227,6 +246,20 @@ class AppViewModel(
             .onEach {
                 uiState.first { it == AppUiState.READY }
                 requestUpdatePromptIfNeeded()
+            }.launchIn(viewModelScope)
+    }
+
+    /*
+     * Why: a payment that settles a group or the third bill saved may ask for a review (RequestReviewIfNeeded holds
+     * the rules), a moment after the form closed, so the card never opens over a screen still sliding away.
+     */
+    private fun askForReviewAfterGoodMoments() {
+        observeReviewMoments()
+            .onEach { moment ->
+                if (!requestReviewIfNeeded(moment)) return@onEach
+                delay(REVIEW_SETTLE_MILLIS)
+                trackEvent(moment.analytics.name, moment.analytics.params)
+                reviewRequests.emit(Unit)
             }.launchIn(viewModelScope)
     }
 
@@ -419,5 +452,8 @@ class AppViewModel(
     private companion object {
         // Why: how long a tapped notification waits for a sync before opening what the device already has.
         const val PUSH_LINK_SYNC_SECONDS = 5
+
+        // Why: how long the screen under a closed form takes to settle before the store's card opens over it.
+        const val REVIEW_SETTLE_MILLIS = 800L
     }
 }
