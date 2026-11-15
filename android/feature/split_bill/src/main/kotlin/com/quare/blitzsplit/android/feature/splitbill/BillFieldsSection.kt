@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
@@ -47,12 +46,26 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AmountTextField
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.CurrencyMenuContent
+import com.quare.blitzsplit.android.designsystem.component.GROUP_CORNER_RATIO
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.freeTextKeyboardOptions
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
 
+/*
+ * Why: the chip's start wraps the group's rounded-square avatar, so its corners follow the badge's (its radius plus the
+ * inset around it) instead of a circle, while the end stays a capsule (beta feedback of 2026-11-14).
+ */
+private val groupChipHeight = 40.dp
+private val groupChipBadgeSize = 32.dp
+private val groupChipStartInset = 4.dp
+private val groupChipShape = RoundedCornerShape(
+    topStart = groupChipBadgeSize * GROUP_CORNER_RATIO + groupChipStartInset,
+    topEnd = groupChipHeight / 2,
+    bottomEnd = groupChipHeight / 2,
+    bottomStart = groupChipBadgeSize * GROUP_CORNER_RATIO + groupChipStartInset,
+)
 private const val DISABLED_CHIP_ALPHA = 0.38f
 
 // Why: what to read first: the group the bill goes to, what it was and how much it was (beta feedback 10).
@@ -269,7 +282,7 @@ private fun GroupChip(
                     }
                 },
             enabled = state.canOpenGroup,
-            shape = CircleShape,
+            shape = groupChipShape,
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ) {
@@ -291,9 +304,9 @@ private fun GroupChip(
 private fun GroupChipContent(state: SplitBillUiState) {
     Row(
         modifier = Modifier
-            .height(40.dp)
+            .height(groupChipHeight)
             .padding(
-                start = 4.dp,
+                start = groupChipStartInset,
                 end = 10.dp,
             ),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -303,7 +316,7 @@ private fun GroupChipContent(state: SplitBillUiState) {
             initials = state.groupInitials,
             color = state.groupColor,
             photoUrl = state.groupPhotoUrl,
-            size = 32.dp,
+            size = groupChipBadgeSize,
         )
         Text(
             text = state.groupName,
