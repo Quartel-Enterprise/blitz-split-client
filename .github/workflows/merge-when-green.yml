@@ -44,6 +44,7 @@ on:
       - static-analysis
       - duplication
       - module-graph
+      - release-notes
       - claude-review
       - claude-review-on-request
       - claude-review-refs

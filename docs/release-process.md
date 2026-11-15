@@ -25,25 +25,32 @@ The upload uses `xcrun altool --upload-app`: if the runner's Xcode refuses it, s
 ## Releasing a beta
 
 ```bash
-./scripts/release/release-beta.sh          # the versionName of version.properties
+./scripts/release/release-beta.sh          # the version the release notes lead to
 ./scripts/release/release-beta.sh 3.1.0    # another X.Y.Z
 ```
 
 Or **Actions → release-beta → Run workflow**. The script dispatches the workflow and prints the link to the run.
 `gh workflow run` only finds a workflow that is on `main`, so the first beta can only run after this one has merged.
 
-1. `plan` resolves the version and shows it in the run summary.
+1. `plan` resolves the version and picks the notes this beta tells, the ones in `release-notes/unreleased/` that the
+   release before it didn't have ([release-notes.md](release-notes.md)), and shows both in the run summary.
 2. Each platform builds and publishes: `android-build` and `android-distribute`, `web`, `ios-build` with
    `ios-upload` and `ios-distribute`, `macos-build` and `macos-upload`. Build and publish are separate jobs, so
    **Re-run failed jobs** sends a failed upload again without building a second time. The APK and the ad hoc IPA are
    kept as build artifacts for one day, since anyone can install them (the ad hoc IPA on the registered iPhones) from
    a public repository, and the App Store IPA and the package for a week, since they install nowhere but TestFlight:
    a re-run of an upload after that needs a new beta.
-3. `finalize` tags the commit the run built and publishes the GitHub pre-release, whose notes list what each channel got
-   and the build number, then squash-merges a pull request with the new `versionCode` into `main`. It runs when at
+3. `finalize` tags the commit the run built and publishes the GitHub pre-release, whose notes list what the beta
+   changed, what each channel got and the build number, then squash-merges a pull request with the new `versionCode`
+   into `main`. It runs when at
    least one platform published, and a platform that failed does not hold the release back. A re-run of `finalize`
    after "Re-run failed jobs" rewrites the table of channels, so the release follows the results. A beta that only
    published the web leaves `main` alone, since it consumed no build number a store cares about.
+4. `site-release-notes` sends the notes to blitz-split-site: `send-release-notes-to-site.sh` writes the version's
+   files in a checkout of it, runs the site's own check, and opens and merges a pull request there, which deploys the
+   site with the notes on its "What's new" page and in the feed the apps read. A beta with no note skips it, and so
+   does one whose version the site already has. It runs after `finalize` even when the merge-back failed, and
+   **Re-run failed jobs** sends the notes again without touching the release.
 
 One beta runs at a time and one more can wait: GitHub keeps a single pending run per concurrency group, so a third
 dispatch would cancel the one waiting. `release-beta.sh` refuses to dispatch while a run is already waiting.
@@ -57,9 +64,13 @@ dispatch would cancel the one waiting. `release-beta.sh` refuses to dispatch whi
 | Apple version string (iOS and macOS) | `3.0.0`: Apple refuses a suffix, so a beta is told apart by its build number. Profile still shows `3.0.0-beta_7`, from the Info.plist's `BlitzSplitVersionName` ([generate-project.sh](../iosApp/generate-project.sh)) |
 | `versionCode`, and the Apple build number | the file's value plus one, on every beta |
 
-[`version.properties`](../version.properties) stays the single source. A beta never changes its `versionName`: that
-moves to the next version by hand, when the work for it starts. The beta number is one past the highest existing
-`X.Y.Z-beta_N` tag for that `X.Y.Z`, so a new `X.Y.Z` starts again at `beta_1`.
+[`version.properties`](../version.properties) stays the file every platform reads. Until a stable version is tagged,
+its `versionName` is the version, moved by hand. From then on the release notes move it: a release is a patch above
+the last stable version when the fragments since it only fix, and a minor one when one of them is new or improved
+([release-notes.md](release-notes.md#the-version-a-release-gets)). The release takes the higher of that and the
+file's, so a major version is still declared by hand in the file, and the merge-back writes the version it used. The
+beta number is one past the highest existing `X.Y.Z-beta_N` tag for that `X.Y.Z`, so a new `X.Y.Z` starts again at
+`beta_1`.
 
 The `versionCode` is one past the highest of two numbers: the one in `version.properties` and the `Build number: N` line
 that every beta release records in its notes. The release is published before the merge-back, so a beta never reuses a
@@ -87,6 +98,7 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | `MATCH_SSH_PRIVATE_KEY` | The private half of a read-only deploy key of `bible-planner-certs` |
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | A token with **Account › Cloudflare Pages › Edit**, and the account's id |
 | `MERGE_WHEN_GREEN_TOKEN` | Already there, for the pull request merges: `finalize` merges the merge-back with it |
+| `SITE_RELEASE_NOTES_TOKEN` | A fine-grained personal access token restricted to `Quartel-Enterprise/blitz-split-site`, with Contents and Pull requests set to Read and write: `site-release-notes` pushes the notes and merges their pull request with it. The organization caps a token at 366 days, so it has to be made again each year (the one made on 2026-11-14 expires on 2027-11-15); with it expired or missing the job fails naming the secret, the release itself is untouched, and a re-run of the job sends the notes |
 | `GRADLE_ENCRYPTION_KEY` | Optional, and not set today: the builds pass it to the Gradle action, which then keeps the configuration cache between runs ([ci.md](ci.md)) |
 
 | Variable (public values) | What it is |

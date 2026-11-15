@@ -9,7 +9,7 @@
 # Requires the GitHub CLI (gh), installed and authenticated: https://cli.github.com
 #
 # Usage: ./scripts/release/release-beta.sh [X.Y.Z]
-#   X.Y.Z  optional: overrides the versionName of version.properties
+#   X.Y.Z  optional: overrides the version that version.properties and the release notes give
 set -euo pipefail
 
 REPO="Quartel-Enterprise/blitz-split-client"

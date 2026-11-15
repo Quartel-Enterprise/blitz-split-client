@@ -3,17 +3,19 @@
 #
 # Usage: scripts/release/suggest-beta-version.sh [versionName]
 #
-# The version is the versionName of version.properties, the single source shared by every platform,
-# unless the argument (X.Y.Z) overrides it; either way it has to be X.Y.Z, since it goes into the tag, the
-# branch name and the Apple version string. The beta number is one past the highest existing X.Y.Z-beta_N
-# tag.
+# The version is the higher of two: the versionName of version.properties, the file every platform reads, and the
+# one the release notes lead to (scripts/release/release-notes.mjs next-version: the last stable version, a patch
+# higher when its fragments only fix, a minor higher when one of them is new or improved). The second is empty until
+# a stable version is tagged, and the first is how a major version is declared, by hand. The argument (X.Y.Z)
+# overrides both. Either way it has to be X.Y.Z, since it goes into the tag, the branch name and the Apple version
+# string. The beta number is one past the highest existing X.Y.Z-beta_N tag.
 #
 # The versionCode is one past the highest of two numbers: the one in version.properties, and the "Build
 # number: N" line every beta release records in its notes. The second is what keeps a beta from reusing a code
 # when the merge-back of the previous one did not reach main. It needs the GitHub CLI and a token (GH_TOKEN),
 # which the workflow has; run locally without one, only the file counts.
 #
-# Inside GitHub Actions, writes `display_version`, `version_code` and `branch` to
+# Inside GitHub Actions, writes `version`, `display_version`, `version_code` and `branch` to
 # $GITHUB_OUTPUT and a human-readable plan to $GITHUB_STEP_SUMMARY.
 set -euo pipefail
 
@@ -36,13 +38,16 @@ if [[ -z "$current_version" || -z "$current_code" ]]; then
   exit 1
 fi
 
-version="${input_version:-$current_version}"
-
 # A versionName someone left with a suffix (a local bump-version.sh run) would end up as 3.0.0-beta_7-beta_1.
-if [[ ! "$version" =~ $SEMVER ]]; then
-  echo "Error: the versionName '${version}' of ${VERSION_FILE} must be in X.Y.Z format (e.g. 3.0.0)" >&2
+if [[ ! "$current_version" =~ $SEMVER ]]; then
+  echo "Error: the versionName '${current_version}' of ${VERSION_FILE} must be in X.Y.Z format (e.g. 3.0.0)" >&2
   exit 1
 fi
+
+# Captured first, so a fragment the script can't read stops the release instead of leaving the version at the file's.
+from_notes="$(node scripts/release/release-notes.mjs next-version)"
+# sort -V orders 3.10.0 after 3.9.0, as the version is read.
+version="${input_version:-$(printf '%s\n' "$current_version" "$from_notes" | sort -V | tail -1)}"
 
 version_code=$(( current_code + 1 ))
 
@@ -74,6 +79,7 @@ echo "Resolved version: ${display_version} (versionCode ${version_code})"
 
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   {
+    echo "version=${version}"
     echo "display_version=${display_version}"
     echo "version_code=${version_code}"
     echo "branch=${branch}"

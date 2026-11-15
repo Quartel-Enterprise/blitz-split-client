@@ -99,6 +99,11 @@ unsure about.
   an `…Other` message with a `{count}` as "few|many", and `pluralFormOf` in `i18n/index.ts` picks one with
   `Intl.PluralRules` (many takes the second form, any other category the first); `check:messages` rejects a "|"
   anywhere else. A language with more forms than that needs `pluralFormOf` extended first.
+- The release notes: add the language to `LANGS` and its sentence to `NOTHING_TO_SAY` in
+  `scripts/release/release-notes.mjs`, and its text to every fragment in `release-notes/unreleased/`
+  (`node scripts/release/release-notes.mjs check` fails until each has it). The language has to be one
+  blitz-split-site's release notes have too, or the site refuses the next release's notes: see
+  [docs/release-notes.md](../../../docs/release-notes.md#adding-a-language).
 - The docs that list the languages: `CLAUDE.md`, `README.md`, `docs/ai_agents.md`, `docs/architecture/code-style.md`,
   `docs/architecture/new-feature-checklist.md`, `docs/product/general.md`, `docs/product/profile.md`,
   `.claude/skills/review-conventions/SKILL.md`, the comments of `androidApp/build.gradle.kts` and `iosApp/project.yml`.
