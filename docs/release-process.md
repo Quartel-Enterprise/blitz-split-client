@@ -143,7 +143,9 @@ is built:
   to the site, reads the permission of whoever started that attempt (`collaborators/<login>/permission`, the
   [`release-admin`](../.github/actions/release-admin/action.yml) action) and fails, naming them, when it isn't
   `admin` or can't be read. So **Re-run failed jobs**, which runs jobs again without `plan`, is an admin's too, and
-  someone else's re-run stops before it builds anything.
+  someone else's re-run stops before it builds anything. The [`store-listing`](../.github/workflows/store-listing.yml)
+  workflow, which sends the listing text to the stores, starts each of its jobs with the same check
+  ([store-listing.md](store-listing.md)).
 - **On `main`**: a run dispatched on another branch would take that branch's copy of the workflow, and fails.
 - **The `Production` environment only lets `main` deploy.** The jobs that reach a store or app.blitzsplit.com (the
   uploads, the submissions, the creation of the App Store version, the screenshots' uploads, the web) name the

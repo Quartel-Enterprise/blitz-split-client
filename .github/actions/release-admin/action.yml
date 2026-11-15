@@ -1,8 +1,8 @@
-name: 'Check that an admin releases'
+name: 'Check that an admin releases or sends a listing'
 description: >-
   Fails unless whoever started this attempt of the run is an administrator of the repository. Nothing waits for an
-  approval in release-production.yml, so every one of its jobs starts with this: "Re-run failed jobs" runs jobs
-  again without the plan. The calling job checks out the repository first.
+  approval in release-production.yml nor in store-listing.yml, so every one of their jobs starts with this: "Re-run
+  failed jobs" runs jobs again without the first one. The calling job checks out the repository first.
 
 inputs:
   token:
@@ -24,13 +24,13 @@ runs:
         if ! permission="$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$ACTOR/permission" --jq .permission 2> "$errors")"; then
           cat "$errors"
           if grep -q "HTTP 404" "$errors"; then
-            echo "::error::Only an administrator of the repository releases a stable version, and $ACTOR is not a user GitHub knows on it (an app or a bot can't release). See docs/release-process.md#who-releases."
+            echo "::error::Only an administrator of the repository releases a stable version or sends a listing to a store, and $ACTOR is not a user GitHub knows on it (an app or a bot can't). See docs/release-process.md#who-releases."
           else
-            echo "::error::Could not read $ACTOR's permission on the repository, so nothing says they may release. Run it again."
+            echo "::error::Could not read $ACTOR's permission on the repository, so nothing says they may. Run it again."
           fi
           exit 1
         fi
         if [ "$permission" != admin ]; then
-          echo "::error::Only an administrator of the repository releases a stable version, and $ACTOR has the '$permission' permission. See docs/release-process.md#who-releases."
+          echo "::error::Only an administrator of the repository releases a stable version or sends a listing to a store, and $ACTOR has the '$permission' permission. See docs/release-process.md#who-releases."
           exit 1
         fi
