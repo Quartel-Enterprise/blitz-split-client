@@ -1,7 +1,7 @@
 # Store listing screenshots
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
-showing a sample trip among five friends, inside a device frame with a title and description, in all 12 languages
+showing a sample trip among five friends, inside a device frame with a title and description, in all 13 languages
 of the listings. The frames come from the [store-screenshots](https://github.com/lucianosantosdev/store-screenshots)
 library, as in Bible Planner. None of the images is versioned: every run rebuilds them from source.
 
@@ -40,7 +40,9 @@ The lane runs, each step under `scripts/heavy-check.sh`:
    the app to run locally, having no signing account.
 2. `./gradlew stagePlayStoreScreenshots stageAppStoreScreenshots collect…`: the generators (the unit tests of
    `:android:store_screenshots`) draw every image. The tasks then copy the images to `store_listings/` to look at, and
-   to the folders fastlane uploads from. Spanish goes out to each store's regional codes.
+   to the folders fastlane uploads from. Latin America's Spanish goes out to each store's regional codes (`es-419` and
+   `es-US` on Play, `es-MX` on the App Store), and Spain's to `es-ES`, as the listing text does
+   ([store-listing.md](store-listing.md)).
 3. Unless `skip_upload:true` is passed, the upload: `supply` for Play and `deliver` for the App Store, listing
    images only.
 
@@ -144,7 +146,9 @@ fastlane/Fastfile                              # the screenshots and upload lane
 - **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), the UI test's `locales`,
   and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
   which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
-  Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings.
+  Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings. Spain's Spanish
+  goes by `es-ES` the same way, since `es` is Latin America's: its own banners and trip ("ha pagado", "coche",
+  "ticket"), over the app's `es-ES` strings.
 
 ## How the iOS capture works
 

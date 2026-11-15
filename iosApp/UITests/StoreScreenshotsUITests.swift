@@ -25,6 +25,7 @@ final class StoreScreenshotsUITests: XCTestCase {
         ListingLocale(tag: "pt-BR", language: "pt", appleLanguage: "pt-BR", appleLocale: "pt_BR"),
         ListingLocale(tag: "pt-PT", language: "pt-PT", appleLanguage: "pt-PT", appleLocale: "pt_PT"),
         ListingLocale(tag: "es", language: "es", appleLanguage: "es-419", appleLocale: "es_ES"),
+        ListingLocale(tag: "es-ES", language: "es-ES", appleLanguage: "es-ES", appleLocale: "es_ES"),
         ListingLocale(tag: "fr", language: "fr", appleLanguage: "fr-FR", appleLocale: "fr_FR"),
         ListingLocale(tag: "de", language: "de", appleLanguage: "de-DE", appleLocale: "de_DE"),
         ListingLocale(tag: "it", language: "it", appleLanguage: "it-IT", appleLocale: "it_IT"),

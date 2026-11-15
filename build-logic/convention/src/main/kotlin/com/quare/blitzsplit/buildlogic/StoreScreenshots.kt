@@ -9,17 +9,19 @@ import java.io.File
 // The store listing screenshots (docs/store-listing-screenshots.md). The generators of :android:store_screenshots are
 // its unit tests, which write store-screenshots' Fastlane-shaped output into build/outputs/store-screenshots/<locale>/.
 // These tasks copy it where people look at it (store_listings/, git-ignored) and where the fastlane lanes upload from.
-// Play and Apple each fan the one Spanish set out to their own regional codes. The devices map each generator output
-// folder to store_listings/' and to the one the store's tool reads; the Mac's go apart, as the Mac app is a version of
-// its own on App Store Connect (platform osx).
+// Play and Apple each fan Latin America's Spanish set out to their own regional codes; Spain has a set of its own.
+// The devices map each generator output folder to store_listings/' and to the one the store's tool reads; the Mac's
+// go apart, as the Mac app is a version of its own on App Store Connect (platform osx).
 private const val GROUP = "store-screenshots"
 private const val GENERATE_TASK = "testDebugUnitTest"
-private val listingLocales = listOf("en-US", "pt-BR", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "tr", "id", "ja")
+private val listingLocales =
+    listOf("en-US", "pt-BR", "pt-PT", "es", "es-ES", "fr", "de", "it", "pl", "nl", "tr", "id", "ja")
 private val playLocales = mapOf(
     "en-US" to listOf("en-US"),
     "pt-BR" to listOf("pt-BR"),
     "pt-PT" to listOf("pt-PT"),
-    "es" to listOf("es-419", "es-ES", "es-US"),
+    "es" to listOf("es-419", "es-US"),
+    "es-ES" to listOf("es-ES"),
     "fr" to listOf("fr-FR"),
     "de" to listOf("de-DE"),
     "it" to listOf("it-IT"),
@@ -33,7 +35,8 @@ private val appStoreLocales = mapOf(
     "en-US" to listOf("en-US"),
     "pt-BR" to listOf("pt-BR"),
     "pt-PT" to listOf("pt-PT"),
-    "es" to listOf("es-MX", "es-ES"),
+    "es" to listOf("es-MX"),
+    "es-ES" to listOf("es-ES"),
     "fr" to listOf("fr-FR"),
     "de" to listOf("de-DE"),
     "it" to listOf("it"),
