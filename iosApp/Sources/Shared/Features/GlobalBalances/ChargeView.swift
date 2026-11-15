@@ -147,7 +147,7 @@ private struct ChargeContent: View {
     /// The sheet's own size: the whole screen on an iPhone lying down splits in two; a form sheet keeps one column.
     /// Until the sheet has measured itself, the window it opens over decides, so it never opens in one column first.
     private var usesTwoColumns: Bool {
-        let sheet = layout.size == .zero ? window : layout
+        let sheet = layout.or(window)
         return sheet.usesTwoColumns && !sheet.isLarge
     }
     #endif

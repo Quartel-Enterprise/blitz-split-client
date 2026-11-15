@@ -12,6 +12,12 @@ struct ScreenLayout: Equatable {
         size.width > size.height && size.width >= 640
     }
 
+    /// This measure once there is one, else `window`: what a screen lays out for until it has measured itself, so
+    /// it never opens in one layout and then jumps to another.
+    func or(_ window: ScreenLayout) -> ScreenLayout {
+        size == .zero ? window : self
+    }
+
     /// An iPad's room, by size: at least 600 pt on the short side (an iPad, an iPhone Duo open, a wide Split View).
     var isLarge: Bool {
         min(size.width, size.height) >= 600

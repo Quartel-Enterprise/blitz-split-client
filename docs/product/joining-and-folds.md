@@ -114,7 +114,8 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     buttons, the avatar and "Split a bill" (only its +) over the tabs
     (`prefersVerticalBar()`), and the group's bottom bar moves into it; open lying down the system keeps that bar.
     Open lying down, every two-column screen
-    splits on the fold with nothing in its band (Groups' and Contacts' lists end at it, Balances, Statistics with
+    splits on the fold with nothing in its band (Groups' and Contacts' lists end at it, Balances, the group over the whole tab with its header and
+    "Your balance in this group" before it and the tabs after it, Statistics with
     the total and categories before it and By person after it), and a form sheet opens in the leading half
     (`foldSheetPlacement()`). Open upright, as a notebook, Invite people (QR and link on top), Invite (the group on top),
     the group (the header and "Your balance" on top, the tabs and what they hold below, on every tab), Record payment (who and how much on top, how and when below), Statistics (the total and Over time on top),

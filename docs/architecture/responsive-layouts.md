@@ -149,6 +149,14 @@ it back to the system on the pop, which sizes it for the window it is in then; D
 size (`grownSheetSize`) from its first frame, not for the form's it measures while the sheet grows. Not checked on a
 device yet: Estatísticas in an iPad's group pane.
 
+A screen that draws both in the whole tab and in the column beside a list measures itself, not the window, and
+reads `showsGroupBesideList` for what its board draws in that column. The group's screen (`GroupDetailView`) puts
+its header and balance card in a side column wherever it is lying down with the tab to itself (an iPhone, an iPad,
+an iPhone Duo open, through `TwoColumnsLayout`) and keeps one column beside the groups, while Statistics is two
+columns there too. Until its first measure the group's screen goes by `windowLayout`, so it never opens in one
+column and then splits. Not checked on a device yet: the group's two columns on an iPad lying down (issue 388; the
+iPhone Duo simulator open, and closed lying down, were).
+
 The iPhone Duo (iOS 27.1 SDK, decision 7): the app builds with the iOS 27.1 SDK (Xcode 27.1, see
 [getting-started.md](../getting-started.md)) and keeps iOS 26 as its minimum, so every Duo API sits behind
 `#available(iOS 27.1, *)` and below it the size rules decide alone. `FoldDivision` reads

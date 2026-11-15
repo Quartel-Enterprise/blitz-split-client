@@ -456,10 +456,19 @@ struct BalanceCard: View {
 }
 
 #if os(iOS)
-/// The group's screen on iPhone upright and iPad: one column (640 wide at most on iPad) with the header, the balance
-/// card and the tabs over the picked tab's sections. iPhone lying down: the header and the card on the left, the tabs
-/// and the sections on the right. An iPhone Duo open upright: the header and the card above the fold, the tabs and the
-/// sections below it (3.3, 6.2), on every tab so the header never moves. Only the sections change with the tab.
+/// The group's screen on iPhone and iPad upright, and in the column beside the groups: one column (640 wide at most
+/// on iPad) with the header, the balance card and the tabs over the picked tab's sections. Lying down over the whole
+/// tab (an iPhone, an iPad, an iPhone Duo open, issue 388): the header and the card on the left, the tabs and the
+/// sections on the right, in 920 pt at most and one on each side of the Duo's fold. An iPhone Duo open upright: the
+/// header and the card above the fold, the tabs and the sections below it (3.3, 6.2), on every tab so the header
+/// never moves. Only the sections change with the tab.
+/// The header and the card's column beside the tabs, which the loading placeholder draws too.
+enum GroupSideColumn {
+    static let width: CGFloat = 328
+    static let spacing: CGFloat = 8
+    static let avatarSize: CGFloat = 72
+}
+
 struct PhoneGroupScaffold<Sections: View>: View {
     let header: GroupHeader
     /// The account's copy isn't whole: "Your balance in this group" shimmers in its place rather than leaving it out.
@@ -475,9 +484,10 @@ struct PhoneGroupScaffold<Sections: View>: View {
     var body: some View {
         Group {
             if usesTwoColumns {
-                HStack(alignment: .top, spacing: 8) {
+                // The fold of an iPhone Duo open between the two, each column on its side of it
+                TwoColumnsLayout(firstWidth: GroupSideColumn.width, spacing: GroupSideColumn.spacing) {
                     summary
-                        .frame(width: 328)
+                } second: {
                     list(withHeader: false)
                 }
             } else {
@@ -521,7 +531,7 @@ struct PhoneGroupScaffold<Sections: View>: View {
             VStack(spacing: 4) {
                 GroupHeaderAvatar(
                     header: header,
-                    size: collapses ? GroupHeaderScroll.avatarSize : 72,
+                    size: collapses ? GroupHeaderScroll.avatarSize : GroupSideColumn.avatarSize,
                     scroll: collapses ? headerScroll : nil,
                     action: actions.photo,
                 )
@@ -577,6 +587,11 @@ struct PhoneGroupScaffold<Sections: View>: View {
             withHeader ? min(max(0, geometry.contentOffset.y + geometry.contentInsets.top), headerScroll.foldEnd) : 0
         } action: { _, offset in
             headerScroll.offset = offset
+        }
+        // A list without the header starts with it whole beside or above it, and never reports a scroll: a fold
+        // left by the list before it (the device turned or opened) would keep the bar's title in
+        .onAppear {
+            if !withHeader { headerScroll.offset = 0 }
         }
     }
 }
