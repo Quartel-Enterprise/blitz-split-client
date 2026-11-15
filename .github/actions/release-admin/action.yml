@@ -1,0 +1,30 @@
+name: 'Check that an admin releases'
+description: >-
+  Fails unless whoever started this attempt of the run is an administrator of the repository. Nothing waits for an
+  approval in release-production.yml, so its plan and each of its jobs that reach a store or the web start with this:
+  "Re-run failed jobs" runs those jobs again without the plan. The calling job checks out the repository first.
+
+inputs:
+  token:
+    description: 'A token that can read the repository, the GITHUB_TOKEN of the job'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # A permission that can't be read stops the job as one that isn't enough does.
+    - name: Check who releases
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        ACTOR: ${{ github.triggering_actor }}
+      run: |
+        if ! permission="$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$ACTOR/permission" --jq .permission 2>&1)"; then
+          echo "$permission"
+          echo "::error::Could not read $ACTOR's permission on the repository, so nothing says they may release. Run it again."
+          exit 1
+        fi
+        if [ "$permission" != admin ]; then
+          echo "::error::Only an administrator of the repository releases a stable version, and $ACTOR has the '$permission' permission. See docs/release-process.md#who-releases."
+          exit 1
+        fi

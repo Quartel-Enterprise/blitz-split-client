@@ -6,8 +6,8 @@
 # The two release workflows share one concurrency group, since both take the next versionCode from the same place.
 # GitHub keeps one pending run per group (one waiting behind the run in progress) and cancels it when another
 # arrives, so a release dispatched behind a waiting one would silently cancel it. This refuses to dispatch then,
-# which the Actions tab's "Run workflow" doesn't. A run that is only queued for a runner, or waiting for its
-# approval, is not waiting on the group, and cancels nothing.
+# which the Actions tab's "Run workflow" doesn't. A run that is only queued for a runner is not waiting on the
+# group, and cancels nothing.
 #
 # Requires the GitHub CLI (gh), installed and authenticated: https://cli.github.com
 #

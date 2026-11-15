@@ -5,11 +5,12 @@ name: release-production
 #
 # Run it with ./scripts/release/release-production.sh, or from the Actions tab
 # (docs/release-process.md#releasing-a-stable-version):
-#   1. `plan` resolves the version X.Y.Z from version.properties and the release notes' fragments, picks the notes
-#      the version tells (docs/release-notes.md) and shows both, with what the run will publish, in the run summary.
-#   2. `approve` waits on the `Production` environment: nothing is built and nothing reaches a store until one of
-#      its reviewers approves the run. To change anything, reject it and dispatch another.
-#   3. Each platform builds and publishes, in jobs of its own, because "Re-run failed jobs" repeats whole jobs: an
+#   1. `plan` checks who dispatched the run and from where, since nothing waits for an approval: only an
+#      administrator of the repository releases, from main, and the `Production` environment has to limit its
+#      deployments to main. It then resolves the version X.Y.Z from version.properties and the release notes'
+#      fragments, picks the notes the version tells (docs/release-notes.md) and shows both, with what the run will
+#      publish, in the run summary.
+#   2. Each platform builds and publishes, in jobs of its own, because "Re-run failed jobs" repeats whole jobs: an
 #      upload that failed is sent again without building a second time.
 #        - Android: a signed AAB to the Google Play track of the `track` input, with the notes as its "What's new".
 #          On the production track `rollout` is the percentage of the users who get it.
@@ -21,19 +22,20 @@ name: release-production
 #        - The listings' screenshots (`screenshots`) are made again and uploaded: Google Play's after the bundle
 #          reached production, the App Store's before the submission, since a version in review can't take them.
 #          Best effort: none of these jobs holds the release back.
-#   4. `finalize` runs when a store took a build or the web was deployed. When the run released (the production
+#   3. `finalize` runs when a store took a build or the web was deployed. When the run released (the production
 #      track, a submission for review, or the web) it tags X.Y.Z and publishes the GitHub release, then merges the
 #      versionCode, the versionName and the removal of the fragments the version told back into main. A run that
 #      only reached a testing track or TestFlight leaves no tag and removes no fragment: it merges back its
 #      versionCode, and its version when that is higher than main's. A run of the web alone, with every store
 #      platform off, leaves the versionCode on main alone and records no build number, since it consumed none a
 #      store cares about.
-#   5. `site-release-notes` sends the notes of a version that was released to blitz-split-site, whose "What's new"
+#   4. `site-release-notes` sends the notes of a version that was released to blitz-split-site, whose "What's new"
 #      page and feed the apps read. It doesn't wait for the stores' reviews.
 #
 # With no input changed, the run publishes to everyone: the production track at 100%, a submission for review and
 # the web.
-# The approval is the one gate, so `plan` refuses to go on when the environment has no required reviewer.
+# The dispatch is the one gate, as in Bible Planner's releases: the jobs that reach a store or the web name the
+# `Production` environment, which no reviewer guards and whose branch policy only lets main deploy.
 #
 # One release at a time, betas included: the concurrency group is release-beta.yml's, since both take the next
 # versionCode from the same place.
@@ -104,8 +106,9 @@ defaults:
     shell: bash
 
 env:
-  # The GitHub Environment whose required reviewers approve a release (Settings > Environments).
-  APPROVAL_ENVIRONMENT: Production
+  # The GitHub Environment of the jobs that reach a store or the web (Settings > Environments): its deployment
+  # branch policy only lets main deploy. Those jobs name it themselves, since `environment` can't read `env`.
+  RELEASE_ENVIRONMENT: Production
   # Where a version's notes may already be written by hand (docs/release-notes.md): `plan` reads it.
   SITE_REPOSITORY: Quartel-Enterprise/blitz-split-site
   # The Cloudflare Pages project of the production web app, next to the betas' blitz-split-beta in the same
@@ -121,7 +124,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
-      # To read the environment's protection rules.
+      # To read the environment's deployment branch policy.
       actions: read
     outputs:
       version: ${{ steps.resolve.outputs.version }}
@@ -161,26 +164,53 @@ jobs:
             exit 1
           fi
 
-      # GitHub makes an environment a job names and that doesn't exist, with no protection: `approve` would then
-      # pass by itself, and a run with no input changed publishes to everyone. So the release stops here when the
-      # environment is missing, has no required reviewer, or can't be read: nothing is built yet, so a run that
-      # stops here only costs another dispatch.
-      - name: Check the approval gate
+      # Nothing waits for an approval, so the dispatch is the gate: only an administrator of the repository
+      # releases, and only from main, whose copy of this workflow is the one that was reviewed. Nothing is built
+      # yet, so a run that stops here only costs another dispatch. The jobs that reach a store or the web check the
+      # admin again, since "Re-run failed jobs" runs them without this one.
+      - name: Check where the release comes from
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          if [ "$REF" != refs/heads/main ]; then
+            echo "::error::A stable version is released from main, and this run was dispatched on $REF. See docs/release-process.md#who-releases."
+            exit 1
+          fi
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      # The jobs that reach a store or the web name the environment, whose deployment branch policy is what keeps
+      # a copy of this workflow on another branch from publishing through them. GitHub makes an environment a job
+      # names and that doesn't exist, with no rule at all, so the release stops here when it is missing, lets any
+      # branch deploy, or can't be read.
+      - name: Check the environment
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if ! environment="$(gh api "repos/$GITHUB_REPOSITORY/environments/$APPROVAL_ENVIRONMENT" 2>&1)"; then
+          if ! environment="$(gh api "repos/$GITHUB_REPOSITORY/environments/$RELEASE_ENVIRONMENT" 2>&1)"; then
             if grep -q "HTTP 404" <<< "$environment"; then
-              echo "::error::The $APPROVAL_ENVIRONMENT environment doesn't exist: create it with required reviewers. See docs/release-process.md#the-approval."
+              echo "::error::The $RELEASE_ENVIRONMENT environment doesn't exist: create it, with a deployment branch policy that only allows main. See docs/release-process.md#who-releases."
               exit 1
             fi
             echo "$environment"
-            echo "::error::Could not read the $APPROVAL_ENVIRONMENT environment's protection rules, so nothing says an approval would be asked for. Dispatch the release again."
+            echo "::error::Could not read the $RELEASE_ENVIRONMENT environment, so nothing says which branches may deploy to it. Dispatch the release again."
             exit 1
           fi
-          reviewers="$(jq '[.protection_rules[]? | select(.type == "required_reviewers")] | length' <<< "$environment")"
-          if [ "$reviewers" -eq 0 ]; then
-            echo "::error::The $APPROVAL_ENVIRONMENT environment has no required reviewers, so nothing would wait for an approval. See docs/release-process.md#the-approval."
+          if [ "$(jq -r '.deployment_branch_policy.custom_branch_policies // false' <<< "$environment")" != true ]; then
+            echo "::error::The $RELEASE_ENVIRONMENT environment doesn't limit its deployments to branches it names: any branch, or any protected one, could deploy. Set its deployment branches to 'Selected branches and tags', with main alone. See docs/release-process.md#who-releases."
+            exit 1
+          fi
+          if ! allowed="$(gh api "repos/$GITHUB_REPOSITORY/environments/$RELEASE_ENVIRONMENT/deployment-branch-policies" --paginate --jq '.branch_policies[] | "\(.type):\(.name)"' 2>&1)"; then
+            echo "$allowed"
+            echo "::error::Could not read the deployment branch policy of the $RELEASE_ENVIRONMENT environment. Dispatch the release again."
+            exit 1
+          fi
+          # By type too: a tag named main is not the branch.
+          if [ "$allowed" != branch:main ]; then
+            echo "::error::The $RELEASE_ENVIRONMENT environment has to let the branch main deploy, and nothing else: its deployment policy allows '$(paste -sd, - <<< "$allowed")'. See docs/release-process.md#who-releases."
             exit 1
           fi
 
@@ -238,14 +268,14 @@ jobs:
           web="not in this run"
           if [ "$WEB" = true ]; then web="$WEB_URL, for everyone"; fi
           # The web has no testing channel: deployed, it is out for everyone and the version is released, whatever
-          # the stores get. Said before the approval, since a run meant to try the stores would otherwise do more
-          # than its plan reads.
+          # the stores get. Said at once, while the web job still builds: a run meant to try the stores would
+          # otherwise do more than its plan reads, and nothing waits for anyone to read it.
           trial=false
           if [ "$ANDROID" = true ] && [ "$TRACK" != production ]; then trial=true; fi
           if { [ "$IOS" = true ] || [ "$MACOS" = true ]; } && [ "$SUBMIT" != true ]; then trial=true; fi
           note=""
           if [ "$WEB" = true ] && [ "$trial" = true ]; then
-            note="The stores only get a trial (a testing track, or TestFlight), but the web app is deployed for everyone: the version gets its tag and its notes are published. For a run that reaches no user, reject this one and dispatch again with \`web\` off."
+            note="The stores only get a trial (a testing track, or TestFlight), but the web app is deployed for everyone: the version gets its tag and its notes are published. For a run that reaches no user, cancel this one now, before the web job deploys, and dispatch again with \`web\` off. What a store already took stays there, and the run still records it."
             echo "::warning title=The web is released::${note//\`/}"
           fi
           {
@@ -314,25 +344,11 @@ jobs:
           if-no-files-found: error
 
   # ---------------------------------------------------------------------------------------------
-  # The approval
-  # ---------------------------------------------------------------------------------------------
-  approve:
-    name: Wait for the approval
-    needs: plan
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    # Has to be the name APPROVAL_ENVIRONMENT holds: `environment` can't read `env`.
-    environment: Production
-    steps:
-      - name: Approved
-        run: echo "Approved by one of the $APPROVAL_ENVIRONMENT environment's reviewers."
-
-  # ---------------------------------------------------------------------------------------------
   # Android
   # ---------------------------------------------------------------------------------------------
   android-build:
     name: Android, build the AAB
-    needs: [plan, approve]
+    needs: plan
     if: ${{ inputs.android }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -416,6 +432,7 @@ jobs:
     name: Android, send to Google Play
     needs: [plan, android-build]
     runs-on: ubuntu-latest
+    environment: Production
     timeout-minutes: 30
     steps:
       - name: Checkout code
@@ -423,6 +440,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Download the AAB build artifact
         uses: actions/download-artifact@v8
@@ -455,6 +477,7 @@ jobs:
     needs: [plan, android-upload]
     if: ${{ inputs.screenshots && inputs.track == 'production' }}
     runs-on: ubuntu-latest
+    environment: Production
     timeout-minutes: 60
     steps:
       - name: Checkout code
@@ -462,6 +485,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Setup Gradle and Java
         uses: ./.github/actions/gradle
@@ -494,9 +522,10 @@ jobs:
   # time the captures are framed. Should this fail, the first upload creates the version, as it always could.
   app-store-versions:
     name: App Store, create the version
-    needs: [plan, approve]
+    needs: plan
     if: ${{ inputs.screenshots && inputs.submit_for_review && (inputs.ios || inputs.macos) }}
     runs-on: ubuntu-latest
+    environment: Production
     timeout-minutes: 15
     continue-on-error: true
     steps:
@@ -505,6 +534,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Create the iOS version
         if: ${{ inputs.ios }}
@@ -530,7 +564,7 @@ jobs:
   # iPad's. The iPhone Duo's fails on a runner whose Xcode has no runtime for it, and the listing goes without it.
   apple-screenshots-capture:
     name: App Store, capture the ${{ matrix.slot }} screenshots
-    needs: [plan, approve]
+    needs: plan
     if: ${{ inputs.screenshots && inputs.submit_for_review && (inputs.ios || inputs.macos) }}
     runs-on: xcode-27
     timeout-minutes: 150
@@ -654,6 +688,7 @@ jobs:
     needs: [plan, app-store-versions, apple-screenshots-frame]
     if: ${{ !cancelled() && inputs.ios && needs.apple-screenshots-frame.outputs.ios == 'true' }}
     runs-on: ubuntu-latest
+    environment: Production
     timeout-minutes: 90
     continue-on-error: true
     steps:
@@ -662,6 +697,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Download the framed screenshots
         uses: actions/download-artifact@v8
@@ -685,6 +725,7 @@ jobs:
     needs: [plan, app-store-versions, apple-screenshots-frame]
     if: ${{ !cancelled() && inputs.macos && needs.apple-screenshots-frame.outputs.mac == 'true' }}
     runs-on: ubuntu-latest
+    environment: Production
     timeout-minutes: 60
     continue-on-error: true
     steps:
@@ -693,6 +734,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Download the framed screenshots
         uses: actions/download-artifact@v8
@@ -717,9 +763,10 @@ jobs:
   # Pages project was never created.
   web:
     name: Web, build and deploy to Cloudflare Pages
-    needs: [plan, approve]
+    needs: plan
     if: ${{ inputs.web }}
     runs-on: ubuntu-latest
+    environment: Production
     timeout-minutes: 60
     steps:
       - name: Checkout code
@@ -727,6 +774,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Build and deploy the web app
         uses: ./.github/actions/web-deploy
@@ -750,7 +802,7 @@ jobs:
   # ---------------------------------------------------------------------------------------------
   ios-build:
     name: iOS, build the IPA
-    needs: [plan, approve]
+    needs: plan
     if: ${{ inputs.ios }}
     # The Xcode 27 image, as apple.yml: the app uses the iOS 27 SDK's APIs.
     runs-on: xcode-27
@@ -795,6 +847,7 @@ jobs:
     needs: [plan, ios-build]
     # The image that built it: an older altool uploading an Xcode 27 binary is a risk with no use.
     runs-on: xcode-27
+    environment: Production
     timeout-minutes: 30
     steps:
       - name: Checkout code
@@ -802,6 +855,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Download the IPA build artifact
         uses: actions/download-artifact@v8
@@ -828,6 +886,7 @@ jobs:
     needs: [plan, ios-upload, ios-screenshots]
     if: ${{ !cancelled() && inputs.submit_for_review && needs.ios-upload.result == 'success' }}
     runs-on: ubuntu-latest
+    environment: Production
     timeout-minutes: 90
     steps:
       - name: Checkout code
@@ -835,6 +894,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Download the release notes
         uses: actions/download-artifact@v8
@@ -855,7 +919,7 @@ jobs:
 
   macos-build:
     name: macOS, build the package
-    needs: [plan, approve]
+    needs: plan
     if: ${{ inputs.macos }}
     runs-on: xcode-27
     timeout-minutes: 90
@@ -896,6 +960,7 @@ jobs:
     name: macOS, send to App Store Connect
     needs: [plan, macos-build]
     runs-on: xcode-27
+    environment: Production
     timeout-minutes: 30
     steps:
       - name: Checkout code
@@ -903,6 +968,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Download the package build artifact
         uses: actions/download-artifact@v8
@@ -925,6 +995,7 @@ jobs:
     needs: [plan, macos-upload, macos-screenshots]
     if: ${{ !cancelled() && inputs.submit_for_review && needs.macos-upload.result == 'success' }}
     runs-on: ubuntu-latest
+    environment: Production
     timeout-minutes: 90
     steps:
       - name: Checkout code
@@ -932,6 +1003,11 @@ jobs:
         with:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       - name: Download the release notes
         uses: actions/download-artifact@v8
@@ -956,11 +1032,13 @@ jobs:
   finalize:
     name: Tag, release and merge-back
     needs: [plan, android-upload, ios-upload, ios-submit, macos-upload, macos-submit, web]
-    # !cancelled() replaces the implicit success(): a platform the run skipped or that failed must not hold the
-    # release back. A store that took a build, or the web deployed, is enough: the versionCode a store used has to
-    # reach main whatever happened to the others, and a version that is out has to be recorded.
+    # always() replaces the implicit success(): a platform the run skipped or that failed must not hold the
+    # release back, and neither must a cancelled run, since cancelling is the only way to stop a release and what
+    # a store or the web took before it has to be recorded all the same. A store that took a build, or the web
+    # deployed, is enough: the versionCode a store used has to reach main whatever happened to the others, and a
+    # version that is out has to be recorded.
     if: >-
-      ${{ !cancelled() && needs.plan.result == 'success' && (
+      ${{ always() && needs.plan.result == 'success' && (
       needs.android-upload.result == 'success' || needs.ios-upload.result == 'success' ||
       needs.macos-upload.result == 'success' || needs.web.result == 'success') }}
     runs-on: ubuntu-latest
