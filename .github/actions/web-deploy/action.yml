@@ -68,9 +68,10 @@ runs:
       run: |
         ./scripts/release/require-env.sh CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
         project="$RUNNER_TEMP/pages-project.json"
+        # A curl that fails (no answer after its retries) leaves 000, which the last case below explains.
         status="$(curl --silent --show-error --retry 3 --max-time 30 --output "$project" --write-out '%{http_code}' \
           --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-          "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PAGES_PROJECT")"
+          "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PAGES_PROJECT")" || true
         case "$status" in
           200) ;;
           404)
@@ -84,7 +85,7 @@ runs:
             ;;
           *)
             jq -r '.errors[]?.message' "$project" 2> /dev/null || true
-            echo "::error::Cloudflare answered HTTP $status when asked for the Pages project '$PAGES_PROJECT', which says nothing about the secrets: re-run this job."
+            echo "::error::Cloudflare didn't say whether the Pages project '$PAGES_PROJECT' exists (HTTP ${status:-000}, 000 being no answer at all), which says nothing about the secrets: re-run this job."
             exit 1
             ;;
         esac
@@ -95,11 +96,13 @@ runs:
           echo "::error::The Pages project '$PAGES_PROJECT' has '$branch' as its production branch, and a release deploys to main: it would only be a preview. Set the project's production branch to main: see docs/release-process.md#the-production-web-app."
           exit 1
         fi
-        # Only a warning: the deployment is still made, on the project's own pages.dev address.
+        # Only a warning: the deployment is still made, on the project's own pages.dev address, which is counted
+        # with its domains in case Cloudflare lists only the custom ones.
         host="${URL#https://}"
         host="${host%%/*}"
-        if ! jq -e --arg host "$host" '(.result.domains // []) | index($host)' "$project" > /dev/null; then
-          echo "::warning title=Web::$host is not one of the domains of the Pages project '$PAGES_PROJECT' ($(jq -r '(.result.domains // []) | join(", ")' "$project")): the deployment isn't served there until it is added. See docs/release-process.md#the-production-web-app."
+        domains='((.result.domains // []) + [.result.subdomain // empty]) | unique'
+        if ! jq -e --arg host "$host" "$domains | index(\$host)" "$project" > /dev/null; then
+          echo "::warning title=Web::$host is not one of the domains of the Pages project '$PAGES_PROJECT' ($(jq -r "$domains | join(\", \")" "$project")): the deployment isn't served there until it is added. See docs/release-process.md#the-production-web-app."
         fi
 
     # The web app shows the versionName of version.properties. Through env, not spliced into the command: the script

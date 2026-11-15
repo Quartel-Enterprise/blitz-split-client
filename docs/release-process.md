@@ -123,9 +123,9 @@ before the approval.
    squash-merges a pull request into `main` with the `versionCode`, the `versionName` and the removal of the release
    notes' fragments the version told ([`merge-back.sh`](../scripts/release/merge-back.sh)). A run that released
    nothing leaves no tag and removes no fragment: it merges back its `versionCode`, and its version when that is
-   higher than `main`'s, as a beta does. A run that only deployed the web leaves the `versionCode` of `main` alone,
-   as a web-only beta does, since it consumed no build number a store cares about: the version and the fragments
-   are all it merges back.
+   higher than `main`'s, as a beta does. A run of the web alone, with every store platform off, leaves the
+   `versionCode` of `main` alone, as a web-only beta does, and its GitHub release names no build number, since it
+   consumed none a store cares about: the version and the fragments are all it merges back.
 5. `site-release-notes` sends the notes of a released version to blitz-split-site, with the job the betas use
    ([`site-release-notes.yml`](../.github/workflows/site-release-notes.yml), which both workflows call). It doesn't
    wait for the stores' reviews (Pierre's call): the notes are out when the build is submitted. A version the site

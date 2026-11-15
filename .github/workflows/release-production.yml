@@ -25,8 +25,9 @@ name: release-production
 #      track, a submission for review, or the web) it tags X.Y.Z and publishes the GitHub release, then merges the
 #      versionCode, the versionName and the removal of the fragments the version told back into main. A run that
 #      only reached a testing track or TestFlight leaves no tag and removes no fragment: it merges back its
-#      versionCode, and its version when that is higher than main's. One that only deployed the web leaves the
-#      versionCode on main alone, since it consumed no build number a store cares about.
+#      versionCode, and its version when that is higher than main's. A run of the web alone, with every store
+#      platform off, leaves the versionCode on main alone and records no build number, since it consumed none a
+#      store cares about.
 #   5. `site-release-notes` sends the notes of a version that was released to blitz-split-site, whose "What's new"
 #      page and feed the apps read. It doesn't wait for the stores' reviews.
 #
@@ -999,6 +1000,7 @@ jobs:
           MACOS_UPLOAD: ${{ needs.macos-upload.result }}
           MACOS_SUBMIT: ${{ needs.macos-submit.result }}
           WEB: ${{ needs.web.result }}
+          STORES: ${{ inputs.android || inputs.ios || inputs.macos }}
           NOTES: ${{ needs.plan.outputs.github_notes }}
         run: |
           released=false
@@ -1039,29 +1041,45 @@ jobs:
           fi
 
           web_channel="Cloudflare Pages, $WEB_URL"
+          # The build number a store may hold. A run of the web alone has none to record: no store was asked to
+          # take a build, so the release names none and the next one doesn't skip a number for it.
+          code="$VERSION_CODE"
+          if [ "$STORES" != true ]; then code=0; fi
 
           if [ "$exists" = true ]; then
             # A platform this run left out keeps the row an earlier run wrote for it, and so does one this run
-            # only sent to a testing track or to TestFlight when the row says it was released.
+            # only sent to a testing track or to TestFlight when the row says it was released. The web's keeps a
+            # success a later deployment that failed didn't undo: the site still serves the one that worked. A
+            # release from before the web was part of a stable version has no Web row: it goes after macOS's.
             jq -r '.body // ""' <<< "$release" | tr -d '\r' | awk \
-              -v code="$VERSION_CODE" -v android="$ANDROID" -v ios="$ios" -v macos="$macos" \
+              -v code="$code" -v android="$ANDROID" -v ios="$ios" -v macos="$macos" \
               -v android_channel="$android_channel" -v apple_channel="$apple_channel" \
               -v track="$TRACK" -v submit="$SUBMIT" -v web="$WEB" -v web_channel="$web_channel" '
               function keeps(result, releases) { return result == "skipped" || (!releases && $0 ~ /production|sent for review/) }
+              function web_row() { return "| Web | " web_channel " | " web " |" }
+              after_macos { if ($0 !~ /^\| Web \|/ && web != "skipped") print web_row(); after_macos = 0 }
               /^Build number: / { if ($3 + 0 < code + 0) print "Build number: " code; else print; next }
               /^\| Android \|/ && !keeps(android, track == "production") { print "| Android | " android_channel " | " android " |"; next }
               /^\| iOS \|/ && !keeps(ios, submit == "true")              { print "| iOS | " apple_channel " | " ios " |"; next }
-              /^\| macOS \|/ && !keeps(macos, submit == "true")          { print "| macOS | " apple_channel " | " macos " |"; next }
-              /^\| Web \|/ && web != "skipped"                          { print "| Web | " web_channel " | " web " |"; next }
-              { print }' > "$RUNNER_TEMP/notes.md"
+              /^\| macOS \|/ { if (keeps(macos, submit == "true")) print; else print "| macOS | " apple_channel " | " macos " |"; after_macos = 1; next }
+              /^\| Web \|/ && web != "skipped" && (web == "success" || $0 !~ /\| success \|$/) { print web_row(); next }
+              { print }
+              END { if (after_macos && web != "skipped") print web_row() }' > "$RUNNER_TEMP/notes.md"
+            # A release the web alone made names no build number: the first run that sends a store one adds it.
+            if [ "$code" -gt 0 ] && ! grep -q '^Build number: ' "$RUNNER_TEMP/notes.md"; then
+              { printf 'Build number: %s\n\n' "$code"; cat "$RUNNER_TEMP/notes.md"; } > "$RUNNER_TEMP/notes-with-build.md"
+              mv "$RUNNER_TEMP/notes-with-build.md" "$RUNNER_TEMP/notes.md"
+            fi
             gh release edit "$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
             echo "::notice::$VERSION is already published: its table of channels was refreshed."
             exit 0
           fi
 
           {
-            echo "Build number: $VERSION_CODE"
-            echo
+            if [ "$code" -gt 0 ]; then
+              echo "Build number: $code"
+              echo
+            fi
             if [ -n "$NOTES" ]; then
               printf '%s\n\n' "$NOTES"
             fi
@@ -1088,9 +1106,11 @@ jobs:
 
       # The versionCode, the versionName when it is higher than main's and, once the version is released, the
       # removal of the fragments its tag's commit had (scripts/release/merge-back.sh, which also says how a re-run
-      # finishes the job). A run that only deployed the web consumed no build number a store cares about, so, as a
-      # beta's, it leaves main's versionCode alone: the version and the fragments are all it merges back. The pull
-      # request is created with GITHUB_TOKEN, so no PR workflow runs for a version bump,
+      # finishes the job). A run of the web alone, with every store platform off, consumed no build number a store
+      # cares about, so, as a beta's, it leaves main's versionCode alone: the version and the fragments are all it
+      # merges back. A run that asked a store for a build merges its versionCode back even when every upload failed,
+      # since a store may hold a build of a job that failed after sending it. The pull request is created with
+      # GITHUB_TOKEN, so no PR workflow runs for a version bump,
       # and merged with the MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md,
       # "Merge when green").
       - name: Merge the release back into main
@@ -1101,17 +1121,13 @@ jobs:
           VERSION: ${{ needs.plan.outputs.version }}
           VERSION_CODE: ${{ needs.plan.outputs.version_code }}
           RELEASED: ${{ steps.release.outputs.released }}
-          ANDROID: ${{ needs.android-upload.result }}
-          IOS_UPLOAD: ${{ needs.ios-upload.result }}
-          MACOS_UPLOAD: ${{ needs.macos-upload.result }}
+          STORES: ${{ inputs.android || inputs.ios || inputs.macos }}
           ACTOR: ${{ github.actor }}
         run: |
           tag=()
           if [ "$RELEASED" = true ]; then tag=("$VERSION"); fi
           code="$VERSION_CODE"
-          if [ "$ANDROID" != success ] && [ "$IOS_UPLOAD" != success ] && [ "$MACOS_UPLOAD" != success ]; then
-            code=0
-          fi
+          if [ "$STORES" != true ]; then code=0; fi
           ./scripts/release/merge-back.sh "$VERSION" "$code" "$VERSION" "${tag[@]}"
 
   # ---------------------------------------------------------------------------------------------
