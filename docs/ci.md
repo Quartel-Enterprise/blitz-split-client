@@ -259,7 +259,8 @@ workflow also analyzes the languages that need no build.
 
 - Kotlin is read from inside the compiler, so CodeQL only sees the files a build compiles while it watches:
   `compileKotlinJvm` and `:androidApp:compileDebugKotlin`, without the build cache, since a compile task restored
-  from it runs no compiler. The actuals of the Apple and JS targets are not analyzed.
+  from it runs no compiler. The actuals of the Apple and JS targets are not analyzed, nor are the tests (the
+  `:android:store_screenshots` module among them), which neither task compiles.
 - CodeQL supports a range of Kotlin versions, and a new CodeQL release follows a new Kotlin one by some weeks. When a
   bump of Kotlin fails `analyze (java-kotlin)` on an unsupported version, wait for the CodeQL release that supports
   it, or merge without that check.
@@ -273,6 +274,8 @@ Besides the `analyze` jobs, code scanning adds a check of its own to a pull requ
 pull request adds an alert of high severity. It has no run and no log: read the alert on the pull request, or with
 `gh api 'repos/{owner}/{repo}/code-scanning/alerts?ref=refs/pull/<number>/merge&state=open'`, and fix the code. An
 alert that is wrong is dismissed on GitHub with its reason, never by taking the query or the file out of the analysis.
+A dismissal starts no workflow, so, as after resolving a conversation, add the `merge-when-green` label again for the
+pull request to merge.
 
 Secret scanning with push protection and code quality (JavaScript, TypeScript and Python) are also on, in the
 repository's settings alone.
