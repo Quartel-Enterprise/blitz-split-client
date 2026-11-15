@@ -587,9 +587,11 @@ private struct ActivityRowMeta: View {
 
     var body: some View {
         HStack(spacing: 5) {
+            // The group's photo over its tint when it has one; the tint shows while it loads or if it fails to
             GroupAvatar.shape(size: 10)
                 .fill(item.groupColor?.data ?? Color.secondary.opacity(0.2))
                 .frame(width: 10, height: 10)
+                .avatarPhoto(item.groupPhotoUrl, size: 10, shape: GroupAvatar.shape(size: 10))
                 .accessibilityHidden(true)
             if let groupName = item.groupName {
                 Text(verbatim: groupName)

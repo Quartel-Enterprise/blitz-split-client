@@ -52,8 +52,6 @@
     <string name="designsystem_balance_you_owe">borcun</string>
     <string name="designsystem_balance_settled">%s · hesabın kapandı</string>
     <string name="designsystem_balance_get_and_owe">Alacağın %1$s, borcun %2$s</string>
-    <string name="designsystem_balance_get">Alacağın %s</string>
-    <string name="designsystem_balance_owe">Borcun %s</string>
     <string name="designsystem_balance_everyone_settled">Burada kimsenin kimseye borcu yok.</string>
     <string name="designsystem_balance_others_settling">Diğerlerinin hâlâ hesaplaşması gerekiyor.</string>
     <string name="designsystem_balance_settle">Hesaplaş</string>

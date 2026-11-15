@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain
 
+import com.quare.blitzsplit.core.expenses.domain.model.BalanceDetail
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -97,6 +98,96 @@ class MemberBalanceTest {
 
         // Then
         assertTrue(canSettle)
+    }
+
+    @Test
+    fun `GIVEN a member who receives and owes WHEN reading the detail THEN it is the breakdown`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 33_290L,
+            owesMinor = 11_800L,
+        )
+
+        // When
+        val detail = balance.detailOf(isEveryoneSettled = false)
+
+        // Then
+        assertEquals(BalanceDetail.BREAKDOWN, detail)
+    }
+
+    @Test
+    fun `GIVEN a member who receives and owes the same WHEN reading the detail THEN the breakdown explains the zero`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 500L,
+            owesMinor = 500L,
+        )
+
+        // When
+        val detail = balance.detailOf(isEveryoneSettled = false)
+
+        // Then
+        assertEquals(BalanceDetail.BREAKDOWN, detail)
+    }
+
+    @Test
+    fun `GIVEN a member who only receives WHEN reading the detail THEN there is none`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 31_381L,
+            owesMinor = 0L,
+        )
+
+        // When
+        val detail = balance.detailOf(isEveryoneSettled = false)
+
+        // Then
+        assertEquals(BalanceDetail.NONE, detail)
+    }
+
+    @Test
+    fun `GIVEN a member who only owes WHEN reading the detail THEN there is none`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 0L,
+            owesMinor = 11_800L,
+        )
+
+        // When
+        val detail = balance.detailOf(isEveryoneSettled = false)
+
+        // Then
+        assertEquals(BalanceDetail.NONE, detail)
+    }
+
+    @Test
+    fun `GIVEN a settled member while others still owe WHEN reading the detail THEN others are settling`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 0L,
+            owesMinor = 0L,
+        )
+
+        // When
+        val detail = balance.detailOf(isEveryoneSettled = false)
+
+        // Then
+        assertEquals(BalanceDetail.OTHERS_SETTLING, detail)
+    }
+
+    @Test
+    fun `GIVEN a settled member in a settled group WHEN reading the detail THEN everyone is settled`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 0L,
+            owesMinor = 0L,
+        )
+
+        // When
+        val detail = balance.detailOf(isEveryoneSettled = true)
+
+        // Then
+        assertEquals(BalanceDetail.EVERYONE_SETTLED, detail)
     }
 
     private fun balance(

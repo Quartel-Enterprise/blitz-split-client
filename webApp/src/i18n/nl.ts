@@ -1067,8 +1067,6 @@ export const nl: Record<MessageKey, string> = {
   balance_youOwe: 'je bent schuldig',
   balance_settled: '{amount} · je staat quitte',
   balance_getAndOwe: 'Je krijgt {received} en bent {owed} schuldig',
-  balance_get: 'Je krijgt {amount}',
-  balance_owe: 'Je bent {amount} schuldig',
   balance_everyoneSettled: 'Niemand is hier iemand iets schuldig.',
   balance_othersSettling: 'Anderen moeten nog verrekenen.',
   balance_settle: 'Verrekenen',

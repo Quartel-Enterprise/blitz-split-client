@@ -52,8 +52,6 @@
     <string name="designsystem_balance_you_owe">支払う</string>
     <string name="designsystem_balance_settled">%s · 精算済み</string>
     <string name="designsystem_balance_get_and_owe">%1$sを受け取り、%2$sを支払います</string>
-    <string name="designsystem_balance_get">%sを受け取ります</string>
-    <string name="designsystem_balance_owe">%sを支払う必要があります</string>
     <string name="designsystem_balance_everyone_settled">ここでは誰にも貸し借りはありません。</string>
     <string name="designsystem_balance_others_settling">ほかのメンバーの精算がまだ残っています。</string>
     <string name="designsystem_balance_settle">精算する</string>

@@ -1066,8 +1066,6 @@ export const it: Record<MessageKey, string> = {
   balance_youOwe: 'devi',
   balance_settled: '{amount} · sei in pari',
   balance_getAndOwe: 'Ricevi {received} e devi {owed}',
-  balance_get: 'Ricevi {amount}',
-  balance_owe: 'Devi {amount}',
   balance_everyoneSettled: 'Qui nessuno deve niente a nessuno.',
   balance_othersSettling: 'Altri devono ancora saldare.',
   balance_settle: 'Salda',

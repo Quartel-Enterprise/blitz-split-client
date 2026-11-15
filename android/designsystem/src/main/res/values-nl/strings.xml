@@ -52,8 +52,6 @@
     <string name="designsystem_balance_you_owe">je bent schuldig</string>
     <string name="designsystem_balance_settled">%s · alles verrekend</string>
     <string name="designsystem_balance_get_and_owe">Je krijgt %1$s en bent %2$s schuldig</string>
-    <string name="designsystem_balance_get">Je krijgt %s</string>
-    <string name="designsystem_balance_owe">Je bent %s schuldig</string>
     <string name="designsystem_balance_everyone_settled">Niemand is hier iemand iets schuldig.</string>
     <string name="designsystem_balance_others_settling">Anderen moeten nog verrekenen.</string>
     <string name="designsystem_balance_settle">Verrekenen</string>
