@@ -97,8 +97,14 @@ class AccountRepositoryImpl(
     override fun observeSessionRecoveries(): Flow<Unit> = remote.observeSessionRecoveries()
 
     override suspend fun ensureRegistered(): Result<String> = suspendRunCatching {
+        val current = getUserUnlessRefreshing()
+        /*
+         * Why: at launch the sync may get here before the mirror has seen the session the server refused, so the row
+         * is mirrored first: an account deleted for inactivity is marked in that write, and nobody is signed in over it.
+         */
+        if (current == null) local.update { account -> account.toMirrorOf(user = null) }
         if (local.get().inactivityExpiry == InactivityExpiry.PENDING.code) throw AccountExpiredException()
-        val user = getUserUnlessRefreshing() ?: remote.signInAnonymously()
+        val user = current ?: remote.signInAnonymously()
         local.update { account -> account.toMirrorOf(user) }
         user.userId
     }

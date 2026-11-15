@@ -60,7 +60,7 @@ export const id: Record<MessageKey, string> = {
   welcome_legalNotice: "Dengan melanjutkan, kamu menerima {terms} dan menyatakan telah membaca {privacy}.",
   welcome_legalTerms: "Ketentuan Layanan",
   welcome_legalPrivacy: "Kebijakan Privasi",
-  welcome_noAccountNote: 'Tanpa akun, datamu dihapus setelah 30 hari tidak dipakai.',
+  welcome_noAccountNote: 'Datamu dihapus setelah 30 hari tidak dipakai.',
   welcome_expiredTitle: 'Datamu sudah dihapus',
   welcome_expiredBody: 'Kamu memakai aplikasi tanpa akun dan tidak membukanya selama 30 hari, jadi datamu dihapus. Hubungkan Google atau Apple agar tidak hilang lagi.',
   welcome_expiredOk: 'OK',

@@ -16,7 +16,7 @@
     <string name="welcome_legal_notice">En continuant, tu acceptes les %1$s et reconnais avoir pris connaissance de la %2$s.</string>
     <string name="welcome_legal_terms">Conditions d’utilisation</string>
     <string name="welcome_legal_privacy">Politique de confidentialité</string>
-    <string name="welcome_no_account_note">Sans compte, tes données sont effacées après 30 jours sans utilisation.</string>
+    <string name="welcome_no_account_note">Tes données sont effacées après 30 jours sans utilisation.</string>
     <string name="welcome_expired_title">Tes données ont été effacées</string>
     <string name="welcome_expired_body">Tu utilisais l’app sans compte et tu ne l’as pas ouverte pendant 30 jours, donc tes données ont été effacées. Connecte Google ou Apple pour ne plus les perdre.</string>
     <string name="welcome_expired_ok">OK</string>

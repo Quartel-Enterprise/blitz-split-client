@@ -207,7 +207,7 @@ private struct WelcomeActions: View {
             TintedButton(title: "Use without an account") {
                 model.send(WelcomeUiEventOnUseWithoutAccountClicked.shared)
             }
-            Text("Without an account, your data is deleted after 30 days without use.")
+            Text("Your data is deleted after 30 days without use.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

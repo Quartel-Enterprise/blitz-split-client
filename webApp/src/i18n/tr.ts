@@ -61,7 +61,7 @@ export const tr: Record<MessageKey, string> = {
   welcome_legalNotice: "Devam ederek {terms} kabul etmiş ve {privacy} okumuş sayılırsın.",
   welcome_legalTerms: "Hizmet Şartları’nı",
   welcome_legalPrivacy: "Gizlilik Politikası’nı",
-  welcome_noAccountNote: 'Hesapsız kullanımda verilerin 30 gün kullanılmazsa silinir.',
+  welcome_noAccountNote: 'Verilerin 30 gün kullanılmazsa silinir.',
   welcome_expiredTitle: 'Verilerin silindi',
   welcome_expiredBody: 'Uygulamayı hesapsız kullanıyordun ve 30 gün boyunca açmadın, bu yüzden verilerin silindi. Bir dahaki sefere kaybetmemek için Google ya da Apple bağla.',
   welcome_expiredOk: 'Tamam',

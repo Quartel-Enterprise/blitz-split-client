@@ -138436,73 +138436,73 @@
         }
       }
     },
-    "Without an account, your data is deleted after 30 days without use." : {
+    "Your data is deleted after 30 days without use." : {
       "comment" : "Welcome, under \"Use without an account\"",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ohne Konto werden deine Daten nach 30 Tagen ohne Nutzung gelöscht."
+            "value" : "Deine Daten werden nach 30 Tagen ohne Nutzung gelöscht."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin cuenta, tus datos se borran tras 30 días sin uso."
+            "value" : "Tus datos se borran tras 30 días sin uso."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sans compte, tes données sont effacées après 30 jours sans utilisation."
+            "value" : "Tes données sont effacées après 30 jours sans utilisation."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tanpa akun, datamu dihapus setelah 30 hari tidak dipakai."
+            "value" : "Datamu dihapus setelah 30 hari tidak dipakai."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Senza account, i tuoi dati vengono cancellati dopo 30 giorni di inutilizzo."
+            "value" : "I tuoi dati vengono cancellati dopo 30 giorni di inutilizzo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アカウントなしの場合、30日間使わないとデータは削除されます。"
+            "value" : "30日間使わないとデータは削除されます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zonder account worden je gegevens na 30 dagen zonder gebruik verwijderd."
+            "value" : "Je gegevens worden na 30 dagen zonder gebruik verwijderd."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bez konta Twoje dane są usuwane po 30 dniach nieużywania."
+            "value" : "Twoje dane są usuwane po 30 dniach nieużywania."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sem conta, seus dados são apagados após 30 dias sem uso."
+            "value" : "Seus dados são apagados após 30 dias sem uso."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sem conta, os teus dados são apagados após 30 dias sem utilização."
+            "value" : "Os teus dados são apagados após 30 dias sem utilização."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hesapsız kullanımda verilerin 30 gün kullanılmazsa silinir."
+            "value" : "Verilerin 30 gün kullanılmazsa silinir."
           }
         }
       }

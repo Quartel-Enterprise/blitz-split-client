@@ -520,6 +520,19 @@ pending nor trigger a sync.
 The account is optional. Every install starts `AccountStatus.LocalOnly`, becomes `Anonymous` on its first sync and
 `Connected` once Google or Apple is attached.
 
+The server deletes an `Anonymous` account once none of its devices synced for 30 days (`expire-anonymous-accounts` in
+blitz-split-api, which counts from `platforms_seen.last_seen_at`, moved on each sync). A device that comes back finds
+its session refused, which supabase-kt answers by clearing it. The account row keeps when a sync last settled here
+(`lastSyncedAt`, written by `SyncCoordinator` through `recordSync()`), so `AccountRepositoryImpl.mirrorSession` tells
+that refusal apart: an anonymous account whose session ends 29 days or more after its last sync (a day short of the
+30, since the server counts on its own clock) becomes `InactivityExpiry.PENDING` in the write that drops the user.
+While it is pending `ensureRegistered()` fails with `AccountExpiredException`, so no sync signs in a new anonymous
+user over the old copy. `eraseExpiredAccount` (started by `SyncCoordinator.start()`) then erases the device's copy
+under the sync lock, as "Delete account" does, and `endExpiredSession()` leaves `InactivityExpiry.NOTICE`, which
+Welcome shows once (`showsExpiredAccountNotice`) until "OK" clears it. `AppViewModel` puts Welcome in place as soon as
+the profile is gone. A session lost sooner, or on a device that never recorded a sync, is not an expiry and keeps the
+old path: the profile stays and the next sync registers a new anonymous user.
+
 | Platform | Google | Apple |
 | --- | --- | --- |
 | Android | native: Credential Manager ID token (`rememberGoogleSignInLauncher`) | browser OAuth |

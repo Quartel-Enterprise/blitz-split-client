@@ -2856,6 +2856,25 @@ class AccountRepositoryImplTest {
         assertEquals(InactivityExpiry.PENDING, account.inactivityExpiry)
     }
 
+    // Why: at launch the sync may ask for the user before the mirror has seen the refused session.
+    @Test
+    fun `GIVEN an idle account whose refused session is not mirrored yet WHEN ensuring registration THEN expires it`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startAccountLastSynced(anonymousUser, ago = 45.days)
+
+            // When
+            val result = repository.ensureRegistered()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertIs<AccountExpiredException>(result.exceptionOrNull())
+            assertEquals(0, remote.anonymousSignIns)
+            assertEquals(AccountStatus.LocalOnly, account.status)
+            assertEquals(InactivityExpiry.PENDING, account.inactivityExpiry)
+        }
+
     @Test
     fun `GIVEN an account pending its expiry WHEN its session is ended THEN leaves only the notice`() = runTest {
         // Given

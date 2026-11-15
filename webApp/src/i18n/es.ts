@@ -61,7 +61,7 @@ export const es: Record<MessageKey, string> = {
   welcome_legalNotice: "Al continuar, aceptas los {terms} y declaras conocer la {privacy}.",
   welcome_legalTerms: "Términos de Servicio",
   welcome_legalPrivacy: "Política de Privacidad",
-  welcome_noAccountNote: 'Sin cuenta, tus datos se borran tras 30 días sin uso.',
+  welcome_noAccountNote: 'Tus datos se borran tras 30 días sin uso.',
   welcome_expiredTitle: 'Tus datos se borraron',
   welcome_expiredBody: 'Usabas la app sin cuenta y no la abriste durante 30 días, así que tus datos se borraron. Conecta Google o Apple para no perderlos la próxima vez.',
   welcome_expiredOk: 'OK',

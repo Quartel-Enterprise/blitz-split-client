@@ -1,0 +1,24 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "An account without Google or Apple is now deleted after 30 days without use. The welcome screen and Profile say so, and connecting Google or Apple keeps your data.",
+        "pt": "Uma conta sem Google nem Apple agora é apagada após 30 dias sem uso. A tela de entrada e o Perfil avisam, e conectar Google ou Apple mantém seus dados.",
+        "pt-PT": "Uma conta sem Google nem Apple é agora apagada após 30 dias sem utilização. O ecrã de boas-vindas e o Perfil avisam, e ligar o Google ou a Apple mantém os teus dados.",
+        "es": "Una cuenta sin Google ni Apple ahora se borra tras 30 días sin uso. La pantalla de bienvenida y el Perfil lo avisan, y conectar Google o Apple conserva tus datos.",
+        "fr": "Un compte sans Google ni Apple est désormais effacé après 30 jours sans utilisation. L’écran d’accueil et le Profil le signalent, et connecter Google ou Apple conserve vos données.",
+        "de": "Ein Konto ohne Google oder Apple wird jetzt nach 30 Tagen ohne Nutzung gelöscht. Der Willkommensbildschirm und das Profil weisen darauf hin, und mit Google oder Apple bleiben deine Daten erhalten.",
+        "it": "Un account senza Google o Apple ora viene cancellato dopo 30 giorni di inutilizzo. La schermata di benvenuto e il Profilo lo segnalano, e collegare Google o Apple conserva i tuoi dati.",
+        "pl": "Konto bez Google ani Apple jest teraz usuwane po 30 dniach nieużywania. Informują o tym ekran powitalny i Profil, a połączenie Google lub Apple zachowuje Twoje dane.",
+        "nl": "Een account zonder Google of Apple wordt nu na 30 dagen zonder gebruik verwijderd. Het welkomstscherm en Profiel melden dit, en met Google of Apple blijven je gegevens bewaard.",
+        "ja": "GoogleやAppleを連携していないアカウントは、30日間使わないと削除されるようになりました。ようこそ画面とプロフィールでお知らせし、GoogleまたはAppleを連携するとデータは保持されます。",
+        "tr": "Google ya da Apple bağlı olmayan hesaplar artık 30 gün kullanılmazsa siliniyor. Karşılama ekranı ve Profil bunu belirtiyor; Google ya da Apple bağlarsan verilerin korunur.",
+        "id": "Akun tanpa Google atau Apple sekarang dihapus setelah 30 hari tidak dipakai. Layar sambutan dan Profil memberitahukannya, dan menghubungkan Google atau Apple menjaga datamu."
+      }
+    }
+  ]
+}
