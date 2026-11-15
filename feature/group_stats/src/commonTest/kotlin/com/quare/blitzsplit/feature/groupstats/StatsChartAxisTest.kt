@@ -143,7 +143,7 @@ class StatsChartAxisTest {
     @Test
     fun `GIVEN any largest day WHEN creating the lines THEN at most three equal steps up to the first above it`() {
         // Given
-        val largests = largestsToCheck()
+        val largests = largestsToCheck(roundSteps())
 
         // When
         val ticksByLargest = largests.associateWith { StatsChartAxis.createTicks(bars(it)) }
@@ -162,8 +162,8 @@ class StatsChartAxisTest {
     @Test
     fun `GIVEN any largest day WHEN creating the lines THEN steps by the smallest round amount of a third or more`() {
         // Given
-        val largests = largestsToCheck()
         val roundSteps = roundSteps()
+        val largests = largestsToCheck(roundSteps)
 
         // When
         val stepsByLargest = largests.associateWith { StatsChartAxis.createTicks(bars(it))[1] }
@@ -273,18 +273,17 @@ class StatsChartAxisTest {
     }
 
     /*
-     * Why: every amount up to three steps of 100, then around each line a round step can land on (one, two and three
-     * steps) plus a few real amounts, so the step and line rules are checked where they change without walking
-     * thousands of amounts, which outran the JS browser runner's timeout.
+     * Why: every amount up to three steps of 100, then around the second and third line of each round step (a single
+     * step is always under three of the step before, so it is never where anything changes) plus a few real amounts.
+     * The rules are checked where they change without walking thousands of amounts, which outran the JS browser
+     * runner's timeout.
      */
-    private fun largestsToCheck(): List<Long> {
-        val steps = roundSteps()
+    private fun largestsToCheck(steps: List<Long>): List<Long> {
         val aroundLines = steps.flatMap { step ->
-            (1L..MAX_STEPS).flatMap { count -> listOf(count * step - 1, count * step, count * step + 1) }
+            (2L..MAX_STEPS).flatMap { count -> listOf(count * step - 1, count * step, count * step + 1) }
         }
         return ((1L..MAX_STEPS * DENSE_STEP) + aroundLines + listOf(99_999L, 145_800L, 1_000_001L, 987_654_321L))
             .filter { it in 1L..MAX_STEPS * steps.last() }
-            .distinct()
             .sorted()
     }
 
