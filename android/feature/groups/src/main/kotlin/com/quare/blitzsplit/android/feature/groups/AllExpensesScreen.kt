@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -31,14 +30,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.EmptyStateColumn
@@ -47,7 +47,9 @@ import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
 import com.quare.blitzsplit.android.designsystem.layout.FormBleed
+import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
+import com.quare.blitzsplit.android.designsystem.layout.calculateCenteredColumnMargin
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
@@ -129,14 +131,15 @@ internal fun AllExpensesContent(
                 TwoHalvesLayout(
                     start = {
                         if (state.isLoaded) {
-                            AllExpensesFilterBar(
-                                state = state,
-                                onEvent = onEvent,
-                                modifier = Modifier
-                                    .verticalScroll(rememberScrollState())
-                                    .padding(horizontal = sideMargin),
-                                bleed = sideBleed,
-                            )
+                            CompositionLocalProvider(LocalFormBleed provides sideBleed) {
+                                AllExpensesFilterBar(
+                                    state = state,
+                                    onEvent = onEvent,
+                                    modifier = Modifier
+                                        .verticalScroll(rememberScrollState())
+                                        .padding(horizontal = sideMargin),
+                                )
+                            }
                         }
                     },
                     end = {
@@ -150,18 +153,14 @@ internal fun AllExpensesContent(
                     modifier = bodyModifier,
                 )
             } else {
-                Box(
+                AllExpensesList(
+                    state = state,
+                    listState = listState,
+                    showsFilters = true,
+                    onEvent = onEvent,
                     modifier = bodyModifier,
-                    contentAlignment = Alignment.TopCenter,
-                ) {
-                    AllExpensesList(
-                        state = state,
-                        listState = listState,
-                        showsFilters = true,
-                        onEvent = onEvent,
-                        modifier = Modifier.widthIn(max = columnMaxWidth),
-                    )
-                }
+                    maxContentWidth = columnMaxWidth,
+                )
             }
         }
     }
@@ -174,72 +173,83 @@ private fun AllExpensesList(
     showsFilters: Boolean,
     onEvent: (AllExpensesUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    // Why: the cap is in the list's padding, so the filter chips scroll to the screen's edge, not the column's.
+    maxContentWidth: Dp = Dp.Infinity,
 ) {
     EndReachedEffect(
         listState = listState,
         hasMore = state.hasMore,
         onEndReached = { onEvent(AllExpensesUiEvent.OnEndReached) },
     )
-    LazyColumn(
-        modifier = modifier.fillMaxWidth(),
-        state = listState,
-        contentPadding = PaddingValues(
-            start = sideMargin,
-            end = sideMargin,
-            bottom = 24.dp,
-        ),
-    ) {
-        if (state.isLoaded && showsFilters) {
-            item(
-                key = "filters",
-                contentType = "filters",
-            ) {
-                AllExpensesFilterBar(
+    BoxWithConstraints(modifier = modifier) {
+        val margin = calculateCenteredColumnMargin(
+            available = maxWidth,
+            maxWidth = maxContentWidth,
+            minMargin = sideMargin,
+        )
+        val bleed = remember(margin) { FormBleed.ofMargin(margin) }
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            state = listState,
+            contentPadding = PaddingValues(
+                start = margin,
+                end = margin,
+                bottom = 24.dp,
+            ),
+        ) {
+            if (state.isLoaded && showsFilters) {
+                item(
+                    key = "filters",
+                    contentType = "filters",
+                ) {
+                    CompositionLocalProvider(LocalFormBleed provides bleed) {
+                        AllExpensesFilterBar(
+                            state = state,
+                            onEvent = onEvent,
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                    }
+                }
+            }
+            when {
+                state.showsSkeleton -> item(
+                    key = "skeleton",
+                    contentType = "skeleton",
+                ) {
+                    HomeBillsSkeleton()
+                }
+
+                state.showsEmpty -> item(
+                    key = "empty",
+                    contentType = "empty",
+                ) {
+                    EmptyStateColumn(
+                        icon = Icons.AutoMirrored.Outlined.ReceiptLong,
+                        title = stringResource(R.string.groups_all_expenses_empty_title),
+                        body = stringResource(R.string.groups_all_expenses_empty_body),
+                        action = null,
+                        onAction = {},
+                    )
+                }
+
+                state.showsNoResults -> item(
+                    key = "no-results",
+                    contentType = "no-results",
+                ) {
+                    EmptyStateColumn(
+                        icon = Icons.Outlined.SearchOff,
+                        title = stringResource(R.string.groups_all_expenses_no_results_title),
+                        body = stringResource(R.string.groups_all_expenses_no_results_body),
+                        action = stringResource(R.string.groups_all_expenses_clear),
+                        onAction = { onEvent(AllExpensesUiEvent.OnClearFiltersClicked) },
+                    )
+                }
+
+                else -> billDayItems(
                     state = state,
                     onEvent = onEvent,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    bleed = sideBleed,
                 )
             }
-        }
-        when {
-            state.showsSkeleton -> item(
-                key = "skeleton",
-                contentType = "skeleton",
-            ) {
-                HomeBillsSkeleton()
-            }
-
-            state.showsEmpty -> item(
-                key = "empty",
-                contentType = "empty",
-            ) {
-                EmptyStateColumn(
-                    icon = Icons.AutoMirrored.Outlined.ReceiptLong,
-                    title = stringResource(R.string.groups_all_expenses_empty_title),
-                    body = stringResource(R.string.groups_all_expenses_empty_body),
-                    action = null,
-                    onAction = {},
-                )
-            }
-
-            state.showsNoResults -> item(
-                key = "no-results",
-                contentType = "no-results",
-            ) {
-                EmptyStateColumn(
-                    icon = Icons.Outlined.SearchOff,
-                    title = stringResource(R.string.groups_all_expenses_no_results_title),
-                    body = stringResource(R.string.groups_all_expenses_no_results_body),
-                    action = stringResource(R.string.groups_all_expenses_clear),
-                    onAction = { onEvent(AllExpensesUiEvent.OnClearFiltersClicked) },
-                )
-            }
-
-            else -> billDayItems(
-                state = state,
-                onEvent = onEvent,
-            )
         }
     }
 }

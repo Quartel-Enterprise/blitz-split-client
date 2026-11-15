@@ -32,7 +32,7 @@ import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.SearchBarField
 import com.quare.blitzsplit.android.designsystem.format.categoryName
-import com.quare.blitzsplit.android.designsystem.layout.FormBleed
+import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
 import com.quare.blitzsplit.android.designsystem.layout.bleedingHorizontalScroll
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiState
@@ -50,8 +50,6 @@ internal fun AllExpensesFilterBar(
     state: AllExpensesUiState,
     onEvent: (AllExpensesUiEvent) -> Unit,
     modifier: Modifier = Modifier,
-    // Why: the margins of the column it sits in, so the chips scroll to its edge instead of being cut short of it.
-    bleed: FormBleed = FormBleed.None,
 ) {
     val filters = state.filters
     Column(
@@ -66,7 +64,7 @@ internal fun AllExpensesFilterBar(
             height = 52.dp,
         )
         Row(
-            modifier = Modifier.bleedingHorizontalScroll(bleed, rememberScrollState()),
+            modifier = Modifier.bleedingHorizontalScroll(LocalFormBleed.current, rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

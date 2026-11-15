@@ -74,3 +74,13 @@ fun Modifier.bleedingHorizontalScroll(
         start = bleed.start,
         end = bleed.end,
     )
+
+/*
+ * Why: the side margin that centers a column capped at `maxWidth` in `available`, never under `minMargin`. The cap lives
+ * in the padding, so a row that scrolls sideways can bleed into it up to the screen's edge, not the column's.
+ */
+fun calculateCenteredColumnMargin(
+    available: Dp,
+    maxWidth: Dp,
+    minMargin: Dp,
+): Dp = maxOf(minMargin, (available - maxWidth) / 2)
