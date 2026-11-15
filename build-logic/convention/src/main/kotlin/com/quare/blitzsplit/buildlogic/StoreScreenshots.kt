@@ -116,7 +116,7 @@ fun Project.configureStoreScreenshots() {
     }
     val generatesReadmeHero = providers.gradleProperty("readmeHero").isPresent
     val readmeHeroDir = rootProject.layout.buildDirectory
-        .dir("outputs/readme-hero")
+        .dir("outputs/readme-hero-android")
         .get()
         .asFile
     tasks.withType<Test>().configureEach {

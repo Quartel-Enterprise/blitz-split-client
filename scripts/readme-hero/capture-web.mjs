@@ -44,8 +44,28 @@ async function photos() {
   return Object.fromEntries(entries)
 }
 
+/*
+ * Why: Vite reloads the page when it optimizes a dependency it found late, and the seed run again over the half of the
+ * trip the profile's Room already holds would fail or show the trip twice. A second document marks the run spoiled,
+ * and the capture starts over in a fresh profile, by when Vite has its dependencies.
+ */
+const RELOADED = 'The page reloaded while the trip was seeded'
+const ATTEMPTS = 3
+
 const allPhotos = await photos()
 for (const isDark of [true, false]) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await capture(isDark)
+      break
+    } catch (error) {
+      if (attempt >= ATTEMPTS || !error.message.includes(RELOADED)) throw error
+      console.log(`${RELOADED}: starting over in a fresh profile`)
+    }
+  }
+}
+
+async function capture(isDark) {
   const chrome = await launchChrome()
   try {
     await chrome.setViewport(WIDTH, HEIGHT, 2, isDark)
@@ -53,10 +73,15 @@ for (const isDark of [true, false]) {
     // The language goes to the page's storage too, which src/i18n reads before the shared code starts. A failed seed
     // (an unhandled rejection of startShared) stops the wait with its cause instead of timing out.
     await chrome.beforeEachPage(`
-      window.__storeScreenshots = ${JSON.stringify(run)}
+      if (sessionStorage.getItem('readmeHeroStarted')) {
+        window.__storeScreenshotsError = ${JSON.stringify(RELOADED)}
+      } else {
+        sessionStorage.setItem('readmeHeroStarted', '1')
+        window.__storeScreenshots = ${JSON.stringify(run)}
+      }
       localStorage.setItem('language', ${JSON.stringify(run.language)})
       window.addEventListener('unhandledrejection', (event) => {
-        window.__storeScreenshotsError = String(event.reason?.stack ?? event.reason)
+        window.__storeScreenshotsError ??= String(event.reason?.stack ?? event.reason)
       })
     `)
     await chrome.open(url)

@@ -25,32 +25,59 @@ export async function launchChrome() {
     ],
     { stdio: 'ignore' },
   )
-  const port = await debuggingPortOf(profile)
-  const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()
-  const page = targets.find((target) => target.type === 'page')
-  const socket = new WebSocket(page.webSocketDebuggerUrl)
-  await new Promise((resolve, reject) => {
-    socket.onopen = resolve
-    socket.onerror = reject
+  // Why: a binary that isn't there fails the spawn with an 'error' event, which would end Node unhandled.
+  let spawnError = null
+  chrome.once('error', (error) => {
+    spawnError = error
   })
-  let nextId = 0
-  const pending = new Map()
-  socket.onmessage = (message) => {
-    const { id, result, error } = JSON.parse(message.data)
-    if (!pending.has(id)) return
-    const { resolve, reject } = pending.get(id)
-    pending.delete(id)
-    if (error) reject(new Error(error.message))
-    else resolve(result)
+  const stop = async () => {
+    if (chrome.exitCode === null && chrome.signalCode === null && spawnError === null) {
+      // Why: a Chrome that already ended (a crash) sends no 'exit' again, which would wait forever.
+      const exited = new Promise((resolve) => chrome.once('exit', resolve))
+      chrome.kill()
+      await exited
+    }
+    await rm(profile, { recursive: true, force: true })
   }
+  let socket
+  const pending = new Map()
+  let nextId = 0
   const send = (method, params = {}) =>
     new Promise((resolve, reject) => {
       const id = ++nextId
       pending.set(id, { resolve, reject })
       socket.send(JSON.stringify({ id, method, params }))
     })
-  await send('Page.enable')
-  await send('Runtime.enable')
+  try {
+    const port = await debuggingPortOf(profile, () => spawnError)
+    const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()
+    const page = targets.find((target) => target.type === 'page')
+    socket = new WebSocket(page.webSocketDebuggerUrl)
+    await new Promise((resolve, reject) => {
+      socket.onopen = resolve
+      socket.onerror = reject
+    })
+    socket.onmessage = (message) => {
+      const { id, result, error } = JSON.parse(message.data)
+      if (!pending.has(id)) return
+      const { resolve, reject } = pending.get(id)
+      pending.delete(id)
+      if (error) reject(new Error(error.message))
+      else resolve(result)
+    }
+    // Why: a Chrome that crashed answers nothing more, so what still waits on it fails instead of hanging.
+    socket.onclose = () => {
+      for (const { reject } of pending.values()) reject(new Error('Chrome closed the DevTools connection'))
+      pending.clear()
+    }
+    await send('Page.enable')
+    await send('Runtime.enable')
+  } catch (error) {
+    // Why: a launch that fails halfway would leave a headless Chrome running and its profile behind.
+    socket?.close()
+    await stop()
+    throw error
+  }
 
   return {
     /** Sizes the page in CSS pixels, drawn at `scale` device pixels each. */
@@ -85,8 +112,11 @@ export async function launchChrome() {
           isReady = await this.evaluate(`Boolean(${expression})`)
         } catch (error) {
           // Why: a page loading or reloading (Vite's dependency reload) has no context to run in for a moment; any
-          // other error is the page's or the expression's, which waiting won't fix.
-          if (!/context|Cannot find|navigat/i.test(error.message)) throw error
+          // other error is the page's or the expression's, which waiting won't fix. Only DevTools' own messages
+          // match, since the page's error (a Kotlin stack, say) may well hold the word "context".
+          const isBetweenPages =
+            /Execution context was destroyed|Cannot find (default )?(execution )?context|Inspected target navigated or closed/
+          if (!isBetweenPages.test(error.message)) throw error
         }
         if (isReady) return
         await new Promise((resolve) => setTimeout(resolve, 250))
@@ -101,21 +131,18 @@ export async function launchChrome() {
     },
     async close() {
       socket.close()
-      // Why: a Chrome that already ended (a crash) sends no 'exit' again, which would wait forever.
-      if (chrome.exitCode === null && chrome.signalCode === null) {
-        const exited = new Promise((resolve) => chrome.once('exit', resolve))
-        chrome.kill()
-        await exited
-      }
-      await rm(profile, { recursive: true, force: true })
+      await stop()
     },
   }
 }
 
 // Why: with port 0 Chrome picks a free one and writes it to its profile once it listens.
-async function debuggingPortOf(profile) {
+async function debuggingPortOf(profile, spawnErrorOf) {
   const deadline = Date.now() + 30_000
   while (Date.now() < deadline) {
+    if (spawnErrorOf()) {
+      throw new Error(`Chrome didn't start (${spawnErrorOf().message}): set CHROME to its binary if it isn't at ${CHROME}`)
+    }
     try {
       const [port] = (await readFile(join(profile, 'DevToolsActivePort'), 'utf8')).split('\n')
       if (port) return Number(port)

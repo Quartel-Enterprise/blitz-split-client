@@ -24,6 +24,7 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HERE="$ROOT/scripts/readme-hero"
 CAPTURES="$ROOT/build/outputs/readme-hero"
 APPLE_CAPTURES="$ROOT/build/outputs/readme-hero-apple"
+ANDROID_CAPTURES="$ROOT/build/outputs/readme-hero-android"
 IMAGES="$ROOT/docs/images"
 WANTED="${READMEHERO_CAPTURES:-android,ios,mac,web}"
 HEAVY="$ROOT/scripts/heavy-check.sh"
@@ -35,6 +36,8 @@ mkdir -p "$CAPTURES" "$IMAGES"
 if wanted android; then
   echo "Capturing Android"
   "$HEAVY" "$ROOT/gradlew" -p "$ROOT" :android:store_screenshots:testDebugUnitTest -PreadmeHero --rerun -q
+  # Why: the test task owns a folder of its own, which Gradle may wipe as a stale output; the other captures stay out
+  cp "$ANDROID_CAPTURES/android-dark.png" "$ANDROID_CAPTURES/android-light.png" "$CAPTURES/"
 fi
 
 # The store screenshots' 01_group and 10_light_theme are the group, dark and light: the README takes them as they are.
@@ -63,10 +66,19 @@ if wanted web; then
   (cd "$ROOT/webApp" && exec npx vite --port "$port" --strictPort > "$log" 2>&1) &
   vite=$!
   trap 'kill "$vite" 2> /dev/null || true' EXIT
+  is_up=false
   for _ in $(seq 120); do
-    curl -sf "http://localhost:$port/" > /dev/null && break
+    if curl -sf "http://localhost:$port/" > /dev/null; then
+      is_up=true
+      break
+    fi
     sleep 0.5
   done
+  if [ "$is_up" != true ]; then
+    echo "The Vite dev server didn't answer on port $port in a minute; its log:" >&2
+    cat "$log" >&2
+    exit 1
+  fi
   node "$HERE/capture-web.mjs" "http://localhost:$port/" "$CAPTURES"
   kill "$vite" 2> /dev/null || true
 fi
