@@ -133,7 +133,7 @@ store-screenshots has no frame for the Duo or the Mac. They get a plain rounded 
 shared/src/commonMain/.../storescreenshots/   # the sample trip, both stores
 shared/src/appleMain/.../storescreenshots/    # the iOS seed and the screen each capture opens
 android/store_screenshots/src/test/.../        # the Play screens' UiStates, banner copy, the frames
-iosApp/UITests/StoreScreenshotsUITests.swift   # the iOS capture: languages, screens, the one tap Items needs
+iosApp/UITests/StoreScreenshotsUITests.swift   # the iOS capture: languages, screens, the tap Items needs
 build-logic/.../StoreScreenshots.kt            # the collect and stage tasks, the stores' locale codes
 fastlane/Fastfile                              # the screenshots and upload lanes
 ```
@@ -153,9 +153,11 @@ fastlane/Fastfile                              # the screenshots and upload lane
 ## How the iOS capture works
 
 The UI test launches the app once per screen and language with `-StoreScreenshotsLanguage`, `-StoreScreenshotsTheme`
-and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The faces, the groups' photos and the receipt's photo go in
-the launch environment as base64, since the Mac app's sandbox can't read the repository. The app writes them to a
-temporary folder of its own. In a **debug**
+and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The locale's region counts for Spanish:
+in Spain's the app reads its `es-ES` strings, so Latin America's set runs in `es_US`, the region that keeps the
+`es` strings and still writes the trip's euros as "€1,145.80" (Mexico's and Latin America's write "EUR 1,145.80").
+The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
+sandbox can't read the repository. The app writes them to a temporary folder of its own. In a **debug**
 build, `BoraRacharApp` then calls `BlitzSplitApple.startForStoreScreenshots` in place of `start`
 (`StoreScreenshotsRun` is compiled out of a release build, and a release framework ignores the call and starts as
 usual). That entry point:
@@ -168,7 +170,9 @@ usual). That entry point:
    It then does with SQL what a sync would: clears the pending flags, sets everyone as joined with a face, the
    invite code, and Activity's feed.
 4. Once the app has put Home at the root, pushes the screen's routes onto the shared back stack. The test only
-   taps once, on "Split" (`splitBill.split`) for Items, so the run never depends on the language's labels.
+   taps once, on "Split" (`splitBill.split`) for Items, so the run never depends on the language's labels. It
+   scrolls the bill first where the row is below the screen, as on the iPhone Duo closed: a row off the screen
+   isn't in the tree to tap.
 
 Each simulator's status bar is set to 9:41 with a full battery, and the frame draws no status bar over the capture.
 On the Mac, `StoreScreenshotsRun.sizeWindow` gives the window the same size on every launch and hides every other

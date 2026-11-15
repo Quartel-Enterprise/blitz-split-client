@@ -20,11 +20,13 @@ final class StoreScreenshotsUITests: XCTestCase {
         let isDark: Bool
     }
 
+    /// Latin America's Spanish runs in the United States' region: in Spain's the app reads its es-ES strings
+    /// (AppLanguage.toTag), and Mexico's or Latin America's write the trip's euros as "EUR 1,145.80".
     private static let locales = [
         ListingLocale(tag: "en-US", language: "en", appleLanguage: "en-US", appleLocale: "en_US"),
         ListingLocale(tag: "pt-BR", language: "pt", appleLanguage: "pt-BR", appleLocale: "pt_BR"),
         ListingLocale(tag: "pt-PT", language: "pt-PT", appleLanguage: "pt-PT", appleLocale: "pt_PT"),
-        ListingLocale(tag: "es", language: "es", appleLanguage: "es-419", appleLocale: "es_ES"),
+        ListingLocale(tag: "es", language: "es", appleLanguage: "es-419", appleLocale: "es_US"),
         ListingLocale(tag: "es-ES", language: "es-ES", appleLanguage: "es-ES", appleLocale: "es_ES"),
         ListingLocale(tag: "fr", language: "fr", appleLanguage: "fr-FR", appleLocale: "fr_FR"),
         ListingLocale(tag: "de", language: "de", appleLanguage: "de-DE", appleLocale: "de_DE"),
@@ -52,6 +54,9 @@ final class StoreScreenshotsUITests: XCTestCase {
 
     /// How long a launched screen takes to seed, open and finish its transitions before the capture.
     private static let settle: TimeInterval = 4
+
+    /// How many times the bill is scrolled looking for its Split row before the capture gives up.
+    private static let maxScrolls = 3
 
     override func setUp() {
         continueAfterFailure = false
@@ -127,7 +132,7 @@ final class StoreScreenshotsUITests: XCTestCase {
         for person in 0..<5 {
             files["person\(person)"] = root.appendingPathComponent("faces/person\(person).jpg")
         }
-        for photo in ["trip-lisbon-tram", "home-kitchen", "other-soccer"] {
+        for photo in ["trip-lisbon-tram", "home-kitchen", "event-soccer"] {
             files["group_\(photo)"] = root.appendingPathComponent("bank/groups/\(photo).jpg")
         }
         return try files.reduce(into: [:]) { environment, file in
@@ -150,7 +155,13 @@ final class StoreScreenshotsUITests: XCTestCase {
         Thread.sleep(forTimeInterval: Self.settle)
         if screen.code == "items" {
             let split = app.buttons["splitBill.split"]
-            XCTAssertTrue(split.waitForExistence(timeout: Self.settle), "No Split row to open Bill items")
+            // The bill outgrows a short screen (the iPhone Duo closed), and a row below it isn't in the tree yet.
+            var scrolls = 0
+            while !split.waitForExistence(timeout: Self.settle), scrolls < Self.maxScrolls {
+                app.swipeUp()
+                scrolls += 1
+            }
+            XCTAssertTrue(split.exists, "No Split row to open Bill items")
             split.tap()
             Thread.sleep(forTimeInterval: Self.settle / 2)
         }

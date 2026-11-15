@@ -329,7 +329,7 @@ object SampleTrips {
                 SampleSideGroup(
                     name = copy.soccer,
                     type = GroupType.EVENT,
-                    photo = "other-soccer",
+                    photo = "event-soccer",
                     people = listOf(0, 1, 3, 4),
                     billDescription = copy.court,
                     billTotalMinor = price(COURT_CENTS),
