@@ -11,8 +11,8 @@ The two stores draw the screen differently, because the app has a native UI on e
   the sample trip. Any machine can do it.
 - **App Store.** The UI is SwiftUI, which Robolectric can't draw, so the screens are **captured on the iOS
   simulator** by an XCUITest target. It launches a debug build seeded with the same sample trip and writes each whole
-  screen to a PNG. Robolectric then puts that PNG into the iPhone or iPad frame, with the same banner. This half
-  **needs a Mac with Xcode**.
+  screen to a PNG. The Mac app's window is photographed on the Mac itself, by a script. Robolectric then puts each
+  PNG into its device's frame, with the same banner. This half **needs a Mac with Xcode**.
 
 ## One command
 
@@ -33,9 +33,10 @@ The lane runs, each step under `scripts/heavy-check.sh`:
 
 1. `scripts/store-screenshots/capture-ios.sh`: builds the `BoraRachar-iOS-StoreScreenshots` UI tests and runs them
    on one simulator per App Store slot. They write `build/outputs/apple-screenshot-captures/<slot>/<locale>/`.
-   Then `scripts/store-screenshots/capture-mac.sh` does the same with the Mac app's window
-   (`BoraRachar-macOS-StoreScreenshots`). **It drives this Mac's own screen for about half an hour**, so leave
-   the keyboard and mouse alone, or pass `skip_mac:true` to leave the Mac listing as it is.
+   Then `scripts/store-screenshots/capture-mac.sh` builds the Mac app and photographs its window itself, with no
+   UI test ([why](#how-the-mac-capture-works)). **It takes this Mac's own screen for about half an hour**, so leave
+   the keyboard and mouse alone, or pass `skip_mac:true` to leave the Mac listing as it is. Whatever runs it needs
+   the Screen Recording permission (System Settings › Privacy & Security).
    `STORE_SCREENSHOTS_BUILD_SETTINGS` adds build settings to the Mac build, which the release's runner uses to sign
    the app to run locally, having no signing account.
 2. `./gradlew stagePlayStoreScreenshots stageAppStoreScreenshots collect…`: the generators (the unit tests of
@@ -133,7 +134,9 @@ store-screenshots has no frame for the Duo or the Mac. They get a plain rounded 
 shared/src/commonMain/.../storescreenshots/   # the sample trip, both stores
 shared/src/appleMain/.../storescreenshots/    # the iOS seed and the screen each capture opens
 android/store_screenshots/src/test/.../        # the Play screens' UiStates, banner copy, the frames
-iosApp/UITests/StoreScreenshotsUITests.swift   # the iOS capture: languages, screens, the tap Items needs
+iosApp/UITests/StoreScreenshotsUITests.swift   # the iOS capture
+scripts/store-screenshots/capture-mac.sh       # the Mac capture
+scripts/store-screenshots/*.tsv                # the languages, screens and photos both captures read
 build-logic/.../StoreScreenshots.kt            # the collect and stage tasks, the stores' locale codes
 fastlane/Fastfile                              # the screenshots and upload lanes
 ```
@@ -141,10 +144,10 @@ fastlane/Fastfile                              # the screenshots and upload lane
 - **Banner copy:** `BannerCopies.kt`, per screen and language. The frame wraps the description to two lines, so keep it
   short.
 - **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
-  `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on iOS) and in the UI
-  test's `screens`. The file names must match on both sides.
-- **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), the UI test's `locales`,
-  and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
+  `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on Apple's) and a row
+  of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides.
+- **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), a row of
+  `scripts/store-screenshots/locales.tsv`, and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
   which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
   Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings. Spain's Spanish
   goes by `es-ES` the same way, since `es` is Latin America's: its own banners and trip ("ha pagado", "coche",
@@ -153,12 +156,14 @@ fastlane/Fastfile                              # the screenshots and upload lane
 ## How the iOS capture works
 
 The UI test launches the app once per screen and language with `-StoreScreenshotsLanguage`, `-StoreScreenshotsTheme`
-and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The locale's region counts for Spanish:
+and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The languages, the screens and the photos
+are the tables of `scripts/store-screenshots/` (`locales.tsv`, `screens.tsv`, `assets.tsv`), which the Mac's capture
+reads too. The locale's region counts for Spanish:
 in Spain's the app reads its `es-ES` strings, so Latin America's set runs in `es_US`, the region that keeps the
 `es` strings and still writes the trip's euros as "€1,145.80" (Mexico's and Latin America's write "EUR 1,145.80").
 The trade-off: that region writes the hours on a 12-hour clock ("9:00 p.m.") and the month before the day, and Play's
 set, drawn in Robolectric's bare `es`, writes the same amount as "1145,80 €". Changing the region is that one line
-of the UI test.
+of `locales.tsv`.
 The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
 sandbox can't read the repository. The app writes them to a temporary folder of its own. In a **debug**
 build, `BoraRacharApp` then calls `BlitzSplitApple.startForStoreScreenshots` in place of `start`
@@ -172,17 +177,33 @@ usual). That entry point:
 3. Seeds the trip through the app's own use cases (profile, three groups, bills, the payment, pins, language, theme).
    It then does with SQL what a sync would: clears the pending flags, sets everyone as joined with a face, the
    invite code, and Activity's feed.
-4. Once the app has put Home at the root, pushes the screen's routes onto the shared back stack. The test only
-   taps once, on "Split" (`splitBill.split`) for Items, so the run never depends on the language's labels. It
-   scrolls the bill first where the row is below the screen, as on the iPhone Duo closed: a row off the screen
-   isn't in the tree to tap.
+4. Once the app has put Home at the root, pushes the screen's routes onto the shared back stack. Nothing is
+   tapped: for Items, the split bill screen opens "Bill items" by itself once the dinner is loaded
+   (`SplitBillModel`, debug only), as its "Split" row does. A tap would depend on where that row is, which
+   changes with the screen's height (below the screen on the iPhone Duo closed), and the Mac's capture has
+   nothing that taps.
 
 Each simulator's status bar is set to 9:41 with a full battery, and the frame draws no status bar over the capture.
-On the Mac, `StoreScreenshotsRun.sizeWindow` gives the window the same size on every launch and hides every other
-app's windows first (as ⌥⌘H does), so the sidebar's glass shows the wallpaper and nothing else. The test captures
-the window alone. The hidden apps come back with a click on their Dock icon.
 The capture's points must match the frame's screen (`AppleScreenshotSlot`), or the PNG is stretched. Check them
 after a library upgrade.
+
+## How the Mac capture works
+
+The Mac has no simulator and no UI test: `capture-mac.sh` launches the debug app itself, with the same arguments and
+photos as the iOS test, and photographs its window with `screencapture`. A Mac's UI test runner is sandboxed by
+Xcode (it reads the disk and writes only its own container), so a test can't write the captures out, and on this
+project's Mac its own screenshot of the window failed as well ("Image creation failed").
+
+- **The window opens by itself.** The script, or a runner with no session in front, may launch the app without it
+  coming forward, and a Mac app launched behind the others gets no window until it is reopened or activated. A
+  screenshot launch asks itself to reopen, as a click on its Dock icon does
+  (`StoreScreenshotsRun.openWindowIfLaunchedBehind`).
+- **The window alone, always the same size.** `StoreScreenshotsRun.sizeWindow` gives the window the same size on
+  every launch and hides every other app's windows first (as ⌥⌘H does), so the sidebar's glass shows the wallpaper
+  and nothing else. It then prints the window's number, which the script reads from the app's output and hands to
+  `screencapture -l`. The hidden apps come back with a click on their Dock icon.
+- **On a Retina display.** The frame draws the window at twice its points (2880x1800). On a display that isn't
+  Retina the capture is 1440x900 and would go to the listing blurred; the release's job fails on that.
 
 ## Things that bite
 

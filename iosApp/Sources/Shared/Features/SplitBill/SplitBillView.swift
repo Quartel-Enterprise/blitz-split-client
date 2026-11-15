@@ -22,6 +22,10 @@ final class SplitBillModel {
 
     @ObservationIgnored private let holder: ViewModelHolder<SplitBillViewModel>
     @ObservationIgnored private let watches = WatchBag()
+    #if DEBUG
+    /// Whether this is the store screenshots' "Bill items" launch, still to open it (StoreScreenshotsRun).
+    @ObservationIgnored private var opensItemsForStoreScreenshots = StoreScreenshotsRun.current?.screen == "items"
+    #endif
 
     init(route: RouteSplitBill) {
         holder = BlitzSplitApple.shared.createSplitBillViewModel(route: route)
@@ -37,6 +41,9 @@ final class SplitBillModel {
             } else if state.payerSelection != nil {
                 self?.shownPayerAmounts = nil
             }
+            #if DEBUG
+            self?.openItemsForStoreScreenshots(state)
+            #endif
         })
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
@@ -58,6 +65,17 @@ final class SplitBillModel {
     func send(_ event: any SplitBillUiEvent) {
         holder.viewModel.onEvent(event: event)
     }
+
+    #if DEBUG
+    /// The store screenshots' "Bill items" opens by itself once the dinner and its items are loaded, as "Split" does:
+    /// nothing taps on the Mac's capture, and on a phone the row's place changes with the screen's height.
+    private func openItemsForStoreScreenshots(_ state: SplitBillUiState) {
+        guard opensItemsForStoreScreenshots, state.split.mode == .items else { return }
+        opensItemsForStoreScreenshots = false
+        // Once the watcher is done handing this state over
+        DispatchQueue.main.async { [weak self] in self?.send(SplitBillUiEventOnSplitClicked.shared) }
+    }
+    #endif
 
     /// "Delete this bill?" closed without "Delete"; the ViewModel keeps it while the bill is being deleted.
     func dismissDeletion() {
@@ -595,8 +613,6 @@ private struct PhoneSplitBill: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
-            // The App Store screenshots' UI test opens "Bill items" through it, whatever the language
-            .accessibilityIdentifier("splitBill.split")
         } header: {
             Text("Details")
         } footer: {
@@ -1245,8 +1261,6 @@ private struct MacBillForm: View {
                             Button("Change…") {
                                 model.send(SplitBillUiEventOnSplitClicked.shared)
                             }
-                            // The Mac store screenshots' UI test opens "Bill Items" through it, whatever the language
-                            .accessibilityIdentifier("splitBill.split")
                         }
                     }
                 }

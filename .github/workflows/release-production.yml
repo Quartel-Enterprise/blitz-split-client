@@ -566,7 +566,8 @@ jobs:
           key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   # One job per App Store slot, next to the builds: each builds the UI tests of a debug app seeded with the sample
-  # trip and runs them on its simulator, or for `mac` on the runner's own screen (docs/store-listing-screenshots.md).
+  # trip and runs them on its simulator; for `mac`, a script launches the debug Mac app on the runner's own screen and
+  # photographs its window (docs/store-listing-screenshots.md).
   # Every slot is captured whichever Apple platform the run releases, since the frames need the iPhone's and the
   # iPad's. The iPhone Duo's fails on a runner whose Xcode has no runtime for it, and the listing goes without it.
   apple-screenshots-capture:

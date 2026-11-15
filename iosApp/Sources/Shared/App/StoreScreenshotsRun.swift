@@ -87,16 +87,39 @@ struct StoreScreenshotsRun {
     }
 
     #if os(macOS)
+    /// A screenshot launch asks itself to reopen, as a click on its Dock icon does. The capture may launch the app
+    /// without it coming forward (a Mac someone is using, a runner with no session in front), and an app launched
+    /// behind the others gets no window until it is reopened or activated: nothing to capture. Activating itself is
+    /// not enough, the system refuses it to an app the person didn't start. With the window already there, the reopen
+    /// does nothing.
+    static func openWindowIfLaunchedBehind() {
+        guard current != nil else { return }
+        let reopen = NSAppleEventDescriptor(
+            eventClass: AEEventClass(kCoreEventClass),
+            eventID: AEEventID(kAEReopenApplication),
+            targetDescriptor: NSAppleEventDescriptor(processIdentifier: ProcessInfo.processInfo.processIdentifier),
+            returnID: AEReturnID(kAutoGenerateReturnID),
+            transactionID: AETransactionID(kAnyTransactionID),
+        )
+        _ = try? reopen.sendEvent(options: .noReply, timeout: 1)
+    }
+
     /// Every capture of the Mac is the same window size, whatever the last run left it at, alone on the desktop: the
     /// other apps' windows are hidden (as ⌥⌘H does, no permission needed), so the sidebar's glass shows nothing of
-    /// them. They come back with a click on their Dock icon.
+    /// them. They come back with a click on their Dock icon. The window's number goes to the app's output, where
+    /// capture-mac.sh reads it to photograph that window alone.
     static func sizeWindow() {
         guard current != nil, let window = NSApplication.shared.windows.first else { return }
         NSApplication.shared.hideOtherApplications(nil)
         window.setContentSize(windowSize)
         window.center()
         window.makeKeyAndOrderFront(nil)
+        print("\(windowNumberLine) \(window.windowNumber)")
+        fflush(stdout)
     }
+
+    /// What capture-mac.sh looks for in the app's output, followed by the window's number.
+    private static let windowNumberLine = "store-screenshots-window"
     #endif
 }
 #endif
