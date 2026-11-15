@@ -192,7 +192,7 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   ones that changed. Play shows a listing's screenshots to everyone at once, so a testing track brings none.
 - **App Store**, before the submission, since a version in review can't take them, and only in a run that submits:
   `app-store-versions` creates the version, `apple-screenshots-capture` runs the UI tests on one simulator per slot
-  and, for the Mac, on the runner's own screen, `apple-screenshots-frame` frames the captures, and `ios-screenshots`
+  and, for the Mac, photographs the app's window on the runner's own screen, `apple-screenshots-frame` frames the captures, and `ios-screenshots`
   and `macos-screenshots` upload them.
 
 None of the App Store's jobs holds the release back: one that fails is listed as failed, the run is not, and the

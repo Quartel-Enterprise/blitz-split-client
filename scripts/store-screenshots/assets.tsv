@@ -1,0 +1,13 @@
+# The photos the Apple captures hand the app, in its launch environment: the name the app files each one under and
+# its file here. The groups' photos are the three SampleTrips names (TRIP_PHOTO and each side group's), not the whole
+# bank, since the environment has a size limit; the seed stops the launch on a name SampleTrips has and this lacks.
+# name	file
+receipt	receipt.jpg
+person0	faces/person0.jpg
+person1	faces/person1.jpg
+person2	faces/person2.jpg
+person3	faces/person3.jpg
+person4	faces/person4.jpg
+group_trip-lisbon-tram	bank/groups/trip-lisbon-tram.jpg
+group_home-kitchen	bank/groups/home-kitchen.jpg
+group_event-soccer	bank/groups/event-soccer.jpg

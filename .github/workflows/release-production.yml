@@ -566,7 +566,8 @@ jobs:
           key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   # One job per App Store slot, next to the builds: each builds the UI tests of a debug app seeded with the sample
-  # trip and runs them on its simulator, or for `mac` on the runner's own screen (docs/store-listing-screenshots.md).
+  # trip and runs them on its simulator; for `mac`, a script launches the debug Mac app on the runner's own screen and
+  # photographs its window (docs/store-listing-screenshots.md).
   # Every slot is captured whichever Apple platform the run releases, since the frames need the iPhone's and the
   # iPad's. The iPhone Duo's fails on a runner whose Xcode has no runtime for it, and the listing goes without it.
   apple-screenshots-capture:
@@ -609,20 +610,13 @@ jobs:
         run: ./scripts/store-screenshots/capture-ios.sh
 
       # The runner has no signing account, so the app is signed to run locally and without its entitlements, which
-      # only a provisioning profile could grant. The frame draws the window at twice its points, so a capture from
-      # a display that isn't Retina would go to the listing blurred: the Mac's listing keeps its screenshots then.
+      # only a provisioning profile could grant. The script fails where it isn't allowed to record the screen, and
+      # on a display that isn't Retina, whose captures the frame would blur: the Mac's listing keeps its screenshots.
       - name: Capture on the runner's screen
         if: ${{ matrix.slot == 'mac' }}
         env:
           STORE_SCREENSHOTS_BUILD_SETTINGS: CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER= CODE_SIGN_ENTITLEMENTS=
-        run: |
-          ./scripts/store-screenshots/capture-mac.sh
-          capture="$(find build/outputs/apple-screenshot-captures/mac -name '*.png' -print -quit)"
-          width="$(sips -g pixelWidth "$capture" | awk '/pixelWidth/ { print $2 }')"
-          if [ "$width" -lt 2880 ]; then
-            echo "::error::The Mac captures are $width pixels wide and the frame takes 2880: this runner's display is not Retina."
-            exit 1
-          fi
+        run: ./scripts/store-screenshots/capture-mac.sh
 
       - name: Upload the captures as a build artifact
         uses: actions/upload-artifact@v7

@@ -153,6 +153,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         PushNotifications.shared.start()
     }
 
+    #if DEBUG
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        StoreScreenshotsRun.openWindowIfLaunchedBehind()
+    }
+    #endif
+
     func application(_ application: NSApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         PushNotifications.shared.register(deviceToken: deviceToken)
     }
