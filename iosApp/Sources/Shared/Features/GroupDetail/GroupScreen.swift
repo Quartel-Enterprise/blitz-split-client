@@ -443,17 +443,20 @@ struct BalanceCard: View {
         }
     }
 
-    /// "You get $332.90 and owe $118.00" only while both sides are open: with one alone it would repeat the net.
+    /// The words of the line the shared code picked (`BalanceDetail`); none when it would only repeat the net.
     private var details: String? {
-        if balance.isSettled {
-            return isEveryoneSettled
-                ? String(localized: "Nobody owes anybody anything here.", bundle: .appLanguage)
-                : String(localized: "Others still have to settle up.", bundle: .appLanguage)
+        switch balance.detailOf(isEveryoneSettled: isEveryoneSettled) {
+        case .everyoneSettled:
+            return String(localized: "Nobody owes anybody anything here.", bundle: .appLanguage)
+        case .othersSettling:
+            return String(localized: "Others still have to settle up.", bundle: .appLanguage)
+        case .breakdown:
+            let receives = currency.format(balance.receivesMinor)
+            let owes = currency.format(balance.owesMinor)
+            return String(localized: "You get \(receives) and owe \(owes)", bundle: .appLanguage)
+        default:
+            return nil
         }
-        guard balance.showsBreakdown else { return nil }
-        let receives = currency.format(balance.receivesMinor)
-        let owes = currency.format(balance.owesMinor)
-        return String(localized: "You get \(receives) and owe \(owes)", bundle: .appLanguage)
     }
 }
 

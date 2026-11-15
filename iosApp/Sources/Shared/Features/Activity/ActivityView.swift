@@ -591,17 +591,7 @@ private struct ActivityRowMeta: View {
             GroupAvatar.shape(size: 10)
                 .fill(item.groupColor?.data ?? Color.secondary.opacity(0.2))
                 .frame(width: 10, height: 10)
-                .overlay {
-                    if let photoUrl = item.groupPhotoUrl, let url = URL(string: photoUrl) {
-                        AsyncImage(url: url) { phase in
-                            if let image = phase.image {
-                                image.renderingMode(.original).resizable().scaledToFill()
-                            }
-                        }
-                        .frame(width: 10, height: 10)
-                        .clipShape(GroupAvatar.shape(size: 10))
-                    }
-                }
+                .avatarPhoto(item.groupPhotoUrl, size: 10, shape: GroupAvatar.shape(size: 10))
                 .accessibilityHidden(true)
             if let groupName = item.groupName {
                 Text(verbatim: groupName)

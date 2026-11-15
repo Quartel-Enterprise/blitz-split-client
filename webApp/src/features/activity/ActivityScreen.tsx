@@ -3,7 +3,7 @@ import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRo
 import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
+import { Avatar, AvatarPhoto, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
 import { pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
@@ -310,18 +310,7 @@ function GroupMark({ color, photoUrl }: { color: string | null | undefined; phot
   if (!color) return <span aria-hidden className={cn('size-3 shrink-0 bg-muted', GROUP_SHAPE)} />
   return (
     <span aria-hidden style={avatarStyle(color)} className={cn('avatar-mark relative size-3 shrink-0 overflow-hidden', GROUP_SHAPE)}>
-      {photoUrl && (
-        <img
-          // Why: a new photo gets a fresh element, so one that failed before doesn't stay hidden.
-          key={photoUrl}
-          src={photoUrl}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 size-full object-cover"
-          onError={(event) => (event.currentTarget.hidden = true)}
-        />
-      )}
+      {photoUrl && <AvatarPhoto key={photoUrl} src={photoUrl} />}
     </span>
   )
 }

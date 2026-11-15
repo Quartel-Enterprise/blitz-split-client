@@ -42,25 +42,23 @@ export function balanceTone(minor: number): string {
  */
 export function BalanceCard({
   balance,
-  isEveryoneSettled,
+  detail,
   currency,
   fractionDigits,
   onSettle,
 }: {
   balance: JsMemberBalance
-  isEveryoneSettled: boolean
+  /** The line under the amount, decided by the shared code: "everyone_settled", "others_settling", "breakdown" or "none". */
+  detail: string
   currency: string
   fractionDigits: number
   onSettle: () => void
 }) {
   const money = (minor: number) => formatMoney(minor, currency, fractionDigits)
   const net = balance.netMinor
-  // With one side alone the breakdown would repeat the net, so it shows only when this person both gets and owes.
-  const details = balance.isSettled
-    ? t(isEveryoneSettled ? 'balance_everyoneSettled' : 'balance_othersSettling')
-    : balance.showsBreakdown
-      ? t('balance_getAndOwe', { received: money(balance.receivesMinor), owed: money(balance.owesMinor) })
-      : null
+  const details = detailText(detail, () =>
+    t('balance_getAndOwe', { received: money(balance.receivesMinor), owed: money(balance.owesMinor) }),
+  )
   return (
     <section aria-labelledby="balance-card-title" className="flex items-center gap-3 rounded-xl border bg-card px-4 py-3.5">
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -125,4 +123,18 @@ export function useRecordedPaymentNotice(presenter: RecordedPaymentEvents | null
     }
     // The notice is the same while its settlement is; a redrawn state doesn't show it again
   }, [presenter, settlementId])
+}
+
+/** The words of the line under the amount; none when it would only repeat the amount. */
+function detailText(detail: string, breakdown: () => string): string | null {
+  switch (detail) {
+    case 'everyone_settled':
+      return t('balance_everyoneSettled')
+    case 'others_settling':
+      return t('balance_othersSettling')
+    case 'breakdown':
+      return breakdown()
+    default:
+      return null
+  }
 }

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain
 
+import com.quare.blitzsplit.core.expenses.domain.model.BalanceDetail
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -100,7 +101,7 @@ class MemberBalanceTest {
     }
 
     @Test
-    fun `GIVEN a member who receives and owes WHEN checking the breakdown THEN it shows`() {
+    fun `GIVEN a member who receives and owes WHEN reading the detail THEN it is the breakdown`() {
         // Given
         val balance = balance(
             receivesMinor = 33_290L,
@@ -108,14 +109,14 @@ class MemberBalanceTest {
         )
 
         // When
-        val showsBreakdown = balance.showsBreakdown
+        val detail = balance.detailOf(isEveryoneSettled = false)
 
         // Then
-        assertTrue(showsBreakdown)
+        assertEquals(BalanceDetail.BREAKDOWN, detail)
     }
 
     @Test
-    fun `GIVEN a member who receives and owes the same WHEN checking the breakdown THEN it explains the zero net`() {
+    fun `GIVEN a member who receives and owes the same WHEN reading the detail THEN the breakdown explains the zero`() {
         // Given
         val balance = balance(
             receivesMinor = 500L,
@@ -123,14 +124,14 @@ class MemberBalanceTest {
         )
 
         // When
-        val showsBreakdown = balance.showsBreakdown
+        val detail = balance.detailOf(isEveryoneSettled = false)
 
         // Then
-        assertTrue(showsBreakdown)
+        assertEquals(BalanceDetail.BREAKDOWN, detail)
     }
 
     @Test
-    fun `GIVEN a member who only receives WHEN checking the breakdown THEN it is hidden`() {
+    fun `GIVEN a member who only receives WHEN reading the detail THEN there is none`() {
         // Given
         val balance = balance(
             receivesMinor = 31_381L,
@@ -138,14 +139,14 @@ class MemberBalanceTest {
         )
 
         // When
-        val showsBreakdown = balance.showsBreakdown
+        val detail = balance.detailOf(isEveryoneSettled = false)
 
         // Then
-        assertFalse(showsBreakdown)
+        assertEquals(BalanceDetail.NONE, detail)
     }
 
     @Test
-    fun `GIVEN a member who only owes WHEN checking the breakdown THEN it is hidden`() {
+    fun `GIVEN a member who only owes WHEN reading the detail THEN there is none`() {
         // Given
         val balance = balance(
             receivesMinor = 0L,
@@ -153,14 +154,14 @@ class MemberBalanceTest {
         )
 
         // When
-        val showsBreakdown = balance.showsBreakdown
+        val detail = balance.detailOf(isEveryoneSettled = false)
 
         // Then
-        assertFalse(showsBreakdown)
+        assertEquals(BalanceDetail.NONE, detail)
     }
 
     @Test
-    fun `GIVEN a settled member WHEN checking the breakdown THEN it is hidden`() {
+    fun `GIVEN a settled member while others still owe WHEN reading the detail THEN others are settling`() {
         // Given
         val balance = balance(
             receivesMinor = 0L,
@@ -168,10 +169,25 @@ class MemberBalanceTest {
         )
 
         // When
-        val showsBreakdown = balance.showsBreakdown
+        val detail = balance.detailOf(isEveryoneSettled = false)
 
         // Then
-        assertFalse(showsBreakdown)
+        assertEquals(BalanceDetail.OTHERS_SETTLING, detail)
+    }
+
+    @Test
+    fun `GIVEN a settled member in a settled group WHEN reading the detail THEN everyone is settled`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 0L,
+            owesMinor = 0L,
+        )
+
+        // When
+        val detail = balance.detailOf(isEveryoneSettled = true)
+
+        // Then
+        assertEquals(BalanceDetail.EVERYONE_SETTLED, detail)
     }
 
     private fun balance(

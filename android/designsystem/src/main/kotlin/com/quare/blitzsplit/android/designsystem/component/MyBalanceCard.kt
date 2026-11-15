@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
+import com.quare.blitzsplit.core.expenses.domain.model.BalanceDetail
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
 
 /*
@@ -131,22 +132,22 @@ private fun BalanceHeading(
     }
 }
 
-// Why: "Você recebe R$ 332,90 e deve R$ 118,00" only while both sides are open; with one alone it repeats the net.
+// Why: the words of the line the shared code picked (BalanceDetail); none when it would only repeat the net.
 @Composable
 private fun balanceDetailOf(
     balance: MemberBalance,
     isEveryoneSettled: Boolean,
     money: MoneyFormatter,
-): String? = when {
-    balance.isSettled && isEveryoneSettled -> stringResource(R.string.designsystem_balance_everyone_settled)
+): String? = when (balance.detailOf(isEveryoneSettled)) {
+    BalanceDetail.EVERYONE_SETTLED -> stringResource(R.string.designsystem_balance_everyone_settled)
 
-    balance.isSettled -> stringResource(R.string.designsystem_balance_others_settling)
+    BalanceDetail.OTHERS_SETTLING -> stringResource(R.string.designsystem_balance_others_settling)
 
-    balance.showsBreakdown -> stringResource(
+    BalanceDetail.BREAKDOWN -> stringResource(
         R.string.designsystem_balance_get_and_owe,
         money.toText(balance.receivesMinor),
         money.toText(balance.owesMinor),
     )
 
-    else -> null
+    BalanceDetail.NONE -> null
 }

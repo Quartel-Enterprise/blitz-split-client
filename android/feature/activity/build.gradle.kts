@@ -5,5 +5,4 @@ plugins {
 dependencies {
     implementation(project(":feature:activity"))
     implementation(project(":android:platform"))
-    implementation(libs.coil.compose)
 }

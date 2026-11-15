@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.designsystem.component
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -61,15 +62,23 @@ fun GroupBadge(
             fontWeight = FontWeight.ExtraBold,
             fontSize = (size.value * 0.32f).sp,
         )
-        if (photoUrl != null) {
-            AsyncImage(
-                model = photoUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.matchParentSize().clip(outline),
-            )
-        }
+        GroupPhotoImage(photoUrl)
     }
+}
+
+/*
+ * Why: a group's photo over what its box draws under it (the initials, the color), filling it in the group's square;
+ * that stays in sight while the photo loads or when it fails to.
+ */
+@Composable
+fun BoxScope.GroupPhotoImage(photoUrl: String?) {
+    if (photoUrl == null) return
+    AsyncImage(
+        model = photoUrl,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.matchParentSize().clip(GroupAvatarShape),
+    )
 }
 
 // Why: Atividade still names a "Forma" an older Android build changed.
