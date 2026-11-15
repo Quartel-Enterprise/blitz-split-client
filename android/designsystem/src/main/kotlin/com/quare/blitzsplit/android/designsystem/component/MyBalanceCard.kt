@@ -31,6 +31,8 @@ fun MyBalanceCard(
     money: MoneyFormatter,
     onSettleClick: () -> Unit,
     modifier: Modifier = Modifier,
+    // Why: the balance and its word of the group's row or card, which fly in as the group opens.
+    shared: GroupSharedModifiers = GroupSharedModifiers.None,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -54,6 +56,7 @@ fun MyBalanceCard(
                 BalanceHeading(
                     balance = balance,
                     money = money,
+                    shared = shared,
                 )
                 Text(
                     text = balanceDetailOf(
@@ -76,6 +79,7 @@ fun MyBalanceCard(
 private fun BalanceHeading(
     balance: MemberBalance,
     money: MoneyFormatter,
+    shared: GroupSharedModifiers,
 ) {
     if (balance.isSettled) {
         Text(
@@ -103,10 +107,11 @@ private fun BalanceHeading(
         AmountText(
             text = money.toSignedText(net),
             // Why: the word after it keeps its room and the amount shrinks into what is left.
-            modifier = Modifier.weight(
-                weight = 1f,
-                fill = false,
-            ),
+            modifier = Modifier
+                .weight(
+                    weight = 1f,
+                    fill = false,
+                ).then(shared.balance),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = if (net < 0) MaterialTheme.colorScheme.error else positiveAmountColor(),
@@ -115,7 +120,9 @@ private fun BalanceHeading(
             text = stringResource(
                 if (net < 0) R.string.designsystem_balance_you_owe else R.string.designsystem_balance_to_get_back,
             ),
-            modifier = Modifier.padding(bottom = 3.dp),
+            modifier = Modifier
+                .padding(bottom = 3.dp)
+                .then(shared.balanceWord),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

@@ -26,9 +26,9 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
-import com.quare.blitzsplit.android.designsystem.component.GroupSharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
 import com.quare.blitzsplit.android.designsystem.component.LocalSharedTransitionScope
+import com.quare.blitzsplit.android.designsystem.component.SharedOrigin
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
@@ -212,15 +212,35 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
         isHomeEmpty = isHomeEmpty,
     )
     val listDetailStrategy = rememberHomeListDetailStrategy(listDetail)
-    // Why: the screen each group opened over, which its exit still needs once back has popped it.
-    val groupRoutesBelow = remember { mutableMapOf<Route.GroupDetail, Route?>() }
+    /*
+     * Why: the screen each group or bill opened over, which its exit still needs once back has popped it. Kept while
+     * the route is on the back stack and read back once it leaves it: back pops the route before its exit runs, so read
+     * live the origin turned null and the avatar and name stopped flying home (beta feedback of 2026-11-14).
+     */
+    val routesBelow = remember { mutableMapOf<Route, Route?>() }
+    val routeBelowOf = { route: Route ->
+        val index = backStack.lastIndexOf(route)
+        if (index >= 0) {
+            backStack.getOrNull(index - 1).also { routesBelow[route] = it }
+        } else {
+            routesBelow[route]
+        }
+    }
     // Why: the screen right under the group is the one its row was tapped on; beside the list nothing flies.
     val groupSharedOriginOf = { routeBelow: Route? ->
         when (routeBelow) {
-            Route.Home -> GroupSharedOrigin.HOME
-            Route.Groups -> GroupSharedOrigin.GROUPS.takeIf { listDetail == null }
+            Route.Home -> SharedOrigin.HOME
+            Route.Groups -> SharedOrigin.GROUPS.takeIf { listDetail == null }
             else -> null
         }
+    }
+    // Why: a bill flies out of Home's "Latest expenses" or "All expenses" only where it covers the window.
+    val billSharedOriginOf = { routeBelow: Route? ->
+        when (routeBelow) {
+            Route.Home -> SharedOrigin.HOME
+            Route.AllExpenses -> SharedOrigin.ALL_EXPENSES
+            else -> null
+        }.takeUnless { opensBillOverGroup }
     }
     val groupStatsMetadata = if (listDetail?.isBook == false) homeDetailPaneMetadata else emptyMap()
     // Why: NavDisplay keeps an entry's metadata until the back stack changes, so the placeholder reads it as it draws.
@@ -263,7 +283,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Restore> { RestoreScreen() }
             // Why: Início, the root of the home; the other tabs open right above it.
             entry<Route.Home>(metadata = homeTabMetadata) {
-                EntryTransitionLayout(origin = GroupSharedOrigin.HOME) {
+                EntryTransitionLayout(origin = SharedOrigin.HOME) {
                     HomeScreen(
                         recoveryCodeSheet = { RecoveryCodeSheet() },
                         isPushConfigured = PushSetup.isConfigured,
@@ -273,7 +293,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
             entry<Route.Groups>(metadata = groupsMetadata) {
                 // Why: beside the group the list stays where it is, so its rows fly nowhere.
-                EntryTransitionLayout(origin = GroupSharedOrigin.GROUPS.takeIf { listDetail == null }) {
+                EntryTransitionLayout(origin = SharedOrigin.GROUPS.takeIf { listDetail == null }) {
                     GroupsScreen(
                         recoveryCodeSheet = { RecoveryCodeSheet() },
                         onEmptyChanged = { isGroupsScreenEmpty = it },
@@ -345,19 +365,8 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Invite> { route -> InviteScreen(route) }
             // Why: the group, its tabs inside it, goes in the pane beside the groups, where the window has room for it.
             entry<Route.GroupDetail>(metadata = homeDetailPaneMetadata) { route ->
-                /*
-                 * Why: kept while the group is on the back stack and read back once it leaves it. Back pops the group
-                 * before its exit runs, so read live the origin turned null and the avatar and name stopped flying
-                 * home (beta feedback of 2026-11-14).
-                 */
-                val index = backStack.lastIndexOf(route)
-                val routeBelow = if (index >= 0) {
-                    backStack.getOrNull(index - 1).also { groupRoutesBelow[route] = it }
-                } else {
-                    groupRoutesBelow[route]
-                }
                 InGroupPane {
-                    EntryTransitionLayout(origin = groupSharedOriginOf(routeBelow)) {
+                    EntryTransitionLayout(origin = groupSharedOriginOf(routeBelowOf(route))) {
                         GroupDetailScreen(
                             route = route,
                             membersTab = { snackbarHostState -> rememberMembersTab(route, snackbarHostState) },
@@ -398,10 +407,12 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: like Rachar conta, the group stays behind the bill wider than a phone, a tabletop included.
             entry<Route.BillDetail>(metadata = billOverGroupMetadata) { route ->
-                BillDetailScreen(
-                    route = route,
-                    isDialog = opensBillOverGroup,
-                )
+                EntryTransitionLayout(origin = billSharedOriginOf(routeBelowOf(route))) {
+                    BillDetailScreen(
+                        route = route,
+                        isDialog = opensBillOverGroup,
+                    )
+                }
             }
             // Why: "Compartilhar conta" over Conta, opened as Convidar of Contatos: a sheet, a dialog or the tabletop's halves.
             entry<Route.ShareBill>(metadata = formPresentationMetadata) { route ->
@@ -452,7 +463,9 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: Atividade, pushed over Início by its bell or over a contact's profile by their history.
             entry<Route.Activity> { route -> ActivityScreen(route) }
             // Why: "Todas as despesas", which Início's "Ver tudo" pushes over it, a page on every size.
-            entry<Route.AllExpenses> { AllExpensesScreen() }
+            entry<Route.AllExpenses> {
+                EntryTransitionLayout(origin = SharedOrigin.ALL_EXPENSES) { AllExpensesScreen() }
+            }
             // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.
             entry<Route.SettleUp>(metadata = formPresentationMetadata) { route ->
                 val presentation = remember { formPresentation }

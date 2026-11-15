@@ -7,10 +7,10 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
-import com.quare.blitzsplit.android.designsystem.component.GroupSharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.LocalEntryVisibilityScope
-import com.quare.blitzsplit.android.designsystem.component.LocalGroupSharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.LocalHomeBarsEntryKey
+import com.quare.blitzsplit.android.designsystem.component.LocalSharedOrigin
+import com.quare.blitzsplit.android.designsystem.component.SharedOrigin
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.navigation.Route
 
@@ -25,19 +25,20 @@ internal val homeBarsEntryDecorator: NavEntryDecorator<Route> = NavEntryDecorato
 )
 
 /*
- * Why: the entry's own transition, which a group's avatar and name follow from its row to its screen and back. Only
- * around the entries whose rows or header fly (Início, Grupos, the group), which NavDisplay draws in its animated
- * content: a dialog's or a sheet's entry is drawn outside it, where LocalNavAnimatedContentScope has no value. `origin`
- * keys the flight by the screen the group opens from, null where nothing flies.
+ * Why: the entry's own transition, which a group's avatar and name or a bill's title and amounts follow from its row to
+ * its screen and back. Only around the entries whose rows or header fly (Início, Grupos, "All expenses", the group, the
+ * bill), which NavDisplay draws in its animated content. `origin` keys the flight by the screen the group or bill
+ * opens from, null where nothing flies; only then is the transition read, since a dialog's or a sheet's entry (a bill
+ * over the group) is drawn outside the animated content, where LocalNavAnimatedContentScope has no value.
  */
 @Composable
 internal fun EntryTransitionLayout(
-    origin: GroupSharedOrigin?,
+    origin: SharedOrigin?,
     content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
-        LocalEntryVisibilityScope provides LocalNavAnimatedContentScope.current,
-        LocalGroupSharedOrigin provides origin,
+        LocalEntryVisibilityScope provides origin?.let { LocalNavAnimatedContentScope.current },
+        LocalSharedOrigin provides origin,
         content = content,
     )
 }

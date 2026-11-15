@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
+import com.quare.blitzsplit.android.designsystem.component.BillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
@@ -60,6 +61,8 @@ internal fun BillSummaryColumn(
     totalText: String,
     payers: List<BillPayer>,
     onLonePayerClick: (() -> Unit)?,
+    // Why: the badge, title and total of the row tapped, which fly in as the bill opens.
+    shared: BillSharedModifiers = BillSharedModifiers.None,
     notes: @Composable ColumnScope.() -> Unit = {},
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -70,6 +73,7 @@ internal fun BillSummaryColumn(
         ) {
             CategoryBadge(
                 category = category,
+                modifier = shared.category,
                 size = 28.dp,
             )
             Text(
@@ -80,7 +84,9 @@ internal fun BillSummaryColumn(
         }
         Text(
             text = description,
-            modifier = Modifier.semantics { heading() },
+            modifier = Modifier
+                .semantics { heading() }
+                .then(shared.title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
         )
@@ -91,6 +97,7 @@ internal fun BillSummaryColumn(
         )
         Text(
             text = totalText,
+            modifier = shared.total,
             style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
         )
@@ -117,6 +124,8 @@ internal fun BillSummaryColumn(
 internal fun MyPartCard(
     state: BillDetailUiState,
     money: MoneyFormatter,
+    // Why: the row's share, which lands on the amount.
+    shareModifier: Modifier = Modifier,
 ) {
     val balance = state.myBalanceMinor ?: return
     Surface(
@@ -139,6 +148,7 @@ internal fun MyPartCard(
             ) {
                 Text(
                     text = if (balance < 0) money.toText(-balance) else money.toSignedText(balance),
+                    modifier = shareModifier,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = amountColorOf(balance),

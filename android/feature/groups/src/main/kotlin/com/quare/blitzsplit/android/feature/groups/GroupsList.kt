@@ -349,6 +349,7 @@ private fun GroupListRow(
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
                         text = money.toSignedText(group.netMinor),
+                        modifier = shared.balance,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = amountColorOf(group.netMinor),
@@ -356,6 +357,7 @@ private fun GroupListRow(
                     )
                     Text(
                         text = stringResource(balanceLabelOf(group.balanceKind)),
+                        modifier = shared.balanceWord,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

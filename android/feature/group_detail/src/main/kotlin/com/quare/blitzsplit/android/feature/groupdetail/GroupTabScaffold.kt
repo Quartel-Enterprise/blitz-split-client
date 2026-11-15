@@ -33,6 +33,7 @@ import com.quare.blitzsplit.android.designsystem.component.CurrencyChipRow
 import com.quare.blitzsplit.android.designsystem.component.MyBalanceCard
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
 import com.quare.blitzsplit.android.designsystem.component.rememberCollapsingTopBarScrollBehavior
+import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -254,6 +255,7 @@ private fun GroupSideHeader(
                 money = frame.money,
                 onSettleClick = { onAction(GroupAction.SETTLE) },
                 modifier = balancePadding,
+                shared = rememberGroupSharedModifiers(frame.sharedGroupId),
             )
         }
         GroupTabsRow(
