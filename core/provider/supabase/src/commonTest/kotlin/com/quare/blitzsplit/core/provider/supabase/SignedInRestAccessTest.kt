@@ -92,6 +92,19 @@ class SignedInRestAccessTest {
         assertEquals(listOf("/rest/v1/rpc/get_invite"), requestedPaths)
     }
 
+    // Why: the server refused the session, so the device has no user left to ask with.
+    @Test
+    fun `GIVEN no user token WHEN asking whether the account expired THEN reaches the server`() = runTest {
+        // Given
+        val url = "$URL/rest/v1/rpc/was_account_expired"
+
+        // When
+        client.post(url)
+
+        // Then
+        assertEquals(listOf("/rest/v1/rpc/was_account_expired"), requestedPaths)
+    }
+
     @Test
     fun `GIVEN no user token WHEN resolving a profile link THEN reaches the server`() = runTest {
         // Given
