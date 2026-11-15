@@ -96,7 +96,7 @@ internal abstract class StoreScreenshots(
                 val slot = appleSlot
                 if (slot == null) {
                     BlitzSplitTheme(isDark = screen.isDark) {
-                        SampleFacesComponent { content(SampleTrips.tripOf(locale.language)) }
+                        SamplePhotosComponent { content(SampleTrips.tripOf(locale.language)) }
                     }
                 } else {
                     AppleScreenshotImage(

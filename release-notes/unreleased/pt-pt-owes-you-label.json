@@ -1,0 +1,23 @@
+{
+  "notes": [
+    {
+      "kind": "fixed",
+      "platforms": ["android"],
+      "betaOnly": true,
+      "text": {
+        "en": "Fixed Home's people row in Portugal's Portuguese, which said \"te deve\" under a name instead of \"deve-te\".",
+        "pt": "Corrigimos a fileira de pessoas do Início no português de Portugal, que dizia \"te deve\" embaixo do nome em vez de \"deve-te\".",
+        "pt-PT": "Corrigimos a fila de pessoas do Início, que dizia \"te deve\" por baixo do nome em vez de \"deve-te\".",
+        "es": "Corregimos la fila de personas de Inicio en portugués de Portugal, que decía \"te deve\" debajo del nombre en lugar de \"deve-te\".",
+        "fr": "Correction de la rangée de personnes de l'Accueil en portugais du Portugal, qui affichait « te deve » sous le nom au lieu de « deve-te ».",
+        "de": "Die Personenzeile auf „Start“ zeigte im Portugiesisch Portugals „te deve“ unter dem Namen statt „deve-te“; das ist behoben.",
+        "it": "Corretta la riga delle persone nella Home in portoghese del Portogallo, che mostrava \"te deve\" sotto il nome invece di \"deve-te\".",
+        "pl": "Naprawiono wiersz osób na ekranie Start w portugalskim z Portugalii, który pod imieniem pokazywał „te deve” zamiast „deve-te”.",
+        "nl": "De rij met personen op Start toonde in het Portugees van Portugal \"te deve\" onder een naam in plaats van \"deve-te\"; dat is opgelost.",
+        "ja": "ポルトガルのポルトガル語で、ホームの人の列の名前の下に「deve-te」ではなく「te deve」と表示されていた問題を修正しました。",
+        "tr": "Portekiz Portekizcesinde Ana Sayfa'daki kişiler satırında adın altında \"deve-te\" yerine \"te deve\" yazması düzeltildi.",
+        "id": "Memperbaiki baris orang di Beranda dalam bahasa Portugis Portugal, yang menampilkan \"te deve\" di bawah nama, bukan \"deve-te\"."
+      }
+    }
+  ]
+}

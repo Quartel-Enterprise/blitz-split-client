@@ -21,7 +21,7 @@ private const val GROUP_PHOTOS_DIRECTORY_PROPERTY = "storeScreenshots.groupPhoto
  */
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-internal fun SampleFacesComponent(content: @Composable () -> Unit) {
+internal fun SamplePhotosComponent(content: @Composable () -> Unit) {
     val directory =
         checkNotNull(System.getProperty(FACES_DIRECTORY_PROPERTY)) { "$FACES_DIRECTORY_PROPERTY is not set" }
     val groupPhotos = checkNotNull(System.getProperty(GROUP_PHOTOS_DIRECTORY_PROPERTY)) {

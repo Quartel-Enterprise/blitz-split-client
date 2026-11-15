@@ -241,7 +241,7 @@ internal class StoreScreenshotsSeed(
             if (person == 0) statements += "UPDATE profile SET photoUrl = ${toSqlLiteral(face)}"
         }
         val groupPhotos = listOf(tripId to SampleTrips.TRIP_PHOTO) +
-            sideGroups.mapIndexed { index, members -> members.groupId to trip.sideGroups[index].photo }
+            sideGroups.zip(trip.sideGroups) { members, group -> members.groupId to group.photo }
         groupPhotos.forEach { (groupId, photo) ->
             val url = groupPhotoOf(photo) ?: return@forEach
             statements += "UPDATE split_group SET photoUrl = ${toSqlLiteral(url)} WHERE id = ${toSqlLiteral(groupId)}"

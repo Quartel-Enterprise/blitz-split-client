@@ -189,6 +189,6 @@ after a library upgrade.
 - **Robolectric has no SDK 37**: the library pins SDK 35 for the generators.
 - **The Play tablets** render the screens' own tablet layouts at the frame's size, and the iPad capture is the
   iPad's real layout.
-- **Faces on Play** come through Coil's preview handler (`SampleFacesComponent`), which answers at once. A real load would
-  still be running when Robolectric captures.
+- **Faces and group photos on Play** come through Coil's preview handler (`SamplePhotosComponent`), which answers at
+  once. A real load would still be running when Robolectric captures.
 - **`ItemsEditorContent` is public** so the generator can draw "Bill items" without the ViewModel.
