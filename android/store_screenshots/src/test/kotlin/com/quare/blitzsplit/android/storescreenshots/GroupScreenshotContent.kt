@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtKind
 import com.quare.blitzsplit.core.expenses.domain.model.DebtRow
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
+import com.quare.blitzsplit.core.model.FaceStack
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.toStackedFaces
@@ -51,7 +52,7 @@ internal fun SampleTrip.groupHeader(): GroupHeader {
         currencies = listOf(currency, foreignCurrency),
         faces = people.indices
             .toList()
-            .toStackedFaces()
+            .toStackedFaces(FaceStack.ROOMY)
             .map { faceOf(it) },
         memberCount = people.size,
         notJoinedCount = 0,

@@ -43,6 +43,7 @@ import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.payerNamesTextOf
 import com.quare.blitzsplit.android.designsystem.format.relativeDateTimeTextOf
+import com.quare.blitzsplit.core.model.FaceStack
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiState
@@ -166,6 +167,7 @@ private fun StackedFacesRow(people: List<BillPerson>) {
                     photoUrl = it.photoUrl,
                 )
             },
+            stack = FaceStack.COMPACT,
             size = splitFaceSize,
             ringColor = MaterialTheme.colorScheme.surfaceContainerLowest,
             modifier = Modifier.wrapContentWidth(unbounded = true),

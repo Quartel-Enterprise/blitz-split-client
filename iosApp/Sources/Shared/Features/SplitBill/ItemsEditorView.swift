@@ -117,7 +117,7 @@ private struct ConsumerFaces: View {
     var size: CGFloat = 24
 
     var body: some View {
-        AvatarStack(people: people.map(StackFace.init), size: size)
+        AvatarStack(people: people.map(StackFace.init), stack: .compact, size: size)
     }
 }
 

@@ -327,10 +327,19 @@ private struct JoinInviteContent: View {
             }
         }
         if !state.joinedNames.isEmpty {
-            HStack(spacing: 12) {
-                faces(state.joined)
-                alreadyIn(state.joinedNames)
-                    .font(.subheadline)
+            // A sentence too long for one line beside the faces goes under them with the whole width, rather than
+            // wrap in a narrow column.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) {
+                    faces(state.joined)
+                    alreadyIn(state.joinedNames)
+                        .font(.subheadline)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    faces(state.joined)
+                    alreadyIn(state.joinedNames)
+                        .font(.subheadline)
+                }
             }
         }
     }
@@ -342,10 +351,11 @@ private struct JoinInviteContent: View {
         return Text("\(count) · created by \(creatorName)")
     }
 
-    /// The faces of who joined as a stack: the first and how many more there are.
+    /// The faces of who joined as the roomy stack: up to five, or four and how many more there are.
     private func faces(_ members: [JoinMember]) -> some View {
         AvatarStack(
             people: members.map { StackFace(initials: $0.initials, color: $0.avatarColor, photoUrl: $0.photoUrl) },
+            stack: .roomy,
             size: 32,
             ring: Palette.groupedBackground,
         )

@@ -1,0 +1,22 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": ["all"],
+      "text": {
+        "en": "A group's page, an invite and a bill's details now show up to five people's photos side by side instead of two.",
+        "pt": "A tela do grupo, o convite e os detalhes de uma conta agora mostram as fotos de até cinco pessoas lado a lado, em vez de duas.",
+        "pt-PT": "O ecrã do grupo, o convite e os detalhes de uma conta mostram agora as fotos de até cinco pessoas lado a lado, em vez de duas.",
+        "es": "La pantalla del grupo, la invitación y los detalles de un gasto ahora muestran las fotos de hasta cinco personas una al lado de la otra, en lugar de dos.",
+        "fr": "L'écran du groupe, l'invitation et le détail d'une dépense affichent désormais les photos de cinq personnes au maximum côte à côte, au lieu de deux.",
+        "de": "Die Gruppenseite, die Einladung und die Details einer Ausgabe zeigen jetzt die Fotos von bis zu fünf Personen nebeneinander statt nur zwei.",
+        "it": "La schermata del gruppo, l'invito e i dettagli di una spesa ora mostrano le foto di un massimo di cinque persone affiancate, invece di due.",
+        "pl": "Ekran grupy, zaproszenie i szczegóły wydatku pokazują teraz obok siebie zdjęcia nawet pięciu osób zamiast dwóch.",
+        "nl": "De groepspagina, de uitnodiging en de details van een uitgave tonen nu de foto's van maximaal vijf personen naast elkaar in plaats van twee.",
+        "ja": "グループの画面、招待、支出の詳細に、これまでの2人ではなく最大5人の写真が並んで表示されるようになりました。",
+        "tr": "Grup ekranı, davet ve bir harcamanın ayrıntıları artık iki yerine en fazla beş kişinin fotoğrafını yan yana gösteriyor.",
+        "id": "Layar grup, undangan, dan detail tagihan kini menampilkan foto hingga lima orang secara berdampingan, bukan dua."
+      }
+    }
+  ]
+}

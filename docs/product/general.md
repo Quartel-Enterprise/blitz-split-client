@@ -139,13 +139,24 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     captions over a white page: 80% on the web, 75% black on Apple. A selected chip's label takes the color made
     for the accent (`Palette.onAccent` on Apple), and on the Mac a money color in a selected row gives way to the
     row's own label color.
-  - Every stack of faces (a group's members on its row and under its name, who paid a bill in a list and on the Bill,
-    who is in a split and who shares an item in Split a bill, who already joined on the invite) shows at most two
-    bubbles, the same on every platform (Pierre's call, beta feedback): one or two people show their faces; three or
-    more show the first face and a second bubble "+N" for the rest (three people: a face and "+2"). The rule is
-    `FaceStack` in `:core:model`, which the ViewModels cut their faces by and each UI's one stack component uses
+  - Every stack of faces shows as many bubbles as its place has room for, the same on every platform (Pierre's
+    call, 2026-11-15, after the beta feedback that capped every stack at two). In a list's row or card and in a form's
+    field, where the stack shares its line with a name or an amount (a group's members on its row or card, who paid a
+    bill in a list, who is in a split and who shares an item in Split a bill), it is compact, at most two bubbles: one
+    or two people show their faces; three or more show the first face and a second bubble "+N" for the rest (three
+    people: a face and "+2"). On a screen's own header or body, alone on its line or beside a sentence free to wrap (a
+    group's members under its name, who already joined on the invite, who paid on the Bill), it is roomy, at most
+    five: up to five people all show their faces; six or more show the first four and "+N" (six people: four faces and
+    "+2"). "+N" never stands for one person alone. On the invite, a sentence too long for one line beside the
+    faces ("Pierre, Ana, Bruno, Carla and Diego are already in the group") goes under them with the whole width
+    rather than wrap in a narrow column, and the group header's loading skeleton shimmers three faces, between the
+    smallest group's two and the header's five (both Pierre's call, 2026-11-15). A new stack takes the size of the kind of place it is in, and this
+    list names it. The rule is
+    `FaceStack` in `:core:model` (`COMPACT` and `ROOMY`), which the ViewModels cut their faces by (the group's header, Groups' rows, Home's bills) and each UI's one stack
+    component applies to the stacks it is handed whole (the invite, the Bill, Split a bill), with the size this list
+    gives the place
     (Android's `AvatarStackRow`, Apple's `AvatarStack`, the web's `AvatarStack` through `getStackedFaceCount`). Each
-    bubble is a true circle ringed in the surface behind it, covers the one before it ("+N" sits over the first face),
+    bubble is a true circle ringed in the surface behind it, covers the one before it ("+N" sits over the last face),
     and keeps its size whatever room the row leaves it (a squeezed one read flattened); screen readers skip the stack,
     the row around it says who.
   - A money amount is never broken in two lines nor cut to its sign (the same sweep): it stays on one line and

@@ -8,10 +8,11 @@ struct StackFace {
     let photoUrl: String?
 }
 
-/// Every stack of faces in the app, as Android and the web draw it: at most two bubbles, by the shared `FaceStack`
-/// rule (beta feedback). Both faces of two people, the first face and "+N" of three or more. Each bubble is ringed in
-/// the surface behind it so its neighbor's edge reads, and keeps its circle whatever room the row leaves. VoiceOver
-/// skips it; the row around it says who.
+/// Every stack of faces in the app, as Android and the web draw it, by the shared `FaceStack` rule: `.compact` in a
+/// list's row or a form's field (two bubbles: both faces of two people, the first face and "+N" of three or more),
+/// `.roomy` on a screen's own header or body (five: everyone up to five, four faces and "+N" of six or more). Each
+/// bubble is ringed in the surface behind it so its neighbor's edge reads, and keeps its circle whatever room the row
+/// leaves. VoiceOver skips it; the row around it says who.
 struct AvatarStack: View {
     let faces: [StackFace]
     let extraCount: Int
@@ -28,13 +29,13 @@ struct AvatarStack: View {
         self.ringWidth = ringWidth
     }
 
-    /// Everyone at once, cut to the two bubbles here.
-    init(people: [StackFace], size: CGFloat, ring: Color = Palette.card, ringWidth: CGFloat = 2) {
+    /// Everyone at once, cut to the bubbles the place has room for.
+    init(people: [StackFace], stack: FaceStack, size: CGFloat, ring: Color = Palette.card, ringWidth: CGFloat = 2) {
         let count = Int32(people.count)
-        let shown = Int(FaceStack.shared.faceCountOf(peopleCount: count))
+        let shown = Int(stack.faceCountOf(peopleCount: count))
         self.init(
             faces: Array(people.prefix(shown)),
-            extraCount: Int(FaceStack.shared.extraCountOf(peopleCount: count)),
+            extraCount: Int(stack.extraCountOf(peopleCount: count)),
             size: size,
             ring: ring,
             ringWidth: ringWidth,

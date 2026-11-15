@@ -97,7 +97,7 @@ function ItemsBody({ presenter, state, items, money, signed }: { presenter: Spli
                   <span className="truncate font-medium">{row.name}</span>
                   <span className={cn('truncate text-xs', row.isLoose ? 'text-destructive' : 'text-muted-foreground')}>{itemRowSubtitle(row, money)}</span>
                 </span>
-                <AvatarStack {...stackOf(Array.from(row.consumers))} />
+                <AvatarStack {...stackOf(Array.from(row.consumers), 'compact')} />
                 <span role="cell" className="w-24 shrink-0 text-right font-mono text-[13px] tabular-nums">
                   {money(row.totalMinor)}
                 </span>

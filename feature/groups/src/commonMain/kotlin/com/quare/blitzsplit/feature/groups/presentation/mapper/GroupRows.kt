@@ -57,14 +57,14 @@ internal fun rowOf(
         initials = Initials.of(group.name),
         color = group.color,
         photoUrl = group.photo?.toImageUrl(),
-        faces = group.members.toStackedFaces().map {
+        faces = group.members.toStackedFaces(FaceStack.COMPACT).map {
             MemberFace(
                 initial = Initials.firstOf(it.name),
                 color = it.avatarColor,
                 photoUrl = it.photoUrl,
             )
         },
-        extraMemberCount = FaceStack.extraCountOf(group.members.size),
+        extraMemberCount = FaceStack.COMPACT.extraCountOf(group.members.size),
         memberCount = group.members.size,
         memberNames = group.members.take(LISTED_NAMES).map { it.name },
         isPending = group.isPending ||

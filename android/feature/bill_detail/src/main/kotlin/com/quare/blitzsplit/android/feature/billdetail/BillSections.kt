@@ -40,6 +40,7 @@ import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryPath
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.model.FaceStack
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPayer
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillShareRow
@@ -306,6 +307,7 @@ private fun PayerFacesRow(payers: List<BillPayer>) {
                 photoUrl = it.photoUrl,
             )
         },
+        stack = FaceStack.ROOMY,
         size = payerAvatarSize,
         ringColor = MaterialTheme.colorScheme.surface,
     )

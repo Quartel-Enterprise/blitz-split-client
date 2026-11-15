@@ -39,7 +39,7 @@ The home tab, its shortcuts and pinned groups.
     "Floripa trip · You paid" line (beta feedback, it was cut off on a phone): the group's rounded square (its photo,
     or its initials on its color, `HomeBill.groupInitials`, `groupColor`, `groupPhotoUrl`) and then who paid as
     a stack of faces (their photo, or their initial on their color; someone no longer in the group a blank face), at
-    most two bubbles as every stack ([General rules](general.md)) (`HomeBill.payerFaces`, `extraPayerCount`), the amber dot and "queued" after them while the bill
+    most two bubbles as every stack in a list's row ([General rules](general.md)) (`HomeBill.payerFaces`, `extraPayerCount`), the amber dot and "queued" after them while the bill
     waits, as the legacy Bora Rachar drew the payer and the group; TalkBack, VoiceOver and the web's screen readers
     still read "Floripa trip · You paid". The web's list keeps the day after the faces, and its desktop table draws the
     group's square in its Group column and only the faces under the description. Inside the group, Expenses keeps its
