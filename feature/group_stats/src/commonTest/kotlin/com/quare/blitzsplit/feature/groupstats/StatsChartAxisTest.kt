@@ -143,7 +143,7 @@ class StatsChartAxisTest {
     @Test
     fun `GIVEN any largest day WHEN creating the lines THEN at most three equal steps up to the first above it`() {
         // Given
-        val largests = (1L..20_000L) + listOf(99_999L, 145_800L, 1_000_001L, 987_654_321L)
+        val largests = largestsToCheck()
 
         // When
         val ticksByLargest = largests.associateWith { StatsChartAxis.createTicks(bars(it)) }
@@ -162,15 +162,16 @@ class StatsChartAxisTest {
     @Test
     fun `GIVEN any largest day WHEN creating the lines THEN steps by the smallest round amount of a third or more`() {
         // Given
-        val largests = (1L..20_000L) + listOf(99_999L, 145_800L, 1_000_001L, 987_654_321L)
+        val largests = largestsToCheck()
 
         // When
         val stepsByLargest = largests.associateWith { StatsChartAxis.createTicks(bars(it))[1] }
 
         // Then
+        val roundSteps = roundSteps()
         stepsByLargest.forEach { (largest, step) ->
             val third = (largest + 2) / 3
-            val expected = roundSteps().first { it >= third }
+            val expected = roundSteps.first { it >= third }
             assertEquals(expected, step, "largest $largest")
         }
     }
@@ -271,6 +272,22 @@ class StatsChartAxisTest {
         assertNull(average)
     }
 
+    /*
+     * Why: every amount up to three steps of 100, then around each line a round step can land on (one, two and three
+     * steps) plus a few real amounts, so the step and line rules are checked where they change without walking
+     * thousands of amounts, which outran the JS browser runner's timeout.
+     */
+    private fun largestsToCheck(): List<Long> {
+        val steps = roundSteps()
+        val aroundLines = steps.flatMap { step ->
+            (1L..MAX_STEPS).flatMap { count -> listOf(count * step - 1, count * step, count * step + 1) }
+        }
+        return ((1L..MAX_STEPS * DENSE_STEP) + aroundLines + listOf(99_999L, 145_800L, 1_000_001L, 987_654_321L))
+            .filter { it in 1L..MAX_STEPS * steps.last() }
+            .distinct()
+            .sorted()
+    }
+
     // Why: 1, 2, 2.5 and 5 of each power of ten, 2.5 only once it is a whole number of minor units, smallest first.
     private fun roundSteps(): List<Long> = generateSequence(1L) { it * 10 }
         .take(TEN_POWERS)
@@ -294,6 +311,8 @@ class StatsChartAxisTest {
     private companion object {
         const val DAY_MILLIS = 86_400_000L
         const val TEN_POWERS = 12
+        const val MAX_STEPS = 3L
+        const val DENSE_STEP = 100L
     }
 
     @Test
