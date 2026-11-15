@@ -14,6 +14,10 @@ on:
         description: "The commit the release was built from"
         type: string
         required: true
+      admin-only:
+        description: "A stable version's: fail unless a repository admin started this attempt of the run"
+        type: boolean
+        default: false
     secrets:
       # Not required here, so that a missing one fails in the step that names it and points to the docs.
       SITE_RELEASE_NOTES_TOKEN:
@@ -37,6 +41,13 @@ jobs:
         with:
           ref: ${{ inputs.sha }}
           fetch-depth: 0
+
+      # A stable release is an admin's to run, and to run again (docs/release-process.md#who-releases).
+      - name: Check who releases
+        if: ${{ inputs.admin-only }}
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
 
       # A missing token and an expired one both stop here, naming the secret: the checkout below would only say
       # that the authentication failed. The site is public, and GitHub still refuses a token that isn't valid.

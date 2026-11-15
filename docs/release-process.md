@@ -3,7 +3,7 @@
 How a release of Bora Rachar goes out. A **beta** reaches a closed group of testers without the stores or the app's
 domain: one command tags it, publishes each platform to its own channel and records it as a GitHub pre-release
 ([`release-beta.yml`](../.github/workflows/release-beta.yml)). A **stable version** goes to Google Play, the App
-Store and the web, after an approval ([`release-production.yml`](../.github/workflows/release-production.yml),
+Store and the web, as soon as an admin dispatches it ([`release-production.yml`](../.github/workflows/release-production.yml),
 [Releasing a stable version](#releasing-a-stable-version)).
 
 ## Channels
@@ -95,19 +95,21 @@ dispatched behind a waiting one cancels it without a word.
 | `phased_release` | off | Releases an approved update over seven days, to the people with automatic updates. Off, everyone gets it at once |
 | `screenshots` | on | Makes the store listings' screenshots again and uploads them, with a release |
 
-**A run with nothing changed publishes to everyone** (Pierre's call): the production track at 100%, a submission
-for review that goes out by itself once Apple approves it, and the web app at app.blitzsplit.com.
-[The approval](#the-approval) is the one gate. For a run that reaches no user, choose the `internal` track and turn
-`submit_for_review` and `web` off: the bundle goes to Play's internal testers and the Apple builds to TestFlight, with
-no tag and no GitHub release. The web has no testing channel in this workflow: its trial is a beta. With `web` left
-on, such a run still deploys the web for everyone and so tags the version, which `plan` says in the run summary,
-before the approval.
+**A run with nothing changed publishes to everyone, and nothing waits for an approval** (Pierre's calls, as in
+Bible Planner): the production track at 100%, a submission for review that goes out by itself once Apple approves
+it, and the web app at app.blitzsplit.com. The dispatch is the one gate ([Who releases](#who-releases)), so read the
+inputs before it: cancelling a run stops what hasn't started, not what a store or the web already took
+([Re-runs and what a run leaves](#re-runs-and-what-a-run-leaves)). For a run that reaches
+no user, choose the `internal` track and turn `submit_for_review` and `web` off: the bundle goes to Play's internal
+testers and the Apple builds to TestFlight, with no tag and no GitHub release. The web has no testing channel in this
+workflow: its trial is a beta. With `web` left on, such a run still deploys the web for everyone and so tags the
+version: `plan` warns about it at once, in the run summary, while the web job still builds.
 
-1. `plan` resolves the version and the next `versionCode`, checks that the approval can't be skipped, and picks the
-   notes the version tells, once, for every job after it: the stores' "What's new" by language and the GitHub release's
-   ([release-notes.md](release-notes.md)). The run summary shows the version, where each platform goes and the notes.
-2. `approve` waits for [the approval](#the-approval). Nothing is built before it.
-3. Each platform builds and publishes, in jobs of its own, so **Re-run failed jobs** sends a failed upload again
+1. `plan` checks who dispatched the run and from where ([Who releases](#who-releases)), resolves the version and the
+   next `versionCode`, and picks the notes the version tells, once, for every job after it: the stores' "What's new"
+   by language and the GitHub release's ([release-notes.md](release-notes.md)). The run summary shows the version,
+   where each platform goes and the notes.
+2. Each platform builds and publishes, in jobs of its own, so **Re-run failed jobs** sends a failed upload again
    without building a second time. The bundle, the IPA and the package are kept as build artifacts for a week.
    - `android-build` signs an AAB (`:androidApp:bundleRelease`) and prints its certificate, and `android-upload`
      sends it to the track with the notes ([What the stores and the web get](#what-the-stores-and-the-web-get)).
@@ -116,7 +118,7 @@ before the approval.
    - `web` builds the web app at the stable version and deploys it to the Pages project `blitz-split`, with the
      action the beta's job uses ([`web-deploy`](../.github/actions/web-deploy/action.yml)). It is live at once.
    - The screenshots' jobs run next to them ([Screenshots with a release](#screenshots-with-a-release)).
-4. `finalize` runs when a store took a build or the web was deployed, and a platform that failed does not hold it
+3. `finalize` runs when a store took a build or the web was deployed, and a platform that failed does not hold it
    back. When the run **released**, that is, a bundle reached the production track, a build was sent for review or
    the web was deployed, it tags the commit the run built and publishes the GitHub release `X.Y.Z`: the build
    number, "What's new", what each channel got and the pull requests since the stable version before it. It then
@@ -126,22 +128,35 @@ before the approval.
    higher than `main`'s, as a beta does. A run of the web alone, with every store platform off, leaves the
    `versionCode` of `main` alone, as a web-only beta does, and its GitHub release names no build number, since it
    consumed none a store cares about: the version and the fragments are all it merges back.
-5. `site-release-notes` sends the notes of a released version to blitz-split-site, with the job the betas use
+4. `site-release-notes` sends the notes of a released version to blitz-split-site, with the job the betas use
    ([`site-release-notes.yml`](../.github/workflows/site-release-notes.yml), which both workflows call). It doesn't
    wait for the stores' reviews (Pierre's call): the notes are out when the build is submitted. A version the site
    already has, as one written there by hand, is left as it is.
 
-### The approval
+### Who releases
 
-The `approve` job names the GitHub Environment `Production`, and waits until one of its **required reviewers**
-approves the run on its page. Reject a run to change anything, and dispatch another. Create the environment once, in
-**Settings → Environments → New environment**: name it `Production`, tick **Required reviewers** and add who may
-release. GitHub makes an environment a job names and that doesn't exist, with no protection, and the run would then
-publish with no one asked: so `plan` fails when the environment is missing, has no required reviewer, or can't be
-read.
+Nobody approves a stable release (Pierre's call: he and the other admins are the ones who release, and a release
+they dispatch waits for no one, as in Bible Planner). The dispatch is the gate, and `plan` checks it before anything
+is built:
 
-A run waiting for its approval holds the releases' concurrency group: a beta dispatched meanwhile waits behind it, and
-a second one would cancel that beta. Approve or reject a run before starting another release.
+- **An administrator of the repository** started the run: every job, from `plan` to `finalize` and the notes sent
+  to the site, reads the permission of whoever started that attempt (`collaborators/<login>/permission`, the
+  [`release-admin`](../.github/actions/release-admin/action.yml) action) and fails, naming them, when it isn't
+  `admin` or can't be read. So **Re-run failed jobs**, which runs jobs again without `plan`, is an admin's too, and
+  someone else's re-run stops before it builds anything.
+- **On `main`**: a run dispatched on another branch would take that branch's copy of the workflow, and fails.
+- **The `Production` environment only lets `main` deploy.** The jobs that reach a store or app.blitzsplit.com (the
+  uploads, the submissions, the creation of the App Store version, the screenshots' uploads, the web) name the
+  GitHub Environment `Production`, which has no required reviewer and a deployment branch policy with the branch
+  `main` alone. GitHub makes an environment a job names and
+  that doesn't exist, with no rule at all, so `plan` fails when it is missing, when it lets any branch or any
+  protected branch deploy, when its policy allows anything but `main`, or when it can't be read. It was created
+  once, in **Settings → Environments → New environment**: named `Production`, **Deployment branches and tags** set
+  to **Selected branches and tags** with `main`, and no reviewer.
+
+These checks are against mistakes: a release from the wrong branch, or by someone who shouldn't. They are no wall
+around the secrets, which are the repository's, so a workflow changed on a branch someone can push to could still
+read them ([Secrets](#secrets)).
 
 ### What the stores and the web get
 
@@ -187,6 +202,18 @@ editable.
 
 ### Re-runs and what a run leaves
 
+- **A cancelled run** stops the jobs that haven't finished, and nothing undoes the ones that did: a bundle Google
+  Play took, a build App Store Connect holds, a web deployment. `finalize` still runs when a store or the web took
+  something, to record it: the tag, the GitHub release and the notes sent to the site when the run released, and
+  the `versionCode` on `main`. Cancelling is clean only before the first upload job starts, a few minutes after the
+  builds do. A job cancelled while it was uploading may have reached its store, and nothing says which:
+  - An upload to a store counts for the `versionCode`, which is merged back all the same, since it only has to
+    grow, and never for the tag: look at the Play Console or App Store Connect for what is there.
+  - The web job is one step from built to live: look at https://app.blitzsplit.com. A deployment that landed in a
+    run that tagged nothing is recorded by dispatching the web alone, with the same `version` typed.
+
+  **Re-run failed jobs** on a cancelled run runs every job that was cancelled, the web's too: dispatch a new run for
+  what is still wanted.
 - **Re-run failed jobs** works for a week, while the build artifacts last. Every job after a build can run twice:
   Play takes or refuses an edit whole, `ios-submit` and `macos-submit` find a version already submitted (waiting
   for review, in review or beyond) and do nothing, and `finalize` skips what an earlier attempt did, as a beta's.
@@ -263,9 +290,10 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | `VITE_VAPID_PUBLIC_KEY` | The public half of the server's VAPID pair, see [Push](#push) |
 
 Also needed once: **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests**, for the
-merge-back, and for the stable versions the `Production` environment with its required reviewers
-([The approval](#the-approval)). Every secret above is a repository secret, which any job of the repository's
-workflows can read: the environment is a gate on the run, not on the secrets.
+merge-back, and for the stable versions the `Production` environment, with no reviewer and a deployment branch
+policy that only allows `main` ([Who releases](#who-releases)). Every secret above is a repository secret, which any
+job of the repository's workflows can read: the environment limits which branch deploys through the release's jobs,
+not who reads the secrets.
 
 ### The production web app
 
