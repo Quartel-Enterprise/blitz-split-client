@@ -2776,6 +2776,22 @@ class ContactProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN another screen over her profile WHEN her face is tapped THEN neither opens nor sends anything`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(personKey = CARLA_KEY)
+            navigator.navigate(Route.SettleUp(CARLA_KEY, GroupCurrency.BRL))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ContactProfileUiEvent.OnPhotoClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isPhotoOpen)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
     fun `GIVEN her profile just opened WHEN nothing is tapped THEN her photo is closed`() = runTest(testDispatcher) {
         // Given
         prepareScenario(

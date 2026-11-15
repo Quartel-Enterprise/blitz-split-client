@@ -271,7 +271,9 @@ class ContactProfileViewModel(
 
             ContactProfileUiEvent.OnShareProfileClicked -> shareProfile()
 
-            ContactProfileUiEvent.OnPhotoClicked -> if (uiState.value.contact != null && !uiState.value.isPhotoOpen) {
+            ContactProfileUiEvent.OnPhotoClicked -> if (isShown() && uiState.value.contact != null &&
+                !uiState.value.isPhotoOpen
+            ) {
                 trackEvent("contact_photo_clicked", emptyMap())
                 uiState.update { it.copy(isPhotoOpen = true) }
             }
