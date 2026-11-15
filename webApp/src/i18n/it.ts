@@ -801,6 +801,7 @@ export const it: Record<MessageKey, string> = {
   profile_emailInfoBody: 'È qui perché tu sappia con quale account hai effettuato l’accesso. Le persone dei tuoi gruppi vedono il tuo nome e la tua foto, mai la tua email.',
   profile_accountNone: 'Nessun account',
   profile_accountNoneDetail: 'Cancellato dopo 30 giorni di inutilizzo',
+  profile_accountLocalDetail: 'Dati in questo browser',
   profile_connect: 'Collega',
   profile_connectFailed: 'Impossibile collegarsi in questo momento. Riprova.',
   profile_recoveryCode: 'Codice di recupero',

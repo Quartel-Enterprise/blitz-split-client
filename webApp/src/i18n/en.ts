@@ -799,6 +799,7 @@ export const en = {
   profile_emailInfoBody: "It's here so you know which account you're signed in with. The people in your groups see your name and photo, never your email.",
   profile_accountNone: 'No account',
   profile_accountNoneDetail: 'Deleted after 30 days without use',
+  profile_accountLocalDetail: 'Data in this browser',
   profile_connect: 'Connect',
   profile_connectFailed: "Couldn't connect right now. Try again.",
   profile_recoveryCode: 'Recovery code',

@@ -801,6 +801,7 @@ export const tr: Record<MessageKey, string> = {
   profile_emailInfoBody: 'Hangi hesapla giriş yaptığını bilmen için burada. Gruplarındaki kişiler adını ve fotoğrafını görür, e-postanı asla görmez.',
   profile_accountNone: 'Hesap yok',
   profile_accountNoneDetail: '30 gün kullanılmazsa silinir',
+  profile_accountLocalDetail: 'Veriler bu tarayıcıda',
   profile_connect: 'Bağlan',
   profile_connectFailed: 'Şu anda bağlanılamadı. Tekrar dene.',
   profile_recoveryCode: 'Kurtarma kodu',

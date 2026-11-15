@@ -58,8 +58,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     (Android's dialog, a popover on Apple platforms and the web, `ProfileDialog.EMAIL_INFO`); without an email the
     row falls back to the provider's name and has no ⓘ. Without Google or Apple the row keeps "No account" and its
     line, under an anonymous-person icon (a person with a slash): "Deleted after 30 days without use" once the
-    account is on the server (`hasAnonymousId`; the web says it for every profile without an account), since the
-    server deletes it then ([general.md](general.md)), and "Saved only on this device for now" before the first sync. On Android its "Connect" button drops under the
+    account is on the server (`hasAnonymousId`), since the
+    server deletes it then ([general.md](general.md)), and "Saved only on this device for now" before the first sync ("Data in this browser" on the web). On Android its "Connect" button drops under the
     texts where the row is narrow for its font (under 300 dp times the font scale), so the line beside it never breaks inside a word. The row opens nothing and nothing disconnects the
     Google or Apple account from the user (Pierre's call, beta feedback). Who wants it gone signs out or deletes the
     account. The server has no `unlink-identity` function any more.

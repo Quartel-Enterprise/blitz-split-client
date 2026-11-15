@@ -104,10 +104,13 @@ internal suspend fun syncOnSessionRecovery(
 
 /*
  * Why: the server deleted the account for inactivity, so its copy leaves the device as in a deletion asked here, and
- * the welcome tells why. Under the sync lock, and read again there: a sign out that got ahead already erased it.
+ * the welcome tells why. Under the sync lock, and read again there: a sign out that got ahead already erased it. A
+ * profile that failed to go keeps the account pending, so no sync registers a new user with it and the next launch
+ * erases again.
  */
 internal suspend fun eraseExpiredAccount(
     accountRepository: AccountRepository,
+    profileRepository: ProfileRepository,
     syncLock: Mutex,
     eraseDeviceCopy: suspend () -> Unit,
 ) {
@@ -121,7 +124,8 @@ internal suspend fun eraseExpiredAccount(
                 val account = accountRepository.observeAccount().first()
                 if (account.inactivityExpiry == InactivityExpiry.PENDING) {
                     eraseDeviceCopy()
-                    suspendRunCatching { accountRepository.endExpiredSession() }
+                    val isErased = suspendRunCatching { profileRepository.observeProfile().first() == null }
+                    if (isErased.getOrDefault(false)) suspendRunCatching { accountRepository.endExpiredSession() }
                 }
             }
         }

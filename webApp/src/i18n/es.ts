@@ -801,6 +801,7 @@ export const es: Record<MessageKey, string> = {
   profile_emailInfoBody: 'Aparece aquí para que sepas con qué cuenta iniciaste sesión. Las personas de tus grupos ven tu nombre y tu foto, nunca tu correo.',
   profile_accountNone: 'Sin cuenta',
   profile_accountNoneDetail: 'Se borra tras 30 días sin uso',
+  profile_accountLocalDetail: 'Datos en este navegador',
   profile_connect: 'Conectar',
   profile_connectFailed: 'No se pudo conectar ahora. Inténtalo de nuevo.',
   profile_recoveryCode: 'Código de recuperación',

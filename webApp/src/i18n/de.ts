@@ -802,6 +802,7 @@ export const de: Record<MessageKey, string> = {
   profile_emailInfoBody: 'Sie steht hier, damit du weißt, mit welchem Konto du angemeldet bist. Die Leute in deinen Gruppen sehen deinen Namen und dein Foto, nie deine E-Mail.',
   profile_accountNone: 'Kein Konto',
   profile_accountNoneDetail: 'Wird nach 30 Tagen ohne Nutzung gelöscht',
+  profile_accountLocalDetail: 'Daten in diesem Browser',
   profile_connect: 'Verbinden',
   profile_connectFailed: 'Verbinden gerade nicht möglich. Versuch es noch mal.',
   profile_recoveryCode: 'Wiederherstellungscode',

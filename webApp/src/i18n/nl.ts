@@ -802,6 +802,7 @@ export const nl: Record<MessageKey, string> = {
   profile_emailInfoBody: 'Het staat hier zodat je weet met welk account je bent ingelogd. De mensen in je groepen zien je naam en foto, nooit je e-mailadres.',
   profile_accountNone: 'Geen account',
   profile_accountNoneDetail: 'Wordt na 30 dagen zonder gebruik verwijderd',
+  profile_accountLocalDetail: 'Gegevens in deze browser',
   profile_connect: 'Verbinden',
   profile_connectFailed: 'Verbinden lukt nu niet. Probeer het opnieuw.',
   profile_recoveryCode: 'Herstelcode',

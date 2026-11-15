@@ -801,6 +801,7 @@ export const ja: Record<MessageKey, string> = {
   profile_emailInfoBody: 'どのアカウントでログインしているか分かるように表示しています。グループのメンバーにはあなたの名前と写真が表示され、メールアドレスは表示されません。',
   profile_accountNone: 'アカウントなし',
   profile_accountNoneDetail: '30日間使わないと削除されます',
+  profile_accountLocalDetail: 'データはこのブラウザに保存',
   profile_connect: '接続',
   profile_connectFailed: '現在接続できません。もう一度お試しください。',
   profile_recoveryCode: '復元コード',

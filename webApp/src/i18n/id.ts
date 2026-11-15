@@ -800,6 +800,7 @@ export const id: Record<MessageKey, string> = {
   profile_emailInfoBody: 'Email ini ada di sini agar kamu tahu akun mana yang kamu pakai untuk masuk. Orang di grupmu melihat nama dan fotomu, tidak pernah emailmu.',
   profile_accountNone: 'Tanpa akun',
   profile_accountNoneDetail: 'Dihapus setelah 30 hari tidak dipakai',
+  profile_accountLocalDetail: 'Data di browser ini',
   profile_connect: 'Hubungkan',
   profile_connectFailed: 'Belum bisa terhubung sekarang. Coba lagi.',
   profile_recoveryCode: 'Kode pemulihan',

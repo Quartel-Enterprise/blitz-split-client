@@ -528,7 +528,8 @@ that refusal apart: an anonymous account whose session ends 29 days or more afte
 30, since the server counts on its own clock) becomes `InactivityExpiry.PENDING` in the write that drops the user.
 While it is pending `ensureRegistered()` fails with `AccountExpiredException`, so no sync signs in a new anonymous
 user over the old copy. `eraseExpiredAccount` (started by `SyncCoordinator.start()`) then erases the device's copy
-under the sync lock, as "Delete account" does, and `endExpiredSession()` leaves `InactivityExpiry.NOTICE`, which
+under the sync lock, as "Delete account" does (a profile that failed to go keeps it pending for the next launch), and
+`endExpiredSession()` leaves `InactivityExpiry.NOTICE`, which
 Welcome shows once (`showsExpiredAccountNotice`) until "OK" clears it. `AppViewModel` puts Welcome in place as soon as
 the profile is gone. A session lost sooner, or on a device that never recorded a sync, is not an expiry and keeps the
 old path: the profile stays and the next sync registers a new anonymous user.

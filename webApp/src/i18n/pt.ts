@@ -800,6 +800,7 @@ export const pt: Record<MessageKey, string> = {
   profile_emailInfoBody: 'Ele aparece aqui para você saber com qual conta entrou. As pessoas dos seus grupos veem seu nome e sua foto, nunca o seu e-mail.',
   profile_accountNone: 'Sem conta',
   profile_accountNoneDetail: 'Apagada após 30 dias sem uso',
+  profile_accountLocalDetail: 'Dados neste navegador',
   profile_connect: 'Conectar',
   profile_connectFailed: 'Não deu para conectar agora. Tente de novo.',
   profile_recoveryCode: 'Código de recuperação',

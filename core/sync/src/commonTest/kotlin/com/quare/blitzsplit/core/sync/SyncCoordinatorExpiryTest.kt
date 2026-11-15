@@ -334,7 +334,7 @@ class SyncCoordinatorExpiryTest {
         }
 
     @Test
-    fun `GIVEN clearing the profile fails WHEN an expired account is erased THEN the rest goes and the notice stays`() =
+    fun `GIVEN clearing the profile fails WHEN an expired account is erased THEN the rest goes and it stays pending`() =
         runTest {
             // Given
             prepareScenario(
@@ -351,27 +351,26 @@ class SyncCoordinatorExpiryTest {
             // Then
             assertEquals(deviceCopy, steps.attempts)
             assertTrue(paymentKeys.keys.value.isEmpty())
-            assertEquals(InactivityExpiry.NOTICE, account.snapshot.value.inactivityExpiry)
+            assertEquals(InactivityExpiry.PENDING, account.snapshot.value.inactivityExpiry)
         }
 
     @Test
-    fun `GIVEN every clear fails WHEN an expired account is erased THEN tries each one and leaves the notice`() =
-        runTest {
-            // Given
-            prepareScenario(
-                expiry = InactivityExpiry.PENDING,
-                failingSteps = deviceCopy.toSet(),
-            )
-            account.registerError = AccountExpiredException()
+    fun `GIVEN every clear fails WHEN an expired account is erased THEN tries each one and stays pending`() = runTest {
+        // Given
+        prepareScenario(
+            expiry = InactivityExpiry.PENDING,
+            failingSteps = deviceCopy.toSet(),
+        )
+        account.registerError = AccountExpiredException()
 
-            // When
-            coordinator.start()
-            runCurrent()
+        // When
+        coordinator.start()
+        runCurrent()
 
-            // Then
-            assertEquals(deviceCopy, steps.attempts)
-            assertEquals(InactivityExpiry.NOTICE, account.snapshot.value.inactivityExpiry)
-        }
+        // Then
+        assertEquals(deviceCopy, steps.attempts)
+        assertEquals(InactivityExpiry.PENDING, account.snapshot.value.inactivityExpiry)
+    }
 
     @Test
     fun `GIVEN the notice fails to be left WHEN an expired account is erased THEN the device copy is still erased`() =

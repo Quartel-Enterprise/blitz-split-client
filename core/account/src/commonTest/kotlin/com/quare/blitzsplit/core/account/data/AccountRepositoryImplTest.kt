@@ -2876,6 +2876,24 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN an account pending its expiry and a new session WHEN ensuring registration THEN registers its user`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            startExpiredAccount()
+            remote.sessionUsers.value = SessionUser("user-1", AccountProvider.GOOGLE, "Pierre", null, null)
+
+            // When
+            val result = repository.ensureRegistered()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals("user-1", result.getOrNull())
+            assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), account.status)
+            assertNull(account.inactivityExpiry)
+        }
+
+    @Test
     fun `GIVEN an account pending its expiry WHEN its session is ended THEN leaves only the notice`() = runTest {
         // Given
         prepareScenario(currentUser = null)
