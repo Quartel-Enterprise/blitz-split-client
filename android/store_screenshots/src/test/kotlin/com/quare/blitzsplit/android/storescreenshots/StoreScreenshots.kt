@@ -78,8 +78,8 @@ internal abstract class StoreScreenshots(
         content: @Composable (SampleTrip) -> Unit,
     ) {
         assumeFalse("${screen.name} only fills an App Store slot", appleSlot == null && screen.isAppStoreOnly)
-        // The iPhone Duo and the Mac are captured only where their simulator or window could be: a run without them
-        // skips their slots instead of failing the others.
+        // The iPhone Duo, closed and open, and the Mac are captured only where their simulator or window could be: a
+        // run without them skips their slots instead of failing the others.
         appleSlot?.let { assumeTrue("No ${it.directoryName} captures of every language", hasAppleCaptures(it)) }
         // The fixtures' days and times are in UTC, so "Today" and "21:00" read the same on every machine.
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
@@ -156,6 +156,17 @@ internal class IPhoneDuoStoreScreenshots :
         outputSubdir = "iphoneduo",
         canvas = ScreenshotCanvas.px(1398, 2034),
         mockupFrame = { content -> DuoBezelSurface(content) },
+    )
+
+// The iPhone Duo open: its inner display lying down, the way it opens, in the same plain bezel. Its odd pixel size
+// only lands on whole dp at the display's own 3x.
+internal class IPhoneDuoOpenStoreScreenshots :
+    StoreScreenshots(
+        appleSlot = AppleScreenshotSlot.IPHONE_DUO_OPEN,
+        formFactor = FormFactor.AppleIPad13,
+        outputSubdir = "iphoneduoopen",
+        canvas = ScreenshotCanvas.px(2853, 2007, density = 3f),
+        mockupFrame = { content -> DuoOpenBezelSurface(content) },
     )
 
 // The Mac app's window, on a 2880x1800 canvas (16:10, the largest size the Mac slot takes).

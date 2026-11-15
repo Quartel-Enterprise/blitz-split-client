@@ -89,9 +89,10 @@ contact sheets. Run it once per size. Put `font_scale`, `wm size` and `wm densit
 (tabletop, a book's band) needs the Pixel Fold or Galaxy Z Fold emulator; say so when they were not run.
 
 **iOS**: the iPhone Duo closed (`--display=1`), an iPhone and an iPad, in light and dark, on the seeded screens.
-The Duo's inner display stays black until the simulator is unfolded by hand in Device Hub, and no tool does it: ask
-the user to unfold it while they are there, capture with display 3, and otherwise report the open Duo as read in code
-only. Large text: `xcrun simctl ui <udid> content_size extra-extra-extra-large`.
+The Duo's inner display stays off until the simulator is opened in Device Hub (the Open button in the bar under the
+device), and no command line tool moves the hinge: ask the user to press it while they are there, capture with
+display 3, and otherwise report the open Duo as read in code only. Large text:
+`xcrun simctl ui <udid> content_size extra-extra-extra-large`.
 
 **Web**: the worktree's dev server on a free port, in the browser pane, at 320, 375, 768, 1024 and 1440 px wide
 (`resize_window`), light and dark.

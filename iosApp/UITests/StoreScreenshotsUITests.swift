@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 
 /// Captures the App Store screenshots (docs/store-listing-screenshots.md) on the simulator it runs on: for every
@@ -25,6 +26,12 @@ final class StoreScreenshotsUITests: XCTestCase {
     /// How long a launched screen takes to seed, open and finish its transitions before the capture. "Bill items"
     /// opens by itself in that time (BlitzSplitApple.createSplitBillViewModel), so the test taps nothing.
     private static let settle: TimeInterval = 4
+
+    /// The slot of the iPhone Duo open, which capture-ios.sh opens in Device Hub before the test runs.
+    private static let duoOpenSlot = "iphoneduoopen"
+
+    /// The long side of the iPhone Duo's inner display, in pixels.
+    private static let innerDisplayLongSide = 2853
 
     override func setUp() {
         continueAfterFailure = false
@@ -54,7 +61,7 @@ final class StoreScreenshotsUITests: XCTestCase {
             let directory = output.appendingPathComponent(slot).appendingPathComponent(locale.tag)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             for screen in screens where onlyScreens?.contains(screen.code) ?? true {
-                let png = capture(screen, in: locale, assets: assets)
+                let png = try capture(screen, in: locale, assets: assets, isDuoOpen: slot == Self.duoOpenSlot)
                 try png.write(to: directory.appendingPathComponent("\(screen.fileName).png"))
             }
         }
@@ -118,7 +125,12 @@ final class StoreScreenshotsUITests: XCTestCase {
     }
 
     @MainActor
-    private func capture(_ screen: ListingScreen, in locale: ListingLocale, assets: [String: String]) -> Data {
+    private func capture(
+        _ screen: ListingScreen,
+        in locale: ListingLocale,
+        assets: [String: String],
+        isDuoOpen: Bool
+    ) throws -> Data {
         let app = XCUIApplication()
         app.launchArguments = [
             "-StoreScreenshotsLanguage", locale.language,
@@ -130,8 +142,38 @@ final class StoreScreenshotsUITests: XCTestCase {
         app.launchEnvironment = assets
         app.launch()
         Thread.sleep(forTimeInterval: Self.settle)
-        let png = XCUIScreen.main.screenshot().pngRepresentation
+        let png = isDuoOpen ? Self.innerDisplayPNG() : XCUIScreen.main.screenshot().pngRepresentation
         app.terminate()
-        return png
+        return try XCTUnwrap(png, "The iPhone Duo isn't open: no screen of its inner display's size is lying down")
+    }
+
+    /// The iPhone Duo's inner display, nil while the Duo isn't open. Open, the Duo draws there, on what XCTest lists
+    /// as a second screen, while the main one, the outer display, is off: of the two, the larger is the one in use. A
+    /// screen longer than the inner display is none of the Duo's own (the simulator has a resizable scene display
+    /// too) and is left out. XCTest hands the display lying down as upright pixels with a rotation tag, which the
+    /// frame's decoder doesn't read, so the image is drawn again the way it is seen, pixel for pixel. Closed, the
+    /// inner display is off and upright, and nothing is returned rather than a black capture for the frame to stretch.
+    @MainActor
+    private static func innerDisplayPNG() -> Data? {
+        let images = XCUIScreen.screens.map { $0.screenshot().image }.filter { image in
+            image.cgImage.map { max($0.width, $0.height) <= innerDisplayLongSide } ?? false
+        }
+        guard let image = images.max(by: { pixels(of: $0) < pixels(of: $1) }),
+              image.size.width > image.size.height
+        else { return nil }
+        let size = CGSize(
+            width: (image.size.width * image.scale).rounded(),
+            height: (image.size.height * image.scale).rounded()
+        )
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = true
+        return UIGraphicsImageRenderer(size: size, format: format).pngData { _ in
+            image.draw(in: CGRect(origin: .zero, size: size))
+        }
+    }
+
+    private static func pixels(of image: UIImage) -> Int {
+        image.cgImage.map { $0.width * $0.height } ?? 0
     }
 }

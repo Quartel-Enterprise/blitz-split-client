@@ -9,6 +9,8 @@ package com.quare.blitzsplit.android.storescreenshots
  * - [IPAD_13]: the 13" iPad, 1024x1366: an iPad Air 13", the frame's AppleIPad13 screen.
  * - [IPHONE_DUO]: the iPhone Duo closed, as the simulator boots it: its outer display at 1398x2034 px, in a frame of its
  *   own.
+ * - [IPHONE_DUO_OPEN]: the iPhone Duo open and lying down, once Device Hub opened it: its inner display, 2853x2007 px,
+ *   which XCTest hands a pixel short each way (2852x2006) and the frame draws on the display's own canvas.
  * - [MAC]: the Mac app's window at 1440x900 points, in a window frame on a 2880x1800 canvas.
  */
 internal enum class AppleScreenshotSlot(
@@ -18,5 +20,6 @@ internal enum class AppleScreenshotSlot(
     IPHONE_6_7(directoryName = "iphone67"),
     IPAD_13(directoryName = "ipad13"),
     IPHONE_DUO(directoryName = "iphoneduo"),
+    IPHONE_DUO_OPEN(directoryName = "iphoneduoopen"),
     MAC(directoryName = "mac"),
 }
