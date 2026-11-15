@@ -115,8 +115,9 @@ const pluralRules = new Intl.PluralRules(documentLanguage)
  * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many
  * (0, 5–21…). Its message for a `…Other` key with a `{count}` holds both, "{count} grupy|{count} grup", and this picks
  * the one `count` takes (a fraction taking few's, as Polish does). Russian and Ukrainian also say 21 in the singular
- * ("21 группа"), so theirs hold three, one|few|many: "{count} группа|{count} группы|{count} групп" (a fraction taking
- * few's too). Any other message has one form. `count` must be the number itself, not a formatted string: one that
+ * ("21 группа"), so theirs hold three, one|few|many: "{count} группа|{count} группы|{count} групп". A fraction takes
+ * few's, which is Russian's own; Ukrainian has a form of its own for it ("1,5 платежу"), which no count the app
+ * passes needs. Any other message has one form. `count` must be the number itself, not a formatted string: one that
  * isn't a number gets the many form, the one most counts take.
  */
 function pluralFormOf(message: string, count: string | number | undefined): string {
@@ -173,7 +174,8 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * user's ("as divisé", "hast geteilt", "bist beigetreten", "hai diviso", "hebt verdeeld", "bent lid geworden"). Polish
  * ones start with a past in "ł(a)", the app not knowing the gender: "podzielił(a)" becomes "podzieliłeś(-aś)". Turkish
  * ones end with their simple past, which takes an "n": "böldü" becomes "böldün". Other languages keep the verb as it
- * is, Brazil's Portuguese too ("Você dividiu"). Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or
+ * is, Brazil's Portuguese too ("Você dividiu"), and Russian and Ukrainian, whose past says the gender but not the
+ * person ("Ты разделил(а)"). Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or
  * "-iste": "dividiu" becomes "dividiste". Same rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
 export function verbForYou(verb: string): string {

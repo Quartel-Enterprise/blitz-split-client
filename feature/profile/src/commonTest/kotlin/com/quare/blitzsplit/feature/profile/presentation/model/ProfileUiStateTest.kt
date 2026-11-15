@@ -767,6 +767,18 @@ class ProfileUiStateTest {
     }
 
     @Test
+    fun `GIVEN ua or uk typed and no names WHEN searching the languages THEN finds Ukrainian by chip or code`() {
+        // Given
+        val queries = listOf("ua", "uk")
+
+        // When
+        val options = queries.map { state(languageQuery = it).findLanguageOptions({ emptyList() }) }
+
+        // Then
+        assertEquals(List(queries.size) { listOf(AppLanguage.UKRAINIAN) }, options)
+    }
+
+    @Test
     fun `GIVEN the code NL typed in upper case WHEN searching the languages THEN finds Dutch by its code`() {
         // Given
         val profile = state(languageQuery = "NL")

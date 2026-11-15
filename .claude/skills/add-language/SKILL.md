@@ -69,8 +69,10 @@ language allows, put it in the glossary, add it to the three helpers and describ
 person needs none of this.
 
 A language that conjugates also says the deleted-item notice with who deleted it first ("Tu as supprimé…"): add it to
-`youSubjectLanguages` in `SecondPersonVerbs.kt`, so Android uses "You" and the verb rule instead of "by you". Apple's
-notice always starts with the actor, and the web has its own `activity_deletedByMe` message.
+`youSubjectLanguages` in `SecondPersonVerbs.kt`, so Android uses "You" and the verb rule instead of "by you". So does a
+language that would decline the names after "by" (Russian, Ukrainian: "Ты удалил(а): …"); its Android notice must then
+start with the deleter's `%2$s`. Apple's notice always starts with the actor, and the web has its own
+`activity_deletedByMe` message: three places to check for each new language.
 
 ## 5. The strings
 
