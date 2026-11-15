@@ -15,7 +15,9 @@
         "nl": "De bovenbalk van een uitgave toont nu de foto van de groep, of haar initialen, naast de groepsnaam.",
         "ja": "支出の上部バーに、グループ名の横にグループの写真（またはイニシャル）が表示されるようになりました。",
         "tr": "Bir harcamanın üst çubuğu artık grubun adının yanında grubun fotoğrafını ya da baş harflerini gösteriyor.",
-        "id": "Bilah atas sebuah tagihan kini menampilkan foto grup, atau inisialnya, di samping nama grup."
+        "id": "Bilah atas sebuah tagihan kini menampilkan foto grup, atau inisialnya, di samping nama grup.",
+        "ru": "Верхняя панель счёта теперь показывает фото группы или её инициалы рядом с названием группы.",
+        "uk": "Верхня панель рахунку тепер показує фото групи або її ініціали поруч із назвою групи."
       }
     },
     {
@@ -33,7 +35,9 @@
         "nl": "Tik je op iemands foto, dan beweegt die nu mee naar het profiel, en weer terug als je teruggaat.",
         "ja": "誰かの写真をタップすると、写真がそのままプロフィールへ移動し、戻るときも元の場所へ戻るようになりました。",
         "tr": "Birinin fotoğrafına dokunduğunda fotoğraf artık profiline taşınıyor, geri döndüğünde de yerine dönüyor.",
-        "id": "Mengetuk foto seseorang kini membawa foto itu ke profilnya, dan kembali lagi saat kamu kembali."
+        "id": "Mengetuk foto seseorang kini membawa foto itu ke profilnya, dan kembali lagi saat kamu kembali.",
+        "ru": "Если нажать на чьё-то фото, оно переносится в профиль этого человека и обратно, когда ты возвращаешься.",
+        "uk": "Якщо натиснути на чиєсь фото, воно переноситься в профіль цієї людини й назад, коли ти повертаєшся."
       }
     },
     {
@@ -51,7 +55,9 @@
         "nl": "Een uitgave die je opent vanuit de Uitgaven van een groep schuift nu op haar plek zoals vanaf Home, en de groepsfoto bij de uitgaven op Home vliegt naar de bovenbalk van de uitgave.",
         "ja": "グループの支出から開いた支出も、ホームから開いたときと同じように移動して表示されるようになり、ホームの支出にあるグループの写真が支出の上部バーへ移動します。",
         "tr": "Bir grubun Harcamalar sekmesinden açılan harcama artık Ana Sayfa'dan açıldığı gibi yerine kayıyor; Ana Sayfa'daki harcamalarda grubun fotoğrafı da harcamanın üst çubuğuna uçuyor.",
-        "id": "Tagihan yang dibuka dari Pengeluaran grup kini bergerak ke tempatnya seperti dari Beranda, dan foto grup di tagihan Beranda terbang ke bilah atas tagihan."
+        "id": "Tagihan yang dibuka dari Pengeluaran grup kini bergerak ke tempatnya seperti dari Beranda, dan foto grup di tagihan Beranda terbang ke bilah atas tagihan.",
+        "ru": "Счёт, открытый из «Расходов» группы, теперь встаёт на место так же, как с «Главной», а фото группы у счетов на «Главной» перелетает в верхнюю панель счёта.",
+        "uk": "Рахунок, відкритий із «Витрат» групи, тепер стає на місце так само, як із «Головної», а фото групи біля рахунків на «Головній» перелітає у верхню панель рахунку."
       }
     }
   ]

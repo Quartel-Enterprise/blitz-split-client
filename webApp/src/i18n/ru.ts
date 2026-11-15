@@ -1066,6 +1066,7 @@ export const ru: Record<MessageKey, string> = {
   payingMethod_paidWith: 'Чем оплачено',
   payingMethod_paidWithNone: 'Не указано',
   payingMethod_paidWithPrivate: 'Это видишь только ты.',
+  payingMethod_paidWithOnlyPayers: 'Отметить, чем оплачено, могут только те, кто платил за этот счёт.',
 
   balance_title: 'Твой баланс в этой группе',
   balance_toGetBack: 'тебе должны',

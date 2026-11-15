@@ -18,7 +18,9 @@
         "nl": "In \"Uitgave verdelen\" verschijnt \"Betaald met\" nu ook, gedimd, als iemand anders heeft betaald: een tik legt uit dat alleen wie betaalde kan aangeven waarmee.",
         "ja": "「支出を割り勘」で、ほかの人が支払った場合も「支払い方法」が薄く表示されるようになりました。タップすると、支払った人だけが選べることを説明します。",
         "tr": "\"Harcama böl\" ekranında \"Ödeme şekli\" artık başkası ödediğinde de soluk olarak görünüyor: dokununca yalnızca ödeyenlerin seçebileceğini açıklıyor.",
-        "id": "Di \"Bagi tagihan\", \"Dibayar dengan\" kini juga tampil redup saat orang lain yang membayar: mengetuknya menjelaskan bahwa hanya yang membayar yang bisa menandai cara bayarnya."
+        "id": "Di \"Bagi tagihan\", \"Dibayar dengan\" kini juga tampil redup saat orang lain yang membayar: mengetuknya menjelaskan bahwa hanya yang membayar yang bisa menandai cara bayarnya.",
+        "ru": "В «Разделить счёт» поле «Чем оплачено» теперь видно, даже когда платил кто-то другой, но неактивным: нажатие объясняет, что отметить способ оплаты могут только те, кто платил.",
+        "uk": "У «Розділити рахунок» поле «Чим сплачено» тепер видно, навіть коли платив хтось інший, але неактивним: натискання пояснює, що позначити спосіб оплати можуть лише ті, хто платив."
       }
     }
   ]

@@ -1066,6 +1066,7 @@ export const uk: Record<MessageKey, string> = {
   payingMethod_paidWith: 'Чим сплачено',
   payingMethod_paidWithNone: 'Немає',
   payingMethod_paidWithPrivate: 'Це бачиш лише ти.',
+  payingMethod_paidWithOnlyPayers: 'Позначити, чим сплачено, можуть лише ті, хто платив за цей рахунок.',
 
   balance_title: 'Твій баланс у цій групі',
   balance_toGetBack: 'до отримання',

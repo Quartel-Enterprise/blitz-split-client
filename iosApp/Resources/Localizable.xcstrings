@@ -163934,10 +163934,22 @@
             "value" : "Só quem pagou esta conta pode marcar com o que pagou."
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отметить, чем оплачено, могут только те, кто платил за этот счёт."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ödeme şeklini yalnızca bu harcamayı ödeyenler seçebilir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позначити, чим сплачено, можуть лише ті, хто платив за цей рахунок."
           }
         }
       }

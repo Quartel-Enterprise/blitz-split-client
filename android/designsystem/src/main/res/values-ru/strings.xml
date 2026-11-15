@@ -320,5 +320,6 @@
     <string name="designsystem_paid_with">Чем оплачено</string>
     <string name="designsystem_paid_with_none">Не указано</string>
     <string name="designsystem_paid_with_private">Это видишь только ты.</string>
+    <string name="designsystem_paid_with_only_payers">Отметить, чем оплачено, могут только те, кто платил за этот счёт.</string>
     <string name="designsystem_paid_with_add">Добавить способ оплаты</string>
 </resources>
