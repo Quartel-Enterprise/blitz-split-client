@@ -52,8 +52,6 @@
     <string name="designsystem_balance_you_owe">debes</string>
     <string name="designsystem_balance_settled">%s · tienes las cuentas saldadas</string>
     <string name="designsystem_balance_get_and_owe">Recuperas %1$s y debes %2$s</string>
-    <string name="designsystem_balance_get">Recuperas %s</string>
-    <string name="designsystem_balance_owe">Debes %s</string>
     <string name="designsystem_balance_everyone_settled">Aquí nadie le debe nada a nadie.</string>
     <string name="designsystem_balance_others_settling">Otros aún deben saldar cuentas.</string>
     <string name="designsystem_balance_settle">Saldar cuentas</string>

@@ -1065,8 +1065,6 @@ export const id: Record<MessageKey, string> = {
   balance_youOwe: 'kamu berutang',
   balance_settled: '{amount} · kamu sudah lunas',
   balance_getAndOwe: 'Kamu menerima {received} dan berutang {owed}',
-  balance_get: 'Kamu menerima {amount}',
-  balance_owe: 'Kamu berutang {amount}',
   balance_everyoneSettled: 'Tidak ada yang berutang apa pun di sini.',
   balance_othersSettling: 'Yang lain masih harus melunasi.',
   balance_settle: 'Lunasi',

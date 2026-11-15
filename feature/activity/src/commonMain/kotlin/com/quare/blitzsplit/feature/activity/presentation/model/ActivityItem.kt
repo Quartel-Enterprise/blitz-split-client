@@ -20,6 +20,8 @@ data class ActivityItem(
     val groupName: String?,
     // Why: null once the group is gone from the device.
     val groupColor: AvatarColor?,
+    // Why: drawn in place of the color's square beside the group's name; null with no photo or once the group is gone.
+    val groupPhotoUrl: String?,
     val groupType: GroupType?,
     val occurredAt: Long,
     // Why: the bill's description, or the group's or member's name.

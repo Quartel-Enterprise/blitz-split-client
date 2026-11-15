@@ -171,7 +171,7 @@ export function GroupPage({
           {header.myBalance && (
             <BalanceCard
               balance={header.myBalance}
-              isEveryoneSettled={header.isEveryoneSettled}
+              detail={header.myBalanceDetail ?? 'none'}
               currency={header.currency}
               fractionDigits={header.fractionDigits}
               onSettle={() => events.settle()}

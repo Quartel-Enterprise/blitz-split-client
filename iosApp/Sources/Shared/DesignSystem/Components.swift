@@ -182,17 +182,25 @@ struct AvatarPhoto: View {
             .foregroundStyle(color.content)
             .frame(width: size, height: size)
             .background(color.container, in: .circle)
-            .overlay {
-                if let photoUrl, let url = URL(string: photoUrl) {
-                    AsyncImage(url: url) { phase in
-                        if let image = phase.image {
-                            image.renderingMode(.original).resizable().scaledToFill()
-                        }
+            .avatarPhoto(photoUrl, size: size, shape: .circle)
+    }
+}
+
+extension View {
+    /// A person's or a group's photo over its avatar of side `size`, cut to its shape. Nothing shows until it loads
+    /// or when it fails to, so what is under it (the initials, the color) stays.
+    func avatarPhoto(_ photoUrl: String?, size: CGFloat, shape: some Shape) -> some View {
+        overlay {
+            if let photoUrl, let url = URL(string: photoUrl) {
+                AsyncImage(url: url) { phase in
+                    if let image = phase.image {
+                        image.renderingMode(.original).resizable().scaledToFill()
                     }
-                    .frame(width: size, height: size)
-                    .clipShape(.circle)
                 }
+                .frame(width: size, height: size)
+                .clipShape(shape)
             }
+        }
     }
 }
 

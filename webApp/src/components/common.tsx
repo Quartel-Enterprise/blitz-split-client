@@ -121,19 +121,7 @@ export function Avatar({ initial, color, photoUrl, className }: { initial: strin
   return (
     <span aria-hidden style={avatarStyle(color)} className={cn('avatar relative flex shrink-0 items-center justify-center overflow-hidden rounded-full font-semibold', className)}>
       {initial}
-      {photoUrl && (
-        <img
-          // Why: a new photo gets a fresh element, so one that failed before doesn't stay hidden.
-          key={photoUrl}
-          src={photoUrl}
-          alt=""
-          referrerPolicy="no-referrer"
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 size-full object-cover"
-          onError={(event) => (event.currentTarget.hidden = true)}
-        />
-      )}
+      {photoUrl && <AvatarPhoto key={photoUrl} src={photoUrl} />}
     </span>
   )
 }
@@ -267,5 +255,24 @@ export function PageProblem({ icon, title, message, children }: { icon: ReactNod
       {message && <p className="text-muted-foreground">{message}</p>}
       {children && <div className="mt-3 flex w-full flex-col gap-2 sm:w-auto">{children}</div>}
     </section>
+  )
+}
+
+/**
+ * A person's or a group's photo over its avatar, filling it. It hides itself when it fails to load, so what is under
+ * it (the initials, the color) shows instead. Give it `key={src}`, so a new photo gets a fresh element and one that
+ * failed before doesn't stay hidden.
+ */
+export function AvatarPhoto({ src }: { src: string }) {
+  return (
+    <img
+      src={src}
+      alt=""
+      referrerPolicy="no-referrer"
+      loading="lazy"
+      decoding="async"
+      className="absolute inset-0 size-full object-cover"
+      onError={(event) => (event.currentTarget.hidden = true)}
+    />
   )
 }

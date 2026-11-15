@@ -516,6 +516,7 @@ class ActivityUiStateTest {
         groupId = "ape",
         groupName = "Apê 302",
         groupColor = AvatarColor.PEACH,
+        groupPhotoUrl = null,
         groupType = GroupType.HOME,
         occurredAt = 0L,
         subject = "Mercado",

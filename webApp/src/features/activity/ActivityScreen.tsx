@@ -3,7 +3,7 @@ import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRo
 import { useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
-import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
+import { Avatar, AvatarPhoto, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
 import { pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
@@ -290,7 +290,7 @@ function HeadlineLine({ item, isBold = item.isUnread, className }: { item: JsAct
 function ItemMeta({ item }: { item: JsActivityItem }) {
   return (
     <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
-      <GroupMark color={item.groupColor} />
+      <GroupMark color={item.groupColor} photoUrl={item.groupPhotoUrl} />
       <span className="truncate">{item.groupName}</span>
       <span aria-hidden>·</span>
       {item.isPending ? (
@@ -305,10 +305,14 @@ function ItemMeta({ item }: { item: JsActivityItem }) {
   )
 }
 
-// Why: a deleted group is no longer on the device, so its shape goes grey.
-function GroupMark({ color }: { color: string | null | undefined }) {
+// Why: the group's photo on its color, which shows while it loads or if it fails; a deleted group goes grey.
+function GroupMark({ color, photoUrl }: { color: string | null | undefined; photoUrl: string | null | undefined }) {
   if (!color) return <span aria-hidden className={cn('size-3 shrink-0 bg-muted', GROUP_SHAPE)} />
-  return <span aria-hidden style={avatarStyle(color)} className={cn('avatar-mark size-3 shrink-0', GROUP_SHAPE)} />
+  return (
+    <span aria-hidden style={avatarStyle(color)} className={cn('avatar-mark relative size-3 shrink-0 overflow-hidden', GROUP_SHAPE)}>
+      {photoUrl && <AvatarPhoto key={photoUrl} src={photoUrl} />}
+    </span>
+  )
 }
 
 function kindIcon(item: JsActivityItem): ReactNode {

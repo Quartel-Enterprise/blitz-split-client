@@ -1066,8 +1066,6 @@ export const ja: Record<MessageKey, string> = {
   balance_youOwe: '支払う',
   balance_settled: '{amount} · 精算済みです',
   balance_getAndOwe: '{received}を受け取り、{owed}を支払います',
-  balance_get: '{amount}を受け取ります',
-  balance_owe: '{amount}を支払う必要があります',
   balance_everyoneSettled: 'このグループでは誰にも貸し借りがありません。',
   balance_othersSettling: 'ほかのメンバーがまだ精算していません。',
   balance_settle: '精算する',

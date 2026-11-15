@@ -84,7 +84,10 @@ internal fun ActivityDetailPane(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    GroupDotIcon(color = item.groupColor)
+                    GroupDotIcon(
+                        color = item.groupColor,
+                        photoUrl = item.groupPhotoUrl,
+                    )
                     Text(
                         text = whenTextOf(item, dates, nowMillis),
                         style = MaterialTheme.typography.bodyMedium,
