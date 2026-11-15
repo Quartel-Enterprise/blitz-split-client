@@ -1,7 +1,14 @@
 package com.quare.blitzsplit.android.feature.groupstats
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DateRangePicker
+import androidx.compose.material3.DateRangePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
@@ -9,7 +16,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.unit.dp
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -60,7 +74,53 @@ internal fun StatsDateRangeDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.group_stats_cancel)) }
         },
     ) {
-        DateRangePicker(state = state)
+        val formatter = remember { DatePickerDefaults.dateFormatter() }
+        DateRangePicker(
+            state = state,
+            dateFormatter = formatter,
+            headline = { RangeHeadlineText(state, formatter) },
+        )
+    }
+}
+
+/*
+ * Why: Material's headline keeps both dates in one row, so on a phone the end date ("14 de nov. de 2026") wrapped a
+ * letter or two per line. Here each date stays whole and the end date goes under the start one when both don't fit,
+ * with Material's padding and the text style the picker gives its headline.
+ */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+private fun RangeHeadlineText(
+    state: DateRangePickerState,
+    formatter: DatePickerFormatter,
+) {
+    val locale = LocalConfiguration.current.locales[0]
+    val startLabel = stringResource(R.string.group_stats_range_start)
+    val endLabel = stringResource(R.string.group_stats_range_end)
+    val none = stringResource(R.string.group_stats_range_none)
+    val start = formatter.formatDate(state.selectedStartDateMillis, locale) ?: startLabel
+    val end = formatter.formatDate(state.selectedEndDateMillis, locale) ?: endLabel
+    // Why: as Material's headline, TalkBack reads both dates in full with what each is, and again as they change.
+    val description = listOf(
+        startLabel to state.selectedStartDateMillis,
+        endLabel to state.selectedEndDateMillis,
+    ).joinToString { (label, millis) ->
+        "$label: ${formatter.formatDate(millis, locale, forContentDescription = true) ?: none}"
+    }
+    FlowRow(
+        modifier = Modifier
+            .padding(
+                start = 64.dp,
+                end = 12.dp,
+                bottom = 12.dp,
+            ).clearAndSetSemantics {
+                liveRegion = LiveRegionMode.Polite
+                contentDescription = description
+            },
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Text(text = "$start –")
+        Text(text = end)
     }
 }
 

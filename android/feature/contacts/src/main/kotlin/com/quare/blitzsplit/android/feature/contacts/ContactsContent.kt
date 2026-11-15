@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.contacts
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -18,27 +19,24 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
-import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.HomeTabTopBar
 import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
 import com.quare.blitzsplit.android.designsystem.component.collapsingBarsScroll
 import com.quare.blitzsplit.android.designsystem.component.homeTabBarsOf
@@ -108,12 +106,15 @@ fun ContactsContent(
                     .fillMaxSize()
                     .collapsingBarsScroll(scrollBehavior, collapsesBars),
                 topBar = {
-                    ContactsTopBar(
-                        state = state,
-                        title = title,
-                        scrollBehavior = scrollBehavior.takeIf { collapsesBars },
-                        onEvent = onEvent,
-                    )
+                    // Why: beside the pane the bar sits over the list only, so the pane starts at the top.
+                    if (paneLayout == null) {
+                        ContactsTopBar(
+                            state = state,
+                            title = title,
+                            scrollBehavior = scrollBehavior.takeIf { collapsesBars },
+                            onEvent = onEvent,
+                        )
+                    }
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
@@ -132,14 +133,28 @@ fun ContactsContent(
                     .consumeWindowInsets(padding)
                 if (paneLayout != null) {
                     Row(modifier = bodyModifier.fillMaxSize()) {
-                        ContactsLazyList(
-                            state = state,
-                            isPaneShown = true,
-                            onEvent = onEvent,
+                        Column(
                             modifier = Modifier
                                 .width(paneLayout.listWidth)
                                 .fillMaxHeight(),
-                        )
+                        ) {
+                            ContactsTopBar(
+                                state = state,
+                                title = title,
+                                scrollBehavior = null,
+                                onEvent = onEvent,
+                                modifier = Modifier.padding(end = paneLayout.barEndPadding),
+                                windowInsets = WindowInsets(0),
+                            )
+                            ContactsLazyList(
+                                state = state,
+                                isPaneShown = true,
+                                onEvent = onEvent,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                            )
+                        }
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -147,7 +162,6 @@ fun ContactsContent(
                                 .padding(
                                     start = paneLayout.paneSpacing,
                                     end = paneLayout.paneEndPadding,
-                                    top = 8.dp,
                                     bottom = 16.dp,
                                 ),
                         ) {
@@ -187,23 +201,19 @@ private fun ContactsTopBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior?,
     onEvent: (ContactsUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
-    val profile = stringResource(R.string.contacts_profile)
-    TopAppBar(
-        title = { HomeTabTitle(title) },
-        actions = {
-            IconButton(
-                onClick = { onEvent(ContactsUiEvent.OnProfileClicked) },
-                modifier = Modifier.semantics { contentDescription = profile },
-            ) {
-                AvatarBadge(
-                    initial = state.avatarInitial,
-                    color = state.avatarColor,
-                    photoUrl = state.photoUrl,
-                )
-            }
-        },
+    HomeTabTopBar(
+        title = title,
+        avatarInitial = state.avatarInitial,
+        avatarColor = state.avatarColor,
+        photoUrl = state.photoUrl,
+        profileDescription = stringResource(R.string.contacts_profile),
+        onProfileClick = { onEvent(ContactsUiEvent.OnProfileClicked) },
+        modifier = modifier,
         scrollBehavior = scrollBehavior,
+        windowInsets = windowInsets,
     )
 }
 

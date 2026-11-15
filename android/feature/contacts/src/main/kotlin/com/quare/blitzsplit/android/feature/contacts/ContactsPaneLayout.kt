@@ -23,6 +23,8 @@ internal data class ContactsPaneLayout(
     val listWidth: Dp,
     val paneSpacing: Dp,
     val paneEndPadding: Dp,
+    // Why: on a book the list column ends at the hinge, so the bar's profile button keeps clear of the fold.
+    val barEndPadding: Dp,
 )
 
 // Why: null while the window draws one column, where the profile and the agenda open over the list.
@@ -36,12 +38,14 @@ internal fun rememberContactsPaneLayout(): ContactsPaneLayout? {
                 listWidth = listDetail.listPaneWidth - railWidth,
                 paneSpacing = listDetail.paneSpacing,
                 paneEndPadding = if (listDetail.isBook) 16.dp else 32.dp,
+                barEndPadding = if (listDetail.isBook) 16.dp else 0.dp,
             )
 
             formFactor == FormFactor.PhoneLandscape -> ContactsPaneLayout(
                 listWidth = phoneLandscapeListWidth,
                 paneSpacing = 8.dp,
                 paneEndPadding = 16.dp,
+                barEndPadding = 0.dp,
             )
 
             else -> null

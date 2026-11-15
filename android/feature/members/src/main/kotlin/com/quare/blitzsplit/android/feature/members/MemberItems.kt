@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.members
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -174,8 +175,16 @@ private fun LinkCard(
                     )
                 }
             }
+            /*
+             * Why: the default outline (outlineVariant) reads at about 1:1 on the card's secondaryContainer; primary
+             * keeps the edge at 3:1 or more in both themes (4.97:1 light, 5.46:1 dark).
+             */
             OutlinedButton(
                 onClick = { onEvent(MembersUiEvent.OnAddClicked) },
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                ),
                 modifier = Modifier.padding(
                     top = 4.dp,
                     end = 4.dp,

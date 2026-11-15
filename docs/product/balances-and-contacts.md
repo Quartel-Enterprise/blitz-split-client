@@ -33,7 +33,9 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     filter hides the pick): their groups by name, "Carla owes you R$ 32,90" with the actions, "By group" (a table on
     the web) and "The net already offsets the groups: Request and Received use R$ 32,90. The app records a payment in each group." ("Only one group open with Ana." for one group); the empty states take that pane. Everywhere else one
     column with "By group" in the row, the filter beside the list on a phone lying down (on an iPhone, Overall balance
-    and the filter stay still in a 300 pt column on the left while the people scroll on the right). On the Mac the
+    and the filter stay still in a 300 pt column on the left while the people scroll on the right); on Android the top bar, with the profile photo, sits over that filter column, which scrolls under it at a large
+    font, and over the list beside a person's pane, so what is beside it starts at the top: see
+    [the home and the shells](home-and-shell.md)). On the Mac the
     arrow keys move through the people, as through Activity's items (beside the inspector they pick the one it shows;
     a narrow window only marks the row), a double click or Return opens the person's profile, and a right-click offers
     "Got paid" and "Request" for someone who owes you, else "Settle up", then "Open Ana's profile".

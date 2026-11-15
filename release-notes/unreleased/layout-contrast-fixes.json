@@ -1,0 +1,66 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "android"
+      ],
+      "text": {
+        "en": "With the phone or a tablet lying down, what sits beside the list in Contacts and Balances now starts at the top of the screen, with your profile photo over the list.",
+        "pt": "Com o celular ou o tablet deitado, o que fica ao lado da lista em Contatos e Saldos agora começa no topo da tela, com a sua foto de perfil sobre a lista.",
+        "pt-PT": "Com o telemóvel ou o tablet deitado, o que fica ao lado da lista em Contactos e Saldos começa agora no topo do ecrã, com a tua foto de perfil sobre a lista.",
+        "es": "Con el teléfono o la tablet acostados, lo que está al lado de la lista en Contactos y Saldos ahora empieza arriba de la pantalla, con tu foto de perfil sobre la lista.",
+        "fr": "Téléphone ou tablette à l'horizontale, ce qui est à côté de la liste dans Contacts et Soldes commence désormais en haut de l'écran, avec ta photo de profil au-dessus de la liste.",
+        "de": "Mit Handy oder Tablet quer beginnt in Kontakte und Salden, was neben der Liste steht, jetzt am oberen Bildschirmrand, dein Profilbild steht über der Liste.",
+        "it": "Con il telefono o il tablet in orizzontale, ciò che sta accanto all'elenco in Contatti e Saldi ora parte dall'alto dello schermo, con la tua foto profilo sopra l'elenco.",
+        "pl": "Na telefonie lub tablecie w poziomie to, co jest obok listy w Kontaktach i Saldach, zaczyna się teraz od samej góry ekranu, a Twoje zdjęcie profilowe jest nad listą.",
+        "nl": "Met je telefoon of tablet liggend begint wat naast de lijst staat in Contacten en Saldi nu bovenaan het scherm, met je profielfoto boven de lijst.",
+        "ja": "スマートフォンやタブレットを横向きにしたとき、連絡先と残高でリストの横に表示される内容が画面の上から始まり、プロフィール写真はリストの上に移りました。",
+        "tr": "Telefon veya tablet yatayken Kişiler ve Bakiyeler'de listenin yanındakiler artık ekranın en üstünden başlıyor; profil fotoğrafın listenin üstünde.",
+        "id": "Saat ponsel atau tablet dalam posisi mendatar, isi di samping daftar di Kontak dan Saldo kini dimulai dari bagian atas layar, dengan foto profilmu di atas daftar."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "android",
+        "web"
+      ],
+      "text": {
+        "en": "The edge of the \"Add person\" button in a group's Members is easier to see.",
+        "pt": "A borda do botão \"Adicionar pessoa\" em Membros do grupo ficou mais fácil de ver.",
+        "pt-PT": "O contorno do botão \"Adicionar pessoa\" em Membros do grupo está mais fácil de ver.",
+        "es": "El borde del botón \"Agregar persona\" en Miembros del grupo se ve mejor.",
+        "fr": "Le contour du bouton « Ajouter une personne » dans les Membres d'un groupe se voit mieux.",
+        "de": "Der Rand der Schaltfläche „Person hinzufügen“ in den Mitgliedern einer Gruppe ist besser zu sehen.",
+        "it": "Il bordo del pulsante \"Aggiungi persona\" nei Membri del gruppo si vede meglio.",
+        "pl": "Obramowanie przycisku „Dodaj osobę” w Członkach grupy jest lepiej widoczne.",
+        "nl": "De rand van de knop 'Persoon toevoegen' bij de Leden van een groep is beter te zien.",
+        "ja": "グループのメンバーにある「メンバーを追加」ボタンの枠線が見やすくなりました。",
+        "tr": "Grubun Üyeler bölümündeki \"Kişi ekle\" düğmesinin kenarı artık daha kolay görünüyor.",
+        "id": "Tepi tombol \"Tambah orang\" di Anggota grup kini lebih mudah terlihat."
+      }
+    },
+    {
+      "kind": "fixed",
+      "platforms": [
+        "android"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "Fixed the dates in Statistics' date picker breaking a letter or two per line; the end date now goes under the start date when both don't fit.",
+        "pt": "Corrigimos as datas do seletor de datas de Estatísticas, que quebravam uma ou duas letras por linha; a data final agora vai para baixo da inicial quando as duas não cabem.",
+        "pt-PT": "Corrigimos as datas do seletor de datas das Estatísticas, que partiam uma ou duas letras por linha; a data final passa agora para baixo da inicial quando as duas não cabem.",
+        "es": "Corregimos las fechas del selector de Estadísticas, que se cortaban una o dos letras por línea; ahora la fecha final pasa debajo de la inicial cuando no caben las dos.",
+        "fr": "Les dates du sélecteur de dates des Statistiques ne se coupent plus lettre par lettre : la date de fin passe sous la date de début quand les deux ne tiennent pas.",
+        "de": "Die Daten in der Datumsauswahl der Statistiken brechen nicht mehr nach ein, zwei Buchstaben um: Das Enddatum steht unter dem Startdatum, wenn beide nicht passen.",
+        "it": "Le date nel selettore delle Statistiche non vanno più a capo ogni una o due lettere: la data di fine va sotto quella di inizio quando non ci stanno entrambe.",
+        "pl": "Daty w wyborze dat w Statystykach nie łamią się już co jedną lub dwie litery: data końcowa trafia pod początkową, gdy obie się nie mieszczą.",
+        "nl": "De datums in de datumkiezer van Statistieken breken niet meer om per letter of twee: de einddatum komt onder de begindatum als ze niet allebei passen.",
+        "ja": "統計の日付選択で日付が1〜2文字ずつ改行される問題を修正しました。2つの日付が収まらないときは終了日が開始日の下に表示されます。",
+        "tr": "İstatistikler'in tarih seçicisinde tarihlerin satır başına bir iki harf kırılması düzeltildi; ikisi sığmadığında bitiş tarihi başlangıç tarihinin altına geçiyor.",
+        "id": "Memperbaiki tanggal di pemilih tanggal Statistik yang terpotong satu atau dua huruf per baris; tanggal akhir kini turun ke bawah tanggal mulai jika keduanya tidak muat."
+      }
+    }
+  ]
+}

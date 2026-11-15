@@ -73,7 +73,9 @@ export function MembersTab({ presenter, state }: { presenter: MembersPresenter; 
             <p className="truncate font-mono text-xs text-muted-foreground">{state.displayLink ?? t('members_linkPending')}</p>
           </div>
           <div className="order-last flex w-full justify-end @md:order-none @md:mr-1 @md:w-auto">
-            <Button variant="outline" onClick={() => presenter.add()}>
+            {/* Why: the outline's --input edge reads at 1.3:1 on the card; primary keeps it at 3:1 or more in both themes
+                (dark: too, to beat the outline variant's dark:border-input). */}
+            <Button variant="outline" className="border-primary dark:border-primary" onClick={() => presenter.add()}>
               <UserPlus />
               {t('members_add')}
             </Button>

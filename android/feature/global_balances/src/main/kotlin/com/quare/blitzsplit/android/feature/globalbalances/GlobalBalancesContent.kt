@@ -19,28 +19,29 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
-import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.HomeTabTopBar
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
-import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
 import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
 import com.quare.blitzsplit.android.designsystem.component.collapsingBarsScroll
 import com.quare.blitzsplit.android.designsystem.component.homeTabBarsOf
@@ -83,7 +84,6 @@ fun GlobalBalancesContent(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val title = stringResource(R.string.global_balances_title)
-    val profile = stringResource(R.string.global_balances_profile)
     val onTabClick: (HomeTab) -> Unit = { tab -> eventOf(tab)?.let(onEvent) }
     val listDetail = rememberListDetailLayout()
     val listState = rememberLazyListState()
@@ -114,19 +114,18 @@ fun GlobalBalancesContent(
                     .fillMaxSize()
                     .collapsingBarsScroll(scrollBehavior, collapsesBars),
                 topBar = {
-                    TopAppBar(
-                        title = { HomeTabTitle(title) },
-                        actions = {
-                            ProfileAvatarButton(
-                                initial = state.avatarInitial,
-                                color = state.avatarColor,
-                                photoUrl = state.photoUrl,
-                                contentDescription = profile,
-                                onClick = { onEvent(GlobalBalancesUiEvent.OnProfileClicked) },
-                            )
-                        },
-                        scrollBehavior = scrollBehavior.takeIf { collapsesBars },
-                    )
+                    /*
+                     * Why: beside a pane or the people the bar sits over the list or the filter only, so what is
+                     * beside it starts at the top.
+                     */
+                    if (listDetail == null && !layout.usesTwoColumns) {
+                        BalancesTopBar(
+                            state = state,
+                            title = title,
+                            onEvent = onEvent,
+                            scrollBehavior = scrollBehavior.takeIf { collapsesBars },
+                        )
+                    }
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
@@ -143,6 +142,7 @@ fun GlobalBalancesContent(
                 if (listDetail != null) {
                     BalancesListDetailLayout(
                         state = state,
+                        title = title,
                         listDetail = listDetail,
                         onEvent = onEvent,
                         modifier = Modifier
@@ -153,6 +153,7 @@ fun GlobalBalancesContent(
                 }
                 BalancesPane(
                     state = state,
+                    title = title,
                     layout = layout,
                     onEvent = onEvent,
                     listState = listState,
@@ -169,6 +170,7 @@ fun GlobalBalancesContent(
 @Composable
 private fun BalancesPane(
     state: GlobalBalancesUiState,
+    title: String,
     layout: DeviceLayout,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
     listState: LazyListState,
@@ -180,15 +182,21 @@ private fun BalancesPane(
             modifier = modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Column(
-                modifier = Modifier
-                    .widthIn(max = sideColumnWidth)
-                    .padding(top = 4.dp),
-            ) {
-                FilterHeaderColumn(
+            Column(modifier = Modifier.widthIn(max = sideColumnWidth)) {
+                BalancesTopBar(
                     state = state,
+                    title = title,
                     onEvent = onEvent,
+                    scrollBehavior = null,
+                    windowInsets = WindowInsets(0),
                 )
+                // Why: the bar stays put; the filter under it scrolls rather than be cut at a large font.
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    FilterHeaderColumn(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
             }
             PeopleList(
                 state = state,
@@ -233,41 +241,35 @@ private fun BalancesPane(
 @Composable
 private fun BalancesListDetailLayout(
     state: GlobalBalancesUiState,
+    title: String,
     listDetail: ListDetailLayout,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val selected = state.selectedPerson
     Row(modifier = modifier.fillMaxSize()) {
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .width(listDetail.listPaneWidth - railWidth)
                 .fillMaxHeight(),
-            contentPadding = PaddingValues(bottom = 24.dp),
         ) {
-            item(
-                key = "filter",
-                contentType = "filter",
-            ) {
-                FilterHeaderColumn(
-                    state = state,
-                    onEvent = onEvent,
-                )
-            }
-            if (state.isLoaded) {
-                pickableSections(
-                    state = state,
-                    selectedId = selected?.id,
-                    onEvent = onEvent,
-                )
-            } else {
-                item(
-                    key = "skeleton",
-                    contentType = "skeleton",
-                ) {
-                    PeopleRowsSkeleton(isWaitingForInternet = state.isWaitingForInternet)
-                }
-            }
+            BalancesTopBar(
+                state = state,
+                title = title,
+                onEvent = onEvent,
+                scrollBehavior = null,
+                // Why: on a book the list column ends at the hinge, so the profile button keeps clear of the fold.
+                modifier = Modifier.padding(end = if (listDetail.isBook) 16.dp else 0.dp),
+                windowInsets = WindowInsets(0),
+            )
+            BalancesListPane(
+                state = state,
+                selectedId = selected?.id,
+                onEvent = onEvent,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+            )
         }
         Box(
             modifier = Modifier
@@ -276,7 +278,6 @@ private fun BalancesListDetailLayout(
                 .padding(
                     start = listDetail.paneSpacing,
                     end = if (listDetail.isBook) 16.dp else 32.dp,
-                    top = 8.dp,
                 ),
         ) {
             val emptyState = state.emptyState
@@ -297,6 +298,67 @@ private fun BalancesListDetailLayout(
             }
         }
     }
+}
+
+// Why: the filter and the people picked from beside the detail.
+@Composable
+private fun BalancesListPane(
+    state: GlobalBalancesUiState,
+    selectedId: String?,
+    onEvent: (GlobalBalancesUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(bottom = 24.dp),
+    ) {
+        item(
+            key = "filter",
+            contentType = "filter",
+        ) {
+            FilterHeaderColumn(
+                state = state,
+                onEvent = onEvent,
+            )
+        }
+        if (state.isLoaded) {
+            pickableSections(
+                state = state,
+                selectedId = selectedId,
+                onEvent = onEvent,
+            )
+        } else {
+            item(
+                key = "skeleton",
+                contentType = "skeleton",
+            ) {
+                PeopleRowsSkeleton(isWaitingForInternet = state.isWaitingForInternet)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BalancesTopBar(
+    state: GlobalBalancesUiState,
+    title: String,
+    onEvent: (GlobalBalancesUiEvent) -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior?,
+    modifier: Modifier = Modifier,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+) {
+    HomeTabTopBar(
+        title = title,
+        avatarInitial = state.avatarInitial,
+        avatarColor = state.avatarColor,
+        photoUrl = state.photoUrl,
+        profileDescription = stringResource(R.string.global_balances_profile),
+        onProfileClick = { onEvent(GlobalBalancesUiEvent.OnProfileClicked) },
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        windowInsets = windowInsets,
+    )
 }
 
 // Why: the sections of the list beside the detail, each person a row that shows them in the pane.

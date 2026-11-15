@@ -69,6 +69,9 @@
     <string name="group_stats_see_whole_period">Ver todo o período</string>
     <string name="group_stats_apply">Aplicar</string>
     <string name="group_stats_cancel">Cancelar</string>
+    <string name="group_stats_range_start">Data de início</string>
+    <string name="group_stats_range_end">Data de término</string>
+    <string name="group_stats_range_none">Nenhuma selecionada</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d despesa</item>
         <item quantity="other">%d despesas</item>

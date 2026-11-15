@@ -69,6 +69,9 @@
     <string name="group_stats_see_whole_period">Tüm zamanları gör</string>
     <string name="group_stats_apply">Uygula</string>
     <string name="group_stats_cancel">İptal</string>
+    <string name="group_stats_range_start">Başlangıç tarihi</string>
+    <string name="group_stats_range_end">Bitiş tarihi</string>
+    <string name="group_stats_range_none">Seçilmedi</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d harcama</item>
         <item quantity="other">%d harcama</item>

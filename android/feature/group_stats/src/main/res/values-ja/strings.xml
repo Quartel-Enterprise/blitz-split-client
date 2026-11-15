@@ -69,6 +69,9 @@
     <string name="group_stats_see_whole_period">全期間を見る</string>
     <string name="group_stats_apply">適用</string>
     <string name="group_stats_cancel">キャンセル</string>
+    <string name="group_stats_range_start">開始日</string>
+    <string name="group_stats_range_end">終了日</string>
+    <string name="group_stats_range_none">未選択</string>
     <plurals name="group_stats_expenses">
         <item quantity="other">%d件の支出</item>
     </plurals>
