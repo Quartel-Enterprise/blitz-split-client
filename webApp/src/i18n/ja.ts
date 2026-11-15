@@ -2322,4 +2322,13 @@ export const ja: Record<MessageKey, string> = {
   push_debtsUnsimplifiedToYou: '{1}が「精算をシンプルに」をオフにしました。これからは{2}があなたに{3}を払います。',
   push_debtsUnsimplifiedFromYou: '{1}が「精算をシンプルに」をオフにしました。これからはあなたが{2}に{3}を払います。',
   push_debtsUnsimplifiedOther: '{1}が「精算をシンプルに」をオフにしました。あなたへの影響を確認してください。',
+  releaseNotes_title: 'リリースノート',
+  releaseNotes_showBeta: 'ベータ版を表示',
+  releaseNotes_beta: 'ベータ {number}',
+  releaseNotes_thisVersion: 'このバージョン',
+  releaseNotes_empty: 'リリースノートはまだありません。',
+  releaseNotes_emptyOnlyBeta: '安定版はまだありません。ベータ版を表示すると、テスト中の内容を確認できます。',
+  releaseNotes_loadFailedTitle: 'リリースノートを読み込めませんでした',
+  releaseNotes_loadFailedBody: '接続を確認して、もう一度お試しください。',
+  releaseNotes_retry: '再試行',
 }

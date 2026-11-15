@@ -33,6 +33,12 @@
             android:name="google_analytics_automatic_screen_reporting_enabled"
             android:value="false" />
 
+        <!-- The status bar icon of a notification FCM draws itself (a notification payload while in the background),
+             the same as the ones BlitzSplitMessagingService builds, instead of the launcher icon's white square -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+
         <!-- Compose owns the keyboard inset through Modifier.imePadding(); without adjustResize the
              system pans the whole window as well. -->
         <activity

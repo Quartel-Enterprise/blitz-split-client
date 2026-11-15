@@ -83,6 +83,7 @@
     <string name="profile_privacy_policy">Privacybeleid</string>
     <string name="profile_terms">Servicevoorwaarden</string>
     <string name="profile_version_footer">Versie %1$s</string>
+    <string name="profile_release_notes">Releaseopmerkingen</string>
     <string name="profile_check_for_updates">Controleren op updates</string>
     <string name="profile_check_for_updates_version">Versie %1$s</string>
     <string name="profile_check_for_updates_checking">Controleren…</string>

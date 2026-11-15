@@ -358,6 +358,8 @@ struct MainTabView: View {
         case .categoryMap: CategoryMapView()
         // The profile's "Privacy Policy" and "Terms of Service"; a sheet on the Mac's Ajustes instead
         case let .legalDocument(route): LegalDocumentView(route: route)
+        // The profile's "Release notes"; a sheet on the Mac's Ajustes instead
+        case .releaseNotes: ReleaseNotesView()
         case let .paymentKey(route): PaymentKeyView(route: route)
         case let .payingMethod(route): PayingMethodView(route: route)
         // A new identity per route: a group swapped in place (the Mac's sidebar) must not keep the model of the last one

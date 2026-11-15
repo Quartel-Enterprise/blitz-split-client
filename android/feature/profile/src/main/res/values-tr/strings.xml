@@ -83,6 +83,7 @@
     <string name="profile_privacy_policy">Gizlilik Politikası</string>
     <string name="profile_terms">Hizmet Şartları</string>
     <string name="profile_version_footer">Sürüm %1$s</string>
+    <string name="profile_release_notes">Sürüm notları</string>
     <string name="profile_check_for_updates">Güncellemeleri denetle</string>
     <string name="profile_check_for_updates_version">Sürüm %1$s</string>
     <string name="profile_check_for_updates_checking">Denetleniyor…</string>
