@@ -2,6 +2,7 @@
 // devices out, and a headless Chrome photographs it, dark and light, as WebP with its transparency.
 //
 //   node scripts/readme-hero/compose.mjs <captures folder> <output folder>
+import { readFile, writeFile } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
 import { join, resolve } from 'node:path'
 import { launchChrome } from './chrome.mjs'
@@ -16,15 +17,18 @@ const WIDTH = 1280
 const HEIGHT = 680
 const SCALE = 2
 const QUALITY = 90
-const page = pathToFileURL(join(import.meta.dirname, 'hero.html'))
+const template = await readFile(join(import.meta.dirname, 'hero.html'), 'utf8')
 const favicon = pathToFileURL(resolve(import.meta.dirname, '../../webApp/public/icon-192.png'))
 
 const chrome = await launchChrome()
 try {
   for (const theme of ['dark', 'light']) {
     await chrome.setViewport(WIDTH, HEIGHT, SCALE, theme === 'dark')
-    const query = new URLSearchParams({ theme, captures: pathToFileURL(captures).href, favicon: favicon.href })
-    await chrome.open(`${page.href}?${query}`)
+    // Why: the page gets its images written in, not read from its address, so it runs no script at all.
+    const slots = { theme, captures: pathToFileURL(captures).href, favicon: favicon.href }
+    const page = join(captures, `hero-${theme}.html`)
+    await writeFile(page, template.replace(/\{\{(\w+)\}\}/g, (_, name) => slots[name]))
+    await chrome.open(pathToFileURL(page).href)
     await chrome.waitFor(`document.readyState === 'complete' && [...document.images].every((image) => image.complete && image.naturalWidth > 0)`)
     const file = join(output, `readme-hero-${theme}.webp`)
     await chrome.screenshot(file, { format: 'webp', quality: QUALITY })

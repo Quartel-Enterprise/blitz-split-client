@@ -1,10 +1,11 @@
 <!doctype html>
 <!--
   The README's opening image (scripts/readme-hero/generate.sh): the same group of the sample trip on the four native UIs,
-  each in its device. compose.mjs opens this page with ?theme=dark|light&captures=<folder of the captures> and
+  each in its device. compose.mjs fills the {{…}} slots (the theme and the captures' file URLs), writes the page next to
+  the captures and
   photographs it. Transparent around the devices, so it sits on GitHub's page in either theme.
 -->
-<html>
+<html data-theme="{{theme}}">
 <head>
 <meta charset="utf-8">
 <style>
@@ -16,6 +17,7 @@
     --browser-field: #ffffff;
     --browser-text: #3c4043;
     --browser-edge: rgba(0, 0, 0, 0.12);
+    --status: #1d1b20;
   }
   :root[data-theme="dark"] {
     --caption: #f0f6fc;
@@ -25,6 +27,7 @@
     --browser-field: #2b2b2b;
     --browser-text: #e3e3e3;
     --browser-edge: rgba(255, 255, 255, 0.10);
+    --status: #e6e1e5;
   }
   * { box-sizing: border-box; margin: 0; }
   html, body { width: 1280px; height: 680px; background: transparent; overflow: hidden; }
@@ -86,7 +89,7 @@
 </head>
 <body>
   <div class="device mac">
-    <img id="mac" alt="">
+    <img id="mac" alt="" src="{{captures}}/mac-{{theme}}.png">
     <div class="caption"><b>Mac</b><span>SwiftUI · Liquid Glass</span></div>
   </div>
 
@@ -95,23 +98,23 @@
       <div class="browser-bar">
         <div class="browser-top">
           <div class="lights"><i></i><i></i><i></i></div>
-          <div class="tab"><img id="favicon" alt="">Blitz Split</div>
+          <div class="tab"><img id="favicon" alt="" src="{{favicon}}">Blitz Split</div>
         </div>
         <div class="field">app.blitzsplit.com</div>
       </div>
-      <img id="web" alt="">
+      <img id="web" alt="" src="{{captures}}/web-{{theme}}.png">
     </div>
     <div class="caption"><b>Web</b><span>React · shadcn/ui</span></div>
   </div>
 
   <div class="device iphone">
-    <div class="phone"><img id="ios" alt=""><div class="island"></div></div>
+    <div class="phone"><img id="ios" alt="" src="{{captures}}/ios-{{theme}}.png"><div class="island"></div></div>
     <div class="caption"><b>iPhone and iPad</b><span>SwiftUI · Liquid Glass</span></div>
   </div>
 
   <div class="device android">
     <div class="phone">
-      <img id="android" alt="">
+      <img id="android" alt="" src="{{captures}}/android-{{theme}}.png">
       <div class="punch"></div>
       <div class="android-status">
         <span>9:41</span>
@@ -125,16 +128,5 @@
     <div class="caption"><b>Android</b><span>Jetpack Compose<br>Material 3 Expressive</span></div>
   </div>
 
-<script>
-  const params = new URLSearchParams(location.search)
-  const theme = params.get('theme')
-  const captures = params.get('captures')
-  document.documentElement.dataset.theme = theme
-  document.documentElement.style.setProperty('--status', theme === 'dark' ? '#e6e1e5' : '#1d1b20')
-  for (const id of ['mac', 'web', 'ios', 'android']) {
-    document.getElementById(id).src = `${captures}/${id}-${theme}.png`
-  }
-  document.getElementById('favicon').src = params.get('favicon')
-</script>
 </body>
 </html>
