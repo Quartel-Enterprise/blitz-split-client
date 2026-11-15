@@ -1,0 +1,22 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": ["all"],
+      "text": {
+        "en": "A bill opened from Home or All expenses now goes back straight to where you opened it, without passing through its group.",
+        "pt": "Uma conta aberta pelo Início ou por Todas as despesas agora volta direto para onde você a abriu, sem passar pelo grupo.",
+        "pt-PT": "Uma conta aberta a partir do Início ou de Todas as despesas volta agora diretamente para onde a abriste, sem passar pelo grupo.",
+        "es": "Un gasto abierto desde Inicio o Todos los gastos ahora vuelve directo a donde lo abriste, sin pasar por su grupo.",
+        "fr": "Une dépense ouverte depuis Accueil ou Toutes les dépenses revient maintenant directement là où vous l'avez ouverte, sans passer par son groupe.",
+        "de": "Eine Ausgabe, die du über Start oder Alle Ausgaben öffnest, führt beim Zurückgehen jetzt direkt dorthin zurück, ohne Umweg über ihre Gruppe.",
+        "it": "Una spesa aperta da Home o da Tutte le spese ora torna direttamente dove l'hai aperta, senza passare dal suo gruppo.",
+        "pl": "Wydatek otwarty ze Start lub z Wszystkie wydatki wraca teraz prosto tam, skąd go otwarto, bez przechodzenia przez jego grupę.",
+        "nl": "Een uitgave die je opent vanuit Start of Alle uitgaven gaat nu terug naar waar je hem opende, zonder langs de groep te gaan.",
+        "ja": "ホームやすべての支出から開いた支出は、グループを経由せずに開いた画面へそのまま戻るようになりました。",
+        "tr": "Ana Sayfa veya Tüm harcamalar üzerinden açılan bir harcama artık grubuna uğramadan doğrudan açtığınız yere geri döner.",
+        "id": "Tagihan yang dibuka dari Beranda atau Semua pengeluaran kini kembali langsung ke tempat Anda membukanya, tanpa melewati grupnya."
+      }
+    }
+  ]
+}

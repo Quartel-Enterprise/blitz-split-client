@@ -31,6 +31,7 @@ import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.openBillFrom
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.navigation.openSearchOver
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
@@ -377,11 +378,11 @@ class HomeViewModel(
             // Why: a tab works from any screen Início opened (iOS keeps the tab bar over them), closing it first.
             HomeUiEvent.OnGroupsTabClicked -> navigator.openHomeTab(Route.Groups)
 
-            // Why: over its group, so back goes to the group's bills, as from Despesas.
-            is HomeUiEvent.OnBillClicked -> if (isOnTop()) {
-                navigator.navigate(Route.GroupDetail.expensesOf(event.groupId))
-                navigator.navigate(Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null))
-            }
+            // Why: straight over Início, so back comes back here: the group was never opened on the way (Pierre's call).
+            is HomeUiEvent.OnBillClicked -> navigator.openBillFrom(
+                from = Route.Home,
+                bill = Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null),
+            )
 
             HomeUiEvent.OnBalancesTabClicked -> openBalancesTab(BalancesFilter.ALL)
 

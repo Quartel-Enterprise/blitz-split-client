@@ -68,5 +68,31 @@ fun Navigator.openFromGroupScreen(
     }
 }
 
+/*
+ * Why: a bill Início or "Todas as despesas" (from) opens right over it, and the Mac draws that bill beside it (its
+ * inspector), so from still takes clicks there: another bill tapped takes the bill's place, as from a group's screen.
+ * Under anything else nothing opens: a native back may have closed from.
+ */
+fun Navigator.openBillFrom(
+    from: Route,
+    bill: Route.BillDetail,
+) {
+    val stack = backStack.value
+    val top = stack.lastOrNull()
+    when {
+        top == from -> navigate(bill)
+        top is Route.BillDetail && stack.getOrNull(stack.lastIndex - 1) == from -> replaceTop(bill)
+    }
+}
+
+/*
+ * Why: "Esta conta foi apagada" waits for the bill's group to come back on top, so it is only posted when that group is
+ * under the screen on top; Início and "Todas as despesas" open a bill with no group under it, and a notice left there
+ * would show out of context the next time that group opens.
+ */
+fun Navigator.isOverGroupScreen(groupId: String): Boolean = backStack.value
+    .dropLast(1)
+    .any { groupScreenIdOrNull(it) == groupId }
+
 // Why: the group whose screen the route is, null for any other screen.
 fun groupScreenIdOrNull(route: Route): String? = (route as? Route.GroupDetail)?.groupId

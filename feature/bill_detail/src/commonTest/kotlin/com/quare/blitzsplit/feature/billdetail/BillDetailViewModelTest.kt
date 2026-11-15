@@ -1873,6 +1873,20 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN the bill opened from Inicio WHEN someone else deletes it THEN returns to Inicio without the notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isOverGroup = false)
+
+            // When
+            expenses.expenses.value = emptyList()
+
+            // Then
+            assertEquals(listOf(Route.Home), navigator.backStack.value)
+            assertNull(deletedBills.observeNoticeGroupId().first())
+        }
+
+    @Test
     fun `GIVEN a bill that is not on the device WHEN it opens THEN returns to the group without the notice`() =
         runTest(testDispatcher) {
             // Given
@@ -5024,6 +5038,7 @@ class BillDetailViewModelTest {
         firstDownload: FirstDownloadProgress? = null,
         commentChangeError: Throwable? = null,
         focusCommentId: String? = null,
+        isOverGroup: Boolean = true,
     ) {
         route = route.copy(focusCommentId = focusCommentId)
         isOnline.value = online
@@ -5036,8 +5051,8 @@ class BillDetailViewModelTest {
             it.updateError = updateError
             it.updateGate = updateGate
         }
-        navigator = BackStackNavigator(startRoute = Route.Groups).also {
-            it.navigate(groupRoute)
+        navigator = BackStackNavigator(startRoute = if (isOverGroup) Route.Groups else Route.Home).also {
+            if (isOverGroup) it.navigate(groupRoute)
             it.navigate(route)
         }
         deletedBills = InMemoryDeletedBillRepository()

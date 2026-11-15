@@ -2293,7 +2293,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN a bill on Inicio WHEN tapping it THEN opens its Conta over its group`() = runTest(testDispatcher) {
+    fun `GIVEN a bill on Inicio WHEN tapping it THEN opens its Conta right over Inicio`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
             storedGroups = listOf(trio()),
@@ -2307,17 +2307,34 @@ class HomeViewModelTest {
         assertEquals(
             listOf(
                 Route.Home,
-                Route.GroupDetail(
-                    "trio",
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                    isOverBill = false,
-                ),
                 Route.BillDetail("trio", "dinner", focusCommentId = null),
             ),
             navigator.backStack.value,
         )
     }
+
+    @Test
+    fun `GIVEN a Conta Inicio opened beside it WHEN tapping another bill THEN takes the place of the Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner"), bill("lunch")),
+            )
+            viewModel.onEvent(HomeUiEvent.OnBillClicked("trio", "dinner"))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnBillClicked("trio", "lunch"))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.BillDetail("trio", "lunch", focusCommentId = null),
+                ),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN a bill from this afternoon on an open Inicio WHEN midnight passes THEN its day says yesterday`() =

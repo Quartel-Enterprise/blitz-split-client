@@ -41,7 +41,8 @@ The home tab, its shortcuts and pinned groups.
     waits, as the legacy Bora Rachar drew the payer and the group; TalkBack, VoiceOver and the web's screen readers
     still read "Floripa trip · You paid". The web's list keeps the day after the faces, and its desktop table draws the
     group's square in its Group column and only the faces under the description. Inside the group, Expenses keeps its
-    rows as they are, the group being implied there. A bill opens its Bill over its group. Each line ends in the
+    rows as they are, the group being implied there. A bill opens its Bill right over Home, back coming back to Home: the
+    group was never opened on the way, so it is not in the back stack (Pierre's call; it opened over its group before). Each line ends in the
     group's Expenses' ⋮ (⋯ on iOS and macOS), a long press (Android, iPhone, iPad) or a right click (the Mac, the web)
     on the line opening it too, with the same options in the same order: "Edit", "Duplicate", "Share" and "Delete",
     which asks the same "Delete this bill?" and stays on Home, the bill leaving the list (Pierre's call, beta feedback,
@@ -49,7 +50,7 @@ The home tab, its shortcuts and pinned groups.
     over the group (`BillMenuController` in `:core:expenses`, which the group's Expenses shares). The web's desktop table
     has the ⋮ in a last column. "See all" opens "All expenses" over Home (Pierre's call, beta feedback; it opened
     Activity on its bills before), `Route.AllExpenses`: every bill you paid or take part in, across groups, by day,
-    drawn as Home's rows, each with the same ⋮, a tap opening its Bill over its group as from Home. A page on every
+    drawn as Home's rows, each with the same ⋮, a tap opening its Bill right over All expenses as from Home. A page on every
     platform and size (on an Android book the filters sit before the hinge and the bills after it, as a category's
     expenses do; on an iPhone Duo open the column keeps to the leading half, off the fold, as Activity's; the contrast
     and responsiveness sweep of 2026-11-12), back on the left (a long list read a page at a time reads better full height than in a

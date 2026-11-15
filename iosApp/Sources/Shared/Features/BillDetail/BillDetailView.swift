@@ -208,7 +208,7 @@ extension BillDetailModel {
 
 /// "Bill": one bill of the group, what it was, who paid, its Attachments and how it splits, then its Comments and
 /// History (7.3). Pushed
-/// over the group on iPhone, a sheet on iPad (820×640 lying down, 620×860 upright) and the window's inspector on the
+/// over the group (or Home, All expenses) on iPhone, a sheet on iPad (820×640 lying down, 620×860 upright) and the window's inspector on the
 /// Mac; Share, Edit and Delete in the toolbar (on the Mac, in the inspector's header).
 struct BillDetailView: View {
     let route: RouteBillDetail

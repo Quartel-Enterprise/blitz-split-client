@@ -160,7 +160,9 @@ Conta is `AppModel.billInspector` instead, the main window's `.inspector` beside
 too: "Editar conta" opens as a sheet over the window with the inspector still shown, and closing it pops it and
 whatever was over it. The group beside it still takes clicks, so what the group opens then takes the bill's place,
 another bill included (`Navigator.openFromGroupScreen`, a `replaceTop` while its own bill is right above it, for the
-group's tabs and Membros' Compartilhar alike; the profile goes over the bill, since Ajustes opens it). On the Mac, a group's
+group's tabs and Membros' Compartilhar alike; the profile goes over the bill, since Ajustes opens it). Início and
+"Todas as despesas" open a bill right over themselves, and another bill tapped there takes its place the same way
+(`Navigator.openBillFrom`). On the Mac, a group's
 Convidar over the group is `AppModel.invitePopover` instead: the root hands it down (`\.invitePopover`) and the
 group's "Convidar pessoas" draws it (`.invitePopover(host:)`), Membros' Compartilhar while that tab is picked; closing
 it pops it the same way.

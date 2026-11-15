@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
+import com.quare.blitzsplit.core.navigation.openBillFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
@@ -130,11 +131,11 @@ class AllExpensesViewModel(
         when (event) {
             AllExpensesUiEvent.OnBackClicked -> navigator.navigateBackFrom(Route.AllExpenses)
 
-            // Why: over its group, so back goes to the group's bills, as from Início.
-            is AllExpensesUiEvent.OnBillClicked -> if (isOnTop()) {
-                navigator.navigate(Route.GroupDetail.expensesOf(event.groupId))
-                navigator.navigate(Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null))
-            }
+            // Why: straight over Todas as despesas, as from Início, so back comes back here (Pierre's call).
+            is AllExpensesUiEvent.OnBillClicked -> navigator.openBillFrom(
+                from = Route.AllExpenses,
+                bill = Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null),
+            )
 
             AllExpensesUiEvent.OnEndReached -> loadMore()
 
