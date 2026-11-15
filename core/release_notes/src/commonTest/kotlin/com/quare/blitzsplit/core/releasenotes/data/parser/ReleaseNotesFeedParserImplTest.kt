@@ -240,6 +240,63 @@ class ReleaseNotesFeedParserImplTest {
     }
 
     @Test
+    fun `GIVEN versions dated on a day their month does not have WHEN reading the feed THEN leaves them out`() {
+        // Given
+        val json = feedJson(
+            releaseJson(
+                version = "3.3.0",
+                date = "2026-02-29",
+            ),
+            releaseJson(
+                version = "3.2.0",
+                date = "2026-04-31",
+            ),
+            releaseJson(
+                version = "3.1.0",
+                date = "2100-02-29",
+            ),
+            releaseJson(
+                version = "3.0.0",
+                date = "2028-02-29",
+            ),
+        )
+
+        // When
+        val releases = parser.parse(json)
+
+        // Then
+        assertEquals(listOf("3.0.0"), releases?.map { it.version.fullName })
+    }
+
+    @Test
+    fun `GIVEN the same version listed twice WHEN reading the feed THEN gives it once as first listed`() {
+        // Given
+        val json = feedJson(
+            releaseJson(
+                version = "3.1.0",
+                date = "2026-11-20",
+            ),
+            releaseJson(
+                version = "3.01.0",
+                date = "2026-11-21",
+            ),
+            releaseJson(
+                version = "3.0.0",
+                date = "2026-10-01",
+            ),
+        )
+
+        // When
+        val releases = parser.parse(json)
+
+        // Then
+        assertEquals(
+            listOf("3.1.0" to ReleaseDate(2026, 11, 20), "3.0.0" to ReleaseDate(2026, 10, 1)),
+            releases?.map { it.version.fullName to it.date },
+        )
+    }
+
+    @Test
     fun `GIVEN versions dated in month zero and on day zero WHEN reading the feed THEN leaves them out`() {
         // Given
         val json = feedJson(

@@ -202,9 +202,7 @@ class ProfileViewModel(
          * so the add rows never draw one way and switch to the other.
          */
         combine(observePaymentKeys(), firstDownload, observeShowsPix()) { keys, download, showsPix ->
-            val items = if (download !=
-                null
-            ) {
+            val items = if (download != null) {
                 Loadable.Loading
             } else {
                 keys.mapNotNull { it.toItemOrNull(validatePaymentKey) }.toLoaded()
