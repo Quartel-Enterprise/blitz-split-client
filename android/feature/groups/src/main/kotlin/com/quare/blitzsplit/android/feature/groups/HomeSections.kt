@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.groups
 
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,11 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -93,9 +92,17 @@ internal fun HomeSummaryCard(
     val toPay = summary.toPay
     val toReceiveMoney = rememberMoneyFormatter(toReceive?.currency ?: currency)
     val toPayMoney = rememberMoneyFormatter(toPay?.currency ?: currency)
+    val seeBalances = stringResource(R.string.groups_home_see_balances)
     Surface(
         onClick = { onEvent(HomeUiEvent.OnOverallBalanceClicked) },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics {
+                onClick(
+                    label = seeBalances,
+                    action = null,
+                )
+            },
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -163,7 +170,6 @@ internal fun HomeSummaryCard(
                     amountColor = positiveAmountColor(),
                     isEnabled = summary.canOpenToReceive,
                     onClick = { onEvent(HomeUiEvent.OnToReceiveClicked) },
-                    modifier = if (summary.canOpenToReceive) Modifier else Modifier.swallowTaps(),
                 )
                 SummaryButton(
                     label = stringResource(
@@ -180,15 +186,11 @@ internal fun HomeSummaryCard(
                     amountColor = MaterialTheme.colorScheme.error,
                     isEnabled = summary.canOpenToPay,
                     onClick = { onEvent(HomeUiEvent.OnToPayClicked) },
-                    modifier = if (summary.canOpenToPay) Modifier else Modifier.swallowTaps(),
                 )
             }
         }
     }
 }
-
-// Why: a disabled button lets its tap through, which would open Saldos from the card under it.
-private fun Modifier.swallowTaps(): Modifier = pointerInput(Unit) { detectTapGestures { } }
 
 // Why: "+US$ 40,00" under the big amount, for each other currency with a net; never added to the first.
 @Composable

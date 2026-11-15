@@ -50,7 +50,7 @@ export function HomeSummaryCards({ presenter, state }: SectionProps) {
       >
         <h2 id="home-summary-title" className="text-[13px] font-medium text-muted-foreground">
           {/* Why: the whole card opens Balances, as a link stretched over it that keyboards and screen readers reach. */}
-          <button type="button" onClick={() => presenter.openOverallBalance()} className="outline-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:ring-[3px] focus-visible:after:ring-ring">
+          <button type="button" aria-label={`${t('groups_summaryTitle')}. ${t('groups_summaryOpenBalances')}`} onClick={() => presenter.openOverallBalance()} className="outline-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:ring-[3px] focus-visible:after:ring-ring">
             {t('groups_summaryTitle')}
           </button>
         </h2>

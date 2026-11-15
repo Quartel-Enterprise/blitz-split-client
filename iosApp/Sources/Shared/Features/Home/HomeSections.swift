@@ -331,6 +331,8 @@ struct HomeSummaryCard: View {
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
+        // The taps go through to the card's button behind; VoiceOver still reads the texts.
+        .allowsHitTesting(false)
     }
 
     @ViewBuilder

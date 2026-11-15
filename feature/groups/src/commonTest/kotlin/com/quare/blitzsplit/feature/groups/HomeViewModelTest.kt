@@ -302,7 +302,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN the profile over Inicio WHEN a late tap on Ver saldos arrives THEN the profile stays open`() =
+    fun `GIVEN the profile over Inicio WHEN late taps on Ver saldos or Saldo geral arrive THEN the profile stays open`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))

@@ -339,9 +339,9 @@ class HomeViewModel(
 
             is HomeUiEvent.OnPersonClicked -> openSettleUp(event.key, event.currency)
 
-            HomeUiEvent.OnSeeBalancesClicked -> if (isOnTop()) openBalancesTab(BalancesFilter.ALL)
-
-            HomeUiEvent.OnOverallBalanceClicked -> if (isOnTop()) openBalancesTab(BalancesFilter.ALL)
+            HomeUiEvent.OnSeeBalancesClicked,
+            HomeUiEvent.OnOverallBalanceClicked,
+            -> if (isOnTop()) openBalancesTab(BalancesFilter.ALL)
 
             HomeUiEvent.OnToReceiveClicked -> if (isOnTop() &&
                 uiState.value.summary
