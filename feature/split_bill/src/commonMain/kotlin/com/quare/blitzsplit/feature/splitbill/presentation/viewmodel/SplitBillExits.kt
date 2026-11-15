@@ -89,7 +89,7 @@ internal class SplitBillExits(
         return stack.getOrNull(stack.lastIndex - 1)
     }
 
-    // Why: back to Despesas do grupo past "Conta", which would show a bill that is gone.
+    // Why: back past "Conta", which would show a bill that is gone, to what opened it (Despesas do grupo, Início).
     fun leaveToGroup() {
         if (!isOnTop()) return
         settle()

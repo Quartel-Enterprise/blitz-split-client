@@ -2314,6 +2314,29 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `GIVEN a Conta Inicio opened beside it WHEN tapping another bill THEN takes the Conta's place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner"), bill("lunch")),
+            )
+            viewModel.onEvent(HomeUiEvent.OnBillClicked("trio", "dinner"))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnBillClicked("trio", "lunch"))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.BillDetail("trio", "lunch", focusCommentId = null),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN a bill from this afternoon on an open Inicio WHEN midnight passes THEN its day says yesterday`() =
         runTest(testDispatcher) {
             // Given

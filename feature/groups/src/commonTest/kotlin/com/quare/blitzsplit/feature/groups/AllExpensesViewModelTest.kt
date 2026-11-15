@@ -610,6 +610,30 @@ class AllExpensesViewModelTest {
         }
 
     @Test
+    fun `GIVEN a bill All expenses opened beside it WHEN tapping another bill THEN takes that bill's place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner"), bill("lunch")),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnBillClicked("trio", "dinner"))
+
+            // When
+            viewModel.onEvent(AllExpensesUiEvent.OnBillClicked("trio", "lunch"))
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.AllExpenses,
+                    Route.BillDetail("trio", "lunch", focusCommentId = null),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN All expenses on top WHEN tapping a bill THEN tracks bill_clicked from all expenses`() =
         runTest(testDispatcher) {
             // Given

@@ -308,7 +308,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
   - Delete asks first: "“X” leaves the group and everyone's share of it stops counting.", plus "You no longer owe/get back R$ Y" while the bill moves the device user's balance (`BillDeletion`). It deletes offline as a
     tombstone and goes back to the group, past Bill. A bill someone else deleted while open closes, and Group
     expenses says "This bill was deleted" once it is on top (`GroupDetailUiState.showsBillDeletedNotice`); never
-    for a bill this device deleted (`NoticeBillGone`).
+    for a bill this device deleted (`NoticeBillGone`), nor for one Home or All expenses opened, with no group under it
+    (`Navigator.isOverGroupScreen`): it closes back to where it was opened, without a word.
   - Editing or deleting a bill after a payment (7.4b) is allowed: the payment still counts and the balance is redone.
     While the change typed in "Edit bill" moves the balance of a pair with a payment dated at or after the
     "When" being typed (the saved one for "Delete"), the form says so before saving, live as it is typed, so moving
