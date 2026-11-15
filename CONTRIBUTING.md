@@ -62,8 +62,10 @@ Start with:
    ./scripts/ktlint.sh --format
    ./scripts/cpd.sh
    ./gradlew build jvmTest :koverVerifyCi assertModuleGraph
+   npm --prefix webApp run check:messages
    npm --prefix webApp run build
    node scripts/release/release-notes.mjs check
+   node scripts/release/store-listing.mjs check
    ```
 
    and, if you touched the Apple app, build the `BoraRachar-iOS` and `BoraRachar-macOS` schemes after
@@ -79,4 +81,5 @@ Start with:
 - Add screenshots for any visual change, on each platform it reaches, in light and dark.
 - Keep it focused: one change per pull request is far easier to review.
 
-The CI runs the same checks, and a maintainer reviews every pull request before it merges.
+The CI runs these checks, plus Android lint (which fails on a missing Android translation) and the tests on the JS
+and Apple targets, and a maintainer reviews every pull request before it merges.

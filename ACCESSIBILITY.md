@@ -22,7 +22,7 @@ keyboard in the browser.
   meaning at 3:1 (WCAG 2.2 AA), in light and dark mode. Money and status never rely on color alone: amounts carry their
   sign and words such as "owes" or "is owed".
 - **Text size.** The apps follow the system's font size (Android's font scale, Apple's Dynamic Type, the browser's
-  zoom), and layouts reflow rather than clip.
+  zoom), and layouts reflow to make room; an amount stays on one line and shrinks to fit.
 - **Screen readers.** Buttons, icons and photos have labels; decorative images are hidden from them; a row reads as
   one sentence instead of scattered pieces.
 - **Motion.** Animations respect Reduce Motion on Apple devices and `prefers-reduced-motion` on the web.
@@ -38,9 +38,10 @@ keyboard in the browser.
 - Reading a receipt from a photo relies on the camera and on how legible the receipt is; every field it fills in can
   be typed instead.
 - Scanning an invite's QR code needs the camera; the same invite works as a link.
-- A group's statistics are partly visual. "By category" lists each category's amount as text; the chart over time
-  gives each period's amount only when a bar or point is picked (with the arrow keys on the web, the Mac and Android,
-  read aloud on the web, and as an Audio Graph with VoiceOver).
+- A group's statistics are partly visual. "By category" lists each category's amount as text. Screen readers read
+  the chart over time as the list of its periods and amounts (TalkBack and the web) or as an Audio Graph (VoiceOver);
+  on screen, a period's amount shows only when its bar or point is picked (with the arrow keys too on the web, the
+  Mac and Android, read aloud on the web).
 
 ## Reporting a barrier
 
