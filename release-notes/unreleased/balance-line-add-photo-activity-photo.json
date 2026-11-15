@@ -1,0 +1,65 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "In Activity, each line now shows the group's photo next to its name, when the group has one.",
+        "pt": "Na Atividade, cada linha agora mostra a foto do grupo ao lado do nome dele, quando o grupo tem uma.",
+        "pt-PT": "Na Atividade, cada linha mostra agora a fotografia do grupo ao lado do nome, quando o grupo tem uma.",
+        "es": "En Actividad, cada línea ahora muestra la foto del grupo junto a su nombre, cuando el grupo tiene una.",
+        "fr": "Dans Activité, chaque ligne affiche désormais la photo du groupe à côté de son nom, quand le groupe en a une.",
+        "de": "In Aktivität zeigt jede Zeile jetzt das Foto der Gruppe neben ihrem Namen, wenn die Gruppe eins hat.",
+        "it": "In Attività, ogni riga ora mostra la foto del gruppo accanto al suo nome, quando il gruppo ne ha una.",
+        "pl": "W Aktywności każdy wiersz pokazuje teraz zdjęcie grupy obok jej nazwy, jeśli grupa je ma.",
+        "nl": "In Activiteit toont elke regel nu de foto van de groep naast de naam, als de groep er een heeft.",
+        "ja": "アクティビティの各行に、グループの写真があればグループ名の横に表示されるようになりました。",
+        "tr": "Etkinlik'te her satır artık grubun fotoğrafı varsa onu grubun adının yanında gösteriyor.",
+        "id": "Di Aktivitas, setiap baris kini menampilkan foto grup di samping namanya, jika grup punya foto."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Your balance in this group no longer repeats the amount on a second line when you only get back or only owe.",
+        "pt": "Seu saldo neste grupo não repete mais o valor numa segunda linha quando você só tem a receber ou só deve.",
+        "pt-PT": "O teu saldo neste grupo já não repete o valor numa segunda linha quando só tens a receber ou só deves.",
+        "es": "Tu saldo en este grupo ya no repite el monto en una segunda línea cuando solo te deben o solo debes.",
+        "fr": "Ton solde dans ce groupe ne répète plus le montant sur une deuxième ligne quand tu ne fais que recevoir ou que devoir.",
+        "de": "Dein Saldo in dieser Gruppe wiederholt den Betrag nicht mehr in einer zweiten Zeile, wenn du nur etwas bekommst oder nur etwas schuldest.",
+        "it": "Il tuo saldo in questo gruppo non ripete più l'importo su una seconda riga quando ricevi soltanto o devi soltanto.",
+        "pl": "Twoje saldo w tej grupie nie powtarza już kwoty w drugim wierszu, gdy tylko masz coś do odzyskania albo tylko do oddania.",
+        "nl": "Je saldo in deze groep herhaalt het bedrag niet meer op een tweede regel als je alleen iets krijgt of alleen iets schuldig bent.",
+        "ja": "このグループでの残高は、受け取るだけ、または支払うだけのときに、2行目で同じ金額を繰り返さなくなりました。",
+        "tr": "Bu gruptaki bakiyen, yalnızca alacağın ya da yalnızca borcun olduğunda tutarı ikinci bir satırda tekrarlamıyor.",
+        "id": "Saldomu di grup ini tidak lagi mengulang jumlahnya di baris kedua saat kamu hanya menerima atau hanya berutang."
+      }
+    },
+    {
+      "kind": "fixed",
+      "platforms": [
+        "android"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "The first letter of \"Add photo\" under a bill's attachments is no longer cut off.",
+        "pt": "A primeira letra de \"Adicionar foto\" nos anexos de uma conta não aparece mais cortada.",
+        "pt-PT": "A primeira letra de \"Adicionar foto\" nos anexos de uma conta já não aparece cortada.",
+        "es": "La primera letra de \"Agregar foto\" en los adjuntos de un gasto ya no aparece cortada.",
+        "fr": "La première lettre de « Ajouter une photo » dans les pièces jointes d’une dépense n’est plus coupée.",
+        "de": "Der erste Buchstabe von „Foto hinzufügen“ bei den Anhängen einer Ausgabe wird nicht mehr abgeschnitten.",
+        "it": "La prima lettera di \"Aggiungi foto\" negli allegati di una spesa non viene più tagliata.",
+        "pl": "Pierwsza litera „Dodaj zdjęcie” w załącznikach wydatku nie jest już ucięta.",
+        "nl": "De eerste letter van \"Foto toevoegen\" bij de bijlagen van een uitgave wordt niet meer afgesneden.",
+        "ja": "支出の添付にある「写真を追加」の最初の文字が切れなくなりました。",
+        "tr": "Bir harcamanın eklerindeki \"Fotoğraf ekle\" yazısının ilk harfi artık kesilmiyor.",
+        "id": "Huruf pertama \"Tambah foto\" di lampiran tagihan tidak lagi terpotong."
+      }
+    }
+  ]
+}
