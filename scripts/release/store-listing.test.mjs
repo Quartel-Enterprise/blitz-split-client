@@ -9,6 +9,7 @@ import { LANGS } from "./release-notes.mjs";
 import {
   APP_STORE_LOCALES,
   FIELDS,
+  LISTING_LANGS,
   ListingError,
   PLAY_LOCALES,
   brandOf,
@@ -81,14 +82,22 @@ test("the keywords waste no character", () => {
   assert.equal(parse({ appStoreKeywords: "split bill,trip" }).appStoreKeywords, "split bill,trip");
 });
 
-test("every language of the app has a listing the stores take", () => {
+test("every language of the listings has a file the stores take", () => {
   const listings = readListings();
-  assert.deepEqual(Object.keys(listings), LANGS);
+  assert.deepEqual(Object.keys(listings), LISTING_LANGS);
+});
+
+test("the listings are written in the release notes' languages and Spain's Spanish, after Latin America's", () => {
+  assert.deepEqual(
+    LISTING_LANGS.filter((lang) => lang !== "es-ES"),
+    LANGS,
+  );
+  assert.equal(LISTING_LANGS[LISTING_LANGS.indexOf("es") + 1], "es-ES");
 });
 
 test("every language goes to a locale of each store, none twice", () => {
   for (const locales of [PLAY_LOCALES, APP_STORE_LOCALES]) {
-    assert.deepEqual(Object.keys(locales), LANGS);
+    assert.deepEqual(Object.keys(locales), LISTING_LANGS);
     const all = Object.values(locales).flat();
     assert.equal(new Set(all).size, all.length);
   }
@@ -102,6 +111,7 @@ test("staging writes each store's files under each of a language's locales", () 
   assert.equal(staged["app-store/en-US/keywords.txt"], FIELD_TEXT.appStoreKeywords);
   assert.equal(staged["app-store/en-US/promotional_text.txt"], FIELD_TEXT.appStorePromotionalText);
   assert.equal(staged["play/en-US/keywords.txt"], undefined);
-  // Play: 3 files for 3 Spanish locales and 1 English; App Store: 5 files for 2 Spanish locales and 1 English
-  assert.equal(Object.keys(staged).length, 3 * 4 + 5 * 3);
+  assert.equal(staged["play/es-ES/title.txt"], undefined);
+  // Play: 3 files for Latin America's 2 locales and 1 English; App Store: 5 files for 1 locale of each
+  assert.equal(Object.keys(staged).length, 3 * 3 + 5 * 2);
 });

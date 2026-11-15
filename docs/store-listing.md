@@ -22,8 +22,9 @@ staged rollout, say which with `fastlane upload_listing platform:android version
 
 ## A language's file
 
-`store-listing/<language>.md`, for each language of the release notes (`LANGS` of `release-notes.mjs`): `en`, `pt`
-(Brazil), `pt-PT`, `es`, `fr`, `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`. A `# Title` line, then these sections, in
+`store-listing/<language>.md`, for each language of the release notes (`LANGS` of `release-notes.mjs`) and for
+Spain's Spanish, which has a listing of its own (`LISTING_LANGS` of the script): `en`, `pt` (Brazil), `pt-PT`, `es`
+(Latin America), `es-ES`, `fr`, `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`. A `# Title` line, then these sections, in
 this order:
 
 | Section | Store | Limit | What it is |
@@ -53,8 +54,10 @@ The limits are in characters, as the stores count them. Every field but the desc
   wasted, and so is a space after a comma, both of which the check refuses. Prefer single words, which the App Store
   combines by itself.
 - **Each language is written for its reader**, with the words people there search for (a "racha" in Brazil, a "talão"
-  in Portugal, a "coloc" in France), not translated word for word. Portugal's Portuguese is written in full: "tu",
-  "telemóvel", "partilhar".
+  in Portugal, a "coloc" in France), not translated word for word. The two regional ones are written in full, not as
+  a few words over the other: Portugal's Portuguese ("tu", "telemóvel", "partilhar") and Spain's Spanish ("os pagáis",
+  "móvil", "ordenador", "ticket"), beside a Spanish that reads well from Mexico to Argentina ("se pagan", "celular",
+  "computadora", "recibo").
 - **Plain text.** The stores show no Markdown: paragraphs, lines in capitals as headings, and `•` for a list.
 
 ## How it reaches the stores
@@ -64,8 +67,9 @@ locale: `play/<locale>/` with `title.txt`, `short_description.txt` and `full_des
 `app-store/<locale>/` with `name.txt`, `subtitle.txt`, `keywords.txt`, `promotional_text.txt` and `description.txt`
 for deliver. `fastlane upload_listing` stages into a temporary folder and uploads it.
 
-A language goes to one or more locales of each store (`PLAY_LOCALES` and `APP_STORE_LOCALES` of the script): Spanish
-is `es-419`, `es-ES` and `es-US` on Play and `es-MX` and `es-ES` on the App Store. They are the codes the screenshots
+A language goes to one or more locales of each store (`PLAY_LOCALES` and `APP_STORE_LOCALES` of the script): Latin
+America's Spanish is `es-419` and `es-US` on Play and `es-MX` on the App Store, and Spain's is `es-ES` on both. They
+are the codes the screenshots
 use (`StoreScreenshots.kt` of `build-logic`), and the two lists stay in step: a store attaches a locale's
 screenshots, and a version's "What's new", to the listing of that same locale. A locale with a listing and no
 screenshots of its own shows the default language's on Play and the primary language's on the App Store. Both tools add a locale the listing
@@ -78,5 +82,7 @@ version.
 ## Adding a language
 
 Write `store-listing/<language>.md`, add the language to `LANGS` (the release notes need it too:
-[release-notes.md](release-notes.md)) and its locales to `PLAY_LOCALES` and `APP_STORE_LOCALES`. The check then
+[release-notes.md](release-notes.md)) and its locales to `PLAY_LOCALES` and `APP_STORE_LOCALES`. A regional
+listing of a language the release notes already have, as Spain's Spanish, goes in `LISTING_LANGS` alone, and takes
+its locale from its language's list. The check then
 passes, and the next `upload_listing` creates the listing in that locale. The `add-language` skill lists the rest.

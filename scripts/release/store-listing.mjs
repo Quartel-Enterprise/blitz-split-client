@@ -19,6 +19,13 @@ import { LANGS } from "./release-notes.mjs";
 export const LISTING_DIR = "store-listing";
 
 /**
+ * The languages a listing is written in: the release notes' and Spain's Spanish, right after Latin America's. The
+ * stores list Spain apart from the rest (es-ES), and people there search and read in other words ("ticket",
+ * "móvil", "os pagáis"), as with Portugal's Portuguese, so each has a listing written in full.
+ */
+export const LISTING_LANGS = LANGS.flatMap((lang) => (lang === "es" ? ["es", "es-ES"] : [lang]));
+
+/**
  * A listing's fields, in the order its file has them: the heading that starts each one, the most characters its
  * store takes, and whether it is one line. The description is one text for both stores.
  */
@@ -41,7 +48,8 @@ export const PLAY_LOCALES = {
   en: ["en-US"],
   pt: ["pt-BR"],
   "pt-PT": ["pt-PT"],
-  es: ["es-419", "es-ES", "es-US"],
+  es: ["es-419", "es-US"],
+  "es-ES": ["es-ES"],
   fr: ["fr-FR"],
   de: ["de-DE"],
   it: ["it-IT"],
@@ -55,7 +63,8 @@ export const APP_STORE_LOCALES = {
   en: ["en-US"],
   pt: ["pt-BR"],
   "pt-PT": ["pt-PT"],
-  es: ["es-MX", "es-ES"],
+  es: ["es-MX"],
+  "es-ES": ["es-ES"],
   fr: ["fr-FR"],
   de: ["de-DE"],
   it: ["it"],
@@ -145,16 +154,16 @@ function checkKeywords(file, listing) {
   if (wasted !== undefined) fail(file, `App Store keywords repeats "${wasted}", which the name or the subtitle already has`);
 }
 
-/** Every language's listing, by language. Fails when a language of the app has no file, or a file no language. */
+/** Every language's listing, by language. Fails when a language of the listings has no file, or a file no language. */
 export function readListings(root = ".") {
   const directory = join(root, LISTING_DIR);
   const files = existsSync(directory) ? readdirSync(directory).filter((name) => name.endsWith(".md")) : [];
-  const stray = files.find((name) => !LANGS.includes(name.slice(0, -".md".length)));
-  if (stray !== undefined) fail(join(LISTING_DIR, stray), `is no language of the app: ${LANGS.join(", ")}`);
+  const stray = files.find((name) => !LISTING_LANGS.includes(name.slice(0, -".md".length)));
+  if (stray !== undefined) fail(join(LISTING_DIR, stray), `is no language of the listings: ${LISTING_LANGS.join(", ")}`);
   return Object.fromEntries(
-    LANGS.map((lang) => {
+    LISTING_LANGS.map((lang) => {
       const file = join(LISTING_DIR, `${lang}.md`);
-      if (!files.includes(`${lang}.md`)) fail(file, "is missing: every language of the app has a listing");
+      if (!files.includes(`${lang}.md`)) fail(file, "is missing: every language of the listings has a file");
       return [lang, parseListing(file, readFileSync(join(root, file), "utf8"), lang)];
     }),
   );
