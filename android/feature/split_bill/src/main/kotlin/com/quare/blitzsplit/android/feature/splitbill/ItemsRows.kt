@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
 import com.quare.blitzsplit.android.designsystem.component.StackFace
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.core.model.FaceStack
 import com.quare.blitzsplit.feature.splitbill.presentation.model.BillPerson
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemsFee
@@ -42,6 +43,7 @@ internal fun ConsumerFacesRow(people: List<BillPerson>) {
                 photoUrl = it.photoUrl,
             )
         },
+        stack = FaceStack.COMPACT,
         size = 24.dp,
         ringColor = MaterialTheme.colorScheme.surfaceContainerLowest,
     )

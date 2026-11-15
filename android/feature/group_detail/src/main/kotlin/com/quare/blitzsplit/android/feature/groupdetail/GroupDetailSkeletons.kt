@@ -23,9 +23,8 @@ import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
 import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
 import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
-import com.quare.blitzsplit.core.model.FaceStack
 
-private const val SKELETON_FACES = FaceStack.MAX_BUBBLES
+private const val SKELETON_FACES = 2
 private const val SKELETON_ROWS = 4
 private val skeletonFaceSize = 36.dp
 

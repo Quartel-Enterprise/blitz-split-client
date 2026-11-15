@@ -342,10 +342,11 @@ private struct JoinInviteContent: View {
         return Text("\(count) · created by \(creatorName)")
     }
 
-    /// The faces of who joined as a stack: the first and how many more there are.
+    /// The faces of who joined as the roomy stack: up to five, or four and how many more there are.
     private func faces(_ members: [JoinMember]) -> some View {
         AvatarStack(
             people: members.map { StackFace(initials: $0.initials, color: $0.avatarColor, photoUrl: $0.photoUrl) },
+            stack: .roomy,
             size: 32,
             ring: Palette.groupedBackground,
         )

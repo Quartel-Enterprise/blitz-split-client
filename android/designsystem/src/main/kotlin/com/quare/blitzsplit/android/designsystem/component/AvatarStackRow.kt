@@ -35,20 +35,21 @@ data class StackFace(
 )
 
 /*
- * Why: everyone at once, cut to FaceStack's two bubbles: both faces of two people, the first face and "+N" of three or
- * more (beta feedback). For a list the ViewModel already cut, the overload below takes its faces and N.
+ * Why: everyone at once, cut to the bubbles of the FaceStack the place has room for: COMPACT in a list's row or a
+ * form's field, ROOMY on a screen's own header or body (docs/product/general.md names each place). For a list the ViewModel already cut, the overload below takes its faces and N.
  */
 @Composable
 fun AvatarStackRow(
     people: List<StackFace>,
+    stack: FaceStack,
     size: Dp,
     ringColor: Color,
     modifier: Modifier = Modifier,
     ringWidth: Dp = 2.dp,
 ) {
     AvatarStackRow(
-        faces = people.toStackedFaces(),
-        extraCount = FaceStack.extraCountOf(people.size),
+        faces = people.toStackedFaces(stack),
+        extraCount = stack.extraCountOf(people.size),
         size = size,
         ringColor = ringColor,
         modifier = modifier,

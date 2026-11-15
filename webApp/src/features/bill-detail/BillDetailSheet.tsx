@@ -294,7 +294,7 @@ export function BillBody({
             onOpen={onPerson && lonePayerId ? () => onPerson(lonePayerId) : null}
             className="flex items-center gap-2 self-start text-sm text-muted-foreground"
           >
-            {faces.length > 0 && <AvatarStack {...stackOf(Array.from(faces))} size="xs" />}
+            {faces.length > 0 && <AvatarStack {...stackOf(Array.from(faces), { isRoomy: true })} size="xs" />}
             {paid}
           </PersonButton>
           {state.paidWith && <PaidWithRow method={state.paidWith} />}

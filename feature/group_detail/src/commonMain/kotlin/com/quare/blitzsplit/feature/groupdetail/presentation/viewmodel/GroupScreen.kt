@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.expenses.export.GroupExportWords
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.FaceStack
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.toImageUrl
@@ -336,7 +337,7 @@ internal fun groupHeaderOf(
         groupPhotoUrl = group.photo?.toImageUrl(),
         currency = currency,
         currencies = balances.currencies,
-        faces = group.members.toStackedFaces().map(::faceOf),
+        faces = group.members.toStackedFaces(FaceStack.ROOMY).map(::faceOf),
         memberCount = group.members.size,
         notJoinedCount = group.members.count { !it.hasJoined },
         totalSpentMinor = expenses.filter { it.currency == currency }.sumOf { it.amountMinor },

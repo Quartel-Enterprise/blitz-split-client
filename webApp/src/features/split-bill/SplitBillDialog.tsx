@@ -529,7 +529,7 @@ function PayerField({ presenter, state, money }: { presenter: SplitBillPresenter
         onClick={() => presenter.openPayer()}
         className={cn(controlClass, mismatch && 'border-destructive')}
       >
-        {faces.length > 0 && <AvatarStack {...stackOf(faces)} size="xs" />}
+        {faces.length > 0 && <AvatarStack {...stackOf(faces, { isRoomy: false })} size="xs" />}
         <span className="flex-1 truncate">{name}</span>
         <ChevronsUpDown aria-hidden className="size-4 text-muted-foreground" />
       </button>
@@ -642,7 +642,7 @@ function SplitSummary({
       onClick={() => presenter.openSplit()}
       className="flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
     >
-      <AvatarStack {...stackOf(Array.from(split.included))} />
+      <AvatarStack {...stackOf(Array.from(split.included), { isRoomy: false })} />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate font-medium">{title}</span>
         {details && <span className="truncate text-[13px] text-muted-foreground">{details}</span>}

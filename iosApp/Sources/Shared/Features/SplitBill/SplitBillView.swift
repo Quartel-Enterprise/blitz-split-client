@@ -281,7 +281,7 @@ private struct SplitFaces: View {
     var size: CGFloat = 22
 
     var body: some View {
-        AvatarStack(people: people.map(StackFace.init), size: size, ringWidth: 1.5)
+        AvatarStack(people: people.map(StackFace.init), stack: .compact, size: size, ringWidth: 1.5)
     }
 }
 

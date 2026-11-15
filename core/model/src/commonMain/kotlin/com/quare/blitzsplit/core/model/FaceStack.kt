@@ -1,18 +1,31 @@
 package com.quare.blitzsplit.core.model
 
 /*
- * Why: every stack of faces in the app (a group's members, who paid a bill, who is in a split) shows at most two
- * bubbles, the same on the three UIs (beta feedback): one or two people show their faces; three or more show the first
- * face and a second bubble "+N" for the rest (three people: a face and "+2").
+ * Why: how many bubbles a stack of faces shows, the same on the three UIs (Pierre's call). Up to maxBubbles people all
+ * show their faces; more than that show one face fewer and a last bubble "+N" for the rest, so "+N" never stands for
+ * one person alone.
  */
-object FaceStack {
-    const val MAX_BUBBLES = 2
+enum class FaceStack(
+    val maxBubbles: Int,
+) {
+    /*
+     * Why: a stack in a list's row or card or in a form's field, which share their line with a name or an amount (beta
+     * feedback: more read squeezed there). Three people: a face and "+2".
+     */
+    COMPACT(2),
+
+    /*
+     * Why: a stack on a screen's own header or body, alone on its line or beside a sentence free to wrap: under a
+     * group's name, on the invite, on the Bill. Five people: the five faces; six: four faces and "+2".
+     */
+    ROOMY(5),
+    ;
 
     // Why: how many of the first people show their face.
     fun faceCountOf(peopleCount: Int): Int = when {
         peopleCount <= 0 -> 0
-        peopleCount <= MAX_BUBBLES -> peopleCount
-        else -> 1
+        peopleCount <= maxBubbles -> peopleCount
+        else -> maxBubbles - 1
     }
 
     // Why: the "+N" bubble's N, 0 for no bubble.
@@ -20,4 +33,4 @@ object FaceStack {
 }
 
 // Why: the first people whose faces a stack shows; the rest is FaceStack.extraCountOf.
-fun <T> List<T>.toStackedFaces(): List<T> = take(FaceStack.faceCountOf(size))
+fun <T> List<T>.toStackedFaces(stack: FaceStack): List<T> = take(stack.faceCountOf(size))

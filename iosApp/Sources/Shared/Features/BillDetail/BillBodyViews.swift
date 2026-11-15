@@ -55,6 +55,7 @@ struct BillPayerLine: View {
             if !faces.isEmpty {
                 AvatarStack(
                     people: faces.map { StackFace(initials: $0.initials, color: $0.avatarColor, photoUrl: $0.photoUrl) },
+                    stack: .roomy,
                     size: size,
                 )
             }

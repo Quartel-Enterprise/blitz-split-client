@@ -324,7 +324,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group with four members WHEN the screen opens THEN shows the first face and three more`() =
+    fun `GIVEN a group with four members WHEN the screen opens THEN shows the four faces and no more bubble`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -333,17 +333,13 @@ class GroupDetailViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(
-                listOf(
-                    GroupFace("A", AvatarColor.PEACH, photoUrl = null),
-                ),
-                state.header.faces,
-            )
-            assertEquals(3, state.header.extraMemberCount)
+            assertEquals(GroupFace("A", AvatarColor.PEACH, photoUrl = null), state.header.faces.first())
+            assertEquals(listOf("A", "P", "B", "C"), state.header.faces.map { it.initials })
+            assertEquals(0, state.header.extraMemberCount)
         }
 
     @Test
-    fun `GIVEN a group with six members WHEN the screen opens THEN shows the first face and five more`() =
+    fun `GIVEN a group with six members WHEN the screen opens THEN shows the first four faces and two more`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroup = trip.copy(members = trip.members + diego + elisa))
@@ -352,8 +348,8 @@ class GroupDetailViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(listOf("A"), state.header.faces.map { it.initials })
-            assertEquals(5, state.header.extraMemberCount)
+            assertEquals(listOf("A", "P", "B", "C"), state.header.faces.map { it.initials })
+            assertEquals(2, state.header.extraMemberCount)
             assertEquals(6, state.header.memberCount)
             assertEquals(4, state.header.notJoinedCount)
         }
@@ -921,7 +917,7 @@ class GroupDetailViewModelTest {
             assertEquals("PR", state.header.groupInitials)
             assertEquals(5, state.header.memberCount)
             assertEquals(3, state.header.notJoinedCount)
-            assertEquals(4, state.header.extraMemberCount)
+            assertEquals(0, state.header.extraMemberCount)
         }
 
     @Test

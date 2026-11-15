@@ -12,15 +12,20 @@ const sizes = {
   lg: { face: 'size-9 text-xs', extra: 'h-9 min-w-9 px-1.5 text-xs', overlap: '-ml-2.5' },
 }
 
-/** Everyone at once, cut to the shared FaceStack rule's two bubbles: both faces of two, the first and "+N" of three or more. */
-export function stackOf<T>(people: T[]): { faces: T[]; extraCount: number } {
-  return { faces: people.slice(0, getStackedFaceCount(people.length)), extraCount: getStackedExtraCount(people.length) }
+/**
+ * Everyone at once, cut by the shared FaceStack rule. Compact, in a list's row or a form's field: both faces of two, the
+ * first and "+N" of three or more. Roomy, on a screen's own header or body: everyone up to five, four faces and "+N" of
+ * six or more.
+ */
+export function stackOf<T>(people: T[], { isRoomy }: { isRoomy: boolean }): { faces: T[]; extraCount: number } {
+  return { faces: people.slice(0, getStackedFaceCount(people.length, isRoomy)), extraCount: getStackedExtraCount(people.length, isRoomy) }
 }
 
 /**
- * Every stack of faces in the app, as Android and Apple draw it (beta feedback): at most two bubbles, each ringed in the
- * surface behind it (`ring`, a Tailwind ring color) so its neighbor's edge reads, never shrunk by a tight row. Screen
- * readers skip it; the row around it says who. `faces` and `extraCount` come from the ViewModel or `stackOf`.
+ * Every stack of faces in the app, as Android and Apple draw it: at most two bubbles in a list's row or a form, five on
+ * a screen's own header or body, each ringed in the surface behind it (`ring`, a Tailwind ring color) so its neighbor's edge reads,
+ * never shrunk by a tight row. Screen readers skip it; the row around it says who. `faces` and `extraCount` come from
+ * the ViewModel or `stackOf`.
  */
 export function AvatarStack({
   faces,

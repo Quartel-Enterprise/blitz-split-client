@@ -124,7 +124,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     expenses), ends in your share as its signed amount alone ("+R$ 6,79", "−R$ 9") in green or orange, never with
     "to get back" or "you owe" after it, as Groups' list draws a group's net (beta feedback); screen readers still hear
     the word. Bill keeps it under "Your share". Who paid shows as the app's stack of faces, at most two bubbles
-    ([General rules](general.md)), as do the members' faces under the group's name.
+    ([General rules](general.md)); the members' faces under the group's name and who paid on the Bill have room for five.
   - A bill tapped there opens "Bill" (`Route.BillDetail`): the bill, "Your share" and the split over every member,
     with its category over the title and Share, Edit and Delete in the top bar. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
     half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the

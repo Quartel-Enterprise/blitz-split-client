@@ -127,9 +127,9 @@ function PersonalTitle({ inviter, name }: { inviter: string | null | undefined; 
   return <>{inviter != null ? t('join_personalTitle', { inviter, name }) : t('join_personalTitleNoInviter', { name })}</>
 }
 
-/** The faces of who joined as the app's stack: the first and how many more there are. */
+/** The faces of who joined as the app's roomy stack: up to five, or four and how many more there are. */
 function Faces({ members }: { members: JsJoinMember[] }) {
-  return <AvatarStack {...stackOf(members)} size="lg" ring="ring-background" />
+  return <AvatarStack {...stackOf(members, { isRoomy: true })} size="lg" ring="ring-background" />
 }
 
 /** The invite's chip, title, group card and buttons, while the server is asked what the link opens. */
