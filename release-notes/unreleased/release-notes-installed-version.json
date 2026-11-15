@@ -18,7 +18,9 @@
         "nl": "Releaseopmerkingen tonen nu de versie die je net hebt geïnstalleerd, in plaats van tot een dag te wachten op de nieuwe punten ervan.",
         "ja": "リリースノートに、インストールしたばかりのバージョンがすぐ表示されるようになりました。最大1日待つ必要はありません。",
         "tr": "Sürüm notları artık yeni yüklediğin sürümü gösteriyor; yeniliklerini getirmek için bir güne kadar beklemiyor.",
-        "id": "Catatan rilis kini menampilkan versi yang baru kamu pasang, tanpa menunggu hingga sehari untuk membawa catatannya."
+        "id": "Catatan rilis kini menampilkan versi yang baru kamu pasang, tanpa menunggu hingga sehari untuk membawa catatannya.",
+        "ru": "«Что нового» теперь сразу показывает только что установленную версию, а не ждёт до суток, чтобы подтянуть её изменения.",
+        "uk": "«Що нового» тепер одразу показує щойно встановлену версію, а не чекає до доби, щоб підтягнути її зміни."
       }
     }
   ]
