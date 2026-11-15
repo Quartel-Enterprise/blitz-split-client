@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The status bar icon: ic_launcher_monochrome's paths without the adaptive icon's safe zone, which shrank the glyph
-    there. A new logo redraws both drawables.
+    The status bar icon, framed tight: the adaptive icon's safe zone made the glyph small there. ic_launcher_monochrome
+    insets this drawable, so a new logo changes only these paths.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
