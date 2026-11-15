@@ -77,6 +77,8 @@ data class ProfileUiState(
      * web always serves the latest, so its version is only the legal footer's.
      */
     val showsCheckForUpdates: Boolean,
+    // Why: "Rate the app", only where a store lists this platform's app (the web sends to the phone app's page).
+    val showsRateApp: Boolean,
     // Why: "Verificando…" under it while the store is asked, which also ignores another tap.
     val isCheckingForUpdates: Boolean,
     val dialog: ProfileDialog?,

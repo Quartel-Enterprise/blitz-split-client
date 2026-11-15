@@ -839,6 +839,7 @@ export const nl: Record<MessageKey, string> = {
   profile_themeDark: 'Donker',
   profile_support: 'Support en feedback',
   profile_contactSupport: 'Contact opnemen met support',
+  profile_rateApp: 'Beoordeel de app',
   profile_about: 'Privacy en info',
   profile_privacyPolicy: 'Privacybeleid',
   profile_terms: 'Servicevoorwaarden',

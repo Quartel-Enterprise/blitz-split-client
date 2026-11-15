@@ -67,6 +67,8 @@ class JsProfileState(
     val isSigningOut: Boolean,
     val hasSignOutFailed: Boolean,
     val showsDeleteAccount: Boolean,
+    // Why: "Rate the app", which on the web opens the page that leads to the phone app's store.
+    val showsRateApp: Boolean,
     // Why: Pix first, each method's default first; null while they load (shimmer), never "no key" before it.
     val paymentKeys: Array<JsPaymentKeyItem>?,
     val canAddPaymentKey: Boolean,
@@ -148,6 +150,7 @@ class ProfilePresenter {
                 isSigningOut = state.isSigningOut,
                 hasSignOutFailed = state.hasSignOutFailed,
                 showsDeleteAccount = state.showsDeleteAccount,
+                showsRateApp = state.showsRateApp,
                 appInviteStatus = state.appInvite?.status?.name,
                 appInviteLink = state.appInvite?.link,
                 paymentKeys = state.paymentKeys
@@ -261,6 +264,10 @@ class ProfilePresenter {
 
     fun contactSupport() {
         viewModel.onEvent(ProfileUiEvent.OnContactSupportClicked)
+    }
+
+    fun rateApp() {
+        viewModel.onEvent(ProfileUiEvent.OnRateAppClicked)
     }
 
     fun retrySync() {

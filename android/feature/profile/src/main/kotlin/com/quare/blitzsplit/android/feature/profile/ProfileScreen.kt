@@ -81,7 +81,8 @@ fun ProfileScreen(
 
                 is ProfileUiAction.LaunchNativeSignIn -> launchGoogleSignIn()
 
-                is ProfileUiAction.OpenUrl -> uriHandler.openUri(action.url)
+                // Why: a device with no browser nor store to take the link ignores the tap.
+                is ProfileUiAction.OpenUrl -> runCatching { uriHandler.openUri(action.url) }
 
                 is ProfileUiAction.SaveExport -> saveExport(action.json)
 

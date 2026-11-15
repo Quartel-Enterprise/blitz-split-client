@@ -80,6 +80,7 @@
     <string name="profile_info_ok">Anladım</string>
     <string name="profile_section_support">Destek ve geri bildirim</string>
     <string name="profile_contact_support">Destekle iletişime geç</string>
+    <string name="profile_rate_app">Uygulamayı değerlendir</string>
     <string name="profile_section_about">Gizlilik ve hakkında</string>
     <string name="profile_privacy_policy">Gizlilik Politikası</string>
     <string name="profile_terms">Hizmet Şartları</string>

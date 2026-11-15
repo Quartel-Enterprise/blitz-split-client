@@ -837,6 +837,7 @@ export const id: Record<MessageKey, string> = {
   profile_themeDark: 'Gelap',
   profile_support: 'Dukungan dan masukan',
   profile_contactSupport: 'Hubungi dukungan',
+  profile_rateApp: 'Beri nilai aplikasi',
   profile_about: 'Privasi dan tentang',
   profile_privacyPolicy: 'Kebijakan Privasi',
   profile_terms: 'Ketentuan Layanan',

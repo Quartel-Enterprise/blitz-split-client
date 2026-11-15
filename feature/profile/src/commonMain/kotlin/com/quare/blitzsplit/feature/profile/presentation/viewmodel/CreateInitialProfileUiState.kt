@@ -10,6 +10,7 @@ import software.quare.loadable.Loadable
 internal fun createInitialProfileUiState(
     showsDynamicColors: Boolean,
     showsCheckForUpdates: Boolean,
+    showsRateApp: Boolean,
 ): ProfileUiState = ProfileUiState(
     isLoaded = false,
     displayName = "",
@@ -37,6 +38,7 @@ internal fun createInitialProfileUiState(
     languageQuery = "",
     activeNotificationCount = Loadable.Loading,
     showsCheckForUpdates = showsCheckForUpdates,
+    showsRateApp = showsRateApp,
     isCheckingForUpdates = false,
     dialog = null,
     hasConfirmedCodeSaved = false,

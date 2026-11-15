@@ -41,6 +41,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.support.domain.model.ReviewMoment
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
@@ -76,6 +77,7 @@ class DuplicateBillViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
     private val actions = mutableListOf<SplitBillUiAction>()
+    private val notedMoments = mutableListOf<ReviewMoment>()
 
     @BeforeTest
     fun setUp() {
@@ -355,6 +357,31 @@ class DuplicateBillViewModelTest {
             assertTrue(expenses.updatedExpenses.isEmpty())
             assertEquals(savedBill, expenses.expenses.value.single { it.id == EXPENSE_ID })
         }
+
+    @Test
+    fun `GIVEN a duplicate WHEN tapping Salvar THEN notes a bill created once for the review`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.BillCreated), notedMoments)
+        }
+
+    @Test
+    fun `GIVEN a saved bill WHEN Duplicar opens THEN nothing is noted for the review`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val noted = notedMoments.toList()
+
+        // Then
+        assertTrue(noted.isEmpty())
+    }
 
     @Test
     fun `GIVEN a duplicate changed WHEN tapping Salvar THEN saves what was typed`() = runTest(testDispatcher) {
@@ -679,6 +706,7 @@ class DuplicateBillViewModelTest {
             navigator.navigate(route)
         }
         viewModel = SplitBillViewModel(
+            noteReviewMoment = notedMoments::add,
             paidWithUseCases = paidWithUseCasesOf(),
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,

@@ -92,6 +92,10 @@ class MainActivity : ComponentActivity() {
                             BillLinkNoticeDialog(appViewModel = appViewModel)
                             DiscardChangesDialog(appViewModel = appViewModel)
                             InAppUpdateDownloadOverlay()
+                            InAppReviewEffect(
+                                appViewModel = appViewModel,
+                                activity = this@MainActivity,
+                            )
                         }
                     }
                 }

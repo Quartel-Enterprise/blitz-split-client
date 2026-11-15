@@ -40,6 +40,7 @@ val splitBillModule = module {
             paidWithUseCases = get(),
             observeBitcoinInSats = get(),
             connectivityObserver = get(),
+            noteReviewMoment = get(),
             trackEvent = get(),
         )
     }

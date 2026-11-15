@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
+import com.quare.blitzsplit.core.support.domain.usecase.NoteReviewMoment
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SPLIT_BILL_SOURCE
@@ -69,6 +70,7 @@ class SplitBillViewModel(
     private val decimalSeparator: DeviceDecimalSeparator,
     private val offerCategoryTeach: OfferCategoryTeach,
     private val saveSplitAsDefault: SaveSplitAsDefault,
+    private val noteReviewMoment: NoteReviewMoment,
     readReceipt: ReadReceipt,
     attachBillImage: AttachBillImage,
     takePickedReceipt: TakePickedReceipt,
@@ -534,7 +536,7 @@ class SplitBillViewModel(
         viewModelScope.launch {
             val expenseId = route.expenseId
             val result = if (expenseId == null) {
-                createExpense.saveNew(state, amountMinor, payers, shares).map { id ->
+                createExpense.saveNew(state, amountMinor, payers, shares, noteReviewMoment).map { id ->
                     paidWith.saveTo(id, state)
                     receipt.attachTo(id, state)
                     saveSplitAsDefault.saveOf(state)

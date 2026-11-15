@@ -1102,6 +1102,7 @@ class DiscardChangesViewModelTest {
             navigator.navigate(screen)
         }
         viewModel = SplitBillViewModel(
+            noteReviewMoment = {},
             paidWithUseCases = paidWithUseCasesOf(),
             trackEvent = { _, _ -> },
             route = screen,
