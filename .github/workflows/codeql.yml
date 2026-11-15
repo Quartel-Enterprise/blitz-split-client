@@ -40,9 +40,11 @@ on:
 permissions:
   contents: read
 
-# Cancels in-progress runs if a new commit is pushed to the same PR or branch
+# A new push to a pull request cancels the run of the previous one. On main every commit has a group
+# of its own and always finishes: a pull request's alerts are the ones its base commit doesn't have,
+# so a commit of main without its analysis would hand its alerts to the pull requests based on it.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -65,7 +67,7 @@ jobs:
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
     # A hung runner would otherwise hold the check, and merge-when-green, for six hours.
-    timeout-minutes: ${{ matrix.language == 'java-kotlin' && 45 || 15 }}
+    timeout-minutes: ${{ matrix.language == 'java-kotlin' && 60 || 15 }}
     permissions:
       contents: read
       # Uploads the results to code scanning.
@@ -108,7 +110,7 @@ jobs:
 
       # The jvm target of the shared modules and the debug variant of the Android app, which
       # compiles every :android:* module and the androidMain of the shared ones: together, every
-      # Kotlin file but the actuals of the Apple and JS targets. A compile task restored from the
+      # production Kotlin file but the actuals of the Apple and JS targets (no test is compiled). A compile task restored from the
       # build cache runs no compiler, and CodeQL would see none of its files, so the cache is off.
       - name: Compile the Kotlin code
         if: matrix.build-mode == 'manual'

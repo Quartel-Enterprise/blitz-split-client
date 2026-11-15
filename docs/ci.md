@@ -225,6 +225,11 @@ GitHub sometimes leaves a job's check in progress after its workflow run complet
 ends. A check still pending in a completed run takes the run's conclusion instead (a run succeeds only when every job of
 it did), with a warning on the `merge-when-green` run that names the run.
 
+The `CodeQL` check code scanning adds to a pull request is no workflow run: it turns green a little after the `codeql`
+run completes, and its completion starts nothing. So while the only checks left are pending ones no run of Actions
+owns, `merge-when-green` reads the checks again, every 20 seconds for two minutes, before giving up until the next
+event or sweep.
+
 The `Main rules` ruleset requires every review conversation to be resolved before a pull request merges into `main`,
 with no bypass, admins included, and `merge-when-green` never merges with `--admin`. When everything else is green
 and a conversation is still open, it removes its label and comments on the pull request instead. Fix each finding,
@@ -285,7 +290,8 @@ repository's settings alone.
 - Scope it with `paths` or `paths-ignore`, so a docs-only change doesn't run a build.
 - Give every job a `timeout-minutes` (see [Speed and timeouts](#speed-and-timeouts)).
 - Use per-commit `concurrency` groups on `main` if it writes a Gradle cache, per-ref otherwise: a cancelled run saves
-  no cache.
+  no cache. `codeql` is per commit too: a commit of `main` without its analysis would hand its alerts to the pull
+  requests based on it.
 - If it checks the app on pull requests, start it with the `review-gate` job, with the same `pull_request` types
   and `if` as the other callers, and make its other jobs need it.
 - Set up Gradle through `./.github/actions/gradle` and pass `secrets.GRADLE_ENCRYPTION_KEY`.
