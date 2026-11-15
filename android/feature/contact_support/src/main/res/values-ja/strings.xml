@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">サポートに問い合わせる</string>
+    <string name="contact_support_description">メッセージを用意した状態でメールアプリを開きます。起きたことを書いて送信してください。すべてのメッセージは担当者が読みます。</string>
+    <string name="contact_support_to">宛先</string>
+    <string name="contact_support_diagnostics">メールに含まれる情報</string>
+    <string name="contact_support_app_version">アプリのバージョン</string>
+    <string name="contact_support_platform">プラットフォーム</string>
+    <string name="contact_support_language">言語</string>
+    <string name="contact_support_account">アカウント</string>
+    <string name="contact_support_profile">プロフィール</string>
+    <string name="contact_support_language_system">システム</string>
+    <string name="contact_support_account_local">この端末のみ</string>
+    <string name="contact_support_account_anonymous">未連携</string>
+    <string name="contact_support_open_email">メールを開く</string>
+    <string name="contact_support_copy_email">メールアドレスをコピー</string>
+    <string name="contact_support_notice_copied">メールアドレスをコピーしました。</string>
+    <string name="contact_support_notice_no_app">メールアプリが見つかりません。アドレスをコピーしました。</string>
+    <string name="contact_support_close">閉じる</string>
+</resources>

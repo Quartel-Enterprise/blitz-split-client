@@ -131,6 +131,23 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     asks, which offers the update even within the hour, or says "You already have the latest version.", "The update
     is already downloading." (Android) or that it couldn't check. The web always serves the latest, so it never checks: its
     version is only the footer's.
+  - Profile's "Support and feedback" comes right before "Privacy and about" on every platform (Pierre's call, as
+    Bible Planner's "Support & comments"): after "Preferences" in one column, and in the first column, over "Privacy
+    and about", where the preferences go to the second; a card of its own on the web. Its first row, "Contact
+    support", opens Contact support (`Route.ContactSupport`) over the profile: a bottom sheet on an Android phone and a
+    dialog anywhere wider, a sheet on iPhone and iPad, a sheet on Settings on the Mac, a dialog on the web (a drawer
+    on a phone). It shows the address under "To" (appborarachar@gmail.com, selectable, with a copy button), "Will be
+    included in the email" (the app's version, the platform, the language, as its tag or "System (pt)" with the one the app speaks while it follows the device, the account as "This device only", "Not
+    connected", Google or Apple, and the profile's link once it has one, shimmering until they were read), "Open
+    email" and "Copy email address". "Open email" hands the platform a mailto link whose subject ("Blitz Split
+    support", the platform and the version) and diagnostics are in English whatever the app's language, since whoever
+    answers reads them; the person writes above them in their own. Never the account's email nor its id: the
+    profile's link is what finds the person. A device with no email app (Android and Apple say so; a browser never
+    does) copies the address instead and says "No email app found. The address was copied instead."; a copy says
+    "Email address copied.", which VoiceOver hears on every tap. A browser that refuses the clipboard takes that line
+    back and toasts "Couldn't copy. Select it and copy by hand.". On Android the subject and the body also go as the
+    intent's extras, for the email apps that never read them from the link. An iPad shows the sheet at the form's
+    size.
   - Profile's "Privacy and about" holds "Share usage data" ("Screens and taps, to improve the app. Never names or
     amounts."), a switch right under "Export my data" (Pierre's call, #184): on by default, per device like the theme,
     it turns Firebase Analytics off on this device, the user id included. Nothing asks about it first: Analytics rests

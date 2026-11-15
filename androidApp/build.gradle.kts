@@ -137,6 +137,7 @@ dependencies {
     implementation(projects.android.feature.paymentKey)
     implementation(projects.android.feature.payingMethod)
     implementation(projects.android.feature.deleteAccount)
+    implementation(projects.android.feature.contactSupport)
     implementation(projects.android.feature.notificationSettings)
     implementation(projects.android.feature.categoryMap)
     implementation(projects.android.feature.inAppUpdate)

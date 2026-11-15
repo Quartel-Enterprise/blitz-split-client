@@ -77,6 +77,8 @@
     <string name="profile_dynamic_colors_info_body">Dinamik renkler uygulamayı duvar kağıdına uydurur: düğmeler, arka planlar ve vurgular Android\'in duvar kağıdından seçtiği renkleri alır ve duvar kağıdın değişince onlar da değişir.</string>
     <string name="profile_dynamic_colors_info_note">Gruplar, avatarlar ve kategoriler kendi renklerini korur, böylece onları yine ayırt edersin. Bu yalnızca bu cihazda geçerlidir.</string>
     <string name="profile_info_ok">Anladım</string>
+    <string name="profile_section_support">Destek ve geri bildirim</string>
+    <string name="profile_contact_support">Destekle iletişime geç</string>
     <string name="profile_section_about">Gizlilik ve hakkında</string>
     <string name="profile_privacy_policy">Gizlilik Politikası</string>
     <string name="profile_terms">Hizmet Şartları</string>
