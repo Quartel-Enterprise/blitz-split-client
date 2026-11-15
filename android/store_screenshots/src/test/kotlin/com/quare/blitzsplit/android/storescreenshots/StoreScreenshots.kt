@@ -73,7 +73,6 @@ internal abstract class StoreScreenshots(
         // The logo's blue dimmed far down, so the app's own accents stay the brightest thing in each image.
         const val BANNER_BACKGROUND = 0xFF0E2433
 
-        // Where the library writes, as build-logic's StoreScreenshots.kt sets it; the module's folder when it doesn't.
         const val OUTPUT_ROOT_PROPERTY = "storeScreenshots.outputRoot"
     }
 
@@ -127,13 +126,20 @@ internal abstract class StoreScreenshots(
         tag: String,
     ) {
         if (drawnIn == tag) return
+        check(storeLocales.none { it.tag == drawnIn }) {
+            "$drawnIn is another set's folder: moving it to $tag would mix the two sets"
+        }
+        // The library's own rule for where it writes: the property build-logic sets, or the module's folder.
         val outputRoot = File(System.getProperty(OUTPUT_ROOT_PROPERTY) ?: System.getProperty("user.dir"))
         val drawn = outputRoot.resolve(drawnIn)
+        check(drawn.isDirectory) {
+            "No $drawn to move to $tag: has the library changed where it writes or how it names a locale's folder?"
+        }
         drawn.copyRecursively(
             target = outputRoot.resolve(tag),
             overwrite = true,
         )
-        drawn.deleteRecursively()
+        check(drawn.deleteRecursively()) { "Couldn't delete $drawn after moving it to $tag" }
     }
 }
 
