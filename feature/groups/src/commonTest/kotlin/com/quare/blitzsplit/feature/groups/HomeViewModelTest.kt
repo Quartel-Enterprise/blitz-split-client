@@ -2314,7 +2314,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `GIVEN a Conta Inicio opened beside it WHEN tapping another bill THEN takes the Conta's place`() =
+    fun `GIVEN a Conta Inicio opened beside it WHEN tapping another bill THEN takes the place of the Conta`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(

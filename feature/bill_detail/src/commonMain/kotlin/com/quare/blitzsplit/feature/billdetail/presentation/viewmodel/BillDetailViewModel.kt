@@ -578,5 +578,5 @@ class BillDetailViewModel(
         timeZone = currentTimeZone(),
     )
 
-    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
+    private fun isOnTop(): Boolean = leaving.isOnTop()
 }

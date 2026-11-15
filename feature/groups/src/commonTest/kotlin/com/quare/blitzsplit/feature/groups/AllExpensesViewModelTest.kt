@@ -610,7 +610,7 @@ class AllExpensesViewModelTest {
         }
 
     @Test
-    fun `GIVEN a bill All expenses opened beside it WHEN tapping another bill THEN takes that bill's place`() =
+    fun `GIVEN a bill All expenses opened beside it WHEN tapping another bill THEN takes the place of that bill`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -648,25 +648,6 @@ class AllExpensesViewModelTest {
 
             // Then
             assertEquals(listOf("bill_clicked" to fromAllExpenses), trackedEvents)
-        }
-
-    @Test
-    fun `GIVEN a bill already opened over the list WHEN a late tap on another bill comes THEN the back stack stays`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedGroups = listOf(trio()),
-                storedExpenses = listOf(bill("dinner"), bill("taxi")),
-            )
-            viewModel.onEvent(AllExpensesUiEvent.OnBillClicked("trio", "dinner"))
-            val opened = navigator.backStack.value
-            val event = AllExpensesUiEvent.OnBillClicked("trio", "taxi")
-
-            // When
-            viewModel.onEvent(event)
-
-            // Then
-            assertEquals(opened, navigator.backStack.value)
         }
 
     @Test

@@ -15,6 +15,8 @@ internal class BillDetailLeaving(
     private val route: Route.BillDetail,
     private val noticeBillGone: NoticeBillGone,
 ) {
+    fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
+
     private var isGone = false
     private var isBillGoneAfterShowing = false
 
@@ -30,7 +32,7 @@ internal class BillDetailLeaving(
 
     // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
     fun leave() {
-        if (navigator.backStack.value.lastOrNull() != route) return
+        if (!isOnTop()) return
         if (isBillGoneAfterShowing && navigator.isOverGroupScreen(route.groupId)) {
             noticeBillGone(route.groupId, route.expenseId)
         }
