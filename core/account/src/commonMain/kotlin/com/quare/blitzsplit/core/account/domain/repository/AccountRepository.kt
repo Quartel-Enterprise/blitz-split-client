@@ -62,6 +62,11 @@ interface AccountRepository {
 
     suspend fun updateAwaitsFullSync(awaits: Boolean)
 
+    // Why: the device's copy of an account deleted for inactivity is erased, so only the welcome's notice is left.
+    suspend fun endExpiredSession()
+
+    suspend fun dismissExpiredNotice()
+
     suspend fun signOut()
 
     // Why: only the server's copy; the device's goes with endDeletedSession and the profile's and keys' clears.

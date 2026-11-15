@@ -15,6 +15,8 @@ private val anonymousFunctions = setOf(
     // Why: a profile link opened signed out (the welcome, a profile kept on the device only) still shows its person.
     "get_profile_by_share_code",
     "unregister_push_device",
+    // Why: asked once the server refused the session, to tell an account deleted for inactivity from a lost session.
+    "was_account_expired",
 )
 
 // Why: supabase-kt rethrows it as an HttpRequestException, which the sync counts as a connection failure.

@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">Alleen jij ziet je e-mailadres</string>
     <string name="profile_email_info_body">Het staat hier zodat je weet met welk account je bent ingelogd. De mensen in je groepen zien je naam en foto, nooit je e-mailadres.</string>
     <string name="profile_account_none">Geen account</string>
-    <string name="profile_account_none_detail">Anonieme ID van dit apparaat</string>
+    <string name="profile_account_none_detail">Wordt na 30 dagen zonder gebruik verwijderd</string>
     <string name="profile_account_local_detail">Voorlopig alleen op dit apparaat opgeslagen</string>
     <string name="profile_connect">Koppelen</string>
     <string name="profile_connect_failed">Kan niet koppelen. Probeer het opnieuw.</string>
@@ -106,7 +106,7 @@
     <string name="profile_sign_out_now">Nu uitloggen en de wijzigingen kwijtraken</string>
     <string name="profile_sign_out_failed">Kan niet uitloggen. Probeer het opnieuw.</string>
     <string name="profile_erase_title">Het profiel van dit apparaat wissen?</string>
-    <string name="profile_erase_body">Je account heeft geen inlog via Google of Apple. Als je uitlogt, wissen we de kopie op dit apparaat. Om terug te komen, heb je de herstelcode nodig.</string>
+    <string name="profile_erase_body">Je account heeft geen inlog via Google of Apple. Als je uitlogt, wissen we de kopie op dit apparaat. Om terug te komen, heb je de herstelcode nodig. Na 30 dagen zonder gebruik wordt het account verwijderd en werkt de code niet meer.</string>
     <string name="profile_erase_body_no_code">Je gebruikt de app zonder account en hebt nog niet gesynchroniseerd, dus er is geen herstelcode. Als je vertrekt, is je profiel voorgoed weg.</string>
     <string name="profile_erase_code_saved">Ik heb de code veilig bewaard</string>
     <string name="profile_erase_no_code_ack">Ik begrijp dat het niet kan worden hersteld</string>

@@ -1,11 +1,13 @@
 package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
+import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.repository.AppInviteRepository
 import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
+import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -13,13 +15,17 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import software.quare.connectivity.NetworkConnectivityObserver
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 // Why: how long a failed call waits before each try again; after the last one it waits for the next change.
 private val pushRetryDelays = listOf(30.seconds, 2.minutes, 10.minutes)
+private const val EXPIRED_NOTICE_ATTEMPTS = 3
 
 /*
  * Why: Atividade's push notifications go to the devices of the account signed in, so this device's token goes to
@@ -95,4 +101,60 @@ internal suspend fun syncOnSessionRecovery(
     sync: suspend () -> Unit,
 ) {
     accountRepository.observeSessionRecoveries().collect { if (lastSyncFailed.value) sync() }
+}
+
+/*
+ * Why: the session of an account without Google or Apple ended on its own, which nothing else answers with a sync:
+ * the device is as online as before and nothing is queued. One runs now, since registering is what asks the server
+ * whether it deleted the account, and what signs in a new user when it didn't.
+ */
+internal suspend fun syncOnLostAnonymousUser(
+    accountRepository: AccountRepository,
+    sync: suspend () -> Unit,
+) {
+    accountRepository
+        .observeAccount()
+        .map { account -> account.hasLostAnonymousUser }
+        .distinctUntilChanged()
+        .filter { hasLost -> hasLost }
+        .collect { sync() }
+}
+
+/*
+ * Why: the server deleted the account for inactivity, so its copy leaves the device as in a deletion asked here, and
+ * the welcome tells why. Under the sync lock, and read again there: a sign out that got ahead already erased it. A
+ * profile that failed to go keeps the account pending, so no sync registers a new user with it and the next launch
+ * erases again.
+ */
+internal suspend fun eraseExpiredAccount(
+    accountRepository: AccountRepository,
+    profileRepository: ProfileRepository,
+    syncLock: Mutex,
+    eraseDeviceCopy: suspend () -> Unit,
+) {
+    accountRepository
+        .observeAccount()
+        .map { account -> account.inactivityExpiry == InactivityExpiry.PENDING }
+        .distinctUntilChanged()
+        .filter { isPending -> isPending }
+        .collect {
+            syncLock.withLock {
+                val account = accountRepository.observeAccount().first()
+                if (account.inactivityExpiry == InactivityExpiry.PENDING) {
+                    eraseDeviceCopy()
+                    val isErased = suspendRunCatching { profileRepository.observeProfile().first() == null }
+                    if (isErased.getOrDefault(false)) leaveExpiredNotice(accountRepository)
+                }
+            }
+        }
+}
+
+/*
+ * Why: with the copy erased, an account left pending would refuse every sync of a profile made on the welcome and
+ * erase it at the next launch, so a write that fails is tried again before it is given up.
+ */
+private suspend fun leaveExpiredNotice(accountRepository: AccountRepository) {
+    repeat(EXPIRED_NOTICE_ATTEMPTS) {
+        if (suspendRunCatching { accountRepository.endExpiredSession() }.isSuccess) return
+    }
 }

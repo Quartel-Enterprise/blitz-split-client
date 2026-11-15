@@ -99,7 +99,7 @@ private struct EraseProfileSheet: View {
                             .foregroundStyle(Palette.negative)
                     }
                     if let code = state.formattedRecoveryCode {
-                        Text("Your account has no Google or Apple sign in. When you sign out, we erase the copy on this \(DeviceName.current). To come back, you need the recovery code.")
+                        Text("Your account has no Google or Apple sign in. When you sign out, we erase the copy on this \(DeviceName.current). To come back, you need the recovery code. After 30 days without use, the account is deleted and the code stops working.")
                         HStack {
                             Text(verbatim: code)
                                 .font(.system(.title3, design: .monospaced).weight(.semibold))

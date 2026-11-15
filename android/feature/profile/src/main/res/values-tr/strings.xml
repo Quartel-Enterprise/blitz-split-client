@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">E-postanı yalnızca sen görürsün</string>
     <string name="profile_email_info_body">Hangi hesapla giriş yaptığını bilmen için burada. Gruplarındaki kişiler adını ve fotoğrafını görür, e-postanı asla görmez.</string>
     <string name="profile_account_none">Hesap yok</string>
-    <string name="profile_account_none_detail">Bu cihazın anonim kimliği</string>
+    <string name="profile_account_none_detail">30 gün kullanılmazsa silinir</string>
     <string name="profile_account_local_detail">Şimdilik yalnızca bu cihazda kayıtlı</string>
     <string name="profile_connect">Bağla</string>
     <string name="profile_connect_failed">Bağlanılamadı. Tekrar dene.</string>
@@ -106,7 +106,7 @@
     <string name="profile_sign_out_now">Şimdi çıkış yap, değişiklikler kaybolsun</string>
     <string name="profile_sign_out_failed">Çıkış yapılamadı. Tekrar dene.</string>
     <string name="profile_erase_title">Profil bu cihazdan silinsin mi?</string>
-    <string name="profile_erase_body">Hesabında Google ya da Apple girişi yok. Çıkış yaptığında bu cihazdaki kopyayı sileriz. Geri dönmek için kurtarma koduna ihtiyacın olur.</string>
+    <string name="profile_erase_body">Hesabında Google ya da Apple girişi yok. Çıkış yaptığında bu cihazdaki kopyayı sileriz. Geri dönmek için kurtarma koduna ihtiyacın olur. 30 gün kullanılmazsa hesap silinir ve kod çalışmaz.</string>
     <string name="profile_erase_body_no_code">Uygulamayı hesapsız kullanıyorsun ve henüz eşitlemedin, bu yüzden kurtarma kodu yok. Çıkınca profilin tamamen gider.</string>
     <string name="profile_erase_code_saved">Kodu güvenli bir yerde sakladım</string>
     <string name="profile_erase_no_code_ack">Geri getirilemeyeceğini anlıyorum</string>

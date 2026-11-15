@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">メールアドレスはあなただけに表示されます</string>
     <string name="profile_email_info_body">どのアカウントでログインしているか分かるように表示しています。グループのメンバーにはあなたの名前と写真が表示され、メールアドレスは表示されません。</string>
     <string name="profile_account_none">アカウントなし</string>
-    <string name="profile_account_none_detail">このデバイスの匿名ID</string>
+    <string name="profile_account_none_detail">30日間使わないと削除されます</string>
     <string name="profile_account_local_detail">今はこのデバイスにだけ保存されています</string>
     <string name="profile_connect">連携</string>
     <string name="profile_connect_failed">連携できませんでした。もう一度お試しください。</string>
@@ -103,7 +103,7 @@
     <string name="profile_sign_out_now">今すぐログアウトして変更を破棄</string>
     <string name="profile_sign_out_failed">ログアウトできませんでした。もう一度お試しください。</string>
     <string name="profile_erase_title">このデバイスからプロフィールを消去しますか？</string>
-    <string name="profile_erase_body">このアカウントにはGoogleやAppleのログインがありません。ログアウトすると、このデバイスのコピーを消去します。戻るには復元コードが必要です。</string>
+    <string name="profile_erase_body">このアカウントにはGoogleやAppleのログインがありません。ログアウトすると、このデバイスのコピーを消去します。戻るには復元コードが必要です。30日間使わないとアカウントは削除され、コードも使えなくなります。</string>
     <string name="profile_erase_body_no_code">アカウントなしでアプリを使っていて、まだ同期していないため、復元コードはありません。退出すると、プロフィールは完全に失われます。</string>
     <string name="profile_erase_code_saved">コードを安全な場所に保管しました</string>
     <string name="profile_erase_no_code_ack">復元できないことを理解しました</string>

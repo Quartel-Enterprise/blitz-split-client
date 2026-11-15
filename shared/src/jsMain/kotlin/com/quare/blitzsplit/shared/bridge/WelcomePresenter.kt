@@ -16,6 +16,7 @@ class JsWelcomeState(
     val showsOfflineNotice: Boolean,
     val connectingProvider: String?,
     val hasSignInFailed: Boolean,
+    val showsExpiredAccountNotice: Boolean,
 )
 
 class WelcomePresenter {
@@ -29,6 +30,7 @@ class WelcomePresenter {
                 showsOfflineNotice = state.showsOfflineNotice,
                 connectingProvider = state.connectingProvider?.code,
                 hasSignInFailed = state.error != null,
+                showsExpiredAccountNotice = state.showsExpiredAccountNotice,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -60,6 +62,10 @@ class WelcomePresenter {
         val urls = viewModel.uiAction.mapNotNull { action -> (action as? WelcomeUiAction.OpenUrl)?.url }
         val watch = FlowWatcher(urls).observe(onUrl)
         return JsWatch(watch::cancel)
+    }
+
+    fun dismissExpiredAccountNotice() {
+        viewModel.onEvent(WelcomeUiEvent.OnExpiredAccountNoticeDismissed)
     }
 
     fun dismissError() {

@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">Solo tú ves tu correo</string>
     <string name="profile_email_info_body">Aparece aquí para que sepas con qué cuenta iniciaste sesión. Las personas de tus grupos ven tu nombre y tu foto, nunca tu correo.</string>
     <string name="profile_account_none">Sin cuenta</string>
-    <string name="profile_account_none_detail">ID anónimo de este dispositivo</string>
+    <string name="profile_account_none_detail">Se borra tras 30 días sin uso</string>
     <string name="profile_account_local_detail">Guardado solo en este dispositivo por ahora</string>
     <string name="profile_connect">Conectar</string>
     <string name="profile_connect_failed">No se pudo conectar. Inténtalo de nuevo.</string>
@@ -109,7 +109,7 @@
     <string name="profile_sign_out_now">Cerrar sesión ahora y perder los cambios</string>
     <string name="profile_sign_out_failed">No se pudo cerrar la sesión. Inténtalo de nuevo.</string>
     <string name="profile_erase_title">¿Borrar el perfil de este dispositivo?</string>
-    <string name="profile_erase_body">Tu cuenta no tiene Google ni Apple. Al cerrar sesión, borramos la copia de este dispositivo. Para volver, necesitas el código de recuperación.</string>
+    <string name="profile_erase_body">Tu cuenta no tiene Google ni Apple. Al cerrar sesión, borramos la copia de este dispositivo. Para volver, necesitas el código de recuperación. Tras 30 días sin uso, la cuenta se borra y el código deja de funcionar.</string>
     <string name="profile_erase_body_no_code">Usas la app sin cuenta y aún no has sincronizado, así que no hay código de recuperación. Al salir, tu perfil se pierde para siempre.</string>
     <string name="profile_erase_code_saved">Guardé el código en un lugar seguro</string>
     <string name="profile_erase_no_code_ack">Entiendo que no se puede recuperar</string>

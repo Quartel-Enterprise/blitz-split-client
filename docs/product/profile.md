@@ -45,7 +45,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     [joining-and-folds.md](joining-and-folds.md) (where it opens).
   - "Sign out" and "Delete account" are two buttons for every account the server keeps, an anonymous one too, as for
     Google or Apple (Pierre's call, beta feedback 17): signing out an anonymous account asks "Sign out?" and for the
-    recovery code to be kept, since it is the way back, and Delete account deletes it on the server (the
+    recovery code to be kept, since it is the way back for 30 days (the dialog says the account is deleted after 30
+    days without use, and the code with it), and Delete account deletes it on the server (the
     `delete-account` function takes any signed in user). Only a profile nothing brings back (no Google or Apple and no
     recovery code yet, `ProfileUiState.erasesProfileOnSignOut`) reads "Erase profile and sign out", whose dialog says
     it is gone for good; one the server never saw (`isLocalOnly`) has no Delete account either, while an anonymous
@@ -56,15 +57,17 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     November 2026). An ⓘ button next to the email explains that only the person sees it, in each platform's way
     (Android's dialog, a popover on Apple platforms and the web, `ProfileDialog.EMAIL_INFO`); without an email the
     row falls back to the provider's name and has no ⓘ. Without Google or Apple the row keeps "No account" and its
-    line, under an anonymous-person icon (a person with a slash). On Android its "Connect" button drops under the
+    line, under an anonymous-person icon (a person with a slash): "Deleted after 30 days without use" once the
+    account is on the server (`hasAnonymousId`), since the
+    server deletes it then ([general.md](general.md)), and "Saved only on this device for now" before the first sync ("Data in this browser" on the web). On Android its "Connect" button drops under the
     texts where the row is narrow for its font (under 300 dp times the font scale), so the line beside it never breaks inside a word. The row opens nothing and nothing disconnects the
     Google or Apple account from the user (Pierre's call, beta feedback). Who wants it gone signs out or deletes the
     account. The server has no `unlink-identity` function any more.
   - Delete account lists, truthfully to the server's `delete-account` function and its migrations, "What gets
     deleted" (the profile with its photo, the Pix and Bitcoin keys, the link to Google or Apple, an anonymous
     account's recovery code, the copy on this device) and then "What stays in your groups" (testers' feedback,
-    November 2026): the groups with their bills and payments, for the other members (the server keeps them, even one
-    nobody else is in); the person's name in each group, as a member no longer linked to any account
+    November 2026): the groups with their bills and payments, for the other members (a group no account is left in goes
+    with the account, `delete_group_if_unlinked` on the server); the person's name in each group, as a member no longer linked to any account
     (`group_members.user_id` is set to null); and their comments and the photos they added, under the name they had
     (`author_user_id` and `added_by` set to null). The server also drops, without the screen naming them, the
     notification settings, pins, hidden contacts, likes on comments and push devices (`on delete cascade`).

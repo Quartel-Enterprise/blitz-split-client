@@ -410,7 +410,7 @@ function AccountCard({ presenter, state, className }: CardProps) {
           <div className="flex flex-col gap-3 pb-3">
             <div className="flex items-center gap-3">
               <UserX aria-hidden className="size-4 shrink-0 text-muted-foreground" />
-              <Row title={t('profile_accountNone')} detail={t('profile_accountNoneDetail')} className="min-w-0 flex-1">
+              <Row title={t('profile_accountNone')} detail={t(state.hasAnonymousId ? 'profile_accountNoneDetail' : 'profile_accountLocalDetail')} className="min-w-0 flex-1">
                 {!state.isConnectExpanded && (
                   <Button size="sm" variant="outline" disabled={!state.canConnect} onClick={() => presenter.connect()}>
                     {t('profile_connect')}

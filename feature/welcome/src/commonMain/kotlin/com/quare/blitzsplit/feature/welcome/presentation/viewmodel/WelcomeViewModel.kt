@@ -1,7 +1,10 @@
 package com.quare.blitzsplit.feature.welcome.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.usecase.DismissExpiredAccountNotice
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.model.AccountProvider
+import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.LegalPage
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -19,7 +22,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,6 +33,8 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class WelcomeViewModel(
     private val navigator: Navigator,
     private val openLegalPage: OpenLegalPage,
+    private val dismissExpiredAccountNotice: DismissExpiredAccountNotice,
+    observeAccount: ObserveAccount,
     providerSignIn: ProviderSignIn,
     connectivityObserver: NetworkConnectivityObserver,
     trackEvent: TrackEvent,
@@ -38,6 +45,7 @@ class WelcomeViewModel(
                 isOnline = true,
                 connectingProvider = null,
                 error = null,
+                showsExpiredAccountNotice = false,
             ),
         )
 
@@ -61,6 +69,11 @@ class WelcomeViewModel(
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
+        observeAccount()
+            .map { account -> account.inactivityExpiry == InactivityExpiry.NOTICE }
+            .distinctUntilChanged()
+            .onEach { isShown -> uiState.update { it.copy(showsExpiredAccountNotice = isShown) } }
+            .launchIn(viewModelScope)
         signIn.observeBrowserSignIn(isShown = { navigator.backStack.value.lastOrNull() == Route.Welcome })
     }
 
@@ -73,9 +86,19 @@ class WelcomeViewModel(
             WelcomeUiEvent.OnUseWithoutAccountClicked -> navigator.navigate(Route.ProfileSetup)
             WelcomeUiEvent.OnUsedOnAnotherDeviceClicked -> navigator.navigate(Route.Restore)
             WelcomeUiEvent.OnErrorDismissed -> uiState.update { it.copy(error = null) }
+            WelcomeUiEvent.OnExpiredAccountNoticeDismissed -> handleExpiredAccountNoticeDismissed()
             WelcomeUiEvent.OnPrivacyPolicyClicked -> openLegalPage(LegalPage.PRIVACY_POLICY, ::openUrl)
             WelcomeUiEvent.OnTermsClicked -> openLegalPage(LegalPage.TERMS_OF_USE, ::openUrl)
         }
+    }
+
+    /*
+     * Why: hidden at once, not only once the account's write comes back, so a UI whose dialog reads the state
+     * (SwiftUI's alert binding, Radix's open) never shows it again in between.
+     */
+    private fun handleExpiredAccountNoticeDismissed() {
+        uiState.update { it.copy(showsExpiredAccountNotice = false) }
+        viewModelScope.launch { dismissExpiredAccountNotice() }
     }
 
     private fun openUrl(url: String) {

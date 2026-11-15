@@ -34,7 +34,7 @@ internal class SyncOutcomes(
 
     // Why: whether it told, so a failure it left out never counts as the streak's report.
     private suspend fun report(failure: Throwable): Boolean {
-        if (failure.isConnectionFailure() || !connectivityObserver.observe().first()) return false
+        if (failure.isExpectedFailure() || !connectivityObserver.observe().first()) return false
         crashReporter.recordException(SyncFailure(failure))
         return true
     }

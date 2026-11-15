@@ -95,6 +95,21 @@ struct WelcomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .measuringScreenLayout($layout)
         .toolbar(.hidden)
+        // Shown once, on the welcome a device lands on after its account was deleted for 30 days without use
+        .alert("Your data was deleted", isPresented: isExpiredNoticePresented) {
+            Button("OK") {}
+        } message: {
+            Text("You were using the app without an account and didn't open it for 30 days, so your data was deleted. Connect Google or Apple to keep it next time.")
+        }
+    }
+
+    private var isExpiredNoticePresented: Binding<Bool> {
+        Binding(
+            get: { model.state.showsExpiredAccountNotice },
+            set: { isPresented in
+                if !isPresented { model.send(WelcomeUiEventOnExpiredAccountNoticeDismissed.shared) }
+            },
+        )
     }
 }
 
@@ -192,6 +207,11 @@ private struct WelcomeActions: View {
             TintedButton(title: "Use without an account") {
                 model.send(WelcomeUiEventOnUseWithoutAccountClicked.shared)
             }
+            Text("Your data is deleted after 30 days without use.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
             Button("I've used it on another device") {
                 model.send(WelcomeUiEventOnUsedOnAnotherDeviceClicked.shared)
             }

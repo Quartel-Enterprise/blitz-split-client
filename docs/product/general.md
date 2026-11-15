@@ -6,6 +6,23 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     (`RecoveryCodeUiState.isConnectExpanded`).
   - Apple's sign in button comes before Google's on iOS, macOS and in the browser of an Apple device (Mac, iPhone,
     iPad); Google comes first on Android and in any other browser.
+  - An account without Google or Apple is deleted once none of its devices synced for 30 days (Pierre's call,
+    November 2026): every test install made one, and a forgotten one stayed forever. Only a sync counts, so 30 days
+    offline in a row count too. The server does it (`expire-anonymous-accounts` in blitz-split-api), as a deletion
+    asked in Profile: the person's name stays in their groups with no account, and a group left with no account goes.
+    Every platform says so in the same four places:
+    - Welcome, in a small centered line right under "Use without an account": "Your data is deleted after 30 days
+      without use."
+    - Profile's "No account" row, whose line reads "Deleted after 30 days without use" once the account is on the
+      server ([profile.md](profile.md)).
+    - The sign out of such an account, whose dialog adds that after 30 days without use the account is deleted and
+      the code stops working.
+    - A device that comes back to a deleted account is erased, profile included, and lands on Welcome with an alert,
+      once: "Your data was deleted", "You were using the app without an account and didn't open it for 30 days, so
+      your data was deleted. Connect Google or Apple to keep it next time." and "OK"
+      (`WelcomeUiState.showsExpiredAccountNotice`). The device asks the server first whether it deleted that
+      account: a session lost for any other reason (revoked, the account deleted from another device) keeps the
+      profile as before, with no alert.
   - Welcome ends in one small centered line under its buttons, "By continuing, you accept the Terms of Service and
     acknowledge the Privacy Policy.", both names links to the legal texts (the app's own screens; the site's page in
     another tab on the web), with no checkbox nor step of its own (Pierre's call, #184): Analytics rests on legitimate

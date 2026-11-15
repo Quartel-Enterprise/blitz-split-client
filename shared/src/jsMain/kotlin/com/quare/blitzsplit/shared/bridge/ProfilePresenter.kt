@@ -35,6 +35,8 @@ class JsProfileState(
     val showsRecoveryCodeRow: Boolean,
     val showsRecoveryCodePrompt: Boolean,
     val showsOfflineNotice: Boolean,
+    // Why: the account is on the server with no Google or Apple, which deletes it after 30 days without use.
+    val hasAnonymousId: Boolean,
     // Why: the ProfileSyncStatus's name, null when everything is synced.
     val syncStatus: String?,
     val showsProfilePending: Boolean,
@@ -125,6 +127,7 @@ class ProfilePresenter {
                 showsRecoveryCodeRow = state.showsRecoveryCodeRow,
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,
                 showsOfflineNotice = state.showsOfflineNotice,
+                hasAnonymousId = state.hasAnonymousId,
                 syncStatus = state.syncStatus?.name,
                 showsProfilePending = state.showsProfilePending,
                 pendingChangeCount = state.pendingChangeCount,

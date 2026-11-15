@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.account.domain.model
 
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 
 data class AccountSnapshot(
@@ -12,4 +13,8 @@ data class AccountSnapshot(
     val signOutWhenSynced: Boolean,
     // Why: the account came to this device from the server and no sync settled since, so its copy is still partial.
     val awaitsFullSync: Boolean,
+    // Why: the server deleted the account for inactivity; null for every other account.
+    val inactivityExpiry: InactivityExpiry?,
+    // Why: an anonymous user's session ended on its own, and the server wasn't asked yet whether it deleted the account.
+    val hasLostAnonymousUser: Boolean,
 )

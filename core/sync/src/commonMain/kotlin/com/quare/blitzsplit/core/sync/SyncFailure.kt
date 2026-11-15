@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.sync
 
+import com.quare.blitzsplit.core.account.domain.model.AccountExpiredException
 import com.quare.blitzsplit.core.account.domain.model.SessionRefreshingException
 import com.quare.blitzsplit.core.provider.crashlytics.ReportableFailure
 import io.github.jan.supabase.exceptions.HttpRequestException
@@ -24,6 +25,13 @@ internal class SyncFailure(
 internal fun Throwable.isConnectionFailure(): Boolean = getCauses().any { cause ->
     cause is HttpRequestException || cause is HttpRequestTimeoutException || cause is SessionRefreshingException
 }
+
+/*
+ * Why: what a failed sync doesn't report: a connection failure, and the sync of an account the server deleted for
+ * inactivity, which only waits for the device to be erased.
+ */
+internal fun Throwable.isExpectedFailure(): Boolean =
+    isConnectionFailure() || getCauses().any { cause -> cause is AccountExpiredException }
 
 private fun codesOf(failure: Throwable): String = failure.getCauses().joinToString(separator = " ← ") { cause ->
     val name = cause::class.simpleName ?: "Throwable"

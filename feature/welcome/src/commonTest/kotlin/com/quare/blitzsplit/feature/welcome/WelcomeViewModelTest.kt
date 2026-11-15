@@ -5,12 +5,15 @@ import com.quare.blitzsplit.core.account.domain.model.ConnectResult
 import com.quare.blitzsplit.core.account.domain.model.NativeSignIn
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithBrowserUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ConnectWithIdTokenUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.DismissExpiredAccountNoticeUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAbandonedBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountStatusUseCase
+import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.LegalPage
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -25,6 +28,7 @@ import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewMo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -731,6 +735,105 @@ class WelcomeViewModelTest {
             assertEquals(listOf("privacy_policy_clicked" to mapOf<String, Any>("source" to "welcome")), trackedEvents)
         }
 
+    @Test
+    fun `GIVEN the account was deleted for inactivity WHEN the screen opens THEN shows the expired account notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(inactivityExpiry = InactivityExpiry.NOTICE)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsExpiredAccountNotice)
+        }
+
+    @Test
+    fun `GIVEN no account expired WHEN the screen opens THEN shows no expired account notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(inactivityExpiry = null)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsExpiredAccountNotice)
+        }
+
+    @Test
+    fun `GIVEN an expired account not erased from the device yet WHEN the screen opens THEN shows no notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(inactivityExpiry = InactivityExpiry.PENDING)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsExpiredAccountNotice)
+        }
+
+    @Test
+    fun `GIVEN the welcome screen open WHEN the device is erased for inactivity THEN shows the expired notice`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(inactivityExpiry = InactivityExpiry.PENDING)
+
+            // When
+            account.snapshot.update { it.copy(inactivityExpiry = InactivityExpiry.NOTICE) }
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsExpiredAccountNotice)
+        }
+
+    @Test
+    fun `GIVEN the expired account notice WHEN the screen opens online THEN keeps the account buttons enabled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(inactivityExpiry = InactivityExpiry.NOTICE)
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.areAccountButtonsEnabled)
+            assertFalse(state.showsOfflineNotice)
+            assertNull(state.connectingProvider)
+            assertNull(state.error)
+        }
+
+    @Test
+    fun `GIVEN the expired account notice WHEN dismissing it THEN hides it and clears the expiry of the account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(inactivityExpiry = InactivityExpiry.NOTICE)
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnExpiredAccountNoticeDismissed)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsExpiredAccountNotice)
+            assertNull(account.snapshot.value.inactivityExpiry)
+            assertEquals(listOf(Route.Welcome), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the expired account notice WHEN dismissing it THEN tracks the dismissal with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(inactivityExpiry = InactivityExpiry.NOTICE)
+
+            // When
+            viewModel.onEvent(WelcomeUiEvent.OnExpiredAccountNoticeDismissed)
+
+            // Then
+            assertEquals(
+                listOf("welcome_expired_account_notice_dismissed" to emptyMap<String, Any>()),
+                trackedEvents,
+            )
+        }
+
     private fun legalDocument(page: LegalPage): Route = Route.LegalDocument(
         page = page,
         anchor = null,
@@ -747,13 +850,19 @@ class WelcomeViewModelTest {
         connectResult: Result<ConnectResult> = Result.success(ConnectResult.LINKED),
         isProfilePullPending: Boolean = false,
         clientPlatform: ClientPlatform = ClientPlatform.ANDROID,
+        inactivityExpiry: InactivityExpiry? = null,
     ) {
         if (!isProfilePullPending) profilePull.complete(Unit)
-        account = FakeAccountRepository().also { it.connectResult = connectResult }
+        account = FakeAccountRepository().also { fake ->
+            fake.connectResult = connectResult
+            fake.snapshot.update { it.copy(inactivityExpiry = inactivityExpiry) }
+        }
         navigator = BackStackNavigator(startRoute = Route.Welcome)
         isOnline = MutableStateFlow(online)
         viewModel = WelcomeViewModel(
             trackEvent = { name, params -> trackedEvents += name to params },
+            dismissExpiredAccountNotice = DismissExpiredAccountNoticeUseCase(account),
+            observeAccount = ObserveAccountUseCase(account),
             providerSignIn = ProviderSignInImpl(
                 nativeSignIn = NativeSignIn(native),
                 connectWithIdToken = ConnectWithIdTokenUseCase(account),

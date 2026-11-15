@@ -42101,77 +42101,6 @@
         }
       }
     },
-    "Your account has no Google or Apple sign in. When you sign out, we erase the copy on this %@. To come back, you need the recovery code." : {
-      "comment" : "%@ is the device: iPhone, iPad or Mac",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Konto hat keine Anmeldung mit Google oder Apple. Wenn du dich abmeldest, löschen wir die Kopie auf diesem %@. Um zurückzukommen, brauchst du den Wiederherstellungscode."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu cuenta no tiene Google ni Apple. Al cerrar sesión, borramos la copia de este %@. Para volver, necesitas el código de recuperación."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ton compte n’a pas de connexion Google ni Apple. Quand tu te déconnectes, on efface la copie sur ton %@. Pour revenir, il te faut le code de récupération."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Akunmu tidak punya login Google atau Apple. Saat kamu keluar, kami menghapus salinan di %@ ini. Untuk kembali, kamu butuh kode pemulihan."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Il tuo account non ha l’accesso con Google o Apple. Quando esci, cancelliamo la copia su questo %@. Per tornare ti serve il codice di recupero."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アカウントにGoogleまたはAppleのログインがありません。ログアウトすると、この%@のデータは消去されます。戻るには復元コードが必要です。"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Je account heeft geen inlog met Google of Apple. Als je uitlogt, wissen we de kopie op deze %@. Om terug te komen heb je de herstelcode nodig."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Twoje konto nie ma logowania przez Google ani Apple. Po wylogowaniu usuniemy kopię z tego urządzenia (%@). Aby wrócić, potrzebujesz kodu odzyskiwania."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sua conta não tem Google nem Apple. Ao sair, apagamos a cópia deste %@. Para voltar, só com o código de recuperação."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "A tua conta não tem início de sessão com Google nem Apple. Ao terminar a sessão, apagamos a cópia deste %@. Para voltar, só com o código de recuperação."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hesabında Google veya Apple girişi yok. Çıkış yaptığında bu %@ üzerindeki kopyayı sileriz. Geri dönmek için kurtarma kodu gerekir."
-          }
-        }
-      }
-    },
     "Your contacts are empty. The invite link works without them." : {
       "comment" : "Invite from contacts: the agenda was read and holds nobody",
       "localizations" : {
@@ -59372,77 +59301,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hesap isteğe bağlı"
-          }
-        }
-      }
-    },
-    "Anonymous ID of this %@" : {
-      "comment" : "%@ is the device: iPhone, iPad or Mac",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anonyme ID dieses %@"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ID anónimo de este %@"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ID anonyme de ton %@"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ID anonim %@ ini"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ID anonimo di questo %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "この%@の匿名ID"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anonieme ID van deze %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anonimowy identyfikator tego urządzenia (%@)"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ID anônimo deste %@"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ID anónimo deste %@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bu %@ için anonim kimlik"
           }
         }
       }
@@ -138574,6 +138432,361 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Uygulamayı değerlendir"
+          }
+        }
+      }
+    },
+    "Your data is deleted after 30 days without use." : {
+      "comment" : "Welcome, under \"Use without an account\"",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Daten werden nach 30 Tagen ohne Nutzung gelöscht."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus datos se borran tras 30 días sin uso."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tes données sont effacées après 30 jours sans utilisation."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datamu dihapus setelah 30 hari tidak dipakai."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi dati vengono cancellati dopo 30 giorni di inutilizzo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30日間使わないとデータは削除されます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je gegevens worden na 30 dagen zonder gebruik verwijderd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twoje dane są usuwane po 30 dniach nieużywania."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus dados são apagados após 30 dias sem uso."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os teus dados são apagados após 30 dias sem utilização."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verilerin 30 gün kullanılmazsa silinir."
+          }
+        }
+      }
+    },
+    "Your data was deleted" : {
+      "comment" : "Welcome: the alert's title after the account was deleted for 30 days without use",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Daten wurden gelöscht"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus datos se borraron"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tes données ont été effacées"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datamu sudah dihapus"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I tuoi dati sono stati cancellati"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データが削除されました"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je gegevens zijn verwijderd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twoje dane zostały usunięte"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus dados foram apagados"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os teus dados foram apagados"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verilerin silindi"
+          }
+        }
+      }
+    },
+    "You were using the app without an account and didn't open it for 30 days, so your data was deleted. Connect Google or Apple to keep it next time." : {
+      "comment" : "Welcome: the alert's message after the account was deleted for 30 days without use",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du hast die App ohne Konto genutzt und 30 Tage lang nicht geöffnet, deshalb wurden deine Daten gelöscht. Verbinde Google oder Apple, damit das nicht wieder passiert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usabas la app sin cuenta y no la abriste durante 30 días, así que tus datos se borraron. Conecta Google o Apple para no perderlos la próxima vez."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu utilisais l’app sans compte et tu ne l’as pas ouverte pendant 30 jours, donc tes données ont été effacées. Connecte Google ou Apple pour ne plus les perdre."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamu memakai aplikasi tanpa akun dan tidak membukanya selama 30 hari, jadi datamu dihapus. Hubungkan Google atau Apple agar tidak hilang lagi."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usavi l’app senza account e non l’hai aperta per 30 giorni, quindi i tuoi dati sono stati cancellati. Collega Google o Apple per non perderli la prossima volta."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントなしで使用し、30日間アプリを開かなかったため、データが削除されました。次回からはGoogleまたはAppleを連携すると保持できます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je gebruikte de app zonder account en hebt hem 30 dagen niet geopend, dus je gegevens zijn verwijderd. Koppel Google of Apple om ze de volgende keer te behouden."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aplikacja była używana bez konta i nie była otwierana przez 30 dni, więc Twoje dane zostały usunięte. Połącz Google lub Apple, aby następnym razem ich nie stracić."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você usava o app sem conta e ficou 30 dias sem abrir, então seus dados foram apagados. Conecte Google ou Apple para não perder da próxima vez."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usavas a app sem conta e estiveste 30 dias sem a abrir, por isso os teus dados foram apagados. Liga o Google ou a Apple para não os perderes da próxima vez."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uygulamayı hesapsız kullanıyordun ve 30 gün boyunca açmadın, bu yüzden verilerin silindi. Bir dahaki sefere kaybetmemek için Google ya da Apple bağla."
+          }
+        }
+      }
+    },
+    "Deleted after 30 days without use" : {
+      "comment" : "Profile: the line under \"No account\" for an account without Google or Apple",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird nach 30 Tagen ohne Nutzung gelöscht"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se borra tras 30 días sin uso"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacé après 30 jours sans utilisation"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dihapus setelah 30 hari tidak dipakai"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancellato dopo 30 giorni di inutilizzo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30日間使わないと削除されます"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wordt na 30 dagen zonder gebruik verwijderd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuwane po 30 dniach nieużywania"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagada após 30 dias sem uso"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagada após 30 dias sem utilização"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 gün kullanılmazsa silinir"
+          }
+        }
+      }
+    },
+    "Your account has no Google or Apple sign in. When you sign out, we erase the copy on this %@. To come back, you need the recovery code. After 30 days without use, the account is deleted and the code stops working." : {
+      "comment" : "%@ is the device: iPhone, iPad or Mac",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Konto hat keine Anmeldung mit Google oder Apple. Wenn du dich abmeldest, löschen wir die Kopie auf diesem %@. Um zurückzukommen, brauchst du den Wiederherstellungscode. Nach 30 Tagen ohne Nutzung wird das Konto gelöscht und der Code funktioniert nicht mehr."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu cuenta no tiene Google ni Apple. Al cerrar sesión, borramos la copia de este %@. Para volver, necesitas el código de recuperación. Tras 30 días sin uso, la cuenta se borra y el código deja de funcionar."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ton compte n’a pas de connexion Google ni Apple. Quand tu te déconnectes, on efface la copie sur ton %@. Pour revenir, il te faut le code de récupération. Après 30 jours sans utilisation, le compte est effacé et le code ne fonctionne plus."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Akunmu tidak punya login Google atau Apple. Saat kamu keluar, kami menghapus salinan di %@ ini. Untuk kembali, kamu butuh kode pemulihan. Setelah 30 hari tidak dipakai, akun dihapus dan kode tidak berlaku lagi."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il tuo account non ha l’accesso con Google o Apple. Quando esci, cancelliamo la copia su questo %@. Per tornare ti serve il codice di recupero. Dopo 30 giorni di inutilizzo, l’account viene cancellato e il codice smette di funzionare."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウントにGoogleまたはAppleのログインがありません。ログアウトすると、この%@のデータは消去されます。戻るには復元コードが必要です。30日間使わないとアカウントは削除され、コードも使えなくなります。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je account heeft geen inlog met Google of Apple. Als je uitlogt, wissen we de kopie op deze %@. Om terug te komen heb je de herstelcode nodig. Na 30 dagen zonder gebruik wordt het account verwijderd en werkt de code niet meer."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twoje konto nie ma logowania przez Google ani Apple. Po wylogowaniu usuniemy kopię z tego urządzenia (%@). Aby wrócić, potrzebujesz kodu odzyskiwania. Po 30 dniach nieużywania konto jest usuwane, a kod przestaje działać."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sua conta não tem Google nem Apple. Ao sair, apagamos a cópia deste %@. Para voltar, só com o código de recuperação. Após 30 dias sem uso, a conta é apagada e o código deixa de funcionar."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A tua conta não tem início de sessão com Google nem Apple. Ao terminar a sessão, apagamos a cópia deste %@. Para voltar, só com o código de recuperação. Após 30 dias sem utilização, a conta é apagada e o código deixa de funcionar."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesabında Google veya Apple girişi yok. Çıkış yaptığında bu %@ üzerindeki kopyayı sileriz. Geri dönmek için kurtarma kodu gerekir. 30 gün kullanılmazsa hesap silinir ve kod çalışmaz."
           }
         }
       }

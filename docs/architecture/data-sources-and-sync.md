@@ -520,11 +520,20 @@ pending nor trigger a sync.
 The account is optional. Every install starts `AccountStatus.LocalOnly`, becomes `Anonymous` on its first sync and
 `Connected` once Google or Apple is attached.
 
-| Platform | Google | Apple |
-| --- | --- | --- |
-| Android | native: Credential Manager ID token (`rememberGoogleSignInLauncher`) | browser OAuth |
-| iOS, macOS | browser OAuth | native: Sign in with Apple ID token with a SHA-256 nonce (`AppleSignIn`) |
-| Web | browser OAuth | browser OAuth |
+The server deletes an `Anonymous` account once none of its devices synced for 30 days (`expire-anonymous-accounts` in
+blitz-split-api, which counts from `platforms_seen.last_seen_at`, moved on each sync, and from the last token a
+session of the account got), and keeps the deleted user's id. A device that comes back finds its session refused,
+which supabase-kt answers by clearing it, as it does for a session lost any other way. So the mirror only remembers
+the anonymous user whose session ended (`lostAnonymousUserId` on the account row), and `ensureRegistered()`, before
+it signs anyone in, asks the server about that id (`was_account_expired`, callable with no session); it reads the row
+as it is, since at launch the sync may get there before the mirror wrote the null. On a yes the account becomes
+`InactivityExpiry.PENDING` and the call fails with `AccountExpiredException` (as every sign in does while it is
+pending), so nobody takes over the old copy; on a no a new anonymous user is signed in, the path from before the
+expiry; a question that fails fails the sync, which asks again. `eraseExpiredAccount` (started by
+`SyncCoordinator.start()`) then erases the device's copy under the sync lock, as "Delete account" does (a profile
+that failed to go keeps it pending for the next launch), and `endExpiredSession()` leaves `InactivityExpiry.NOTICE`,
+which Welcome shows once (`showsExpiredAccountNotice`) until "OK" clears it. `AppViewModel` puts Welcome in place as
+soon as the profile is gone.
 
 `NativeSignIn` (see [dependency-injection.md](dependency-injection.md#expect-modules)) tells the ViewModel which
 path to take. With an ID token, `AccountRepositoryImpl.signInWithIdToken` decides:

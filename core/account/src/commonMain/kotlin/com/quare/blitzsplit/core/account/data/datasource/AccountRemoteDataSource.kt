@@ -59,4 +59,7 @@ interface AccountRemoteDataSource {
 
     // Why: ends the session on this device even offline, when the server can't be told.
     suspend fun signOut()
+
+    // Why: asked with no session, since the server refused it: whether it deleted that account for inactivity.
+    suspend fun wasAccountExpired(userId: String): Boolean
 }

@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">Tylko ty widzisz swój e-mail</string>
     <string name="profile_email_info_body">Jest tutaj, żeby było widać, na jakie konto się zalogowano. Osoby w twoich grupach widzą twoje imię i zdjęcie, nigdy twój e-mail.</string>
     <string name="profile_account_none">Brak konta</string>
-    <string name="profile_account_none_detail">Anonimowy identyfikator tego urządzenia</string>
+    <string name="profile_account_none_detail">Usuwane po 30 dniach nieużywania</string>
     <string name="profile_account_local_detail">Na razie zapisane tylko na tym urządzeniu</string>
     <string name="profile_connect">Połącz</string>
     <string name="profile_connect_failed">Nie udało się połączyć. Spróbuj ponownie.</string>
@@ -112,7 +112,7 @@
     <string name="profile_sign_out_now">Wyloguj teraz i strać zmiany</string>
     <string name="profile_sign_out_failed">Nie udało się wylogować. Spróbuj ponownie.</string>
     <string name="profile_erase_title">Wymazać profil z tego urządzenia?</string>
-    <string name="profile_erase_body">Twoje konto nie ma logowania przez Google ani Apple. Po wylogowaniu usuniemy kopię z tego urządzenia. Aby wrócić, potrzebujesz kodu odzyskiwania.</string>
+    <string name="profile_erase_body">Twoje konto nie ma logowania przez Google ani Apple. Po wylogowaniu usuniemy kopię z tego urządzenia. Aby wrócić, potrzebujesz kodu odzyskiwania. Po 30 dniach nieużywania konto jest usuwane, a kod przestaje działać.</string>
     <string name="profile_erase_body_no_code">Używasz aplikacji bez konta i dane nie zostały jeszcze zsynchronizowane, więc nie ma kodu odzyskiwania. Gdy wyjdziesz, twój profil zniknie na zawsze.</string>
     <string name="profile_erase_code_saved">Kod jest zapisany w bezpiecznym miejscu</string>
     <string name="profile_erase_no_code_ack">Rozumiem, że nie da się go odzyskać</string>

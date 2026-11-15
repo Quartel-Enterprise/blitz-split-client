@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">Solo tu vedi la tua email</string>
     <string name="profile_email_info_body">È qui perché tu sappia con quale account hai effettuato l’accesso. Le persone dei tuoi gruppi vedono il tuo nome e la tua foto, mai la tua email.</string>
     <string name="profile_account_none">Nessun account</string>
-    <string name="profile_account_none_detail">ID anonimo di questo dispositivo</string>
+    <string name="profile_account_none_detail">Cancellato dopo 30 giorni di inutilizzo</string>
     <string name="profile_account_local_detail">Per ora salvato solo su questo dispositivo</string>
     <string name="profile_connect">Collega</string>
     <string name="profile_connect_failed">Collegamento non riuscito. Riprova.</string>
@@ -109,7 +109,7 @@
     <string name="profile_sign_out_now">Esci ora e perdi le modifiche</string>
     <string name="profile_sign_out_failed">Impossibile uscire. Riprova.</string>
     <string name="profile_erase_title">Cancellare il profilo da questo dispositivo?</string>
-    <string name="profile_erase_body">Il tuo account non ha l’accesso con Google o Apple. Quando esci, cancelliamo la copia su questo dispositivo. Per tornare, ti serve il codice di recupero.</string>
+    <string name="profile_erase_body">Il tuo account non ha l’accesso con Google o Apple. Quando esci, cancelliamo la copia su questo dispositivo. Per tornare, ti serve il codice di recupero. Dopo 30 giorni di inutilizzo, l’account viene cancellato e il codice smette di funzionare.</string>
     <string name="profile_erase_body_no_code">Usi l’app senza account e non hai ancora sincronizzato, quindi non c’è un codice di recupero. Quando esci, il tuo profilo sparisce per sempre.</string>
     <string name="profile_erase_code_saved">Ho conservato il codice in un posto sicuro</string>
     <string name="profile_erase_no_code_ack">Ho capito che non si può recuperare</string>

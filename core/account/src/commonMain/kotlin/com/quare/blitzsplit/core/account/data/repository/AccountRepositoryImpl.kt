@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.account.data.datasource.AccountRemoteDataSource
 import com.quare.blitzsplit.core.account.data.datasource.BrowserCallback
 import com.quare.blitzsplit.core.account.data.datasource.RemoteSession
 import com.quare.blitzsplit.core.account.domain.model.AbandonedBrowserSignIn
+import com.quare.blitzsplit.core.account.domain.model.AccountExpiredException
 import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.account.domain.model.AppleToken
 import com.quare.blitzsplit.core.account.domain.model.ConnectResult
@@ -16,6 +17,7 @@ import com.quare.blitzsplit.core.account.domain.model.SocialAccountHasNoRecovery
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
+import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
 import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
@@ -92,7 +94,7 @@ class AccountRepositoryImpl(
     override fun observeSessionRecoveries(): Flow<Unit> = remote.observeSessionRecoveries()
 
     override suspend fun ensureRegistered(): Result<String> = suspendRunCatching {
-        val user = getUserUnlessRefreshing() ?: remote.signInAnonymously()
+        val user = getUserUnlessRefreshing() ?: signInAnonymouslyUnlessExpired()
         local.update { account -> account.toMirrorOf(user) }
         user.userId
     }
@@ -104,6 +106,7 @@ class AccountRepositoryImpl(
         fullName: String?,
         authorizationCode: String?,
     ): Result<ConnectResult> = suspendRunCatching {
+        failWhileExpiring()
         val current = getUserUnlessRefreshing()
         val result = when {
             current == null -> {
@@ -145,6 +148,7 @@ class AccountRepositoryImpl(
         provider: AccountProvider,
         isFromProfile: Boolean,
     ): Result<Unit> = suspendRunCatching {
+        failWhileExpiring()
         val current = getUserUnlessRefreshing()
         if (current != null && current.socialProvider == null) {
             linkWithBrowser(
@@ -213,6 +217,7 @@ class AccountRepositoryImpl(
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> = suspendRunCatching {
         val normalized = RecoveryCodeFormat.normalize(code) ?: throw InvalidRecoveryCodeException()
+        failWhileExpiring()
         val credentials = remote.fetchRecoveryCredentials(normalized)
         remote.signInWithPassword(credentials)
         val user = requireNotNull(remote.getCurrentUserOrNull())
@@ -263,6 +268,31 @@ class AccountRepositoryImpl(
     override suspend fun endDeletedSession() {
         remote.clearLocalSession()
         local.clear()
+    }
+
+    // Why: a sign out that erased the device meanwhile leaves no expiry, and so no notice for the welcome.
+    override suspend fun endExpiredSession() {
+        local.update { account ->
+            if (account.inactivityExpiry == InactivityExpiry.PENDING.code) {
+                account.copy(
+                    recoveryCode = null,
+                    recoveryCodePrompt = RecoveryCodePrompt.NOT_DUE.code,
+                    browserSignInProvider = null,
+                    browserSignInFromProfile = false,
+                    lostAnonymousUserId = null,
+                    inactivityExpiry = InactivityExpiry.NOTICE.code,
+                )
+            } else {
+                account
+            }
+        }
+    }
+
+    override suspend fun dismissExpiredNotice() {
+        local.update { account ->
+            val isNoticeDue = account.inactivityExpiry == InactivityExpiry.NOTICE.code
+            if (isNoticeDue) account.copy(inactivityExpiry = null) else account
+        }
     }
 
     /*
@@ -396,6 +426,8 @@ class AccountRepositoryImpl(
         email = account.email,
         signOutWhenSynced = account.signOutWhenSynced,
         awaitsFullSync = account.awaitsFullSync,
+        inactivityExpiry = InactivityExpiry.fromCodeOrNull(account.inactivityExpiry),
+        hasLostAnonymousUser = account.lostAnonymousUserId != null,
     )
 
     private fun toStatus(account: AccountEntity): AccountStatus {
@@ -423,6 +455,8 @@ class AccountRepositoryImpl(
             email = null,
             signOutWhenSynced = false,
             awaitsFullSync = false,
+            // Why: kept to ask the server, before anyone else is signed in, whether it deleted that account.
+            lostAnonymousUserId = if (userId != null && provider == null) userId else lostAnonymousUserId,
         )
 
         user.socialProvider != null -> copy(
@@ -434,6 +468,8 @@ class AccountRepositoryImpl(
             email = user.email,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
             awaitsFullSync = awaitsFullSync || (userId != null && userId != user.userId),
+            lostAnonymousUserId = null,
+            inactivityExpiry = null,
         )
 
         else -> copy(
@@ -451,7 +487,30 @@ class AccountRepositoryImpl(
             email = null,
             signOutWhenSynced = signOutWhenSynced && userId == user.userId,
             awaitsFullSync = awaitsFullSync || (userId != null && userId != user.userId),
+            lostAnonymousUserId = null,
+            inactivityExpiry = null,
         )
+    }
+
+    /*
+     * Why: the server refuses the session of an account it deleted for inactivity, as it does one lost for any other
+     * reason, so the device asks which it was before a new user takes over its copy. Read from the row as it is,
+     * since at launch the sync may get here before the mirror has seen the session go. A deleted account is marked
+     * and nobody is signed in: the copy is erased first. Any other keeps the old path, a new anonymous user.
+     */
+    private suspend fun signInAnonymouslyUnlessExpired(): SessionUser {
+        val account = local.get()
+        val lostUserId = account.lostAnonymousUserId ?: account.userId.takeIf { account.provider == null }
+        val isExpired = account.inactivityExpiry == InactivityExpiry.PENDING.code ||
+            (lostUserId != null && remote.wasAccountExpired(lostUserId))
+        if (!isExpired) return remote.signInAnonymously()
+        local.update { row -> row.toMirrorOf(user = null).copy(inactivityExpiry = InactivityExpiry.PENDING.code) }
+        throw AccountExpiredException()
+    }
+
+    // Why: a sign in over an account waiting to be erased would hand its copy to the new user.
+    private suspend fun failWhileExpiring() {
+        if (local.get().inactivityExpiry == InactivityExpiry.PENDING.code) throw AccountExpiredException()
     }
 
     private val appleTokenRetryDelay = 2.seconds

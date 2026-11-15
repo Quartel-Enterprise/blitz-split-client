@@ -1789,6 +1789,8 @@ class CategoryMapCategoriesTest {
                         email = null,
                         signOutWhenSynced = false,
                         awaitsFullSync = false,
+                        inactivityExpiry = null,
+                        hasLostAnonymousUser = false,
                     ),
                 )
             },

@@ -93,6 +93,19 @@ class SyncCoordinator(
     )
     private var started = false
 
+    // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
+    private val deviceCopyClears: List<suspend () -> Unit> = listOf(
+        { paymentKeyRepository.clear() },
+        { notificationPreferencesRepository.clear() },
+        { appInviteRepository.clear() },
+        { personalCategoryData.clear() },
+        { payingMethodRepository.clear() },
+        { groupRepository.clear() },
+        { activityRepository.clear() },
+        { hiddenContactRepository.clear() },
+        { profileRepository.clear() },
+    )
+
     // Why: counts the syncs waiting on the lock too, so the state stays SYNCING between two queued ones.
     private val requestedSyncs = MutableStateFlow(0)
     private val outcomes = SyncOutcomes(firstDownload, crashReporter, connectivityObserver)
@@ -126,6 +139,8 @@ class SyncCoordinator(
         scope.launch { accountRepository.keepAppleTokens() }
         scope.launch { reviveSnoozedPrompt() }
         scope.launch { syncOnUserSwitch() }
+        scope.launch { syncOnLostAnonymousUser(accountRepository, ::syncUntilSettled) }
+        scope.launch { eraseExpiredAccount(accountRepository, profileRepository, syncLock, ::eraseDeviceCopy) }
         scope.launch { syncOnSessionRecovery(accountRepository, outcomes.lastSyncFailed, ::syncUntilSettled) }
         scope.launch { syncWhenDue() }
         scope.launch { registerPushDevice(pushDeviceRepository, accountRepository, connectivityObserver) }
@@ -324,16 +339,7 @@ class SyncCoordinator(
         .async {
             syncLock.withLock {
                 accountRepository.deleteAccount().onSuccess {
-                    // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
-                    suspendRunCatching { paymentKeyRepository.clear() }
-                    suspendRunCatching { notificationPreferencesRepository.clear() }
-                    suspendRunCatching { appInviteRepository.clear() }
-                    suspendRunCatching { personalCategoryData.clear() }
-                    suspendRunCatching { payingMethodRepository.clear() }
-                    suspendRunCatching { groupRepository.clear() }
-                    suspendRunCatching { activityRepository.clear() }
-                    suspendRunCatching { hiddenContactRepository.clear() }
-                    suspendRunCatching { profileRepository.clear() }
+                    eraseDeviceCopy()
                     suspendRunCatching { accountRepository.endDeletedSession() }
                 }
             }
@@ -429,16 +435,12 @@ class SyncCoordinator(
      */
     private suspend fun clearSession() {
         accountRepository.signOut()
-        // Why: the keys first, so a failure can't leave someone's CPF or wallet on a device with no profile.
-        paymentKeyRepository.clear()
-        notificationPreferencesRepository.clear()
-        appInviteRepository.clear()
-        personalCategoryData.clear()
-        payingMethodRepository.clear()
-        groupRepository.clear()
-        activityRepository.clear()
-        hiddenContactRepository.clear()
-        profileRepository.clear()
+        deviceCopyClears.forEach { clear -> clear() }
+    }
+
+    // Why: each step runs on its own, so one that fails can't keep the others.
+    private suspend fun eraseDeviceCopy() {
+        deviceCopyClears.forEach { clear -> suspendRunCatching { clear() } }
     }
 
     // Why: anything waiting on the device to go up, whichever part it belongs to.

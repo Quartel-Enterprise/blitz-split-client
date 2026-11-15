@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.sync
 
+import com.quare.blitzsplit.core.account.domain.model.AccountExpiredException
 import com.quare.blitzsplit.core.account.domain.model.SessionRefreshingException
 import com.quare.blitzsplit.core.provider.crashlytics.ReportableFailure
 import io.github.jan.supabase.exceptions.HttpRequestException
@@ -138,6 +139,30 @@ class SyncFailureTest {
     }
 
     @Test
+    fun `GIVEN an account deleted for inactivity WHEN checking the failure THEN it is not a connection failure`() {
+        // Given
+        val failure = AccountExpiredException()
+
+        // When
+        val isConnectionFailure = failure.isConnectionFailure()
+
+        // Then
+        assertFalse(isConnectionFailure)
+    }
+
+    @Test
+    fun `GIVEN a failure caused by an expired account WHEN checking it THEN it is not a connection failure`() {
+        // Given
+        val failure = IllegalStateException("sync failed", AccountExpiredException())
+
+        // When
+        val isConnectionFailure = failure.isConnectionFailure()
+
+        // Then
+        assertFalse(isConnectionFailure)
+    }
+
+    @Test
     fun `GIVEN a request that timed out WHEN checking the failure THEN it is a connection failure`() {
         // Given
         val failure = IllegalStateException(
@@ -165,5 +190,98 @@ class SyncFailureTest {
 
         // Then
         assertFalse(isConnectionFailure)
+    }
+
+    @Test
+    fun `GIVEN a request that got no answer WHEN checking the failure THEN it is an expected failure`() {
+        // Given
+        val failure: Throwable = noAnswer
+
+        // When
+        val isExpectedFailure = failure.isExpectedFailure()
+
+        // Then
+        assertTrue(isExpectedFailure)
+    }
+
+    @Test
+    fun `GIVEN a failure caused by a request that timed out WHEN checking it THEN it is an expected failure`() {
+        // Given
+        val failure = IllegalStateException(
+            "pull failed",
+            HttpRequestTimeoutException(
+                url = "https://example.supabase.co/rest/v1/expenses",
+                timeoutMillis = 30_000,
+            ),
+        )
+
+        // When
+        val isExpectedFailure = failure.isExpectedFailure()
+
+        // Then
+        assertTrue(isExpectedFailure)
+    }
+
+    @Test
+    fun `GIVEN a session waiting for its refresh WHEN checking the failure THEN it is an expected failure`() {
+        // Given
+        val failure = SessionRefreshingException()
+
+        // When
+        val isExpectedFailure = failure.isExpectedFailure()
+
+        // Then
+        assertTrue(isExpectedFailure)
+    }
+
+    @Test
+    fun `GIVEN an account deleted for inactivity WHEN checking the failure THEN it is an expected failure`() {
+        // Given
+        val failure = AccountExpiredException()
+
+        // When
+        val isExpectedFailure = failure.isExpectedFailure()
+
+        // Then
+        assertTrue(isExpectedFailure)
+    }
+
+    @Test
+    fun `GIVEN a failure caused by an expired account WHEN checking it THEN it is an expected failure`() {
+        // Given
+        val failure = IllegalStateException("sync failed", AccountExpiredException())
+
+        // When
+        val isExpectedFailure = failure.isExpectedFailure()
+
+        // Then
+        assertTrue(isExpectedFailure)
+    }
+
+    @Test
+    fun `GIVEN an expired account two causes down WHEN checking the failure THEN it is an expected failure`() {
+        // Given
+        val failure = IllegalStateException(
+            "sync failed",
+            IllegalArgumentException("push failed", AccountExpiredException()),
+        )
+
+        // When
+        val isExpectedFailure = failure.isExpectedFailure()
+
+        // Then
+        assertTrue(isExpectedFailure)
+    }
+
+    @Test
+    fun `GIVEN a change the server refused WHEN checking the failure THEN it is not an expected failure`() {
+        // Given
+        val failure = IllegalStateException("refused", IllegalArgumentException("check violated"))
+
+        // When
+        val isExpectedFailure = failure.isExpectedFailure()
+
+        // Then
+        assertFalse(isExpectedFailure)
     }
 }

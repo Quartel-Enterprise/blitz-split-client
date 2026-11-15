@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">Only you see your email</string>
     <string name="profile_email_info_body">It\'s here so you know which account you\'re signed in with. The people in your groups see your name and photo, never your email.</string>
     <string name="profile_account_none">No account</string>
-    <string name="profile_account_none_detail">Anonymous ID of this device</string>
+    <string name="profile_account_none_detail">Deleted after 30 days without use</string>
     <string name="profile_account_local_detail">Saved only on this device for now</string>
     <string name="profile_connect">Connect</string>
     <string name="profile_connect_failed">Couldn\'t connect. Try again.</string>
@@ -122,7 +122,7 @@
     <string name="profile_sign_out_now">Sign out now and lose the changes</string>
     <string name="profile_sign_out_failed">Couldn\'t sign out. Try again.</string>
     <string name="profile_erase_title">Erase the profile from this device?</string>
-    <string name="profile_erase_body">Your account has no Google or Apple sign in. When you sign out, we erase this device\'s copy. To come back, you need the recovery code.</string>
+    <string name="profile_erase_body">Your account has no Google or Apple sign in. When you sign out, we erase this device\'s copy. To come back, you need the recovery code. After 30 days without use, the account is deleted and the code stops working.</string>
     <string name="profile_erase_body_no_code">You use the app without an account and haven\'t synced yet, so there is no recovery code. When you leave, your profile is gone for good.</string>
     <string name="profile_erase_code_saved">I kept the code somewhere safe</string>
     <string name="profile_erase_no_code_ack">I understand it can\'t be recovered</string>

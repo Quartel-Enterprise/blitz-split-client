@@ -11,7 +11,7 @@
     <string name="profile_email_info_title">Hanya kamu yang melihat emailmu</string>
     <string name="profile_email_info_body">Email ini ada di sini agar kamu tahu akun mana yang kamu pakai untuk masuk. Orang di grupmu melihat nama dan fotomu, tidak pernah emailmu.</string>
     <string name="profile_account_none">Tanpa akun</string>
-    <string name="profile_account_none_detail">ID anonim perangkat ini</string>
+    <string name="profile_account_none_detail">Dihapus setelah 30 hari tidak dipakai</string>
     <string name="profile_account_local_detail">Untuk sementara hanya tersimpan di perangkat ini</string>
     <string name="profile_connect">Hubungkan</string>
     <string name="profile_connect_failed">Tidak dapat terhubung. Coba lagi.</string>
@@ -103,7 +103,7 @@
     <string name="profile_sign_out_now">Keluar sekarang dan hilangkan perubahan</string>
     <string name="profile_sign_out_failed">Tidak dapat keluar. Coba lagi.</string>
     <string name="profile_erase_title">Hapus profil dari perangkat ini?</string>
-    <string name="profile_erase_body">Akunmu tidak masuk dengan Google atau Apple. Saat kamu keluar, kami menghapus salinan di perangkat ini. Untuk kembali, kamu butuh kode pemulihan.</string>
+    <string name="profile_erase_body">Akunmu tidak masuk dengan Google atau Apple. Saat kamu keluar, kami menghapus salinan di perangkat ini. Untuk kembali, kamu butuh kode pemulihan. Setelah 30 hari tidak dipakai, akun dihapus dan kode tidak berlaku lagi.</string>
     <string name="profile_erase_body_no_code">Kamu memakai aplikasi tanpa akun dan belum pernah sinkronisasi, jadi belum ada kode pemulihan. Saat kamu keluar, profilmu hilang selamanya.</string>
     <string name="profile_erase_code_saved">Saya sudah menyimpan kodenya di tempat aman</string>
     <string name="profile_erase_no_code_ack">Saya paham ini tidak bisa dipulihkan</string>
