@@ -107,7 +107,6 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "pt" to ("Convide por link ou QR code" over "A galera entra no grupo em segundos, sem cadastro"),
         "pt-PT" to ("Convida por link ou QR code" over "Os amigos entram no grupo em segundos, sem criar conta"),
         "es" to ("Invita con un enlace o código QR" over "Tus amigos se unen en segundos, sin registrarse"),
-        "es-ES" to ("Invita con un enlace o código QR" over "Tus amigos se unen en segundos, sin registrarse"),
         "fr" to
             ("Invitez par lien ou QR code" over "Vos amis rejoignent le groupe en quelques secondes, sans inscription"),
         "de" to ("Per Link oder QR-Code einladen" over "Freunde treten in Sekunden bei, ganz ohne Anmeldung"),
@@ -139,7 +138,6 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "pt" to ("Seus grupos sempre à mão" over "Fixe os que você mais usa e veja seu saldo em cada um"),
         "pt-PT" to ("Os teus grupos sempre à mão" over "Fixa os que mais usas e vê o teu saldo em cada um"),
         "es" to ("Tus grupos, siempre a mano" over "Fija los que más usas y mira tu saldo en cada uno"),
-        "es-ES" to ("Tus grupos, siempre a mano" over "Fija los que más usas y mira tu saldo en cada uno"),
         "fr" to ("Vos groupes, toujours sous la main" over "Épinglez vos favoris et voyez votre solde dans chacun"),
         "de" to ("Deine Gruppen immer griffbereit" over "Pinne die wichtigsten an und sieh deinen Saldo in jeder"),
         "it" to
@@ -179,7 +177,6 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "pt" to ("Não perca nenhuma novidade" over "Cada conta e pagamento novo dos seus grupos, na hora"),
         "pt-PT" to ("Não percas nenhuma novidade" over "Cada conta e pagamento novo dos teus grupos, na hora"),
         "es" to ("No te pierdas ningún cambio" over "Cada gasto y pago nuevo de tus grupos, al instante"),
-        "es-ES" to ("No te pierdas ningún cambio" over "Cada gasto y pago nuevo de tus grupos, al instante"),
         "fr" to ("Ne manquez aucun changement" over "Chaque dépense et paiement de vos groupes, en direct"),
         "de" to ("Keine Änderung verpassen" over "Jede neue Ausgabe und Zahlung deiner Gruppen, sofort"),
         "it" to ("Non perderti nessuna modifica" over "Ogni nuova spesa e pagamento dei tuoi gruppi, in tempo reale"),
@@ -194,7 +191,6 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "pt" to ("Claro ou escuro, do seu jeito" over "Funciona offline, com ou sem conta"),
         "pt-PT" to ("Claro ou escuro, à tua maneira" over "Funciona offline, com ou sem conta"),
         "es" to ("Claro u oscuro, a tu gusto" over "Funciona sin conexión, con o sin cuenta"),
-        "es-ES" to ("Claro u oscuro, a tu gusto" over "Funciona sin conexión, con o sin cuenta"),
         "fr" to ("Clair ou sombre, à votre goût" over "Fonctionne hors ligne, avec ou sans compte"),
         "de" to ("Hell oder dunkel, wie du willst" over "Funktioniert offline, mit oder ohne Konto"),
         "it" to ("Chiaro o scuro, come preferisci" over "Funziona offline, con o senza account"),
@@ -211,7 +207,8 @@ internal fun bannerCopyOf(
     language: String,
 ): BannerCopy {
     val copies = bannerCopies.getValue(screen)
-    return copies[language] ?: copies.getValue("en")
+    // A regional language (es-ES) only lists the banners it words differently, as the apps' regional strings do.
+    return copies[language] ?: copies[language.substringBefore('-')] ?: copies.getValue("en")
 }
 
 private infix fun String.over(description: String): BannerCopy = BannerCopy(

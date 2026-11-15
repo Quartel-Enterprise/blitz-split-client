@@ -58,6 +58,11 @@ final class StoreScreenshotsUITests: XCTestCase {
     /// How many times the bill is scrolled looking for its Split row before the capture gives up.
     private static let maxScrolls = 3
 
+    #if os(macOS)
+    /// How far each scroll moves the bill on the Mac, whose window has no swipe.
+    private static let macScrollDelta: CGFloat = 400
+    #endif
+
     override func setUp() {
         continueAfterFailure = false
     }
@@ -158,7 +163,12 @@ final class StoreScreenshotsUITests: XCTestCase {
             // The bill outgrows a short screen (the iPhone Duo closed), and a row below it isn't in the tree yet.
             var scrolls = 0
             while !split.waitForExistence(timeout: Self.settle), scrolls < Self.maxScrolls {
+                // swipeUp() is iOS only: the Mac's UI tests, built from this same file, scroll the wheel instead.
+                #if os(iOS)
                 app.swipeUp()
+                #else
+                app.scroll(byDeltaX: 0, deltaY: -Self.macScrollDelta)
+                #endif
                 scrolls += 1
             }
             XCTAssertTrue(split.exists, "No Split row to open Bill items")
