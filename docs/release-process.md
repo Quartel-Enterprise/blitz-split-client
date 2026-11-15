@@ -271,17 +271,22 @@ workflows can read: the environment is a gate on the run, not on the secrets.
 
 A stable version deploys the web app to the Cloudflare Pages project `blitz-split` (`CLOUDFLARE_PAGES_PROJECT` in
 `release-production.yml`), served at https://app.blitzsplit.com. The workflow never creates a project or a domain:
-until the project exists, the `web` job fails before building, naming it. Once, in the Cloudflare account of
-`CLOUDFLARE_ACCOUNT_ID`, the one that has `blitz-split-beta` and the zone `blitzsplit.com`:
+both are set up once, by hand, in the Cloudflare account of `CLOUDFLARE_ACCOUNT_ID`, the one that has
+`blitz-split-beta` and the zone `blitzsplit.com`.
 
-1. Create the project, with `main` as its production branch, the branch the workflow deploys to: a Direct Upload
-   project named `blitz-split` from that account's dashboard (Workers & Pages), or
+1. **The project exists**: `blitz-split`, with `main` as its production branch, the branch the workflow deploys
+   to, at `blitz-split.pages.dev`. The token and the account id of the secrets reach it. Should it ever be made
+   again, the `web` job fails before building, naming it, until it is there: a Direct Upload project of that name
+   from that account's dashboard (Workers & Pages), or
    `npx wrangler pages project create blitz-split --production-branch main`. wrangler creates it in the account it
    is logged into, which may be another one: check `npx wrangler whoami` first, or run it with that account's
    `CLOUDFLARE_ACCOUNT_ID` and a `CLOUDFLARE_API_TOKEN` exported.
-2. Give it the domain: Workers & Pages › `blitz-split` › Custom domains › Set up a custom domain ›
-   `app.blitzsplit.com`. With the zone in the same account, Cloudflare adds the DNS record and issues the
-   certificate.
+2. **The domain is still to confirm.** The zone has a proxied CNAME, `app`, pointing at `blitz-split.pages.dev`,
+   and `app.blitzsplit.com` was requested as the project's custom domain. With no deployment yet, Cloudflare did not
+   list the domain on the project and https://app.blitzsplit.com answers 522. After the first production deploy,
+   check Workers & Pages › `blitz-split` › Custom domains: `app.blitzsplit.com` has to be there and active, or set
+   it up again from that page. Until it is, the `web` job warns that the project doesn't serve the domain, and the
+   deployment is only at `blitz-split.pages.dev`.
 
 What the production web app needs outside this repository, or its sign in fails:
 
