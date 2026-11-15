@@ -20,6 +20,7 @@ new features or modifying existing ones.
 - [@docs/ci.md](ci.md)
 - [@docs/release-process.md](release-process.md)
 - [@docs/release-notes.md](release-notes.md)
+- [@docs/store-listing.md](store-listing.md)
 - [@docs/store-listing-screenshots.md](store-listing-screenshots.md)
 
 The one idea behind all of them: Kotlin Multiplatform is shared **up to the ViewModel**. Every `ViewModel`,
