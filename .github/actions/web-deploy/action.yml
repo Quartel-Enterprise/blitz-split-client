@@ -50,6 +50,10 @@ inputs:
     description: "The Sentry project's DSN (the VITE_SENTRY_DSN variable); empty, the web app reports no crash"
     required: false
     default: ''
+  sentry-environment:
+    description: "The environment the reports are filed under in Sentry: beta or production"
+    required: false
+    default: 'production'
   sentry-auth-token:
     description: 'A Sentry organization token, for the source maps; empty, none is made nor uploaded'
     required: false
@@ -167,12 +171,14 @@ runs:
         VITE_FIREBASE_MEASUREMENT_ID: ${{ inputs.firebase-measurement-id }}
         VITE_VAPID_PUBLIC_KEY: ${{ inputs.vapid-public-key }}
         VITE_SENTRY_DSN: ${{ inputs.sentry-dsn }}
+        VITE_SENTRY_ENVIRONMENT: ${{ inputs.sentry-environment }}
         # vite.config.ts makes the source maps when this is true. The token itself stays out of the build.
         WEB_SOURCE_MAPS: ${{ inputs.sentry-auth-token != '' }}
       run: npm --prefix webApp run build --ignore-scripts
 
     # Sentry reads a report's stack with the source maps of the build it came from, matched by the debug id that
-    # inject writes into each file and its map, so this runs before the deploy. A failed upload only warns: the
+    # inject writes into each file and its map, so this runs before the deploy. Only on assets, what Vite bundled:
+    # the files copied from public (the push service worker) have no map and stay as they are. A failed upload only warns: the
     # reports still arrive, with the minified stack. The maps never go to Pages, uploaded or not.
     - name: Upload the source maps to Sentry
       if: inputs.sentry-auth-token != ''
@@ -187,8 +193,8 @@ runs:
       run: |
         if [ -z "$SENTRY_ORG" ] || [ -z "$SENTRY_PROJECT" ]; then
           echo "::warning title=Web::SENTRY_AUTH_TOKEN is set without the SENTRY_ORG and SENTRY_PROJECT variables: no source map was uploaded. See docs/crash-reporting.md#the-web."
-        elif ! { npx --yes "@sentry/cli@${SENTRY_CLI_VERSION}" sourcemaps inject webApp/dist \
-          && npx --yes "@sentry/cli@${SENTRY_CLI_VERSION}" sourcemaps upload --release "$VERSION" webApp/dist; }; then
+        elif ! { npx --yes "@sentry/cli@${SENTRY_CLI_VERSION}" sourcemaps inject webApp/dist/assets \
+          && npx --yes "@sentry/cli@${SENTRY_CLI_VERSION}" sourcemaps upload --release "$VERSION" webApp/dist/assets; }; then
           echo "::warning title=Web::The source maps didn't reach Sentry: this version's reports show the minified stack. See docs/crash-reporting.md#the-web."
         fi
         find webApp/dist -name '*.map' -delete

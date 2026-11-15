@@ -33,3 +33,13 @@ private class WebCrashlyticsCalls(
 
     override fun setCollectionEnabled(enabled: Boolean) {}
 }
+
+/*
+ * Why: a Kotlin failure's JS name is its constructor's, which the web app's bundler shortens to a letter or two, so
+ * the web reporter asks for the class's own name. Null for an error Kotlin didn't define, whose name is already right.
+ */
+fun findKotlinClassNameOf(error: Throwable): String? {
+    val constructor = error.asDynamic().constructor
+    val isKotlinClass = constructor != null && constructor["\$metadata\$"] != null
+    return if (isKotlinClass) error::class.simpleName else null
+}

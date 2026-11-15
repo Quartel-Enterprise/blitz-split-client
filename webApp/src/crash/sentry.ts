@@ -1,4 +1,4 @@
-import { attachCrashReporter } from 'blitzsplit-shared'
+import { attachCrashReporter, findKotlinClassName } from 'blitzsplit-shared'
 
 /**
  * Crash reporting on the web (docs/crash-reporting.md): Sentry, since Firebase has no Crashlytics for the browser.
@@ -19,6 +19,9 @@ const kept = ['EventFilters', 'FunctionToString', 'GlobalHandlers', 'LinkedError
 /** How many of the shared code's failures wait for Sentry to load; a sync reports once per streak, so few ever do. */
 const maxWaiting = 10
 
+/** How far down a failure's causes the class names are looked up; Sentry follows fewer. */
+const maxCauses = 10
+
 export async function startCrashReporting(): Promise<void> {
   if (import.meta.env.DEV || dsn === '') return
   // Why: the shared code counts a failure as reported once it is handed over, so the ones recorded while Sentry
@@ -36,11 +39,13 @@ export async function startCrashReporting(): Promise<void> {
     init({
       dsn,
       release: __APP_VERSION__,
+      // Why: the betas and the stable versions report to one project, told apart by this
+      environment: import.meta.env.VITE_SENTRY_ENVIRONMENT || 'production',
       // Why: each is on by default; with userInfo off, Sentry doesn't take the request's IP address either
       dataCollection: { userInfo: false, cookies: false, httpHeaders: false, httpBodies: [], urlQueryParams: false, stackFrameVariables: false },
       maxBreadcrumbs: 0,
       integrations: (defaults) => defaults.filter((integration) => kept.includes(integration.name)),
-      beforeSend: (event, hint) => redacted(event, isObject(hint.originalException) && recorded.has(hint.originalException)),
+      beforeSend: (event, hint) => redacted(event, hint.originalException, isObject(hint.originalException) && recorded.has(hint.originalException)),
     })
     report = (error) => {
       if (isObject(error)) recorded.add(error)
@@ -61,8 +66,9 @@ export async function startCrashReporting(): Promise<void> {
  * whatever a rejected promise carried. An error left with no frame of the app's own scripts isn't sent: it came from
  * an extension or an injected script, or it is a rejection with nothing to read.
  */
-function redacted<Reported extends RedactableEvent>(event: Reported, isRecorded: boolean): Reported | null {
+function redacted<Reported extends RedactableEvent>(event: Reported, original: unknown, isRecorded: boolean): Reported | null {
   const failures = event.exception?.values ?? []
+  nameByKotlinClass(failures, original)
   failures.forEach((failure) => {
     if (!isRecorded) failure.value = ''
     if (failure.stacktrace?.frames) failure.stacktrace.frames = failure.stacktrace.frames.flatMap(ownFrame)
@@ -74,6 +80,22 @@ function redacted<Reported extends RedactableEvent>(event: Reported, isRecorded:
   delete event.extra
   delete event.user
   return event
+}
+
+/**
+ * With its message blank, a failure is told apart by its class alone, and a Kotlin class reaches the browser under
+ * the short name the bundler gave its constructor. Sentry numbers a failure and its causes from the failure down, so
+ * each one takes the name of the Kotlin class at its place in the chain; an error of the browser's own keeps its name.
+ */
+function nameByKotlinClass(failures: Failure[], original: unknown): void {
+  const chain: unknown[] = []
+  for (let error = original; isObject(error) && chain.length < maxCauses; error = (error as { cause?: unknown }).cause) chain.push(error)
+  failures.forEach((failure) => {
+    const source = failure.mechanism?.source
+    if (source !== undefined && source !== 'cause') return
+    const name = findKotlinClassName(chain[failure.mechanism?.exception_id ?? 0])
+    if (name) failure.type = name
+  })
 }
 
 /**
@@ -105,8 +127,15 @@ interface StackFrame {
   in_app?: boolean
 }
 
+interface Failure {
+  type?: string
+  value?: string
+  stacktrace?: { frames?: StackFrame[] }
+  mechanism?: { source?: string; exception_id?: number }
+}
+
 interface RedactableEvent {
-  exception?: { values?: { value?: string; stacktrace?: { frames?: StackFrame[] } }[] }
+  exception?: { values?: Failure[] }
   message?: unknown
   breadcrumbs?: unknown
   request?: unknown

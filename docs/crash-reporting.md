@@ -34,7 +34,9 @@ A debug build records nothing, and every launch sets that again, since Crashlyti
 The web applies the rule to everything it sends, in `sentry.ts`' `beforeSend`, since an uncaught Kotlin exception
 reaches the browser with its message:
 
-- An uncaught error goes with its message blank, cause by cause: its class and stack only. A non-fatal of
+- An uncaught error goes with its message blank, cause by cause: its class and stack only. The class is the Kotlin
+  one's own name, asked from the shared code (`findKotlinClassName`), since the bundler shortens the name a Kotlin failure
+  carries in the browser. A non-fatal of
   `CrashReporter` keeps the message it arrives with, already its class names or written to be reported.
 - Of the stack, only the frames at a line of the app's own scripts go. Sentry reads a stack line by line, and an
   uncaught Kotlin failure's holds its message and its causes', which a URL in them would turn into a frame. An error
@@ -73,14 +75,17 @@ after this resolves the Firebase Swift package.
 
 The Sentry project `blitz-split-web`, of the Browser JavaScript platform with only Error monitoring, in the
 `quare-software` organization (US data region, the Developer plan's 5,000 errors a month, shared with its other
-projects). Turn on **Prevent Storing of IP Addresses** (Settings › Security & Privacy) and leave tracing, replays and profiling off: the app only
-sends errors. Then, in GitHub ([release-process.md](release-process.md#secrets)):
+projects). **Prevent Storing of IP Addresses** is on (Settings › Security & Privacy), and tracing, replays and
+profiling stay off: the app only sends errors. Then, in GitHub ([release-process.md](release-process.md#secrets)):
 
 | Name | Kind | What it is |
 | --- | --- | --- |
 | `VITE_SENTRY_DSN` | Variable | The project's DSN (Settings › Client Keys). Public: it ships in the page |
 | `SENTRY_ORG`, `SENTRY_PROJECT` | Variable | The organization's and the project's slugs |
 | `SENTRY_AUTH_TOKEN` | Secret | An organization token (Settings › Auth Tokens), which only uploads source maps |
+
+The betas and the stable versions report to the same project, under the `beta` and `production` environments, which
+the release workflows pass to `web-deploy`.
 
 Without the DSN the build has no Sentry at all, and the page never downloads it. With it, a non-fatal the shared code
 records while Sentry's script still loads waits for it; an uncaught error that early isn't reported. With the token, the `web-deploy`

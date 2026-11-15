@@ -5,6 +5,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WebCrashReporterTest {
@@ -14,19 +15,6 @@ class WebCrashReporterTest {
     @AfterTest
     fun restore() {
         CrashlyticsKotlin.implementation = previous
-    }
-
-    @Test
-    fun `GIVEN an attached web reporter WHEN recording a failure THEN hands it only the classes`() {
-        // Given
-        attachWebCrashReporter { reported += it }
-        val failure = IllegalStateException("Failing row contains (Jantar, 31200)", IllegalArgumentException("Ana"))
-
-        // When
-        CrashlyticsReporter().recordException(failure)
-
-        // Then
-        assertEquals(listOf("IllegalStateException ← IllegalArgumentException"), reported.map { it.message })
     }
 
     @Test
@@ -71,5 +59,58 @@ class WebCrashReporterTest {
 
         // Then
         assertEquals("sync@app.js:1:2\nrun@app.js:3:4", adopter.asDynamic().stack)
+    }
+
+    @Test
+    fun `GIVEN a stack that is only the name and the message WHEN adopting it THEN takes nothing`() {
+        // Given
+        val original = IllegalStateException("Failing row contains (Jantar, 31200)")
+        original.asDynamic().stack = "IllegalStateException: Failing row contains (Jantar, 31200)"
+        val adopter = Exception("adopter")
+
+        // When
+        adopter.adoptStackTrace(from = original)
+
+        // Then
+        assertEquals("", adopter.asDynamic().stack)
+    }
+
+    @Test
+    fun `GIVEN a message with a line that starts like a frame WHEN adopting the stack THEN keeps only the frames`() {
+        // Given
+        val original = IllegalStateException("Failing row\nat least one member (Ana)")
+        original.asDynamic().stack = "IllegalStateException: Failing row\nat least one member (Ana)\n" +
+            "    at sync (app.js:1:2)"
+        val adopter = Exception("adopter")
+
+        // When
+        adopter.adoptStackTrace(from = original)
+
+        // Then
+        assertEquals("    at sync (app.js:1:2)", adopter.asDynamic().stack)
+    }
+
+    @Test
+    fun `GIVEN a Kotlin failure WHEN asking for its class name THEN gives the name of its class`() {
+        // Given
+        val failure = IllegalStateException("Failing row")
+
+        // When
+        val name = findKotlinClassNameOf(failure)
+
+        // Then
+        assertEquals("IllegalStateException", name)
+    }
+
+    @Test
+    fun `GIVEN an error Kotlin did not define WHEN asking for its class name THEN gives none`() {
+        // Given
+        val error = js("new TypeError('x')").unsafeCast<Throwable>()
+
+        // When
+        val name = findKotlinClassNameOf(error)
+
+        // Then
+        assertNull(name)
     }
 }

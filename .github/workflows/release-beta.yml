@@ -322,6 +322,7 @@ jobs:
           firebase-project-id: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
           firebase-measurement-id: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
           sentry-dsn: ${{ vars.VITE_SENTRY_DSN }}
+          sentry-environment: beta
           sentry-auth-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
           sentry-org: ${{ vars.SENTRY_ORG }}
           sentry-project: ${{ vars.SENTRY_PROJECT }}

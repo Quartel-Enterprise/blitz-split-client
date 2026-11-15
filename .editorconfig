@@ -31,14 +31,14 @@ ktlint_quare_prepare-scenario-in-given = disabled
 
 # Test sources: fixtures and fakes are named after the value they produce
 # (versionDto(), passage(), day()), which is intentional and reads well in Given/When/Then.
-[**/src/{commonTest,jvmTest,androidHostTest,iosSimulatorArm64Test}/**]
+[**/src/{commonTest,jvmTest,jsTest,androidHostTest,iosSimulatorArm64Test}/**]
 ktlint_quare_value-returning-function-naming = disabled
 
 # Comments are for tests (Given/When/Then), the :testing fake modules and the build: Gradle scripts and
 # build-logic. Production Kotlin keeps only // Why: comments (quare:comments-say-why).
 # The test structure rules (docs/testing) run here, and only here. The 600-line limit
 # (quare:max-file-length) is for production code: a test class grows with its scenarios.
-[**/src/{commonTest,jvmTest,androidHostTest,androidDeviceTest,iosTest,iosSimulatorArm64Test,test}/**]
+[**/src/{commonTest,jvmTest,jsTest,androidHostTest,androidDeviceTest,iosTest,iosSimulatorArm64Test,test}/**]
 ktlint_quare_comments-say-why = disabled
 ktlint_quare_test-name-given-when-then = enabled
 ktlint_quare_test-body-sections = enabled
