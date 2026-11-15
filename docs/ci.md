@@ -236,8 +236,8 @@ and a conversation is still open, it removes its label and comments on the pull 
 or reply with why the code stays as it is, resolve the conversation, then add the label again: resolving one starts
 no workflow. When the opening review's threads held the checks (see [The review gate](#the-review-gate)), the failed
 gates don't count as failed checks: once every conversation is resolved, `merge-when-green` re-runs the held runs,
-keeps its label and merges when they pass. A merge GitHub refuses with everything green (a conflict with `main`) also
-removes the label, with a comment saying why.
+keeps its label and merges when they pass. A merge GitHub refuses with everything green (a conflict with `main`, or a
+token without the Workflows permission, see below) also removes the label, with a comment saying why.
 
 The merge uses the `MERGE_WHEN_GREEN_TOKEN` secret, not `GITHUB_TOKEN`: a merge made with `GITHUB_TOKEN` triggers no
 other workflow, so the push to `main` would run none of its checks. The merge shows up as made by the token's owner.
