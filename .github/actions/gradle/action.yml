@@ -103,9 +103,10 @@ runs:
         # The fixed word after the version keeps 2.5.0 from matching an entry of 2.5.0-RC.
         echo "konan-key=konan-$RUNNER_OS-$RUNNER_ARCH-$version-libraries-" >> "$GITHUB_OUTPUT"
 
-    # No entry has the bare prefix as its key, so it is always a restore key that matches. The second
-    # one is the entry saved before the keys had a fingerprint, so the first runs after that change
-    # don't start from nothing: drop it once Kotlin moves on from 2.4.21.
+    # No entry has the bare prefix as its key, so the match is always by prefix, and the newest entry
+    # it matches is restored. Don't add a restore key that is an entry's whole key: the entry saved
+    # before the keys had a fingerprint was one here, as a fallback after the prefix, and GitHub
+    # restored it on every run, ahead of the newer entries the prefix matched.
     - name: Restore the Kotlin/Native toolchain
       id: konan
       if: inputs.kotlin-native == 'true'
@@ -115,4 +116,3 @@ runs:
         key: ${{ steps.kotlin.outputs.konan-key }}
         restore-keys: |
           ${{ steps.kotlin.outputs.konan-key }}
-          konan-macOS-ARM64-2.4.21

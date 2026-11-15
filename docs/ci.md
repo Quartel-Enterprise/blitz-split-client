@@ -78,11 +78,11 @@ request of its own, checked on the Mac, since that pull request's `apple-tests` 
 
 The Kotlin/Native entry (`~/.konan`) holds the toolchain and the native code each library is compiled to on its first
 link. Every Kotlin/Native job restores the newest entry of its Kotlin version, and `apple-tests` saves it on `main`
-when it ends, under a key that ends with a fingerprint of the libraries compiled in it: a link that compiled a
-library's new version changes the fingerprint and saves a new entry, a run that compiled nothing new saves none, and a
-failed test doesn't stop the save. With the Kotlin version alone as the key, the entry was saved once and every run
-compiled the libraries bumped since. An entry keeps the versions bumped away until a new Kotlin version starts an
-empty one.
+when it ends, under a key with a fingerprint of the libraries compiled in it and the run that saved it: a link that
+compiled a library's new version changes the fingerprint and saves a new entry, which is then the newest, a run whose
+fingerprint is the restored entry's saves none, and a failed test doesn't stop the save. With the Kotlin version alone
+as the key, the entry was saved once and every run compiled the libraries bumped since. An entry keeps the versions
+bumped away until a new Kotlin version starts an empty one.
 
 ## AI review
 

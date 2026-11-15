@@ -153,28 +153,34 @@ jobs:
           path: '**/build/reports/tests/**'
 
       # main saves the Kotlin/Native entry the Gradle action restored, and only this job, which
-      # compiles every Apple target. Its key ends with a fingerprint of the libraries compiled to
-      # native code in it (the folders of klib/cache), so it is saved again when a link compiled a
-      # library's new version, and only then: with the Kotlin version alone as the key it was saved
-      # once, and every run compiled the libraries bumped since. A failed test doesn't stop it, since
-      # the libraries were compiled all the same; a run the timeout killed does. An entry keeps the
-      # versions bumped away until a new Kotlin version starts an empty one.
+      # compiles every Apple target. Its key has a fingerprint of the libraries compiled to native code
+      # in it (the folders of klib/cache), so it is saved again when a link compiled a library's new
+      # version, and only then: with the Kotlin version alone as the key it was saved once, and every
+      # run compiled the libraries bumped since. The key ends with the run, so an entry saved now is
+      # always a new one and the newest, the one every job restores: with the fingerprint alone, a run
+      # that started from a newer entry holding less (one saved after a restore that found nothing)
+      # and compiled its way back to an older entry's libraries could save nothing, that key being
+      # taken. A failed test doesn't stop the save, since the libraries were compiled all the same; a
+      # run the timeout killed does. An entry keeps the versions bumped away until a new Kotlin
+      # version starts an empty one.
       - name: Fingerprint the Kotlin/Native libraries
         id: konan
         if: ${{ !cancelled() && steps.tests.outputs.finished == 'true' && github.ref == 'refs/heads/main' }}
         env:
           KEY_PREFIX: ${{ steps.gradle.outputs.konan-key }}
+          RESTORED_KEY: ${{ steps.gradle.outputs.konan-restored-key }}
         run: |
           if [ -n "$KEY_PREFIX" ] && ls -d ~/.konan/kotlin-native-prebuilt-*/klib/cache > /dev/null 2>&1; then
             libraries=$(find ~/.konan/kotlin-native-prebuilt-*/klib/cache -mindepth 3 -maxdepth 3 -type d |
               sort | shasum -a 256 | cut -c1-16)
-            echo "key=$KEY_PREFIX$libraries" >> "$GITHUB_OUTPUT"
+            case "$RESTORED_KEY" in
+              "$KEY_PREFIX$libraries"*) echo "The restored entry already holds these libraries." ;;
+              *) echo "key=$KEY_PREFIX$libraries-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_OUTPUT" ;;
+            esac
           fi
 
       - name: Save the Kotlin/Native toolchain
-        if: >-
-          ${{ !cancelled() && steps.konan.outputs.key != '' &&
-          steps.konan.outputs.key != steps.gradle.outputs.konan-restored-key }}
+        if: ${{ !cancelled() && steps.konan.outputs.key != '' }}
         uses: actions/cache/save@v6
         with:
           path: ~/.konan
