@@ -53,7 +53,8 @@
     <string name="profile_language_english">İngilizce</string>
     <string name="profile_language_portuguese">Portekizce (Brezilya)</string>
     <string name="profile_language_portuguese_portugal">Portekizce (Portekiz)</string>
-    <string name="profile_language_spanish">İspanyolca</string>
+    <string name="profile_language_spanish">İspanyolca (Latin Amerika)</string>
+    <string name="profile_language_spanish_spain">İspanyolca (İspanya)</string>
     <string name="profile_language_french">Fransızca</string>
     <string name="profile_language_german">Almanca</string>
     <string name="profile_language_italian">İtalyanca</string>

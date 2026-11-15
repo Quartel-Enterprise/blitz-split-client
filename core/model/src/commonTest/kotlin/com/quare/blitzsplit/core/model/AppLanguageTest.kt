@@ -41,7 +41,7 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN the two Portuguese WHEN drawing the picker chips THEN each shows a region or a language`() {
+    fun `GIVEN the two Portuguese and the two Spanish WHEN drawing the picker chips THEN each shows its region`() {
         // Given
         val languages = listOf(
             AppLanguage.SYSTEM,
@@ -49,13 +49,14 @@ class AppLanguageTest {
             AppLanguage.PORTUGUESE,
             AppLanguage.PORTUGUESE_PORTUGAL,
             AppLanguage.SPANISH,
+            AppLanguage.SPANISH_SPAIN,
         )
 
         // When
         val codes = languages.map { it.chipCode }
 
         // Then
-        assertEquals(listOf(null, "EN", "BR", "PT", "ES"), codes)
+        assertEquals(listOf(null, "EN", "BR", "PT", "419", "ES"), codes)
     }
 
     @Test
@@ -95,15 +96,27 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN any Spanish tag WHEN reading it THEN is Spanish`() {
+    fun `GIVEN a Spanish tag not of Spain WHEN reading it THEN is the Latin American Spanish`() {
         // Given
-        val tags = listOf("es", "es-ES", "es-MX", "es-419")
+        val tags = listOf("es", "es-MX", "es_AR", "ES-us", "es-419", "es-u-fw-mon")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)
 
         // Then
         assertEquals(List(tags.size) { AppLanguage.SPANISH }, languages)
+    }
+
+    @Test
+    fun `GIVEN a Spanish tag of Spain WHEN reading it THEN is the Spanish of Spain`() {
+        // Given
+        val tags = listOf("es-ES", "es_ES", "ES-es", "es-ES-u-fw-mon")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.SPANISH_SPAIN }, languages)
     }
 
     @Test
@@ -116,18 +129,6 @@ class AppLanguageTest {
 
         // Then
         assertEquals(List(tags.size) { AppLanguage.FRENCH }, languages)
-    }
-
-    @Test
-    fun `GIVEN a device in any region WHEN French is picked THEN is the bare French`() {
-        // Given
-        val regions = listOf("FR", "CA", "ES", null)
-
-        // When
-        val tags = regions.map(AppLanguage.FRENCH::toTag)
-
-        // Then
-        assertEquals(listOf("fr", "fr", "fr", "fr"), tags)
     }
 
     @Test
@@ -215,63 +216,6 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN a device in any region WHEN a language with one variant is picked THEN is the bare language`() {
-        // Given
-        val languages = listOf(
-            AppLanguage.GERMAN,
-            AppLanguage.ITALIAN,
-            AppLanguage.POLISH,
-            AppLanguage.DUTCH,
-            AppLanguage.JAPANESE,
-            AppLanguage.TURKISH,
-            AppLanguage.INDONESIAN,
-        )
-
-        // When
-        val tags = languages.map { it.toTag("BE") }
-
-        // Then
-        assertEquals(listOf("de", "it", "pl", "nl", "ja", "tr", "id"), tags)
-    }
-
-    @Test
-    fun `GIVEN a device in Spain WHEN Spanish is picked THEN keeps the Spanish of Spain`() {
-        // Given
-        val region = "ES"
-
-        // When
-        val tag = AppLanguage.SPANISH.toTag(region)
-
-        // Then
-        assertEquals("es-ES", tag)
-    }
-
-    @Test
-    fun `GIVEN a device anywhere else or with no region WHEN Spanish is picked THEN is the neutral Spanish`() {
-        // Given
-        val regions = listOf("MX", "BR", null)
-
-        // When
-        val tags = regions.map(AppLanguage.SPANISH::toTag)
-
-        // Then
-        assertEquals(listOf("es", "es", "es"), tags)
-    }
-
-    @Test
-    fun `GIVEN a device in Spain WHEN another language is picked THEN its tag stays`() {
-        // Given
-        val languages =
-            listOf(AppLanguage.SYSTEM, AppLanguage.ENGLISH, AppLanguage.PORTUGUESE, AppLanguage.PORTUGUESE_PORTUGAL)
-
-        // When
-        val tags = languages.map { it.toTag("ES") }
-
-        // Then
-        assertEquals(listOf(null, "en", "pt-BR", "pt-PT"), tags)
-    }
-
-    @Test
     fun `GIVEN a Portuguese tag of Portugal in other spellings WHEN reading it THEN is the Portuguese of Portugal`() {
         // Given
         val tags = listOf("pt-PT-x-private", "PT-PT", "pt-pt", "pt_pt_x_private", "pt-Latn-pt-u-fw-mon")
@@ -308,46 +252,6 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN every language WHEN picked on a device in any region THEN read back is that same language`() {
-        // Given
-        val regions = listOf("ES", "PT", "BR", null)
-
-        // When
-        val readBack = AppLanguage.entries.map { language ->
-            regions.map { AppLanguage.fromTag(language.toTag(it)) }.distinct()
-        }
-
-        // Then
-        assertEquals(AppLanguage.entries.map { listOf(it) }, readBack)
-    }
-
-    @Test
-    fun `GIVEN a device in Portugal or Brazil WHEN a Portuguese is picked THEN writes its own tag`() {
-        // Given
-        val regions = listOf("PT", "pt", "BR", "ES", null)
-
-        // When
-        val portugal = regions.map(AppLanguage.PORTUGUESE_PORTUGAL::toTag)
-        val brazil = regions.map(AppLanguage.PORTUGUESE::toTag)
-
-        // Then
-        assertEquals(List(regions.size) { "pt-PT" }, portugal)
-        assertEquals(List(regions.size) { "pt-BR" }, brazil)
-    }
-
-    @Test
-    fun `GIVEN a device in Spain in lower case WHEN Spanish is picked THEN keeps the Spanish of Spain`() {
-        // Given
-        val region = "es"
-
-        // When
-        val tag = AppLanguage.SPANISH.toTag(region)
-
-        // Then
-        assertEquals("es-ES", tag)
-    }
-
-    @Test
     fun `GIVEN every language WHEN drawing the picker chips THEN each shows its code or region and the system none`() {
         // Given
         val languages = AppLanguage.entries
@@ -357,7 +261,7 @@ class AppLanguageTest {
 
         // Then
         assertEquals(
-            listOf(null, "EN", "BR", "PT", "ES", "FR", "DE", "IT", "PL", "NL", "JA", "TR", "ID"),
+            listOf(null, "EN", "BR", "PT", "419", "ES", "FR", "DE", "IT", "PL", "NL", "JA", "TR", "ID"),
             codes,
         )
         assertEquals(codes.filterNotNull().size, codes.filterNotNull().distinct().size)

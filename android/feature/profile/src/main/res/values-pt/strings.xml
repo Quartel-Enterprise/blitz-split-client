@@ -53,7 +53,8 @@
     <string name="profile_language_english">Inglês</string>
     <string name="profile_language_portuguese">Português (Brasil)</string>
     <string name="profile_language_portuguese_portugal">Português (Portugal)</string>
-    <string name="profile_language_spanish">Espanhol</string>
+    <string name="profile_language_spanish">Espanhol (América Latina)</string>
+    <string name="profile_language_spanish_spain">Espanhol (Espanha)</string>
     <string name="profile_language_french">Francês</string>
     <string name="profile_language_german">Alemão</string>
     <string name="profile_language_italian">Italiano</string>

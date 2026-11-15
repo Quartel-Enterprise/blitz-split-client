@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Brazil's Portuguese. Without this file a pt-BR device took values-pt-rPT's true, Android 7+ falling back to a
+        child of pt when values-pt has no such resource, while its strings came from values-pt: "Você criaste a conta"
+    -->
+    <bool name="designsystem_portugal_portuguese">false</bool>
+</resources>

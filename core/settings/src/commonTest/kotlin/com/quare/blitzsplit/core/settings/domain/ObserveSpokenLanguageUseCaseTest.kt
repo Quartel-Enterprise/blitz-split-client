@@ -87,20 +87,19 @@ class ObserveSpokenLanguageUseCaseTest {
         }
 
     @Test
-    fun `GIVEN Spanish picked in Profile on a device in Spain WHEN observing the spoken language THEN it is es`() =
-        runTest {
-            // Given
-            prepareScenario(
-                picked = AppLanguage.SPANISH,
-                device = "es-ES",
-            )
+    fun `GIVEN the Spanish of Spain picked in Profile WHEN observing the spoken language THEN it is es`() = runTest {
+        // Given
+        prepareScenario(
+            picked = AppLanguage.SPANISH_SPAIN,
+            device = "es-ES",
+        )
 
-            // When
-            val spoken = observeSpokenLanguage().first()
+        // When
+        val spoken = observeSpokenLanguage().first()
 
-            // Then
-            assertEquals("es", spoken)
-        }
+        // Then
+        assertEquals("es", spoken)
+    }
 
     @Test
     fun `GIVEN a Catalan device WHEN picking each language of the app THEN it is the code of the one picked`() =
@@ -110,7 +109,9 @@ class ObserveSpokenLanguageUseCaseTest {
             val picks = listOf(
                 AppLanguage.ENGLISH,
                 AppLanguage.PORTUGUESE,
+                AppLanguage.PORTUGUESE_PORTUGAL,
                 AppLanguage.SPANISH,
+                AppLanguage.SPANISH_SPAIN,
                 AppLanguage.FRENCH,
                 AppLanguage.GERMAN,
                 AppLanguage.ITALIAN,
@@ -125,7 +126,7 @@ class ObserveSpokenLanguageUseCaseTest {
             val spoken = picks.map { spokenWith(it) }
 
             // Then
-            assertEquals(listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id"), spoken)
+            assertEquals(listOf("en", "pt", "pt", "es", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id"), spoken)
         }
 
     @Test

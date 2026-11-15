@@ -16,6 +16,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.quare.blitzsplit.android.designsystem.component.DialogSystemBarsEffect
@@ -285,7 +287,10 @@ private fun LanguageRow(
     )
 }
 
-// Why: the language's code ("EN", "ES"; "BR" and "PT" for the two Portuguese) as Bible Planner's chip, a phone for System.
+/*
+ * Why: the language's code ("EN"; "BR" and "PT", "419" and "ES" for the two of each) as Bible Planner's chip, a phone
+ * for System.
+ */
 @Composable
 private fun LanguageChip(
     language: AppLanguage,
@@ -309,11 +314,19 @@ private fun LanguageChip(
                 modifier = Modifier.size(20.dp),
             )
         } else {
+            // Why: "419" is wider than the two-letter codes, so at a large font scale it shrinks to fit the circle.
             Text(
                 text = code,
+                modifier = Modifier.padding(horizontal = 4.dp),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = content,
+                maxLines = 1,
+                softWrap = false,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 8.sp,
+                    maxFontSize = MaterialTheme.typography.labelLarge.fontSize,
+                ),
             )
         }
     }
@@ -321,7 +334,7 @@ private fun LanguageChip(
 
 /*
  * Why: each language in its own language, the way its speakers look for it (Pierre's call, beta feedback), the region
- * spelled out for the one written for a region: "Português (Brasil)".
+ * spelled out for the ones written for a region: "Português (Brasil)", "Español (España)".
  */
 @Composable
 internal fun languageName(language: AppLanguage): String = when (language) {
@@ -330,6 +343,7 @@ internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_native_portuguese)
     AppLanguage.PORTUGUESE_PORTUGAL -> stringResource(R.string.profile_language_native_portuguese_portugal)
     AppLanguage.SPANISH -> stringResource(R.string.profile_language_native_spanish)
+    AppLanguage.SPANISH_SPAIN -> stringResource(R.string.profile_language_native_spanish_spain)
     AppLanguage.FRENCH -> stringResource(R.string.profile_language_native_french)
     AppLanguage.GERMAN -> stringResource(R.string.profile_language_native_german)
     AppLanguage.ITALIAN -> stringResource(R.string.profile_language_native_italian)
@@ -348,6 +362,7 @@ private fun translatedLanguageName(language: AppLanguage): String = when (langua
     AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_portuguese)
     AppLanguage.PORTUGUESE_PORTUGAL -> stringResource(R.string.profile_language_portuguese_portugal)
     AppLanguage.SPANISH -> stringResource(R.string.profile_language_spanish)
+    AppLanguage.SPANISH_SPAIN -> stringResource(R.string.profile_language_spanish_spain)
     AppLanguage.FRENCH -> stringResource(R.string.profile_language_french)
     AppLanguage.GERMAN -> stringResource(R.string.profile_language_german)
     AppLanguage.ITALIAN -> stringResource(R.string.profile_language_italian)

@@ -19,7 +19,8 @@ class ProfileUiStateTest {
             AppLanguage.ENGLISH -> listOf("English", "English")
             AppLanguage.PORTUGUESE -> listOf("Português (Brasil)", "Portuguese (Brazil)")
             AppLanguage.PORTUGUESE_PORTUGAL -> listOf("Português (Portugal)", "Portuguese (Portugal)")
-            AppLanguage.SPANISH -> listOf("Español", "Spanish")
+            AppLanguage.SPANISH -> listOf("Español (Latinoamérica)", "Spanish (Latin America)")
+            AppLanguage.SPANISH_SPAIN -> listOf("Español (España)", "Spanish (Spain)")
             AppLanguage.FRENCH -> listOf("Français", "French")
             AppLanguage.GERMAN -> listOf("Deutsch", "German")
             AppLanguage.ITALIAN -> listOf("Italiano", "Italian")
@@ -46,6 +47,7 @@ class ProfileUiStateTest {
         AppLanguage.PORTUGUESE,
         AppLanguage.PORTUGUESE_PORTUGAL,
         AppLanguage.SPANISH,
+        AppLanguage.SPANISH_SPAIN,
         AppLanguage.FRENCH,
         AppLanguage.GERMAN,
         AppLanguage.ITALIAN,
@@ -616,6 +618,7 @@ class ProfileUiStateTest {
                 AppLanguage.PORTUGUESE,
                 AppLanguage.PORTUGUESE_PORTUGAL,
                 AppLanguage.SPANISH,
+                AppLanguage.SPANISH_SPAIN,
                 AppLanguage.FRENCH,
                 AppLanguage.GERMAN,
                 AppLanguage.ITALIAN,
@@ -645,6 +648,7 @@ class ProfileUiStateTest {
                 AppLanguage.PORTUGUESE,
                 AppLanguage.PORTUGUESE_PORTUGAL,
                 AppLanguage.SPANISH,
+                AppLanguage.SPANISH_SPAIN,
                 AppLanguage.FRENCH,
                 AppLanguage.GERMAN,
                 AppLanguage.ITALIAN,
@@ -811,7 +815,16 @@ class ProfileUiStateTest {
         val options = profile.findLanguageOptions(englishNames)
 
         // Then
-        assertEquals(listOf(AppLanguage.ENGLISH, AppLanguage.SPANISH, AppLanguage.POLISH, AppLanguage.TURKISH), options)
+        assertEquals(
+            listOf(
+                AppLanguage.ENGLISH,
+                AppLanguage.SPANISH,
+                AppLanguage.SPANISH_SPAIN,
+                AppLanguage.POLISH,
+                AppLanguage.TURKISH,
+            ),
+            options,
+        )
     }
 
     @Test
@@ -836,6 +849,42 @@ class ProfileUiStateTest {
 
         // Then
         assertEquals(listOf(AppLanguage.PORTUGUESE, AppLanguage.PORTUGUESE_PORTUGAL), options)
+    }
+
+    @Test
+    fun `GIVEN the code es typed and no names WHEN searching the languages THEN finds both Spanish by their code`() {
+        // Given
+        val profile = state(languageQuery = "es")
+
+        // When
+        val options = profile.findLanguageOptions({ emptyList() })
+
+        // Then
+        assertEquals(listOf(AppLanguage.SPANISH, AppLanguage.SPANISH_SPAIN), options)
+    }
+
+    @Test
+    fun `GIVEN the chip code 419 and no names WHEN searching the languages THEN finds the Latin American Spanish`() {
+        // Given
+        val profile = state(languageQuery = "419")
+
+        // When
+        val options = profile.findLanguageOptions({ emptyList() })
+
+        // Then
+        assertEquals(listOf(AppLanguage.SPANISH), options)
+    }
+
+    @Test
+    fun `GIVEN espana typed without its tilde WHEN searching the languages THEN finds the Spanish of Spain only`() {
+        // Given
+        val profile = state(languageQuery = "espana")
+
+        // When
+        val options = profile.findLanguageOptions(englishNames)
+
+        // Then
+        assertEquals(listOf(AppLanguage.SPANISH_SPAIN), options)
     }
 
     @Test

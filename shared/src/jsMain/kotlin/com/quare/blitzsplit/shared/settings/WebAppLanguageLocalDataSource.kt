@@ -17,18 +17,11 @@ internal class WebAppLanguageLocalDataSource : AppLanguageLocalDataSource {
 
     override fun write(language: AppLanguage) {
         try {
-            val tag = language.toTag(getBrowserRegion())
+            val tag = language.tag
             if (tag == null) localStorage.removeItem(STORAGE_KEY) else localStorage.setItem(STORAGE_KEY, tag)
         } catch (unavailable: Throwable) {
             // Why: nothing to keep it in, so the page stays in the browser's language.
         }
-    }
-
-    // Why: the region of the browser's own language, as webApp/src/i18n reads es-ES; none for a bare "es".
-    private fun getBrowserRegion(): String? = try {
-        js("new Intl.Locale(navigator.language).region") as? String
-    } catch (unsupported: Throwable) {
-        null
     }
 
     private companion object {

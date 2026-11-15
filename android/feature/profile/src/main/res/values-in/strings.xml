@@ -52,7 +52,8 @@
     <string name="profile_language_english">Bahasa Inggris</string>
     <string name="profile_language_portuguese">Bahasa Portugis (Brasil)</string>
     <string name="profile_language_portuguese_portugal">Bahasa Portugis (Portugal)</string>
-    <string name="profile_language_spanish">Bahasa Spanyol</string>
+    <string name="profile_language_spanish">Bahasa Spanyol (Amerika Latin)</string>
+    <string name="profile_language_spanish_spain">Bahasa Spanyol (Spanyol)</string>
     <string name="profile_language_french">Bahasa Prancis</string>
     <string name="profile_language_german">Bahasa Jerman</string>
     <string name="profile_language_italian">Bahasa Italia</string>

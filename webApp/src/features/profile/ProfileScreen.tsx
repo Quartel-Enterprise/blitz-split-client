@@ -35,13 +35,14 @@ const themes: { code: string; label: MessageKey }[] = [
 
 /**
  * Each language in its own language, the way its speakers look for it (Pierre's call, beta feedback), the region spelled
- * out for the one written for a region. The same in every language of the app, so not in the dictionaries.
+ * out for the ones written for a region. The same in every language of the app, so not in the dictionaries.
  */
 const nativeLanguageNames: Record<string, string> = {
   en: 'English',
   'pt-BR': 'Português (Brasil)',
   'pt-PT': 'Português (Portugal)',
-  es: 'Español',
+  es: 'Español (Latinoamérica)',
+  'es-ES': 'Español (España)',
   fr: 'Français',
   de: 'Deutsch',
   it: 'Italiano',
@@ -58,6 +59,7 @@ const languageNames: Record<string, MessageKey> = {
   'pt-BR': 'profile_languagePortuguese',
   'pt-PT': 'profile_languagePortuguesePortugal',
   es: 'profile_languageSpanish',
+  'es-ES': 'profile_languageSpanishSpain',
   fr: 'profile_languageFrench',
   de: 'profile_languageGerman',
   it: 'profile_languageItalian',

@@ -462,7 +462,7 @@ private struct PreferencesSection: View {
 }
 
 /// Each language in its own language, the way its speakers look for it (Pierre's call, beta feedback), with the region
-/// spelled out for the one written for a region ("Português (Brasil)"), and under it its name in the app's language,
+/// spelled out for the ones written for a region ("Português (Brasil)", "Español (España)"), and under it its name in the app's language,
 /// unless both read the same ("Italiano"). A menu draws the second line as the item's subtitle.
 private struct LanguageName: View {
     let language: AppLanguage
@@ -488,7 +488,8 @@ private struct LanguageName: View {
         case .english: "English"
         case .portuguese: "Português (Brasil)"
         case .portuguesePortugal: "Português (Portugal)"
-        case .spanish: "Español"
+        case .spanish: "Español (Latinoamérica)"
+        case .spanishSpain: "Español (España)"
         case .french: "Français"
         case .german: "Deutsch"
         case .italian: "Italiano"
@@ -519,7 +520,12 @@ private struct LanguageName: View {
             comment: "A language of Profile › Language, in the app's language",
         )
         case .spanish: String(
-            localized: "Spanish",
+            localized: "Spanish (Latin America)",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .spanishSpain: String(
+            localized: "Spanish (Spain)",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )

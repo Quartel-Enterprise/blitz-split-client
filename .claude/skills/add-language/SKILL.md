@@ -20,7 +20,7 @@ Product choices nobody wrote down are Pierre's call. Ask, in one question, only 
 - **The address**: informal or formal ("tu" or "vous", "du" or "Sie", "tú" or "usted"). Spanish and French are informal:
   friends splitting a bill.
 - **Variants**: one for every tag of the language, unless Pierre wants a regional one (Spanish has `es` and a partial
-  `es-ES`, picked by the device's region; Portuguese has `pt-BR` and a partial `pt-PT`, each its own row of the picker). A regional variant holds only the words the region says differently.
+  `es-ES`, Portuguese `pt-BR` and a partial `pt-PT`, each its own row of the picker). A regional variant holds only the words the region says differently.
 - **The name**: Blitz Split in every language but Portuguese, so nothing to ask unless the language needs another one.
 - **A language that reads right to left** (Arabic, Hebrew) or whose plural has more than `one`/`other` (Russian, Polish,
   Arabic): say so, it is more than a translation (RTL layouts on three UIs; more plural categories in every `plurals`
@@ -39,7 +39,7 @@ Every translator, human or agent, reads it first; without it each one picks its 
 ## 3. The code
 
 - `core/model` `AppLanguage`: the new entry (its BCP-47 tag), the `fromTag` comment, and a test in `AppLanguageTest`
-  for its tags and its `toTag`. `ProfileUiStateTest` lists every language the picker offers.
+  for its tags and its chip. `ProfileUiStateTest` lists every language the picker offers.
 - The picker names each language in its own language first ("Français", "日本語"), the same in every language of the
   app, with its name in the app's language as a smaller line under it ("French", "Francês"); a region is spelled out,
   never a code ("Português (Brasil)", "Portuguese (Brazil)"). So a new language adds its own name once and its
