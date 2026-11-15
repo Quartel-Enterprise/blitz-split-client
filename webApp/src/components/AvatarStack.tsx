@@ -12,13 +12,16 @@ const sizes = {
   lg: { face: 'size-9 text-xs', extra: 'h-9 min-w-9 px-1.5 text-xs', overlap: '-ml-2.5' },
 }
 
+/** The shared FaceStack's two sizes, as the bridge reads them. */
+export type StackSize = 'compact' | 'roomy'
+
 /**
  * Everyone at once, cut by the shared FaceStack rule. Compact, in a list's row or a form's field: both faces of two, the
  * first and "+N" of three or more. Roomy, on a screen's own header or body: everyone up to five, four faces and "+N" of
  * six or more.
  */
-export function stackOf<T>(people: T[], { isRoomy }: { isRoomy: boolean }): { faces: T[]; extraCount: number } {
-  return { faces: people.slice(0, getStackedFaceCount(people.length, isRoomy)), extraCount: getStackedExtraCount(people.length, isRoomy) }
+export function stackOf<T>(people: T[], size: StackSize): { faces: T[]; extraCount: number } {
+  return { faces: people.slice(0, getStackedFaceCount(people.length, size)), extraCount: getStackedExtraCount(people.length, size) }
 }
 
 /**

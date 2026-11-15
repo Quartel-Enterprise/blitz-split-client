@@ -24,7 +24,8 @@ import com.quare.blitzsplit.android.designsystem.component.ShimmerRowSkeleton
 import com.quare.blitzsplit.android.designsystem.component.WaitingForInternetMessage
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 
-private const val SKELETON_FACES = 2
+// Why: between the two faces of the smallest group and the five the header holds (Pierre's call).
+private const val SKELETON_FACES = 3
 private const val SKELETON_ROWS = 4
 private val skeletonFaceSize = 36.dp
 

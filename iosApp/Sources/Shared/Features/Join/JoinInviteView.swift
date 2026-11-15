@@ -327,10 +327,19 @@ private struct JoinInviteContent: View {
             }
         }
         if !state.joinedNames.isEmpty {
-            HStack(spacing: 12) {
-                faces(state.joined)
-                alreadyIn(state.joinedNames)
-                    .font(.subheadline)
+            // A sentence too long for one line beside the faces goes under them with the whole width, rather than
+            // wrap in a narrow column.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) {
+                    faces(state.joined)
+                    alreadyIn(state.joinedNames)
+                        .font(.subheadline)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    faces(state.joined)
+                    alreadyIn(state.joinedNames)
+                        .font(.subheadline)
+                }
             }
         }
     }

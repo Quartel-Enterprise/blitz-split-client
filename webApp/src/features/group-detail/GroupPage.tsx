@@ -269,7 +269,8 @@ function GroupBodySkeleton() {
   return (
     <>
       <span className="-mt-1 flex">
-        {[0, 1].map((index) => (
+        {/* Why: three, between the two faces of the smallest group and the five the header holds (Pierre's call). */}
+        {[0, 1, 2].map((index) => (
           <SkeletonCircle key={index} className={cn('size-7 border-2 border-background', index > 0 && '-ml-1.5')} />
         ))}
       </span>

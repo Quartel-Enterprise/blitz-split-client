@@ -3,6 +3,8 @@ package com.quare.blitzsplit.android.feature.join
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -386,15 +388,20 @@ private fun GroupCard(state: JoinInviteUiState) {
     }
 }
 
-// Why: "Pierre e Ana já estão no grupo", next to the faces of who joined, as the roomy stack.
+/*
+ * Why: "Pierre e Ana já estão no grupo", next to the faces of who joined, as the roomy stack. A sentence too long for
+ * one line beside the faces goes under them with the whole width, rather than wrap in a narrow column (Pierre's call).
+ */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AlreadyInText(
     members: List<JoinMember>,
     joinedNames: List<String>,
 ) {
-    Row(
+    FlowRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        itemVerticalAlignment = Alignment.CenterVertically,
     ) {
         AvatarStackRow(
             people = members.map {

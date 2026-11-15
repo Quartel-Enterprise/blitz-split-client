@@ -93,7 +93,8 @@ function Invite({ presenter, state }: { presenter: JoinInvitePresenter; state: J
         </div>
       </section>
       {state.joinedNames.length > 0 && (
-        <div className="flex items-center gap-3">
+        // Why: a sentence too long for one line beside the faces wraps under them with the whole width.
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <Faces members={state.joined} />
           <p className="text-sm">{t(state.joinedNames.length === 1 ? 'join_alreadyInOne' : 'join_alreadyInOther', { names: new Intl.ListFormat(locale, { type: 'conjunction' }).format(state.joinedNames) })}</p>
         </div>
@@ -129,7 +130,7 @@ function PersonalTitle({ inviter, name }: { inviter: string | null | undefined; 
 
 /** The faces of who joined as the app's roomy stack: up to five, or four and how many more there are. */
 function Faces({ members }: { members: JsJoinMember[] }) {
-  return <AvatarStack {...stackOf(members, { isRoomy: true })} size="lg" ring="ring-background" />
+  return <AvatarStack {...stackOf(members, 'roomy')} size="lg" ring="ring-background" />
 }
 
 /** The invite's chip, title, group card and buttons, while the server is asked what the link opens. */

@@ -147,7 +147,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     people: a face and "+2"). On a screen's own header or body, alone on its line or beside a sentence free to wrap (a
     group's members under its name, who already joined on the invite, who paid on the Bill), it is roomy, at most
     five: up to five people all show their faces; six or more show the first four and "+N" (six people: four faces and
-    "+2"). "+N" never stands for one person alone. A new stack takes the size of the kind of place it is in, and this
+    "+2"). "+N" never stands for one person alone. On the invite, a sentence too long for one line beside the
+    faces ("Pierre, Ana, Bruno, Carla and Diego are already in the group") goes under them with the whole width
+    rather than wrap in a narrow column, and the group header's loading skeleton shimmers three faces, between the
+    smallest group's two and the header's five (both Pierre's call, 2026-11-15). A new stack takes the size of the kind of place it is in, and this
     list names it. The rule is
     `FaceStack` in `:core:model` (`COMPACT` and `ROOMY`), which the ViewModels cut their faces by (the group's header, Groups' rows, Home's bills) and each UI's one stack
     component applies to the stacks it is handed whole (the invite, the Bill, Split a bill), with the size this list
