@@ -37,6 +37,10 @@ internal fun AppleScreenshotImage(
     )
 }
 
+/**
+ * Whether the slot was captured in every language of the listings: captures older than a language (a Mac capture kept
+ * by a run that left the Mac out) count as none, so their slot is skipped rather than failing on the missing folder.
+ */
 internal fun hasAppleCaptures(slot: AppleScreenshotSlot): Boolean = System
     .getProperty(CAPTURES_DIRECTORY_PROPERTY)
-    ?.let { File(it, slot.directoryName).isDirectory } == true
+    ?.let { captures -> storeLocales.all { File(captures, "${slot.directoryName}/${it.tag}").isDirectory } } == true

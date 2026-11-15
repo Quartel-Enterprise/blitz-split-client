@@ -26,6 +26,15 @@ object SampleTrips {
         listOf(AvatarColor.BLUE, AvatarColor.PEACH, AvatarColor.GREEN, AvatarColor.LILAC, AvatarColor.SAND)
     val sideGroupColors: List<AvatarColor> = listOf(AvatarColor.BLUE, AvatarColor.GREEN)
     const val INVITE_CODE = "Lx7Kp2Qa"
+
+    /*
+     * Why: the three groups' photos, files of scripts/store-screenshots/bank/groups without their extension. The App
+     * Store's UI test passes the same three files to the app (StoreScreenshotsUITests), which can't read these: its
+     * bundle doesn't link the shared framework. The seed stops on one the test didn't pass.
+     */
+    const val TRIP_PHOTO = "trip-lisbon-tram"
+    private const val ROOMMATES_PHOTO = "home-kitchen"
+    private const val SOCCER_PHOTO = "event-soccer"
     private val italianDishes =
         listOf("Pizza margherita", "Burrata", "Risotto ai funghi", "Tiramisù", "Prosecco", "Espresso")
     private val copies = mapOf(
@@ -57,6 +66,20 @@ object SampleTrips {
             court = "Aluguel da quadra",
             items = italianDishes,
         ),
+        "pt-PT" to SampleTripCopy(
+            groupName = "Viagem a Lisboa",
+            people = listOf("Inês", "Tiago", "Beatriz", "Diogo", "Mariana"),
+            dinner = "Jantar na trattoria",
+            apartment = "Apartamento em Alfama",
+            groceries = "Supermercado",
+            carRental = "Aluguer do carro",
+            boatTour = "Passeio de barco",
+            taxi = "Táxi do aeroporto",
+            roommates = "Colegas de casa",
+            soccer = "Futebol à sexta",
+            court = "Aluguer do campo",
+            items = italianDishes,
+        ),
         "es" to SampleTripCopy(
             groupName = "Viaje a Lisboa",
             people = listOf("Lucía", "Mateo", "Sofía", "Diego", "Valentina"),
@@ -69,6 +92,20 @@ object SampleTrips {
             roommates = "Compañeros de piso",
             soccer = "Fútbol de los viernes",
             court = "Alquiler de la cancha",
+            items = italianDishes,
+        ),
+        "es-ES" to SampleTripCopy(
+            groupName = "Viaje a Lisboa",
+            people = listOf("Lucía", "Hugo", "Paula", "Álvaro", "Carmen"),
+            dinner = "Cena en la trattoria",
+            apartment = "Apartamento en Alfama",
+            groceries = "Supermercado",
+            carRental = "Alquiler del coche",
+            boatTour = "Paseo en barco",
+            taxi = "Taxi del aeropuerto",
+            roommates = "Compañeros de piso",
+            soccer = "Fútbol de los viernes",
+            court = "Alquiler del campo",
             items = italianDishes,
         ),
         "fr" to SampleTripCopy(
@@ -187,7 +224,9 @@ object SampleTrips {
     private val currencies = mapOf(
         "en" to GroupCurrency.USD,
         "pt" to GroupCurrency.BRL,
+        "pt-PT" to GroupCurrency.EUR,
         "es" to GroupCurrency.EUR,
+        "es-ES" to GroupCurrency.EUR,
         "fr" to GroupCurrency.EUR,
         "de" to GroupCurrency.EUR,
         "it" to GroupCurrency.EUR,
@@ -282,6 +321,7 @@ object SampleTrips {
                 SampleSideGroup(
                     name = copy.roommates,
                     type = GroupType.HOME,
+                    photo = ROOMMATES_PHOTO,
                     people = listOf(0, 2, 3),
                     billDescription = copy.groceries,
                     billTotalMinor = price(ROOMMATES_GROCERIES_CENTS),
@@ -292,6 +332,7 @@ object SampleTrips {
                 SampleSideGroup(
                     name = copy.soccer,
                     type = GroupType.EVENT,
+                    photo = SOCCER_PHOTO,
                     people = listOf(0, 1, 3, 4),
                     billDescription = copy.court,
                     billTotalMinor = price(COURT_CENTS),

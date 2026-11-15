@@ -151,7 +151,17 @@ internal val SampleTrip.debts: List<Debt>
 internal val SampleTrip.me: Int
     get() = SampleTrips.ME.toInt()
 
-/** A sample person's face: an AI-generated portrait (scripts/store-screenshots/faces), which [SampleFacesComponent] loads. */
+/** A sample person's face: an AI-generated portrait (scripts/store-screenshots/faces), which [SamplePhotosComponent] loads. */
 internal fun photoUrlOf(person: Int): String = "$FACE_SCHEME$person"
 
 internal const val FACE_SCHEME = "face://person"
+
+/**
+ * A sample group's photo: an AI-generated image of the bank (scripts/store-screenshots/bank/groups), loaded as the
+ * faces are.
+ */
+internal fun groupPhotoUrlOf(photo: String): String = "$GROUP_PHOTO_SCHEME$photo"
+
+internal val tripPhotoUrl: String = groupPhotoUrlOf(SampleTrips.TRIP_PHOTO)
+
+internal const val GROUP_PHOTO_SCHEME = "group://"

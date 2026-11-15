@@ -48,6 +48,7 @@
     <string name="groups_cover_latest_by_me">Adicionaste %1$s, %2$s, em %3$s</string>
     <string name="groups_cover_open_phone">Abrir no telemóvel</string>
     <string name="groups_cover_open_phone_hint">Abre o telemóvel para continuar</string>
+    <string name="groups_home_person_owes_you">deve-te</string>
     <string name="groups_home_person_you_owe">deves</string>
     <string name="groups_home_person_owes_you_description">%1$s deve-te %2$s. Registar pagamento</string>
     <string name="groups_home_guest_owes_you_description">%1$s deve-te %2$s, convidado sem app. Registar pagamento</string>

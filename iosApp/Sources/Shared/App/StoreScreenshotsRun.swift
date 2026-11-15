@@ -58,19 +58,29 @@ struct StoreScreenshotsRun {
         defaults.removeObject(forKey: savedLanguagesKey)
     }
 
-    /// The faces and the receipt the UI test passed as base64, written where this app may read them: the shared code
-    /// reads `faces/person<n>.jpg` and `receipt.jpg` there. Nil when the test passed none.
+    /// The faces, the groups' photos and the receipt the UI test passed as base64, written where this app may read
+    /// them: the shared code reads `faces/person<n>.jpg`, `groups/<photo>.jpg` and `receipt.jpg` there. Nil when the
+    /// test passed none.
     private static func writeAssets() -> String? {
         let prefix = "STORE_SCREENSHOTS_ASSET_"
         let assets = ProcessInfo.processInfo.environment.filter { $0.key.hasPrefix(prefix) }
         guard !assets.isEmpty else { return nil }
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("store-screenshots")
         let faces = root.appendingPathComponent("faces")
+        let groups = root.appendingPathComponent("groups")
+        let groupPrefix = "group_"
         try? FileManager.default.createDirectory(at: faces, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: groups, withIntermediateDirectories: true)
         for (key, base64) in assets {
             guard let data = Data(base64Encoded: base64) else { continue }
             let name = String(key.dropFirst(prefix.count))
-            let file = name == "receipt" ? root.appendingPathComponent("receipt.jpg") : faces.appendingPathComponent("\(name).jpg")
+            let file = if name == "receipt" {
+                root.appendingPathComponent("receipt.jpg")
+            } else if name.hasPrefix(groupPrefix) {
+                groups.appendingPathComponent("\(name.dropFirst(groupPrefix.count)).jpg")
+            } else {
+                faces.appendingPathComponent("\(name).jpg")
+            }
             try? data.write(to: file)
         }
         return root.path

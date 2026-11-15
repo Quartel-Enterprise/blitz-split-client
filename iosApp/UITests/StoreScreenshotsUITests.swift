@@ -20,10 +20,14 @@ final class StoreScreenshotsUITests: XCTestCase {
         let isDark: Bool
     }
 
+    /// Latin America's Spanish runs in the United States' region: in Spain's the app reads its es-ES strings
+    /// (AppLanguage.toTag), and Mexico's or Latin America's write the trip's euros as "EUR 1,145.80".
     private static let locales = [
         ListingLocale(tag: "en-US", language: "en", appleLanguage: "en-US", appleLocale: "en_US"),
         ListingLocale(tag: "pt-BR", language: "pt", appleLanguage: "pt-BR", appleLocale: "pt_BR"),
-        ListingLocale(tag: "es", language: "es", appleLanguage: "es-419", appleLocale: "es_ES"),
+        ListingLocale(tag: "pt-PT", language: "pt-PT", appleLanguage: "pt-PT", appleLocale: "pt_PT"),
+        ListingLocale(tag: "es", language: "es", appleLanguage: "es-419", appleLocale: "es_US"),
+        ListingLocale(tag: "es-ES", language: "es-ES", appleLanguage: "es-ES", appleLocale: "es_ES"),
         ListingLocale(tag: "fr", language: "fr", appleLanguage: "fr-FR", appleLocale: "fr_FR"),
         ListingLocale(tag: "de", language: "de", appleLanguage: "de-DE", appleLocale: "de_DE"),
         ListingLocale(tag: "it", language: "it", appleLanguage: "it-IT", appleLocale: "it_IT"),
@@ -50,6 +54,14 @@ final class StoreScreenshotsUITests: XCTestCase {
 
     /// How long a launched screen takes to seed, open and finish its transitions before the capture.
     private static let settle: TimeInterval = 4
+
+    /// How many times the bill is scrolled looking for its Split row before the capture gives up.
+    private static let maxScrolls = 3
+
+    #if os(macOS)
+    /// How far each scroll moves the bill on the Mac, whose window has no swipe.
+    private static let macScrollDelta: CGFloat = 400
+    #endif
 
     override func setUp() {
         continueAfterFailure = false
@@ -114,14 +126,20 @@ final class StoreScreenshotsUITests: XCTestCase {
         return Set(list.split(separator: ",").map(String.init))
     }
 
-    /// The faces and the receipt's photo, base64 in the launch environment: the Mac app's sandbox can't read the
-    /// repository, so the app writes them to a folder of its own (StoreScreenshotsRun).
+    /// The faces, the groups' photos and the receipt's photo, base64 in the launch environment: the Mac app's sandbox
+    /// can't read the repository, so the app writes them to a folder of its own (StoreScreenshotsRun). The groups'
+    /// photos are the three SampleTrips names (TRIP_PHOTO and each side group's), not the whole bank: the environment
+    /// has a size limit. This bundle doesn't link the shared framework, so the names are repeated here, and the seed
+    /// stops the launch on a name SampleTrips has and this list lacks.
     private static func assetsEnvironment(_ directory: String?) throws -> [String: String] {
         guard let directory else { return [:] }
         let root = URL(fileURLWithPath: directory)
         var files = ["receipt": root.appendingPathComponent("receipt.jpg")]
         for person in 0..<5 {
             files["person\(person)"] = root.appendingPathComponent("faces/person\(person).jpg")
+        }
+        for photo in ["trip-lisbon-tram", "home-kitchen", "event-soccer"] {
+            files["group_\(photo)"] = root.appendingPathComponent("bank/groups/\(photo).jpg")
         }
         return try files.reduce(into: [:]) { environment, file in
             environment["STORE_SCREENSHOTS_ASSET_\(file.key)"] = try Data(contentsOf: file.value).base64EncodedString()
@@ -143,7 +161,18 @@ final class StoreScreenshotsUITests: XCTestCase {
         Thread.sleep(forTimeInterval: Self.settle)
         if screen.code == "items" {
             let split = app.buttons["splitBill.split"]
-            XCTAssertTrue(split.waitForExistence(timeout: Self.settle), "No Split row to open Bill items")
+            // The bill outgrows a short screen (the iPhone Duo closed), and a row below it isn't in the tree yet.
+            var scrolls = 0
+            while !split.waitForExistence(timeout: Self.settle), scrolls < Self.maxScrolls {
+                // swipeUp() is iOS only: the Mac's UI tests, built from this same file, scroll the wheel instead.
+                #if os(iOS)
+                app.swipeUp()
+                #else
+                app.scroll(byDeltaX: 0, deltaY: -Self.macScrollDelta)
+                #endif
+                scrolls += 1
+            }
+            XCTAssertTrue(split.exists, "No Split row to open Bill items")
             split.tap()
             Thread.sleep(forTimeInterval: Self.settle / 2)
         }

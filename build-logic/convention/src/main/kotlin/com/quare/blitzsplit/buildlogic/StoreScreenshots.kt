@@ -9,16 +9,19 @@ import java.io.File
 // The store listing screenshots (docs/store-listing-screenshots.md). The generators of :android:store_screenshots are
 // its unit tests, which write store-screenshots' Fastlane-shaped output into build/outputs/store-screenshots/<locale>/.
 // These tasks copy it where people look at it (store_listings/, git-ignored) and where the fastlane lanes upload from.
-// Play and Apple each fan the one Spanish set out to their own regional codes. The devices map each generator output
-// folder to store_listings/' and to the one the store's tool reads; the Mac's go apart, as the Mac app is a version of
-// its own on App Store Connect (platform osx).
+// Play and Apple each fan Latin America's Spanish set out to their own regional codes; Spain has a set of its own.
+// The devices map each generator output folder to store_listings/' and to the one the store's tool reads; the Mac's
+// go apart, as the Mac app is a version of its own on App Store Connect (platform osx).
 private const val GROUP = "store-screenshots"
 private const val GENERATE_TASK = "testDebugUnitTest"
-private val listingLocales = listOf("en-US", "pt-BR", "es", "fr", "de", "it", "pl", "nl", "tr", "id", "ja")
+private val listingLocales =
+    listOf("en-US", "pt-BR", "pt-PT", "es", "es-ES", "fr", "de", "it", "pl", "nl", "tr", "id", "ja")
 private val playLocales = mapOf(
     "en-US" to listOf("en-US"),
     "pt-BR" to listOf("pt-BR"),
-    "es" to listOf("es-419", "es-ES", "es-US"),
+    "pt-PT" to listOf("pt-PT"),
+    "es" to listOf("es-419", "es-US"),
+    "es-ES" to listOf("es-ES"),
     "fr" to listOf("fr-FR"),
     "de" to listOf("de-DE"),
     "it" to listOf("it-IT"),
@@ -31,7 +34,9 @@ private val playLocales = mapOf(
 private val appStoreLocales = mapOf(
     "en-US" to listOf("en-US"),
     "pt-BR" to listOf("pt-BR"),
-    "es" to listOf("es-MX", "es-ES"),
+    "pt-PT" to listOf("pt-PT"),
+    "es" to listOf("es-MX"),
+    "es-ES" to listOf("es-ES"),
     "fr" to listOf("fr-FR"),
     "de" to listOf("de-DE"),
     "it" to listOf("it"),
@@ -91,6 +96,7 @@ fun Project.configureStoreScreenshots() {
         .get()
         .asFile
     val facesDir = rootProject.file("scripts/store-screenshots/faces")
+    val groupPhotosDir = rootProject.file("scripts/store-screenshots/bank/groups")
     // Decided from the tasks the build was asked for, as in Bible Planner: only a build that produces the App Store
     // shots runs the iPhone and iPad classes, which frame the iOS captures (scripts/store-screenshots/capture-ios.sh).
     // Any other build, the Play listing's included, leaves them out and needs no Mac.
@@ -111,15 +117,21 @@ fun Project.configureStoreScreenshots() {
         systemProperty("storeScreenshots.outputRoot", generatedDir.absolutePath)
         systemProperty("appleScreenshots.capturesDir", capturesDir.absolutePath)
         systemProperty("storeScreenshots.facesDir", facesDir.absolutePath)
+        systemProperty("storeScreenshots.groupPhotosDir", groupPhotosDir.absolutePath)
         systemProperty("roborazzi.test.record", "true")
         inputs.dir(facesDir)
+        inputs.dir(groupPhotosDir)
         outputs.dir(generatedDir)
         maxHeapSize = "4g"
         if (generatesAppStoreScreenshots) {
             inputs.dir(capturesDir)
             doFirst {
-                check(listOf("iphone63", "iphone67", "ipad13").all { capturesDir.resolve(it).isDirectory }) {
-                    "No iOS captures in $capturesDir: run scripts/store-screenshots/capture-ios.sh first"
+                val captured = listOf("iphone63", "iphone67", "ipad13").all { slot ->
+                    listingLocales.all { capturesDir.resolve("$slot/$it").isDirectory }
+                }
+                check(captured) {
+                    "No iOS captures of every language in $capturesDir: " +
+                        "run scripts/store-screenshots/capture-ios.sh first"
                 }
             }
         } else {

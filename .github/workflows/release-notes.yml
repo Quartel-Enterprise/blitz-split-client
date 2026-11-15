@@ -19,6 +19,8 @@ on:
       - 'scripts/release/**'
       - 'release-notes/**'
       - 'store-listing/**'
+      # The screenshots' store locales, which a test compares with the listing text's
+      - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
   push:
     branches:
       - main
@@ -27,6 +29,8 @@ on:
       - 'scripts/release/**'
       - 'release-notes/**'
       - 'store-listing/**'
+      # The screenshots' store locales, which a test compares with the listing text's
+      - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
 
 permissions:
   contents: read

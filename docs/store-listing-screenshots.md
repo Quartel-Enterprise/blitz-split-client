@@ -1,7 +1,7 @@
 # Store listing screenshots
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
-showing a sample trip among five friends, inside a device frame with a title and description, in all 11 languages
+showing a sample trip among five friends, inside a device frame with a title and description, in all 13 languages
 of the listings. The frames come from the [store-screenshots](https://github.com/lucianosantosdev/store-screenshots)
 library, as in Bible Planner. None of the images is versioned: every run rebuilds them from source.
 
@@ -40,7 +40,9 @@ The lane runs, each step under `scripts/heavy-check.sh`:
    the app to run locally, having no signing account.
 2. `./gradlew stagePlayStoreScreenshots stageAppStoreScreenshots collect…`: the generators (the unit tests of
    `:android:store_screenshots`) draw every image. The tasks then copy the images to `store_listings/` to look at, and
-   to the folders fastlane uploads from. Spanish goes out to each store's regional codes.
+   to the folders fastlane uploads from. Latin America's Spanish goes out to each store's regional codes (`es-419` and
+   `es-US` on Play, `es-MX` on the App Store), and Spain's to `es-ES`, as the listing text does
+   ([store-listing.md](store-listing.md)).
 3. Unless `skip_upload:true` is passed, the upload: `supply` for Play and `deliver` for the App Store, listing
    images only.
 
@@ -101,8 +103,12 @@ without swiping. Play holds 8 per device type and the App Store 10 per display s
 
 **The sample trip** (`shared/src/commonMain/.../storescreenshots/SampleTrips.kt`) is one story told in each
 language: a trip to Lisbon among five friends, its names and descriptions in that language and its amounts in that
-language's currency, at round rates and rounded the way a menu there prices them. The faces are AI-generated portraits of people who don't exist (`scripts/store-screenshots/faces/`), the same
-five in every language; the receipt's photo is `scripts/store-screenshots/receipt.jpg`.
+language's currency, at round rates and rounded the way a menu there prices them. The faces are AI-generated
+portraits of people who don't exist (`scripts/store-screenshots/faces/`), the same five in every language; the
+receipt's photo is `scripts/store-screenshots/receipt.jpg`. The three groups have a photo too, AI-generated as well:
+`SampleTrips` names each one by its file in the image bank, `scripts/store-screenshots/bank/groups/`, so no group is
+drawn as initials on a color. [The bank](../scripts/store-screenshots/bank/README.md) holds more faces and group
+photos than the screenshots use, to pick from.
 
 | Device | Play | App Store (Apple's screenshot specifications, November 2026) |
 | --- | --- | --- |
@@ -127,7 +133,7 @@ store-screenshots has no frame for the Duo or the Mac. They get a plain rounded 
 shared/src/commonMain/.../storescreenshots/   # the sample trip, both stores
 shared/src/appleMain/.../storescreenshots/    # the iOS seed and the screen each capture opens
 android/store_screenshots/src/test/.../        # the Play screens' UiStates, banner copy, the frames
-iosApp/UITests/StoreScreenshotsUITests.swift   # the iOS capture: languages, screens, the one tap Items needs
+iosApp/UITests/StoreScreenshotsUITests.swift   # the iOS capture: languages, screens, the tap Items needs
 build-logic/.../StoreScreenshots.kt            # the collect and stage tasks, the stores' locale codes
 fastlane/Fastfile                              # the screenshots and upload lanes
 ```
@@ -137,15 +143,24 @@ fastlane/Fastfile                              # the screenshots and upload lane
 - **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
   `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on iOS) and in the UI
   test's `screens`. The file names must match on both sides.
-- **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), the UI test's `locales` and
-  the two store maps in `StoreScreenshots.kt`.
+- **A new language:** `storeLocales`, `bannerCopies`, `SampleTrips` (copy and currency), the UI test's `locales`,
+  and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
+  which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
+  Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings. Spain's Spanish
+  goes by `es-ES` the same way, since `es` is Latin America's: its own banners and trip ("ha pagado", "coche",
+  "ticket"), over the app's `es-ES` strings.
 
 ## How the iOS capture works
 
 The UI test launches the app once per screen and language with `-StoreScreenshotsLanguage`, `-StoreScreenshotsTheme`
-and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The faces and the receipt's photo go in
-the launch environment as base64, since the Mac app's sandbox can't read the repository. The app writes them to a
-temporary folder of its own. In a **debug**
+and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The locale's region counts for Spanish:
+in Spain's the app reads its `es-ES` strings, so Latin America's set runs in `es_US`, the region that keeps the
+`es` strings and still writes the trip's euros as "€1,145.80" (Mexico's and Latin America's write "EUR 1,145.80").
+The trade-off: that region writes the hours on a 12-hour clock ("9:00 p.m.") and the month before the day, and Play's
+set, drawn in Robolectric's bare `es`, writes the same amount as "1145,80 €". Changing the region is that one line
+of the UI test.
+The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
+sandbox can't read the repository. The app writes them to a temporary folder of its own. In a **debug**
 build, `BoraRacharApp` then calls `BlitzSplitApple.startForStoreScreenshots` in place of `start`
 (`StoreScreenshotsRun` is compiled out of a release build, and a release framework ignores the call and starts as
 usual). That entry point:
@@ -158,7 +173,9 @@ usual). That entry point:
    It then does with SQL what a sync would: clears the pending flags, sets everyone as joined with a face, the
    invite code, and Activity's feed.
 4. Once the app has put Home at the root, pushes the screen's routes onto the shared back stack. The test only
-   taps once, on "Split" (`splitBill.split`) for Items, so the run never depends on the language's labels.
+   taps once, on "Split" (`splitBill.split`) for Items, so the run never depends on the language's labels. It
+   scrolls the bill first where the row is below the screen, as on the iPhone Duo closed: a row off the screen
+   isn't in the tree to tap.
 
 Each simulator's status bar is set to 9:41 with a full battery, and the frame draws no status bar over the capture.
 On the Mac, `StoreScreenshotsRun.sizeWindow` gives the window the same size on every launch and hides every other
@@ -175,6 +192,6 @@ after a library upgrade.
 - **Robolectric has no SDK 37**: the library pins SDK 35 for the generators.
 - **The Play tablets** render the screens' own tablet layouts at the frame's size, and the iPad capture is the
   iPad's real layout.
-- **Faces on Play** come through Coil's preview handler (`SampleFacesComponent`), which answers at once. A real load would
-  still be running when Robolectric captures.
+- **Faces and group photos on Play** come through Coil's preview handler (`SamplePhotosComponent`), which answers at
+  once. A real load would still be running when Robolectric captures.
 - **`ItemsEditorContent` is public** so the generator can draw "Bill items" without the ViewModel.

@@ -46,7 +46,7 @@ internal fun SampleTrip.groupHeader(): GroupHeader {
         groupName = groupName,
         groupInitials = previewInitialsOf(groupName),
         groupColor = tripColor,
-        groupPhotoUrl = null,
+        groupPhotoUrl = tripPhotoUrl,
         currency = currency,
         currencies = listOf(currency, foreignCurrency),
         faces = people.indices
