@@ -108,8 +108,7 @@ env:
   # Where a version's notes may already be written by hand (docs/release-notes.md): `plan` reads it.
   SITE_REPOSITORY: Quartel-Enterprise/blitz-split-site
   # The Cloudflare Pages project of the production web app, next to the betas' blitz-split-beta in the same
-  # account, and the domain it is served at. Both are set up by hand, never by this workflow: the project is
-  # there, and its custom domain is to confirm after the first deploy
+  # account, and the domain it is served at. Both were set up by hand, never by this workflow
   # (docs/release-process.md#the-production-web-app).
   CLOUDFLARE_PAGES_PROJECT: blitz-split
   WEB_URL: https://app.blitzsplit.com
