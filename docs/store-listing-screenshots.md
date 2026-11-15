@@ -159,7 +159,7 @@ fastlane/Fastfile                              # the screenshots and upload lane
 - **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
   `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on Apple's) and a row
   of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides.
-- **A new language:** `storeLocales` (its `playLocale` is its tag), `bannerCopies`, `SampleTrips` (copy and currency), a row of
+- **A new language:** `storeLocales` (its `playLocale` defaults to its tag), `bannerCopies`, `SampleTrips` (copy and currency), a row of
   `scripts/store-screenshots/locales.tsv`, and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
   which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
   Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings. Spain's Spanish
