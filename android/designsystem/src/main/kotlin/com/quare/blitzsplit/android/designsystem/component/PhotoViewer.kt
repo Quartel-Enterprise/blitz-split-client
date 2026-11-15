@@ -69,7 +69,7 @@ private val destructiveContent = Color(0xFFFF9A9A)
 
 /*
  * Why: the photo big on a dimmed, blurred backdrop, with the shortcuts that change it under it, for the profile's and
- * the group's alike. A tap outside them, ✕ and back close it. `content` draws the photo and its shortcuts, given the
+ * the group's alike, and a contact's with none. A tap outside them, ✕ and back close it. `content` draws the photo and its shortcuts, given the
  * size the photo takes: 260 dp where both sides have 600, 200 dp otherwise.
  */
 @Composable

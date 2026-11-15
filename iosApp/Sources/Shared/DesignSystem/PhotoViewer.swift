@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// A photo big, as Bible Planner's viewer, for the profile's and the group's: the photo with the shortcuts that change
-/// it at once under it. On iPhone and iPad it covers the screen over the blurred page, closed by ✕ or a tap outside;
+/// A photo big, as Bible Planner's viewer, for the profile's, the group's and a contact's: the photo with the shortcuts
+/// that change it at once under it (none for a contact's, which isn't this user's). On iPhone and iPad it covers the screen over the blurred page, closed by ✕ or a tap outside;
 /// on the Mac it is a sheet, closed by Close or Esc. `content` gets the photo's side: 260 only where both sides of the
 /// screen have 600, so an iPhone lying down keeps the compact photo and its shortcuts fit.
 struct PhotoViewer<Content: View>: View {

@@ -41,9 +41,7 @@
 
     <string name="contacts_profile_back">Voltar para Contatos</string>
     <string name="contacts_profile_share">Compartilhar perfil</string>
-    <string name="contacts_profile_photo_open">Ver foto</string>
-    <string name="contacts_profile_photo_close">Fechar</string>
-    <string name="contacts_profile_more">Mais opções</string>
+    <string name="contacts_profile_photo_open">Ver foto</string>    <string name="contacts_profile_more">Mais opções</string>
     <string name="contacts_profile_meta_user">Usa o Bora Rachar · %s</string>
     <string name="contacts_profile_meta_guest">Convidado · ainda sem o app</string>
     <string name="contacts_profile_offline">Offline · o que você fizer entra na fila</string>

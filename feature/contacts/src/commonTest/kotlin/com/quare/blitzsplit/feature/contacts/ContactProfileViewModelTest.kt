@@ -2880,7 +2880,7 @@ class ContactProfileViewModelTest {
         }
 
     @Test
-    fun `GIVEN the contact not read from the device yet WHEN the face is tapped THEN opens and sends nothing`() =
+    fun `GIVEN the contact not read yet WHEN the face is tapped THEN opens nothing and sends nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(

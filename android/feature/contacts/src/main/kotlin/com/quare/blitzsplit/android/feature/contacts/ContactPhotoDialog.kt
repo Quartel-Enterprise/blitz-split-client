@@ -50,7 +50,7 @@ private fun ContactPhotoContent(
 ) {
     PhotoViewerContent(
         isLoaded = true,
-        closeDescription = stringResource(R.string.contacts_profile_photo_close),
+        closeDescription = stringResource(R.string.contacts_close),
         onDismiss = onDismiss,
     ) { avatarSize ->
         AvatarBadge(
