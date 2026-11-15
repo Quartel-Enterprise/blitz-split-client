@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.releasenotes.domain.usecase
 
+import com.quare.blitzsplit.core.releasenotes.domain.model.AppVersion
 import com.quare.blitzsplit.core.releasenotes.domain.usecase.impl.PrefetchReleaseNotesUseCase
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -19,6 +20,7 @@ class PrefetchReleaseNotesUseCaseTest {
 
         // Then
         assertEquals(listOf("tr"), repository.refreshed)
+        assertEquals(listOf(AppVersion.parseOrNull("3.1.0")), repository.refreshedVersions)
     }
 
     @Test
@@ -45,6 +47,7 @@ class PrefetchReleaseNotesUseCaseTest {
         prefetch = PrefetchReleaseNotesUseCase(
             getReleaseNotesLanguage = { language },
             repository = repository,
+            getInstalledVersion = { AppVersion.parseOrNull("3.1.0") },
         )
     }
 }

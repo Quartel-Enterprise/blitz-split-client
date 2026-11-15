@@ -18,9 +18,14 @@ interface ReleaseNotesFeedDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: ReleaseNotesFeedEntity)
 
-    @Query("UPDATE release_notes_feed SET checkedAt = :checkedAt WHERE language = :language")
+    @Query(
+        "UPDATE release_notes_feed SET checkedAt = :checkedAt, installedVersion = :installedVersion, " +
+            "installedVersionSeenAt = :installedVersionSeenAt WHERE language = :language",
+    )
     suspend fun markChecked(
         language: String,
         checkedAt: Long,
+        installedVersion: String?,
+        installedVersionSeenAt: Long?,
     )
 }

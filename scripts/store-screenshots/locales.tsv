@@ -1,11 +1,12 @@
 # The listing languages the Apple captures run in: the generated folder, the app's language code, and the language and
-# region iOS and macOS are told to run in. Latin America's Spanish runs in the United States' region: in Spain's the app
-# reads its es-ES strings, and Mexico's or Latin America's write the trip's euros as "EUR 1,145.80".
+# region iOS and macOS are told to run in. The language picks the strings, the region how amounts, dates and hours are
+# written. Latin America's Spanish runs in Equatorial Guinea's region: every Latin American one writes the trip's euros
+# with the code ("EUR 1,145.80"), and the United States' the month before the day (docs/store-listing-screenshots.md).
 # tag	language	appleLanguage	appleLocale
 en-US	en	en-US	en_US
 pt-BR	pt	pt-BR	pt_BR
 pt-PT	pt-PT	pt-PT	pt_PT
-es	es	es-419	es_US
+es	es	es-419	es_GQ
 es-ES	es-ES	es-ES	es_ES
 fr	fr	fr-FR	fr_FR
 de	de	de-DE	de_DE

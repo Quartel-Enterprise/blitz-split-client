@@ -75,6 +75,7 @@ class RoomReleaseNotesLocalDataSourceTest {
                 json = "novidades",
                 etag = null,
                 checkedAt = 1_000L,
+                installedVersion = null,
             )
             runCurrent()
 
@@ -116,6 +117,7 @@ class RoomReleaseNotesLocalDataSourceTest {
                 json = "{}",
                 etag = "\"abc\"",
                 checkedAt = 1_000L,
+                installedVersion = null,
             ),
             saved,
         )
@@ -143,6 +145,7 @@ class RoomReleaseNotesLocalDataSourceTest {
                 json = "{}",
                 etag = null,
                 checkedAt = 1_000L,
+                installedVersion = null,
             ),
             saved,
         )
@@ -171,6 +174,7 @@ class RoomReleaseNotesLocalDataSourceTest {
             json = "novidades",
             etag = "\"abc\"",
             checkedAt = 1_000L,
+            installedVersion = null,
         )
 
         // Then
@@ -181,6 +185,8 @@ class RoomReleaseNotesLocalDataSourceTest {
                     json = "novidades",
                     etag = "\"abc\"",
                     checkedAt = 1_000L,
+                    installedVersion = null,
+                    installedVersionSeenAt = null,
                 ),
             ),
             dao.rows.value,
@@ -215,6 +221,7 @@ class RoomReleaseNotesLocalDataSourceTest {
                 json = "new",
                 etag = null,
                 checkedAt = 2_000L,
+                installedVersion = null,
             )
 
             // Then
@@ -226,6 +233,8 @@ class RoomReleaseNotesLocalDataSourceTest {
                         json = "new",
                         etag = null,
                         checkedAt = 2_000L,
+                        installedVersion = null,
+                        installedVersionSeenAt = null,
                     ),
                 ),
                 dao.rows.value.toSet(),
@@ -259,6 +268,7 @@ class RoomReleaseNotesLocalDataSourceTest {
             dataSource.markChecked(
                 language = "pt",
                 checkedAt = 2_000L,
+                installedVersion = null,
             )
 
             // Then
@@ -269,11 +279,43 @@ class RoomReleaseNotesLocalDataSourceTest {
                         json = "novidades",
                         etag = "\"abc\"",
                         checkedAt = 2_000L,
+                        installedVersion = null,
+                        installedVersionSeenAt = null,
                     ),
                     spanish,
                 ),
                 dao.rows.value,
             )
+        }
+
+    @Test
+    fun `GIVEN a saved feed WHEN marking it checked on a version THEN reads back that version and its first time`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    entity(
+                        language = "pt",
+                        checkedAt = 1_000L,
+                    ),
+                ),
+            )
+            val seen = SeenInstalledVersion(
+                name = "3.1.0-beta_2",
+                seenAt = 500L,
+            )
+
+            // When
+            dataSource.markChecked(
+                language = "pt",
+                checkedAt = 2_000L,
+                installedVersion = seen,
+            )
+            val saved = dataSource.getSavedFeed("pt")
+
+            // Then
+            assertEquals(seen, saved?.installedVersion)
+            assertEquals(2_000L, saved?.checkedAt)
         }
 
     private fun entity(
@@ -286,6 +328,8 @@ class RoomReleaseNotesLocalDataSourceTest {
         json = json,
         etag = etag,
         checkedAt = checkedAt,
+        installedVersion = null,
+        installedVersionSeenAt = null,
     )
 
     private fun TestScope.prepareScenario(
@@ -321,7 +365,21 @@ private class FakeReleaseNotesFeedDao(
     override suspend fun markChecked(
         language: String,
         checkedAt: Long,
+        installedVersion: String?,
+        installedVersionSeenAt: Long?,
     ) {
-        rows.update { all -> all.map { if (it.language == language) it.copy(checkedAt = checkedAt) else it } }
+        rows.update { all ->
+            all.map { row ->
+                if (row.language == language) {
+                    row.copy(
+                        checkedAt = checkedAt,
+                        installedVersion = installedVersion,
+                        installedVersionSeenAt = installedVersionSeenAt,
+                    )
+                } else {
+                    row
+                }
+            }
+        }
     }
 }
