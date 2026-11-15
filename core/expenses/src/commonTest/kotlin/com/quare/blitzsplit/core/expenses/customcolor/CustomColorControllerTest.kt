@@ -9,6 +9,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.ColorDraft
 import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 import com.quare.blitzsplit.core.expenses.domain.model.CustomPalette
 import com.quare.blitzsplit.core.expenses.domain.model.CustomPaletteFullException
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
+import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.testing.FakeCustomColorRepository
 import com.quare.blitzsplit.core.expenses.testing.createFakeCustomColorUseCases
@@ -27,7 +29,7 @@ class CustomColorControllerTest {
     private lateinit var repository: FakeCustomColorRepository
     private lateinit var controller: CustomColorController
     private val picked = mutableListOf<Pair<CategoryTint, String?>>()
-    private val usedBy = mutableMapOf<CustomColor, Category>()
+    private val usedBy = mutableMapOf<CustomColor, CustomColorUser>()
 
     private val blue = CustomColor(0x3A7BD5)
     private val yellow = CustomColor(0xFFF59D)
@@ -269,7 +271,7 @@ class CustomColorControllerTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(palette = listOf(blue))
-            usedBy[blue] = food
+            usedBy[blue] = CustomColorUser.OfCategory(food)
             controller.observe()
 
             // When
@@ -278,7 +280,7 @@ class CustomColorControllerTest {
 
             // Then
             val deletion = controller.state.value.deletion
-            assertEquals(food, deletion?.usedBy)
+            assertEquals(CustomColorUser.OfCategory(food), deletion?.usedBy)
             assertEquals(true, deletion?.isBlocked)
         }
 
@@ -323,7 +325,7 @@ class CustomColorControllerTest {
             controller.observe()
             controller.onEvent(CustomColorEvent.OnLongPressed(blue))
             runCurrent()
-            usedBy[blue] = food
+            usedBy[blue] = CustomColorUser.OfCategory(food)
 
             // When
             controller.onEvent(CustomColorEvent.OnDeleteConfirmed)
@@ -334,7 +336,7 @@ class CustomColorControllerTest {
             assertEquals(
                 CustomColorDeletion(
                     blue,
-                    usedBy = food,
+                    usedBy = CustomColorUser.OfCategory(food),
                     isDeleting = false,
                 ),
                 controller.state.value.deletion,
@@ -346,7 +348,7 @@ class CustomColorControllerTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(palette = listOf(blue))
-            usedBy[blue] = food
+            usedBy[blue] = CustomColorUser.OfCategory(food)
             controller.observe()
             controller.onEvent(CustomColorEvent.OnLongPressed(blue))
             runCurrent()
@@ -592,6 +594,80 @@ class CustomColorControllerTest {
             // Then
             assertTrue(picked.isEmpty())
             assertEquals(listOf(blue), repository.colors.value)
+        }
+
+    private val nubank = PayingMethod(
+        id = "nubank",
+        type = PayingMethodType.CREDIT_CARD,
+        name = "Nubank",
+        cardColor = CustomColor(0x3A7BD5).tint,
+        isDefault = false,
+        addedAt = 1L,
+    )
+
+    @Test
+    fun `GIVEN a palette color a card uses WHEN long pressing it THEN names the card and blocks the deletion`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(palette = listOf(blue))
+            usedBy[blue] = CustomColorUser.OfPayingMethod(nubank)
+            controller.observe()
+
+            // When
+            controller.onEvent(CustomColorEvent.OnLongPressed(blue))
+            runCurrent()
+
+            // Then
+            val deletion = controller.state.value.deletion
+            assertEquals(CustomColorUser.OfPayingMethod(nubank), deletion?.usedBy)
+            assertEquals(true, deletion?.isBlocked)
+        }
+
+    @Test
+    fun `GIVEN a card uses the color WHEN confirming the deletion THEN deletes nothing and it stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(palette = listOf(blue))
+            usedBy[blue] = CustomColorUser.OfPayingMethod(nubank)
+            controller.observe()
+            controller.onEvent(CustomColorEvent.OnLongPressed(blue))
+            runCurrent()
+            val deletion = controller.state.value.deletion
+
+            // When
+            controller.onEvent(CustomColorEvent.OnDeleteConfirmed)
+            runCurrent()
+
+            // Then
+            assertTrue(repository.deletedAt.isEmpty())
+            assertEquals(deletion, controller.state.value.deletion)
+            assertEquals(listOf(blue), controller.state.value.palette)
+        }
+
+    @Test
+    fun `GIVEN a card took the color since asked WHEN confirming THEN it turns blocked and deletes nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(palette = listOf(blue))
+            controller.observe()
+            controller.onEvent(CustomColorEvent.OnLongPressed(blue))
+            runCurrent()
+            usedBy[blue] = CustomColorUser.OfPayingMethod(nubank)
+
+            // When
+            controller.onEvent(CustomColorEvent.OnDeleteConfirmed)
+            runCurrent()
+
+            // Then
+            assertTrue(repository.deletedAt.isEmpty())
+            assertEquals(
+                CustomColorDeletion(
+                    blue,
+                    usedBy = CustomColorUser.OfPayingMethod(nubank),
+                    isDeleting = false,
+                ),
+                controller.state.value.deletion,
+            )
         }
 
     private fun TestScope.prepareScenario(

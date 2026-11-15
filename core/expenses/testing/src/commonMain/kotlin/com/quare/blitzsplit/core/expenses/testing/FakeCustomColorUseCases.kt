@@ -1,7 +1,7 @@
 package com.quare.blitzsplit.core.expenses.testing
 
 import com.quare.blitzsplit.core.expenses.customcolor.CustomColorUseCases
-import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorUser
 import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
 
 /*
@@ -10,7 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.CustomColor
  */
 fun createFakeCustomColorUseCases(
     repository: FakeCustomColorRepository = FakeCustomColorRepository(),
-    usedBy: (CustomColor) -> Category? = { null },
+    usedBy: (CustomColor) -> CustomColorUser? = { null },
 ): CustomColorUseCases = CustomColorUseCases(
     observeCustomColors = { repository.observeColors() },
     addCustomColor = { repository.add(it, 0L) },

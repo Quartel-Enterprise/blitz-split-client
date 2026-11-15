@@ -10,9 +10,10 @@ import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveAccountUseCa
 import com.quare.blitzsplit.core.account.domain.usecase.impl.ObserveReturningBrowserSignInUseCase
 import com.quare.blitzsplit.core.account.domain.usecase.impl.UpdateRecoveryCodePromptUseCase
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePayingMethodsUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import com.quare.blitzsplit.core.inappupdate.domain.model.UpdateAvailability
@@ -7210,7 +7211,7 @@ class ProfileViewModelTest {
         id = "nubank",
         type = PayingMethodType.CREDIT_CARD,
         name = "Nubank",
-        cardColor = CardColor.PURPLE,
+        cardColor = CategoryColor.PURPLE.tint,
         isDefault = true,
         addedAt = 1L,
     )

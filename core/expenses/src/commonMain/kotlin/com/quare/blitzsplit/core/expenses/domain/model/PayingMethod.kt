@@ -9,8 +9,8 @@ data class PayingMethod(
     val type: PayingMethodType,
     // Why: what the person calls it ("Nubank"), empty for none, so each UI shows the type's name instead.
     val name: String,
-    // Why: a card's swatch, null for anything but a card.
-    val cardColor: CardColor?,
+    // Why: a card's color, a category's named or custom one (CardTints); null for anything but a card.
+    val cardColor: CategoryTint?,
     val isDefault: Boolean,
     val addedAt: Long,
 )

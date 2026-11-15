@@ -1,6 +1,7 @@
-import { Check, Loader2, Trash2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
 import { PayingMethodPresenter, type JsPayingMethodState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { CategoryColorPicker } from '@/components/CategoryColorPicker'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { PayingMethodTile } from '@/components/PayingMethodTile'
@@ -12,7 +13,7 @@ import { Switch } from '@/components/ui/switch'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
-import { cardColorHexes, cardColorNames, payingMethodTypeName, type CardColor } from '@/lib/payingMethod'
+import { payingMethodTypeName } from '@/lib/payingMethod'
 import { cn } from '@/lib/utils'
 
 const formId = 'paying-method-form'
@@ -135,30 +136,14 @@ function PayingMethodForm({ presenter, state }: { presenter: PayingMethodPresent
           <span id={colorLabelId} className="text-sm font-medium">
             {t('payingMethod_color')}
           </span>
-          <div role="radiogroup" aria-labelledby={colorLabelId} className="flex flex-wrap gap-3">
-            {state.cardColors.map((color) => {
-              const isSelected = color === state.cardColor
-              const colorName = t(cardColorNames[color as CardColor] ?? 'payingMethod_colorGraphite')
-              return (
-                <button
-                  key={color}
-                  type="button"
-                  role="radio"
-                  aria-checked={isSelected}
-                  aria-label={colorName}
-                  title={colorName}
-                  onClick={() => presenter.selectCardColor(color)}
-                  style={{ backgroundColor: cardColorHexes[color as CardColor] }}
-                  className={cn(
-                    'flex size-8 items-center justify-center rounded-full text-white outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-                    isSelected && 'ring-2 ring-foreground ring-offset-2 ring-offset-background',
-                  )}
-                >
-                  {isSelected && <Check className="size-4" />}
-                </button>
-              )
-            })}
-          </div>
+          {/* Why: a category's picker (Pierre's call): the twelve named colors, the person's own and "+" for "New color". */}
+          <CategoryColorPicker
+            selected={state.cardColor}
+            onPick={(code) => presenter.selectCardColor(code)}
+            customColors={state.customColors}
+            actions={presenter.customColors}
+            labelledBy={colorLabelId}
+          />
         </div>
       )}
       <label className="flex cursor-pointer items-center gap-3 rounded-lg border p-3">

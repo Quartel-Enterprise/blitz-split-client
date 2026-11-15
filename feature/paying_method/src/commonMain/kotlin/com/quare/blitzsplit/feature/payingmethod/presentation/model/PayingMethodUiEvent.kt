@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.feature.payingmethod.presentation.model
 
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorEvent
+import com.quare.blitzsplit.core.expenses.customcolor.customColorAnalyticsOf
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
@@ -19,6 +21,8 @@ sealed interface PayingMethodUiEvent : UiEvent {
 
             // Why: only another color than the one picked.
             is OnCardColorSelected -> EventAnalytics.Manual("paying_method_card_color_selected")
+
+            is OnCustomColor -> customColorAnalyticsOf(event, "paying_method")
 
             is OnDefaultChanged -> EventAnalytics.Manual("paying_method_default_toggled")
 
@@ -45,7 +49,12 @@ sealed interface PayingMethodUiEvent : UiEvent {
     ) : PayingMethodUiEvent
 
     data class OnCardColorSelected(
-        val color: CardColor,
+        val color: CategoryTint,
+    ) : PayingMethodUiEvent
+
+    // Why: the card's color picker's own colors ("+", "New color", a long press), as a category's.
+    data class OnCustomColor(
+        val event: CustomColorEvent,
     ) : PayingMethodUiEvent
 
     data class OnDefaultChanged(

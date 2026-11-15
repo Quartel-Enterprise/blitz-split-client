@@ -1,7 +1,11 @@
 package com.quare.blitzsplit.feature.payingmethod.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorController
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorState
+import com.quare.blitzsplit.core.expenses.customcolor.CustomColorUseCases
+import com.quare.blitzsplit.core.expenses.domain.model.CardTints
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodRules
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
@@ -38,6 +42,7 @@ class PayingMethodViewModel(
     private val deletePayingMethod: DeletePayingMethod,
     observePayingMethods: ObservePayingMethods,
     observeShowsPix: ObserveShowsPix,
+    customColorUseCases: CustomColorUseCases,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<PayingMethodUiEvent>(trackEvent) {
     val uiState: StateFlow<PayingMethodUiState>
@@ -48,11 +53,12 @@ class PayingMethodViewModel(
                 types = PayingMethodType.entries,
                 type = PayingMethodType.CREDIT_CARD,
                 name = "",
-                cardColor = CardColor.PURPLE,
+                cardColor = CardTints.default,
                 isDefault = false,
                 isSaving = false,
                 isDeleteConfirmationShown = false,
                 openedInput = null,
+                customColors = CustomColorState.idle,
             ),
         )
 
@@ -61,7 +67,18 @@ class PayingMethodViewModel(
     // Why: what a sync brought while saving, which update() skipped then and applies if the save fails.
     private var latest: Pair<List<PayingMethod>, Boolean>? = null
 
+    // Why: "Add" in "New color" gives the color to the card, as a pick in the picker.
+    private val customColors = CustomColorController(
+        useCases = customColorUseCases,
+        scope = viewModelScope,
+        onPicked = { tint, _ -> selectColor(tint) },
+    )
+
     init {
+        customColors.observe()
+        customColors.state
+            .onEach { colors -> uiState.update { it.copy(customColors = colors) } }
+            .launchIn(viewModelScope)
         combine(observePayingMethods(), observeShowsPix(), ::Pair)
             .onEach { (methods, showsPix) ->
                 latest = methods to showsPix
@@ -82,6 +99,8 @@ class PayingMethodViewModel(
             }
 
             is PayingMethodUiEvent.OnCardColorSelected -> selectColor(event.color)
+
+            is PayingMethodUiEvent.OnCustomColor -> customColors.onEvent(event.event)
 
             is PayingMethodUiEvent.OnDefaultChanged -> changeDefault(event.isDefault)
 
@@ -157,12 +176,14 @@ class PayingMethodViewModel(
         val state = uiState.value
         if (type == state.type || type !in state.types) return
         trackEvent("paying_method_type_selected", mapOf("type" to type.code))
+        // Why: the picker leaves with the card, on every platform, so an "Add" still saving never colors a hidden card.
+        if (state.type.isCard && !type.isCard) customColors.close()
         uiState.update { it.copy(type = type) }
     }
 
-    private fun selectColor(color: CardColor) {
+    private fun selectColor(color: CategoryTint) {
         if (color == uiState.value.cardColor) return
-        trackEvent("paying_method_card_color_selected", mapOf("color" to color.code))
+        trackEvent("paying_method_card_color_selected", mapOf("color" to color.analyticsCode))
         uiState.update { it.copy(cardColor = color) }
     }
 

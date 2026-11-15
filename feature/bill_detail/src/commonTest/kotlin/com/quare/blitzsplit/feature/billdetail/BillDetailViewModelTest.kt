@@ -17,7 +17,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairOutcome
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
@@ -171,7 +172,7 @@ class BillDetailViewModelTest {
                 id = "card-1",
                 type = PayingMethodType.CREDIT_CARD,
                 name = "Travel card",
-                cardColor = CardColor.BLUE,
+                cardColor = CategoryColor.BLUE.tint,
                 isDefault = true,
                 addedAt = 1L,
             )
@@ -194,7 +195,7 @@ class BillDetailViewModelTest {
                 id = "card-1",
                 type = PayingMethodType.CREDIT_CARD,
                 name = "Travel card",
-                cardColor = CardColor.BLUE,
+                cardColor = CategoryColor.BLUE.tint,
                 isDefault = true,
                 addedAt = 1L,
             )

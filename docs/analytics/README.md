@@ -367,7 +367,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `paying_method_add_clicked` | none | Profile's "Add a payment method" | `:feature:profile` |
 | `paying_method_clicked` | `type` | A payment method's row in Profile, which opens it to edit | `:feature:profile` |
 | `paying_method_type_selected` | `type` | Another type for the method (Credit card, Cash, Pix…) | `:feature:paying_method` |
-| `paying_method_card_color_selected` | `color` | Another color for a card | `:feature:paying_method` |
+| `paying_method_card_color_selected` | `color` (a named color's key, `custom` for one of the person's) | Another color for a card | `:feature:paying_method` |
 | `paying_method_default_toggled` | `is_default` | "Default method" | `:feature:paying_method` |
 | `paying_method_save_clicked` | none | The method's Save, also when it can't save yet | `:feature:paying_method` |
 | `paying_method_saved` | `type`, `is_new`, `is_default` | A method saved | `:feature:paying_method` |
@@ -404,12 +404,12 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `category_icon_picked` | `icon`, `source` (`category_map`, `split_bill`) | One of the 18 icons | `:feature:category_map`, `:feature:split_bill` |
 | `category_color_picked` | `color` (a named color, or `custom` for one of the person's own), `source` (`category_map`, `split_bill`) | One of the colors in the category's form | `:feature:category_map`, `:feature:split_bill` |
 | `app_category_color_picked` | `category` (the app category's key), `color` (a color, `custom` for one of the person's own, or `default` for "Restore color") | The color of one of the app's own categories, from the map | `:feature:category_map` |
-| `custom_color_add_clicked` | `source` (`category_map`, `split_bill`) | "+" in a category color picker, which opens "New color" | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_save_clicked` | `source` (`category_map`, `split_bill`) | "Add" in "New color", also when it can't save yet | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_cancelled` | `source` (`category_map`, `split_bill`) | "New color" closed without adding | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_delete_asked` | `source` (`category_map`, `split_bill`) | A long press or right click on one of the person's colors | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_delete_confirmed` | `source` (`category_map`, `split_bill`) | "Delete" in "Delete this color?"; a category given the color meanwhile still blocks it | `:feature:category_map`, `:feature:split_bill` |
-| `custom_color_delete_cancelled` | `source` (`category_map`, `split_bill`) | "Delete this color?" or "This color is in use" closed without deleting | `:feature:category_map`, `:feature:split_bill` |
+| `custom_color_add_clicked` | `source` (`category_map`, `split_bill`, `paying_method`) | "+" in a category color picker, which opens "New color" | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_save_clicked` | `source` (`category_map`, `split_bill`, `paying_method`) | "Add" in "New color", also when it can't save yet | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_cancelled` | `source` (`category_map`, `split_bill`, `paying_method`) | "New color" closed without adding | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_delete_asked` | `source` (`category_map`, `split_bill`, `paying_method`) | A long press or right click on one of the person's colors | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_delete_confirmed` | `source` (`category_map`, `split_bill`, `paying_method`) | "Delete" in "Delete this color?"; a category or a payment method given the color meanwhile still blocks it | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
+| `custom_color_delete_cancelled` | `source` (`category_map`, `split_bill`, `paying_method`) | "Delete this color?" or "This color is in use" closed without deleting | `:feature:category_map`, `:feature:split_bill`, `:feature:paying_method` |
 | `category_save_clicked` | `source` (`category_map`, `split_bill`) | The category's Save, also when it can't save yet | `:feature:category_map`, `:feature:split_bill` |
 | `category_saved` | `is_new`, `is_subcategory`, `source` (`category_map`, `split_bill`) | A category saved | `:feature:category_map`, `:feature:split_bill` |
 | `category_delete_clicked` | `source` (`category_map`, `split_bill`) | The category's Delete, which asks first | `:feature:category_map`, `:feature:split_bill` |

@@ -5,14 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
@@ -57,7 +55,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.R
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.android.designsystem.theme.rgbOf
+import com.quare.blitzsplit.core.expenses.domain.model.CardTints
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 
@@ -66,19 +66,19 @@ private const val CORNER_RATIO = 0.3f
 private const val ICON_RATIO = 0.55f
 
 /*
- * Why: a payment method's tile, the same on Profile, its form, Split a bill and Bill: a card filled with its own
- * brand-neutral swatch, Pix and Bitcoin in the keys' colors, the rest on the neutral tile. Never a bank's or a card
- * brand's logo.
+ * Why: a payment method's tile, the same on Profile, its form, Split a bill and Bill: a card filled with its color, a
+ * category's at its light data tone in both themes (CardTints.fillRgbOf), Pix and Bitcoin in the keys' colors, the
+ * rest on the neutral tile. Never a bank's or a card brand's logo.
  */
 @Composable
 fun PayingMethodTile(
     type: PayingMethodType,
-    cardColor: CardColor?,
+    cardColor: CategoryTint?,
     modifier: Modifier = Modifier,
     size: Dp = 40.dp,
 ) {
     val (container, content) = when {
-        type.isCard -> (cardColor ?: CardColor.GRAPHITE).swatch to Color.White
+        type.isCard -> rgbOf(CardTints.fillRgbOf(cardColor)) to Color.White
 
         type == PayingMethodType.PIX ->
             MaterialTheme.colorScheme.primaryContainer to
@@ -122,32 +122,6 @@ val PayingMethodType.nameRes: Int
         PayingMethodType.BANK_TRANSFER -> R.string.designsystem_paying_method_bank_transfer
         PayingMethodType.BITCOIN -> R.string.designsystem_paying_method_bitcoin
         PayingMethodType.OTHER -> R.string.designsystem_paying_method_other
-    }
-
-@get:StringRes
-val CardColor.nameRes: Int
-    get() = when (this) {
-        CardColor.PURPLE -> R.string.designsystem_card_color_purple
-        CardColor.BLUE -> R.string.designsystem_card_color_blue
-        CardColor.GREEN -> R.string.designsystem_card_color_green
-        CardColor.ORANGE -> R.string.designsystem_card_color_orange
-        CardColor.RED -> R.string.designsystem_card_color_red
-        CardColor.PINK -> R.string.designsystem_card_color_pink
-        CardColor.GOLD -> R.string.designsystem_card_color_gold
-        CardColor.GRAPHITE -> R.string.designsystem_card_color_graphite
-    }
-
-// Why: the same swatches in light and dark, each dark enough for the white card glyph (3:1 or more).
-val CardColor.swatch: Color
-    get() = when (this) {
-        CardColor.PURPLE -> Color(0xFF6D4AB8)
-        CardColor.BLUE -> Color(0xFF1565C0)
-        CardColor.GREEN -> Color(0xFF2E7D32)
-        CardColor.ORANGE -> Color(0xFFE65100)
-        CardColor.RED -> Color(0xFFC62828)
-        CardColor.PINK -> Color(0xFFAD1457)
-        CardColor.GOLD -> Color(0xFF9A7500)
-        CardColor.GRAPHITE -> Color(0xFF455A64)
     }
 
 private val PayingMethodType.icon: ImageVector
@@ -371,30 +345,5 @@ private fun PaidWithPrivateLabel(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-    }
-}
-
-// Why: a card's color on its form, one round swatch each, named for screen readers.
-@Composable
-fun CardColorPicker(
-    colors: List<CardColor>,
-    selected: CardColor,
-    onSelected: (CardColor) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    FlowRow(
-        modifier = modifier.selectableGroup(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        colors.forEach { color ->
-            ColorSwatchButton(
-                label = stringResource(color.nameRes),
-                isSelected = color == selected,
-                container = color.swatch,
-                content = Color.White,
-                onClick = { onSelected(color) },
-            )
-        }
     }
 }

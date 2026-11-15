@@ -292,14 +292,6 @@
     <string name="designsystem_paying_method_bank_transfer">銀行振込</string>
     <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
     <string name="designsystem_paying_method_other">その他</string>
-    <string name="designsystem_card_color_purple">紫</string>
-    <string name="designsystem_card_color_blue">青</string>
-    <string name="designsystem_card_color_green">緑</string>
-    <string name="designsystem_card_color_orange">オレンジ</string>
-    <string name="designsystem_card_color_red">赤</string>
-    <string name="designsystem_card_color_pink">ピンク</string>
-    <string name="designsystem_card_color_gold">ゴールド</string>
-    <string name="designsystem_card_color_graphite">グラファイト</string>
     <string name="designsystem_paid_with">支払い方法</string>
     <string name="designsystem_paid_with_none">なし</string>
     <string name="designsystem_paid_with_private">あなただけに表示されます。</string>

@@ -1,8 +1,8 @@
 import { Banknote, Bitcoin, CreditCard, Ellipsis, Landmark, Wallet } from 'lucide-react'
-import type { JsPayingMethod } from 'blitzsplit-shared'
+import { getCardFill, type JsPayingMethod } from 'blitzsplit-shared'
 import type { ComponentType } from 'react'
 import { PixIcon } from '@/components/PixIcon'
-import { cardColorHexes, payingMethodLabel, payingMethodSubtitle, type CardColor, type PayingMethodType } from '@/lib/payingMethod'
+import { payingMethodLabel, payingMethodSubtitle, type PayingMethodType } from '@/lib/payingMethod'
 import { cn } from '@/lib/utils'
 
 type Look = { Icon: ComponentType<{ className?: string }>; tileClass: string }
@@ -43,12 +43,11 @@ export function PayingMethodTile({
   className?: string
 }) {
   const { Icon, tileClass } = looks[type as PayingMethodType] ?? looks.other
-  const hex = cardColor ? cardColorHexes[cardColor as CardColor] : undefined
   return (
     <span
       aria-hidden
       className={cn('flex shrink-0 items-center justify-center', sizes[size].tile, tileClass, className)}
-      style={tileClass === cardTile ? { backgroundColor: hex ?? cardColorHexes.graphite } : undefined}
+      style={tileClass === cardTile ? { backgroundColor: getCardFill(cardColor ?? null) } : undefined}
     >
       {/* text-current: a menu item would otherwise grey every icon in it, the card's white glyph too */}
       <Icon className={cn('text-current', sizes[size].icon)} />

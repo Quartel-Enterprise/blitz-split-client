@@ -171,8 +171,10 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     category map (`custom_color`, the server's `custom_colors`), up to 12 colors ("Your palette is full: long press one
     of your colors to delete it."); a long press (a right click on the Mac and the web) on one of them asks "Delete
     this color?" ("It leaves your palette on all your devices."), unless a category the person can see uses it (one
-    of the app's on this device, or one of any group's on the device), which says "Food uses this color. Change its
-    color first, then delete it." and deletes nothing. A custom color goes anywhere a named one does: an app category
+    of the app's on this device, or one of any group's on the device) or one of their [payment methods](profile.md)'s
+    card does, which says "Food uses this color. Change its color first, then delete it." ("Nubank uses this color…",
+    the type's name for a method without one) and deletes nothing. The card color of a payment method picks from the
+    same palette. A custom color goes anywhere a named one does: an app category
     keeps it per device (`app_category_color` holds its hex), a group's own category stores it as `#RRGGBB` in
     `group_categories.color` and syncs it to the members, who see it picked in the form even though it isn't in their
     palette (and can't delete it). A version older than custom colors reads a hex as none picked and draws the

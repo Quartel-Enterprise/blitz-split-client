@@ -1,8 +1,9 @@
 package com.quare.blitzsplit.core.expenses.domain
 
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethod
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
+import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.SavePayingMethodUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakePayingMethodRepository
 import kotlinx.coroutines.test.runTest
@@ -27,7 +28,7 @@ class SavePayingMethodUseCaseTest {
             methodId = null,
             type = PayingMethodType.CREDIT_CARD,
             name = "Nubank",
-            cardColor = CardColor.PURPLE,
+            cardColor = CategoryColor.PURPLE.tint,
             isDefault = false,
         )
 
@@ -37,7 +38,7 @@ class SavePayingMethodUseCaseTest {
         assertTrue(saved.id.isNotBlank())
         assertEquals(PayingMethodType.CREDIT_CARD, saved.type)
         assertEquals("Nubank", saved.name)
-        assertEquals(CardColor.PURPLE, saved.cardColor)
+        assertEquals(CategoryColor.PURPLE.tint, saved.cardColor)
         assertEquals(NOW, saved.addedAt)
     }
 
@@ -75,7 +76,7 @@ class SavePayingMethodUseCaseTest {
             methodId = nubank.id,
             type = PayingMethodType.DEBIT_CARD,
             name = "Inter",
-            cardColor = CardColor.ORANGE,
+            cardColor = CategoryColor.ORANGE.tint,
             isDefault = false,
         )
 
@@ -86,7 +87,7 @@ class SavePayingMethodUseCaseTest {
                 id = nubank.id,
                 type = PayingMethodType.DEBIT_CARD,
                 name = "Inter",
-                cardColor = CardColor.ORANGE,
+                cardColor = CategoryColor.ORANGE.tint,
                 isDefault = false,
                 addedAt = nubank.addedAt,
             ),
@@ -339,7 +340,7 @@ class SavePayingMethodUseCaseTest {
             methodId = nubank.id,
             type = PayingMethodType.CREDIT_CARD,
             name = "Inter",
-            cardColor = CardColor.PURPLE,
+            cardColor = CategoryColor.PURPLE.tint,
             isDefault = true,
         )
 
@@ -359,7 +360,7 @@ class SavePayingMethodUseCaseTest {
             methodId = null,
             type = PayingMethodType.PIX,
             name = "",
-            cardColor = CardColor.RED,
+            cardColor = CategoryColor.RED.tint,
             isDefault = false,
         )
 
@@ -381,7 +382,7 @@ class SavePayingMethodUseCaseTest {
             methodId = nubank.id,
             type = PayingMethodType.CASH,
             name = "",
-            cardColor = CardColor.PURPLE,
+            cardColor = CategoryColor.PURPLE.tint,
             isDefault = false,
         )
 
@@ -435,7 +436,7 @@ class SavePayingMethodUseCaseTest {
         id = "card-1",
         type = PayingMethodType.CREDIT_CARD,
         name = "Nubank",
-        cardColor = CardColor.PURPLE,
+        cardColor = CategoryColor.PURPLE.tint,
         isDefault = false,
         addedAt = 100L,
     )

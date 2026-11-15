@@ -1,6 +1,6 @@
 package com.quare.blitzsplit.core.expenses.domain.usecase
 
-import com.quare.blitzsplit.core.expenses.domain.model.CardColor
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryTint
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
 
 fun interface SavePayingMethod {
@@ -12,7 +12,7 @@ fun interface SavePayingMethod {
         methodId: String?,
         type: PayingMethodType,
         name: String,
-        cardColor: CardColor?,
+        cardColor: CategoryTint?,
         isDefault: Boolean,
     ): Result<Unit>
 }

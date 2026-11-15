@@ -19,6 +19,7 @@ import { useDraft } from '@/hooks/useDraft'
 import { t } from '@/i18n'
 import { categoryColorCodes, categoryColorLabel, categoryStyle } from '@/lib/avatar'
 import { categoryName } from '@/lib/categories'
+import { payingMethodLabel } from '@/lib/payingMethod'
 import { cn } from '@/lib/utils'
 
 const LONG_PRESS_MS = 550
@@ -131,7 +132,7 @@ function CustomColorDialogs({ customColors, actions }: { customColors: JsCustomC
   return (
     <>
       {customColors.draft && <NewColorDialog draft={customColors.draft} actions={actions} />}
-      {deletion && deletion.usedBy == null && (
+      {deletion && !deletion.isInUse && (
         <ConfirmDialog
           title={t('customColor_deleteTitle')}
           description={t('customColor_deleteMessage')}
@@ -141,12 +142,15 @@ function CustomColorDialogs({ customColors, actions }: { customColors: JsCustomC
           onDismiss={() => actions.dismissDeletion()}
         />
       )}
-      {deletion?.usedBy && (
+      {deletion?.isInUse && (
         <AlertDialog open onOpenChange={(open) => !open && actions.dismissDeletion()}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>{t('customColor_inUseTitle')}</AlertDialogTitle>
-              <AlertDialogDescription>{t('customColor_inUseMessage', { name: categoryName(deletion.usedBy) })}</AlertDialogDescription>
+              <AlertDialogDescription>{t('customColor_inUseMessage', {
+                  // Why: a category, or one of the person's payment methods, whose cards pick from the same colors.
+                  name: deletion.usedBy ? categoryName(deletion.usedBy) : deletion.usedByMethod ? payingMethodLabel(deletion.usedByMethod) : '',
+                })}</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               {/* Why: the action closes the dialog through onOpenChange, which already dismisses it. */}

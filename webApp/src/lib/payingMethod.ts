@@ -1,12 +1,11 @@
 /*
- * The codes of the shared PayingMethodType and CardColor, as the bridge sends them. Records keyed by them make the
+ * The codes of the shared PayingMethodType, as the bridge sends them. Records keyed by them make the
  * type check ask for every case's words and colors, so a type added later can't show an empty label.
  */
 import type { JsPayingMethod } from 'blitzsplit-shared'
 import { t, type MessageKey } from '@/i18n'
 
 export type PayingMethodType = 'credit_card' | 'debit_card' | 'cash' | 'pix' | 'bank_transfer' | 'bitcoin' | 'other'
-export type CardColor = 'purple' | 'blue' | 'green' | 'orange' | 'red' | 'pink' | 'gold' | 'graphite'
 
 const typeNames: Record<PayingMethodType, MessageKey> = {
   credit_card: 'payingMethod_typeCreditCard',
@@ -16,29 +15,6 @@ const typeNames: Record<PayingMethodType, MessageKey> = {
   bank_transfer: 'payingMethod_typeBankTransfer',
   bitcoin: 'payingMethod_typeBitcoin',
   other: 'payingMethod_typeOther',
-}
-
-export const cardColorNames: Record<CardColor, MessageKey> = {
-  purple: 'payingMethod_colorPurple',
-  blue: 'payingMethod_colorBlue',
-  green: 'payingMethod_colorGreen',
-  orange: 'payingMethod_colorOrange',
-  red: 'payingMethod_colorRed',
-  pink: 'payingMethod_colorPink',
-  gold: 'payingMethod_colorGold',
-  graphite: 'payingMethod_colorGraphite',
-}
-
-// Why: a card's tile is the same color in light and dark, as on Android and the Apple app; white glyphs read on each.
-export const cardColorHexes: Record<CardColor, string> = {
-  purple: '#6D4AB8',
-  blue: '#1565C0',
-  green: '#2E7D32',
-  orange: '#E65100',
-  red: '#C62828',
-  pink: '#AD1457',
-  gold: '#9A7500',
-  graphite: '#455A64',
 }
 
 /** "Credit card", "Pix"…; a code a newer app version added reads as "Other" rather than its raw code. */
