@@ -10,17 +10,41 @@ import { payingMethodLabel } from '@/lib/payingMethod'
  * "Paid with" under Split while this device's user pays the bill, as discreet as a chip (Pierre's call, feedback of
  * November 15, 2026): the method they paid with, or "None", whose menu picks another. With no method yet, "Add a
  * payment method" in its place, whose new method comes back picked. Only they see it, which screen readers hear.
+ * While they don't pay it, a dimmed chip on "None" that still takes the click, which says why it can't change (Pierre's
+ * call, beta feedback of November 15, 2026).
  */
 export function PaidWithField({
   presenter,
   paidWith,
   showsAdd,
+  showsLocked,
 }: {
   presenter: SplitBillPresenter
   paidWith: JsPaidWith | null | undefined
   showsAdd: boolean
+  showsLocked: boolean
 }) {
   if (!paidWith) {
+    if (showsLocked) {
+      return (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          // Why: aria-disabled, never disabled, so the click still reaches the ViewModel and its toast.
+          aria-disabled
+          className="self-start rounded-full opacity-50"
+          aria-label={`${t('payingMethod_paidWith')}: ${t('payingMethod_paidWithNone')}`}
+          aria-description={t('payingMethod_paidWithOnlyPayers')}
+          title={t('payingMethod_paidWithOnlyPayers')}
+          onClick={() => presenter.lockedPaidWithClicked()}
+        >
+          <CreditCard aria-hidden className="text-muted-foreground" />
+          <span className="truncate">{t('payingMethod_paidWithNone')}</span>
+          <ChevronDown aria-hidden className="text-muted-foreground" />
+        </Button>
+      )
+    }
     if (!showsAdd) return null
     return (
       <Button

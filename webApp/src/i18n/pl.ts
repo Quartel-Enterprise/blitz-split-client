@@ -1063,6 +1063,7 @@ export const pl: Record<MessageKey, string> = {
   payingMethod_paidWith: 'Zapłacono za pomocą',
   payingMethod_paidWithNone: 'Brak',
   payingMethod_paidWithPrivate: 'Widzisz to tylko Ty.',
+  payingMethod_paidWithOnlyPayers: 'Tylko osoby, które zapłaciły za ten wydatek, mogą zaznaczyć, czym zapłaciły.',
 
   balance_title: 'Twoje saldo w tej grupie',
   balance_toGetBack: 'do odzyskania',

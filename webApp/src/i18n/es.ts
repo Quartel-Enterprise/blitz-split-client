@@ -1060,6 +1060,7 @@ export const es: Record<MessageKey, string> = {
   payingMethod_paidWith: 'Pagado con',
   payingMethod_paidWithNone: 'Ninguno',
   payingMethod_paidWithPrivate: 'Solo tú ves esto.',
+  payingMethod_paidWithOnlyPayers: 'Solo quien pagó este gasto puede marcar con qué pagó.',
 
   balance_title: 'Tu saldo en este grupo',
   balance_toGetBack: 'por recibir',

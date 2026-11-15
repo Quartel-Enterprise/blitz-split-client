@@ -1060,6 +1060,7 @@ export const tr: Record<MessageKey, string> = {
   payingMethod_paidWith: 'Ödeme şekli',
   payingMethod_paidWithNone: 'Yok',
   payingMethod_paidWithPrivate: 'Bunu yalnızca sen görürsün.',
+  payingMethod_paidWithOnlyPayers: 'Ödeme şeklini yalnızca bu harcamayı ödeyenler seçebilir.',
 
   balance_title: 'Bu gruptaki bakiyen',
   balance_toGetBack: 'alacak',

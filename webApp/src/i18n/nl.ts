@@ -1061,6 +1061,7 @@ export const nl: Record<MessageKey, string> = {
   payingMethod_paidWith: 'Betaald met',
   payingMethod_paidWithNone: 'Geen',
   payingMethod_paidWithPrivate: 'Alleen jij ziet dit.',
+  payingMethod_paidWithOnlyPayers: 'Alleen wie deze uitgave heeft betaald, kan aangeven waarmee.',
 
   balance_title: 'Jouw saldo in deze groep',
   balance_toGetBack: 'te ontvangen',

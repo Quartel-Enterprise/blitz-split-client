@@ -302,5 +302,6 @@
     <string name="designsystem_paid_with">Paid with</string>
     <string name="designsystem_paid_with_none">None</string>
     <string name="designsystem_paid_with_private">Only you see this.</string>
+    <string name="designsystem_paid_with_only_payers">Only those who paid this bill can mark what they paid with.</string>
     <string name="designsystem_paid_with_add">Add a payment method</string>
 </resources>

@@ -11,4 +11,7 @@ sealed interface SplitBillUiAction {
     data object ShowCategorySaveError : SplitBillUiAction
 
     data object ShowCategoryDeleteError : SplitBillUiAction
+
+    // Why: the disabled "Paid with" was tapped: it is only for whoever paid the bill.
+    data object ShowPaidWithOnlyForPayers : SplitBillUiAction
 }

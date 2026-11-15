@@ -320,5 +320,6 @@
     <string name="designsystem_paid_with">Zapłacono za pomocą</string>
     <string name="designsystem_paid_with_none">Brak</string>
     <string name="designsystem_paid_with_private">Widzisz to tylko Ty.</string>
+    <string name="designsystem_paid_with_only_payers">Tylko osoby, które zapłaciły za ten wydatek, mogą zaznaczyć, czym zapłaciły.</string>
     <string name="designsystem_paid_with_add">Dodaj metodę płatności</string>
 </resources>
