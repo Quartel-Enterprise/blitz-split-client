@@ -12,8 +12,9 @@
 #
 # The versionCode is one past the highest of two numbers: the one in version.properties, and the "Build
 # number: N" line every beta release records in its notes. The second is what keeps a beta from reusing a code
-# when the merge-back of the previous one did not reach main. It needs the GitHub CLI and a token (GH_TOKEN),
-# which the workflow has; run locally without one, only the file counts.
+# when the merge-back of the previous one did not reach main. The workflow hands the releases in a file
+# (RELEASES_FILE: a JSON list, each with its `body` and `prerelease`); without it they are read with the GitHub CLI
+# and a token (GH_TOKEN), and run locally with neither, only the file counts.
 #
 # Inside GitHub Actions, writes `version`, `display_version`, `version_code` and `branch` to
 # $GITHUB_OUTPUT and a human-readable plan to $GITHUB_STEP_SUMMARY.
@@ -52,11 +53,16 @@ version="${input_version:-$(printf '%s\n' "$current_version" "$from_notes" | sor
 version_code=$(( current_code + 1 ))
 
 recorded=0
-if command -v gh > /dev/null && [[ -n "${GH_TOKEN:-${GITHUB_TOKEN:-}}" ]]; then
-  # One call for every release's notes; it is captured first, so an API or auth error stops the script instead of
-  # leaving `recorded` at 0 and the versionCode at the file's. The notes of a release edited on github.com have CRLF
-  # line ends.
-  notes="$(gh api "repos/{owner}/{repo}/releases" --jq '.[] | select(.prerelease) | .body')"
+# Every release's notes, captured first, so a file that can't be read or an API or auth error stops the script
+# instead of leaving `recorded` at 0 and the versionCode at the file's.
+notes=""
+if [[ -n "${RELEASES_FILE:-}" ]]; then
+  notes="$(jq -r '.[] | select(.prerelease) | .body' "$RELEASES_FILE")"
+elif command -v gh > /dev/null && [[ -n "${GH_TOKEN:-${GITHUB_TOKEN:-}}" ]]; then
+  notes="$(gh api "repos/{owner}/{repo}/releases" --paginate --jq '.[] | select(.prerelease) | .body')"
+fi
+if [[ -n "$notes" ]]; then
+  # The notes of a release edited on github.com have CRLF line ends.
   while read -r code; do
     if [[ "$code" =~ ^[0-9]+$ ]] && (( code > recorded )); then
       recorded="$code"

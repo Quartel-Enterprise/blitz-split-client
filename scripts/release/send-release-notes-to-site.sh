@@ -21,6 +21,13 @@ cd "$(dirname "$0")/../.."
 
 branch="release-notes/${version}"
 
+# Only a version that was released: finalize tags it. Notes sent for a version with no tag would make the site
+# refuse the same version's notes later, when the release is made after all, with other notes.
+if ! git rev-parse --quiet --verify "refs/tags/${version}" > /dev/null; then
+  echo "::error::${version} has no tag: it was never released. Re-run finalize first, then this job."
+  exit 1
+fi
+
 if [ -f "$site/release-notes/en/${version}.json" ]; then
   echo "::notice::The site already has the release notes of ${version}: nothing to send."
   exit 0
@@ -33,8 +40,9 @@ if [ -z "$(git -C "$site" status --porcelain -- release-notes)" ]; then
   exit 0
 fi
 
-# The site's own check, before anything is pushed: the same one its pull requests run.
-node "$site/scripts/build-release-notes.mjs" --check
+# The site's own check, before anything is pushed: the same one its pull requests run. From its folder, so the
+# files it reads are the site's whatever the script takes its paths from.
+(cd "$site" && node scripts/build-release-notes.mjs --check)
 
 git -C "$site" config user.name "github-actions[bot]"
 git -C "$site" config user.email "41898282+github-actions[bot]@users.noreply.github.com"

@@ -70,6 +70,7 @@ describe("a fragment", () => {
     refuses(withPlatforms([]), /platforms is a list/);
     refuses(withPlatforms(["windows"]), /not "windows"/);
     refuses(withPlatforms(["all", "web"]), /not "all"/);
+    refuses(withPlatforms([["all"]]), /not \["all"\]/);
     refuses(withPlatforms(["ios", "ios"]), /twice/);
     refuses(withPlatforms(["android", "ios", "mac", "web"]), /write \["all"\]/);
     refuses(withPlatforms(["web", "android"]), /in the order/);
@@ -102,11 +103,16 @@ describe("the versions", () => {
 
   test("the first release starts after nothing", () => assert.equal(releaseBefore("3.0.0-beta_1", []), null));
 
-  test("a release sent a platform's testers a build when its row of the channels says success", () => {
-    const body = ["Build number: 84", "", "| Platform | Channel | Result |", "| --- | --- | --- |", "| Android | Firebase App Distribution, group `beta` | skipped |", "| iOS | TestFlight | success |", "| iOS, ad hoc | Firebase App Distribution, group `ios-beta` | success |"].join("\r\n");
+  test("a release sent a platform's testers a build when its notes list the platform", () => {
+    const body = ["Build number: 84", "Sent to testers: ios", "", "| Android | Firebase App Distribution, group `beta` | skipped |"].join("\r\n");
     assert.equal(sentToTesters(body, "android"), false);
     assert.equal(sentToTesters(body, "ios"), true);
-    assert.equal(sentToTesters("| iOS | TestFlight | success |", "ios"), false);
+    assert.equal(sentToTesters("Sent to testers: android, ios", "android"), true);
+    assert.equal(sentToTesters("Sent to testers: none", "ios"), false);
+  });
+
+  test("a release from before that line, or with no notes, sent nothing as far as the notes go", () => {
+    assert.equal(sentToTesters("| Android | Firebase App Distribution | success |", "android"), false);
     assert.equal(sentToTesters(undefined, "android"), false);
   });
 
@@ -319,6 +325,10 @@ describe("the commands", () => {
     rmSync(elsewhere, { recursive: true, force: true });
   });
 
+  test("an option with no value of its own is refused, not read from the next one", () => {
+    assert.throws(() => run("collect", "3.0.1-beta_2", "--ref", "--out", site), /--ref: takes one of/);
+  });
+
   test("a version the site has with fewer notes in one language is refused by name", () => {
     writeInSite("3.0.2", (lang) => (lang === "ja" ? [] : [{ text: "By hand", platforms: ["all"] }]));
     assert.throws(() => run("collect", "3.0.2", "--site", site), /ja\/3\.0\.2\.json: not as many notes as in English/);
@@ -348,9 +358,8 @@ describe("the commands", () => {
 
   test("the testers of a platform a beta left out get its notes with their next build", () => {
     const out = join(site, "out-left-out");
-    const channels = (android, ios) => `| Android | Firebase App Distribution | ${android} |\n| iOS, ad hoc | Firebase App Distribution | ${ios} |`;
     const releases = join(site, "releases.json");
-    writeFileSync(releases, JSON.stringify([{ tag: "3.0.0", body: channels("success", "success") }, { tag: "3.0.1-beta_1", body: channels("skipped", "success") }]));
+    writeFileSync(releases, JSON.stringify([{ tag: "3.0.0", body: "Build number: 90\nSent to testers: android, ios" }, { tag: "3.0.1-beta_1", body: "Build number: 91\nSent to testers: ios" }]));
     run("collect", "3.0.1-beta_2", "--out", out, "--releases", releases);
     assert.equal(readFileSync(join(out, "testers/android.txt"), "utf8"), "• Dark icon (pt)\n• The widget updates (pt)");
     assert.equal(readFileSync(join(out, "testers/ios.txt"), "utf8"), "• Dark icon (pt)");
