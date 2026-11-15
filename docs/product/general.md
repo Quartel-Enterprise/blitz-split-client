@@ -84,10 +84,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - Money coming to you is green, what you owe the brand's orange (Pierre's call, as the legacy app): a positive net
     or share, "to get back", "owes you", Owed to you's and To get back's totals, in `#006C4C` light and `#6EDBAA` dark (a
     teal-leaning green that colorblind eyes still tell apart from the orange), never the accent blue of links and
-    buttons (Android's Saldo geral alone keeps its filled card's colors), and never swapped for the wallpaper's by
+    buttons (Android's Saldo geral alone keeps its filled card's colors), and never swapped for the Android system's by
     Dynamic colors. Zero stays muted, debts between two others keep their color, and a status that adds up
     ("Adds up") stays the accent. No preference inverts them: the sign and the words already say which way the money
-    goes. With Android's Dynamic colors on, what you owe takes the wallpaper scheme's red for now
+    goes. With Android's Dynamic colors on, what you owe takes the Android system scheme's red for now
     ([#179](https://github.com/Quartel-Enterprise/blitz-split-client/issues/179) decides it).
   - What is saved here and not on the server yet (the queue's dot, "queued", "Waiting to send", a profile change
     not up yet) is amber (chosen in the contrast audit, for Pierre to confirm), `#7C5800` light and `#F9BC3E` dark,

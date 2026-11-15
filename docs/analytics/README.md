@@ -543,6 +543,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `release_notes_clicked` | none | "Release notes", in Profile's "Privacy and about" | `:feature:profile` |
 | `release_notes_retry_clicked` | none | "Try again" on release notes that couldn't be downloaded | `:feature:release_notes` |
 | `release_notes_beta_toggled` | `is_on` | "Show beta versions" on Release notes, when it changes | `:feature:release_notes` |
+| `release_notes_github_clicked` | none | The GitHub button of Release notes (its top bar, beside the title on the Mac's sheet), every release on GitHub | `:feature:release_notes` |
+| `release_notes_release_clicked` | `version` | A version's card on Release notes, its release on GitHub (`3.0.0-beta_11`) | `:feature:release_notes` |
 | `sign_out_scheduled_cancel_clicked` | none | Cancel on "Sign out scheduled" | `:feature:profile` |
 | `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `profile_share_clicked` | none | The top bar's "Share profile", while the account has a link (it opens the system share) | `:feature:profile` |

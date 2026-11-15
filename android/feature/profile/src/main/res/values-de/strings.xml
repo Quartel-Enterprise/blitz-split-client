@@ -72,10 +72,10 @@
     <string name="profile_theme_light">Hell</string>
     <string name="profile_theme_dark">Dunkel</string>
     <string name="profile_dynamic_colors">Dynamische Farben</string>
-    <string name="profile_dynamic_colors_detail">Die Farben deines Hintergrundbilds in der App verwenden</string>
+    <string name="profile_dynamic_colors_detail">Die Systemfarben von Android in der App verwenden</string>
     <string name="profile_appearance_dynamic_summary">%1$s · dynamische Farben</string>
     <string name="profile_dynamic_colors_info">Über dynamische Farben</string>
-    <string name="profile_dynamic_colors_info_body">Dynamische Farben passen die App an dein Hintergrundbild an: Schaltflächen, Hintergründe und Hervorhebungen übernehmen die Farben, die Android daraus wählt, und ändern sich, wenn du dein Hintergrundbild änderst.</string>
+    <string name="profile_dynamic_colors_info_body">Dynamische Farben passen die App an die Systemfarben von Android an: Schaltflächen, Hintergründe und Hervorhebungen übernehmen die Farben von Android, die aus deinem Hintergrundbild oder aus der in den Android-Einstellungen gewählten Palette stammen, und ändern sich mit ihnen.</string>
     <string name="profile_dynamic_colors_info_note">Gruppen, Avatare und Kategorien behalten ihre eigenen Farben, damit du sie weiterhin unterscheiden kannst. Das gilt nur für dieses Gerät.</string>
     <string name="profile_info_ok">Verstanden</string>
     <string name="profile_section_support">Support und Feedback</string>

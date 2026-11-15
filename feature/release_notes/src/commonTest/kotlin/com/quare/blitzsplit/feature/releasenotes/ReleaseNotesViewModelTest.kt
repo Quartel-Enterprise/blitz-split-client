@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.releasenotes.domain.model.AppVersion
 import com.quare.blitzsplit.core.releasenotes.domain.model.ReleaseDate
 import com.quare.blitzsplit.core.releasenotes.domain.model.ReleaseNotes
+import com.quare.blitzsplit.feature.releasenotes.presentation.model.ReleaseNotesUiAction
 import com.quare.blitzsplit.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
 import com.quare.blitzsplit.feature.releasenotes.presentation.viewmodel.ReleaseNotesViewModel
 import kotlinx.coroutines.CompletableDeferred
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -26,6 +29,7 @@ import kotlin.test.assertTrue
 
 class ReleaseNotesViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val actions = mutableListOf<ReleaseNotesUiAction>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var device: FakeReleaseNotesDevice
     private lateinit var navigator: BackStackNavigator
@@ -659,6 +663,226 @@ class ReleaseNotesViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN the list on screen WHEN the GitHub button is clicked THEN opens every release on GitHub`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(saved = listOf(stable30))
+            val stateBefore = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnAllReleasesClicked)
+
+            // Then
+            assertEquals(listOf<ReleaseNotesUiAction>(ReleaseNotesUiAction.OpenUrl(ALL_RELEASES_URL)), actions)
+            assertEquals(
+                listOf<Pair<String, Map<String, Any>>>("release_notes_github_clicked" to emptyMap()),
+                trackedEvents,
+            )
+            assertEquals(stateBefore, viewModel.uiState.value)
+            assertEquals(listOf(Route.Profile, Route.ReleaseNotes), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the skeleton WHEN the GitHub button is clicked THEN opens every release on GitHub`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isDownloadPending = true)
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnAllReleasesClicked)
+
+            // Then
+            assertEquals(listOf<ReleaseNotesUiAction>(ReleaseNotesUiAction.OpenUrl(ALL_RELEASES_URL)), actions)
+            assertEquals(
+                listOf<Pair<String, Map<String, Any>>>("release_notes_github_clicked" to emptyMap()),
+                trackedEvents,
+            )
+            assertTrue(viewModel.uiState.value.showsSkeleton)
+        }
+
+    @Test
+    fun `GIVEN load failed WHEN the GitHub button is clicked THEN opens every release on GitHub`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(downloadError = offline)
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnAllReleasesClicked)
+
+            // Then
+            assertEquals(listOf<ReleaseNotesUiAction>(ReleaseNotesUiAction.OpenUrl(ALL_RELEASES_URL)), actions)
+            assertEquals(
+                listOf<Pair<String, Map<String, Any>>>("release_notes_github_clicked" to emptyMap()),
+                trackedEvents,
+            )
+            assertTrue(viewModel.uiState.value.showsLoadFailed)
+            assertEquals(listOf(Route.Profile, Route.ReleaseNotes), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a stable version on screen WHEN its card is clicked THEN opens its release tagged by its name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(saved = listOf(stable31, stable30))
+            val stateBefore = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(stable30.version))
+
+            // Then
+            assertEquals(
+                listOf<ReleaseNotesUiAction>(ReleaseNotesUiAction.OpenUrl("$ALL_RELEASES_URL/tag/3.0.0")),
+                actions,
+            )
+            assertEquals(
+                listOf<Pair<String, Map<String, Any>>>(
+                    "release_notes_release_clicked" to mapOf("version" to "3.0.0"),
+                ),
+                trackedEvents,
+            )
+            assertEquals(stateBefore, viewModel.uiState.value)
+            assertEquals(listOf(Route.Profile, Route.ReleaseNotes), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a beta version on screen WHEN its card is clicked THEN opens its release tagged by its whole name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = listOf(stable30, beta3011),
+                showsBeta = true,
+            )
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(beta3011.version))
+
+            // Then
+            assertEquals(
+                listOf<ReleaseNotesUiAction>(ReleaseNotesUiAction.OpenUrl("$ALL_RELEASES_URL/tag/3.0.0-beta_11")),
+                actions,
+            )
+            assertEquals(
+                listOf<Pair<String, Map<String, Any>>>(
+                    "release_notes_release_clicked" to mapOf("version" to "3.0.0-beta_11"),
+                ),
+                trackedEvents,
+            )
+            assertEquals(listOf(Route.Profile, Route.ReleaseNotes), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN stable and beta versions on screen WHEN each card is clicked THEN each opens its own release`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = mixed,
+                showsBeta = true,
+            )
+            val cards = viewModel.uiState.value.visibleReleases
+
+            // When
+            cards.forEach { viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(it.version)) }
+
+            // Then
+            assertEquals(
+                listOf<ReleaseNotesUiAction>(
+                    ReleaseNotesUiAction.OpenUrl("$ALL_RELEASES_URL/tag/3.1.0"),
+                    ReleaseNotesUiAction.OpenUrl("$ALL_RELEASES_URL/tag/3.1.0-beta_2"),
+                    ReleaseNotesUiAction.OpenUrl("$ALL_RELEASES_URL/tag/3.0.0"),
+                    ReleaseNotesUiAction.OpenUrl("$ALL_RELEASES_URL/tag/3.0.0-beta_1"),
+                ),
+                actions,
+            )
+            assertEquals(
+                listOf("3.1.0", "3.1.0-beta_2", "3.0.0", "3.0.0-beta_1").map { version ->
+                    "release_notes_release_clicked" to mapOf<String, Any>("version" to version)
+                },
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the switch off WHEN a hidden beta card click is sent THEN opens nothing and counts nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = mixed,
+                showsBeta = false,
+            )
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(beta31.version))
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the list on screen WHEN a click on a version not in the feed is sent THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = listOf(stable30),
+                showsBeta = true,
+            )
+            val unknown = checkNotNull(AppVersion.parseOrNull("9.9.9"))
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(unknown))
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the skeleton before the notes arrive WHEN a card click is sent THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(isDownloadPending = true)
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(stable30.version))
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN saved notes and the choice of the switch not read yet WHEN a card click is sent THEN opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                saved = mixed,
+                showsBeta = null,
+            )
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(stable30.version))
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsSkeleton)
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN load failed WHEN a card click is sent THEN opens nothing and counts nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(downloadError = offline)
+
+            // When
+            viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(stable30.version))
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
     private val offline = IllegalStateException("offline")
 
     private val stable31 = release("3.1.0")
@@ -666,6 +890,7 @@ class ReleaseNotesViewModelTest {
     private val stable30 = release("3.0.0")
     private val beta30 = release("3.0.0-beta_1")
     private val mixed = listOf(stable31, beta31, stable30, beta30)
+    private val beta3011 = release("3.0.0-beta_11")
 
     private fun release(version: String): ReleaseNotes = ReleaseNotes(
         version = checkNotNull(AppVersion.parseOrNull(version)),
@@ -678,7 +903,7 @@ class ReleaseNotesViewModelTest {
         notes = listOf("What $version changed"),
     )
 
-    private fun prepareScenario(
+    private fun TestScope.prepareScenario(
         saved: List<ReleaseNotes>? = null,
         site: List<ReleaseNotes> = saved ?: listOf(stable30),
         showsBeta: Boolean? = false,
@@ -709,10 +934,12 @@ class ReleaseNotesViewModelTest {
             observeShowsBetaReleaseNotes = { device.showsBeta.filterNotNull() },
             trackEvent = { name, params -> trackedEvents += name to params },
         )
+        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 
     private companion object {
         const val LANGUAGE = "en"
+        const val ALL_RELEASES_URL = "https://github.com/Quartel-Enterprise/blitz-split-client/releases"
     }
 }
 

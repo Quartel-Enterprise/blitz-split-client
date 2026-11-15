@@ -2339,4 +2339,5 @@ export const de: Record<MessageKey, string> = {
   releaseNotes_loadFailedTitle: 'Versionshinweise konnten nicht geladen werden',
   releaseNotes_loadFailedBody: 'Prüfe deine Verbindung und versuche es erneut.',
   releaseNotes_retry: 'Erneut versuchen',
+  releaseNotes_openOnGitHub: 'Auf GitHub öffnen',
 }

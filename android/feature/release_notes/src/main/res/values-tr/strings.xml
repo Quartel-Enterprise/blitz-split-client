@@ -9,4 +9,5 @@
     <string name="release_notes_load_failed_title">Sürüm notları yüklenemedi</string>
     <string name="release_notes_load_failed_body">Bağlantını kontrol edip tekrar dene.</string>
     <string name="release_notes_retry">Tekrar dene</string>
+    <string name="release_notes_open_on_github">GitHub\'da aç</string>
 </resources>

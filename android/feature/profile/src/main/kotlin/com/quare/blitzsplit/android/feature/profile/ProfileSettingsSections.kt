@@ -389,7 +389,7 @@ internal fun DeleteAccountButton(onEvent: (ProfileUiEvent) -> Unit) {
     }
 }
 
-// Why: "Sistema", or "Sistema · cores dinâmicas" while the wallpaper's colors are on.
+// Why: "Sistema", or "Sistema · cores dinâmicas" while the Android system's colors are on.
 @Composable
 private fun appearanceSummary(state: ProfileUiState): String {
     val theme = stringResource(state.theme.labelRes)

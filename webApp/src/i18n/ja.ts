@@ -2338,4 +2338,5 @@ export const ja: Record<MessageKey, string> = {
   releaseNotes_loadFailedTitle: 'リリースノートを読み込めませんでした',
   releaseNotes_loadFailedBody: '接続を確認して、もう一度お試しください。',
   releaseNotes_retry: '再試行',
+  releaseNotes_openOnGitHub: 'GitHubで開く',
 }

@@ -2338,4 +2338,5 @@ export const tr: Record<MessageKey, string> = {
   releaseNotes_loadFailedTitle: 'Sürüm notları yüklenemedi',
   releaseNotes_loadFailedBody: 'Bağlantını kontrol edip tekrar dene.',
   releaseNotes_retry: 'Tekrar dene',
+  releaseNotes_openOnGitHub: "GitHub'da aç",
 }

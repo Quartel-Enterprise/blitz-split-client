@@ -2337,4 +2337,5 @@ export const id: Record<MessageKey, string> = {
   releaseNotes_loadFailedTitle: 'Tidak dapat memuat catatan rilis',
   releaseNotes_loadFailedBody: 'Periksa koneksimu, lalu coba lagi.',
   releaseNotes_retry: 'Coba lagi',
+  releaseNotes_openOnGitHub: 'Buka di GitHub',
 }

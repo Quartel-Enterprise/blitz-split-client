@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.releasenotes
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
@@ -30,15 +32,24 @@ import java.time.format.FormatStyle
 
 private const val BULLET = "•"
 
-// Why: one version: its name with its badges, the day it came out, then what it changed, a line each.
+/*
+ * Why: one version: its name with its badges, the day it came out, then what it changed, a line each; a tap opens its
+ * release on GitHub.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ReleaseNotesCard(
     release: ReleaseNotes,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier
+            .clip(MaterialTheme.shapes.extraLarge)
+            .clickable(
+                onClickLabel = stringResource(R.string.release_notes_open_on_github),
+                onClick = onClick,
+            ),
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {

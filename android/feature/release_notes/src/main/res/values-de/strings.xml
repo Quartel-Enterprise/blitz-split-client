@@ -9,4 +9,5 @@
     <string name="release_notes_load_failed_title">Versionshinweise konnten nicht geladen werden</string>
     <string name="release_notes_load_failed_body">Prüfe deine Verbindung und versuche es erneut.</string>
     <string name="release_notes_retry">Erneut versuchen</string>
+    <string name="release_notes_open_on_github">Auf GitHub öffnen</string>
 </resources>

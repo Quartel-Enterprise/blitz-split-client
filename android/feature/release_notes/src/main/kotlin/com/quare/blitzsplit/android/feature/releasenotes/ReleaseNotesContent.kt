@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -68,6 +69,14 @@ fun ReleaseNotesContent(
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                             contentDescription = stringResource(DesignR.string.designsystem_back),
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { onEvent(ReleaseNotesUiEvent.OnAllReleasesClicked) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_github_logo),
+                            contentDescription = stringResource(R.string.release_notes_open_on_github),
                         )
                     }
                 },
@@ -151,6 +160,7 @@ private fun ReleaseList(
         ) { release ->
             ReleaseNotesCard(
                 release = release,
+                onClick = { onEvent(ReleaseNotesUiEvent.OnReleaseClicked(release.version)) },
                 modifier = Modifier
                     .textColumn()
                     .animateItem(),

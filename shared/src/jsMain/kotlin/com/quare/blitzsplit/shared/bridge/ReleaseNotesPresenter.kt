@@ -4,10 +4,13 @@ package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.core.releasenotes.domain.model.AppVersion
 import com.quare.blitzsplit.core.releasenotes.domain.model.ReleaseDate
+import com.quare.blitzsplit.feature.releasenotes.presentation.model.ReleaseNotesUiAction
 import com.quare.blitzsplit.feature.releasenotes.presentation.model.ReleaseNotesUiEvent
 import com.quare.blitzsplit.feature.releasenotes.presentation.viewmodel.ReleaseNotesViewModel
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import org.koin.mp.KoinPlatform
 
 class JsReleaseNotes(
@@ -75,6 +78,28 @@ class ReleaseNotesPresenter {
 
     fun toggleBeta(isOn: Boolean) {
         viewModel.onEvent(ReleaseNotesUiEvent.OnShowBetaToggled(isOn))
+    }
+
+    // Why: the top bar's GitHub button.
+    fun openAllReleases() {
+        viewModel.onEvent(ReleaseNotesUiEvent.OnAllReleasesClicked)
+    }
+
+    // Why: a version's card, by the whole name that keys it; the ViewModel ignores one no longer on screen.
+    fun openRelease(version: String) {
+        val appVersion = AppVersion.parseOrNull(version) ?: return
+        viewModel.onEvent(ReleaseNotesUiEvent.OnReleaseClicked(appVersion))
+    }
+
+    // Why: a GitHub release page to open in another tab.
+    fun observeOpenUrls(onUrl: (String) -> Unit): JsWatch {
+        val urls = viewModel.uiAction.mapNotNull { action ->
+            when (action) {
+                is ReleaseNotesUiAction.OpenUrl -> action.url
+            }
+        }
+        val watch = FlowWatcher(urls).observe(onUrl)
+        return JsWatch(watch::cancel)
     }
 
     fun dispose() {
