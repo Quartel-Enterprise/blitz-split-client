@@ -1,0 +1,179 @@
+name: 'Build and deploy the web app'
+description: >-
+  Builds the web app at a version and deploys it to a Cloudflare Pages project: the beta's (release-beta.yml) or the
+  production one, served at app.blitzsplit.com (release-production.yml), which differ only in these inputs. The
+  calling job checks out the repository first, since the steps run its scripts.
+
+inputs:
+  version:
+    description: 'The versionName the web app shows, a beta suffix too'
+    required: true
+  version-code:
+    description: 'The versionCode'
+    required: true
+  sha:
+    description: 'The commit the release builds, which the deployment is recorded with'
+    required: true
+  pages-project:
+    description: "The Cloudflare Pages project's name"
+    required: true
+  url:
+    description: 'Where people open what was deployed, for the run summary'
+    required: true
+  cloudflare-api-token:
+    description: 'A token with Account > Cloudflare Pages > Edit'
+    required: true
+  cloudflare-account-id:
+    description: "The Cloudflare account's id"
+    required: true
+  firebase-api-key:
+    description: "The web app's Firebase config (the VITE_FIREBASE_API_KEY variable)"
+    required: false
+    default: ''
+  firebase-app-id:
+    description: 'The VITE_FIREBASE_APP_ID variable'
+    required: false
+    default: ''
+  firebase-project-id:
+    description: 'The VITE_FIREBASE_PROJECT_ID variable'
+    required: false
+    default: ''
+  firebase-measurement-id:
+    description: 'The VITE_FIREBASE_MEASUREMENT_ID variable'
+    required: false
+    default: ''
+  vapid-public-key:
+    description: "The public half of the server's VAPID pair (the VITE_VAPID_PUBLIC_KEY variable)"
+    required: false
+    default: ''
+  cache-encryption-key:
+    description: 'Passed to the Gradle action'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    # Before the build, which takes minutes: a missing secret, a token Cloudflare refuses, a project nobody created
+    # yet and one that would only take a preview each stop here with what to do, where wrangler would say the
+    # deployment failed, or nothing at all. A Pages project is created once, by hand
+    # (docs/release-process.md#the-production-web-app): the workflow never makes one.
+    - name: Check the secrets and the Pages project
+      shell: bash
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ inputs.cloudflare-api-token }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ inputs.cloudflare-account-id }}
+        PAGES_PROJECT: ${{ inputs.pages-project }}
+        URL: ${{ inputs.url }}
+      run: |
+        ./scripts/release/require-env.sh CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID
+        project="$RUNNER_TEMP/pages-project.json"
+        # A curl that fails (no answer after its retries) leaves 000, which the last case below explains.
+        status="$(curl --silent --show-error --retry 3 --max-time 30 --output "$project" --write-out '%{http_code}' \
+          --header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+          "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$PAGES_PROJECT")" || true
+        case "$status" in
+          200) ;;
+          404)
+            echo "::error::The Cloudflare Pages project '$PAGES_PROJECT' doesn't exist in the account of CLOUDFLARE_ACCOUNT_ID. Create it once, then re-run this job: see docs/release-process.md#the-production-web-app."
+            exit 1
+            ;;
+          400 | 401 | 403)
+            jq -r '.errors[]?.message' "$project" 2> /dev/null || true
+            echo "::error::Cloudflare refused the request for the Pages project '$PAGES_PROJECT' (HTTP $status): check the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets. See docs/release-process.md#secrets."
+            exit 1
+            ;;
+          *)
+            jq -r '.errors[]?.message' "$project" 2> /dev/null || true
+            echo "::error::Cloudflare didn't say whether the Pages project '$PAGES_PROJECT' exists (HTTP ${status:-000}, 000 being no answer at all), which says nothing about the secrets: re-run this job."
+            exit 1
+            ;;
+        esac
+        # The deploy below goes to main: on a project with another production branch it would only be a preview,
+        # which no domain serves, and the job would still pass.
+        branch="$(jq -r '.result.production_branch // empty' "$project")"
+        if [ "$branch" != main ]; then
+          echo "::error::The Pages project '$PAGES_PROJECT' has '$branch' as its production branch, and a release deploys to main: it would only be a preview. Set the project's production branch to main: see docs/release-process.md#the-production-web-app."
+          exit 1
+        fi
+        # Only a warning: the deployment is still made, on the project's own pages.dev address, which is counted
+        # with its domains in case Cloudflare lists only the custom ones.
+        host="${URL#https://}"
+        host="${host%%/*}"
+        domains='((.result.domains // []) + [.result.subdomain // empty]) | unique'
+        if ! jq -e --arg host "$host" "$domains | index(\$host)" "$project" > /dev/null; then
+          echo "::warning title=Web::$host is not one of the domains of the Pages project '$PAGES_PROJECT' ($(jq -r "$domains | join(\", \")" "$project")): the deployment isn't served there until it is added. See docs/release-process.md#the-production-web-app."
+        fi
+
+    # The web app shows the versionName of version.properties. Through env, not spliced into the command: the script
+    # validates the values, but only after the shell has parsed the line.
+    - name: Bump version
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+        VERSION_CODE: ${{ inputs.version-code }}
+      run: ./scripts/release/bump-version.sh "$VERSION" "$VERSION_CODE"
+
+    - name: Setup Gradle and Java
+      uses: ./.github/actions/gradle
+      with:
+        cache-encryption-key: ${{ inputs.cache-encryption-key }}
+        # Dispatched on main, where the action would save the cache: a release must not push out the entries the
+        # pull requests read.
+        cache-read-only: 'true'
+
+    - name: Set up Node
+      uses: actions/setup-node@v7
+      with:
+        node-version: '24'
+        cache: npm
+        cache-dependency-path: webApp/package-lock.json
+
+    # webApp depends on the JS library of :shared through a file: dependency, so the library is built before npm
+    # installs it.
+    - name: Build the shared JS library
+      shell: bash
+      run: npm --prefix webApp run shared
+
+    - name: Install the web dependencies
+      shell: bash
+      run: npm --prefix webApp ci
+
+    # Cloudflare Pages answers an unknown path with index.html when the site has no 404.html, which is what
+    # /g/<code> and /n?... need. The database runs in a worker on OPFS's opfs-sahpool, so no COOP/COEP headers are
+    # needed either. --ignore-scripts skips the prebuild hook, which would build the shared JS library a second time.
+    - name: Build the web app
+      shell: bash
+      env:
+        VITE_FIREBASE_API_KEY: ${{ inputs.firebase-api-key }}
+        VITE_FIREBASE_APP_ID: ${{ inputs.firebase-app-id }}
+        VITE_FIREBASE_PROJECT_ID: ${{ inputs.firebase-project-id }}
+        VITE_FIREBASE_MEASUREMENT_ID: ${{ inputs.firebase-measurement-id }}
+        VITE_VAPID_PUBLIC_KEY: ${{ inputs.vapid-public-key }}
+      run: npm --prefix webApp run build --ignore-scripts
+
+    # To the project's production branch, main, so the deployment is the one its domains serve. The tree is dirty
+    # with the version bump above; --commit-dirty keeps wrangler from warning about it.
+    - name: Deploy to Cloudflare Pages
+      shell: bash
+      env:
+        CLOUDFLARE_API_TOKEN: ${{ inputs.cloudflare-api-token }}
+        CLOUDFLARE_ACCOUNT_ID: ${{ inputs.cloudflare-account-id }}
+        PAGES_PROJECT: ${{ inputs.pages-project }}
+        VERSION: ${{ inputs.version }}
+        SHA: ${{ inputs.sha }}
+        URL: ${{ inputs.url }}
+        # Pinned: the version the releases were written with.
+        WRANGLER_VERSION: 4.152.0
+      run: |
+        npx --yes "wrangler@${WRANGLER_VERSION}" pages deploy webApp/dist \
+          --project-name "$PAGES_PROJECT" \
+          --branch main \
+          --commit-dirty=true \
+          --commit-hash "$SHA" \
+          --commit-message "$VERSION"
+        {
+          echo "### Web"
+          echo ""
+          echo "$URL"
+        } >> "$GITHUB_STEP_SUMMARY"

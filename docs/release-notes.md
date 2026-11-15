@@ -134,7 +134,7 @@ checkout, and the lanes that upload them (`play_upload` and `app_store_submit` i
 store which locales its listing has and give each one its language's file: the file of its own name (`pt-PT`),
 else its language's (`pt-BR` reads `pt`, `es-419`, `es-MX` and `es-ES` read `es`, `en-GB` reads `en`), else
 English's. So no map of store locale codes is kept for the notes, and a language added to a listing gets its notes
-with the next release ([release-process.md](release-process.md#what-the-stores-get)).
+with the next release ([release-process.md](release-process.md#what-the-stores-and-the-web-get)).
 
 ## Adding a language
 

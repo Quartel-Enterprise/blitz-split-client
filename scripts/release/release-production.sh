@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 #
-# Triggers the workflow that releases a stable version to Google Play and the App Store: no prompts, no menu.
+# Triggers the workflow that releases a stable version to Google Play, the App Store and the web: no prompts, no
+# menu.
 #
 # The run waits for the approval of a reviewer of the Production environment before it builds anything. With no
-# input it then publishes to everyone: the production track at 100% and a submission for App Store review. See
+# input it then publishes to everyone: the production track at 100%, a submission for App Store review and the
+# web app at app.blitzsplit.com. See
 # docs/release-process.md#releasing-a-stable-version for the inputs.
 #
 # Requires the GitHub CLI (gh), installed and authenticated: https://cli.github.com
 #
 # Usage: ./scripts/release/release-production.sh [input=value ...]
-#   ./scripts/release/release-production.sh                                          # every platform, to everyone
-#   ./scripts/release/release-production.sh track=internal submit_for_review=false   # reaches no user
-#   ./scripts/release/release-production.sh version=3.1.0 rollout=20                 # a staged rollout of 3.1.0
+#   ./scripts/release/release-production.sh                                                    # every platform, to everyone
+#   ./scripts/release/release-production.sh track=internal submit_for_review=false web=false   # reaches no user
+#   ./scripts/release/release-production.sh version=3.1.0 rollout=20                           # a staged rollout of 3.1.0
 set -euo pipefail
 
 inputs=()
@@ -26,7 +28,7 @@ done
 echo "Bora Rachar: stable release"
 echo "==========================="
 if [ "$#" -eq 0 ]; then
-  echo "No input: once approved, the run publishes to everyone on Google Play and submits for App Store review."
+  echo "No input: once approved, the run publishes to everyone on Google Play and the web, and submits for App Store review."
 fi
 
 # Refuses while another release waits, dispatches on main and prints the run's link. The array may be empty,

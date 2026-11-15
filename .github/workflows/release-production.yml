@@ -1,6 +1,7 @@
 name: release-production
 
-# Ships a stable version of Bora Rachar to the stores: Android to Google Play, iOS and macOS to the App Store.
+# Ships a stable version of Bora Rachar: Android to Google Play, iOS and macOS to the App Store, and the web app to
+# https://app.blitzsplit.com.
 #
 # Run it with ./scripts/release/release-production.sh, or from the Actions tab
 # (docs/release-process.md#releasing-a-stable-version):
@@ -15,18 +16,23 @@ name: release-production
 #        - iOS and macOS: App Store Connect, signed as the betas are (the composite actions apple-build and
 #          apple-upload). With `submit_for_review`, the build is then sent to App Store review with the notes, and
 #          goes out by itself once approved.
+#        - Web: Cloudflare Pages, the project of CLOUDFLARE_PAGES_PROJECT, which app.blitzsplit.com serves. The
+#          beta's build and deploy, at the stable version (the composite action web-deploy).
 #        - The listings' screenshots (`screenshots`) are made again and uploaded: Google Play's after the bundle
 #          reached production, the App Store's before the submission, since a version in review can't take them.
 #          Best effort: none of these jobs holds the release back.
-#   4. `finalize` runs when a store took a build. When the run released (the production track, or a submission for
-#      review) it tags X.Y.Z and publishes the GitHub release, then merges the versionCode, the versionName and the
-#      removal of the fragments the version told back into main. A run that only reached a testing track or
-#      TestFlight leaves no tag and removes no fragment: it merges back its versionCode, and its version when that
-#      is higher than main's.
+#   4. `finalize` runs when a store took a build or the web was deployed. When the run released (the production
+#      track, a submission for review, or the web) it tags X.Y.Z and publishes the GitHub release, then merges the
+#      versionCode, the versionName and the removal of the fragments the version told back into main. A run that
+#      only reached a testing track or TestFlight leaves no tag and removes no fragment: it merges back its
+#      versionCode, and its version when that is higher than main's. A run of the web alone, with every store
+#      platform off, leaves the versionCode on main alone and records no build number, since it consumed none a
+#      store cares about.
 #   5. `site-release-notes` sends the notes of a version that was released to blitz-split-site, whose "What's new"
 #      page and feed the apps read. It doesn't wait for the stores' reviews.
 #
-# With no input changed, the run publishes to everyone: the production track at 100% and a submission for review.
+# With no input changed, the run publishes to everyone: the production track at 100%, a submission for review and
+# the web.
 # The approval is the one gate, so `plan` refuses to go on when the environment has no required reviewer.
 #
 # One release at a time, betas included: the concurrency group is release-beta.yml's, since both take the next
@@ -51,6 +57,10 @@ on:
         default: true
       macos:
         description: "macOS, App Store"
+        type: boolean
+        default: true
+      web:
+        description: "Web, app.blitzsplit.com"
         type: boolean
         default: true
       track:
@@ -98,6 +108,11 @@ env:
   APPROVAL_ENVIRONMENT: Production
   # Where a version's notes may already be written by hand (docs/release-notes.md): `plan` reads it.
   SITE_REPOSITORY: Quartel-Enterprise/blitz-split-site
+  # The Cloudflare Pages project of the production web app, next to the betas' blitz-split-beta in the same
+  # account, and the domain it is served at. Both were set up by hand, never by this workflow
+  # (docs/release-process.md#the-production-web-app).
+  CLOUDFLARE_PAGES_PROJECT: blitz-split
+  WEB_URL: https://app.blitzsplit.com
 
 jobs:
   plan:
@@ -134,9 +149,10 @@ jobs:
           ANDROID: ${{ inputs.android }}
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
+          WEB: ${{ inputs.web }}
           ROLLOUT: ${{ inputs.rollout }}
         run: |
-          if [ "$ANDROID" != true ] && [ "$IOS" != true ] && [ "$MACOS" != true ]; then
+          if [ "$ANDROID" != true ] && [ "$IOS" != true ] && [ "$MACOS" != true ] && [ "$WEB" != true ]; then
             echo "::error::No platform is selected."
             exit 1
           fi
@@ -194,6 +210,7 @@ jobs:
           ANDROID: ${{ inputs.android }}
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
+          WEB: ${{ inputs.web }}
           TRACK: ${{ inputs.track }}
           ROLLOUT: ${{ inputs.rollout }}
           SUBMIT: ${{ inputs.submit_for_review }}
@@ -218,6 +235,19 @@ jobs:
           macos="not in this run"
           if [ "$IOS" = true ]; then ios="$app_store"; fi
           if [ "$MACOS" = true ]; then macos="$app_store"; fi
+          web="not in this run"
+          if [ "$WEB" = true ]; then web="$WEB_URL, for everyone"; fi
+          # The web has no testing channel: deployed, it is out for everyone and the version is released, whatever
+          # the stores get. Said before the approval, since a run meant to try the stores would otherwise do more
+          # than its plan reads.
+          trial=false
+          if [ "$ANDROID" = true ] && [ "$TRACK" != production ]; then trial=true; fi
+          if { [ "$IOS" = true ] || [ "$MACOS" = true ]; } && [ "$SUBMIT" != true ]; then trial=true; fi
+          note=""
+          if [ "$WEB" = true ] && [ "$trial" = true ]; then
+            note="The stores only get a trial (a testing track, or TestFlight), but the web app is deployed for everyone: the version gets its tag and its notes are published. For a run that reaches no user, reject this one and dispatch again with \`web\` off."
+            echo "::warning title=The web is released::${note//\`/}"
+          fi
           {
             echo ""
             echo "| Platform | Where it goes |"
@@ -225,8 +255,13 @@ jobs:
             echo "| Android | $android |"
             echo "| iOS | $ios |"
             echo "| macOS | $macos |"
+            echo "| Web | $web |"
             echo "| Store screenshots | $([ "$SCREENSHOTS" = true ] && echo "made again and uploaded with a release" || echo "left as they are") |"
             echo ""
+            if [ -n "$note" ]; then
+              echo "**$note**"
+              echo ""
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
       # Read-only, and public: the default token is enough. A version the site already has, as one written there by
@@ -675,6 +710,42 @@ jobs:
           key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   # ---------------------------------------------------------------------------------------------
+  # Web
+  # ---------------------------------------------------------------------------------------------
+  # One job, as the beta's: Cloudflare takes a deployment whole, and one that failed leaves the site as it was, so
+  # "Re-run failed jobs" builds and deploys again. The action stops before the build, naming the project, when the
+  # Pages project was never created.
+  web:
+    name: Web, build and deploy to Cloudflare Pages
+    needs: [plan, approve]
+    if: ${{ inputs.web }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Build and deploy the web app
+        uses: ./.github/actions/web-deploy
+        with:
+          version: ${{ needs.plan.outputs.version }}
+          version-code: ${{ needs.plan.outputs.version_code }}
+          sha: ${{ needs.plan.outputs.sha }}
+          pages-project: ${{ env.CLOUDFLARE_PAGES_PROJECT }}
+          url: ${{ env.WEB_URL }}
+          cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          cloudflare-account-id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          firebase-api-key: ${{ vars.VITE_FIREBASE_API_KEY }}
+          firebase-app-id: ${{ vars.VITE_FIREBASE_APP_ID }}
+          firebase-project-id: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          firebase-measurement-id: ${{ vars.VITE_FIREBASE_MEASUREMENT_ID }}
+          vapid-public-key: ${{ vars.VITE_VAPID_PUBLIC_KEY }}
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+  # ---------------------------------------------------------------------------------------------
   # iOS and macOS: the same composite actions as the betas, then the submission
   # ---------------------------------------------------------------------------------------------
   ios-build:
@@ -884,14 +955,14 @@ jobs:
   # ---------------------------------------------------------------------------------------------
   finalize:
     name: Tag, release and merge-back
-    needs: [plan, android-upload, ios-upload, ios-submit, macos-upload, macos-submit]
+    needs: [plan, android-upload, ios-upload, ios-submit, macos-upload, macos-submit, web]
     # !cancelled() replaces the implicit success(): a platform the run skipped or that failed must not hold the
-    # release back. A store that took a build is enough, since the versionCode it used has to reach main whatever
-    # happened to the others.
+    # release back. A store that took a build, or the web deployed, is enough: the versionCode a store used has to
+    # reach main whatever happened to the others, and a version that is out has to be recorded.
     if: >-
       ${{ !cancelled() && needs.plan.result == 'success' && (
       needs.android-upload.result == 'success' || needs.ios-upload.result == 'success' ||
-      needs.macos-upload.result == 'success') }}
+      needs.macos-upload.result == 'success' || needs.web.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -906,7 +977,8 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      # The run released when a build reached the production track or was sent to App Store review: the version
+      # The run released when a build reached the production track or was sent to App Store review, or the web app
+      # was deployed, which is for everyone at once: the version
       # then gets its tag and its GitHub release, which is also what tells the next release where to count the
       # notes and the build numbers from. First, so it is recorded even when the merge-back below fails. It opens
       # with what the version tells, in English, as `plan` picked it. A re-run
@@ -927,11 +999,14 @@ jobs:
           IOS_SUBMIT: ${{ needs.ios-submit.result }}
           MACOS_UPLOAD: ${{ needs.macos-upload.result }}
           MACOS_SUBMIT: ${{ needs.macos-submit.result }}
+          WEB: ${{ needs.web.result }}
+          STORES: ${{ inputs.android || inputs.ios || inputs.macos }}
           NOTES: ${{ needs.plan.outputs.github_notes }}
         run: |
           released=false
           if [ "$TRACK" = production ] && [ "$ANDROID" = success ]; then released=true; fi
           if [ "$IOS_SUBMIT" = success ] || [ "$MACOS_SUBMIT" = success ]; then released=true; fi
+          if [ "$WEB" = success ]; then released=true; fi
           # Only a 404 says the version has no release: any other failure read as "not released" would skip the
           # tag of a version that went out, or try to create a release that is there.
           if release="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$VERSION" 2>&1)"; then
@@ -945,7 +1020,7 @@ jobs:
           fi
           if [ "$released" = false ] && [ "$exists" = false ]; then
             echo "released=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Nothing reached the production track or App Store review: $VERSION gets no tag, and its fragments stay. Its versionCode is merged back, and its version when higher than main's."
+            echo "::notice::Nothing reached the production track, App Store review or the web: $VERSION gets no tag, and its fragments stay. Its versionCode is merged back, and its version when higher than main's."
             exit 0
           fi
           echo "released=true" >> "$GITHUB_OUTPUT"
@@ -965,27 +1040,46 @@ jobs:
             macos="$MACOS_UPLOAD"
           fi
 
+          web_channel="Cloudflare Pages, $WEB_URL"
+          # The build number a store may hold. A run of the web alone has none to record: no store was asked to
+          # take a build, so the release names none and the next one doesn't skip a number for it.
+          code="$VERSION_CODE"
+          if [ "$STORES" != true ]; then code=0; fi
+
           if [ "$exists" = true ]; then
             # A platform this run left out keeps the row an earlier run wrote for it, and so does one this run
-            # only sent to a testing track or to TestFlight when the row says it was released.
+            # only sent to a testing track or to TestFlight when the row says it was released. The web's keeps a
+            # success a later deployment that failed didn't undo: the site still serves the one that worked. A
+            # release from before the web was part of a stable version has no Web row: it goes after macOS's.
             jq -r '.body // ""' <<< "$release" | tr -d '\r' | awk \
-              -v code="$VERSION_CODE" -v android="$ANDROID" -v ios="$ios" -v macos="$macos" \
+              -v code="$code" -v android="$ANDROID" -v ios="$ios" -v macos="$macos" \
               -v android_channel="$android_channel" -v apple_channel="$apple_channel" \
-              -v track="$TRACK" -v submit="$SUBMIT" '
+              -v track="$TRACK" -v submit="$SUBMIT" -v web="$WEB" -v web_channel="$web_channel" '
               function keeps(result, releases) { return result == "skipped" || (!releases && $0 ~ /production|sent for review/) }
+              function web_row() { return "| Web | " web_channel " | " web " |" }
+              after_macos { if ($0 !~ /^\| Web \|/ && web != "skipped") print web_row(); after_macos = 0 }
               /^Build number: / { if ($3 + 0 < code + 0) print "Build number: " code; else print; next }
               /^\| Android \|/ && !keeps(android, track == "production") { print "| Android | " android_channel " | " android " |"; next }
               /^\| iOS \|/ && !keeps(ios, submit == "true")              { print "| iOS | " apple_channel " | " ios " |"; next }
-              /^\| macOS \|/ && !keeps(macos, submit == "true")          { print "| macOS | " apple_channel " | " macos " |"; next }
-              { print }' > "$RUNNER_TEMP/notes.md"
+              /^\| macOS \|/ { if (keeps(macos, submit == "true")) print; else print "| macOS | " apple_channel " | " macos " |"; after_macos = 1; next }
+              /^\| Web \|/ && web != "skipped" && (web == "success" || $0 !~ /\| success \|$/) { print web_row(); next }
+              { print }
+              END { if (after_macos && web != "skipped") print web_row() }' > "$RUNNER_TEMP/notes.md"
+            # A release the web alone made names no build number: the first run that sends a store one adds it.
+            if [ "$code" -gt 0 ] && ! grep -q '^Build number: ' "$RUNNER_TEMP/notes.md"; then
+              { printf 'Build number: %s\n\n' "$code"; cat "$RUNNER_TEMP/notes.md"; } > "$RUNNER_TEMP/notes-with-build.md"
+              mv "$RUNNER_TEMP/notes-with-build.md" "$RUNNER_TEMP/notes.md"
+            fi
             gh release edit "$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
             echo "::notice::$VERSION is already published: its table of channels was refreshed."
             exit 0
           fi
 
           {
-            echo "Build number: $VERSION_CODE"
-            echo
+            if [ "$code" -gt 0 ]; then
+              echo "Build number: $code"
+              echo
+            fi
             if [ -n "$NOTES" ]; then
               printf '%s\n\n' "$NOTES"
             fi
@@ -996,6 +1090,7 @@ jobs:
             echo "| Android | $android_channel | $ANDROID |"
             echo "| iOS | $apple_channel | $ios |"
             echo "| macOS | $apple_channel | $macos |"
+            echo "| Web | $web_channel | $WEB |"
           } > "$RUNNER_TEMP/channels.md"
           # The pull requests since the stable version before this one, not since its last beta.
           since=()
@@ -1011,7 +1106,11 @@ jobs:
 
       # The versionCode, the versionName when it is higher than main's and, once the version is released, the
       # removal of the fragments its tag's commit had (scripts/release/merge-back.sh, which also says how a re-run
-      # finishes the job). The pull request is created with GITHUB_TOKEN, so no PR workflow runs for a version bump,
+      # finishes the job). A run of the web alone, with every store platform off, consumed no build number a store
+      # cares about, so, as a beta's, it leaves main's versionCode alone: the version and the fragments are all it
+      # merges back. A run that asked a store for a build merges its versionCode back even when every upload failed,
+      # since a store may hold a build of a job that failed after sending it. The pull request is created with
+      # GITHUB_TOKEN, so no PR workflow runs for a version bump,
       # and merged with the MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md,
       # "Merge when green").
       - name: Merge the release back into main
@@ -1022,11 +1121,14 @@ jobs:
           VERSION: ${{ needs.plan.outputs.version }}
           VERSION_CODE: ${{ needs.plan.outputs.version_code }}
           RELEASED: ${{ steps.release.outputs.released }}
+          STORES: ${{ inputs.android || inputs.ios || inputs.macos }}
           ACTOR: ${{ github.actor }}
         run: |
           tag=()
           if [ "$RELEASED" = true ]; then tag=("$VERSION"); fi
-          ./scripts/release/merge-back.sh "$VERSION" "$VERSION_CODE" "$VERSION" "${tag[@]}"
+          code="$VERSION_CODE"
+          if [ "$STORES" != true ]; then code=0; fi
+          ./scripts/release/merge-back.sh "$VERSION" "$code" "$VERSION" "${tag[@]}"
 
   # ---------------------------------------------------------------------------------------------
   # Release notes
