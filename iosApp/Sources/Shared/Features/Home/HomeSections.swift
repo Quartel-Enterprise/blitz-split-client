@@ -296,7 +296,16 @@ struct HomeSummaryCard: View {
         .padding(.leading, 18)
         .padding([.trailing, .vertical], 12)
         .padding(.top, 4)
-        .background(Palette.card, in: .rect(cornerRadius: 26))
+        // The card is a button behind its content: the two buttons on top keep their taps, disabled or not.
+        .background {
+            Button {
+                send(HomeUiEventOnOverallBalanceClicked.shared)
+            } label: {
+                RoundedRectangle(cornerRadius: 26).fill(Palette.card)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text("See balances"))
+        }
     }
 
     private var balance: some View {
@@ -322,6 +331,8 @@ struct HomeSummaryCard: View {
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
+        // The taps go through to the card's button behind; VoiceOver still reads the texts.
+        .allowsHitTesting(false)
     }
 
     @ViewBuilder

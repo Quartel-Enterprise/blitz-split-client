@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -178,6 +180,7 @@ internal fun SummaryButton(
         onClick = onClick,
         enabled = isEnabled,
         modifier = modifier
+            .then(if (isEnabled) Modifier else Modifier.pointerInput(Unit) { detectTapGestures { } })
             .semantics { contentDescription = description },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surface,

@@ -287,6 +287,10 @@ class HomePresenter {
         viewModel.onEvent(HomeUiEvent.OnSeeBalancesClicked)
     }
 
+    fun openOverallBalance() {
+        viewModel.onEvent(HomeUiEvent.OnOverallBalanceClicked)
+    }
+
     fun openToReceive() {
         viewModel.onEvent(HomeUiEvent.OnToReceiveClicked)
     }

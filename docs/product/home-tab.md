@@ -14,7 +14,7 @@ The home tab, its shortcuts and pinned groups.
     "Overall balance" as Groups' (both are the global Balances' totals, `PeopleBalances.totals`, so the three never differ: big in the first currency with a net, a line for each other one with a net,
     `HomeSummary.main` and `others`), with "Owed to you" and "You owe", each in the first currency with something that
     way (`HomeSummary.toReceive`, `toPay`), which open Balances filtered (You owe straight to settling up while only
-    one person is in it), disabled at zero. Three shortcuts (on Android each tile has its icon above its label at
+    one person is in it), disabled at zero. The card itself, outside those two buttons, opens Balances unfiltered (`HomeUiEvent.OnOverallBalanceClicked`; a disabled button swallows its tap, it does not fall through to the card). Three shortcuts (on Android each tile has its icon above its label at
     every size, a book's half and a phone lying down included, where a label beside the icon broke inside a word:
     chosen in the sweep of 2026-11-12 without Pierre, for him to confirm): "Scan receipt", which first asks right on Home where the
     receipt's photo comes from, as the form's "Scan receipt" asks (the same sheet, dialog or drawer: the camera, the

@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -91,8 +92,17 @@ internal fun HomeSummaryCard(
     val toPay = summary.toPay
     val toReceiveMoney = rememberMoneyFormatter(toReceive?.currency ?: currency)
     val toPayMoney = rememberMoneyFormatter(toPay?.currency ?: currency)
+    val seeBalances = stringResource(R.string.groups_home_see_balances)
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        onClick = { onEvent(HomeUiEvent.OnOverallBalanceClicked) },
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics {
+                onClick(
+                    label = seeBalances,
+                    action = null,
+                )
+            },
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,

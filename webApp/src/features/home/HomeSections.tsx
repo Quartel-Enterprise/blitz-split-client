@@ -44,9 +44,15 @@ export function HomeSummaryCards({ presenter, state }: SectionProps) {
   const people = (count: number) => t(count === 1 ? 'home_peopleOne' : 'home_peopleOther', { count })
   return (
     <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4 lg:grid-cols-[1.4fr_1fr_1fr]">
-      <section aria-labelledby="home-summary-title" className="col-span-2 flex min-w-0 flex-col gap-1 rounded-lg border bg-card px-4 py-3.5 md:col-span-1 md:px-5 md:py-4">
+      <section
+        aria-labelledby="home-summary-title"
+        className="relative col-span-2 flex min-w-0 flex-col gap-1 rounded-lg border bg-card px-4 py-3.5 hover:bg-accent md:col-span-1 md:px-5 md:py-4"
+      >
         <h2 id="home-summary-title" className="text-[13px] font-medium text-muted-foreground">
-          {t('groups_summaryTitle')}
+          {/* Why: the whole card opens Balances, as a link stretched over it that keyboards and screen readers reach. */}
+          <button type="button" aria-label={`${t('groups_summaryTitle')}. ${t('groups_summaryOpenBalances')}`} onClick={() => presenter.openOverallBalance()} className="outline-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:ring-[3px] focus-visible:after:ring-ring">
+            {t('groups_summaryTitle')}
+          </button>
         </h2>
         {net ? (
           <span className={cn('truncate text-[30px] leading-tight font-bold tracking-tight tabular-nums lg:text-4xl', isSettled ? 'text-muted-foreground' : balanceTone(main?.netMinor ?? 0))}>
