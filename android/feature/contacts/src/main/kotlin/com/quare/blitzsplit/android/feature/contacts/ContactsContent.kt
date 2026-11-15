@@ -24,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -37,8 +36,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
-import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
-import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
+import com.quare.blitzsplit.android.designsystem.component.HomeTabTopBar
 import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
 import com.quare.blitzsplit.android.designsystem.component.collapsingBarsScroll
 import com.quare.blitzsplit.android.designsystem.component.homeTabBarsOf
@@ -145,6 +143,7 @@ fun ContactsContent(
                                 title = title,
                                 scrollBehavior = null,
                                 onEvent = onEvent,
+                                modifier = Modifier.padding(end = paneLayout.barEndPadding),
                                 windowInsets = WindowInsets(0),
                             )
                             ContactsLazyList(
@@ -163,7 +162,6 @@ fun ContactsContent(
                                 .padding(
                                     start = paneLayout.paneSpacing,
                                     end = paneLayout.paneEndPadding,
-                                    top = 8.dp,
                                     bottom = 16.dp,
                                 ),
                         ) {
@@ -203,19 +201,17 @@ private fun ContactsTopBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior?,
     onEvent: (ContactsUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
-    TopAppBar(
-        title = { HomeTabTitle(title) },
-        actions = {
-            ProfileAvatarButton(
-                initial = state.avatarInitial,
-                color = state.avatarColor,
-                photoUrl = state.photoUrl,
-                contentDescription = stringResource(R.string.contacts_profile),
-                onClick = { onEvent(ContactsUiEvent.OnProfileClicked) },
-            )
-        },
+    HomeTabTopBar(
+        title = title,
+        avatarInitial = state.avatarInitial,
+        avatarColor = state.avatarColor,
+        photoUrl = state.photoUrl,
+        profileDescription = stringResource(R.string.contacts_profile),
+        onProfileClick = { onEvent(ContactsUiEvent.OnProfileClicked) },
+        modifier = modifier,
         scrollBehavior = scrollBehavior,
         windowInsets = windowInsets,
     )

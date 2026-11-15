@@ -103,7 +103,9 @@ The home's four tabs and the web's and the Mac's shell.
     on a phone lying down), the top bar with the title and the profile photo sits over the list column only, and what is
     beside it starts at the top of the screen (Pierre's feedback of 2026-11-15: a bar across the whole width left the
     photo alone above the pane and took its height). The Apple apps keep the profile in the system's toolbar, which also
-    holds the large title, and the web's wide layouts have no top bar (the profile sits at the sidebar's foot).
+    holds the large title, and the web's wide layouts have no top bar (the profile sits at the sidebar's foot). On a
+    book the list column ends at the hinge, so the bar keeps 16 dp clear of it, and the pane beside starts level with
+    the bar (`HomeTabTopBar`, shared by the tabs).
   - On the web every page in the home's frame (the five tabs, a group's pages, Statistics, Profile) centers its
     content at the same width, 1152 px at most (`pageContentClass`; Balances, Contacts and Activity keep their one
     column at 768 px under 1024 px). A new page (a tab, a group, Profile,

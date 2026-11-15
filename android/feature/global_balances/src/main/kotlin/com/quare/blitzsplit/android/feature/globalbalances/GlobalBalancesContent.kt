@@ -27,7 +27,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -35,16 +34,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsScaffold
-import com.quare.blitzsplit.android.designsystem.component.HomeTabTitle
+import com.quare.blitzsplit.android.designsystem.component.HomeTabTopBar
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
-import com.quare.blitzsplit.android.designsystem.component.ProfileAvatarButton
 import com.quare.blitzsplit.android.designsystem.component.SplitBillFab
 import com.quare.blitzsplit.android.designsystem.component.collapsingBarsScroll
 import com.quare.blitzsplit.android.designsystem.component.homeTabBarsOf
@@ -185,12 +182,7 @@ private fun BalancesPane(
             modifier = modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            // Why: the bar takes height from the filter, which scrolls rather than be cut at a large font.
-            Column(
-                modifier = Modifier
-                    .widthIn(max = sideColumnWidth)
-                    .verticalScroll(rememberScrollState()),
-            ) {
+            Column(modifier = Modifier.widthIn(max = sideColumnWidth)) {
                 BalancesTopBar(
                     state = state,
                     title = title,
@@ -198,10 +190,13 @@ private fun BalancesPane(
                     scrollBehavior = null,
                     windowInsets = WindowInsets(0),
                 )
-                FilterHeaderColumn(
-                    state = state,
-                    onEvent = onEvent,
-                )
+                // Why: the bar stays put; the filter under it scrolls rather than be cut at a large font.
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                    FilterHeaderColumn(
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
             }
             PeopleList(
                 state = state,
@@ -263,6 +258,8 @@ private fun BalancesListDetailLayout(
                 title = title,
                 onEvent = onEvent,
                 scrollBehavior = null,
+                // Why: on a book the list column ends at the hinge, so the profile button keeps clear of the fold.
+                modifier = Modifier.padding(end = if (listDetail.isBook) 16.dp else 0.dp),
                 windowInsets = WindowInsets(0),
             )
             BalancesListPane(
@@ -281,7 +278,6 @@ private fun BalancesListDetailLayout(
                 .padding(
                     start = listDetail.paneSpacing,
                     end = if (listDetail.isBook) 16.dp else 32.dp,
-                    top = 8.dp,
                 ),
         ) {
             val emptyState = state.emptyState
@@ -349,19 +345,17 @@ private fun BalancesTopBar(
     title: String,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior?,
+    modifier: Modifier = Modifier,
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
-    TopAppBar(
-        title = { HomeTabTitle(title) },
-        actions = {
-            ProfileAvatarButton(
-                initial = state.avatarInitial,
-                color = state.avatarColor,
-                photoUrl = state.photoUrl,
-                contentDescription = stringResource(R.string.global_balances_profile),
-                onClick = { onEvent(GlobalBalancesUiEvent.OnProfileClicked) },
-            )
-        },
+    HomeTabTopBar(
+        title = title,
+        avatarInitial = state.avatarInitial,
+        avatarColor = state.avatarColor,
+        photoUrl = state.photoUrl,
+        profileDescription = stringResource(R.string.global_balances_profile),
+        onProfileClick = { onEvent(GlobalBalancesUiEvent.OnProfileClicked) },
+        modifier = modifier,
         scrollBehavior = scrollBehavior,
         windowInsets = windowInsets,
     )
