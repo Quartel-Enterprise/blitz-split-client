@@ -23,7 +23,8 @@ OUTPUT="${STORE_SCREENSHOTS_OUTPUT:-$ROOT/build/outputs/apple-screenshot-capture
 DERIVED_DATA="$ROOT/build/apple-screenshots/DerivedData"
 SLOTS="${STORE_SCREENSHOTS_SLOTS:-iphone63 iphone67 ipad13 iphoneduo iphoneduoopen}"
 DEVICE_HUB="com.apple.dt.Devices"
-# How long the Duo may take to open, by the script's press or by a person's.
+# How long the Duo may take to open, by the script's press or by a person's, counted once the script's own attempt at
+# the press is over (which waits up to a minute for Device Hub's window and half a minute for its Open button).
 OPEN_TIMEOUT="${STORE_SCREENSHOTS_OPEN_TIMEOUT:-120}"
 # The Duo's inner display, as `simctl io enumerate` numbers it.
 DUO_INNER_DISPLAY=3
@@ -70,7 +71,12 @@ open_duo() {
   # The Device Hub of the Xcode in use, which is the one that knows its simulators: a runner has several Xcodes, and
   # the bundle identifier alone lets macOS pick any of theirs.
   hub="$(dirname "$(xcode-select -p)")/Applications/DeviceHub.app"
-  if [ -d "$hub" ]; then open -g "$hub"; else open -g -b "$DEVICE_HUB"; fi
+  if [ -d "$hub" ]; then
+    open -g "$hub"
+  else
+    echo "No Device Hub at $hub: opening whichever Xcode's $DEVICE_HUB macOS picks" >&2
+    open -g -b "$DEVICE_HUB"
+  fi
   if ! osascript - "$name" << 'APPLESCRIPT' > /dev/null 2>&1; then
 on run arguments
   set simulatorName to item 1 of arguments
