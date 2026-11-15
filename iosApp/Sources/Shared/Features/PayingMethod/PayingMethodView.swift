@@ -61,12 +61,6 @@ struct PayingMethodView: View {
     /// made for nothing would still read the methods, and close the screen if the method is gone.
     @State private var model: PayingMethodModel?
     @State private var layout = ScreenLayout()
-    /// The window under the sheet, not the sheet: whether this method is a sheet or a pushed screen.
-    @Environment(\.windowLayout) private var windowLayout
-
-    private var isSheet: Bool {
-        AppRoute.payingMethod(route).presentsAsSheet(isLargeWindow: windowLayout.isLarge)
-    }
 
     private var title: Text {
         model?.state.isEditing ?? (route.methodId != nil)
@@ -78,7 +72,8 @@ struct PayingMethodView: View {
         SavingFormScreen(
             title: title,
             layout: $layout,
-            isSheet: isSheet,
+            // A sheet on every device and window (`AppRoute.isSheetEverywhere`), so Cancel always shows
+            isSheet: true,
             canSave: model?.state.canSave == true,
             isSaving: model?.state.isSaving == true,
             onCancel: { model?.send(PayingMethodUiEventOnBackClicked.shared) },

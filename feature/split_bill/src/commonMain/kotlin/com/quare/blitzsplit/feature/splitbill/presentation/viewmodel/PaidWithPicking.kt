@@ -30,10 +30,11 @@ internal class PaidWithPicking(
     private var hasOpened = false
 
     /*
-     * Why: the methods known when "Add a payment method" was tapped, while waiting for the one it saves; null otherwise.
-     * Kept until a method appears rather than until the form closes, since Room may tell of the save a moment after.
+     * Why: "Add a payment method" was tapped, which only shows while the person has no method, so the first method the
+     * list brings is the one it saved. Kept until a method appears rather than until the form closes, since Room may
+     * tell of the save a moment after.
      */
-    private var knownBeforeAdd: Set<String>? = null
+    private var isAwaitingAdded = false
 
     init {
         val markedId = route.expenseId ?: route.duplicatesExpenseId
@@ -52,12 +53,13 @@ internal class PaidWithPicking(
         uiState.update { it.copy(paidWith = it.paidWith.copy(methodId = methodId)) }
     }
 
-    // Why: "Add a payment method", only while it shows.
+    // Why: "Add a payment method", only while it shows, and never while the bill saves, which leaves the form.
     fun add() {
         val state = uiState.value
-        if (!state.showsAddPayingMethod || state.isFormLocked || !exits.openNewPayingMethod()) return
+        if (!state.showsAddPayingMethod || state.isFormLocked || state.isSaving || state.isDeleting) return
+        if (!exits.openNewPayingMethod()) return
         trackEvent("split_bill_add_paying_method_clicked", emptyMap())
-        knownBeforeAdd = state.paidWith.methods.mapTo(mutableSetOf()) { it.id }
+        isAwaitingAdded = true
     }
 
     /*
@@ -83,8 +85,8 @@ internal class PaidWithPicking(
     ) {
         val default = methods.firstOrNull { it.isDefault }?.id.takeIf { route.expenseId == null }
         val openedId = mark?.id ?: default
-        val added = knownBeforeAdd?.let { known -> methods.firstOrNull { it.id !in known } }
-        if (added != null) knownBeforeAdd = null
+        val added = methods.firstOrNull()?.takeIf { isAwaitingAdded }
+        if (added != null) isAwaitingAdded = false
         uiState.update { state ->
             val withMethods = state.paidWith.copy(
                 methods = methods,
@@ -107,6 +109,6 @@ internal class PaidWithPicking(
             }
             state.copy(paidWith = paidWith)
         }
-        if (methods.isNotEmpty() || added != null) hasOpened = true
+        if (methods.isNotEmpty()) hasOpened = true
     }
 }

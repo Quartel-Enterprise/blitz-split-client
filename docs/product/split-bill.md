@@ -31,13 +31,13 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     edit; no longer paying a bill clears the mark. A change to it counts as unsaved input ("Discard changes?").
   - "Add a payment method" (Pierre's call, feedback of November 15, 2026): in the chip's place while this device's
     user pays the bill and has no method yet, once their methods were read (`SplitBillUiState.showsAddPayingMethod`), a
-    button slightly more visible than the chip (Android's tonal button, Apple's and the web's bordered one). It opens
+    button slightly more visible than the chip (Android's tonal button, Apple's bordered one, the web's secondary one). It opens
     "New payment method" (`Route.PayingMethod(methodId = null)`) over Split a bill, as the sheet or dialog
     [Profile](profile.md) opens (the web draws it in the bill's place, which comes back with what was typed). The
     method saved there comes back already picked as the bill's "Paid with", which counts as a change ("Discard
-    changes?"). The shared ViewModel does it, not a UI: it keeps the ids of the methods known when the button was
-    tapped and picks the first method outside them that the methods' list brings (`PaidWithPicking.add`), so no route
-    hands a result back. It waits until a method appears rather than until the form closes, since Room may tell of the
+    changes?"). The shared ViewModel does it, not a UI: the button only shows while the person has no method, so once
+    tapped it picks the first method the methods' list brings (`PaidWithPicking.add`), and no route hands a result
+    back. It does nothing while the bill saves, which leaves the form. It waits until a method appears rather than until the form closes, since Room may tell of the
     save a moment after the form is gone; a method that arrives from another device while it waits is picked the same
     way.
   - "Split a bill" (`Route.SplitBill`): "Who paid" picks one person, who paid the whole bill, or "Several people",

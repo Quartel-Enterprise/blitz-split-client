@@ -905,6 +905,8 @@ private struct PaidWithMenu: View {
 
     var body: some View {
         let paidWith = model.state.paidWith
+        let label = paidWith.method.map { Text(verbatim: $0.label) }
+            ?? Text(LocalizedStringResource("None (no payment method)", defaultValue: "None"))
         Menu {
             PaidWithMenuItems(methods: paidWith.methods) { methodId in
                 model.send(SplitBillUiEventOnPaidWithPicked(methodId: methodId))
@@ -916,12 +918,8 @@ private struct PaidWithMenu: View {
                 } else {
                     Image(systemName: "creditcard")
                 }
-                if let method = paidWith.method {
-                    Text(verbatim: method.label)
-                        .lineLimit(1)
-                } else {
-                    Text(LocalizedStringResource("None (no payment method)", defaultValue: "None"))
-                }
+                label
+                    .lineLimit(1)
                 Image(systemName: "chevron.down")
                     .font(.caption2.weight(.semibold))
             }
@@ -929,8 +927,7 @@ private struct PaidWithMenu: View {
         }
         .fixedSize()
         .accessibilityLabel(Text("Paid with"))
-        .accessibilityValue(paidWith.method.map { Text(verbatim: $0.label) }
-            ?? Text(LocalizedStringResource("None (no payment method)", defaultValue: "None")))
+        .accessibilityValue(label)
         .accessibilityHint(Text("Only you see this."))
     }
 }

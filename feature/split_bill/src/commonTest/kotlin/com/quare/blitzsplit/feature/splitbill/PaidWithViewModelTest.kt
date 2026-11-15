@@ -878,6 +878,23 @@ class PaidWithViewModelTest {
     }
 
     @Test
+    fun `GIVEN the bill saving WHEN tapping Add a payment method THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(methods = emptyList())
+        fillIn()
+        expenses.createGate = CompletableDeferred()
+        viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+        // When
+        viewModel.onEvent(SplitBillUiEvent.OnAddPayingMethodClicked)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isSaving)
+        assertEquals(groupStack + newBill, navigator.backStack.value)
+        assertTrue(addEvents().isEmpty())
+    }
+
+    @Test
     fun `GIVEN a receipt being read WHEN picking None in Paid with THEN the method stays picked`() =
         runTest(testDispatcher) {
             // Given

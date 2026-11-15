@@ -312,20 +312,14 @@ fun PaidWithCard(
             shape = MaterialTheme.shapes.large,
             color = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {
-            PaidWithLine(
-                method = method,
-                trailing = {},
-            )
+            PaidWithLine(method = method)
         }
         PaidWithPrivateLabel(modifier = Modifier.padding(horizontal = 16.dp))
     }
 }
 
 @Composable
-private fun PaidWithLine(
-    method: PayingMethod?,
-    trailing: @Composable () -> Unit,
-) {
+private fun PaidWithLine(method: PayingMethod) {
     Row(
         modifier = Modifier
             .heightIn(min = 56.dp)
@@ -336,13 +330,11 @@ private fun PaidWithLine(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (method != null) {
-            PayingMethodTile(
-                type = method.type,
-                cardColor = method.cardColor,
-                size = 32.dp,
-            )
-        }
+        PayingMethodTile(
+            type = method.type,
+            cardColor = method.cardColor,
+            size = 32.dp,
+        )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(R.string.designsystem_paid_with),
@@ -350,14 +342,13 @@ private fun PaidWithLine(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = method?.label() ?: stringResource(R.string.designsystem_paid_with_none),
+                text = method.label(),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        trailing()
     }
 }
 
