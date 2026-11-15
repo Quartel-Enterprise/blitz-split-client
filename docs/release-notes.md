@@ -26,6 +26,7 @@ dependencies, and [release-process.md](release-process.md) says how a release ru
       "text": {
         "en": "You can now export a group's data from its menu.",
         "pt": "Agora você pode exportar os dados de um grupo pelo menu dele.",
+        "pt-PT": "Agora podes exportar os dados de um grupo a partir do menu dele.",
         "es": "…", "fr": "…", "de": "…", "it": "…", "pl": "…", "nl": "…", "ja": "…", "tr": "…", "id": "…"
       }
     }
@@ -42,8 +43,10 @@ dependencies, and [release-process.md](release-process.md) says how a release ru
 - **`platforms`**: `["all"]`, or some of `android`, `ios` (iPhone and iPad), `mac` and `web`, in that order; never all
   four, which is `["all"]`. The platforms whose UI the change reaches: a note for a change in the shared ViewModel is
   for all, one for a SwiftUI-only change is `["ios", "mac"]` or one of them.
-- **`text`**: the note in each of the eleven languages the site has (`en`, `pt`, `es`, `fr`, `de`, `it`, `pl`, `nl`,
-  `ja`, `tr`, `id`), one plain line each, with no Markdown and no HTML: the apps and the page draw it as it is.
+- **`text`**: the note in each of the twelve languages the site has (`en`, `pt`, `pt-PT`, `es`, `fr`, `de`, `it`,
+  `pl`, `nl`, `ja`, `tr`, `id`), one plain line each, with no Markdown and no HTML: the apps and the page draw it as
+  it is. Portugal's Portuguese is written in full here, as on the site, not as the few words over Brazil's that the
+  apps keep for it: nearly every note differs ("tu" for "você", "ecrã" for "tela", "estar a" for the gerund).
 - **`betaOnly`**, optional: `true` for a note about something no stable version ever had, such as the fix of a bug
   another pull request introduced since the last stable version. The beta testers read it, and the stable version
   leaves it out, since nobody on a stable version saw the bug.
@@ -63,8 +66,9 @@ no visible effect, or code no screen reaches yet: a pull request with none of th
   that…". Never what the code does: no class, no library, no "refactored".
 - One sentence, with no jargon. Screens and buttons are named as the app shows them in that language (Profile ›
   Privacy and about is Perfil › Privacidade e sobre in Portuguese), as the site's legal pages do: take the words from
-  the app's strings, not from a translation of the English note. The app is Bora Rachar in Portuguese and Blitz Split
-  in every other language.
+  the app's strings, not from a translation of the English note. The app is Bora Rachar in Brazil's Portuguese and
+  Blitz Split in every other language, Portugal's included. A word Portugal's strings don't override
+  (`values-pt-rPT`, the `pt-PT` localization, `ptPT.ts`) is Brazil's.
 - No "On Android," at the start: `platforms` says where, and the page writes it. A platform's name stays only when it
   narrows the note further ("On iPhone in landscape,").
 - An operating system's version is a floor ("on iOS 26 or later"), never one version: the notes stay readable for
@@ -129,6 +133,12 @@ stable version yet (see [release-process.md](release-process.md)); the script al
 
 ## Adding a language
 
-The languages are `LANGS` in `release-notes.mjs`, and they are the site's: a language goes in both at once, with its
-"Bug fixes and performance improvements." in `NOTHING_TO_SAY`, and every fragment in `release-notes/unreleased/` gets
-its text, or the check fails. The `add-language` skill lists it.
+The languages are `LANGS` in `release-notes.mjs`, and they are the site's: a language goes in both, with its "Bug
+fixes and performance improvements." in `NOTHING_TO_SAY`, and every fragment in `release-notes/unreleased/` gets its
+text, or the check fails. The `add-language` skill lists it.
+
+The two repositories gain a language in pull requests of their own, and either may merge first. So a release writes
+the languages the site's `release-notes/` has folders for, not `LANGS`: a language only the fragments have waits for
+the site, whose earlier versions it then adds itself, and one only the site has stops `site-release-notes`, naming
+it, since the site would refuse a version without it. A hand-written version read from a site that lacks a language
+tells that language its base's notes (Portugal's reads Brazil's) or English's.

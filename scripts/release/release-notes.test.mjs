@@ -217,9 +217,16 @@ describe("the commands", () => {
     }
   };
 
+  // A checkout of the site as it is once it has every language of the fragments; `langs` for one that hasn't.
+  const siteWith = (langs) => {
+    const dir = mkdtempSync(join(tmpdir(), "release-notes-site-"));
+    for (const lang of langs) mkdirSync(join(dir, "release-notes", lang), { recursive: true });
+    return dir;
+  };
+
   before(() => {
     repo = mkdtempSync(join(tmpdir(), "release-notes-repo-"));
-    site = mkdtempSync(join(tmpdir(), "release-notes-site-"));
+    site = siteWith(LANGS);
     git("init", "-q", "-b", "main");
     git("config", "user.name", "Test");
     git("config", "user.email", "test@example.com");
@@ -279,6 +286,37 @@ describe("the commands", () => {
     assert.match(run("collect", "3.0.1", "--site", site, "--out", out), /from the site/);
     assert.equal(siteNotes("3.0.1").date, "2026-12-01");
     assert.equal(readFileSync(join(out, "stores/app-store-ios/fr.txt"), "utf8"), "• By hand (fr)");
+  });
+
+  test("a site that doesn't have a language yet gets the others, and nothing in that one", () => {
+    const older = siteWith(LANGS.filter((lang) => lang !== "pt-PT"));
+    run("collect", "3.0.1-beta_2", "--date", "2026-12-03", "--site", older);
+    assert.equal(JSON.parse(readFileSync(join(older, "release-notes/pt/3.0.1-beta_2.json"), "utf8")).notes[0].text, "Dark icon (pt)");
+    assert.equal(existsSync(join(older, "release-notes/pt-PT")), false);
+    rmSync(older, { recursive: true, force: true });
+  });
+
+  test("a site with a language the fragments don't have stops the release, naming it", () => {
+    const newer = siteWith([...LANGS, "ko"]);
+    assert.throws(() => run("collect", "3.0.1-beta_2", "--site", newer), /release-notes\/ko: the site has release notes in ko and the fragments don't/);
+    rmSync(newer, { recursive: true, force: true });
+  });
+
+  test("a version written by hand in a site without Portugal's Portuguese tells Portugal Brazil's", () => {
+    const older = siteWith(LANGS.filter((lang) => lang !== "pt-PT"));
+    const out = join(older, "out");
+    for (const lang of LANGS.filter((each) => each !== "pt-PT")) {
+      writeFileSync(join(older, "release-notes", lang, "3.0.3.json"), JSON.stringify({ date: "2026-12-04", notes: [{ text: `By hand (${lang})`, platforms: ["all"] }] }));
+    }
+    run("collect", "3.0.3", "--site", older, "--out", out);
+    assert.equal(readFileSync(join(out, "stores/play/pt-PT.txt"), "utf8"), "• By hand (pt)");
+    rmSync(older, { recursive: true, force: true });
+  });
+
+  test("a folder that isn't the site's checkout is refused", () => {
+    const elsewhere = mkdtempSync(join(tmpdir(), "release-notes-elsewhere-"));
+    assert.throws(() => run("collect", "3.0.1-beta_2", "--site", elsewhere), /not a checkout of blitz-split-site/);
+    rmSync(elsewhere, { recursive: true, force: true });
   });
 
   test("a version the site has with fewer notes in one language is refused by name", () => {

@@ -139,9 +139,12 @@ with one note per change the person notices:
 
 - `platforms`: the UIs the change reaches, the ones the description lists. `["all"]` for a change
   every platform draws.
-- `text`: the note in all eleven languages, each written for its reader, not translated word for
+- `text`: the note in all twelve languages, each written for its reader, not translated word for
   word. Name screens and buttons with the app's own strings in that language (`res/values-xx/strings.xml`,
-  `Localizable.xcstrings`, `webApp/src/i18n`).
+  `Localizable.xcstrings`, `webApp/src/i18n`). Portugal's Portuguese (`pt-PT`) is written in full, not
+  left to Brazil's: "tu", "estar a + infinitive", ecrã, telemóvel, partilhar, and the app is Blitz Split
+  there (Bora Rachar only in Brazil's `pt`), with its own words from `values-pt-rPT`, the `pt-PT`
+  localization and `ptPT.ts`.
 - `betaOnly: true` when the note is about something no stable version has: the fix of a bug that a
   pull request merged after the last stable tag introduced (`git tag --list | grep -v beta` lists the
   stable versions; `git log <tag>..origin/main -- <file>` shows whether the broken code is newer than it).

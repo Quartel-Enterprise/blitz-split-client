@@ -22,8 +22,11 @@ import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realp
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-/** The languages of the notes, English first: the ones blitz-split-site's release notes have. */
-export const LANGS = ["en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id"];
+/**
+ * The languages of the notes, English first: the ones blitz-split-site's release notes have. Portugal's Portuguese,
+ * pt-PT, is one of its own there, written in full, not the few words over Brazil's that the apps keep for it.
+ */
+export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id"];
 /** The platforms a note names, in the order it lists them; "all" stands alone, for every one of them. */
 export const PLATFORMS = ["android", "ios", "mac", "web"];
 /** What a note is, in the order a version lists its notes. Only "fixed" leaves the version a patch. */
@@ -46,6 +49,7 @@ const PLATFORM_NAMES = { android: "Android", ios: "iPhone and iPad", mac: "Mac",
 const NOTHING_TO_SAY = {
   en: "Bug fixes and performance improvements.",
   pt: "Correções de bugs e melhorias de desempenho.",
+  "pt-PT": "Correções de erros e melhorias de desempenho.",
   es: "Correcciones de errores y mejoras de rendimiento.",
   fr: "Corrections de bugs et améliorations des performances.",
   de: "Fehlerbehebungen und Leistungsverbesserungen.",
@@ -273,12 +277,30 @@ export function nextVersion(ref) {
 
 const siteVersionFile = (site, lang, version) => join(site, "release-notes", lang, `${version}.json`);
 
+/**
+ * The languages the site's release notes have: its folders. The site's, not `LANGS`, are the ones written, since the
+ * two repositories gain a language in pull requests of their own and either may merge first: a language only the
+ * fragments have waits for the site, and one only the site has stops the release, which would leave it without notes.
+ */
+function siteLangs(site) {
+  const dir = join(site, "release-notes");
+  if (!existsSync(dir)) fail(dir, "the folder is missing: not a checkout of blitz-split-site");
+  const langs = readdirSync(dir).filter((name) => !name.startsWith("."));
+  const unknown = langs.find((lang) => !LANGS.includes(lang));
+  if (unknown !== undefined) fail(join(dir, unknown), `the site has release notes in ${unknown} and the fragments don't: add it to LANGS and to the fragments`);
+  return langs;
+}
+
+/** The language a missing one is read as: a region's (pt-PT) as its language's (pt), any other as English. */
+const fallbackOf = (lang) => (lang.includes("-") ? lang.slice(0, lang.indexOf("-")) : "en");
+
 /** A version blitz-split-site already has, written by hand or by an earlier run, as notes; null without it. */
 function readSiteVersion(site, version) {
   if (!existsSync(siteVersionFile(site, "en", version))) return null;
+  const langs = siteLangs(site);
   const files = Object.fromEntries(
     LANGS.map((lang) => {
-      const file = siteVersionFile(site, lang, version);
+      const file = siteVersionFile(site, langs.includes(lang) ? lang : fallbackOf(lang), version);
       if (!existsSync(file)) fail(file, "the file is missing: the site has this version in English");
       return [lang, JSON.parse(readFileSync(file, "utf8"))];
     }),
@@ -300,7 +322,7 @@ function write(file, text) {
 }
 
 function writeSiteVersion(site, version, date, notes) {
-  for (const lang of LANGS) write(siteVersionFile(site, lang, version), `${JSON.stringify(siteFile(notes, lang, date), null, 2)}\n`);
+  for (const lang of siteLangs(site)) write(siteVersionFile(site, lang, version), `${JSON.stringify(siteFile(notes, lang, date), null, 2)}\n`);
 }
 
 function writeOutputs(out, version, notes, testers) {
