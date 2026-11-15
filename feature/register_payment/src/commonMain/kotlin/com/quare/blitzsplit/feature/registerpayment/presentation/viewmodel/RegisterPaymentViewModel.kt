@@ -27,12 +27,12 @@ import com.quare.blitzsplit.core.profile.domain.usecase.FormatPaymentKey
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveMemberPaymentKeys
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
+import com.quare.blitzsplit.core.support.domain.usecase.NoteReviewMoment
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveShowsPix
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.DeviceDecimalSeparator
-import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentTarget
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.ReceiverKey
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
@@ -69,8 +69,6 @@ import software.quare.loadable.toLoaded
 class RegisterPaymentViewModel(
     private val route: Route,
     private val navigator: Navigator,
-    private val recordSettlement: RecordSettlement,
-    private val settleUp: SettleUp,
     private val consumeRecordedPayment: ConsumeRecordedPayment,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
@@ -78,6 +76,9 @@ class RegisterPaymentViewModel(
     private val formatPaymentKey: FormatPaymentKey,
     private val observeMemberPaymentKeys: ObserveMemberPaymentKeys,
     private val encodeQrCode: EncodeQrCode,
+    recordSettlement: RecordSettlement,
+    settleUp: SettleUp,
+    noteReviewMoment: NoteReviewMoment,
     observeGroup: ObserveGroup,
     observeGroupBalances: ObserveGroupBalances,
     observePeopleBalances: ObservePeopleBalances,
@@ -95,6 +96,8 @@ class RegisterPaymentViewModel(
 
     val stateWatcher: FlowWatcher<RegisterPaymentUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<RegisterPaymentUiAction> = FlowWatcher(uiAction)
+
+    private val saving = PaymentSaving(recordSettlement, settleUp, noteReviewMoment)
 
     // Why: the debt is gone (paid elsewhere, the pair or the group gone) while another screen covered this one.
     private var isDebtGone = false
@@ -500,30 +503,7 @@ class RegisterPaymentViewModel(
         val target = latest ?: return
         uiState.update { it.copy(isSaving = true) }
         viewModelScope.launch {
-            // Why: a pair of one group may pay part of the debt; a settling up of a single group too, through its one payment.
-            val result = if (route is Route.SettleUp) {
-                settleUp(
-                    legs = target.legs
-                        .singleOrNull()
-                        ?.let { leg -> listOf(leg.copy(amountMinor = amountMinor)) }
-                        ?: target.legs,
-                    method = method,
-                    paidAt = paidAt,
-                    personName = (if (state.kind == PaymentKind.PAID) state.to else state.from)?.name,
-                    isPaidByMe = state.kind == PaymentKind.PAID,
-                )
-            } else {
-                val leg = target.legs.first()
-                recordSettlement(
-                    groupId = leg.groupId,
-                    fromMemberId = leg.fromMemberId,
-                    toMemberId = leg.toMemberId,
-                    amountMinor = amountMinor,
-                    currency = leg.currency,
-                    method = method,
-                    paidAt = paidAt,
-                ).map { listOf(it) }
-            }
+            val result = saving.save(route is Route.SettleUp, target, state, amountMinor, method, paidAt)
             result
                 .onSuccess { settlementIds ->
                     trackEvent(

@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.support.domain.model.ReviewMoment
 import com.quare.blitzsplit.feature.splitbill.presentation.model.PayerSelection
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiAction
 import com.quare.blitzsplit.feature.splitbill.presentation.model.SplitBillUiEvent
@@ -75,6 +76,7 @@ class SplitBillViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: SplitBillViewModel
     private val actions = mutableListOf<SplitBillUiAction>()
+    private val notedMoments = mutableListOf<ReviewMoment>()
 
     // Why: what the device clock says, which a case moves on after the screen opened.
     private var clockMillis = 0L
@@ -2647,6 +2649,131 @@ class SplitBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN a new bill filled in WHEN tapping Salvar THEN notes a bill created once for the review`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("100")
+            describe("Mercado")
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.BillCreated), notedMoments)
+        }
+
+    @Test
+    fun `GIVEN no internet and a new bill filled in WHEN tapping Salvar THEN notes a bill created once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(online = false)
+            typeAmount("100")
+            describe("Mercado")
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.BillCreated), notedMoments)
+        }
+
+    @Test
+    fun `GIVEN the device fails to save WHEN tapping Salvar THEN notes nothing for the review`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(createError = IllegalStateException("disk full"))
+            typeAmount("100")
+            describe("Mercado")
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertTrue(notedMoments.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a new bill filled in and not saved WHEN reading the review moments THEN nothing was noted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("100")
+            describe("Mercado")
+
+            // When
+            val noted = notedMoments.toList()
+
+            // Then
+            assertTrue(noted.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill with no description WHEN tapping Salvar THEN notes nothing for the review`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("100")
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // Then
+            assertTrue(notedMoments.isEmpty())
+            assertTrue(expenses.createdExpenses.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a save in flight WHEN reading the review moments THEN nothing is noted before it succeeds`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(createGate = CompletableDeferred())
+            typeAmount("100")
+            describe("Mercado")
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // When
+            val noted = notedMoments.toList()
+
+            // Then
+            assertTrue(noted.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a second tap on Salvar while saving WHEN the save finishes THEN notes a bill created once`() =
+        runTest(testDispatcher) {
+            // Given
+            val gate = CompletableDeferred<Unit>()
+            prepareScenario(createGate = gate)
+            typeAmount("100")
+            describe("Mercado")
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // When
+            gate.complete(Unit)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.BillCreated), notedMoments)
+        }
+
+    @Test
+    fun `GIVEN a bill filled in WHEN tapping close and discarding THEN notes nothing for the review`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            typeAmount("100")
+            describe("Mercado")
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnCloseClicked)
+            navigator.confirmDiscard()
+
+            // Then
+            assertTrue(notedMoments.isEmpty())
+        }
+
+    @Test
     fun `GIVEN another screen on top WHEN tapping close THEN the back stack stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -3399,6 +3526,7 @@ class SplitBillViewModelTest {
         val roomNeverAnswers = MutableSharedFlow<Group?>()
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            noteReviewMoment = notedMoments::add,
             paidWithUseCases = paidWithUseCasesOf(),
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,

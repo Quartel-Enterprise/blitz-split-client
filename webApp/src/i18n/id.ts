@@ -2322,4 +2322,13 @@ export const id: Record<MessageKey, string> = {
   push_debtsUnsimplifiedToYou: '{1} menonaktifkan Sederhanakan utang. Sekarang {2} membayar {3} ke kamu.',
   push_debtsUnsimplifiedFromYou: '{1} menonaktifkan Sederhanakan utang. Sekarang kamu membayar {3} ke {2}.',
   push_debtsUnsimplifiedOther: '{1} menonaktifkan Sederhanakan utang. Lihat dampaknya untukmu.',
+  releaseNotes_title: 'Catatan rilis',
+  releaseNotes_showBeta: 'Tampilkan versi beta',
+  releaseNotes_beta: 'Beta {number}',
+  releaseNotes_thisVersion: 'Versi ini',
+  releaseNotes_empty: 'Belum ada catatan rilis.',
+  releaseNotes_emptyOnlyBeta: 'Belum ada versi stabil. Aktifkan versi beta untuk melihat apa yang sedang diuji.',
+  releaseNotes_loadFailedTitle: 'Tidak dapat memuat catatan rilis',
+  releaseNotes_loadFailedBody: 'Periksa koneksimu, lalu coba lagi.',
+  releaseNotes_retry: 'Coba lagi',
 }

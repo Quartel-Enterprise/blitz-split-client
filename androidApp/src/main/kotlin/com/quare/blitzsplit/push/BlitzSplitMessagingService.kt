@@ -64,7 +64,7 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
         if (!canNotify() || !isPushEnabled()) return
         val notification = NotificationCompat
             .Builder(this, kind.channel.id)
-            .setSmallIcon(R.drawable.ic_launcher_monochrome)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))

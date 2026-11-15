@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.provider.crashlytics.di.crashlyticsModule
 import com.quare.blitzsplit.core.provider.image.di.imageModule
 import com.quare.blitzsplit.core.provider.room.di.roomModule
 import com.quare.blitzsplit.core.provider.supabase.di.supabaseModule
+import com.quare.blitzsplit.core.releasenotes.di.releaseNotesModule
 import com.quare.blitzsplit.core.settings.di.settingsModule
 import com.quare.blitzsplit.core.support.di.supportModule
 import com.quare.blitzsplit.core.sync.di.syncModule
@@ -48,19 +49,23 @@ import com.quare.blitzsplit.feature.paymentkey.di.paymentKeyModule
 import com.quare.blitzsplit.feature.profilesetup.di.profileSetupModule
 import com.quare.blitzsplit.feature.recoverycode.di.recoveryCodeModule
 import com.quare.blitzsplit.feature.registerpayment.di.registerPaymentModule
+import com.quare.blitzsplit.feature.releasenotes.di.releaseNotesFeatureModule
 import com.quare.blitzsplit.feature.restore.di.restoreModule
 import com.quare.blitzsplit.feature.splitbill.di.splitBillModule
 import com.quare.blitzsplit.feature.welcome.di.welcomeModule
 import com.quare.blitzsplit.shared.app.AnalyticsChoices
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
+import com.quare.blitzsplit.shared.app.SiteTextUseCases
+import com.quare.blitzsplit.shared.app.StorePromptUseCases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import software.quare.connectivity.connectivityModule
 import com.quare.blitzsplit.feature.profile.di.profileModule as profileScreenModule
@@ -70,36 +75,9 @@ private val appModule = module {
     single<RandomCode> { SecureRandomCode() }
     single<MinuteTicks> { SystemMinuteTicks(get()) }
     single { LinkInbox() }
-    // Why: spelled out, as the ViewModel takes more than viewModelOf's 22 parameters.
-    viewModel {
-        AppViewModel(
-            observeProfile = get(),
-            navigator = get(),
-            observeBrowserSignInReturningToProfile = get(),
-            observeThemePreference = get(),
-            observeDynamicColors = get(),
-            observeBitcoinInSats = get(),
-            observeAppLanguage = get(),
-            refreshAppLanguage = get(),
-            linkInbox = get(),
-            sharedBillLeftForSignIn = get(),
-            markActivityRead = get(),
-            findActivityEvent = get(),
-            observeGroup = get(),
-            observeExpense = get(),
-            syncNow = get(),
-            locateBill = get(),
-            noticeBillGone = get(),
-            observeAppForeground = get(),
-            requestUpdatePromptIfNeeded = get(),
-            startScreenViews = get(),
-            prefetchLegalDocuments = get(),
-            observeReviewMoments = get(),
-            requestReviewIfNeeded = get(),
-            trackEvent = get(),
-            startSync = get(),
-        )
-    }
+    factoryOf(::SiteTextUseCases)
+    factoryOf(::StorePromptUseCases)
+    viewModelOf(::AppViewModel)
     // Why: a single that owns its scope, following the choices for the app's whole life, as SyncCoordinator does.
     single {
         AnalyticsChoices(
@@ -130,6 +108,7 @@ val sharedModules: List<Module> = listOf(
     settingsModule,
     inAppUpdateModule,
     legalModule,
+    releaseNotesModule,
     supportModule,
     welcomeModule,
     profileSetupModule,
@@ -159,6 +138,7 @@ val sharedModules: List<Module> = listOf(
     contactsModule,
     inAppUpdateFeatureModule,
     legalFeatureModule,
+    releaseNotesFeatureModule,
     appDownloadModule,
 )
 

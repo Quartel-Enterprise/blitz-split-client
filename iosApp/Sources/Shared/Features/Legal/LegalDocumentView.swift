@@ -190,9 +190,7 @@ private struct LegalDocumentText: View {
     /// The day the text last changed, long ("November 5, 2026") in the device's own format.
     private var updated: String {
         let day = document.updated
-        let components = DateComponents(year: Int(day.year), month: Int(day.month), day: Int(day.day))
-        guard let date = Calendar.current.date(from: components) else { return "" }
-        return date.formatted(date: .long, time: .omitted)
+        return longSiteDate(year: day.year, month: day.month, day: day.day)
     }
 }
 

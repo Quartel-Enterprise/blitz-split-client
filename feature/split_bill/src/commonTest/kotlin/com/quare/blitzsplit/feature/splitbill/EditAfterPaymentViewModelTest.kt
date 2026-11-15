@@ -356,6 +356,7 @@ class EditAfterPaymentViewModelTest {
             it.navigate(route)
         }
         viewModel = SplitBillViewModel(
+            noteReviewMoment = {},
             paidWithUseCases = paidWithUseCasesOf(),
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,

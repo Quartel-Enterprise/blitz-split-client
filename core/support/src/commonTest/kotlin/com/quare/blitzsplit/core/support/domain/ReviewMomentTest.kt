@@ -7,29 +7,38 @@ import kotlin.test.assertEquals
 
 class ReviewMomentTest {
     @Test
-    fun `GIVEN a bill created WHEN reading its analytics THEN the review was requested by a saved bill`() {
+    fun `GIVEN a bill created WHEN reading its trigger THEN a saved bill led to the review`() {
         // Given
         val moment = ReviewMoment.BillCreated
 
         // When
-        val analytics = moment.analytics
+        val trigger = moment.trigger
 
         // Then
-        assertEquals(EventAnalytics.Automatic("in_app_review_requested", mapOf("trigger" to "bill_saved")), analytics)
+        assertEquals("bill_saved", trigger)
     }
 
     @Test
-    fun `GIVEN a payment recorded WHEN reading its analytics THEN the review was requested by a settled group`() {
+    fun `GIVEN a payment recorded WHEN reading its trigger THEN a settled group led to the review`() {
         // Given
         val moment = ReviewMoment.PaymentRecorded(listOf("group-trip"))
 
         // When
-        val analytics = moment.analytics
+        val trigger = moment.trigger
 
         // Then
-        assertEquals(
-            EventAnalytics.Automatic("in_app_review_requested", mapOf("trigger" to "group_settled")),
-            analytics,
-        )
+        assertEquals("group_settled", trigger)
+    }
+
+    @Test
+    fun `GIVEN the review moments WHEN reading their analytics THEN the event is sent by hand`() {
+        // Given
+        val moments = ReviewMoment
+
+        // When
+        val analytics = moments.analytics
+
+        // Then
+        assertEquals(EventAnalytics.Manual("in_app_review_requested"), analytics)
     }
 }

@@ -82,6 +82,7 @@
     <string name="profile_privacy_policy">Kebijakan Privasi</string>
     <string name="profile_terms">Ketentuan Layanan</string>
     <string name="profile_version_footer">Versi %1$s</string>
+    <string name="profile_release_notes">Catatan rilis</string>
     <string name="profile_check_for_updates">Periksa pembaruan</string>
     <string name="profile_check_for_updates_version">Versi %1$s</string>
     <string name="profile_check_for_updates_checking">Memeriksa…</string>

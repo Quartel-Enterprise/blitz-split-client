@@ -1,7 +1,9 @@
 package com.quare.blitzsplit.core.support.domain
 
+import com.quare.blitzsplit.core.support.data.ReviewMomentInbox
 import com.quare.blitzsplit.core.support.domain.model.ReviewMoment
-import com.quare.blitzsplit.core.support.domain.usecase.impl.ReviewMoments
+import com.quare.blitzsplit.core.support.domain.usecase.impl.NoteReviewMomentUseCase
+import com.quare.blitzsplit.core.support.domain.usecase.impl.ObserveReviewMomentsUseCase
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -10,7 +12,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ReviewMomentsTest {
-    private val moments = ReviewMoments()
+    private val inbox = ReviewMomentInbox()
+    private val moments = NoteReviewMomentUseCase(inbox)
+    private val observe = ObserveReviewMomentsUseCase(inbox)
     private val observed = mutableListOf<ReviewMoment>()
 
     @Test
@@ -71,7 +75,7 @@ class ReviewMomentsTest {
         }
 
     private fun TestScope.observeMoments() {
-        backgroundScope.launch { moments().collect(observed::add) }
+        backgroundScope.launch { observe().collect(observed::add) }
         runCurrent()
     }
 }

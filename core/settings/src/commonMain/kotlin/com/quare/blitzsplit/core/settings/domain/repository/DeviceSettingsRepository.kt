@@ -41,4 +41,9 @@ interface DeviceSettingsRepository {
     fun observeUsageDataSharing(): Flow<Boolean>
 
     suspend fun updateUsageDataSharing(isOn: Boolean)
+
+    // Why: Release notes' "Show beta versions" as switched on this device, null until it was.
+    fun observeBetaReleaseNotesChoice(): Flow<Boolean?>
+
+    suspend fun updateBetaReleaseNotesChoice(isOn: Boolean)
 }

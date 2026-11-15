@@ -32,6 +32,7 @@ import com.quare.blitzsplit.core.profile.domain.model.PixBrCode
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
+import com.quare.blitzsplit.core.support.domain.model.ReviewMoment
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
@@ -82,6 +83,7 @@ class PayReceiverViewModelTest {
     private lateinit var viewModel: RegisterPaymentViewModel
     private lateinit var firstDownload: MutableStateFlow<FirstDownloadProgress?>
     private val actions = mutableListOf<RegisterPaymentUiAction>()
+    private val reviewMoments = mutableListOf<ReviewMoment>()
 
     // Why: what the device clock says, which a case moves on after the screen opened.
     private var clockMillis = 0L
@@ -720,6 +722,20 @@ class PayReceiverViewModelTest {
         }
 
     @Test
+    fun `GIVEN the keys shown WHEN Mark as paid saves THEN notes one payment recorded in the group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("10,00"))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(GROUP_ID))), reviewMoments)
+        }
+
+    @Test
     fun `GIVEN Bitcoin shown WHEN tapping Marcar como pago THEN records the whole debt as another method`() =
         runTest(testDispatcher) {
             // Given
@@ -1229,6 +1245,7 @@ class PayReceiverViewModelTest {
             it.navigate(route)
         }
         viewModel = RegisterPaymentViewModel(
+            noteReviewMoment = { reviewMoments += it },
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.support.di
 
+import com.quare.blitzsplit.core.support.data.ReviewMomentInbox
 import com.quare.blitzsplit.core.support.data.datasource.ReviewPromptLocalDataSource
 import com.quare.blitzsplit.core.support.data.datasource.RoomReviewPromptLocalDataSource
 import com.quare.blitzsplit.core.support.data.repository.ReviewPromptRepositoryImpl
@@ -12,14 +13,14 @@ import com.quare.blitzsplit.core.support.domain.usecase.ObserveSupportDiagnostic
 import com.quare.blitzsplit.core.support.domain.usecase.RequestReviewIfNeeded
 import com.quare.blitzsplit.core.support.domain.usecase.impl.BuildSupportEmailUseCase
 import com.quare.blitzsplit.core.support.domain.usecase.impl.FindRateAppLinkUseCase
+import com.quare.blitzsplit.core.support.domain.usecase.impl.NoteReviewMomentUseCase
+import com.quare.blitzsplit.core.support.domain.usecase.impl.ObserveReviewMomentsUseCase
 import com.quare.blitzsplit.core.support.domain.usecase.impl.ObserveSupportDiagnosticsUseCase
 import com.quare.blitzsplit.core.support.domain.usecase.impl.RequestReviewIfNeededUseCase
-import com.quare.blitzsplit.core.support.domain.usecase.impl.ReviewMoments
 import com.quare.blitzsplit.core.support.generated.SupportConfig
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
-import org.koin.dsl.binds
 import org.koin.dsl.module
 
 val supportModule = module {
@@ -36,7 +37,9 @@ val supportModule = module {
     factoryOf(::BuildSupportEmailUseCase).bind<BuildSupportEmail>()
     singleOf(::RoomReviewPromptLocalDataSource).bind<ReviewPromptLocalDataSource>()
     singleOf(::ReviewPromptRepositoryImpl).bind<ReviewPromptRepository>()
-    singleOf(::ReviewMoments).binds(arrayOf(NoteReviewMoment::class, ObserveReviewMoments::class))
+    singleOf(::ReviewMomentInbox)
+    factoryOf(::NoteReviewMomentUseCase).bind<NoteReviewMoment>()
+    factoryOf(::ObserveReviewMomentsUseCase).bind<ObserveReviewMoments>()
     factoryOf(::FindRateAppLinkUseCase).bind<FindRateAppLink>()
     factory<RequestReviewIfNeeded> {
         RequestReviewIfNeededUseCase(
@@ -46,6 +49,7 @@ val supportModule = module {
             repository = get(),
             observeGroupBalances = get(),
             currentTimeMillis = get(),
+            trackEvent = get(),
         )
     }
 }

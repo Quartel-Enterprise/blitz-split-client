@@ -11,6 +11,7 @@ internal class FakeDeviceSettingsRepository(
     stored: ThemePreference = ThemePreference.SYSTEM,
 ) : DeviceSettingsRepository {
     val theme = MutableStateFlow(stored)
+    val betaReleaseNotesChoice = MutableStateFlow<Boolean?>(null)
     val updatedThemes = mutableListOf<ThemePreference>()
     val layout = MutableStateFlow(GroupsLayout.initial)
     val updatedLayouts = mutableListOf<GroupsLayout>()
@@ -85,5 +86,11 @@ internal class FakeDeviceSettingsRepository(
     override suspend fun updateUsageDataSharing(isOn: Boolean) {
         updatedUsageDataSharing += isOn
         usageDataSharing.value = isOn
+    }
+
+    override fun observeBetaReleaseNotesChoice(): Flow<Boolean?> = betaReleaseNotesChoice
+
+    override suspend fun updateBetaReleaseNotesChoice(isOn: Boolean) {
+        betaReleaseNotesChoice.value = isOn
     }
 }

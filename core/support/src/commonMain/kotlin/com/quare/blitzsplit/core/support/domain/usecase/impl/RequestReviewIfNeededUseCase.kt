@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupBalances
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.isRestingScreen
 import com.quare.blitzsplit.core.profile.domain.model.ClientPlatform
+import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.support.domain.model.ReviewMoment
 import com.quare.blitzsplit.core.support.domain.repository.ReviewPromptRepository
 import com.quare.blitzsplit.core.support.domain.usecase.RequestReviewIfNeeded
@@ -30,10 +31,12 @@ class RequestReviewIfNeededUseCase(
     private val repository: ReviewPromptRepository,
     private val observeGroupBalances: ObserveGroupBalances,
     private val currentTimeMillis: CurrentTimeMillis,
+    private val trackEvent: TrackEvent,
 ) : RequestReviewIfNeeded {
     private val grace = 3.days
     private val cooldown = 60.days
     private val restingScreenWait = 10.seconds
+    private val balancesWait = 5.seconds
 
     override suspend fun invoke(moment: ReviewMoment): Boolean {
         if (platform == ClientPlatform.WEB || !isWorthAsking(moment)) return false
@@ -57,6 +60,7 @@ class RequestReviewIfNeededUseCase(
                 lastPromptedVersion = appVersion,
             )
         }
+        trackEvent("in_app_review_requested", mapOf("trigger" to moment.trigger))
         return true
     }
 
@@ -64,8 +68,10 @@ class RequestReviewIfNeededUseCase(
         ReviewMoment.BillCreated ->
             repository.update { it.copy(billsCreated = it.billsCreated + 1) }.billsCreated >= BILLS_BEFORE_ASKING
 
-        is ReviewMoment.PaymentRecorded ->
-            moment.groupIds.any { groupId -> observeGroupBalances(groupId).first().isEveryoneSettled }
+        // Why: a group that went meanwhile may never answer, and one moment must not hold the ones after it.
+        is ReviewMoment.PaymentRecorded -> moment.groupIds.any { groupId ->
+            withTimeoutOrNull(balancesWait) { observeGroupBalances(groupId).first() }?.isEveryoneSettled == true
+        }
     }
 
     // Why: a clock set back since then never silences the review for good.

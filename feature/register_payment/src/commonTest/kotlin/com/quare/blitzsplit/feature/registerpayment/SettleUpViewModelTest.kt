@@ -34,6 +34,7 @@ import com.quare.blitzsplit.core.profile.domain.model.PixBrCode
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.FormatPaymentKeyUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveMemberPaymentKeysUseCase
 import com.quare.blitzsplit.core.profile.testing.FakePaymentKeyRepository
+import com.quare.blitzsplit.core.support.domain.model.ReviewMoment
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PaymentKind
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.RegisterPaymentUiAction
@@ -73,6 +74,7 @@ class SettleUpViewModelTest {
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: RegisterPaymentViewModel
     private val actions = mutableListOf<RegisterPaymentUiAction>()
+    private val reviewMoments = mutableListOf<ReviewMoment>()
 
     @BeforeTest
     fun setUp() {
@@ -694,6 +696,136 @@ class SettleUpViewModelTest {
             assertEquals(route, navigator.backStack.value.last())
         }
 
+    @Test
+    fun `GIVEN a settling up across three groups WHEN the save succeeds THEN notes each group once in order`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(
+                listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(FLORIPA, APE, CHURRASCO))),
+                reviewMoments,
+            )
+        }
+
+    @Test
+    fun `GIVEN Carla keys across two groups WHEN Mark as paid saves THEN notes one payment in both groups`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = youOweCarlaAcrossGroups,
+                carlaKeys = listOf(carlaPhoneKey),
+            )
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(FLORIPA, APE))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN a settling up in one group WHEN paying part of it THEN notes one payment in that group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(bills = listOf(owes(FLORIPA, CARLA_FLORIPA, ME_FLORIPA, 9_840L)))
+            viewModel.onEvent(RegisterPaymentUiEvent.OnAmountChanged("40,00"))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(FLORIPA))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN a settling up in one group WHEN paying all of it THEN notes one payment in that group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(bills = listOf(owes(CHURRASCO, CARLA_CHURRASCO, ME_CHURRASCO, 3_250L)))
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(CHURRASCO))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN Carla keys in one group WHEN Mark as paid saves THEN notes one payment in that group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = listOf(owes(APE, ME_APE, CARLA_APE, 9_800L)),
+                carlaKeys = listOf(carlaPhoneKey),
+            )
+
+            // When
+            viewModel.onEvent(RegisterPaymentUiEvent.OnMarkAsPaidClicked)
+
+            // Then
+            assertEquals(listOf<ReviewMoment>(ReviewMoment.PaymentRecorded(listOf(APE))), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN the settling up fails WHEN confirming THEN notes no review moment`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        settlements.recordError = IllegalStateException("disk full")
+
+        // When
+        viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+        // Then
+        assertEquals(emptyList(), reviewMoments)
+    }
+
+    @Test
+    fun `GIVEN a settling up being saved WHEN reading the review moments THEN none was noted yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(recordGate = CompletableDeferred())
+            viewModel.onEvent(RegisterPaymentUiEvent.OnConfirmClicked)
+
+            // When
+            val noted = reviewMoments.toList()
+
+            // Then
+            assertEquals(emptyList(), noted)
+        }
+
+    @Test
+    fun `GIVEN settling up open WHEN a sync settles the person THEN notes no review moment`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            expenses.expenses.update { emptyList() }
+
+            // Then
+            assertEquals(emptyList(), reviewMoments)
+        }
+
+    @Test
+    fun `GIVEN a held close of a settling up WHEN discarding THEN notes no review moment`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(RegisterPaymentUiEvent.OnMethodPicked(SettlementMethod.CASH))
+        viewModel.onEvent(RegisterPaymentUiEvent.OnCloseClicked)
+
+        // When
+        navigator.confirmDiscard()
+
+        // Then
+        assertEquals(emptyList(), reviewMoments)
+    }
+
     private fun paymentRecorded(
         method: SettlementMethod,
         way: String,
@@ -827,6 +959,7 @@ class SettleUpViewModelTest {
         }
         val money = ObserveGroupsMoneyUseCase(expenses, settlements)
         viewModel = RegisterPaymentViewModel(
+            noteReviewMoment = { reviewMoments += it },
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,

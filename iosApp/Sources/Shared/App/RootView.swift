@@ -192,6 +192,7 @@ struct RootView: View {
         case .contactSupport: ContactSupportView()
         case .notificationSettings: NotificationSettingsView()
         case .categoryMap: CategoryMapView()
+        case .releaseNotes: ReleaseNotesView()
         case let .legalDocument(route): LegalDocumentView(route: route)
         case let .paymentKey(route): PaymentKeyView(route: route)
         case let .payingMethod(route): PayingMethodView(route: route)

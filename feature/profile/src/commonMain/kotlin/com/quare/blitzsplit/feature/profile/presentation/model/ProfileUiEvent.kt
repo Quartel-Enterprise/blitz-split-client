@@ -62,6 +62,8 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnTermsClicked -> EventAnalytics.Automatic("terms_clicked", mapOf("source" to PROFILE_SOURCE))
 
+            OnReleaseNotesClicked -> EventAnalytics.Automatic("release_notes_clicked")
+
             OnCancelScheduledSignOutClicked -> EventAnalytics.Automatic("sign_out_scheduled_cancel_clicked")
 
             is OnCodeSavedChanged -> EventAnalytics.Automatic(
@@ -250,6 +252,9 @@ sealed interface ProfileUiEvent : UiEvent {
     data object OnPrivacyPolicyClicked : ProfileUiEvent
 
     data object OnTermsClicked : ProfileUiEvent
+
+    // Why: "Privacy and about" › "Release notes"; the Mac opens it as a sheet on its Settings.
+    data object OnReleaseNotesClicked : ProfileUiEvent
 
     // Why: "Buscar atualizações", in the place of "Versão" on Android, iOS and macOS.
     data object OnCheckForUpdatesClicked : ProfileUiEvent

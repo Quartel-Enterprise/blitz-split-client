@@ -49,4 +49,10 @@ data class DeviceSettingsEntity(
     // Why: Profile's "Share usage data" (Firebase Analytics), on until turned off on this device.
     @ColumnInfo(defaultValue = "1")
     val sharesUsageData: Boolean,
+    /*
+     * Why: Release notes' "Show beta versions"; null until switched on this device, when it follows the build: on in a
+     * beta, off in a stable version.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val showsBetaReleaseNotes: Boolean?,
 )

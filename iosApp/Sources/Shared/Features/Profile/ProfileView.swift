@@ -1115,6 +1115,7 @@ private struct AboutSection: View {
                 Text("Screens and taps, to improve the app. Never names or amounts.")
             }
             .disabled(!model.state.isLoaded)
+            ReleaseNotesRow(model: model)
             // The version itself sits in the legal footer, at the end of the profile (beta feedback 18)
             if model.state.showsCheckForUpdates {
                 CheckForUpdatesRow(model: model)
@@ -1157,6 +1158,29 @@ private struct LegalFooter: View {
             model.send(ProfileUiEventOnTermsClicked.shared)
         }
         .buttonStyle(.borderless)
+    }
+}
+
+/// "Release notes": what each version changed, pushed on iPhone and iPad and a sheet on the Mac's Settings. The
+/// whole row opens it, a chevron at its end, as a key's row does on both.
+private struct ReleaseNotesRow: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Button {
+            model.send(ProfileUiEventOnReleaseNotesClicked.shared)
+        } label: {
+            LabeledContent {
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
+            } label: {
+                Text("Release notes").foregroundStyle(.primary)
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
     }
 }
 

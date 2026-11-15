@@ -936,6 +936,7 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
             it.navigate(route)
         }
         viewModel = RegisterPaymentViewModel(
+            noteReviewMoment = {},
             trackEvent = { name, params -> trackedEvents += name to params },
             route = route,
             navigator = navigator,

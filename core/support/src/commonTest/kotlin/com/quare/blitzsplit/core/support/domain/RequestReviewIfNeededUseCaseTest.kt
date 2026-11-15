@@ -23,6 +23,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RequestReviewIfNeededUseCaseTest {
+    private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private lateinit var repository: FakeReviewPromptRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var useCase: RequestReviewIfNeededUseCase
@@ -596,6 +597,48 @@ class RequestReviewIfNeededUseCaseTest {
         assertFalse(asks)
     }
 
+    @Test
+    fun `GIVEN the grace is over WHEN a bill is saved THEN sends the review requested by a saved bill`() = runTest {
+        // Given
+        prepareScenario(stored = pastGrace)
+
+        // When
+        useCase(ReviewMoment.BillCreated)
+
+        // Then
+        assertEquals(listOf("in_app_review_requested" to mapOf<String, Any>("trigger" to "bill_saved")), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the grace is over WHEN a payment settles a group THEN sends the review requested by it`() = runTest {
+        // Given
+        prepareScenario(
+            stored = pastGrace,
+            balances = mapOf("group-trip" to settled),
+        )
+
+        // When
+        useCase(ReviewMoment.PaymentRecorded(listOf("group-trip")))
+
+        // Then
+        assertEquals(
+            listOf("in_app_review_requested" to mapOf<String, Any>("trigger" to "group_settled")),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the grace only starts WHEN a bill is saved THEN sends no event`() = runTest {
+        // Given
+        prepareScenario(stored = state(billsCreated = 2))
+
+        // When
+        useCase(ReviewMoment.BillCreated)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
     private val pastGrace = state(
         billsCreated = 5,
         firstEligibleAt = NOW - 3 * DAY,
@@ -645,6 +688,7 @@ class RequestReviewIfNeededUseCaseTest {
             repository = repository,
             observeGroupBalances = { groupId -> flowOf(balances.getValue(groupId)) },
             currentTimeMillis = { NOW },
+            trackEvent = { name, params -> trackedEvents += name to params },
         )
     }
 

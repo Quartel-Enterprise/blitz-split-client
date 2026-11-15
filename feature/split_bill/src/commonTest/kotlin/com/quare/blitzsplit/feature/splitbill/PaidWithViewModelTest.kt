@@ -739,6 +739,7 @@ class PaidWithViewModelTest {
         }
         val deletedBills = InMemoryDeletedBillRepository()
         viewModel = SplitBillViewModel(
+            noteReviewMoment = {},
             paidWithUseCases = paidWithUseCasesOf(paying),
             trackEvent = { name, params -> trackedEvents += name to params },
             route = screen,

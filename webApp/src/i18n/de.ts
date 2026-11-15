@@ -2324,4 +2324,13 @@ export const de: Record<MessageKey, string> = {
   push_debtsUnsimplifiedToYou: '{1} hat „Schulden vereinfachen“ ausgeschaltet. Jetzt zahlt {2} dir {3}.',
   push_debtsUnsimplifiedFromYou: '{1} hat „Schulden vereinfachen“ ausgeschaltet. Jetzt zahlst du {2} {3}.',
   push_debtsUnsimplifiedOther: '{1} hat „Schulden vereinfachen“ ausgeschaltet. Sieh nach, was das für dich bedeutet.',
+  releaseNotes_title: 'Versionshinweise',
+  releaseNotes_showBeta: 'Beta-Versionen anzeigen',
+  releaseNotes_beta: 'Beta {number}',
+  releaseNotes_thisVersion: 'Diese Version',
+  releaseNotes_empty: 'Noch keine Versionshinweise.',
+  releaseNotes_emptyOnlyBeta: 'Es gibt noch keine stabile Version. Schalte die Beta-Versionen ein, um zu sehen, was gerade getestet wird.',
+  releaseNotes_loadFailedTitle: 'Versionshinweise konnten nicht geladen werden',
+  releaseNotes_loadFailedBody: 'Prüfe deine Verbindung und versuche es erneut.',
+  releaseNotes_retry: 'Erneut versuchen',
 }

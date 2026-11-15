@@ -109,7 +109,6 @@ dependencies {
     implementation(projects.core.provider.crashlytics)
     implementation(projects.core.provider.analytics)
     implementation(projects.core.sync)
-    implementation(projects.core.support)
     implementation(projects.core.inAppUpdate)
     implementation(projects.android.platform)
 
@@ -143,6 +142,7 @@ dependencies {
     implementation(projects.android.feature.categoryMap)
     implementation(projects.android.feature.inAppUpdate)
     implementation(projects.android.feature.legal)
+    implementation(projects.android.feature.releaseNotes)
 
     // Atividade's push notifications (Crashlytics comes with :core:provider:crashlytics)
     implementation(platform(libs.firebase.bom))

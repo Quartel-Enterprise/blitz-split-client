@@ -2323,4 +2323,13 @@ export const it: Record<MessageKey, string> = {
   push_debtsUnsimplifiedToYou: '{1} ha disattivato Semplifica debiti. Ora {2} ti paga {3}.',
   push_debtsUnsimplifiedFromYou: '{1} ha disattivato Semplifica debiti. Ora paghi {3} a {2}.',
   push_debtsUnsimplifiedOther: '{1} ha disattivato Semplifica debiti. Guarda cosa cambia per te.',
+  releaseNotes_title: 'Note di rilascio',
+  releaseNotes_showBeta: 'Mostra versioni beta',
+  releaseNotes_beta: 'Beta {number}',
+  releaseNotes_thisVersion: 'Questa versione',
+  releaseNotes_empty: 'Ancora nessuna nota di rilascio.',
+  releaseNotes_emptyOnlyBeta: 'Non c’è ancora una versione stabile. Attiva le versioni beta per vedere cosa è in prova.',
+  releaseNotes_loadFailedTitle: 'Impossibile caricare le note di rilascio',
+  releaseNotes_loadFailedBody: 'Controlla la connessione e riprova.',
+  releaseNotes_retry: 'Riprova',
 }

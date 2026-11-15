@@ -318,6 +318,10 @@ class ProfilePresenter {
         viewModel.onEvent(ProfileUiEvent.OnTermsClicked)
     }
 
+    fun releaseNotes() {
+        viewModel.onEvent(ProfileUiEvent.OnReleaseNotesClicked)
+    }
+
     fun signOut() {
         viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
     }

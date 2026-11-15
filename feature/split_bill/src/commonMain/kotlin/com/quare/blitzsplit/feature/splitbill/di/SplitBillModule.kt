@@ -1,7 +1,5 @@
 package com.quare.blitzsplit.feature.splitbill.di
 
-import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
-import com.quare.blitzsplit.core.support.domain.usecase.impl.toReviewNoting
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillCategoryUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.BillPayingMethodUseCases
 import com.quare.blitzsplit.feature.splitbill.presentation.viewmodel.SplitBillViewModel
@@ -19,8 +17,7 @@ val splitBillModule = module {
     viewModel { parameters ->
         SplitBillViewModel(
             route = parameters.get(),
-            // Why: a new bill saved here is a moment the app may ask for a review after.
-            createExpense = get<CreateExpense>().toReviewNoting(get()),
+            createExpense = get(),
             updateExpense = get(),
             deleteExpense = get(),
             noticeBillGone = get(),
@@ -43,6 +40,7 @@ val splitBillModule = module {
             paidWithUseCases = get(),
             observeBitcoinInSats = get(),
             connectivityObserver = get(),
+            noteReviewMoment = get(),
             trackEvent = get(),
         )
     }

@@ -13,7 +13,7 @@ kotlin {
             implementation(projects.core.profile)
             implementation(projects.core.account)
             implementation(projects.core.settings)
-            // Why: EventAnalytics, which names the event a review request sends.
+            // Why: EventAnalytics and TrackEvent, for the event a review request sends.
             implementation(projects.core.presentation)
             // Why: the review asks only over a resting screen, after a payment that settles a group.
             implementation(projects.core.navigation)
@@ -23,10 +23,6 @@ kotlin {
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)
-        }
-        androidMain.dependencies {
-            // Why: Google Play's in-app review card.
-            implementation(libs.play.review)
         }
         commonTest.dependencies {
             implementation(libs.kotlinx.coroutines.test)
