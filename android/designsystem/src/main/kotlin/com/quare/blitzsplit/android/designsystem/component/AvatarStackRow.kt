@@ -36,7 +36,8 @@ data class StackFace(
 
 /*
  * Why: everyone at once, cut to the bubbles of the FaceStack the place has room for: COMPACT in a list's row or a
- * form's field, ROOMY on a screen's own header or body (docs/product/general.md names each place). For a list the ViewModel already cut, the overload below takes its faces and N.
+ * form's field, ROOMY on a screen's own header or body (docs/product/general.md names each place). For a list the
+ * ViewModel already cut, the overload below takes its faces and N.
  */
 @Composable
 fun AvatarStackRow(

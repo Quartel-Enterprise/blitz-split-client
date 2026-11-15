@@ -10,9 +10,9 @@ struct StackFace {
 
 /// Every stack of faces in the app, as Android and the web draw it, by the shared `FaceStack` rule: `.compact` in a
 /// list's row or a form's field (two bubbles: both faces of two people, the first face and "+N" of three or more),
-/// `.roomy` on a screen's own header or body (five: everyone up to five, four faces and "+N" of six or more). Each bubble is ringed in
-/// the surface behind it so its neighbor's edge reads, and keeps its circle whatever room the row leaves. VoiceOver
-/// skips it; the row around it says who.
+/// `.roomy` on a screen's own header or body (five: everyone up to five, four faces and "+N" of six or more). Each
+/// bubble is ringed in the surface behind it so its neighbor's edge reads, and keeps its circle whatever room the row
+/// leaves. VoiceOver skips it; the row around it says who.
 struct AvatarStack: View {
     let faces: [StackFace]
     let extraCount: Int
