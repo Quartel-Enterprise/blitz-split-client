@@ -209,6 +209,81 @@ lane :finish_app_store_screenshots do
   tidy_app_store_screenshots("osx")
 end
 
+desc "Upload the stores' listing text, the files of store-listing/ (docs/store-listing.md): the name, the"
+desc "descriptions and, on the App Store, the subtitle, the keywords and the promotional text, in every language."
+desc "Options: platform (android|ios|mac; all three when left out). Needs PLAY_STORE_JSON_KEY_PATH (Play) and the"
+desc "App Store Connect key variables (App Store). version_code names the production release supply reads when the"
+desc "track holds more than one (a staged rollout). VALIDATE_ONLY=true, or validate_only:true, only asks Play whether"
+desc "it would take the text and changes nothing: the App Store has no such check, so it is left out of that run."
+lane :upload_listing do |options|
+  require "tmpdir"
+
+  repo_root = File.expand_path("..", __dir__)
+  platforms = options[:platform] ? [options[:platform].to_s] : %w[android ios mac]
+  UI.user_error!("platform is one of android, ios, mac") unless (platforms - %w[android ios mac]).empty?
+  validates_only = validate_only?(options[:validate_only])
+  if validates_only && platforms != ["android"]
+    UI.user_error!("VALIDATE_ONLY checks Google Play alone: the App Store has no such check") unless platforms.include?("android")
+    UI.important("VALIDATE_ONLY: only Google Play is checked, the App Store listings are left as they are")
+    platforms = ["android"]
+  end
+  Dir.mktmpdir("store-listing-") do |dir|
+    # The script reads store-listing/ from the working directory, which fastlane sets to fastlane/. It stops on a
+    # field over its store's limit, before anything is uploaded
+    Dir.chdir(repo_root) { sh("node", "scripts/release/store-listing.mjs", "stage", "--out", dir) }
+    upload_play_listing(File.join(dir, "play"), options[:version_code], validates_only) if platforms.include?("android")
+    upload_app_store_listing(File.join(dir, "app-store"), "ios") if platforms.include?("ios")
+    upload_app_store_listing(File.join(dir, "app-store"), "osx") if platforms.include?("mac")
+  end
+end
+
+# VALIDATE_ONLY=true in the environment, or a lane's validate_only:true, asks Play whether it would take the upload
+# and changes nothing.
+def validate_only?(option = nil)
+  [ENV["VALIDATE_ONLY"], option].any? { |value| value.to_s.strip.downcase == "true" }
+end
+
+# The listing's text only: no bundle, no track, no images. supply adds the listing of a locale Play doesn't have yet.
+# It reads the production track's release on the way, and stops when the track holds more than one unless it is
+# told which, by its versionCode.
+def upload_play_listing(metadata_path, version_code, validates_only)
+  release = version_code.to_s.empty? ? {} : { version_code: version_code.to_s.to_i }
+  retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
+    upload_to_play_store(
+      package_name: ANDROID_PACKAGE,
+      json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
+      **release,
+      metadata_path: metadata_path,
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: false,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      validate_only: validates_only,
+    )
+  end
+end
+
+# The text only, on the editable version: no build, no screenshots, no submission. deliver adds the locales the
+# listing doesn't have yet. The name and the subtitle are the app's, so the iPhone's and the Mac's runs write the same.
+def upload_app_store_listing(metadata_path, platform)
+  upload_to_app_store(
+    api_key: app_store_api_key,
+    app_identifier: BUNDLE_ID,
+    # Unset, deliver uses the editable version; set, it creates that version when it doesn't exist yet
+    app_version: ENV["APP_VERSION"],
+    platform: platform,
+    metadata_path: metadata_path,
+    skip_binary_upload: true,
+    skip_screenshots: true,
+    skip_metadata: false,
+    submit_for_review: false,
+    force: true,
+    precheck_include_in_app_purchases: false,
+  )
+end
+
 # Listing images only: no bundle, no track, no text. sync_image_upload sends only the images whose SHA-256 differs from
 # what Play holds, so running it again uploads nothing that already landed. supply sends everything in one edit and
 # commits it at the end, so a 5xx throws the edit away and the next attempt starts over.
@@ -227,7 +302,7 @@ def upload_play_screenshots(metadata_path, locale)
         skip_upload_images: true,
         skip_upload_screenshots: false,
         sync_image_upload: true,
-        validate_only: ENV.fetch("VALIDATE_ONLY", "false").strip.downcase == "true",
+        validate_only: validate_only?,
       )
     end
   end
@@ -414,7 +489,7 @@ lane :play_upload do |options|
           **release,
           metadata_path: changelogs,
           skip_upload_changelogs: false,
-          # The listing's text and images are not this lane's: the Play Console and the screenshots lanes hold them
+          # The listing's text and images are not this lane's: upload_listing and the screenshots lanes send them
           skip_upload_apk: true,
           skip_upload_metadata: true,
           skip_upload_images: true,

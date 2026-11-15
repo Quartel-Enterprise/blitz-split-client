@@ -259,6 +259,7 @@ reproduce a CI failure (step 12).
 | Web UI | `webApp/`, `shared/src/jsMain` | The production build of the web app | |
 | Copied code | Any `.kt`, `.swift`, `.ts` or `.tsx`, `.jscpd.json`, `.jscpd-baseline.json`, `scripts/cpd.sh`, a workflow that uses `Quartel-Enterprise/copied-code-check` | The duplication check | |
 | Release notes | `release-notes/`, `scripts/release/release-notes.mjs` or its tests | `node scripts/release/release-notes.mjs check`, and `node --test scripts/release/release-notes.test.mjs` when the script or its tests changed. Seconds each, no queue | |
+| Store listing text | `store-listing/`, `scripts/release/store-listing.mjs` or its tests | `node scripts/release/store-listing.mjs check`, and `node --test scripts/release/store-listing.test.mjs` when the script or its tests changed. Seconds each, no queue | |
 
 A change to the API the Apple app sees (a `UiState`, a ViewModel) without a change to `iosApp/` runs
 no Apple build locally, and one without a change to `webApp/` or `shared/src/jsMain` runs no web

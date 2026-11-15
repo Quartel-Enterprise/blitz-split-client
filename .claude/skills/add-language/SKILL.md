@@ -106,6 +106,10 @@ unsure about.
   fragments then carry the whole note, not only the words that differ. The site gains the language in a
   pull request of its own and either may merge first: see
   [docs/release-notes.md](../../../docs/release-notes.md#adding-a-language).
+- The stores' listing: write `store-listing/<language>.md` and add the language's store locales to
+  `PLAY_LOCALES` and `APP_STORE_LOCALES` in `scripts/release/store-listing.mjs`
+  (`node scripts/release/store-listing.mjs check` fails until the file is there). See
+  [docs/store-listing.md](../../../docs/store-listing.md#adding-a-language).
 - The docs that list the languages: `CLAUDE.md`, `README.md`, `docs/ai_agents.md`, `docs/architecture/code-style.md`,
   `docs/architecture/new-feature-checklist.md`, `docs/product/general.md`, `docs/product/profile.md`,
   `.claude/skills/review-conventions/SKILL.md`, the comments of `androidApp/build.gradle.kts` and `iosApp/project.yml`.

@@ -143,7 +143,9 @@ is built:
   to the site, reads the permission of whoever started that attempt (`collaborators/<login>/permission`, the
   [`release-admin`](../.github/actions/release-admin/action.yml) action) and fails, naming them, when it isn't
   `admin` or can't be read. So **Re-run failed jobs**, which runs jobs again without `plan`, is an admin's too, and
-  someone else's re-run stops before it builds anything.
+  someone else's re-run stops before it builds anything. The [`store-listing`](../.github/workflows/store-listing.yml)
+  workflow, which sends the listing text to the stores, starts each of its jobs with the same check
+  ([store-listing.md](store-listing.md)).
 - **On `main`**: a run dispatched on another branch would take that branch's copy of the workflow, and fails.
 - **The `Production` environment only lets `main` deploy.** The jobs that reach a store or app.blitzsplit.com (the
   uploads, the submissions, the creation of the App Store version, the screenshots' uploads, the web) name the
@@ -163,7 +165,8 @@ read them ([Secrets](#secrets)).
 - **Google Play.** The `play_upload` lane of [`fastlane/Fastfile`](../fastlane/Fastfile) sends the bundle, the track
   and the notes in one edit (`supply`), so a failed attempt leaves nothing behind. On the production track a
   `rollout` under 100 starts a staged rollout: raise it, halt it or finish it in the Play Console (Test and release ›
-  Production). The other tracks get the release whole. The listing's text is not touched.
+  Production). The other tracks get the release whole. The listing's text is not touched: it is
+  `fastlane upload_listing`'s ([store-listing.md](store-listing.md)).
 - **App Store.** The `app_store_submit` lane waits for App Store Connect to process the build (up to 45 minutes),
   makes `X.Y.Z` the editable version, writes its "What's new", selects the build and submits it (`deliver`). An
   approved version is released by itself, to everyone, or over seven days with `phased_release`. The Mac app is a
