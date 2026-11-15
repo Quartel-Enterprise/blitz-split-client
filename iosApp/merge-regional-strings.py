@@ -56,7 +56,7 @@ def read_tables(lproj: Path) -> dict:
     }
 
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def read_catalog(catalog: Path) -> Optional[dict]:
     """The catalog's strings, read once however many tables and regions ask; None when there is no such catalog."""
     if not catalog.is_file():
@@ -64,15 +64,16 @@ def read_catalog(catalog: Path) -> Optional[dict]:
     return json.loads(catalog.read_text(encoding="utf-8")).get("strings", {})
 
 
-def read_translated_keys(catalogs: Path, table: str, region: str) -> Optional[set]:
-    """The keys the table's catalog translates into `region`; None for a table that has no catalog."""
-    strings = read_catalog(catalogs / f"{Path(table).stem}.xcstrings")
+@functools.cache
+def read_translated_keys(catalog: Path, region: str) -> Optional[frozenset]:
+    """The keys the catalog translates into `region`, once for its .strings and .stringsdict; None for no catalog."""
+    strings = read_catalog(catalog)
     if strings is None:
         return None
-    return {key for key, entry in strings.items() if region in entry.get("localizations", {})}
+    return frozenset(key for key, entry in strings.items() if region in entry.get("localizations", {}))
 
 
-def own_entries(table: dict, translated_keys: Optional[set]) -> dict:
+def own_entries(table: dict, translated_keys: Optional[frozenset]) -> dict:
     if translated_keys is None:
         return table
     return {key: value for key, value in table.items() if key in translated_keys}
@@ -81,9 +82,11 @@ def own_entries(table: dict, translated_keys: Optional[set]) -> dict:
 def merge(language_lproj: Path, regional_lproj: Path, catalogs: Path) -> None:
     language_tables = read_tables(language_lproj)
     built_tables = read_tables(regional_lproj)
-    region = regional_lproj.stem
+    # The catalogs name a region with a hyphen (es-ES), whichever separator its lproj took
+    region = regional_lproj.stem.replace("_", "-")
     regional_tables = {
-        name: own_entries(table, read_translated_keys(catalogs, name, region)) for name, table in built_tables.items()
+        name: own_entries(table, read_translated_keys(catalogs / f"{Path(name).stem}.xcstrings", region))
+        for name, table in built_tables.items()
     }
     for name, language_table in language_tables.items():
         regional_table = regional_tables.get(name, {})
