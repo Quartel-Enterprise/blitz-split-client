@@ -33,7 +33,7 @@ export const FIELDS = [
 ];
 
 /**
- * The stores' locales each language's listing goes to, the codes the screenshots use too (`playStoreLocales` and
+ * The stores' locales each language's listing goes to, the codes the screenshots use too (`playLocales` and
  * `appStoreLocales` of build-logic's StoreScreenshots.kt): keep the two in step, since a store attaches a locale's
  * screenshots to the listing of that same locale.
  */
