@@ -40,4 +40,9 @@ export default defineConfig({
   worker: {
     format: 'es',
   },
+  // Why: only a release that uploads them to Sentry makes source maps (the web-deploy action), which it deletes before
+  // deploying; 'hidden' leaves no sourceMappingURL in the files people download.
+  build: {
+    sourcemap: process.env.WEB_SOURCE_MAPS === 'true' ? 'hidden' : false,
+  },
 })
