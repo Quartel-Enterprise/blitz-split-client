@@ -32,9 +32,14 @@ rows() { grep -v '^#' "$TABLES/$1.tsv"; }
 # Whether a comma-separated list (empty: everything) has the item.
 wanted() { [ -z "$1" ] || [[ ",$1," == *",$2,"* ]]; }
 
+# Asks the app to quit, and kills it if it is still there five seconds later, so a stuck launch can't hold the run.
 quit_app() {
   pkill -f "$APP/Contents/MacOS/" 2>/dev/null || true
-  while pgrep -f "$APP/Contents/MacOS/" > /dev/null; do sleep 0.2; done
+  for _ in $(seq 25); do
+    pgrep -f "$APP/Contents/MacOS/" > /dev/null || return 0
+    sleep 0.2
+  done
+  pkill -9 -f "$APP/Contents/MacOS/" 2>/dev/null || true
 }
 
 "$ROOT/iosApp/generate-project.sh"
@@ -71,6 +76,7 @@ restore_language() {
 }
 trap restore_language EXIT
 
+last_capture=""
 while IFS=$'\t' read -r tag language apple_language apple_locale; do
   wanted "$STORE_SCREENSHOTS_LOCALES" "$tag" || continue
   mkdir -p "$OUTPUT/mac/$tag"
@@ -93,18 +99,22 @@ while IFS=$'\t' read -r tag language apple_language apple_locale; do
     sleep "$SETTLE"
     # The window alone, without its shadow, at the size StoreScreenshotsRun gives it, which the Mac's frame draws
     # on its own canvas
-    screencapture -x -o -l "$window" "$OUTPUT/mac/$tag/$file_name.png"
+    last_capture="$OUTPUT/mac/$tag/$file_name.png"
+    screencapture -x -o -l "$window" "$last_capture"
     quit_app
   done < <(rows screens)
   echo "Captured $tag"
 done < <(rows locales)
 
+if [ -z "$last_capture" ]; then
+  echo "Nothing captured: no row of locales.tsv and screens.tsv matches what was asked for" >&2
+  exit 1
+fi
 echo "Captured into $OUTPUT/mac"
 
 # The frame draws the window at twice its points: a capture from a display that isn't Retina would go to the listing
 # blurred, so the run fails and whatever called it stops before framing or uploading.
-capture="$(find "$OUTPUT/mac" -name '*.png' -print -quit)"
-width="$(sips -g pixelWidth "$capture" | awk '/pixelWidth/ { print $2 }')"
+width="$(sips -g pixelWidth "$last_capture" | awk '/pixelWidth/ { print $2 }')"
 if [ "$width" -lt 2880 ]; then
   echo "The Mac captures are $width px wide, the frame takes 2880: the window was on a display that isn't Retina" >&2
   exit 1

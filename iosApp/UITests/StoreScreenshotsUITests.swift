@@ -37,10 +37,10 @@ final class StoreScreenshotsUITests: XCTestCase {
         let slot = try XCTUnwrap(environment["STORE_SCREENSHOTS_SLOT"])
         // The tables capture-mac.sh reads too, beside the photos: scripts/store-screenshots
         let tables = URL(fileURLWithPath: try XCTUnwrap(environment["STORE_SCREENSHOTS_ASSETS"]))
-        let locales = try Self.rows(of: "locales", in: tables).map {
+        let locales = try Self.rows(of: "locales", fields: 4, in: tables).map {
             ListingLocale(tag: $0[0], language: $0[1], appleLanguage: $0[2], appleLocale: $0[3])
         }
-        let screens = try Self.rows(of: "screens", in: tables).map {
+        let screens = try Self.rows(of: "screens", fields: 3, in: tables).map {
             ListingScreen(code: $0[0], fileName: $0[1], isDark: $0[2] == "dark")
         }
         let assets = try Self.assetsEnvironment(tables)
@@ -93,19 +93,25 @@ final class StoreScreenshotsUITests: XCTestCase {
         return Set(list.split(separator: ",").map(String.init))
     }
 
-    /// The rows of `<name>.tsv`, each its tab-separated fields, without the `#` comment lines and the empty ones.
-    private static func rows(of name: String, in directory: URL) throws -> [[String]] {
-        try String(contentsOf: directory.appendingPathComponent("\(name).tsv"), encoding: .utf8)
+    /// The rows of `<name>.tsv`, each its tab-separated fields, without the `#` comment lines and the empty ones. A
+    /// row short of a field (spaces typed for a tab) fails the test here, by name, instead of trapping where it is
+    /// read.
+    private static func rows(of name: String, fields: Int, in directory: URL) throws -> [[String]] {
+        let rows = try String(contentsOf: directory.appendingPathComponent("\(name).tsv"), encoding: .utf8)
             .split(separator: "\n")
             .filter { !$0.hasPrefix("#") }
             .map { $0.split(separator: "\t").map(String.init) }
+        for row in rows {
+            XCTAssertEqual(row.count, fields, "\(name).tsv: \(row.joined(separator: " ")) has not \(fields) fields")
+        }
+        return rows
     }
 
     /// The faces, the groups' photos and the receipt's photo of assets.tsv, base64 in the launch environment, which
     /// the app writes to a folder of its own (StoreScreenshotsRun): the Mac's capture hands them the same way, since
     /// the Mac app's sandbox can't read the repository.
     private static func assetsEnvironment(_ directory: URL) throws -> [String: String] {
-        try rows(of: "assets", in: directory).reduce(into: [:]) { environment, asset in
+        try rows(of: "assets", fields: 2, in: directory).reduce(into: [:]) { environment, asset in
             let photo = try Data(contentsOf: directory.appendingPathComponent(asset[1]))
             environment["STORE_SCREENSHOTS_ASSET_\(asset[0])"] = photo.base64EncodedString()
         }

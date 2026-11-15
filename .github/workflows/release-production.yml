@@ -610,8 +610,8 @@ jobs:
         run: ./scripts/store-screenshots/capture-ios.sh
 
       # The runner has no signing account, so the app is signed to run locally and without its entitlements, which
-      # only a provisioning profile could grant. The script fails on a display that isn't Retina, whose captures the
-      # frame would blur, and where it may not record the screen: the Mac's listing keeps its screenshots then.
+      # only a provisioning profile could grant. The script fails where it isn't allowed to record the screen, and
+      # on a display that isn't Retina, whose captures the frame would blur: the Mac's listing keeps its screenshots.
       - name: Capture on the runner's screen
         if: ${{ matrix.slot == 'mac' }}
         env:
