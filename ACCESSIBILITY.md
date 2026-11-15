@@ -25,7 +25,8 @@ keyboard in the browser.
   zoom), and layouts reflow to make room; an amount stays on one line and shrinks to fit.
 - **Screen readers.** Buttons, icons and photos have labels; decorative images are hidden from them; a row reads as
   one sentence instead of scattered pieces.
-- **Motion.** Animations respect Reduce Motion on Apple devices and `prefers-reduced-motion` on the web.
+- **Motion.** Animations follow Android's Remove animations, Reduce Motion on Apple devices and
+  `prefers-reduced-motion` on the web, but for the exception under Known limitations.
 - **Every screen size.** Phones upright and lying down, tablets, foldables in book and tabletop postures, the Mac's
   windows and the web's breakpoints, as [Responsive layouts](docs/architecture/responsive-layouts.md) describes.
 - **Keyboard and pointer.** On the Mac and the web, controls are reachable with the keyboard and show a focus ring;
@@ -35,6 +36,8 @@ keyboard in the browser.
 
 ## Known limitations
 
+- On iPhone, iPad and the Mac, the charts of a group's statistics still animate in (the bars growing, the pie
+  sweeping) with Reduce Motion on.
 - Reading a receipt from a photo relies on the camera and on how legible the receipt is; every field it fills in can
   be typed instead.
 - Scanning an invite's QR code needs the camera; the same invite works as a link.

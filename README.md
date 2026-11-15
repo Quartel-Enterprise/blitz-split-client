@@ -11,7 +11,7 @@ every group, bill and payment on your device first and syncs when the internet i
 
 | Android | iPhone, iPad and Mac | Web |
 | -- | -- | -- |
-| Jetpack Compose, Material 3 Expressive | SwiftUI, iOS, iPadOS and macOS 26 (Liquid Glass) | React, [blitzsplit.com](https://blitzsplit.com) |
+| Jetpack Compose, Material 3 Expressive | SwiftUI, iOS, iPadOS and macOS 26 (Liquid Glass) | React, [app.blitzsplit.com](https://app.blitzsplit.com) |
 
 The apps keep the `com.quare.blitzsplit` application id and bundle id of the legacy Blitz Split, since they replace
 it in the stores.

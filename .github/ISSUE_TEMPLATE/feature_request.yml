@@ -1,5 +1,6 @@
 name: Feature request
 description: An idea to make the app better.
+labels: [feature]
 body:
   - type: markdown
     attributes:
