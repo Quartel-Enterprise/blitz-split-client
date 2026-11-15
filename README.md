@@ -83,6 +83,12 @@ npm --prefix webApp run dev           # web dev server
 
 ## 🤝 Contributing
 
-Branches and pull request titles follow Conventional Commits types (`fix`, `feature`, `enhancement`, `refactor`,
-`chore`). Before opening one, run `./scripts/ktlint.sh`, `./gradlew jvmTest :koverVerifyCi assertModuleGraph` and `./scripts/cpd.sh`. Code,
-comments, docs and commit messages are in English; only the text a user sees is translated.
+Bug reports, ideas and pull requests are welcome: [Contributing](CONTRIBUTING.md) says how to report a bug, how the
+code is organized and what a pull request needs. Everyone taking part follows the [code of conduct](CODE_OF_CONDUCT.md).
+Report security problems privately, as the [security policy](SECURITY.md) says, and accessibility barriers as
+[Accessibility](ACCESSIBILITY.md) explains.
+
+## 📄 License
+
+Copyright © 2026 Quartel Enterprise. All rights reserved. The source is public to read and to contribute to, but it is
+not open source: see the [license](LICENSE).
