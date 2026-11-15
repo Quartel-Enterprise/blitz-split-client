@@ -1,0 +1,65 @@
+name: 'Run an App Store Connect lane'
+description: >-
+  Runs a lane of fastlane/Fastfile that talks to App Store Connect: the screenshots' upload, the version, the
+  submission for review. Writes the API key where the lanes read it (KEY_PATH) and removes it afterwards. The calling
+  job checks out the repository first, since the steps run its scripts.
+
+inputs:
+  lane:
+    description: 'The lane and its options, as they follow `fastlane` on a command line. Paths are read from the repository root'
+    required: true
+  app-version:
+    description: 'For the screenshots: the App Store version they go on (APP_VERSION), created when it is missing'
+    required: false
+    default: ''
+  key-id:
+    description: 'The App Store Connect API key id'
+    required: true
+  key-issuer-id:
+    description: 'The App Store Connect API issuer id'
+    required: true
+  key-p8:
+    description: 'The text of the API key (.p8)'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set up fastlane
+      uses: ./.github/actions/fastlane
+
+    # In a step of its own: the lanes read the key from the file, and take APP_STORE_CONNECT_API_KEY_P8, when they
+    # see it, for the base64 a local run passes.
+    - name: Write the App Store Connect key
+      id: key
+      shell: bash
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
+        APP_STORE_CONNECT_API_KEY_P8: ${{ inputs.key-p8 }}
+      run: |
+        ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+        echo "path=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_OUTPUT"
+
+    - name: Run the lane
+      shell: bash
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ inputs.key-id }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ inputs.key-issuer-id }}
+        KEY_PATH: ${{ steps.key.outputs.path }}
+        APP_VERSION: ${{ inputs.app-version }}
+        LANE: ${{ inputs.lane }}
+      run: |
+        # An empty one would name a version with no number.
+        if [ -z "$APP_VERSION" ]; then unset APP_VERSION; fi
+        # Unquoted on purpose: the lane and each of its options are words of their own.
+        # shellcheck disable=SC2086
+        fastlane $LANE
+
+    # The key must not stay on the runner for the steps after this action, or for the next job on a reused one.
+    - name: Remove the App Store Connect key
+      if: always()
+      shell: bash
+      env:
+        KEY_PATH: ${{ steps.key.outputs.path }}
+      run: rm -f "$KEY_PATH"

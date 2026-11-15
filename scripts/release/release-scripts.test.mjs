@@ -82,7 +82,7 @@ describe("the version of a release", () => {
 
   test("a stable version is the version as it is, whatever betas it had", () => {
     git("tag", "3.0.0-beta_1");
-    assert.deepEqual(outputsOf(["--stable"]), { version: "3.0.0", display_version: "3.0.0", version_code: "84", branch: BRANCH, tagged: "false" });
+    assert.deepEqual(outputsOf(["--stable"]), { version: "3.0.0", display_version: "3.0.0", version_code: "84", branch: BRANCH });
   });
 
   test("a stable version after one is the one the release notes lead to", () => {
@@ -96,9 +96,16 @@ describe("the version of a release", () => {
     assert.throws(() => outputsOf(["--stable"]), /no text in pt/);
   });
 
-  test("a stable version typed again says it is already tagged", () => {
+  test("a stable version typed again says in the plan that it is already tagged", () => {
+    const summary = join(root, "summary");
+    const planOf = (args) => {
+      writeFileSync(summary, "");
+      run("suggest-version.sh", args, { GITHUB_STEP_SUMMARY: summary });
+      return readFileSync(summary, "utf8");
+    };
+    assert.doesNotMatch(planOf(["--stable", "3.0.0"]), /already tagged/);
     git("tag", "3.0.0");
-    assert.equal(outputsOf(["--stable", "3.0.0"]).tagged, "true");
+    assert.match(planOf(["--stable", "3.0.0"]), /`3\.0\.0` is already tagged/);
   });
 
   test("the versionCode is one past the highest build number a release recorded, a stable one's too", () => {
@@ -175,6 +182,8 @@ describe("the merge-back", () => {
     git("tag", "3.0.0");
     commit("merged back", versionFile("3.0.0", 84));
     git("push", "-q", "origin", "main", "3.0.0");
+    // A file a step left in the checkout is not something to merge back.
+    writeFileSync(join(repo, "left-behind.txt"), "");
     assert.match(mergeBack(["3.0.0", "84", "3.0.0", "3.0.0"]), /nothing to merge back/);
     assert.deepEqual(ghCalls(), []);
   });

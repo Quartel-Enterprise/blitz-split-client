@@ -25,7 +25,13 @@ echo "========================="
 # another arrives, so a beta dispatched behind a waiting one would silently cancel it, after this script printed its
 # link. A run that is only queued for a runner is not waiting on the group, and cancels nothing.
 for workflow in "${GROUP_WORKFLOWS[@]}"; do
-  waiting="$(gh run list --workflow="$workflow" --repo "$REPO" --status pending --json databaseId --jq length)"
+  if ! waiting="$(gh run list --workflow="$workflow" --repo "$REPO" --status pending --json databaseId --jq length)"; then
+    # gh fails on a workflow main doesn't have, which then has no run waiting; on this one, it is a real error.
+    if [ "$workflow" = "$WORKFLOW" ]; then
+      exit 1
+    fi
+    continue
+  fi
   if [ "$waiting" -gt 0 ]; then
     echo "A release is already waiting behind a running one. Wait for it to start, then run this again." >&2
     exit 1

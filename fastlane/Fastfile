@@ -368,8 +368,13 @@ end
 PLAY_TRACKS = %w[production beta alpha internal].freeze
 # How long App Store Connect may take to process an upload before the build can be selected:
 BUILD_PROCESSING_TIMEOUT_SECONDS = 45 * 60
-# The states of a version App Store Connect is already reviewing:
-IN_REVIEW_STATES = %w[WAITING_FOR_REVIEW IN_REVIEW].freeze
+# The states of a version that was submitted already, from waiting for its review to being on the store:
+SUBMITTED_STATES = %w[
+  WAITING_FOR_REVIEW IN_REVIEW ACCEPTED PENDING_DEVELOPER_RELEASE PENDING_APPLE_RELEASE PROCESSING_FOR_DISTRIBUTION
+  READY_FOR_DISTRIBUTION
+].freeze
+# What Google Play answers to a bundle whose versionCode it already holds:
+PLAY_VERSION_CODE_USED_MESSAGE = "has already been used".freeze
 
 desc "Upload a signed AAB to a Google Play track with the version's \"What's new\""
 desc "Options: aab (its path); track (production|beta|alpha|internal); rollout (the percentage of the users who get"
@@ -388,22 +393,32 @@ lane :play_upload do |options|
   with_notes_for(File.expand_path(options.fetch(:notes), repo_root), play_listing_locales(json_key)) do |changelogs|
     release = staged ? { release_status: "inProgress", rollout: (percentage.to_i / 100.0).to_s } : { release_status: "completed" }
     # supply sends the bundle, the track and the notes through one edit and commits it at the end, so a 5xx throws
-    # the edit away and the next attempt starts over: Play holds nothing of a failed one
+    # the edit away and the next attempt starts over: Play holds nothing of a failed one. Unless the 5xx answered a
+    # commit that did land: the next attempt is then refused the versionCode, which after a server error, and only
+    # then, means the release is there.
+    attempt = 0
     retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
-      upload_to_play_store(
-        package_name: ANDROID_PACKAGE,
-        json_key: json_key,
-        aab: File.expand_path(options.fetch(:aab), repo_root),
-        track: track,
-        **release,
-        metadata_path: changelogs,
-        skip_upload_changelogs: false,
-        # The listing's text and images are not this lane's: the Play Console and the screenshots lanes hold them
-        skip_upload_apk: true,
-        skip_upload_metadata: true,
-        skip_upload_images: true,
-        skip_upload_screenshots: true,
-      )
+      attempt += 1
+      begin
+        upload_to_play_store(
+          package_name: ANDROID_PACKAGE,
+          json_key: json_key,
+          aab: File.expand_path(options.fetch(:aab), repo_root),
+          track: track,
+          **release,
+          metadata_path: changelogs,
+          skip_upload_changelogs: false,
+          # The listing's text and images are not this lane's: the Play Console and the screenshots lanes hold them
+          skip_upload_apk: true,
+          skip_upload_metadata: true,
+          skip_upload_images: true,
+          skip_upload_screenshots: true,
+        )
+      rescue => e
+        raise unless attempt > 1 && e.message.include?(PLAY_VERSION_CODE_USED_MESSAGE)
+
+        UI.important("Google Play already holds this versionCode: the attempt it answered with a server error had landed")
+      end
     end
   end
 end
@@ -443,10 +458,18 @@ lane :app_store_submit do |options|
   phased = options.fetch(:phased, false).to_s == "true"
   app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
 
-  # A re-run after the submission landed: App Store Connect refuses a second one, and nothing is left to do
-  editable = app.get_edit_app_store_version(platform: connect_platform)
-  if submit && editable && editable.version_string == version && IN_REVIEW_STATES.include?(editable.app_version_state)
-    UI.important("#{version} (#{platform}) is already waiting for review: nothing to submit")
+  # A re-run after the submission landed: App Store Connect refuses a second one, and nothing is left to do. Looked up
+  # by its number, since a version Apple has started to review is no longer the editable one. With another build
+  # on it, this run's was never submitted, and saying nothing would record it as sent.
+  submitted = app.get_app_store_versions(filter: { versionString: version, platform: connect_platform })
+                 .find { |each| SUBMITTED_STATES.include?(each.app_version_state) }
+  if submit && submitted
+    state = submitted.app_version_state.downcase.tr("_", " ")
+    on_it = submitted.build&.version
+    if on_it && on_it != build
+      UI.user_error!("#{version} (#{platform}) is already #{state} with build #{on_it}: build #{build} was not submitted. Remove that submission in App Store Connect to send this one")
+    end
+    UI.important("#{version} (#{platform}) is already #{state}: nothing to submit")
     next
   end
 

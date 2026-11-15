@@ -63,7 +63,9 @@ if [ -n "$tag" ]; then
   done < <(git ls-tree --name-only "$commit" "$FRAGMENTS_DIR/")
 fi
 
-if [ -z "$(git status --porcelain)" ]; then
+# Against the commit, staged or not: the removals are staged and the version isn't. Not `git status`, which also
+# lists a file some step left in the checkout, and the commit below would then find nothing to take.
+if git diff --quiet HEAD; then
   echo "::notice::main already holds version $main_version and versionCode $main_code, nothing to merge back."
   exit 0
 fi

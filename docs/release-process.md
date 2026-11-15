@@ -103,11 +103,12 @@ testers and the Apple builds to TestFlight, with no tag and no GitHub release.
    the run built and publishes the GitHub release `X.Y.Z`: the build number, "What's new", what each store got and
    the pull requests since the stable version before it. It then squash-merges a pull request into `main` with the
    `versionCode`, the `versionName` and the removal of the release notes' fragments the version told
-   ([`merge-back.sh`](../scripts/release/merge-back.sh)). A run that released nothing merges back its `versionCode`
-   alone.
-5. `site-release-notes` sends the notes of a released version to blitz-split-site, as a beta's. It doesn't wait for
-   the stores' reviews (Pierre's call): the notes are out when the build is submitted. A version the site already
-   has, as one written there by hand, is left as it is.
+   ([`merge-back.sh`](../scripts/release/merge-back.sh)). A run that released nothing leaves no tag and removes no
+   fragment: it merges back its `versionCode`, and its version when that is higher than `main`'s, as a beta does.
+5. `site-release-notes` sends the notes of a released version to blitz-split-site, with the job the betas use
+   ([`site-release-notes.yml`](../.github/workflows/site-release-notes.yml), which both workflows call). It doesn't
+   wait for the stores' reviews (Pierre's call): the notes are out when the build is submitted. A version the site
+   already has, as one written there by hand, is left as it is.
 
 ### The approval
 
@@ -115,7 +116,8 @@ The `approve` job names the GitHub Environment `Production`, and waits until one
 approves the run on its page. Reject a run to change anything, and dispatch another. Create the environment once, in
 **Settings → Environments → New environment**: name it `Production`, tick **Required reviewers** and add who may
 release. GitHub makes an environment a job names and that doesn't exist, with no protection, and the run would then
-publish with no one asked: so `plan` fails when the environment is missing or has no required reviewer.
+publish with no one asked: so `plan` fails when the environment is missing, has no required reviewer, or can't be
+read.
 
 A run waiting for its approval holds the releases' concurrency group: a beta dispatched meanwhile waits behind it, and
 a second one would cancel that beta. Approve or reject a run before starting another release.
@@ -160,15 +162,16 @@ editable.
 ### Re-runs and what a run leaves
 
 - **Re-run failed jobs** works for a week, while the build artifacts last. Every job after a build can run twice:
-  Play takes or refuses an edit whole, `ios-submit` and `macos-submit` find a version already waiting for review and
-  do nothing, and `finalize` skips what an earlier attempt did, as a beta's.
+  Play takes or refuses an edit whole, `ios-submit` and `macos-submit` find a version already submitted (waiting
+  for review, in review or beyond) and do nothing, and `finalize` skips what an earlier attempt did, as a beta's.
 - **App Store Connect refuses a build number it already holds.** An `ios-upload` or `macos-upload` that failed
   although its build shows on TestFlight fails the same way on a re-run, and its submit job never starts: submit
   that build by hand in App Store Connect.
 - **A platform left for later** (or rejected by a store and fixed): dispatch again with the same `version` typed and
   the other platforms off. The run builds `main` as it is then, with a new build number, keeps the tag and rewrites
   that platform's row in the GitHub release. Prefer one run for every platform: a later one carries the changes
-  merged since, which the version's notes don't tell.
+  merged since, which the version's notes don't tell. While the version still waits for its review with the first
+  build, the submit job fails, saying which build is there: remove that submission in App Store Connect first.
 - **A store's review rejects the build.** Fix it and release the next version, or the same one again as above. The
   `versionCode` is consumed either way, and it only has to grow.
 - **The web** is not part of this workflow.

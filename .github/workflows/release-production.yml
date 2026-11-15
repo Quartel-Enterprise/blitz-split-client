@@ -20,7 +20,8 @@ name: release-production
 #   4. `finalize` runs when a store took a build. When the run released (the production track, or a submission for
 #      review) it tags X.Y.Z and publishes the GitHub release, then merges the versionCode, the versionName and the
 #      removal of the fragments the version told back into main. A run that only reached a testing track or
-#      TestFlight merges back its versionCode alone, and leaves no tag.
+#      TestFlight leaves no tag and removes no fragment: it merges back its versionCode, and its version when that
+#      is higher than main's.
 #   5. `site-release-notes` sends the notes of a version that was released to blitz-split-site, whose "What's new"
 #      page and feed the apps read. It doesn't wait for the stores' reviews.
 #
@@ -85,10 +86,16 @@ concurrency:
   group: release
   cancel-in-progress: false
 
+# Named, so every step runs with pipefail: a `gh` that fails at the head of a pipe must stop the step, not hand an
+# empty answer to what reads it.
+defaults:
+  run:
+    shell: bash
+
 env:
   # The GitHub Environment whose required reviewers approve a release (Settings > Environments).
   APPROVAL_ENVIRONMENT: Production
-  # Where the release notes are published: its "What's new" page and the feed the apps read (docs/release-notes.md).
+  # Where a version's notes may already be written by hand (docs/release-notes.md): `plan` reads it.
   SITE_REPOSITORY: Quartel-Enterprise/blitz-split-site
 
 jobs:
@@ -139,8 +146,8 @@ jobs:
 
       # GitHub makes an environment a job names and that doesn't exist, with no protection: `approve` would then
       # pass by itself, and a run with no input changed publishes to everyone. So the release stops here when the
-      # environment is missing or has no required reviewer. Any other answer of the API only warns: the gate may
-      # well be there, and a release must not depend on that call.
+      # environment is missing, has no required reviewer, or can't be read: nothing is built yet, so a run that
+      # stops here only costs another dispatch.
       - name: Check the approval gate
         env:
           GH_TOKEN: ${{ github.token }}
@@ -151,8 +158,8 @@ jobs:
               exit 1
             fi
             echo "$environment"
-            echo "::warning::Could not read the $APPROVAL_ENVIRONMENT environment's protection rules."
-            exit 0
+            echo "::error::Could not read the $APPROVAL_ENVIRONMENT environment's protection rules, so nothing says an approval would be asked for. Dispatch the release again."
+            exit 1
           fi
           reviewers="$(jq '[.protection_rules[]? | select(.type == "required_reviewers")] | length' <<< "$environment")"
           if [ "$reviewers" -eq 0 ]; then
@@ -530,37 +537,23 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
-      - name: Set up fastlane
-        uses: ./.github/actions/fastlane
-
-      # In a step of its own: the lanes read the key from the file, and take APP_STORE_CONNECT_API_KEY_P8, when
-      # they see it, for the base64 a local run passes.
-      - name: Write the App Store Connect key
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-        run: |
-          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
-          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
-
       - name: Create the iOS version
         if: ${{ inputs.ios }}
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-        run: fastlane app_store_prepare_version platform:ios version:"${{ needs.plan.outputs.version }}"
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: app_store_prepare_version platform:ios version:${{ needs.plan.outputs.version }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
       - name: Create the macOS version
         if: ${{ !cancelled() && inputs.macos }}
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-        run: fastlane app_store_prepare_version platform:osx version:"${{ needs.plan.outputs.version }}"
-
-      - name: Remove the App Store Connect key
-        if: always()
-        run: rm -f "${KEY_PATH:-}"
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: app_store_prepare_version platform:osx version:${{ needs.plan.outputs.version }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   # One job per App Store slot, next to the builds: each builds the UI tests of a debug app seeded with the sample
   # trip and runs them on its simulator, or for `mac` on the runner's own screen (docs/store-listing-screenshots.md).
@@ -609,7 +602,7 @@ jobs:
           STORE_SCREENSHOTS_BUILD_SETTINGS: CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER= CODE_SIGN_ENTITLEMENTS=
         run: |
           ./scripts/store-screenshots/capture-mac.sh
-          capture="$(find build/outputs/apple-screenshot-captures/mac -name '*.png' | head -1)"
+          capture="$(find build/outputs/apple-screenshot-captures/mac -name '*.png' -print -quit)"
           width="$(sips -g pixelWidth "$capture" | awk '/pixelWidth/ { print $2 }')"
           if [ "$width" -lt 2880 ]; then
             echo "::error::The Mac captures are $width pixels wide and the frame takes 2880: this runner's display is not Retina."
@@ -664,7 +657,7 @@ jobs:
       - name: Say what was staged
         id: staged
         run: |
-          staged() { [ -n "$(find "$1" -name '*.png' 2> /dev/null | head -1)" ] && echo true || echo false; }
+          staged() { [ -n "$(find "$1" -name '*.png' -print -quit 2> /dev/null)" ] && echo true || echo false; }
           {
             echo "ios=$(staged fastlane/screenshots)"
             echo "mac=$(staged fastlane/screenshots-mac)"
@@ -701,36 +694,22 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
-      - name: Set up fastlane
-        uses: ./.github/actions/fastlane
-
       - name: Download the framed screenshots
         uses: actions/download-artifact@v8
         with:
           name: app-store-screenshots-ios
           path: fastlane/screenshots
 
-      - name: Write the App Store Connect key
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-        run: |
-          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
-          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
-
-      # Listing images only, of every locale, then the tidy-up of the shelves. APP_VERSION names the version they
-      # go on, created if app-store-versions didn't.
+      # Listing images only, of every locale, then the tidy-up of the shelves. They go on the release's version,
+      # created if app-store-versions didn't.
       - name: Send the screenshots to App Store Connect
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_VERSION: ${{ needs.plan.outputs.version }}
-        run: fastlane upload_screenshots platform:ios skip_mac:true
-
-      - name: Remove the App Store Connect key
-        if: always()
-        run: rm -f "${KEY_PATH:-}"
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: upload_screenshots platform:ios skip_mac:true
+          app-version: ${{ needs.plan.outputs.version }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   macos-screenshots:
     name: macOS, send the screenshots to the App Store
@@ -746,34 +725,20 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
-      - name: Set up fastlane
-        uses: ./.github/actions/fastlane
-
       - name: Download the framed screenshots
         uses: actions/download-artifact@v8
         with:
           name: app-store-screenshots-mac
           path: fastlane/screenshots-mac
 
-      - name: Write the App Store Connect key
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-        run: |
-          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
-          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
-
       - name: Send the screenshots to App Store Connect
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_VERSION: ${{ needs.plan.outputs.version }}
-        run: fastlane upload_screenshots platform:mac
-
-      - name: Remove the App Store Connect key
-        if: always()
-        run: rm -f "${KEY_PATH:-}"
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: upload_screenshots platform:mac
+          app-version: ${{ needs.plan.outputs.version }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   # ---------------------------------------------------------------------------------------------
   # iOS and macOS: the same composite actions as the betas, then the submission
@@ -866,37 +831,22 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
-      - name: Set up fastlane
-        uses: ./.github/actions/fastlane
-
       - name: Download the release notes
         uses: actions/download-artifact@v8
         with:
           name: release-notes
           path: release-notes
 
-      - name: Write the App Store Connect key
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-        run: |
-          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
-          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
-
       - name: Submit for review
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          PHASED: ${{ inputs.phased_release }}
-        run: |
-          fastlane app_store_submit platform:ios version:"${{ needs.plan.outputs.version }}" \
-            build:"${{ needs.plan.outputs.version_code }}" phased:"$PHASED" \
-            notes:"$GITHUB_WORKSPACE/release-notes/fastlane/app-store-ios"
-
-      - name: Remove the App Store Connect key
-        if: always()
-        run: rm -f "${KEY_PATH:-}"
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: >-
+            app_store_submit platform:ios version:${{ needs.plan.outputs.version }}
+            build:${{ needs.plan.outputs.version_code }} phased:${{ inputs.phased_release }}
+            notes:release-notes/fastlane/app-store-ios
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   macos-build:
     name: macOS, build the package
@@ -978,37 +928,22 @@ jobs:
           ref: ${{ needs.plan.outputs.sha }}
           fetch-depth: 1
 
-      - name: Set up fastlane
-        uses: ./.github/actions/fastlane
-
       - name: Download the release notes
         uses: actions/download-artifact@v8
         with:
           name: release-notes
           path: release-notes
 
-      - name: Write the App Store Connect key
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-        run: |
-          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
-          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
-
       - name: Submit for review
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          PHASED: ${{ inputs.phased_release }}
-        run: |
-          fastlane app_store_submit platform:osx version:"${{ needs.plan.outputs.version }}" \
-            build:"${{ needs.plan.outputs.version_code }}" phased:"$PHASED" \
-            notes:"$GITHUB_WORKSPACE/release-notes/fastlane/app-store-mac"
-
-      - name: Remove the App Store Connect key
-        if: always()
-        run: rm -f "${KEY_PATH:-}"
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: >-
+            app_store_submit platform:osx version:${{ needs.plan.outputs.version }}
+            build:${{ needs.plan.outputs.version_code }} phased:${{ inputs.phased_release }}
+            notes:release-notes/fastlane/app-store-mac
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   # ---------------------------------------------------------------------------------------------
   # Finalize
@@ -1067,7 +1002,7 @@ jobs:
           if gh release view "$VERSION" > /dev/null 2>&1; then exists=true; fi
           if [ "$released" = false ] && [ "$exists" = false ]; then
             echo "released=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Nothing reached the production track or App Store review: $VERSION gets no tag, and only its versionCode is merged back."
+            echo "::notice::Nothing reached the production track or App Store review: $VERSION gets no tag, and its fragments stay. Its versionCode is merged back, and its version when higher than main's."
             exit 0
           fi
           echo "released=true" >> "$GITHUB_OUTPUT"
@@ -1078,6 +1013,9 @@ jobs:
             apple_channel="App Store, sent for review"
             ios="$IOS_SUBMIT"
             macos="$MACOS_SUBMIT"
+            # A submission that never started because the upload failed is that failure, not a platform left out.
+            if [ "$IOS_UPLOAD" != success ]; then ios="$IOS_UPLOAD"; fi
+            if [ "$MACOS_UPLOAD" != success ]; then macos="$MACOS_UPLOAD"; fi
           else
             apple_channel="TestFlight"
             ios="$IOS_UPLOAD"
@@ -1085,14 +1023,17 @@ jobs:
           fi
 
           if [ "$exists" = true ]; then
-            # A platform this run left out keeps the row an earlier run wrote for it.
+            # A platform this run left out keeps the row an earlier run wrote for it, and so does one this run
+            # only sent to a testing track or to TestFlight when the row says it was released.
             gh release view "$VERSION" --json body --jq .body | tr -d '\r' | awk \
               -v code="$VERSION_CODE" -v android="$ANDROID" -v ios="$ios" -v macos="$macos" \
-              -v android_channel="$android_channel" -v apple_channel="$apple_channel" '
+              -v android_channel="$android_channel" -v apple_channel="$apple_channel" \
+              -v track="$TRACK" -v submit="$SUBMIT" '
+              function keeps(result, releases) { return result == "skipped" || (!releases && $0 ~ /production|sent for review/) }
               /^Build number: / { if ($3 + 0 < code + 0) print "Build number: " code; else print; next }
-              /^\| Android \|/ && android != "skipped" { print "| Android | " android_channel " | " android " |"; next }
-              /^\| iOS \|/ && ios != "skipped"         { print "| iOS | " apple_channel " | " ios " |"; next }
-              /^\| macOS \|/ && macos != "skipped"     { print "| macOS | " apple_channel " | " macos " |"; next }
+              /^\| Android \|/ && !keeps(android, track == "production") { print "| Android | " android_channel " | " android " |"; next }
+              /^\| iOS \|/ && !keeps(ios, submit == "true")              { print "| iOS | " apple_channel " | " ios " |"; next }
+              /^\| macOS \|/ && !keeps(macos, submit == "true")          { print "| macOS | " apple_channel " | " macos " |"; next }
               { print }' > "$RUNNER_TEMP/notes.md"
             gh release edit "$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
             echo "::notice::$VERSION is already published: its table of channels was refreshed."
@@ -1154,47 +1095,9 @@ jobs:
     if: >-
       ${{ !cancelled() && needs.plan.outputs.has_notes == 'true' && needs.finalize.outputs.released == 'true' &&
       (needs.finalize.result == 'success' || needs.finalize.result == 'failure') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      # The whole history: which notes a version tells depends on the tags before it.
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ needs.plan.outputs.sha }}
-          fetch-depth: 0
-
-      # A missing token and an expired one both stop here, naming the secret: the checkout below would only say
-      # that the authentication failed. The site is public, and GitHub still refuses a token that isn't valid.
-      - name: Check the site's token
-        env:
-          SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-        run: |
-          ./scripts/release/require-env.sh SITE_RELEASE_NOTES_TOKEN
-          if ! GH_TOKEN="$SITE_RELEASE_NOTES_TOKEN" gh api "repos/$SITE_REPOSITORY" --silent; then
-            echo "::error::GitHub refused the SITE_RELEASE_NOTES_TOKEN secret: it expired or can't reach $SITE_REPOSITORY. See docs/release-process.md#secrets."
-            exit 1
-          fi
-
-      # With the token, so the push and the pull request below are made with it: GITHUB_TOKEN can't write to
-      # another repository.
-      - name: Checkout the site
-        uses: actions/checkout@v7
-        with:
-          repository: ${{ env.SITE_REPOSITORY }}
-          token: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-          path: site
-          fetch-depth: 1
-
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-
-      # A version written by hand in the site is left as it is: the script finds it and sends nothing.
-      - name: Send the notes to the site
-        env:
-          GH_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-          VERSION: ${{ needs.plan.outputs.version }}
-          SHA: ${{ needs.plan.outputs.sha }}
-        run: ./scripts/release/send-release-notes-to-site.sh "$VERSION" "$SHA" site
+    uses: ./.github/workflows/site-release-notes.yml
+    with:
+      version: ${{ needs.plan.outputs.version }}
+      sha: ${{ needs.plan.outputs.sha }}
+    secrets:
+      SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}

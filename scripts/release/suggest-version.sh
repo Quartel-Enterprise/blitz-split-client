@@ -16,9 +16,9 @@
 # file (RELEASES_FILE: a JSON list, each with its `body`); without it they are read with the GitHub CLI and a token
 # (GH_TOKEN), and run locally with neither, only the file counts.
 #
-# Inside GitHub Actions, writes `version`, `display_version`, `version_code` and `branch` to $GITHUB_OUTPUT, with
-# `tagged` for a stable version (whether X.Y.Z is already a tag: a run that adds a platform to a version already
-# released), and a human-readable plan to $GITHUB_STEP_SUMMARY.
+# Inside GitHub Actions, writes `version`, `display_version`, `version_code` and `branch` to $GITHUB_OUTPUT and a
+# human-readable plan to $GITHUB_STEP_SUMMARY, which says so when a stable version is already tagged: the run then
+# adds its builds to a version already released.
 set -euo pipefail
 
 cd "$(dirname "$0")/../.."
@@ -103,9 +103,6 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     echo "display_version=${display_version}"
     echo "version_code=${version_code}"
     echo "branch=${branch}"
-    if [[ "$stable" == true ]]; then
-      echo "tagged=${tagged}"
-    fi
   } >> "$GITHUB_OUTPUT"
 fi
 

@@ -71,8 +71,6 @@ env:
   FIREBASE_IOS_APP_ID: 1:791706056713:ios:a3d191b81ce12a0f99a0d8
   FIREBASE_IOS_GROUP: ios-beta
   CLOUDFLARE_PAGES_PROJECT: blitz-split-beta
-  # Where the release notes are published: its "What's new" page and the feed the apps read (docs/release-notes.md).
-  SITE_REPOSITORY: Quartel-Enterprise/blitz-split-site
   # Pinned: the versions the release was written with.
   FIREBASE_TOOLS_VERSION: 15.22.0
   WRANGLER_VERSION: 4.152.0
@@ -716,46 +714,9 @@ jobs:
     if: >-
       ${{ !cancelled() && needs.plan.outputs.has_notes == 'true' &&
       (needs.finalize.result == 'success' || needs.finalize.result == 'failure') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      # The whole history: which notes a beta tells depends on the tags before it.
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ needs.plan.outputs.sha }}
-          fetch-depth: 0
-
-      # A missing token and an expired one both stop here, naming the secret: the checkout below would only say
-      # that the authentication failed. The site is public, and GitHub still refuses a token that isn't valid.
-      - name: Check the site's token
-        env:
-          SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-        run: |
-          ./scripts/release/require-env.sh SITE_RELEASE_NOTES_TOKEN
-          if ! GH_TOKEN="$SITE_RELEASE_NOTES_TOKEN" gh api "repos/$SITE_REPOSITORY" --silent; then
-            echo "::error::GitHub refused the SITE_RELEASE_NOTES_TOKEN secret: it expired or can't reach $SITE_REPOSITORY. See docs/release-process.md#secrets."
-            exit 1
-          fi
-
-      # With the token, so the push and the pull request below are made with it: GITHUB_TOKEN can't write to
-      # another repository.
-      - name: Checkout the site
-        uses: actions/checkout@v7
-        with:
-          repository: ${{ env.SITE_REPOSITORY }}
-          token: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-          path: site
-          fetch-depth: 1
-
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-
-      - name: Send the notes to the site
-        env:
-          GH_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
-          DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
-          SHA: ${{ needs.plan.outputs.sha }}
-        run: ./scripts/release/send-release-notes-to-site.sh "$DISPLAY_VERSION" "$SHA" site
+    uses: ./.github/workflows/site-release-notes.yml
+    with:
+      version: ${{ needs.plan.outputs.display_version }}
+      sha: ${{ needs.plan.outputs.sha }}
+    secrets:
+      SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
