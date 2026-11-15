@@ -4,14 +4,14 @@ package com.quare.blitzsplit.android.storescreenshots
  * A language of the listings. [tag] names the generated folder; [language] picks the sample trip and the banner copy:
  * the app language's code, Portugal's Portuguese by its whole tag (pt-PT), since "pt" is Brazil's, and Spain's Spanish
  * by its own (es-ES), since "es" is Latin America's. [playLocale] is what Robolectric draws the Play screens in: the
- * resources' language and the region the amounts, dates and hours are written in, the tag itself (the default) for
- * every set but Latin America's Spanish. The stores' own codes (es-419, es-MX…) come from the tags in the staging
- * tasks of build-logic's StoreScreenshots.kt.
+ * resources' language and the region the amounts, dates and hours are written in, the tag itself for every set but
+ * Latin America's Spanish. The stores' own codes (es-419, es-MX…) come from the tags in the staging tasks of
+ * build-logic's StoreScreenshots.kt.
  */
 internal data class StoreLocale(
     val tag: String,
     val language: String,
-    val playLocale: String = tag,
+    val playLocale: String,
 )
 
 /**
@@ -27,14 +27,17 @@ internal val storeLocales = listOf(
     StoreLocale(
         tag = "en-US",
         language = "en",
+        playLocale = "en-US",
     ),
     StoreLocale(
         tag = "pt-BR",
         language = "pt",
+        playLocale = "pt-BR",
     ),
     StoreLocale(
         tag = "pt-PT",
         language = "pt-PT",
+        playLocale = "pt-PT",
     ),
     StoreLocale(
         tag = "es",
@@ -44,37 +47,46 @@ internal val storeLocales = listOf(
     StoreLocale(
         tag = "es-ES",
         language = "es-ES",
+        playLocale = "es-ES",
     ),
     StoreLocale(
         tag = "fr",
         language = "fr",
+        playLocale = "fr",
     ),
     StoreLocale(
         tag = "de",
         language = "de",
+        playLocale = "de",
     ),
     StoreLocale(
         tag = "it",
         language = "it",
+        playLocale = "it",
     ),
     StoreLocale(
         tag = "pl",
         language = "pl",
+        playLocale = "pl",
     ),
     StoreLocale(
         tag = "nl",
         language = "nl",
+        playLocale = "nl",
     ),
     StoreLocale(
         tag = "tr",
         language = "tr",
+        playLocale = "tr",
     ),
     StoreLocale(
         tag = "id",
         language = "id",
+        playLocale = "id",
     ),
     StoreLocale(
         tag = "ja",
         language = "ja",
+        playLocale = "ja",
     ),
 )
