@@ -25,14 +25,20 @@ nonisolated struct JSONExportDocument: FileDocument {
 }
 
 enum DataExport {
+    /// Whether the app draws in a Portuguese, as Profile › Language picked it (not the launch language), and its
+    /// whole `.lproj` name ("pt-BR", "pt-PT"), which the file names below read the brand and the words from.
+    static var language: (isPortuguese: Bool, isBrazil: Bool) {
+        let identifier = Bundle.appLanguageIdentifier
+        let isPortuguese = identifier?.hasPrefix("pt") == true
+        return (isPortuguese, isPortuguese && identifier != "pt-PT")
+    }
+
     /// "bora-rachar-dados-2026-10-29.json" in Brazil's Portuguese, "blitz-split-dados-2026-10-29.json" in Portugal's and
     /// "blitz-split-data-2026-10-29.json" in any other language, on the device's local date.
     static func fileName(on date: Date = .now) -> String {
-        let localization = Bundle.main.preferredLocalizations.first
-        let isPortuguese = localization?.hasPrefix("pt") == true
-        let brand = isPortuguese && localization != "pt-PT" ? "bora-rachar-" : "blitz-split-"
+        let language = Self.language
         let day = date.formatted(Date.ISO8601FormatStyle(timeZone: .current).year().month().day())
-        return brand + (isPortuguese ? "dados-" : "data-") + day + ".json"
+        return (language.isBrazil ? "bora-rachar-" : "blitz-split-") + (language.isPortuguese ? "dados-" : "data-") + day + ".json"
     }
 }
 

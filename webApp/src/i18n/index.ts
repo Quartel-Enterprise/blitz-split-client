@@ -25,6 +25,12 @@ const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': 
 // Why: the languages with one variant for every tag of theirs.
 const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id']
 
+// Why: the first two-letter subtag before any extension ("-u-fw-mon", whose keys are no region), as AppLanguage.regionOf.
+function regionOf(subtags: readonly string[]): string | undefined {
+  const end = subtags.findIndex((subtag) => subtag.length < 2)
+  return (end === -1 ? subtags : subtags.slice(0, end)).find((subtag) => subtag.length === 2)
+}
+
 /**
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag
@@ -39,7 +45,7 @@ export function pickLocale(languages: readonly string[]): Locale {
     // Why: "in" is Indonesian's legacy code, which older Android WebViews still send; AppLanguage.fromTag maps it too.
     const language = subtag === 'in' ? 'id' : subtag
     if (bareLocales.includes(language as Locale)) return language as Locale
-    if (language === 'pt') return rest.length === 1 && rest[0] === 'pt' ? 'pt-PT' : 'pt'
+    if (language === 'pt') return regionOf(rest) === 'pt' ? 'pt-PT' : 'pt'
     if (language === 'es') return rest.length === 1 && rest[0] === 'es' ? 'es-ES' : 'es'
   }
   return 'en'

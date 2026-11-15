@@ -1,12 +1,12 @@
 package com.quare.blitzsplit.android.designsystem.format
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
-import java.util.Locale
+import com.quare.blitzsplit.android.designsystem.R
 
 private const val SPANISH = "es"
 private const val PORTUGUESE = "pt"
-private const val PORTUGAL = "PT"
 private const val PORTUGAL_PORTUGUESE = "pt-PT"
 private const val FRENCH = "fr"
 private const val GERMAN = "de"
@@ -97,17 +97,14 @@ private fun toTurkishSecondPerson(verb: String): String {
     return clause + "n" + verb.substring(clause.length)
 }
 
-// Why: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste"; the verb phrase's first word is the verb.
-private fun toPortugueseSecondPerson(verb: String): String {
-    val words = verb.split(' ')
-    val first = words.first()
-    val second = portugueseIrregularSecondPerson[first] ?: when {
+// Why: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste"; the first word is the verb.
+private fun toPortugueseSecondPerson(verb: String): String = replaceFirstWord(verb) { first ->
+    portugueseIrregularSecondPerson[first] ?: when {
         first.endsWith("ou") -> first.dropLast(2) + "aste"
         first.endsWith("eu") -> first.dropLast(2) + "este"
         first.endsWith("iu") -> first.dropLast(2) + "iste"
-        else -> return verb
+        else -> null
     }
-    return (listOf(second) + words.drop(1)).joinToString(" ")
 }
 
 private fun toSpanishSecondPerson(verb: String): String {
@@ -136,15 +133,17 @@ private fun toSpanishSecondPerson(verb: String): String {
  * "Jij" or "Sen" and conjugate the verb for it, unlike the other languages.
  */
 @Composable
-fun isYouSubjectUi(): Boolean = secondPersonLanguageOf(LocalLocale.current.platformLocale) in youSubjectLanguages
+fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages
 
-// Why: the language alone, but Portugal's Portuguese is told from Brazil's by its region, which conjugates differently.
-private fun secondPersonLanguageOf(locale: Locale): String = if (locale.language == PORTUGUESE &&
-    locale.country == PORTUGAL
-) {
-    PORTUGAL_PORTUGUESE
-} else {
-    locale.language
+/*
+ * Why: the language alone, but Portugal's Portuguese is told from Brazil's by the strings Android drew: its resources
+ * also answer pt-AO, pt-MZ and the like, which no country check would catch.
+ */
+@Composable
+private fun secondPersonLanguageUi(): String {
+    val locale = LocalLocale.current.platformLocale
+    val isPortugal = LocalContext.current.resources.getBoolean(R.bool.designsystem_portugal_portuguese)
+    return if (locale.language == PORTUGUESE && isPortugal) PORTUGAL_PORTUGUESE else locale.language
 }
 
 // Why: only the user is "Tú"; the verb of someone else stays in the third person.
@@ -152,7 +151,7 @@ private fun secondPersonLanguageOf(locale: Locale): String = if (locale.language
 fun verbForActorOf(
     verb: String,
     isMe: Boolean,
-): String = if (isMe) toSecondPerson(verb, secondPersonLanguageOf(LocalLocale.current.platformLocale)) else verb
+): String = if (isMe) toSecondPerson(verb, secondPersonLanguageUi()) else verb
 
 /*
  * Why: in a sentence template "%1$s dividió %2$s" the actor placeholder starts it, and with the user as the actor the

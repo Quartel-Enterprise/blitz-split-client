@@ -59968,7 +59968,7 @@
       }
     },
     "Blitz Split" : {
-      "comment" : "The app name: Bora Rachar only in Portuguese, Blitz Split in every other language",
+      "comment" : "The app name: Bora Rachar only in Brazil's Portuguese, Blitz Split in every other language",
       "localizations" : {
         "de" : {
           "stringUnit" : {
