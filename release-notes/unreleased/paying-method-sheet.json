@@ -16,7 +16,9 @@
         "nl": "In \"Uitgave verdelen\" is \"Betaald met\" nu een kleine knop onder de verdeling, en als je nog geen betaalmethode hebt, maakt \"Betaalmethode toevoegen\" er daar meteen een aan en kiest die voor de uitgave. Betaalkaarten hebben nu ook een eigen pictogram.",
         "ja": "「支出を割り勘」の「支払い方法」が、「分け方」の下の小さなボタンになりました。まだ支払い方法がないときは「支払い方法を追加」でその場で作成でき、そのまま支出に選ばれます。デビットカードにも専用のアイコンが付きました。",
         "tr": "\"Harcama böl\" ekranında \"Ödeme şekli\" artık bölüşümün altında küçük bir düğme. Henüz ödeme yöntemin yoksa \"Ödeme yöntemi ekle\" orada bir tane oluşturup harcama için seçer. Banka kartının da artık kendi simgesi var.",
-        "id": "Di \"Bagi tagihan\", \"Dibayar dengan\" sekarang jadi tombol kecil di bawah pembagian, dan kalau kamu belum punya metode pembayaran, \"Tambah metode pembayaran\" langsung membuatnya di sana dan memilihnya untuk tagihan. Kartu debit juga sekarang punya ikon sendiri."
+        "id": "Di \"Bagi tagihan\", \"Dibayar dengan\" sekarang jadi tombol kecil di bawah pembagian, dan kalau kamu belum punya metode pembayaran, \"Tambah metode pembayaran\" langsung membuatnya di sana dan memilihnya untuk tagihan. Kartu debit juga sekarang punya ikon sendiri.",
+        "ru": "На экране «Разделить счёт» поле «Чем оплачено» теперь — небольшая кнопка под разделением, а если у тебя ещё нет способа оплаты, «Добавить способ оплаты» создаст его прямо там и выберет для этого счёта. У дебетовых карт теперь тоже свой значок.",
+        "uk": "На екрані «Розділити рахунок» поле «Чим сплачено» тепер — невелика кнопка під розподілом, а якщо в тебе ще немає способу оплати, «Додати спосіб оплати» створить його просто там і обере для цього рахунку. Дебетові картки тепер теж мають власний значок."
       }
     },
     {
@@ -35,7 +37,9 @@
         "nl": "Een betaalmethode toevoegen of bewerken in Profiel opent nu eroverheen in plaats van op een apart scherm.",
         "ja": "プロフィールでの支払い方法の追加・編集が、別の画面ではなくプロフィールの上に開くようになりました。",
         "tr": "Profil'de ödeme yöntemi eklemek veya düzenlemek artık ayrı bir ekran yerine profilin üzerinde açılıyor.",
-        "id": "Menambah atau mengubah metode pembayaran di Profil sekarang terbuka di atasnya, bukan di layar terpisah."
+        "id": "Menambah atau mengubah metode pembayaran di Profil sekarang terbuka di atasnya, bukan di layar terpisah.",
+        "ru": "Добавление и изменение способа оплаты в разделе «Профиль» теперь открывается поверх него, а не на отдельном экране.",
+        "uk": "Додавання та редагування способу оплати в розділі «Профіль» тепер відкривається поверх нього, а не на окремому екрані."
       }
     }
   ]

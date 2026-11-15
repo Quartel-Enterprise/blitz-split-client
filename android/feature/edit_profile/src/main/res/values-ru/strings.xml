@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Изменить профиль</string>
+    <string name="edit_profile_save">Сохранить</string>
+    <string name="edit_profile_change_photo">Изменить фото</string>
+    <string name="edit_profile_take_photo">Сделать фото</string>
+    <string name="edit_profile_choose_photo">Выбрать из галереи</string>
+    <string name="edit_profile_use_account_photo">Использовать фото из аккаунта %1$s</string>
+    <string name="edit_profile_remove_photo">Удалить фото</string>
+    <string name="edit_profile_photo_error">Не удалось использовать это фото. Попробуй другое.</string>
+    <string name="edit_profile_avatar_color">Цвет аватара</string>
+    <string name="edit_profile_avatar_color_hint">Виден, когда нет фото.</string>
+    <string name="edit_profile_name_label">Твоё имя</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Минимум букв: %d.</string>
+    <string name="edit_profile_name_too_long">Максимум символов: %d.</string>
+    <string name="edit_profile_account_notice">Имя и фото взяты из твоего аккаунта %1$s. Если изменить их здесь, это коснётся только Blitz Split, а аккаунт %1$s не изменится.</string>
+    <string name="edit_profile_footer">Твоё имя и фото видят твои группы и все, у кого есть ссылка на твой профиль.</string>
+    <string name="profile_photo_close">Закрыть</string>
+    <string name="profile_photo_camera">Камера</string>
+    <string name="profile_photo_gallery">Галерея</string>
+    <string name="profile_photo_remove">Удалить</string>
+    <string name="profile_photo_title">Фото профиля</string>
+</resources>

@@ -17,7 +17,9 @@
         "nl": "Met je telefoon of tablet liggend begint wat naast de lijst staat in Contacten en Saldi nu bovenaan het scherm, met je profielfoto boven de lijst.",
         "ja": "スマートフォンやタブレットを横向きにしたとき、連絡先と残高でリストの横に表示される内容が画面の上から始まり、プロフィール写真はリストの上に移りました。",
         "tr": "Telefon veya tablet yatayken Kişiler ve Bakiyeler'de listenin yanındakiler artık ekranın en üstünden başlıyor; profil fotoğrafın listenin üstünde.",
-        "id": "Saat ponsel atau tablet dalam posisi mendatar, isi di samping daftar di Kontak dan Saldo kini dimulai dari bagian atas layar, dengan foto profilmu di atas daftar."
+        "id": "Saat ponsel atau tablet dalam posisi mendatar, isi di samping daftar di Kontak dan Saldo kini dimulai dari bagian atas layar, dengan foto profilmu di atas daftar.",
+        "ru": "Когда телефон или планшет в горизонтальном положении, то, что стоит рядом со списком на экранах «Контакты» и «Балансы», теперь начинается с самого верха экрана, а фото твоего профиля — над списком.",
+        "uk": "Коли телефон чи планшет у горизонтальному положенні, те, що розташоване поруч зі списком на екранах «Контакти» і «Баланси», тепер починається з самого верху екрана, а фото твого профілю — над списком."
       }
     },
     {
@@ -38,7 +40,9 @@
         "nl": "De rand van de knop 'Persoon toevoegen' bij de Leden van een groep is beter te zien.",
         "ja": "グループのメンバーにある「メンバーを追加」ボタンの枠線が見やすくなりました。",
         "tr": "Grubun Üyeler bölümündeki \"Kişi ekle\" düğmesinin kenarı artık daha kolay görünüyor.",
-        "id": "Tepi tombol \"Tambah orang\" di Anggota grup kini lebih mudah terlihat."
+        "id": "Tepi tombol \"Tambah orang\" di Anggota grup kini lebih mudah terlihat.",
+        "ru": "Контур кнопки «Добавить человека» во вкладке «Участники» группы теперь лучше видно.",
+        "uk": "Контур кнопки «Додати людину» на вкладці «Учасники» групи тепер краще видно."
       }
     },
     {
@@ -59,7 +63,9 @@
         "nl": "De datums in de datumkiezer van Statistieken breken niet meer om per letter of twee: de einddatum komt onder de begindatum als ze niet allebei passen.",
         "ja": "統計の日付選択で日付が1〜2文字ずつ改行される問題を修正しました。2つの日付が収まらないときは終了日が開始日の下に表示されます。",
         "tr": "İstatistikler'in tarih seçicisinde tarihlerin satır başına bir iki harf kırılması düzeltildi; ikisi sığmadığında bitiş tarihi başlangıç tarihinin altına geçiyor.",
-        "id": "Memperbaiki tanggal di pemilih tanggal Statistik yang terpotong satu atau dua huruf per baris; tanggal akhir kini turun ke bawah tanggal mulai jika keduanya tidak muat."
+        "id": "Memperbaiki tanggal di pemilih tanggal Statistik yang terpotong satu atau dua huruf per baris; tanggal akhir kini turun ke bawah tanggal mulai jika keduanya tidak muat.",
+        "ru": "Исправлены даты в окне выбора дат на экране «Статистика», которые разбивались по одной-две буквы на строку: теперь конечная дата переносится под начальную, если обе не помещаются.",
+        "uk": "Виправлено дати у вікні вибору дат на екрані «Статистика», які розбивалися по одній-дві літери на рядок: тепер кінцева дата переноситься під початкову, якщо обидві не вміщуються."
       }
     }
   ]

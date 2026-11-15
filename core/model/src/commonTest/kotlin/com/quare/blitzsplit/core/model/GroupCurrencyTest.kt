@@ -178,6 +178,18 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Russia and Ukraine WHEN picking their currency THEN it is the ruble and the hryvnia`() {
+        // Given
+        val regions = listOf("RU", "UA")
+
+        // When
+        val currencies = regions.map { GroupCurrency.ofRegion(it) }
+
+        // Then
+        assertEquals(listOf(GroupCurrency.RUB, GroupCurrency.UAH), currencies)
+    }
+
+    @Test
     fun `GIVEN the rupiah WHEN picking the digits to type THEN it types none though ISO gives it 2`() {
         // Given
         val currency = GroupCurrency.IDR

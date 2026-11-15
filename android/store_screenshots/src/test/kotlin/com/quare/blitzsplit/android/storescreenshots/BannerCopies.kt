@@ -34,6 +34,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
             ("Wie wat betaalde, in één oogopslag" over "Alle uitgaven van de trip op één plek, met je saldo bovenaan"),
         "tr" to ("Kim neyi ödedi, tek bakışta" over "Tatilin tüm harcamaları tek yerde, bakiyen en üstte"),
         "id" to ("Siapa bayar apa, sekilas saja" over "Semua tagihan liburan di satu tempat, saldomu di paling atas"),
+        "ru" to ("Кто за что платил — сразу видно" over "Все расходы поездки в одном месте, твой баланс сверху"),
+        "uk" to ("Хто за що платив — одразу видно" over "Усі витрати подорожі в одному місці, твій баланс угорі"),
         "ja" to ("誰が何を払ったか、ひと目で" over "旅の支払いをまとめて表示。あなたの残高も一番上に"),
     ),
     StoreScreen.ITEMS to mapOf(
@@ -69,6 +71,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "nl" to ("Verdeel naar wat ieder had" over "Vink aan wie wat had en de service wordt eerlijk verdeeld"),
         "tr" to ("Herkes ne yediyse onu ödesin" over "Her ürünü kimin aldığını işaretle, servis adilce bölünsün"),
         "id" to ("Bagi sesuai pesanan masing-masing" over "Tandai siapa pesan apa, biaya layanan terbagi adil"),
+        "ru" to ("Каждый платит за своё" over "Отметь, кто что ел, и сервисный сбор разделится честно"),
+        "uk" to ("Кожен платить за своє" over "Познач, хто що їв, і сервісний збір розділиться чесно"),
         "ja" to ("注文したものごとに割り勘" over "誰が何を頼んだかを選ぶだけ。サービス料も公平に分配"),
     ),
     StoreScreen.RECEIPT to mapOf(
@@ -85,6 +89,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "nl" to ("Maak een foto van de bon, klaar" over "De items vullen zich vanzelf in vanaf de foto"),
         "tr" to ("Fişin fotoğrafını çek, yeter" over "Ürünler fotoğraftan kendiliğinden dolsun"),
         "id" to ("Foto struknya, beres" over "Daftar item terisi sendiri dari foto"),
+        "ru" to ("Сфотографируй чек — и всё" over "Позиции заполнятся сами по фото"),
+        "uk" to ("Сфотографуй чек — і все" over "Позиції заповняться самі з фото"),
         "ja" to ("レシートを撮るだけ" over "写真から品目が自動で入力されます"),
     ),
     StoreScreen.BALANCES to mapOf(
@@ -100,6 +106,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "nl" to ("Weet wie wie wat schuldig is" over "Reken af met één tik en leg de betaling vast"),
         "tr" to ("Kim kime borçlu, hep bil" over "Tek dokunuşla hesaplaş, ödemeyi kaydet"),
         "id" to ("Tahu siapa berutang ke siapa" over "Lunasi sekali ketuk dan catat pembayarannya"),
+        "ru" to ("Знай, кто кому должен" over "Рассчитайся в одно касание и запиши платёж"),
+        "uk" to ("Знай, хто кому винен" over "Розрахуйся в один дотик і запиши платіж"),
         "ja" to ("誰が誰にいくら、すぐわかる" over "ワンタップで精算して支払いを記録"),
     ),
     StoreScreen.INVITE to mapOf(
@@ -116,6 +124,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "nl" to ("Nodig uit met een link of QR-code" over "Vrienden doen in seconden mee, zonder account"),
         "tr" to ("Bağlantıyla ya da QR kodla davet et" over "Arkadaşların saniyeler içinde katılır, kayıt gerekmez"),
         "id" to ("Undang lewat tautan atau kode QR" over "Teman bergabung dalam hitungan detik, tanpa daftar"),
+        "ru" to ("Пригласи по ссылке или QR-коду" over "Друзья присоединятся за секунды, без регистрации"),
+        "uk" to ("Запроси за посиланням або QR-кодом" over "Друзі приєднаються за секунди, без реєстрації"),
         "ja" to ("リンクやQRコードで招待" over "友だちは登録不要、数秒でグループに参加"),
     ),
     StoreScreen.STATISTICS to mapOf(
@@ -131,6 +141,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "nl" to ("Zie waar het geld heen ging" over "Uitgaven per categorie en per persoon"),
         "tr" to ("Paranın nereye gittiğini gör" over "Kategoriye ve kişiye göre harcamalar"),
         "id" to ("Lihat ke mana uangnya pergi" over "Pengeluaran per kategori dan per orang"),
+        "ru" to ("Смотри, куда ушли деньги" over "Расходы по категориям и по людям"),
+        "uk" to ("Дивись, куди пішли гроші" over "Витрати за категоріями та людьми"),
         "ja" to ("お金の行き先がわかる" over "カテゴリ別・人別の支出"),
     ),
     StoreScreen.HOME to mapOf(
@@ -146,6 +158,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "nl" to ("Je groepen altijd bij de hand" over "Zet je favorieten vast en zie je saldo per groep"),
         "tr" to ("Grupların hep el altında" over "En çok kullandıklarını sabitle, her birinde bakiyeni gör"),
         "id" to ("Grupmu selalu di depan" over "Sematkan yang sering dipakai dan lihat saldomu di tiap grup"),
+        "ru" to ("Твои группы всегда под рукой" over "Закрепи самые нужные и смотри баланс в каждой"),
+        "uk" to ("Твої групи завжди під рукою" over "Закріпи найпотрібніші й дивись баланс у кожній"),
         "ja" to ("よく使うグループをすぐ開ける" over "ピン留めして、グループごとの残高を確認"),
     ),
     StoreScreen.PAYERS_AND_CURRENCIES to mapOf(
@@ -170,6 +184,10 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "tr" to ("Birden çok ödeyen, her para birimi" over "Birkaç kişinin ödediği hesapları böl, kriptoda bile"),
         "id" to
             ("Banyak pembayar, mata uang apa pun" over "Bagi tagihan yang dibayar beberapa orang, bahkan dalam kripto"),
+        "ru" to
+            ("Несколько плательщиков, любая валюта" over "Дели счета, оплаченные несколькими людьми, даже в крипте"),
+        "uk" to
+            ("Кілька платників, будь-яка валюта" over "Діли рахунки, сплачені кількома людьми, навіть у криптовалюті"),
         "ja" to ("複数人の支払いも、どの通貨でも" over "何人かで払った会計も分けられる。暗号資産にも対応"),
     ),
     StoreScreen.ACTIVITY to mapOf(
@@ -184,6 +202,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "nl" to ("Mis geen enkele wijziging" over "Elke nieuwe uitgave en betaling in je groepen, meteen"),
         "tr" to ("Hiçbir değişikliği kaçırma" over "Gruplarındaki her yeni harcama ve ödeme, anında"),
         "id" to ("Jangan lewatkan perubahan" over "Setiap tagihan dan pembayaran baru di grupmu, langsung"),
+        "ru" to ("Не пропусти ни одного изменения" over "Каждый новый расход и платёж в твоих группах — сразу"),
+        "uk" to ("Не пропусти жодної зміни" over "Кожна нова витрата й платіж у твоїх групах — одразу"),
         "ja" to ("変更を見逃さない" over "グループの新しい支払いや精算をすぐにお知らせ"),
     ),
     StoreScreen.LIGHT_THEME to mapOf(
@@ -198,6 +218,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "nl" to ("Licht of donker, zoals jij wilt" over "Werkt offline, met of zonder account"),
         "tr" to ("Açık ya da koyu, sana göre" over "Çevrimdışı çalışır, hesaplı ya da hesapsız"),
         "id" to ("Terang atau gelap, sesukamu" over "Bisa offline, dengan atau tanpa akun"),
+        "ru" to ("Светлая или тёмная — как тебе нравится" over "Работает офлайн, с аккаунтом или без"),
+        "uk" to ("Світла чи темна — як тобі подобається" over "Працює офлайн, з обліковим записом або без"),
         "ja" to ("ライトもダークも、お好みで" over "オフラインでも、アカウントなしでも使えます"),
     ),
 )

@@ -18,7 +18,9 @@
         "nl": "Tik in Releaseopmerkingen op een versie om de pagina ervan op GitHub te openen, of op de GitHub-knop om ze allemaal te zien.",
         "ja": "リリースノートでバージョンをタップするとGitHubのページが開き、GitHubボタンですべてのリリースを見られます。",
         "tr": "Sürüm notlarında bir sürüme dokunarak GitHub'daki sayfasını, GitHub düğmesiyle de tüm sürümleri açabilirsin.",
-        "id": "Di Catatan rilis, ketuk versi untuk membuka halamannya di GitHub, atau tombol GitHub untuk melihat semuanya."
+        "id": "Di Catatan rilis, ketuk versi untuk membuka halamannya di GitHub, atau tombol GitHub untuk melihat semuanya.",
+        "ru": "В разделе «Что нового» нажми на версию, чтобы открыть её страницу на GitHub, или на кнопку GitHub, чтобы увидеть все версии.",
+        "uk": "У розділі «Що нового» натисни на версію, щоб відкрити її сторінку на GitHub, або на кнопку GitHub, щоб побачити всі версії."
       }
     },
     {
@@ -39,7 +41,9 @@
         "nl": "Dynamische kleuren legt nu uit dat de app de systeemkleuren van Android gebruikt, die uit je achtergrond komen of uit het palet dat je in de Android-instellingen hebt gekozen.",
         "ja": "ダイナミックカラーの説明を更新しました。アプリはAndroidのシステムカラーを使い、その色は壁紙またはAndroidの設定で選んだパレットから決まります。",
         "tr": "Dinamik renkler artık uygulamanın Android sistem renklerini kullandığını, bu renklerin duvar kağıdından ya da Android ayarlarında seçtiğin paletten geldiğini açıklıyor.",
-        "id": "Warna dinamis kini menjelaskan bahwa aplikasi memakai warna sistem Android, yang berasal dari wallpaper-mu atau dari palet yang kamu pilih di setelan Android."
+        "id": "Warna dinamis kini menjelaskan bahwa aplikasi memakai warna sistem Android, yang berasal dari wallpaper-mu atau dari palet yang kamu pilih di setelan Android.",
+        "ru": "Пункт «Динамические цвета» теперь объясняет, что приложение берёт системные цвета Android, которые зависят от твоих обоев или от палитры, выбранной в настройках Android.",
+        "uk": "Пункт «Динамічні кольори» тепер пояснює, що застосунок бере системні кольори Android, які залежать від твоїх шпалер або від палітри, обраної в налаштуваннях Android."
       }
     }
   ]

@@ -29,6 +29,8 @@ class ProfileUiStateTest {
             AppLanguage.JAPANESE -> listOf("日本語", "Japanese")
             AppLanguage.TURKISH -> listOf("Türkçe", "Turkish")
             AppLanguage.INDONESIAN -> listOf("Bahasa Indonesia", "Indonesian")
+            AppLanguage.RUSSIAN -> listOf("Русский", "Russian")
+            AppLanguage.UKRAINIAN -> listOf("Українська", "Ukrainian")
         }
     }
 
@@ -56,6 +58,8 @@ class ProfileUiStateTest {
         AppLanguage.JAPANESE,
         AppLanguage.TURKISH,
         AppLanguage.INDONESIAN,
+        AppLanguage.RUSSIAN,
+        AppLanguage.UKRAINIAN,
     )
 
     @Test
@@ -627,6 +631,8 @@ class ProfileUiStateTest {
                 AppLanguage.JAPANESE,
                 AppLanguage.TURKISH,
                 AppLanguage.INDONESIAN,
+                AppLanguage.RUSSIAN,
+                AppLanguage.UKRAINIAN,
             ),
             options,
         )
@@ -657,6 +663,8 @@ class ProfileUiStateTest {
                 AppLanguage.JAPANESE,
                 AppLanguage.TURKISH,
                 AppLanguage.INDONESIAN,
+                AppLanguage.RUSSIAN,
+                AppLanguage.UKRAINIAN,
             ),
             options,
         )

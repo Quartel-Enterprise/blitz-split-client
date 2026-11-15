@@ -32,7 +32,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     `https://blitzsplit.com/u/<code>`, with "Here's my profile on Blitz Split: <link>" ("Esse é meu perfil no Bora
     Rachar" in Portuguese). The link shared or copied ends in `?lang=<the app's language>` (`LinkLanguage`): a profile
     has no currency to pick its link's preview language by, so blitzsplit.com writes the preview in that one (any of
-    the app's eleven languages), and the site's own pages read the same parameter (the web app, once it serves
+    the app's thirteen languages), and the site's own pages read the same parameter (the web app, once it serves
     `/u/<code>` itself, doesn't read it yet). The language is the one the app is speaking (`ObserveSpokenLanguage`):
     the pick, or the first of the device's languages the app has, English otherwise. Android and iOS open the system
     share, whose own Copy covers copying; the Mac's toolbar and
@@ -87,8 +87,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     (`https://blitzsplit.com/legal/…`). The web keeps opening https://blitzsplit.com/privacy and
     https://blitzsplit.com/terms in another tab (`LegalLinks`), a browser's own way (Pierre's call).
     - The language is Profile › Language's, or the device's own while it follows the system, so a device in Turkish
-      reads them in Turkish though the app is in English; the site writes them in all eleven of the app's languages
-      (blitz-split-site#29), and a language it doesn't write them in reads the English text.
+      reads them in Turkish though the app is in English; the site writes them in all thirteen of the app's languages
+      (blitz-split-site#29; Russian and Ukrainian in blitz-split-site#40), and a language it doesn't write them in reads the English text.
     - The device keeps the last text it downloaded (`legal_document`, per page and language) and shows it at once,
       offline too, while a newer one downloads and takes its place. A device that never downloaded it draws the
       shimmer, then "Couldn't load this page" with "Try again" when the download fails (Pierre's call: no copy ships
@@ -204,7 +204,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     the device's language (English for one the app doesn't have), then each language in its own name, the way its
     speakers look for it, with its name in the app's language as a smaller line under it (Pierre's call, beta feedback,
     back from only translated names): "English", "Português (Brasil)", "Português (Portugal)", "Español (Latinoamérica)", "Español (España)", "Français", "Deutsch", "Italiano",
-    "Polski", "Nederlands", "日本語", "Türkçe" and "Bahasa Indonesia", the same in every language, under them "Portuguese
+    "Polski", "Nederlands", "日本語", "Türkçe", "Bahasa Indonesia", "Русский" and "Українська", the same in every language, under them "Portuguese
     (Brazil)", "Portuguese (Portugal)", "Spanish (Latin America)", "Spanish (Spain)"… in English and "Inglês", "Espanhol (América Latina)"… in Portuguese, the smaller line left out where both read
     the same (Italian's "Italiano" in Portuguese, Portuguese's own row). A region is spelled out, never a code:
     "Português (Brasil)", "Portuguese (Brazil)". The Portuguese of Portugal is its own row, never picked by the
@@ -212,7 +212,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     Spain (Pierre's call, November 2026: it used to be the one "Spanish" row, Spain's on a device whose region was
     Spain), so "Español (Latinoamérica)" is the neutral `es` and "Español (España)" Spain's `es-ES` wherever the device
     is. Portugal's chip reads "PT" and Brazil's "BR", Spain's "ES" and Latin America's "419" (its UN code, as in es-419;
-    every other chip is its language's code), and a search for "pt" or "es" finds both of the language. Each own name is marked with its language, so a screen
+    Ukrainian's is Ukraine's "UA", since "UK" reads as the United Kingdom; every other chip is its language's code), and a search for "pt" or "es" finds both of the language. Each own name is marked with its language, so a screen
     reader reads "日本語" as Japanese and the font draws it as Japan's. Kept per device and
     never synced, still there after a sign out, and kept by each platform's own per-app language
     (`AppLanguage`, `AppLanguageLocalDataSource`), so the system applies it before the first frame: Android 13 and later's

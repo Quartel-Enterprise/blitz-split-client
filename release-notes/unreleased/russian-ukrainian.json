@@ -1,0 +1,48 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Russian and Ukrainian: pick \"Русский\" or \"Українська\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala russo e ucraniano: escolha \"Русский\" ou \"Українська\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora russo e ucraniano: escolhe \"Русский\" ou \"Українська\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla ruso y ucraniano: elige \"Русский\" o \"Українська\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais russe et ukrainien : choisis « Русский » ou « Українська » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Russisch und Ukrainisch: Wähle „Русский“ oder „Українська“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla russo e ucraino: scegli \"Русский\" o \"Українська\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po rosyjsku i ukraińsku: wybierz „Русский” lub „Українська” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Russisch en Oekraïens: kies \"Русский\" of \"Українська\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがロシア語とウクライナ語に対応しました。プロフィール › 言語で「Русский」か「Українська」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Rusça ve Ukraynaca konuşuyor: Profil › Dil'den \"Русский\" ya da \"Українська\"yı seç ya da cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Rusia dan Ukraina: pilih \"Русский\" atau \"Українська\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит по-русски и по-украински: выбери «Русский» или «Українська» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить російською та українською: обери «Русский» або «Українська» в «Профіль › Мова» або залиш мову пристрою."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the Russian ruble (RUB) and the Ukrainian hryvnia (UAH), and a group made in Russia or Ukraine starts in its currency.",
+        "pt": "Os grupos agora podem dividir em rublo russo (RUB) e hryvnia ucraniana (UAH), e um grupo criado na Rússia ou na Ucrânia já começa na moeda de lá.",
+        "pt-PT": "Os grupos podem agora dividir em rublo russo (RUB) e hryvnia ucraniana (UAH), e um grupo criado na Rússia ou na Ucrânia começa logo na moeda de lá.",
+        "es": "Los grupos ya pueden dividir en rublo ruso (RUB) y grivna ucraniana (UAH), y un grupo creado en Rusia o Ucrania empieza en su moneda.",
+        "fr": "Les groupes peuvent maintenant partager en rouble russe (RUB) et en hryvnia ukrainienne (UAH), et un groupe créé en Russie ou en Ukraine démarre dans sa devise.",
+        "de": "Gruppen können jetzt in Russischem Rubel (RUB) und Ukrainischer Hrywnja (UAH) teilen, und eine in Russland oder der Ukraine erstellte Gruppe startet in deren Währung.",
+        "it": "I gruppi ora possono dividere in rublo russo (RUB) e grivnia ucraina (UAH), e un gruppo creato in Russia o in Ucraina parte nella sua valuta.",
+        "pl": "Grupy mogą teraz dzielić w rublach rosyjskich (RUB) i hrywnach ukraińskich (UAH), a grupa założona w Rosji lub na Ukrainie startuje w ich walucie.",
+        "nl": "Groepen kunnen nu verdelen in Russische roebel (RUB) en Oekraïense hryvnja (UAH), en een groep die in Rusland of Oekraïne wordt gemaakt, start in die valuta.",
+        "ja": "グループでロシア・ルーブル（RUB）とウクライナ・フリヴニャ（UAH）が使えるようになり、ロシアやウクライナで作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık Rus rublesi (RUB) ve Ukrayna grivnası (UAH) ile bölebiliyor; Rusya'da ya da Ukrayna'da açılan bir grup o ülkenin para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam rubel Rusia (RUB) dan hryvnia Ukraina (UAH), dan grup yang dibuat di Rusia atau Ukraina langsung memakai mata uangnya.",
+        "ru": "Группы теперь могут делить расходы в российских рублях (RUB) и украинских гривнах (UAH), а группа, созданная в России или Украине, сразу начинает в её валюте.",
+        "uk": "Групи тепер можуть ділити витрати в українських гривнях (UAH) і російських рублях (RUB), а група, створена в Україні чи Росії, одразу починає в її валюті."
+      }
+    }
+  ]
+}

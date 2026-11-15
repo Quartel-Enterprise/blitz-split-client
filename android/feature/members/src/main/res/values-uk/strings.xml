@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Посилання-запрошення</string>
+    <string name="members_link_pending">Ще не створено</string>
+    <string name="members_share">Поділитися</string>
+    <string name="members_me">%s (ти)</string>
+    <string name="members_status_this_device">Цей пристрій</string>
+    <string name="members_status_joined">Приєднався(-лася)</string>
+    <string name="members_status_not_joined">Ще не приєднався(-лася)</string>
+    <string name="members_options">Параметри: %s</string>
+    <string name="members_rename">Перейменувати</string>
+    <string name="members_personal_invite">Особисте запрошення для учасника %s</string>
+    <string name="members_personal_message">Той, хто відкриє це посилання, одразу приєднається як %s, не обираючи зі списку. Воно працює один раз.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Той, хто відкриє це посилання, одразу приєднається як %1$s, не обираючи зі списку, і вже побачить свою частку %2$s у %3$d доданому рахунку. Воно працює один раз.</item>
+        <item quantity="few">Той, хто відкриє це посилання, одразу приєднається як %1$s, не обираючи зі списку, і вже побачить свою частку %2$s у %3$d доданих рахунках. Воно працює один раз.</item>
+        <item quantity="many">Той, хто відкриє це посилання, одразу приєднається як %1$s, не обираючи зі списку, і вже побачить свою частку %2$s у %3$d доданих рахунках. Воно працює один раз.</item>
+        <item quantity="other">Той, хто відкриє це посилання, одразу приєднається як %1$s, не обираючи зі списку, і вже побачить свою частку %2$s у %3$d доданого рахунку. Воно працює один раз.</item>
+    </plurals>
+    <string name="members_personal_copy">Копіювати посилання</string>
+    <string name="members_personal_copied">Скопійовано</string>
+    <string name="members_personal_share">Надіслати учаснику %s</string>
+    <string name="members_personal_share_message">Приєднуйся до групи %1$s як %2$s у Blitz Split: %3$s</string>
+    <string name="members_remove">Видалити з групи</string>
+    <string name="members_remove_joined">%s уже приєднався(-лася) до групи</string>
+    <string name="members_remove_title">Видалити учасника %s з групи?</string>
+    <string name="members_remove_message">%s ще не приєднався(-лася). Пізніше можна додати знову.</string>
+    <string name="members_remove_confirm">Видалити</string>
+    <string name="members_release">Звільнити ім\'я</string>
+    <string name="members_release_title">Звільнити ім\'я %s?</string>
+    <string name="members_release_message">Той, хто приєднався як %1$s, вийде з групи. Ім\'я, колір і рахунки учасника %1$s залишаться, і %1$s можна буде знову обрати за посиланням групи.</string>
+    <string name="members_release_confirm">Звільнити</string>
+    <string name="members_release_error">Не вдалося звільнити ім\'я. Перевір з\'єднання і спробуй ще раз.</string>
+    <string name="members_add">Додати людину</string>
+    <string name="members_invite_instead">Має застосунок? Запроси за посиланням</string>
+    <string name="members_name_label">Ім\'я</string>
+    <string name="members_save">Зберегти</string>
+    <string name="members_cancel">Скасувати</string>
+    <string name="members_change_error">Не вдалося зберегти зміну. Спробуй ще раз.</string>
+    <string name="members_remove_open_balance">%s має відкритий баланс</string>
+    <string name="members_balance_to_get_back">%s до отримання</string>
+    <string name="members_balance_owes">винен(-на) %s</string>
+    <string name="members_balance_settled">Розрахунки закрито</string>
+</resources>

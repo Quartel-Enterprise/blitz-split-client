@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Видалити обліковий запис</string>
+    <string name="delete_account_offline_title">Немає інтернету.</string>
+    <string name="delete_account_offline_body">Щоб видалити обліковий запис, потрібне з\'єднання з інтернетом. Підключися і спробуй ще раз.</string>
+    <string name="delete_account_heading">Видалити твій обліковий запис і дані?</string>
+    <string name="delete_account_deleted_title">Що буде видалено</string>
+    <string name="delete_account_deleted_profile">Твій профіль (ім\'я, фото й колір)</string>
+    <string name="delete_account_deleted_keys">Твої ключі Pix і Bitcoin</string>
+    <string name="delete_account_deleted_provider">Зв\'язок із твоїм обліковим записом %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Твій код відновлення</string>
+    <string name="delete_account_deleted_device">Копія твоїх даних на цьому пристрої</string>
+    <string name="delete_account_kept_title">Що залишиться у твоїх групах</string>
+    <string name="delete_account_kept_groups">Групи з їхніми рахунками й платежами — для інших учасників</string>
+    <string name="delete_account_kept_member">Твоє ім\'я в кожній групі — як учасника без облікового запису</string>
+    <string name="delete_account_kept_comments">Твої коментарі й додані тобою фото — під твоїм ім\'ям</string>
+    <string name="delete_account_export">Спершу експортувати мої дані</string>
+    <string name="delete_account_confirm">Я розумію, що це не можна скасувати</string>
+    <string name="delete_account_delete">Видалити обліковий запис</string>
+    <string name="delete_account_cancel">Скасувати</string>
+    <string name="delete_account_failed">Не вдалося видалити твій обліковий запис. Спробуй ще раз.</string>
+</resources>

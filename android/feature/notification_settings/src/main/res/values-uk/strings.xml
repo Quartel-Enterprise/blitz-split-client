@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Сповіщення</string>
+    <string name="notification_settings_denied_title">Сповіщення Blitz Split вимкнено в Android.</string>
+    <string name="notification_settings_denied_body">Увімкни їх у системних налаштуваннях, щоб отримувати push-сповіщення нижче. Дзвіночок і далі працює.</string>
+    <string name="notification_settings_open_settings">Відкрити налаштування</string>
+    <string name="notification_settings_refused_body">Android дає змогу дозволити їх ще раз, щоб отримувати push-сповіщення нижче. Дзвіночок і далі працює.</string>
+    <string name="notification_settings_turn_on">Увімкнути</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Заблоковано в Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Відкрити налаштування Android для «%1$s»</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Push-сповіщення</string>
+    <string name="notification_settings_push_switch_detail">Лише на цьому пристрої</string>
+    <string name="notification_settings_section">Сповіщати мене про</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">У застосунку</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push надсилає сповіщення на цей пристрій. «У застосунку» позначає його як нове на дзвіночку та в «Активності»; якщо вимкнено, воно все одно з\'являється в «Активності», уже прочитаним.</string>
+    <string name="notification_settings_bills">Рахунки</string>
+    <string name="notification_settings_bills_detail">Нові, змінені чи видалені рахунки, у яких ти береш участь</string>
+    <string name="notification_settings_payments">Платежі й розрахунки</string>
+    <string name="notification_settings_payments_detail">Платежі тобі чи від тебе та спрощені борги</string>
+    <string name="notification_settings_comments">Коментарі</string>
+    <string name="notification_settings_comments_detail">До рахунків, у яких ти береш участь, і в обговореннях, де ти писав(-ла)</string>
+    <string name="notification_settings_people_and_groups">Люди та групи</string>
+    <string name="notification_settings_people_and_groups_detail">Хто приєднується до твоїх груп чи виходить із них і що в них змінюється</string>
+    <string name="notification_settings_payment_requests">Нагадування про оплату</string>
+    <string name="notification_settings_payment_requests_detail">Коли хтось просить тебе заплатити</string>
+    <string name="notification_settings_balance_reminder">Нагадування про відкритий баланс</string>
+    <string name="notification_settings_balance_reminder_detail">Раз на тиждень, якщо є відкритий баланс</string>
+    <string name="notification_settings_footer">Сповіщення надходять, коли є інтернет. Щоб вимкнути звук групи, скористайся меню всередині неї.</string>
+</resources>

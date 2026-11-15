@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Діли рахунок без клопоту</string>
+    <string name="welcome_offline_title">Працює офлайн</string>
+    <string name="welcome_offline_body">Усе зберігається на твоєму пристрої й синхронізується пізніше.</string>
+    <string name="welcome_optional_title">Обліковий запис необов\'язковий</string>
+    <string name="welcome_optional_body">Google чи Apple лише допомагають нічого не втратити, коли ти змінюєш пристрій.</string>
+    <string name="welcome_invite_title">Запрошуй посиланням або QR-кодом</string>
+    <string name="welcome_invite_body">Друзі приєднуються до групи без створення облікового запису.</string>
+    <string name="welcome_no_connection_title">Немає з\'єднання.</string>
+    <string name="welcome_no_connection_body">Для входу в обліковий запис потрібен інтернет. Користуйся зараз без облікового запису, а підключи його пізніше в «Профілі».</string>
+    <string name="welcome_or">або</string>
+    <string name="welcome_use_without_account">Користуватися без облікового запису</string>
+    <string name="welcome_used_on_another_device">Я користувався(-лася) ним на іншому пристрої</string>
+    <string name="welcome_sign_in_failed">Зараз не вдалося увійти. Спробуй ще раз.</string>
+    <string name="welcome_legal_notice">Продовжуючи, ти приймаєш %1$s і підтверджуєш, що ознайомився(-лася) з документом %2$s.</string>
+    <string name="welcome_legal_terms">Умови використання</string>
+    <string name="welcome_legal_privacy">Політика конфіденційності</string>
+    <string name="welcome_no_account_note">Твої дані буде видалено після 30 днів без використання.</string>
+    <string name="welcome_expired_title">Твої дані видалено</string>
+    <string name="welcome_expired_body">Ти користувався(-лася) застосунком без облікового запису й не відкривав(-ла) його 30 днів, тому твої дані видалено. Підключи Google чи Apple, щоб наступного разу зберегти їх.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

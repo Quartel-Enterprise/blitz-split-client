@@ -17,7 +17,9 @@
         "nl": "Profiel › Taal toont Spaans nu twee keer, \"Español (Latinoamérica)\" en \"Español (España)\", zodat je je eigen Spaans kiest, waar je toestel ook is.",
         "ja": "プロフィール › 言語でスペイン語が「Español (Latinoamérica)」と「Español (España)」の2つになり、端末の地域に関係なく話す方を選べます。",
         "tr": "Profil › Dil artık İspanyolcayı iki seçenekle gösteriyor, \"Español (Latinoamérica)\" ve \"Español (España)\"; cihazın nerede olursa olsun konuştuğunu seçebilirsin.",
-        "id": "Profil › Bahasa kini menampilkan bahasa Spanyol dalam dua pilihan, \"Español (Latinoamérica)\" dan \"Español (España)\", jadi kamu memilih yang kamu pakai di mana pun perangkatmu berada."
+        "id": "Profil › Bahasa kini menampilkan bahasa Spanyol dalam dua pilihan, \"Español (Latinoamérica)\" dan \"Español (España)\", jadi kamu memilih yang kamu pakai di mana pun perangkatmu berada.",
+        "ru": "В разделе «Профиль › Язык» испанский теперь есть в двух вариантах — «Español (Latinoamérica)» и «Español (España)», — чтобы можно было выбрать свой, где бы ни находилось твоё устройство.",
+        "uk": "У розділі «Профіль › Мова» іспанська тепер є у двох варіантах — «Español (Latinoamérica)» і «Español (España)», — щоб можна було обрати свою, де б не був твій пристрій."
       }
     },
     {
@@ -38,7 +40,9 @@
         "nl": "In Braziliaans Portugees stond in Activiteit en de geschiedenis van de uitgave \"Você criaste\" en dergelijke in plaats van \"Você criou\".",
         "ja": "ブラジルポルトガル語で、アクティビティと支出の履歴に「Você criou」ではなく「Você criaste」などと表示されていました。",
         "tr": "Brezilya Portekizcesinde Etkinlik ve harcamanın geçmişi \"Você criou\" yerine \"Você criaste\" gibi ifadeler yazıyordu.",
-        "id": "Dalam bahasa Portugis Brasil, Aktivitas dan riwayat tagihan menampilkan \"Você criaste\" dan sejenisnya alih-alih \"Você criou\"."
+        "id": "Dalam bahasa Portugis Brasil, Aktivitas dan riwayat tagihan menampilkan \"Você criaste\" dan sejenisnya alih-alih \"Você criou\".",
+        "ru": "В бразильском португальском раздел «Активность» и история счёта показывали «Você criaste» и подобное вместо «Você criou».",
+        "uk": "У бразильській португальській розділ «Активність» та історія рахунку показували «Você criaste» тощо замість «Você criou»."
       }
     }
   ]

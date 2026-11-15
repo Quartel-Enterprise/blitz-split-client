@@ -48,7 +48,7 @@ staged rollout, say which with `fastlane upload_listing platform:android version
 
 `store-listing/<language>.md`, for each language of the release notes (`LANGS` of `release-notes.mjs`) and for
 Spain's Spanish, which has a listing of its own (`LISTING_LANGS` of the script): `en`, `pt` (Brazil), `pt-PT`, `es`
-(Latin America), `es-ES`, `fr`, `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`. A `# Title` line, then these sections, in
+(Latin America), `es-ES`, `fr`, `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`. A `# Title` line, then these sections, in
 this order:
 
 | Section | Store | Limit | What it is |
@@ -73,7 +73,7 @@ The limits are in characters, as the stores count them. Every field but the desc
   and the web", not the name of a phone. The one exception is "Sign in with Google or Apple", the names of the two
   buttons the app shows on every platform. No competitor's name anywhere, keywords included: both stores remove
   listings for it.
-- **No number that changes by itself**, such as how many languages the app is in: nothing would update it in thirteen
+- **No number that changes by itself**, such as how many languages the app is in: nothing would update it in fifteen
   files.
 - **Free, with no ads** is true today and written in every listing ([general.md](product/general.md)): when the app
   gains something paid, the listings change in the same pull request.

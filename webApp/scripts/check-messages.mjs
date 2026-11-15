@@ -6,8 +6,9 @@
 // the words that region says differently, so it may lack keys, but never has an extra one.
 //
 // A language with two plurals where English has one (Polish's few and many) writes them as "few|many" in an `…Other`
-// message with a {count}; `t()` picks one. A "|" anywhere else, in another language, or forms that aren't two, would
-// print on screen or never be picked.
+// message with a {count}; one whose singular also takes counts past 1 (Russian's and Ukrainian's 21) writes three,
+// "one|few|many". `t()` picks one. A "|" anywhere else, in another language, or another number of forms, would print
+// on screen or never be picked.
 //
 // Runs on the TypeScript sources through Node's own type stripping, with no build:  node scripts/check-messages.mjs
 import { readdirSync } from 'node:fs'
@@ -30,6 +31,9 @@ const hasFewAndMany = (language) => {
   return categories.includes('few') && categories.includes('many')
 }
 
+// Why: Russian's and Ukrainian's 21 takes the singular, which an …Other message must then hold too: one|few|many.
+const pluralFormCount = (language) => (new Intl.PluralRules(language.slice(0, 2)).select(21) === 'one' ? 3 : 2)
+
 let failures = 0
 const fail = (language, key, problem) => {
   console.error(`webApp/src/i18n/${language}.ts: error: "${key}" ${problem}`)
@@ -51,15 +55,18 @@ for (const language of languages) {
     } else if (messages[key].includes('|')) {
       const forms = messages[key].split('|')
       if (!hasFewAndMany(language)) {
-        fail(language, key, 'has a "|", which only a language with few and many plurals (Polish) may hold')
+        fail(language, key, 'has a "|", which only a language with few and many plurals (Polish, Russian, Ukrainian) may hold')
         continue
       }
-      if (!key.endsWith('Other') || !/\{count\}/.test(en[key])) {
-        fail(language, key, 'has a "|", which only an …Other message with a {count} may hold')
+      // Why: a …WordOther message is the word beside a count drawn apart ("7 payments" with a big 7), whose caller
+      // passes the count with no {count} to print.
+      if (!key.endsWith('Other') || !(/\{count\}/.test(en[key]) || key.endsWith('WordOther'))) {
+        fail(language, key, 'has a "|", which only an …Other message with a {count}, or a …WordOther one, may hold')
         continue
       }
-      if (forms.length !== 2 || forms.some((form) => form.trim() === '')) {
-        fail(language, key, 'must hold exactly two plural forms, "few|many"')
+      const formCount = pluralFormCount(language)
+      if (forms.length !== formCount || forms.some((form) => form.trim() === '')) {
+        fail(language, key, formCount === 3 ? 'must hold exactly three plural forms, "one|few|many"' : 'must hold exactly two plural forms, "few|many"')
         continue
       }
       for (const form of forms) {

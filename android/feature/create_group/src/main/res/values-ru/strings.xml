@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Новая группа</string>
+    <string name="create_group_close">Закрыть</string>
+    <string name="create_group_create">Создать</string>
+    <string name="create_group_change_color">Изменить цвет группы</string>
+    <string name="create_group_name_label">Название группы</string>
+    <string name="create_group_type_label">Тип группы</string>
+    <string name="create_group_members_title">Кто участвует</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d человек</item>
+        <item quantity="few">%d человека</item>
+        <item quantity="many">%d человек</item>
+        <item quantity="other">%d человека</item>
+    </plurals>
+    <string name="create_group_me">ты</string>
+    <string name="create_group_remove_member">Убрать участника %s</string>
+    <string name="create_group_add_placeholder">Добавить по имени</string>
+    <string name="create_group_add">Добавить</string>
+    <string name="create_group_no_app_notice">Сейчас никому не нужно приложение. Ты уже можешь добавлять расходы за всех, а ссылку отправить позже.</string>
+    <string name="create_group_currency">Валюта по умолчанию</string>
+    <string name="create_group_currency_caption">Новые счета начинаются в этой валюте; в каждом счёте можно выбрать другую.</string>
+    <string name="create_group_save_error">Не удалось сохранить группу. Попробуй ещё раз.</string>
+    <string name="create_group_photo">Фото группы</string>
+    <string name="create_group_take_photo">Сделать фото</string>
+    <string name="create_group_choose_photo">Выбрать фото</string>
+    <string name="create_group_remove_photo">Удалить фото</string>
+    <string name="create_group_photo_error">Не удалось использовать это фото. Попробуй другое.</string>
+</resources>

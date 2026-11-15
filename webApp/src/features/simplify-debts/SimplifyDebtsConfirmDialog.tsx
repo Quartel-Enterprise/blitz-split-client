@@ -122,7 +122,7 @@ function Counts({ change, showsCurrency }: { change: JsSimplifyCurrencyChange; s
   const side = (count: number, tone: string) => (
     <span className="flex items-baseline gap-1.5">
       <strong className={`text-[28px] leading-8 font-bold tabular-nums ${tone}`}>{count}</strong>
-      <span className="text-[13px] text-muted-foreground">{t(count === 1 ? 'simplifyConfirm_paymentsWordOne' : 'simplifyConfirm_paymentsWordOther')}</span>
+      <span className="text-[13px] text-muted-foreground">{count === 1 ? t('simplifyConfirm_paymentsWordOne') : t('simplifyConfirm_paymentsWordOther', { count })}</span>
     </span>
   )
   return (
