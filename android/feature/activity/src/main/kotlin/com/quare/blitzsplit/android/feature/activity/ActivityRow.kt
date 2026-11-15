@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -42,6 +43,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
@@ -146,10 +148,14 @@ internal fun ActorAvatarIcon(
     }
 }
 
-// Why: the group's own shape from Grupos in its color's data tone, small before its name.
+/*
+ * Why: the group's own shape from Grupos in its color's data tone, small before its name, with the group's photo over
+ * it when it has one (beta feedback of Nov 15, 2026); the color shows while the photo loads or if it fails to.
+ */
 @Composable
 internal fun GroupDotIcon(
     color: AvatarColor?,
+    photoUrl: String?,
     modifier: Modifier = Modifier,
 ) {
     val isDark = LocalIsDarkTheme.current
@@ -161,7 +167,16 @@ internal fun GroupDotIcon(
                 color?.toDataColor(isDark) ?: neutralDataColorOf(isDark),
                 GroupAvatarShape,
             ),
-    )
+    ) {
+        if (photoUrl != null) {
+            AsyncImage(
+                model = photoUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.matchParentSize().clip(GroupAvatarShape),
+            )
+        }
+    }
 }
 
 /*
@@ -249,7 +264,10 @@ private fun MetaLine(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        GroupDotIcon(color = item.groupColor)
+        GroupDotIcon(
+            color = item.groupColor,
+            photoUrl = item.groupPhotoUrl,
+        )
         Text(
             text = groupAndTimeTextOf(item, dates),
             style = MaterialTheme.typography.bodySmall,

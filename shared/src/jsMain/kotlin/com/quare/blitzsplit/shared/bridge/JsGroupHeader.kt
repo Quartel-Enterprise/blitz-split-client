@@ -19,6 +19,7 @@ class JsMemberBalance(
     val owesMinor: Double,
     val netMinor: Double,
     val isSettled: Boolean,
+    val showsBreakdown: Boolean,
     val canSettle: Boolean,
 )
 
@@ -78,6 +79,7 @@ internal fun toJsMemberBalance(balance: MemberBalance): JsMemberBalance = JsMemb
     owesMinor = balance.owesMinor.toDouble(),
     netMinor = balance.netMinor.toDouble(),
     isSettled = balance.isSettled,
+    showsBreakdown = balance.showsBreakdown,
     canSettle = balance.canSettle,
 )
 

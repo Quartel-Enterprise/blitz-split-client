@@ -13,6 +13,13 @@ data class MemberBalance(
     val isSettled: Boolean
         get() = receivesMinor == 0L && owesMinor == 0L
 
+    /*
+     * Why: "Você recebe R$ 332,90 e deve R$ 118,00" under the net only when it adds something: with one side alone it
+     * would repeat the net ("+R$ 313,81 a receber" over "Você recebe R$ 313,81").
+     */
+    val showsBreakdown: Boolean
+        get() = receivesMinor > 0L && owesMinor > 0L
+
     // Why: "Acertar" only for someone who owes.
     val canSettle: Boolean
         get() = owesMinor > 0L

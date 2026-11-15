@@ -102,6 +102,8 @@ class JsActivityItem(
     val groupInitials: String,
     // Why: null once the group is gone from the device.
     val groupColor: String?,
+    // Why: in place of the color's square, null for none.
+    val groupPhotoUrl: String?,
     val groupType: String?,
     val isGroupOnDevice: Boolean,
     val occurredAt: Double,
@@ -441,6 +443,7 @@ private fun toJsActivityItem(
     groupName = item.groupName,
     groupInitials = item.groupName?.let(Initials::of).orEmpty(),
     groupColor = item.groupColor?.code,
+    groupPhotoUrl = item.groupPhotoUrl,
     groupType = item.groupType?.code,
     isGroupOnDevice = item.isGroupOnDevice,
     occurredAt = item.occurredAt.toDouble(),

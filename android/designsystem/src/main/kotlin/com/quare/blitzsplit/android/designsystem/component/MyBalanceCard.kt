@@ -58,15 +58,17 @@ fun MyBalanceCard(
                     money = money,
                     shared = shared,
                 )
-                Text(
-                    text = balanceDetailOf(
-                        balance = balance,
-                        isEveryoneSettled = isEveryoneSettled,
-                        money = money,
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                balanceDetailOf(
+                    balance = balance,
+                    isEveryoneSettled = isEveryoneSettled,
+                    money = money,
+                )?.let { detail ->
+                    Text(
+                        text = detail,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
             if (balance.canSettle) {
                 Button(onClick = onSettleClick) { Text(stringResource(R.string.designsystem_balance_settle)) }
@@ -129,20 +131,22 @@ private fun BalanceHeading(
     }
 }
 
-// Why: "Você recebe R$ 332,90 e deve R$ 118,00", dropping the part that is zero.
+// Why: "Você recebe R$ 332,90 e deve R$ 118,00" only while both sides are open; with one alone it repeats the net.
 @Composable
 private fun balanceDetailOf(
     balance: MemberBalance,
     isEveryoneSettled: Boolean,
     money: MoneyFormatter,
-): String {
-    val receives = balance.receivesMinor
-    val owes = balance.owesMinor
-    return when {
-        balance.isSettled && isEveryoneSettled -> stringResource(R.string.designsystem_balance_everyone_settled)
-        balance.isSettled -> stringResource(R.string.designsystem_balance_others_settling)
-        owes == 0L -> stringResource(R.string.designsystem_balance_get, money.toText(receives))
-        receives == 0L -> stringResource(R.string.designsystem_balance_owe, money.toText(owes))
-        else -> stringResource(R.string.designsystem_balance_get_and_owe, money.toText(receives), money.toText(owes))
-    }
+): String? = when {
+    balance.isSettled && isEveryoneSettled -> stringResource(R.string.designsystem_balance_everyone_settled)
+
+    balance.isSettled -> stringResource(R.string.designsystem_balance_others_settling)
+
+    balance.showsBreakdown -> stringResource(
+        R.string.designsystem_balance_get_and_owe,
+        money.toText(balance.receivesMinor),
+        money.toText(balance.owesMinor),
+    )
+
+    else -> null
 }

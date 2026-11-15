@@ -369,10 +369,12 @@ struct BalanceCard: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                 amount
-                Text(verbatim: details)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                if let details {
+                    Text(verbatim: details)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             .accessibilityElement(children: .combine)
             Spacer(minLength: 8)
@@ -440,17 +442,16 @@ struct BalanceCard: View {
         }
     }
 
-    /// "You get $332.90 and owe $118.00", without the part that is zero.
-    private var details: String {
+    /// "You get $332.90 and owe $118.00" only while both sides are open: with one alone it would repeat the net.
+    private var details: String? {
         if balance.isSettled {
             return isEveryoneSettled
                 ? String(localized: "Nobody owes anybody anything here.", bundle: .appLanguage)
                 : String(localized: "Others still have to settle up.", bundle: .appLanguage)
         }
+        guard balance.showsBreakdown else { return nil }
         let receives = currency.format(balance.receivesMinor)
         let owes = currency.format(balance.owesMinor)
-        if balance.owesMinor == 0 { return String(localized: "You get \(receives)", bundle: .appLanguage) }
-        if balance.receivesMinor == 0 { return String(localized: "You owe \(owes)", bundle: .appLanguage) }
         return String(localized: "You get \(receives) and owe \(owes)", bundle: .appLanguage)
     }
 }

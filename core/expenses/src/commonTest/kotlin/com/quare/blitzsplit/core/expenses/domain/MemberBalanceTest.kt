@@ -99,6 +99,81 @@ class MemberBalanceTest {
         assertTrue(canSettle)
     }
 
+    @Test
+    fun `GIVEN a member who receives and owes WHEN checking the breakdown THEN it shows`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 33_290L,
+            owesMinor = 11_800L,
+        )
+
+        // When
+        val showsBreakdown = balance.showsBreakdown
+
+        // Then
+        assertTrue(showsBreakdown)
+    }
+
+    @Test
+    fun `GIVEN a member who receives and owes the same WHEN checking the breakdown THEN it explains the zero net`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 500L,
+            owesMinor = 500L,
+        )
+
+        // When
+        val showsBreakdown = balance.showsBreakdown
+
+        // Then
+        assertTrue(showsBreakdown)
+    }
+
+    @Test
+    fun `GIVEN a member who only receives WHEN checking the breakdown THEN it is hidden`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 31_381L,
+            owesMinor = 0L,
+        )
+
+        // When
+        val showsBreakdown = balance.showsBreakdown
+
+        // Then
+        assertFalse(showsBreakdown)
+    }
+
+    @Test
+    fun `GIVEN a member who only owes WHEN checking the breakdown THEN it is hidden`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 0L,
+            owesMinor = 11_800L,
+        )
+
+        // When
+        val showsBreakdown = balance.showsBreakdown
+
+        // Then
+        assertFalse(showsBreakdown)
+    }
+
+    @Test
+    fun `GIVEN a settled member WHEN checking the breakdown THEN it is hidden`() {
+        // Given
+        val balance = balance(
+            receivesMinor = 0L,
+            owesMinor = 0L,
+        )
+
+        // When
+        val showsBreakdown = balance.showsBreakdown
+
+        // Then
+        assertFalse(showsBreakdown)
+    }
+
     private fun balance(
         receivesMinor: Long,
         owesMinor: Long,

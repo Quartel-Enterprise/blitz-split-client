@@ -55,13 +55,12 @@ export function BalanceCard({
 }) {
   const money = (minor: number) => formatMoney(minor, currency, fractionDigits)
   const net = balance.netMinor
+  // With one side alone the breakdown would repeat the net, so it shows only when this person both gets and owes.
   const details = balance.isSettled
     ? t(isEveryoneSettled ? 'balance_everyoneSettled' : 'balance_othersSettling')
-    : balance.receivesMinor > 0 && balance.owesMinor > 0
+    : balance.showsBreakdown
       ? t('balance_getAndOwe', { received: money(balance.receivesMinor), owed: money(balance.owesMinor) })
-      : balance.receivesMinor > 0
-        ? t('balance_get', { amount: money(balance.receivesMinor) })
-        : t('balance_owe', { amount: money(balance.owesMinor) })
+      : null
   return (
     <section aria-labelledby="balance-card-title" className="flex items-center gap-3 rounded-xl border bg-card px-4 py-3.5">
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -78,7 +77,7 @@ export function BalanceCard({
             {net !== 0 && <span className={cn('font-medium', balanceTone(net))}>{t(net > 0 ? 'balance_toGetBack' : 'balance_youOwe')}</span>}
           </span>
         )}
-        <span className="text-[13px] text-muted-foreground">{details}</span>
+        {details && <span className="text-[13px] text-muted-foreground">{details}</span>}
       </div>
       {balance.canSettle && <Button onClick={onSettle}>{t('balance_settle')}</Button>}
     </section>

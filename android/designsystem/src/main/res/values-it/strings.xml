@@ -52,8 +52,6 @@
     <string name="designsystem_balance_you_owe">devi</string>
     <string name="designsystem_balance_settled">%s · sei in pari</string>
     <string name="designsystem_balance_get_and_owe">Ricevi %1$s e devi %2$s</string>
-    <string name="designsystem_balance_get">Ricevi %s</string>
-    <string name="designsystem_balance_owe">Devi %s</string>
     <string name="designsystem_balance_everyone_settled">Qui nessuno deve niente a nessuno.</string>
     <string name="designsystem_balance_others_settling">Altri devono ancora saldare.</string>
     <string name="designsystem_balance_settle">Salda</string>

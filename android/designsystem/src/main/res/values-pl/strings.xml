@@ -52,8 +52,6 @@
     <string name="designsystem_balance_you_owe">do oddania</string>
     <string name="designsystem_balance_settled">%s · wszystko rozliczone</string>
     <string name="designsystem_balance_get_and_owe">Do odzyskania: %1$s, do oddania: %2$s</string>
-    <string name="designsystem_balance_get">Do odzyskania: %s</string>
-    <string name="designsystem_balance_owe">Do oddania: %s</string>
     <string name="designsystem_balance_everyone_settled">Nikt nikomu nic tu nie jest winien.</string>
     <string name="designsystem_balance_others_settling">Pozostałe osoby muszą się jeszcze rozliczyć.</string>
     <string name="designsystem_balance_settle">Rozlicz</string>

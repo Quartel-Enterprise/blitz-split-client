@@ -412,8 +412,6 @@ export const ptPT: Partial<Record<MessageKey, string>> = {
   balance_youOwe: 'deves',
   balance_settled: '{amount} · estás quite',
   balance_getAndOwe: 'Recebes {received} e deves {owed}',
-  balance_get: 'Recebes {amount}',
-  balance_owe: 'Deves {amount}',
   balances_withYou: 'Contigo',
   balances_youOwe: 'Deves a {name}',
   balances_owesYou: '{name} deve-te',

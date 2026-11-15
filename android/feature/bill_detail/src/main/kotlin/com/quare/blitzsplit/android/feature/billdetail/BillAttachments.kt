@@ -78,6 +78,12 @@ private val badgeShape = RoundedCornerShape(6.dp)
 private val dashWidth = 1.5.dp
 private val dashOn = 6.dp
 private val dashOff = 4.dp
+private val tileShape = RoundedCornerShape(
+    topStart = 12.dp,
+    topEnd = 12.dp,
+    bottomEnd = 4.dp,
+    bottomStart = 4.dp,
+)
 
 private class TileSize(
     val width: Dp,
@@ -376,7 +382,11 @@ private fun TileColumn(
     Column(
         modifier = Modifier
             .width(size.width)
-            .clip(MaterialTheme.shapes.small)
+            /*
+             * Why: the ripple's shape, round at the top like the thumb; 12dp at the bottom too clipped the label's
+             * first letter, which sits in that corner ("Adicionar foto", beta feedback of Nov 15, 2026).
+             */
+            .clip(tileShape)
             .clickable(
                 enabled = isEnabled,
                 onClickLabel = onClickLabel,

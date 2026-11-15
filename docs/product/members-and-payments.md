@@ -72,7 +72,11 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     the bills make them.
   - "Your balance in this group" sits above the tabs of Expenses, Balances and Members while the group has a bill: "R$ 0 ·
     you're settled up" when settled, and its "Settle up" opens Record payment with whoever you owe the most, hidden
-    when you owe nobody.
+    when you owe nobody. Unsettled, it reads the net ("+R$ 313,81 to get back", "−R$ 118,00 you owe"), with the
+    breakdown "You get R$ 332,90 and owe R$ 118,00" under it only when you both get and owe
+    (`MemberBalance.showsBreakdown`): with one side alone the breakdown would repeat the net, so it is left out (beta
+    feedback of Nov 15, 2026). Settled, the line under it says "Nobody owes anybody anything here." or "Others still
+    have to settle up."
   - "Record payment" (`Route.RegisterPayment`) records a payment made outside the app, which any member may
     record between any two members, with no confirmation by whoever received it: up to the pair's debt, never over
     ("Ana owes you R$ 162,30. Use up to that amount."), partial payments allowed, Pix / Cash / Transfer / Other
