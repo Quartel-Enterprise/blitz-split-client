@@ -86,13 +86,13 @@ class BillDetailViewModel(
     private val route: Route.BillDetail,
     private val navigator: Navigator,
     private val deleteExpense: DeleteExpense,
-    private val noticeBillGone: NoticeBillGone,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val updateExpense: UpdateExpense,
     private val addBillAttachment: AddBillAttachment,
     private val removeBillAttachment: RemoveBillAttachment,
     private val loadBillAttachmentImage: LoadBillAttachmentImage,
+    noticeBillGone: NoticeBillGone,
     addBillComment: AddBillComment,
     editBillComment: EditBillComment,
     deleteBillComment: DeleteBillComment,
@@ -214,12 +214,7 @@ class BillDetailViewModel(
         ::findDeletionSettledPairOrNull,
     ).stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    /*
-     * Why: the group or the bill went while "Editar conta" covered this screen, which then leaves as soon as it is on
-     * top again. A bill that went after it showed says so on Despesas do grupo, unless this device deleted it.
-     */
-    private var isGone = false
-    private var isBillGoneAfterShowing = false
+    private val leaving = BillDetailLeaving(navigator, route, noticeBillGone)
 
     // Why: a sync may bring someone else's edit while the bill is open, or delete it, or the whole group.
     init {
@@ -294,14 +289,14 @@ class BillDetailViewModel(
                 showHistory()
                 showAttachments()
             }.launchIn(viewModelScope)
-        navigator.backStack.onEach { if (isGone) leave() }.launchIn(viewModelScope)
+        navigator.backStack.onEach { leaving.leaveIfGone() }.launchIn(viewModelScope)
     }
 
     override fun handleEvent(event: BillDetailUiEvent) {
         when (event) {
             is BillDetailUiEvent.CommentEvent -> comments.onEvent(event)
 
-            BillDetailUiEvent.OnBackClicked -> leave()
+            BillDetailUiEvent.OnBackClicked -> leaving.leave()
 
             is BillDetailUiEvent.OnPersonClicked -> openPerson(event.memberId)
 
@@ -349,10 +344,10 @@ class BillDetailViewModel(
         expense: Expense?,
     ) {
         when {
-            group == null -> markGone(isBillGoneAfterShowing = false)
+            group == null -> leaving.markGone(isBillGoneAfterShowing = false)
 
             // Why: one that never showed (a stale link) leaves without a word.
-            expense == null -> markGone(isBillGoneAfterShowing = this.expense != null)
+            expense == null -> leaving.markGone(isBillGoneAfterShowing = this.expense != null)
 
             else -> show(group, expense)
         }
@@ -367,12 +362,6 @@ class BillDetailViewModel(
     private fun showDeletionSettledPair(settledPair: SettledPairChange?) {
         // Why: the delete in flight takes the bill out of Room, which must not reword the question still shown.
         uiState.update { if (it.isDeleting) it else it.copy(deletion = it.deletion?.copy(settledPair = settledPair)) }
-    }
-
-    private fun markGone(isBillGoneAfterShowing: Boolean) {
-        isGone = true
-        this.isBillGoneAfterShowing = isBillGoneAfterShowing
-        leave()
     }
 
     private fun show(
@@ -570,7 +559,7 @@ class BillDetailViewModel(
         uiState.update { it.copy(isDeleting = true) }
         viewModelScope.launch {
             deleteExpense(route.expenseId)
-                .onSuccess { leave() }
+                .onSuccess { leaving.leave() }
                 .onFailure {
                     uiState.update {
                         it.copy(
@@ -590,11 +579,4 @@ class BillDetailViewModel(
     )
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
-
-    // Why: only while it is still on top: a native back (a swipe, the browser's) may have closed it.
-    private fun leave() {
-        if (!isOnTop()) return
-        if (isBillGoneAfterShowing) noticeBillGone(route.groupId, route.expenseId)
-        navigator.navigateBack()
-    }
 }

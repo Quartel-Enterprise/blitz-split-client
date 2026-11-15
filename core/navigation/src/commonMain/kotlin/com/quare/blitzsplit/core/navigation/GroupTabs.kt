@@ -68,5 +68,14 @@ fun Navigator.openFromGroupScreen(
     }
 }
 
+/*
+ * Why: "Esta conta foi apagada" waits for the bill's group to come back on top, so it is only posted when that group is
+ * under the screen on top; Início and "Todas as despesas" open a bill with no group under it, and a notice left there
+ * would show out of context the next time that group opens.
+ */
+fun Navigator.isOverGroupScreen(groupId: String): Boolean = backStack.value
+    .dropLast(1)
+    .any { groupScreenIdOrNull(it) == groupId }
+
 // Why: the group whose screen the route is, null for any other screen.
 fun groupScreenIdOrNull(route: Route): String? = (route as? Route.GroupDetail)?.groupId

@@ -586,28 +586,28 @@ class AllExpensesViewModelTest {
         }
 
     @Test
-    fun `GIVEN All expenses on top WHEN tapping a bill THEN opens its bill over its group`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(
-            storedGroups = listOf(trio()),
-            storedExpenses = listOf(bill("dinner")),
-        )
-        val event = AllExpensesUiEvent.OnBillClicked("trio", "dinner")
+    fun `GIVEN All expenses on top WHEN tapping a bill THEN opens its bill over All expenses`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("dinner")),
+            )
+            val event = AllExpensesUiEvent.OnBillClicked("trio", "dinner")
 
-        // When
-        viewModel.onEvent(event)
+            // When
+            viewModel.onEvent(event)
 
-        // Then
-        assertEquals(
-            listOf(
-                Route.Home,
-                Route.AllExpenses,
-                Route.GroupDetail.expensesOf("trio"),
-                Route.BillDetail("trio", "dinner", focusCommentId = null),
-            ),
-            navigator.backStack.value,
-        )
-    }
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    Route.AllExpenses,
+                    Route.BillDetail("trio", "dinner", focusCommentId = null),
+                ),
+                navigator.backStack.value,
+            )
+        }
 
     @Test
     fun `GIVEN All expenses on top WHEN tapping a bill THEN tracks bill_clicked from all expenses`() =

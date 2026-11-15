@@ -2293,7 +2293,7 @@ class HomeViewModelTest {
         }
 
     @Test
-    fun `GIVEN a bill on Inicio WHEN tapping it THEN opens its Conta over its group`() = runTest(testDispatcher) {
+    fun `GIVEN a bill on Inicio WHEN tapping it THEN opens its Conta right over Inicio`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
             storedGroups = listOf(trio()),
@@ -2307,12 +2307,6 @@ class HomeViewModelTest {
         assertEquals(
             listOf(
                 Route.Home,
-                Route.GroupDetail(
-                    "trio",
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                    isOverBill = false,
-                ),
                 Route.BillDetail("trio", "dinner", focusCommentId = null),
             ),
             navigator.backStack.value,

@@ -130,9 +130,8 @@ class AllExpensesViewModel(
         when (event) {
             AllExpensesUiEvent.OnBackClicked -> navigator.navigateBackFrom(Route.AllExpenses)
 
-            // Why: over its group, so back goes to the group's bills, as from Início.
+            // Why: straight over Todas as despesas, as from Início, so back comes back here (Pierre's call).
             is AllExpensesUiEvent.OnBillClicked -> if (isOnTop()) {
-                navigator.navigate(Route.GroupDetail.expensesOf(event.groupId))
                 navigator.navigate(Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null))
             }
 

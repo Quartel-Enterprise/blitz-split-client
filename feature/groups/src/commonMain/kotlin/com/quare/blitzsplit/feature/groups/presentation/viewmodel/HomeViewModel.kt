@@ -377,9 +377,8 @@ class HomeViewModel(
             // Why: a tab works from any screen Início opened (iOS keeps the tab bar over them), closing it first.
             HomeUiEvent.OnGroupsTabClicked -> navigator.openHomeTab(Route.Groups)
 
-            // Why: over its group, so back goes to the group's bills, as from Despesas.
+            // Why: straight over Início, so back comes back here: the group was never opened on the way (Pierre's call).
             is HomeUiEvent.OnBillClicked -> if (isOnTop()) {
-                navigator.navigate(Route.GroupDetail.expensesOf(event.groupId))
                 navigator.navigate(Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null))
             }
 
