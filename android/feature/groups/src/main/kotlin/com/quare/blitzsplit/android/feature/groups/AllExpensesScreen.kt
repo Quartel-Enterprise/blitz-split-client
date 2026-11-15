@@ -59,6 +59,7 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 // Why: one column, as Atividade's, centered on a tablet or a book: the rows read as Início's, never stretched.
 private val columnMaxWidth = 640.dp
 private val sideMargin = 16.dp
+private val sideBleed = FormBleed.ofMargin(sideMargin)
 
 /*
  * Why: "Todas as despesas", which Início's "Ver tudo" opens over it: a page on every size (a long list a page at a time
@@ -134,7 +135,7 @@ internal fun AllExpensesContent(
                                 modifier = Modifier
                                     .verticalScroll(rememberScrollState())
                                     .padding(horizontal = sideMargin),
-                                bleed = FormBleed.ofMargin(sideMargin),
+                                bleed = sideBleed,
                             )
                         }
                     },
@@ -197,7 +198,7 @@ private fun AllExpensesList(
                     state = state,
                     onEvent = onEvent,
                     modifier = Modifier.padding(bottom = 8.dp),
-                    bleed = FormBleed.ofMargin(sideMargin),
+                    bleed = sideBleed,
                 )
             }
         }

@@ -65,6 +65,7 @@ private const val SKELETON_FIELDS = 3
 private val singleColumnMaxWidth = 592.dp
 private val dialogWidth = 560.dp
 private val sideMargin = 16.dp
+private val sideBleed = FormBleed.ofMargin(sideMargin)
 private val rowShape = RoundedCornerShape(20.dp)
 
 @Composable
@@ -187,7 +188,7 @@ private fun ColumnScope.PayingMethodFieldsColumn(
             groupLabel = stringResource(R.string.paying_method_type),
             onClick = { index -> onEvent(PayingMethodUiEvent.OnTypeSelected(state.types[index])) },
             // Why: the form column's side margins, which the type chips scroll into.
-            bleed = FormBleed.ofMargin(sideMargin),
+            bleed = sideBleed,
         )
     }
     OutlinedTextField(
