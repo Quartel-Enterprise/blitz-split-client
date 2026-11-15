@@ -29,6 +29,8 @@ sealed interface HomeUiEvent : UiEvent {
 
             OnSeeBalancesClicked -> EventAnalytics.Automatic("home_see_balances_clicked")
 
+            OnOverallBalanceClicked -> EventAnalytics.Automatic("balances_overall_clicked", mapOf("source" to SOURCE))
+
             OnToReceiveClicked -> EventAnalytics.Automatic("balances_to_receive_clicked", mapOf("source" to SOURCE))
 
             OnToPayClicked -> EventAnalytics.Automatic("balances_to_pay_clicked", mapOf("source" to SOURCE))
@@ -167,6 +169,9 @@ sealed interface HomeUiEvent : UiEvent {
 
     // Why: "Ver saldos" over the faces.
     data object OnSeeBalancesClicked : HomeUiEvent
+
+    // Why: the "Saldo geral" card itself, outside its two buttons: the Saldos tab.
+    data object OnOverallBalanceClicked : HomeUiEvent
 
     // Why: "Te devem" and "Você deve" of "Saldo geral".
     data object OnToReceiveClicked : HomeUiEvent

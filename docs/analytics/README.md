@@ -253,7 +253,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `split_bill_clicked` | `source` (`home`, `groups`, `global_balances`, `contacts`, `group_detail`, `group_stats`) | "Split a bill" | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
 | `balances_to_receive_clicked` | `source` (`home`, `groups`) | "To get back" or "Owed to you" | `:feature:groups` |
 | `balances_to_pay_clicked` | `source` (`home`, `groups`) | "To pay" or "You owe" | `:feature:groups` |
-| `balances_overall_clicked` | `source` (`groups`) | The Groups tab's "Overall balance" card (web, Mac), which opens Balances | `:feature:groups` |
+| `balances_overall_clicked` | `source` (`groups`, `home`) | The "Overall balance" card of the Groups tab (web, Mac) and of Home, which opens Balances | `:feature:groups` |
 | `create_group_clicked` | `source` (`home`, `groups`, `contact_invite`, `personal_invite` for a guest's own invite) | "New group" | `:feature:groups`, `:feature:contacts` |
 | `join_with_link_clicked` | `source` (`home`, `groups`) | "Join with a link or QR code" | `:feature:groups` |
 | `group_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `activity`, `contact_profile`) | A group's row, card or sidebar entry, a group of a person's "By group" on Balances, an item's group in Activity, or "Groups in common" on a contact | `:feature:groups`, `:feature:global_balances`, `:feature:activity`, `:feature:contacts` |

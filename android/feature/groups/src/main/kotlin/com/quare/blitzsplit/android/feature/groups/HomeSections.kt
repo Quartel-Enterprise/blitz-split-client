@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -92,6 +94,7 @@ internal fun HomeSummaryCard(
     val toReceiveMoney = rememberMoneyFormatter(toReceive?.currency ?: currency)
     val toPayMoney = rememberMoneyFormatter(toPay?.currency ?: currency)
     Surface(
+        onClick = { onEvent(HomeUiEvent.OnOverallBalanceClicked) },
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -160,6 +163,7 @@ internal fun HomeSummaryCard(
                     amountColor = positiveAmountColor(),
                     isEnabled = summary.canOpenToReceive,
                     onClick = { onEvent(HomeUiEvent.OnToReceiveClicked) },
+                    modifier = if (summary.canOpenToReceive) Modifier else Modifier.swallowTaps(),
                 )
                 SummaryButton(
                     label = stringResource(
@@ -176,11 +180,15 @@ internal fun HomeSummaryCard(
                     amountColor = MaterialTheme.colorScheme.error,
                     isEnabled = summary.canOpenToPay,
                     onClick = { onEvent(HomeUiEvent.OnToPayClicked) },
+                    modifier = if (summary.canOpenToPay) Modifier else Modifier.swallowTaps(),
                 )
             }
         }
     }
 }
+
+// Why: a disabled button lets its tap through, which would open Saldos from the card under it.
+private fun Modifier.swallowTaps(): Modifier = pointerInput(Unit) { detectTapGestures { } }
 
 // Why: "+US$ 40,00" under the big amount, for each other currency with a net; never added to the first.
 @Composable

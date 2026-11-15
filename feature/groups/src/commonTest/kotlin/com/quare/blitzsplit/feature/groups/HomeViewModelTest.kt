@@ -232,6 +232,22 @@ class HomeViewModelTest {
         }
 
     @Test
+    fun `GIVEN Inicio WHEN tapping the Saldo geral card THEN opens Saldos with everyone above Inicio`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnOverallBalanceClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
     fun `GIVEN Inicio WHEN tapping Ver saldos THEN opens Saldos with everyone above Inicio`() =
         runTest(testDispatcher) {
             // Given
@@ -294,6 +310,7 @@ class HomeViewModelTest {
 
             // When
             viewModel.onEvent(HomeUiEvent.OnSeeBalancesClicked)
+            viewModel.onEvent(HomeUiEvent.OnOverallBalanceClicked)
 
             // Then
             assertEquals(listOf(Route.Home, Route.Profile), navigator.backStack.value)
@@ -3551,6 +3568,19 @@ class HomeViewModelTest {
 
             // Then
             assertEquals(listOf("home_see_balances_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Inicio WHEN tapping the Saldo geral card THEN tracks balances_overall_clicked from the home`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(HomeUiEvent.OnOverallBalanceClicked)
+
+            // Then
+            assertEquals(listOf("balances_overall_clicked" to mapOf<String, Any>("source" to "home")), trackedEvents)
         }
 
     @Test

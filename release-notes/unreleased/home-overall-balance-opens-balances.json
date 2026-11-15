@@ -1,0 +1,22 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": ["all"],
+      "text": {
+        "en": "Tapping Home's Overall balance card now opens the Balances tab.",
+        "pt": "Tocar no cartão Saldo geral do Início agora abre a aba Saldos.",
+        "pt-PT": "Tocar no cartão Saldo geral do Início abre agora o separador Saldos.",
+        "es": "Tocar la tarjeta Saldo general de Inicio ahora abre la pestaña Saldos.",
+        "fr": "Toucher la carte Solde global de l’Accueil ouvre désormais l’onglet Soldes.",
+        "de": "Ein Tipp auf die Karte Gesamtsaldo in Start öffnet jetzt den Tab Salden.",
+        "it": "Toccando la scheda Saldo complessivo della Home si apre ora la scheda Saldi.",
+        "pl": "Dotknięcie karty Saldo ogólne na ekranie Start otwiera teraz kartę Salda.",
+        "nl": "Tikken op de kaart Totaalsaldo in Start opent nu het tabblad Saldi.",
+        "ja": "ホームの「全体の残高」カードをタップすると、残高タブが開くようになりました。",
+        "tr": "Ana Sayfa'daki Genel bakiye kartına dokunmak artık Bakiyeler sekmesini açıyor.",
+        "id": "Mengetuk kartu Saldo keseluruhan di Beranda kini membuka tab Saldo."
+      }
+    }
+  ]
+}

@@ -341,6 +341,8 @@ class HomeViewModel(
 
             HomeUiEvent.OnSeeBalancesClicked -> if (isOnTop()) openBalancesTab(BalancesFilter.ALL)
 
+            HomeUiEvent.OnOverallBalanceClicked -> if (isOnTop()) openBalancesTab(BalancesFilter.ALL)
+
             HomeUiEvent.OnToReceiveClicked -> if (isOnTop() &&
                 uiState.value.summary
                     .valueOrNull()
