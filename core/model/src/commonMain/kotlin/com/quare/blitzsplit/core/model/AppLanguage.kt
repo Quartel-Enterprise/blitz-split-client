@@ -24,25 +24,21 @@ enum class AppLanguage(
     ;
 
     /*
-     * Why: what the language picker's chip shows ("EN", "FR", "BR"): the language's code, but Portuguese and Spanish
-     * come written for two regions each, so each shows its region and the chips differ: "BR" and "PT", "419" (Latin
-     * America's UN code, as in es-419) and "ES".
+     * Why: what the language picker's chip shows ("EN", "FR"): the language's code, but a language written for more
+     * than one region shows each one's region, so its chips differ: "BR" and "PT", "419" (Latin America's UN code,
+     * as in es-419, its tag having no region) and "ES".
      */
     val chipCode: String?
-        get() = when (this) {
-            PORTUGUESE, PORTUGUESE_PORTUGAL, SPANISH_SPAIN -> tag?.substringAfter('-')
-            SPANISH -> LATIN_AMERICA
-            else -> tag?.substringBefore('-')
-        }?.uppercase()
+        get() = when {
+            this == SPANISH -> LATIN_AMERICA
+            variantsOf(languageOf(tag)).size > 1 -> regionOf(tag)
+            else -> languageOf(tag)?.uppercase()
+        }
 
     companion object {
         // Why: Android still names Indonesian by its legacy code "in" (values-in), so a tag read from it may carry it.
         private const val LEGACY_INDONESIAN = "in"
 
-        private const val PORTUGUESE_LANGUAGE = "pt"
-        private const val PORTUGAL = "PT"
-        private const val SPANISH_LANGUAGE = "es"
-        private const val SPAIN = "ES"
         private const val LATIN_AMERICA = "419"
 
         /*
@@ -52,14 +48,18 @@ enum class AppLanguage(
          * Spanish too: es-ES is Spain's, every other tag (es, es-MX, es-419…) the neutral Latin-American one.
          */
         fun fromTag(tag: String?): AppLanguage {
-            val language = languageOf(tag)
-            if (language == PORTUGUESE_LANGUAGE) {
-                return if (regionOf(tag) == PORTUGAL) PORTUGUESE_PORTUGAL else PORTUGUESE
-            }
-            if (language == SPANISH_LANGUAGE) {
-                return if (regionOf(tag) == SPAIN) SPANISH_SPAIN else SPANISH
-            }
-            return entries.firstOrNull { it.tag?.substringBefore('-') == language } ?: SYSTEM
+            val variants = variantsOf(languageOf(tag))
+            val region = regionOf(tag)
+            return variants.firstOrNull { region != null && regionOf(it.tag) == region }
+                ?: variants.firstOrNull()
+                ?: SYSTEM
+        }
+
+        // Why: the entries of a language, the one for every other tag first (pt-BR before pt-PT, es before es-ES).
+        private fun variantsOf(language: String?): List<AppLanguage> = if (language == null) {
+            emptyList()
+        } else {
+            entries.filter { it.tag != null && languageOf(it.tag) == language }
         }
 
         /*

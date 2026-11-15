@@ -4,13 +4,14 @@ import { browserLanguages } from '@/lib/platform'
 // Why: pickLocale answers English for a tag it doesn't know ("sv"), which must not pick that tag for the picker.
 const isSupportedTag = (tag: string) => pickLocale([tag]) !== 'en' || /^en(-|$)/i.test(tag)
 const supportedTag = browserLanguages().find((tag) => isSupportedTag(tag) && pickLocale([tag]) === locale)
+const appTag = supportedTag ?? locale
 /**
  * The tag currencies are named in: the app's language, with the region of the first browser language in it
  * ("pt-PT" for a Portuguese browser in Portugal, "es-MX" for a Mexican one), so the picker never speaks another
- * language than the UI. A bare "es" has no region of its own and speaks "es-419",
- * Latin America's, as the page's lang does.
+ * language than the UI. A bare "es", from the browser or from "Español (Latinoamérica)" picked on a browser in
+ * Spain, has no region of its own and speaks "es-419", Latin America's, as the page's lang does.
  */
-export const uiTag = (supportedTag?.toLowerCase() === 'es' ? 'es-419' : supportedTag) ?? locale
+export const uiTag = appTag.toLowerCase() === 'es' ? 'es-419' : appTag
 
 // Why: the picker draws every currency on each render, and building the Intl formatters each time is costly.
 const currencyLabels = new Map<string, string>()
