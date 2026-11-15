@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.releasenotes.data.datasource.SavedReleaseNotesF
 import com.quare.blitzsplit.core.releasenotes.data.parser.ReleaseNotesFeedParser
 import com.quare.blitzsplit.core.releasenotes.domain.model.PublishedRelease
 import com.quare.blitzsplit.core.releasenotes.domain.repository.ReleaseNotesRepository
+import com.quare.blitzsplit.core.releasenotes.domain.usecase.GetInstalledVersion
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.flow.Flow
@@ -17,12 +18,14 @@ import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
 class ReleaseNotesRepositoryImpl(
     private val local: ReleaseNotesLocalDataSource,
     private val remote: ReleaseNotesRemoteDataSource,
     private val parser: ReleaseNotesFeedParser,
     private val currentTimeMillis: CurrentTimeMillis,
+    private val getInstalledVersion: GetInstalledVersion,
 ) : ReleaseNotesRepository {
     /*
      * Why: the launch's download and the screen's may ask for the same feed at once; the second waits and finds it
@@ -32,6 +35,12 @@ class ReleaseNotesRepositoryImpl(
 
     // Why: a version comes out every few days at most; a day keeps its notes from waiting long without asking at every launch.
     private val freshFor = 24.hours
+
+    /*
+     * Why: a feed without the installed version is asked again sooner, since the site gets a version's notes only
+     * once its release ends; still with a limit, as a version released without notes never reaches the site.
+     */
+    private val freshWhileMissingInstalledFor = 15.minutes
 
     override fun observeReleases(language: String): Flow<List<PublishedRelease>?> = local
         .observeFeed(language)
@@ -44,11 +53,12 @@ class ReleaseNotesRepositoryImpl(
              * Why: a saved feed this version of the app can't read counts as none: it is downloaded again now, and
              * without its ETag, since an "unchanged" answer would leave the screen with nothing to draw.
              */
-            val saved = local.getSavedFeed(language)?.takeIf { parser.parse(it.json) != null }
-            if (saved?.isFresh() != true) {
+            val saved = local.getSavedFeed(language)
+            val savedReleases = saved?.let { parser.parse(it.json) }
+            if (saved == null || savedReleases == null || !saved.isFresh(savedReleases)) {
                 download(
                     language = language,
-                    savedEtag = saved?.etag,
+                    savedEtag = savedReleases?.let { saved.etag },
                 )
             }
         }
@@ -122,9 +132,16 @@ class ReleaseNotesRepositoryImpl(
     }
 
     // Why: a clock set back since the last check never keeps a feed from being checked again.
-    private fun SavedReleaseNotesFeed.isFresh(): Boolean {
+    private fun SavedReleaseNotesFeed.isFresh(releases: List<PublishedRelease>): Boolean {
         val elapsed = (currentTimeMillis() - checkedAt).milliseconds
-        return elapsed >= Duration.ZERO && elapsed < freshFor
+        val freshness = if (releases.isMissingInstalledVersion()) freshWhileMissingInstalledFor else freshFor
+        return elapsed >= Duration.ZERO && elapsed < freshness
+    }
+
+    // Why: a version whose name can't be read (GetInstalledVersion's null) is never missed.
+    private fun List<PublishedRelease>.isMissingInstalledVersion(): Boolean {
+        val installed = getInstalledVersion() ?: return false
+        return none { it.version >= installed }
     }
 
     private companion object {

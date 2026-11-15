@@ -126,7 +126,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     (`release-notes/<language>/<version>.json`), and each app downloads its language's feed
     (`https://blitzsplit.com/release-notes/<language>.json`, English when the site lacks the language) at launch and
     when the screen opens, keeps it in Room for offline and asks again at most once a day with the saved feed's
-    `ETag`, as the legal texts (the web, which asks from another origin, never sees the `ETag` and leaves that to the
+    `ETag`, as the legal texts, or every 15 minutes while the saved feed doesn't list the version installed yet (the
+    site gets a version's notes only once its release ends, and never one released without notes) (the web, which asks from another origin, never sees the `ETag` and leaves that to the
     browser's own cache). Each note names the platforms it is for, and an app shows only its own: the web never
     shows a note written for Android and iOS alone, and a version with no note for the platform isn't listed. Nor is a
     version newer than the app itself, which a store may not offer yet (Pierre's call). "Show beta versions", a switch

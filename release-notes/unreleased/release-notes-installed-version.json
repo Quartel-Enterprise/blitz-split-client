@@ -1,0 +1,25 @@
+{
+  "notes": [
+    {
+      "kind": "fixed",
+      "platforms": [
+        "all"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "Release notes now show the version you just installed, instead of waiting up to a day to bring its notes.",
+        "pt": "As Notas de versão agora mostram a versão que você acabou de instalar, em vez de esperar até um dia para trazer as novidades dela.",
+        "pt-PT": "As Notas de versão mostram agora a versão que acabaste de instalar, em vez de esperarem até um dia para trazer as novidades dela.",
+        "es": "Las Notas de la versión ahora muestran la versión que acabas de instalar, en lugar de esperar hasta un día para traer sus novedades.",
+        "fr": "Les Notes de version affichent désormais la version que vous venez d’installer, au lieu d’attendre jusqu’à un jour pour en apporter les nouveautés.",
+        "de": "Die Versionshinweise zeigen jetzt die gerade installierte Version, statt bis zu einen Tag auf ihre Neuerungen zu warten.",
+        "it": "Le Note di rilascio ora mostrano la versione appena installata, invece di aspettare fino a un giorno per portarne le novità.",
+        "pl": "Informacje o wersji pokazują teraz właśnie zainstalowaną wersję, zamiast czekać nawet dzień na jej nowości.",
+        "nl": "Releaseopmerkingen tonen nu de versie die je net hebt geïnstalleerd, in plaats van tot een dag te wachten op de nieuwe punten ervan.",
+        "ja": "リリースノートに、インストールしたばかりのバージョンがすぐ表示されるようになりました。最大1日待つ必要はありません。",
+        "tr": "Sürüm notları artık yeni yüklediğin sürümü gösteriyor; yeniliklerini getirmek için bir güne kadar beklemiyor.",
+        "id": "Catatan rilis kini menampilkan versi yang baru kamu pasang, tanpa menunggu hingga sehari untuk membawa catatannya."
+      }
+    }
+  ]
+}

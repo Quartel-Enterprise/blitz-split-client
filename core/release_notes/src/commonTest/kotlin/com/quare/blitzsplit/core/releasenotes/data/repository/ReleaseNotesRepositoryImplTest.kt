@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.releasenotes.data.datasource.ReleaseNotesRemote
 import com.quare.blitzsplit.core.releasenotes.data.datasource.ReleaseNotesRemoteDataSource
 import com.quare.blitzsplit.core.releasenotes.data.datasource.SavedReleaseNotesFeed
 import com.quare.blitzsplit.core.releasenotes.data.parser.ReleaseNotesFeedParserImpl
+import com.quare.blitzsplit.core.releasenotes.domain.model.AppVersion
 import com.quare.blitzsplit.core.releasenotes.domain.model.PublishedRelease
 import com.quare.blitzsplit.core.releasenotes.feedJson
 import com.quare.blitzsplit.core.releasenotes.published
@@ -29,6 +30,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 class ReleaseNotesRepositoryImplTest {
     private lateinit var local: FakeReleaseNotesLocalDataSource
@@ -194,6 +196,147 @@ class ReleaseNotesRepositoryImplTest {
                 ),
             ),
             site = mapOf("pt" to newFeed),
+        )
+
+        // When
+        val result = repository.refreshReleases("pt")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue(remote.requests.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a feed confirmed an hour ago without the installed version WHEN refreshing THEN asks the site again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        etag = "\"old\"",
+                        checkedAt = NOW - 1.hours.ms,
+                    ),
+                ),
+                site = mapOf("pt" to newFeed),
+                siteEtags = mapOf("pt" to "\"new\""),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf<String?>("\"old\""), remote.sentEtags)
+            assertEquals(mapOf("pt" to SavedRow(newFeed, "\"new\"", NOW)), local.rows.value)
+        }
+
+    @Test
+    fun `GIVEN a feed without the installed version and an unchanged site WHEN refreshing THEN only the time moves`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        etag = "\"old\"",
+                        checkedAt = NOW - 1.hours.ms,
+                    ),
+                ),
+                site = mapOf("pt" to oldFeed),
+                siteEtags = mapOf("pt" to "\"old\""),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(mapOf("pt" to SavedRow(oldFeed, "\"old\"", NOW)), local.rows.value)
+        }
+
+    @Test
+    fun `GIVEN a feed without the installed version confirmed a minute ago WHEN refreshing THEN asks nothing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        checkedAt = NOW - 1.minutes.ms,
+                    ),
+                ),
+                site = mapOf("pt" to newFeed),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertTrue(remote.requests.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a feed without the installed version confirmed 15 minutes ago WHEN refreshing THEN asks again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                saved = mapOf(
+                    "pt" to savedFeed(
+                        json = oldFeed,
+                        checkedAt = NOW - 15.minutes.ms,
+                    ),
+                ),
+                site = mapOf("pt" to newFeed),
+                installedVersion = "3.1.0",
+            )
+
+            // When
+            val result = repository.refreshReleases("pt")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("pt"), remote.requests)
+        }
+
+    @Test
+    fun `GIVEN a fresh feed with a version newer than the installed one WHEN refreshing THEN asks nothing`() = runTest {
+        // Given
+        prepareScenario(
+            saved = mapOf(
+                "pt" to savedFeed(
+                    json = newFeed,
+                    checkedAt = NOW - 1.hours.ms,
+                ),
+            ),
+            site = mapOf("pt" to newFeed),
+            installedVersion = "3.0.1-beta_1",
+        )
+
+        // When
+        val result = repository.refreshReleases("pt")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertTrue(remote.requests.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a feed confirmed an hour ago with the installed version WHEN refreshing THEN asks nothing`() = runTest {
+        // Given
+        prepareScenario(
+            saved = mapOf(
+                "pt" to savedFeed(
+                    json = newFeed,
+                    checkedAt = NOW - 1.hours.ms,
+                ),
+            ),
+            site = mapOf("pt" to newFeed),
+            installedVersion = "3.1.0",
         )
 
         // When
@@ -635,6 +778,7 @@ class ReleaseNotesRepositoryImplTest {
         site: Map<String, String> = emptyMap(),
         siteEtags: Map<String, String> = emptyMap(),
         siteError: Throwable? = null,
+        installedVersion: String? = null,
     ) {
         local = FakeReleaseNotesLocalDataSource(saved)
         remote = FakeReleaseNotesRemoteDataSource(
@@ -647,6 +791,7 @@ class ReleaseNotesRepositoryImplTest {
             remote = remote,
             parser = ReleaseNotesFeedParserImpl(),
             currentTimeMillis = { NOW },
+            getInstalledVersion = { installedVersion?.let(AppVersion::parseOrNull) },
         )
     }
 
