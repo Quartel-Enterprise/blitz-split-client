@@ -172,6 +172,25 @@ The UI test launches the app once per screen and language with `-StoreScreenshot
 and `-StoreScreenshotsScreen`, plus `-AppleLanguages` and `-AppleLocale`. The languages, the screens and the photos
 are the tables of `scripts/store-screenshots/` (`locales.tsv`, `screens.tsv`, `assets.tsv`), which the Mac's capture
 reads too.
+
+**The language picks the strings, the region how amounts, dates and hours are written.** Launched in `es-419`, the
+app reads its `es` strings in every region, Spain's included. Latin America's set runs in `es_GQ`, Equatorial Guinea's
+region (Pierre's call): the only Spanish region that writes the trip's euros with the symbol in front ("€1145,80")
+and also the hours on a 24-hour clock ("21:00") and the day before the month ("15 nov", "11–14 nov"). Every Spanish
+region was measured with the app's format styles on iOS 27.2 and macOS 27.2, which write them alike:
+
+- **Latin America's**, all of them, write the euro as its code, "EUR 1,145.80" or, in most of South America,
+  "EUR 1.145,80", and nearly all on a 12-hour clock. Under Mexico's the wider amount also cut the group's rows short.
+- **The United States'** writes "€1,145.80", with "9:00 p.m.", "nov 15" and "nov 11–14".
+- **The Canary Islands'** and **Ceuta and Melilla's** write Spain's "1145,80 €", and so does **the Philippines'**,
+  on a 12-hour clock.
+
+The trade-off: Equatorial Guinea's separators are Spain's, a decimal comma and no thousands separator under 10 000,
+the boat tour's dollars are "US$120" where the United States' wrote "$120", and a compact amount from 1000 up puts
+the symbol after ("1 mil €"). The trip's Statistics stays under it: its most expensive day is €678, so the chart's
+value lines stop at "€750". Play's set, drawn in Robolectric's bare `es`, writes the same amount as "1145,80 €".
+Changing the region is that one line of `locales.tsv`.
+
 The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
 sandbox can't read the repository. The app writes them to a temporary folder of its own. In a **debug**
 build, `BoraRacharApp` then calls `BlitzSplitApple.startForStoreScreenshots` in place of `start`
@@ -190,22 +209,6 @@ usual). That entry point:
    (`BlitzSplitApple.createSplitBillViewModel`), as its "Split" row does. A tap would depend on where that row is, which
    changes with the screen's height (below the screen on the iPhone Duo closed), and the Mac's capture has
    nothing that taps.
-
-**The language picks the strings, the region how amounts, dates and hours are written.** Launched in `es-419`, the
-app reads its `es` strings in every region, Spain's included. Latin America's set runs in `es_GQ`, Equatorial Guinea's
-region (Pierre's call): the only Spanish region that writes the trip's euros with the symbol in front ("€1145,80")
-and also the hours on a 24-hour clock ("21:00") and the day before the month ("15 nov", "11–14 nov"). Every region was
-measured on iOS 27.2:
-
-- **Latin America's**, all of them, write the euro as its code, "EUR 1,145.80" or, in most of South America,
-  "EUR 1.145,80", and nearly all on a 12-hour clock. Under Mexico's the wider amount also cut the group's rows short.
-- **The United States'** writes "€1,145.80", with "9:00 p.m.", "nov 15" and "nov 11–14".
-- **The Canary Islands'** and **Ceuta and Melilla's** write Spain's "1145,80 €".
-
-The trade-off: Equatorial Guinea's separators are Spain's, a decimal comma and no thousands separator under 10 000,
-the boat tour's dollars are "US$120" where the United States' wrote "$120", and a compact amount above 1000 would put
-the symbol after ("1,2 mil €"), which no line of the trip's Statistics reaches. Play's set, drawn in Robolectric's bare
-`es`, writes the same amount as "1145,80 €". Changing the region is that one line of `locales.tsv`.
 
 Each simulator's status bar is set to 9:41 with a full battery, and the frame draws no status bar over the capture.
 The capture's points must match the frame's screen (`AppleScreenshotSlot`), or the PNG is stretched. Check them
