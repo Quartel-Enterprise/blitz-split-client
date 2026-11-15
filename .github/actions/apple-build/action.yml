@@ -1,9 +1,9 @@
 name: 'Build an Apple app for TestFlight'
 description: >-
   Archives and exports one scheme of the Apple app, signed with the team's distribution certificate and App Store
-  profile from the certificates repository (fastlane match, fastlane/Fastfile). The iOS and the macOS beta jobs of
-  release-beta.yml differ only in these inputs. The calling job checks out the repository first, since the steps run
-  its scripts.
+  profile from the certificates repository (fastlane match, fastlane/Fastfile). The iOS and the macOS jobs of
+  release-beta.yml and release-production.yml differ only in these inputs. The calling job checks out the repository
+  first, since the steps run its scripts.
 
 inputs:
   scheme:
@@ -95,20 +95,9 @@ runs:
       shell: bash
       run: brew install xcodegen
 
-    # The xcode-27 image ships Ruby and fastlane; this version is the one the signing lane was checked with, and a
-    # newer image keeps it until someone moves FASTLANE_VERSION on purpose
-    - name: Check fastlane
-      shell: bash
-      env:
-        FASTLANE_VERSION: '2.241.2'
-      run: |
-        if ! fastlane --version 2> /dev/null | grep -q "fastlane $FASTLANE_VERSION"; then
-          gem install fastlane -v "$FASTLANE_VERSION" --no-document
-        fi
-        if ! fastlane --version 2> /dev/null | grep -q "fastlane $FASTLANE_VERSION"; then
-          echo "::error::The fastlane on the PATH is not $FASTLANE_VERSION."
-          exit 1
-        fi
+    # The version the signing lane was checked with
+    - name: Set up fastlane
+      uses: ./.github/actions/fastlane
 
     - name: Prepare SSH access to the certificates repository
       shell: bash

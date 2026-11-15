@@ -99,7 +99,8 @@ unsure about.
   an `…Other` message with a `{count}` as "few|many", and `pluralFormOf` in `i18n/index.ts` picks one with
   `Intl.PluralRules` (many takes the second form, any other category the first); `check:messages` rejects a "|"
   anywhere else. A language with more forms than that needs `pluralFormOf` extended first.
-- The release notes: add the language to `LANGS` and its sentence to `NOTHING_TO_SAY` in
+- The release notes: add the language to `LANGS`, its sentence to `NOTHING_TO_SAY` and its stores' locale codes to
+  `STORE_LOCALES` (the ones of `StoreScreenshots.kt`, which a test compares) in
   `scripts/release/release-notes.mjs`, and its text to every fragment in `release-notes/unreleased/`
   (`node scripts/release/release-notes.mjs check` fails until each has it). This goes for a regional
   variant too when the site writes its release notes in full, as it does Portugal's Portuguese: the

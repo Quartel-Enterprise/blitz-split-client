@@ -1,0 +1,28 @@
+name: 'Set up fastlane'
+description: >-
+  Puts the fastlane the lanes of fastlane/Fastfile were checked with on the PATH: the one the xcode-27 image ships
+  when it is that version, installed otherwise. A Linux runner gets a Ruby of its own first.
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Ruby
+      if: runner.os == 'Linux'
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+
+    # The xcode-27 image ships Ruby and fastlane; this version is the one the lanes were checked with, and a newer
+    # image keeps it until someone moves FASTLANE_VERSION on purpose
+    - name: Check fastlane
+      shell: bash
+      env:
+        FASTLANE_VERSION: '2.241.2'
+      run: |
+        if ! fastlane --version 2> /dev/null | grep -q "fastlane $FASTLANE_VERSION"; then
+          gem install fastlane -v "$FASTLANE_VERSION" --no-document
+        fi
+        if ! fastlane --version 2> /dev/null | grep -q "fastlane $FASTLANE_VERSION"; then
+          echo "::error::The fastlane on the PATH is not $FASTLANE_VERSION."
+          exit 1
+        fi

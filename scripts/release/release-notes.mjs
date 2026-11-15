@@ -12,8 +12,10 @@
 //                                 [--site <blitz-split-site checkout>] [--out <folder>] [--releases <file>]
 //       Picks the notes of <version> (3.1.0, 3.1.0-beta_2). --site writes them as that repository's files, unless it
 //       already has the version, whose notes then are the ones every output gets. --out writes github.md, the
-//       testers' text and, for a stable version, the stores' text. --releases is the GitHub releases as JSON (each a
-//       tag and a body), which lets a platform's testers read every note since the last beta they got a build of.
+//       testers' text and, for a stable version, the stores' text: by language in stores/, and again in fastlane/ by
+//       each store's locale codes, in the folders supply and deliver upload from. --releases is the GitHub releases
+//       as JSON (each a tag and a body), which lets a platform's testers read every note since the last beta they got
+//       a build of.
 //
 // Plain Node, no dependencies: the release workflow and the check run it as it is.
 
@@ -41,6 +43,42 @@ export const TESTERS_LANG = "pt";
 export const TESTERS_ROWS = { android: "Android", ios: "iOS, ad hoc" };
 /** What a store takes as a version's "What's new", in characters. */
 export const STORE_LIMITS = { play: 500, appStore: 4000 };
+/**
+ * Each store's locale codes for a language of the notes, the ones the store screenshots go to (build-logic's
+ * StoreScreenshots.kt, where "en-US" and "pt-BR" are the notes' "en" and "pt"): Spanish goes out to each store's
+ * regional codes. Portugal's Portuguese is only here, until the screenshots have it; the lanes that upload leave out
+ * a locale the store's listing doesn't have.
+ */
+export const STORE_LOCALES = {
+  play: {
+    en: ["en-US"],
+    pt: ["pt-BR"],
+    "pt-PT": ["pt-PT"],
+    es: ["es-419", "es-ES", "es-US"],
+    fr: ["fr-FR"],
+    de: ["de-DE"],
+    it: ["it-IT"],
+    pl: ["pl-PL"],
+    nl: ["nl-NL"],
+    ja: ["ja-JP"],
+    tr: ["tr-TR"],
+    id: ["id"],
+  },
+  appStore: {
+    en: ["en-US"],
+    pt: ["pt-BR"],
+    "pt-PT": ["pt-PT"],
+    es: ["es-MX", "es-ES"],
+    fr: ["fr-FR"],
+    de: ["de-DE"],
+    it: ["it"],
+    pl: ["pl"],
+    nl: ["nl-NL"],
+    ja: ["ja"],
+    tr: ["tr"],
+    id: ["id"],
+  },
+};
 
 const VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-beta_([1-9]\d*))?$/;
 const FRAGMENT_NAME = /^[a-z0-9][a-z0-9-]*\.json$/;
@@ -330,9 +368,15 @@ function writeOutputs(out, version, notes, testers) {
   for (const platform of Object.keys(TESTERS_ROWS)) write(join(out, "testers", `${platform}.txt`), plainNotes(testers[platform], platform, TESTERS_LANG));
   if (isBeta(version)) return;
   for (const lang of LANGS) {
-    write(join(out, "stores", "play", `${lang}.txt`), storeNotes(notes, "android", lang, STORE_LIMITS.play));
-    write(join(out, "stores", "app-store-ios", `${lang}.txt`), storeNotes(notes, "ios", lang, STORE_LIMITS.appStore));
-    write(join(out, "stores", "app-store-mac", `${lang}.txt`), storeNotes(notes, "mac", lang, STORE_LIMITS.appStore));
+    const play = storeNotes(notes, "android", lang, STORE_LIMITS.play);
+    const appStore = { "app-store-ios": storeNotes(notes, "ios", lang, STORE_LIMITS.appStore), "app-store-mac": storeNotes(notes, "mac", lang, STORE_LIMITS.appStore) };
+    write(join(out, "stores", "play", `${lang}.txt`), play);
+    // What supply reads for a release whose versionCode has no file of its own: the workflow needn't pass the code.
+    for (const locale of STORE_LOCALES.play[lang]) write(join(out, "fastlane", "play", locale, "changelogs", "default.txt"), play);
+    for (const [store, text] of Object.entries(appStore)) {
+      write(join(out, "stores", store, `${lang}.txt`), text);
+      for (const locale of STORE_LOCALES.appStore[lang]) write(join(out, "fastlane", store, locale, "release_notes.txt"), text);
+    }
   }
 }
 

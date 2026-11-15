@@ -1,0 +1,1190 @@
+name: release-production
+
+# Ships a stable version of Bora Rachar to the stores: Android to Google Play, iOS and macOS to the App Store.
+#
+# Run it from the Actions tab (docs/release-process.md#releasing-a-stable-version):
+#   1. `plan` resolves the version X.Y.Z from version.properties and the release notes' fragments, picks the notes
+#      the version tells (docs/release-notes.md) and shows both, with what the run will publish, in the run summary.
+#   2. `approve` waits on the `Production` environment: nothing is built and nothing reaches a store until one of
+#      its reviewers approves the run. To change anything, reject it and dispatch another.
+#   3. Each platform builds and publishes, in jobs of its own, because "Re-run failed jobs" repeats whole jobs: an
+#      upload that failed is sent again without building a second time.
+#        - Android: a signed AAB to the Google Play track of the `track` input, with the notes as its "What's new".
+#          On the production track `rollout` is the percentage of the users who get it.
+#        - iOS and macOS: App Store Connect, signed as the betas are (the composite actions apple-build and
+#          apple-upload). With `submit_for_review`, the build is then sent to App Store review with the notes, and
+#          goes out by itself once approved.
+#        - The listings' screenshots (`screenshots`) are made again and uploaded: Google Play's after the bundle
+#          reached production, the App Store's before the submission, since a version in review can't take them.
+#          Best effort: none of these jobs holds the release back.
+#   4. `finalize` runs when a store took a build. When the run released (the production track, or a submission for
+#      review) it tags X.Y.Z and publishes the GitHub release, then merges the versionCode, the versionName and the
+#      removal of the fragments the version told back into main. A run that only reached a testing track or
+#      TestFlight merges back its versionCode alone, and leaves no tag.
+#   5. `site-release-notes` sends the notes of a version that was released to blitz-split-site, whose "What's new"
+#      page and feed the apps read. It doesn't wait for the stores' reviews.
+#
+# With no input changed, the run publishes to everyone: the production track at 100% and a submission for review.
+# The approval is the one gate, so `plan` refuses to go on when the environment has no required reviewer.
+#
+# One release at a time, betas included: the concurrency group is release-beta.yml's, since both take the next
+# versionCode from the same place.
+#
+# Repository secrets and variables: see docs/release-process.md#secrets.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version X.Y.Z: leave blank to use the one version.properties and the release notes give"
+        type: string
+        required: false
+      android:
+        description: "Android, Google Play"
+        type: boolean
+        default: true
+      ios:
+        description: "iOS, App Store"
+        type: boolean
+        default: true
+      macos:
+        description: "macOS, App Store"
+        type: boolean
+        default: true
+      track:
+        description: "Google Play track"
+        type: choice
+        options:
+          - production
+          - beta
+          - alpha
+          - internal
+        default: production
+      rollout:
+        description: "Google Play, production track: the percentage of the users who get it, 1 to 100"
+        type: string
+        default: '100'
+      submit_for_review:
+        description: "Submit the iOS and macOS builds for App Store review (unchecked: TestFlight only)"
+        type: boolean
+        default: true
+      phased_release:
+        description: "App Store: release an approved update over seven days, not to everyone at once"
+        type: boolean
+        default: false
+      screenshots:
+        description: "Make the store listings' screenshots again and upload them"
+        type: boolean
+        default: true
+
+# Least privilege by default: only finalize writes.
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  # The GitHub Environment whose required reviewers approve a release (Settings > Environments).
+  APPROVAL_ENVIRONMENT: Production
+  # Where the release notes are published: its "What's new" page and the feed the apps read (docs/release-notes.md).
+  SITE_REPOSITORY: Quartel-Enterprise/blitz-split-site
+
+jobs:
+  plan:
+    name: Plan the release
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      # To read the environment's protection rules.
+      actions: read
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      version_code: ${{ steps.resolve.outputs.version_code }}
+      branch: ${{ steps.resolve.outputs.branch }}
+      sha: ${{ steps.sha.outputs.sha }}
+      has_notes: ${{ steps.notes.outputs.has_notes }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      # Every job builds this commit, so a push to main during the run doesn't end up half in the release.
+      - name: Pin the commit
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Through env, not spliced into the commands: the values are checked, but only after the shell has parsed
+      # the line.
+      - name: Check the inputs
+        env:
+          ANDROID: ${{ inputs.android }}
+          IOS: ${{ inputs.ios }}
+          MACOS: ${{ inputs.macos }}
+          ROLLOUT: ${{ inputs.rollout }}
+        run: |
+          if [ "$ANDROID" != true ] && [ "$IOS" != true ] && [ "$MACOS" != true ]; then
+            echo "::error::No platform is selected."
+            exit 1
+          fi
+          if ! [[ "$ROLLOUT" =~ ^[0-9]+$ ]] || [ "$ROLLOUT" -lt 1 ] || [ "$ROLLOUT" -gt 100 ]; then
+            echo "::error::rollout is the percentage of the users who get the release, from 1 to 100: '$ROLLOUT' is not."
+            exit 1
+          fi
+
+      # GitHub makes an environment a job names and that doesn't exist, with no protection: `approve` would then
+      # pass by itself, and a run with no input changed publishes to everyone. So the release stops here when the
+      # environment is missing or has no required reviewer. Any other answer of the API only warns: the gate may
+      # well be there, and a release must not depend on that call.
+      - name: Check the approval gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! environment="$(gh api "repos/$GITHUB_REPOSITORY/environments/$APPROVAL_ENVIRONMENT" 2>&1)"; then
+            if grep -q "HTTP 404" <<< "$environment"; then
+              echo "::error::The $APPROVAL_ENVIRONMENT environment doesn't exist: create it with required reviewers. See docs/release-process.md#the-approval."
+              exit 1
+            fi
+            echo "$environment"
+            echo "::warning::Could not read the $APPROVAL_ENVIRONMENT environment's protection rules."
+            exit 0
+          fi
+          reviewers="$(jq '[.protection_rules[]? | select(.type == "required_reviewers")] | length' <<< "$environment")"
+          if [ "$reviewers" -eq 0 ]; then
+            echo "::error::The $APPROVAL_ENVIRONMENT environment has no required reviewers, so nothing would wait for an approval. See docs/release-process.md#the-approval."
+            exit 1
+          fi
+
+      # The version and the notes both come from scripts/release/release-notes.mjs, plain Node.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Resolve version
+        id: resolve
+        env:
+          VERSION_INPUT: ${{ inputs.version }}
+          # To read the build numbers the earlier releases recorded in their notes.
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/release/suggest-version.sh --stable "$VERSION_INPUT"
+
+      - name: Say what the run publishes
+        env:
+          ANDROID: ${{ inputs.android }}
+          IOS: ${{ inputs.ios }}
+          MACOS: ${{ inputs.macos }}
+          TRACK: ${{ inputs.track }}
+          ROLLOUT: ${{ inputs.rollout }}
+          SUBMIT: ${{ inputs.submit_for_review }}
+          PHASED: ${{ inputs.phased_release }}
+          SCREENSHOTS: ${{ inputs.screenshots }}
+        run: |
+          android="not in this run"
+          if [ "$ANDROID" = true ]; then
+            android="Google Play, \`$TRACK\` track"
+            if [ "$TRACK" = production ]; then
+              android="$android, $ROLLOUT% of the users"
+            fi
+          fi
+          app_store="TestFlight only"
+          if [ "$SUBMIT" = true ]; then
+            app_store="App Store review, then released once approved"
+            if [ "$PHASED" = true ]; then
+              app_store="$app_store, over seven days"
+            fi
+          fi
+          ios="not in this run"
+          macos="not in this run"
+          if [ "$IOS" = true ]; then ios="$app_store"; fi
+          if [ "$MACOS" = true ]; then macos="$app_store"; fi
+          {
+            echo ""
+            echo "| Platform | Where it goes |"
+            echo "|---|---|"
+            echo "| Android | $android |"
+            echo "| iOS | $ios |"
+            echo "| macOS | $macos |"
+            echo "| Store screenshots | $([ "$SCREENSHOTS" = true ] && echo "made again and uploaded with a release" || echo "left as they are") |"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Read-only, and public: the default token is enough. A version the site already has, as one written there by
+      # hand, is the text every store and the GitHub release get (docs/release-notes.md).
+      - name: Checkout the site
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.SITE_REPOSITORY }}
+          path: site
+          fetch-depth: 1
+          persist-credentials: false
+
+      # Once, here, for every job after it: the stores' "What's new" by locale and the GitHub release's notes.
+      - name: Pick the release notes
+        id: notes
+        env:
+          VERSION: ${{ steps.resolve.outputs.version }}
+          SHA: ${{ steps.sha.outputs.sha }}
+        run: |
+          node scripts/release/release-notes.mjs collect "$VERSION" --ref "$SHA" --site site \
+            --out "$RUNNER_TEMP/release-notes"
+          if [ -s "$RUNNER_TEMP/release-notes/github.md" ]; then
+            cat "$RUNNER_TEMP/release-notes/github.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          {
+            echo ""
+            echo "### What's new on Google Play, in English"
+            echo ""
+            echo '```'
+            cat "$RUNNER_TEMP/release-notes/stores/play/en.txt"
+            echo ""
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the release notes as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-notes
+          path: ${{ runner.temp }}/release-notes/
+          retention-days: 7
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------------------------
+  # The approval
+  # ---------------------------------------------------------------------------------------------
+  approve:
+    name: Wait for the approval
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Has to be the name APPROVAL_ENVIRONMENT holds: `environment` can't read `env`.
+    environment: Production
+    steps:
+      - name: Approved
+        run: echo "Approved by one of the $APPROVAL_ENVIRONMENT environment's reviewers."
+
+  # ---------------------------------------------------------------------------------------------
+  # Android
+  # ---------------------------------------------------------------------------------------------
+  android-build:
+    name: Android, build the AAB
+    needs: [plan, approve]
+    if: ${{ inputs.android }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      # A bundle signed with the debug key builds, and Google Play refuses it.
+      - name: Check the signing secrets
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: ./scripts/release/require-env.sh ANDROID_KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD GOOGLE_SERVICES_JSON
+
+      # Without the web client id the app builds, but the native Google sign in fails (docs/getting-started.md).
+      - name: Check the Google web client id
+        env:
+          SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
+        run: ./scripts/release/require-env.sh SUPABASE_GOOGLE_WEB_CLIENT_ID
+
+      - name: Bump version
+        run: ./scripts/release/bump-version.sh "${{ needs.plan.outputs.version }}" "${{ needs.plan.outputs.version_code }}"
+
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          # Dispatched on main, where the action would save the cache: a release must not push out the entries the
+          # pull requests read.
+          cache-read-only: 'true'
+
+      - name: Decode signing and Firebase config
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
+
+      - name: Build the signed AAB
+        run: ./gradlew :androidApp:bundleRelease
+        env:
+          SUPABASE_GOOGLE_WEB_CLIENT_ID: ${{ vars.SUPABASE_GOOGLE_WEB_CLIENT_ID }}
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/release.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      # Google Play takes a bundle only when it is signed with the app's upload key, so the run says which key this
+      # one carries: its SHA-1 is the one to compare with Play Console > Test and release > App integrity > Upload
+      # key certificate when the upload is refused. The digests come from the release keystore, and keytool confirms
+      # the bundle carries that certificate by its SHA-256.
+      - name: Show the signing certificate
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          shopt -s nullglob
+          aabs=(androidApp/build/outputs/bundle/release/*.aab)
+          if [ "${#aabs[@]}" -ne 1 ]; then
+            echo "::error::Expected one release AAB, found ${#aabs[@]}."
+            exit 1
+          fi
+          if ! keystore="$(keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -alias "$ANDROID_KEY_ALIAS" \
+            -storepass "$ANDROID_KEYSTORE_PASSWORD" 2>&1)"; then
+            echo "$keystore"
+            echo "::error::keytool could not read the release keystore."
+            exit 1
+          fi
+          digest() { sed -n "s/^[[:space:]]*$1: *//p" <<< "$2" | head -1; }
+          sha1="$(digest SHA1 "$keystore")"
+          sha256="$(digest SHA256 "$keystore")"
+          if [ -z "$sha1" ] || [ -z "$sha256" ]; then
+            echo "$keystore"
+            echo "::error::keytool printed no SHA-1 or SHA-256 for the release key."
+            exit 1
+          fi
+          if ! bundle="$(keytool -printcert -jarfile "${aabs[0]}" 2>&1)" || [ "$(digest SHA256 "$bundle")" != "$sha256" ]; then
+            echo "$bundle"
+            echo "::error::The release AAB is not signed with the release keystore's certificate (SHA-256 $sha256)."
+            exit 1
+          fi
+          echo "::notice title=AAB signing SHA-1::$sha1"
+          {
+            echo "### AAB signing certificate"
+            echo ""
+            echo "SHA-1: \`$sha1\`"
+            echo ""
+            echo "SHA-256: \`$sha256\`"
+            echo ""
+            echo "Google Play takes the bundle only when this is its upload key certificate (Play Console > Test and release > App integrity)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the AAB as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-aab
+          path: androidApp/build/outputs/bundle/release/*.aab
+          # A week, for the "Re-run failed jobs" of the upload: a bundle installs nowhere before Google Play signs it.
+          retention-days: 7
+          if-no-files-found: error
+
+  android-upload:
+    name: Android, send to Google Play
+    needs: [plan, android-build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      # The key of a Google Cloud service account, as JSON: a missing one and one pasted wrong both stop here.
+      - name: Write the Google Play key
+        env:
+          PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          ./scripts/release/require-env.sh PLAY_STORE_SERVICE_ACCOUNT_JSON
+          printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
+          if ! jq -e '.client_email' "$RUNNER_TEMP/play-service-account.json" > /dev/null 2>&1; then
+            echo "::error::The PLAY_STORE_SERVICE_ACCOUNT_JSON secret is not a service account key (JSON). See docs/release-process.md#secrets."
+            exit 1
+          fi
+
+      - name: Set up fastlane
+        uses: ./.github/actions/fastlane
+
+      - name: Download the AAB build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: android-aab
+          path: aab
+
+      - name: Download the release notes
+        uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: release-notes
+
+      # One edit of Google Play: the bundle, the track and the notes land together or not at all, so a failed
+      # attempt leaves nothing behind and "Re-run failed jobs" starts it over.
+      - name: Send the AAB to Google Play
+        env:
+          PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
+          TRACK: ${{ inputs.track }}
+          ROLLOUT: ${{ inputs.rollout }}
+        run: |
+          shopt -s nullglob
+          aabs=(aab/*.aab)
+          if [ "${#aabs[@]}" -ne 1 ]; then
+            echo "::error::Expected one AAB in the build artifact, found ${#aabs[@]}."
+            exit 1
+          fi
+          fastlane play_upload aab:"$GITHUB_WORKSPACE/${aabs[0]}" track:"$TRACK" rollout:"$ROLLOUT" \
+            notes:"$GITHUB_WORKSPACE/release-notes/fastlane/play"
+
+      - name: Remove the Google Play key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/play-service-account.json"
+
+  # Google Play shows a listing's screenshots to everyone the moment they change, whatever track the bundle went to:
+  # only a release to the production track brings its screenshots. A job of its own, which finalize doesn't wait
+  # for, so a listing that failed to update never reads as a bundle that didn't land.
+  android-screenshots:
+    name: Android, store listing screenshots
+    needs: [plan, android-upload]
+    if: ${{ inputs.screenshots && inputs.track == 'production' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Write the Google Play key
+        env:
+          PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          ./scripts/release/require-env.sh PLAY_STORE_SERVICE_ACCOUNT_JSON
+          printf '%s' "$PLAY_STORE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-service-account.json"
+
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-read-only: 'true'
+
+      - name: Set up fastlane
+        uses: ./.github/actions/fastlane
+
+      # Robolectric draws the real Compose screens from the sample trip (docs/store-listing-screenshots.md).
+      - name: Make the screenshots
+        run: ./gradlew stagePlayStoreScreenshots
+
+      # Only the images whose content changed are sent, so a release with the same screens uploads nothing.
+      - name: Send the screenshots to Google Play
+        env:
+          PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json
+        run: fastlane upload_screenshots platform:android
+
+      - name: Remove the Google Play key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/play-service-account.json"
+
+  # ---------------------------------------------------------------------------------------------
+  # The App Store's screenshots: captured on the simulators and this runner's screen, framed, uploaded
+  # ---------------------------------------------------------------------------------------------
+  # The App Store only takes screenshots on a version it can still edit, so they go up before the submission, and
+  # only in a run that submits. None of these jobs may hold the release back, hence continue-on-error: a failed one
+  # is listed as failed, the run is not, and the submission goes on with the screenshots the version already has. A
+  # job with continue-on-error doesn't read as failed to the jobs that need it, so those look at its outputs.
+
+  # Creating a version makes App Store Connect copy the previous version's screenshots into it, and deliver deleting
+  # a shelf in the middle of that copy leaves strays it then can't sort. Created here, the copy is long over by the
+  # time the captures are framed. Should this fail, the first upload creates the version, as it always could.
+  app-store-versions:
+    name: App Store, create the version
+    needs: [plan, approve]
+    if: ${{ inputs.screenshots && inputs.submit_for_review && (inputs.ios || inputs.macos) }}
+    runs-on: xcode-27
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Set up fastlane
+        uses: ./.github/actions/fastlane
+
+      # In a step of its own: the lanes read the key from the file, and take APP_STORE_CONNECT_API_KEY_P8, when
+      # they see it, for the base64 a local run passes.
+      - name: Write the App Store Connect key
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
+
+      - name: Create the iOS version
+        if: ${{ inputs.ios }}
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: fastlane app_store_prepare_version platform:ios version:"${{ needs.plan.outputs.version }}"
+
+      - name: Create the macOS version
+        if: ${{ !cancelled() && inputs.macos }}
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        run: fastlane app_store_prepare_version platform:osx version:"${{ needs.plan.outputs.version }}"
+
+      - name: Remove the App Store Connect key
+        if: always()
+        run: rm -f "${KEY_PATH:-}"
+
+  # One job per App Store slot, next to the builds: each builds the UI tests of a debug app seeded with the sample
+  # trip and runs them on its simulator, or for `mac` on the runner's own screen (docs/store-listing-screenshots.md).
+  # Every slot is captured whichever Apple platform the run releases, since the frames need the iPhone's and the
+  # iPad's. The iPhone Duo's fails on a runner whose Xcode has no runtime for it, and the listing goes without it.
+  apple-screenshots-capture:
+    name: App Store, capture the ${{ matrix.slot }} screenshots
+    needs: [plan, approve]
+    if: ${{ inputs.screenshots && inputs.submit_for_review && (inputs.ios || inputs.macos) }}
+    runs-on: xcode-27
+    timeout-minutes: 150
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [iphone63, iphone67, ipad13, iphoneduo, mac]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          kotlin-native: 'true'
+          cache-read-only: 'true'
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Capture on the simulator
+        if: ${{ matrix.slot != 'mac' }}
+        env:
+          STORE_SCREENSHOTS_SLOTS: ${{ matrix.slot }}
+        run: ./scripts/store-screenshots/capture-ios.sh
+
+      # The runner has no signing account, so the app is signed to run locally and without its entitlements, which
+      # only a provisioning profile could grant. The frame draws the window at twice its points, so a capture from
+      # a display that isn't Retina would go to the listing blurred: the Mac's listing keeps its screenshots then.
+      - name: Capture on the runner's screen
+        if: ${{ matrix.slot == 'mac' }}
+        env:
+          STORE_SCREENSHOTS_BUILD_SETTINGS: CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER= CODE_SIGN_ENTITLEMENTS=
+        run: |
+          ./scripts/store-screenshots/capture-mac.sh
+          capture="$(find build/outputs/apple-screenshot-captures/mac -name '*.png' | head -1)"
+          width="$(sips -g pixelWidth "$capture" | awk '/pixelWidth/ { print $2 }')"
+          if [ "$width" -lt 2880 ]; then
+            echo "::error::The Mac captures are $width pixels wide and the frame takes 2880: this runner's display is not Retina."
+            exit 1
+          fi
+
+      - name: Upload the captures as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: apple-captures-${{ matrix.slot }}
+          path: build/outputs/apple-screenshot-captures/
+          retention-days: 7
+          if-no-files-found: error
+
+  # Robolectric puts each capture into its device's frame, with the banner (any machine does it). The Gradle task
+  # fails without the iPhone's and the iPad's captures; the iPhone Duo's and the Mac's are framed when they are there.
+  apple-screenshots-frame:
+    name: App Store, frame the screenshots
+    needs: [plan, apple-screenshots-capture]
+    if: ${{ !cancelled() && needs.apple-screenshots-capture.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: true
+    outputs:
+      ios: ${{ steps.staged.outputs.ios }}
+      mac: ${{ steps.staged.outputs.mac }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Setup Gradle and Java
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          cache-read-only: 'true'
+
+      # Each artifact is rooted at its slot's folder, so together they are the captures folder again.
+      - name: Download the captures
+        uses: actions/download-artifact@v8
+        with:
+          pattern: apple-captures-*
+          merge-multiple: true
+          path: build/outputs/apple-screenshot-captures
+
+      - name: Frame the screenshots
+        run: ./gradlew stageAppStoreScreenshots
+
+      # Set last, so only a job that framed them says so.
+      - name: Say what was staged
+        id: staged
+        run: |
+          staged() { [ -n "$(find "$1" -name '*.png' 2> /dev/null | head -1)" ] && echo true || echo false; }
+          {
+            echo "ios=$(staged fastlane/screenshots)"
+            echo "mac=$(staged fastlane/screenshots-mac)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload the iPhone and iPad screenshots as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-store-screenshots-ios
+          path: fastlane/screenshots/
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Upload the Mac screenshots as a build artifact
+        if: ${{ steps.staged.outputs.mac == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-store-screenshots-mac
+          path: fastlane/screenshots-mac/
+          retention-days: 7
+          if-no-files-found: error
+
+  ios-screenshots:
+    name: iOS, send the screenshots to the App Store
+    needs: [plan, app-store-versions, apple-screenshots-frame]
+    if: ${{ !cancelled() && inputs.ios && needs.apple-screenshots-frame.outputs.ios == 'true' }}
+    runs-on: xcode-27
+    timeout-minutes: 90
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Set up fastlane
+        uses: ./.github/actions/fastlane
+
+      - name: Download the framed screenshots
+        uses: actions/download-artifact@v8
+        with:
+          name: app-store-screenshots-ios
+          path: fastlane/screenshots
+
+      - name: Write the App Store Connect key
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
+
+      # Listing images only, of every locale, then the tidy-up of the shelves. APP_VERSION names the version they
+      # go on, created if app-store-versions didn't.
+      - name: Send the screenshots to App Store Connect
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_VERSION: ${{ needs.plan.outputs.version }}
+        run: fastlane upload_screenshots platform:ios skip_mac:true
+
+      - name: Remove the App Store Connect key
+        if: always()
+        run: rm -f "${KEY_PATH:-}"
+
+  macos-screenshots:
+    name: macOS, send the screenshots to the App Store
+    needs: [plan, app-store-versions, apple-screenshots-frame]
+    if: ${{ !cancelled() && inputs.macos && needs.apple-screenshots-frame.outputs.mac == 'true' }}
+    runs-on: xcode-27
+    timeout-minutes: 60
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Set up fastlane
+        uses: ./.github/actions/fastlane
+
+      - name: Download the framed screenshots
+        uses: actions/download-artifact@v8
+        with:
+          name: app-store-screenshots-mac
+          path: fastlane/screenshots-mac
+
+      - name: Write the App Store Connect key
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
+
+      - name: Send the screenshots to App Store Connect
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_VERSION: ${{ needs.plan.outputs.version }}
+        run: fastlane upload_screenshots platform:mac
+
+      - name: Remove the App Store Connect key
+        if: always()
+        run: rm -f "${KEY_PATH:-}"
+
+  # ---------------------------------------------------------------------------------------------
+  # iOS and macOS: the same composite actions as the betas, then the submission
+  # ---------------------------------------------------------------------------------------------
+  ios-build:
+    name: iOS, build the IPA
+    needs: [plan, approve]
+    if: ${{ inputs.ios }}
+    # The Xcode 27 image, as apple.yml: the app uses the iOS 27 SDK's APIs.
+    runs-on: xcode-27
+    timeout-minutes: 90
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Archive and export the iOS app
+        uses: ./.github/actions/apple-build
+        with:
+          scheme: BoraRachar-iOS
+          destination: generic/platform=iOS
+          export-path: build/ios
+          version: ${{ needs.plan.outputs.version }}
+          version-code: ${{ needs.plan.outputs.version_code }}
+          google-service-info-plist: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-ssh-private-key: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Upload the IPA as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-ipa
+          path: build/ios/*.ipa
+          # A week, for the "Re-run failed jobs" of the upload: an IPA signed for the App Store installs nowhere else.
+          retention-days: 7
+          if-no-files-found: error
+
+  # The binary only, which is also what puts it on TestFlight. The submission is ios-submit's, so one that fails
+  # is tried again without sending the build a second time, which App Store Connect refuses for a build number it
+  # already holds.
+  ios-upload:
+    name: iOS, send to App Store Connect
+    needs: [plan, ios-build]
+    # The image that built it: an older altool uploading an Xcode 27 binary is a risk with no use.
+    runs-on: xcode-27
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Download the IPA build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: ios-ipa
+          path: build/ios
+
+      - name: Send the IPA to App Store Connect
+        uses: ./.github/actions/apple-upload
+        with:
+          type: ios
+          file: build/ios/*.ipa
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  # Waits for App Store Connect to process the build, writes the version's "What's new" in each language the
+  # listing has, and sends it for review. It needs the screenshots' job only to come after it: !cancelled() lets it
+  # run when that one failed or never ran, and the binary having landed is the one thing it requires. The lane
+  # refuses to submit a version with a locale left without screenshots, and a re-run of this job after the
+  # submission landed finds it and does nothing.
+  ios-submit:
+    name: iOS, submit for App Store review
+    needs: [plan, ios-upload, ios-screenshots]
+    if: ${{ !cancelled() && inputs.submit_for_review && needs.ios-upload.result == 'success' }}
+    runs-on: xcode-27
+    timeout-minutes: 90
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Set up fastlane
+        uses: ./.github/actions/fastlane
+
+      - name: Download the release notes
+        uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: release-notes
+
+      - name: Write the App Store Connect key
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
+
+      - name: Submit for review
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          PHASED: ${{ inputs.phased_release }}
+        run: |
+          fastlane app_store_submit platform:ios version:"${{ needs.plan.outputs.version }}" \
+            build:"${{ needs.plan.outputs.version_code }}" phased:"$PHASED" \
+            notes:"$GITHUB_WORKSPACE/release-notes/fastlane/app-store-ios"
+
+      - name: Remove the App Store Connect key
+        if: always()
+        run: rm -f "${KEY_PATH:-}"
+
+  macos-build:
+    name: macOS, build the package
+    needs: [plan, approve]
+    if: ${{ inputs.macos }}
+    runs-on: xcode-27
+    timeout-minutes: 90
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Archive and export the macOS app
+        uses: ./.github/actions/apple-build
+        with:
+          scheme: BoraRachar-macOS
+          destination: generic/platform=macOS
+          # :shared only declares macosArm64(), and a Release archive of a generic destination also builds x86_64.
+          build-settings: ARCHS=arm64
+          export-path: build/macos
+          version: ${{ needs.plan.outputs.version }}
+          version-code: ${{ needs.plan.outputs.version_code }}
+          google-service-info-plist: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+          match-password: ${{ secrets.MATCH_PASSWORD }}
+          match-ssh-private-key: ${{ secrets.MATCH_SSH_PRIVATE_KEY }}
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Upload the package as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-pkg
+          path: build/macos/*.pkg
+          retention-days: 7
+          if-no-files-found: error
+
+  macos-upload:
+    name: macOS, send to App Store Connect
+    needs: [plan, macos-build]
+    runs-on: xcode-27
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Download the package build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: macos-pkg
+          path: build/macos
+
+      - name: Send the package to App Store Connect
+        uses: ./.github/actions/apple-upload
+        with:
+          type: macos
+          file: build/macos/*.pkg
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  # As ios-submit, on the Mac app's own version (platform osx).
+  macos-submit:
+    name: macOS, submit for App Store review
+    needs: [plan, macos-upload, macos-screenshots]
+    if: ${{ !cancelled() && inputs.submit_for_review && needs.macos-upload.result == 'success' }}
+    runs-on: xcode-27
+    timeout-minutes: 90
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Set up fastlane
+        uses: ./.github/actions/fastlane
+
+      - name: Download the release notes
+        uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: release-notes
+
+      - name: Write the App Store Connect key
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          ./scripts/release/require-env.sh APP_STORE_CONNECT_API_KEY_ID APP_STORE_CONNECT_API_ISSUER_ID APP_STORE_CONNECT_API_KEY_P8
+          echo "KEY_PATH=$(./scripts/release/write-asc-key.sh)" >> "$GITHUB_ENV"
+
+      - name: Submit for review
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          PHASED: ${{ inputs.phased_release }}
+        run: |
+          fastlane app_store_submit platform:osx version:"${{ needs.plan.outputs.version }}" \
+            build:"${{ needs.plan.outputs.version_code }}" phased:"$PHASED" \
+            notes:"$GITHUB_WORKSPACE/release-notes/fastlane/app-store-mac"
+
+      - name: Remove the App Store Connect key
+        if: always()
+        run: rm -f "${KEY_PATH:-}"
+
+  # ---------------------------------------------------------------------------------------------
+  # Finalize
+  # ---------------------------------------------------------------------------------------------
+  finalize:
+    name: Tag, release and merge-back
+    needs: [plan, android-upload, ios-upload, ios-submit, macos-upload, macos-submit]
+    # !cancelled() replaces the implicit success(): a platform the run skipped or that failed must not hold the
+    # release back. A store that took a build is enough, since the versionCode it used has to reach main whatever
+    # happened to the others.
+    if: >-
+      ${{ !cancelled() && needs.plan.result == 'success' && (
+      needs.android-upload.result == 'success' || needs.ios-upload.result == 'success' ||
+      needs.macos-upload.result == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      released: ${{ steps.release.outputs.released }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      # What `plan` picked, for the GitHub release. Kept a week: a re-run after that publishes without it.
+      - name: Download the release notes
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: ${{ runner.temp }}/release-notes
+
+      # The run released when a build reached the production track or was sent to App Store review: the version
+      # then gets its tag and its GitHub release, which is also what tells the next release where to count the
+      # notes and the build numbers from. First, so it is recorded even when the merge-back below fails. A re-run
+      # (after "Re-run failed jobs" fixed a platform), or a later run that adds a platform to the version, keeps
+      # the release and rewrites the rows of the platforms it ran, so the record follows the results.
+      - name: Publish the GitHub release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          VERSION_CODE: ${{ needs.plan.outputs.version_code }}
+          SHA: ${{ needs.plan.outputs.sha }}
+          TRACK: ${{ inputs.track }}
+          ROLLOUT: ${{ inputs.rollout }}
+          SUBMIT: ${{ inputs.submit_for_review }}
+          ANDROID: ${{ needs.android-upload.result }}
+          IOS_UPLOAD: ${{ needs.ios-upload.result }}
+          IOS_SUBMIT: ${{ needs.ios-submit.result }}
+          MACOS_UPLOAD: ${{ needs.macos-upload.result }}
+          MACOS_SUBMIT: ${{ needs.macos-submit.result }}
+        run: |
+          released=false
+          if [ "$TRACK" = production ] && [ "$ANDROID" = success ]; then released=true; fi
+          if [ "$IOS_SUBMIT" = success ] || [ "$MACOS_SUBMIT" = success ]; then released=true; fi
+          exists=false
+          if gh release view "$VERSION" > /dev/null 2>&1; then exists=true; fi
+          if [ "$released" = false ] && [ "$exists" = false ]; then
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Nothing reached the production track or App Store review: $VERSION gets no tag, and only its versionCode is merged back."
+            exit 0
+          fi
+          echo "released=true" >> "$GITHUB_OUTPUT"
+
+          android_channel="Google Play, \`$TRACK\` track"
+          if [ "$TRACK" = production ]; then android_channel="$android_channel, $ROLLOUT% of the users"; fi
+          if [ "$SUBMIT" = true ]; then
+            apple_channel="App Store, sent for review"
+            ios="$IOS_SUBMIT"
+            macos="$MACOS_SUBMIT"
+          else
+            apple_channel="TestFlight"
+            ios="$IOS_UPLOAD"
+            macos="$MACOS_UPLOAD"
+          fi
+
+          if [ "$exists" = true ]; then
+            # A platform this run left out keeps the row an earlier run wrote for it.
+            gh release view "$VERSION" --json body --jq .body | tr -d '\r' | awk \
+              -v code="$VERSION_CODE" -v android="$ANDROID" -v ios="$ios" -v macos="$macos" \
+              -v android_channel="$android_channel" -v apple_channel="$apple_channel" '
+              /^Build number: / { if ($3 + 0 < code + 0) print "Build number: " code; else print; next }
+              /^\| Android \|/ && android != "skipped" { print "| Android | " android_channel " | " android " |"; next }
+              /^\| iOS \|/ && ios != "skipped"         { print "| iOS | " apple_channel " | " ios " |"; next }
+              /^\| macOS \|/ && macos != "skipped"     { print "| macOS | " apple_channel " | " macos " |"; next }
+              { print }' > "$RUNNER_TEMP/notes.md"
+            gh release edit "$VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+            echo "::notice::$VERSION is already published: its table of channels was refreshed."
+            exit 0
+          fi
+
+          {
+            echo "Build number: $VERSION_CODE"
+            echo
+            if [ -s "$RUNNER_TEMP/release-notes/github.md" ]; then
+              cat "$RUNNER_TEMP/release-notes/github.md"
+              echo
+            fi
+            echo "## Channels"
+            echo
+            echo "| Platform | Channel | Result |"
+            echo "| --- | --- | --- |"
+            echo "| Android | $android_channel | $ANDROID |"
+            echo "| iOS | $apple_channel | $ios |"
+            echo "| macOS | $apple_channel | $macos |"
+          } > "$RUNNER_TEMP/channels.md"
+          # The pull requests since the stable version before this one, not since its last beta.
+          since=()
+          previous="$(git tag --merged "$SHA" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)"
+          if [ -n "$previous" ]; then since=(--notes-start-tag "$previous"); fi
+          gh release create "$VERSION" \
+            --target "$SHA" \
+            --title "$VERSION" \
+            --notes-file "$RUNNER_TEMP/channels.md" \
+            --generate-notes "${since[@]}" \
+            --latest
+
+      # The versionCode, the versionName when it is higher than main's and, once the version is released, the
+      # removal of the fragments its tag's commit had (scripts/release/merge-back.sh, which also says how a re-run
+      # finishes the job). The pull request is created with GITHUB_TOKEN, so no PR workflow runs for a version bump,
+      # and merged with the MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md,
+      # "Merge when green").
+      - name: Merge the release back into main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MERGE_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
+          BRANCH: ${{ needs.plan.outputs.branch }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          VERSION_CODE: ${{ needs.plan.outputs.version_code }}
+          RELEASED: ${{ steps.release.outputs.released }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          tag=()
+          if [ "$RELEASED" = true ]; then tag=("$VERSION"); fi
+          ./scripts/release/merge-back.sh "$VERSION" "$VERSION_CODE" "$VERSION" "${tag[@]}"
+
+  # ---------------------------------------------------------------------------------------------
+  # Release notes
+  # ---------------------------------------------------------------------------------------------
+  site-release-notes:
+    name: Release notes, send to the site
+    needs: [plan, finalize]
+    # Once the version is released, whatever the stores' reviews say later, and even when the merge-back failed:
+    # the notes are about a version that went out. A version with no note has nothing to send.
+    if: >-
+      ${{ !cancelled() && needs.plan.outputs.has_notes == 'true' && needs.finalize.outputs.released == 'true' &&
+      (needs.finalize.result == 'success' || needs.finalize.result == 'failure') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # The whole history: which notes a version tells depends on the tags before it.
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 0
+
+      # A missing token and an expired one both stop here, naming the secret: the checkout below would only say
+      # that the authentication failed. The site is public, and GitHub still refuses a token that isn't valid.
+      - name: Check the site's token
+        env:
+          SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
+        run: |
+          ./scripts/release/require-env.sh SITE_RELEASE_NOTES_TOKEN
+          if ! GH_TOKEN="$SITE_RELEASE_NOTES_TOKEN" gh api "repos/$SITE_REPOSITORY" --silent; then
+            echo "::error::GitHub refused the SITE_RELEASE_NOTES_TOKEN secret: it expired or can't reach $SITE_REPOSITORY. See docs/release-process.md#secrets."
+            exit 1
+          fi
+
+      # With the token, so the push and the pull request below are made with it: GITHUB_TOKEN can't write to
+      # another repository.
+      - name: Checkout the site
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.SITE_REPOSITORY }}
+          token: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
+          path: site
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # A version written by hand in the site is left as it is: the script finds it and sends nothing.
+      - name: Send the notes to the site
+        env:
+          GH_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          SHA: ${{ needs.plan.outputs.sha }}
+        run: ./scripts/release/send-release-notes-to-site.sh "$VERSION" "$SHA" site

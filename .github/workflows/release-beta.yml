@@ -24,7 +24,8 @@ name: release-beta
 #      show them once its pull request merges. Skipped by a beta with no note to tell.
 #
 # One run at a time, and one more waiting: GitHub keeps a single pending run per concurrency group, so a third
-# dispatch cancels the one that waits. release-beta.sh refuses to dispatch while a run is already waiting.
+# dispatch cancels the one that waits. release-beta.sh refuses to dispatch while a run is already waiting. The group
+# is release-production.yml's too: both take the next versionCode from the same place, so they never run together.
 #
 # Repository secrets and variables: see docs/release-process.md#secrets.
 
@@ -57,7 +58,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-beta
+  group: release
   cancel-in-progress: false
 
 env:
@@ -117,7 +118,7 @@ jobs:
           VERSION_INPUT: ${{ inputs.version }}
           # To read the build numbers the earlier betas recorded in their releases.
           GH_TOKEN: ${{ github.token }}
-        run: ./scripts/release/suggest-beta-version.sh "$VERSION_INPUT"
+        run: ./scripts/release/suggest-version.sh "$VERSION_INPUT"
 
       # What the testers read with the build on Firebase App Distribution: the version, then the notes for their
       # platform since the last beta that sent them a build, read from the table of channels each release keeps. So
@@ -670,15 +671,10 @@ jobs:
             --prerelease
 
       # The versionCode, and the versionName when the release notes led this beta to a higher version than main's
-      # (never a lower one: a version someone raised by hand meanwhile stays). A re-run finishes the job wherever
-      # the last one stopped:
-      #   - main already holds this versionCode, or a higher one that someone bumped meanwhile: done, and never
-      #     lowered;
-      #   - the branch is rebuilt from the current main and pushed over the old one, so a PR left open by a failed
-      #     run follows main instead of staying in conflict;
-      #   - the pull request is created only when none is open.
-      # The PR is created with GITHUB_TOKEN, so no PR workflow runs for a version bump, and merged with the
-      # MERGE_WHEN_GREEN_TOKEN, so the push to main triggers its workflows (docs/ci.md, "Merge when green").
+      # (never a lower one: a version someone raised by hand meanwhile stays). scripts/release/merge-back.sh says
+      # how a re-run finishes the job wherever the last one stopped. The pull request is created with GITHUB_TOKEN,
+      # so no PR workflow runs for a version bump, and merged with the MERGE_WHEN_GREEN_TOKEN, so the push to main
+      # triggers its workflows (docs/ci.md, "Merge when green").
       - name: Merge the versionCode back into main
         # A web-only beta consumed no build number a store cares about, so it leaves main alone.
         if: >-
@@ -692,44 +688,7 @@ jobs:
           VERSION_CODE: ${{ needs.plan.outputs.version_code }}
           DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
           ACTOR: ${{ github.actor }}
-        run: |
-          main_code="$(grep -E '^versionCode=' version.properties | cut -d= -f2)"
-          if [ "$main_code" -ge "$VERSION_CODE" ]; then
-            echo "::notice::main already holds versionCode $main_code, nothing to merge back."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" 2> /dev/null || true
-          git checkout -B "$BRANCH"
-          current_version="$(grep -E '^versionName=' version.properties | cut -d= -f2)"
-          version="$(printf '%s\n' "$current_version" "$VERSION" | sort -V | tail -1)"
-          ./scripts/release/bump-version.sh "$version" "$VERSION_CODE"
-          git commit -am "chore: bump versionCode to $VERSION_CODE for $DISPLAY_VERSION"
-          git push --force-with-lease origin "$BRANCH"
-
-          title="chore: merge back $DISPLAY_VERSION into main"
-          body="Merges the versionCode $VERSION_CODE that $DISPLAY_VERSION consumed back into main."
-          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')" ]; then
-            gh pr create --base main --head "$BRANCH" --title "$title" --body "$body"
-          else
-            # Left open by an earlier beta: the branch now holds this one's code, so the text says so too.
-            gh pr edit "$BRANCH" --title "$title" --body "$body"
-          fi
-          # Best effort: GitHub refuses an assignee it can't assign (a bot, an app), and the merge must not depend on it.
-          gh pr edit "$BRANCH" --add-assignee "$ACTOR" || true
-
-          # GitHub recomputes mergeability asynchronously, so the merge right after the create can
-          # still read the PR as blocked. Retry instead of failing the release on a race that
-          # resolves itself in seconds.
-          for _ in 1 2 3 4 5; do
-            if GH_TOKEN="${MERGE_TOKEN:-$GH_TOKEN}" gh pr merge "$BRANCH" --squash --delete-branch; then
-              exit 0
-            fi
-            sleep 10
-          done
-          exit 1
+        run: ./scripts/release/merge-back.sh "$VERSION" "$VERSION_CODE" "$DISPLAY_VERSION"
 
   # ---------------------------------------------------------------------------------------------
   # Release notes

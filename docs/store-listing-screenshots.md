@@ -22,7 +22,12 @@ fastlane screenshots skip_upload:true                # generate only, nothing re
 fastlane screenshots platform:android skip_upload:true
 fastlane screenshots platform:ios skip_capture:true  # frame the iOS captures already in build/ again
 fastlane upload_screenshots locale:es-419            # upload what is staged, one locale
+fastlane upload_screenshots platform:mac             # upload the Mac's alone
 ```
+
+A stable release runs the same steps in CI, in jobs of `release-production`: the capture on one runner per slot, the
+frames, and the upload to each store ([release-process.md](release-process.md#screenshots-with-a-release)). Run the
+lane by hand between releases, or when a release's screenshot jobs failed.
 
 The lane runs, each step under `scripts/heavy-check.sh`:
 
@@ -31,6 +36,8 @@ The lane runs, each step under `scripts/heavy-check.sh`:
    Then `scripts/store-screenshots/capture-mac.sh` does the same with the Mac app's window
    (`BoraRachar-macOS-StoreScreenshots`). **It drives this Mac's own screen for about half an hour**, so leave
    the keyboard and mouse alone, or pass `skip_mac:true` to leave the Mac listing as it is.
+   `STORE_SCREENSHOTS_BUILD_SETTINGS` adds build settings to the Mac build, which the release's runner uses to sign
+   the app to run locally, having no signing account.
 2. `./gradlew stagePlayStoreScreenshots stageAppStoreScreenshots collect…`: the generators (the unit tests of
    `:android:store_screenshots`) draw every image. The tasks then copy the images to `store_listings/` to look at, and
    to the folders fastlane uploads from. Spanish goes out to each store's regional codes.

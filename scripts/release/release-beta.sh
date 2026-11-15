@@ -14,6 +14,8 @@ set -euo pipefail
 
 REPO="Quartel-Enterprise/blitz-split-client"
 WORKFLOW="release-beta.yml"
+# The stable releases wait in the same concurrency group (release-production.yml).
+GROUP_WORKFLOWS=("$WORKFLOW" "release-production.yml")
 version="${1:-}"
 
 echo "Bora Rachar: beta release"
@@ -22,11 +24,13 @@ echo "========================="
 # GitHub keeps one pending run per concurrency group (one waiting behind the run in progress) and cancels it when
 # another arrives, so a beta dispatched behind a waiting one would silently cancel it, after this script printed its
 # link. A run that is only queued for a runner is not waiting on the group, and cancels nothing.
-waiting="$(gh run list --workflow="$WORKFLOW" --repo "$REPO" --status pending --json databaseId --jq length)"
-if [ "$waiting" -gt 0 ]; then
-  echo "A beta is already waiting behind a running one. Wait for it to start, then run this again." >&2
-  exit 1
-fi
+for workflow in "${GROUP_WORKFLOWS[@]}"; do
+  waiting="$(gh run list --workflow="$workflow" --repo "$REPO" --status pending --json databaseId --jq length)"
+  if [ "$waiting" -gt 0 ]; then
+    echo "A release is already waiting behind a running one. Wait for it to start, then run this again." >&2
+    exit 1
+  fi
+done
 
 before="$(gh run list --workflow="$WORKFLOW" --repo "$REPO" --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
 
