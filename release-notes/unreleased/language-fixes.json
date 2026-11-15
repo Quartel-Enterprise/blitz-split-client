@@ -1,0 +1,45 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Profile › Language now lists Spanish twice, \"Español (Latinoamérica)\" and \"Español (España)\", so you pick the one you speak wherever your device is.",
+        "pt": "Perfil › Idioma agora mostra o espanhol em duas opções, \"Español (Latinoamérica)\" e \"Español (España)\", e você escolhe o que fala onde quer que esteja o aparelho.",
+        "pt-PT": "Perfil › Idioma mostra agora o espanhol em duas opções, \"Español (Latinoamérica)\" e \"Español (España)\", e escolhes o que falas onde quer que esteja o telemóvel.",
+        "es": "Perfil › Idioma ahora muestra el español en dos opciones, \"Español (Latinoamérica)\" y \"Español (España)\", para que elijas el tuyo estés donde estés.",
+        "fr": "Profil › Langue propose désormais l’espagnol en deux options, « Español (Latinoamérica) » et « Español (España) », pour choisir le vôtre où que soit votre appareil.",
+        "de": "Profil › Sprache führt Spanisch jetzt zweimal auf, „Español (Latinoamérica)“ und „Español (España)“, damit du deins wählst, egal wo dein Gerät ist.",
+        "it": "Profilo › Lingua ora mostra lo spagnolo in due opzioni, \"Español (Latinoamérica)\" ed \"Español (España)\", così scegli il tuo ovunque si trovi il dispositivo.",
+        "pl": "Profil › Język pokazuje teraz hiszpański w dwóch wersjach, „Español (Latinoamérica)” i „Español (España)”, więc wybierasz swoją, gdziekolwiek jest urządzenie.",
+        "nl": "Profiel › Taal toont Spaans nu twee keer, \"Español (Latinoamérica)\" en \"Español (España)\", zodat je je eigen Spaans kiest, waar je toestel ook is.",
+        "ja": "プロフィール › 言語でスペイン語が「Español (Latinoamérica)」と「Español (España)」の2つになり、端末の地域に関係なく話す方を選べます。",
+        "tr": "Profil › Dil artık İspanyolcayı iki seçenekle gösteriyor, \"Español (Latinoamérica)\" ve \"Español (España)\"; cihazın nerede olursa olsun konuştuğunu seçebilirsin.",
+        "id": "Profil › Bahasa kini menampilkan bahasa Spanyol dalam dua pilihan, \"Español (Latinoamérica)\" dan \"Español (España)\", jadi kamu memilih yang kamu pakai di mana pun perangkatmu berada."
+      }
+    },
+    {
+      "kind": "fixed",
+      "platforms": [
+        "android"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "In Brazilian Portuguese, Activity and a bill's history said \"Você criaste\" and the like instead of \"Você criou\".",
+        "pt": "A Atividade e o histórico da conta diziam \"Você criaste\" e afins em vez de \"Você criou\".",
+        "pt-PT": "Em português do Brasil, a Atividade e o histórico da despesa diziam \"Você criaste\" e afins em vez de \"Você criou\".",
+        "es": "En portugués de Brasil, Actividad y el historial del gasto decían \"Você criaste\" y similares en lugar de \"Você criou\".",
+        "fr": "En portugais du Brésil, Activité et l’historique de la dépense affichaient « Você criaste » et autres au lieu de « Você criou ».",
+        "de": "Auf brasilianischem Portugiesisch stand in Aktivität und im Verlauf der Ausgabe „Você criaste“ und Ähnliches statt „Você criou“.",
+        "it": "In portoghese del Brasile, Attività e la cronologia della spesa dicevano \"Você criaste\" e simili invece di \"Você criou\".",
+        "pl": "W portugalskim brazylijskim Aktywność i historia wydatku pokazywały „Você criaste” i podobne zamiast „Você criou”.",
+        "nl": "In Braziliaans Portugees stond in Activiteit en de geschiedenis van de uitgave \"Você criaste\" en dergelijke in plaats van \"Você criou\".",
+        "ja": "ブラジルポルトガル語で、アクティビティと支出の履歴に「Você criou」ではなく「Você criaste」などと表示されていました。",
+        "tr": "Brezilya Portekizcesinde Etkinlik ve harcamanın geçmişi \"Você criou\" yerine \"Você criaste\" gibi ifadeler yazıyordu.",
+        "id": "Dalam bahasa Portugis Brasil, Aktivitas dan riwayat tagihan menampilkan \"Você criaste\" dan sejenisnya alih-alih \"Você criou\"."
+      }
+    }
+  ]
+}

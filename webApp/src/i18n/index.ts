@@ -33,7 +33,7 @@ function regionOf(subtags: readonly string[]): string | undefined {
 
 /**
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
- * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (exactly Spain) is Spain's Spanish, every other `es` tag
+ * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag
  * (es, es-MX, es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any
  * `de`, `it`, `pl`, `nl`, `ja`, `tr` or `id` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID…)
  * is German, Italian, Polish, Dutch, Japanese, Turkish or Indonesian, any `en` tag is English, and English when none
@@ -46,7 +46,7 @@ export function pickLocale(languages: readonly string[]): Locale {
     const language = subtag === 'in' ? 'id' : subtag
     if (bareLocales.includes(language as Locale)) return language as Locale
     if (language === 'pt') return regionOf(rest) === 'pt' ? 'pt-PT' : 'pt'
-    if (language === 'es') return rest.length === 1 && rest[0] === 'es' ? 'es-ES' : 'es'
+    if (language === 'es') return regionOf(rest) === 'es' ? 'es-ES' : 'es'
   }
   return 'en'
 }

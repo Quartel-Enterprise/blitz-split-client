@@ -118,6 +118,7 @@ class AppLanguageTest {
         // Then
         assertEquals(List(tags.size) { AppLanguage.SPANISH_SPAIN }, languages)
     }
+
     @Test
     fun `GIVEN any French tag WHEN reading it THEN is French`() {
         // Given

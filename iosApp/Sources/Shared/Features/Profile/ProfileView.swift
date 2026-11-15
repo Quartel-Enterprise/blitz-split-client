@@ -462,7 +462,7 @@ private struct PreferencesSection: View {
 }
 
 /// Each language in its own language, the way its speakers look for it (Pierre's call, beta feedback), with the region
-/// spelled out for the one written for a region ("Português (Brasil)"), and under it its name in the app's language,
+/// spelled out for the ones written for a region ("Português (Brasil)", "Español (España)"), and under it its name in the app's language,
 /// unless both read the same ("Italiano"). A menu draws the second line as the item's subtitle.
 private struct LanguageName: View {
     let language: AppLanguage
