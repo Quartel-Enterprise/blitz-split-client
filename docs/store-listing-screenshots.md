@@ -183,9 +183,10 @@ move this constant with it, generate both sets and compare them.
 - **The folder stays `es`.** The library names an image's folder after the locale it drew it in, so the generator
   moves `es-GQ/` to `es/` (`moveToListingFolder`), where the collect and stage tasks look.
 - **One value still differs: the thousands separator.** The App Store's set writes the trip's total as "€1145,80",
-  and Play's as "€1.145,80". Spanish only groups from five digits on ("12.345,60"), which iOS and an Android phone
-  follow and the JVM that draws the generators doesn't. It is not the region's doing: Spain's set has the same
-  difference ("1.145,80 €" on Play, "1145,80 €" on the App Store), and so has any language with that rule.
+  and Play's as "€1.145,80". Spanish only groups from five digits on ("12.345,60"): iOS follows that, as does ICU,
+  which formats on an Android phone, and the JVM that draws the generators groups from four. It is not the region's doing, and no locale changes
+  it: the bare `es` wrote "1.145,80 €", and Spain's set has the same difference ("1.145,80 €" on Play, "1145,80 €"
+  on the App Store), as does any language with that rule.
 - **No `-u-` extension in a `playLocale`.** The library turns the tag into a resource qualifier (`es-rGQ`), which
   has no room for one.
 
@@ -211,8 +212,8 @@ region was measured with the app's format styles on iOS 27.2 and macOS 27.2, whi
 The trade-off: Equatorial Guinea's separators are Spain's, a decimal comma and no thousands separator under 10 000,
 the boat tour's dollars are "US$120" where the United States' wrote "$120", and a compact amount from 1000 up puts
 the symbol after ("1 mil €"). The trip's Statistics stays under it: its most expensive day is €678, so the chart's
-value lines stop at "€750". Play's set, drawn in Robolectric's bare `es`, writes the same amount as "1145,80 €".
-Changing the region is that one line of `locales.tsv`.
+value lines stop at "€750". Changing the region is that one line of `locales.tsv`, and Play's set, drawn in the
+same region, changes with it ([the region Play's screens are drawn in](#the-region-plays-screens-are-drawn-in)).
 
 The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
 sandbox can't read the repository. The app writes them to a temporary folder of its own. In a **debug**
