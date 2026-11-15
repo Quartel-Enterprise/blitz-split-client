@@ -373,10 +373,17 @@ private struct ContactsSummaryCard: View {
 struct ContactRowLabel: View {
     let row: ContactRow
 
+    /// The face's id in the tab's zoom, which its row's tap arms.
+    static func faceId(_ row: ContactRow) -> String {
+        "contact-\(row.key)"
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             AvatarPhoto(initial: row.initials, color: row.color, photoUrl: row.photoUrl, size: 40)
                 .accessibilityHidden(true)
+                // The face zooms into the profile its row pushes over the list (beta feedback of 2026-11-15)
+                .profileZoomSource(faceId: ContactRowLabel.faceId(row))
             VStack(alignment: .leading, spacing: 1) {
                 Text(verbatim: row.name)
                     .lineLimit(1)
@@ -407,6 +414,8 @@ private struct ContactPickRow: View {
     let row: ContactRow
     let isSelected: Bool
 
+    @Environment(\.profileZoomScope) private var profileZoom
+
     var body: some View {
         #if os(macOS)
         // The list's own selection opens them, by a click or the arrow keys, and draws them selected
@@ -414,6 +423,7 @@ private struct ContactPickRow: View {
             .tag(row.key)
         #else
         Button {
+            profileZoom?.zoom.arm(ContactRowLabel.faceId(row))
             model.send(ContactsUiEventOnContactClicked(key: row.key))
         } label: {
             ContactRowLabel(row: row)
@@ -485,6 +495,8 @@ private struct HiddenContactsSection: View {
     let model: ContactsModel
     let showsDetail: Bool
 
+    @Environment(\.profileZoomScope) private var profileZoom
+
     var body: some View {
         let state = model.state
         Section {
@@ -496,6 +508,7 @@ private struct HiddenContactsSection: View {
                         ContactRowLabel(row: row)
                         #else
                         Button {
+                            profileZoom?.zoom.arm(ContactRowLabel.faceId(row))
                             model.send(ContactsUiEventOnContactClicked(key: row.key))
                         } label: {
                             ContactRowLabel(row: row)

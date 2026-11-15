@@ -1062,6 +1062,7 @@ export const ja: Record<MessageKey, string> = {
   payingMethod_paidWith: '支払い方法',
   payingMethod_paidWithNone: 'なし',
   payingMethod_paidWithPrivate: 'あなただけに表示されます。',
+  payingMethod_paidWithOnlyPayers: 'この支出を支払った人だけが支払い方法を選べます。',
 
   balance_title: 'このグループでのあなたの残高',
   balance_toGetBack: '受け取る',

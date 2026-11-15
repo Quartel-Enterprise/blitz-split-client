@@ -1060,6 +1060,7 @@ export const en = {
   payingMethod_paidWith: 'Paid with',
   payingMethod_paidWithNone: 'None',
   payingMethod_paidWithPrivate: 'Only you see this.',
+  payingMethod_paidWithOnlyPayers: 'Only those who paid this bill can mark what they paid with.',
 
   balance_title: 'Your balance in this group',
   balance_toGetBack: 'to get back',

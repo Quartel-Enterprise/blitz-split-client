@@ -1061,6 +1061,7 @@ export const pt: Record<MessageKey, string> = {
   payingMethod_paidWith: 'Pago com',
   payingMethod_paidWithNone: 'Nenhuma',
   payingMethod_paidWithPrivate: 'Só você vê isso.',
+  payingMethod_paidWithOnlyPayers: 'Só quem pagou esta conta pode marcar com o que pagou.',
 
   balance_title: 'Seu saldo neste grupo',
   balance_toGetBack: 'a receber',

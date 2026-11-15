@@ -1,0 +1,25 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "In \"Split a bill\", \"Paid with\" now also shows when someone else paid the bill, dimmed: tapping it explains that only those who paid can mark what they paid with.",
+        "pt": "Em \"Rachar conta\", o \"Pago com\" agora aparece também quando outra pessoa pagou a conta, apagado: um toque explica que só quem pagou pode marcar com o que pagou.",
+        "pt-PT": "Em \"Dividir conta\", o \"Pago com\" aparece agora também quando outra pessoa pagou a conta, esbatido: um toque explica que só quem pagou pode marcar com o que pagou.",
+        "es": "En \"Dividir un gasto\", \"Pagado con\" ahora también aparece cuando otra persona pagó, atenuado: al tocarlo explica que solo quien pagó puede marcar con qué pagó.",
+        "fr": "Dans « Partager une dépense », « Payé avec » s’affiche désormais aussi, grisé, quand quelqu’un d’autre a payé : un appui explique que seuls ceux qui ont payé peuvent indiquer avec quoi.",
+        "de": "In „Ausgabe aufteilen“ erscheint „Bezahlt mit“ jetzt auch ausgegraut, wenn jemand anderes bezahlt hat: Ein Tippen erklärt, dass nur wer bezahlt hat angeben kann, womit.",
+        "it": "In \"Dividi una spesa\", \"Pagato con\" ora compare anche, attenuato, quando ha pagato qualcun altro: un tocco spiega che solo chi ha pagato può indicare con cosa.",
+        "pl": "W „Podziel wydatek” pole „Zapłacono za pomocą” pojawia się teraz także, wyszarzone, gdy zapłacił ktoś inny: dotknięcie wyjaśnia, że tylko płacący mogą zaznaczyć, czym zapłacili.",
+        "nl": "In \"Uitgave verdelen\" verschijnt \"Betaald met\" nu ook, gedimd, als iemand anders heeft betaald: een tik legt uit dat alleen wie betaalde kan aangeven waarmee.",
+        "ja": "「支出を割り勘」で、ほかの人が支払った場合も「支払い方法」が薄く表示されるようになりました。タップすると、支払った人だけが選べることを説明します。",
+        "tr": "\"Harcama böl\" ekranında \"Ödeme şekli\" artık başkası ödediğinde de soluk olarak görünüyor: dokununca yalnızca ödeyenlerin seçebileceğini açıklıyor.",
+        "id": "Di \"Bagi tagihan\", \"Dibayar dengan\" kini juga tampil redup saat orang lain yang membayar: mengetuknya menjelaskan bahwa hanya yang membayar yang bisa menandai cara bayarnya."
+      }
+    }
+  ]
+}

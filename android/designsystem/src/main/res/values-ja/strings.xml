@@ -293,5 +293,6 @@
     <string name="designsystem_paid_with">支払い方法</string>
     <string name="designsystem_paid_with_none">なし</string>
     <string name="designsystem_paid_with_private">あなただけに表示されます。</string>
+    <string name="designsystem_paid_with_only_payers">この支出を支払った人だけが支払い方法を選べます。</string>
     <string name="designsystem_paid_with_add">支払い方法を追加</string>
 </resources>

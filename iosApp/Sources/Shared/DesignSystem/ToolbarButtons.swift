@@ -3,10 +3,16 @@ import SwiftUI
 
 /// The profile's avatar in a home tab's toolbar (Home, Groups): opens the profile.
 struct ProfileToolbarButton: View {
+    /// Each tab's stack has one, so one id names it in every stack.
+    private static let faceId = "profile-toolbar"
+
     let initial: String
     let color: AvatarColor
     let photoUrl: String?
     let action: () -> Void
+
+    /// The tab's stack, whose Profile zooms out of this avatar (beta feedback of 2026-11-15).
+    @Environment(\.profileZoomScope) private var profileZoom
 
     var body: some View {
         // A name always has an initial, so an empty one is a profile not read yet: a shimmer, never an empty badge
@@ -14,7 +20,10 @@ struct ProfileToolbarButton: View {
         if initial.isEmpty, photoUrl == nil {
             ShimmerCircle(size: 32).shimmering()
         } else {
-            Button(action: action) {
+            Button {
+                profileZoom?.zoom.arm(Self.faceId)
+                action()
+            } label: {
                 AvatarPhoto(
                     initial: initial,
                     color: color,
@@ -22,6 +31,7 @@ struct ProfileToolbarButton: View {
                     size: 32,
                     font: .subheadline.weight(.semibold),
                 )
+                .profileZoomSource(faceId: Self.faceId)
             }
             .accessibilityLabel("Profile")
         }

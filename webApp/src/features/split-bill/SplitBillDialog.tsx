@@ -84,6 +84,7 @@ export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; 
     else if (action === 'delete-error') toast(t('billDetail_deleteError'))
     else if (action === 'category-save-error') toast(t('splitBill_categorySaveError'))
     else if (action === 'category-delete-error') toast(t('splitBill_categoryDeleteError'))
+    else if (action === 'paid-with-only-payers') toast(t('payingMethod_paidWithOnlyPayers'))
   })
   // Why: "Ler cupom fiscal" sits in the footer, under the thumb on a phone (beta feedback), and the form holds its inputs.
   const receiptPicker = useReceiptPicker(presenter, state)
@@ -408,7 +409,12 @@ function BillForm({
                 money={money}
               />
             </div>
-            <PaidWithField presenter={presenter} paidWith={state.paidWith} showsAdd={state.showsAddPayingMethod} />
+            <PaidWithField
+              presenter={presenter}
+              paidWith={state.paidWith}
+              showsAdd={state.showsAddPayingMethod}
+              showsLocked={state.showsLockedPaidWith}
+            />
           </fieldset>
           <ReceiptField presenter={presenter} state={state} />
         </div>

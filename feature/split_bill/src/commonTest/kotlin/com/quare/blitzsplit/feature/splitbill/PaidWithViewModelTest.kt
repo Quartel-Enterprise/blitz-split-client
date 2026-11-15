@@ -919,6 +919,25 @@ class PaidWithViewModelTest {
     }
 
     @Test
+    fun `GIVEN the bill saving and someone else pays WHEN tapping the locked Paid with THEN nothing is said`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            fillIn()
+            pickPayer(ANA)
+            expenses.createGate = CompletableDeferred()
+            viewModel.onEvent(SplitBillUiEvent.OnSaveClicked)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnLockedPaidWithClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isSaving)
+            assertTrue(actions.isEmpty())
+            assertTrue(lockedEvents().isEmpty())
+        }
+
+    @Test
     fun `GIVEN a receipt being read WHEN picking None in Paid with THEN the method stays picked`() =
         runTest(testDispatcher) {
             // Given
@@ -935,6 +954,183 @@ class PaidWithViewModelTest {
             assertEquals(picked, viewModel.uiState.value.paidWith.methodId)
             assertTrue(paidWithEvents().isEmpty())
         }
+
+    @Test
+    fun `GIVEN a new bill WHEN someone else is picked as the payer THEN Paid with shows locked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            pickPayer(ANA)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsLockedPaidWith)
+            assertFalse(state.showsPaidWith)
+            assertFalse(state.showsAddPayingMethod)
+        }
+
+    @Test
+    fun `GIVEN no method saved WHEN someone else is picked as the payer THEN Paid with shows locked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(methods = emptyList())
+
+            // When
+            pickPayer(ANA)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsLockedPaidWith)
+            assertFalse(state.showsAddPayingMethod)
+        }
+
+    @Test
+    fun `GIVEN a new bill this device user pays WHEN the form opens THEN Paid with is not locked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsLockedPaidWith)
+            assertTrue(state.showsPaidWith)
+        }
+
+    @Test
+    fun `GIVEN a saved bill someone else paid WHEN Editar conta opens THEN Paid with shows locked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                screen = edit,
+                storedExpense = anaBill,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsLockedPaidWith)
+            assertFalse(state.showsPaidWith)
+        }
+
+    @Test
+    fun `GIVEN the methods not read yet and someone else pays WHEN reading Paid with THEN it is not locked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(readsMethods = false)
+
+            // When
+            pickPayer(ANA)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsLockedPaidWith)
+        }
+
+    @Test
+    fun `GIVEN cash picked and Ana made the payer WHEN this device user is picked back THEN cash comes back`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(SplitBillUiEvent.OnPaidWithPicked(CASH))
+            pickPayer(ANA)
+
+            // When
+            pickPayer(PIERRE)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsLockedPaidWith)
+            assertTrue(state.showsPaidWith)
+            assertEquals(CASH, state.paidWith.methodId)
+        }
+
+    @Test
+    fun `GIVEN Paid with locked as someone else pays WHEN tapping it THEN says it is only for payers and tracks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            pickPayer(ANA)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnLockedPaidWithClicked)
+
+            // Then
+            assertEquals(listOf<SplitBillUiAction>(SplitBillUiAction.ShowPaidWithOnlyForPayers), actions)
+            assertEquals(listOf(LOCKED_CLICKED to emptyMap<String, Any>()), lockedEvents())
+        }
+
+    @Test
+    fun `GIVEN Paid with locked on a saved bill someone else paid WHEN tapping it THEN says it is only for payers`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                screen = edit,
+                storedExpense = anaBill,
+                methods = emptyList(),
+            )
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnLockedPaidWithClicked)
+
+            // Then
+            assertEquals(listOf<SplitBillUiAction>(SplitBillUiAction.ShowPaidWithOnlyForPayers), actions)
+            assertEquals(listOf(LOCKED_CLICKED to emptyMap<String, Any>()), lockedEvents())
+        }
+
+    @Test
+    fun `GIVEN this device user pays WHEN the locked Paid with is tapped THEN nothing is said or tracked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnLockedPaidWithClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(lockedEvents().isEmpty())
+            assertEquals(NUBANK, viewModel.uiState.value.paidWith.methodId)
+        }
+
+    @Test
+    fun `GIVEN the methods not read and someone else pays WHEN the locked Paid with is tapped THEN nothing is said`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(readsMethods = false)
+            pickPayer(ANA)
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnLockedPaidWithClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(lockedEvents().isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a receipt being read and someone else pays WHEN tapping the locked Paid with THEN nothing is said`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            pickPayer(ANA)
+            readGate = CompletableDeferred()
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(byteArrayOf(1, 2, 3)))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnLockedPaidWithClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isFormLocked)
+            assertTrue(actions.isEmpty())
+            assertTrue(lockedEvents().isEmpty())
+        }
+
+    private fun lockedEvents(): List<Pair<String, Map<String, Any>>> =
+        trackedEvents.filter { it.first == LOCKED_CLICKED }
 
     private fun paidWithEvents(): List<Pair<String, Map<String, Any>>> =
         trackedEvents.filter { it.first == "split_bill_paid_with_picked" }
@@ -1166,6 +1362,7 @@ class PaidWithViewModelTest {
         const val CASH = "method-cash"
         const val PIX = "method-pix"
         const val ADD_CLICKED = "split_bill_add_paying_method_clicked"
+        const val LOCKED_CLICKED = "split_bill_paid_with_locked_clicked"
 
         // Why: 2026-10-30T15:00:00Z.
         const val NOW_MILLIS = 1_793_372_400_000L

@@ -1076,6 +1076,141 @@ class SplitBillUiStateTest {
     }
 
     @Test
+    fun `GIVEN someone else pays and methods saved WHEN reading the locked Paid with THEN it shows`() {
+        // Given
+        val state = state(
+            payerId = ANA,
+            paidWith = cashPicked,
+        )
+
+        // When
+        val showsLockedPaidWith = state.showsLockedPaidWith
+
+        // Then
+        assertTrue(showsLockedPaidWith)
+        assertFalse(state.showsPaidWith)
+    }
+
+    @Test
+    fun `GIVEN someone else pays and no method saved WHEN reading the locked Paid with THEN it shows`() {
+        // Given
+        val state = state(
+            payerId = ANA,
+            paidWith = noMethods,
+        )
+
+        // When
+        val showsLockedPaidWith = state.showsLockedPaidWith
+
+        // Then
+        assertTrue(showsLockedPaidWith)
+        assertFalse(state.showsAddPayingMethod)
+    }
+
+    @Test
+    fun `GIVEN several others pay without this device user WHEN reading the locked Paid with THEN it shows`() {
+        // Given
+        val state = state(
+            people = listOf(person(ANA, isMe = false), person(PIERRE, isMe = true), person(BRUNO, isMe = false)),
+            severalPayers = several(ANA to "60,00", BRUNO to "40,00"),
+            paidWith = cashPicked,
+        )
+
+        // When
+        val showsLockedPaidWith = state.showsLockedPaidWith
+
+        // Then
+        assertTrue(showsLockedPaidWith)
+    }
+
+    @Test
+    fun `GIVEN this device user pays alone WHEN reading the locked Paid with THEN it is hidden`() {
+        // Given
+        val state = state(paidWith = cashPicked)
+
+        // When
+        val showsLockedPaidWith = state.showsLockedPaidWith
+
+        // Then
+        assertFalse(showsLockedPaidWith)
+        assertTrue(state.showsPaidWith)
+    }
+
+    @Test
+    fun `GIVEN this device user pays alone with no method WHEN reading the locked Paid with THEN it is hidden`() {
+        // Given
+        val state = state(paidWith = noMethods)
+
+        // When
+        val showsLockedPaidWith = state.showsLockedPaidWith
+
+        // Then
+        assertFalse(showsLockedPaidWith)
+        assertTrue(state.showsAddPayingMethod)
+    }
+
+    @Test
+    fun `GIVEN this device user among several payers WHEN reading the locked Paid with THEN it is hidden`() {
+        // Given
+        val state = state(
+            severalPayers = several(ANA to "60,00", PIERRE to "40,00"),
+            paidWith = cashPicked,
+        )
+
+        // When
+        val showsLockedPaidWith = state.showsLockedPaidWith
+
+        // Then
+        assertFalse(showsLockedPaidWith)
+    }
+
+    @Test
+    fun `GIVEN someone else pays and Room not read WHEN reading the locked Paid with THEN it is hidden`() {
+        // Given
+        val state = state(
+            payerId = ANA,
+            isLoaded = false,
+            paidWith = cashPicked,
+        )
+
+        // When
+        val showsLockedPaidWith = state.showsLockedPaidWith
+
+        // Then
+        assertFalse(showsLockedPaidWith)
+    }
+
+    @Test
+    fun `GIVEN someone else pays and the methods not read yet WHEN reading the locked Paid with THEN it is hidden`() {
+        // Given
+        val state = state(
+            payerId = ANA,
+            paidWith = noMethods.copy(isLoaded = false),
+        )
+
+        // When
+        val showsLockedPaidWith = state.showsLockedPaidWith
+
+        // Then
+        assertFalse(showsLockedPaidWith)
+    }
+
+    @Test
+    fun `GIVEN nobody on the device in the group WHEN reading the locked Paid with THEN it is hidden`() {
+        // Given
+        val state = state(
+            people = listOf(person(ANA, isMe = false), person(PIERRE, isMe = false)),
+            paidWith = cashPicked,
+        )
+
+        // When
+        val showsLockedPaidWith = state.showsLockedPaidWith
+
+        // Then
+        assertFalse(showsLockedPaidWith)
+    }
+
+    @Test
     fun `GIVEN another method picked while someone else pays WHEN reading the unsaved input THEN there is none`() {
         // Given
         val state = state(

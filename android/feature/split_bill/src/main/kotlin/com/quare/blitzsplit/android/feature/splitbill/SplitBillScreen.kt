@@ -57,6 +57,7 @@ fun SplitBillScreen(
             SplitBillUiAction.ShowDeleteError -> DesignR.string.designsystem_delete_bill_error
             SplitBillUiAction.ShowCategorySaveError -> DesignR.string.designsystem_category_save_error
             SplitBillUiAction.ShowCategoryDeleteError -> DesignR.string.designsystem_category_delete_error
+            SplitBillUiAction.ShowPaidWithOnlyForPayers -> DesignR.string.designsystem_paid_with_only_payers
         }
     }
     var spentAtPicker by rememberSaveable { mutableStateOf<SpentAtPicker?>(null) }

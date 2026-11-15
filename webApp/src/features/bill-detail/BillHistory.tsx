@@ -118,6 +118,7 @@ function HistoryLine({
           isRound
           label={entry.actorIsMe ? t('person_openMyProfile') : t('person_openProfile', { name: historyActor(entry) })}
           onOpen={openActor}
+          flightKey={`history-${entry.id}`}
           className="flex"
         >
           <Avatar initial={entry.actorInitials} color={entry.actorColor} photoUrl={entry.actorPhotoUrl} className="size-7 text-[11px]" />

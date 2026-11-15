@@ -338,7 +338,7 @@ export function HomeShellView({
             </button>
             {syncStatus && <div className="flex min-w-0 items-center gap-1">{syncStatus}</div>}
             {bell && <ActivityBell unreadCount={bell.unreadCount} onOpen={bell.onOpen} />}
-            <button aria-label={t('groups_profile')} onClick={onProfile} className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
+            <button aria-label={t('groups_profile')} onClick={onProfile} data-profile-link="profile-top" className="rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
               {profile ? (
                 <Avatar initial={profile.avatarInitial} color={profile.avatarColor} photoUrl={profile.photoUrl} className="size-9 text-sm" />
               ) : (

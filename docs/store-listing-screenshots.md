@@ -100,8 +100,9 @@ The rules the upload follows:
 | 10 | Light theme | | ✓ | The group again, light: "light or dark, it follows you" |
 
 The file prefix is the **shelf order**: both stores sort by file name, and only the first two or three show
-without swiping. Play holds 8 per device type and the App Store 10 per display size, so 09 and 10 are App Store only
-(`StoreScreen.isAppStoreOnly`). Every shot is in the dark theme except 10, on the logo's blue dimmed to `#0E2433`.
+without swiping. Play holds 8 per device type and the App Store 10 per device size, so 09 and 10 are App Store only
+(`StoreScreen.isAppStoreOnly`), and the iPhone Duo's two displays share their ten
+([below](#what-the-images-show)). Every shot is in the dark theme except 10, on the logo's blue dimmed to `#0E2433`.
 
 **The sample trip** (`shared/src/commonMain/.../storescreenshots/SampleTrips.kt`) is one story told in each
 language: a trip to Lisbon among five friends, its names and descriptions in that language and its amounts in that
@@ -121,19 +122,52 @@ photos than the screenshots use, to pick from.
 
 **The Duo open needs Device Hub.** The simulator boots closed, and its hinge moves only from Device Hub: its Open
 button, in the bar under the device, sends the simulator a HID event that neither `simctl`, `devicectl` nor XCUITest
-sends. So for the `iphoneduoopen` slot `capture-ios.sh` opens Device Hub and tries to select the simulator and press
-Open through accessibility, which the terminal running it must be allowed to (System Settings › Privacy & Security ›
-Accessibility). That press had not run anywhere when this was written: the captures were made the other way. Where
-it fails, the script says so and waits two minutes for a person to press Open (`STORE_SCREENSHOTS_OPEN_TIMEOUT`, in
-seconds), then skips the slot and goes on with the others. It knows the Duo
-is open by its inner display (`xcrun simctl io <udid> screenshot --display=3`), which then draws lying down. Open,
+sends. So for the `iphoneduoopen` slot `capture-ios.sh` opens the Device Hub of the Xcode in use and tries to select
+the simulator and press Open through accessibility, which the terminal running it must be allowed to (System Settings
+› Privacy & Security › Accessibility). Where it fails, the script says so and waits two minutes for a person to press
+Open (`STORE_SCREENSHOTS_OPEN_TIMEOUT`, in seconds), then skips the slot and goes on with the others. It knows the
+Duo is open by its inner display (`xcrun simctl io <udid> screenshot --display=3`), which then draws lying down. Open,
 the outer display is off and still XCTest's main screen, so the UI test photographs the larger of the two screens.
 
-**The Duo open is collected, not uploaded yet.** `collectAppStoreScreenshots` frames it into
-`store_listings/ios/<locale>/iphone_duo_open/`, and `stageAppStoreScreenshots` leaves it out: deliver files either
-Duo size under the one Duo display type, whose shelf holds ten screenshots, so the closed set already fills it. Which
-screens go there open is Pierre's call; once taken, move the slot from `appleCollectOnlyDevices` to `appleDevices`
-(`build-logic/.../StoreScreenshots.kt`) and add it to the capture's matrix in `release-production`.
+What was checked of that, in November 2026:
+
+- **The script's own press has not opened a Duo anywhere yet.** On this project's Mac, the shell it was run from had
+  no Accessibility permission ("osascript is not allowed assistive access"), so the script waited and Open was
+  pressed in Device Hub for it. The 13 languages were captured that way, and everything after the press ran as
+  written: the script saw the inner display lying down and the UI test photographed it.
+- **In a release**, the slot has a runner of its own, with nobody to press Open, so once its own attempt is over it
+  waits 30 seconds more and gives up. The `xcode-27` image has what the script needs on paper: Xcode 27.2 with Device Hub inside it,
+  the iPhone Duo's runtime (iOS 27.1 and 27.2), a logged-in desktop, and `osascript` and `bash` allowed in
+  Accessibility and to drive System Events (the image's `configure-tccdb-macos-27.sh`). Whether Device Hub shows its
+  window there and the press lands is only known after the first release with `screenshots` on: nothing but a
+  release runs that job.
+
+**The Duo's two displays share one shelf.** App Store Connect has one iPhone Duo device size for both displays, outer
+(1398x2034) and inner (2853x2007), and takes ten screenshots per device size
+([Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/)).
+deliver (fastlane 2.241.2) files both sizes under `APP_IPHONE_DUO` and skips whatever comes after the tenth by file
+name, so twenty images would put the first five screens up twice and leave the other five out. Each screen
+therefore goes up once, closed or open:
+
+| Open (the inner display) | Closed (the outer display) |
+| --- | --- |
+| 01 The group, 04 Balances, 06 Statistics, 07 Home, 09 Activity | 02 Split by items, 03 Receipt read, 05 Invite, 08 Several payers, 10 Light theme |
+
+Open are the screens that use the inner display's width: the group and Home in two columns, Statistics, Activity's
+feed beside the item picked. Closed are the bill's sheets, which open are a sheet over the screen behind, Invite, and
+the light theme, so the group shows both ways. The shelf keeps the file names' order, so it starts open, on the
+group. The list is `duoScreensStagedOpen` in `build-logic/.../StoreScreenshots.kt`: a default nobody chose for the
+product yet, so it is Pierre's to change, in that one line. A display that wasn't captured gives its screens to the
+other one, so a release whose open capture failed uploads the ten closed, as before. `collectAppStoreScreenshots`
+still frames both whole, into `store_listings/ios/<locale>/iphone_duo/` and `iphone_duo_open/`.
+
+Not checked yet, since no Duo screenshot has gone to App Store Connect: that it files both sizes on that one shelf,
+upright and lying down side by side. Apple's page lists the four sizes under the one device and fastlane's change
+says its upload was tried, but the API's own `ScreenshotDisplayType` didn't list `APP_IPHONE_DUO` in version 4.6 of
+its specification (its newer asset library does, as the display class `IPHONE_DUO`). Should App Store Connect refuse
+a size, deliver fails after the other devices' screenshots are up; the lane still sorts the shelves that landed, then
+fails, the job is listed as failed and the release goes on
+([release-process.md](release-process.md#screenshots-with-a-release)).
 
 **The iPad runs in full-screen apps.** iPadOS 26 opens apps in windows by default, which would leave the app short
 of the screen. On an iPad slot, the UI test first switches Settings › Multitasking & Gestures to full-screen apps.
@@ -158,7 +192,9 @@ fastlane/Fastfile                              # the screenshots and upload lane
   short.
 - **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
   `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on Apple's) and a row
-  of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides.
+  of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides. It goes on the iPhone Duo's
+  shelf closed unless `duoScreensStagedOpen` (`StoreScreenshots.kt`) names it; a test of `store-listing.test.mjs`
+  holds that list, `StoreScreen` and `screens.tsv` to the same file names.
 - **A new language:** `storeLocales` (its `playLocale` is its tag), `bannerCopies`, `SampleTrips` (copy and currency), a row of
   `scripts/store-screenshots/locales.tsv`, and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
   which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
@@ -273,3 +309,8 @@ project's Mac its own screenshot of the window failed as well ("Image creation f
 - **Faces and group photos on Play** come through Coil's preview handler (`SamplePhotosComponent`), which answers at
   once. A real load would still be running when Robolectric captures.
 - **`ItemsEditorContent` is public** so the generator can draw "Bill items" without the ViewModel.
+- **An iOS capture can be a screen still loading.** The UI test photographs each screen four seconds after its
+  launch, whatever it shows by then, and on a simulator just booted "Bill items" has come out as its grey
+  placeholders (the open iPhone Duo's first language, November 2026). Look at `store_listings/` after a capture, and
+  take the screen again with `STORE_SCREENSHOTS_SLOTS`, `STORE_SCREENSHOTS_LOCALES` and `STORE_SCREENSHOTS_SCREENS`.
+  A release's captures are not looked at before they go up.

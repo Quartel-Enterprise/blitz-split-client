@@ -54,6 +54,7 @@ import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.verbForActorOf
@@ -317,6 +318,8 @@ private fun ActorAvatarIcon(
 ) {
     val rowColor = MaterialTheme.colorScheme.surfaceContainerLowest
     val name = personNameOf(entry.actorName, entry.actorIsMe)
+    // Why: the face flies into the profile it opens and back (beta feedback of 2026-11-15).
+    val flight = rememberProfileFlightSource()
     Box {
         // Why: the actor's face opens their profile while they are in the group, named for TalkBack.
         AvatarBadge(
@@ -324,10 +327,10 @@ private fun ActorAvatarIcon(
             color = entry.actorColor,
             photoUrl = entry.actorPhotoUrl,
             size = actorAvatarSize,
-            modifier = Modifier
+            modifier = flight.face
                 .clip(CircleShape)
                 .semantics { if (entry.actorMemberId != null) contentDescription = name }
-                .opensProfile(onClick.takeIf { entry.actorMemberId != null }),
+                .opensProfile(flight.toFlyingClickOrNull(onClick.takeIf { entry.actorMemberId != null })),
         )
         Box(
             modifier = Modifier

@@ -311,32 +311,48 @@ end
 # deliver deletes a locale's screenshots and recreates its sets; a set recreated before App Store Connect finished
 # deleting it is refused with "Screenshot Set Already Exists!", and waiting and running deliver again recovers. A shelf
 # it can't reorder (a copy of the previous version's screenshot still there) doesn't fail an upload that landed: the
-# tidy-up after the last locale removes the copy and sorts it.
+# tidy-up after the last locale removes the copy and sorts it. An upload that fails on one shelf (a size App Store
+# Connect refuses, as the iPhone Duo's inner display might) has put the other shelves up by then, unsorted, since
+# deliver sorts last: the tidy-up runs for them too, and the upload's failure is the one reported.
 def upload_app_store_screenshots(screenshots_path, locale, platform)
   api_key = app_store_api_key
+  upload_error = nil
   with_locale_only(screenshots_path, locale) do |path|
     ensure_screenshots_staged(File.join(path, "*", "*.png"))
-    tolerating(SCREENSHOT_REORDER_REFUSED_MESSAGE) do
-      retrying_on(SCREENSHOT_SET_RACE_MESSAGE, attempts: SCREENSHOT_SET_RACE_ATTEMPTS, wait_seconds: SCREENSHOT_SET_RACE_WAIT_SECONDS) do
-        upload_to_app_store(
-          api_key: api_key,
-          app_identifier: BUNDLE_ID,
-          # Unset, deliver uses the editable version; set, it creates that version when it doesn't exist yet
-          app_version: ENV["APP_VERSION"],
-          platform: platform,
-          screenshots_path: path,
-          skip_binary_upload: true,
-          skip_metadata: true,
-          skip_screenshots: false,
-          submit_for_review: false,
-          force: true,
-          precheck_include_in_app_purchases: false,
-          overwrite_screenshots: true,
-        )
+    begin
+      tolerating(SCREENSHOT_REORDER_REFUSED_MESSAGE) do
+        retrying_on(SCREENSHOT_SET_RACE_MESSAGE, attempts: SCREENSHOT_SET_RACE_ATTEMPTS, wait_seconds: SCREENSHOT_SET_RACE_WAIT_SECONDS) do
+          upload_to_app_store(
+            api_key: api_key,
+            app_identifier: BUNDLE_ID,
+            # Unset, deliver uses the editable version; set, it creates that version when it doesn't exist yet
+            app_version: ENV["APP_VERSION"],
+            platform: platform,
+            screenshots_path: path,
+            skip_binary_upload: true,
+            skip_metadata: true,
+            skip_screenshots: false,
+            submit_for_review: false,
+            force: true,
+            precheck_include_in_app_purchases: false,
+            overwrite_screenshots: true,
+          )
+        end
       end
+    rescue => e
+      upload_error = e
     end
   end
-  tidy_app_store_screenshots(platform) if locale.nil?
+  if locale.nil?
+    begin
+      tidy_app_store_screenshots(platform)
+    rescue => e
+      raise if upload_error.nil?
+
+      UI.error("Could not tidy the shelves up after the failed upload: #{e.message.lines.first.to_s.strip}")
+    end
+  end
+  raise upload_error unless upload_error.nil?
 end
 
 def app_store_api_key

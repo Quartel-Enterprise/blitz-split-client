@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
+import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.TrailingOrBelowLayout
 import com.quare.blitzsplit.core.expenses.domain.model.MemberBalance
@@ -59,6 +60,8 @@ internal fun MemberRow(
     onEvent: (MembersUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Why: the face flies into the profile it opens and back (beta feedback of 2026-11-15).
+    val flight = rememberProfileFlightSource()
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = shape,
@@ -67,7 +70,7 @@ internal fun MemberRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .opensProfile { onEvent(MembersUiEvent.OnMemberClicked(member.id)) }
+                .opensProfile(flight.toFlyingClick { onEvent(MembersUiEvent.OnMemberClicked(member.id)) })
                 .heightIn(min = 64.dp)
                 .padding(
                     start = 16.dp,
@@ -82,6 +85,7 @@ internal fun MemberRow(
                 initial = member.initials,
                 color = member.avatarColor,
                 photoUrl = member.photoUrl,
+                modifier = flight.face,
             )
             // Why: in a narrow pane the balance goes under the status, so the name and the status keep their width.
             TrailingOrBelowLayout(

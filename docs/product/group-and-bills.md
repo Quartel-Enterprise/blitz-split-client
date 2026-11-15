@@ -88,14 +88,17 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     once, the web skips it under `prefers-reduced-motion`, and iOS's Reduce Motion turns the zoom into the system's
     crossfade and stills the header's scale and rise, keeping its fades. iOS's zoom already carries the whole card,
     balance included; the web names only the avatar and name, so its balance crossfades with the page. A bill's
-    "Latest expenses" row on Home shows the group's avatar but opens the bill, so the group's avatar flies nowhere.
-  - A bill's category badge, title, total and share fly from its row on Home's "Latest expenses" or "All expenses"
-    into the bill's screen (the badge, the title, the big total and "Your share"'s amount), and back on back or the back
-    gesture (beta feedback of 2026-11-15). Android only, where the bill covers the window (a phone; wider it is a dialog
-    over the screen it opened from, and nothing flies, even once the window narrows under it): `rememberBillSharedModifiers`, keyed by the bill and the screen it opened from
-    (`SharedOrigin`), the screen under the bill kept as the group's is. The row's ⋮ stays. A bill opened from the group's
-    Expenses, Search or Activity just slides in. iOS, the Mac and the web animate no bill between screens, so they keep
-    their own push.
+    "Latest expenses" row on Home shows the group's avatar but opens the bill, so the group's avatar flies into the
+    bill's top bar instead (below).
+  - A bill's category badge, title, total and share fly from its row on Home's "Latest expenses", "All expenses" or
+    the group's Expenses into the bill's screen (the badge, the title, the big total and "Your share"'s amount), and
+    back on back or the back gesture (beta feedback of 2026-11-15, the group's Expenses asked the same day); the row's
+    small group square on Home and "All expenses" flies into the group's square of the bill's top bar. Android only,
+    where the bill covers the window (a phone; wider it is a dialog over the screen it opened from, and nothing flies,
+    even once the window narrows under it): `rememberBillSharedModifiers`, keyed by the bill and the screen it opened
+    from (`SharedOrigin`, `GROUP` for the group's Expenses), the screen under the bill kept as the group's is. The row's
+    ⋮ stays. A bill opened from Search, Activity or a category's bills just slides in. iOS, the Mac and the web animate
+    no bill between screens (Pierre's call: as the group's transition does), so they keep their own push.
   - The group's avatar in the header (its rounded square, the photo or the initials on the color; the web's page header, the top bar on Android, the header on iOS and the Mac) opens the photo big (Pierre's call, `Route.GroupPhoto`,
     `GroupPhotoViewModel`), as the profile's avatar does ([the profile's viewer](profile.md)): the group's square, 200 pt/dp/px (260 once both sides have 600) over the
     dimmed, blurred group, with "Camera" where there is one, "Gallery" and "Remove" (with a photo) under it. Each saves
@@ -131,7 +134,11 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     the word. Bill keeps it under "Your share". Who paid shows as the app's stack of faces, at most two bubbles
     ([General rules](general.md)); the members' faces under the group's name and who paid on the Bill have room for five.
   - A bill tapped there opens "Bill" (`Route.BillDetail`): the bill, "Your share" and the split over every member,
-    with its category over the title and Share, Edit and Delete in the top bar. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
+    with its category over the title and Share, Edit and Delete in the top bar. The top bar names the group with its
+    rounded square before the name (its photo, or its initials on its color, beta feedback of 2026-11-15,
+    `BillDetailUiState.groupInitials`, `groupColor`, `groupPhotoUrl`): Android's top bar (32 dp) and dialog header, the
+    iOS and iPadOS bar's title (30 pt, as the group's folded bar), the Mac inspector's line under the bill's name (18
+    pt) and the web sheet's header (24 px). It shows once the bill is read, never as an empty square. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
     half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the
     main window's inspector (720 pt, 330 pt in a window under 1180 pt, the bill beside its split from 600 pt, ✕ and Esc
     closing it, another bill or whatever the group opens taking its place; the 330 pt one puts Share, Edit, Delete and

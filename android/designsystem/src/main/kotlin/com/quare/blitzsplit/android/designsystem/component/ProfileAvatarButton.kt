@@ -31,14 +31,17 @@ fun ProfileAvatarButton(
         }
         return
     }
+    // Why: the avatar flies into Profile's and back (beta feedback of 2026-11-15).
+    val flight = rememberProfileFlightSource()
     IconButton(
-        onClick = onClick,
+        onClick = flight.toFlyingClick(onClick),
         modifier = Modifier.semantics { this.contentDescription = contentDescription },
     ) {
         AvatarBadge(
             initial = initial,
             color = color,
             photoUrl = photoUrl,
+            modifier = flight.face,
         )
     }
 }

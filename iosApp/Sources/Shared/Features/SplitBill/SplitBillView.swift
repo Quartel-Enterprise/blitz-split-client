@@ -19,6 +19,7 @@ final class SplitBillModel {
     private(set) var deleteErrorCount = 0
     private(set) var categorySaveErrorCount = 0
     private(set) var categoryDeleteErrorCount = 0
+    private(set) var paidWithOnlyForPayersCount = 0
 
     @ObservationIgnored private let holder: ViewModelHolder<SplitBillViewModel>
     @ObservationIgnored private let watches = WatchBag()
@@ -44,6 +45,7 @@ final class SplitBillModel {
             case is SplitBillUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is SplitBillUiActionShowCategorySaveError: self?.categorySaveErrorCount += 1
             case is SplitBillUiActionShowCategoryDeleteError: self?.categoryDeleteErrorCount += 1
+            case is SplitBillUiActionShowPaidWithOnlyForPayers: self?.paidWithOnlyForPayersCount += 1
             default: break
             }
         })
@@ -201,6 +203,10 @@ struct SplitBillView: View {
         .glassToast("Couldn't delete the bill. Try again.", trigger: model?.deleteErrorCount ?? 0)
         .glassToast("Couldn't save the category. Try again.", trigger: model?.categorySaveErrorCount ?? 0)
         .glassToast("Couldn't delete the category. Try again.", trigger: model?.categoryDeleteErrorCount ?? 0)
+        .glassToast(
+            "Only those who paid this bill can mark what they paid with.",
+            trigger: model?.paidWithOnlyForPayersCount ?? 0,
+        )
         // VoiceOver says the settled pair warning when it shows and when the pair or how it ends up changes, never on
         // each digit of the amount (7.4b).
         .onChange(of: model?.state.settledPair?.announcementKey) { _, key in
@@ -596,7 +602,7 @@ private struct PhoneSplitBill: View {
             Text("Details")
         } footer: {
             VStack(alignment: .leading, spacing: 8) {
-                if state.showsPaidWith || state.showsAddPayingMethod {
+                if state.showsPaidWith || state.showsAddPayingMethod || state.showsLockedPaidWith {
                     PaidWithControl(model: model)
                         .padding(.top, 4)
                 }
@@ -893,6 +899,51 @@ private struct PaidWithControl: View {
             .buttonStyle(.bordered)
             .buttonBorderShape(.capsule)
             .accessibilityHint(Text("Only you see this."))
+        } else if state.showsLockedPaidWith {
+            LockedPaidWithChip(model: model)
+        }
+    }
+}
+
+/// "Paid with" while this device's user doesn't pay the bill (Pierre's call, beta feedback of November 15, 2026): drawn
+/// dimmed on "None" but never truly disabled, so a tap still reaches the ViewModel, which raises a toast saying why.
+private struct LockedPaidWithChip: View {
+    let model: SplitBillModel
+
+    var body: some View {
+        let none = Text(LocalizedStringResource("None (no payment method)", defaultValue: "None"))
+        Button {
+            model.send(SplitBillUiEventOnLockedPaidWithClicked.shared)
+        } label: {
+            PaidWithChipLabel(method: nil, text: none)
+                .foregroundStyle(.tertiary)
+        }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .controlSize(.small)
+        .tint(.secondary)
+        .accessibilityLabel(Text("Paid with"))
+        .accessibilityValue(none)
+        .accessibilityHint(Text("Only those who paid this bill can mark what they paid with."))
+    }
+}
+
+/// What Paid with's chip says, live or locked: the method's tile (or a card glyph for "None"), its name and a ▾.
+private struct PaidWithChipLabel: View {
+    let method: PayingMethod?
+    let text: Text
+
+    var body: some View {
+        HStack(spacing: 6) {
+            if let method {
+                PayingMethodTile(method: method, size: 18)
+            } else {
+                Image(systemName: "creditcard")
+            }
+            text
+                .lineLimit(1)
+            Image(systemName: "chevron.down")
+                .font(.caption2.weight(.semibold))
         }
     }
 }
@@ -910,18 +961,8 @@ private struct PaidWithMenu: View {
                 model.send(SplitBillUiEventOnPaidWithPicked(methodId: methodId))
             }
         } label: {
-            HStack(spacing: 6) {
-                if let method = paidWith.method {
-                    PayingMethodTile(method: method, size: 18)
-                } else {
-                    Image(systemName: "creditcard")
-                }
-                label
-                    .lineLimit(1)
-                Image(systemName: "chevron.down")
-                    .font(.caption2.weight(.semibold))
-            }
-            .foregroundStyle(.primary)
+            PaidWithChipLabel(method: paidWith.method, text: label)
+                .foregroundStyle(.primary)
         }
         // As wide as its label up to the footer's width, where a long name truncates instead of being clipped
         .fixedSize(horizontal: false, vertical: true)
@@ -1258,8 +1299,8 @@ private struct MacBillForm: View {
                             }
                         }
                     }
-                    // Paid with's chip, or "Add a payment method", under Split as on the iPhone
-                    if state.showsPaidWith || state.showsAddPayingMethod {
+                    // Paid with's chip (dimmed for someone who didn't pay), or "Add a payment method", under Split as on the iPhone
+                    if state.showsPaidWith || state.showsAddPayingMethod || state.showsLockedPaidWith {
                         LabeledContent {
                             PaidWithControl(model: model)
                         } label: {

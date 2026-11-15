@@ -1061,6 +1061,7 @@ export const id: Record<MessageKey, string> = {
   payingMethod_paidWith: 'Dibayar dengan',
   payingMethod_paidWithNone: 'Tidak ada',
   payingMethod_paidWithPrivate: 'Hanya kamu yang melihat ini.',
+  payingMethod_paidWithOnlyPayers: 'Hanya yang membayar tagihan ini yang bisa menandai cara bayarnya.',
 
   balance_title: 'Saldomu di grup ini',
   balance_toGetBack: 'untuk diterima',

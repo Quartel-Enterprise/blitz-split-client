@@ -56,7 +56,7 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
                 onClick={() => presenter.openPhoto()}
                 className="block rounded-full outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
               >
-                <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-24 text-4xl transition-colors" />
+                <Avatar initial={state.avatarInitial} color={state.avatarColor} photoUrl={state.photoUrl} className="size-24 text-4xl transition-colors" isProfilePhoto />
               </button>
               {state.isPreparingPhoto && (
                 <span className="absolute inset-0 flex items-center justify-center rounded-full bg-background/60">

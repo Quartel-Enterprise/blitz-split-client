@@ -142,6 +142,70 @@ private val PayingMethodType.icon: ImageVector
         PayingMethodType.OTHER -> Icons.Outlined.MoreHoriz
     }
 
+// Why: the glyphs of Paid with's chips, live and locked alike, at a chip's icon size.
+@Composable
+private fun ChipIcon(imageVector: ImageVector) {
+    Icon(
+        imageVector = imageVector,
+        contentDescription = null,
+        modifier = Modifier.size(AssistChipDefaults.IconSize),
+    )
+}
+
+/*
+ * Why: "Paid with" while this device's user doesn't pay the bill (Pierre's call, beta feedback of November 15, 2026):
+ * drawn as a disabled chip on None, yet still taking the tap, which raises a snackbar saying why it can't change. Truly
+ * disabled (enabled false) while the form is locked, as the rest of the form is.
+ */
+@Composable
+fun LockedPaidWithChip(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    val none = stringResource(R.string.designsystem_paid_with_none)
+    val description = listOf(
+        stringResource(R.string.designsystem_paid_with),
+        none,
+        stringResource(R.string.designsystem_paid_with_only_payers),
+    ).joinToString(separator = ". ")
+    val defaults = AssistChipDefaults.assistChipColors()
+    AssistChip(
+        onClick = onClick,
+        label = {
+            Text(
+                text = none,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        modifier = modifier
+            .widthIn(max = 280.dp)
+            .clearAndSetSemantics {
+                contentDescription = description
+                role = Role.Button
+                if (enabled) {
+                    onClick {
+                        onClick()
+                        true
+                    }
+                } else {
+                    disabled()
+                }
+            },
+        enabled = enabled,
+        leadingIcon = { ChipIcon(Icons.Outlined.CreditCard) },
+        trailingIcon = { ChipIcon(Icons.Outlined.ExpandMore) },
+        // Why: the disabled chip's look, while the chip itself stays enabled so the tap gets through.
+        colors = AssistChipDefaults.assistChipColors(
+            labelColor = defaults.disabledLabelColor,
+            leadingIconContentColor = defaults.disabledLeadingIconContentColor,
+            trailingIconContentColor = defaults.disabledTrailingIconContentColor,
+        ),
+        border = AssistChipDefaults.assistChipBorder(enabled = false),
+    )
+}
+
 /*
  * Why: "Paid with" on Split a bill, as discreet as a chip (Pierre's call, feedback of November 15, 2026): the method
  * picked (or None) with its tile, whose menu lists None and each of the person's methods. Screen readers hear "Paid
@@ -195,20 +259,10 @@ fun PaidWithChip(
                         size = AssistChipDefaults.IconSize,
                     )
                 } else {
-                    Icon(
-                        imageVector = Icons.Outlined.CreditCard,
-                        contentDescription = null,
-                        modifier = Modifier.size(AssistChipDefaults.IconSize),
-                    )
+                    ChipIcon(Icons.Outlined.CreditCard)
                 }
             },
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.ExpandMore,
-                    contentDescription = null,
-                    modifier = Modifier.size(AssistChipDefaults.IconSize),
-                )
-            },
+            trailingIcon = { ChipIcon(Icons.Outlined.ExpandMore) },
         )
         DropdownMenu(
             expanded = isMenuOpen,

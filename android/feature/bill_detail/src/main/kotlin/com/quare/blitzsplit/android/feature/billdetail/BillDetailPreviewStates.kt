@@ -53,6 +53,9 @@ internal fun createPreviewBillDetailState(
     }
     return BillDetailUiState(
         groupName = "Viagem Floripa",
+        groupInitials = "VF",
+        groupColor = AvatarColor.GREEN,
+        groupPhotoUrl = null,
         currency = GroupCurrency.BRL,
         description = "Jantar no Ostradamus",
         totalMinor = PREVIEW_TOTAL_MINOR,

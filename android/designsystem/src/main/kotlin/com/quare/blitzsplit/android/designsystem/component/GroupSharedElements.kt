@@ -96,10 +96,12 @@ class SharedScopes internal constructor(
 // Why: null where nothing flies: no id, no navigation's scope (previews, tests) or no origin (beside the list).
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun rememberSharedScopes(id: String?): SharedScopes? {
+internal fun rememberSharedScopes(
+    id: String?,
+    origin: SharedOrigin? = LocalSharedOrigin.current,
+): SharedScopes? {
     val transitionScope = LocalSharedTransitionScope.current
     val visibilityScope = LocalEntryVisibilityScope.current
-    val origin = LocalSharedOrigin.current
     if (id == null || transitionScope == null || visibilityScope == null || origin == null) return null
     return remember(transitionScope, visibilityScope, origin, id) {
         SharedScopes(

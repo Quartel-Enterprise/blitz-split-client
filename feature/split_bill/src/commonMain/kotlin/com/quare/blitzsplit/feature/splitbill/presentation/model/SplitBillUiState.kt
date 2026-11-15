@@ -166,6 +166,14 @@ data class SplitBillUiState(
     val showsAddPayingMethod: Boolean
         get() = paidWith.isLoaded && paidWith.methods.isEmpty() && isMePaying
 
+    /*
+     * Why: "Paid with" drawn disabled while this device's user is in the bill's group but doesn't pay it (Pierre's call,
+     * beta feedback of November 15, 2026): it shows where the mark goes, and a tap says it is only for whoever paid.
+     * It stands for "Add a payment method" too, for someone who has no method yet.
+     */
+    val showsLockedPaidWith: Boolean
+        get() = isLoaded && paidWith.isLoaded && meId != null && !isMePaying
+
     private val isMePaying: Boolean
         get() = meId != null && meId in payerIds
 

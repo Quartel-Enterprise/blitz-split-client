@@ -143,7 +143,7 @@ function MemberBalanceText({ balance, money }: { balance: JsMemberBalance; money
 function MemberRow({ presenter, member, money }: { presenter: MembersPresenter; member: JsMembersMember; money: (minor: number) => string }) {
   return (
     <li className="flex items-center gap-1 py-1 pr-2 pl-2">
-      <PersonButton onOpen={() => presenter.openMember(member.id)} className="flex min-w-0 flex-1 items-center gap-3 px-2 py-1.5">
+      <PersonButton onOpen={() => presenter.openMember(member.id)} flightKey={`member-${member.id}`} className="flex min-w-0 flex-1 items-center gap-3 px-2 py-1.5">
       <Avatar initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-10 text-sm" />
       {/* Why: the balance wraps under the status once it and the whole name don't fit side by side, so the name and the status keep their width. */}
       <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">

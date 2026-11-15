@@ -163870,6 +163870,77 @@
           }
         }
       }
+    },
+    "Only those who paid this bill can mark what they paid with." : {
+      "comment" : "Toast and VoiceOver hint of the dimmed Paid with, tapped by someone who didn't pay the bill",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur wer diese Ausgabe bezahlt hat, kann angeben, womit."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo quien pagó este gasto puede marcar con qué pagó."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seuls ceux qui ont payé cette dépense peuvent indiquer avec quoi ils ont payé."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hanya yang membayar tagihan ini yang bisa menandai cara bayarnya."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo chi ha pagato questa spesa può indicare con cosa ha pagato."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この支出を支払った人だけが支払い方法を選べます。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alleen wie deze uitgave heeft betaald, kan aangeven waarmee."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tylko osoby, które zapłaciły za ten wydatek, mogą zaznaczyć, czym zapłaciły."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só quem pagou esta conta pode marcar com o que pagou."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Só quem pagou esta conta pode marcar com o que pagou."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ödeme şeklini yalnızca bu harcamayı ödeyenler seçebilir."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
