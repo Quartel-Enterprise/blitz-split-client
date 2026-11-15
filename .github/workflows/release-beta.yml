@@ -3,7 +3,9 @@ name: release-beta
 # Ships a beta of Bora Rachar to the closed group of testers, outside the stores and the app's domain.
 #
 # Run it from the Actions tab or with ./scripts/release/release-beta.sh:
-#   1. `plan` resolves the version from version.properties and the existing X.Y.Z-beta_N tags.
+#   1. `plan` resolves the version from version.properties, the release notes' fragments and the existing
+#      X.Y.Z-beta_N tags, and picks the notes this beta tells: the ones in release-notes/unreleased/ that the release
+#      before it didn't have (docs/release-notes.md).
 #   2. Each platform builds and publishes to its own channel, in jobs of its own, because "Re-run failed
 #      jobs" repeats whole jobs: an upload that failed is sent again without building a second time.
 #        - Android: signed APK to the Firebase App Distribution `beta` group.
@@ -18,6 +20,8 @@ name: release-beta
 #      so it never repeats either, even when the merge-back fails. `finalize` runs when at least one platform
 #      published, since the Apple stores refuse a build number they already hold, and can be re-run: every
 #      step skips what an earlier attempt already did.
+#   4. `site-release-notes` sends the notes to blitz-split-site, whose "What's new" page and feed the apps read
+#      show them once its pull request merges. Skipped by a beta with no note to tell.
 #
 # One run at a time, and one more waiting: GitHub keeps a single pending run per concurrency group, so a third
 # dispatch cancels the one that waits. release-beta.sh refuses to dispatch while a run is already waiting.
@@ -28,7 +32,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version X.Y.Z: leave blank to use the versionName of version.properties"
+        description: "Version X.Y.Z: leave blank to use the one version.properties and the release notes give"
         type: string
         required: false
       android:
@@ -66,6 +70,8 @@ env:
   FIREBASE_IOS_APP_ID: 1:791706056713:ios:a3d191b81ce12a0f99a0d8
   FIREBASE_IOS_GROUP: ios-beta
   CLOUDFLARE_PAGES_PROJECT: blitz-split-beta
+  # Where the release notes are published: its "What's new" page and the feed the apps read (docs/release-notes.md).
+  SITE_REPOSITORY: Quartel-Enterprise/blitz-split-site
   # Pinned: the versions the release was written with.
   FIREBASE_TOOLS_VERSION: 15.22.0
   WRANGLER_VERSION: 4.152.0
@@ -76,10 +82,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
+      version: ${{ steps.resolve.outputs.version }}
       display_version: ${{ steps.resolve.outputs.display_version }}
       version_code: ${{ steps.resolve.outputs.version_code }}
       branch: ${{ steps.resolve.outputs.branch }}
       sha: ${{ steps.sha.outputs.sha }}
+      has_notes: ${{ steps.notes.outputs.has_notes }}
+      github_notes: ${{ steps.notes.outputs.github_notes }}
+      testers_android: ${{ steps.notes.outputs.testers_android }}
+      testers_ios: ${{ steps.notes.outputs.testers_ios }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -93,15 +104,65 @@ jobs:
         id: sha
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
+      # The version and the notes both come from scripts/release/release-notes.mjs, plain Node.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # Every release with its notes, read once for the two steps below: the build numbers the earlier betas
+      # recorded in them, and the platforms whose testers each one sent a build to.
+      - name: Read the releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+            --jq '.[] | {tag: .tag_name, body: .body, prerelease: .prerelease}' | jq -s . > "$RUNNER_TEMP/releases.json"
+
       # Through env, not spliced into the command: the script validates the value, but only after the
       # shell has parsed the line.
       - name: Resolve version
         id: resolve
         env:
           VERSION_INPUT: ${{ inputs.version }}
-          # To read the build numbers the earlier betas recorded in their releases.
-          GH_TOKEN: ${{ github.token }}
+          RELEASES_FILE: ${{ runner.temp }}/releases.json
         run: ./scripts/release/suggest-beta-version.sh "$VERSION_INPUT"
+
+      # Picked here, once, for every job: a later job that picked them again could fail after the builds went out,
+      # or read other tags. `github_notes` is what the GitHub release opens with. `testers_*` is what the testers
+      # read with the build on Firebase App Distribution: the version, then the notes for their platform since the
+      # last beta that sent them a build (the "Sent to testers:" line finalize writes in each release), so a beta
+      # that left a platform out (an iOS only one) doesn't keep its notes from the Android testers.
+      - name: Pick the release notes
+        id: notes
+        env:
+          DISPLAY_VERSION: ${{ steps.resolve.outputs.display_version }}
+          VERSION_CODE: ${{ steps.resolve.outputs.version_code }}
+        run: |
+          node scripts/release/release-notes.mjs collect "$DISPLAY_VERSION" \
+            --out "$RUNNER_TEMP/release-notes" --releases "$RUNNER_TEMP/releases.json"
+          # A delimiter no note can hold, since the notes are text the pull requests wrote.
+          delimiter="notes_$(openssl rand -hex 16)"
+          {
+            echo "github_notes<<${delimiter}"
+            cat "$RUNNER_TEMP/release-notes/github.md"
+            echo "$delimiter"
+          } >> "$GITHUB_OUTPUT"
+          for platform in android ios; do
+            {
+              echo "testers_${platform}<<${delimiter}"
+              echo "$DISPLAY_VERSION (build $VERSION_CODE)"
+              if [ -s "$RUNNER_TEMP/release-notes/testers/${platform}.txt" ]; then
+                echo
+                cat "$RUNNER_TEMP/release-notes/testers/${platform}.txt"
+                echo
+              fi
+              echo "$delimiter"
+            } >> "$GITHUB_OUTPUT"
+          done
+          if [ -s "$RUNNER_TEMP/release-notes/github.md" ]; then
+            cat "$RUNNER_TEMP/release-notes/github.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   # ---------------------------------------------------------------------------------------------
   # Android
@@ -258,7 +319,7 @@ jobs:
           file: apk/*.apk
           app-id: ${{ env.FIREBASE_ANDROID_APP_ID }}
           group: ${{ env.FIREBASE_GROUP }}
-          release-notes: "${{ needs.plan.outputs.display_version }} (build ${{ needs.plan.outputs.version_code }})"
+          release-notes: ${{ needs.plan.outputs.testers_android }}
           project: ${{ env.FIREBASE_PROJECT }}
           firebase-tools-version: ${{ env.FIREBASE_TOOLS_VERSION }}
           service-account-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
@@ -433,7 +494,7 @@ jobs:
           file: ipa/*.ipa
           app-id: ${{ env.FIREBASE_IOS_APP_ID }}
           group: ${{ env.FIREBASE_IOS_GROUP }}
-          release-notes: "${{ needs.plan.outputs.display_version }} (build ${{ needs.plan.outputs.version_code }})"
+          release-notes: ${{ needs.plan.outputs.testers_ios }}
           project: ${{ env.FIREBASE_PROJECT }}
           firebase-tools-version: ${{ env.FIREBASE_TOOLS_VERSION }}
           service-account-json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
@@ -560,7 +621,11 @@ jobs:
 
       # First, because the release is what `plan` reads: with it recorded, the next beta takes the next number and
       # the next versionCode even when the merge-back below fails. A re-run (after "Re-run failed jobs" fixed a
-      # platform) keeps the release and rewrites its table of channels, so the record follows the results.
+      # platform) keeps the release and rewrites its table of channels, so the record follows the results. The
+      # release opens with what this beta tells, in English, as `plan` picked it: nothing here can fail on the
+      # notes after the builds went out. "Sent to testers:" lists the platforms whose Firebase App Distribution
+      # build went out, by the names scripts/release/release-notes.mjs reads (TESTERS): the next beta counts each
+      # platform's notes from the last release that lists it.
       - name: Publish the GitHub pre-release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -572,11 +637,17 @@ jobs:
           IOS: ${{ needs.ios-upload.result }}
           IOS_FIREBASE: ${{ needs.ios-distribute.result }}
           MACOS: ${{ needs.macos-upload.result }}
+          NOTES: ${{ needs.plan.outputs.github_notes }}
         run: |
+          sent=""
+          if [ "$ANDROID" = success ]; then sent="android"; fi
+          if [ "$IOS_FIREBASE" = success ]; then sent="${sent:+$sent, }ios"; fi
+          sent="${sent:-none}"
           if gh release view "$DISPLAY_VERSION" > /dev/null 2>&1; then
             gh release view "$DISPLAY_VERSION" --json body --jq .body | tr -d '\r' | awk \
               -v android="$ANDROID" -v web="$WEB" -v ios="$IOS" -v ios_firebase="$IOS_FIREBASE" -v macos="$MACOS" \
-              -v pages="$CLOUDFLARE_PAGES_PROJECT" '
+              -v pages="$CLOUDFLARE_PAGES_PROJECT" -v sent="$sent" '
+              /^Sent to testers:/ { print "Sent to testers: " sent; next }
               /^\| Android \|/ { print "| Android | Firebase App Distribution, group `beta` | " android " |"; next }
               /^\| Web \|/     { print "| Web | Cloudflare Pages, https://" pages ".pages.dev | " web " |"; next }
               /^\| iOS \|/     { print "| iOS | TestFlight | " ios " |"; next }
@@ -587,9 +658,15 @@ jobs:
             echo "::notice::$DISPLAY_VERSION is already published: its table of channels was refreshed."
             exit 0
           fi
-          cat > "$RUNNER_TEMP/channels.md" <<EOF
-          Build number: $VERSION_CODE
-
+          {
+            echo "Build number: $VERSION_CODE"
+            echo "Sent to testers: $sent"
+            echo
+            if [ -n "$NOTES" ]; then
+              printf '%s\n\n' "$NOTES"
+            fi
+          } > "$RUNNER_TEMP/channels.md"
+          cat >> "$RUNNER_TEMP/channels.md" <<EOF
           ## Channels
 
           | Platform | Channel | Result |
@@ -607,10 +684,10 @@ jobs:
             --generate-notes \
             --prerelease
 
-      # Only the versionCode: versionName stays at the version the beta leads up to. A re-run finishes the job
-      # wherever the last one stopped:
-      #   - main already holds this versionCode, or a higher one that someone bumped meanwhile: done, and never
-      #     lowered;
+      # The versionCode, and the versionName when the release notes led this beta to a higher version than main's.
+      # Neither is ever lowered: a versionCode or a version someone raised by hand meanwhile stays. A re-run
+      # finishes the job wherever the last one stopped:
+      #   - main already holds this versionCode (or a higher one) and this version (or a higher one): done;
       #   - the branch is rebuilt from the current main and pushed over the old one, so a PR left open by a failed
       #     run follows main instead of staying in conflict;
       #   - the pull request is created only when none is open.
@@ -625,13 +702,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           MERGE_TOKEN: ${{ secrets.MERGE_WHEN_GREEN_TOKEN }}
           BRANCH: ${{ needs.plan.outputs.branch }}
+          VERSION: ${{ needs.plan.outputs.version }}
           VERSION_CODE: ${{ needs.plan.outputs.version_code }}
           DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
           ACTOR: ${{ github.actor }}
         run: |
           main_code="$(grep -E '^versionCode=' version.properties | cut -d= -f2)"
-          if [ "$main_code" -ge "$VERSION_CODE" ]; then
-            echo "::notice::main already holds versionCode $main_code, nothing to merge back."
+          main_version="$(grep -E '^versionName=' version.properties | cut -d= -f2)"
+          version="$(printf '%s\n' "$main_version" "$VERSION" | sort -V | tail -1)"
+          code=$(( main_code > VERSION_CODE ? main_code : VERSION_CODE ))
+          if [ "$main_code" -ge "$VERSION_CODE" ] && [ "$main_version" = "$version" ]; then
+            echo "::notice::main already holds version $main_version and versionCode $main_code, nothing to merge back."
             exit 0
           fi
 
@@ -639,13 +720,12 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin "+refs/heads/$BRANCH:refs/remotes/origin/$BRANCH" 2> /dev/null || true
           git checkout -B "$BRANCH"
-          current_version="$(grep -E '^versionName=' version.properties | cut -d= -f2)"
-          ./scripts/release/bump-version.sh "$current_version" "$VERSION_CODE"
-          git commit -am "chore: bump versionCode to $VERSION_CODE for $DISPLAY_VERSION"
+          ./scripts/release/bump-version.sh "$version" "$code"
+          git commit -am "chore: bump the version to $version (versionCode $code) for $DISPLAY_VERSION"
           git push --force-with-lease origin "$BRANCH"
 
           title="chore: merge back $DISPLAY_VERSION into main"
-          body="Merges the versionCode $VERSION_CODE that $DISPLAY_VERSION consumed back into main."
+          body="Merges the version $version and the versionCode $code that $DISPLAY_VERSION used back into main."
           if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')" ]; then
             gh pr create --base main --head "$BRANCH" --title "$title" --body "$body"
           else
@@ -665,3 +745,58 @@ jobs:
             sleep 10
           done
           exit 1
+
+  # ---------------------------------------------------------------------------------------------
+  # Release notes
+  # ---------------------------------------------------------------------------------------------
+  site-release-notes:
+    name: Release notes, send to the site
+    needs: [plan, finalize]
+    # After finalize, whatever its result but skipped (no platform published): the notes are about builds that
+    # went out, and a merge-back that failed doesn't make them wrong. A beta with no note has nothing to send.
+    if: >-
+      ${{ !cancelled() && needs.plan.outputs.has_notes == 'true' &&
+      (needs.finalize.result == 'success' || needs.finalize.result == 'failure') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # The whole history: which notes a beta tells depends on the tags before it.
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 0
+
+      # A missing token and an expired one both stop here, naming the secret: the checkout below would only say
+      # that the authentication failed. The site is public, and GitHub still refuses a token that isn't valid.
+      - name: Check the site's token
+        env:
+          SITE_RELEASE_NOTES_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
+        run: |
+          ./scripts/release/require-env.sh SITE_RELEASE_NOTES_TOKEN
+          if ! GH_TOKEN="$SITE_RELEASE_NOTES_TOKEN" gh api "repos/$SITE_REPOSITORY" --silent; then
+            echo "::error::GitHub refused the SITE_RELEASE_NOTES_TOKEN secret: it expired or can't reach $SITE_REPOSITORY. See docs/release-process.md#secrets."
+            exit 1
+          fi
+
+      # With the token, so the push and the pull request below are made with it: GITHUB_TOKEN can't write to
+      # another repository.
+      - name: Checkout the site
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.SITE_REPOSITORY }}
+          token: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
+          path: site
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Send the notes to the site
+        env:
+          GH_TOKEN: ${{ secrets.SITE_RELEASE_NOTES_TOKEN }}
+          DISPLAY_VERSION: ${{ needs.plan.outputs.display_version }}
+          SHA: ${{ needs.plan.outputs.sha }}
+        run: ./scripts/release/send-release-notes-to-site.sh "$DISPLAY_VERSION" "$SHA" site

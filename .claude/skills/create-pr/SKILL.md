@@ -1,12 +1,12 @@
 ---
 name: create-pr
-description: "Create a pull request following all project conventions: ktlint formatting, AI review of the changes with every finding fixed, the checks of every area the branch touches (shared Kotlin, Android, Apple, web), Conventional Commits title, description, assignee, and labels; then add merge-when-green and auto fix the pull request until it merges."
+description: "Create a pull request following all project conventions: ktlint formatting, the release notes fragment of a change people notice, AI review of the changes with every finding fixed, the checks of every area the branch touches (shared Kotlin, Android, Apple, web), Conventional Commits title, description, assignee, and labels; then add merge-when-green and auto fix the pull request until it merges."
 ---
 
 # Create PR
 
-This skill formats the code, reviews the changes and fixes what the reviews find, runs the checks of
-every area the branch touches, commits any uncommitted changes, pushes the branch, and opens a pull
+This skill formats the code, writes the release notes of a change people notice, reviews the changes
+and fixes what the reviews find, runs the checks of every area the branch touches, commits any uncommitted changes, pushes the branch, and opens a pull
 request with a clear title and description inferred from the actual changes. Then it adds the
 `merge-when-green` label and fixes the pull request's failing checks and review threads until it
 merges, without asking.
@@ -115,6 +115,51 @@ medium level of detail:
 
 The same text becomes the pull request body in step 11.
 
+#### The release notes fragment
+
+With the description written, decide whether the person using the app would notice this change, and
+write its release notes if they would. The releases publish them, and take the version number from
+them, so this is the one place a change is told to the people who use the app:
+[docs/release-notes.md](../../../docs/release-notes.md) has the format and the rules, read it in full
+the first time.
+
+| The change | The fragment |
+|---|---|
+| The app does something it couldn't (usually a `feature` branch) | A `new` note |
+| Something it already did works or looks better (usually `enhancement`) | An `improved` note |
+| Something a person could see going wrong is fixed (usually `fix`) | A `fixed` note |
+| A refactor, tests, the build, CI, docs, skills, a dependency bump with no visible effect, code no screen reaches yet | None: skip this step |
+
+Go by what the person sees, not by the branch type: a `fix` of a crash nobody could reach has no
+note, and a `chore` that makes the app open faster has an `improved` one. When unsure whether a
+change is visible, it has no note: an empty "what's new" is better than one about nothing.
+
+Write `release-notes/unreleased/<short-description>.json`, named after the branch's description,
+with one note per change the person notices:
+
+- `platforms`: the UIs the change reaches, the ones the description lists. `["all"]` for a change
+  every platform draws.
+- `text`: the note in all twelve languages, each written for its reader, not translated word for
+  word. Name screens and buttons with the app's own strings in that language (`res/values-xx/strings.xml`,
+  `Localizable.xcstrings`, `webApp/src/i18n`). Portugal's Portuguese (`pt-PT`) is written in full, not
+  left to Brazil's: "tu", "estar a + infinitive", ecrã, telemóvel, partilhar, and the app is Blitz Split
+  there (Bora Rachar only in Brazil's `pt`), with its own words from `values-pt-rPT`, the `pt-PT`
+  localization and `ptPT.ts`.
+- `betaOnly: true` when the note is about something no stable version has: the fix of a bug that a
+  pull request merged after the last stable tag introduced (`git tag --list | grep -v beta` lists the
+  stable versions; `git log <tag>..origin/main -- <file>` shows whether the broken code is newer than it).
+  While no stable version is tagged, every `fixed` note of a bug the betas introduced is `betaOnly`.
+
+Then check it:
+
+```bash
+node scripts/release/release-notes.mjs check
+```
+
+A pull request that already has its fragment (a second run of this skill, a review fix) updates that
+file instead of adding another. When the change turns out different from what the note says, the
+note changes with it.
+
 ### 7. Review the changes
 
 Skip this step when the user's request says so (e.g. "sem review", "pula a review"), or when every
@@ -213,6 +258,7 @@ reproduce a CI failure (step 12).
 | Apple UI | `iosApp/` | Regenerate the Xcode project, build the scheme the Swift change reaches | The other scheme |
 | Web UI | `webApp/`, `shared/src/jsMain` | The production build of the web app | |
 | Copied code | Any `.kt`, `.swift`, `.ts` or `.tsx`, `.jscpd.json`, `.jscpd-baseline.json`, `scripts/cpd.sh`, a workflow that uses `Quartel-Enterprise/copied-code-check` | The duplication check | |
+| Release notes | `release-notes/`, `scripts/release/release-notes.mjs` or its tests | `node scripts/release/release-notes.mjs check`, and `node --test scripts/release/release-notes.test.mjs` when the script or its tests changed. Seconds each, no queue | |
 
 A change to the API the Apple app sees (a `UiState`, a ViewModel) without a change to `iosApp/` runs
 no Apple build locally, and one without a change to `webApp/` or `shared/src/jsMain` runs no web

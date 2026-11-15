@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.feature.payingmethod
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +47,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CardColorPicker
 import com.quare.blitzsplit.android.designsystem.component.ChoiceChipRow
@@ -53,6 +56,9 @@ import com.quare.blitzsplit.android.designsystem.component.PayingMethodTile
 import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
 import com.quare.blitzsplit.android.designsystem.component.nameRes
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.FormBleed
+import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
+import com.quare.blitzsplit.android.designsystem.layout.calculateCenteredColumnMargin
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.CardColor
 import com.quare.blitzsplit.core.expenses.domain.model.PayingMethodType
@@ -63,6 +69,7 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 private const val SKELETON_FIELDS = 3
 private val singleColumnMaxWidth = 592.dp
 private val dialogWidth = 560.dp
+private val sideMargin = 16.dp
 private val rowShape = RoundedCornerShape(20.dp)
 
 @Composable
@@ -118,7 +125,8 @@ fun PayingMethodContent(
                 PayingMethodFormColumn(
                     state = state,
                     onEvent = onEvent,
-                    modifier = Modifier.widthIn(max = singleColumnMaxWidth),
+                    // Why: the cap is in the column's padding, so the type chips scroll to the screen's edge.
+                    maxContentWidth = singleColumnMaxWidth,
                 )
             }
         }
@@ -131,30 +139,43 @@ private fun PayingMethodFormColumn(
     state: PayingMethodUiState,
     onEvent: (PayingMethodUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    maxContentWidth: Dp = Dp.Infinity,
 ) {
-    if (!state.isLoaded) {
-        ShimmerFormSkeleton(
-            modifier = modifier.padding(16.dp),
-            fieldCount = SKELETON_FIELDS,
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val margin = calculateCenteredColumnMargin(
+            available = maxWidth,
+            maxWidth = maxContentWidth,
+            minMargin = sideMargin,
         )
-        return
-    }
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 8.dp,
-                bottom = 32.dp,
-            ),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        PayingMethodFieldsColumn(
-            state = state,
-            onEvent = onEvent,
-        )
+        if (!state.isLoaded) {
+            ShimmerFormSkeleton(
+                modifier = Modifier.padding(
+                    horizontal = margin,
+                    vertical = 16.dp,
+                ),
+                fieldCount = SKELETON_FIELDS,
+            )
+            return@BoxWithConstraints
+        }
+        CompositionLocalProvider(LocalFormBleed provides FormBleed.ofMargin(margin)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        start = margin,
+                        end = margin,
+                        top = 8.dp,
+                        bottom = 32.dp,
+                    ),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                PayingMethodFieldsColumn(
+                    state = state,
+                    onEvent = onEvent,
+                )
+            }
+        }
     }
 }
 
@@ -184,6 +205,8 @@ private fun ColumnScope.PayingMethodFieldsColumn(
             selectedIndex = state.types.indexOf(state.type),
             groupLabel = stringResource(R.string.paying_method_type),
             onClick = { index -> onEvent(PayingMethodUiEvent.OnTypeSelected(state.types[index])) },
+            // Why: the form column's side margins, which the type chips scroll into.
+            bleed = LocalFormBleed.current,
         )
     }
     OutlinedTextField(

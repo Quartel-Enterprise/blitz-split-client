@@ -57,7 +57,8 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     The row scrolls edge to edge, with no cut on either side (Pierre's call, beta feedback): at rest the first capsule
     lines up with the form, but scrolling carries the capsules out to the screen's (or the dialog's) edge rather than
     stopping at the form's side margins (Android's `LocalFormBleed`, SwiftUI's `scrollClipDisabled`, the web's
-    `--pane-gutter`).
+    `--pane-gutter`). On Android Items' people totals, the paying method's type and All expenses' filters scroll the
+    same way; the currency rows of the group's tabs still stop at the margins.
     "By income" (`SplitMode.INCOME`, Pierre's call: the incomes are synced) has each one's income field, prefilled with
     the group's incomes (`group_member_income`, the same ones Default split's By income keeps, in the group's currency,
     moved to the bill's as a total is), blank for whoever has none, and under each name their share and the
@@ -273,8 +274,9 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     marked until "Continue" (`SplitBillUiState.groupSelection`); closing it keeps the marked group's bill. With a
     single group it goes straight to the bill, and a sync bringing a second one never asks later. The bill's group
     opens that group's screen (its Expenses) over the form (beta feedback; the details below were settled while
-    Pierre was away, see PR #299: `OnOpenGroupClicked`, `SplitBillUiState.canOpenGroup`): Android's chip, iOS's
-    "Group" row, the web's "Group" field and the Mac's "Open group" link beside it, a new bill and "Edit bill" alike,
+    Pierre was away, see PR #299: `OnOpenGroupClicked`, `SplitBillUiState.canOpenGroup`): Android's chip (its start
+    follows the group photo's rounded square, its end a capsule), iOS's "Group" row, the web's "Group" field and the
+    Mac's "Open group" link beside it, a new bill and "Edit bill" alike,
     never while the bill saves or a receipt is read. Back comes to the form with what was typed: Android keeps its
     entry under the group, iOS and the Mac push the group inside the bill's sheet (as the category map), with what it
     opens but a screen that is only ever a sheet, the web draws it over the form, which stays mounted. The group's

@@ -252,7 +252,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     its name (or its type's name) with the type under a name, and "Default" on the default one; "Add a payment method"
     ends the list, and a row or the add opens "New payment method" / "Edit payment method" (`Route.PayingMethod`,
     presented as a key's form on each platform). Types: Credit card, Debit card, Cash, Pix, Bank transfer, Bitcoin,
-    Other. Pix follows [the Pix rule](general.md) (a Pix method being edited keeps it); Cash is one per person; Other
+    Other (on Android a row of chips that scrolls sideways out into the form's side margins, as Dividir's modes do in
+    [split-bill.md](split-bill.md)). Pix follows [the Pix rule](general.md) (a Pix method being edited keeps it); Cash is one per person; Other
     needs a name, the rest take an optional one (up to 30 characters). Once the form is filled, a sync never changes
     the type picked (a Cash added on another device meanwhile makes saving a second one fail instead). A card picks one of eight brand-neutral colors
     (purple, blue, green, orange, red, pink, gold, graphite) that fill its tile with a white card glyph: never a bank's
