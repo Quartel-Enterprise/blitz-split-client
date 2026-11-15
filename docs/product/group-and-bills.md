@@ -207,7 +207,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     never the payments of Balances (but in "Settling up"), so it works offline. Periods (only this screen keeps one): a trip lists "The whole trip" (the default, from its first
     to its last day with a bill), "This month", "Last month" and "Pick dates…"; any other group "This year", "This
     month", "Last month", "All time" (the default, as the notes say) and "Pick dates…" (each platform's date
-    range picker, never after today). Total spent, how many bills, "Average per person" (the total over every member,
+    range picker, never after today; Android's headline keeps each date whole and puts the end date under the start
+    one when both don't fit, "25 Oct 2026 –" then "14 Nov 2026", Pierre's feedback of 2026-11-15, where Material's
+    wrapped it a letter or two per line; iOS and the web ask "From" and "To" in fields of their own). Total spent, how many bills, "Average per person" (the total over every member,
     who hasn't joined included), "Your share" and "You paid", on a neutral card under a neutral period chip on every
     platform (a pale blue fill read as one more slice of the ring);
     "By person" shows Consumed (each part as each bill

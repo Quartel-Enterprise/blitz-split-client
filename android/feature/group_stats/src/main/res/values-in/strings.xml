@@ -69,6 +69,9 @@
     <string name="group_stats_see_whole_period">Lihat sepanjang waktu</string>
     <string name="group_stats_apply">Terapkan</string>
     <string name="group_stats_cancel">Batal</string>
+    <string name="group_stats_range_start">Tanggal mulai</string>
+    <string name="group_stats_range_end">Tanggal selesai</string>
+    <string name="group_stats_range_none">Tidak ada yang dipilih</string>
     <plurals name="group_stats_expenses">
         <item quantity="other">%d pengeluaran</item>
     </plurals>

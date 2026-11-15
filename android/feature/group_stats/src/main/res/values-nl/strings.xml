@@ -69,6 +69,9 @@
     <string name="group_stats_see_whole_period">Alles bekijken</string>
     <string name="group_stats_apply">Toepassen</string>
     <string name="group_stats_cancel">Annuleren</string>
+    <string name="group_stats_range_start">Begindatum</string>
+    <string name="group_stats_range_end">Einddatum</string>
+    <string name="group_stats_range_none">Niets geselecteerd</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d uitgave</item>
         <item quantity="other">%d uitgaven</item>

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.contacts
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -25,6 +26,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -108,12 +110,15 @@ fun ContactsContent(
                     .fillMaxSize()
                     .collapsingBarsScroll(scrollBehavior, collapsesBars),
                 topBar = {
-                    ContactsTopBar(
-                        state = state,
-                        title = title,
-                        scrollBehavior = scrollBehavior.takeIf { collapsesBars },
-                        onEvent = onEvent,
-                    )
+                    // Why: beside the pane the bar sits over the list only, so the pane starts at the top.
+                    if (paneLayout == null) {
+                        ContactsTopBar(
+                            state = state,
+                            title = title,
+                            scrollBehavior = scrollBehavior.takeIf { collapsesBars },
+                            onEvent = onEvent,
+                        )
+                    }
                 },
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
@@ -132,14 +137,27 @@ fun ContactsContent(
                     .consumeWindowInsets(padding)
                 if (paneLayout != null) {
                     Row(modifier = bodyModifier.fillMaxSize()) {
-                        ContactsLazyList(
-                            state = state,
-                            isPaneShown = true,
-                            onEvent = onEvent,
+                        Column(
                             modifier = Modifier
                                 .width(paneLayout.listWidth)
                                 .fillMaxHeight(),
-                        )
+                        ) {
+                            ContactsTopBar(
+                                state = state,
+                                title = title,
+                                scrollBehavior = null,
+                                onEvent = onEvent,
+                                windowInsets = WindowInsets(0),
+                            )
+                            ContactsLazyList(
+                                state = state,
+                                isPaneShown = true,
+                                onEvent = onEvent,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                            )
+                        }
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -187,6 +205,7 @@ private fun ContactsTopBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior?,
     onEvent: (ContactsUiEvent) -> Unit,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
     val profile = stringResource(R.string.contacts_profile)
     TopAppBar(
@@ -204,6 +223,7 @@ private fun ContactsTopBar(
             }
         },
         scrollBehavior = scrollBehavior,
+        windowInsets = windowInsets,
     )
 }
 

@@ -9,7 +9,9 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     snackbar before, Apple and the web a "Link copied" toast), and Share, which opens Invite with the QR code (beta
     bugs of 2026-11-10). Any member may rename and add members ("Add person", in the same card, so both ways in sit
     together: under the link at the card's end on Android and on a web phone, a row of its own under it on iOS, before
-    the icons on the Mac and the wider web). The group's main button stays "Split a bill" on Members, as on
+    the icons on the Mac and the wider web). Where it is an outlined button (Android, the web) its edge is the primary
+    color, 3:1 or more against the card in light and dark (Pierre's feedback of 2026-11-15: the default outline read at
+    about 1:1 on Android's blue card); the Apple apps draw it without an edge. The group's main button stays "Split a bill" on Members, as on
     Expenses and Balances, so it never changes under the person. "Has the app? Invite with the link" in Add person
     closes it and opens Invite, for someone who would rather join and pick their own name; a name may repeat another
     member's, as everywhere, beta feedback 3 item 29), but only a member who hasn't joined can be removed ("Remove from group" is disabled for someone
