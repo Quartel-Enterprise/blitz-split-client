@@ -58,4 +58,4 @@ FUNCIONA OFFLINE
 • Adicione contas e pagamentos sem internet: tudo sincroniza quando a conexão voltar
 • A aba de atividade mostra o que mudou em cada grupo
 
-Gratuito e sem anúncios. Disponível em 12 idiomas, nos modos claro e escuro.
+Gratuito e sem anúncios. Nos modos claro e escuro.

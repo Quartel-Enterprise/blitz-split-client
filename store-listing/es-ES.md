@@ -57,4 +57,4 @@ FUNCIONA SIN CONEXIÓN
 • Añade cuentas y pagos sin internet: todo se sincroniza cuando vuelvas a tener conexión
 • La actividad te enseña qué ha cambiado en cada grupo
 
-Gratis y sin anuncios. Disponible en 12 idiomas, en modo claro y oscuro.
+Gratis y sin anuncios. En modo claro y oscuro.

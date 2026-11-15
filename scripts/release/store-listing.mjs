@@ -12,7 +12,7 @@
 // Plain Node, no dependencies: the check and the lane run it as it is.
 
 import { existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LANGS } from "./release-notes.mjs";
 
@@ -79,6 +79,8 @@ export const APP_STORE_LOCALES = {
 export const brandOf = (lang) => (lang === "pt" ? "Bora Rachar" : "Blitz Split");
 
 const HEADING = /^## (.+)$/;
+/** A word of a script written without spaces: kanji, hiragana or katakana. */
+const UNSPACED = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u;
 /** What each file fastlane reads is called, by field. */
 const PLAY_FILES = { playTitle: "title.txt", playShortDescription: "short_description.txt", description: "full_description.txt" };
 const APP_STORE_FILES = {
@@ -149,8 +151,10 @@ function checkKeywords(file, listing) {
   const lower = keywords.map((keyword) => keyword.toLowerCase());
   const repeated = lower.find((keyword, index) => lower.indexOf(keyword) !== index);
   if (repeated !== undefined) fail(file, `App Store keywords lists "${repeated}" twice`);
-  const shown = `${listing.appStoreName} ${listing.appStoreSubtitle}`.toLowerCase().split(/[^\p{L}\p{N}]+/u);
-  const wasted = lower.find((keyword) => shown.includes(keyword));
+  const shown = `${listing.appStoreName} ${listing.appStoreSubtitle}`.toLowerCase();
+  const words = shown.split(/[^\p{L}\p{N}]+/u);
+  // Why: Japanese writes no spaces between words, so a keyword in kana or kanji is looked for anywhere in the text.
+  const wasted = lower.find((keyword) => words.includes(keyword) || (UNSPACED.test(keyword) && shown.includes(keyword)));
   if (wasted !== undefined) fail(file, `App Store keywords repeats "${wasted}", which the name or the subtitle already has`);
 }
 
@@ -174,15 +178,15 @@ export function readListings(root = ".") {
 /** The files of both stores, by path under the staging folder: <store>/<locale>/<file>. */
 export function stagedFiles(listings) {
   const staged = {};
-  const stage = (store, locales, files) => {
+  const stageStore = (store, locales, files) => {
     for (const [lang, listing] of Object.entries(listings)) {
       for (const locale of locales[lang]) {
         for (const [key, name] of Object.entries(files)) staged[join(store, locale, name)] = listing[key];
       }
     }
   };
-  stage("play", PLAY_LOCALES, PLAY_FILES);
-  stage("app-store", APP_STORE_LOCALES, APP_STORE_FILES);
+  stageStore("play", PLAY_LOCALES, PLAY_FILES);
+  stageStore("app-store", APP_STORE_LOCALES, APP_STORE_FILES);
   return staged;
 }
 
@@ -192,7 +196,7 @@ function stage(out) {
   for (const store of ["play", "app-store"]) rmSync(join(out, store), { recursive: true, force: true });
   for (const [path, text] of Object.entries(staged)) {
     const file = join(out, path);
-    mkdirSync(join(file, ".."), { recursive: true });
+    mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, text);
   }
   console.log(`${Object.keys(staged).length} file(s) staged under ${out}`);

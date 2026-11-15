@@ -18,7 +18,7 @@ Patungan grup dan siapa utang
 
 ## App Store keywords
 
-split bill,bayar,pengeluaran,biaya,kos,liburan,jalan,struk,nota,pindai,teman,hutang,lunas,makan
+bill,bayar,pengeluaran,biaya,kos,liburan,jalan,struk,nota,pindai,teman,hutang,lunas,makan
 
 ## App Store promotional text
 
@@ -57,4 +57,4 @@ BISA OFFLINE
 • Tambahkan tagihan dan pembayaran tanpa koneksi: semuanya tersinkron saat kamu kembali online
 • Aktivitas menunjukkan apa yang berubah di tiap grup
 
-Gratis dan tanpa iklan. Tersedia dalam 12 bahasa, dalam mode terang dan gelap.
+Gratis dan tanpa iklan. Tersedia dalam mode terang dan gelap.

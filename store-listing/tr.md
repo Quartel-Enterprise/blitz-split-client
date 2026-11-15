@@ -57,4 +57,4 @@ SANİYELER İÇİNDE BAŞLA
 • Bağlantı olmadan hesap ve ödeme ekle: tekrar çevrimiçi olduğunda her şey eşitlenir
 • Etkinlik akışı her grupta neyin değiştiğini gösterir
 
-Ücretsiz ve reklamsız. 12 dilde, açık ve koyu modda kullanılabilir.
+Ücretsiz ve reklamsız. Açık ve koyu modda kullanılabilir.

@@ -57,4 +57,4 @@ FONCTIONNE HORS LIGNE
 • Ajoutez dépenses et paiements sans connexion : tout se synchronise quand le réseau revient
 • Un fil d'activité montre ce qui a changé dans chaque groupe
 
-Gratuit et sans publicité. Disponible en 12 langues, en mode clair et sombre.
+Gratuit et sans publicité. En mode clair et sombre.

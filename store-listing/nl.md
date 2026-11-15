@@ -57,4 +57,4 @@ WERKT OFFLINE
 • Voeg rekeningen en betalingen toe zonder verbinding: alles synchroniseert zodra je weer online bent
 • De activiteit laat zien wat er in elke groep is veranderd
 
-Gratis en zonder advertenties. Beschikbaar in 12 talen, in lichte en donkere modus.
+Gratis en zonder advertenties. In lichte en donkere modus.

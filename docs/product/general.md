@@ -224,6 +224,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     draw a seam in the 2 dp gaps and break the group into separate cards. iOS, the Mac and the web keep their own
     platform's look.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.
+  - The app is free, with nothing paid in it for now, and shows no ads (Pierre's call). The stores' listings say so
+    ([store-listing.md](../store-listing.md)): something paid changes them in the same pull request.
   - Nothing comes over from the legacy app (Pierre's call): 3.0.0 is a clean break. The legacy Blitz Split (2.4.0)
     kept its groups and bills on its own server, which this app never reads, so someone who updates starts on
     Welcome like anyone new. Of its own data, the legacy app only left a DataStore file on the device

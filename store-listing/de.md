@@ -57,4 +57,4 @@ FUNKTIONIERT OFFLINE
 • Rechnungen und Zahlungen ohne Verbindung hinzufügen: Alles wird synchronisiert, sobald du wieder online bist
 • Die Aktivität zeigt, was sich in jeder Gruppe geändert hat
 
-Kostenlos und ohne Werbung. In 12 Sprachen verfügbar, im hellen und dunklen Modus.
+Kostenlos und ohne Werbung. Im hellen und dunklen Modus.

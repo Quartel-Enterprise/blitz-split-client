@@ -57,4 +57,4 @@ DZIAŁA OFFLINE
 • Dodawaj rachunki i płatności bez internetu: wszystko zsynchronizuje się, gdy wrócisz online
 • Aktywność pokazuje, co zmieniło się w każdej grupie
 
-Za darmo i bez reklam. Dostępna w 12 językach, w trybie jasnym i ciemnym.
+Za darmo i bez reklam. W trybie jasnym i ciemnym.

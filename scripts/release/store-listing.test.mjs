@@ -59,8 +59,10 @@ test("an empty field is refused", () => {
 test("a field over its store's limit is refused, counted by character", () => {
   refuses({ playTitle: `Blitz Split: ${"a".repeat(18)}` }, /Play title has 31 characters, and its store takes 30/);
   assert.equal(lengthOf("割り勘👍"), 4);
-  // Thirty kanji are sixty UTF-16 units and still one line of thirty characters
-  assert.equal(parse({ appStoreSubtitle: "割".repeat(30) }).appStoreSubtitle.length, 30);
+  // Thirty characters outside the Basic Multilingual Plane are sixty UTF-16 units, and still thirty for a store
+  const subtitle = parse({ appStoreSubtitle: "𠮷".repeat(30) }).appStoreSubtitle;
+  assert.equal(subtitle.length, 60);
+  assert.equal(lengthOf(subtitle), 30);
 });
 
 test("only the description takes more than one line", () => {
@@ -80,6 +82,10 @@ test("the keywords waste no character", () => {
   refuses({ appStoreKeywords: "trip,receipt,Trip" }, /lists "trip" twice/);
   refuses({ appStoreKeywords: "trip,expenses" }, /repeats "expenses", which the name or the subtitle already has/);
   assert.equal(parse({ appStoreKeywords: "split bill,trip" }).appStoreKeywords, "split bill,trip");
+  // Japanese has no spaces to split the name by: a keyword is looked for anywhere in it
+  const japanese = { appStoreName: "Blitz Split：割り勘・立て替え精算", appStoreSubtitle: "グループの支払い" };
+  refuses({ ...japanese, appStoreKeywords: "旅行,精算" }, /repeats "精算", which the name or the subtitle already has/);
+  assert.equal(parse({ ...japanese, appStoreKeywords: "旅行,清算" }).appStoreKeywords, "旅行,清算");
 });
 
 test("every language of the listings has a file the stores take", () => {

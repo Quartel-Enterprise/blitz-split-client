@@ -17,6 +17,10 @@ VALIDATE_ONLY=true fastlane upload_listing              # ask Play whether it wo
 test of it too. It uploads text only: no build, no screenshots, no submission for review. `VALIDATE_ONLY=true` is
 Google Play's check alone: the App Store has none, so that run leaves the iPhone's and the Mac's listings out.
 
+The stores are uploaded one after the other, Play, then the iPhone, then the Mac, and one that fails leaves the ones
+before it changed: run the lane again for that platform alone once what stopped it is fixed (an App Store platform
+with no editable version, for one).
+
 On Play the upload reads the production track's release on its way. While the track holds more than one, as in a
 staged rollout, say which with `fastlane upload_listing platform:android version_code:<its versionCode>`.
 
@@ -46,8 +50,13 @@ The limits are in characters, as the stores count them. Every field but the desc
 - **Only what the app does.** A feature the listing promises and the app lacks is a rejection and a bad review:
   check a claim against `docs/product/` before writing it. The app moves no money, and the description says so.
 - **No other store or platform by name** in the description, since it goes to both stores: "phone, tablet, computer
-  and the web", not the name of a phone. No competitor's name anywhere, keywords included: both stores remove
+  and the web", not the name of a phone. The one exception is "Sign in with Google or Apple", the names of the two
+  buttons the app shows on every platform. No competitor's name anywhere, keywords included: both stores remove
   listings for it.
+- **No number that changes by itself**, such as how many languages the app is in: nothing would update it in thirteen
+  files.
+- **Free, with no ads** is true today and written in every listing ([general.md](product/general.md)): when the app
+  gains something paid, the listings change in the same pull request.
 - **Search.** Play searches the title, the short description and the full description, so the words people type
   ("split bills", "expenses", "who owes whom") belong in all three, in natural sentences. The App Store searches the
   name, the subtitle and the keywords, and not the description: a keyword already in the name or the subtitle is

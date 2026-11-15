@@ -34,7 +34,7 @@ DIVIDE QUALQUER CONTA, À TUA MANEIRA
 • Pagou mais do que uma pessoa? Adiciona vários pagadores à mesma conta
 
 LÊ O TALÃO
-• Tira uma fotografia ao talão e os itens, os preços e o total ficam preenchidos por ti
+• Tira uma fotografia ao talão e os itens, os preços e o total são preenchidos automaticamente
 • Anexa fotografias à conta e deixa comentários, para ninguém ter de perguntar o que era
 
 VÊ QUEM DEVE A QUEM
@@ -57,4 +57,4 @@ FUNCIONA OFFLINE
 • Adiciona contas e pagamentos sem ligação: tudo sincroniza quando voltares a estar online
 • O separador de atividade mostra o que mudou em cada grupo
 
-Gratuito e sem anúncios. Disponível em 12 idiomas, nos modos claro e escuro.
+Gratuito e sem anúncios. Nos modos claro e escuro.

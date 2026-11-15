@@ -57,4 +57,4 @@ WORKS OFFLINE
 • Add bills and payments without a connection: everything syncs when you're back online
 • An activity feed shows what changed in each group
 
-Free, with no ads. Available in 12 languages, in light and dark mode.
+Free, with no ads. In light and dark mode.

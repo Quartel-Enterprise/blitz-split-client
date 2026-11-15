@@ -223,8 +223,9 @@ lane :upload_listing do |options|
   UI.user_error!("platform is one of android, ios, mac") unless (platforms - %w[android ios mac]).empty?
   validates_only = ENV.fetch("VALIDATE_ONLY", "false").strip.downcase == "true"
   if validates_only && platforms != ["android"]
+    UI.user_error!("VALIDATE_ONLY checks Google Play alone: the App Store has no such check") unless platforms.include?("android")
     UI.important("VALIDATE_ONLY: only Google Play is checked, the App Store listings are left as they are")
-    platforms &= ["android"]
+    platforms = ["android"]
   end
   Dir.mktmpdir("store-listing-") do |dir|
     # The script reads store-listing/ from the working directory, which fastlane sets to fastlane/. It stops on a

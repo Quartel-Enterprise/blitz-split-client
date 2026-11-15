@@ -57,4 +57,4 @@ FUNZIONA OFFLINE
 • Aggiungi conti e pagamenti senza connessione: tutto si sincronizza quando torni online
 • L'attività mostra cosa è cambiato in ogni gruppo
 
-Gratis e senza pubblicità. Disponibile in 12 lingue, in modalità chiara e scura.
+Gratis e senza pubblicità. In modalità chiara e scura.
