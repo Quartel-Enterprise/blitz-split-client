@@ -3,6 +3,7 @@ package com.quare.blitzsplit.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
@@ -13,6 +14,9 @@ import com.quare.blitzsplit.android.designsystem.component.LocalSharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.SharedOrigin
 import com.quare.blitzsplit.core.model.BalancesFilter
 import com.quare.blitzsplit.core.navigation.Route
+
+// Why: true inside a dialog's or a sheet's scene, which NavDisplay draws outside its animated content.
+internal val LocalInOverlayScene = staticCompositionLocalOf { false }
 
 // Why: a fixed list, so each one's rememberDecoratedNavEntries keeps its place in the composition.
 private val keptTabs: List<Route> = listOf(Route.Groups, Route.GlobalBalances(BalancesFilter.ALL), Route.Contacts)
@@ -36,9 +40,10 @@ internal fun EntryTransitionLayout(
     origin: SharedOrigin?,
     content: @Composable () -> Unit,
 ) {
+    val flownOrigin = origin.takeUnless { LocalInOverlayScene.current }
     CompositionLocalProvider(
-        LocalEntryVisibilityScope provides origin?.let { LocalNavAnimatedContentScope.current },
-        LocalSharedOrigin provides origin,
+        LocalEntryVisibilityScope provides flownOrigin?.let { LocalNavAnimatedContentScope.current },
+        LocalSharedOrigin provides flownOrigin,
         content = content,
     )
 }

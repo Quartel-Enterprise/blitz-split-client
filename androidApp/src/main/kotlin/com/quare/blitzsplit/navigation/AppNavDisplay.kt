@@ -408,15 +408,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             // Why: like Rachar conta, the group stays behind the bill wider than a phone, a tabletop included.
             entry<Route.BillDetail>(metadata = billOverGroupMetadata) { route ->
                 /*
-                 * Why: the scene the bill opened in, which it keeps when the fold changes under it. A dialog's entry
-                 * has no transition to read, so a bill opened as one never flies, even once the window narrows.
+                 * Why: the scene the bill is drawn in, not the window's width now: a scene outlives a fold until the
+                 * back stack changes, and the bill moves into the dialog then. Its content follows the scene, and
+                 * EntryTransitionLayout flies nothing there.
                  */
-                val opensAsDialog = remember { opensBillOverGroup }
-                val origin = billSharedOriginOf(routeBelowOf(route)).takeUnless { opensAsDialog }
-                EntryTransitionLayout(origin = origin) {
+                EntryTransitionLayout(origin = billSharedOriginOf(routeBelowOf(route))) {
                     BillDetailScreen(
                         route = route,
-                        isDialog = opensAsDialog,
+                        isDialog = LocalInOverlayScene.current,
                     )
                 }
             }
