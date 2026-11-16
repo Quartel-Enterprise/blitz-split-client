@@ -27,7 +27,7 @@ internal fun createPreviewProfileState(
     photoUrl = null,
     shareLink = "https://blitzsplit.com/u/7Hk2pQ8xZa",
     accountProvider = accountProvider,
-    hasAnonymousId = true,
+    userId = "3f8c2a91-6b4e-4d2a-9c7f-1e5b8a0d4f27",
     email = accountProvider?.let { "pierre@gmail.com" },
     recoveryWords = if (accountProvider == null) {
         "legal winner thank year wave sausage worth useful legal winner thank yellow".split(" ")

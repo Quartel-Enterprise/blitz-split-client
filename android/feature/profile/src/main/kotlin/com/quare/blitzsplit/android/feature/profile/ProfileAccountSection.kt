@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.CloudSync
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.NoAccounts
@@ -85,6 +87,13 @@ internal fun AccountSection(
                 },
             )
         }
+        if (state.showsUserId) {
+            HorizontalDivider()
+            UserIdRow(
+                onEvent = onEvent,
+                shortUserId = state.shortUserId,
+            )
+        }
     }
 }
 
@@ -158,6 +167,33 @@ private fun AccountRow(
             }
         }
     }
+}
+
+/*
+ * Why: a quiet last row, the id shortened and the whole one copied by a tap anywhere on it, for a survey to tell who
+ * answered (Pierre's call, testers' feedback).
+ */
+@Composable
+private fun UserIdRow(
+    shortUserId: String,
+    onEvent: (ProfileUiEvent) -> Unit,
+) {
+    SectionRow(
+        icon = Icons.Outlined.Badge,
+        headline = stringResource(R.string.profile_user_id),
+        supporting = shortUserId,
+        modifier = Modifier.clickable(onClickLabel = stringResource(R.string.profile_user_id_copy)) {
+            onEvent(ProfileUiEvent.OnCopyUserIdClicked)
+        },
+        // Why: the row itself copies, so the icon only marks the action and TalkBack gets one stop.
+        trailing = {
+            Icon(
+                imageVector = Icons.Outlined.ContentCopy,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        },
+    )
 }
 
 // Why: Google comes first on Android, natively; Apple signs in through the browser.

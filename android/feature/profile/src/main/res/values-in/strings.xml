@@ -136,4 +136,7 @@
     <string name="profile_share_usage_data_detail">Layar dan ketukan, untuk meningkatkan aplikasi. Tidak pernah nama atau jumlah.</string>
     <string name="profile_section_paying_methods">Metode pembayaran</string>
     <string name="profile_paying_methods_subtitle">Hanya kamu yang melihatnya. Tandai metode yang kamu pakai untuk membayar tagihan.</string>
+    <string name="profile_user_id">ID pengguna</string>
+    <string name="profile_user_id_copy">Salin ID pengguna</string>
+    <string name="profile_user_id_copied">ID pengguna disalin</string>
 </resources>

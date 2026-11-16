@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /*
- * Why: Profile's "Share profile" and "Copy link", the account's profile link (blitzsplit.com/u/<code>). Each acts only
- * while the account has a link, so a tap from a stale screen never shares nothing.
+ * Why: what Profile shares or copies: "Share profile" and "Copy link", the account's profile link
+ * (blitzsplit.com/u/<code>), "User ID" and the recovery code. Each acts only while what it shares exists, so a tap from
+ * a stale screen never shares nothing.
  */
-internal class ProfileShareLink(
+internal class ProfileSharing(
     private val uiState: StateFlow<ProfileUiState>,
     private val scope: CoroutineScope,
     private val observeSpokenLanguage: ObserveSpokenLanguage,
@@ -31,6 +32,18 @@ internal class ProfileShareLink(
         val link = uiState.value.shareLink ?: return
         trackEvent("profile_link_copied", emptyMap())
         scope.launch { emit(ProfileUiAction.CopyProfileLink(toSpokenLanguage(link))) }
+    }
+
+    fun copyUserId() {
+        val userId = uiState.value.userId ?: return
+        trackEvent("profile_user_id_copied", emptyMap())
+        scope.launch { emit(ProfileUiAction.CopyUserId(userId)) }
+    }
+
+    fun copyCode() {
+        val words = uiState.value.recoveryWords ?: return
+        trackEvent("erase_code_copy_clicked", emptyMap())
+        scope.launch { emit(ProfileUiAction.CopyToClipboard(words.joinToString(" "))) }
     }
 
     // Why: a profile has nothing else to pick its link's preview language by, so the link carries the app's own.

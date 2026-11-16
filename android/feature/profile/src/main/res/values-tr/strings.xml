@@ -140,4 +140,7 @@
     <string name="profile_share_usage_data_detail">Uygulamayı geliştirmek için ekranlar ve dokunuşlar. İsim veya tutar asla gönderilmez.</string>
     <string name="profile_section_paying_methods">Ödeme yöntemleri</string>
     <string name="profile_paying_methods_subtitle">Bunları yalnızca sen görürsün. Her harcamayı hangisiyle ödediğini işaretle.</string>
+    <string name="profile_user_id">Kullanıcı kimliği</string>
+    <string name="profile_user_id_copy">Kullanıcı kimliğini kopyala</string>
+    <string name="profile_user_id_copied">Kullanıcı kimliği kopyalandı</string>
 </resources>
