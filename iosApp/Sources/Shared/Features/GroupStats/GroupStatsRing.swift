@@ -22,6 +22,11 @@ struct StatsRing<Center: View>: View {
     let onTap: (Int, Bool) -> Void
     @ViewBuilder let center: Center
 
+    /// The hole's radius over the ring's, which is also its diameter over the ring's size.
+    private static var holeRatio: CGFloat { 0.62 }
+    /// The room the middle keeps on each side from the ring's inner edge.
+    private static var centerGap: CGFloat { 10 }
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// 0 to 1 as the ring sweeps in, clockwise from the top.
@@ -38,13 +43,13 @@ struct StatsRing<Center: View>: View {
         let hasGaps = slices.filter { $0.percent > 0 }.count > 1
         Chart {
             if isEmpty {
-                SectorMark(angle: .value("Share", 100), innerRadius: .ratio(0.62), outerRadius: .ratio(0.92))
+                SectorMark(angle: .value("Share", 100), innerRadius: .ratio(Self.holeRatio), outerRadius: .ratio(0.92))
                     .foregroundStyle(Color.secondary.opacity(0.18))
             } else {
                 ForEach(Array(slices.enumerated()), id: \.element.id) { index, slice in
                     SectorMark(
                         angle: .value("Share", slice.percent * swept),
-                        innerRadius: .ratio(0.62),
+                        innerRadius: .ratio(Self.holeRatio),
                         outerRadius: .ratio(selected == index ? 1 : 0.92),
                         angularInset: hasGaps ? 1.5 : 0,
                     )
@@ -52,7 +57,7 @@ struct StatsRing<Center: View>: View {
                     .opacity(selected == nil || selected == index ? 1 : 0.4)
                 }
                 // The rest of the turn while the ring sweeps in, drawn in no color
-                SectorMark(angle: .value("Share", 100 * (1 - swept)), innerRadius: .ratio(0.62), outerRadius: .ratio(0.92))
+                SectorMark(angle: .value("Share", 100 * (1 - swept)), innerRadius: .ratio(Self.holeRatio), outerRadius: .ratio(0.92))
                     .foregroundStyle(.clear)
             }
         }
@@ -81,8 +86,10 @@ struct StatsRing<Center: View>: View {
         }
         .frame(width: size, height: size)
         .overlay {
+            // Kept inside the hole with a gap on each side, so a long name ends in an ellipsis before it touches
+            // the ring
             center
-                .padding(.horizontal, 24)
+                .frame(maxWidth: max(size * Self.holeRatio - 2 * Self.centerGap, 0))
                 .allowsHitTesting(false)
         }
         .accessibilityElement(children: .ignore)
@@ -123,6 +130,8 @@ struct StatsRingCenter: View {
                 .font(.headline.weight(.bold))
                 .monospacedDigit()
                 .contentTransition(.numericText())
+                // Only the name is held to the hole; the share stays whole at the largest text sizes
+                .fixedSize()
             Text(verbatim: name)
                 .font(.caption2)
                 .foregroundStyle(.secondary)

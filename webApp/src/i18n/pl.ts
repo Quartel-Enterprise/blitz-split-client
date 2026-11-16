@@ -1267,6 +1267,7 @@ export const pl: Record<MessageKey, string> = {
   stats_consumption: 'Konsumpcja',
   stats_paid: 'Zapłacone',
   stats_you: '{name} (ty)',
+  stats_ringYou: 'Ty',
   stats_noteConsumption: 'Konsumpcja to udział każdej osoby w wydatkach, zgodnie z podziałem każdego wydatku.',
   stats_notePaid: 'Ile każda osoba zapłaciła w danej chwili. Różnica między tym, co zapłaciła, a tym, co skonsumowała, staje się saldem w Saldach.',
   stats_settling: 'Rozliczanie',

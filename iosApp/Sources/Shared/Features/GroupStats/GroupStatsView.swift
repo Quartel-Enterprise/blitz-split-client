@@ -534,7 +534,7 @@ private struct StatsPeopleSection: View {
             ) {
                 if state.topPerson != nil {
                     let shown = people[picked ?? 0]
-                    StatsRingCenter(percent: shown.percent, name: GroupStatsCopy.name(shown))
+                    StatsRingCenter(percent: shown.percent, name: GroupStatsCopy.ringName(shown))
                 }
             }
             .frame(maxWidth: .infinity)

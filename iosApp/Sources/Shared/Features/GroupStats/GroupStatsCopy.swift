@@ -188,6 +188,12 @@ enum GroupStatsCopy {
         return self.name(name, isMe: person.isMe)
     }
 
+    /// The ring's middle: just "You" for this device's user (the row under the ring keeps "Bruno (you)"), the name
+    /// otherwise, so a long name doesn't crowd the hole.
+    static func ringName(_ person: StatsPersonRow) -> String {
+        person.isMe ? String(localized: "You", bundle: .appLanguage) : name(person)
+    }
+
     /// "Bruno (you)" for this device's user, the name as it is otherwise.
     static func name(_ name: String, isMe: Bool) -> String {
         isMe ? String(localized: "\(name) (you)", bundle: .appLanguage) : name

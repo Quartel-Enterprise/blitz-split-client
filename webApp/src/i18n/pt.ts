@@ -1263,6 +1263,7 @@ export const pt: Record<MessageKey, string> = {
   stats_consumption: 'Consumo',
   stats_paid: 'Pagou',
   stats_you: '{name} (você)',
+  stats_ringYou: 'Você',
   stats_noteConsumption: 'Consumo é a parte de cada um nas despesas, como foi dividida em cada conta.',
   stats_notePaid: 'Quanto cada um pagou na hora. A diferença entre o que pagou e o que consumiu vira saldo, em Saldos.',
   stats_settling: 'Acertos',
