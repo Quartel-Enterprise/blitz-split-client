@@ -82,6 +82,7 @@ internal val everyRouteKind: List<Route> = listOf(
         period = ExpensePeriod.CUSTOM,
         customStartMillis = 1L,
         customEndMillis = 2L,
+        isFromStatistics = true,
     ),
     Route.GlobalBalances(filter = BalancesFilter.OWES_YOU),
     Route.Charge(

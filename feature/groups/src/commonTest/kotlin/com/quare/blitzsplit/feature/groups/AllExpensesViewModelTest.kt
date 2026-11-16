@@ -3067,6 +3067,52 @@ class AllExpensesViewModelTest {
         }
 
     @Test
+    fun `GIVEN statistics opened with others bills WHEN letting go of its group THEN lists only your bills`() =
+        runTest(testDispatcher) {
+            // Given
+            val others = bill(
+                "others",
+                paidBy = "Ana",
+                splitOver = listOf("Ana", "Bruno"),
+                categoryId = AppCategory.FOOD.key,
+            )
+            val mine = bill(
+                "mine",
+                spentAt = daysAgo(6),
+                categoryId = AppCategory.FOOD.key,
+            )
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(others, mine),
+                route = fromStatistics(period = ExpensePeriod.ALL),
+            )
+
+            // When
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+
+            // Then
+            assertEquals(listOf("mine"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN a group whose members have no you yet WHEN opening from statistics THEN still lists its bills`() =
+        runTest(testDispatcher) {
+            // Given
+            val syncing = trio().let { group -> group.copy(members = group.members.map { it.copy(isMe = false) }) }
+            prepareScenario(
+                storedGroups = listOf(syncing),
+                storedExpenses = listOf(bill("dinner", categoryId = AppCategory.FOOD.key)),
+                route = fromStatistics(period = ExpensePeriod.ALL),
+            )
+
+            // When
+            val shown = shownIds()
+
+            // Then
+            assertEquals(listOf("dinner"), shown)
+        }
+
+    @Test
     fun `GIVEN a bill only others shared WHEN opening from a group See all THEN leaves it out`() =
         runTest(testDispatcher) {
             // Given
@@ -3491,6 +3537,7 @@ class AllExpensesViewModelTest {
         period = period,
         customStartMillis = customStartMillis,
         customEndMillis = customEndMillis,
+        isFromStatistics = true,
     )
 
     private fun TestScope.prepareScenario(

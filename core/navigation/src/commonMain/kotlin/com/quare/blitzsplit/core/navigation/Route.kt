@@ -300,6 +300,8 @@ sealed interface Route {
         // Why: a moment of CUSTOM's first and last days (the start of each, as Statistics shows its period).
         val customStartMillis: Long?,
         val customEndMillis: Long?,
+        // Why: a category of the statistics opened it, which then lists every bill of the group and leads its filters.
+        val isFromStatistics: Boolean,
     ) : Route {
         companion object {
             // Why: Home's and a group's "See all": the group picked, if any, and every other filter at its default.
@@ -309,6 +311,7 @@ sealed interface Route {
                 period = ExpensePeriod.ALL,
                 customStartMillis = null,
                 customEndMillis = null,
+                isFromStatistics = false,
             )
         }
     }

@@ -438,6 +438,7 @@ class GroupStatsViewModel(
                 period = state.period.expensePeriod,
                 customStartMillis = state.periodStartMillis.takeIf { isCustom },
                 customEndMillis = state.periodEndMillis.takeIf { isCustom },
+                isFromStatistics = true,
             ),
         )
         if (isOpened) trackEvent("stats_category_clicked", mapOf("target" to target.name.lowercase()))

@@ -29,12 +29,14 @@ internal fun myExpensesOf(
     val groupsById = groups.associateBy { it.id }
     return expenses.mapNotNull { expense ->
         val group = groupsById[expense.groupId] ?: return@mapNotNull null
-        val meId = group.members.firstOrNull { it.isMe }?.id ?: return@mapNotNull null
+        val isWholeGroup = expense.groupId == everyBillGroupId
+        // Why: in the whole group even before its members say which is the user's (still syncing), as a bill of others.
+        val meId = group.members.firstOrNull { it.isMe }?.id
         LatestExpense(
             group = group,
             expense = expense,
-            myBalanceMinor = expense.balanceOf(meId)
-                ?: 0L.takeIf { expense.groupId == everyBillGroupId }
+            myBalanceMinor = meId?.let(expense::balanceOf)
+                ?: 0L.takeIf { isWholeGroup }
                 ?: return@mapNotNull null,
         )
     }

@@ -46,12 +46,13 @@ import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
 import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
+import kotlin.time.Duration.Companion.hours
 
 /*
  * Why: DateUtils reads an end at midnight as the day before, and Statistics sends a custom period's days as their
  * start (the pickers, as their noon): half a day later stays on the last day either way, as Statistics' own text does.
  */
-private const val RANGE_END_SHIFT_MILLIS = 12L * 60 * 60 * 1000
+private val rangeEndShiftMillis = 12.hours.inWholeMilliseconds
 
 /*
  * Why: over "All expenses"' bills (Pierre's call, beta feedback): the search, which finds bills by their description as
@@ -187,7 +188,7 @@ private fun PeriodChip(
                     .formatDateRange(
                         context,
                         customStart,
-                        customEnd + RANGE_END_SHIFT_MILLIS,
+                        customEnd + rangeEndShiftMillis,
                         DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH,
                     )
 

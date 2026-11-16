@@ -2139,6 +2139,7 @@ class GroupStatsViewModelTest {
                     period = ExpensePeriod.ALL,
                     customStartMillis = null,
                     customEndMillis = null,
+                    isFromStatistics = true,
                 ),
                 navigator.backStack.value,
             )
@@ -2161,6 +2162,7 @@ class GroupStatsViewModelTest {
                 period = ExpensePeriod.THIS_MONTH,
                 customStartMillis = null,
                 customEndMillis = null,
+                isFromStatistics = true,
             ),
             navigator.backStack.value,
         )
@@ -2188,6 +2190,7 @@ class GroupStatsViewModelTest {
                 period = ExpensePeriod.CUSTOM,
                 customStartMillis = millisOf("2026-10-24T00:00:00Z"),
                 customEndMillis = millisOf("2026-10-26T00:00:00Z"),
+                isFromStatistics = true,
             ),
             navigator.backStack.value,
         )
@@ -2242,6 +2245,7 @@ class GroupStatsViewModelTest {
                     period = ExpensePeriod.ALL,
                     customStartMillis = null,
                     customEndMillis = null,
+                    isFromStatistics = true,
                 ),
                 navigator.backStack.value,
             )
@@ -2752,6 +2756,7 @@ class GroupStatsViewModelTest {
                 period = ExpensePeriod.ALL,
                 customStartMillis = null,
                 customEndMillis = null,
+                isFromStatistics = true,
             ),
             navigator.backStack.value,
         )

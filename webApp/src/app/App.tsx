@@ -344,7 +344,7 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
     // Why: Início's "Ver tudo" over "Últimas despesas", a page over the home; a group's, over the group, filtered by it;
     // a category of the statistics, over them, with the group, the category and the period picked.
     case 'all-expenses':
-      return route ? <AllExpensesScreen key={route.groupId ?? ''} route={route} /> : null
+      return route ? <AllExpensesScreen key={route.allExpensesKey ?? ''} route={route} /> : null
     // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it;
     // one opened from Saldos draws the same page.
     case 'contacts':

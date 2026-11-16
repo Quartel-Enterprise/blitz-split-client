@@ -350,8 +350,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     (they follow today there too), picked dates as their days. Statistics' currency chip doesn't go: All expenses
     lists the bills in every currency, each in its own. Opened from Statistics it lists every bill of the group, a
     bill only others shared included (with no share of yours under its amount), as "Expenses by category" did, so the
-    list adds up to what the chart counted (Pierre's call, 2026-11-16); from Home or a group's "See all" it still
-    lists only the bills you paid or take part in. All expenses is a page on every size, as from Home or the
+    list adds up to what the chart counted (Pierre's call, 2026-11-16), while its Group filter holds that group alone;
+    any other pick of groups, and Home's or a group's "See all", list only the bills you paid or take part in. All expenses is a page on every size, as from Home or the
     group's "See all": on a tablet lying down it covers the groups' pane rather than drawing in it, and on the web and
     the Mac it keeps its own title and back rather than a breadcrumb.
   - "Duplicate", only in a bill's ⋮ on Expenses (Bill's top bar has no such button), opens "Split a bill" as a new bill

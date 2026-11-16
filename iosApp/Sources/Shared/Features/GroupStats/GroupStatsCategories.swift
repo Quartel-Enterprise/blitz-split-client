@@ -38,6 +38,7 @@ struct StatsCategoriesSection: View {
                         label: Text("Split by category: \(pieDescription)"),
                         selected: $selected,
                         onTap: { index, _ in open(state.categories[index].category.id, .ring) },
+                        onTapOff: { selected = nil },
                     ) {
                         StatsRingCenter(percent: top.percent, name: CategoryCopy.name(top.category))
                     }

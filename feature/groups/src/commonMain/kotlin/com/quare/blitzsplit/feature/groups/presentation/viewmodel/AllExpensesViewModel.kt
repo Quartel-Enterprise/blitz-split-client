@@ -97,7 +97,7 @@ class AllExpensesViewModel(
     val actionWatcher: FlowWatcher<AllExpensesUiAction> = FlowWatcher(uiAction)
 
     // Why: the group whose every bill the list holds, opened from its statistics; null lists only the user's bills.
-    private val everyBillGroupId: String? = route.groupId.takeIf { route.categoryId != null }
+    private val everyBillGroupId: String? = route.groupId.takeIf { route.isFromStatistics }
 
     // Why: how many bills the list shows; grows a page at a time, back to one page when the filters change.
     private val limit = MutableStateFlow(ALL_EXPENSES_PAGE_SIZE)
@@ -128,16 +128,16 @@ class AllExpensesViewModel(
          * the list then shows a page at a time.
          */
         val source = filters
-            .map { it.windowGroupIds.takeIf { everyBillGroupId == null } }
+            .map { picked -> wholeGroupIdOf(picked) to picked.windowGroupIds }
             .distinctUntilChanged()
-            .flatMapLatest { windowGroupIds ->
-                if (everyBillGroupId != null) {
-                    // Why: Room reads only this device's user's bills, so the group's own list adds the others'.
-                    combine(observeMyExpenses(Int.MAX_VALUE), observeExpenses(everyBillGroupId)) { mine, group ->
+            .flatMapLatest { (wholeGroupId, windowGroupIds) ->
+                if (wholeGroupId != null) {
+                    // Why: every bill of the group, others' too, as the statistics counted them (Room's reads: the user's).
+                    observeExpenses(wholeGroupId).map {
                         DeviceBills(
                             windowSize = null,
                             groupIds = null,
-                            expenses = (mine + group).distinctBy { it.id },
+                            expenses = it,
                         )
                     }
                 } else if (windowGroupIds == null) {
@@ -274,7 +274,7 @@ class AllExpensesViewModel(
             uiState.update { it.copy(filters = picked) }
             return
         }
-        val mine = myExpensesOf(bills.device.expenses, bills.groups, everyBillGroupId)
+        val mine = myExpensesOf(bills.device.expenses, bills.groups, wholeGroupIdOf(picked))
         val narrowed = if (window != null) {
             mine.take(window)
         } else {
@@ -298,6 +298,13 @@ class AllExpensesViewModel(
             )
         }
     }
+
+    /*
+     * Why: opened from the statistics, the group's every bill while the Group filter holds that group alone (Pierre's
+     * call); any other pick of groups lists the user's own bills, as from Home.
+     */
+    private fun wholeGroupIdOf(picked: AllExpensesFilters): String? =
+        everyBillGroupId?.takeIf { picked.groupIds == setOf(it) }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 }
@@ -342,7 +349,7 @@ private fun filterOrderOf(
     route: Route.AllExpenses,
     filters: AllExpensesFilters,
 ): List<AllExpensesFilter> {
-    if (route.categoryId == null) return AllExpensesFilter.entries
+    if (!route.isFromStatistics) return AllExpensesFilter.entries
     val leading = listOfNotNull(
         AllExpensesFilter.PERIOD.takeIf { filters.period != ExpensePeriod.ALL },
         AllExpensesFilter.CATEGORY,

@@ -43,6 +43,15 @@ class JsRoute internal constructor(
     }
 
     /*
+     * Why: everything "all-expenses" opens with (group, category, period, its days), which keys the page, so a route
+     * that opens it with other filters gets its own ViewModel; null for every other route.
+     */
+    val allExpensesKey: String? = (route as? Route.AllExpenses)?.let {
+        listOf(it.groupId, it.categoryId, it.period, it.customStartMillis, it.customEndMillis, it.isFromStatistics)
+            .joinToString("/")
+    }
+
+    /*
      * Why: the tab "group-detail" opens on, null for every other route: with the group, it keys the page, so a route
      * that opens the same group on another tab gets its own ViewModel.
      */
