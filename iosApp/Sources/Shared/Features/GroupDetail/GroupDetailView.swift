@@ -605,7 +605,7 @@ private struct PhoneExpenseSections: View {
             GroupLoadingRows(isWaitingForInternet: state.isWaitingForInternet, leading: .badge)
         }
         ForEach(state.days, id: \.dayStartMillis) { day in
-            Section(ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay)) {
+            Section {
                 ForEach(day.entries, id: \.id) { entry in
                     // A tap opens the line; its "⋯" and a long press offer its options without opening it
                     HStack(spacing: 4) {
@@ -624,6 +624,21 @@ private struct PhoneExpenseSections: View {
                     .contextMenu {
                         DayEntryMenuItems(entry: entry, model: model)
                     }
+                }
+            } header: {
+                let title = ExpenseFormat.day(day.dayStartMillis, relativeDay: day.relativeDay)
+                // "See everything" (Home's words for the same screen) at the end of the first day's heading opens All expenses filtered by this group
+                if day.dayStartMillis == state.days.first?.dayStartMillis, state.showsSeeAllBills {
+                    HStack {
+                        Text(verbatim: title)
+                        Spacer(minLength: 8)
+                        Button(String(localized: "See everything", bundle: .appLanguage)) { model.send(GroupDetailUiEventOnSeeAllBillsClicked.shared) }
+                            .font(.subheadline)
+                            .textCase(nil)
+                            .buttonStyle(.borderless)
+                    }
+                } else {
+                    Text(verbatim: title)
                 }
             }
         }
@@ -766,6 +781,16 @@ private struct MacGroupExpenses: View {
                 }
                 .scrollContentBackground(.hidden)
             } else {
+                // "See everything" over the table opens All expenses filtered by this group, as the phone's first day does
+                if state.showsSeeAllBills {
+                    HStack {
+                        Spacer()
+                        Button(String(localized: "See everything", bundle: .appLanguage)) { model.send(GroupDetailUiEventOnSeeAllBillsClicked.shared) }
+                            .buttonStyle(.link)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 6)
+                }
                 table
             }
         }

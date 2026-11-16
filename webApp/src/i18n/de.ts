@@ -336,6 +336,7 @@ export const de: Record<MessageKey, string> = {
   groupDetail_breadcrumb: 'Du bist hier',
   groupDetail_joinedTitle: 'Du bist als {name} beigetreten',
   groupDetail_joinedMessage: 'Alles, was für dich eingetragen wurde, erscheint hier.',
+  groupDetail_seeAllBills: 'Alle ansehen',
   groupDetail_protectTitle: 'Sichere deinen Zugang',
   groupDetail_protectMessage: 'Du bist ohne Konto beigetreten. Speichere den Code oder verbinde Google oder Apple.',
   groupDetail_metaTotal: '{members} · {total} insgesamt',

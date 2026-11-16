@@ -41,6 +41,7 @@
     <string name="group_detail_tab_expenses">Uitgaven</string>
     <string name="group_detail_tab_balances">Saldi</string>
     <string name="group_detail_tab_members">Leden</string>
+    <string name="group_detail_see_all_bills">Alles bekijken</string>
     <string name="group_detail_today">Vandaag</string>
     <string name="group_detail_yesterday">Gisteren</string>
     <string name="group_detail_queued">in wachtrij</string>

@@ -1,0 +1,48 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "A group's Expenses now has \"See all\", which opens All expenses already filtered by that group, so you can search, sort and filter its bills. Clear the filter to see every group.",
+        "pt": "As Despesas de um grupo agora têm \"Ver tudo\", que abre Todas as despesas já filtradas por esse grupo, para você buscar, ordenar e filtrar as contas dele. Limpe o filtro para ver todos os grupos.",
+        "pt-PT": "As Despesas de um grupo têm agora \"Ver tudo\", que abre Todas as despesas já filtradas por esse grupo, para pesquisares, ordenares e filtrares as contas dele. Limpa o filtro para veres todos os grupos.",
+        "es": "Los Gastos de un grupo ahora tienen \"Ver todo\", que abre Todos los gastos ya filtrados por ese grupo, para que busques, ordenes y filtres sus gastos. Borra el filtro para ver todos los grupos.",
+        "fr": "Les Dépenses d’un groupe ont maintenant « Tout voir », qui ouvre Toutes les dépenses déjà filtrées sur ce groupe, pour rechercher, trier et filtrer ses dépenses. Efface le filtre pour voir tous les groupes.",
+        "de": "Die Ausgaben einer Gruppe haben jetzt „Alle ansehen“, das Alle Ausgaben bereits nach dieser Gruppe gefiltert öffnet, damit du ihre Ausgaben suchen, sortieren und filtern kannst. Setz den Filter zurück, um alle Gruppen zu sehen.",
+        "it": "Le Spese di un gruppo ora hanno \"Vedi tutte\", che apre Tutte le spese già filtrate per quel gruppo, così puoi cercare, ordinare e filtrare le sue spese. Cancella il filtro per vedere tutti i gruppi.",
+        "pl": "Wydatki grupy mają teraz „Zobacz wszystkie”, które otwiera Wszystkie wydatki od razu przefiltrowane do tej grupy, żeby szukać, sortować i filtrować jej wydatki. Wyczyść filtr, aby zobaczyć wszystkie grupy.",
+        "nl": "De Uitgaven van een groep hebben nu \"Alles bekijken\", dat Alle uitgaven al gefilterd op die groep opent, zodat je de uitgaven kunt zoeken, sorteren en filteren. Wis het filter om alle groepen te zien.",
+        "ja": "グループの「支出」に「すべて見る」が追加され、そのグループで絞り込んだ状態の「すべての支出」が開くようになりました。支出の検索、並べ替え、絞り込みができます。絞り込みを解除すると、すべてのグループが表示されます。",
+        "tr": "Bir grubun Harcamalar bölümünde artık \"Tümünü gör\" var; Tüm harcamalar'ı o gruba göre filtrelenmiş olarak açar, böylece harcamalarını arayabilir, sıralayabilir ve filtreleyebilirsin. Tüm grupları görmek için filtreyi temizle.",
+        "id": "Pengeluaran sebuah grup kini punya \"Lihat semua\", yang membuka Semua pengeluaran yang sudah difilter ke grup itu, jadi kamu bisa mencari, mengurutkan, dan memfilter tagihannya. Hapus filternya untuk melihat semua grup.",
+        "ru": "В «Расходах» группы появилась кнопка «Все»: она открывает «Все расходы», уже отфильтрованные по этой группе, чтобы искать, сортировать и фильтровать её счета. Сбрось фильтр, чтобы увидеть все группы.",
+        "uk": "У «Витратах» групи з’явилася кнопка «Переглянути все»: вона відкриває «Усі витрати», уже відфільтровані за цією групою, щоб шукати, сортувати й фільтрувати її рахунки. Очисти фільтр, щоб побачити всі групи."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "android"
+      ],
+      "text": {
+        "en": "Scrolling a group, its folded top bar shows only the group's photo and name, without the members and total cut off beside them.",
+        "pt": "Ao rolar um grupo, a barra de cima recolhida mostra só a foto e o nome do grupo, sem os membros e o total cortados ao lado.",
+        "pt-PT": "Ao deslizar um grupo, a barra de cima recolhida mostra só a foto e o nome do grupo, sem os membros e o total cortados ao lado.",
+        "es": "Al desplazarte por un grupo, la barra superior plegada muestra solo la foto y el nombre del grupo, sin los miembros y el total cortados al lado.",
+        "fr": "En faisant défiler un groupe, la barre du haut repliée n’affiche plus que la photo et le nom du groupe, sans les membres et le total coupés à côté.",
+        "de": "Beim Scrollen in einer Gruppe zeigt die eingeklappte obere Leiste nur noch Foto und Namen der Gruppe, ohne die abgeschnittenen Mitglieder und die Summe daneben.",
+        "it": "Scorrendo un gruppo, la barra in alto ridotta mostra solo la foto e il nome del gruppo, senza i membri e il totale tagliati accanto.",
+        "pl": "Podczas przewijania grupy zwinięty górny pasek pokazuje tylko zdjęcie i nazwę grupy, bez uciętych obok członków i sumy.",
+        "nl": "Als je door een groep scrolt, toont de ingeklapte bovenste balk alleen de foto en naam van de groep, zonder de afgekapte leden en het totaal ernaast.",
+        "ja": "グループをスクロールしたときの折りたたまれた上部バーに、グループの写真と名前だけが表示され、途中で切れていたメンバー数と合計は表示されなくなりました。",
+        "tr": "Bir grupta kaydırırken daraltılmış üst çubuk artık yalnızca grubun fotoğrafını ve adını gösteriyor; yanında kesik görünen üyeler ve toplam yok.",
+        "id": "Saat menggulir grup, bilah atas yang terlipat kini hanya menampilkan foto dan nama grup, tanpa anggota dan total yang terpotong di sebelahnya.",
+        "ru": "При прокрутке группы свёрнутая верхняя панель показывает только фото и название группы, без обрезанных рядом участников и суммы.",
+        "uk": "Під час прокручування групи згорнута верхня панель показує лише фото й назву групи, без обрізаних поруч учасників і суми."
+      }
+    }
+  ]
+}

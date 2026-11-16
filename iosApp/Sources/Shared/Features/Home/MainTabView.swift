@@ -393,8 +393,8 @@ struct MainTabView: View {
         case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
         // Home's bell, or a contact's "See all", pushes Activity
         case let .activity(route): ActivityView(route: route).id(route)
-        // Home's "See everything" over "Latest expenses" pushes All expenses
-        case .allExpenses: AllExpensesView()
+        // Home's "See everything" over "Latest expenses", or a group's "See all", pushes All expenses
+        case let .allExpenses(route): AllExpensesView(route: route).id(route)
         // The search over Home, Balances or Contacts; every platform here has the search tab instead
         case .search: SearchView()
         default:

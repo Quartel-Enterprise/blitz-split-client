@@ -335,6 +335,7 @@ export const tr: Record<MessageKey, string> = {
   groupDetail_breadcrumb: 'Buradasın',
   groupDetail_joinedTitle: '{name} olarak katıldın',
   groupDetail_joinedMessage: 'Senin için eklenen her şey burada görünür.',
+  groupDetail_seeAllBills: 'Tümünü gör',
   groupDetail_protectTitle: 'Erişimini koru',
   groupDetail_protectMessage: 'Hesapsız katıldın. Kodu kaydet ya da Google veya Apple bağla.',
   groupDetail_metaTotal: '{members} · toplam {total}',

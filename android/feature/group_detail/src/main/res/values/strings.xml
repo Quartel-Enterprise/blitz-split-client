@@ -44,6 +44,7 @@
     <string name="group_detail_tab_expenses">Expenses</string>
     <string name="group_detail_tab_balances">Balances</string>
     <string name="group_detail_tab_members">Members</string>
+    <string name="group_detail_see_all_bills">See all</string>
     <string name="group_detail_today">Today</string>
     <string name="group_detail_yesterday">Yesterday</string>
     <string name="group_detail_queued">queued</string>

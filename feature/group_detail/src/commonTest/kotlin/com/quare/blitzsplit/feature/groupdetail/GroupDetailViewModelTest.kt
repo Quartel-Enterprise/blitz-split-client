@@ -1167,6 +1167,123 @@ class GroupDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN the screen on top WHEN tapping See all THEN opens all the bills of the group over it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+            val event = GroupDetailUiEvent.OnSeeAllBillsClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, route, Route.AllExpenses(groupId = GROUP_ID)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN a bill of the group beside it WHEN tapping See all THEN all the bills take the place of the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+            navigator.navigate(Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSeeAllBillsClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, route, Route.AllExpenses(groupId = GROUP_ID)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN another screen over the group WHEN tapping See all THEN the back stack stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+            navigator.navigate(Route.EditGroup(GROUP_ID))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSeeAllBillsClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Home, Route.Groups, route, Route.EditGroup(GROUP_ID)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN all the bills opened over the group WHEN going back THEN the group is on top again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+            viewModel.onEvent(GroupDetailUiEvent.OnSeeAllBillsClicked)
+
+            // When
+            navigator.navigateBack()
+
+            // Then
+            assertEquals(listOf(Route.Home, Route.Groups, route), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN a bill and a payment on the list WHEN the screen opens THEN shows See all`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedExpenses = listOf(expense("dinner", spentAt = thisMorning)),
+            storedSettlements = listOf(settlement(id = "pay-1")),
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsSeeAllBills)
+    }
+
+    @Test
+    fun `GIVEN only payments on the list WHEN the screen opens THEN hides See all`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedSettlements = listOf(settlement(id = "pay-1")))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.days.isNotEmpty())
+        assertFalse(state.showsSeeAllBills)
+    }
+
+    @Test
+    fun `GIVEN a group without bills WHEN the screen opens THEN hides See all`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsSeeAllBills)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN its first bill arrives THEN shows See all`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        expenses.expenses.value = listOf(expense("dinner", spentAt = thisMorning))
+
+        // Then
+        assertTrue(viewModel.uiState.value.showsSeeAllBills)
+    }
+
+    @Test
     fun `GIVEN Rachar conta already opened WHEN tapping Convidar THEN the back stack stays`() =
         runTest(testDispatcher) {
             // Given
@@ -2382,6 +2499,19 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(listOf("leave_group_clicked" to fromGroupDetail), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the screen on top WHEN tapping See all THEN tracks group_see_all_bills_clicked without params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(expense("dinner", spentAt = thisMorning)))
+
+            // When
+            viewModel.onEvent(GroupDetailUiEvent.OnSeeAllBillsClicked)
+
+            // Then
+            assertEquals(listOf("group_see_all_bills_clicked" to emptyMap<String, Any>()), trackedEvents)
         }
 
     @Test

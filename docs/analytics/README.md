@@ -292,6 +292,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `app_download_link_copied` | none | The copy button beside the link on the app's code | `:feature:app_download` |
 | `app_link_clicked` | `source` (`home`, `home_banner`, `app_download`, `profile`) | The app's link the browser opens (web): beside the QR code of Home's invite card, "Open in the app" of the phone's banner, under the app's code, or "Download" / "Open in the app" of Profile's "App on your phone" row in a phone's browser | `:feature:groups`, `:feature:app_download`, `:feature:profile` |
 | `group_stats_clicked` | none | The group's Statistics | `:feature:group_detail` |
+| `group_see_all_bills_clicked` | none | "See all" over the group's Expenses, which opens All expenses filtered by the group | `:feature:group_detail` |
 | `group_photo_clicked` | none | The group's avatar in its header, which opens the photo big | `:feature:group_detail` |
 | `group_tab_clicked` | `tab` (`expenses`, `balances`, `members`) | Expenses, Balances or Members | `:feature:group_detail` |
 | `balances_currency_clicked` | `source` (`group_detail`, `members`, `group_stats`) | A currency chip, drawn while the group has money in more than one currency | `:feature:group_detail`, `:feature:members`, `:feature:group_stats` |

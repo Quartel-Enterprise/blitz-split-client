@@ -130,6 +130,7 @@ private fun expensesTabOf(
                 expenseDayItems(
                     days = state.days,
                     dates = dates,
+                    showsSeeAll = state.showsSeeAllBills,
                     onEvent = onEvent,
                 )
             }

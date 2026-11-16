@@ -23,6 +23,8 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
             OnStatsClicked -> EventAnalytics.Automatic("group_stats_clicked")
 
+            OnSeeAllBillsClicked -> EventAnalytics.Automatic("group_see_all_bills_clicked")
+
             OnPhotoClicked -> EventAnalytics.Automatic("group_photo_clicked")
 
             is OnCurrencySelected -> EventAnalytics.Automatic(
@@ -165,6 +167,9 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: "Estatísticas" in the top bar.
     data object OnStatsClicked : GroupDetailUiEvent
+
+    // Why: "Ver tudo" over Despesas' bills, which opens "Todas as despesas" over the group, filtered by it.
+    data object OnSeeAllBillsClicked : GroupDetailUiEvent
 
     // Why: a currency chip of the header and Saldos, drawn while the group has money in more than one.
     data class OnCurrencySelected(

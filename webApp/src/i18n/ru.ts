@@ -339,6 +339,7 @@ export const ru: Record<MessageKey, string> = {
   groupDetail_breadcrumb: 'Ты здесь',
   groupDetail_joinedTitle: 'Ты вошёл(-ла) как {name}',
   groupDetail_joinedMessage: 'Всё, что добавлено на тебя, появится здесь.',
+  groupDetail_seeAllBills: 'Все',
   groupDetail_protectTitle: 'Защити свой доступ',
   groupDetail_protectMessage: 'Ты присоединился(-ась) без аккаунта. Сохрани код или подключи Google или Apple.',
   groupDetail_metaTotal: '{members} · всего {total}',

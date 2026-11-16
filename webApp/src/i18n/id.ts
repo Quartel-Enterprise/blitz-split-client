@@ -334,6 +334,7 @@ export const id: Record<MessageKey, string> = {
   groupDetail_breadcrumb: 'Kamu di sini',
   groupDetail_joinedTitle: 'Kamu bergabung sebagai {name}',
   groupDetail_joinedMessage: 'Semua yang ditambahkan untukmu muncul di sini.',
+  groupDetail_seeAllBills: 'Lihat semua',
   groupDetail_protectTitle: 'Lindungi aksesmu',
   groupDetail_protectMessage: 'Kamu bergabung tanpa akun. Simpan kodenya atau hubungkan Google atau Apple.',
   groupDetail_metaTotal: '{members} · total {total}',

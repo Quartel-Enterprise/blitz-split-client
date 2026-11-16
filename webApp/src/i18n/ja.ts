@@ -335,6 +335,7 @@ export const ja: Record<MessageKey, string> = {
   groupDetail_breadcrumb: '現在の場所',
   groupDetail_joinedTitle: '{name}として参加しました',
   groupDetail_joinedMessage: 'あなたの分として追加されたものはすべてここに表示されます。',
+  groupDetail_seeAllBills: 'すべて見る',
   groupDetail_protectTitle: 'アクセスを守る',
   groupDetail_protectMessage: 'アカウントなしで参加しました。コードを保存するか、GoogleかAppleに接続してください。',
   groupDetail_metaTotal: '{members} · 合計{total}',

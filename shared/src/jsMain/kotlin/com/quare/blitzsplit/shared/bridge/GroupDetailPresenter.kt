@@ -132,6 +132,7 @@ class JsGroupDetailState(
     val isMyBalanceLoading: Boolean,
     val showsDebtNote: Boolean,
     val showsSplitBillButton: Boolean,
+    val showsSeeAllBills: Boolean,
     val showsBillDeletedNotice: Boolean,
     val isLoaded: Boolean,
     val teach: JsCategoryTeach?,
@@ -214,6 +215,7 @@ class GroupDetailPresenter(
                 isMyBalanceLoading = state.isMyBalanceLoading,
                 showsDebtNote = state.showsDebtNote,
                 showsSplitBillButton = state.showsSplitBillButton,
+                showsSeeAllBills = state.showsSeeAllBills,
                 showsBillDeletedNotice = state.showsBillDeletedNotice,
                 isLoaded = state.isLoaded,
                 teach = state.teach?.let { teach ->
@@ -298,6 +300,11 @@ class GroupDetailPresenter(
 
     fun stats() {
         viewModel.onEvent(GroupDetailUiEvent.OnStatsClicked)
+    }
+
+    // Why: "See all" at the end of Expenses' first day, which opens All expenses over the group, filtered by it.
+    fun seeAllBills() {
+        viewModel.onEvent(GroupDetailUiEvent.OnSeeAllBillsClicked)
     }
 
     // Why: "expenses", "balances" or "members", the tabs under the header (Membros also from the faces).

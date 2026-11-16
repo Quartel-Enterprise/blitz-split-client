@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.Category
+import com.quare.blitzsplit.core.model.HomeTab
 
 /*
  * Why: "Todas as despesas", which Início's "Ver tudo" opens: every bill this device's user paid or takes part in, across
@@ -30,6 +31,8 @@ data class AllExpensesUiState(
     val billToDelete: BillDeletion?,
     // Why: its "Apagar" waits while the device deletes the bill.
     val isDeletingBill: Boolean,
+    // Why: the home's tab under it, which the web's sidebar keeps picked: Início, or the tab of the group it opened over.
+    val homeTab: HomeTab,
 ) {
     // Why: skeletons until the first page, and while the first download may still bring the first bill.
     val showsSkeleton: Boolean
@@ -62,6 +65,7 @@ data class AllExpensesUiState(
             isFirstDownload = false,
             billToDelete = null,
             isDeletingBill = false,
+            homeTab = HomeTab.HOME,
         )
     }
 }

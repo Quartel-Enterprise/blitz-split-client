@@ -282,6 +282,9 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnStatsClicked -> screen.open(Route.GroupStats(route.groupId))
 
+            // Why: over the group, so back comes back to it; the group already picked in its Group filter.
+            GroupDetailUiEvent.OnSeeAllBillsClicked -> screen.open(Route.AllExpenses(route.groupId))
+
             is GroupDetailUiEvent.OnTabSelected -> selectTab(event.tab)
 
             is GroupDetailUiEvent.OnTabRestored -> selectTab(event.tab)

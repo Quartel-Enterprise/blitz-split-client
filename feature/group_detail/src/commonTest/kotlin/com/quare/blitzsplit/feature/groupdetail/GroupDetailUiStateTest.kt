@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.GroupFace
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
@@ -16,6 +17,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRow
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.ExpenseRowPayer
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -384,6 +386,87 @@ class GroupDetailUiStateTest {
         assertFalse(showsCard)
     }
 
+    @Test
+    fun `GIVEN no day on Despesas WHEN reading See all THEN it hides`() {
+        // Given
+        val state = state(hasBills = false)
+
+        // When
+        val showsSeeAll = state.showsSeeAllBills
+
+        // Then
+        assertFalse(showsSeeAll)
+    }
+
+    @Test
+    fun `GIVEN a bill on Despesas WHEN reading See all THEN it shows`() {
+        // Given
+        val state = state(hasBills = true)
+
+        // When
+        val showsSeeAll = state.showsSeeAllBills
+
+        // Then
+        assertTrue(showsSeeAll)
+    }
+
+    @Test
+    fun `GIVEN only bills this person has no part in WHEN reading See all THEN it hides`() {
+        // Given
+        val notMine = day.copy(
+            entries = day.entries.map { (it as ExpenseRow).copy(myBalanceMinor = null) },
+        )
+        val state = state(hasBills = true).copy(days = listOf(notMine))
+
+        // When
+        val showsSeeAll = state.showsSeeAllBills
+
+        // Then
+        assertFalse(showsSeeAll)
+    }
+
+    @Test
+    fun `GIVEN days holding only payments WHEN reading See all THEN it hides`() {
+        // Given
+        val state = state().copy(days = listOf(paymentDay, paymentDay.copy(dayStartMillis = -86_400_000L)))
+
+        // When
+        val showsSeeAll = state.showsSeeAllBills
+
+        // Then
+        assertFalse(showsSeeAll)
+    }
+
+    @Test
+    fun `GIVEN a first day of payments and a bill on an older day WHEN reading See all THEN it shows`() {
+        // Given
+        val olderBillDay = day.copy(
+            dayStartMillis = -86_400_000L,
+            relativeDay = RelativeDay.YESTERDAY,
+        )
+        val state = state().copy(days = listOf(paymentDay, olderBillDay))
+
+        // When
+        val showsSeeAll = state.showsSeeAllBills
+
+        // Then
+        assertTrue(showsSeeAll)
+    }
+
+    @Test
+    fun `GIVEN a day mixing a payment and a bill WHEN reading See all THEN it shows`() {
+        // Given
+        val state = state().copy(
+            days = listOf(day.copy(entries = paymentDay.entries + day.entries)),
+        )
+
+        // When
+        val showsSeeAll = state.showsSeeAllBills
+
+        // Then
+        assertTrue(showsSeeAll)
+    }
+
     private val simplified = DebtSimplificationSummary(
         paymentCount = 1,
         unsimplifiedPaymentCount = 2,
@@ -483,6 +566,26 @@ class GroupDetailUiStateTest {
                 currency = GroupCurrency.USD,
                 myBalanceMinor = -6_000,
                 category = CategoryTree.appOnly.other,
+                isPending = false,
+            ),
+        ),
+    )
+
+    private val paymentDay = ExpenseDay(
+        dayStartMillis = 0L,
+        relativeDay = RelativeDay.TODAY,
+        entries = listOf(
+            PaymentRow(
+                id = "pay-1",
+                paidAt = 0L,
+                paidDay = RelativeDay.TODAY,
+                fromName = "Ana",
+                fromIsMe = false,
+                toName = "Pierre",
+                toIsMe = true,
+                amountMinor = 5_000,
+                currency = GroupCurrency.USD,
+                method = SettlementMethod.PIX,
                 isPending = false,
             ),
         ),

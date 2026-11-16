@@ -39,20 +39,29 @@ internal const val META_SEPARATOR = ENTRY_META_SEPARATOR
 internal fun LazyListScope.expenseDayItems(
     days: List<ExpenseDay>,
     dates: DateTimeTextFormatter,
+    showsSeeAll: Boolean,
     onEvent: (GroupDetailUiEvent) -> Unit,
 ) {
-    days.forEach { day ->
+    days.forEachIndexed { index, day ->
         item(
             key = "day-${day.dayStartMillis}",
             contentType = "day",
         ) {
-            EntryDayHeading(
-                text = when (day.relativeDay) {
-                    RelativeDay.TODAY -> stringResource(R.string.group_detail_today)
-                    RelativeDay.YESTERDAY -> stringResource(R.string.group_detail_yesterday)
-                    RelativeDay.OTHER -> dates.toWeekdayDateText(day.dayStartMillis)
-                },
-            )
+            val heading = when (day.relativeDay) {
+                RelativeDay.TODAY -> stringResource(R.string.group_detail_today)
+                RelativeDay.YESTERDAY -> stringResource(R.string.group_detail_yesterday)
+                RelativeDay.OTHER -> dates.toWeekdayDateText(day.dayStartMillis)
+            }
+            // Why: "Ver tudo" opens "Todas as despesas" filtered by this group, at the end of the list's first heading.
+            if (index == 0 && showsSeeAll) {
+                EntryDayHeading(
+                    text = heading,
+                    action = stringResource(R.string.group_detail_see_all_bills),
+                    onAction = { onEvent(GroupDetailUiEvent.OnSeeAllBillsClicked) },
+                )
+            } else {
+                EntryDayHeading(text = heading)
+            }
         }
         itemsIndexed(
             items = day.entries,

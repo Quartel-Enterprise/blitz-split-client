@@ -244,7 +244,7 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
     val billSharedOriginOf = { routeBelow: Route? ->
         when (routeBelow) {
             Route.Home -> SharedOrigin.HOME
-            Route.AllExpenses -> SharedOrigin.ALL_EXPENSES
+            is Route.AllExpenses -> SharedOrigin.ALL_EXPENSES
             is Route.GroupDetail -> SharedOrigin.GROUP
             else -> null
         }
@@ -480,9 +480,9 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             // Why: Atividade, pushed over Início by its bell or over a contact's profile by their history.
             entry<Route.Activity> { route -> ActivityScreen(route) }
-            // Why: "Todas as despesas", which Início's "Ver tudo" pushes over it, a page on every size.
-            entry<Route.AllExpenses> {
-                EntryTransitionLayout(origin = SharedOrigin.ALL_EXPENSES) { AllExpensesScreen() }
+            // Why: "Todas as despesas", which Início's and a group's "Ver tudo" push over them, a page on every size.
+            entry<Route.AllExpenses> { route ->
+                EntryTransitionLayout(origin = SharedOrigin.ALL_EXPENSES) { AllExpensesScreen(route) }
             }
             // Why: Acertar and Recebi of Saldos open Registrar pagamento across groups, the same way as over a group.
             entry<Route.SettleUp>(metadata = formPresentationMetadata) { route ->

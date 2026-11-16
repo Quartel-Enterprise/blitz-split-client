@@ -336,6 +336,7 @@ export const nl: Record<MessageKey, string> = {
   groupDetail_breadcrumb: 'Je bent hier',
   groupDetail_joinedTitle: 'Je bent lid geworden als {name}',
   groupDetail_joinedMessage: 'Alles wat voor jou is toegevoegd, verschijnt hier.',
+  groupDetail_seeAllBills: 'Alles bekijken',
   groupDetail_protectTitle: 'Bescherm je toegang',
   groupDetail_protectMessage: 'Je bent lid geworden zonder account. Bewaar de code of verbind Google of Apple.',
   groupDetail_metaTotal: '{members} · {total} in totaal',

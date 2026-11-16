@@ -54,12 +54,36 @@ export function DayRowsTable({ label, children }: { label: string; children: Rea
   )
 }
 
-/** A day of the table: "Today", "Yesterday" or its date over its rows. */
-export function DayRowGroup({ dayStartMillis, relativeDay, children }: { dayStartMillis: number; relativeDay: string; children: ReactNode }) {
+/**
+ * A day of the table: "Today", "Yesterday" or its date over its rows. The group's first day carries "See all" at its
+ * end (`action`), as Home's "Latest expenses" carries its link.
+ */
+export function DayRowGroup({
+  dayStartMillis,
+  relativeDay,
+  action,
+  children,
+}: {
+  dayStartMillis: number
+  relativeDay: string
+  action?: { label: string; onClick: () => void }
+  children: ReactNode
+}) {
   return (
     <div role="rowgroup" className="border-b [contain-intrinsic-size:auto_300px] [content-visibility:auto] last:border-b-0">
-      <div role="row" className="flex h-8 items-center border-b bg-sidebar px-4 text-xs font-medium text-muted-foreground">
+      <div role="row" className={cn('flex h-8 items-center border-b bg-sidebar px-4 text-xs font-medium text-muted-foreground', action && 'pr-1.5')}>
         <span role="rowheader">{formatDayLabel(dayStartMillis, relativeDay)}</span>
+        {action && (
+          <span role="cell" className="ml-auto">
+            <button
+              type="button"
+              onClick={action.onClick}
+              className="flex h-7 items-center rounded-md px-2.5 text-[13px] font-medium text-primary outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
+            >
+              {action.label}
+            </button>
+          </span>
+        )}
       </div>
       {children}
     </div>

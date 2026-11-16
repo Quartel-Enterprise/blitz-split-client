@@ -8,10 +8,11 @@ final class AllExpensesModel {
     /// "Couldn't delete the bill. Try again.", from a bill's "⋯".
     private(set) var billDeleteErrorCount = 0
 
-    @ObservationIgnored private let holder = BlitzSplitApple.shared.createAllExpensesViewModel()
+    @ObservationIgnored private let holder: ViewModelHolder<AllExpensesViewModel>
     @ObservationIgnored private let watches = WatchBag()
 
-    init() {
+    init(route: RouteAllExpenses) {
+        holder = BlitzSplitApple.shared.createAllExpensesViewModel(route: route)
         let viewModel = holder.viewModel
         state = viewModel.uiState.value as! AllExpensesUiState
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
@@ -44,11 +45,12 @@ final class AllExpensesModel {
     }
 }
 
-/// "All expenses", which Home's "See everything" pushes over it: every bill you paid or take part in, across groups,
-/// by day, drawn as Home's rows with their "⋯" (a long press, a right click on the Mac). A page on every size, one
+/// "All expenses", which Home's "See everything" pushes over it (and a group's "See all", over the group, with the group
+/// picked in its Group filter): every bill you paid or take part in, across groups, by day, drawn as Home's rows with their "⋯" (a long press, a right click on the Mac). A page on every size, one
 /// column centered on an iPad and a wide Mac window, and in the half before the fold of an iPhone Duo open lying
 /// down, so no card crosses it; the next page is read as the last row comes into view.
 struct AllExpensesView: View {
+    let route: RouteAllExpenses
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: AllExpensesModel?
     /// The iPhone Duo's fold over the list, in the list's own coordinates.
@@ -83,7 +85,7 @@ struct AllExpensesView: View {
         )
         .glassToast("Couldn't delete the bill. Try again.", trigger: model?.billDeleteErrorCount ?? 0)
         .onAppear {
-            if model == nil { model = AllExpensesModel() }
+            if model == nil { model = AllExpensesModel(route: route) }
         }
     }
 
