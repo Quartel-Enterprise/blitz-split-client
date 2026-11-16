@@ -67,11 +67,6 @@
     <string name="group_stats_period_empty_body">Bu grubun tüm harcamaları şu döneme ait: %s.</string>
     <string name="group_stats_see_whole_trip">Tüm geziyi gör</string>
     <string name="group_stats_see_whole_period">Tüm zamanları gör</string>
-    <string name="group_stats_apply">Uygula</string>
-    <string name="group_stats_cancel">İptal</string>
-    <string name="group_stats_range_start">Başlangıç tarihi</string>
-    <string name="group_stats_range_end">Bitiş tarihi</string>
-    <string name="group_stats_range_none">Seçilmedi</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d harcama</item>
         <item quantity="other">%d harcama</item>
@@ -97,15 +92,4 @@
     <string name="group_stats_settling_open">%s hâlâ açık</string>
     <string name="group_stats_settling_note">Herkesin dönemin harcamalarındaki payını ortalama ne kadar sürede kapattığı. Hâlâ açık olanlar bugüne kadar sayılır.</string>
     <string name="group_stats_category_open">Harcamaları gör</string>
-    <string name="category_expenses_title">Kategoriye göre harcamalar</string>
-    <string name="category_expenses_subtitle">%1$s · %2$s</string>
-    <string name="category_expenses_back">İstatistikler\'e dön</string>
-    <string name="category_expenses_clear">Temizle</string>
-    <string name="category_expenses_summary">%1$s · %2$s</string>
-    <string name="category_expenses_empty_title">Bu kategorilerde harcama yok</string>
-    <string name="category_expenses_period_empty">Bu dönemde harcama yok</string>
-    <string name="category_expenses_empty_body">Yukarıdan başka kategoriler seç ya da dönemin tüm harcamalarını görmek için temizle.</string>
-    <string name="category_expenses_today">Bugün</string>
-    <string name="category_expenses_yesterday">Dün</string>
-    <string name="category_expenses_queued">sırada</string>
 </resources>

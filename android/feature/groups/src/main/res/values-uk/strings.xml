@@ -216,4 +216,10 @@
     <string name="groups_all_expenses_clear">Очистити фільтри</string>
     <string name="groups_all_expenses_no_results_title">Немає відповідних витрат</string>
     <string name="groups_all_expenses_no_results_body">Спробуй інші слова або очисти фільтри.</string>
+    <string name="groups_all_expenses_period">Період</string>
+    <string name="groups_all_expenses_period_all">За весь час</string>
+    <string name="groups_all_expenses_period_this_year">Цей рік</string>
+    <string name="groups_all_expenses_period_this_month">Цей місяць</string>
+    <string name="groups_all_expenses_period_last_month">Минулий місяць</string>
+    <string name="groups_all_expenses_period_custom">Обрати дати…</string>
 </resources>

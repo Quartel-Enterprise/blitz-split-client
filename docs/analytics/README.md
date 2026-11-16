@@ -40,7 +40,6 @@ can't ship without one); a few routes add what kind of screen it is, which stays
 | `payment_key` | `method` (`pix`, `bitcoin`), `is_new` |
 | `paying_method` | `is_new` |
 | `legal_document` | `page` (`privacy_policy`, `terms_of_use`) |
-| `category_expenses` | `has_period` (the statistics showed a period other than the whole history) |
 | Every other route (`home`, `groups`, `group_detail`, `bill_detail`…) | none |
 
 ## What is never sent
@@ -246,7 +245,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `update_dismissed` | `source` (`startup`, `manual`) | "Not now" or Esc on "Update available" (iOS, macOS) | `in_app_update` |
 | `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The avatar that opens Profile | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
 | `brand_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The web's logo, which opens Home (a tap on Home itself counts too) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |
-| `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`, `category_expenses`) | Search opened: its navigation item (Android's bar or rail, the web's), Apple's search tab (the Mac's sidebar item), or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
+| `search_opened` | `source` (`home`, `groups`, `global_balances`, `contacts`, `sidebar`, `group_detail`, `group_stats`) | Search opened: its navigation item (Android's bar or rail, the web's), Apple's search tab (the Mac's sidebar item), or ⌘K (not one refused over a dialog or a pushed screen) | `:feature:groups`, `:feature:global_balances`, `:feature:contacts`, `:feature:group_detail`, `:feature:group_stats` |
 | `search_scope_selected` | `scope`, `source` (`search`, `groups`) | All, Groups, People or Expenses | `:feature:groups` |
 | `search_result_clicked` | `kind` (`group`, `contact`, `person`, `bill`), `source` (`search`, `groups`) | A result tapped: `contact` is the person's profile, `person` their row in a group | `:feature:groups` |
 | `search_suggestion_clicked` | `source` (`search`, `groups`) | "Did you mean “Larissa”?" tapped | `:feature:groups` |
@@ -273,9 +272,9 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `scan_receipt_clicked` | `source` (`home`, `split_bill`) | "Scan receipt", only while it can ask where the photo comes from (online; on Home once it is read) | `:feature:groups`, `:feature:split_bill` |
 | `record_payment_clicked` | `source` (`home`) | Home's "Record a payment" | `:feature:groups` |
 | `home_see_all_groups_clicked` | none | "See all" over "Your groups" | `:feature:groups` |
-| `bill_clicked` | `source` (`home`, `all_expenses`, `group_detail`, `group_stats`, `category_expenses`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
+| `bill_clicked` | `source` (`home`, `all_expenses`, `group_detail`, `group_stats`) | A bill's row, which opens its Bill | `:feature:groups`, `:feature:group_detail`, `:feature:group_stats` |
 | `home_see_all_bills_clicked` | none | "See all" over "Latest expenses", which opens All expenses | `:feature:groups` |
-| `all_expenses_filter_changed` | `source` (`all_expenses`), `filter` (`group`, `category`, `share`, `payer`) | A filter of All expenses changed: a group or a main category picked or let go, "Your share" or "Who paid" picked | `:feature:groups` |
+| `all_expenses_filter_changed` | `source` (`all_expenses`), `filter` (`group`, `category`, `period`, `share`, `payer`) | A filter of All expenses changed: a group or a main category picked or let go, a period or its dates picked, "Your share" or "Who paid" picked | `:feature:groups` |
 | `all_expenses_sort_changed` | `sort` (`newest`, `oldest`, `largest`, `smallest`) | An order picked in All expenses' "Sort" | `:feature:groups` |
 | `all_expenses_filters_cleared` | none | "Clear filters" in All expenses, beside the filters or on "No expenses match"; the order stays | `:feature:groups` |
 | `activity_bell_clicked` | none | The bell in Home's bar, which opens Activity over Home | `:feature:groups` |
@@ -384,9 +383,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `stats_chart_type_selected` | `chart_type` | Bars or Line, another than the one showing | `:feature:group_stats` |
 | `stats_grain_selected` | `grain` | Day, Week, Month or Year, another than the one showing or one that switches the period to the whole one | `:feature:group_stats` |
 | `stats_whole_period_clicked` | none | "See the whole trip" of a period without bills | `:feature:group_stats` |
-| `stats_category_clicked` | `target` (`ring`, `legend`, `row`) | A category of "By category" (its slice, legend line or row), which opens "Expenses by category" | `:feature:group_stats` |
-| `category_filter_toggled` | `is_selected` | A chip of "Expenses by category", picked or let go | `:feature:group_stats` |
-| `category_filter_cleared` | `count` (chips picked) | "Clear" of "Expenses by category", while a chip is picked | `:feature:group_stats` |
+| `stats_category_clicked` | `target` (`ring`, `legend`, `row`) | A category of "By category" (its slice, legend line or row), which opens All expenses with it, the group and the period picked | `:feature:group_stats` |
 | `category_map_profile_clicked` | none | "Open Profile" on "Your map stays on this device only" | `:feature:category_map` |
 | `category_map_section_selected` | none | Another category picked beside its terms | `:feature:category_map` |
 | `category_term_add_clicked` | `entry` (`map`, `category`, `search`) | "Add term", "Add term in Transport" or "Add “pizzaria”", once the map is read | `:feature:category_map` |
@@ -469,12 +466,12 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `camera_allow_clicked` | `source` (`receipt`) | "Allow camera" on the receipt camera after a first refusal, which asks the system again (Android) | `:feature:split_bill`, `:feature:groups` |
 | `split_bill_save_clicked` | none | Split a bill's Save, also when it can't save yet | `:feature:split_bill` |
 | `bill_saved` | `is_new`, `split_mode`, `payers` (how many), `is_from_receipt`, `is_category_picked` (a new bill's, by hand), `is_split_as_default` (a new bill asking to save its split as the default) | A bill saved, new or edited | `:feature:split_bill` |
-| `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`, `home`, `all_expenses`, `category_expenses`) | "Delete bill", when its question opens; `group_detail`, `home`, `all_expenses` and `category_expenses` are a bill's ⋮ "Delete" on Expenses, Home's "Latest expenses", All expenses and Expenses by category | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
-| `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`, `group_detail`, `home`, `all_expenses`, `category_expenses`) | "Delete this bill?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
-| `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`, `group_detail`, `home`, `all_expenses`, `category_expenses`) | "Delete this bill?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
-| `bill_edit_clicked` | `source` (`group_detail`, `home`, `all_expenses`, `category_expenses`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" (Expenses, Home, All expenses, Expenses by category) once Edit bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
-| `bill_duplicate_clicked` | `source` (`group_detail`, `home`, `all_expenses`, `category_expenses`) | A bill's ⋮ "Duplicate" (Expenses, Home, All expenses, Expenses by category), once Split a bill opened filled in with the bill | `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
-| `bill_share_clicked` | `source` (`group_detail`, `home`, `all_expenses`, `category_expenses`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" (Expenses, Home, All expenses, Expenses by category) once Share bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
+| `bill_delete_clicked` | `source` (`split_bill`, `bill_detail`, `group_detail`, `home`, `all_expenses`) | "Delete bill", when its question opens; `group_detail`, `home` and `all_expenses` are a bill's ⋮ "Delete" on Expenses, Home's "Latest expenses" and All expenses | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
+| `bill_delete_confirmed` | `source` (`split_bill`, `bill_detail`, `group_detail`, `home`, `all_expenses`) | "Delete this bill?" confirmed, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
+| `bill_delete_cancelled` | `source` (`split_bill`, `bill_detail`, `group_detail`, `home`, `all_expenses`) | "Delete this bill?" closed without confirming, while it was open and not deleting yet | `:feature:split_bill`, `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
+| `bill_edit_clicked` | `source` (`group_detail`, `home`, `all_expenses`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" (Expenses, Home, All expenses) once Edit bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
+| `bill_duplicate_clicked` | `source` (`group_detail`, `home`, `all_expenses`) | A bill's ⋮ "Duplicate" (Expenses, Home, All expenses), once Split a bill opened filled in with the bill | `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
+| `bill_share_clicked` | `source` (`group_detail`, `home`, `all_expenses`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" (Expenses, Home, All expenses) once Share bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
 | `bill_undo_clicked` | none | "Undo" on History's latest edit, when it undoes | `:feature:bill_detail` |
 | `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
 | `bill_attachment_removed` | none | "Remove photo" in the viewer, on a photo it can remove | `:feature:bill_detail` |

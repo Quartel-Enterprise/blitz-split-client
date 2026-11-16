@@ -198,4 +198,10 @@
     <string name="groups_all_expenses_clear">Filtreleri temizle</string>
     <string name="groups_all_expenses_no_results_title">Eşleşen harcama yok</string>
     <string name="groups_all_expenses_no_results_body">Başka kelimeler dene veya filtreleri temizle.</string>
+    <string name="groups_all_expenses_period">Dönem</string>
+    <string name="groups_all_expenses_period_all">Tüm zamanlar</string>
+    <string name="groups_all_expenses_period_this_year">Bu yıl</string>
+    <string name="groups_all_expenses_period_this_month">Bu ay</string>
+    <string name="groups_all_expenses_period_last_month">Geçen ay</string>
+    <string name="groups_all_expenses_period_custom">Tarih seç…</string>
 </resources>

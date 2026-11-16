@@ -67,11 +67,6 @@
     <string name="group_stats_period_empty_body">Все расходы этой группы относятся к периоду: %s.</string>
     <string name="group_stats_see_whole_trip">Посмотреть всю поездку</string>
     <string name="group_stats_see_whole_period">Посмотреть за всё время</string>
-    <string name="group_stats_apply">Применить</string>
-    <string name="group_stats_cancel">Отмена</string>
-    <string name="group_stats_range_start">Дата начала</string>
-    <string name="group_stats_range_end">Дата окончания</string>
-    <string name="group_stats_range_none">Не выбрано</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d расход</item>
         <item quantity="few">%d расхода</item>
@@ -103,15 +98,4 @@
     <string name="group_stats_settling_open">%s ещё не закрыто</string>
     <string name="group_stats_settling_note">Сколько в среднем каждый тратит времени, чтобы рассчитаться за свою долю в счетах периода. Всё, что ещё не закрыто, считается до сегодняшнего дня.</string>
     <string name="group_stats_category_open">Посмотреть расходы</string>
-    <string name="category_expenses_title">Расходы по категориям</string>
-    <string name="category_expenses_subtitle">%1$s · %2$s</string>
-    <string name="category_expenses_back">Назад к статистике</string>
-    <string name="category_expenses_clear">Сбросить</string>
-    <string name="category_expenses_summary">%1$s · %2$s</string>
-    <string name="category_expenses_empty_title">Нет расходов в этих категориях</string>
-    <string name="category_expenses_period_empty">Нет расходов за этот период</string>
-    <string name="category_expenses_empty_body">Выбери другие категории выше или сбрось их, чтобы увидеть все расходы за период.</string>
-    <string name="category_expenses_today">Сегодня</string>
-    <string name="category_expenses_yesterday">Вчера</string>
-    <string name="category_expenses_queued">в очереди</string>
 </resources>

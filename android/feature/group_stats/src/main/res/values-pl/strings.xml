@@ -67,11 +67,6 @@
     <string name="group_stats_period_empty_body">Wszystkie wydatki tej grupy pochodzą z okresu: %s.</string>
     <string name="group_stats_see_whole_trip">Zobacz całą podróż</string>
     <string name="group_stats_see_whole_period">Zobacz cały okres</string>
-    <string name="group_stats_apply">Zastosuj</string>
-    <string name="group_stats_cancel">Anuluj</string>
-    <string name="group_stats_range_start">Data rozpoczęcia</string>
-    <string name="group_stats_range_end">Data zakończenia</string>
-    <string name="group_stats_range_none">Nie wybrano</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d wydatek</item>
         <item quantity="few">%d wydatki</item>
@@ -103,15 +98,4 @@
     <string name="group_stats_settling_open">%s wciąż otwarte</string>
     <string name="group_stats_settling_note">Ile czasu średnio zajmuje każdej osobie rozliczenie jej udziału w wydatkach z tego okresu. To, co wciąż otwarte, liczy się do dziś.</string>
     <string name="group_stats_category_open">Zobacz wydatki</string>
-    <string name="category_expenses_title">Wydatki według kategorii</string>
-    <string name="category_expenses_subtitle">%1$s · %2$s</string>
-    <string name="category_expenses_back">Wróć do Statystyk</string>
-    <string name="category_expenses_clear">Wyczyść</string>
-    <string name="category_expenses_summary">%1$s · %2$s</string>
-    <string name="category_expenses_empty_title">Brak wydatków w tych kategoriach</string>
-    <string name="category_expenses_period_empty">Brak wydatków w tym okresie</string>
-    <string name="category_expenses_empty_body">Wybierz powyżej inne kategorie albo je wyczyść, by zobaczyć wszystkie wydatki z okresu.</string>
-    <string name="category_expenses_today">Dziś</string>
-    <string name="category_expenses_yesterday">Wczoraj</string>
-    <string name="category_expenses_queued">w kolejce</string>
 </resources>

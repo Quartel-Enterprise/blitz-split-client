@@ -313,4 +313,8 @@
     <string name="designsystem_paid_with_private">Lo vedi solo tu.</string>
     <string name="designsystem_paid_with_only_payers">Solo chi ha pagato questa spesa può indicare con cosa ha pagato.</string>
     <string name="designsystem_paid_with_add">Aggiungi un metodo di pagamento</string>
+    <string name="designsystem_range_apply">Applica</string>
+    <string name="designsystem_range_start">Data di inizio</string>
+    <string name="designsystem_range_end">Data di fine</string>
+    <string name="designsystem_range_none">Nessuna selezionata</string>
 </resources>

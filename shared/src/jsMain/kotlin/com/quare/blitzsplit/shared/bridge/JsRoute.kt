@@ -38,7 +38,6 @@ class JsRoute internal constructor(
         is Route.GroupPhoto -> route.groupId
         is Route.DefaultSplit -> route.groupId
         is Route.GroupStats -> route.groupId
-        is Route.CategoryExpenses -> route.groupId
         is Route.AllExpenses -> route.groupId
         else -> null
     }

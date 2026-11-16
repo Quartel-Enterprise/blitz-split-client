@@ -537,7 +537,7 @@ private struct EmptyExpenses: View {
     }
 }
 
-/// An entry of the day (the group's Expenses, a category's bills from the statistics): its icon, a title and a meta line (with the amber dot while queued), and its amounts.
+/// An entry of the day (the group's Expenses): its icon, a title and a meta line (with the amber dot while queued), and its amounts.
 struct DayEntryLine<Amounts: View>: View {
     let systemImage: String
     /// A bill's category, drawn in place of the icon (6.1); nil for a payment.

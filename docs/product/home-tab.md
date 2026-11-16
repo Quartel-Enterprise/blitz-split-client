@@ -53,10 +53,9 @@ The home tab, its shortcuts and pinned groups.
     over the group (`BillMenuController` in `:core:expenses`, which the group's Expenses shares). The web's desktop table
     has the ⋮ in a last column. "See all" opens "All expenses" over Home (Pierre's call, beta feedback; it opened
     Activity on its bills before), `Route.AllExpenses`; the group's Expenses has its own "See all", which opens it over
-    the group with that group already picked in "Group" (beta feedback of 2026-11-16, [group-and-bills.md](group-and-bills.md)), the web's sidebar keeping the group's tab picked: every bill you paid or take part in, across groups, by day,
+    the group with that group already picked in "Group" (beta feedback of 2026-11-16, [group-and-bills.md](group-and-bills.md)), the web's sidebar keeping the group's tab picked; a category of the group's Statistics opens it over them with the group, that category and Statistics' period picked, those menus first (period, category, group): every bill you paid or take part in, across groups, by day,
     drawn as Home's rows, each with the same ⋮, a tap opening its Bill right over All expenses as from Home. A page on every
-    platform and size (on an Android book the filters sit before the hinge and the bills after it, as a category's
-    expenses do; on an iPhone Duo open the column keeps to the leading half, off the fold, as Activity's; the contrast
+    platform and size (on an Android book the filters sit before the hinge and the bills after it; on an iPhone Duo open the column keeps to the leading half, off the fold, as Activity's; the contrast
     and responsiveness sweep of 2026-11-12), back on the left (a long list read a page at a time reads better full height than in a
     dialog): Android a column of up to 640 dp centered, iOS and the Mac pushed over Home in its tab, a column of up to
     520 pt, the web a page in the home's frame with the tab it opened over selected (Home's, or the group's). It reads the device only, a page of 30 bills
@@ -68,7 +67,11 @@ The home tab, its shortcuts and pinned groups.
     does, what comes a typo or two away, `TypoTolerantQuery`), then a row of menus: the order ("Newest first", the
     default, "Oldest first", "Largest first", "Smallest first"; sorted by amount the bills read as one list with no
     day over them, ties the most recent first), "Group" and "Category" (several at once; a main category takes its
-    subcategories' bills, as Statistics' chips do; one picked names the menu, several read "Group · 2"), "Your share"
+    subcategories' bills, as Statistics' "By category" counts them; one picked names the menu, several read "Group ·
+    2"), "Period" (Statistics' own: "All time", the default, "This year", "This month", "Last month" and "Pick
+    dates…", which opens the same picker as Statistics, from one day to another, never after today; a period picked
+    names the menu, picked dates as their days, "Oct 24 – 26, 2026"; this year and this month count up to today, every
+    bill falling in by the day it was spent in the device's time zone), "Your share"
     ("You get back", "You owe") and "Who paid" ("You paid", alone or with others, "Others paid"), a menu filled while
     it narrows the list, and "Clear filters" (which keeps the order) once one does; nothing matching shows "No
     expenses match" / "Try other words or clear the filters." with "Clear filters". Android draws them as a search

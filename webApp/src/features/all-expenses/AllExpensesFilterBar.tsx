@@ -1,11 +1,14 @@
 import { ArrowDownUp, Check, ChevronDown, Search, X } from 'lucide-react'
 import type { AllExpensesPresenter, JsAllExpensesState } from 'blitzsplit-shared'
-import type { ReactNode } from 'react'
+import { Fragment, useState, type ReactNode } from 'react'
+import { PickDatesDialog } from '@/components/PickDatesDialog'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
+import { formatRange } from '@/features/group-stats/statsFormat'
 import { useDraft } from '@/hooks/useDraft'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { CategoryBadge, categoryName } from '@/lib/categories'
 import { cn } from '@/lib/utils'
@@ -23,6 +26,15 @@ const shareLabels: Record<string, MessageKey> = {
   TO_PAY: 'allExpenses_sharePay',
 }
 
+// Why: the statistics' periods, in their words.
+const periodLabels: Record<string, MessageKey> = {
+  ALL: 'stats_periodAll',
+  THIS_YEAR: 'stats_periodThisYear',
+  THIS_MONTH: 'stats_periodThisMonth',
+  LAST_MONTH: 'stats_periodLastMonth',
+  CUSTOM: 'stats_periodCustom',
+}
+
 const payerLabels: Record<string, MessageKey> = {
   ALL: 'allExpenses_payerAll',
   YOU: 'allExpenses_payerYou',
@@ -37,8 +49,9 @@ function pickedLabel(label: string, names: string[]): string {
 
 /**
  * Over "All expenses"' bills (Pierre's call, beta feedback): the search, which finds bills by their description as the
- * home's search does, then the order and the filters, each a menu, a filter's button filled while it narrows the list,
- * and "Clear filters" once one does. The row wraps on a phone.
+ * home's search does, then the order and the filters (in filterOrder: what the statistics picked comes first), each a
+ * menu, a filter's button filled while it narrows the list, and "Clear filters" once one does. The row wraps on a
+ * phone.
  */
 export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpensesPresenter; state: JsAllExpensesState }) {
   const groupIds = Array.from(state.groupIds)
@@ -46,6 +59,93 @@ export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpen
   const groups = Array.from(state.groupOptions)
   const categories = Array.from(state.categoryOptions)
   const [query, setQuery] = useDraft(state.query, (next) => presenter.search(next))
+  const [isPickingDates, setPickingDates] = useState(false)
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const chip = (filter: string) => {
+    switch (filter) {
+      case 'SORT':
+        return (
+          <FilterMenu label={t(sortLabels[state.sort])} icon={<ArrowDownUp />} isActive={false} ariaLabel={t('allExpenses_sort')}>
+            {Object.keys(sortLabels).map((sort) => (
+              <CheckedItem key={sort} label={t(sortLabels[sort])} isChecked={state.sort === sort} onSelect={() => presenter.pickSort(sort)} />
+            ))}
+          </FilterMenu>
+        )
+      case 'GROUP':
+        return (
+          <FilterMenu
+            label={pickedLabel(
+              t('allExpenses_group'),
+              groups.filter((group) => groupIds.includes(group.id)).map((group) => group.name),
+            )}
+            isActive={groupIds.length > 0}
+          >
+            {groups.map((group) => (
+              <CheckedItem
+                key={group.id}
+                label={group.name}
+                leading={<GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-5 text-[7px]" />}
+                isChecked={groupIds.includes(group.id)}
+                keepsOpen
+                onSelect={() => presenter.toggleGroup(group.id)}
+              />
+            ))}
+          </FilterMenu>
+        )
+      case 'CATEGORY':
+        return (
+          <FilterMenu
+            label={pickedLabel(
+              t('allExpenses_category'),
+              categories.filter((category) => categoryIds.includes(category.id)).map(categoryName),
+            )}
+            isActive={categoryIds.length > 0}
+          >
+            {categories.map((category) => (
+              <CheckedItem
+                key={category.id}
+                label={categoryName(category)}
+                leading={<CategoryBadge category={category} className="size-5 rounded-md [&_svg]:size-3" />}
+                isChecked={categoryIds.includes(category.id)}
+                keepsOpen
+                onSelect={() => presenter.toggleCategory(category.id)}
+              />
+            ))}
+          </FilterMenu>
+        )
+      case 'SHARE':
+        return (
+          <FilterMenu label={state.share === 'ALL' ? t('allExpenses_share') : t(shareLabels[state.share])} isActive={state.share !== 'ALL'}>
+            {Object.keys(shareLabels).map((share) => (
+              <CheckedItem key={share} label={t(shareLabels[share])} isChecked={state.share === share} onSelect={() => presenter.pickShare(share)} />
+            ))}
+          </FilterMenu>
+        )
+      case 'PAYER':
+        return (
+          <FilterMenu label={state.payer === 'ALL' ? t('allExpenses_payer') : t(payerLabels[state.payer])} isActive={state.payer !== 'ALL'}>
+            {Object.keys(payerLabels).map((payer) => (
+              <CheckedItem key={payer} label={t(payerLabels[payer])} isChecked={state.payer === payer} onSelect={() => presenter.pickPayer(payer)} />
+            ))}
+          </FilterMenu>
+        )
+      case 'PERIOD':
+        return (
+          <FilterMenu label={periodText(state)} isActive={state.period !== 'ALL'}>
+            {Object.keys(periodLabels).map((period) => (
+              <CheckedItem
+                key={period}
+                label={t(periodLabels[period])}
+                isChecked={state.period === period}
+                onSelect={() => (period === 'CUSTOM' ? setPickingDates(true) : presenter.pickPeriod(period))}
+              />
+            ))}
+          </FilterMenu>
+        )
+      default:
+        return null
+    }
+  }
   return (
     <div className="flex flex-col gap-2.5">
       <div className="relative">
@@ -60,65 +160,39 @@ export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpen
         />
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <FilterMenu label={t(sortLabels[state.sort])} icon={<ArrowDownUp />} isActive={false} ariaLabel={t('allExpenses_sort')}>
-          {Object.keys(sortLabels).map((sort) => (
-            <CheckedItem key={sort} label={t(sortLabels[sort])} isChecked={state.sort === sort} onSelect={() => presenter.pickSort(sort)} />
-          ))}
-        </FilterMenu>
-        <FilterMenu
-          label={pickedLabel(
-            t('allExpenses_group'),
-            groups.filter((group) => groupIds.includes(group.id)).map((group) => group.name),
-          )}
-          isActive={groupIds.length > 0}
-        >
-          {groups.map((group) => (
-            <CheckedItem
-              key={group.id}
-              label={group.name}
-              leading={<GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-5 text-[7px]" />}
-              isChecked={groupIds.includes(group.id)}
-              keepsOpen
-              onSelect={() => presenter.toggleGroup(group.id)}
-            />
-          ))}
-        </FilterMenu>
-        <FilterMenu
-          label={pickedLabel(
-            t('allExpenses_category'),
-            categories.filter((category) => categoryIds.includes(category.id)).map(categoryName),
-          )}
-          isActive={categoryIds.length > 0}
-        >
-          {categories.map((category) => (
-            <CheckedItem
-              key={category.id}
-              label={categoryName(category)}
-              leading={<CategoryBadge category={category} className="size-5 rounded-md [&_svg]:size-3" />}
-              isChecked={categoryIds.includes(category.id)}
-              keepsOpen
-              onSelect={() => presenter.toggleCategory(category.id)}
-            />
-          ))}
-        </FilterMenu>
-        <FilterMenu label={state.share === 'ALL' ? t('allExpenses_share') : t(shareLabels[state.share])} isActive={state.share !== 'ALL'}>
-          {Object.keys(shareLabels).map((share) => (
-            <CheckedItem key={share} label={t(shareLabels[share])} isChecked={state.share === share} onSelect={() => presenter.pickShare(share)} />
-          ))}
-        </FilterMenu>
-        <FilterMenu label={state.payer === 'ALL' ? t('allExpenses_payer') : t(payerLabels[state.payer])} isActive={state.payer !== 'ALL'}>
-          {Object.keys(payerLabels).map((payer) => (
-            <CheckedItem key={payer} label={t(payerLabels[payer])} isChecked={state.payer === payer} onSelect={() => presenter.pickPayer(payer)} />
-          ))}
-        </FilterMenu>
+        {Array.from(state.filterOrder).map((filter) => (
+          <Fragment key={filter}>{chip(filter)}</Fragment>
+        ))}
         {state.isFiltering && (
           <Button variant="ghost" size="sm" onClick={() => presenter.clearFilters()}>
             <X /> {t('allExpenses_clear')}
           </Button>
         )}
       </div>
+      {isPickingDates && (
+        <PickDatesDialog
+          isDesktop={isDesktop}
+          description={t('allExpenses_pickDatesBody')}
+          initialStart={state.customStartMillis ?? Date.now()}
+          initialEnd={state.customEndMillis ?? Date.now()}
+          onPick={(start, end) => {
+            setPickingDates(false)
+            presenter.pickCustomPeriod(start, end)
+          }}
+          onClose={() => setPickingDates(false)}
+        />
+      )}
     </div>
   )
+}
+
+/** "Period" while it is the whole history, a custom period's days ("Oct 24 – 26"), any other by its name. */
+function periodText(state: JsAllExpensesState): string {
+  if (state.period === 'ALL') return t('stats_period')
+  if (state.period === 'CUSTOM' && state.customStartMillis != null && state.customEndMillis != null) {
+    return formatRange('days', state.customStartMillis, state.customEndMillis)
+  }
+  return t(periodLabels[state.period])
 }
 
 function FilterMenu({ label, icon, isActive, ariaLabel, children }: { label: string; icon?: ReactNode; isActive: boolean; ariaLabel?: string; children: ReactNode }) {

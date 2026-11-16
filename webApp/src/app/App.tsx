@@ -22,7 +22,6 @@ import { ChargeDialog } from '@/features/global-balances/ChargeDialog'
 import { GlobalBalancesScreen } from '@/features/global-balances/GlobalBalancesScreen'
 import { GroupDetailScreen } from '@/features/group-detail/GroupDetailScreen'
 import { forgetClosedPickedTabs } from '@/features/group-detail/pickedTabs'
-import { CategoryExpensesScreen } from '@/features/group-stats/CategoryExpensesScreen'
 import { GroupStatsScreen } from '@/features/group-stats/GroupStatsScreen'
 import { GroupsScreen } from '@/features/groups/GroupsScreen'
 import { SearchRouteDialog } from '@/features/groups/SearchDialog'
@@ -176,7 +175,6 @@ const FRAME_PAGES = new Set([
   'all-expenses',
   'group-detail',
   'group-stats',
-  'category-expenses',
   'contact-profile',
   'profile',
   'edit-profile',
@@ -338,14 +336,13 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
       return route ? <GroupDetailScreen key={`${route.groupId}/${route.groupTab}`} route={route} /> : null
     case 'group-stats':
       return route ? <GroupStatsScreen key={route.groupId} route={route} /> : null
-    case 'category-expenses':
-      return route ? <CategoryExpensesScreen key={route.groupId} route={route} /> : null
     case 'global-balances':
       return route ? <GlobalBalancesScreen route={route} /> : null
     // Why: a push notification replaces a contact's Atividade, or Início's bills, with everyone's, which is a new page.
     case 'activity':
       return route ? <ActivityScreen key={`${route.personKey ?? ''}:${route.showsBillsOnly}`} route={route} /> : null
-    // Why: Início's "Ver tudo" over "Últimas despesas", a page over the home; a group's, over the group, filtered by it.
+    // Why: Início's "Ver tudo" over "Últimas despesas", a page over the home; a group's, over the group, filtered by it;
+    // a category of the statistics, over them, with the group, the category and the period picked.
     case 'all-expenses':
       return route ? <AllExpensesScreen key={route.groupId ?? ''} route={route} /> : null
     // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it;

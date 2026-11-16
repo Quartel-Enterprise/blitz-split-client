@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.groupstats
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -139,7 +141,10 @@ internal fun StatsPeopleSection(
     }
 }
 
-// Why: the ring of "Por pessoa" on its card, centered; a finger's tap picks a slice and a second one lets it go.
+/*
+ * Why: the ring of "Por pessoa" on its card, centered; a finger's tap picks a slice and a second one lets it go, as does
+ * a tap anywhere else on the card (Pierre's call, beta feedback of 2026-11-16).
+ */
 @Composable
 private fun StatsPeopleRingCard(
     state: GroupStatsUiState,
@@ -149,6 +154,7 @@ private fun StatsPeopleRingCard(
     onPick: (Int?) -> Unit,
 ) {
     val isDark = LocalIsDarkTheme.current
+    val currentOnPick by rememberUpdatedState(onPick)
     val people = state.people
     val names = people.map { personName(it) }
     val parts = people.mapIndexed { index, person ->
@@ -158,6 +164,7 @@ private fun StatsPeopleRingCard(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainerLowest, RoundedCornerShape(20.dp))
+            .pointerInput(Unit) { detectTapGestures { currentOnPick(null) } }
             .padding(16.dp),
         contentAlignment = Alignment.Center,
     ) {

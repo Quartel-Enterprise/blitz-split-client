@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpensesIn
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
@@ -29,7 +30,9 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.groupOptionsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homeBillsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.myExpensesOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.narrowedOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.periodSpanOrNull
 import com.quare.blitzsplit.feature.groups.presentation.model.ALL_EXPENSES_SOURCE
+import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
@@ -56,7 +59,8 @@ internal const val ALL_EXPENSES_PAGE_SIZE = 30
  * each time the list nears its end, as a window that grows (a LIMIT over Room's query, one more bill to know whether
  * more are left). Room keeps the window live, so a bill edited, deleted or synced in changes in place, never a stale
  * page. A bill's ⋮ is the group's (BillMenuController), its options opening over this screen. From a group's Expenses
- * the route names the group, picked in the Group filter from the start.
+ * the route names the group, picked in the Group filter from the start; from a category of the statistics, the group,
+ * the category and the period they showed, which then lead the row of filters.
  */
 class AllExpensesViewModel(
     private val route: Route.AllExpenses,
@@ -75,8 +79,9 @@ class AllExpensesViewModel(
     val uiState: StateFlow<AllExpensesUiState>
         field = MutableStateFlow(
             AllExpensesUiState.initial.copy(
-                filters = AllExpensesFilters.none.copy(groupIds = setOfNotNull(route.groupId)),
+                filters = filtersOf(route),
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
+                filterOrder = filterOrderOf(route),
             ),
         )
 
@@ -166,6 +171,19 @@ class AllExpensesViewModel(
                 it.copy(categoryIds = it.categoryIds.toToggled(event.categoryId))
             }
 
+            is AllExpensesUiEvent.OnPeriodPicked -> narrow {
+                // Why: "Custom range…" waits for its days, which the picker sends as OnCustomPeriodPicked.
+                if (event.period == ExpensePeriod.CUSTOM && it.customStartMillis == null) it else it.copy(period = event.period)
+            }
+
+            is AllExpensesUiEvent.OnCustomPeriodPicked -> narrow {
+                it.copy(
+                    period = ExpensePeriod.CUSTOM,
+                    customStartMillis = minOf(event.startMillis, event.endMillis),
+                    customEndMillis = maxOf(event.startMillis, event.endMillis),
+                )
+            }
+
             is AllExpensesUiEvent.OnShareFilterPicked -> narrow { it.copy(share = event.share) }
 
             is AllExpensesUiEvent.OnPayerFilterPicked -> narrow { it.copy(payer = event.payer) }
@@ -217,7 +235,11 @@ class AllExpensesViewModel(
             return
         }
         val mine = myExpensesOf(bills.device.expenses, bills.groups)
-        val narrowed = if (window != null) mine.take(window) else narrowedOf(mine, picked, bills.categories)
+        val narrowed = if (window != null) {
+            mine.take(window)
+        } else {
+            narrowedOf(mine, picked, bills.categories, picked.periodSpanOrNull(clock.nowMillis, clock.timeZone))
+        }
         val shown = if (window != null) narrowed else narrowed.take(requested)
         val dated = homeBillsOf(shown, bills.categories)
         uiState.update {
@@ -259,6 +281,33 @@ private class ReadBills(
     val groups: List<Group>,
     val categories: CategoryTree,
 )
+
+// Why: what the route picks: the group of a group's Expenses; the group, category and period of the statistics.
+private fun filtersOf(route: Route.AllExpenses): AllExpensesFilters {
+    val hasCustomDays = route.customStartMillis != null && route.customEndMillis != null
+    return AllExpensesFilters.none.copy(
+        groupIds = setOfNotNull(route.groupId),
+        categoryIds = setOfNotNull(route.categoryId),
+        period = route.period.takeIf { it != ExpensePeriod.CUSTOM || hasCustomDays } ?: ExpensePeriod.ALL,
+        customStartMillis = route.customStartMillis.takeIf { hasCustomDays },
+        customEndMillis = route.customEndMillis.takeIf { hasCustomDays },
+    )
+}
+
+/*
+ * Why: opened from the statistics (a category picked), what they picked comes first, in the order Pierre named it
+ * (period, category, group); the rest keep their place.
+ */
+private fun filterOrderOf(route: Route.AllExpenses): List<AllExpensesFilter> {
+    if (route.categoryId == null) return AllExpensesFilter.entries
+    val filters = filtersOf(route)
+    val leading = listOfNotNull(
+        AllExpensesFilter.PERIOD.takeIf { filters.period != ExpensePeriod.ALL },
+        AllExpensesFilter.CATEGORY,
+        AllExpensesFilter.GROUP.takeIf { filters.groupIds.isNotEmpty() },
+    )
+    return leading + (AllExpensesFilter.entries - leading.toSet())
+}
 
 private fun Set<String>.toToggled(id: String): Set<String> = if (id in this) this - id else this + id
 

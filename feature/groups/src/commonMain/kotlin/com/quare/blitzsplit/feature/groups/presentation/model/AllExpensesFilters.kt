@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
+import com.quare.blitzsplit.core.model.ExpensePeriod
+
 /*
  * Why: what "All expenses" narrows its bills to (Pierre's call, beta feedback): the search's text over the description,
  * as the home's search finds bills, the groups and the main categories picked (none picked: all), your share, who paid,
@@ -10,6 +12,10 @@ data class AllExpensesFilters(
     val groupIds: Set<String>,
     // Why: main categories; one takes its subcategories' bills, as Statistics' chips do.
     val categoryIds: Set<String>,
+    val period: ExpensePeriod,
+    // Why: CUSTOM's first and last days (noon of each in the device's zone, as the pickers give them); null until picked.
+    val customStartMillis: Long?,
+    val customEndMillis: Long?,
     val share: ShareFilter,
     val payer: PayerFilter,
     val sort: ExpenseSort,
@@ -19,6 +25,7 @@ data class AllExpensesFilters(
         get() = query.isNotBlank() ||
             groupIds.isNotEmpty() ||
             categoryIds.isNotEmpty() ||
+            period != ExpensePeriod.ALL ||
             share != ShareFilter.ALL ||
             payer != PayerFilter.ALL
 
@@ -35,6 +42,9 @@ data class AllExpensesFilters(
             query = "",
             groupIds = emptySet(),
             categoryIds = emptySet(),
+            period = ExpensePeriod.ALL,
+            customStartMillis = null,
+            customEndMillis = null,
             share = ShareFilter.ALL,
             payer = PayerFilter.ALL,
             sort = ExpenseSort.NEWEST,

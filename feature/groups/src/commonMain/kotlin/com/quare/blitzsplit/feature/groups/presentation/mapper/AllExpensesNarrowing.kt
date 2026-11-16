@@ -1,9 +1,12 @@
 package com.quare.blitzsplit.feature.groups.presentation.mapper
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
+import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.utils.TypoTolerantQuery
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
@@ -11,6 +14,10 @@ import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
 import com.quare.blitzsplit.feature.groups.presentation.model.FilterGroupOption
 import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.minus
 
 /*
  * Why: each bill with its group and what it does to this device's user's balance; a bill whose group isn't read yet, or
@@ -41,8 +48,10 @@ internal fun narrowedOf(
     bills: List<LatestExpense>,
     filters: AllExpensesFilters,
     categories: CategoryTree,
+    // Why: the days of the period picked, in the device's zone; null for the whole history.
+    period: DatedSpan?,
 ): List<LatestExpense> {
-    val filtered = bills.filter { it.isPassing(filters, categories) }
+    val filtered = bills.filter { it.isPassing(filters, categories) && (period == null || period.holds(it.expense.spentAt)) }
     val typed = TypoTolerantQuery.of(filters.query)
     val found = if (typed.isEmpty) {
         filtered
@@ -53,6 +62,45 @@ internal fun narrowedOf(
             .ifEmpty { filtered.filter { typed.findIn(it.expense.description) != null } }
     }
     return found.sortedWith(comparatorOf(filters.sort))
+}
+
+// Why: a period's days with the zone they are counted in, so a bill falls in it by the day it was spent there.
+internal class DatedSpan(
+    private val span: DateSpan,
+    private val timeZone: TimeZone,
+) {
+    fun holds(epochMillis: Long): Boolean = SpentDay.dateOf(epochMillis, timeZone) in span
+}
+
+/*
+ * Why: the period's days as the statistics count them: this year and this month up to today, last month whole, a
+ * custom span as picked; null for the whole history (and for CUSTOM before its days, which never happens).
+ */
+internal fun AllExpensesFilters.periodSpanOrNull(
+    nowMillis: Long,
+    timeZone: TimeZone,
+): DatedSpan? {
+    val today = SpentDay.dateOf(nowMillis, timeZone)
+    val monthStart = LocalDate(today.year, today.month, 1)
+    val span = when (period) {
+        ExpensePeriod.ALL -> null
+
+        ExpensePeriod.THIS_YEAR -> DateSpan(LocalDate(today.year, 1, 1), today)
+
+        ExpensePeriod.THIS_MONTH -> DateSpan(monthStart, today)
+
+        ExpensePeriod.LAST_MONTH -> DateSpan(
+            start = monthStart.minus(DatePeriod(months = 1)),
+            end = monthStart.minus(DatePeriod(days = 1)),
+        )
+
+        ExpensePeriod.CUSTOM -> {
+            val start = customStartMillis
+            val end = customEndMillis
+            if (start != null && end != null) DateSpan(SpentDay.dateOf(start, timeZone), SpentDay.dateOf(end, timeZone)) else null
+        }
+    }
+    return span?.let { DatedSpan(it, timeZone) }
 }
 
 private fun LatestExpense.isPassing(

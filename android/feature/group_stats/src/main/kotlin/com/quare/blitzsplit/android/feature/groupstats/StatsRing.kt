@@ -56,7 +56,7 @@ internal data class StatsRingSlice(
 /*
  * Why: the ring of "Por categoria" and "Por pessoa": slices with a thin gap between them, sweeping in when sweepKey
  * changes. The picked slice pops out and the others fade; a mouse picks by hovering, and a tap or a click lands on
- * onTap. Shares that are all 0 leave a bare neutral ring. The center is the caller's, the description TalkBack's.
+ * onTap, or lets the pick go off every slice. Shares that are all 0 leave a bare neutral ring. The center is the caller's, the description TalkBack's.
  */
 @Composable
 internal fun StatsRingDisplay(
@@ -95,7 +95,9 @@ internal fun StatsRingDisplay(
                 .pointerInput(percents) {
                     detectPickTaps { offset, isMouse ->
                         // Why: this.size is the pointer area's, in pixels; a bare size is the ring's Dp parameter.
-                        findSliceAt(offset, this.size.width.toFloat(), percents)?.let { currentOnTap(it, isMouse) }
+                        val index = findSliceAt(offset, this.size.width.toFloat(), percents)
+                        // Why: off every slice (the hole, the corners) lets the picked one go, as the card around does.
+                        if (index != null) currentOnTap(index, isMouse) else currentOnPick(null)
                     }
                 }.onMouseHover(
                     key = percents,

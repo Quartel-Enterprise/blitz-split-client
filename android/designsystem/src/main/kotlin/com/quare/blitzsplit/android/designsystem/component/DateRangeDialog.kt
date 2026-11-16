@@ -1,4 +1,4 @@
-package com.quare.blitzsplit.android.feature.groupstats
+package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -24,6 +24,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -32,12 +33,12 @@ import java.time.ZoneOffset
 private const val NOON = 12
 
 /*
- * Why: "Escolher datas…", from one day to another, never after today. The picker works in UTC days, so each local day
+ * Why: "Pick dates…" of Statistics and "Custom range…" of All expenses, from one day to another, never after today. The picker works in UTC days, so each local day
  * goes in and out of it as midnight UTC, and the ViewModel gets noon of each day in the device's time zone.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun StatsDateRangeDialog(
+fun DateRangeDialog(
     startMillis: Long,
     endMillis: Long,
     onPicked: (Long, Long) -> Unit,
@@ -68,10 +69,10 @@ internal fun StatsDateRangeDialog(
                     onPicked(start.toLocalNoon(zone), end.toLocalNoon(zone))
                 },
                 enabled = state.selectedStartDateMillis != null,
-            ) { Text(stringResource(R.string.group_stats_apply)) }
+            ) { Text(stringResource(R.string.designsystem_range_apply)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.group_stats_cancel)) }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }
         },
     ) {
         val formatter = remember { DatePickerDefaults.dateFormatter() }
@@ -95,9 +96,9 @@ private fun RangeHeadlineText(
     formatter: DatePickerFormatter,
 ) {
     val locale = LocalConfiguration.current.locales[0]
-    val startLabel = stringResource(R.string.group_stats_range_start)
-    val endLabel = stringResource(R.string.group_stats_range_end)
-    val none = stringResource(R.string.group_stats_range_none)
+    val startLabel = stringResource(R.string.designsystem_range_start)
+    val endLabel = stringResource(R.string.designsystem_range_end)
+    val none = stringResource(R.string.designsystem_range_none)
     val start = formatter.formatDate(state.selectedStartDateMillis, locale) ?: startLabel
     val end = formatter.formatDate(state.selectedEndDateMillis, locale) ?: endLabel
     // Why: as Material's headline, TalkBack reads both dates in full with what each is, and again as they change.

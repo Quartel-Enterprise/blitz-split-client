@@ -189,4 +189,10 @@
     <string name="groups_all_expenses_clear">フィルターをクリア</string>
     <string name="groups_all_expenses_no_results_title">一致する支出はありません</string>
     <string name="groups_all_expenses_no_results_body">別の言葉を試すか、フィルターをクリアしてください。</string>
+    <string name="groups_all_expenses_period">期間</string>
+    <string name="groups_all_expenses_period_all">全期間</string>
+    <string name="groups_all_expenses_period_this_year">今年</string>
+    <string name="groups_all_expenses_period_this_month">今月</string>
+    <string name="groups_all_expenses_period_last_month">先月</string>
+    <string name="groups_all_expenses_period_custom">日付を選ぶ…</string>
 </resources>

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.provider.analytics.screen
 
 import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.LegalPage
@@ -42,14 +43,6 @@ internal val everyRouteKind: List<Route> = listOf(
         isOverBill = false,
     ),
     Route.GroupStats(groupId = "secret-group"),
-    Route.CategoryExpenses(
-        groupId = "secret-group",
-        categoryId = "secret-category",
-        currency = GroupCurrency.BRL,
-        periodStartMillis = 1L,
-        periodEndMillis = 2L,
-        isMonthPeriod = false,
-    ),
     Route.EditGroup(groupId = "secret-group"),
     Route.GroupPhoto(groupId = "secret-group"),
     Route.DefaultSplit(groupId = "secret-group"),
@@ -83,7 +76,13 @@ internal val everyRouteKind: List<Route> = listOf(
         offersReceiverKeys = true,
     ),
     Route.PickPayment,
-    Route.AllExpenses(groupId = null),
+    Route.AllExpenses(
+        groupId = "secret-group",
+        categoryId = "secret-category",
+        period = ExpensePeriod.CUSTOM,
+        customStartMillis = 1L,
+        customEndMillis = 2L,
+    ),
     Route.GlobalBalances(filter = BalancesFilter.OWES_YOU),
     Route.Charge(
         personKey = "secret-person",

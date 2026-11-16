@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.navigation
 
 import com.quare.blitzsplit.core.model.AppDownloadSource
 import com.quare.blitzsplit.core.model.BalancesFilter
+import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.LegalPage
@@ -137,23 +138,6 @@ sealed interface Route {
      */
     data class GroupStats(
         val groupId: String,
-    ) : Route
-
-    /*
-     * Why: "Expenses by category", from a category of the statistics' "By category" (its slice, legend line or row):
-     * the group's bills of that main category, whose chips switch or add others. The first instant of the first and
-     * last days of the period the statistics showed, both null for the whole history (which then follows new bills).
-     * Back goes to the statistics.
-     */
-    data class CategoryExpenses(
-        val groupId: String,
-        val categoryId: String,
-        // Why: the statistics' currency chip: the list and its total hold the bills in that currency only.
-        val currency: GroupCurrency,
-        val periodStartMillis: Long?,
-        val periodEndMillis: Long?,
-        // Why: the period was "This month" or "Last month", which the statistics name as a month ("October 2026").
-        val isMonthPeriod: Boolean,
     ) : Route
 
     /*
@@ -305,10 +289,17 @@ sealed interface Route {
      * Why: "Todas as despesas", which Início's "Ver tudo" over "Últimas despesas" opens over Início: every bill this
      * device's user paid or takes part in, across groups, by day, each with its ⋮ (Pierre's call, beta feedback). The
      * group's Expenses opens it over the group with groupId already picked in its Group filter (beta feedback of
-     * 2026-11-16), which the person may clear there; Início opens it with none.
+     * 2026-11-16), which the person may clear there; Início opens it with none. A category of the statistics' "By
+     * category" opens it over them with the group, that main category and the period they showed already picked, which
+     * then lead its filters (beta feedback of 2026-11-16, in the place of "Expenses by category").
      */
     data class AllExpenses(
         val groupId: String?,
+        val categoryId: String? = null,
+        val period: ExpensePeriod = ExpensePeriod.ALL,
+        // Why: CUSTOM's first and last days, as the statistics' picker gives them (noon of each, the device's zone).
+        val customStartMillis: Long? = null,
+        val customEndMillis: Long? = null,
     ) : Route
 
     /*

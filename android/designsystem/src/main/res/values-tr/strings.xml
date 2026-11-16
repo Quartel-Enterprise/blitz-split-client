@@ -304,4 +304,8 @@
     <string name="designsystem_paid_with_private">Bunu yalnızca sen görürsün.</string>
     <string name="designsystem_paid_with_only_payers">Ödeme şeklini yalnızca bu harcamayı ödeyenler seçebilir.</string>
     <string name="designsystem_paid_with_add">Ödeme yöntemi ekle</string>
+    <string name="designsystem_range_apply">Uygula</string>
+    <string name="designsystem_range_start">Başlangıç tarihi</string>
+    <string name="designsystem_range_end">Bitiş tarihi</string>
+    <string name="designsystem_range_none">Seçilmedi</string>
 </resources>

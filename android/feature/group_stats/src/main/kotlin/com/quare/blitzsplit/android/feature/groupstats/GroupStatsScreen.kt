@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.quare.blitzsplit.android.designsystem.component.DateRangeDialog
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.GroupStatsViewModel
@@ -30,7 +31,7 @@ fun GroupStatsScreen(
         },
     )
     if (isPickingDates) {
-        StatsDateRangeDialog(
+        DateRangeDialog(
             startMillis = state.periodStartMillis,
             endMillis = state.periodEndMillis,
             onPicked = { start, end ->

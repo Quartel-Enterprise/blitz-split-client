@@ -295,4 +295,8 @@
     <string name="designsystem_paid_with_private">Hanya kamu yang melihat ini.</string>
     <string name="designsystem_paid_with_only_payers">Hanya yang membayar tagihan ini yang bisa menandai cara bayarnya.</string>
     <string name="designsystem_paid_with_add">Tambah metode pembayaran</string>
+    <string name="designsystem_range_apply">Terapkan</string>
+    <string name="designsystem_range_start">Tanggal mulai</string>
+    <string name="designsystem_range_end">Tanggal selesai</string>
+    <string name="designsystem_range_none">Tidak ada yang dipilih</string>
 </resources>

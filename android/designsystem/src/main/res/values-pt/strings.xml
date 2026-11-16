@@ -305,4 +305,8 @@
     <string name="designsystem_paid_with_private">Só você vê isso.</string>
     <string name="designsystem_paid_with_only_payers">Só quem pagou esta conta pode marcar com o que pagou.</string>
     <string name="designsystem_paid_with_add">Adicionar forma de pagamento</string>
+    <string name="designsystem_range_apply">Aplicar</string>
+    <string name="designsystem_range_start">Data de início</string>
+    <string name="designsystem_range_end">Data de término</string>
+    <string name="designsystem_range_none">Nenhuma selecionada</string>
 </resources>

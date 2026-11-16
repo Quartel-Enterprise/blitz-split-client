@@ -10,7 +10,5 @@
     <string name="group_stats_note_year_switches_trip">Para comparar anos, escolhe Ano: o período passa a Toda a viagem.</string>
     <string name="group_stats_empty_body">As estatísticas aparecem quando a primeira despesa for registada.</string>
     <string name="group_stats_split_bill">Dividir conta</string>
-    <string name="category_expenses_empty_body">Escolhe outras categorias acima, ou limpa para ver todas as despesas do período.</string>
-    <string name="group_stats_range_end">Data de fim</string>
     <string name="group_stats_settling_note">Quanto tempo cada um leva, em média, para acertar a sua parte nas contas do período. O que segue em aberto conta até hoje.</string>
 </resources>

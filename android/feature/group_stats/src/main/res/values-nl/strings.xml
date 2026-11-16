@@ -67,11 +67,6 @@
     <string name="group_stats_period_empty_body">Alle uitgaven van deze groep zijn van %s.</string>
     <string name="group_stats_see_whole_trip">De hele reis bekijken</string>
     <string name="group_stats_see_whole_period">Alles bekijken</string>
-    <string name="group_stats_apply">Toepassen</string>
-    <string name="group_stats_cancel">Annuleren</string>
-    <string name="group_stats_range_start">Begindatum</string>
-    <string name="group_stats_range_end">Einddatum</string>
-    <string name="group_stats_range_none">Niets geselecteerd</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d uitgave</item>
         <item quantity="other">%d uitgaven</item>
@@ -97,15 +92,4 @@
     <string name="group_stats_settling_open">%s nog open</string>
     <string name="group_stats_settling_note">Hoe lang ieder er gemiddeld over doet om hun deel van de uitgaven van de periode te verrekenen. Wat nog open staat, telt tot vandaag.</string>
     <string name="group_stats_category_open">Uitgaven bekijken</string>
-    <string name="category_expenses_title">Uitgaven per categorie</string>
-    <string name="category_expenses_subtitle">%1$s · %2$s</string>
-    <string name="category_expenses_back">Terug naar Statistieken</string>
-    <string name="category_expenses_clear">Wissen</string>
-    <string name="category_expenses_summary">%1$s · %2$s</string>
-    <string name="category_expenses_empty_title">Geen uitgaven in deze categorieën</string>
-    <string name="category_expenses_period_empty">Geen uitgaven in deze periode</string>
-    <string name="category_expenses_empty_body">Kies hierboven andere categorieën, of wis ze om alle uitgaven van de periode te zien.</string>
-    <string name="category_expenses_today">Vandaag</string>
-    <string name="category_expenses_yesterday">Gisteren</string>
-    <string name="category_expenses_queued">in wachtrij</string>
 </resources>
