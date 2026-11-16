@@ -38,6 +38,13 @@ private val previewPeople = listOf(
     Triple("Diego", AvatarColor.GREEN, 25_350L),
 )
 
+// Why: the people's shares, rounded down with the points left over on the largest, so the ring closes at 100.
+private val previewPercents = previewPeople
+    .map { it.third * 100 / previewPeople.sumOf { person -> person.third } }
+    .map { it.toInt() }
+    .toMutableList()
+    .apply { this[0] += 100 - sum() }
+
 internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsUiState {
     val end = PREVIEW_START + previewDay * (previewDays.size - 1)
     return GroupStatsUiState(
@@ -77,7 +84,7 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
                 photoUrl = null,
                 isMe = name == "Pierre",
                 amountMinor = amount,
-                percent = (amount * 100 / previewPeople.sumOf { it.third }).toInt(),
+                percent = previewPercents[index],
                 color = SplitBarColors.getAt(index),
             )
         },

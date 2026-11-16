@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { categoryStyle } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 import { useReplay } from './useReplay'
@@ -18,8 +18,8 @@ export interface StatsRingSlice {
 /**
  * The ring of "Por categoria" and "Por pessoa": slices with a thin gap between them, sweeping in again when ringKey
  * changes. The picked slice pops out and the others fade; the mouse picks by hovering, and a click or a tap lands on
- * onTap. Shares that are all 0 leave a bare neutral ring. The center is the caller's, as is the label read for the
- * whole ring.
+ * onTap, which is told whether a mouse made it. Shares that are all 0 leave a bare neutral ring. The center is the
+ * caller's, as is the label read for the whole ring.
  */
 export function StatsRing({
   slices,
@@ -37,10 +37,12 @@ export function StatsRing({
   selected: number | null
   size: number
   onPick: (index: number | null) => void
-  onTap: (index: number) => void
+  onTap: (index: number, isMouse: boolean) => void
   children: ReactNode
 }) {
   const isSwept = useReplay(ringKey)
+  // Why: a click doesn't say what made it, so the pointer that pressed it is kept for onTap.
+  const pointerType = useRef('mouse')
   const isEmpty = !slices.some((slice) => slice.percent > 0)
   return (
     <div role="img" aria-label={label} className="relative shrink-0" style={{ width: size, height: size }}>
@@ -77,7 +79,10 @@ export function StatsRing({
               onPointerEnter={(event) => {
                 if (event.pointerType === 'mouse') onPick(index)
               }}
-              onClick={() => onTap(index)}
+              onPointerDown={(event) => {
+                pointerType.current = event.pointerType
+              }}
+              onClick={() => onTap(index, pointerType.current === 'mouse')}
             />
           ))
         )}

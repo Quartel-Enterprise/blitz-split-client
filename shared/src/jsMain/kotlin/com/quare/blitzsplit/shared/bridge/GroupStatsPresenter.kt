@@ -138,6 +138,8 @@ class JsGroupStatsState(
     val myPaidCount: Int,
     val peopleView: String,
     val people: Array<JsStatsPerson>,
+    // Why: the ring by person has a share to show (GroupStatsUiState.topPerson); false leaves it bare and neutral.
+    val hasPersonShares: Boolean,
     val chartType: String,
     val grain: String,
     val grains: Array<JsStatsGrain>,
@@ -291,6 +293,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
     myPaidCount = state.myPaidCount,
     peopleView = if (state.peopleView == StatsPeopleView.PAID) "paid" else "consumption",
     people = state.people.map(::toJsStatsPerson).toTypedArray(),
+    hasPersonShares = state.topPerson != null,
     chartType = state.chartType.code,
     grain = state.grain.code,
     grains = state.grains.map { JsStatsGrain(it.grain.code, it.isEnabled) }.toTypedArray(),

@@ -10,7 +10,7 @@ struct StatsRingSlice {
 
 /// The ring of "By category" and "By person": slices with a thin gap between them, sweeping in when `ringKey`
 /// changes (whole at once with Reduce Motion on). The picked slice pops out and the others fade; the pointer picks by
-/// hovering, and a tap or a click lands on `onTap`. Shares that are all 0 leave a bare neutral ring. The center is the
+/// hovering, and a tap or a click lands on `onTap`, told whether a pointer made it. Shares that are all 0 leave a bare neutral ring. The center is the
 /// caller's, as is the label VoiceOver reads for the whole ring.
 struct StatsRing<Center: View>: View {
     let slices: [StatsRingSlice]
@@ -18,13 +18,16 @@ struct StatsRing<Center: View>: View {
     let ringKey: String
     let label: Text
     @Binding var selected: Int?
-    let onTap: (Int) -> Void
+    /// The slice tapped, and whether a pointer (the Mac's, an iPad's trackpad) was over the ring when it was.
+    let onTap: (Int, Bool) -> Void
     @ViewBuilder let center: Center
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     /// 0 to 1 as the ring sweeps in, clockwise from the top.
     @State private var sweep: Double = 0
+    /// A pointer is over the ring, so a click lands on a slice its hover already picked.
+    @State private var isHovered = false
 
     private var isEmpty: Bool {
         !slices.contains { $0.percent > 0 }
@@ -32,6 +35,7 @@ struct StatsRing<Center: View>: View {
 
     var body: some View {
         let swept = reduceMotion ? 1 : sweep
+        let hasGaps = slices.filter { $0.percent > 0 }.count > 1
         Chart {
             if isEmpty {
                 SectorMark(angle: .value("Share", 100), innerRadius: .ratio(0.62), outerRadius: .ratio(0.92))
@@ -42,7 +46,7 @@ struct StatsRing<Center: View>: View {
                         angle: .value("Share", slice.percent * swept),
                         innerRadius: .ratio(0.62),
                         outerRadius: .ratio(selected == index ? 1 : 0.92),
-                        angularInset: slices.filter { $0.percent > 0 }.count > 1 ? 1.5 : 0,
+                        angularInset: hasGaps ? 1.5 : 0,
                     )
                     .foregroundStyle(slice.color)
                     .opacity(selected == nil || selected == index ? 1 : 0.4)
@@ -60,14 +64,16 @@ struct StatsRing<Center: View>: View {
                     .contentShape(Rectangle())
                     .onTapGesture { location in
                         if let index = slice(at: location, in: geometry.size) {
-                            onTap(index)
+                            onTap(index, isHovered)
                         }
                     }
                     .onContinuousHover { phase in
                         switch phase {
                         case let .active(location):
+                            isHovered = true
                             selected = slice(at: location, in: geometry.size)
                         case .ended:
+                            isHovered = false
                             selected = nil
                         }
                     }

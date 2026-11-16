@@ -13,7 +13,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -75,6 +77,9 @@ internal fun StatsRingDisplay(
         sweep.animateTo(1f, tween(SWEEP_MILLIS))
     }
     val percents = slices.map { it.percent }
+    // Why: the gestures keep running across recompositions, so they call the latest callbacks, not the first ones.
+    val currentOnPick by rememberUpdatedState(onPick)
+    val currentOnTap by rememberUpdatedState(onTap)
     Box(
         modifier = Modifier
             .size(size)
@@ -87,12 +92,12 @@ internal fun StatsRingDisplay(
                 .pointerInput(percents) {
                     detectPickTaps { offset, isMouse ->
                         // Why: this.size is the pointer area's, in pixels; a bare size is the ring's Dp parameter.
-                        findSliceAt(offset, this.size.width.toFloat(), percents)?.let { onTap(it, isMouse) }
+                        findSliceAt(offset, this.size.width.toFloat(), percents)?.let { currentOnTap(it, isMouse) }
                     }
                 }.onMouseHover(
                     key = percents,
-                    onMove = { position -> onPick(findSliceAt(position, this.size.width.toFloat(), percents)) },
-                    onExit = { onPick(null) },
+                    onMove = { position -> currentOnPick(findSliceAt(position, this.size.width.toFloat(), percents)) },
+                    onExit = { currentOnPick(null) },
                 ),
         ) {
             val margin = popOut.toPx()

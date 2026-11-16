@@ -44,6 +44,9 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
         .associateWith { person -> bills.sumOf { sharesOf(it)[person] ?: 0L } }
         .entries
         .sortedByDescending { it.value }
+    // Why: each share rounded down, the points left over going to the largest, so the ring closes at 100.
+    val percents = consumed.map { (it.value * PERCENT / total).toInt() }.toMutableList()
+    percents[0] += PERCENT.toInt() - percents.sum()
     val days = (firstDay downTo 0).map { daysAgo -> daysAgo to bills.filter { it.daysAgo == daysAgo } }
     val peak = days.maxBy { (_, dayBills) -> dayBills.sumOf { it.totalMinor } }.first
     val biggest = bills.maxBy { it.totalMinor }
@@ -81,7 +84,7 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
         myPaidMinor = bills.sumOf { bill -> bill.payers.filter { it.person == me }.sumOf { it.amountMinor } },
         myPaidCount = bills.count { bill -> bill.payers.any { it.person == me } },
         peopleView = StatsPeopleView.CONSUMPTION,
-        people = consumed.map { (person, amount) ->
+        people = consumed.mapIndexed { index, (person, amount) ->
             StatsPersonRow(
                 memberId = memberIdOf(person),
                 name = people[person],
@@ -90,7 +93,7 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
                 photoUrl = photoUrlOf(person),
                 isMe = person == me,
                 amountMinor = amount,
-                percent = (amount * PERCENT / total).toInt(),
+                percent = percents[index],
                 color = SplitBarColors.getAt(person),
             )
         },

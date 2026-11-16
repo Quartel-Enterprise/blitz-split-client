@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,17 +57,13 @@ internal fun StatsPeopleSection(
     val people = state.people
     var selected by remember { mutableStateOf<Int?>(null) }
     // Why: the same keys as iOS and the web: the period, the view and each person's share.
-    val ringKey = listOf(
-        state.periodStartMillis,
-        state.periodEndMillis,
-        state.peopleView,
-        people.map {
-            it.memberId to
-                it.percent
-        },
-    )
+    val shares = people.map { it.memberId to it.percent }
+    val ringKey = listOf(state.periodStartMillis, state.periodEndMillis, state.peopleView, shares)
     LaunchedEffect(ringKey) { selected = null }
-    val picked = selected?.takeIf { state.topPerson != null && it in people.indices }
+    val hasShares = state.topPerson != null
+    // Why: a row's hover keeps running across recompositions, so it reads whether anyone has a share now.
+    val currentHasShares by rememberUpdatedState(hasShares)
+    val picked = selected?.takeIf { hasShares && it in people.indices }
     Column(modifier = modifier) {
         StatsSectionHeading(stringResource(R.string.group_stats_by_person), modifier = sectionPadding)
         ConnectedButtonRow(
@@ -105,7 +102,7 @@ internal fun StatsPeopleSection(
                             .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
                             .onMouseHover(
                                 key = index,
-                                onMove = { if (state.topPerson != null) selected = index },
+                                onMove = { if (currentHasShares) selected = index },
                                 onExit = { selected = null },
                             ).alpha(if (picked == null || picked == index) 1f else RING_DIMMED_ALPHA)
                             .opensProfile(

@@ -525,7 +525,10 @@ private struct StatsPeopleSection: View {
                 ringKey: ringKey,
                 label: Text("Split by person: \(people.map { "\(GroupStatsCopy.name($0)) \($0.percent)%" }.joined(separator: ", "))"),
                 selected: Binding(get: { picked }, set: { selected = $0 }),
-                onTap: { index in selected = selected == index ? nil : index },
+                // A finger's tap picks a slice and a second one lets it go; a pointer already picked it by hovering
+                onTap: { index, isPointer in
+                    if !isPointer { selected = selected == index ? nil : index }
+                },
             ) {
                 if state.topPerson != nil {
                     let shown = people[picked ?? 0]
@@ -590,7 +593,10 @@ private struct StatsPersonLine: View {
             initial: person.initials,
             color: person.avatarColor,
             photoUrl: person.photoUrl,
-            label: "\(GroupStatsCopy.name(person)): \(Int(person.percent))% of the total, \(currency.format(person.amountMinor))",
+            label: String(
+                localized: "\(GroupStatsCopy.name(person)): \(Int(person.percent))% of the total, \(currency.format(person.amountMinor))",
+                bundle: .appLanguage,
+            ),
         ) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Circle()
@@ -635,7 +641,7 @@ struct StatsAvatarRow<Content: View>: View {
     }
 }
 
-/// The bar takes the color of what it measures (the category's slice, the person's face), never the accent.
+/// The bar takes the color of what it measures (the category's slice), never the accent.
 struct StatsAmountBar: View {
     let fraction: Double
     let color: Color

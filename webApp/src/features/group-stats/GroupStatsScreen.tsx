@@ -332,7 +332,7 @@ function SummaryCards({ state, money }: { state: JsGroupStatsState; money: (mino
 function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; presenter: GroupStatsPresenter; money: (minor: number) => string }) {
   const isPaid = state.peopleView === 'paid'
   const people = state.people
-  const hasShares = people.some((person) => person.amountMinor > 0)
+  const hasShares = state.hasPersonShares
   const ringKey = `${state.periodStartMillis}-${state.periodEndMillis}-${state.peopleView}-${people.map((person) => `${person.memberId}:${person.percent}`).join(',')}`
   const [selected, setSelected] = useState<number | null>(null)
   useEffect(() => setSelected(null), [ringKey])
@@ -374,7 +374,10 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
           selected={picked}
           size={160}
           onPick={(index) => setSelected(hasShares ? index : null)}
-          onTap={(index) => setSelected(selected === index ? null : index)}
+          // Why: a finger's tap picks a slice and a second one lets it go; a mouse already picked it by hovering.
+          onTap={(index, isMouse) => {
+            if (!isMouse) setSelected(selected === index ? null : index)
+          }}
         >
           {hasShares && <StatsRingCenter percent={people[shown].percent} name={names[shown]} />}
         </StatsRing>
@@ -396,6 +399,7 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
           >
             <PersonButton
               onOpen={person.opensProfile ? () => presenter.openPerson(person.memberId) : null}
+              label={`${t('groupStats_categoryShare', { name: names[index], percent: person.percent })}, ${money(person.amountMinor)}`}
               flightKey={`stats-${person.memberId}`}
               className="-mx-1 flex min-w-0 flex-1 items-center gap-2.5 px-1 py-0.5"
             >

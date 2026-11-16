@@ -60,12 +60,6 @@ import kotlinx.coroutines.launch
 
 private const val DISABLED_ALPHA = 0.38f
 private val cardShape = RoundedCornerShape(20.dp)
-private val sectionPadding = Modifier.padding(
-    start = 4.dp,
-    end = 4.dp,
-    top = 20.dp,
-    bottom = 8.dp,
-)
 
 // Why: "Ao longo do tempo": Barras or Linha, the grain, the chart, the most expensive one and why some grains are off.
 @Composable

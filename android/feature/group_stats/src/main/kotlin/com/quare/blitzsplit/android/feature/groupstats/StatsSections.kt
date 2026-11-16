@@ -53,6 +53,7 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiSt
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettler
 
+// Why: a section heading's room, shared by every section of the screen.
 internal val sectionPadding = Modifier.padding(
     start = 4.dp,
     end = 4.dp,
@@ -443,7 +444,7 @@ internal fun StatsAvatarRow(
     }
 }
 
-// Why: the bar takes the color of what it measures (the category's slice, the person's face), never the accent.
+// Why: the bar takes the color of what it measures (the category's slice), never the accent.
 @Composable
 internal fun StatsAmountBarIndicator(
     fraction: Float,
