@@ -127,6 +127,9 @@ private struct GroupScreenBars: ViewModifier {
             // would leave Statistics, ⋯ and "Split a bill" no room
             .groupFlowHidesTabBar()
             #else
+            // No line under the group's name (beta feedback of 2026-11-16), and none of the root screen's showing
+            // through either
+            .navigationSubtitle(Text(verbatim: ""))
             // File › Split a Bill (⌘N): a bill in this group, while this screen is the one in front
             .newItemCommands(
                 isInFront: frontRoute == host,

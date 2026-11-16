@@ -61,9 +61,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     - The file is named after the group and the day, "Trip-to-Rio-2026-11-14.xlsx" (characters a file system refuses
       dropped, spaces as dashes, at most 60 characters of name).
   - The group's avatar is big in the open header and shrinks into the bar as the list scrolls (beta feedback of
-    2026-11-12, Pierre's call), following the scroll, never a timed animation. Android: the open bar (148 dp) draws it
+    2026-11-12, Pierre's call), following the scroll, never a timed animation. Android: the open bar (160 dp) draws it
     at 64 dp beside the name, shrinking to 40 dp as the bar folds while the one-line bar's title, 32 dp, fades in over
-    it (Material's `TwoRowsTopAppBar`, folding by the rules above); a tabletop's one-line bar keeps 32 dp. The web:
+    it, 12 dp over the faces (Material's `TwoRowsTopAppBar`, folding by the rules above); a tabletop's one-line bar keeps 32 dp. The web:
     one sticky header at every width, open 136 px tall on a phone (the 64 px avatar and the 22 px name under the bar
     of back, Statistics, Invite and ⋯) and 96 px from the tablet up (80 px avatar, 24 px name, with Statistics,
     Invite, "Split a bill" and ⋯ in its row, Statistics and Invite as icons alone under 1024 px so the name keeps

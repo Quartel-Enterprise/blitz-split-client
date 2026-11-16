@@ -66,12 +66,15 @@ import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
  * Why: the header's avatar, big while the bar is open and shrinking with it into the one-line bar (beta feedback of
- * 2026-11-12), and the open bar's height, room under the one-line bar for it beside the name.
+ * 2026-11-12), and the open bar's height, room under the one-line bar for it beside the name. The open title keeps 12 dp
+ * over the faces, the room the line under the name used to leave: it has no baseline left for the bar to align on
+ * (skipsBaselinePlacement), so without it the avatar would sit on the faces.
  */
 private val expandedBadgeSize = 64.dp
 private val foldingBadgeSize = 40.dp
 private val collapsedBadgeSize = 32.dp
-private val expandedBarHeight = 148.dp
+private val expandedBarHeight = 160.dp
+private val expandedTitleBottomPadding = 12.dp
 
 /*
  * Why: the canvas's medium flexible bar: the group's square and name, with no line under them (the faces under the bar
@@ -109,6 +112,7 @@ internal fun GroupTopBar(
                     badgeSize = lerp(expandedBadgeSize, foldingBadgeSize, scrollBehavior.state.collapsedFraction),
                     onAction = onAction,
                     sharedGroupId = sharedGroupId.takeIf { isMostlyOpen },
+                    modifier = Modifier.padding(bottom = expandedTitleBottomPadding),
                 )
             } else {
                 GroupTitle(
@@ -183,11 +187,13 @@ private fun GroupTitle(
     badgeSize: Dp,
     onAction: (GroupAction) -> Unit,
     sharedGroupId: String? = null,
+    modifier: Modifier = Modifier,
 ) {
     val shared = rememberGroupSharedModifiers(sharedGroupId)
     // Why: the square and name also fly into the top bar of a bill opened from the Expenses (beta feedback of 2026-11-16).
     val billShared = rememberGroupBillSharedModifiers(sharedGroupId)
     Row(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
