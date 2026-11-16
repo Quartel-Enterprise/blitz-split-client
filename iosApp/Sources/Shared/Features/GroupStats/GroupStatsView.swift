@@ -50,10 +50,6 @@ struct GroupStatsView: View {
     /// In the iPad's column beside the groups, upright as it is, the boards still draw two columns.
     @Environment(\.showsGroupBesideList) private var showsGroupBesideList
 
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    #endif
-
     var body: some View {
         Group {
             if let model, model.state.isLoaded {

@@ -50,10 +50,6 @@ struct CategoryExpensesView: View {
     @State private var layout = ScreenLayout()
     @Environment(\.windowLayout) private var windowLayout
 
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    #endif
-
     var body: some View {
         Group {
             if let model, model.state.isLoaded {

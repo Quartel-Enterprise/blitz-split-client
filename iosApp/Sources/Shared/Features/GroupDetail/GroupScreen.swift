@@ -91,9 +91,7 @@ private struct GroupScreenBars: ViewModifier {
     let isOnline: Bool
     let actions: GroupScreenActions
 
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    #else
+    #if os(macOS)
     @Environment(\.isNarrowWindow) private var isNarrowWindow
     @Environment(\.frontRoute) private var frontRoute
     #endif

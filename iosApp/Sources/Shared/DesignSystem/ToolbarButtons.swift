@@ -114,15 +114,19 @@ struct TabTrailingItems<Buttons: View>: ToolbarContent {
         self.buttons = buttons()
     }
 
+    /// A crowded tab bar leaves room for "Split a bill" alone: the buttons go to the row atop the content
+    /// (`tabButtonsRow`).
+    private var isCrowded: Bool {
+        isTabBarCrowded(window, sizeClass, inListColumn: isInTabListColumn)
+    }
+
     var body: some ToolbarContent {
-        // A crowded tab bar leaves room for "Split a bill" alone: the buttons go to the row atop the content
-        // (`tabButtonsRow`)
-        if !isTabBarCrowded(window, sizeClass, inListColumn: isInTabListColumn) {
+        if !isCrowded {
             ToolbarItemGroup(placement: .primaryAction) { buttons }
                 .prefersVerticalBar()
         }
         if showsSplitBill {
-            if !isTabBarCrowded(window, sizeClass, inListColumn: isInTabListColumn) {
+            if !isCrowded {
                 ToolbarSpacer(.fixed, placement: .primaryAction)
             }
             ToolbarItem(placement: .primaryAction) {
