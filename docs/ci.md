@@ -236,16 +236,26 @@ Two kinds of check turn green with nothing to start `merge-when-green` then:
   started `merge-when-green`: such a pull request used to sit green with its label on until the next push to `main`
   swept it.
 
-So while the only checks left are pending ones of those two kinds (no run of Actions owns the check, or a `dynamic`
-run of the head commit that is still going does), `merge-when-green` reads the checks again, every 20 seconds for 15
-minutes, before giving up until the next event or sweep. A Code Quality run takes a minute as a rule, and took 13 at
-its longest. A `dynamic` run of the head commit that is still going is waited for the same way while every check
-there is has passed, since its jobs may not have their checks yet, and the pull request is never merged past it.
-When those runs can't be read (GitHub's API failing), nothing is merged either: a failed check still ends the run at
-once, anything else is read again in the next round, and the run ends with a warning when the 15 minutes are over.
-After the wait `merge-when-green` reads the pull request again: one that was merged or closed meanwhile, made a
-draft, lost its label or got a push is not merged by that run (a push's own runs decide). A Code Quality check that
-failed and was re-run green starts nothing either: add the label again, or run the workflow by hand.
+So while the only checks left are pending ones of those two kinds, `merge-when-green` reads the checks again before
+giving up until the next event or sweep, every 20 seconds for the first two minutes and every minute after that:
+
+- **For 15 minutes** while a `dynamic` run that is still going owns one of them. A Code Quality run takes a minute as
+  a rule, and took 13 at its longest.
+- **For 2 minutes** for a check no run of Actions owns, as before.
+
+A pending check of one of the repository's own workflows, or a failed check, still ends the run at once: that
+workflow's completion starts another. Around that wait:
+
+- A `dynamic` run of the head commit that is still going while every check there is has passed gets 2 minutes for
+  its jobs to have their checks. Past that it is a run with no check on the commit (stuck in progress, or one that
+  checks nothing): the pull request merges, with a warning that names the run.
+- On every round after the first the pull request is read again: one that was merged or closed meanwhile, made a
+  draft, lost its label or got a push ends the wait, unmerged by that run (a push's own runs decide).
+- A read GitHub's API fails in the middle of a wait is taken again, for 2 minutes. A pull request is never merged on
+  a round whose reads didn't all answer: the run ends with a warning instead, or fails when it is the checks that
+  can't be read.
+- A Code Quality check that failed and was re-run green starts nothing either: add the label again, or run the
+  workflow by hand.
 
 The `Main rules` ruleset requires every review conversation to be resolved before a pull request merges into `main`,
 with no bypass, admins included, and `merge-when-green` never merges with `--admin`. When everything else is green

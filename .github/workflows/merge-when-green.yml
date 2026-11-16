@@ -186,32 +186,69 @@ jobs:
           # its own on every push (event "dynamic": its workflow is no file of the repository, and it
           # is named after the pull request), which no workflow_run announces; on a pull request whose
           # changes run no check workflow (docs only) they are the last to finish. So while the only
-          # checks left are pending ones of those two kinds, or such a run of the head commit is still
-          # going, the checks are read again, every 20 seconds for 15 minutes at most: a Code Quality
-          # run takes a minute as a rule, and took 13 at its longest.
-          last_attempt=45
-          for attempt in $(seq 0 "$last_attempt"); do
-            # The head commit's runs GitHub started on its own that are still going. Read before the
-            # checks: a run that ends in between has its checks settled by the time they are read. A
-            # read that fails is no answer, and never counts as "none": the checks still end this run
-            # at once when one failed, and anything else is read again in the next round.
+          # checks left are pending ones of those two kinds, the checks are read again:
+          # - for 15 minutes while a dynamic run that is still going owns one of them: a Code Quality
+          #   run takes a minute as a rule, and took 13 at its longest;
+          # - for 2 minutes otherwise: a check no run owns, a dynamic run of the head commit with no
+          #   check on it yet (its jobs may not have theirs), or a read GitHub's API failed.
+          # Every 20 seconds for the first 2 minutes and every minute after that, so a long wait costs
+          # few API calls.
+          long_wait=900
+          short_wait=120
+          waited=0
+          stalled=0
+          unread_for=0
+          pause() {
+            local step=20
+            if [ "$waited" -ge "$short_wait" ]; then step=60; fi
+            sleep "$step"
+            waited=$((waited + step))
+            if [ "$1" = stalled ]; then stalled=$((stalled + step)); fi
+            if [ "$1" = unread ]; then unread_for=$((unread_for + step)); else unread_for=0; fi
+          }
+          while :; do
             unread=false
-            if ! unannounced=$(GH_TOKEN="$GITHUB_TOKEN" gh api --method GET "repos/$GH_REPO/actions/runs" \
+
+            # A wait can be long, and the pull request may no longer be the one read before it: merged
+            # or closed by someone, made a draft, its label taken off by whoever changed their mind, or
+            # pushed to, in which case that commit's own runs decide. Read again on every round after
+            # the first, so the wait ends as soon as that happens.
+            if [ "$waited" -gt 0 ]; then
+              if now=$(gh pr view "$pr" --json state,isDraft,labels,headRefOid \
+                --jq '"\(.state) \(.isDraft) \(any(.labels[]; .name == "merge-when-green")) \(.headRefOid)"'); then
+                if [ "$now" != "OPEN false true $head" ]; then
+                  echo "#$pr changed during the wait (state, draft, labeled, head: $now): not merged by this run."
+                  exit 0
+                fi
+              else
+                unread=true
+              fi
+            fi
+
+            # The head commit's runs GitHub started on its own that are still going: one whose jobs
+            # have no check yet shows nowhere else. A read that fails is no answer, never "none".
+            if ! going=$(GH_TOKEN="$GITHUB_TOKEN" gh api --method GET "repos/$GH_REPO/actions/runs" \
               -f head_sha="$head" -f event=dynamic -f per_page=100 \
               --jq '[.workflow_runs[] | select(.status != "completed") | (.id | tostring)]'); then
               unread=true
-              unannounced='[]'
+              going='[]'
             fi
 
             # gh exits with 8 while checks are pending and with 1 when one failed or none exists. Those
             # are answers here, not errors, so the JSON it prints is what gets inspected. A pull request
             # whose changes run no check workflow (docs only) has nothing to wait for. GITHUB_TOKEN reads
-            # them, since it is granted checks: read and the personal token isn't.
+            # them, since it is granted checks: read and the personal token isn't. An error on the first
+            # read fails the job, as it always did; one in the middle of a wait is read again, for 2
+            # minutes, since giving up there would leave a green pull request with nothing to merge it.
             checks=$(GH_TOKEN="$GITHUB_TOKEN" gh pr checks "$pr" --json name,workflow,bucket,link 2> "$RUNNER_TEMP/checks.err") || true
             if ! jq -e 'type == "array"' <<< "$checks" > /dev/null 2>&1; then
               if ! grep -q 'no checks reported' "$RUNNER_TEMP/checks.err"; then
                 cat "$RUNNER_TEMP/checks.err"
-                exit 1
+                if [ "$waited" -eq 0 ] || [ "$unread_for" -ge "$short_wait" ]; then
+                  exit 1
+                fi
+                pause unread
+                continue
               fi
               checks='[]'
             fi
@@ -220,16 +257,24 @@ jobs:
             # GitHub sometimes leaves a job's check in progress after its workflow run completed: the
             # job has no steps and never ends, so waiting on it would wait forever. A pending check
             # whose run completed takes the run's conclusion instead: a run succeeds only when every
-            # job of it did.
+            # job of it did. A run still going that GitHub started on its own joins the ones listed
+            # above, which may have been read before it existed. One that can't be read may be either.
+            unknown='[]'
             pending_runs=$(jq -r '.[] | select(.bucket == "pending") | .link // ""
               | capture("/actions/runs/(?<id>[0-9]+)/job/")? | .id' <<< "$others" | sort -u)
             for run_id in $pending_runs; do
               if ! run=$(GH_TOKEN="$GITHUB_TOKEN" gh api "repos/$GH_REPO/actions/runs/$run_id" \
-                --jq '"\(.status) \(.conclusion // "")"'); then
+                --jq '"\(.status) \(.conclusion // "none") \(.event)"'); then
+                unknown=$(jq -c --arg id "$run_id" '. + [$id]' <<< "$unknown")
                 continue
               fi
-              read -r status conclusion <<< "$run"
-              [ "$status" = completed ] || continue
+              read -r status conclusion event <<< "$run"
+              if [ "$status" != completed ]; then
+                if [ "$event" = dynamic ]; then
+                  going=$(jq -c --arg id "$run_id" '. + [$id] | unique' <<< "$going")
+                fi
+                continue
+              fi
               case "$conclusion" in
                 success) bucket=pass ;;
                 skipped) bucket=skipping ;;
@@ -247,48 +292,64 @@ jobs:
             unfinished=$(jq -r '.[] | select(.bucket != "pass" and .bucket != "skipping")
               | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)
               | "\(.name): \(.bucket)"' <<< "$others")
-            if [ -z "$unfinished" ]; then
-              # Every check there is passed, but a run GitHub started may not have given its jobs their
-              # checks yet: it is waited for like a pending check of its own, and never merged past.
-              if [ "$unread" = false ] && [ "$unannounced" = '[]' ]; then
-                break
-              fi
-              unfinished="the runs GitHub started on its own: $([ "$unread" = true ] && echo unread || echo "$unannounced still going")"
-              starts_nothing=true
-            else
-              # Pending, and either no run of Actions owns the check or one of those runs does. With
-              # those runs unread, a pending check of any run may be one of theirs.
-              starts_nothing=$(jq --argjson unannounced "$unannounced" --argjson unread "$unread" '[.[]
-                | select(.bucket != "pass" and .bucket != "skipping")
-                | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)]
-                | all(.[]; .bucket == "pending"
-                  and ((((.link // "") | capture("/actions/runs/(?<id>[0-9]+)/").id) // null) as $run
-                    | $run == null or $unread or any($unannounced[]; . == $run)))' <<< "$others")
-            fi
-            if [ "$starts_nothing" = true ] && [ "$attempt" -lt "$last_attempt" ]; then
-              echo "Waiting for what starts no workflow when it completes:"
+
+            # What each check left says: a failed one, or a pending one of a run of the repository's
+            # own workflows, ends this run at once, since that run's completion starts another. The
+            # others start nothing when they turn green: no run owns the check, a dynamic run does, or
+            # its run couldn't be read.
+            left=$(jq -c --argjson going "$going" --argjson unknown "$unknown" '[.[]
+              | select(.bucket != "pass" and .bucket != "skipping")
+              | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)
+              | (((.link // "") | capture("/actions/runs/(?<id>[0-9]+)").id) // null) as $run
+              | if .bucket != "pending" then "blocking"
+                elif $run == null then "unowned"
+                elif any($going[]; . == $run) then "dynamic"
+                elif any($unknown[]; . == $run) then "unowned"
+                else "blocking" end]' <<< "$others")
+            if jq -e 'any(.[]; . == "blocking")' <<< "$left" > /dev/null; then
+              echo "#$pr is not green yet:"
               echo "$unfinished"
-              sleep 20
+              exit 0
+            fi
+
+            if [ -n "$unfinished" ]; then
+              limit=$short_wait
+              if jq -e 'any(.[]; . == "dynamic")' <<< "$left" > /dev/null; then limit=$long_wait; fi
+              if [ "$waited" -ge "$limit" ]; then
+                echo "#$pr is not green yet, after $((waited / 60)) minutes of waiting:"
+                echo "$unfinished"
+                exit 0
+              fi
+              echo "Waiting for the checks whose completion starts no workflow:"
+              echo "$unfinished"
+              pause
               continue
             fi
-            if [ "$unread" = true ]; then
-              echo "::warning::The runs GitHub started on its own for #$pr couldn't be read: not merged by this run."
-            fi
-            echo "#$pr is not green yet:"
-            echo "$unfinished"
-            exit 0
-          done
 
-          # The wait above can be long, and the pull request may no longer be the one read before it:
-          # merged or closed by someone, made a draft, its label taken off by whoever changed their
-          # mind, or pushed to, in which case the checks just read are the new commit's and that
-          # commit's own runs decide.
-          now=$(gh pr view "$pr" --json state,isDraft,labels,headRefOid \
-            --jq '"\(.state) \(.isDraft) \(any(.labels[]; .name == "merge-when-green")) \(.headRefOid)"')
-          if [ "$now" != "OPEN false true $head" ]; then
-            echo "#$pr changed while its checks were read (state, draft, labeled, head: $now): not merged by this run."
-            exit 0
-          fi
+            # Every check there is passed. Merging still takes this round's reads to have answered.
+            if [ "$unread" = true ]; then
+              if [ "$unread_for" -ge "$short_wait" ]; then
+                echo "::warning::#$pr looks green, but GitHub's API failed to say whether it still is, or which runs are going: not merged by this run."
+                exit 0
+              fi
+              echo "A read of GitHub's API failed: reading again."
+              pause unread
+              continue
+            fi
+
+            # A run GitHub started on its own may not have given its jobs their checks yet, so it gets
+            # 2 minutes to. Past that it is a run with no check on the commit (a run stuck in progress,
+            # or one that never checks anything), which holds no merge: it is named and left behind.
+            if [ "$going" != '[]' ]; then
+              if [ "$stalled" -lt "$short_wait" ]; then
+                echo "Waiting for the checks of run(s) $going, which GitHub started on its own."
+                pause stalled
+                continue
+              fi
+              echo "::warning::Run(s) $going of #$pr, which GitHub started on its own, are still going with no check on the commit: not waited for."
+            fi
+            break
+          done
 
           # A job waiting on another (the checks behind review-gate) has no check until it starts, so
           # while review-gate waits for the review, or right after it passes, every check can be green
