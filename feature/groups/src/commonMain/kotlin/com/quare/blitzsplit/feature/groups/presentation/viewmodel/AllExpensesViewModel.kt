@@ -107,14 +107,14 @@ class AllExpensesViewModel(
          * the list then shows a page at a time.
          */
         val source = filters
-            .map { picked -> picked.groupIds.takeIf { picked.readsAWindow } }
+            .map { it.windowGroupIds }
             .distinctUntilChanged()
             .flatMapLatest { windowGroupIds ->
                 if (windowGroupIds == null) {
                     observeMyExpenses(Int.MAX_VALUE).map {
                         DeviceBills(
                             windowSize = null,
-                            groupIds = emptySet(),
+                            groupIds = null,
                             expenses = it,
                         )
                     }
@@ -203,7 +203,7 @@ class AllExpensesViewModel(
          * Why: the filters just left the window read (or its groups changed) and the next read is on its way; this
          * window would show too few, or another group's.
          */
-        if (window != null && (!picked.readsAWindow || picked.groupIds != bills.device.groupIds)) {
+        if (window != null && picked.windowGroupIds != bills.device.groupIds) {
             // Why: what was picked shows picked at once, the rows staying until every bill is read.
             uiState.update { it.copy(filters = picked) }
             return
@@ -232,12 +232,19 @@ class AllExpensesViewModel(
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.AllExpenses
 }
 
-// Why: what the device gave: a window of its bills (windowSize), of the groups read (none: every group's), or every one.
+/*
+ * Why: what the device gave: a window of its bills (windowSize) of the groups read (groupIds, empty for every group's),
+ * or every one of them (both null).
+ */
 private class DeviceBills(
     val windowSize: Int?,
-    val groupIds: Set<String>,
+    val groupIds: Set<String>?,
     val expenses: List<Expense>,
 )
+
+// Why: the groups whose window Room reads (empty: every group's), or null when every bill is read and narrowed here.
+private val AllExpensesFilters.windowGroupIds: Set<String>?
+    get() = groupIds.takeIf { readsAWindow }
 
 private class ReadBills(
     val device: DeviceBills,
