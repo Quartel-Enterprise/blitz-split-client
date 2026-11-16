@@ -11,7 +11,8 @@ screenshot, sometimes a voice note nobody transcribed. This skill turns an expor
 into merged PRs: it reads every message and image, lists the items (each bug or improvement), asks
 everything it needs at once, then splits the work into sessions that run in parallel, each in a
 worktree of its own and each ending in a PR made by [`create-pr`](../create-pr/SKILL.md). This
-session coordinates: it writes no app code itself.
+session coordinates: it writes no app code itself, and its one PR of its own is the README's image at
+the end (step 8).
 
 The person usually leaves once the questions are answered. So every question goes in step 4, in one
 round, and from step 5 on the skill decides by the docs, the sensible default, or a line in a PR
@@ -187,7 +188,9 @@ Every brief is self-contained, since the session sees nothing of this conversati
   through `./scripts/heavy-check.sh`.
 - How it ends: start with `worktree-start-task` (with a simulator or emulator only when it needs to
   see the screen), verify the fix on a device when it is visual, and open the PR with `create-pr`,
-  which labels it `merge-when-green` and drives it until it merges.
+  which labels it `merge-when-green` and drives it until it merges. It skips `create-pr`'s step
+  that refreshes the README's image: this session does that once for every piece, at the end (step
+  8). Its PR description still says whether its change shows in that image, and on which platforms.
 - For the backend: merging to `main` of `blitz-split-api` runs its deploy workflow against the
   production Supabase project, so its PR says what the migration does to existing data. For the
   site: never `wrangler deploy` from this Mac, Cloudflare deploys it on merge.
@@ -204,11 +207,27 @@ Then:
   main`, or tell its session to.
 - A session asking a product question: forward it to the person as asked, and their answer back with
   their words quoted.
-- Never write the fix here, and never merge a PR yourself unless the person asks.
+- Never write the fix here, and never merge a PR yourself unless the person asks. The README's PR
+  of step 8 is the exception: the person asked for it with this skill, and `create-pr` merges it
+  as it merges every piece's.
 
-## 8. Report
+## 8. Refresh the README and report
 
-Once every piece has a merged PR, or is stuck on something only the person can settle, report: a
-table of the items, each with its PR (a full `owner/repo#n` link) and its state; the items left out
-and why; and the decisions still open. Then offer, in one question, to run `finish-task` for the
+Once every piece has a merged PR, or is stuck on something only the person can settle, look at the
+merged client PRs: their descriptions say whether the change shows in the README's image (check the
+diff, as step 1 of [`update-readme-screenshots`](../update-readme-screenshots/SKILL.md) says, when
+one doesn't). If none does, skip to the report. If any does, refresh the image once for all of them,
+in one PR: start it with `worktree-start-task` (a `chore` branch from the `origin/main` that now has
+every piece), run `update-readme-screenshots`, and open the PR with `create-pr`. This is the one
+change this session makes itself, since it is no app code and needs every piece merged first; it
+counts as a building session for step 5. Wait for it to merge, or to stop on a capture this Mac
+can't take, before reporting.
+
+A piece still stuck at that point whose change shows in the image would merge after the refresh,
+with the README missing it. Message its session (`SendMessage`) that the refresh is now its own: it
+runs `create-pr`'s README step before its PR merges. Say so in the report.
+
+Then report: a
+table of the items, each with its PR (a full `owner/repo#n` link) and its state; the README's PR, or
+why there was none; the items left out and why; and the decisions still open. Then offer, in one question, to run `finish-task` for the
 merged worktrees and archive the finished sessions. Archive only on the person's yes.
