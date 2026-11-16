@@ -140,4 +140,7 @@
     <string name="profile_share_usage_data_detail">Schermen en tikken, om de app te verbeteren. Nooit namen of bedragen.</string>
     <string name="profile_section_paying_methods">Betaalmethoden</string>
     <string name="profile_paying_methods_subtitle">Alleen jij ziet ze. Geef aan waarmee je een uitgave betaalde.</string>
+    <string name="profile_user_id">Gebruikers-ID</string>
+    <string name="profile_user_id_copy">Gebruikers-ID kopiëren</string>
+    <string name="profile_user_id_copied">Gebruikers-ID gekopieerd</string>
 </resources>

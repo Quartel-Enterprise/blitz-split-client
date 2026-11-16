@@ -80,6 +80,8 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnCopyProfileLinkClicked -> EventAnalytics.Manual("profile_link_copied")
 
+            OnCopyUserIdClicked -> EventAnalytics.Manual("profile_user_id_copied")
+
             OnDialogDismissed -> EventAnalytics.Manual("profile_dialog_cancelled")
 
             OnConnectClicked -> EventAnalytics.Manual("profile_connect_clicked")
@@ -145,6 +147,9 @@ sealed interface ProfileUiEvent : UiEvent {
 
     // Why: "Copy link", beside the share where the platform's idiom has one (the Mac's and the web's menu).
     data object OnCopyProfileLinkClicked : ProfileUiEvent
+
+    // Why: "User ID"'s copy, in "Account and sync", for anyone the server knows (a connected or anonymous account).
+    data object OnCopyUserIdClicked : ProfileUiEvent
 
     data object OnDialogDismissed : ProfileUiEvent
 

@@ -554,6 +554,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `erase_code_saved_toggled` | `is_checked` | "I kept the code somewhere safe" on "Sign out?" (an anonymous account) | `:feature:profile` |
 | `profile_share_clicked` | none | The top bar's "Share profile", while the account has a link (it opens the system share) | `:feature:profile` |
 | `profile_link_copied` | none | "Copy link" of the Mac's and the web's "Share profile" menu, while the account has a link | `:feature:profile` |
+| `profile_user_id_copied` | none | "User ID"'s copy in "Account and sync", while the account is on the server (connected or anonymous) | `:feature:profile` |
 | `profile_dialog_cancelled` | `dialog` (`sign_out`, `sign_out_pending`, `erase_profile`) | A confirmation of Profile (sign out, erase) closed without its main button, while nothing signs out | `:feature:profile` |
 | `profile_connect_clicked` | none | "Connect", while it can connect | `:feature:profile` |
 | `payment_key_add_clicked` | `method` (`pix`, `bitcoin`) | "Add a Pix or Bitcoin key", while a key can be added | `:feature:profile` |

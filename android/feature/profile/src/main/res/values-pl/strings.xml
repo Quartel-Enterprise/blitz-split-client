@@ -148,4 +148,7 @@
     <string name="profile_share_usage_data_detail">Ekrany i dotknięcia, by ulepszać aplikację. Nigdy imion ani kwot.</string>
     <string name="profile_section_paying_methods">Metody płatności</string>
     <string name="profile_paying_methods_subtitle">Widzisz je tylko Ty. Zaznaczaj, czym płacisz za wydatki.</string>
+    <string name="profile_user_id">ID użytkownika</string>
+    <string name="profile_user_id_copy">Kopiuj ID użytkownika</string>
+    <string name="profile_user_id_copied">Skopiowano ID użytkownika</string>
 </resources>

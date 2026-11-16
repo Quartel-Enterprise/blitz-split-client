@@ -17,6 +17,7 @@ import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.RecoveryCodeSaver
 import com.quare.blitzsplit.android.platform.copyLink
+import com.quare.blitzsplit.android.platform.copyText
 import com.quare.blitzsplit.android.platform.rememberExportFileSaver
 import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
 import com.quare.blitzsplit.android.platform.shareText
@@ -76,6 +77,14 @@ fun ProfileScreen(
                     showReplacingSnackbar(
                         snackbarHostState = snackbarHostState,
                         message = resources.getString(R.string.profile_link_copied),
+                    )
+                }
+
+                is ProfileUiAction.CopyUserId -> {
+                    context.copyText(action.userId)
+                    showReplacingSnackbar(
+                        snackbarHostState = snackbarHostState,
+                        message = resources.getString(R.string.profile_user_id_copied),
                     )
                 }
 

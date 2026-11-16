@@ -13,6 +13,11 @@ sealed interface ProfileUiAction {
         val link: String,
     ) : ProfileUiAction
 
+    // Why: "User ID copied", the whole id the row shortens.
+    data class CopyUserId(
+        val userId: String,
+    ) : ProfileUiAction
+
     // Why: the recovery words joined by single spaces.
     data class CopyToClipboard(
         val code: String,

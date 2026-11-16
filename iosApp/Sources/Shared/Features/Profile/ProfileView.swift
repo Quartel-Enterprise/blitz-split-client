@@ -11,6 +11,8 @@ final class ProfileModel {
     private(set) var updateCheckFailedCount = 0
     /// Bumped by each "Copy link" of "Share profile", which a toast says.
     private(set) var linkCopiedCount = 0
+    /// Bumped by each copy of "User ID", which a toast says.
+    private(set) var userIdCopiedCount = 0
     /// The JSON of "Export my data", until the save sheet closes.
     var exportJson: String?
 
@@ -50,6 +52,9 @@ final class ProfileModel {
         case let copy as ProfileUiActionCopyProfileLink:
             Pasteboard.copy(copy.link)
             linkCopiedCount += 1
+        case let copy as ProfileUiActionCopyUserId:
+            Pasteboard.copy(copy.userId)
+            userIdCopiedCount += 1
         case let result as ProfileUiActionShowUpdateCheckResult:
             switch result.result {
             case .upToDate: upToDateCount += 1
@@ -167,6 +172,7 @@ struct ProfileView: View {
         .glassToast([
             GlassToastMessage(text: "You already have the latest version.", trigger: model.upToDateCount),
             GlassToastMessage(text: "Link copied", trigger: model.linkCopiedCount),
+            GlassToastMessage(text: "User ID copied", trigger: model.userIdCopiedCount),
             GlassToastMessage(
                 text: "Couldn't check for updates. Check your connection and try again.",
                 trigger: model.updateCheckFailedCount,
@@ -802,6 +808,9 @@ private struct AccountSection: View {
                     Text("Signs out as soon as everything is uploaded")
                 }
             }
+            if state.showsUserId {
+                UserIdRow(model: model, shortUserId: state.shortUserId ?? "")
+            }
         }
     }
 
@@ -811,6 +820,33 @@ private struct AccountSection: View {
         case .failed: Text("No response from the server")
         default: hasPendingChanges ? Text("\(count) changes in the queue") : Text("Waiting to sync")
         }
+    }
+}
+
+/// "User ID", a quiet last row: the id shortened, the whole one copied by the row or its button, for a
+/// survey to tell who answered (Pierre's call, testers' feedback).
+private struct UserIdRow: View {
+    let model: ProfileModel
+    let shortUserId: String
+
+    var body: some View {
+        Button {
+            model.send(ProfileUiEventOnCopyUserIdClicked.shared)
+        } label: {
+            LabeledContent {
+                Image(systemName: "doc.on.doc")
+                    .foregroundStyle(.tint)
+                    .accessibilityHidden(true)
+            } label: {
+                Text("User ID").foregroundStyle(.primary)
+                Text(shortUserId)
+            }
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text("User ID"))
+        .accessibilityValue(Text(shortUserId))
+        .accessibilityHint(Text("Copy user ID"))
     }
 }
 

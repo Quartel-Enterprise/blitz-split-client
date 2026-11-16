@@ -20,6 +20,7 @@ internal fun createInitialProfileUiState(
     shareLink = null,
     accountProvider = null,
     hasAnonymousId = false,
+    userId = null,
     email = null,
     recoveryWords = null,
     showsRecoveryCodePrompt = false,

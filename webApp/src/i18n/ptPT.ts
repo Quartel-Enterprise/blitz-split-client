@@ -877,4 +877,7 @@ export const ptPT: Partial<Record<MessageKey, string>> = {
   activity_fieldDefaultSplit: 'Divisão predefinida',
   categoryMap_emptyTitle: 'O teu mapa está vazio',
   simplifyConfirm_bodyOn: 'Cada pessoa continua a pagar ou a receber o mesmo total. Só muda quem paga a quem.',
+  profile_userId: 'ID de utilizador',
+  profile_userIdCopy: 'Copiar ID de utilizador',
+  profile_userIdCopied: 'ID de utilizador copiado',
 }

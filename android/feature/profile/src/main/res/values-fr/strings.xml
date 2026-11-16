@@ -144,4 +144,7 @@
     <string name="profile_share_usage_data_detail">Écrans et appuis, pour améliorer l’app. Jamais de noms ni de montants.</string>
     <string name="profile_section_paying_methods">Moyens de paiement</string>
     <string name="profile_paying_methods_subtitle">Vous seul les voyez. Indiquez avec lequel vous avez payé chaque dépense.</string>
+    <string name="profile_user_id">ID utilisateur</string>
+    <string name="profile_user_id_copy">Copier l’ID utilisateur</string>
+    <string name="profile_user_id_copied">ID utilisateur copié</string>
 </resources>

@@ -65,6 +65,14 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     texts where the row is narrow for its font (under 300 dp times the font scale), so the line beside it never breaks inside a word. The row opens nothing and nothing disconnects the
     Google or Apple account from the user (Pierre's call, beta feedback). Who wants it gone signs out or deletes the
     account. The server has no `unlink-identity` function any more.
+  - "User ID" closes "Account and sync" for every account the server keeps, a Google or Apple one and an anonymous
+    one alike (`ProfileUiState.showsUserId`), never for a local only profile, which has no id on the server yet
+    (Pierre's call, testers' feedback of 2026-11-16: the public survey asks for it to tell who answered). It is the
+    account's Supabase auth user id, shown shortened, its first 8 and last 4 characters around an ellipsis
+    (`shortUserId`, as `3f8c2a91…4f27`), and copied whole: by a copy button beside it on Android and the web, and by a
+    tap anywhere on the row on Android, iOS, iPadOS and the Mac (the row is the button there, with the copy icon at its
+    end). Copying says "User ID copied", in the snackbar on Android, a toast on Apple platforms and the web, as "Link
+    copied" does.
   - Delete account lists, truthfully to the server's `delete-account` function and its migrations, "What gets
     deleted" (the profile with its photo, the Pix and Bitcoin keys, the link to Google or Apple, an anonymous
     account's recovery code, the copy on this device) and then "What stays in your groups" (testers' feedback,

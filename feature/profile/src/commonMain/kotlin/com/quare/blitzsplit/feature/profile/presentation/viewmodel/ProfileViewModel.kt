@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.model.toImageUrl
+import com.quare.blitzsplit.core.model.userIdOrNull
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
@@ -159,7 +160,7 @@ class ProfileViewModel(
         emit = ::emit,
     )
 
-    private val shareLink = ProfileShareLink(
+    private val sharing = ProfileSharing(
         uiState = uiState,
         scope = viewModelScope,
         observeSpokenLanguage = observeSpokenLanguage,
@@ -284,9 +285,11 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnAvatarClicked -> navigator.navigate(Route.ProfilePhoto)
 
-            ProfileUiEvent.OnShareProfileClicked -> shareLink.share()
+            ProfileUiEvent.OnShareProfileClicked -> sharing.share()
 
-            ProfileUiEvent.OnCopyProfileLinkClicked -> shareLink.copy()
+            ProfileUiEvent.OnCopyProfileLinkClicked -> sharing.copy()
+
+            ProfileUiEvent.OnCopyUserIdClicked -> sharing.copyUserId()
 
             ProfileUiEvent.OnDialogDismissed -> dialogs.close()
 
@@ -370,7 +373,7 @@ class ProfileViewModel(
 
             is ProfileUiEvent.OnCodeSavedChanged -> confirmCodeSaved(event.isChecked)
 
-            ProfileUiEvent.OnCopyCodeClicked -> copyCode()
+            ProfileUiEvent.OnCopyCodeClicked -> sharing.copyCode()
 
             ProfileUiEvent.OnConnectInsteadClicked -> connectInstead()
 
@@ -400,6 +403,7 @@ class ProfileViewModel(
             it.copy(
                 accountProvider = connected?.provider,
                 hasAnonymousId = account.status is AccountStatus.Anonymous,
+                userId = account.status.userIdOrNull(),
                 email = email,
                 // Why: the email's info explains a row that is gone once the account no longer shows an email.
                 dialog = it.dialog.takeUnless { dialog -> dialog == ProfileDialog.EMAIL_INFO && email == null },
@@ -469,12 +473,6 @@ class ProfileViewModel(
 
     private fun confirmCodeSaved(isChecked: Boolean) {
         uiState.update { it.copy(hasConfirmedCodeSaved = isChecked) }
-    }
-
-    private fun copyCode() {
-        val words = uiState.value.recoveryWords ?: return
-        trackEvent("erase_code_copy_clicked", emptyMap())
-        emit(ProfileUiAction.CopyToClipboard(words.joinToString(" ")))
     }
 
     private fun expandConnect() {

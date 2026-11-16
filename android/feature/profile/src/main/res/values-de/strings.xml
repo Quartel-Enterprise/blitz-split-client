@@ -140,4 +140,7 @@
     <string name="profile_share_usage_data_detail">Bildschirme und Aktionen, um die App zu verbessern. Nie Namen oder Beträge.</string>
     <string name="profile_section_paying_methods">Zahlungsmethoden</string>
     <string name="profile_paying_methods_subtitle">Nur du siehst sie. Markiere, womit du eine Ausgabe bezahlt hast.</string>
+    <string name="profile_user_id">Nutzer-ID</string>
+    <string name="profile_user_id_copy">Nutzer-ID kopieren</string>
+    <string name="profile_user_id_copied">Nutzer-ID kopiert</string>
 </resources>
