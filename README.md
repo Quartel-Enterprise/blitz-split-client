@@ -1,11 +1,7 @@
 # Blitz Split
 
-<a href="docs/images/readme-hero-light.webp"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-hero-dark.webp">
-  <img alt="The same group, Lisbon trip, on an Android phone, an iPhone, the Mac app and the web app, each drawn by its own native UI" src="docs/images/readme-hero-light.webp">
-</picture></a>
-
-<sub>Open it full size: [light](docs/images/readme-hero-light.webp) · [dark](docs/images/readme-hero-dark.webp)</sub>
+<a href="docs/images/readme-hero-light.webp#gh-light-mode-only"><img alt="The same group, Lisbon trip, on an Android phone, an iPhone, the Mac app and the web app, each drawn by its own native UI" src="docs/images/readme-hero-light.webp#gh-light-mode-only"></a>
+<a href="docs/images/readme-hero-dark.webp#gh-dark-mode-only"><img alt="The same group, Lisbon trip, on an Android phone, an iPhone, the Mac app and the web app, each drawn by its own native UI" src="docs/images/readme-hero-dark.webp#gh-dark-mode-only"></a>
 
 Split bills with friends, even offline. [Blitz Split](https://blitzsplit.com) (**Bora Rachar** in Portuguese) keeps
 every group, bill and payment on your device first and syncs when the internet is back. An account is optional.
