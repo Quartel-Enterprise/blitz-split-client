@@ -55,10 +55,11 @@ internal class BillPhotoAdding(
                         photo = photo,
                         crop = PhotoCrop.of(photo.width, photo.height),
                     )
-                    uiState.update {
-                        it.copy(
+                    // Why: a bill whose deletion started while the photo was read takes no photo; no editor opens.
+                    uiState.update { state ->
+                        state.copy(
                             isAddingPhoto = false,
-                            photoCrop = editor,
+                            photoCrop = editor.takeIf { state.areActionsEnabled },
                         )
                     }
                 }.onFailure { error -> finish(errorOf(error)) }

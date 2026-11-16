@@ -953,6 +953,29 @@ class BillDetailAttachmentsTest {
         }
 
     @Test
+    fun `GIVEN a deletion while the photo is read WHEN it is read THEN Adjust photo stays closed`() =
+        runTest(testDispatcher) {
+            // Given
+            val loadGate = CompletableDeferred<Unit>()
+            prepareScenario(
+                loadGate = loadGate,
+                deleteGate = CompletableDeferred(),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+            // When
+            loadGate.complete(Unit)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertFalse(state.isAddingPhoto)
+            assertEquals(0, additions)
+        }
+
+    @Test
     fun `GIVEN another device filled the five photos WHEN picking a photo THEN says the bill has no room`() =
         runTest(testDispatcher) {
             // Given
