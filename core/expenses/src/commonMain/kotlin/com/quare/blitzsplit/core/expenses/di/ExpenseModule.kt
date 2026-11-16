@@ -89,7 +89,6 @@ import com.quare.blitzsplit.core.expenses.domain.repository.PickedReceiptReposit
 import com.quare.blitzsplit.core.expenses.domain.repository.ReceiptRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.RecordedPaymentRepository
 import com.quare.blitzsplit.core.expenses.domain.repository.SettlementRepository
-import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddCustomColor
 import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
@@ -158,9 +157,9 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.SetSimplifiesDebts
 import com.quare.blitzsplit.core.expenses.domain.usecase.SettleUp
 import com.quare.blitzsplit.core.expenses.domain.usecase.TakePickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.UpdateExpense
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillAttachmentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddCustomColorUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AttachBillImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.CommentOnSharedBillUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeCategoryTeachOfferUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ConsumeDeletedBillNoticeUseCase
@@ -231,7 +230,6 @@ import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
-import org.koin.dsl.binds
 import org.koin.dsl.module
 
 val expenseModule = module {
@@ -346,7 +344,7 @@ val expenseModule = module {
     singleOf(::BillAttachmentMapperImpl).bind<BillAttachmentMapper>()
     singleOf(::BillAttachmentRepositoryImpl).bind<BillAttachmentRepository>()
     factoryOf(::ObserveBillAttachmentsUseCase).bind<ObserveBillAttachments>()
-    factoryOf(::AddBillAttachmentUseCase).binds(arrayOf(AddBillAttachment::class, AttachBillImage::class))
+    factoryOf(::AttachBillImageUseCase).bind<AttachBillImage>()
     factoryOf(::RemoveBillAttachmentUseCase).bind<RemoveBillAttachment>()
     factoryOf(::LoadBillAttachmentUrlsUseCase).bind<LoadBillAttachmentUrls>()
     factoryOf(::LoadBillAttachmentImageUseCase).bind<LoadBillAttachmentImage>()

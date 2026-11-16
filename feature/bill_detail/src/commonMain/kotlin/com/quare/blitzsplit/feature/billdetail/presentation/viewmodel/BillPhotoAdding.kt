@@ -70,15 +70,8 @@ internal class BillPhotoAdding(
     fun onCropEvent(event: PhotoCropEvent) {
         val editor = uiState.value.photoCrop ?: return
         when (event) {
-            // Why: a bill being deleted takes no photo; the editor just closes.
-            PhotoCropEvent.OnConfirmClicked -> if (uiState.value.areActionsEnabled) {
-                attach(editor)
-            } else {
-                uiState.update { it.copy(photoCrop = null) }
-            }
-
+            PhotoCropEvent.OnConfirmClicked -> attach(editor)
             PhotoCropEvent.OnDismissed -> uiState.update { it.copy(photoCrop = null) }
-
             else -> uiState.update { it.copy(photoCrop = editor.toEdited(event)) }
         }
     }
@@ -119,8 +112,6 @@ internal class BillPhotoAdding(
     private fun errorOf(addition: BillAttachmentAddition): BillPhotoError? = when (addition) {
         BillAttachmentAddition.ADDED -> null
         BillAttachmentAddition.NO_ROOM -> BillPhotoError.NO_ROOM
-        BillAttachmentAddition.UNREADABLE -> BillPhotoError.UNREADABLE
-        BillAttachmentAddition.TOO_LARGE -> BillPhotoError.TOO_LARGE
     }
 
     private fun errorOf(error: Throwable): BillPhotoError = when (error) {

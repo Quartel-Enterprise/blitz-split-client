@@ -85,6 +85,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -935,21 +936,22 @@ class BillDetailAttachmentsTest {
     }
 
     @Test
-    fun `GIVEN a photo framed while the bill is deleted WHEN tapping Done THEN closes the editor and adds nothing`() =
+    fun `GIVEN a photo framed while the bill is deleted WHEN tapping Done THEN adds nothing and counts no confirm`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(deleteGate = CompletableDeferred())
             viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
             viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
             viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+            trackedEvents.clear()
 
             // When
             viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
 
             // Then
             assertEquals(0, additions)
-            assertNull(viewModel.uiState.value.photoCrop)
-            assertFalse(viewModel.uiState.value.isAddingPhoto)
+            assertNotNull(viewModel.uiState.value.photoCrop)
+            assertTrue(trackedEvents.isEmpty())
         }
 
     @Test

@@ -29,8 +29,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillAttachmentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AttachBillImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
@@ -5130,9 +5130,8 @@ class BillDetailViewModelTest {
             observeBillHistory = ObserveBillHistoryUseCase(activity),
             loadCropPhoto = { Result.failure(UnsupportedOperationException()) },
             prepareBillPhoto = { _, _ -> Result.failure(UnsupportedOperationException()) },
-            attachBillImage = AddBillAttachmentUseCase(
+            attachBillImage = AttachBillImageUseCase(
                 attachments,
-                encodeImage = { throw UnsupportedOperationException() },
                 currentTimeMillis = { nowMillis },
             ),
             removeBillAttachment = RemoveBillAttachmentUseCase(attachments, currentTimeMillis = { nowMillis }),
