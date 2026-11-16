@@ -35,7 +35,7 @@ would need two **When**s checks two behaviors and is split:
 fun `GIVEN an unknown code WHEN restoring THEN shows the invalid code error`() = runTest(testDispatcher) {
     // Given
     prepareScenario(restoreError = InvalidRecoveryCodeException())
-    viewModel.onEvent(RestoreUiEvent.OnWordChanged(index = 0, text = RECOVERY_CODE))
+    viewModel.onEvent(RestoreUiEvent.OnWordChanged(index = 0, text = "legal winner thank year wave sausage worth useful legal winner thank yellow"))
 
     // When
     viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)

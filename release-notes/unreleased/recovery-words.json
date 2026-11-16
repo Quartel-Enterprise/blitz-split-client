@@ -2,22 +2,24 @@
   "notes": [
     {
       "kind": "improved",
-      "platforms": ["all"],
+      "platforms": [
+        "all"
+      ],
       "text": {
-        "en": "Without an account, your recovery code is now 12 numbered words, easier to write down, and restoring takes them one word per field, suggesting each word as you type.",
-        "pt": "Sem conta, seu código de recuperação agora é de 12 palavras numeradas, mais fáceis de anotar, e para recuperar você digita uma palavra por campo, com sugestões enquanto digita.",
-        "pt-PT": "Sem conta, o teu código de recuperação agora é de 12 palavras numeradas, mais fáceis de anotar, e para recuperar escreves uma palavra por campo, com sugestões enquanto escreves.",
-        "es": "Sin cuenta, tu código de recuperación ahora son 12 palabras numeradas, más fáciles de anotar, y para recuperarlo escribes una palabra por campo, con sugerencias mientras escribes.",
-        "fr": "Sans compte, ton code de récupération est désormais composé de 12 mots numérotés, plus faciles à noter, et pour le restaurer tu saisis un mot par champ, avec des suggestions au fil de la frappe.",
-        "de": "Ohne Konto besteht dein Wiederherstellungscode jetzt aus 12 nummerierten Wörtern, die sich leichter aufschreiben lassen, und beim Wiederherstellen gibst du ein Wort pro Feld ein, mit Vorschlägen beim Tippen.",
-        "it": "Senza account, il tuo codice di recupero ora è di 12 parole numerate, più facili da annotare, e per ripristinarlo scrivi una parola per campo, con suggerimenti mentre digiti.",
-        "pl": "Bez konta twój kod odzyskiwania to teraz 12 ponumerowanych słów, łatwiejszych do zapisania, a przy odzyskiwaniu wpisujesz jedno słowo na pole, z podpowiedziami podczas pisania.",
-        "nl": "Zonder account bestaat je herstelcode nu uit 12 genummerde woorden die makkelijker op te schrijven zijn, en bij het herstellen typ je één woord per veld, met suggesties terwijl je typt.",
-        "ja": "アカウントなしの場合、復元コードは書き留めやすい番号付きの12個の単語になりました。復元するときは1つの欄に1単語ずつ入力でき、入力中に候補が表示されます。",
-        "tr": "Hesapsız kullanımda kurtarma kodun artık not alması daha kolay, numaralı 12 kelime. Geri yüklerken her alana bir kelime yazıyorsun ve yazarken öneriler çıkıyor.",
-        "id": "Tanpa akun, kode pemulihanmu sekarang berupa 12 kata bernomor yang lebih mudah dicatat, dan saat memulihkan kamu mengetik satu kata per kolom, dengan saran saat mengetik.",
-        "ru": "Без аккаунта код восстановления теперь состоит из 12 пронумерованных слов, которые проще записать, а при восстановлении ты вводишь по одному слову в поле, с подсказками при вводе.",
-        "uk": "Без облікового запису код відновлення тепер складається з 12 пронумерованих слів, які простіше записати, а під час відновлення ти вводиш по одному слову в поле, з підказками під час введення."
+        "en": "Without an account, your recovery code is now 12 numbered words, easier to write down, and restoring takes them one word per field, suggesting each word as you type. Codes saved before this version no longer work: save the new one, or connect Google or Apple.",
+        "pt": "Sem conta, seu código de recuperação agora é de 12 palavras numeradas, mais fáceis de anotar, e para recuperar você digita uma palavra por campo, com sugestões enquanto digita. Códigos guardados antes desta versão não funcionam mais: guarde o novo ou conecte o Google ou a Apple.",
+        "pt-PT": "Sem conta, o teu código de recuperação agora é de 12 palavras numeradas, mais fáceis de anotar, e para recuperar escreves uma palavra por campo, com sugestões enquanto escreves. Os códigos guardados antes desta versão deixam de funcionar: guarda o novo ou liga a Google ou a Apple.",
+        "es": "Sin cuenta, tu código de recuperación ahora son 12 palabras numeradas, más fáciles de anotar, y para recuperarlo escribes una palabra por campo, con sugerencias mientras escribes. Los códigos guardados antes de esta versión ya no funcionan: guarda el nuevo o conecta Google o Apple.",
+        "fr": "Sans compte, ton code de récupération est désormais composé de 12 mots numérotés, plus faciles à noter, et pour le restaurer tu saisis un mot par champ, avec des suggestions au fil de la frappe. Les codes enregistrés avant cette version ne fonctionnent plus : garde le nouveau ou connecte Google ou Apple.",
+        "de": "Ohne Konto besteht dein Wiederherstellungscode jetzt aus 12 nummerierten Wörtern, die sich leichter aufschreiben lassen, und beim Wiederherstellen gibst du ein Wort pro Feld ein, mit Vorschlägen beim Tippen. Codes, die du vor dieser Version gespeichert hast, funktionieren nicht mehr: Speichere den neuen oder verbinde Google oder Apple.",
+        "it": "Senza account, il tuo codice di recupero ora è di 12 parole numerate, più facili da annotare, e per ripristinarlo scrivi una parola per campo, con suggerimenti mentre digiti. I codici salvati prima di questa versione non funzionano più: salva quello nuovo o collega Google o Apple.",
+        "pl": "Bez konta twój kod odzyskiwania to teraz 12 ponumerowanych słów, łatwiejszych do zapisania, a przy odzyskiwaniu wpisujesz jedno słowo na pole, z podpowiedziami podczas pisania. Kody zapisane przed tą wersją już nie działają: zapisz nowy albo połącz Google lub Apple.",
+        "nl": "Zonder account bestaat je herstelcode nu uit 12 genummerde woorden die makkelijker op te schrijven zijn, en bij het herstellen typ je één woord per veld, met suggesties terwijl je typt. Codes die je vóór deze versie hebt bewaard, werken niet meer: bewaar de nieuwe of koppel Google of Apple.",
+        "ja": "アカウントなしの場合、復元コードは書き留めやすい番号付きの12個の単語になりました。復元するときは1つの欄に1単語ずつ入力でき、入力中に候補が表示されます。 このバージョンより前に保存したコードは使えなくなりました。新しいコードを保存するか、GoogleまたはAppleを連携してください。",
+        "tr": "Hesapsız kullanımda kurtarma kodun artık not alması daha kolay, numaralı 12 kelime. Geri yüklerken her alana bir kelime yazıyorsun ve yazarken öneriler çıkıyor. Bu sürümden önce kaydettiğin kodlar artık çalışmıyor: yenisini kaydet ya da Google veya Apple'ı bağla.",
+        "id": "Tanpa akun, kode pemulihanmu sekarang berupa 12 kata bernomor yang lebih mudah dicatat, dan saat memulihkan kamu mengetik satu kata per kolom, dengan saran saat mengetik. Kode yang disimpan sebelum versi ini tidak berlaku lagi: simpan yang baru, atau hubungkan Google atau Apple.",
+        "ru": "Без аккаунта код восстановления теперь состоит из 12 пронумерованных слов, которые проще записать, а при восстановлении ты вводишь по одному слову в поле, с подсказками при вводе. Коды, сохранённые до этой версии, больше не работают: сохрани новый или подключи Google или Apple.",
+        "uk": "Без облікового запису код відновлення тепер складається з 12 пронумерованих слів, які простіше записати, а під час відновлення ти вводиш по одному слову в поле, з підказками під час введення. Коди, збережені до цієї версії, більше не працюють: збережи новий або підключи Google чи Apple."
       }
     }
   ]

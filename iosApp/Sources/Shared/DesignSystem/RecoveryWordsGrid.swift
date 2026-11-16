@@ -1,12 +1,20 @@
 import SwiftUI
 
 /// The 12 recovery words, numbered so they are written down in order. They read row by row, the order the restore
-/// screen's fields take them in.
+/// screen's fields take them in. Three columns of the longest words don't fit an iPhone, so it falls back to two.
 struct RecoveryWordsGrid: View {
     let words: [String]
     var columnCount = 3
 
     var body: some View {
+        ViewThatFits(in: .horizontal) {
+            grid(columns: columnCount)
+            grid(columns: min(columnCount, 2))
+        }
+        .textSelection(.enabled)
+    }
+
+    private func grid(columns columnCount: Int) -> some View {
         Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 8) {
             ForEach(Array(stride(from: 0, to: words.count, by: columnCount)), id: \.self) { start in
                 GridRow {
@@ -27,6 +35,5 @@ struct RecoveryWordsGrid: View {
                 }
             }
         }
-        .textSelection(.enabled)
     }
 }

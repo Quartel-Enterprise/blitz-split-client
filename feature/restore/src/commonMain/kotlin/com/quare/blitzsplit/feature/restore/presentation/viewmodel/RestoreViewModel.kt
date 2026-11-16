@@ -102,8 +102,13 @@ class RestoreViewModel(
         if (index !in uiState.value.words.indices) return
         val tokens = RecoveryWords.split(text)
         when {
+            tokens.size >= RecoveryWords.COUNT -> fillWords(
+                from = 0,
+                tokens = RecoveryWords.findCodeIn(text) ?: tokens,
+            )
+
             tokens.size > 1 -> fillWords(
-                from = if (tokens.size >= RecoveryWords.COUNT) 0 else index,
+                from = index,
                 tokens = tokens,
             )
 
@@ -179,12 +184,19 @@ class RestoreViewModel(
         }
     }
 
+    // Why: a QR that isn't a recovery code (another app's, an old code's) says so instead of restoring nothing.
     private fun handleQrScanned(content: String) {
+        val text = content.toRecoveryCodeFromQr()
+        val code = RecoveryWords.findCodeIn(text)
         fillWords(
             from = 0,
-            tokens = RecoveryWords.split(content.toRecoveryCodeFromQr()),
+            tokens = code ?: RecoveryWords.split(text),
         )
-        restore()
+        if (code == null) {
+            uiState.update { it.copy(error = RestoreError.INVALID_CODE) }
+        } else {
+            restore()
+        }
     }
 
     private fun handleRestoreClicked() {

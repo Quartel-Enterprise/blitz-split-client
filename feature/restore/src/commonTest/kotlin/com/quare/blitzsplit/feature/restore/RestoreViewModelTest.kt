@@ -1229,6 +1229,37 @@ class RestoreViewModelTest {
         }
 
     @Test
+    fun `GIVEN the downloaded file of the web WHEN pasted whole THEN fills the 12 fields with its words alone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val file = "Blitz Split · recovery code\n\n" +
+                recoveryWords.mapIndexed { index, word -> "${index + 1}. $word" }.joinToString("\n") +
+                "\n\nUse it to bring your groups back."
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(3, file))
+
+            // Then
+            assertEquals(recoveryWords, wordTexts())
+            assertTrue(viewModel.uiState.value.isCodeComplete)
+        }
+
+    @Test
+    fun `GIVEN a QR that is not a recovery code WHEN scanned THEN shows the invalid code error without restoring`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnQrScanned("borarachar://recover?code=K7QM4XPA9TRE"))
+
+            // Then
+            assertEquals(RestoreError.INVALID_CODE, viewModel.uiState.value.error)
+            assertTrue(account.restoredCodes.isEmpty())
+        }
+
+    @Test
     fun `GIVEN the restore screen WHEN a word arrives for a field past the last THEN changes nothing`() =
         runTest(testDispatcher) {
             // Given

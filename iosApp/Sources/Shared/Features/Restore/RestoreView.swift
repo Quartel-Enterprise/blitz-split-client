@@ -56,6 +56,11 @@ final class RestoreModel {
         }
     }
 
+    /// Once applied, so the same field asked again (back into a word, then completed again) moves the keyboard again.
+    func consumeFocusRequest() {
+        focusRequest = nil
+    }
+
     isolated deinit {
         holder.clear()
     }
@@ -256,7 +261,10 @@ private struct RestoreWordFields: View {
             }
         }
         .onChange(of: model.focusRequest) { _, index in
-            focusedWord = index
+            if let index {
+                focusedWord = index
+                model.consumeFocusRequest()
+            }
         }
     }
 

@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,9 +22,12 @@ import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 
+// Why: a number and an eight-letter word, the longest of the list, in the monospaced font, plus the gap.
+private val minWidthPerColumn = 118.dp
+
 /*
  * Why: the 12 recovery words, numbered so they are written down in order. They read row by row, the order the restore
- * screen's fields take them in.
+ * screen's fields take them in. Three columns of the longest words don't fit a phone, so a narrow box takes two.
  */
 @Composable
 fun RecoveryWordsGrid(
@@ -32,10 +36,23 @@ fun RecoveryWordsGrid(
     columnCount: Int = 3,
     isCompact: Boolean = false,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(if (isCompact) 4.dp else 8.dp),
-    ) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val columns = if (maxWidth < minWidthPerColumn * columnCount) minOf(columnCount, 2) else columnCount
+        RecoveryWordsColumn(
+            words = words,
+            columnCount = columns,
+            isCompact = isCompact,
+        )
+    }
+}
+
+@Composable
+private fun RecoveryWordsColumn(
+    words: List<String>,
+    columnCount: Int,
+    isCompact: Boolean,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(if (isCompact) 4.dp else 8.dp)) {
         words.chunked(columnCount).forEachIndexed { row, rowWords ->
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 repeat(columnCount) { column ->

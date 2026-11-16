@@ -422,4 +422,29 @@ class RecoveryWordsTest {
         // Then
         assertNull(words)
     }
+
+    @Test
+    fun `GIVEN the words between a heading and a sentence WHEN finding the code THEN returns the 12 words alone`() {
+        // Given
+        val file = "Blitz Split · recovery code\n\n1. legal\n2. winner\n3. thank\n4. year\n5. wave\n6. sausage\n" +
+            "7. worth\n8. useful\n9. legal\n10. winner\n11. thank\n12. yell\n\nUse it to bring your groups back."
+
+        // When
+        val code = RecoveryWords.findCodeIn(file)
+
+        // Then
+        assertEquals(validCode.split(" "), code)
+    }
+
+    @Test
+    fun `GIVEN no run of 12 words of the list WHEN finding the code THEN returns null`() {
+        // Given
+        val text = "K7QM4XPA9TRE legal winner thank"
+
+        // When
+        val code = RecoveryWords.findCodeIn(text)
+
+        // Then
+        assertNull(code)
+    }
 }

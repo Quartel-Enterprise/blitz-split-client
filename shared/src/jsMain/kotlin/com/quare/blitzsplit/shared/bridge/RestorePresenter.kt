@@ -18,8 +18,6 @@ class JsRestoreWord(
 
 class JsRestoreState(
     val words: Array<JsRestoreWord>,
-    // Why: -1 while no field has the focus.
-    val focusedWordIndex: Int,
     val suggestions: Array<String>,
     val canRestore: Boolean,
     val isRestoring: Boolean,
@@ -37,7 +35,6 @@ class RestorePresenter {
         val states = viewModel.uiState.map { state ->
             JsRestoreState(
                 words = state.words.map { JsRestoreWord(it.text, it.isDeadEnd) }.toTypedArray(),
-                focusedWordIndex = state.focusedWordIndex ?: -1,
                 suggestions = state.suggestions.toTypedArray(),
                 canRestore = state.canRestore,
                 isRestoring = state.isRestoring,

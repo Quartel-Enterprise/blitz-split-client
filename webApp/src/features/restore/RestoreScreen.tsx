@@ -65,7 +65,9 @@ export function RestoreScreen() {
                     inputRef={(input) => {
                       wordInputs.current[index] = input
                     }}
+                    isLast={index === state.words.length - 1}
                     onFocus={() => presenter.focusWord(index)}
+                    onNext={() => wordInputs.current[index + 1]?.focus()}
                     onChange={(value) => presenter.changeWord(index, value)}
                   />
                 ))}
@@ -143,15 +145,17 @@ interface WordInputProps {
   word: JsRestoreWord
   hasError: boolean
   inputRef: (input: HTMLInputElement | null) => void
+  isLast: boolean
   onFocus: () => void
+  onNext: () => void
   onChange: (value: string) => void
 }
 
 /**
  * One recovery word. Several words pasted or typed into it fill the fields from it on, so the draft keeps only the first
- * one, which the ViewModel sends back whole.
+ * one, which the ViewModel sends back whole. Enter moves on, as the phones' Next does, and only the last field submits.
  */
-function WordInput({ index, word, hasError, inputRef, onFocus, onChange }: WordInputProps) {
+function WordInput({ index, word, hasError, inputRef, isLast, onFocus, onNext, onChange }: WordInputProps) {
   const [text, setText] = useDraft(word.text, (value) => {
     onChange(value)
     const words = value.toLowerCase().split(/[^a-z]+/).filter(Boolean)
@@ -174,7 +178,14 @@ function WordInput({ index, word, hasError, inputRef, onFocus, onChange }: WordI
         aria-invalid={hasError || word.isDeadEnd}
         aria-describedby="recovery-code-help"
         className="h-10 pl-8 font-mono"
+        enterKeyHint={isLast ? 'go' : 'next'}
         onFocus={onFocus}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' && !isLast) {
+            event.preventDefault()
+            onNext()
+          }
+        }}
         onChange={(event) => setText(event.target.value)}
       />
     </div>
