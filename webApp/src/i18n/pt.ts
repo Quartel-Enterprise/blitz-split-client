@@ -60,7 +60,7 @@ export const pt: Record<MessageKey, string> = {
   welcome_legalNotice: "Ao continuar, você aceita os {terms} e declara estar ciente da {privacy}.",
   welcome_legalTerms: "Termos de Serviço",
   welcome_legalPrivacy: "Política de Privacidade",
-  welcome_noAccountNote: 'Seus dados são apagados após 30 dias sem uso.',
+  welcome_noAccountNote: 'Sem conta, seus dados são apagados após 30 dias sem uso. Conecte Google ou Apple para mantê-los.',
   welcome_expiredTitle: 'Seus dados foram apagados',
   welcome_expiredBody: 'Você usava o app sem conta e ficou 30 dias sem abrir, então seus dados foram apagados. Conecte Google ou Apple para não perder da próxima vez.',
   welcome_expiredOk: 'OK',

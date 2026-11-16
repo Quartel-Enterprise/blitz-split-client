@@ -16,7 +16,7 @@
     <string name="welcome_legal_notice">Продолжая, ты принимаешь %1$s и подтверждаешь, что прочитал(а) %2$s.</string>
     <string name="welcome_legal_terms">Условия использования</string>
     <string name="welcome_legal_privacy">Политику конфиденциальности</string>
-    <string name="welcome_no_account_note">Твои данные удаляются через 30 дней без использования.</string>
+    <string name="welcome_no_account_note">Без аккаунта твои данные удаляются через 30 дней без использования. Подключи Google или Apple, чтобы их сохранить.</string>
     <string name="welcome_expired_title">Твои данные удалены</string>
     <string name="welcome_expired_body">Ты пользовался(-ась) приложением без аккаунта и не открывал(а) его 30 дней, поэтому твои данные удалены. Подключи Google или Apple, чтобы в следующий раз их сохранить.</string>
     <string name="welcome_expired_ok">ОК</string>

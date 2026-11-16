@@ -61,7 +61,7 @@ export const it: Record<MessageKey, string> = {
   welcome_legalNotice: "Continuando, accetti i {terms} e dichiari di aver letto l’{privacy}.",
   welcome_legalTerms: "Termini di servizio",
   welcome_legalPrivacy: "Informativa sulla privacy",
-  welcome_noAccountNote: 'I tuoi dati vengono cancellati dopo 30 giorni di inutilizzo.',
+  welcome_noAccountNote: 'Senza account, i tuoi dati vengono cancellati dopo 30 giorni di inutilizzo. Collega Google o Apple per conservarli.',
   welcome_expiredTitle: 'I tuoi dati sono stati cancellati',
   welcome_expiredBody: 'Usavi l’app senza account e non l’hai aperta per 30 giorni, quindi i tuoi dati sono stati cancellati. Collega Google o Apple per non perderli la prossima volta.',
   welcome_expiredOk: 'OK',

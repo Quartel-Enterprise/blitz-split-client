@@ -16,7 +16,7 @@
     <string name="welcome_legal_notice">続行すると、%1$sに同意し、%2$sを確認したものとみなされます。</string>
     <string name="welcome_legal_terms">利用規約</string>
     <string name="welcome_legal_privacy">プライバシーポリシー</string>
-    <string name="welcome_no_account_note">30日間使わないとデータは削除されます。</string>
+    <string name="welcome_no_account_note">アカウントなしの場合、30日間使わないとデータは削除されます。GoogleまたはAppleを連携すると保持できます。</string>
     <string name="welcome_expired_title">データが削除されました</string>
     <string name="welcome_expired_body">アカウントなしで使用し、30日間アプリを開かなかったため、データが削除されました。次回からはGoogleまたはAppleを連携すると保持できます。</string>
     <string name="welcome_expired_ok">OK</string>

@@ -16,7 +16,7 @@
     <string name="welcome_legal_notice">Kontynuując, akceptujesz %1$s i potwierdzasz, że znasz %2$s.</string>
     <string name="welcome_legal_terms">Warunki korzystania</string>
     <string name="welcome_legal_privacy">Politykę prywatności</string>
-    <string name="welcome_no_account_note">Twoje dane są usuwane po 30 dniach nieużywania.</string>
+    <string name="welcome_no_account_note">Bez konta Twoje dane są usuwane po 30 dniach nieużywania. Połącz Google lub Apple, aby je zachować.</string>
     <string name="welcome_expired_title">Twoje dane zostały usunięte</string>
     <string name="welcome_expired_body">Aplikacja była używana bez konta i nie była otwierana przez 30 dni, więc Twoje dane zostały usunięte. Połącz Google lub Apple, aby następnym razem ich nie stracić.</string>
     <string name="welcome_expired_ok">OK</string>

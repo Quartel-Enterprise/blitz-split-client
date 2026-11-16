@@ -16,7 +16,7 @@
     <string name="welcome_legal_notice">Ao continuar, você aceita os %1$s e declara estar ciente da %2$s.</string>
     <string name="welcome_legal_terms">Termos de Serviço</string>
     <string name="welcome_legal_privacy">Política de Privacidade</string>
-    <string name="welcome_no_account_note">Seus dados são apagados após 30 dias sem uso.</string>
+    <string name="welcome_no_account_note">Sem conta, seus dados são apagados após 30 dias sem uso. Conecte Google ou Apple para mantê-los.</string>
     <string name="welcome_expired_title">Seus dados foram apagados</string>
     <string name="welcome_expired_body">Você usava o app sem conta e ficou 30 dias sem abrir, então seus dados foram apagados. Conecte Google ou Apple para não perder da próxima vez.</string>
     <string name="welcome_expired_ok">OK</string>

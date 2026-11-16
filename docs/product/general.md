@@ -11,8 +11,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     offline in a row count too. The server does it (`expire-anonymous-accounts` in blitz-split-api), as a deletion
     asked in Profile: the person's name stays in their groups with no account, and a group left with no account goes.
     Every platform says so in the same four places:
-    - Welcome, in a small centered line right under "Use without an account": "Your data is deleted after 30 days
-      without use."
+    - Welcome, in a small centered line right under "Use without an account": "Without an account, your data is
+      deleted after 30 days without use. Connect Google or Apple to keep it." It starts with "Without an account" so a
+      person who signs in with Google or Apple does not read it as a rule for them (Pierre's call, November 2026).
     - Profile's "No account" row, whose line reads "Deleted after 30 days without use" once the account is on the
       server ([profile.md](profile.md)).
     - The sign out of such an account, whose dialog adds that after 30 days without use the account is deleted and

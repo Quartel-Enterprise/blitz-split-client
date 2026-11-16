@@ -163225,85 +163225,85 @@
         }
       }
     },
-    "Your data is deleted after 30 days without use." : {
+    "Without an account, your data is deleted after 30 days without use. Connect Google or Apple to keep it." : {
       "comment" : "Welcome, under \"Use without an account\"",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine Daten werden nach 30 Tagen ohne Nutzung gelöscht."
+            "value" : "Ohne Konto werden deine Daten nach 30 Tagen ohne Nutzung gelöscht. Verbinde Google oder Apple, um sie zu behalten."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tus datos se borran tras 30 días sin uso."
+            "value" : "Sin cuenta, tus datos se borran tras 30 días sin uso. Conecta Google o Apple para conservarlos."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tes données sont effacées après 30 jours sans utilisation."
+            "value" : "Sans compte, tes données sont effacées après 30 jours sans utilisation. Connecte Google ou Apple pour les garder."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Datamu dihapus setelah 30 hari tidak dipakai."
+            "value" : "Tanpa akun, datamu dihapus setelah 30 hari tidak dipakai. Hubungkan Google atau Apple agar tetap tersimpan."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I tuoi dati vengono cancellati dopo 30 giorni di inutilizzo."
+            "value" : "Senza account, i tuoi dati vengono cancellati dopo 30 giorni di inutilizzo. Collega Google o Apple per conservarli."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "30日間使わないとデータは削除されます。"
+            "value" : "アカウントなしの場合、30日間使わないとデータは削除されます。GoogleまたはAppleを連携すると保持できます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je gegevens worden na 30 dagen zonder gebruik verwijderd."
+            "value" : "Zonder account worden je gegevens na 30 dagen zonder gebruik verwijderd. Koppel Google of Apple om ze te behouden."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Twoje dane są usuwane po 30 dniach nieużywania."
+            "value" : "Bez konta Twoje dane są usuwane po 30 dniach nieużywania. Połącz Google lub Apple, aby je zachować."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seus dados são apagados após 30 dias sem uso."
+            "value" : "Sem conta, seus dados são apagados após 30 dias sem uso. Conecte Google ou Apple para mantê-los."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Os teus dados são apagados após 30 dias sem utilização."
+            "value" : "Sem conta, os teus dados são apagados após 30 dias sem utilização. Liga o Google ou a Apple para os manteres."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Твои данные удаляются после 30 дней без использования."
+            "value" : "Без аккаунта твои данные удаляются через 30 дней без использования. Подключи Google или Apple, чтобы их сохранить."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verilerin 30 gün kullanılmazsa silinir."
+            "value" : "Hesap olmadan, 30 gün kullanılmazsa verilerin silinir. Saklamak için Google ya da Apple bağla."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Твої дані буде видалено після 30 днів без використання."
+            "value" : "Без облікового запису твої дані буде видалено після 30 днів без використання. Підключи Google чи Apple, щоб зберегти їх."
           }
         }
       }
