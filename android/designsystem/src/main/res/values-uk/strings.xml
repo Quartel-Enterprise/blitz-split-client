@@ -322,4 +322,8 @@
     <string name="designsystem_paid_with_private">Це бачиш лише ти.</string>
     <string name="designsystem_paid_with_only_payers">Позначити, чим сплачено, можуть лише ті, хто платив за цей рахунок.</string>
     <string name="designsystem_paid_with_add">Додати спосіб оплати</string>
+    <string name="designsystem_range_apply">Застосувати</string>
+    <string name="designsystem_range_start">Дата початку</string>
+    <string name="designsystem_range_end">Дата завершення</string>
+    <string name="designsystem_range_none">Не вибрано</string>
 </resources>

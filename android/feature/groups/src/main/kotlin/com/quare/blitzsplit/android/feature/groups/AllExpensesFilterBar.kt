@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.groups
 
+import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,28 +23,42 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
+import com.quare.blitzsplit.android.designsystem.component.DateRangeDialog
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.SearchBarField
 import com.quare.blitzsplit.android.designsystem.format.categoryName
 import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
 import com.quare.blitzsplit.android.designsystem.layout.bleedingHorizontalScroll
+import com.quare.blitzsplit.core.model.ExpensePeriod
+import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilter
+import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
 import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
+import kotlin.time.Duration.Companion.hours
+
+/*
+ * Why: DateUtils reads an end at midnight as the day before, and Statistics sends a custom period's days as their
+ * start (the pickers, as their noon): half a day later stays on the last day either way, as Statistics' own text does.
+ */
+private val rangeEndShiftMillis = 12.hours.inWholeMilliseconds
 
 /*
  * Why: over "All expenses"' bills (Pierre's call, beta feedback): the search, which finds bills by their description as
- * the home's search does, then a row of chips that scrolls sideways: the order, then Group, Category, Your share and
- * Who paid, each a menu, a chip picked while its filter narrows the list, and "Clear filters" once one does.
+ * the home's search does, then a row of chips that scrolls sideways: the order, then Group, Category, Period, Your share
+ * and Who paid (or what the statistics picked first, filterOrder), each a menu, a chip picked while its filter narrows
+ * the list, and "Clear filters" once one does.
  */
 @Composable
 internal fun AllExpensesFilterBar(
@@ -51,13 +66,12 @@ internal fun AllExpensesFilterBar(
     onEvent: (AllExpensesUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val filters = state.filters
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         SearchBarField(
-            query = filters.query,
+            query = state.filters.query,
             placeholder = stringResource(R.string.groups_all_expenses_search),
             clearLabel = stringResource(R.string.groups_search_clear),
             onQueryChange = { onEvent(AllExpensesUiEvent.OnQueryChanged(it)) },
@@ -68,55 +82,14 @@ internal fun AllExpensesFilterBar(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            SortChip(
-                sort = filters.sort,
-                onPick = { onEvent(AllExpensesUiEvent.OnSortPicked(it)) },
-            )
-            GroupChip(
-                state = state,
-                onEvent = onEvent,
-            )
-            CategoryChip(
-                state = state,
-                onEvent = onEvent,
-            )
-            MenuChip(
-                label = if (filters.share == ShareFilter.ALL) {
-                    stringResource(R.string.groups_all_expenses_share)
-                } else {
-                    shareLabel(filters.share)
-                },
-                isSelected = filters.share != ShareFilter.ALL,
-            ) { close ->
-                ShareFilter.entries.forEach { share ->
-                    CheckedMenuItem(
-                        text = shareLabel(share),
-                        isChecked = filters.share == share,
-                    ) {
-                        close()
-                        onEvent(AllExpensesUiEvent.OnShareFilterPicked(share))
-                    }
-                }
+            state.filterOrder.forEach { filter ->
+                FilterMenuChip(
+                    filter = filter,
+                    state = state,
+                    onEvent = onEvent,
+                )
             }
-            MenuChip(
-                label = if (filters.payer == PayerFilter.ALL) {
-                    stringResource(R.string.groups_all_expenses_payer)
-                } else {
-                    payerLabel(filters.payer)
-                },
-                isSelected = filters.payer != PayerFilter.ALL,
-            ) { close ->
-                PayerFilter.entries.forEach { payer ->
-                    CheckedMenuItem(
-                        text = payerLabel(payer),
-                        isChecked = filters.payer == payer,
-                    ) {
-                        close()
-                        onEvent(AllExpensesUiEvent.OnPayerFilterPicked(payer))
-                    }
-                }
-            }
-            if (filters.isFiltering) {
+            if (state.filters.isFiltering) {
                 TextButton(onClick = { onEvent(AllExpensesUiEvent.OnClearFiltersClicked) }) {
                     Text(stringResource(R.string.groups_all_expenses_clear))
                 }
@@ -124,6 +97,143 @@ internal fun AllExpensesFilterBar(
         }
     }
 }
+
+@Composable
+private fun FilterMenuChip(
+    filter: AllExpensesFilter,
+    state: AllExpensesUiState,
+    onEvent: (AllExpensesUiEvent) -> Unit,
+) {
+    val filters = state.filters
+    when (filter) {
+        AllExpensesFilter.SORT -> SortChip(
+            sort = filters.sort,
+            onPick = { onEvent(AllExpensesUiEvent.OnSortPicked(it)) },
+        )
+
+        AllExpensesFilter.GROUP -> GroupChip(
+            state = state,
+            onEvent = onEvent,
+        )
+
+        AllExpensesFilter.CATEGORY -> CategoryChip(
+            state = state,
+            onEvent = onEvent,
+        )
+
+        AllExpensesFilter.PERIOD -> PeriodChip(
+            filters = filters,
+            onEvent = onEvent,
+        )
+
+        AllExpensesFilter.SHARE -> MenuChip(
+            label = if (filters.share == ShareFilter.ALL) {
+                stringResource(R.string.groups_all_expenses_share)
+            } else {
+                shareLabel(filters.share)
+            },
+            isSelected = filters.share != ShareFilter.ALL,
+        ) { close ->
+            ShareFilter.entries.forEach { share ->
+                CheckedMenuItem(
+                    text = shareLabel(share),
+                    isChecked = filters.share == share,
+                ) {
+                    close()
+                    onEvent(AllExpensesUiEvent.OnShareFilterPicked(share))
+                }
+            }
+        }
+
+        AllExpensesFilter.PAYER -> MenuChip(
+            label = if (filters.payer == PayerFilter.ALL) {
+                stringResource(R.string.groups_all_expenses_payer)
+            } else {
+                payerLabel(filters.payer)
+            },
+            isSelected = filters.payer != PayerFilter.ALL,
+        ) { close ->
+            PayerFilter.entries.forEach { payer ->
+                CheckedMenuItem(
+                    text = payerLabel(payer),
+                    isChecked = filters.payer == payer,
+                ) {
+                    close()
+                    onEvent(AllExpensesUiEvent.OnPayerFilterPicked(payer))
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Why: the statistics' periods. "Pick dates…" opens the range picker, from the days picked before or today; a custom
+ * period names its days ("Oct 24 – 26, 2026").
+ */
+@Composable
+private fun PeriodChip(
+    filters: AllExpensesFilters,
+    onEvent: (AllExpensesUiEvent) -> Unit,
+) {
+    var isPicking by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    val customStart = filters.customStartMillis
+    val customEnd = filters.customEndMillis
+    MenuChip(
+        label = when {
+            filters.period == ExpensePeriod.ALL -> stringResource(R.string.groups_all_expenses_period)
+
+            filters.period == ExpensePeriod.CUSTOM && customStart != null && customEnd != null ->
+                DateUtils
+                    .formatDateRange(
+                        context,
+                        customStart,
+                        customEnd + rangeEndShiftMillis,
+                        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH,
+                    )
+
+            else -> periodLabel(filters.period)
+        },
+        isSelected = filters.period != ExpensePeriod.ALL,
+    ) { close ->
+        ExpensePeriod.entries.forEach { period ->
+            CheckedMenuItem(
+                text = periodLabel(period),
+                isChecked = filters.period == period,
+            ) {
+                close()
+                if (period == ExpensePeriod.CUSTOM) {
+                    isPicking = true
+                } else {
+                    onEvent(AllExpensesUiEvent.OnPeriodPicked(period))
+                }
+            }
+        }
+    }
+    if (isPicking) {
+        val now = remember { System.currentTimeMillis() }
+        DateRangeDialog(
+            startMillis = customStart ?: now,
+            endMillis = customEnd ?: now,
+            onPicked = { start, end ->
+                isPicking = false
+                onEvent(AllExpensesUiEvent.OnCustomPeriodPicked(start, end))
+            },
+            onDismiss = { isPicking = false },
+        )
+    }
+}
+
+@Composable
+private fun periodLabel(period: ExpensePeriod): String = stringResource(
+    when (period) {
+        ExpensePeriod.ALL -> R.string.groups_all_expenses_period_all
+        ExpensePeriod.THIS_YEAR -> R.string.groups_all_expenses_period_this_year
+        ExpensePeriod.THIS_MONTH -> R.string.groups_all_expenses_period_this_month
+        ExpensePeriod.LAST_MONTH -> R.string.groups_all_expenses_period_last_month
+        ExpensePeriod.CUSTOM -> R.string.groups_all_expenses_period_custom
+    },
+)
 
 @Composable
 private fun SortChip(

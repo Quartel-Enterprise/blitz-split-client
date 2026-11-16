@@ -1175,7 +1175,7 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.AllExpenses(groupId = GROUP_ID)),
+                listOf(Route.Home, Route.Groups, route, Route.AllExpenses.create(groupId = GROUP_ID)),
                 navigator.backStack.value,
             )
         }
@@ -1192,7 +1192,7 @@ class GroupDetailViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.Groups, route, Route.AllExpenses(groupId = GROUP_ID)),
+                listOf(Route.Home, Route.Groups, route, Route.AllExpenses.create(groupId = GROUP_ID)),
                 navigator.backStack.value,
             )
         }

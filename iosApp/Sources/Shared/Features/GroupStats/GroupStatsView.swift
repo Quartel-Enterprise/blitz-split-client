@@ -84,7 +84,7 @@ struct GroupStatsView: View {
         #endif
         .sheet(isPresented: $isPickingDates) {
             if let model {
-                StatsDatesSheet(state: model.state) { start, end in
+                DateRangeSheet(startMillis: model.state.periodStartMillis, endMillis: model.state.periodEndMillis) { start, end in
                     isPickingDates = false
                     model.send(GroupStatsUiEventOnCustomPeriodPicked(startMillis: start, endMillis: end))
                 }
@@ -531,6 +531,7 @@ private struct StatsPeopleSection: View {
                 onTap: { index, isPointer in
                     selected = isPointer || selected != index ? index : nil
                 },
+                onTapOff: { selected = nil },
             ) {
                 if state.topPerson != nil {
                     let shown = people[picked ?? 0]
@@ -540,6 +541,9 @@ private struct StatsPeopleSection: View {
             .frame(maxWidth: .infinity)
             .padding(16)
             .background(Palette.card, in: .rect(cornerRadius: 26))
+            // A tap on the card beside the ring lets the picked slice go (Pierre's call, beta feedback of 2026-11-16)
+            .contentShape(.rect(cornerRadius: 26))
+            .onTapGesture { selected = nil }
             VStack(spacing: 0) {
                 ForEach(Array(people.enumerated()), id: \.element.memberId) { index, person in
                     StatsPersonLine(person: person, currency: state.currency) {
@@ -881,52 +885,6 @@ private struct StatsEmptyCard: View {
         .padding(.vertical, 28)
         .frame(maxWidth: .infinity)
         .background(Palette.card, in: .rect(cornerRadius: 26))
-    }
-}
-
-/// "Pick dates": the first and the last day, never after today.
-private struct StatsDatesSheet: View {
-    let onPick: (Int64, Int64) -> Void
-
-    @Environment(\.dismiss) private var dismiss
-    @State private var start: Date
-    @State private var end: Date
-
-    init(state: GroupStatsUiState, onPick: @escaping (Int64, Int64) -> Void) {
-        self.onPick = onPick
-        _start = State(initialValue: ExpenseFormat.date(of: state.periodStartMillis))
-        _end = State(initialValue: ExpenseFormat.date(of: state.periodEndMillis))
-    }
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                DatePicker("From", selection: $start, in: ...Date.now, displayedComponents: .date)
-                DatePicker("To", selection: $end, in: ...Date.now, displayedComponents: .date)
-            }
-            .formStyle(.grouped)
-            .navigationTitle("Pick dates")
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            #endif
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", role: .cancel) { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Apply") {
-                        onPick(ExpenseFormat.millis(of: start), ExpenseFormat.millis(of: end))
-                    }
-                }
-            }
-        }
-        #if os(iOS)
-        .presentationDetents([.medium])
-        // An iPhone Duo open: in the half before the fold, never over it
-        .foldSheetPlacement()
-        #else
-        .frame(width: 360, height: 220)
-        #endif
     }
 }
 

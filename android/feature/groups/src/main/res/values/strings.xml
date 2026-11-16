@@ -199,4 +199,10 @@
     <string name="groups_all_expenses_clear">Clear filters</string>
     <string name="groups_all_expenses_no_results_title">No expenses match</string>
     <string name="groups_all_expenses_no_results_body">Try other words or clear the filters.</string>
+    <string name="groups_all_expenses_period">Period</string>
+    <string name="groups_all_expenses_period_all">All time</string>
+    <string name="groups_all_expenses_period_this_year">This year</string>
+    <string name="groups_all_expenses_period_this_month">This month</string>
+    <string name="groups_all_expenses_period_last_month">Last month</string>
+    <string name="groups_all_expenses_period_custom">Pick dates…</string>
 </resources>

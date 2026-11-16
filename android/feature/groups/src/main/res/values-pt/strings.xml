@@ -198,4 +198,10 @@
     <string name="groups_all_expenses_clear">Limpar filtros</string>
     <string name="groups_all_expenses_no_results_title">Nenhuma despesa encontrada</string>
     <string name="groups_all_expenses_no_results_body">Tente outras palavras ou limpe os filtros.</string>
+    <string name="groups_all_expenses_period">Período</string>
+    <string name="groups_all_expenses_period_all">Todo o período</string>
+    <string name="groups_all_expenses_period_this_year">Este ano</string>
+    <string name="groups_all_expenses_period_this_month">Este mês</string>
+    <string name="groups_all_expenses_period_last_month">Mês passado</string>
+    <string name="groups_all_expenses_period_custom">Escolher datas…</string>
 </resources>

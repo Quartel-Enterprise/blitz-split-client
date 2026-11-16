@@ -31,6 +31,12 @@ data class AllExpensesUiState(
     val billToDelete: BillDeletion?,
     // Why: its "Apagar" waits while the device deletes the bill.
     val isDeletingBill: Boolean,
+    /*
+     * Why: the chips under the search, in this order: the order, then each filter, unless the statistics opened the
+     * screen, whose picks (period, category, group) come first (Pierre's call, beta feedback of 2026-11-16). Kept as
+     * opened, so a chip never jumps while the person picks.
+     */
+    val filterOrder: List<AllExpensesFilter>,
     // Why: the home's tab under it, which the web's sidebar keeps picked: Início, or the tab of the group it opened over.
     val homeTab: HomeTab,
 ) {
@@ -66,6 +72,7 @@ data class AllExpensesUiState(
             billToDelete = null,
             isDeletingBill = false,
             homeTab = HomeTab.HOME,
+            filterOrder = AllExpensesFilter.entries,
         )
     }
 }

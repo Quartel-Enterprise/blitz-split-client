@@ -295,4 +295,8 @@
     <string name="designsystem_paid_with_private">あなただけに表示されます。</string>
     <string name="designsystem_paid_with_only_payers">この支出を支払った人だけが支払い方法を選べます。</string>
     <string name="designsystem_paid_with_add">支払い方法を追加</string>
+    <string name="designsystem_range_apply">適用</string>
+    <string name="designsystem_range_start">開始日</string>
+    <string name="designsystem_range_end">終了日</string>
+    <string name="designsystem_range_none">未選択</string>
 </resources>

@@ -398,7 +398,9 @@ class HomeViewModel(
             HomeUiEvent.OnContactsTabClicked -> navigator.openHomeTab(Route.Contacts)
 
             // Why: "Ver tudo" of Últimas despesas opens "Todas as despesas" over Início (Pierre's call, beta feedback).
-            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) navigator.navigate(Route.AllExpenses(groupId = null))
+            HomeUiEvent.OnSeeAllBillsClicked -> if (isOnTop()) {
+                navigator.navigate(Route.AllExpenses.create(groupId = null))
+            }
 
             is BillMenuEvent -> billMenu.onEvent(event)
 

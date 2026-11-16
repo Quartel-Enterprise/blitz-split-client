@@ -189,4 +189,10 @@
     <string name="groups_all_expenses_clear">Hapus filter</string>
     <string name="groups_all_expenses_no_results_title">Tidak ada pengeluaran yang cocok</string>
     <string name="groups_all_expenses_no_results_body">Coba kata lain atau hapus filternya.</string>
+    <string name="groups_all_expenses_period">Periode</string>
+    <string name="groups_all_expenses_period_all">Sepanjang waktu</string>
+    <string name="groups_all_expenses_period_this_year">Tahun ini</string>
+    <string name="groups_all_expenses_period_this_month">Bulan ini</string>
+    <string name="groups_all_expenses_period_last_month">Bulan lalu</string>
+    <string name="groups_all_expenses_period_custom">Pilih tanggal…</string>
 </resources>

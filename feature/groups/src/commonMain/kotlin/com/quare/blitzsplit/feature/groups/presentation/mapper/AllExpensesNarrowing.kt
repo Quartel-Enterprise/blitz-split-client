@@ -1,7 +1,10 @@
 package com.quare.blitzsplit.feature.groups.presentation.mapper
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.model.findSpanOrNull
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.toImageUrl
@@ -11,23 +14,30 @@ import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
 import com.quare.blitzsplit.feature.groups.presentation.model.FilterGroupOption
 import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
+import kotlinx.datetime.TimeZone
 
 /*
  * Why: each bill with its group and what it does to this device's user's balance; a bill whose group isn't read yet, or
- * which they aren't in after all, is left out.
+ * which they aren't in after all, is left out, but in everyBillGroupId (opened from its statistics), where a bill of
+ * others does nothing to their balance.
  */
 internal fun myExpensesOf(
     expenses: List<Expense>,
     groups: List<Group>,
+    everyBillGroupId: String?,
 ): List<LatestExpense> {
     val groupsById = groups.associateBy { it.id }
     return expenses.mapNotNull { expense ->
         val group = groupsById[expense.groupId] ?: return@mapNotNull null
-        val meId = group.members.firstOrNull { it.isMe }?.id ?: return@mapNotNull null
+        val isWholeGroup = expense.groupId == everyBillGroupId
+        // Why: in the whole group even before its members say which is the user's (still syncing), as a bill of others.
+        val meId = group.members.firstOrNull { it.isMe }?.id
         LatestExpense(
             group = group,
             expense = expense,
-            myBalanceMinor = expense.balanceOf(meId) ?: return@mapNotNull null,
+            myBalanceMinor = meId?.let(expense::balanceOf)
+                ?: 0L.takeIf { isWholeGroup }
+                ?: return@mapNotNull null,
         )
     }
 }
@@ -41,8 +51,13 @@ internal fun narrowedOf(
     bills: List<LatestExpense>,
     filters: AllExpensesFilters,
     categories: CategoryTree,
+    // Why: the days of the period picked, in the device's zone; null for the whole history.
+    period: DatedSpan?,
 ): List<LatestExpense> {
-    val filtered = bills.filter { it.isPassing(filters, categories) }
+    val filtered = bills.filter {
+        it.isPassing(filters, categories) &&
+            (period == null || it.expense.spentAt in period)
+    }
     val typed = TypoTolerantQuery.of(filters.query)
     val found = if (typed.isEmpty) {
         filtered
@@ -53,6 +68,34 @@ internal fun narrowedOf(
             .ifEmpty { filtered.filter { typed.findIn(it.expense.description) != null } }
     }
     return found.sortedWith(comparatorOf(filters.sort))
+}
+
+// Why: a period's days with the zone they are counted in, so a bill falls in it by the day it was spent there.
+internal class DatedSpan(
+    private val span: DateSpan,
+    private val timeZone: TimeZone,
+) {
+    operator fun contains(epochMillis: Long): Boolean = SpentDay.dateOf(epochMillis, timeZone) in span
+}
+
+// Why: the period's days as the statistics count them (findSpanOrNull); null for the whole history.
+internal fun AllExpensesFilters.periodSpanOrNull(
+    nowMillis: Long,
+    timeZone: TimeZone,
+): DatedSpan? {
+    val start = customStartMillis
+    val end = customEndMillis
+    val customSpan = if (start != null && end != null) {
+        DateSpan(SpentDay.dateOf(start, timeZone), SpentDay.dateOf(end, timeZone))
+    } else {
+        null
+    }
+    return period
+        .findSpanOrNull(
+            SpentDay.dateOf(nowMillis, timeZone),
+            wholeSpan = null,
+            customSpan = customSpan,
+        )?.let { DatedSpan(it, timeZone) }
 }
 
 private fun LatestExpense.isPassing(

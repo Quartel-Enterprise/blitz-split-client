@@ -6,11 +6,13 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpensesIn
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
@@ -29,7 +31,9 @@ import com.quare.blitzsplit.feature.groups.presentation.mapper.groupOptionsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.homeBillsOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.myExpensesOf
 import com.quare.blitzsplit.feature.groups.presentation.mapper.narrowedOf
+import com.quare.blitzsplit.feature.groups.presentation.mapper.periodSpanOrNull
 import com.quare.blitzsplit.feature.groups.presentation.model.ALL_EXPENSES_SOURCE
+import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
@@ -56,7 +60,9 @@ internal const val ALL_EXPENSES_PAGE_SIZE = 30
  * each time the list nears its end, as a window that grows (a LIMIT over Room's query, one more bill to know whether
  * more are left). Room keeps the window live, so a bill edited, deleted or synced in changes in place, never a stale
  * page. A bill's ⋮ is the group's (BillMenuController), its options opening over this screen. From a group's Expenses
- * the route names the group, picked in the Group filter from the start.
+ * the route names the group, picked in the Group filter from the start; from a category of the statistics, the group,
+ * the category and the period they showed, which then lead the row of filters, and every bill of that group, theirs too
+ * (Pierre's call, beta feedback of 2026-11-16), so the list adds up to what the statistics counted.
  */
 class AllExpensesViewModel(
     private val route: Route.AllExpenses,
@@ -65,6 +71,7 @@ class AllExpensesViewModel(
     private val currentTimeZone: CurrentTimeZone,
     observeMyExpenses: ObserveMyExpenses,
     observeMyExpensesIn: ObserveMyExpensesIn,
+    observeExpenses: ObserveExpenses,
     observeGroups: ObserveGroups,
     observeMapCategories: ObserveMapCategories,
     observeFirstDownload: ObserveFirstDownload,
@@ -73,18 +80,24 @@ class AllExpensesViewModel(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AllExpensesUiEvent>(trackEvent) {
     val uiState: StateFlow<AllExpensesUiState>
-        field = MutableStateFlow(
-            AllExpensesUiState.initial.copy(
-                filters = AllExpensesFilters.none.copy(groupIds = setOfNotNull(route.groupId)),
-                homeTab = navigator.backStack.value.findHomeTabUnder(route),
-            ),
-        )
+        field = filtersOf(route).let { filters ->
+            MutableStateFlow(
+                AllExpensesUiState.initial.copy(
+                    filters = filters,
+                    homeTab = navigator.backStack.value.findHomeTabUnder(route),
+                    filterOrder = filterOrderOf(route, filters),
+                ),
+            )
+        }
 
     val uiAction: SharedFlow<AllExpensesUiAction>
         field = MutableSharedFlow<AllExpensesUiAction>()
 
     val stateWatcher: FlowWatcher<AllExpensesUiState> = FlowWatcher(uiState)
     val actionWatcher: FlowWatcher<AllExpensesUiAction> = FlowWatcher(uiAction)
+
+    // Why: the group whose every bill the list holds, opened from its statistics; null lists only the user's bills.
+    private val everyBillGroupId: String? = route.groupId.takeIf { route.isFromStatistics }
 
     // Why: how many bills the list shows; grows a page at a time, back to one page when the filters change.
     private val limit = MutableStateFlow(ALL_EXPENSES_PAGE_SIZE)
@@ -115,10 +128,19 @@ class AllExpensesViewModel(
          * the list then shows a page at a time.
          */
         val source = filters
-            .map { it.windowGroupIds }
+            .map { picked -> wholeGroupIdOf(picked) to picked.windowGroupIds }
             .distinctUntilChanged()
-            .flatMapLatest { windowGroupIds ->
-                if (windowGroupIds == null) {
+            .flatMapLatest { (wholeGroupId, windowGroupIds) ->
+                if (wholeGroupId != null) {
+                    // Why: every bill of the group, others' too, as the statistics counted them (Room's reads: the user's).
+                    observeExpenses(wholeGroupId).map {
+                        DeviceBills(
+                            windowSize = null,
+                            groupIds = null,
+                            expenses = it,
+                        )
+                    }
+                } else if (windowGroupIds == null) {
                     observeMyExpenses(Int.MAX_VALUE).map {
                         DeviceBills(
                             windowSize = null,
@@ -166,6 +188,29 @@ class AllExpensesViewModel(
                 it.copy(categoryIds = it.categoryIds.toToggled(event.categoryId))
             }
 
+            // Why: "Pick dates…" waits for its days, which the picker sends as OnCustomPeriodPicked.
+            is AllExpensesUiEvent.OnPeriodPicked -> narrowPeriod {
+                if (event.period == ExpensePeriod.CUSTOM &&
+                    it.customStartMillis == null
+                ) {
+                    it
+                } else {
+                    it.copy(period = event.period)
+                }
+            }
+
+            // Why: never past today, whatever a typed date (the web's date field) says, as Statistics' picker.
+            is AllExpensesUiEvent.OnCustomPeriodPicked -> narrowPeriod {
+                val now = currentTimeMillis()
+                val first = minOf(event.startMillis, event.endMillis, now)
+                val last = minOf(maxOf(event.startMillis, event.endMillis), now)
+                it.copy(
+                    period = ExpensePeriod.CUSTOM,
+                    customStartMillis = first,
+                    customEndMillis = last,
+                )
+            }
+
             is AllExpensesUiEvent.OnShareFilterPicked -> narrow { it.copy(share = event.share) }
 
             is AllExpensesUiEvent.OnPayerFilterPicked -> narrow { it.copy(payer = event.payer) }
@@ -187,10 +232,23 @@ class AllExpensesViewModel(
 
     // Why: the list starts again from its first page under what was just picked.
     private fun narrow(change: (AllExpensesFilters) -> AllExpensesFilters) {
+        isNarrowed(change)
+    }
+
+    // Why: narrow's own, saying whether anything changed, which the period's analytics need.
+    private fun isNarrowed(change: (AllExpensesFilters) -> AllExpensesFilters): Boolean {
         val next = change(filters.value)
-        if (next == filters.value) return
+        if (next == filters.value) return false
         limit.value = ALL_EXPENSES_PAGE_SIZE
         filters.value = next
+        return true
+    }
+
+    // Why: only a period that changed counts, never "Pick dates…" before its days nor the same period again.
+    private fun narrowPeriod(change: (AllExpensesFilters) -> AllExpensesFilters) {
+        if (isNarrowed(change)) {
+            trackEvent("all_expenses_filter_changed", mapOf("source" to ALL_EXPENSES_SOURCE, "filter" to "period"))
+        }
     }
 
     /*
@@ -216,8 +274,12 @@ class AllExpensesViewModel(
             uiState.update { it.copy(filters = picked) }
             return
         }
-        val mine = myExpensesOf(bills.device.expenses, bills.groups)
-        val narrowed = if (window != null) mine.take(window) else narrowedOf(mine, picked, bills.categories)
+        val mine = myExpensesOf(bills.device.expenses, bills.groups, wholeGroupIdOf(picked))
+        val narrowed = if (window != null) {
+            mine.take(window)
+        } else {
+            narrowedOf(mine, picked, bills.categories, picked.periodSpanOrNull(clock.nowMillis, clock.timeZone))
+        }
         val shown = if (window != null) narrowed else narrowed.take(requested)
         val dated = homeBillsOf(shown, bills.categories)
         uiState.update {
@@ -236,6 +298,13 @@ class AllExpensesViewModel(
             )
         }
     }
+
+    /*
+     * Why: opened from the statistics, the group's every bill while the Group filter holds that group alone (Pierre's
+     * call); any other pick of groups lists the user's own bills, as from Home.
+     */
+    private fun wholeGroupIdOf(picked: AllExpensesFilters): String? =
+        everyBillGroupId?.takeIf { picked.groupIds == setOf(it) }
 
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 }
@@ -259,6 +328,35 @@ private class ReadBills(
     val groups: List<Group>,
     val categories: CategoryTree,
 )
+
+// Why: what the route picks: the group of a group's Expenses; the group, category and period of the statistics.
+private fun filtersOf(route: Route.AllExpenses): AllExpensesFilters {
+    val hasCustomDays = route.customStartMillis != null && route.customEndMillis != null
+    return AllExpensesFilters.none.copy(
+        groupIds = setOfNotNull(route.groupId),
+        categoryIds = setOfNotNull(route.categoryId),
+        period = route.period.takeIf { it != ExpensePeriod.CUSTOM || hasCustomDays } ?: ExpensePeriod.ALL,
+        customStartMillis = route.customStartMillis.takeIf { hasCustomDays },
+        customEndMillis = route.customEndMillis.takeIf { hasCustomDays },
+    )
+}
+
+/*
+ * Why: opened from the statistics (a category picked), what they picked comes first, in the order Pierre named it
+ * (period, category, group); the rest keep their place.
+ */
+private fun filterOrderOf(
+    route: Route.AllExpenses,
+    filters: AllExpensesFilters,
+): List<AllExpensesFilter> {
+    if (!route.isFromStatistics) return AllExpensesFilter.entries
+    val leading = listOfNotNull(
+        AllExpensesFilter.PERIOD.takeIf { filters.period != ExpensePeriod.ALL },
+        AllExpensesFilter.CATEGORY,
+        AllExpensesFilter.GROUP.takeIf { filters.groupIds.isNotEmpty() },
+    )
+    return leading + (AllExpensesFilter.entries - leading.toSet())
+}
 
 private fun Set<String>.toToggled(id: String): Set<String> = if (id in this) this - id else this + id
 

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
+import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 
@@ -23,6 +24,11 @@ sealed interface AllExpensesUiEvent : UiEvent {
             is OnGroupToggled -> filterChanged("group")
 
             is OnCategoryToggled -> filterChanged("category")
+
+            // Why: only a period that changed, never "Pick dates…" before its days.
+            is OnPeriodPicked -> EventAnalytics.Manual("all_expenses_filter_changed")
+
+            is OnCustomPeriodPicked -> EventAnalytics.Manual("all_expenses_filter_changed")
 
             is OnShareFilterPicked -> filterChanged("share")
 
@@ -59,6 +65,17 @@ sealed interface AllExpensesUiEvent : UiEvent {
     // Why: a main category of the Category filter, picked or let go; several may be picked.
     data class OnCategoryToggled(
         val categoryId: String,
+    ) : AllExpensesUiEvent
+
+    // Why: a period of the Period filter; CUSTOM only once its days were picked (OnCustomPeriodPicked).
+    data class OnPeriodPicked(
+        val period: ExpensePeriod,
+    ) : AllExpensesUiEvent
+
+    // Why: "Pick dates…"' days: a moment of the first and the last (noon, as the pickers give them).
+    data class OnCustomPeriodPicked(
+        val startMillis: Long,
+        val endMillis: Long,
     ) : AllExpensesUiEvent
 
     data class OnShareFilterPicked(

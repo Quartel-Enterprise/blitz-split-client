@@ -216,4 +216,10 @@
     <string name="groups_all_expenses_clear">Сбросить фильтры</string>
     <string name="groups_all_expenses_no_results_title">Нет подходящих расходов</string>
     <string name="groups_all_expenses_no_results_body">Попробуй другие слова или сбрось фильтры.</string>
+    <string name="groups_all_expenses_period">Период</string>
+    <string name="groups_all_expenses_period_all">За всё время</string>
+    <string name="groups_all_expenses_period_this_year">Этот год</string>
+    <string name="groups_all_expenses_period_this_month">Этот месяц</string>
+    <string name="groups_all_expenses_period_last_month">Прошлый месяц</string>
+    <string name="groups_all_expenses_period_custom">Выбрать даты…</string>
 </resources>

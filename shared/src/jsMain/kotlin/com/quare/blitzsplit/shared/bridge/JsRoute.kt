@@ -24,8 +24,8 @@ class JsRoute internal constructor(
 
     /*
      * Why: the group of "invite", "group-detail", "register-payment", "split-bill",
-     * "bill-detail", "share-bill", "edit-group", "default-split", "group-stats" and "category-expenses", and the group
-     * "all-expenses" opens filtered by (a group's "See all"), null for every other route.
+     * "bill-detail", "share-bill", "edit-group", "default-split", and "group-stats", and the group "all-expenses"
+     * opens filtered by (a group's "See all", a category of the statistics), null for every other route.
      */
     val groupId: String? = when (route) {
         is Route.Invite -> route.groupId
@@ -38,9 +38,17 @@ class JsRoute internal constructor(
         is Route.GroupPhoto -> route.groupId
         is Route.DefaultSplit -> route.groupId
         is Route.GroupStats -> route.groupId
-        is Route.CategoryExpenses -> route.groupId
         is Route.AllExpenses -> route.groupId
         else -> null
+    }
+
+    /*
+     * Why: everything "all-expenses" opens with (group, category, period, its days), which keys the page, so a route
+     * that opens it with other filters gets its own ViewModel; null for every other route.
+     */
+    val allExpensesKey: String? = (route as? Route.AllExpenses)?.let {
+        listOf(it.groupId, it.categoryId, it.period, it.customStartMillis, it.customEndMillis, it.isFromStatistics)
+            .joinToString("/")
     }
 
     /*

@@ -198,4 +198,10 @@
     <string name="groups_all_expenses_clear">Filter zurücksetzen</string>
     <string name="groups_all_expenses_no_results_title">Keine passenden Ausgaben</string>
     <string name="groups_all_expenses_no_results_body">Versuch andere Wörter oder setz die Filter zurück.</string>
+    <string name="groups_all_expenses_period">Zeitraum</string>
+    <string name="groups_all_expenses_period_all">Gesamter Zeitraum</string>
+    <string name="groups_all_expenses_period_this_year">Dieses Jahr</string>
+    <string name="groups_all_expenses_period_this_month">Diesen Monat</string>
+    <string name="groups_all_expenses_period_last_month">Letzten Monat</string>
+    <string name="groups_all_expenses_period_custom">Daten wählen…</string>
 </resources>
