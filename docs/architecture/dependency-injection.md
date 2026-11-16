@@ -99,15 +99,19 @@ them:
 | What draws it | Scope | How |
 | --- | --- | --- |
 | A screen, a tab, a dialog or sheet that is a route | its back stack entry (the default) | nothing: `rememberViewModelStoreNavEntryDecorator()` provides it |
-| A piece composed only for a while inside an entry, whose ViewModels must go with it: a pane showing one pick, a pager page, a lazy list item | that composable | `rememberViewModelStoreOwner()` provided through `LocalViewModelStoreOwner`, as `PickScopedPane` does |
-| Several pieces each keeping their own ViewModel while their container stays composed (pager pages kept across swipes) | one store per key | `rememberViewModelStoreProvider()` once in the container, then `rememberViewModelStoreOwner(key = page, provider = provider)` per piece; the stores go once the container leaves the composition, a route pushed over the entry included |
+| A piece that may start over each time it shows: a lazy list item, a pager page that may load again once swiped away | that composable | `rememberViewModelStoreOwner()` provided through `LocalViewModelStoreOwner` |
+| Pieces that each keep their own ViewModel while their container stays composed (pager pages kept across swipes), or a pick shown in a pane, whose store must go even when a rotation leaves no pane | one store per key | `rememberViewModelStoreProvider()` once in the container, then `rememberViewModelStoreOwner(key = pick, provider = provider)` per piece, and `clearKey` for a key no longer shown, as `rememberPaneStores` and `PickScopedPane` do in Contacts |
 
 - `rememberViewModelStoreOwner()` (lifecycle-viewmodel-compose, `commonMain`) clears its ViewModels when the
-  composable leaves the composition and keeps them across a rotation, since it hangs off the entry's owner. Across a
-  configuration change the store waits for the same call site to come back: when the new layout doesn't draw it
-  (the Contacts pane after turning a tablet upright), it stays in the entry's store until that call site is drawn
-  and left again, or the entry goes. Never
-  hand-roll a `ViewModelStoreOwner` with `remember` and `DisposableEffect`: its store is cleared on every
+  composable leaves the composition and keeps them across a rotation, since it hangs off the entry's owner. It finds
+  its store again by its position in the composition: give lazy items a stable `key`, or after a reorder and a
+  rotation an item picks up another one's ViewModel. Across a configuration change the store waits for the same
+  call site to come back, so when the new layout doesn't draw it (a pane gone after turning a tablet upright), it
+  stays in the entry's store, running, until that call site is drawn and left again. A pane that comes and goes
+  with the window takes the provider row instead, clearing the key it last showed (saved with `rememberSaveable`)
+  once it shows another pick or none.
+- The provider's stores go once the container leaves the composition, a route pushed over the entry included.
+- Never hand-roll a `ViewModelStoreOwner` with `remember` and `DisposableEffect`: its store is cleared on every
   configuration change.
 - Wrap it in `key(...)` when one call site draws different things over time (`PickScopedPane(pick)`), so each one
   gets a fresh store.

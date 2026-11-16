@@ -12,6 +12,9 @@ import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactsViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val CONTACT_PICK_PREFIX = "contact:"
+private const val AGENDA_PICK = "agenda"
+
 // Why: the home's Contatos tab: everyone the user shares a group with, each with the net of every group.
 @Composable
 fun ContactsScreen(viewModel: ContactsViewModel = koinViewModel()) {
@@ -27,24 +30,36 @@ fun ContactsScreen(viewModel: ContactsViewModel = koinViewModel()) {
         viewModel.onEvent(ContactsUiEvent.OnDetailPaneChanged(showsPane))
         onDispose { viewModel.onEvent(ContactsUiEvent.OnDetailPaneChanged(isShown = false)) }
     }
-    val hasPanePick = showsPane && (state.selectedKey != null || state.isAgendaPicked)
+    val selectedKey = state.selectedKey
+    val panePick = when {
+        !showsPane -> null
+        selectedKey != null -> "$CONTACT_PICK_PREFIX$selectedKey"
+        state.isAgendaPicked -> AGENDA_PICK
+        else -> null
+    }
+    val paneStores = rememberPaneStores(panePick)
     // Why: back closes the pane's pick before it leaves Contatos.
-    BackHandler(enabled = hasPanePick) { viewModel.onEvent(ContactsUiEvent.OnPaneBackClicked) }
+    BackHandler(enabled = panePick != null) { viewModel.onEvent(ContactsUiEvent.OnPaneBackClicked) }
     ContactsContent(
         state = state,
         onEvent = viewModel::onEvent,
         snackbarHostState = snackbarHostState,
         detailPane = {
-            val key = state.selectedKey
             when {
-                key != null -> PickScopedPane(pick = key) {
+                selectedKey != null -> PickScopedPane(
+                    pick = "$CONTACT_PICK_PREFIX$selectedKey",
+                    stores = paneStores,
+                ) {
                     ContactProfileScreen(
-                        route = Route.ContactProfile(key),
+                        route = Route.ContactProfile(selectedKey),
                         isInPane = true,
                     )
                 }
 
-                state.isAgendaPicked -> PickScopedPane(pick = Route.ContactsAgenda) {
+                state.isAgendaPicked -> PickScopedPane(
+                    pick = AGENDA_PICK,
+                    stores = paneStores,
+                ) {
                     AgendaScreen(isInPane = true)
                 }
 
