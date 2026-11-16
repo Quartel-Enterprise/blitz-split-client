@@ -85,17 +85,19 @@ kotlin {
             api(project.dependencies.platform(libs.koin.bom))
             api(libs.koin.core)
             implementation(libs.koin.core.viewmodel)
-        }
-        // The store screenshots' seed (docs/store-listing-screenshots.md) writes the sample trip's feed and links.
-        appleMain.dependencies {
+            // The store screenshots' seed (docs/store-listing-screenshots.md), which the Apple apps and the web run:
+            // it writes the sample trip's feed and links, and points Supabase at a server that isn't there.
             implementation(libs.kotlinx.serialization.json)
-            implementation(libs.androidx.sqlite.bundled)
             implementation(project.dependencies.platform(libs.supabase.bom))
             implementation(libs.supabase.auth)
             implementation(libs.supabase.postgrest)
             implementation(libs.supabase.functions)
             implementation(libs.supabase.storage)
             implementation(libs.supabase.realtime)
+        }
+        // The store screenshots' Room of its own, a file apart from the developer's (StoreScreenshotsDatabase).
+        appleMain.dependencies {
+            implementation(libs.androidx.sqlite.bundled)
         }
         commonTest.dependencies {
             implementation(libs.koin.test)

@@ -27,7 +27,6 @@ import com.quare.blitzsplit.core.provider.room.entity.SINGLE_ROW_ID
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationPromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
-import com.quare.blitzsplit.shared.bridge.BlitzSplitApple
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.TimeZone
@@ -37,9 +36,7 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
-import platform.Foundation.NSData
-import platform.Foundation.base64EncodedStringWithOptions
-import platform.Foundation.dataWithContentsOfFile
+import kotlin.io.encoding.Base64
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
@@ -52,7 +49,7 @@ import kotlin.time.Duration.Companion.minutes
  */
 internal class StoreScreenshotsSeed(
     private val trip: SampleTrip,
-    private val assetsDirectory: String?,
+    private val assets: StoreScreenshotsAssets?,
 ) : KoinComponent {
     private val database: AppDatabase = get()
     private val now = Clock.System.now()
@@ -127,9 +124,7 @@ internal class StoreScreenshotsSeed(
         markSynced(tripId, tripMembers, sideGroups)
         writeFeed(tripMembers)
         database.useWriterConnection { connection -> statements.forEach { connection.executeSQL(it) } }
-        assetsDirectory?.let { NSData.dataWithContentsOfFile("$it/receipt.jpg") }?.let { receipt ->
-            get<HoldPickedReceipt>().invoke(BlitzSplitApple.toByteArray(receipt))
-        }
+        assets?.read("receipt.jpg")?.let { receipt -> get<HoldPickedReceipt>().invoke(receipt) }
         return SeededTrip(
             groupId = tripId,
             dinnerId = billIds[trip.bills.indexOfFirst { it.items != null }],
@@ -316,16 +311,15 @@ internal class StoreScreenshotsSeed(
 
     // Why: a run with assets and without a photo SampleTrips names would capture that group as initials, unnoticed.
     private fun groupPhotoOf(photo: String): String? = photoOf("groups/$photo.jpg").also { url ->
-        check(url != null || assetsDirectory == null) {
-            "No group photo named $photo in $assetsDirectory/groups: scripts/store-screenshots/assets.tsv must list it"
+        check(url != null || assets == null) {
+            "No group photo named $photo in groups/: scripts/store-screenshots/assets.tsv must list it"
         }
     }
 
     // Why: a photo as a data URI, which the avatars load like any photo's URL; none when the file isn't there.
     private fun photoOf(file: String): String? {
-        val directory = assetsDirectory ?: return null
-        val data = NSData.dataWithContentsOfFile("$directory/$file") ?: return null
-        return "data:image/jpeg;base64," + data.base64EncodedStringWithOptions(0u)
+        val data = assets?.read(file) ?: return null
+        return "data:image/jpeg;base64," + Base64.encode(data)
     }
 
     private fun momentOf(

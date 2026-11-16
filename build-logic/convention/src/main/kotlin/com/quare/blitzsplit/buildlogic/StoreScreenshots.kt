@@ -149,6 +149,11 @@ fun Project.configureStoreScreenshots() {
     val generatesScreenshots = gradle.startParameter.taskNames.any { requested ->
         requested.endsWith("StoreScreenshots") || requested == "$modulePath:$GENERATE_TASK"
     }
+    val generatesReadmeHero = providers.gradleProperty("readmeHero").isPresent
+    val readmeHeroDir = rootProject.layout.buildDirectory
+        .dir("outputs/readme-hero-android")
+        .get()
+        .asFile
     tasks.withType<Test>().configureEach {
         val isGenerator = name == GENERATE_TASK
         onlyIf("the build asked for the store screenshots") { isGenerator && generatesScreenshots }
@@ -161,6 +166,14 @@ fun Project.configureStoreScreenshots() {
         inputs.dir(groupPhotosDir)
         outputs.dir(generatedDir)
         maxHeapSize = "4g"
+        // The README's Android phone (scripts/readme-hero) is drawn alone, and only when asked for.
+        if (generatesReadmeHero) {
+            filter.includeTestsMatching("*.ReadmeHeroScreens")
+            systemProperty("readmeHero.outputDir", readmeHeroDir.absolutePath)
+            outputs.dir(readmeHeroDir)
+            return@configureEach
+        }
+        filter.excludeTestsMatching("*.ReadmeHeroScreens")
         if (generatesAppStoreScreenshots) {
             inputs.dir(capturesDir)
             doFirst {

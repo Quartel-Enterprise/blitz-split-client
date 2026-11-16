@@ -178,10 +178,12 @@ store-screenshots has no frame for the Duo or the Mac. They get a plain rounded 
 ## Where to edit
 
 ```
-shared/src/commonMain/.../storescreenshots/   # the sample trip, both stores
-shared/src/appleMain/.../storescreenshots/    # the iOS seed and the screen each capture opens
+shared/src/commonMain/.../storescreenshots/   # the sample trip, its seed and the screen each capture opens
+shared/src/appleMain/.../storescreenshots/    # the Apple captures' Room file and photos folder
 android/store_screenshots/src/test/.../        # the Play screens' UiStates, banner copy, the frames
 iosApp/UITests/StoreScreenshotsUITests.swift   # the iOS capture
+shared/src/jsMain/.../StoreScreenshotsWeb.kt   # the web's seed, for the README's image
+scripts/readme-hero/                           # the README's image
 scripts/store-screenshots/capture-mac.sh       # the Mac capture
 scripts/store-screenshots/*.tsv                # the languages, screens and photos both captures read
 build-logic/.../StoreScreenshots.kt            # the collect and stage tasks, the stores' locale codes
@@ -297,6 +299,36 @@ project's Mac its own screenshot of the window failed as well ("Image creation f
 - **On a Retina display.** The frame draws the window at twice its points (2880x1800). On a display that isn't
   Retina the capture is 1440x900 and would go to the listing blurred, so the script stops at the first one, which
   is still there to look at.
+
+## The README's image
+
+The README opens with the same sample trip: its group, Expenses, on Android, the iPhone, the Mac and the web, side by
+side, dark or light as the reader's GitHub is (`docs/images/readme-hero-{dark,light}.webp`, versioned, unlike the store
+images). One command captures the four screens and draws it:
+
+```bash
+./scripts/readme-hero/generate.sh                                  # all four, then the image
+READMEHERO_CAPTURES=web ./scripts/readme-hero/generate.sh          # capture again only the web's
+READMEHERO_CAPTURES=none ./scripts/readme-hero/generate.sh         # the image again, from the captures in build/
+```
+
+Run it after a change to the group's screen on any platform, and commit the two images. Each platform comes from the
+store screenshots' own tools:
+
+- **Android:** `ReadmeHeroScreens` in `:android:store_screenshots` draws the Compose screen under Robolectric, bare
+  (no frame, no banner), on a Pixel 9's screen. Only `-PreadmeHero` runs it, and then nothing else.
+- **iPhone and Mac:** the App Store captures of `group` and `light` in `en-US` (`capture-ios.sh` on the iPhone 17 Pro,
+  `capture-mac.sh`), written apart from the store's, in `build/outputs/readme-hero-apple/`. The Mac's takes the
+  screen for a moment, as the store run does.
+- **Web:** the web has no store, so it gets the same seed its own way. `capture-web.mjs` opens the dev server in a
+  headless Chrome with an empty profile of its own and sets `window.__storeScreenshots` before the page runs; the
+  dev build then starts the shared code with `startBlitzSplitForStoreScreenshots` (`StoreScreenshotsWeb.kt`), which
+  seeds the trip as the Apple apps' `startForStoreScreenshots` does, and opens the group. A production build never
+  looks at it (`webApp/src/bridge/storeScreenshots.ts`). The photos go in as base64, from `assets.tsv`.
+
+`compose.mjs` then lays the four out in `hero.html` (the phones' bezels, Chrome's bar, the captions) and has the same
+headless Chrome photograph it. Nothing to install: it drives the Chrome already on the Mac over the DevTools Protocol
+(`chrome.mjs`; `CHROME` points at another binary).
 
 ## Things that bite
 

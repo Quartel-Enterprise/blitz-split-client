@@ -38,6 +38,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
 import org.w3c.dom.Worker
@@ -60,27 +61,33 @@ fun startBlitzSplit(
 ) {
     // Why: read before Auth starts, since it removes the callback's error from the fragment.
     val launchUrl = window.location.href
-    // Why: the UI's language is picked once at startup, so its separator is read once too.
+    startBlitzSplitKoin(extraModules = listOf(webModuleOf(sqliteWorker, languageTag)))
+    val handleBrowserCallback = KoinPlatform.getKoin().get<HandleBrowserCallback>()
+    MainScope().launch { handleBrowserCallback(launchUrl) }
+    openInviteLink(launchUrl)
+    forgetSharedBillOnceProfileMade()
+    reopenProfileAfterLanguage()
+}
+
+/*
+ * Why: what only the page knows: the SQLite Worker Vite bundled, and the language the UI speaks, picked once at startup,
+ * so its separator is read once too.
+ */
+internal fun webModuleOf(
+    sqliteWorker: Worker,
+    languageTag: String,
+): Module {
     val decimalSeparator = decimalSeparatorOf(languageTag)
     /*
      * Why: the language the pages speak, which src/i18n picks from the pick or the first of the browser's languages
      * the app has, not navigator.language alone; a pick reloads the page, so it never changes while it runs.
      */
     val spokenLanguage = AppLanguage.languageOf(languageTag) ?: "en"
-    startBlitzSplitKoin(
-        extraModules = listOf(
-            module {
-                single<Worker> { sqliteWorker }
-                single { DeviceDecimalSeparator { decimalSeparator } }
-                single { ObserveSpokenLanguage { flowOf(spokenLanguage) } }
-            },
-        ),
-    )
-    val handleBrowserCallback = KoinPlatform.getKoin().get<HandleBrowserCallback>()
-    MainScope().launch { handleBrowserCallback(launchUrl) }
-    openInviteLink(launchUrl)
-    forgetSharedBillOnceProfileMade()
-    reopenProfileAfterLanguage()
+    return module {
+        single<Worker> { sqliteWorker }
+        single { DeviceDecimalSeparator { decimalSeparator } }
+        single { ObserveSpokenLanguage { flowOf(spokenLanguage) } }
+    }
 }
 
 /*

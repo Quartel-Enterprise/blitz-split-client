@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.shared.bridge
 
+import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
@@ -15,6 +16,7 @@ import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsService
+import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.appdownload.presentation.viewmodel.AppDownloadViewModel
@@ -68,9 +70,12 @@ import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewMo
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
+import com.quare.blitzsplit.shared.storescreenshots.DirectoryAssets
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
 import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsScreen
+import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsScreen.Companion.openOverHome
 import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsSeed
+import com.quare.blitzsplit.shared.storescreenshots.createStoreScreenshotsDatabaseBuilder
 import com.quare.blitzsplit.shared.storescreenshots.deleteStoreScreenshotsDatabase
 import com.quare.blitzsplit.shared.storescreenshots.storeScreenshotsModuleOf
 import io.github.jan.supabase.SupabaseClient
@@ -88,6 +93,7 @@ import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.Foundation.create
@@ -137,13 +143,18 @@ object BlitzSplitApple : KoinComponent {
         }
         deleteStoreScreenshotsDatabase()
         val trip = SampleTrips.tripOf(language)
-        startBlitzSplitKoin(extraModules = listOf(storeScreenshotsModuleOf(trip)))
+        startBlitzSplitKoin(
+            extraModules = listOf(
+                storeScreenshotsModuleOf(trip),
+                module { single<RoomDatabase.Builder<AppDatabase>> { createStoreScreenshotsDatabaseBuilder() } },
+            ),
+        )
         /*
          * Why: blocks the launch until the trip is there, off the main thread, so a seed step that hops to Main can't
          * wait on it.
          */
         val seeded = runBlocking(Dispatchers.Default) {
-            StoreScreenshotsSeed(trip, assetsDirectory).createTrip(
+            StoreScreenshotsSeed(trip, assetsDirectory?.let(::DirectoryAssets)).createTrip(
                 language = AppLanguage.fromTag(language),
                 theme = if (isDark) ThemePreference.DARK else ThemePreference.LIGHT,
             )
@@ -152,11 +163,7 @@ object BlitzSplitApple : KoinComponent {
         opensBillItems = screen == StoreScreenshotsScreen.ITEMS
         val routes = screen?.routesOf(seeded).orEmpty()
         val navigator = get<Navigator>()
-        scope.launch {
-            // Why: the app puts Início at the root once it read the profile; the screen goes over it after that.
-            navigator.backStack.first { it.firstOrNull() == Route.Home }
-            routes.forEach(navigator::navigate)
-        }
+        scope.launch { navigator.openOverHome(routes) }
     }
 
     // Why: right after FirebaseApp.configure(), which only a build with its GoogleService-Info.plist calls.
