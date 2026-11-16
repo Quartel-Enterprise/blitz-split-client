@@ -31,7 +31,7 @@ class JsProfileState(
     // Why: "Erase profile and sign out" in the place of "Sign out", and its dialog, when nothing brings it back.
     val erasesProfileOnSignOut: Boolean,
     val email: String?,
-    val formattedRecoveryCode: String?,
+    val recoveryWords: Array<String>?,
     val hasRecoveryCode: Boolean,
     val showsRecoveryCodeRow: Boolean,
     val showsRecoveryCodePrompt: Boolean,
@@ -125,7 +125,7 @@ class ProfilePresenter {
                 hasAccount = state.hasAccount,
                 erasesProfileOnSignOut = state.erasesProfileOnSignOut,
                 email = state.email,
-                formattedRecoveryCode = state.formattedRecoveryCode,
+                recoveryWords = state.recoveryWords?.toTypedArray(),
                 hasRecoveryCode = state.hasRecoveryCode,
                 showsRecoveryCodeRow = state.showsRecoveryCodeRow,
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,
@@ -186,7 +186,7 @@ class ProfilePresenter {
     fun observeActions(onAction: (JsProfileAction) -> Unit): JsWatch {
         val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
-                is ProfileUiAction.CopyToClipboard -> JsProfileAction("copy", action.formattedCode)
+                is ProfileUiAction.CopyToClipboard -> JsProfileAction("copy", action.code)
 
                 is ProfileUiAction.OpenUrl -> JsProfileAction("open", action.url)
 

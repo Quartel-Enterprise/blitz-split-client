@@ -308,6 +308,24 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN an anonymous user kept with a code from before the words WHEN syncing THEN issues a new code`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                prompt = RecoveryCodePrompt.SAVED,
+            )
+            account.recoveryCode = "K7QM4XPA9TRE"
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertEquals(1, account.recoveryCodeCreations)
+            assertEquals(RecoveryCodePrompt.DUE, account.recoveryCodePrompt)
+        }
+
+    @Test
     fun `GIVEN a Google account WHEN syncing THEN never issues a recovery code`() = runTest {
         // Given
         prepareScenario(

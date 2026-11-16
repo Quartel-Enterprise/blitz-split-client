@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import org.koin.mp.KoinPlatform
 
 class JsRecoveryCodeState(
-    val formattedCode: String?,
+    val recoveryWords: Array<String>?,
     val isPromptDue: Boolean,
     val areAccountButtonsEnabled: Boolean,
     val connectingProvider: String?,
@@ -23,7 +23,7 @@ class JsRecoveryCodeState(
 // Why: on the web "save to the password manager" becomes downloading the code as a file.
 class JsRecoveryCodeAction(
     val type: String,
-    val formattedCode: String,
+    val code: String,
 )
 
 class RecoveryCodePresenter {
@@ -33,7 +33,7 @@ class RecoveryCodePresenter {
     fun observeState(onChange: (JsRecoveryCodeState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsRecoveryCodeState(
-                formattedCode = state.formattedCode,
+                recoveryWords = state.recoveryWords?.toTypedArray(),
                 isPromptDue = state.isPromptDue,
                 areAccountButtonsEnabled = state.areAccountButtonsEnabled,
                 connectingProvider = state.connectingProvider?.code,
@@ -48,8 +48,8 @@ class RecoveryCodePresenter {
     fun observeActions(onAction: (JsRecoveryCodeAction) -> Unit): JsWatch {
         val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
-                is RecoveryCodeUiAction.CopyToClipboard -> JsRecoveryCodeAction("copy", action.formattedCode)
-                is RecoveryCodeUiAction.SaveToPasswordManager -> JsRecoveryCodeAction("download", action.formattedCode)
+                is RecoveryCodeUiAction.CopyToClipboard -> JsRecoveryCodeAction("copy", action.code)
+                is RecoveryCodeUiAction.SaveToPasswordManager -> JsRecoveryCodeAction("download", action.code)
                 is RecoveryCodeUiAction.LaunchNativeSignIn -> null
             }
         }

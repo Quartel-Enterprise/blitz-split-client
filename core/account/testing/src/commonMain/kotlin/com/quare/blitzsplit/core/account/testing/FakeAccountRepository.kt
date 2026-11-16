@@ -106,7 +106,8 @@ class FakeAccountRepository(
     // requeryStatus() runs, so a test can deliver a status late.
     var defersStatusUpdates = false
     private val requeriedStatus = MutableStateFlow(initialStatus)
-    var createRecoveryCodeResult: Result<String> = Result.success("K7QM4XPA9TRE")
+    var createRecoveryCodeResult: Result<String> =
+        Result.success("legal winner thank year wave sausage worth useful legal winner thank yellow")
 
     override fun observeAccount(): Flow<AccountSnapshot> = snapshot
 

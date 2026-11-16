@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
@@ -13,7 +14,6 @@ import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,10 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
+import com.quare.blitzsplit.android.designsystem.component.RecoveryWordsGrid
 import com.quare.blitzsplit.android.designsystem.component.labelRes
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
@@ -161,7 +160,7 @@ private fun EraseProfileDialog(
     onDismiss: () -> Unit,
     placement: DialogPlacement,
 ) {
-    val code = state.formattedRecoveryCode
+    val words = state.recoveryWords
     val bodyRes = if (state.erasesProfileOnSignOut) R.string.profile_erase_body_no_code else R.string.profile_erase_body
     FoldAlertDialog(
         onDismissRequest = onDismiss,
@@ -185,9 +184,9 @@ private fun EraseProfileDialog(
                         color = MaterialTheme.colorScheme.error,
                     )
                 }
-                if (code != null) {
+                if (words != null) {
                     RecoveryCodeBox(
-                        code = code,
+                        words = words,
                         onEvent = onEvent,
                     )
                 }
@@ -269,7 +268,7 @@ private fun SignOutFailedText() {
 
 @Composable
 private fun RecoveryCodeBox(
-    code: String,
+    words: List<String>,
     onEvent: (ProfileUiEvent) -> Unit,
 ) {
     Surface(
@@ -277,26 +276,31 @@ private fun RecoveryCodeBox(
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surfaceContainerHighest,
     ) {
-        Row(
+        Column(
             modifier = Modifier.padding(
-                start = 16.dp,
+                start = 12.dp,
                 end = 8.dp,
-                top = 8.dp,
-                bottom = 8.dp,
+                top = 12.dp,
             ),
-            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = code,
-                modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.titleMedium,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold,
+            // Why: a dialog is narrower than the sheet, so the words take two columns.
+            RecoveryWordsGrid(
+                words = words,
+                columnCount = 2,
+                isCompact = true,
             )
-            FilledTonalIconButton(onClick = { onEvent(ProfileUiEvent.OnCopyCodeClicked) }) {
+            TextButton(
+                onClick = { onEvent(ProfileUiEvent.OnCopyCodeClicked) },
+                modifier = Modifier.align(Alignment.End),
+            ) {
                 Icon(
                     imageVector = Icons.Outlined.ContentCopy,
-                    contentDescription = stringResource(R.string.profile_copy_code),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+                Text(
+                    text = stringResource(R.string.profile_copy_code),
+                    modifier = Modifier.padding(start = 8.dp),
                 )
             }
         }

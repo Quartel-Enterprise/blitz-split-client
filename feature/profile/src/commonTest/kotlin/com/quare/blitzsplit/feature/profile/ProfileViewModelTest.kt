@@ -372,7 +372,7 @@ class ProfileViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals("K7QM-4XPA-9TRE", state.formattedRecoveryCode)
+            assertEquals(RECOVERY_CODE.split(" "), state.recoveryWords)
             assertTrue(state.showsRecoveryCodeRow)
         }
 
@@ -389,7 +389,7 @@ class ProfileViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertNull(state.formattedRecoveryCode)
+            assertNull(state.recoveryWords)
             assertFalse(state.showsRecoveryCodeRow)
         }
 
@@ -2961,7 +2961,7 @@ class ProfileViewModelTest {
             viewModel.onEvent(ProfileUiEvent.OnCopyCodeClicked)
 
             // Then
-            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyToClipboard("K7QM-4XPA-9TRE")), actions)
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyToClipboard(RECOVERY_CODE)), actions)
         }
 
     @Test
@@ -7628,7 +7628,7 @@ class ProfileViewModelTest {
         isWaitingForInternet = false,
     )
 
-    private val recoveryCode = "K7QM4XPA9TRE"
+    private val recoveryCode = RECOVERY_CODE
 
     private val storeListing = "https://play.google.com/store/apps/details?id=com.quare.blitzsplit"
 
@@ -7812,5 +7812,9 @@ class ProfileViewModelTest {
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+    }
+
+    private companion object {
+        private const val RECOVERY_CODE = "legal winner thank year wave sausage worth useful legal winner thank yellow"
     }
 }

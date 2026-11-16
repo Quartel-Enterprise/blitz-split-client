@@ -13,8 +13,9 @@ sealed interface ProfileUiAction {
         val link: String,
     ) : ProfileUiAction
 
+    // Why: the recovery words joined by single spaces.
     data class CopyToClipboard(
-        val formattedCode: String,
+        val code: String,
     ) : ProfileUiAction
 
     data class LaunchNativeSignIn(

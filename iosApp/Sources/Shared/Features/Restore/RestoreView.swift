@@ -6,6 +6,8 @@ import SwiftUI
 final class RestoreModel {
     private(set) var state: RestoreUiState
     var isScanningQr = false
+    /// The word field the ViewModel moves the keyboard to, once a word is completed or picked.
+    private(set) var focusRequest: Int?
 
     @ObservationIgnored private let holder = BlitzSplitApple.shared.createRestoreViewModel()
     @ObservationIgnored private let watches = WatchBag()
@@ -26,10 +28,19 @@ final class RestoreModel {
         holder.viewModel.onEvent(event: event)
     }
 
+    /// Changes a word and reads the state back at once: when the ViewModel keeps the field as it was (a space it drops),
+    /// no new state arrives, and SwiftUI's TextField would keep showing what was typed.
+    func changeWord(at index: Int, to text: String) {
+        send(RestoreUiEventOnWordChanged(index: Int32(index), text: text))
+        state = holder.viewModel.uiState.value as! RestoreUiState
+    }
+
     private func handle(_ action: any RestoreUiAction) {
         switch action {
         case is RestoreUiActionOpenQrScanner:
             isScanningQr = true
+        case let focus as RestoreUiActionFocusWord:
+            focusRequest = Int(focus.index)
         case is RestoreUiActionLaunchNativeSignIn:
             Task {
                 switch await appleSignIn.signIn() {
@@ -50,6 +61,11 @@ final class RestoreModel {
         default:
             break
         }
+    }
+
+    /// Once applied, so the same field asked again (back into a word, then completed again) moves the keyboard again.
+    func consumeFocusRequest() {
+        focusRequest = nil
     }
 
     isolated deinit {
@@ -164,25 +180,12 @@ private struct RestoreCodeSection: View {
         VStack(alignment: .leading, spacing: 7) {
             SectionCaption(text: "Or use the recovery code")
             GroupedCard {
-                TextField(
-                    "K7QM-4XPA-9TRE",
-                    text: Binding(
-                        get: { model.state.code },
-                        set: { model.send(RestoreUiEventOnCodeChanged(code: $0)) },
-                    ),
-                )
-                .font(.system(.title2, design: .monospaced).weight(.semibold))
-                .tracking(2)
-                .autocorrectionDisabled()
-                #if os(iOS)
-                .textInputAutocapitalization(.characters)
-                .keyboardType(.asciiCapable)
-                #endif
-                .submitLabel(.go)
-                .onSubmit { model.send(RestoreUiEventOnRestoreClicked.shared) }
-                .accessibilityLabel("Recovery code")
-                .padding(.horizontal, 16)
-                .frame(minHeight: 56)
+                RestoreWordFields(model: model)
+                    .padding(12)
+            }
+            if !state.suggestions.isEmpty {
+                RestoreWordSuggestions(model: model)
+                    .padding(.horizontal, 4)
             }
             Text(codeHint(for: state.error))
                 .font(.footnote)
@@ -237,10 +240,98 @@ private struct RestoreCodeSection: View {
 
     private func codeHint(for error: RestoreError?) -> LocalizedStringKey {
         switch error {
-        case .invalidCode: "Code not found. Check the letters and try again."
+        case .invalidCode: "Code not found. Check the words and their order, then try again."
         case .tooManyAttempts: "Too many attempts. Wait a few minutes and try again."
         case .unknown: "Something went wrong. Try again."
-        default: "12 letters and numbers. Dashes are optional."
+        default: "The 12 words in order. Paste them all into one field to fill every field."
+        }
+    }
+}
+
+/// One field per word, so a wrong word is pointed at instead of the whole code. Pasting the words into any field fills
+/// them all, and the keyboard's next moves on. Two columns on an iPhone, more where there is room.
+private struct RestoreWordFields: View {
+    let model: RestoreModel
+
+    @FocusState private var focusedWord: Int?
+
+    var body: some View {
+        let words = model.state.words
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 132), spacing: 8)], spacing: 8) {
+            ForEach(words.indices, id: \.self) { index in
+                field(at: index, isDeadEnd: words[index].isDeadEnd, isLast: index == words.count - 1)
+            }
+        }
+        .onChange(of: focusedWord) { _, index in
+            if let index {
+                model.send(RestoreUiEventOnWordFocused(index: Int32(index)))
+            }
+        }
+        .onChange(of: model.focusRequest) { _, index in
+            if let index {
+                focusedWord = index
+                model.consumeFocusRequest()
+            }
+        }
+    }
+
+    private func field(at index: Int, isDeadEnd: Bool, isLast: Bool) -> some View {
+        HStack(spacing: 6) {
+            Text(verbatim: "\(index + 1)")
+                .font(.subheadline)
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+                .frame(minWidth: 20, alignment: .trailing)
+                .accessibilityHidden(true)
+            TextField(
+                "",
+                text: Binding(
+                    get: { model.state.words[index].text },
+                    set: { model.changeWord(at: index, to: $0) },
+                ),
+            )
+            .font(.system(.body, design: .monospaced))
+            .autocorrectionDisabled()
+            #if os(iOS)
+            .textInputAutocapitalization(.never)
+            .keyboardType(.asciiCapable)
+            #endif
+            .focused($focusedWord, equals: index)
+            .submitLabel(isLast ? .go : .next)
+            .onSubmit {
+                if isLast {
+                    model.send(RestoreUiEventOnRestoreClicked.shared)
+                } else {
+                    focusedWord = index + 1
+                }
+            }
+            .accessibilityLabel("Word \(index + 1)")
+        }
+        .padding(.horizontal, 10)
+        .frame(minHeight: 44)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .strokeBorder(isDeadEnd ? Palette.negative : Color.secondary.opacity(0.35)),
+        )
+    }
+}
+
+/// The words of the list that start with what the focused field holds, to tap instead of typing the rest.
+private struct RestoreWordSuggestions: View {
+    let model: RestoreModel
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(model.state.suggestions, id: \.self) { word in
+                Button {
+                    model.send(RestoreUiEventOnSuggestionClicked(word: word))
+                } label: {
+                    Text(verbatim: word)
+                        .font(.system(.subheadline, design: .monospaced))
+                }
+                .buttonStyle(.bordered)
+                .buttonBorderShape(.capsule)
+            }
         }
     }
 }

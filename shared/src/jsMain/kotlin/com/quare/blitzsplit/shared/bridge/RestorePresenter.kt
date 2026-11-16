@@ -11,8 +11,14 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import org.koin.mp.KoinPlatform
 
+class JsRestoreWord(
+    val text: String,
+    val isDeadEnd: Boolean,
+)
+
 class JsRestoreState(
-    val code: String,
+    val words: Array<JsRestoreWord>,
+    val suggestions: Array<String>,
     val canRestore: Boolean,
     val isRestoring: Boolean,
     val areAccountButtonsEnabled: Boolean,
@@ -28,7 +34,8 @@ class RestorePresenter {
     fun observeState(onChange: (JsRestoreState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
             JsRestoreState(
-                code = state.code,
+                words = state.words.map { JsRestoreWord(it.text, it.isDeadEnd) }.toTypedArray(),
+                suggestions = state.suggestions.toTypedArray(),
                 canRestore = state.canRestore,
                 isRestoring = state.isRestoring,
                 areAccountButtonsEnabled = state.areAccountButtonsEnabled,
@@ -47,8 +54,31 @@ class RestorePresenter {
         return JsWatch(watch::cancel)
     }
 
-    fun changeCode(code: String) {
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged(code))
+    fun observeFocusWord(onFocus: (Int) -> Unit): JsWatch {
+        val focuses = viewModel.uiAction.filterIsInstance<RestoreUiAction.FocusWord>().map { it.index }
+        val watch = FlowWatcher(focuses).observe(onFocus)
+        return JsWatch(watch::cancel)
+    }
+
+    fun changeWord(
+        index: Int,
+        text: String,
+    ) {
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(index, text))
+    }
+
+    // Why: the field shows what the ViewModel kept in the same keystroke (a space dropped, words spread to the others).
+    fun getWordText(index: Int): String = viewModel.uiState.value.words
+        .getOrNull(index)
+        ?.text
+        .orEmpty()
+
+    fun focusWord(index: Int) {
+        viewModel.onEvent(RestoreUiEvent.OnWordFocused(index))
+    }
+
+    fun pickSuggestion(word: String) {
+        viewModel.onEvent(RestoreUiEvent.OnSuggestionClicked(word))
     }
 
     fun restore() {

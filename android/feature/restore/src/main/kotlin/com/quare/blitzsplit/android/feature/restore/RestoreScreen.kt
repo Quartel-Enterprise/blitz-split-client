@@ -2,9 +2,11 @@ package com.quare.blitzsplit.android.feature.restore
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
@@ -13,6 +15,7 @@ import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiAction
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiEvent
+import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiState
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -21,6 +24,7 @@ fun RestoreScreen(viewModel: RestoreViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val qrCodeScanner = remember(context) { QrCodeScanner(context) }
+    val wordFocus = remember { List(RestoreUiState.WORD_COUNT) { FocusRequester() } }
     val launchGoogleSignIn = rememberGoogleSignInLauncher { result ->
         viewModel.onEvent(
             when (result) {
@@ -47,11 +51,15 @@ fun RestoreScreen(viewModel: RestoreViewModel = koinViewModel()) {
                 RestoreUiAction.OpenQrScanner -> qrCodeScanner.scan { content ->
                     viewModel.onEvent(RestoreUiEvent.OnQrScanned(content))
                 }
+
+                is RestoreUiAction.FocusWord -> wordFocus[action.index].requestFocus()
             }
         }
     }
-    RestoreContent(
-        state = state,
-        onEvent = viewModel::onEvent,
-    )
+    CompositionLocalProvider(LocalRestoreWordFocus provides wordFocus) {
+        RestoreContent(
+            state = state,
+            onEvent = viewModel::onEvent,
+        )
+    }
 }

@@ -473,10 +473,7 @@ class SyncCoordinator(
     ) { expenses, settlements, categories, incomes -> listOf(expenses, settlements, categories, incomes) }
 
     private suspend fun offerRecoveryCodeIfDue() {
-        val account = accountRepository.observeAccount().first()
-        if (account.status is AccountStatus.Anonymous && account.recoveryCodePrompt == RecoveryCodePrompt.NOT_DUE) {
-            accountRepository.createRecoveryCode()
-        }
+        if (accountRepository.observeAccount().first().isRecoveryCodeDue()) accountRepository.createRecoveryCode()
     }
 
     /*

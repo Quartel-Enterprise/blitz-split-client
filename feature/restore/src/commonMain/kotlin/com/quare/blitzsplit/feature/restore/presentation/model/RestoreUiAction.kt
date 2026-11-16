@@ -8,4 +8,9 @@ sealed interface RestoreUiAction {
     ) : RestoreUiAction
 
     data object OpenQrScanner : RestoreUiAction
+
+    // Why: a word completed or picked moves the keyboard to the next field.
+    data class FocusWord(
+        val index: Int,
+    ) : RestoreUiAction
 }

@@ -29,7 +29,11 @@ internal fun createPreviewProfileState(
     accountProvider = accountProvider,
     hasAnonymousId = true,
     email = accountProvider?.let { "pierre@gmail.com" },
-    formattedRecoveryCode = if (accountProvider == null) "K7QM-4XPA-9TRE" else null,
+    recoveryWords = if (accountProvider == null) {
+        "legal winner thank year wave sausage worth useful legal winner thank yellow".split(" ")
+    } else {
+        null
+    },
     showsRecoveryCodePrompt = false,
     isOnline = isOnline,
     syncStatus = syncStatus,

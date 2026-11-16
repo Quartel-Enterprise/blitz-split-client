@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Kurtarma kodunu kaydet</string>
-    <string name="recovery_code_body">Uygulamayı hesapsız kullanıyorsun. Cihazını değiştirir ya da kaybedersen bu kod gruplarını geri getirir.</string>
-    <string name="recovery_code_copy">Kodu kopyala</string>
+    <string name="recovery_code_body">Uygulamayı hesapsız kullanıyorsun. Cihazını değiştirir ya da kaybedersen bu 12 kelime gruplarını geri getirir. Onları sırasıyla not al.</string>
+    <string name="recovery_code_copy">Kelimeleri kopyala</string>
     <string name="recovery_code_save_to_password_manager">Şifre yöneticisine kaydet</string>
     <string name="recovery_code_connect_instead">Bunun yerine Google ya da Apple bağla</string>
     <string name="recovery_code_connect_instead_body">Kod gerekmez</string>

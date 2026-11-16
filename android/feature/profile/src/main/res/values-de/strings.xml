@@ -123,7 +123,7 @@
         <item quantity="one">%d Änderung ist noch nicht hochgeladen und geht verloren.</item>
         <item quantity="other">%d Änderungen sind noch nicht hochgeladen und gehen verloren.</item>
     </plurals>
-    <string name="profile_copy_code">Code kopieren</string>
+    <string name="profile_copy_code">Wörter kopieren</string>
     <string name="profile_export">Meine Daten exportieren</string>
     <string name="profile_export_detail">Eine JSON-Datei mit deinem Profil und deinen Schlüsseln</string>
     <string name="profile_delete_account">Konto und Daten löschen</string>

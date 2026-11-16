@@ -49,7 +49,7 @@ private val landscapeSheetMaxWidth = 640.dp
 fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     RecoveryCodeActionsEffect(viewModel = viewModel)
-    val formattedCode = state.formattedCode ?: return
+    val words = state.recoveryWords ?: return
     val layout = rememberDeviceLayout()
     val onDismiss = { viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked) }
     if (layout.isTablet) {
@@ -65,7 +65,7 @@ fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
                 color = MaterialTheme.colorScheme.surfaceContainer,
             ) {
                 RecoveryCodeContent(
-                    formattedCode = formattedCode,
+                    words = words,
                     state = state,
                     layout = layout,
                     isInHalf = isInHalf,
@@ -84,7 +84,7 @@ fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ) {
             RecoveryCodeContent(
-                formattedCode = formattedCode,
+                words = words,
                 state = state,
                 layout = layout,
                 isInHalf = false,
@@ -128,10 +128,10 @@ private fun RecoveryCodeActionsEffect(viewModel: RecoveryCodeViewModel) {
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
-                is RecoveryCodeUiAction.CopyToClipboard -> saver.copyToClipboard(action.formattedCode)
+                is RecoveryCodeUiAction.CopyToClipboard -> saver.copyToClipboard(action.code)
 
                 is RecoveryCodeUiAction.SaveToPasswordManager -> scope.launch {
-                    saver.saveToPasswordManager(action.formattedCode)
+                    saver.saveToPasswordManager(action.code)
                 }
 
                 is RecoveryCodeUiAction.LaunchNativeSignIn -> launchGoogleSignIn()

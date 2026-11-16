@@ -1,6 +1,6 @@
 import { ArrowLeft, ChevronRight, Loader2, QrCode, RotateCw } from 'lucide-react'
-import { RestorePresenter, type JsRestoreState } from 'blitzsplit-shared'
-import { useState } from 'react'
+import { RestorePresenter, type JsRestoreState, type JsRestoreWord } from 'blitzsplit-shared'
+import { useRef, useState } from 'react'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons, OfflineAlert } from '@/components/common'
 import { Button } from '@/components/ui/button'
@@ -22,6 +22,8 @@ export function RestoreScreen() {
   const state = useWatch(presenter, (p, onChange: (state: JsRestoreState) => void) => p.observeState(onChange))
   const [isScanning, setScanning] = useState(false)
   useActions(presenter, (p, onOpen: (open: boolean) => void) => p.observeOpenQrScanner(onOpen), () => setScanning(true))
+  const wordInputs = useRef<(HTMLInputElement | null)[]>([])
+  useActions(presenter, (p, onFocus: (index: number) => void) => p.observeFocusWord(onFocus), (index) => wordInputs.current[index]?.focus())
   if (!presenter || !state) return null
 
   const codeErrorKey = state.error ? codeErrors[state.error] : undefined
@@ -52,8 +54,45 @@ export function RestoreScreen() {
             }}
           >
             <div className="flex flex-col gap-2">
-              <Label htmlFor="recovery-code">{t('restore_codeLabel')}</Label>
-              <CodeInput value={state.code} hasError={codeError !== undefined} onChange={(value) => presenter.changeCode(value)} />
+              <Label htmlFor="recovery-word-0">{t('restore_codeLabel')}</Label>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {state.words.map((word, index) => (
+                  <WordInput
+                    key={index}
+                    index={index}
+                    word={word}
+                    hasError={codeError !== undefined}
+                    inputRef={(input) => {
+                      wordInputs.current[index] = input
+                    }}
+                    isLast={index === state.words.length - 1}
+                    onFocus={() => presenter.focusWord(index)}
+                    onNext={() => wordInputs.current[index + 1]?.focus()}
+                    onChange={(value) => {
+                      presenter.changeWord(index, value)
+                      return presenter.getWordText(index)
+                    }}
+                  />
+                ))}
+              </div>
+              {state.suggestions.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {state.suggestions.map((suggestion) => (
+                    <Button
+                      key={suggestion}
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="rounded-full font-mono"
+                      // Keeps the focus in the field, so the ViewModel's next field gets it
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => presenter.pickSuggestion(suggestion)}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </div>
+              )}
               <span id="recovery-code-help" className={cn('text-xs', codeError ? 'text-destructive' : 'text-muted-foreground')}>
                 {codeError ?? t('restore_codeHint')}
               </span>
@@ -104,20 +143,51 @@ export function RestoreScreen() {
   )
 }
 
-function CodeInput({ value, hasError, onChange }: { value: string; hasError: boolean; onChange: (value: string) => void }) {
-  const [code, setCode] = useDraft(value, onChange)
+interface WordInputProps {
+  index: number
+  word: JsRestoreWord
+  hasError: boolean
+  inputRef: (input: HTMLInputElement | null) => void
+  isLast: boolean
+  onFocus: () => void
+  onNext: () => void
+  onChange: (value: string) => string
+}
+
+/**
+ * One recovery word. The draft shows what the ViewModel kept for the field in the same keystroke, so a space it drops
+ * or words it spreads to the other fields don't stay typed here. Enter moves on, as the phones' Next does, and only the
+ * last field submits.
+ */
+function WordInput({ index, word, hasError, inputRef, isLast, onFocus, onNext, onChange }: WordInputProps) {
+  const [text, setText] = useDraft(word.text, onChange)
   return (
-    <Input
-      id="recovery-code"
-      value={code}
-      placeholder="K7QM-4XPA-9TRE"
-      autoComplete="one-time-code"
-      autoCapitalize="characters"
-      spellCheck={false}
-      aria-invalid={hasError}
-      aria-describedby="recovery-code-help"
-      className="h-12 font-mono text-lg font-semibold tracking-[0.15em]"
-      onChange={(event) => setCode(event.target.value)}
-    />
+    <div className="relative">
+      <span className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-xs text-muted-foreground tabular-nums">
+        {index + 1}
+      </span>
+      <Input
+        id={`recovery-word-${index}`}
+        ref={inputRef}
+        value={text}
+        autoComplete="off"
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+        aria-label={t('restore_wordLabel', { number: index + 1 })}
+        aria-invalid={hasError || word.isDeadEnd}
+        aria-describedby="recovery-code-help"
+        className="h-10 pl-8 font-mono"
+        enterKeyHint={isLast ? 'go' : 'next'}
+        onFocus={onFocus}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' && !isLast) {
+            event.preventDefault()
+            onNext()
+          }
+        }}
+        onChange={(event) => setText(event.target.value)}
+      />
+    </div>
   )
 }

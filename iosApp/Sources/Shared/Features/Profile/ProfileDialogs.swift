@@ -98,14 +98,12 @@ private struct EraseProfileSheet: View {
                         Text("\(Int(state.pendingChangeCount)) changes haven't uploaded yet and will be lost.")
                             .foregroundStyle(Palette.negative)
                     }
-                    if let code = state.formattedRecoveryCode {
+                    if let words = state.recoveryWords {
                         Text("Your account has no Google or Apple sign in. When you sign out, we erase the copy on this \(DeviceName.current). To come back, you need the recovery code. After 30 days without use, the account is deleted and the code stops working.")
-                        HStack {
-                            Text(verbatim: code)
-                                .font(.system(.title3, design: .monospaced).weight(.semibold))
-                                .tracking(2)
-                                .textSelection(.enabled)
-                            Spacer()
+                        VStack(alignment: .trailing, spacing: 4) {
+                            // A form row is narrower than the sheet, so the words take two columns
+                            RecoveryWordsGrid(words: words, columnCount: 2)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             Button(model.didCopy ? "Copied" : "Copy" as LocalizedStringKey) {
                                 model.send(ProfileUiEventOnCopyCodeClicked.shared)
                             }

@@ -11,7 +11,11 @@ private const val SOURCE = "restore"
 sealed interface RestoreUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
-            is OnCodeChanged -> EventAnalytics.NotTracked
+            is OnWordChanged -> EventAnalytics.NotTracked
+
+            is OnWordFocused -> EventAnalytics.NotTracked
+
+            is OnSuggestionClicked -> EventAnalytics.NotTracked
 
             // Why: the same button is "Tentar de novo" while offline, which submits nothing.
             OnRestoreClicked -> EventAnalytics.Manual(setOf("restore_code_submitted", "retry_clicked"))
@@ -41,8 +45,18 @@ sealed interface RestoreUiEvent : UiEvent {
             OnErrorDismissed -> EventAnalytics.NotTracked
         }
 
-    data class OnCodeChanged(
-        val code: String,
+    // Why: a text with several words (pasted, or dictated) fills the fields from this one on, all 12 from the first.
+    data class OnWordChanged(
+        val index: Int,
+        val text: String,
+    ) : RestoreUiEvent
+
+    data class OnWordFocused(
+        val index: Int,
+    ) : RestoreUiEvent
+
+    data class OnSuggestionClicked(
+        val word: String,
     ) : RestoreUiEvent
 
     data object OnRestoreClicked : RestoreUiEvent

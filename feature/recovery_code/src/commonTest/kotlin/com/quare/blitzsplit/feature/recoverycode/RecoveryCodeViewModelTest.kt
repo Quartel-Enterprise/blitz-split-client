@@ -56,7 +56,7 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN an issued code WHEN observing THEN shows it grouped and the prompt as due`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.DUE,
         )
 
@@ -64,7 +64,7 @@ class RecoveryCodeViewModelTest {
         val state = viewModel.uiState.value
 
         // Then
-        assertEquals("K7QM-4XPA-9TRE", state.formattedCode)
+        assertEquals(RECOVERY_CODE.split(" "), state.recoveryWords)
         assertTrue(state.isPromptDue)
     }
 
@@ -72,7 +72,7 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN the code WHEN copying THEN asks the platform to copy the grouped code`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.DUE,
         )
 
@@ -80,14 +80,14 @@ class RecoveryCodeViewModelTest {
         viewModel.onEvent(RecoveryCodeUiEvent.OnCopyClicked)
 
         // Then
-        assertEquals(listOf<RecoveryCodeUiAction>(RecoveryCodeUiAction.CopyToClipboard("K7QM-4XPA-9TRE")), actions)
+        assertEquals(listOf<RecoveryCodeUiAction>(RecoveryCodeUiAction.CopyToClipboard(RECOVERY_CODE)), actions)
     }
 
     @Test
     fun `GIVEN the sheet WHEN reminding later THEN snoozes the prompt`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.DUE,
         )
 
@@ -102,7 +102,7 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN a saved code opened for review WHEN reminding later THEN keeps it saved`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.REVIEW,
         )
 
@@ -117,7 +117,7 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN the sheet WHEN confirming it was saved THEN settles the prompt`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.DUE,
         )
 
@@ -133,7 +133,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
                 native = setOf(AccountProvider.APPLE),
             )
@@ -153,7 +153,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
 
@@ -162,7 +162,7 @@ class RecoveryCodeViewModelTest {
 
             // Then
             assertEquals(
-                listOf<RecoveryCodeUiAction>(RecoveryCodeUiAction.SaveToPasswordManager("K7QM-4XPA-9TRE")),
+                listOf<RecoveryCodeUiAction>(RecoveryCodeUiAction.SaveToPasswordManager(RECOVERY_CODE)),
                 actions,
             )
         }
@@ -172,7 +172,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
 
@@ -203,7 +203,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
 
@@ -220,7 +220,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
             viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
@@ -238,7 +238,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
             viewModel.onEvent(RecoveryCodeUiEvent.OnProviderClicked(AccountProvider.GOOGLE))
@@ -257,7 +257,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
                 connectResult = Result.failure(IllegalStateException("no browser")),
             )
@@ -275,7 +275,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
                 native = setOf(AccountProvider.APPLE),
             )
@@ -295,7 +295,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
                 native = setOf(AccountProvider.APPLE),
             )
@@ -317,7 +317,7 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN the ID token arrives WHEN the connection fails THEN shows the failure`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.DUE,
             connectResult = Result.failure(IllegalStateException("rejected")),
         )
@@ -335,7 +335,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
                 native = setOf(AccountProvider.APPLE),
             )
@@ -357,7 +357,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
 
@@ -375,7 +375,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
             account.returningBrowserSignIn.value = AccountProvider.GOOGLE
@@ -393,7 +393,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
             account.returningBrowserSignIn.value = AccountProvider.APPLE
@@ -411,7 +411,7 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN the code WHEN copying THEN tracks the copy without the code`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.DUE,
         )
 
@@ -442,7 +442,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
 
@@ -458,7 +458,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
 
@@ -474,7 +474,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
 
@@ -489,7 +489,7 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN Apple is native WHEN choosing Apple THEN tracks Apple as the provider`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.DUE,
             native = setOf(AccountProvider.APPLE),
         )
@@ -506,7 +506,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
                 native = setOf(AccountProvider.APPLE),
             )
@@ -525,7 +525,7 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN no provider click WHEN an ID token arrives THEN tracks nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.DUE,
         )
 
@@ -541,7 +541,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
                 native = setOf(AccountProvider.APPLE),
             )
@@ -565,7 +565,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
                 native = setOf(AccountProvider.APPLE),
             )
@@ -588,7 +588,7 @@ class RecoveryCodeViewModelTest {
     fun `GIVEN the sheet WHEN reminding later THEN tracks the snooze with no params`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
-            code = "K7QM4XPA9TRE",
+            code = RECOVERY_CODE,
             prompt = RecoveryCodePrompt.DUE,
         )
 
@@ -604,7 +604,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.REVIEW,
             )
 
@@ -620,7 +620,7 @@ class RecoveryCodeViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(
-                code = "K7QM4XPA9TRE",
+                code = RECOVERY_CODE,
                 prompt = RecoveryCodePrompt.DUE,
             )
 
@@ -665,5 +665,9 @@ class RecoveryCodeViewModelTest {
             connectivityObserver = NetworkConnectivityObserver { flowOf(true) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+    }
+
+    private companion object {
+        private const val RECOVERY_CODE = "legal winner thank year wave sausage worth useful legal winner thank yellow"
     }
 }

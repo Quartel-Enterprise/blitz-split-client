@@ -7,7 +7,7 @@ The project is a multi-module Gradle build plus two non-Gradle apps. Every new f
 shared/                 # Composition root: Koin, AppViewModel, the Apple framework and the JS library
 core/
 ├── model/              # Plain models every layer shares (UserProfile, AccountStatus, AvatarColor…)
-├── utils/              # suspendRunCatching, ioDispatcher, CurrentTimeMillis, RecoveryCodeFormat
+├── utils/              # suspendRunCatching, ioDispatcher, CurrentTimeMillis, RecoveryWords
 ├── presentation/       # UiEvent (with its analytics), EventAnalytics, TrackedViewModel (over :core:provider:analytics) and PhotoCropAnalytics, and the Swift/JS bridge (FlowWatcher, Watch, ViewModelHolder)
 ├── navigation/         # Route, Navigator, BackStackNavigator: the one back stack
 ├── profile/            # Profile domain + data

@@ -35,10 +35,10 @@ final class RecoveryCodeModel {
     private func handle(_ action: any RecoveryCodeUiAction) {
         switch action {
         case let copy as RecoveryCodeUiActionCopyToClipboard:
-            RecoveryCodeSaver.copy(copy.formattedCode)
+            RecoveryCodeSaver.copy(copy.code)
             didCopy = true
         case let save as RecoveryCodeUiActionSaveToPasswordManager:
-            Task { _ = await RecoveryCodeSaver.saveToPasswords(save.formattedCode) }
+            Task { _ = await RecoveryCodeSaver.saveToPasswords(save.code) }
         case is RecoveryCodeUiActionLaunchNativeSignIn:
             Task {
                 switch await appleSignIn.signIn() {
@@ -114,26 +114,25 @@ private struct RecoveryCodeContent: View {
                 Text("Save your recovery code")
                     .font(.title2.bold())
                     .multilineTextAlignment(.center)
-                Text("You're using it without an account. This code brings your groups back if you switch or lose your \(DeviceName.current).")
+                Text("You're using it without an account. These 12 words bring your groups back if you switch or lose your \(DeviceName.current). Write them down in order.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
             GroupedCard {
                 VStack(spacing: 0) {
-                    HStack {
-                        Text(state.formattedCode ?? "")
-                            .font(.system(.title2, design: .monospaced).weight(.semibold))
-                            .tracking(2)
-                            .textSelection(.enabled)
-                        Spacer()
+                    VStack(alignment: .trailing, spacing: 4) {
+                        RecoveryWordsGrid(words: state.recoveryWords ?? [])
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         Button(model.didCopy ? "Copied" : "Copy" as LocalizedStringKey) {
                             model.send(RecoveryCodeUiEventOnCopyClicked.shared)
                         }
                         .buttonStyle(.borderless)
+                        .frame(minHeight: 36)
                     }
                     .padding(.horizontal, 16)
-                    .frame(minHeight: 64)
+                    .padding(.top, 14)
+                    .padding(.bottom, 4)
                     Divider()
                     OptionRow(systemImage: "key.viewfinder", title: "Save to the Passwords app") {
                         model.send(RecoveryCodeUiEventOnSaveToPasswordManagerClicked.shared)

@@ -65,7 +65,7 @@ fun ProfileScreen(
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
-                is ProfileUiAction.CopyToClipboard -> saver.copyToClipboard(action.formattedCode)
+                is ProfileUiAction.CopyToClipboard -> saver.copyToClipboard(action.code)
 
                 is ProfileUiAction.ShareProfileLink -> context.shareText(
                     resources.getString(R.string.profile_share_message, action.link),

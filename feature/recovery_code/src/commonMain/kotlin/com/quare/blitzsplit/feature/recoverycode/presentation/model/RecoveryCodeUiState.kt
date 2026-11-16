@@ -3,7 +3,8 @@ package com.quare.blitzsplit.feature.recoverycode.presentation.model
 import com.quare.blitzsplit.core.model.AccountProvider
 
 data class RecoveryCodeUiState(
-    val formattedCode: String?,
+    // Why: the 12 words in order, which every UI numbers; null until the server issued them.
+    val recoveryWords: List<String>?,
     val isPromptDue: Boolean,
     val isOnline: Boolean,
     val connectingProvider: AccountProvider?,

@@ -20,7 +20,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.provider.room.entity.AccountEntity
-import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
+import com.quare.blitzsplit.core.utils.RecoveryWords
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -216,7 +216,7 @@ class AccountRepositoryImpl(
         .distinctUntilChanged()
 
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> = suspendRunCatching {
-        val normalized = RecoveryCodeFormat.normalize(code) ?: throw InvalidRecoveryCodeException()
+        val normalized = RecoveryWords.normalize(code) ?: throw InvalidRecoveryCodeException()
         failWhileExpiring()
         val credentials = remote.fetchRecoveryCredentials(normalized)
         remote.signInWithPassword(credentials)

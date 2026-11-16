@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.sync.signin.ProviderSignInImpl
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreError
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiAction
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiEvent
+import com.quare.blitzsplit.feature.restore.presentation.model.RestoreWordField
 import com.quare.blitzsplit.feature.restore.presentation.viewmodel.RestoreViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,7 @@ import kotlin.test.assertTrue
 
 class RestoreViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val recoveryWords: List<String> = RECOVERY_CODE.split(" ")
     private val codeSubmitted: Pair<String, Map<String, Any>> = "restore_code_submitted" to emptyMap()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var account: FakeAccountRepository
@@ -67,7 +69,7 @@ class RestoreViewModelTest {
         prepareScenario()
 
         // When
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "legal winner thank"))
 
         // Then
         assertFalse(viewModel.uiState.value.canRestore)
@@ -77,13 +79,13 @@ class RestoreViewModelTest {
     fun `GIVEN a complete code WHEN restoring THEN restores and opens the groups`() = runTest(testDispatcher) {
         // Given
         prepareScenario(outcome = SignInOutcome.PROFILE_RESTORED)
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
 
         // When
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
 
         // Then
-        assertEquals(listOf("K7QM-4XPA-9TRE"), account.restoredCodes)
+        assertEquals(listOf(RECOVERY_CODE), account.restoredCodes)
         assertEquals(listOf(Route.Home), navigator.backStack.value)
     }
 
@@ -91,7 +93,7 @@ class RestoreViewModelTest {
     fun `GIVEN an unknown code WHEN restoring THEN shows the invalid code error`() = runTest(testDispatcher) {
         // Given
         prepareScenario(restoreError = InvalidRecoveryCodeException())
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
 
         // When
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
@@ -105,7 +107,7 @@ class RestoreViewModelTest {
     fun `GIVEN too many attempts WHEN restoring THEN says so`() = runTest(testDispatcher) {
         // Given
         prepareScenario(restoreError = TooManyRecoveryAttemptsException())
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
 
         // When
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
@@ -118,14 +120,18 @@ class RestoreViewModelTest {
     fun `GIVEN no internet WHEN restoring THEN keeps the code and calls nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario(online = false)
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
 
         // When
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
 
         // Then
         assertTrue(account.restoredCodes.isEmpty())
-        assertEquals("K7QM-4XPA-9TRE", viewModel.uiState.value.code)
+        assertEquals(
+            RECOVERY_CODE.split(" "),
+            viewModel.uiState.value.words
+                .map { it.text },
+        )
         assertTrue(viewModel.uiState.value.showsOfflineNotice)
     }
 
@@ -135,10 +141,10 @@ class RestoreViewModelTest {
         prepareScenario()
 
         // When
-        viewModel.onEvent(RestoreUiEvent.OnQrScanned("borarachar://recover?code=K7QM4XPA9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnQrScanned("borarachar://recover?code=${RECOVERY_CODE.replace(' ', '+')}"))
 
         // Then
-        assertEquals(listOf("K7QM4XPA9TRE"), account.restoredCodes)
+        assertEquals(listOf(RECOVERY_CODE), account.restoredCodes)
     }
 
     @Test
@@ -284,7 +290,7 @@ class RestoreViewModelTest {
     fun `GIVEN the profile pull fails WHEN restoring THEN shows the error and stays`() = runTest(testDispatcher) {
         // Given
         prepareScenario(profilePullError = IllegalStateException("offline"))
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
 
         // When
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
@@ -342,7 +348,7 @@ class RestoreViewModelTest {
     fun `GIVEN an error on screen WHEN dismissing it THEN clears it`() = runTest(testDispatcher) {
         // Given
         prepareScenario(restoreError = InvalidRecoveryCodeException())
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
 
         // When
@@ -381,7 +387,7 @@ class RestoreViewModelTest {
         runTest(testDispatcher) {
             // Given
             prepareScenario(isProfilePullPending = true)
-            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
 
             // When
             account.status = AccountStatus.Connected("user", AccountProvider.GOOGLE)
@@ -419,7 +425,7 @@ class RestoreViewModelTest {
                 isProfilePullPending = true,
             )
             account.restoredStatus = AccountStatus.Connected("user", AccountProvider.GOOGLE)
-            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
             viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
 
             // When
@@ -437,7 +443,7 @@ class RestoreViewModelTest {
             prepareScenario(profilePullError = IllegalStateException("offline"))
             account.defersStatusUpdates = true
             account.restoredStatus = AccountStatus.Connected("user", AccountProvider.GOOGLE)
-            viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
             viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
 
             // When
@@ -516,7 +522,7 @@ class RestoreViewModelTest {
         prepareScenario()
 
         // When
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
 
         // Then
         assertTrue(trackedEvents.isEmpty())
@@ -526,7 +532,7 @@ class RestoreViewModelTest {
     fun `GIVEN a typed code WHEN restoring THEN tracks only the submit with no params`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
 
         // When
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
@@ -539,7 +545,7 @@ class RestoreViewModelTest {
     fun `GIVEN half a code WHEN restoring THEN still tracks the submit`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "legal winner thank"))
 
         // When
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
@@ -564,7 +570,7 @@ class RestoreViewModelTest {
     fun `GIVEN an unknown code WHEN restoring THEN tracks the submit once`() = runTest(testDispatcher) {
         // Given
         prepareScenario(restoreError = InvalidRecoveryCodeException())
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
 
         // When
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
@@ -591,7 +597,7 @@ class RestoreViewModelTest {
         prepareScenario()
 
         // When
-        viewModel.onEvent(RestoreUiEvent.OnQrScanned("borarachar://recover?code=K7QM4XPA9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnQrScanned("borarachar://recover?code=${RECOVERY_CODE.replace(' ', '+')}"))
 
         // Then
         assertTrue(trackedEvents.isEmpty())
@@ -722,7 +728,7 @@ class RestoreViewModelTest {
     fun `GIVEN an error on screen WHEN dismissing it THEN sends nothing more`() = runTest(testDispatcher) {
         // Given
         prepareScenario(restoreError = InvalidRecoveryCodeException())
-        viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
         viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
 
         // When
@@ -748,6 +754,618 @@ class RestoreViewModelTest {
         // Then
         assertEquals(listOf("retry_clicked" to mapOf<String, Any>("source" to "restore")), trackedEvents)
     }
+
+    @Test
+    fun `GIVEN the restore screen WHEN it opens THEN shows 12 empty fields none marked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(
+            List(12) {
+                RestoreWordField(
+                    text = "",
+                    isDeadEnd = false,
+                )
+            },
+            state.words,
+        )
+        assertNull(state.focusedWordIndex)
+        assertEquals(emptyList(), state.suggestions)
+        assertFalse(state.isCodeComplete)
+    }
+
+    @Test
+    fun `GIVEN an empty field WHEN typing a word with capitals THEN shows it in lowercase`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(3, "Leg"))
+
+        // Then
+        assertEquals(List(12) { if (it == 3) "leg" else "" }, wordTexts())
+        assertEquals(emptyList(), actions)
+    }
+
+    @Test
+    fun `GIVEN an error on screen WHEN typing a word THEN clears the error`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(restoreError = InvalidRecoveryCodeException())
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
+        viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "leg"))
+
+        // Then
+        assertNull(viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `GIVEN the first field WHEN pasting three words THEN fills three whole words and moves on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "lega winn thank"))
+
+            // Then
+            assertEquals(listOf("legal", "winner", "thank") + List(9) { "" }, wordTexts())
+            assertEquals(listOf<RestoreUiAction>(RestoreUiAction.FocusWord(3)), actions)
+        }
+
+    @Test
+    fun `GIVEN the third field WHEN pasting three words THEN fills from it and moves to the first empty`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(2, "legal winner thank"))
+
+            // Then
+            assertEquals(listOf("", "", "legal", "winner", "thank") + List(7) { "" }, wordTexts())
+            assertEquals(listOf<RestoreUiAction>(RestoreUiAction.FocusWord(0)), actions)
+        }
+
+    @Test
+    fun `GIVEN the eleventh field WHEN pasting three words THEN keeps only the two that fit`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(10, "legal winner thank"))
+
+            // Then
+            assertEquals(List(10) { "" } + listOf("legal", "winner"), wordTexts())
+        }
+
+    @Test
+    fun `GIVEN the sixth field WHEN pasting the 12 words THEN fills all 12 from the first and moves nowhere`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(5, RECOVERY_CODE))
+
+            // Then
+            assertEquals(recoveryWords, wordTexts())
+            assertEquals(emptyList(), actions)
+        }
+
+    @Test
+    fun `GIVEN the fifth field WHEN pasting a list of 13 words THEN fills all 12 fields from the first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val numberedList =
+                recoveryWords.mapIndexed { i, word -> "${i + 1}. $word" }.joinToString("\n") + "\n13. act"
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(4, numberedList))
+
+            // Then
+            assertEquals(recoveryWords, wordTexts())
+        }
+
+    @Test
+    fun `GIVEN the first field WHEN typing a word start and a space THEN completes it and moves on`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "lega "))
+
+            // Then
+            assertEquals(
+                "legal",
+                viewModel.uiState.value.words[0]
+                    .text,
+            )
+            assertEquals(listOf<RestoreUiAction>(RestoreUiAction.FocusWord(1)), actions)
+        }
+
+    @Test
+    fun `GIVEN the last field WHEN typing a word and a space THEN completes it and moves nowhere`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(11, "yell "))
+
+            // Then
+            assertEquals(
+                "yellow",
+                viewModel.uiState.value.words[11]
+                    .text,
+            )
+            assertEquals(emptyList(), actions)
+        }
+
+    @Test
+    fun `GIVEN the first field WHEN typing a non word and a space THEN keeps the letters and moves nowhere`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "qqx "))
+
+            // Then
+            assertEquals(
+                "qqx",
+                viewModel.uiState.value.words[0]
+                    .text,
+            )
+            assertEquals(emptyList(), actions)
+        }
+
+    @Test
+    fun `GIVEN an empty field WHEN typing letters no word starts with THEN marks the field at once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "qqx"))
+
+            // Then
+            assertTrue(
+                viewModel.uiState.value.words[0]
+                    .isDeadEnd,
+            )
+            assertFalse(
+                viewModel.uiState.value.words[1]
+                    .isDeadEnd,
+            )
+        }
+
+    @Test
+    fun `GIVEN an empty field WHEN typing letters a word can still come out of THEN leaves the field unmarked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "le"))
+
+            // Then
+            assertFalse(
+                viewModel.uiState.value.words[0]
+                    .isDeadEnd,
+            )
+        }
+
+    @Test
+    fun `GIVEN a marked field WHEN erasing it THEN unmarks it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "qqx"))
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, ""))
+
+        // Then
+        assertEquals(
+            RestoreWordField(
+                text = "",
+                isDeadEnd = false,
+            ),
+            viewModel.uiState.value.words[0],
+        )
+    }
+
+    @Test
+    fun `GIVEN no field focused WHEN focusing the third THEN marks it as focused`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnWordFocused(2))
+
+        // Then
+        assertEquals(2, viewModel.uiState.value.focusedWordIndex)
+    }
+
+    @Test
+    fun `GIVEN a focused field holding the first letters of a word WHEN focusing another THEN shows the whole word`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(0))
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "lega"))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(1))
+
+            // Then
+            assertEquals(listOf("legal", ""), wordTexts().take(2))
+            assertEquals(1, viewModel.uiState.value.focusedWordIndex)
+        }
+
+    @Test
+    fun `GIVEN a focused field holding letters of several words WHEN focusing another THEN keeps the letters`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(0))
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "le"))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(1))
+
+            // Then
+            assertEquals(
+                "le",
+                viewModel.uiState.value.words[0]
+                    .text,
+            )
+        }
+
+    @Test
+    fun `GIVEN a focused field holding the first letters of a word WHEN focusing it again THEN keeps the letters`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(0))
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "lega"))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(0))
+
+            // Then
+            assertEquals(
+                "lega",
+                viewModel.uiState.value.words[0]
+                    .text,
+            )
+        }
+
+    @Test
+    fun `GIVEN a focused field WHEN typing the first letters of a word THEN suggests up to three words`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(0))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "le"))
+
+            // Then
+            assertEquals(listOf("leader", "leaf", "learn"), viewModel.uiState.value.suggestions)
+        }
+
+    @Test
+    fun `GIVEN no field focused WHEN typing letters THEN suggests nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "le"))
+
+        // Then
+        assertEquals(emptyList(), viewModel.uiState.value.suggestions)
+    }
+
+    @Test
+    fun `GIVEN another field holding letters WHEN focusing an empty field THEN suggests nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "le"))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(1))
+
+            // Then
+            assertEquals(emptyList(), viewModel.uiState.value.suggestions)
+        }
+
+    @Test
+    fun `GIVEN a focused field WHEN typing a whole word no other word starts with THEN suggests nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(0))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "legal"))
+
+            // Then
+            assertEquals(emptyList(), viewModel.uiState.value.suggestions)
+        }
+
+    @Test
+    fun `GIVEN a focused field WHEN typing a short whole word other words start with THEN still suggests them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(0))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "act"))
+
+            // Then
+            assertEquals(listOf("act", "action", "actor"), viewModel.uiState.value.suggestions)
+        }
+
+    @Test
+    fun `GIVEN a focused field WHEN tapping a suggestion THEN writes the word and moves to the next`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(4))
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(4, "le"))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnSuggestionClicked("learn"))
+
+            // Then
+            assertEquals(
+                "learn",
+                viewModel.uiState.value.words[4]
+                    .text,
+            )
+            assertEquals(listOf<RestoreUiAction>(RestoreUiAction.FocusWord(5)), actions)
+        }
+
+    @Test
+    fun `GIVEN no field focused WHEN tapping a suggestion THEN changes nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "le"))
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnSuggestionClicked("learn"))
+
+        // Then
+        assertEquals(List(12) { if (it == 0) "le" else "" }, wordTexts())
+        assertEquals(emptyList(), actions)
+    }
+
+    @Test
+    fun `GIVEN 11 words typed WHEN typing the start of the last THEN the code can be restored`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            recoveryWords.dropLast(1).forEachIndexed { index, word ->
+                viewModel.onEvent(RestoreUiEvent.OnWordChanged(index, word))
+            }
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(11, "yell"))
+
+            // Then
+            assertTrue(viewModel.uiState.value.isCodeComplete)
+            assertTrue(viewModel.uiState.value.canRestore)
+        }
+
+    @Test
+    fun `GIVEN 11 words typed WHEN typing a non word in the last field THEN the code stays incomplete`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            recoveryWords.dropLast(1).forEachIndexed { index, word ->
+                viewModel.onEvent(RestoreUiEvent.OnWordChanged(index, word))
+            }
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(11, "qqx"))
+
+            // Then
+            assertFalse(viewModel.uiState.value.isCodeComplete)
+            assertFalse(viewModel.uiState.value.canRestore)
+        }
+
+    @Test
+    fun `GIVEN the 12 words typed as their first letters WHEN restoring THEN sends them joined by single spaces`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val prefixes = recoveryWords.map { it.take(4) }
+            prefixes.forEachIndexed { index, prefix -> viewModel.onEvent(RestoreUiEvent.OnWordChanged(index, prefix)) }
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+            // Then
+            assertEquals(listOf(prefixes.joinToString(" ")), account.restoredCodes)
+        }
+
+    @Test
+    fun `GIVEN the old device QR WHEN scanned THEN fills the 12 fields`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val content = "borarachar://recover?code=${RECOVERY_CODE.replace(' ', '+')}"
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnQrScanned(content))
+
+        // Then
+        assertEquals(recoveryWords, wordTexts())
+    }
+
+    @Test
+    fun `GIVEN a QR with the bare words WHEN scanned THEN fills the 12 fields and restores`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnQrScanned(RECOVERY_CODE))
+
+            // Then
+            assertEquals(recoveryWords, wordTexts())
+            assertEquals(listOf(RECOVERY_CODE), account.restoredCodes)
+        }
+
+    @Test
+    fun `GIVEN the downloaded file of the web WHEN pasted whole THEN fills the 12 fields with its words alone`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val file = "Blitz Split · recovery code\n\n" +
+                recoveryWords.mapIndexed { index, word -> "${index + 1}. $word" }.joinToString("\n") +
+                "\n\nUse it to bring your groups back."
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(3, file))
+
+            // Then
+            assertEquals(recoveryWords, wordTexts())
+            assertTrue(viewModel.uiState.value.isCodeComplete)
+        }
+
+    @Test
+    fun `GIVEN a QR that is not a recovery code WHEN scanned THEN shows the invalid code error without restoring`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnQrScanned("borarachar://recover?code=K7QM4XPA9TRE"))
+
+            // Then
+            assertEquals(RestoreError.INVALID_CODE, viewModel.uiState.value.error)
+            assertTrue(account.restoredCodes.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a failed restore WHEN another field gets the focus THEN keeps the error`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(restoreError = InvalidRecoveryCodeException())
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
+        viewModel.onEvent(RestoreUiEvent.OnWordFocused(0))
+        viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnWordFocused(3))
+
+        // Then
+        assertEquals(RestoreError.INVALID_CODE, viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `GIVEN a word and the start of the next WHEN typed into a field THEN keeps the focus on the unfinished one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "legal wi"))
+
+            // Then
+            assertEquals(listOf("legal", "wi"), wordTexts().take(2))
+            assertEquals(listOf<RestoreUiAction>(RestoreUiAction.FocusWord(1)), actions)
+        }
+
+    @Test
+    fun `GIVEN 12 typed words WHEN a QR that is not a code is scanned THEN replaces every field`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnQrScanned("hello world"))
+
+            // Then
+            assertEquals(listOf("hello", "world") + List(10) { "" }, wordTexts())
+        }
+
+    @Test
+    fun `GIVEN a numbered list with a mistyped word WHEN pasted THEN fills each word at its number and marks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val note = "Recovery code\n" + recoveryWords
+                .mapIndexed { index, word -> "${index + 1}. ${if (index == 4) "qqx" else word}" }
+                .joinToString("\n")
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, note))
+
+            // Then
+            assertEquals(recoveryWords.toMutableList().apply { this[4] = "qqx" }, wordTexts())
+            assertTrue(
+                viewModel.uiState.value.words[4]
+                    .isDeadEnd,
+            )
+        }
+
+    @Test
+    fun `GIVEN the restore screen WHEN a word arrives for a field past the last THEN changes nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(12, "legal"))
+
+            // Then
+            assertEquals(List(12) { "" }, wordTexts())
+            assertEquals(emptyList(), actions)
+        }
+
+    @Test
+    fun `GIVEN the restore screen WHEN a word arrives for a negative field THEN changes nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(-1, "legal winner"))
+
+            // Then
+            assertEquals(List(12) { "" }, wordTexts())
+            assertEquals(emptyList(), actions)
+        }
+
+    @Test
+    fun `GIVEN a focused field WHEN focusing a field past the last THEN keeps the focus where it was`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(3))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordFocused(12))
+
+            // Then
+            assertEquals(3, viewModel.uiState.value.focusedWordIndex)
+        }
+
+    private fun wordTexts(): List<String> = viewModel.uiState.value.words
+        .map { it.text }
 
     private fun providerClicked(provider: AccountProvider): Pair<String, Map<String, Any>> =
         "sign_in_provider_clicked" to mapOf("provider" to provider, "source" to "restore")
@@ -787,5 +1405,9 @@ class RestoreViewModelTest {
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
+    }
+
+    private companion object {
+        private const val RECOVERY_CODE = "legal winner thank year wave sausage worth useful legal winner thank yellow"
     }
 }

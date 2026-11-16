@@ -48948,6 +48948,83 @@
         }
       }
     },
+    "Word %lld" : {
+      "comment" : "Restore: the accessibility label of the field of one recovery word, by its number",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wort %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palabra %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mot %lld"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kata %lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parola %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "単語%lld"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Woord %lld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Słowo %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palavra %lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Слово %lld"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kelime %lld"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Слово %lld"
+          }
+        }
+      }
+    },
     "Word or phrase" : {
       "comment" : "New term",
       "localizations" : {
@@ -68066,78 +68143,84 @@
         }
       }
     },
-    "12 letters and numbers. Dashes are optional." : {
+    "The 12 words in order. Paste them all into one field to fill every field." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 Buchstaben und Ziffern. Bindestriche sind optional."
+            "value" : "Die 12 Wörter der Reihe nach. Füg alle in ein Feld ein, um alle Felder zu füllen."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 letras y números. Los guiones son opcionales."
+            "value" : "Las 12 palabras, en orden. Pégalas todas en un campo para llenarlos todos."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 lettres et chiffres. Les tirets sont facultatifs."
+            "value" : "Les 12 mots dans l’ordre. Colle-les tous dans un champ pour tout remplir."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 huruf dan angka. Tanda hubung opsional."
+            "value" : "12 kata sesuai urutan. Tempel semuanya di satu kolom untuk mengisi semua kolom."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 lettere e numeri. I trattini sono facoltativi."
+            "value" : "Le 12 parole in ordine. Incollale tutte in un campo per riempirli tutti."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12文字の英数字。ハイフンは省略できます。"
+            "value" : "12個の単語を順番どおりに。まとめて1つの欄に貼り付けると、すべての欄に入力されます。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 letters en cijfers. Streepjes zijn optioneel."
+            "value" : "De 12 woorden op volgorde. Plak ze allemaal in één veld om alles in te vullen."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 liter i cyfr. Myślniki są opcjonalne."
+            "value" : "12 słów po kolei. Wklej wszystkie w jedno pole, aby wypełnić wszystkie."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 letras e números. Traços são opcionais."
+            "value" : "As 12 palavras, na ordem. Cole todas em um campo para preencher tudo."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As 12 palavras, pela ordem. Cola-as todas num campo para preencher tudo."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 букв и цифр. Дефисы необязательны."
+            "value" : "12 слов по порядку. Вставь их все в одно поле, чтобы заполнить все поля."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 harf ve rakam. Tireler isteğe bağlı."
+            "value" : "12 kelime, sırasıyla. Hepsini tek bir alana yapıştırırsan tüm alanlar dolar."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "12 літер і цифр. Дефіси необов'язкові."
+            "value" : "12 слів по порядку. Встав їх усі в одне поле, щоб заповнити всі поля."
           }
         }
       }
@@ -73080,84 +73163,84 @@
         }
       }
     },
-    "Code not found. Check the letters and try again." : {
+    "Code not found. Check the words and their order, then try again." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Code nicht gefunden. Prüfe die Buchstaben und versuch es erneut."
+            "value" : "Code nicht gefunden. Prüfe die Wörter und ihre Reihenfolge und versuch es noch einmal."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Código no encontrado. Revisa las letras e inténtalo de nuevo."
+            "value" : "No se encontró el código. Revisa las palabras y su orden e inténtalo de nuevo."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Code introuvable. Vérifie les lettres et réessaie."
+            "value" : "Code introuvable. Vérifie les mots et leur ordre, puis réessaie."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kode tidak ditemukan. Periksa hurufnya dan coba lagi."
+            "value" : "Kode tidak ditemukan. Periksa kata-kata dan urutannya, lalu coba lagi."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Codice non trovato. Controlla le lettere e riprova."
+            "value" : "Codice non trovato. Controlla le parole e il loro ordine e riprova."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "コードが見つかりません。文字を確認して、もう一度お試しください。"
+            "value" : "コードが見つかりません。単語とその順番を確認して、もう一度お試しください。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Code niet gevonden. Controleer de letters en probeer het opnieuw."
+            "value" : "Code niet gevonden. Controleer de woorden en hun volgorde en probeer het opnieuw."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie znaleziono kodu. Sprawdź litery i spróbuj ponownie."
+            "value" : "Nie znaleziono kodu. Sprawdź słowa i ich kolejność, a potem spróbuj ponownie."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Código não encontrado. Confira as letras e tente de novo."
+            "value" : "Código não encontrado. Confira as palavras e a ordem delas e tente de novo."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Código não encontrado. Confirma as letras e tenta de novo."
+            "value" : "Código não encontrado. Verifica as palavras e a ordem delas e tenta novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Код не найден. Проверь буквы и попробуй ещё раз."
+            "value" : "Код не найден. Проверь слова и их порядок и попробуй ещё раз."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kod bulunamadı. Harfleri kontrol et ve tekrar dene."
+            "value" : "Kod bulunamadı. Kelimeleri ve sıralarını kontrol edip tekrar dene."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Код не знайдено. Перевір літери й спробуй ще раз."
+            "value" : "Код не знайдено. Перевір слова та їхній порядок і спробуй ще раз."
           }
         }
       }
@@ -105363,85 +105446,85 @@
         }
       }
     },
-    "You're using it without an account. This code brings your groups back if you switch or lose your %@." : {
+    "You're using it without an account. These 12 words bring your groups back if you switch or lose your %@. Write them down in order." : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Du nutzt die App ohne Konto. Dieser Code bringt deine Gruppen bei Wechsel oder Verlust deines %@ zurück."
+            "value" : "Du nutzt die App ohne Konto. Diese 12 Wörter bringen deine Gruppen bei Wechsel oder Verlust deines %@ zurück. Schreib sie der Reihe nach auf."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Estás usando la app sin cuenta. Este código recupera tus grupos si cambias o pierdes tu %@."
+            "value" : "Estás usando la app sin cuenta. Estas 12 palabras recuperan tus grupos si cambias o pierdes tu %@. Anótalas en orden."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu l’utilises sans compte. Ce code te rend tes groupes si tu changes ou perds ton %@."
+            "value" : "Tu l’utilises sans compte. Ces 12 mots te rendent tes groupes si tu changes ou perds ton %@. Note-les dans l’ordre."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kamu memakainya tanpa akun. Kode ini mengembalikan grupmu kalau kamu mengganti atau kehilangan %@."
+            "value" : "Kamu memakainya tanpa akun. 12 kata ini mengembalikan grupmu kalau kamu mengganti atau kehilangan %@. Catat sesuai urutannya."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stai usando l’app senza account. Questo codice riporta i tuoi gruppi se cambi o perdi il tuo %@."
+            "value" : "Stai usando l’app senza account. Queste 12 parole riportano i tuoi gruppi se cambi o perdi il tuo %@. Annotale in ordine."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アカウントなしで使っています。%@を変えたりなくしたりしても、このコードでグループを復元できます。"
+            "value" : "アカウントなしで使っています。%@を変えたりなくしたりしても、この12個の単語でグループを復元できます。順番どおりに書き留めてください。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je gebruikt de app zonder account. Deze code brengt je groepen terug als je van %@ wisselt of hem kwijtraakt."
+            "value" : "Je gebruikt de app zonder account. Deze 12 woorden brengen je groepen terug als je van %@ wisselt of hem kwijtraakt. Schrijf ze op in de juiste volgorde."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Używasz aplikacji bez konta. Ten kod przywróci twoje grupy, jeśli zmienisz lub zgubisz urządzenie (%@)."
+            "value" : "Używasz aplikacji bez konta. Te 12 słów przywróci twoje grupy, jeśli zmienisz lub zgubisz urządzenie (%@). Zapisz je po kolei."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Você está usando sem conta. Este código recupera seus grupos se você trocar ou perder o %@."
+            "value" : "Você está usando sem conta. Estas 12 palavras recuperam seus grupos se você trocar ou perder o %@. Anote-as na ordem."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Estás a usar sem conta. Este código recupera os teus grupos se trocares ou perderes o %@."
+            "value" : "Estás a usar sem conta. Estas 12 palavras recuperam os teus grupos se trocares ou perderes o %@. Anota-as pela ordem."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ты пользуешься приложением без аккаунта. Этот код вернёт твои группы, если ты сменишь или потеряешь %@."
+            "value" : "Ты пользуешься приложением без аккаунта. Эти 12 слов вернут твои группы, если ты сменишь или потеряешь %@. Запиши их по порядку."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hesapsız kullanıyorsun. Bu kod, %@ cihazını değiştirirsen ya da kaybedersen gruplarını geri getirir."
+            "value" : "Hesapsız kullanıyorsun. Bu 12 kelime, %@ cihazını değiştirirsen ya da kaybedersen gruplarını geri getirir. Onları sırasıyla not al."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ти користуєшся застосунком без облікового запису. Цей код поверне твої групи, якщо ти зміниш або загубиш пристрій (%@)."
+            "value" : "Ти користуєшся застосунком без облікового запису. Ці 12 слів повернуть твої групи, якщо ти зміниш або загубиш пристрій (%@). Запиши їх по порядку."
           }
         }
       }

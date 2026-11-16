@@ -34,7 +34,8 @@ data class ProfileUiState(
      * only they see it, which the row's info button says. Null without Google or Apple, or when the provider gave none.
      */
     val email: String?,
-    val formattedRecoveryCode: String?,
+    // Why: the 12 recovery words in order, which the sign out dialog numbers.
+    val recoveryWords: List<String>?,
     // Why: "Ver e guardar" shows the recovery code sheet again, as the groups do while it is due.
     val showsRecoveryCodePrompt: Boolean,
     val isOnline: Boolean,
@@ -142,7 +143,7 @@ data class ProfileUiState(
         get() = pendingChanges.isNotEmpty()
 
     val hasRecoveryCode: Boolean
-        get() = formattedRecoveryCode != null
+        get() = recoveryWords != null
 
     val canRetrySync: Boolean
         get() = syncStatus == ProfileSyncStatus.FAILED

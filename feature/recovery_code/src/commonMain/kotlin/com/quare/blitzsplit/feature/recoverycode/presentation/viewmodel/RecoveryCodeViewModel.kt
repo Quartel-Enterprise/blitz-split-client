@@ -9,7 +9,7 @@ import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
-import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
+import com.quare.blitzsplit.core.utils.RecoveryWords
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiEvent
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiState
@@ -33,7 +33,7 @@ class RecoveryCodeViewModel(
     val uiState: StateFlow<RecoveryCodeUiState>
         field = MutableStateFlow(
             RecoveryCodeUiState(
-                formattedCode = null,
+                recoveryWords = null,
                 isPromptDue = false,
                 isOnline = true,
                 connectingProvider = null,
@@ -56,7 +56,7 @@ class RecoveryCodeViewModel(
                 prompt = account.recoveryCodePrompt
                 uiState.update {
                     it.copy(
-                        formattedCode = account.recoveryCode?.let(RecoveryCodeFormat::format),
+                        recoveryWords = account.recoveryCode?.let(RecoveryWords::wordsOf),
                         isPromptDue = account.recoveryCodePrompt.isShown,
                     )
                 }
@@ -106,8 +106,8 @@ class RecoveryCodeViewModel(
     }
 
     private fun emitWithCode(action: (String) -> RecoveryCodeUiAction) {
-        val code = uiState.value.formattedCode ?: return
-        viewModelScope.launch { uiAction.emit(action(code)) }
+        val words = uiState.value.recoveryWords ?: return
+        viewModelScope.launch { uiAction.emit(action(words.joinToString(" "))) }
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {

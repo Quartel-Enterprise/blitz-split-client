@@ -96,7 +96,7 @@ intent gives is a **Should fix**; one that breaks a platform or the module graph
   - It extends `TrackedViewModel<XUiEvent>(trackEvent)` and writes one exhaustive `when` in
     `override fun handleEvent(event)`, whose arms call private functions; the UIs call the inherited
     `onEvent`. `XUiEvent` is a sealed interface extending `core.presentation.UiEvent`, its cases each
-    declaring `analytics`, named after what the person did (`OnProviderClicked`, `OnCodeChanged`), not
+    declaring `analytics`, named after what the person did (`OnProviderClicked`, `OnWordChanged`), not
     what the code does next.
   - Flags every UI needs are computed properties of the `UiState` (`areAccountButtonsEnabled`,
     `showsOfflineNotice`, `canRestore`), so no UI recomputes them.
@@ -212,9 +212,10 @@ otherwise clean.
   with a new identity loses their data.
 - **The recovery code.** Only an anonymous user gets one, issued after the first successful sync;
   a Google or Apple account settles the prompt for good (`RecoveryCodePrompt.SAVED`). "Lembrar
-  depois" shows it again on the next launch, not right away. `RecoveryCodeFormat` mirrors
-  `_shared/recovery_code.ts` of the API (12 Crockford base32 characters), so a change to one must
-  change the other, and a mistyped code is rejected before any request.
+  depois" shows it again on the next launch, not right away. `RecoveryWords` mirrors
+  `_shared/recovery_code.ts` of the API (12 words of the BIP39 English list, the first four letters of
+  each counting), so a change to one must change the other, and a word not in the list is rejected
+  before any request.
 - **Native sign in where the platform has it.** Google signs in natively on Android (Credential
   Manager) and Apple on iOS and macOS (`ASAuthorizationAppleIDButton`), declared by `NativeSignIn`;
   every other provider goes through the browser and comes back as `borarachar://auth-callback`,
