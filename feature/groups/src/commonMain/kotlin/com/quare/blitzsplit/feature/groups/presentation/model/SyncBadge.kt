@@ -38,7 +38,9 @@ enum class SyncBadge {
         }
 
         // Why: the groups came while "Syncing…" showed, which goes with them, never drawn over the account's data.
-        internal fun SyncBadge?.unlessSyncingOver(showsData: Boolean): SyncBadge? =
-            takeUnless { it == SYNCING && showsData }
+        internal fun toShown(
+            badge: SyncBadge?,
+            showsData: Boolean,
+        ): SyncBadge? = badge.takeUnless { it == SYNCING && showsData }
     }
 }

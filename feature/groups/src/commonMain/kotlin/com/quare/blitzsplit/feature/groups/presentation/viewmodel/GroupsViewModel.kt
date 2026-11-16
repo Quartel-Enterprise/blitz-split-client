@@ -63,7 +63,6 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
-import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge.Companion.unlessSyncingOver
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -204,7 +203,7 @@ class GroupsViewModel(
             exit.setOnline(isOnline)
             val badge = UserBadge.of(profile, account.status)
             // Why: only the fields these flows own, so the groups' own flow below keeps what it set.
-            val update: (GroupsUiState) -> GroupsUiState = { state ->
+            return@combine { state: GroupsUiState ->
                 state.copy(
                     displayName = badge.displayName,
                     avatarInitial = badge.avatarInitial,
@@ -221,7 +220,6 @@ class GroupsViewModel(
                     showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
                 )
             }
-            update
         }.onEach(uiState::update)
             .launchIn(viewModelScope)
         observeFirstDownload()
@@ -260,7 +258,7 @@ class GroupsViewModel(
                     it.copy(
                         groups = home.rows,
                         hasLoadedGroups = true,
-                        syncBadge = it.syncBadge.unlessSyncingOver(showsData = home.rows.isNotEmpty()),
+                        syncBadge = SyncBadge.toShown(it.syncBadge, showsData = home.rows.isNotEmpty()),
                         pendingChangeCount = home.pendingChangeCount,
                         latestBill = home.latestBill,
                         /*

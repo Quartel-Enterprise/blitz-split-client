@@ -73,7 +73,6 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
-import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge.Companion.unlessSyncingOver
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -256,7 +255,7 @@ class HomeViewModel(
                     it.copy(
                         isLoaded = true,
                         groupCount = rows.size,
-                        syncBadge = it.syncBadge.unlessSyncingOver(showsData = rows.isNotEmpty()),
+                        syncBadge = SyncBadge.toShown(it.syncBadge, showsData = rows.isNotEmpty()),
                         groups = homeGroupsOf(rows, pinnedIds),
                         billDays = billDaysOf(latestBills, clock),
                         pendingChangeCount = data.pendingChangeCount,
