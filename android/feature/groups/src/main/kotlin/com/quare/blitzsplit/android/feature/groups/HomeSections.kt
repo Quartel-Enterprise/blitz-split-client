@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.negativeAmountColor
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -183,7 +184,7 @@ internal fun HomeSummaryCard(
                         }
                     },
                     amounts = listOf(toPayMoney.toText(toPay?.toPayMinor ?: 0L)),
-                    amountColor = MaterialTheme.colorScheme.error,
+                    amountColor = negativeAmountColor(),
                     isEnabled = summary.canOpenToPay,
                     onClick = { onEvent(HomeUiEvent.OnToPayClicked) },
                 )

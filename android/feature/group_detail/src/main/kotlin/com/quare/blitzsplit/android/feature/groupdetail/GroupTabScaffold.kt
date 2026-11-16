@@ -46,6 +46,7 @@ private val twoColumnsMaxWidth = 1100.dp
 private val phoneSideColumnWidth = 320.dp
 private val tabletSideColumnWidth = 380.dp
 private val fabClearance = 96.dp
+private val listEndPadding = 24.dp
 
 // Why: the group's header, the same over every tab.
 internal class GroupTabFrame(
@@ -67,7 +68,8 @@ internal class GroupTabFrame(
 
 /*
  * Why: a phone upright stacks the faces, the balance card, the tabs and the tab's rows under the bar, with its button
- * floating; lying down, and on a tablet lying down, the faces, the card and the tabs take a column next to the list.
+ * floating; anywhere wider the button sits in the top bar instead, as the home's tabs leave it to the rail. Lying
+ * down, and on a tablet lying down, the faces, the card and the tabs take a column next to the list.
  * A tablet upright centers one column. Drawn alone anywhere wider than a phone upright, the home's rail stays beside
  * it, as the canvas draws it (6.1).
  */
@@ -109,6 +111,10 @@ private fun GroupTabScaffoldContent(
 ) {
     val layout = rememberDeviceLayout()
     val listState = rememberLazyListState()
+    // Why: "Rachar conta" floats only on a phone upright; lying down, on a tabletop or a tablet it sits in the bar.
+    val barButton = body.floatingButton.takeIf { layout.usesNavigationRail }
+    val floatingButton = body.floatingButton.takeUnless { layout.usesNavigationRail }
+    val listBottomPadding = if (floatingButton != null) fabClearance else listEndPadding
     /*
      * Why: on a phone upright the bar folds to its one line on a scroll down and opens again on a scroll up, wherever
      * the list is; anywhere wider it opens only back at the top. Material's two-line bars never leave whole, which
@@ -133,6 +139,7 @@ private fun GroupTabScaffoldContent(
                     money = frame.money,
                     scrollBehavior = scrollBehavior,
                     onAction = onAction,
+                    splitBillButton = barButton,
                     sharedGroupId = frame.sharedGroupId,
                 )
             } else {
@@ -141,7 +148,7 @@ private fun GroupTabScaffoldContent(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            body.floatingButton?.let { button ->
+            floatingButton?.let { button ->
                 ExtendedFloatingActionButton(
                     onClick = button.onClick,
                     icon = { Icon(button.icon, contentDescription = null) },
@@ -182,7 +189,7 @@ private fun GroupTabScaffoldContent(
                     LazyColumn(
                         modifier = Modifier.weight(1f),
                         state = listState,
-                        contentPadding = PaddingValues(bottom = fabClearance),
+                        contentPadding = PaddingValues(bottom = listBottomPadding),
                         content = body.listContent,
                     )
                 }
@@ -192,7 +199,7 @@ private fun GroupTabScaffoldContent(
                         .widthIn(max = singleColumnMaxWidth)
                         .fillMaxWidth(),
                     state = listState,
-                    contentPadding = PaddingValues(bottom = fabClearance),
+                    contentPadding = PaddingValues(bottom = listBottomPadding),
                 ) {
                     item(
                         key = "header",
