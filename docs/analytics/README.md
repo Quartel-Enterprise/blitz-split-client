@@ -182,7 +182,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `restore_scan_qr_clicked` | none | Restore's QR reader opened | `:feature:restore` |
 | `restore_start_fresh_clicked` | none | Restore's "Start fresh on this device" | `:feature:restore` |
 | `recovery_code_copy_clicked` | none | The recovery code's Copy | `:feature:recovery_code` |
-| `recovery_code_password_manager_clicked` | none | "Save to password manager" | `:feature:recovery_code` |
+| `recovery_code_password_manager_clicked` | none | "Save to password manager" (Android and Apple; the web has none) | `:feature:recovery_code` |
+| `recovery_code_download_clicked` | none | Download beside Copy (Android and Apple), "Download as a file" on the web | `:feature:recovery_code` |
 | `recovery_code_connect_instead_clicked` | none | "Connect Google or Apple instead" | `:feature:recovery_code` |
 | `recovery_code_remind_later_clicked` | none | "Remind me later", or the sheet closed any other way while the code is due | `:feature:recovery_code` |
 | `recovery_code_saved_clicked` | none | "I've saved it" | `:feature:recovery_code` |

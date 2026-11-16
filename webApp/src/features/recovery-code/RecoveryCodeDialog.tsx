@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons } from '@/components/common'
-import { numberedRecoveryWords, RecoveryWordsBox } from '@/components/RecoveryWordsBox'
+import { RecoveryWordsBox } from '@/components/RecoveryWordsBox'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -116,7 +116,7 @@ function Option({ icon, title, subtitle, disabled, onClick }: { icon: ReactNode;
   )
 }
 
-function downloadCode(code: string) {
-  const text = t('recoveryCode_fileText', { code: numberedRecoveryWords(code) })
+function downloadCode(numberedWords: string) {
+  const text = t('recoveryCode_fileText', { code: numberedWords })
   downloadFile(text, t('recoveryCode_fileName'), 'text/plain;charset=utf-8')
 }

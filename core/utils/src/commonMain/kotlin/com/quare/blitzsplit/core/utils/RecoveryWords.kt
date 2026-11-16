@@ -48,7 +48,7 @@ object RecoveryWords {
     }
 
     /*
-     * Why: a pasted text may hold more than the words, as the web's downloaded file does (a heading, a sentence after
+     * Why: a pasted text may hold more than the words, as the downloaded file does (a heading, a sentence after
      * them), and a heading's words can be list words too ("split", "code", "recovery" read as "record"). A list
      * numbered 1 to 12 is read by its numbers. Any other text by a run of 12 whole words of the list, the last one
      * since a heading comes before the words, and only then by a run that needs prefixes.
@@ -77,6 +77,11 @@ object RecoveryWords {
             wordOf(typed) ?: typed
         }
     }
+
+    // Why: the downloaded file lists the words one "n. word" a line, which findTypedWordsIn reads back by number.
+    fun buildNumberedLines(words: List<String>): String = words
+        .mapIndexed { index, word -> "${index + 1}. $word" }
+        .joinToString("\n")
 
     // Why: a code stored before the words (12 base32 characters) isn't shown as if it were words.
     fun wordsOf(code: String): List<String>? = normalize(code)?.split(" ")

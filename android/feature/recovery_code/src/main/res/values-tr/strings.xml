@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Kurtarma kodunu kaydet</string>
-    <string name="recovery_code_body">Uygulamayı hesapsız kullanıyorsun. Cihazını değiştirir ya da kaybedersen bu 12 kelime gruplarını geri getirir. Onları sırasıyla not al.</string>
+    <string name="recovery_code_body">Uygulamayı hesapsız kullanıyorsun. Cihazını değiştirir ya da kaybedersen bu 12 kelime verilerini geri getirir. Onları sırasıyla not al. 30 gün kullanılmazsa verilerin silinir ve kelimeler çalışmaz.</string>
     <string name="recovery_code_copy">Kelimeleri kopyala</string>
     <string name="recovery_code_save_to_password_manager">Şifre yöneticisine kaydet</string>
     <string name="recovery_code_connect_instead">Bunun yerine Google ya da Apple bağla</string>
@@ -10,4 +10,7 @@
     <string name="recovery_code_also_in_profile">Ayrıca Profil › Kurtarma\'da da var.</string>
     <string name="recovery_code_remind_later">Sonra hatırlat</string>
     <string name="recovery_code_saved">Kaydettim</string>
+    <string name="recovery_code_download">İndir</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · kurtarma kodu\n\n%1$s\n\nVerilerini geri getirmek için “Başka bir cihazda kullandım” seçeneğinde kullan.\n</string>
 </resources>

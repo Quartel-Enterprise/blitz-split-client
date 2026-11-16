@@ -14,8 +14,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,6 +29,7 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.rememberFullSheetState
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.RecoveryCodeSaver
+import com.quare.blitzsplit.android.platform.rememberFileSaver
 import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
@@ -36,6 +39,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 private val landscapeSheetMaxWidth = 640.dp
+private const val TEXT_MIME_TYPE = "text/plain"
 
 /*
  * Why: shown over the groups once the first sync issued a code. A phone gets a bottom sheet (at
@@ -108,6 +112,9 @@ private fun RecoveryCodeActionsEffect(viewModel: RecoveryCodeViewModel) {
     val context = LocalContext.current
     val saver = remember(context) { RecoveryCodeSaver(context) }
     val scope = rememberCoroutineScope()
+    // Why: the collector outlives a recomposition, so it reads the current language's resources and saver.
+    val resources by rememberUpdatedState(LocalResources.current)
+    val saveFile by rememberUpdatedState(rememberFileSaver())
     val launchGoogleSignIn = rememberGoogleSignInLauncher { result ->
         viewModel.onEvent(
             when (result) {
@@ -129,6 +136,16 @@ private fun RecoveryCodeActionsEffect(viewModel: RecoveryCodeViewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 is RecoveryCodeUiAction.CopyToClipboard -> saver.copyToClipboard(action.code)
+
+                is RecoveryCodeUiAction.DownloadFile -> saveFile(
+                    resources.getString(R.string.recovery_code_file_name),
+                    TEXT_MIME_TYPE,
+                    resources
+                        .getString(
+                            R.string.recovery_code_file_text,
+                            action.numberedWords,
+                        ).encodeToByteArray(),
+                )
 
                 is RecoveryCodeUiAction.SaveToPasswordManager -> scope.launch {
                     saver.saveToPasswordManager(action.code)

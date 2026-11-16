@@ -7,10 +7,12 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The recovery code is 12 English words of the BIP39 list, in every language (Pierre's call, November 2026: a code of
     12 letters and digits was easy to copy wrong by hand, and said nothing about which character was wrong). Every
     platform shows them numbered, row by row (three columns where the longest words fit, two on a phone and in Profile's sign out dialog), with Copy, which copies
-    them joined by spaces, and the web's file lists them one a line. Restoring takes them in 12 numbered fields, one per
+    them joined by spaces. "Save your recovery code" also offers them as a text file (Download beside Copy on Android,
+    iOS and macOS, through the system's save sheet; "Download as a file" on the web), which lists them numbered, one a
+    line, under the app's name and where to type them. Restoring takes them in 12 numbered fields, one per
     word: pasting or typing several words into any field fills the fields from it on, a space or the keyboard's next
     after a whole word moves on, up to three words of the list starting with the field's letters show to tap, and a
-    field no word can come out of is marked at once. Only the first four letters of a word count. A pasted text with more than the words (the web's file, a note) keeps its first run of 12 words of the list, and a scanned QR that isn't a code says "Code not found". The codes from before
+    field no word can come out of is marked at once. Only the first four letters of a word count. A pasted text with more than the words (the downloaded file, a note) keeps its first run of 12 words of the list, and a scanned QR that isn't a code says "Code not found". The codes from before
     the words stopped working, as Pierre decided the anonymous accounts of the beta would be deleted anyway.
   - Apple's sign in button comes before Google's on iOS, macOS and in the browser of an Apple device (Mac, iPhone,
     iPad); Google comes first on Android and in any other browser.
@@ -18,7 +20,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     November 2026): every test install made one, and a forgotten one stayed forever. Only a sync counts, so 30 days
     offline in a row count too. The server does it (`expire-anonymous-accounts` in blitz-split-api), as a deletion
     asked in Profile: the person's name stays in their groups with no account, and a group left with no account goes.
-    Every platform says so in the same four places:
+    Every platform says so in the same five places:
     - Welcome, in a small centered line right under "Use without an account": "Without an account, your data is
       deleted after 30 days without use. Connect Google or Apple to keep it." It starts with "Without an account" so a
       person who signs in with Google or Apple does not read it as a rule for them (Pierre's call, November 2026).
@@ -26,6 +28,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
       keep it." instead, like the offline notice (`WelcomeUiState.showsOfflineNotice`).
     - Profile's "No account" row, whose line reads "Deleted after 30 days without use" once the account is on the
       server ([profile.md](profile.md)).
+    - "Save your recovery code", whose text says the 12 words bring the person's data back and ends "After 30 days
+      without use, your data is deleted and the words stop working." (Pierre's call, November 2026: "data", not
+      "groups", and the 30 days said again where the code is saved).
     - The sign out of such an account, whose dialog adds that after 30 days without use the account is deleted and
       the code stops working.
     - A device that comes back to a deleted account is erased, profile included, and lands on Welcome with an alert,

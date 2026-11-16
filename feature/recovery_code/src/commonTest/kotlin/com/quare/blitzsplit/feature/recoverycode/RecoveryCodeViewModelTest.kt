@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
+import com.quare.blitzsplit.core.utils.RecoveryWords
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiEvent
 import com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel.RecoveryCodeViewModel
@@ -82,6 +83,27 @@ class RecoveryCodeViewModelTest {
         // Then
         assertEquals(listOf<RecoveryCodeUiAction>(RecoveryCodeUiAction.CopyToClipboard(RECOVERY_CODE)), actions)
     }
+
+    @Test
+    fun `GIVEN the code WHEN downloading THEN asks the platform to save the numbered words as a file`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = RECOVERY_CODE,
+                prompt = RecoveryCodePrompt.DUE,
+            )
+
+            // When
+            viewModel.onEvent(RecoveryCodeUiEvent.OnDownloadClicked)
+
+            // Then
+            assertEquals(
+                listOf<RecoveryCodeUiAction>(
+                    RecoveryCodeUiAction.DownloadFile(RecoveryWords.buildNumberedLines(RECOVERY_CODE.split(" "))),
+                ),
+                actions,
+            )
+        }
 
     @Test
     fun `GIVEN the sheet WHEN reminding later THEN snoozes the prompt`() = runTest(testDispatcher) {
@@ -420,6 +442,21 @@ class RecoveryCodeViewModelTest {
 
         // Then
         assertEquals(listOf("recovery_code_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the code WHEN downloading THEN tracks the download without the code`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            code = RECOVERY_CODE,
+            prompt = RecoveryCodePrompt.DUE,
+        )
+
+        // When
+        viewModel.onEvent(RecoveryCodeUiEvent.OnDownloadClicked)
+
+        // Then
+        assertEquals(listOf("recovery_code_download_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
     @Test
