@@ -81,11 +81,52 @@ jobs:
       actions: read
       pull-requests: read
 
-  # The tests and the app build run side by side: each compiles the Kotlin/Native code on its own,
-  # and two runners finish sooner than one doing both.
-  apple-tests:
+  # Says whether the change reaches the Kotlin code, on a Linux runner, which starts at once: a macOS
+  # runner is waited for, up to ten minutes when several pull requests run. A change to the Swift
+  # app alone (iosApp, with its Markdown docs and its release notes fragment) leaves every input of
+  # apple-tests as main built it, so the job would take a macOS runner for five minutes to restore
+  # its tests from the cache. apple-app still builds both schemes. Anything else, a diff that fails
+  # or no changed file at all counts as a change to the Kotlin code.
+  changes:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      kotlin: ${{ steps.diff.outputs.kotlin }}
+    steps:
+      # Two commits: on a pull request, GitHub's merge of it with main and main itself, its first
+      # parent; on main, the pushed commit and the one before it.
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      # The paths that are no input of a Gradle task of the Apple targets; Markdown is already left
+      # out of the paths that start this workflow. On main the change is the whole push, from the
+      # commit main was at: a push of several commits (a rebase merge) isn't judged by its last one,
+      # and since only two commits are here, its diff fails and the tests run. --no-renames lists
+      # both paths of a moved file, so one moved out of a Kotlin module still counts.
+      - name: Look for a change outside the Swift app
+        id: diff
+        env:
+          BASE: ${{ github.event_name == 'push' && github.event.before || 'HEAD^1' }}
+        run: |
+          kotlin=true
+          if files=$(git diff --name-only --no-renames "$BASE" HEAD) && [ -n "$files" ] &&
+            ! grep -q -v -E '^(iosApp|release-notes)/|\.md$' <<< "$files"; then
+            kotlin=false
+          fi
+          echo "kotlin=$kotlin" >> "$GITHUB_OUTPUT"
+
+  # The tests and the app build run side by side: each compiles the Kotlin/Native code on its own,
+  # and two runners finish sooner than one doing both. apple-tests runs unless `changes` said the
+  # Kotlin code is untouched: when that job fails, its output is empty and the tests run.
+  apple-tests:
+    needs: [review-gate, changes]
+    if: >-
+      ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
+      needs.changes.outputs.kotlin != 'false' }}
     # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
     # Xcode 26 only.
     runs-on: xcode-27
@@ -259,6 +300,41 @@ jobs:
           xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS
           -destination 'platform=macOS' -derivedDataPath iosApp/build/DerivedData
           -clonedSourcePackagesDirPath iosApp/build/SourcePackages CODE_SIGNING_ALLOWED=NO build -quiet
+
+  # On main, a failed apple-tests leaves no Gradle home in the cache. setup-gradle saves the home when
+  # the job ends, whatever its result, under a key that ends with the commit, and every later run
+  # restores the newest entry. A run that lost the network restored nothing, found no plugin to
+  # configure the build with, and saved an empty home: the next run of main restored it and compiled
+  # its 1905 tasks, 40 minutes instead of 4, and so did the pull requests opened meanwhile. Without
+  # that entry they restore the one of the last run that passed. A run whose tests failed loses a
+  # good entry the same way, which costs the next run that commit's own changes. A job of its own,
+  # so the entry goes as soon as apple-tests ends, not once apple-app has built both schemes too.
+  drop-failed-cache:
+    needs: apple-tests
+    if: >-
+      ${{ !cancelled() && github.event_name == 'push' &&
+      (needs.apple-tests.result == 'failure' || needs.apple-tests.result == 'cancelled') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      # setup-gradle's key is gradle-home-<version>|<os>|<job>[<hash>]-<commit>. The newest entries
+      # come first, and this run's is among them: a hundred are ten commits of every job's.
+      - name: Delete the Gradle home the failed run saved
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          ids=$(gh cache list --ref "$GITHUB_REF" --key gradle-home- --sort created_at --order desc \
+            --limit 100 --json id,key | jq -r --arg sha "$GITHUB_SHA" '.[]
+            | select((.key | contains("|apple-tests[")) and (.key | endswith("-" + $sha))) | .id')
+          if [ -z "$ids" ]; then
+            echo "The failed run saved no Gradle home."
+          fi
+          for id in $ids; do
+            gh cache delete "$id"
+          done
 
   # main has no pull request to show a failure on, and a test that fails on the iOS simulator alone
   # first fails there, after the merge, since pull requests run the suite on macOS only. So a job
