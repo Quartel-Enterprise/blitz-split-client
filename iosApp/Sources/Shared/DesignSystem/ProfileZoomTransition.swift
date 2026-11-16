@@ -96,7 +96,9 @@ private struct ProfileZoomSourceModifier: ViewModifier {
             // The zoom clips only to a rounded rectangle, so one of half the face's side draws it as its circle. A
             // radius past that hides the face altogether, outside the zoom too
             content
-                .onGeometryChange(for: CGFloat.self) { max(min($0.size.width, $0.size.height) / 2 - 0.5, 0) } action: { radius = $0 }
+                .onGeometryChange(for: CGFloat.self) { max(min($0.size.width, $0.size.height) / 2 - 0.5, 0) } action: {
+                    radius = $0
+                }
                 .matchedTransitionSource(id: faceId, in: scope.namespace) { source in
                     source.clipShape(.rect(cornerRadius: radius, style: .circular))
                 }
