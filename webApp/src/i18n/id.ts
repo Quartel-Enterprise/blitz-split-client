@@ -1972,6 +1972,8 @@ export const id: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Coba lagi',
   splitBill_receiptUnavailableTitle: 'Pembaca struk tidak merespons',
   splitBill_receiptUnavailableBody: 'Bukan karena fotomu. Coba lagi sebentar lagi, atau isi manual.',
+  splitBill_receiptStatementTitle: 'Ini tampak seperti tagihan kartu',
+  splitBill_receiptStatementBody: 'Tagihan kartu dan mutasi bank tidak dibaca sebagai satu tagihan. Isi manual.',
   splitBill_receiptLimitTitle: 'Batas pembacaan hari ini',
   splitBill_receiptLimitBody: 'Kamu sudah membaca 30 struk dalam 24 jam terakhir. Isi manual, atau baca lagi besok.',
   splitBill_receiptOfflineTitle: 'Tidak ada koneksi',

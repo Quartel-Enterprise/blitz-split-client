@@ -1977,6 +1977,8 @@ export const uk: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Спробувати ще раз',
   splitBill_receiptUnavailableTitle: 'Зчитувач чеків не відповів',
   splitBill_receiptUnavailableBody: 'Справа не у твоєму фото. Спробуй ще раз за мить або заповни вручну.',
+  splitBill_receiptStatementTitle: 'Схоже на виписку',
+  splitBill_receiptStatementBody: 'Виписки по картці й рахунку не зчитуються як один рахунок. Заповни вручну.',
   splitBill_receiptLimitTitle: 'Денний ліміт зчитувань',
   splitBill_receiptLimitBody: 'За останні 24 години ти зчитав(-ла) 30 чеків. Заповни вручну або зчитай знову завтра.',
   splitBill_receiptOfflineTitle: "Немає з'єднання",

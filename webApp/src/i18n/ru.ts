@@ -1977,6 +1977,8 @@ export const ru: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Попробовать ещё раз',
   splitBill_receiptUnavailableTitle: 'Сервис распознавания чеков не ответил',
   splitBill_receiptUnavailableBody: 'Дело не в твоём фото. Попробуй ещё раз чуть позже или заполни вручную.',
+  splitBill_receiptStatementTitle: 'Похоже на выписку',
+  splitBill_receiptStatementBody: 'Выписки по карте и по счёту не читаются как один счёт. Заполни вручную.',
   splitBill_receiptLimitTitle: 'Дневной лимит распознавания',
   splitBill_receiptLimitBody: 'За последние 24 часа ты распознал(а) 30 чеков. Заполни вручную или попробуй снова завтра.',
   splitBill_receiptOfflineTitle: 'Нет подключения',

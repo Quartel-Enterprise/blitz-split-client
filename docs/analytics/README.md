@@ -460,7 +460,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_category_main_toggled` | `is_expanded` | A main category shown or hidden in "All categories" | `:feature:split_bill` |
 | `bill_category_picked` | none | A category picked for the bill (a suggestion, a subcategory, "Only Food", a result, Other), one still there | `:feature:split_bill` |
 | `category_map_clicked` | `source` (`split_bill`, `profile`) | The "Category map" card | `:feature:split_bill`, `:feature:profile` |
-| `receipt_read` | `result` (`read`, `unreadable`, `reader_unavailable`, `limit_reached`, `offline`), `items` (how many read) | How a receipt's read ended, which ends the funnel "Scan receipt" began | `:feature:split_bill` |
+| `receipt_read` | `result` (`read`, `unreadable`, `statement`, `reader_unavailable`, `limit_reached`, `offline`), `items` (how many read) | How a receipt's read ended, which ends the funnel "Scan receipt" began | `:feature:split_bill` |
 | `receipt_removed` | none | × on "Receipt photo" | `:feature:split_bill` |
 | `receipt_camera_torch_toggled` | `is_on` | The receipt camera's flashlight (Android, iOS), with where it ended up | `:feature:split_bill`, `:feature:groups` |
 | `camera_allow_clicked` | `source` (`receipt`) | "Allow camera" on the receipt camera after a first refusal, which asks the system again (Android) | `:feature:split_bill`, `:feature:groups` |

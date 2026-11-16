@@ -53,7 +53,7 @@ export function ReceiptReadChips({ presenter, receipt }: { presenter: SplitBillP
 /**
  * Why the receipt read nothing (7.1g): the fields stay as they were, to fill in by hand. "Enviar outra foto" for a photo
  * nothing could be read from, "Tentar de novo" sends the same photo when the reader didn't answer or the connection
- * dropped, and the day's limit offers neither.
+ * dropped, and a card or bank statement and the day's limit offer neither.
  */
 export function ReceiptFailureAlert({
   state,
@@ -92,6 +92,7 @@ const UNREADABLE_COPY = { title: 'splitBill_receiptFailedTitle', body: 'splitBil
 
 const ERROR_COPY: Record<string, { title: MessageKey; body: MessageKey } | undefined> = {
   unreadable: UNREADABLE_COPY,
+  statement: { title: 'splitBill_receiptStatementTitle', body: 'splitBill_receiptStatementBody' },
   reader_unavailable: { title: 'splitBill_receiptUnavailableTitle', body: 'splitBill_receiptUnavailableBody' },
   limit_reached: { title: 'splitBill_receiptLimitTitle', body: 'splitBill_receiptLimitBody' },
   offline: { title: 'splitBill_receiptOfflineTitle', body: 'splitBill_receiptOfflineBody' },

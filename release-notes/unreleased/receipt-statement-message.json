@@ -1,0 +1,26 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Photos of a card or bank statement now say so, and suggest filling the bill in by hand, instead of saying the receipt couldn't be read.",
+        "pt": "Fotos de uma fatura de cartão ou extrato agora dizem isso e sugerem preencher a conta à mão, em vez de dizer que o cupom não pôde ser lido.",
+        "pt-PT": "As fotos de uma fatura de cartão ou extrato dizem agora isso e sugerem preencher a conta à mão, em vez de dizer que o talão não pôde ser lido.",
+        "es": "Las fotos de un extracto de tarjeta o del banco ahora lo dicen y sugieren rellenar el gasto a mano, en vez de decir que no se pudo leer el recibo.",
+        "fr": "Les photos d’un relevé de carte ou de banque le disent désormais et proposent de remplir la dépense à la main, au lieu d’indiquer que le reçu n’a pas pu être lu.",
+        "de": "Fotos einer Karten- oder Kontoabrechnung sagen das jetzt und schlagen vor, die Ausgabe von Hand auszufüllen, statt zu melden, dass der Beleg nicht gelesen werden konnte.",
+        "it": "Le foto di un estratto conto della carta o della banca ora lo dicono e suggeriscono di compilare la spesa a mano, invece di dire che lo scontrino non si è potuto leggere.",
+        "pl": "Zdjęcia wyciągu z karty lub z banku teraz o tym informują i proponują ręczne uzupełnienie wydatku, zamiast pisać, że nie udało się odczytać paragonu.",
+        "nl": "Foto’s van een creditcard- of bankafschrift zeggen dat nu en stellen voor de uitgave zelf in te vullen, in plaats van te melden dat het bonnetje niet gelezen kon worden.",
+        "ja": "カードや銀行の明細の写真は、レシートを読み取れなかったと表示する代わりに、明細であることを伝え、手動での入力を案内するようになりました。",
+        "tr": "Kart veya banka ekstresi fotoğrafları artık fişin okunamadığını söylemek yerine bunu belirtiyor ve harcamayı elle doldurmayı öneriyor.",
+        "id": "Foto tagihan kartu atau mutasi bank kini disebut apa adanya dan menyarankan mengisi tagihan secara manual, bukan bilang struk tidak bisa dibaca.",
+        "ru": "Фото выписки по карте или по счёту теперь так и называются и предлагают заполнить счёт вручную, вместо сообщения, что чек не удалось прочитать.",
+        "uk": "Фото виписки по картці або рахунку тепер так і називаються й пропонують заповнити рахунок вручну, замість повідомлення, що чек не вдалося прочитати."
+      }
+    }
+  ]
+}

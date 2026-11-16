@@ -194,6 +194,7 @@ private fun ColumnScope.ReceiptFailureAction(
 @StringRes
 private fun ReceiptError.toMessageRes(): Int = when (this) {
     ReceiptError.UNREADABLE -> R.string.split_bill_receipt_failed
+    ReceiptError.STATEMENT -> R.string.split_bill_receipt_statement
     ReceiptError.READER_UNAVAILABLE -> R.string.split_bill_receipt_reader_unavailable
     ReceiptError.LIMIT_REACHED -> R.string.split_bill_receipt_limit_reached
     ReceiptError.OFFLINE -> R.string.split_bill_receipt_offline

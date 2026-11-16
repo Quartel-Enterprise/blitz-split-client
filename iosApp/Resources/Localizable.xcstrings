@@ -141768,6 +141768,255 @@
         }
       }
     },
+    "This looks like a statement" : {
+      "comment" : "Split a bill on the Mac: the photo is a card or bank statement",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das sieht nach einer Abrechnung aus"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parece un extracto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On dirait un relevé"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ini tampak seperti tagihan kartu"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sembra un estratto conto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "明細のようです"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit lijkt een afschrift"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To wygląda na wyciąg"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isso parece uma fatura"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isto parece uma fatura"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Похоже на выписку"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu bir ekstreye benziyor"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Схоже на виписку"
+          }
+        }
+      }
+    },
+    "This looks like a card or bank statement, which isn't read as one bill. Fill it in by hand." : {
+      "comment" : "Split a bill: the photo is a card or bank statement, which isn't read as one bill",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das sieht nach einer Karten- oder Kontoabrechnung aus, die nicht als eine Rechnung gelesen wird. Fülle es von Hand aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parece un extracto de tarjeta o del banco, que no se lee como un solo gasto. Rellénalo a mano."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On dirait un relevé de carte ou de banque, qui n’est pas lu comme une seule dépense. Remplis à la main."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ini tampak seperti tagihan kartu atau mutasi bank, yang tidak dibaca sebagai satu tagihan. Isi manual."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sembra un estratto conto della carta o della banca, che non viene letto come un’unica spesa. Compila a mano."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カードや銀行の明細のようです。1件の支払いとしては読み取れません。手動で入力してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit lijkt een creditcard- of bankafschrift, dat niet als één rekening wordt gelezen. Vul het zelf in."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To wygląda na wyciąg z karty lub z banku, który nie jest czytany jako jeden rachunek. Uzupełnij ręcznie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isso parece uma fatura de cartão ou um extrato, que não é lido como uma conta só. Preencha à mão."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isto parece uma fatura de cartão ou um extrato, que não é lido como uma conta só. Preenche à mão."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Похоже на выписку по карте или по счёту: её не читают как один счёт. Заполни вручную."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu bir kart veya banka ekstresine benziyor, tek bir hesap olarak okunmaz. Elle doldur."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Схоже на виписку по картці або рахунку: її не зчитують як один рахунок. Заповни вручну."
+          }
+        }
+      }
+    },
+    "Card and bank statements aren't read as one bill. Fill it in by hand." : {
+      "comment" : "Split a bill on the Mac: the photo is a card or bank statement",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Karten- und Kontoauszüge werden nicht als eine Rechnung gelesen. Fülle es von Hand aus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los extractos del banco y de la tarjeta no se leen como un solo gasto. Rellénalo a mano."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un relevé de carte ou de banque n’est pas lu comme une seule dépense. Remplis à la main."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tagihan kartu dan mutasi bank tidak dibaca sebagai satu tagihan. Isi manual."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gli estratti conto della carta o della banca non vengono letti come un’unica spesa. Compila a mano."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カードや銀行の明細は、1件の支払いとしては読み取れません。手動で入力してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Creditcard- en bankafschriften worden niet als één rekening gelezen. Vul het zelf in."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyciągi z karty i z banku nie są czytane jako jeden rachunek. Uzupełnij ręcznie."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faturas e extratos não são lidos como uma conta só. Preencha à mão."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faturas e extratos não são lidos como uma conta só. Preenche à mão."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выписки по карте и по счёту не читаются как один счёт. Заполни вручную."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kart ve banka ekstreleri tek bir hesap olarak okunmaz. Elle doldur."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Виписки по картці й рахунку не зчитуються як один рахунок. Заповни вручну."
+          }
+        }
+      }
+    },
     "The receipt reader didn't answer" : {
       "comment" : "Split a bill on the Mac: the server's receipt reader didn't answer",
       "localizations" : {

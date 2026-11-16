@@ -307,6 +307,7 @@
     <string name="split_bill_receipt_failed">Struk tidak bisa dibaca. Coba lagi dengan cahaya lebih terang dan seluruh struk masuk foto, atau isi manual.</string>
     <string name="split_bill_receipt_retake">Ambil foto lagi</string>
     <string name="split_bill_receipt_reader_unavailable">Pembaca struk tidak merespons. Bukan karena fotomu: coba lagi sebentar lagi, atau isi manual.</string>
+    <string name="split_bill_receipt_statement">Ini tampak seperti tagihan kartu atau mutasi bank, yang tidak dibaca sebagai satu tagihan. Isi manual.</string>
     <string name="split_bill_receipt_limit_reached">Kamu sudah membaca 30 struk dalam 24 jam terakhir. Isi manual, atau baca lagi besok.</string>
     <string name="split_bill_receipt_offline">Tidak ada koneksi. Foto tidak sampai ke pembaca: coba lagi setelah kamu online, atau isi manual.</string>
     <string name="split_bill_receipt_retry">Coba lagi</string>

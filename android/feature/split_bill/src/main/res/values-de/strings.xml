@@ -332,6 +332,7 @@
     <string name="split_bill_receipt_failed">Der Beleg konnte nicht gelesen werden. Versuch es noch einmal mit mehr Licht und dem ganzen Beleg auf dem Foto, oder fülle es von Hand aus.</string>
     <string name="split_bill_receipt_retake">Neues Foto aufnehmen</string>
     <string name="split_bill_receipt_reader_unavailable">Der Belegleser hat nicht geantwortet. Es liegt nicht an deinem Foto: Versuch es gleich noch einmal oder fülle es von Hand aus.</string>
+    <string name="split_bill_receipt_statement">Das sieht nach einer Karten- oder Kontoabrechnung aus, die nicht als eine Rechnung gelesen wird. Fülle es von Hand aus.</string>
     <string name="split_bill_receipt_limit_reached">Du hast in den letzten 24 Stunden 30 Belege gelesen. Fülle es von Hand aus oder lies den Beleg morgen noch einmal.</string>
     <string name="split_bill_receipt_offline">Keine Verbindung. Das Foto hat den Belegleser nicht erreicht: Versuch es noch einmal, sobald du wieder online bist, oder fülle es von Hand aus.</string>
     <string name="split_bill_receipt_retry">Erneut versuchen</string>

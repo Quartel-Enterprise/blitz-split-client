@@ -5,6 +5,7 @@ import com.quare.blitzsplit.feature.splitbill.presentation.model.ReceiptError
 
 internal fun ReceiptReadFailure.toReceiptError(): ReceiptError = when (this) {
     ReceiptReadFailure.UNREADABLE -> ReceiptError.UNREADABLE
+    ReceiptReadFailure.STATEMENT -> ReceiptError.STATEMENT
     ReceiptReadFailure.READER_UNAVAILABLE -> ReceiptError.READER_UNAVAILABLE
     ReceiptReadFailure.LIMIT_REACHED -> ReceiptError.LIMIT_REACHED
     ReceiptReadFailure.OFFLINE -> ReceiptError.OFFLINE

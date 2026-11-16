@@ -303,7 +303,7 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     photo the camera failed to take) says "Couldn't read the receipt. Try again with more light and the whole receipt in the photo, or fill it in by hand." with "Take another photo"; what isn't the photo's fault says so apart (Pierre's call,
     `SplitBillUiState.receiptError`): the reader that didn't answer or isn't set up "The receipt reader didn't answer.
     It isn't your photo…" and a connection that dropped "No connection. The photo didn't reach the reader…", both with "Try
-    again", which sends the same photo again, and the day's 30 reads "You've read 30 receipts in the last 24 hours…" with
+    again", which sends the same photo again, a photo of a card or bank statement ("fatura", "extrato"; the server's 422 `statement`) "This looks like a card or bank statement, which isn't read as one bill. Fill it in by hand." with no button, as another photo of it wouldn't help (reading its purchases as separate bills is future work), and the day's 30 reads "You've read 30 receipts in the last 24 hours…" with
     no button. Each leaves the fields as they were and keeps no photo (it may be no receipt at all). × on "Receipt photo" (also "Everyone in the group sees it") drops the photo and the receipt's
     items, keeping what it filled. Saving attaches the photo read, as it was read, as the bill's receipt (Bill's
     "Attachments", badge "Receipt").

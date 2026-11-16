@@ -1974,6 +1974,8 @@ export const nl: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Opnieuw proberen',
   splitBill_receiptUnavailableTitle: 'De bonnetjeslezer gaf geen antwoord',
   splitBill_receiptUnavailableBody: 'Het ligt niet aan je foto. Probeer het zo opnieuw, of vul het zelf in.',
+  splitBill_receiptStatementTitle: 'Dit lijkt een afschrift',
+  splitBill_receiptStatementBody: 'Creditcard- en bankafschriften worden niet als één rekening gelezen. Vul het zelf in.',
   splitBill_receiptLimitTitle: 'Leeslimiet voor vandaag',
   splitBill_receiptLimitBody: 'Je hebt in de afgelopen 24 uur 30 bonnetjes gelezen. Vul het zelf in, of lees het morgen opnieuw.',
   splitBill_receiptOfflineTitle: 'Geen verbinding',
