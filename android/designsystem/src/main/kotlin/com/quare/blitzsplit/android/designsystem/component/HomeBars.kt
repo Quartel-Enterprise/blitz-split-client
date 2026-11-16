@@ -34,10 +34,16 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.offset
 import com.quare.blitzsplit.core.model.HomeTab
 
-// Why: M3's NavigationBar height and NavigationRail width, which a screen leaves free until the bar is first measured.
+/*
+ * Why: M3's NavigationBar height and NavigationRail width, which a screen leaves free until the bar is first measured;
+ * and the room animateSizeKeepingShadow leaves around the rail header for the FAB's shadow, sized for M3's FAB
+ * elevation (6dp, 8dp hovered): a higher one needs a wider margin.
+ */
 private val estimatedBarExtent = 80.dp
+private val railHeaderShadowMargin = 16.dp
 
 /*
  * Why: what the home's one bar or rail shows while a screen is in front: the tab selected (null for Search), where each
@@ -159,7 +165,9 @@ fun HomeBarsLayout(
                      * Why: "Rachar conta" comes and goes with the screen (Início and Grupos have it, a group doesn't),
                      * so the tabs under it slide to their place instead of jumping.
                      */
-                    header = { isShort -> Box(modifier = Modifier.animateContentSize()) { bars.railHeader(isShort) } },
+                    header = { isShort ->
+                        Box(modifier = Modifier.animateSizeKeepingShadow()) { bars.railHeader(isShort) }
+                    },
                     modifier = Modifier.align(Alignment.CenterStart).then(measureExtent),
                 )
             }
@@ -167,6 +175,25 @@ fun HomeBarsLayout(
         CompositionLocalProvider(LocalHomeBarsHost provides host, content = content)
     }
 }
+
+/*
+ * Why: animateContentSize always clips, which cut the rail FAB's shadow at its edges. The animated box takes a margin
+ * around the content, wide enough for the shadow, and the outer layout gives that margin back, so the header takes the
+ * same room as before.
+ */
+private fun Modifier.animateSizeKeepingShadow(): Modifier = layout { measurable, constraints ->
+    val margin = railHeaderShadowMargin.roundToPx()
+    val placeable = measurable.measure(
+        constraints.offset(
+            horizontal = 2 * margin,
+            vertical = 2 * margin,
+        ),
+    )
+    val width = (placeable.width - 2 * margin).coerceAtLeast(0)
+    val height = (placeable.height - 2 * margin).coerceAtLeast(0)
+    layout(width, height) { placeable.place(-margin, -margin) }
+}.animateContentSize()
+    .padding(railHeaderShadowMargin)
 
 /*
  * Why: a screen with the home's bars (null: none) leaves their place free, its insets included, and tells the bar
