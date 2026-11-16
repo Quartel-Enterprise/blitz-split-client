@@ -252,6 +252,22 @@ class DefaultSplitViewModelTest {
         }
 
     @Test
+    fun `GIVEN Pela renda blank on percentages adding up to 90 WHEN reading the state THEN the rows say them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home.copy(defaultSplit = percent(60L, 30L).copy(mode = DefaultSplitMode.INCOME)),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsPercentError)
+            assertTrue(state.showsIncomePercents)
+        }
+
+    @Test
     fun `GIVEN Pela renda WHEN typing an income of 0 THEN the rows still say no percentage`() =
         runTest(testDispatcher) {
             // Given

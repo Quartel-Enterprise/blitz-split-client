@@ -169,7 +169,8 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     fair one), both in the same quiet style. Each person's line says "Income per month · 75% of each bill", the
     percentage the typed incomes give, only while at least one field holds an income above 0
     (`DefaultSplitUiState.showsIncomePercents`); with every field blank it says just "Income per month" (beta feedback
-    of 2026-11-16, Pierre's call), though "On a R$ 100 bill:" still shows what Save keeps. The default keeps the
+    of 2026-11-16, Pierre's call), though "On a R$ 100 bill:" still shows what Save keeps. Saved percentages that no
+    longer add up to 100 (someone in them left) still show on each line, so "It adds up to 80%." points at them. The default keeps the
     percentages they give (`IncomePercents`); saving By income saves the incomes typed or cleared there, a field cleared removing that
     person's (fields left blank while the default holds saved percentages change nothing: Save keeps them), and saving another way leaves them as they are, for a bill's By income (in
     [split-bill.md](split-bill.md)). The incomes are in minor units of the group's currency and only their ratio counts.

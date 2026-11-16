@@ -223,7 +223,7 @@ private struct DefaultSplitPeople: View {
             if state.mode == .income {
                 VStack(alignment: .leading, spacing: 6) {
                     Label("Enter each one's net income, after taxes.", systemImage: "info.circle")
-                    Label("The group's members see these incomes and can split bills by them.", systemImage: "person.2")
+                    Label("The group's members see these incomes and can split bills by them.", systemImage: "lock")
                 }
             }
         }
