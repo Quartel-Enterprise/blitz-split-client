@@ -492,7 +492,7 @@ struct StatsSectionTitle: View {
 /// slice or a row the pointer is over, pops out and takes the center; a row still opens the person's profile.
 private struct StatsPeopleSection: View {
     let model: GroupStatsModel
-    var ringSize: CGFloat = 160
+    private let ringSize: CGFloat = 160
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 

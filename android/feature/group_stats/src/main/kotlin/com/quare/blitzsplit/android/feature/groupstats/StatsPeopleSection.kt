@@ -40,6 +40,8 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleVie
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
+private val ringSize = 160.dp
+
 /*
  * Why: "Por pessoa": Consumo or Pagou, a ring of each person's share in their own color with the largest in its middle,
  * the people under it as its legend (each one's dot, share and amount), and what each view means. A slice tapped, or
@@ -51,7 +53,6 @@ internal fun StatsPeopleSection(
     money: MoneyFormatter,
     onEvent: (GroupStatsUiEvent) -> Unit,
     modifier: Modifier = Modifier,
-    ringSize: Dp = 160.dp,
 ) {
     val views = listOf(StatsPeopleView.CONSUMPTION, StatsPeopleView.PAID)
     val people = state.people
