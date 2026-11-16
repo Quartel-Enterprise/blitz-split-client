@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.data.dto.ReadReceiptRequestDto
 import com.quare.blitzsplit.core.expenses.data.dto.ReadReceiptResponseDto
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReadFailure
 import com.quare.blitzsplit.core.expenses.domain.model.ReceiptReaderException
+import com.quare.blitzsplit.core.utils.suspendRunCatching
 import io.github.jan.supabase.exceptions.HttpRequestException
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
@@ -56,7 +57,7 @@ class SupabaseReceiptRemoteDataSource(
     }
 
     // Why: the server's own code for a 422 (`{"error":"statement"}`); a body that can't be read is just no code.
-    private suspend fun RestException.errorCodeOrNull(): String? = runCatching {
+    private suspend fun RestException.errorCodeOrNull(): String? = suspendRunCatching {
         json.decodeFromString<ReadReceiptErrorDto>(response.bodyAsText()).error
     }.getOrNull()
 

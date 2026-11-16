@@ -37,7 +37,7 @@ extension View {
 
 /// Why the receipt read nothing (7.1g); the fields stay as they were, to fill in by hand. "Tirar outra foto" for a
 /// photo nothing could be read from, "Tentar de novo" sends the same photo when the reader didn't answer or the
-/// connection dropped, and the day's limit offers neither.
+/// connection dropped, and a card or bank statement and the day's limit offer neither.
 struct ReceiptFailureText: View {
     let model: SplitBillModel
     let error: ReceiptError
