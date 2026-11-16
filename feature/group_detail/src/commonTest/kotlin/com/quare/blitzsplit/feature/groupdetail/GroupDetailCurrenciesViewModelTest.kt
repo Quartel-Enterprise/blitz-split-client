@@ -285,18 +285,26 @@ class GroupDetailCurrenciesViewModelTest {
         }
 
     @Test
-    fun `GIVEN euros picked WHEN a new euro bill arrives THEN euros stay picked`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedExpenses = listOf(usdPierreOwesBruno, eurAnaOwesPierre))
-        viewModel.onEvent(GroupDetailUiEvent.OnCurrencySelected(GroupCurrency.EUR))
+    fun `GIVEN euros picked WHEN a new euro bill arrives THEN euros stay picked and count it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(usdPierreOwesBruno, eurAnaOwesPierre))
+            viewModel.onEvent(GroupDetailUiEvent.OnCurrencySelected(GroupCurrency.EUR))
 
-        // When
-        expenses.expenses.value = listOf(usdPierreOwesBruno, eurAnaOwesPierre, eurPierreOwesCarla)
+            // When
+            expenses.expenses.value = listOf(usdPierreOwesBruno, eurAnaOwesPierre, eurPierreOwesCarla)
 
-        // Then
-        val header = viewModel.uiState.value.header
-        assertEquals(GroupCurrency.EUR, header.currency)
-    }
+            // Then
+            val header = viewModel.uiState.value.header
+            assertEquals(GroupCurrency.EUR, header.currency)
+            assertEquals(
+                MemberBalance(
+                    receivesMinor = 5_000,
+                    owesMinor = 4_000,
+                ),
+                header.myBalance,
+            )
+        }
 
     @Test
     fun `GIVEN bills only in euros in a dollar group WHEN the group opens THEN it has bills and lists dollars first`() =

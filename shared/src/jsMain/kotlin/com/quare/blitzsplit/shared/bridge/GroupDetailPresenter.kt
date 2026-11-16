@@ -118,7 +118,6 @@ class JsGroupDetailState(
     // Why: Saldos' "Com você" and "Entre os outros", each hidden when empty.
     val myDebts: Array<JsDebtRow>,
     val otherDebts: Array<JsDebtRow>,
-    val hasBills: Boolean,
     val recordedPayment: JsPaymentNotice?,
     val exit: JsGroupExit,
     val isEmpty: Boolean,
@@ -204,7 +203,6 @@ class GroupDetailPresenter(
                 isDeletingBill = state.isDeletingBill,
                 myDebts = state.myDebts.map(::toJsDebtRow).toTypedArray(),
                 otherDebts = state.otherDebts.map(::toJsDebtRow).toTypedArray(),
-                hasBills = state.hasBills,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),
                 exit = toJsGroupExit(state.exit),
                 isEmpty = state.isEmpty,
