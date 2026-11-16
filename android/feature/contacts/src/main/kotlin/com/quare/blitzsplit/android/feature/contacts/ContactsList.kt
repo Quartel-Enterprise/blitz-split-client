@@ -388,7 +388,8 @@ private fun HiddenContactRow(
     modifier: Modifier = Modifier,
 ) {
     val show = stringResource(R.string.contacts_hidden_show_person, row.name)
-    val flight = rememberProfileFlightSource()
+    // Why: its name flies too; a hidden row shows no balance, so the currency only opts it into the texts.
+    val flight = rememberProfileFlightSource(balanceKey = row.net.currency.code)
     Surface(
         onClick = flight.toFlyingClick { onEvent(ContactsUiEvent.OnContactClicked(row.key)) },
         modifier = modifier

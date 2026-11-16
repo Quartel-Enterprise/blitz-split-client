@@ -188,9 +188,12 @@ function markFace(holder: HTMLElement): HTMLElement[] {
   face.style.viewTransitionName = 'profile-face'
   const pieces = PROFILE_PIECES.flatMap((piece) => {
     const element = firstIn(`[data-profile-piece="${piece}"]`)
-    if (!element) return []
+    // Why: a piece scrolled out of sight (the profile's balance above the top) crossfades with the page, as a face does.
+    if (!element || !isInView(element)) return []
     const balance = element.dataset.profileBalance
     element.style.viewTransitionName = balance ? `profile-${piece}-${cssIdent(balance)}` : `profile-${piece}`
+    // Why: its snapshots keep their proportions (index.css), since the two texts differ in size and wording.
+    element.style.setProperty('view-transition-class', 'profile-piece')
     return [element]
   })
   return [face, ...pieces]

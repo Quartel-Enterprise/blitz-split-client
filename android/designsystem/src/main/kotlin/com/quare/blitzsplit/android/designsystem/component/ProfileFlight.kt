@@ -71,12 +71,14 @@ val LocalProfileFlight = staticCompositionLocalOf<ProfileFlightState?> { null }
  */
 @Stable
 class ProfileFlightSource internal constructor(
-    val face: Modifier,
-    val name: Modifier,
-    val amount: Modifier,
-    val word: Modifier,
+    private val pieces: ProfileFlightPieces,
     private val onTap: () -> Unit,
 ) {
+    val face: Modifier get() = pieces.face
+    val name: Modifier get() = pieces.name
+    val amount: Modifier get() = pieces.amount
+    val word: Modifier get() = pieces.word
+
     // Why: wraps the tap that opens the profile, so the face is the one marked before the profile opens.
     fun toFlyingClick(onClick: () -> Unit): () -> Unit = {
         onTap()
@@ -88,10 +90,7 @@ class ProfileFlightSource internal constructor(
 
     companion object {
         val None = ProfileFlightSource(
-            face = Modifier,
-            name = Modifier,
-            amount = Modifier,
-            word = Modifier,
+            pieces = ProfileFlightPieces.None,
             onTap = {},
         )
     }
@@ -109,6 +108,13 @@ class ProfileFlightPieces internal constructor(
     val amount: Modifier,
     val word: Modifier,
 ) {
+    internal fun withFace(face: Modifier): ProfileFlightPieces = ProfileFlightPieces(
+        face = face,
+        name = name,
+        amount = amount,
+        word = word,
+    )
+
     companion object {
         val None = ProfileFlightPieces(
             face = Modifier,
@@ -125,7 +131,7 @@ class ProfileFlightPieces internal constructor(
  * nothing until one is tapped. Where nothing flies (a dialog's bill, previews) it is None. A row that also shows the
  * person's name and balance (Contacts, Balances) puts name, amount and word on them, which fly into the profile's own
  * (beta feedback of 2026-11-16). `balanceKey` is the currency of the row's balance: Balances lists a person once per
- * currency, and only the row in the currency the profile shows has a balance to fly into.
+ * currency, and only the row in the currency the profile shows has a balance to fly into. A face alone passes none.
  */
 @Composable
 fun rememberProfileFlightSource(balanceKey: String? = null): ProfileFlightSource {
@@ -147,10 +153,7 @@ fun rememberProfileFlightSource(balanceKey: String? = null): ProfileFlightSource
         ProfileFlightPieces.None
     }
     return ProfileFlightSource(
-        face = pieces.face,
-        name = pieces.name,
-        amount = pieces.amount,
-        word = pieces.word,
+        pieces = pieces,
         onTap = { flight.onTapped(faceId) },
     )
 }
@@ -159,7 +162,8 @@ fun rememberProfileFlightSource(balanceKey: String? = null): ProfileFlightSource
  * Why: the photo at the top of Profile or a contact's profile, which the face tapped flies into and back out of, with
  * the name and the balance where the profile shows them. The face is read once, as the profile first draws, and kept
  * with it, so back still finds it; a profile opened without a tap on a face (a search hit, a link, beside Contacts'
- * list) flies nothing. `balanceKey` is the currency of the balance the profile shows, as for the row.
+ * list) flies nothing. `balanceKey` is the currency of the balance the profile shows, as for the row; Profile, with
+ * no balance, passes none and only its photo flies.
  */
 @Composable
 fun rememberProfileFlightTarget(balanceKey: String? = null): ProfileFlightPieces {
@@ -185,7 +189,7 @@ fun rememberProfileFlightTarget(balanceKey: String? = null): ProfileFlightPieces
 /*
  * Why: the face keeps its shape and flies as one element. The texts change size and weight, and the word its wording
  * ("owes you" in the row, "Larissa owes you" in the profile), so they fly as shared bounds, their content scaled to the
- * bounds and cross-faded.
+ * bounds and cross-faded. Without a balance (a face alone) only the face's state is remembered.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -195,25 +199,31 @@ private fun rememberFlyingPieces(
     transitionScope: SharedTransitionScope,
     visibilityScope: AnimatedVisibilityScope,
 ): ProfileFlightPieces = with(transitionScope) {
-    ProfileFlightPieces(
-        face = Modifier.sharedElement(
-            sharedContentState = rememberSharedContentState(pieceKeyOf("face", faceId)),
-            animatedVisibilityScope = visibilityScope,
-        ),
-        name = Modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState(pieceKeyOf("name", faceId)),
-            animatedVisibilityScope = visibilityScope,
-        ),
-        amount = Modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState(pieceKeyOf("amount-$balanceKey", faceId)),
-            animatedVisibilityScope = visibilityScope,
-        ),
-        word = Modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState(pieceKeyOf("word-$balanceKey", faceId)),
-            animatedVisibilityScope = visibilityScope,
-        ),
+    val face = Modifier.sharedElement(
+        sharedContentState = rememberSharedContentState(pieceKeyOf("face", faceId)),
+        animatedVisibilityScope = visibilityScope,
     )
+    if (balanceKey == null) {
+        ProfileFlightPieces.None.withFace(face)
+    } else {
+        ProfileFlightPieces(
+            face = face,
+            name = sharedTextOf(pieceKeyOf("name", faceId), visibilityScope),
+            amount = sharedTextOf(pieceKeyOf("amount-$balanceKey", faceId), visibilityScope),
+            word = sharedTextOf(pieceKeyOf("word-$balanceKey", faceId), visibilityScope),
+        )
+    }
 }
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.sharedTextOf(
+    key: String,
+    visibilityScope: AnimatedVisibilityScope,
+): Modifier = Modifier.sharedBounds(
+    sharedContentState = rememberSharedContentState(key),
+    animatedVisibilityScope = visibilityScope,
+)
 
 private fun pieceKeyOf(
     piece: String,
