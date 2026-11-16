@@ -114,7 +114,9 @@ HomeBarsLayout(stackKeys = entries.map { it.contentKey }) {
 }
 ```
 
-The ViewModel store decorator gives each entry its own ViewModel, cleared when the entry is popped. The system back
+The ViewModel store decorator gives each entry its own ViewModel, cleared when the entry is popped; a piece of the
+entry composed only for a while scopes its ViewModels to itself with `rememberViewModelStoreOwner()` (see
+[dependency-injection.md](dependency-injection.md#which-scope-a-compose-viewmodel-takes)). The system back
 gesture goes through `navigateBack()`, so the shared stack stays the source of truth.
 
 Groups and Contacts are the one exception (`rememberAppNavEntries`, `HomeTabEntries.kt`): while one of them is

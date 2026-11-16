@@ -147,6 +147,12 @@ intent gives is a **Should fix**; one that breaks a platform or the module graph
 - `XScreen(viewModel: XViewModel = koinViewModel())` collects `uiState` with
   `collectAsStateWithLifecycle()`, collects `uiAction` in a `LaunchedEffect(viewModel)`, and hands
   the state to a stateless `XContent(state, onEvent, modifier)` that never sees the ViewModel.
+- A ViewModel takes the scope [dependency-injection.md](../../../docs/architecture/dependency-injection.md#which-scope-a-compose-viewmodel-takes)
+  gives it. A `koinViewModel()` inside a piece composed only for a while (a pane per pick, a pager page, a list
+  item) that takes the entry's store, so its ViewModels pile up until the entry is popped, is a finding; so is a
+  hand-rolled `ViewModelStoreOwner` (`remember` + `DisposableEffect` clearing it) instead of
+  `rememberViewModelStoreOwner()`, and a composable-scoped ViewModel whose own `viewModelScope` work can remove
+  the composable that holds it.
 - Text comes from the module's string resources through `stringResource`: English in
   `res/values/strings.xml` Portuguese in `res/values-pt/strings.xml`, Spanish in `res/values-es/strings.xml`, French in `res/values-fr/strings.xml`, German in `res/values-de/strings.xml`, Italian in `res/values-it/strings.xml`, Polish in `res/values-pl/strings.xml`, Dutch in `res/values-nl/strings.xml`, Japanese in `res/values-ja/strings.xml`, Turkish in `res/values-tr/strings.xml`, Indonesian in `res/values-in/strings.xml`, Russian in `res/values-ru/strings.xml` and Ukrainian in `res/values-uk/strings.xml`, all always complete (`values-es-rES` and `values-pt-rPT` hold only what Spain and Portugal say differently). Colors and shapes come from `MaterialTheme` and
   `BlitzSplitTheme` (`:android:designsystem`), not literals in a feature.

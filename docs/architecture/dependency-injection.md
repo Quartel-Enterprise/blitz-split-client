@@ -86,9 +86,36 @@ What differs by platform is an `internal expect val … : Module` with one `actu
 
 | UI | How |
 | --- | --- |
-| Compose | `viewModel: XViewModel = koinViewModel()` as the `XScreen` default parameter; `rememberViewModelStoreNavEntryDecorator()` in `AppNavDisplay` scopes it to the back stack entry |
+| Compose | `viewModel: XViewModel = koinViewModel()` as the `XScreen` default parameter; `rememberViewModelStoreNavEntryDecorator()` in `AppNavDisplay` scopes it to the back stack entry; a piece composed only for a while gets its own scope (see below) |
 | SwiftUI | `BlitzSplitApple.shared.createXViewModel()`, which returns a `ViewModelHolder` built with `get()`: Swift can't call Koin's reified functions |
 | React | the presenter builds `ViewModelHolder(XViewModel::class) { KoinPlatform.getKoin().get() }` |
+
+### Which scope a Compose ViewModel takes
+
+A ViewModel lives as long as the `ViewModelStoreOwner` it was created in, and `koinViewModel()` takes the nearest
+one from `LocalViewModelStoreOwner`. Pick the scope by how long the state and the work must outlive what draws
+them:
+
+| What draws it | Scope | How |
+| --- | --- | --- |
+| A screen, a tab, a dialog or sheet that is a route | its back stack entry (the default) | nothing: `rememberViewModelStoreNavEntryDecorator()` provides it |
+| A piece composed only for a while inside an entry, whose ViewModels must go with it: a pane showing one pick, a pager page, a lazy list item | that composable | `rememberViewModelStoreOwner()` provided through `LocalViewModelStoreOwner`, as `PickScopedPane` does |
+| Several pieces each keeping their own ViewModel while their container stays composed (pager pages kept across swipes) | one store per key | `rememberViewModelStoreProvider()` once in the container, then `rememberViewModelStoreOwner(key = page, provider = provider)` per piece; the stores go once the container leaves the composition, a route pushed over the entry included |
+
+- `rememberViewModelStoreOwner()` (lifecycle-viewmodel-compose, `commonMain`) clears its ViewModels when the
+  composable leaves the composition and keeps them across a rotation, since it hangs off the entry's owner. Across a
+  configuration change the store waits for the same call site to come back: when the new layout doesn't draw it
+  (the Contacts pane after turning a tablet upright), it stays in the entry's store until that call site is drawn
+  and left again, or the entry goes. Never
+  hand-roll a `ViewModelStoreOwner` with `remember` and `DisposableEffect`: its store is cleared on every
+  configuration change.
+- Wrap it in `key(...)` when one call site draws different things over time (`PickScopedPane(pick)`), so each one
+  gets a fresh store.
+- Keep a ViewModel on the entry when its own work can remove the composable it is drawn in. `RecoveryCodeSheet` is
+  composed only while the prompt shows, but linking Google from it settles the prompt and hides the sheet while
+  `completeSignIn()` still runs in `viewModelScope`; a sheet-scoped ViewModel would cancel it halfway.
+- A ViewModel that two composables of one entry share (a list and its detail pane talking to each other) stays on
+  the entry, too.
 
 Besides these and the platform entry points (`MainActivity` injects the `SupabaseClient` for the auth deep link,
 `BlitzSplitApple.handleDeepLink` gets it the same way), nothing reaches into Koin: classes take their dependencies
