@@ -108,24 +108,41 @@ kotlin {
     }
 }
 
-// The branch this checkout builds, which each anonymous account its installs sign in carries (`TaskTag`), so
-// finish-task deletes a development task's test accounts and the server expires a forgotten one after a day. Empty
-// on main and on a detached HEAD, which is how CI checks out every pull request and release. It lives in the
-// composition root, so a new branch rebuilds this module only, not the cached ones below it.
-private val taskBranch: String = runCatching {
-    providers
-        .exec {
-            commandLine("git", "rev-parse", "--abbrev-ref", "HEAD")
-            isIgnoreExitValue = true
-        }.standardOutput.asText
-        .get()
-        .trim()
-}.getOrDefault("").takeUnless { it == "main" || it == "HEAD" }.orEmpty()
+/*
+ * Why: each anonymous account a development task's installs sign in carries the task's branch (`TaskTag`), so
+ * finish-task deletes the task's test accounts and the server expires a forgotten one after a day. A build that could
+ * reach real people never carries it: CI (every pull request, beta and release), a release build (an Android release
+ * task, a release framework, Xcode's Release configuration) and main. The Mac app has none either, since a task's
+ * build shares its sandbox container, and so its account, with the App Store app on the same Mac. It lives in the
+ * composition root, so a new branch rebuilds this module only, not the cached ones below it.
+ */
+private val isReleaseBuild: Boolean = providers.environmentVariable("CI").isPresent ||
+    providers.environmentVariable("CONFIGURATION").orNull == "Release" ||
+    gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }
+
+private val taskBranch: String = if (isReleaseBuild) {
+    ""
+} else {
+    runCatching {
+        providers
+            .exec {
+                commandLine("git", "branch", "--show-current")
+                isIgnoreExitValue = true
+            }.standardOutput.asText
+            .get()
+            .trim()
+    }.getOrDefault("").takeUnless { it == "main" }.orEmpty()
+}
 
 buildkonfig {
     packageName = "com.quare.blitzsplit.shared.generated"
     objectName = "SharedConfig"
     defaultConfigs {
         buildConfigField(FieldSpec.Type.STRING, "TASK_BRANCH", taskBranch)
+    }
+    targetConfigs {
+        create("macosArm64") {
+            buildConfigField(FieldSpec.Type.STRING, "TASK_BRANCH", "")
+        }
     }
 }

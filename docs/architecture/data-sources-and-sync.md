@@ -520,7 +520,7 @@ pending nor trigger a sync.
 The account is optional. Every install starts `AccountStatus.LocalOnly`, becomes `Anonymous` on its first sync and
 `Connected` once Google or Apple is attached.
 
-A build from a branch other than `main` signs its anonymous users in with that branch as their metadata (`TaskTag`,
+A debug build from a branch other than `main` (outside CI, and not the macOS app) signs its anonymous users in with that branch as their metadata (`TaskTag`,
 from `SharedConfig.TASK_BRANCH`): the server deletes them when the development task ends and after one idle day
 otherwise (see [getting-started](../getting-started.md#supabase)).
 

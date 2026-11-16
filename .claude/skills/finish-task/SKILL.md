@@ -86,7 +86,9 @@ shut it down first, as the "Task devices" section of
 **The task's anonymous accounts, in both modes:** every install the task ran made an anonymous
 account on the hosted Supabase project, tagged with the task's branch (see "the task's accounts are
 tagged" in [`start-task`](../start-task/SKILL.md)). Ask the server to delete them, through the Supabase MCP
-(`execute_sql` on the project `cfgnuyijsncgpgywoldf`):
+(`execute_sql` on the project `cfgnuyijsncgpgywoldf`). Git allows `'` in a branch name, so write
+the branch as a SQL literal with every `'` doubled (`fix/don't` is `'fix/don''t'`), here and in the
+count below:
 
 ```sql
 select private.request_task_account_cleanup('<branch>');

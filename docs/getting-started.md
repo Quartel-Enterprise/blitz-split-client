@@ -44,8 +44,8 @@ use that path:
 SUPABASE_GOOGLE_WEB_CLIENT_ID=<web client id>.apps.googleusercontent.com
 ```
 
-`:shared` also compiles the checked-out git branch into `SharedConfig.TASK_BRANCH` (none on `main` or a detached
-HEAD, which is how CI checks out every pull request and release), and each anonymous account a build signs in carries
+`:shared` also compiles the checked-out git branch into `SharedConfig.TASK_BRANCH` (none on `main`, a detached HEAD,
+in CI, in a release build or in the macOS app), and each anonymous account a build signs in carries
 it (`user_metadata.task`): the `finish-task` skill deletes a task's accounts, and the server expires a tagged account
 after one idle day instead of 30. So an install built from a branch is a test install: don't keep real data in it.
 
