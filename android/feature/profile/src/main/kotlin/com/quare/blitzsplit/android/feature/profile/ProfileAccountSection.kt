@@ -170,8 +170,8 @@ private fun AccountRow(
 }
 
 /*
- * Why: a quiet last row, the id shortened and the whole one copied, for a survey to tell who answered (Pierre's call,
- * testers' feedback); a tap anywhere on it copies too.
+ * Why: a quiet last row, the id shortened and the whole one copied by a tap anywhere on it, for a survey to tell who
+ * answered (Pierre's call, testers' feedback).
  */
 @Composable
 private fun UserIdRow(
@@ -185,13 +185,13 @@ private fun UserIdRow(
         modifier = Modifier.clickable(onClickLabel = stringResource(R.string.profile_user_id_copy)) {
             onEvent(ProfileUiEvent.OnCopyUserIdClicked)
         },
+        // Why: the row itself copies, so the icon only marks the action and TalkBack gets one stop.
         trailing = {
-            IconButton(onClick = { onEvent(ProfileUiEvent.OnCopyUserIdClicked) }) {
-                Icon(
-                    imageVector = Icons.Outlined.ContentCopy,
-                    contentDescription = stringResource(R.string.profile_user_id_copy),
-                )
-            }
+            Icon(
+                imageVector = Icons.Outlined.ContentCopy,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
         },
     )
 }

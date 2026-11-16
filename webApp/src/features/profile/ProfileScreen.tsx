@@ -103,10 +103,7 @@ export function ProfileScreen() {
     } else if (action.type === 'copyProfileLink') {
       copyLink(action.value, t('profile_linkCopied'))
     } else if (action.type === 'copyUserId') {
-      void navigator.clipboard
-        .writeText(action.value)
-        .then(() => toast(t('profile_userIdCopied')))
-        .catch(() => toast(t('profile_userIdCopyFailed')))
+      copyLink(action.value, t('profile_userIdCopied'), t('profile_userIdCopyFailed'))
     } else if (action.type === 'reload') {
       // The page reads its language once, before it draws (src/i18n)
       window.location.reload()

@@ -823,8 +823,8 @@ private struct AccountSection: View {
     }
 }
 
-/// "User ID", a quiet last row: the id shortened, the whole one copied by the row or its button, for a
-/// survey to tell who answered (Pierre's call, testers' feedback).
+/// "User ID", a quiet last row: the id shortened, the whole one copied by a tap anywhere on the row, the
+/// copy icon only marking the action, for a survey to tell who answered (Pierre's call, testers' feedback).
 private struct UserIdRow: View {
     let model: ProfileModel
     let shortUserId: String

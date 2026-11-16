@@ -69,9 +69,9 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     one alike (`ProfileUiState.showsUserId`), never for a local only profile, which has no id on the server yet
     (Pierre's call, testers' feedback of 2026-11-16: the public survey asks for it to tell who answered). It is the
     account's Supabase auth user id, shown shortened, its first 8 and last 4 characters around an ellipsis
-    (`shortUserId`, as `3f8c2a91…4f27`), and copied whole: by a copy button beside it on Android and the web, and by a
-    tap anywhere on the row on Android, iOS, iPadOS and the Mac (the row is the button there, with the copy icon at its
-    end). Copying says "User ID copied", in the snackbar on Android, a toast on Apple platforms and the web, as "Link
+    (`shortUserId`, as `3f8c2a91…4f27`), and copied whole: by a tap anywhere on the row on Android, iOS, iPadOS and
+    the Mac (the row is the button there, the copy icon at its end only marking the action), and by a copy button
+    beside it on the web. Copying says "User ID copied", in the snackbar on Android, a toast on Apple platforms and the web, as "Link
     copied" does; a browser that refuses the clipboard says "Couldn't copy the user ID".
   - Delete account lists, truthfully to the server's `delete-account` function and its migrations, "What gets
     deleted" (the profile with its photo, the Pix and Bitcoin keys, the link to Google or Apple, an anonymous
