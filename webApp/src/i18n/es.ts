@@ -1974,6 +1974,8 @@ export const es: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Intentar de nuevo',
   splitBill_receiptUnavailableTitle: 'El lector de recibos no respondió',
   splitBill_receiptUnavailableBody: 'No es por tu foto. Inténtalo de nuevo en un momento, o rellénalo a mano.',
+  splitBill_receiptStatementTitle: 'Parece un extracto',
+  splitBill_receiptStatementBody: 'Los extractos del banco y de la tarjeta no se leen como un solo gasto. Rellénalo a mano.',
   splitBill_receiptLimitTitle: 'Límite de lecturas de hoy',
   splitBill_receiptLimitBody: 'Ya leíste 30 recibos en las últimas 24 horas. Rellénalo a mano o léelo de nuevo mañana.',
   splitBill_receiptOfflineTitle: 'Sin conexión',

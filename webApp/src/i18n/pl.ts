@@ -1977,6 +1977,8 @@ export const pl: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Spróbuj ponownie',
   splitBill_receiptUnavailableTitle: 'Czytnik paragonów nie odpowiedział',
   splitBill_receiptUnavailableBody: 'To nie wina zdjęcia. Spróbuj za chwilę albo uzupełnij ręcznie.',
+  splitBill_receiptStatementTitle: 'To wygląda na wyciąg',
+  splitBill_receiptStatementBody: 'Wyciągi z karty i z banku nie są czytane jako jeden rachunek. Uzupełnij ręcznie.',
   splitBill_receiptLimitTitle: 'Dzisiejszy limit odczytów',
   splitBill_receiptLimitBody: 'W ciągu ostatnich 24 godzin odczytano już 30 paragonów. Uzupełnij ręcznie albo odczytaj jutro.',
   splitBill_receiptOfflineTitle: 'Brak połączenia',

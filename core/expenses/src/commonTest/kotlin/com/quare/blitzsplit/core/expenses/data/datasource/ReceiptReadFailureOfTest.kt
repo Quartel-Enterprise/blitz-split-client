@@ -112,4 +112,69 @@ class ReceiptReadFailureOfTest {
         // Then
         assertEquals(ReceiptReadFailure.READER_UNAVAILABLE, failure)
     }
+
+    @Test
+    fun `GIVEN a 422 coded statement WHEN mapping it THEN reports a statement`() {
+        // Given
+        val statusCode = 422
+        val errorCode = "statement"
+
+        // When
+        val failure = receiptReadFailureOf(statusCode, errorCode)
+
+        // Then
+        assertEquals(ReceiptReadFailure.STATEMENT, failure)
+    }
+
+    @Test
+    fun `GIVEN a 422 coded unreadable WHEN mapping it THEN asks for another photo`() {
+        // Given
+        val statusCode = 422
+        val errorCode = "unreadable"
+
+        // When
+        val failure = receiptReadFailureOf(statusCode, errorCode)
+
+        // Then
+        assertEquals(ReceiptReadFailure.UNREADABLE, failure)
+    }
+
+    @Test
+    fun `GIVEN a 422 with an unknown code WHEN mapping it THEN asks for another photo`() {
+        // Given
+        val statusCode = 422
+        val errorCode = "something_new"
+
+        // When
+        val failure = receiptReadFailureOf(statusCode, errorCode)
+
+        // Then
+        assertEquals(ReceiptReadFailure.UNREADABLE, failure)
+    }
+
+    @Test
+    fun `GIVEN a 422 with no readable code WHEN mapping it THEN asks for another photo`() {
+        // Given
+        val statusCode = 422
+        val errorCode = null
+
+        // When
+        val failure = receiptReadFailureOf(statusCode, errorCode)
+
+        // Then
+        assertEquals(ReceiptReadFailure.UNREADABLE, failure)
+    }
+
+    @Test
+    fun `GIVEN a 502 coded statement WHEN mapping it THEN ignores the code and reports the reader unavailable`() {
+        // Given
+        val statusCode = 502
+        val errorCode = "statement"
+
+        // When
+        val failure = receiptReadFailureOf(statusCode, errorCode)
+
+        // Then
+        assertEquals(ReceiptReadFailure.READER_UNAVAILABLE, failure)
+    }
 }

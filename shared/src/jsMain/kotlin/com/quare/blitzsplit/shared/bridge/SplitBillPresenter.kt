@@ -148,7 +148,7 @@ class JsSplitBillState(
     val showsReceiptSourceChoice: Boolean,
     // Why: the picker picked on that choice, to open: "camera" or "files"; null for none.
     val receiptSource: String?,
-    // Why: why the receipt read nothing (7.1g): "unreadable", "reader_unavailable", "limit_reached" or "offline".
+    // Why: why the receipt read nothing (7.1g): "unreadable", "statement", "reader_unavailable", "limit_reached" or "offline".
     val receiptError: String?,
     val offersReceiptRetake: Boolean,
     val offersReceiptRetry: Boolean,

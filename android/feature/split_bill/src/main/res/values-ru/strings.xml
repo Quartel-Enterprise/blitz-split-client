@@ -382,6 +382,7 @@
     <string name="split_bill_receipt_failed">Не удалось прочитать чек. Попробуй ещё раз при лучшем освещении и так, чтобы весь чек был в кадре, или заполни вручную.</string>
     <string name="split_bill_receipt_retake">Сделать другое фото</string>
     <string name="split_bill_receipt_reader_unavailable">Сервис чтения чеков не ответил. Дело не в твоём фото: попробуй ещё раз чуть позже или заполни вручную.</string>
+    <string name="split_bill_receipt_statement">Похоже на выписку по карте или по счёту: её не читают как один счёт. Заполни вручную.</string>
     <string name="split_bill_receipt_limit_reached">Ты прочитал(а) 30 чеков за последние 24 часа. Заполни вручную или прочитай чек снова завтра.</string>
     <string name="split_bill_receipt_offline">Нет подключения. Фото не дошло до сервиса чтения: попробуй ещё раз, когда снова будешь онлайн, или заполни вручную.</string>
     <string name="split_bill_receipt_retry">Попробовать ещё раз</string>

@@ -1974,6 +1974,8 @@ export const ja: Record<MessageKey, string> = {
   splitBill_receiptRetry: '再試行',
   splitBill_receiptUnavailableTitle: 'レシートの読み取りサービスが応答しませんでした',
   splitBill_receiptUnavailableBody: '写真の問題ではありません。しばらくしてからもう一度試すか、手動で入力してください。',
+  splitBill_receiptStatementTitle: '明細のようです',
+  splitBill_receiptStatementBody: 'カードや銀行の明細は、1件の支払いとしては読み取れません。手動で入力してください。',
   splitBill_receiptLimitTitle: '本日の読み取り上限',
   splitBill_receiptLimitBody: '過去24時間に30枚のレシートを読み取りました。手動で入力するか、明日もう一度読み取ってください。',
   splitBill_receiptOfflineTitle: '接続がありません',

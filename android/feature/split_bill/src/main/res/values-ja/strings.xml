@@ -307,6 +307,7 @@
     <string name="split_bill_receipt_failed">レシートを読み取れませんでした。明るい場所でレシート全体を写してもう一度お試しいただくか、手動で入力してください。</string>
     <string name="split_bill_receipt_retake">写真を撮り直す</string>
     <string name="split_bill_receipt_reader_unavailable">レシートの読み取りが応答しませんでした。写真の問題ではありません。少し待ってからもう一度お試しいただくか、手動で入力してください。</string>
+    <string name="split_bill_receipt_statement">カードや銀行の明細のようです。1件の支払いとしては読み取れません。手動で入力してください。</string>
     <string name="split_bill_receipt_limit_reached">過去24時間で30枚のレシートを読み取りました。手動で入力するか、明日もう一度読み取ってください。</string>
     <string name="split_bill_receipt_offline">接続がありません。写真が読み取りに届きませんでした。オンラインに戻ってからもう一度お試しいただくか、手動で入力してください。</string>
     <string name="split_bill_receipt_retry">もう一度試す</string>

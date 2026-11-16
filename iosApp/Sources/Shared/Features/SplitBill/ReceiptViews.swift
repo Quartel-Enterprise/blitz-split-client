@@ -37,7 +37,7 @@ extension View {
 
 /// Why the receipt read nothing (7.1g); the fields stay as they were, to fill in by hand. "Tirar outra foto" for a
 /// photo nothing could be read from, "Tentar de novo" sends the same photo when the reader didn't answer or the
-/// connection dropped, and the day's limit offers neither.
+/// connection dropped, and a card or bank statement and the day's limit offer neither.
 struct ReceiptFailureText: View {
     let model: SplitBillModel
     let error: ReceiptError
@@ -63,6 +63,7 @@ struct ReceiptFailureText: View {
     /// The Mac's banner heads the text with it.
     static func title(of error: ReceiptError) -> LocalizedStringKey {
         switch error {
+        case .statement: "This looks like a statement"
         case .readerUnavailable: "The receipt reader didn't answer"
         case .limitReached: "Today's reading limit"
         case .offline: "No connection"
@@ -76,6 +77,8 @@ struct ReceiptFailureText: View {
         detail
         #else
         switch error {
+        case .statement:
+            "This looks like a card or bank statement, which isn't read as one bill. Fill it in by hand."
         case .readerUnavailable:
             "The receipt reader didn't answer. It isn't your photo: try again in a moment, or fill it in by hand."
         case .limitReached:
@@ -90,6 +93,7 @@ struct ReceiptFailureText: View {
 
     private var detail: LocalizedStringKey {
         switch error {
+        case .statement: "Card and bank statements aren't read as one bill. Fill it in by hand."
         case .readerUnavailable: "It isn't your photo. Try again in a moment, or fill it in by hand."
         case .limitReached: "You've read 30 receipts in the last 24 hours. Fill it in by hand, or read it again tomorrow."
         case .offline: "The photo didn't reach the reader. Try again once you're back online, or fill it in by hand."

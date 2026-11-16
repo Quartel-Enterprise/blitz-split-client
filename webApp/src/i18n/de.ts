@@ -1975,6 +1975,8 @@ export const de: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Erneut versuchen',
   splitBill_receiptUnavailableTitle: 'Der Belegleser hat nicht geantwortet',
   splitBill_receiptUnavailableBody: 'Es liegt nicht an deinem Foto. Versuch es gleich noch mal oder füll es von Hand aus.',
+  splitBill_receiptStatementTitle: 'Das sieht nach einer Abrechnung aus',
+  splitBill_receiptStatementBody: 'Karten- und Kontoauszüge werden nicht als eine Rechnung gelesen. Fülle es von Hand aus.',
   splitBill_receiptLimitTitle: 'Tageslimit zum Lesen erreicht',
   splitBill_receiptLimitBody: 'Du hast in den letzten 24 Stunden 30 Belege gelesen. Füll es von Hand aus oder lies ihn morgen noch mal.',
   splitBill_receiptOfflineTitle: 'Keine Verbindung',

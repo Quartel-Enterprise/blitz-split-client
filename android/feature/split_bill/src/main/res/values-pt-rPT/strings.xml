@@ -81,6 +81,7 @@
     <string name="split_bill_receipt_remove">Remover a foto do talão</string>
     <string name="split_bill_receipt_failed">Não foi possível ler o talão. Tenta novamente com mais luz e o talão inteiro na foto, ou preenche à mão.</string>
     <string name="split_bill_receipt_reader_unavailable">O leitor de talões não respondeu. Não é a tua foto: tenta novamente daqui a pouco ou preenche à mão.</string>
+    <string name="split_bill_receipt_statement">Isto parece uma fatura de cartão ou um extrato, que não é lido como uma conta só. Preenche à mão.</string>
     <string name="split_bill_receipt_limit_reached">Já leste 30 talões nas últimas 24 horas. Preenche à mão ou lê de novo amanhã.</string>
     <string name="split_bill_receipt_offline">Sem ligação. A foto não chegou ao leitor: tenta novamente quando a ligação voltar, ou preenche à mão.</string>
     <string name="split_bill_as_default_body">As novas contas do grupo começam assim quando esta for guardada.</string>

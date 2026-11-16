@@ -1974,6 +1974,8 @@ export const it: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Riprova',
   splitBill_receiptUnavailableTitle: 'Il lettore di scontrini non ha risposto',
   splitBill_receiptUnavailableBody: 'Non dipende dalla tua foto. Riprova tra un momento, o compila a mano.',
+  splitBill_receiptStatementTitle: 'Sembra un estratto conto',
+  splitBill_receiptStatementBody: 'Gli estratti conto della carta o della banca non vengono letti come un’unica spesa. Compila a mano.',
   splitBill_receiptLimitTitle: 'Limite di letture di oggi',
   splitBill_receiptLimitBody: 'Hai letto 30 scontrini nelle ultime 24 ore. Compila a mano, o leggilo di nuovo domani.',
   splitBill_receiptOfflineTitle: 'Nessuna connessione',

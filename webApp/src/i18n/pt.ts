@@ -1973,6 +1973,8 @@ export const pt: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Tentar de novo',
   splitBill_receiptUnavailableTitle: 'O leitor de cupom não respondeu',
   splitBill_receiptUnavailableBody: 'Não é a sua foto. Tente de novo daqui a pouco ou preencha à mão.',
+  splitBill_receiptStatementTitle: 'Isso parece uma fatura',
+  splitBill_receiptStatementBody: 'Faturas e extratos não são lidos como uma conta só. Preencha à mão.',
   splitBill_receiptLimitTitle: 'Limite de leituras de hoje',
   splitBill_receiptLimitBody: 'Você já leu 30 cupons nas últimas 24 horas. Preencha à mão ou leia de novo amanhã.',
   splitBill_receiptOfflineTitle: 'Sem conexão',

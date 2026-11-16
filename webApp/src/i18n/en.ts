@@ -1972,6 +1972,8 @@ export const en = {
   splitBill_receiptRetry: 'Try again',
   splitBill_receiptUnavailableTitle: "The receipt reader didn't answer",
   splitBill_receiptUnavailableBody: "It isn't your photo. Try again in a moment, or fill it in by hand.",
+  splitBill_receiptStatementTitle: 'This looks like a statement',
+  splitBill_receiptStatementBody: "Card and bank statements aren't read as one bill. Fill it in by hand.",
   splitBill_receiptLimitTitle: "Today's reading limit",
   splitBill_receiptLimitBody: "You've read 30 receipts in the last 24 hours. Fill it in by hand, or read it again tomorrow.",
   splitBill_receiptOfflineTitle: 'No connection',

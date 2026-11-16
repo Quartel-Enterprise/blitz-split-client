@@ -332,6 +332,7 @@
     <string name="split_bill_receipt_failed">Kan het bonnetje niet lezen. Probeer het opnieuw met meer licht en het hele bonnetje op de foto, of vul het zelf in.</string>
     <string name="split_bill_receipt_retake">Nieuwe foto maken</string>
     <string name="split_bill_receipt_reader_unavailable">De bonnetjeslezer reageerde niet. Het ligt niet aan je foto: probeer het zo opnieuw, of vul het zelf in.</string>
+    <string name="split_bill_receipt_statement">Dit lijkt een creditcard- of bankafschrift, dat niet als één rekening wordt gelezen. Vul het zelf in.</string>
     <string name="split_bill_receipt_limit_reached">Je hebt de afgelopen 24 uur 30 bonnetjes laten lezen. Vul het zelf in, of laat het morgen opnieuw lezen.</string>
     <string name="split_bill_receipt_offline">Geen verbinding. De foto heeft de lezer niet bereikt: probeer het opnieuw zodra je weer online bent, of vul het zelf in.</string>
     <string name="split_bill_receipt_retry">Opnieuw proberen</string>

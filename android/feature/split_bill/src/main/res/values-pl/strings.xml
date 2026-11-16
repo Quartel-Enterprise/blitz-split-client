@@ -382,6 +382,7 @@
     <string name="split_bill_receipt_failed">Nie udało się odczytać paragonu. Spróbuj ponownie przy lepszym świetle i z całym paragonem na zdjęciu albo uzupełnij ręcznie.</string>
     <string name="split_bill_receipt_retake">Zrób kolejne zdjęcie</string>
     <string name="split_bill_receipt_reader_unavailable">Czytnik paragonów nie odpowiedział. To nie wina zdjęcia: spróbuj za chwilę albo uzupełnij ręcznie.</string>
+    <string name="split_bill_receipt_statement">To wygląda na wyciąg z karty lub z banku, który nie jest czytany jako jeden rachunek. Uzupełnij ręcznie.</string>
     <string name="split_bill_receipt_limit_reached">Odczytano już 30 paragonów w ciągu ostatnich 24 godzin. Uzupełnij ręcznie albo odczytaj go jutro.</string>
     <string name="split_bill_receipt_offline">Brak połączenia. Zdjęcie nie dotarło do czytnika: spróbuj ponownie, gdy wrócisz do sieci, albo uzupełnij ręcznie.</string>
     <string name="split_bill_receipt_retry">Spróbuj ponownie</string>

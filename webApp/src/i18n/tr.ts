@@ -1974,6 +1974,8 @@ export const tr: Record<MessageKey, string> = {
   splitBill_receiptRetry: 'Tekrar dene',
   splitBill_receiptUnavailableTitle: 'Fiş okuyucu yanıt vermedi',
   splitBill_receiptUnavailableBody: 'Sorun fotoğrafında değil. Biraz sonra tekrar dene ya da elle doldur.',
+  splitBill_receiptStatementTitle: 'Bu bir ekstreye benziyor',
+  splitBill_receiptStatementBody: 'Kart ve banka ekstreleri tek bir hesap olarak okunmaz. Elle doldur.',
   splitBill_receiptLimitTitle: 'Bugünkü okuma sınırı',
   splitBill_receiptLimitBody: 'Son 24 saatte 30 fiş okudun. Elle doldur ya da yarın tekrar oku.',
   splitBill_receiptOfflineTitle: 'Bağlantı yok',

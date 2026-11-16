@@ -1268,6 +1268,38 @@ class ReceiptViewModelTest {
         }
 
     @Test
+    fun `GIVEN a card or bank statement WHEN the reading comes back THEN offers neither another photo nor a retry`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(scan = ReceiptScan.Failed(ReceiptReadFailure.STATEMENT))
+            viewModel.onEvent(SplitBillUiEvent.OnDescriptionChanged("Jantar"))
+
+            // When
+            viewModel.onEvent(SplitBillUiEvent.OnReceiptPhotoPicked(source))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(
+                BillReceipt(
+                    ReceiptStatus.FAILED,
+                    itemCount = 0,
+                    hasPhoto = false,
+                    error = ReceiptError.STATEMENT,
+                ),
+                state.receipt,
+            )
+            assertEquals(ReceiptError.STATEMENT, state.receiptError)
+            assertFalse(state.offersReceiptRetry)
+            assertFalse(state.offersReceiptRetake)
+            assertEquals("", state.amountText)
+            assertEquals("Jantar", state.description)
+            assertEquals(
+                "receipt_read" to mapOf<String, Any>("result" to ReceiptError.STATEMENT, "items" to 0),
+                trackedEvents.last(),
+            )
+        }
+
+    @Test
     fun `GIVEN a receipt being read WHEN a sync moves the bill to another currency THEN reads it again in that one`() =
         runTest(testDispatcher) {
             // Given
