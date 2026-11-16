@@ -152081,6 +152081,12 @@
             "value" : "明細のようです"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "명세서로 보여요"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -152164,6 +152170,12 @@
             "value" : "カードや銀行の明細のようです。1件の支払いとしては読み取れません。手動で入力してください。"
           }
         },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카드 명세서나 은행 거래 내역으로 보여요. 하나의 지출로 읽을 수 없으니 직접 입력해 주세요."
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -152245,6 +152257,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "カードや銀行の明細は、1件の支払いとしては読み取れません。手動で入力してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카드 명세서와 은행 거래 내역은 하나의 지출로 읽을 수 없어요. 직접 입력해 주세요."
           }
         },
         "nl" : {

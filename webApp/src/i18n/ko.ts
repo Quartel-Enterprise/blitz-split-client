@@ -1974,6 +1974,8 @@ export const ko: Record<MessageKey, string> = {
   splitBill_receiptRetry: '다시 시도',
   splitBill_receiptUnavailableTitle: '영수증 리더가 응답하지 않았어요',
   splitBill_receiptUnavailableBody: '사진 문제가 아니에요. 잠시 후 다시 시도하거나 직접 입력하세요.',
+  splitBill_receiptStatementTitle: '명세서로 보여요',
+  splitBill_receiptStatementBody: '카드 명세서와 은행 거래 내역은 하나의 지출로 읽을 수 없어요. 직접 입력해 주세요.',
   splitBill_receiptLimitTitle: '오늘 읽기 한도',
   splitBill_receiptLimitBody: '최근 24시간 동안 영수증을 30장 읽었어요. 직접 입력하거나 내일 다시 읽어 주세요.',
   splitBill_receiptOfflineTitle: '연결 없음',
