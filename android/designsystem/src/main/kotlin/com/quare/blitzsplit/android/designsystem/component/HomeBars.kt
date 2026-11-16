@@ -174,21 +174,18 @@ fun HomeBarsLayout(
 /*
  * Why: animateContentSize always clips, which cut the rail FAB's shadow at its edges. The animated box takes a margin
  * around the content, wide enough for the shadow, and the outer layout gives that margin back, so the header takes the
- * same room as before. shadowMargin fits the FAB's elevation shadow.
+ * same room as before. railHeaderShadowMargin fits the FAB's elevation shadow.
  */
-private fun Modifier.animateSizeKeepingShadow(shadowMargin: Dp = 16.dp): Modifier = layout { measurable, constraints ->
-    val margin = shadowMargin.roundToPx()
-    val placeable = measurable.measure(
-        constraints.offset(
-            horizontal = 2 * margin,
-            vertical = 2 * margin,
-        ),
-    )
+private val railHeaderShadowMargin = 16.dp
+
+private fun Modifier.animateSizeKeepingShadow(): Modifier = layout { measurable, constraints ->
+    val margin = railHeaderShadowMargin.roundToPx()
+    val placeable = measurable.measure(constraints.offset(horizontal = 2 * margin, vertical = 2 * margin))
     val width = (placeable.width - 2 * margin).coerceAtLeast(0)
     val height = (placeable.height - 2 * margin).coerceAtLeast(0)
     layout(width, height) { placeable.place(-margin, -margin) }
 }.animateContentSize()
-    .padding(shadowMargin)
+    .padding(railHeaderShadowMargin)
 
 /*
  * Why: a screen with the home's bars (null: none) leaves their place free, its insets included, and tells the bar
