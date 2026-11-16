@@ -35,6 +35,7 @@ import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRa
 import com.quare.blitzsplit.android.designsystem.component.rememberCollapsingTopBarScrollBehavior
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
@@ -140,6 +141,7 @@ private fun GroupTabScaffoldContent(
                     scrollBehavior = scrollBehavior,
                     onAction = onAction,
                     splitBillButton = barButton,
+                    reservesSplitBillSlot = layout.usesNavigationRail && !LocalInDetailPane.current,
                     sharedGroupId = frame.sharedGroupId,
                 )
             } else {
@@ -177,7 +179,7 @@ private fun GroupTabScaffoldContent(
                             .verticalScroll(rememberScrollState())
                             .padding(
                                 start = 12.dp,
-                                bottom = 24.dp,
+                                bottom = listEndPadding,
                             ),
                     ) {
                         GroupSideHeader(
