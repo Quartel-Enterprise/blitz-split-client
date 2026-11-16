@@ -27,11 +27,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -75,6 +79,7 @@ internal fun MembersSection(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
+    var isDraftFocused by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -94,6 +99,7 @@ internal fun MembersSection(
         AddMemberRow(
             state = state,
             onEvent = onEvent,
+            onFocusChanged = { isDraftFocused = it },
             shape = RoundedCornerShape(
                 topStart = if (state.members.isEmpty()) listEndRadius else listInnerRadius,
                 topEnd = if (state.members.isEmpty()) listEndRadius else listInnerRadius,
@@ -103,13 +109,14 @@ internal fun MembersSection(
         )
         /*
          * Why: the app's Contacts matching the name typed, so the group is created with that same person. They show
-         * under the field, where the keyboard would cover them, so the form scrolls to the last once they show; not
-         * on each later keystroke, which would undo a scroll of the person's own.
+         * under the field, where the keyboard would cover them, so the form scrolls to the last once they show while
+         * the name is being typed; not on each later keystroke, nor when a sync brings them while another field is
+         * edited, which would undo a scroll of the person's own.
          */
         val lastSuggestion = remember { BringIntoViewRequester() }
         val showsSuggestions = state.suggestions.isNotEmpty()
         LaunchedEffect(showsSuggestions) {
-            if (showsSuggestions) lastSuggestion.bringIntoView()
+            if (showsSuggestions && isDraftFocused) lastSuggestion.bringIntoView()
         }
         state.suggestions.forEachIndexed { index, suggestion ->
             val isLast = index == state.suggestions.lastIndex
@@ -241,6 +248,7 @@ private fun MemberRow(
 private fun AddMemberRow(
     state: CreateGroupUiState,
     onEvent: (CreateGroupUiEvent) -> Unit,
+    onFocusChanged: (Boolean) -> Unit,
     shape: RoundedCornerShape,
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -291,7 +299,8 @@ private fun AddMemberRow(
                  */
                 modifier = Modifier
                     .weight(1f)
-                    .focusRequester(focusRequester),
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { onFocusChanged(it.isFocused) },
                 textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                 singleLine = true,
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),

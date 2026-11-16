@@ -87,6 +87,9 @@ class CreateGroupViewModel(
         isBusy = { uiState.value.isCreating },
     )
 
+    // Why: the device's Contacts, offline too, kept current so a sync landing while someone types suggests it too.
+    private var contacts: List<Contact> = emptyList()
+
     /*
      * Why: the creator is the group's first member, with the name and color of their profile, and the group starts
      * in the first color that isn't theirs. Read once, so a sync landing while someone types changes nothing here.
@@ -106,17 +109,16 @@ class CreateGroupViewModel(
             )
             uiState.update { state ->
                 val color = AvatarColor.entries.first { it != profile.avatarColor }
-                state.copy(
-                    color = color,
-                    openedColor = color,
-                    members = listOf(me) + state.members,
+                withSuggestions(
+                    state.copy(
+                        color = color,
+                        openedColor = color,
+                        members = listOf(me) + state.members,
+                    ),
                 )
             }
         }
     }
-
-    // Why: the device's Contacts, offline too, kept current so a sync landing while someone types suggests it too.
-    private var contacts: List<Contact> = emptyList()
 
     init {
         viewModelScope.launch {
@@ -255,8 +257,10 @@ class CreateGroupViewModel(
                     id = Uuid.random().toString(),
                     name = name,
                     initials = Initials.of(name),
-                    avatarColor = contact.color.takeUnless { color -> current.members.any { it.avatarColor == color } }
-                        ?: findLeastUsedColor(current.members),
+                    avatarColor = MemberColors.findFor(
+                        contact.color,
+                        current.members.map(CreateGroupMember::avatarColor),
+                    ),
                     photoUrl = contact.photoUrl,
                     isMe = false,
                     userId = contact.userId,
@@ -272,12 +276,17 @@ class CreateGroupViewModel(
         ),
     )
 
+    // Why: none until this device's user is in the list, since a pick needs them there first (addContact).
     private fun withSuggestions(state: CreateGroupUiState): CreateGroupUiState = state.copy(
-        suggestions = ContactSuggestions.of(
-            contacts = contacts,
-            draft = state.draft,
-            addedKeys = state.members.mapNotNullTo(mutableSetOf(), CreateGroupMember::personKey),
-        ),
+        suggestions = if (state.members.none { it.isMe }) {
+            emptyList()
+        } else {
+            ContactSuggestions.of(
+                contacts = contacts,
+                draft = state.draft,
+                addedKeys = state.members.mapNotNullTo(mutableSetOf(), CreateGroupMember::personKey),
+            )
+        },
     )
 
     private fun findLeastUsedColor(members: List<CreateGroupMember>): AvatarColor =

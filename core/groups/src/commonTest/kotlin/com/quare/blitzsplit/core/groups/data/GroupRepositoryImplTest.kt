@@ -22,6 +22,7 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.InviteCodeTakenException
+import com.quare.blitzsplit.core.groups.domain.model.MemberAccountRefusedException
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsPair
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -487,6 +488,97 @@ class GroupRepositoryImplTest {
             assertIs<IllegalStateException>(result.exceptionOrNull())
             assertEquals(true, local.member("m-1")?.pendingSync)
         }
+
+    @Test
+    fun `GIVEN an account the server refuses WHEN uploading its member THEN the member goes up as a guest`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                ),
+            ),
+            storedMembers = listOf(
+                member(
+                    id = "m-me",
+                    groupId = "group-1",
+                    userId = "user-1",
+                    isMe = true,
+                    pendingSync = true,
+                ),
+                member(
+                    id = "m-ana",
+                    groupId = "group-1",
+                    userId = "ana",
+                    pendingSync = true,
+                ),
+            ),
+        )
+        remote.refusedMemberAccounts = setOf("ana")
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(listOf("user-1", null), remote.upsertedMembers.single().map { it.userId })
+        assertNull(local.member("m-ana")?.userId)
+        assertEquals("user-1", local.member("m-me")?.userId)
+        assertEquals(false, local.member("m-ana")?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN a refusal without a linked account WHEN uploading THEN fails and keeps the members pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-me",
+                    groupId = "group-1",
+                    userId = "user-1",
+                    isMe = true,
+                    pendingSync = true,
+                ),
+            ),
+            upsertMembersError = MemberAccountRefusedException(),
+        )
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertIs<MemberAccountRefusedException>(result.exceptionOrNull())
+        assertEquals(1, remote.upsertMembersAttempts.size)
+        assertEquals(true, local.member("m-me")?.pendingSync)
+    }
+
+    @Test
+    fun `GIVEN the retry as guests fails too WHEN uploading THEN keeps the account and the member pending`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(group(id = "group-1")),
+            storedMembers = listOf(
+                member(
+                    id = "m-ana",
+                    groupId = "group-1",
+                    userId = "ana",
+                    pendingSync = true,
+                ),
+            ),
+            upsertMembersError = MemberAccountRefusedException(),
+        )
+
+        // When
+        val result = repository.uploadPendingGroups("user-1")
+
+        // Then
+        assertIs<MemberAccountRefusedException>(result.exceptionOrNull())
+        assertEquals(listOf("ana", null), remote.upsertMembersAttempts.map { it.single().userId })
+        assertEquals("ana", local.member("m-ana")?.userId)
+        assertEquals(true, local.member("m-ana")?.pendingSync)
+    }
 
     @Test
     fun `GIVEN a group uploaded once WHEN uploading again THEN pushes nothing`() = runTest {
@@ -7451,6 +7543,10 @@ private class FakeGroupLocalDataSource(
         }
     }
 
+    override suspend fun dropMemberAccounts(ids: List<String>) {
+        members.value = members.value.map { if (it.id in ids && !it.isMe) it.copy(userId = null) else it }
+    }
+
     override suspend fun updateMemberInviteCodes(codesById: Map<String, String>) {
         members.value = members.value.map { member ->
             codesById[member.id]?.let { member.copy(inviteCode = it) } ?: member
@@ -7617,6 +7713,10 @@ private class FakeGroupRemoteDataSource(
     var deleteMembersError: Throwable? = null
     var onUpsertGroups: suspend () -> Unit = {}
 
+    // Why: every push of the members, a refused one included, and the accounts the server no longer lets this user link.
+    val upsertMembersAttempts = mutableListOf<List<GroupMemberDto>>()
+    var refusedMemberAccounts: Set<String> = emptySet()
+
     // Why: every push of the groups, a refused one included, with what it sent.
     val upsertGroupsAttempts = mutableListOf<List<GroupDto>>()
 
@@ -7670,7 +7770,9 @@ private class FakeGroupRemoteDataSource(
 
     override suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto> {
         calls += "members"
+        upsertMembersAttempts += members
         upsertMembersError?.let { throw it }
+        if (members.any { it.userId in refusedMemberAccounts }) throw MemberAccountRefusedException()
         upsertedMembers += members
         return members.map { it.copy(inviteCode = memberInviteCodes[it.id]) }
     }

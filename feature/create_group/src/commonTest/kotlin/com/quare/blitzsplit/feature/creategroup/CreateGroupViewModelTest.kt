@@ -2501,6 +2501,45 @@ class CreateGroupViewModelTest {
     }
 
     @Test
+    fun `GIVEN no profile read yet WHEN typing ana THEN suggests nobody`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            profile = null,
+            contacts = listOf(anaPaula),
+        )
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+
+        // Then
+        assertTrue(
+            viewModel.uiState.value.suggestions
+                .isEmpty(),
+        )
+    }
+
+    @Test
+    fun `GIVEN ana typed before the profile WHEN the profile is read THEN suggests Ana Paula`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                profile = null,
+                contacts = listOf(anaPaula),
+            )
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+
+            // When
+            profiles.profile.value = pierre
+
+            // Then
+            assertEquals(
+                listOf(anaPaula.key),
+                viewModel.uiState.value.suggestions
+                    .map { it.key },
+            )
+        }
+
+    @Test
     fun `GIVEN no profile read yet WHEN tapping Ana Paula THEN adds nobody`() = runTest(testDispatcher) {
         // Given
         prepareScenario(

@@ -372,6 +372,10 @@ interface GroupDao {
         }
     }
 
+    // Why: an account the server refused for a member this device linked; this device's own member keeps its account.
+    @Query("UPDATE group_member SET userId = NULL WHERE id IN (:ids) AND isMe = 0")
+    suspend fun dropMemberAccounts(ids: List<String>)
+
     // Why: the server makes the member's code and no client changes it.
     @Query("UPDATE group_member SET inviteCode = :inviteCode WHERE id = :id AND inviteCode IS NOT :inviteCode")
     suspend fun updateMemberInviteCode(

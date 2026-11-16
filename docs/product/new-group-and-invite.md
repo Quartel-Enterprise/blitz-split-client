@@ -23,7 +23,9 @@ Creating a group and inviting people.
     2026-11-16, Pierre's call: the app's Contacts, never the phone's address book; `CreateGroupUiState.suggestions`).
     A tap adds that same person as Contacts' "Add to a group" does: someone who uses the app goes in as their account,
     joined, a guest as their name, in their own color unless someone in the list has it; it works offline from the
-    device's data and goes up with the group's first sync. A name typed and added (Add, Return) is still a new guest,
+    device's data and goes up with the group's first sync; an account the server no longer takes by then (deleted,
+    or no group shared any more) goes up as a guest of that name rather than holding the group, as with Contacts' "Add
+    to a group". A name typed and added (Add, Return) is still a new guest,
     even one written as a contact is. "Who's in" shows the profile photos over the initials, yours too (the one the
     home's avatar shows; the initial without one). The avatar's corner holds the photo's menu (Take photo where there is a camera, Choose
     photo, the Mac's "Choose photo…" a file, and Remove photo once there is one), which opens "Adjust photo"; while a

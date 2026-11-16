@@ -18,7 +18,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 const formId = 'create-group-form'
 const nameId = 'create-group-name'
@@ -101,6 +101,18 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
   const members = state.members.length
   const photo = usePhotoPicker()
   const draftRef = useRef<HTMLInputElement>(null)
+  const lastSuggestionRef = useRef<HTMLLIElement>(null)
+  const showsSuggestions = state.suggestions.length > 0
+  /*
+   * Why: the suggestions show under the field, where a phone's keyboard would cover them, so the list scrolls to the
+   * last once they show while the name is being typed, as on Android and iOS; not on each keystroke, nor when a sync
+   * brings them while another field is edited.
+   */
+  useEffect(() => {
+    if (showsSuggestions && document.activeElement === draftRef.current) {
+      lastSuggestionRef.current?.scrollIntoView({ block: 'nearest' })
+    }
+  }, [showsSuggestions])
   return (
     <form
       id={formId}
@@ -247,8 +259,8 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
             </Button>
           </li>
           {/* Why: the app's Contacts matching the name typed, so the group is created with that same person. */}
-          {state.suggestions.map((suggestion) => (
-            <li key={suggestion.key}>
+          {state.suggestions.map((suggestion, index) => (
+            <li key={suggestion.key} ref={index === state.suggestions.length - 1 ? lastSuggestionRef : undefined}>
               <button
                 type="button"
                 className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"

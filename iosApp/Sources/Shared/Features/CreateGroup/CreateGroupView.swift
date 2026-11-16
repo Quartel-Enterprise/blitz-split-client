@@ -98,6 +98,8 @@ private struct CreateGroupForm: View {
     /// The sheet's own size, which decides the columns.
     @State private var layout = ScreenLayout()
     @FocusState private var isNameFocused: Bool
+    /// "Add by name", held here so the scroll to the suggestions follows only the name being typed.
+    @FocusState private var isDraftFocused: Bool
 
     private var state: CreateGroupUiState {
         model.state
@@ -115,9 +117,10 @@ private struct CreateGroupForm: View {
         ScrollViewReader { proxy in
             formColumns
                 // The suggestions show under the draft, which the keyboard would cover: the list scrolls to the last
-                // once they show, not on each later keystroke, which would undo a scroll of the person's own
+                // once they show while the name is being typed; not on each later keystroke, nor when a sync brings
+                // them while another field is edited, which would undo a scroll of the person's own
                 .onChange(of: state.suggestions.isEmpty) { _, isEmpty in
-                    guard !isEmpty, let last = model.current.suggestions.last?.key else { return }
+                    guard !isEmpty, isDraftFocused, let last = model.current.suggestions.last?.key else { return }
                     withAnimation { proxy.scrollTo(last, anchor: .bottom) }
                 }
         }
@@ -141,13 +144,13 @@ private struct CreateGroupForm: View {
                     Form { groupSections }
                         .formStyle(.grouped)
                 } second: {
-                    Form { MembersSection(model: model) }
+                    Form { MembersSection(model: model, isDraftFocused: $isDraftFocused) }
                         .formStyle(.grouped)
                 }
             } else {
                 Form {
                     groupSections
-                    MembersSection(model: model)
+                    MembersSection(model: model, isDraftFocused: $isDraftFocused)
                 }
                 .formStyle(.grouped)
             }
@@ -283,7 +286,7 @@ private struct CreateGroupIcon: View {
 /// draft row adds on Return, keeping the keyboard up for the next name.
 private struct MembersSection: View {
     let model: CreateGroupModel
-    @FocusState private var isDraftFocused: Bool
+    var isDraftFocused: FocusState<Bool>.Binding
 
     private var state: CreateGroupUiState {
         model.state
@@ -314,14 +317,14 @@ private struct MembersSection: View {
                     #if os(macOS)
                     .multilineTextAlignment(.leading)
                     #endif
-                    .focused($isDraftFocused)
+                    .focused(isDraftFocused)
                     .submitLabel(.next)
                     .onSubmit {
                         // The ViewModel's state now: the watcher may not have brought the last keystroke yet
                         let adds = model.current.canAddMember
                         model.send(CreateGroupUiEventOnAddMemberClicked.shared)
                         // Only after a name went in: Return on an empty draft lets the keyboard go
-                        if adds { isDraftFocused = true }
+                        if adds { isDraftFocused.wrappedValue = true }
                     }
                 if state.canAddMember {
                     Button("Add") { model.send(CreateGroupUiEventOnAddMemberClicked.shared) }
@@ -350,13 +353,13 @@ private struct MembersSection: View {
     /// setting the same value again would bring nothing back. The Mac has no keyboard to bring back, and focusing its
     /// field again would select the name typed so far, which the next key would replace.
     private func focusDraft() {
-        guard isDraftFocused else {
-            isDraftFocused = true
+        guard isDraftFocused.wrappedValue else {
+            isDraftFocused.wrappedValue = true
             return
         }
         #if os(iOS)
-        isDraftFocused = false
-        Task { @MainActor in isDraftFocused = true }
+        isDraftFocused.wrappedValue = false
+        Task { @MainActor in isDraftFocused.wrappedValue = true }
         #endif
     }
 

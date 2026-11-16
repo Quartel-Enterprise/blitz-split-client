@@ -39,8 +39,7 @@ class AddContactToGroupUseCase(
             member = GroupMember(
                 id = Uuid.random().toString(),
                 name = GroupNameRules.toCapped(name),
-                avatarColor = contact.color.takeUnless { color -> group.members.any { it.avatarColor == color } }
-                    ?: MemberColors.findLeastUsed(group.members.map(GroupMember::avatarColor)),
+                avatarColor = MemberColors.findFor(contact.color, group.members.map(GroupMember::avatarColor)),
                 isMe = false,
                 hasJoined = true,
                 userId = userId,
