@@ -94,7 +94,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     its exit runs, so read live it found nothing and the avatar and name stopped flying home (beta feedback of 2026-11-14).
     The name also flew home but not in (beta feedback of 2026-11-16): Material's top bar reads its title's baseline as
     it measures, which placed the name once at the header's spot before the flight began, so the flight started there;
-    the name in a top bar is placed only for real (`skipsBaselinePlacement`), the bar aligning on its subtitle. From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
+    every shared text is placed only for real (`skipsBaselinePlacement` inside `SharedScopes.scaled`), the bar aligning on its subtitle. From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
     over the list, while beside it (a tablet lying down, a book) the row stays where it is. So the group opens over
     Groups as over Home, a screen of its own, outside Material's list-detail scene, wherever the two don't show side by
     side. The web: the View Transitions API

@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react'
 import type { JsGroupRow, JsMemberFace } from 'blitzsplit-shared'
 import { pendingSurfaceClass } from '@/components/common'
-import { AvatarStack } from '@/components/AvatarStack'
+import { AvatarStack, type StackMarks } from '@/components/AvatarStack'
 import { balanceTone } from '@/features/balances/BalanceCard'
 import { t, type MessageKey } from '@/i18n'
 import { formatShortDate } from '@/lib/dates'
@@ -81,13 +81,13 @@ export function QueuedBadge() {
 }
 
 /** The faces the ViewModel picked and "+N"; screen readers get the member count from the row instead. */
-export function Faces({ group }: { group: JsGroupRow }) {
-  return <FaceStack faces={Array.from(group.faces)} extraCount={group.extraMemberCount} />
+export function Faces({ group, ...marks }: { group: JsGroupRow } & StackMarks) {
+  return <FaceStack faces={Array.from(group.faces)} extraCount={group.extraMemberCount} {...marks} />
 }
 
 /** A group's members, or who paid a bill on Home (`isSmall`, a line tall), as the app's stack of faces. */
-export function FaceStack({ faces, extraCount, isSmall = false }: { faces: JsMemberFace[]; extraCount: number; isSmall?: boolean }) {
-  return <AvatarStack faces={faces.map((face) => ({ initials: face.initial, color: face.color, photoUrl: face.photoUrl }))} extraCount={extraCount} size={isSmall ? 'xs' : 'sm'} />
+export function FaceStack({ faces, extraCount, isSmall = false, ...marks }: { faces: JsMemberFace[]; extraCount: number; isSmall?: boolean } & StackMarks) {
+  return <AvatarStack faces={faces.map((face) => ({ initials: face.initial, color: face.color, photoUrl: face.photoUrl }))} extraCount={extraCount} size={isSmall ? 'xs' : 'sm'} {...marks} />
 }
 
 /** "6 members" or "Just you". */

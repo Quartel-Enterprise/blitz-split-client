@@ -44,7 +44,6 @@ import com.quare.blitzsplit.android.designsystem.component.DialogCard
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PaidWithCard
 import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
-import com.quare.blitzsplit.android.designsystem.component.skipsBaselinePlacement
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -536,9 +535,7 @@ private fun BillGroupTitle(
         Text(
             text = state.groupName,
             // Why: only once Room is read, as the square, so the name never flies into the empty one before it.
-            modifier = Modifier
-                .skipsBaselinePlacement()
-                .then(if (state.isLoaded) nameModifier else Modifier),
+            modifier = if (state.isLoaded) nameModifier else Modifier,
             style = textStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

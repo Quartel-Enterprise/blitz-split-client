@@ -60,7 +60,6 @@ import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
-import com.quare.blitzsplit.android.designsystem.component.skipsBaselinePlacement
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
@@ -240,10 +239,7 @@ private fun GroupTitle(
         }
         Text(
             text = header.groupName,
-            modifier = Modifier
-                .skipsBaselinePlacement()
-                .then(shared.name)
-                .then(billShared.name),
+            modifier = shared.name.then(billShared.name),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

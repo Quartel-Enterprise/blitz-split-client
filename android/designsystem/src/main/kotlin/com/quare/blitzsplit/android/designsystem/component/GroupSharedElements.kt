@@ -87,11 +87,12 @@ class SharedScopes internal constructor(
 
     /*
      * Why: a text or a stack of faces, whose two sides crossfade while it scales from one size to the other, from its
-     * start: a name, an amount, the faces of a group or of who paid.
+     * start: a name, an amount, the faces of a group or of who paid. Placed only for real (skipsBaselinePlacement), so
+     * one in a top bar flies in as it flies back.
      */
     @Composable
     fun scaled(id: String): Modifier = with(transitionScope) {
-        Modifier.sharedBounds(
+        Modifier.skipsBaselinePlacement().sharedBounds(
             sharedContentState = rememberSharedContentState(id),
             animatedVisibilityScope = visibilityScope,
             resizeMode = SharedTransitionScope.ResizeMode.scaleToBounds(
@@ -132,9 +133,10 @@ internal fun sharedKeyOf(
  * real placement, only to compute the line. A shared text placed there took the screen's own spot as where it flies
  * from, so the group's name popped into the header instead of flying in, while it flew back fine (beta feedback of
  * 2026-11-16). Placed only for real, the flight starts from the row's text; the bar's subtitle under it still gives
- * the baseline the bar aligns on. Put it before the shared modifier, on a text no parent aligns by its baseline.
+ * the baseline the bar aligns on. Every scaled shared element takes it, in a top bar or not: none sits in a parent that
+ * aligns by its baseline, and the alignment-only placement is never where a flight should start.
  */
-fun Modifier.skipsBaselinePlacement(): Modifier = layout { measurable, constraints ->
+private fun Modifier.skipsBaselinePlacement(): Modifier = layout { measurable, constraints ->
     val placeable = measurable.measure(constraints)
     layout(placeable.width, placeable.height) {
         // Why: no coordinates while the parent places its children only to read their alignment lines.

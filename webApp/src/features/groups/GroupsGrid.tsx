@@ -122,8 +122,8 @@ export function GroupsGrid({ presenter, groups, gridSize, menuOf, onContextMenu 
           {gridSize !== 'compact' && (
             <span className="flex min-w-0 items-center gap-2 text-[13px] text-muted-foreground">
               <span aria-label={membersText(group.memberCount)} className="shrink-0">
-                <span aria-hidden data-group-faces="" className="inline-flex">
-                  <Faces group={group} />
+                <span aria-hidden>
+                  <Faces group={group} data-group-faces="" />
                 </span>
               </span>
               {gridSize === 'large' && <span className="truncate">{lastActivityText(group)}</span>}
