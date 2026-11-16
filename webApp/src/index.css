@@ -420,6 +420,17 @@
   animation-duration: 200ms;
 }
 
+/*
+ * A person's name, amount and word flying into the profile (lib/groupTransition): the two texts differ in size and
+ * wording ("owes you", "Larissa owes you"), so each snapshot scales with the group's height, keeping its proportions
+ * from the start of the group, instead of stretching to the group's width.
+ */
+::view-transition-old(.profile-piece),
+::view-transition-new(.profile-piece) {
+  height: 100%;
+  width: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),

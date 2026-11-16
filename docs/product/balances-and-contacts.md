@@ -71,6 +71,19 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     split rows, payer and History faces, Members, Balances, Statistics, Activity) and Contacts' rows; Record payment,
     a dialog, flies nothing, as on Android; back flies into the same face once its page drew it
     again, and a face under a closed panel (Bill under the profile) leaves the page to crossfade.
+  - With the face, a row that shows the person's name and net (Contacts' rows, Balances' people) flies them too, into
+    the contact's profile's name and its balance card's amount and word ("owes you" morphs into "Larissa owes you"),
+    and back on back and the back gesture (beta feedback of 2026-11-16, "where applicable"), under the same rules. Only
+    where the profile has the piece: Profile has no balance and no tapped row shows the user's own name, so only the
+    face flies there; rows whose amount is another one (a group's balance in Members, a share in a bill) fly the face
+    alone; a hidden contact's row flies its face and name. Balances lists a person once per currency while the
+    profile's card shows one net, so only the row in that currency flies its amount and word; another currency's row
+    flies the face and name, its balance crossfading with the page. Android: `rememberProfileFlightSource` hands the row `name`,
+    `amount` and `word`, which fly as shared bounds (scaled and cross-faded, since their size and wording change) into
+    `rememberProfileFlightTarget`'s, the amount and word keyed by their currency (`balanceKey`). The web: the row
+    marks them `data-profile-piece` (`name`, `amount`, `word`, the last two with `data-profile-balance`, their
+    currency), in the link or beside it, and the contact's profile marks its own inside `data-profile-page`. iOS and iPadOS: the
+    zoom already carries the whole row into the profile, so nothing changes there.
     A profile opened from settling up goes back to that form on its Settle up or Received rather than opening another;
     opened from one group's Record payment, they open settling up for the net over it (Pierre's call).
   - A profile link opened (`Route.ProfileLink`, `https://blitzsplit.com/u/<code>`, Profile's "Share profile") shows

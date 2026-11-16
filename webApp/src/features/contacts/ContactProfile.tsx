@@ -92,7 +92,8 @@ export function ContactProfileView({
   const headerRef = useRef<HTMLElement>(null)
   useCollapsingHeader(headerPlace, headerRef)
   return (
-    <section aria-label={t('contactProfile_pane', { name })} className="@container flex min-w-0 flex-col gap-5">
+    // Why: where the row's name and balance land as the profile opens (data-profile-piece, lib/groupTransition).
+    <section aria-label={t('contactProfile_pane', { name })} data-profile-page className="@container flex min-w-0 flex-col gap-5">
       {onBack && (
         <Button variant="ghost" size="sm" onClick={onBack} className="-mb-1 -ml-2 self-start">
           <ChevronLeft />
@@ -117,7 +118,7 @@ export function ContactProfileView({
           <Avatar initial={contact.initials} color={contact.color} photoUrl={contact.photoUrl} className="contact-header-photo" isProfilePhoto />
         </button>
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <h2 className="contact-header-name truncate font-semibold tracking-tight">{name}</h2>
+          <h2 data-profile-piece="name" className="contact-header-name max-w-full self-start truncate font-semibold tracking-tight">{name}</h2>
           <div className="contact-header-meta flex flex-wrap items-center gap-2">
             <Badge variant={contact.isGuest ? 'outline' : 'secondary'}>{t(contact.isGuest ? 'contactProfile_guest' : 'contactProfile_usesApp')}</Badge>
             <span className="text-[13px] text-muted-foreground">{groupsMeta}</span>
@@ -333,8 +334,8 @@ function BalanceSection({ presenter, state, contact }: { presenter: ContactProfi
       className="flex flex-col gap-4 rounded-xl border bg-card p-5 @md:flex-row @md:flex-wrap @md:items-end @md:justify-between"
     >
       <div className="flex flex-col gap-0.5">
-        <span className="text-[13px] text-muted-foreground">{label}</span>
-        <strong className={cn('text-[28px] leading-tight font-bold tracking-tight whitespace-nowrap tabular-nums @md:text-[32px]', balanceTone(net))}>
+        <span data-profile-piece="word" data-profile-balance={contact.currency} className="self-start text-[13px] text-muted-foreground">{label}</span>
+        <strong data-profile-piece="amount" data-profile-balance={contact.currency} className={cn('self-start text-[28px] leading-tight font-bold tracking-tight whitespace-nowrap tabular-nums @md:text-[32px]', balanceTone(net))}>
           {formatSignedMoney(net, contact.currency, contact.fractionDigits)}
         </strong>
         <span className="text-[13px] text-muted-foreground">{sub}</span>

@@ -14,7 +14,11 @@ import { flushSync } from 'react-dom'
  * of 2026-11-15): the clickable face, name or row carries `data-profile-link={key}` around the face (`.avatar` or
  * `data-profile-face`), the profile's photo `data-profile-photo`. Only the face clicked in the last second flies, so a
  * bill showing its payer twice, or a profile opened from a search hit, never flies out of another face; the key finds
- * the face again on the way back, once its page drew it again.
+ * the face again on the way back, once its page drew it again. A row that shows the person's name and balance (Contacts,
+ * Balances) marks them `data-profile-piece="name"`, `"amount"` and `"word"`, in the link or beside it, and they fly into
+ * the pieces so marked in the profile's page (`data-profile-page`) (beta feedback of 2026-11-16); a side without one
+ * leaves that piece to crossfade with the page. The amount and the word carry their currency (`data-profile-balance`):
+ * Balances lists a person once per currency, and only the row in the profile's currency flies into its balance.
  *
  * Browsers without `document.startViewTransition`, reduced motion and the browser's own back animation (a swipe
  * back, `hasUAVisualTransition`) switch at once.
@@ -168,16 +172,31 @@ function profilePlanOf(
   return null
 }
 
+const PROFILE_PIECES = ['name', 'amount', 'word']
+
 /*
  * Why: the profile's photo, or the face inside the link clicked, carries the one name both sides share. A link with no
- * face inside (a name, a round button laid over the face) takes the face beside it.
+ * face inside (a name, a round button laid over the face) takes the face beside it, and the row's name and balance are
+ * found the same way; the profile's are found in its page.
  */
 function markFace(holder: HTMLElement): HTMLElement[] {
-  const faceIn = (element: HTMLElement | null) => element?.querySelector<HTMLElement>('[data-profile-face], .avatar') ?? null
-  const face = holder.matches('[data-profile-photo]') ? holder : (faceIn(holder) ?? faceIn(holder.parentElement))
+  const isPhoto = holder.matches('[data-profile-photo]')
+  const scopes = isPhoto ? [holder.closest<HTMLElement>('[data-profile-page]')] : [holder, holder.parentElement]
+  const firstIn = (selector: string) => scopes.reduce<HTMLElement | null>((found, scope) => found ?? scope?.querySelector<HTMLElement>(selector) ?? null, null)
+  const face = isPhoto ? holder : firstIn('[data-profile-face], .avatar')
   if (!face) return []
   face.style.viewTransitionName = 'profile-face'
-  return [face]
+  const pieces = PROFILE_PIECES.flatMap((piece) => {
+    const element = firstIn(`[data-profile-piece="${piece}"]`)
+    // Why: a piece scrolled out of sight (the profile's balance above the top) crossfades with the page, as a face does.
+    if (!element || !isInView(element)) return []
+    const balance = element.dataset.profileBalance
+    element.style.viewTransitionName = balance ? `profile-${piece}-${cssIdent(balance)}` : `profile-${piece}`
+    // Why: its snapshots keep their proportions (index.css), since the two texts differ in size and wording.
+    element.style.setProperty('view-transition-class', 'profile-piece')
+    return [element]
+  })
+  return [face, ...pieces]
 }
 
 function isRecent(click: { element: HTMLElement; at: number } | null): click is { element: HTMLElement; at: number } {

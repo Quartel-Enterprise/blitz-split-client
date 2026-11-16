@@ -53,8 +53,11 @@ internal fun ContactListRow(
 ) {
     val money = rememberMoneyFormatter(row.net.currency)
     val amountMinor = row.net.amountMinor
-    // Why: the face flies into the profile it opens over the list and back (beta feedback of 2026-11-15).
-    val flight = rememberProfileFlightSource()
+    /*
+     * Why: the face flies into the profile it opens over the list and back (beta feedback of 2026-11-15), the name and
+     * the net with its word into the profile's name and balance (beta feedback of 2026-11-16).
+     */
+    val flight = rememberProfileFlightSource(balanceKey = row.net.currency.code)
     SelectableListRow(
         isSelected = isSelected,
         index = index,
@@ -73,6 +76,7 @@ internal fun ContactListRow(
             name = row.name,
             meta = rowMetaOf(row),
             modifier = Modifier.weight(1f),
+            nameModifier = flight.name,
         )
         Column(
             horizontalAlignment = Alignment.End,
@@ -80,6 +84,7 @@ internal fun ContactListRow(
         ) {
             Text(
                 text = money.toSignedText(amountMinor),
+                modifier = flight.amount,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = amountColorOf(amountMinor),
@@ -87,6 +92,7 @@ internal fun ContactListRow(
             )
             Text(
                 text = netWordOf(amountMinor),
+                modifier = flight.word,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -129,6 +135,7 @@ private fun NameColumn(
     name: String,
     meta: String,
     modifier: Modifier = Modifier,
+    nameModifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
@@ -136,6 +143,7 @@ private fun NameColumn(
     ) {
         Text(
             text = name,
+            modifier = nameModifier,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.FittingButtonsRow
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
+import com.quare.blitzsplit.android.designsystem.component.ProfileFlightPieces
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerLine
 import com.quare.blitzsplit.android.designsystem.component.amountColorOf
@@ -185,6 +186,7 @@ internal fun PendingMergeCard(
 internal fun BalanceCard(
     state: ContactProfileUiState,
     contact: Contact,
+    flight: ProfileFlightPieces,
     onEvent: (ContactProfileUiEvent) -> Unit,
 ) {
     val net = contact.net
@@ -209,11 +211,13 @@ internal fun BalanceCard(
                         net.amountMinor < 0 -> stringResource(R.string.contacts_balance_you_owe, contact.name)
                         else -> stringResource(R.string.contacts_balance_settled)
                     },
+                    modifier = flight.word,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = money.toSignedText(net.amountMinor),
+                    modifier = flight.amount,
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
                     color = amountColorOf(net.amountMinor),

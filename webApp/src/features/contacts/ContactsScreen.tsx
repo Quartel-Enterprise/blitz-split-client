@@ -218,14 +218,14 @@ function ContactRowButton({ row, isSelected, onClick }: { row: JsContactRow; isS
     >
       <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-sm font-medium">{row.name}</span>
+        <span data-profile-piece="name" className="max-w-full self-start truncate text-sm font-medium">{row.name}</span>
         <span className="truncate text-xs text-muted-foreground">{rowMeta(row)}</span>
       </span>
       <span className="flex shrink-0 flex-col items-end">
-        <span className={cn('text-sm font-semibold whitespace-nowrap tabular-nums', balanceTone(row.netMinor))}>
+        <span data-profile-piece="amount" data-profile-balance={row.currency} className={cn('text-sm font-semibold whitespace-nowrap tabular-nums', balanceTone(row.netMinor))}>
           {formatSignedMoney(row.netMinor, row.currency, row.fractionDigits)}
         </span>
-        <span className="text-xs text-muted-foreground">{netWord(row.netMinor)}</span>
+        <span data-profile-piece="word" data-profile-balance={row.currency} className="text-xs text-muted-foreground">{netWord(row.netMinor)}</span>
       </span>
     </button>
   )
@@ -274,11 +274,13 @@ function HiddenSection({ presenter, state }: { presenter: ContactsPresenter; sta
                 <button
                   type="button"
                   onClick={() => presenter.openContact(row.key)}
+                  // Why: its face and name fly into the profile it opens, as a listed person's do (lib/groupTransition).
+                  data-profile-link={`contact-${row.key}`}
                   className="flex min-w-0 flex-1 items-center gap-3 rounded-lg px-2.5 py-1.5 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring"
                 >
                   <Avatar initial={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-8 text-xs" />
                   <span className="flex min-w-0 flex-col">
-                    <span className="truncate text-sm font-medium">{row.name}</span>
+                    <span data-profile-piece="name" className="max-w-full self-start truncate text-sm font-medium">{row.name}</span>
                     <span className="truncate text-xs text-muted-foreground">
                       {t('contacts_hiddenMeta', {
                         meta: rowMeta(row),

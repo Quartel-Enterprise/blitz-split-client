@@ -1,7 +1,9 @@
 package com.quare.blitzsplit.android.designsystem.component
 
 import android.os.SystemClock
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Stable
@@ -63,12 +65,20 @@ class ProfileFlightState {
 // Why: null in previews and tests, and wherever no navigation draws the screens, where no face flies.
 val LocalProfileFlight = staticCompositionLocalOf<ProfileFlightState?> { null }
 
-// Why: the face's own modifier, and the tap to send along with the profile's opening.
+/*
+ * Why: the face's own modifier, the name's and the balance's (its amount and its word) for a row that shows them, and
+ * the tap to send along with the profile's opening.
+ */
 @Stable
 class ProfileFlightSource internal constructor(
-    val face: Modifier,
+    private val pieces: ProfileFlightPieces,
     private val onTap: () -> Unit,
 ) {
+    val face: Modifier get() = pieces.face
+    val name: Modifier get() = pieces.name
+    val amount: Modifier get() = pieces.amount
+    val word: Modifier get() = pieces.word
+
     // Why: wraps the tap that opens the profile, so the face is the one marked before the profile opens.
     fun toFlyingClick(onClick: () -> Unit): () -> Unit = {
         onTap()
@@ -80,8 +90,37 @@ class ProfileFlightSource internal constructor(
 
     companion object {
         val None = ProfileFlightSource(
-            face = Modifier,
+            pieces = ProfileFlightPieces.None,
             onTap = {},
+        )
+    }
+}
+
+/*
+ * Why: the pieces that fly, alike in the row tapped and in the profile they land in: the face, and, where both show them,
+ * the name and the balance's amount and word. A piece one side leaves out (Profile has no balance) finds no twin there
+ * and stays in place.
+ */
+@Stable
+class ProfileFlightPieces internal constructor(
+    val face: Modifier,
+    val name: Modifier,
+    val amount: Modifier,
+    val word: Modifier,
+) {
+    internal fun withFace(face: Modifier): ProfileFlightPieces = ProfileFlightPieces(
+        face = face,
+        name = name,
+        amount = amount,
+        word = word,
+    )
+
+    companion object {
+        val None = ProfileFlightPieces(
+            face = Modifier,
+            name = Modifier,
+            amount = Modifier,
+            word = Modifier,
         )
     }
 }
@@ -89,11 +128,13 @@ class ProfileFlightSource internal constructor(
 /*
  * Why: a face that opens a profile (a top bar's avatar, a split's row, a member, an actor in the feed). It carries the
  * shared element only while it is the face tapped last or the face of a profile still open, so a list of faces costs
- * nothing until one is tapped. Where nothing flies (a dialog's bill, previews) it is None.
+ * nothing until one is tapped. Where nothing flies (a dialog's bill, previews) it is None. A row that also shows the
+ * person's name and balance (Contacts, Balances) puts name, amount and word on them, which fly into the profile's own
+ * (beta feedback of 2026-11-16). `balanceKey` is the currency of the row's balance: Balances lists a person once per
+ * currency, and only the row in the currency the profile shows has a balance to fly into. A face alone passes none.
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun rememberProfileFlightSource(): ProfileFlightSource {
+fun rememberProfileFlightSource(balanceKey: String? = null): ProfileFlightSource {
     val faceId = rememberSaveable { UUID.randomUUID().toString() }
     val flight = LocalProfileFlight.current
     val transitionScope = LocalSharedTransitionScope.current
@@ -101,45 +142,90 @@ fun rememberProfileFlightSource(): ProfileFlightSource {
     if (flight == null || transitionScope == null || visibilityScope == null) return ProfileFlightSource.None
     // Why: only the faces whose answer changes redraw on a tap, not every face of the list.
     val isFlying by remember(flight, faceId) { derivedStateOf { flight.isFlying(faceId) } }
-    val face = if (isFlying) {
-        with(transitionScope) {
-            Modifier.sharedElement(
-                sharedContentState = rememberSharedContentState(faceKeyOf(faceId)),
-                animatedVisibilityScope = visibilityScope,
-            )
-        }
+    val pieces = if (isFlying) {
+        rememberFlyingPieces(
+            faceId = faceId,
+            balanceKey = balanceKey,
+            transitionScope = transitionScope,
+            visibilityScope = visibilityScope,
+        )
     } else {
-        Modifier
+        ProfileFlightPieces.None
     }
     return ProfileFlightSource(
-        face = face,
+        pieces = pieces,
         onTap = { flight.onTapped(faceId) },
     )
 }
 
 /*
- * Why: the photo at the top of Profile or a contact's profile, which the face tapped flies into and back out of. The
- * face is read once, as the profile first draws, and kept with it, so back still finds it; a profile opened without a
- * tap on a face (a search hit, a link, beside Contacts' list) flies nothing.
+ * Why: the photo at the top of Profile or a contact's profile, which the face tapped flies into and back out of, with
+ * the name and the balance where the profile shows them. The face is read once, as the profile first draws, and kept
+ * with it, so back still finds it; a profile opened without a tap on a face (a search hit, a link, beside Contacts'
+ * list) flies nothing. `balanceKey` is the currency of the balance the profile shows, as for the row; Profile, with
+ * no balance, passes none and only its photo flies.
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun rememberProfileFlightTarget(): Modifier {
+fun rememberProfileFlightTarget(balanceKey: String? = null): ProfileFlightPieces {
     val flight = LocalProfileFlight.current
     val faceId = rememberSaveable { flight?.takeRecentFaceOrNull().orEmpty() }.ifEmpty { null }
     val transitionScope = LocalSharedTransitionScope.current
     val visibilityScope = LocalEntryVisibilityScope.current
-    if (flight == null || faceId == null || transitionScope == null || visibilityScope == null) return Modifier
+    if (flight == null || faceId == null || transitionScope == null || visibilityScope == null) {
+        return ProfileFlightPieces.None
+    }
     DisposableEffect(flight, faceId) {
         flight.onProfileShown(faceId)
         onDispose { flight.onProfileGone(faceId) }
     }
-    return with(transitionScope) {
-        Modifier.sharedElement(
-            sharedContentState = rememberSharedContentState(faceKeyOf(faceId)),
-            animatedVisibilityScope = visibilityScope,
+    return rememberFlyingPieces(
+        faceId = faceId,
+        balanceKey = balanceKey,
+        transitionScope = transitionScope,
+        visibilityScope = visibilityScope,
+    )
+}
+
+/*
+ * Why: the face keeps its shape and flies as one element. The texts change size and weight, and the word its wording
+ * ("owes you" in the row, "Larissa owes you" in the profile), so they fly as shared bounds, their content scaled to the
+ * bounds and cross-faded. Without a balance (a face alone) only the face's state is remembered.
+ */
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun rememberFlyingPieces(
+    faceId: String,
+    balanceKey: String?,
+    transitionScope: SharedTransitionScope,
+    visibilityScope: AnimatedVisibilityScope,
+): ProfileFlightPieces = with(transitionScope) {
+    val face = Modifier.sharedElement(
+        sharedContentState = rememberSharedContentState(pieceKeyOf("face", faceId)),
+        animatedVisibilityScope = visibilityScope,
+    )
+    if (balanceKey == null) {
+        ProfileFlightPieces.None.withFace(face)
+    } else {
+        ProfileFlightPieces(
+            face = face,
+            name = sharedTextOf(pieceKeyOf("name", faceId), visibilityScope),
+            amount = sharedTextOf(pieceKeyOf("amount-$balanceKey", faceId), visibilityScope),
+            word = sharedTextOf(pieceKeyOf("word-$balanceKey", faceId), visibilityScope),
         )
     }
 }
 
-private fun faceKeyOf(faceId: String): String = "profile-face-$faceId"
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.sharedTextOf(
+    key: String,
+    visibilityScope: AnimatedVisibilityScope,
+): Modifier = Modifier.sharedBounds(
+    sharedContentState = rememberSharedContentState(key),
+    animatedVisibilityScope = visibilityScope,
+)
+
+private fun pieceKeyOf(
+    piece: String,
+    faceId: String,
+): String = "profile-$piece-$faceId"
