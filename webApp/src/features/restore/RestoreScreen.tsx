@@ -68,7 +68,10 @@ export function RestoreScreen() {
                     isLast={index === state.words.length - 1}
                     onFocus={() => presenter.focusWord(index)}
                     onNext={() => wordInputs.current[index + 1]?.focus()}
-                    onChange={(value) => presenter.changeWord(index, value)}
+                    onChange={(value) => {
+                      presenter.changeWord(index, value)
+                      return presenter.getWordText(index)
+                    }}
                   />
                 ))}
               </div>
@@ -148,19 +151,16 @@ interface WordInputProps {
   isLast: boolean
   onFocus: () => void
   onNext: () => void
-  onChange: (value: string) => void
+  onChange: (value: string) => string
 }
 
 /**
- * One recovery word. Several words pasted or typed into it fill the fields from it on, so the draft keeps only the first
- * one, which the ViewModel sends back whole. Enter moves on, as the phones' Next does, and only the last field submits.
+ * One recovery word. The draft shows what the ViewModel kept for the field in the same keystroke, so a space it drops
+ * or words it spreads to the other fields don't stay typed here. Enter moves on, as the phones' Next does, and only the
+ * last field submits.
  */
 function WordInput({ index, word, hasError, inputRef, isLast, onFocus, onNext, onChange }: WordInputProps) {
-  const [text, setText] = useDraft(word.text, (value) => {
-    onChange(value)
-    const words = value.toLowerCase().split(/[^a-z]+/).filter(Boolean)
-    return words.length > 1 ? words[0] : undefined
-  })
+  const [text, setText] = useDraft(word.text, onChange)
   return (
     <div className="relative">
       <span className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-xs text-muted-foreground tabular-nums">

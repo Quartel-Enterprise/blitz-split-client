@@ -447,4 +447,45 @@ class RecoveryWordsTest {
         // Then
         assertNull(code)
     }
+
+    @Test
+    fun `GIVEN a numbered list and a date below WHEN finding the code THEN keeps the listed word of each number`() {
+        // Given
+        val note = validCode.split(" ").mapIndexed { index, word -> "${index + 1}. $word" }.joinToString("\n") +
+            "\nSaved on 12 March"
+
+        // When
+        val code = RecoveryWords.findCodeIn(note)
+
+        // Then
+        assertEquals(validCode.split(" "), code)
+    }
+
+    @Test
+    fun `GIVEN a numbered list with a mistyped word WHEN finding the typed words THEN keeps each word at its number`() {
+        // Given
+        val note = "Recovery code\n" + validCode
+            .split(" ")
+            .mapIndexed { index, word -> "${index + 1}. ${if (index == 4) "qqx" else word}" }
+            .joinToString("\n")
+
+        // When
+        val words = RecoveryWords.findTypedWordsIn(note)
+
+        // Then
+        assertEquals(validCode.split(" ").toMutableList().apply { this[4] = "qqx" }, words)
+        assertNull(RecoveryWords.findCodeIn(note))
+    }
+
+    @Test
+    fun `GIVEN a heading of list words before the code WHEN finding the code THEN returns the run after the heading`() {
+        // Given
+        val note = "Recovery code: $validCode"
+
+        // When
+        val code = RecoveryWords.findCodeIn(note)
+
+        // Then
+        assertEquals(validCode.split(" "), code)
+    }
 }

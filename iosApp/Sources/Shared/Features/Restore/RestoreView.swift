@@ -28,6 +28,13 @@ final class RestoreModel {
         holder.viewModel.onEvent(event: event)
     }
 
+    /// Changes a word and reads the state back at once: when the ViewModel keeps the field as it was (a space it drops),
+    /// no new state arrives, and SwiftUI's TextField would keep showing what was typed.
+    func changeWord(at index: Int, to text: String) {
+        send(RestoreUiEventOnWordChanged(index: Int32(index), text: text))
+        state = holder.viewModel.uiState.value as! RestoreUiState
+    }
+
     private func handle(_ action: any RestoreUiAction) {
         switch action {
         case is RestoreUiActionOpenQrScanner:
@@ -280,7 +287,7 @@ private struct RestoreWordFields: View {
                 "",
                 text: Binding(
                     get: { model.state.words[index].text },
-                    set: { model.send(RestoreUiEventOnWordChanged(index: Int32(index), text: $0)) },
+                    set: { model.changeWord(at: index, to: $0) },
                 ),
             )
             .font(.system(.body, design: .monospaced))

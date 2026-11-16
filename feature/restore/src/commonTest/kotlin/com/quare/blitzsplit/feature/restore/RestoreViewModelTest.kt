@@ -1260,6 +1260,69 @@ class RestoreViewModelTest {
         }
 
     @Test
+    fun `GIVEN a failed restore WHEN another field gets the focus THEN keeps the error`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(restoreError = InvalidRecoveryCodeException())
+        viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
+        viewModel.onEvent(RestoreUiEvent.OnWordFocused(0))
+        viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
+
+        // When
+        viewModel.onEvent(RestoreUiEvent.OnWordFocused(3))
+
+        // Then
+        assertEquals(RestoreError.INVALID_CODE, viewModel.uiState.value.error)
+    }
+
+    @Test
+    fun `GIVEN a word and the start of the next WHEN typed into a field THEN keeps the focus on the unfinished one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, "legal wi"))
+
+            // Then
+            assertEquals(listOf("legal", "wi"), wordTexts().take(2))
+            assertEquals(listOf<RestoreUiAction>(RestoreUiAction.FocusWord(1)), actions)
+        }
+
+    @Test
+    fun `GIVEN 12 typed words WHEN a QR that is not a code is scanned THEN replaces every field`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, RECOVERY_CODE))
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnQrScanned("hello world"))
+
+            // Then
+            assertEquals(listOf("hello", "world") + List(10) { "" }, wordTexts())
+        }
+
+    @Test
+    fun `GIVEN a numbered list with a mistyped word WHEN pasted THEN fills each word at its number and marks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val note = "Recovery code\n" + recoveryWords
+                .mapIndexed { index, word -> "${index + 1}. ${if (index == 4) "qqx" else word}" }
+                .joinToString("\n")
+
+            // When
+            viewModel.onEvent(RestoreUiEvent.OnWordChanged(0, note))
+
+            // Then
+            assertEquals(recoveryWords.toMutableList().apply { this[4] = "qqx" }, wordTexts())
+            assertTrue(
+                viewModel.uiState.value.words[4]
+                    .isDeadEnd,
+            )
+        }
+
+    @Test
     fun `GIVEN the restore screen WHEN a word arrives for a field past the last THEN changes nothing`() =
         runTest(testDispatcher) {
             // Given

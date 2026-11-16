@@ -10,6 +10,7 @@ kotlin {
             implementation(project(":core:navigation"))
             implementation(project(":core:account"))
             implementation(project(":core:sync"))
+            implementation(project(":core:utils"))
             implementation(libs.quare.connectivity)
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)

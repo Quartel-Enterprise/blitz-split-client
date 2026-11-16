@@ -12,6 +12,7 @@ object RecoveryWords {
     private const val SUGGESTION_LIMIT = 3
 
     private val wordByPrefix: Map<String, String> = BIP39_ENGLISH.associateBy { it.take(PREFIX_LENGTH) }
+    private val words: Set<String> = BIP39_ENGLISH.toSet()
     private val separators = Regex("[^a-z]+")
     private val numberedWord = Regex("""(?<![0-9])([0-9]{1,2})\s*[.):-]?\s*([A-Za-z]+)""")
 
@@ -26,6 +27,8 @@ object RecoveryWords {
         val token = split(typed).singleOrNull() ?: return null
         return wordByPrefix[token.take(PREFIX_LENGTH)]
     }
+
+    fun isWord(text: String): Boolean = text in words
 
     // Why: a field is marked wrong only once no word can come out of it, not while it is still being typed.
     fun isDeadEnd(typed: String): Boolean {
@@ -46,20 +49,33 @@ object RecoveryWords {
 
     /*
      * Why: a pasted text may hold more than the words, as the web's downloaded file does (a heading, a sentence after
-     * them), and a heading's words can be list words too ("split", "code"). A list numbered 1 to 12 is read by its
-     * numbers; any other text by its first run of 12 words of the list.
+     * them), and a heading's words can be list words too ("split", "code", "recovery" read as "record"). A list
+     * numbered 1 to 12 is read by its numbers. Any other text by a run of 12 whole words of the list, the last one
+     * since a heading comes before the words, and only then by a run that needs prefixes.
      */
-    fun findCodeIn(input: String): List<String>? = findNumberedCodeIn(input) ?: split(input)
-        .windowed(COUNT)
-        .firstOrNull { window -> window.all { wordOf(it) != null } }
-        ?.map { wordOf(it).orEmpty() }
+    fun findCodeIn(input: String): List<String>? {
+        findTypedWordsIn(input)?.let { words -> return words.takeIf { it.all(::isWord) } }
+        val windows = split(input).windowed(COUNT)
+        return windows.lastOrNull { window -> window.all(::isWord) }
+            ?: windows
+                .firstOrNull { window -> window.all { wordOf(it) != null } }
+                ?.map { wordOf(it).orEmpty() }
+    }
 
-    private fun findNumberedCodeIn(input: String): List<String>? {
-        val wordByNumber = numberedWord
-            .findAll(input)
-            .associate { match -> match.groupValues[1].toInt() to wordOf(match.groupValues[2]) }
-        return (1..COUNT)
-            .map { number -> wordByNumber[number] ?: return null }
+    /*
+     * Why: a numbered list with a mistyped word is still the person's 12 words, so it fills the fields by number and
+     * the wrong one is marked in its own field. Only the first word given each number counts, so a date or a count
+     * further down ("Saved on 12 March") can't replace a listed word.
+     */
+    fun findTypedWordsIn(input: String): List<String>? {
+        val wordByNumber = mutableMapOf<Int, String>()
+        numberedWord.findAll(input.lowercase()).forEach { match ->
+            wordByNumber.getOrPut(match.groupValues[1].toInt()) { match.groupValues[2] }
+        }
+        return (1..COUNT).map { number ->
+            val typed = wordByNumber[number] ?: return null
+            wordOf(typed) ?: typed
+        }
     }
 
     // Why: a code stored before the words (12 base32 characters) isn't shown as if it were words.

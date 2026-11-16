@@ -67,6 +67,12 @@ class RestorePresenter {
         viewModel.onEvent(RestoreUiEvent.OnWordChanged(index, text))
     }
 
+    // Why: the field shows what the ViewModel kept in the same keystroke (a space dropped, words spread to the others).
+    fun getWordText(index: Int): String = viewModel.uiState.value.words
+        .getOrNull(index)
+        ?.text
+        .orEmpty()
+
     fun focusWord(index: Int) {
         viewModel.onEvent(RestoreUiEvent.OnWordFocused(index))
     }

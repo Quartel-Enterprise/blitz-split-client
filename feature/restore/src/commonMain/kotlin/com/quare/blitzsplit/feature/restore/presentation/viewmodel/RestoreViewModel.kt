@@ -104,7 +104,7 @@ class RestoreViewModel(
         when {
             tokens.size >= RecoveryWords.COUNT -> fillWords(
                 from = 0,
-                tokens = RecoveryWords.findCodeIn(text) ?: tokens,
+                tokens = RecoveryWords.findCodeIn(text) ?: RecoveryWords.findTypedWordsIn(text) ?: tokens,
             )
 
             tokens.size > 1 -> fillWords(
@@ -112,13 +112,22 @@ class RestoreViewModel(
                 tokens = tokens,
             )
 
-            // Why: a space or the keyboard's next after a word completes it, as picking it would.
-            tokens.size == 1 && !text.last().isLetter() && RecoveryWords.wordOf(tokens.single()) != null -> {
-                setWords(index, listOf(RecoveryWords.wordOf(tokens.single()).orEmpty()))
-                focusNext(index)
-            }
+            else -> typeWord(index, text, tokens.firstOrNull().orEmpty())
+        }
+    }
 
-            else -> setWords(index, listOf(tokens.firstOrNull().orEmpty()))
+    // Why: a space or the keyboard's next after a word completes it, as picking it would.
+    private fun typeWord(
+        index: Int,
+        text: String,
+        token: String,
+    ) {
+        val word = RecoveryWords.wordOf(token)
+        if (word != null && !text.last().isLetter()) {
+            setWords(index, listOf(word))
+            focusNext(index)
+        } else {
+            setWords(index, listOf(token))
         }
     }
 
@@ -128,8 +137,14 @@ class RestoreViewModel(
     ) {
         val words = tokens.take(RecoveryWords.COUNT - from).map { RecoveryWords.wordOf(it) ?: it }
         setWords(from, words)
+        // Why: a last word not whole yet ("legal wi") is still being typed, so the keyboard stays on it.
+        val lastIndex = from + words.lastIndex
+        val isLastWordWhole = RecoveryWords.isWord(words.lastOrNull().orEmpty())
         val nextEmpty = uiState.value.words.indexOfFirst { it.text.isEmpty() }
-        if (nextEmpty >= 0) emitAction(RestoreUiAction.FocusWord(nextEmpty))
+        when {
+            !isLastWordWhole -> emitAction(RestoreUiAction.FocusWord(lastIndex))
+            nextEmpty >= 0 -> emitAction(RestoreUiAction.FocusWord(nextEmpty))
+        }
     }
 
     // Why: leaving a field shows the whole word its first letters stand for.
@@ -137,8 +152,10 @@ class RestoreViewModel(
         if (index !in uiState.value.words.indices) return
         val previous = uiState.value.focusedWordIndex
         if (previous != null && previous != index) {
-            val word = RecoveryWords.wordOf(uiState.value.words[previous].text)
-            if (word != null) setWords(previous, listOf(word))
+            val text = uiState.value.words[previous].text
+            val word = RecoveryWords.wordOf(text)
+            // Why: only a prefix that grows is rewritten, so tapping a field keeps the restore's error in view.
+            if (word != null && word != text) setWords(previous, listOf(word))
         }
         uiState.update { it.copy(focusedWordIndex = index) }
         updateSuggestions()
@@ -188,10 +205,9 @@ class RestoreViewModel(
     private fun handleQrScanned(content: String) {
         val text = content.toRecoveryCodeFromQr()
         val code = RecoveryWords.findCodeIn(text)
-        fillWords(
-            from = 0,
-            tokens = code ?: RecoveryWords.split(text),
-        )
+        val tokens = code ?: RecoveryWords.split(text).take(RecoveryWords.COUNT)
+        // Why: a QR replaces all 12 fields, so no word typed before stays mixed with what it held.
+        setWords(0, tokens + List(RecoveryWords.COUNT - tokens.size) { "" })
         if (code == null) {
             uiState.update { it.copy(error = RestoreError.INVALID_CODE) }
         } else {

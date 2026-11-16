@@ -103,7 +103,7 @@ class DeleteAccountViewModelTest {
             // Given
             prepareScenario(
                 status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
-                recoveryCode = "ABCDEFGHJKLM",
+                recoveryCode = "legal winner thank year wave sausage worth useful legal winner thank yellow",
             )
 
             // When
@@ -111,6 +111,22 @@ class DeleteAccountViewModelTest {
 
             // Then
             assertTrue(state.deletesRecoveryCode)
+        }
+
+    @Test
+    fun `GIVEN an anonymous user kept with a code from before the words WHEN the screen opens THEN leaves it out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous(FakeAccountRepository.ANONYMOUS_USER_ID),
+                recoveryCode = "ABCDEFGHJKLM",
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.deletesRecoveryCode)
         }
 
     @Test

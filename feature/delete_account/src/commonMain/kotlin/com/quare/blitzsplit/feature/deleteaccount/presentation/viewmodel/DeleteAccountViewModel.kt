@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.DeleteAccount
 import com.quare.blitzsplit.core.sync.domain.usecase.ExportUserData
+import com.quare.blitzsplit.core.utils.RecoveryWords
 import com.quare.blitzsplit.feature.deleteaccount.presentation.model.DeleteAccountUiAction
 import com.quare.blitzsplit.feature.deleteaccount.presentation.model.DeleteAccountUiEvent
 import com.quare.blitzsplit.feature.deleteaccount.presentation.model.DeleteAccountUiState
@@ -60,7 +61,8 @@ class DeleteAccountViewModel(
                     it.copy(
                         accountProvider = (status as? AccountStatus.Connected)?.provider.toLoaded(),
                         hasAccount = status !is AccountStatus.LocalOnly,
-                        hasRecoveryCode = account.recoveryCode != null,
+                        // Why: as Profile counts it, a code kept from before the words is none.
+                        hasRecoveryCode = account.recoveryCode?.let(RecoveryWords::wordsOf) != null,
                     )
                 }
             }.launchIn(viewModelScope)

@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontFamily
@@ -37,7 +38,9 @@ fun RecoveryWordsGrid(
     isCompact: Boolean = false,
 ) {
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        val columns = if (maxWidth < minWidthPerColumn * columnCount) minOf(columnCount, 2) else columnCount
+        // Why: the words are in sp, so a larger font needs wider columns.
+        val minWidth = minWidthPerColumn * LocalDensity.current.fontScale * columnCount
+        val columns = if (maxWidth < minWidth) minOf(columnCount, 2) else columnCount
         RecoveryWordsColumn(
             words = words,
             columnCount = columns,
