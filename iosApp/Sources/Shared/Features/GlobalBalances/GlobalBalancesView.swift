@@ -145,7 +145,13 @@ struct GlobalBalancesView: View {
             if !isLoaded { isSplitBillExpanded = true }
         }
         .readingVerticalBar($hasVerticalBar)
-        .tabButtonsRow { profileButton }
+        .tabTrailingButtons(
+            showsSplitBill: model?.state.showsSplitBillButton == true,
+            showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
+            onSplitBill: { model?.send(GlobalBalancesUiEventOnSplitBillClicked.shared) },
+        ) {
+            profileButton
+        }
         .tabTitleDisplayMode()
         #else
         .navigationSubtitle(model.map { GlobalBalancesCopy.macSubtitle($0.state) } ?? "")
@@ -153,13 +159,6 @@ struct GlobalBalancesView: View {
         .toolbar {
             #if os(iOS)
             TabTitle(title: String(localized: "Balances", bundle: .appLanguage))
-            TabTrailingItems(
-                showsSplitBill: model?.state.showsSplitBillButton == true,
-                showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
-                onSplitBill: { model?.send(GlobalBalancesUiEventOnSplitBillClicked.shared) },
-            ) {
-                profileButton
-            }
             #else
             if let model {
                 ToolbarItem(placement: .principal) {

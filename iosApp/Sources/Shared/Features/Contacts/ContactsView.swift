@@ -196,7 +196,13 @@ struct ContactsView: View {
             if isEmpty { isSplitBillExpanded = true }
         }
         .readingVerticalBar($hasVerticalBar)
-        .tabButtonsRow { profileButton }
+        .tabTrailingButtons(
+            showsSplitBill: state.showsSplitBillButton,
+            showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
+            onSplitBill: { model.send(ContactsUiEventOnSplitBillClicked.shared) },
+        ) {
+            profileButton
+        }
         .tabTitleDisplayMode()
         #endif
         .toolbar {
@@ -204,13 +210,6 @@ struct ContactsView: View {
             TabTitle(title: String(localized: "Contacts", bundle: .appLanguage))
             // "Split a bill" asks the group first, as on Groups (beta feedback of 2026-11-15); the Mac keeps it on
             // Home and Groups
-            TabTrailingItems(
-                showsSplitBill: state.showsSplitBillButton,
-                showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
-                onSplitBill: { model.send(ContactsUiEventOnSplitBillClicked.shared) },
-            ) {
-                profileButton
-            }
             #else
             ToolbarItem(placement: .primaryAction) {
                 Button("Invite with a link or QR code", systemImage: "qrcode") {

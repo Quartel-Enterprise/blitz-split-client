@@ -30,8 +30,8 @@ The home's four tabs and the web's and the Mac's shell.
     the tabs, and the web one frame (`HomeFrame`), so their bars never redraw either.
   - An iPad opens with its tabs in the sidebar (`defaultAdaptableTabBarPlacement(.sidebar)`, the iPad only, Pierre's
     call, beta feedback of 2026-11-15), its button still turning them into the bar's tabs. Lying down the sidebar sits
-    beside the content and the top bar keeps its whole width. Upright, and in a Stage Manager window under 1100 pt
-    wide, iPadOS has no room to keep it there: it opens over the content, and once closed the tabs sit in the top
+    beside the content and the top bar keeps its whole width. Upright, and in a window under 1150 pt wide (Stage
+    Manager's, an iPad mini lying down), iPadOS has no room to keep it there: it opens over the content, and once closed the tabs sit in the top
     bar's middle, which leaves the bar's trailing side room for one item. There "Split a bill" is a home tab's only
     item in the bar, and its other buttons (Home's bell and profile, Groups' QR and profile, the profile of Balances
     and Contacts) go to a row of glass atop the content, at its trailing side (`isTabBarCrowded`, `tabButtonsRow`), so

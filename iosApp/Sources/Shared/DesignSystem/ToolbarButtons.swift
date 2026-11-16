@@ -245,23 +245,45 @@ private struct PhoneBarMinimization: ViewModifier {
     }
 }
 
-/// An iPad window under 1100 pt wide with a regular width (an iPad upright, the 13" one included, Stage Manager's
-/// narrower windows): its tabs
+/// An iPad window under 1150 pt wide with a regular width (an iPad upright, the 13" one included, an iPad mini lying
+/// down, Stage Manager's narrower windows): its tabs
 /// sit in the top bar's middle whenever the sidebar is closed (it can't stay beside the content there), which leaves the
 /// bar's trailing side room for one item. "Split a bill" keeps it; the tab's other buttons go to a row atop the content
 /// (`tabButtonsRow`), so iOS never hides any in its own "⋯" (Pierre's call, beta feedback of 2026-11-15). A compact
 /// window has its tab bar at the bottom, as an iPhone. A tab's list column beside a detail (`inListColumn`: Groups'
 /// beside a group, Contacts' beside a person) is crowded at any window width: its own bar, under the tabs, has room
-/// for "Split a bill" alone too. An 11" iPad lying down (1194 pt) has room for all of them beside its tabs.
+/// for "Split a bill" alone too. An 11" iPad lying down (1194 pt) has room for all of them beside its tabs. SwiftUI
+/// tells no view whether the sidebar is open, so the window's width stands for where the tabs are: with the sidebar
+/// open in such a window, the row still holds the buttons, which costs it nothing but a line.
 ///
 /// The idiom check is on purpose, as `PhoneBarMinimization`'s: an iPhone Duo open has an iPad's room but its tabs stay
 /// in the system's vertical bar, never in the top bar's middle.
 func isTabBarCrowded(_ window: ScreenLayout, _ sizeClass: UserInterfaceSizeClass?, inListColumn: Bool = false) -> Bool {
     guard UIDevice.current.userInterfaceIdiom == .pad, sizeClass == .regular else { return false }
-    return inListColumn || (window.size != .zero && window.size.width < 1100)
+    return inListColumn || (window.size != .zero && window.size.width < 1150)
 }
 
 extension View {
+    /// A home tab's trailing buttons and "Split a bill", listed once: in the top bar (`TabTrailingItems`), or, while
+    /// its tabs crowd the bar (`isTabBarCrowded`), "Split a bill" alone there and the buttons in the row atop the
+    /// content (`tabButtonsRow`), so a button added to a tab shows in both places.
+    func tabTrailingButtons<Buttons: View>(
+        showsSplitBill: Bool,
+        showsSplitBillTitle: Bool,
+        onSplitBill: @escaping () -> Void,
+        @ViewBuilder buttons: @escaping () -> Buttons,
+    ) -> some View {
+        toolbar {
+            TabTrailingItems(
+                showsSplitBill: showsSplitBill,
+                showsSplitBillTitle: showsSplitBillTitle,
+                onSplitBill: onSplitBill,
+                buttons: buttons,
+            )
+        }
+        .tabButtonsRow(buttons: buttons)
+    }
+
     /// A group's screens (the group, its Statistics, its expenses by category) keep their own bars without the app's
     /// tabs on an iPhone, and on an iPad whose tabs would crowd the top bar (`isTabBarCrowded`), where they left the
     /// group's buttons no room; not beside Groups' list, whose column keeps the tabs.
@@ -272,7 +294,7 @@ extension View {
     /// The tab's buttons (Home's bell and profile, Groups' QR and profile, the profile of Balances and Contacts) in a
     /// row of glass atop the content, at its trailing side, while a crowded tab bar leaves them no room in the top bar
     /// (`isTabBarCrowded`); nothing anywhere else.
-    func tabButtonsRow(@ViewBuilder buttons: () -> some View) -> some View {
+    private func tabButtonsRow(@ViewBuilder buttons: () -> some View) -> some View {
         modifier(TabButtonsRow(buttons: buttons()))
     }
 }

@@ -175,7 +175,11 @@ struct HomeView: View {
         )
         .navigationTitle(HomeCopy.tabTitle)
         #if os(iOS)
-        .tabButtonsRow {
+        .tabTrailingButtons(
+            showsSplitBill: state.showsSplitBillButton,
+            showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
+            onSplitBill: { model.send(HomeUiEventOnSplitBillClicked.shared) },
+        ) {
             bellButton
             profileButton
         }
@@ -193,14 +197,6 @@ struct HomeView: View {
                         model.send(HomeUiEventOnRetrySyncClicked.shared)
                     }
                 }
-            }
-            TabTrailingItems(
-                showsSplitBill: state.showsSplitBillButton,
-                showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
-                onSplitBill: { model.send(HomeUiEventOnSplitBillClicked.shared) },
-            ) {
-                bellButton
-                profileButton
             }
         }
         #else
