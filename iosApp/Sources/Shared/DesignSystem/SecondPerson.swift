@@ -49,7 +49,8 @@ enum SecondPerson {
     /// Portugal's Portuguese: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste".
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
     /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
-    /// "böldün:". Another language keeps the verb as it is.
+    /// "böldün:". Korean: every verb phrase starts with "님이" after the actor, which the user's drops, since the user's
+    /// subject word ("내가") holds its own particle, so "님이 나눴어요" → "나눴어요". Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)

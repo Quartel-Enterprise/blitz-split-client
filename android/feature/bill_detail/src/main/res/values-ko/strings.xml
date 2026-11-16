@@ -126,9 +126,9 @@
     <string name="bill_detail_viewer_added_today">%1$s 님이 오늘 %2$s에 첨부했어요</string>
     <string name="bill_detail_viewer_added_yesterday">%1$s 님이 어제 %2$s에 첨부했어요</string>
     <string name="bill_detail_viewer_added_other">%1$s 님이 %2$s %3$s에 첨부했어요</string>
-    <string name="bill_detail_viewer_read_today">%1$s 님이 오늘 %2$s에 영수증을 읽었어요</string>
-    <string name="bill_detail_viewer_read_yesterday">%1$s 님이 어제 %2$s에 영수증을 읽었어요</string>
-    <string name="bill_detail_viewer_read_other">%1$s 님이 %2$s %3$s에 영수증을 읽었어요</string>
+    <string name="bill_detail_viewer_read_today">%1$s 님이 오늘 %2$s에 영수증을 스캔했어요</string>
+    <string name="bill_detail_viewer_read_yesterday">%1$s 님이 어제 %2$s에 영수증을 스캔했어요</string>
+    <string name="bill_detail_viewer_read_other">%1$s 님이 %2$s %3$s에 영수증을 스캔했어요</string>
     <string name="bill_detail_viewer_can_remove">그룹의 누구나 삭제할 수 있어요.</string>
     <string name="bill_detail_viewer_swipe">옆으로 넘기면 다음 사진을 볼 수 있어요.</string>
     <string name="bill_detail_viewer_no_image">다시 온라인이 되면 사진이 표시돼요.</string>

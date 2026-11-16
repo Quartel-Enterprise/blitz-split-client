@@ -28,7 +28,7 @@ dependencies, and [release-process.md](release-process.md) says how a release ru
         "pt": "Agora você pode exportar os dados de um grupo pelo menu dele.",
         "pt-PT": "Agora podes exportar os dados de um grupo a partir do menu dele.",
         "es": "…", "fr": "…", "de": "…", "it": "…", "pl": "…", "nl": "…", "ja": "…", "tr": "…", "id": "…",
-        "ru": "…", "uk": "…"
+        "ru": "…", "uk": "…", "ko": "…"
       }
     }
   ]
