@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatters
+import com.quare.blitzsplit.android.designsystem.theme.negativeAmountColor
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.groups.presentation.model.BalanceTotal
@@ -84,7 +85,7 @@ internal fun GroupsSummaryCard(
                 amounts = amountsOf(summary.totals, BalanceTotal::toPayMinor).map { (currency, minor) ->
                     signed(currency, -minor)
                 },
-                amountColor = MaterialTheme.colorScheme.error,
+                amountColor = negativeAmountColor(),
                 isEnabled = summary.canOpenToPay,
                 onClick = { onEvent(GroupsUiEvent.OnToPayClicked) },
                 modifier = buttonModifier,

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AmountText
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.negativeAmountColor
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
 import com.quare.blitzsplit.core.model.BalancesFilter
@@ -110,7 +111,7 @@ private fun SegmentAmountText(
         color = when {
             isSelected -> MaterialTheme.colorScheme.onPrimary
             amountMinor == 0L -> MaterialTheme.colorScheme.onSurfaceVariant
-            filter == BalancesFilter.YOU_OWE || amountMinor < 0 -> MaterialTheme.colorScheme.error
+            filter == BalancesFilter.YOU_OWE || amountMinor < 0 -> negativeAmountColor()
             else -> positiveAmountColor()
         },
     )

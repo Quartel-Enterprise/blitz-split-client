@@ -46,6 +46,7 @@ import com.quare.blitzsplit.android.designsystem.component.QrCodeImage
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.TabletopGap
 import com.quare.blitzsplit.android.designsystem.layout.TopBottomHalvesLayout
+import com.quare.blitzsplit.android.designsystem.theme.negativeAmountColor
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.feature.registerpayment.presentation.model.PayCopyTarget
@@ -239,7 +240,7 @@ private fun PayHeader(
             text = money.toText(state.debtMinor),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.ExtraBold,
-            color = MaterialTheme.colorScheme.error,
+            color = negativeAmountColor(),
         )
     }
 }

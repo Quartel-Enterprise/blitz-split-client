@@ -1,0 +1,48 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "android"
+      ],
+      "text": {
+        "en": "With the phone lying down, and on tablets, a group's \"Split a bill\" now sits in the top bar instead of floating over the bills.",
+        "pt": "Com o celular deitado, e em tablets, o \"Rachar conta\" de um grupo agora fica na barra de cima em vez de flutuar sobre as contas.",
+        "pt-PT": "Com o telemóvel deitado, e em tablets, o \"Dividir conta\" de um grupo fica agora na barra de cima em vez de flutuar sobre as contas.",
+        "es": "Con el teléfono acostado, y en tablets, \"Dividir un gasto\" de un grupo ahora está en la barra superior en vez de flotar sobre los gastos.",
+        "fr": "Téléphone à l’horizontale, et sur tablette, « Partager une dépense » d’un groupe se trouve désormais dans la barre du haut au lieu de flotter sur les dépenses.",
+        "de": "Bei quer gehaltenem Handy und auf Tablets sitzt „Ausgabe aufteilen“ einer Gruppe jetzt in der oberen Leiste, statt über den Ausgaben zu schweben.",
+        "it": "Con il telefono in orizzontale, e sui tablet, \"Dividi una spesa\" di un gruppo ora sta nella barra in alto invece di fluttuare sulle spese.",
+        "pl": "Przy telefonie w poziomie i na tabletach „Podziel wydatek” w grupie jest teraz na górnym pasku, zamiast unosić się nad wydatkami.",
+        "nl": "Met de telefoon liggend, en op tablets, staat \"Uitgave verdelen\" van een groep nu in de bovenste balk in plaats van boven de uitgaven te zweven.",
+        "ja": "スマートフォンを横向きにしたときやタブレットでは、グループの「支出を割り勘」が支出の上に浮かばず、上部のバーに表示されるようになりました。",
+        "tr": "Telefon yatay tutulduğunda ve tabletlerde, bir grubun \"Harcama böl\" düğmesi artık harcamaların üzerinde durmak yerine üst çubukta yer alıyor.",
+        "id": "Saat ponsel dalam posisi mendatar, dan di tablet, \"Bagi tagihan\" sebuah grup kini ada di bilah atas, tidak lagi melayang di atas tagihan.",
+        "ru": "Когда телефон лежит горизонтально, и на планшетах кнопка «Разделить счёт» в группе теперь стоит в верхней панели, а не парит над счетами.",
+        "uk": "Коли телефон лежить горизонтально, і на планшетах кнопка «Розділити рахунок» у групі тепер стоїть у верхній панелі, а не ширяє над рахунками."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "android"
+      ],
+      "text": {
+        "en": "With Dynamic colors on, what you owe stays orange instead of turning red, so it never looks like the green of what comes back to you.",
+        "pt": "Com Cores dinâmicas ligadas, o que você deve continua laranja em vez de ficar vermelho, e nunca se confunde com o verde do que você tem a receber.",
+        "pt-PT": "Com as Cores dinâmicas ativas, o que deves continua laranja em vez de ficar vermelho, e nunca se confunde com o verde do que tens a receber.",
+        "es": "Con Colores dinámicos activados, lo que debes sigue en naranja en vez de volverse rojo, así nunca se confunde con el verde de lo que te deben.",
+        "fr": "Avec Couleurs dynamiques activé, ce que tu dois reste orange au lieu de passer au rouge, pour ne jamais se confondre avec le vert de ce qu’on te doit.",
+        "de": "Mit Dynamische Farben bleibt, was du schuldest, orange statt rot, damit es nie wie das Grün dessen aussieht, was du zurückbekommst.",
+        "it": "Con Colori dinamici attivi, quello che devi resta arancione invece di diventare rosso, così non si confonde mai con il verde di quello che ti spetta.",
+        "pl": "Przy włączonych Kolorach dynamicznych to, co jesteś winien, zostaje pomarańczowe zamiast czerwonego i nie myli się z zielenią tego, co masz odzyskać.",
+        "nl": "Met Dynamische kleuren aan blijft wat je schuldig bent oranje in plaats van rood, zodat het nooit lijkt op het groen van wat je terugkrijgt.",
+        "ja": "ダイナミックカラーをオンにしても、支払う金額は赤ではなくオレンジのままになり、受け取る金額の緑と見分けやすくなりました。",
+        "tr": "Dinamik renkler açıkken borcun kırmızıya dönmek yerine turuncu kalıyor, böylece alacağının yeşiliyle hiç karışmıyor.",
+        "id": "Saat Warna dinamis aktif, utangmu tetap oranye alih-alih merah, jadi tidak pernah tertukar dengan hijau dari yang akan kamu terima.",
+        "ru": "С включёнными «Динамическими цветами» то, что ты должен(-на), остаётся оранжевым, а не красным, и не путается с зелёным цветом того, что должны тебе.",
+        "uk": "З увімкненими «Динамічними кольорами» те, що ти винен(-на), лишається помаранчевим, а не червоним, і не плутається із зеленим кольором того, що винні тобі."
+      }
+    }
+  ]
+}

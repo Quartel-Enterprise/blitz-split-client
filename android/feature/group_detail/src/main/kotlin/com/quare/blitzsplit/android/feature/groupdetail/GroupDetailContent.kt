@@ -76,10 +76,10 @@ fun GroupDetailContent(
 
             GroupTab.BALANCES -> balancesTabOf(state, money, onAction, onEvent)
 
-            // Why: Membros draws only its rows; "Rachar conta" floats over it as over the other tabs.
+            // Why: Membros draws only its rows; "Rachar conta" stays its main button as on the other tabs.
             GroupTab.MEMBERS -> GroupTabBody(
                 listContent = membersTab,
-                floatingButton = splitBillButtonOf(state, onAction),
+                splitBillButton = splitBillButtonOf(state, onAction),
             )
         },
         modifier = modifier,
@@ -134,7 +134,7 @@ private fun expensesTabOf(
                 )
             }
         },
-        floatingButton = splitBillButtonOf(state, onAction),
+        splitBillButton = splitBillButtonOf(state, onAction),
     )
 }
 
@@ -153,7 +153,7 @@ private fun balancesTabOf(
             onEvent = onEvent,
         )
     },
-    floatingButton = splitBillButtonOf(state, onAction),
+    splitBillButton = splitBillButtonOf(state, onAction),
 )
 
 // Why: beside the home's list, the rail's "Rachar conta" already marks this group.
