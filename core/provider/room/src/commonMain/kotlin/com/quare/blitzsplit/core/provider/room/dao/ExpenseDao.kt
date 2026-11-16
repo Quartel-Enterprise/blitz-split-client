@@ -13,10 +13,15 @@ import kotlinx.coroutines.flow.Flow
 /*
  * Why: MAX_IDS_PER_QUERY stays below SQLite's oldest cap on bound parameters (999), which some devices still have.
  * EDITOR_COLUMN is the member who last saved a bill, through the account the server recorded (ExpenseWithEditor).
+ * IS_MINE is a bill this device's user paid or takes part in: a member's id is a UUID, so finding it quoted in the
+ * payers' or the shares' JSON finds that member; the mapper drops what it can't read, and the screen checks again.
  */
 private const val MAX_IDS_PER_QUERY = 500
 private const val EDITOR_COLUMN = "(SELECT group_member.id FROM group_member WHERE group_member.groupId = " +
     "expense.groupId AND group_member.userId = expense.updatedBy LIMIT 1) AS updatedByMemberId"
+private const val IS_MINE = "EXISTS (SELECT 1 FROM group_member WHERE group_member.groupId = expense.groupId AND " +
+    "group_member.isMe = 1 AND (expense.payersJson LIKE '%\"' || group_member.id || '\"%' OR " +
+    "expense.sharesJson LIKE '%\"' || group_member.id || '\"%'))"
 
 @Dao
 interface ExpenseDao {
@@ -36,17 +41,26 @@ interface ExpenseDao {
 
     /*
      * Why: Início's "Ver tudo", the bills this device's user paid or takes part in across groups, the most recent first,
-     * as many as the list has reached (its pages grow the limit). A member's id is a UUID, so finding it quoted in the
-     * payers' or the shares' JSON finds that member; the mapper drops what it can't read, and the screen checks again.
+     * as many as the list has reached (its pages grow the limit).
      */
     @Query(
-        "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE isDeleted = 0 AND EXISTS (SELECT 1 FROM group_member " +
-            "WHERE group_member.groupId = expense.groupId AND group_member.isMe = 1 AND " +
-            "(expense.payersJson LIKE '%\"' || group_member.id || '\"%' OR " +
-            "expense.sharesJson LIKE '%\"' || group_member.id || '\"%')) " +
+        "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE isDeleted = 0 AND $IS_MINE " +
             "ORDER BY spentAt DESC, addedAt DESC, id LIMIT :limit",
     )
     fun observeMyExpenses(limit: Int): Flow<List<ExpenseWithEditor>>
+
+    /*
+     * Why: the same of the groups picked only ("All expenses" narrowed by group alone), still a window that grows rather
+     * than every bill of the device.
+     */
+    @Query(
+        "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE isDeleted = 0 AND groupId IN (:groupIds) AND $IS_MINE " +
+            "ORDER BY spentAt DESC, addedAt DESC, id LIMIT :limit",
+    )
+    fun observeMyExpensesIn(
+        groupIds: Set<String>,
+        limit: Int,
+    ): Flow<List<ExpenseWithEditor>>
 
     // Why: "Conta" and "Editar conta", which close once the bill is deleted, here or on another device.
     @Query(

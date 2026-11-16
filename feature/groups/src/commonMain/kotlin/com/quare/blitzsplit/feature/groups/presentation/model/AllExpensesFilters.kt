@@ -3,7 +3,7 @@ package com.quare.blitzsplit.feature.groups.presentation.model
 /*
  * Why: what "All expenses" narrows its bills to (Pierre's call, beta feedback): the search's text over the description,
  * as the home's search finds bills, the groups and the main categories picked (none picked: all), your share, who paid,
- * and the order. All of them at their default read the device a page at a time.
+ * and the order. All of them at their default, or apart from the groups picked, read the device a page at a time.
  */
 data class AllExpensesFilters(
     val query: String,
@@ -22,9 +22,13 @@ data class AllExpensesFilters(
             share != ShareFilter.ALL ||
             payer != PayerFilter.ALL
 
-    // Why: any of it apart from the default reads every bill of the device and narrows them here.
-    val isDefault: Boolean
-        get() = !isFiltering && sort == ExpenseSort.NEWEST
+    /*
+     * Why: at the default but for the groups picked, Room reads a window of those groups that grows a page at a time;
+     * anything else reads every bill of the device and narrows them here. Derived from isFiltering so a new filter
+     * can't be left out of it, which the window, never narrowed here, would ignore.
+     */
+    val readsAWindow: Boolean
+        get() = !copy(groupIds = emptySet()).isFiltering && sort == ExpenseSort.NEWEST
 
     companion object {
         val none = AllExpensesFilters(

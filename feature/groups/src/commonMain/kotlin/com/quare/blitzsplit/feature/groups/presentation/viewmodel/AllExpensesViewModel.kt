@@ -8,6 +8,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpensesIn
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -63,6 +64,7 @@ class AllExpensesViewModel(
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     observeMyExpenses: ObserveMyExpenses,
+    observeMyExpensesIn: ObserveMyExpensesIn,
     observeGroups: ObserveGroups,
     observeMapCategories: ObserveMapCategories,
     observeFirstDownload: ObserveFirstDownload,
@@ -109,20 +111,29 @@ class AllExpensesViewModel(
     init {
         /*
          * Why: at their default, a window of the device's bills that grows a page at a time (one more to know whether
-         * more are left); narrowed or sorted otherwise, every bill, which the list then shows a page at a time.
+         * more are left), of the groups picked when only those differ; narrowed or sorted otherwise, every bill, which
+         * the list then shows a page at a time.
          */
         val source = filters
-            .map { it.isDefault }
+            .map { it.windowGroupIds }
             .distinctUntilChanged()
-            .flatMapLatest { isDefault ->
-                if (isDefault) {
-                    limit.flatMapLatest { size -> observeMyExpenses(size + 1).map { DeviceBills(size, it) } }
-                } else {
+            .flatMapLatest { windowGroupIds ->
+                if (windowGroupIds == null) {
                     observeMyExpenses(Int.MAX_VALUE).map {
                         DeviceBills(
                             windowSize = null,
+                            groupIds = null,
                             expenses = it,
                         )
+                    }
+                } else {
+                    limit.flatMapLatest { size ->
+                        val window = if (windowGroupIds.isEmpty()) {
+                            observeMyExpenses(size + 1)
+                        } else {
+                            observeMyExpensesIn(windowGroupIds, size + 1)
+                        }
+                        window.map { DeviceBills(size, windowGroupIds, it) }
                     }
                 }
             }
@@ -196,8 +207,11 @@ class AllExpensesViewModel(
             timeZone = currentTimeZone(),
         )
         val window = bills.device.windowSize
-        // Why: the filters just left their default and every bill is on its way; a window narrowed would show too few.
-        if (window != null && !picked.isDefault) {
+        /*
+         * Why: the filters just left the window read (or its groups changed) and the next read is on its way; this
+         * window would show too few, or another group's.
+         */
+        if (window != null && picked.windowGroupIds != bills.device.groupIds) {
             // Why: what was picked shows picked at once, the rows staying until every bill is read.
             uiState.update { it.copy(filters = picked) }
             return
@@ -226,11 +240,19 @@ class AllExpensesViewModel(
     private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 }
 
-// Why: what the device gave: a window of its bills (windowSize) or every one of them (null).
+/*
+ * Why: what the device gave: a window of its bills (windowSize) of the groups read (groupIds, empty for every group's),
+ * or every one of them (both null).
+ */
 private class DeviceBills(
     val windowSize: Int?,
+    val groupIds: Set<String>?,
     val expenses: List<Expense>,
 )
+
+// Why: the groups whose window Room reads (empty: every group's), or null when every bill is read and narrowed here.
+private val AllExpensesFilters.windowGroupIds: Set<String>?
+    get() = groupIds.takeIf { readsAWindow }
 
 private class ReadBills(
     val device: DeviceBills,

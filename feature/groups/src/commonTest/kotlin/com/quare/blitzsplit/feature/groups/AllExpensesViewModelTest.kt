@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpensesIn
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
@@ -1688,13 +1689,93 @@ class AllExpensesViewModelTest {
         }
 
     @Test
-    fun `GIVEN All expenses open WHEN picking a group THEN reads every bill of the device`() = runTest(testDispatcher) {
+    fun `GIVEN All expenses open WHEN picking a group THEN reads 31 bills of that group only`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(5),
+            )
+            val event = AllExpensesUiEvent.OnGroupToggled("trio")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(31), expenses.myExpenseLimits)
+            assertEquals(listOf(setOf("trio") to 31), expenses.myExpenseInReads)
+        }
+
+    @Test
+    fun `GIVEN a group picked WHEN picking a second group THEN reads 31 bills of both`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(trio(), trio(id = "trip")),
+            storedExpenses = manyBills(5) + manyBills(5, groupId = "trip"),
+        )
+        viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+        val event = AllExpensesUiEvent.OnGroupToggled("trip")
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(setOf("trio", "trip") to 31, expenses.myExpenseInReads.last())
+        assertEquals(10, shownCount())
+    }
+
+    @Test
+    fun `GIVEN bills of two groups shown WHEN picking one before its window is read THEN keeps the rows until it is`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = manyBills(2) + manyBills(2, groupId = "trip"),
+            )
+            val shownBefore = shownIds()
+            pagesRead.value = false
+
+            // When
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trip"))
+
+            // Then
+            assertEquals(shownBefore, shownIds())
+            assertEquals(setOf("trip"), viewModel.uiState.value.filters.groupIds)
+            pagesRead.value = true
+            assertEquals(listOf("trip-0", "trip-1"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN a group picked WHEN switching to another before its window is read THEN keeps the rows until it is`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = manyBills(2) + manyBills(2, groupId = "trip"),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            pagesRead.value = false
+
+            // When
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trip"))
+
+            // Then
+            assertEquals(listOf("trio-0", "trio-1"), shownIds())
+            assertEquals(setOf("trip"), viewModel.uiState.value.filters.groupIds)
+            pagesRead.value = true
+            assertEquals(listOf("trip-0", "trip-1"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN a group picked WHEN sorting by oldest THEN reads every bill of the device`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
             storedGroups = listOf(trio()),
             storedExpenses = manyBills(5),
         )
-        val event = AllExpensesUiEvent.OnGroupToggled("trio")
+        viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+        val event = AllExpensesUiEvent.OnSortPicked(ExpenseSort.OLDEST)
 
         // When
         viewModel.onEvent(event)
@@ -1702,6 +1783,28 @@ class AllExpensesViewModelTest {
         // Then
         assertEquals(listOf(31, Int.MAX_VALUE), expenses.myExpenseLimits)
     }
+
+    @Test
+    fun `GIVEN 40 newer bills elsewhere WHEN picking the group of an older bill THEN shows that bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = manyBills(40, groupId = "trip") +
+                    bill(
+                        "old",
+                        spentAt = daysAgo(30),
+                    ),
+            )
+            val event = AllExpensesUiEvent.OnGroupToggled("trio")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("old"), shownIds())
+            assertFalse(viewModel.uiState.value.hasMore)
+        }
 
     @Test
     fun `GIVEN All expenses open WHEN sorting by oldest THEN reads every bill of the device`() =
@@ -1782,7 +1885,7 @@ class AllExpensesViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group picked with 70 bills WHEN the list reaches its end THEN shows 60 reading nothing more`() =
+    fun `GIVEN a group picked with 70 bills WHEN the list reaches its end THEN reads 61 of the group and shows 60`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -1790,7 +1893,6 @@ class AllExpensesViewModelTest {
                 storedExpenses = manyBills(70),
             )
             viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
-            val readsBefore = expenses.myExpenseLimits.toList()
             val event = AllExpensesUiEvent.OnEndReached
 
             // When
@@ -1802,7 +1904,29 @@ class AllExpensesViewModelTest {
             assertTrue(state.hasMore)
             assertFalse(state.isLoadingMore)
             assertFalse(state.showsMoreSkeleton)
-            assertEquals(readsBefore, expenses.myExpenseLimits)
+            assertEquals(listOf(31, 61), expenses.myExpenseInReads.map { it.second })
+            assertEquals(listOf(31), expenses.myExpenseLimits)
+        }
+
+    @Test
+    fun `GIVEN a group picked and its next page not read yet WHEN the list reached its end THEN shows it loading`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(70),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trio"))
+            pagesRead.value = false
+            val event = AllExpensesUiEvent.OnEndReached
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(30, shownCount())
+            assertTrue(state.isLoadingMore)
         }
 
     @Test
@@ -2554,6 +2678,10 @@ class AllExpensesViewModelTest {
             // Why: a page asked for while the device holds its reads only arrives once pagesRead turns true.
             observeMyExpenses = ObserveMyExpenses { limit ->
                 val page = expenses.observeMyExpenses(limit)
+                pagesRead.filter { it }.flatMapLatest { page }
+            },
+            observeMyExpensesIn = ObserveMyExpensesIn { groupIds, limit ->
+                val page = expenses.observeMyExpensesIn(groupIds, limit)
                 pagesRead.filter { it }.flatMapLatest { page }
             },
             observeGroups = ObserveGroupsUseCase(groups),

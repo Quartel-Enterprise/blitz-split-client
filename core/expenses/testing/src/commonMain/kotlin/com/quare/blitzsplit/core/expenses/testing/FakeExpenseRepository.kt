@@ -53,10 +53,12 @@ class FakeExpenseRepository(
 
     /*
      * Why: who this device's user is in each group, as Room's member rows say; null reads every bill as theirs. The
-     * limits observeMyExpenses was asked for, in order, so a test sees the pages grow.
+     * limits observeMyExpenses was asked for, in order, so a test sees the pages grow, and the groups and limits
+     * observeMyExpensesIn was.
      */
     val myMemberIds = MutableStateFlow<Set<String>?>(null)
     val myExpenseLimits = mutableListOf<Int>()
+    val myExpenseInReads = mutableListOf<Pair<Set<String>, Int>>()
     var pullError: Throwable? = null
 
     // Why: like Room, the group's bills with the most recent first.
@@ -72,15 +74,32 @@ class FakeExpenseRepository(
     // Why: like Room, the bills this device's user paid or takes part in, the most recent first, up to the limit.
     override fun observeMyExpenses(limit: Int): Flow<List<Expense>> {
         myExpenseLimits += limit
-        return combine(expenses, myMemberIds) { list, meIds ->
-            list
-                .filter { expense ->
-                    meIds == null ||
-                        expense.payers.any { it.memberId in meIds } ||
-                        expense.shares.any { it.memberId in meIds }
-                }.sortedWith(compareByDescending<Expense> { it.spentAt }.thenBy { it.id })
-                .take(limit)
-        }
+        return observeMine(limit) { true }
+    }
+
+    // Why: like Room, the same of the groups picked only.
+    override fun observeMyExpensesIn(
+        groupIds: Set<String>,
+        limit: Int,
+    ): Flow<List<Expense>> {
+        myExpenseInReads += groupIds to limit
+        return observeMine(limit) { it.groupId in groupIds }
+    }
+
+    private fun observeMine(
+        limit: Int,
+        isPicked: (Expense) -> Boolean,
+    ): Flow<List<Expense>> = combine(expenses, myMemberIds) { list, meIds ->
+        list
+            .filter { expense ->
+                isPicked(expense) &&
+                    (
+                        meIds == null ||
+                            expense.payers.any { it.memberId in meIds } ||
+                            expense.shares.any { it.memberId in meIds }
+                    )
+            }.sortedWith(compareByDescending<Expense> { it.spentAt }.thenBy { it.id })
+            .take(limit)
     }
 
     override fun observeExpense(id: String): Flow<Expense?> = expenses.map { list -> list.firstOrNull { it.id == id } }

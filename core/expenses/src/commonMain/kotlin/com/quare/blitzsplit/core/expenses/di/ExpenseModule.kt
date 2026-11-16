@@ -137,6 +137,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsByActivity
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpensesIn
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePayingMethods
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveRecordedPayment
@@ -203,6 +204,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupBalanc
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsByActivityUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveGroupsMoneyUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMapCategoriesUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMyExpensesInUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMyExpensesUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePayingMethodsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObservePeopleBalancesUseCase
@@ -241,6 +243,7 @@ val expenseModule = module {
     single<CurrentTimeZone> { CurrentTimeZone { TimeZone.currentSystemDefault() } }
     factoryOf(::ObserveExpensesUseCase).bind<ObserveExpenses>()
     factoryOf(::ObserveMyExpensesUseCase).bind<ObserveMyExpenses>()
+    factoryOf(::ObserveMyExpensesInUseCase).bind<ObserveMyExpensesIn>()
     factoryOf(::ObserveBillDeletionUseCase).bind<ObserveBillDeletion>()
     factoryOf(::BillMenuUseCases)
     factoryOf(::CustomColorUseCases)

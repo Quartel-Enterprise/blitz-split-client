@@ -564,6 +564,129 @@ class ExpenseDaoTest {
         }
 
     @Test
+    fun `GIVEN my bills in two groups WHEN observing those of one THEN gives only its bills the most recent first`() =
+        runTest {
+            // Given
+            prepareScenario(
+                otherGroupIds = listOf(OTHER_GROUP_ID),
+                members = listOf(
+                    member(ME, isMe = true),
+                    member(
+                        ME_THERE,
+                        groupId = OTHER_GROUP_ID,
+                        isMe = true,
+                    ),
+                ),
+                expenses = listOf(
+                    myExpense(
+                        id = "older-here",
+                        spentAt = 1_000L,
+                    ),
+                    myExpense(
+                        id = "newer-here",
+                        spentAt = 2_000L,
+                    ),
+                    expense(
+                        id = "there",
+                        groupId = OTHER_GROUP_ID,
+                        spentAt = 3_000L,
+                        payerIds = listOf(ME_THERE),
+                        shareIds = listOf(ME_THERE),
+                    ),
+                ),
+            )
+
+            // When
+            val ids = dao.observeMyExpensesIn(setOf(GROUP_ID), limit = 10).first().map { it.expense.id }
+
+            // Then
+            assertEquals(listOf("newer-here", "older-here"), ids)
+        }
+
+    @Test
+    fun `GIVEN an older bill of a group and newer ones elsewhere WHEN observing a page of that group THEN gives it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                otherGroupIds = listOf(OTHER_GROUP_ID),
+                members = listOf(
+                    member(ME, isMe = true),
+                    member(
+                        ME_THERE,
+                        groupId = OTHER_GROUP_ID,
+                        isMe = true,
+                    ),
+                ),
+                expenses = (1..5).map {
+                    expense(
+                        id = "there-$it",
+                        groupId = OTHER_GROUP_ID,
+                        spentAt = 10_000L + it,
+                        payerIds = listOf(ME_THERE),
+                        shareIds = listOf(ME_THERE),
+                    )
+                } + myExpense(
+                    id = "old-here",
+                    spentAt = 1_000L,
+                ),
+            )
+
+            // When
+            val ids = dao.observeMyExpensesIn(setOf(GROUP_ID), limit = 3).first().map { it.expense.id }
+
+            // Then
+            assertEquals(listOf("old-here"), ids)
+        }
+
+    @Test
+    fun `GIVEN bills I am not in and a deleted one WHEN observing those of the group THEN leaves them out`() = runTest {
+        // Given
+        prepareScenario(
+            members = listOf(member(ME, isMe = true), member(ANA)),
+            expenses = listOf(
+                myExpense(id = "mine"),
+                expense(
+                    id = "theirs",
+                    payerIds = listOf(ANA),
+                    shareIds = listOf(ANA),
+                ),
+                myExpense(id = "deleted"),
+            ),
+        )
+        dao.markDeleted(
+            id = "deleted",
+            now = 5_000L,
+        )
+
+        // When
+        val ids = dao.observeMyExpensesIn(setOf(GROUP_ID), limit = 10).first().map { it.expense.id }
+
+        // Then
+        assertEquals(listOf("mine"), ids)
+    }
+
+    @Test
+    fun `GIVEN more bills of a group than the page WHEN observing a page of that group THEN gives the most recent`() =
+        runTest {
+            // Given
+            prepareScenario(
+                members = listOf(member(ME, isMe = true)),
+                expenses = (1..5).map {
+                    myExpense(
+                        id = "bill-$it",
+                        spentAt = it * 1_000L,
+                    )
+                },
+            )
+
+            // When
+            val ids = dao.observeMyExpensesIn(setOf(GROUP_ID), limit = 3).first().map { it.expense.id }
+
+            // Then
+            assertEquals(listOf("bill-5", "bill-4", "bill-3"), ids)
+        }
+
+    @Test
     fun `GIVEN my bills observed WHEN a bill of mine is added THEN the list shows it`() = runTest {
         // Given
         prepareScenario(

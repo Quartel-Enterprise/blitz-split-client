@@ -15,6 +15,11 @@ class RoomExpenseLocalDataSource(
 
     override fun observeMyExpenses(limit: Int): Flow<List<ExpenseWithEditor>> = dao.observeMyExpenses(limit)
 
+    override fun observeMyExpensesIn(
+        groupIds: Set<String>,
+        limit: Int,
+    ): Flow<List<ExpenseWithEditor>> = dao.observeMyExpensesIn(groupIds, limit)
+
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = dao.observeExpense(id)
 
     override suspend fun findStoredBill(id: String): StoredBillRow? = dao.findStoredBill(id)
