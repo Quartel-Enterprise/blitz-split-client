@@ -1264,6 +1264,7 @@ export const tr: Record<MessageKey, string> = {
   stats_consumption: 'Tüketilen',
   stats_paid: 'Ödenen',
   stats_you: '{name} (sen)',
+  stats_ringYou: 'Sen',
   stats_noteConsumption: 'Tüketilen, her harcama nasıl bölündüyse ona göre herkesin harcamalardaki payıdır.',
   stats_notePaid: "Herkesin o anda ödediği. Ödediğiyle tükettiği arasındaki fark, Bakiyeler'de bakiyeye dönüşür.",
   stats_settling: 'Hesaplaşma',

@@ -1264,6 +1264,7 @@ export const it: Record<MessageKey, string> = {
   stats_consumption: 'Consumato',
   stats_paid: 'Pagato',
   stats_you: '{name} (tu)',
+  stats_ringYou: 'Tu',
   stats_noteConsumption: 'Consumato è la quota delle spese di ognuno, secondo come è stata divisa ogni spesa.',
   stats_notePaid: 'Quanto ha pagato ognuno al momento. La differenza tra quanto ha pagato e quanto ha consumato diventa un saldo, in Saldi.',
   stats_settling: 'Saldare',

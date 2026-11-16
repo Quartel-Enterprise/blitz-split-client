@@ -1268,6 +1268,7 @@ export const ru: Record<MessageKey, string> = {
   stats_consumption: 'Потреблено',
   stats_paid: 'Оплачено',
   stats_you: '{name} (ты)',
+  stats_ringYou: 'Ты',
   stats_noteConsumption: 'Потреблено — это доля каждого в расходах, как был разделён каждый счёт.',
   stats_notePaid: 'Сколько каждый заплатил в момент покупки. Разница между оплаченным и потреблённым становится балансом в Балансах.',
   stats_settling: 'Расчёты',

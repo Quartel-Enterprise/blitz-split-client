@@ -1268,6 +1268,7 @@ export const uk: Record<MessageKey, string> = {
   stats_consumption: 'Спожито',
   stats_paid: 'Сплачено',
   stats_you: '{name} (ти)',
+  stats_ringYou: 'Ти',
   stats_noteConsumption: 'Спожито — це частка кожного у витратах, як було розділено кожен рахунок.',
   stats_notePaid: 'Що кожен заплатив на момент витрати. Різниця між сплаченим і спожитим стає балансом у Балансах.',
   stats_settling: 'Розрахунки',

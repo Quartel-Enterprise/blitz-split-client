@@ -7,8 +7,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +45,7 @@ private const val SWEEP_MILLIS = 600
 private const val HALF = 2f
 private const val HOLE_FRACTION = 0.4f
 private val popOut = 6.dp
+private val centerGap = 10.dp
 
 // Why: one slice of a ring: its rounded share, all of a ring's adding up to 100, and its data tone.
 internal data class StatsRingSlice(
@@ -102,7 +104,7 @@ internal fun StatsRingDisplay(
                 ),
         ) {
             val margin = popOut.toPx()
-            val stroke = (this.size.minDimension - margin * HALF) * RING_FRACTION
+            val stroke = findRingStroke(this.size.minDimension, margin)
             val ringInset = margin + stroke / HALF
             if (percents.none { it > 0 }) {
                 drawArc(
@@ -141,9 +143,22 @@ internal fun StatsRingDisplay(
                 angle += sweepAngle
             }
         }
-        center()
+        // Why: kept inside the hole with centerGap on each side, so a long name ends in an ellipsis before it touches the ring.
+        val hole = size - (popOut + findRingStroke(size.value, popOut.value).dp) * HALF
+        Box(
+            modifier = Modifier.width((hole - centerGap * HALF).coerceAtLeast(0.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            center()
+        }
     }
 }
+
+// Why: the ring's thickness for its side and the pop-out margin around it, in pixels to draw it and in dp for its hole.
+private fun findRingStroke(
+    side: Float,
+    margin: Float,
+): Float = (side - margin * HALF) * RING_FRACTION
 
 /*
  * Why: the slice under a point of the ring, by its angle from the top clockwise; null deep in the hole (a touch just
@@ -186,6 +201,9 @@ internal fun StatsRingLabel(
                 text = stringResource(R.string.group_stats_category_percent, shown.first),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
+                softWrap = false,
+                // Why: only the name is held to the hole; the share stays whole at the largest text sizes.
+                modifier = Modifier.wrapContentWidth(unbounded = true),
             )
             Text(
                 text = shown.second,
@@ -193,7 +211,6 @@ internal fun StatsRingLabel(
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 24.dp),
             )
         }
     }

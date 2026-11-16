@@ -471,6 +471,7 @@ export const ptPT: Partial<Record<MessageKey, string>> = {
   stats_myShare: 'A tua parte',
   stats_myShareHint: '{percent} do total · pagaste {paid}',
   stats_you: '{name} (tu)',
+  stats_ringYou: 'Tu',
   stats_notePaid: 'Quanto cada um pagou na hora. A diferença entre o que pagou e o que consumiu passa a ser saldo, em Saldos.',
   stats_settlesSlowest: 'Demora mais a acertar',
   stats_settlingNote: 'Quanto tempo cada um leva, em média, para acertar a sua parte nas contas do período. O que segue em aberto conta até hoje.',

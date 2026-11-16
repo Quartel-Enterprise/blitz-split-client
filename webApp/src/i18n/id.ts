@@ -1263,6 +1263,7 @@ export const id: Record<MessageKey, string> = {
   stats_consumption: 'Dipakai',
   stats_paid: 'Dibayar',
   stats_you: '{name} (kamu)',
+  stats_ringYou: 'Kamu',
   stats_noteConsumption: 'Dipakai adalah bagian tiap orang dari pengeluaran, sesuai pembagian tiap tagihan.',
   stats_notePaid: 'Yang dibayar tiap orang saat itu. Selisih antara yang dibayar dan yang dipakai menjadi saldo, di Saldo.',
   stats_settling: 'Pelunasan',

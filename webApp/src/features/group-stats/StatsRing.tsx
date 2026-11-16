@@ -3,9 +3,14 @@ import { categoryStyle } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 import { useReplay } from './useReplay'
 
+const viewBoxSide = 132
 const radius = 52
 const stroke = 18
 const circumference = 2 * Math.PI * radius
+// Why: the hole's share of the ring's width (its inner edge over the view box's side), and the room the middle
+// keeps on each side from it.
+const holeFraction = (2 * (radius - stroke / 2)) / viewBoxSide
+const centerGap = 10
 const gap = 2
 
 // Why: one slice of a ring: who or what it is, its rounded share (a ring's adding up to 100) and its category color.
@@ -47,7 +52,7 @@ export function StatsRing({
   return (
     <div role="img" aria-label={label} className="relative shrink-0" style={{ width: size, height: size }}>
       <svg
-        viewBox="0 0 132 132"
+        viewBox={`0 0 ${viewBoxSide} ${viewBoxSide}`}
         className="size-full -rotate-90"
         onPointerLeave={(event) => {
           if (event.pointerType === 'mouse') onPick(null)
@@ -87,8 +92,14 @@ export function StatsRing({
           ))
         )}
       </svg>
-      <span aria-hidden className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-        {children}
+      {/* Why: kept inside the hole with a gap on each side, so a long name ends in an ellipsis before it touches the ring. */}
+      <span aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <span
+          className="flex flex-col items-center text-center"
+          style={{ width: Math.max(size * holeFraction - 2 * centerGap, 0) }}
+        >
+          {children}
+        </span>
       </span>
     </div>
   )
@@ -98,7 +109,7 @@ export function StatsRing({
 export function StatsRingCenter({ percent, name }: { percent: number; name: string }) {
   return (
     <>
-      <span className="text-lg font-bold tabular-nums">{percent}%</span>
+      <span className="whitespace-nowrap text-lg font-bold tabular-nums">{percent}%</span>
       <span className="w-full truncate text-[11px] text-muted-foreground">{name}</span>
     </>
   )

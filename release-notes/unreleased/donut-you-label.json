@@ -1,0 +1,27 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "In Statistics, the middle of the \"By person\" ring now just says \"You\" when the share is yours, and a long name ends in \"…\" instead of touching the ring.",
+        "pt": "Em Estatísticas, o meio do anel de \"Por pessoa\" agora diz só \"Você\" quando a parte é sua, e um nome comprido termina em \"…\" em vez de encostar no anel.",
+        "pt-PT": "Nas Estatísticas, o meio do anel de \"Por pessoa\" diz agora só \"Tu\" quando a parte é tua, e um nome comprido termina em \"…\" em vez de tocar no anel.",
+        "es": "En Estadísticas, el centro del anillo de \"Por persona\" ahora dice solo \"Tú\" cuando la parte es tuya, y un nombre largo termina en \"…\" en vez de tocar el anillo.",
+        "fr": "Dans Statistiques, le centre de l’anneau « Par personne » indique maintenant juste « Toi » quand la part est la tienne, et un nom long se termine par « … » au lieu de toucher l’anneau.",
+        "de": "In Statistiken steht in der Mitte des Rings „Nach Person“ jetzt nur „Du“, wenn der Anteil deiner ist, und ein langer Name endet mit „…“, statt den Ring zu berühren.",
+        "it": "In Statistiche, il centro dell’anello \"Per persona\" ora dice solo \"Tu\" quando la quota è tua, e un nome lungo finisce con \"…\" invece di toccare l’anello.",
+        "pl": "W Statystykach środek pierścienia „Według osób” pokazuje teraz tylko „Ty”, gdy to twoja część, a długie imię kończy się „…” zamiast dotykać pierścienia.",
+        "nl": "In Statistieken staat in het midden van de ring \"Per persoon\" nu alleen \"Jij\" als het aandeel van jou is, en een lange naam eindigt op \"…\" in plaats van de ring te raken.",
+        "ja": "統計の「メンバー別」のリング中央は、自分の割合のときは「あなた」とだけ表示され、長い名前はリングに触れずに「…」で省略されるようになりました。",
+        "tr": "İstatistikler'de \"Kişiye göre\" halkasının ortası, pay seninse artık sadece \"Sen\" yazıyor; uzun bir isim de halkaya değmek yerine \"…\" ile bitiyor.",
+        "id": "Di Statistik, bagian tengah cincin \"Per orang\" kini hanya menulis \"Kamu\" saat bagiannya milikmu, dan nama panjang diakhiri \"…\" alih-alih menyentuh cincin.",
+        "ru": "В «Статистике» в центре кольца «По людям» теперь написано просто «Ты», когда доля твоя, а длинное имя обрывается на «…», не касаясь кольца.",
+        "uk": "У «Статистиці» в центрі кільця «За людьми» тепер написано просто «Ти», коли частка твоя, а довге ім’я обривається на «…», не торкаючись кільця."
+      }
+    }
+  ]
+}

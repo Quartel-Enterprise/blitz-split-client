@@ -1265,6 +1265,7 @@ export const nl: Record<MessageKey, string> = {
   stats_consumption: 'Verbruikt',
   stats_paid: 'Betaald',
   stats_you: '{name} (jij)',
+  stats_ringYou: 'Jij',
   stats_noteConsumption: 'Verbruikt is ieders deel van de uitgaven, zoals elke uitgave verdeeld is.',
   stats_notePaid: 'Wat ieder op het moment zelf betaalde. Het verschil tussen wat iemand betaalde en verbruikte wordt een saldo, in Saldi.',
   stats_settling: 'Verrekenen',

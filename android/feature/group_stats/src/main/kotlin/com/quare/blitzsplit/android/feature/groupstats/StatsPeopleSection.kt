@@ -173,11 +173,13 @@ private fun StatsPeopleRingCard(
             },
         ) {
             val shown = selected ?: 0
+            // Why: the middle says just "Você" for this device's user, the row under the ring keeping "Pierre (você)".
+            val you = stringResource(DesignR.string.designsystem_you)
             state.topPerson?.let {
                 StatsRingLabel(
                     key = people[shown].memberId,
                     percent = people[shown].percent,
-                    label = names[shown],
+                    label = if (people[shown].isMe) you else names[shown],
                 )
             }
         }

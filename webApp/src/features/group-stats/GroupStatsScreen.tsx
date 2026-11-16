@@ -379,7 +379,13 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
             if (!isMouse) setSelected(selected === index ? null : index)
           }}
         >
-          {hasShares && <StatsRingCenter percent={people[shown].percent} name={names[shown]} />}
+          {hasShares && (
+            <StatsRingCenter
+              percent={people[shown].percent}
+              // Why: just "Você" for this device's user in the middle; the row under the ring keeps "Pierre (você)".
+              name={people[shown].isMe ? t('stats_ringYou') : names[shown]}
+            />
+          )}
         </StatsRing>
       </div>
       <div className="flex flex-col gap-1">

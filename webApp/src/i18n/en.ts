@@ -1262,6 +1262,7 @@ export const en = {
   stats_consumption: 'Consumed',
   stats_paid: 'Paid',
   stats_you: '{name} (you)',
+  stats_ringYou: 'You',
   stats_noteConsumption: 'Consumed is each one\'s share of the expenses, as each bill was split.',
   stats_notePaid: 'What each one paid at the time. The difference between what they paid and what they consumed becomes a balance, in Balances.',
   stats_settling: 'Settling up',

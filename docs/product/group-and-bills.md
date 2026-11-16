@@ -261,7 +261,10 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     category"'s ring, at 160 dp/pt/px centered on its own card, its slices each person's share
     (`StatsPersonRow.percent`, rounded to add up to 100 as the categories' are) and its middle the largest one, "39%"
     over "Ana", or the one picked (a tap on a slice, a second tap letting go; with a mouse, the slice or the row it is
-    over), the others fading. Consumed and Paid switch what it shows, and it sweeps in again with them and the period.
+    over), the others fading. When that one is this device's user (`StatsPersonRow.isMe`) the middle says just "You",
+    the row under the ring keeping "Pierre (you)" (beta feedback of 2026-11-16). The middle of both
+    rings stays inside the hole with 10 dp/pt/px to spare on each side of the ring's inner edge, so a long name ends
+    in an ellipsis instead of touching the ring. Consumed and Paid switch what it shows, and it sweeps in again with them and the period.
     Each person takes Default split's color by their place in the group's list (`StatsPersonRow.color`,
     `SplitBarColors`, [members-and-payments.md](members-and-payments.md)), so they read in one color on both screens,
     a former member the neutral Gray; their row under the ring is its legend: the face, a dot of that color, the name,

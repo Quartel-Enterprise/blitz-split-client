@@ -1264,6 +1264,7 @@ export const ja: Record<MessageKey, string> = {
   stats_consumption: '消費',
   stats_paid: '支払い',
   stats_you: '{name}（あなた）',
+  stats_ringYou: 'あなた',
   stats_noteConsumption: '消費は、各支出の分け方に基づいた各自の負担分です。',
   stats_notePaid: 'その時に各自が支払った額です。支払った額と消費した額の差は「残高」に残高として表示されます。',
   stats_settling: '精算',
