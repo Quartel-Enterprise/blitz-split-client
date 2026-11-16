@@ -297,7 +297,7 @@ sealed interface Route {
         val groupId: String?,
         val categoryId: String?,
         val period: ExpensePeriod,
-        // Why: CUSTOM's first and last days, as the statistics' picker gives them (noon of each, the device's zone).
+        // Why: a moment of CUSTOM's first and last days (the start of each, as Statistics shows its period).
         val customStartMillis: Long?,
         val customEndMillis: Long?,
     ) : Route {

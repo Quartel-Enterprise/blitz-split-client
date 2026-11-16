@@ -13,7 +13,10 @@ data class AllExpensesFilters(
     // Why: main categories; one takes its subcategories' bills, as Statistics' chips do.
     val categoryIds: Set<String>,
     val period: ExpensePeriod,
-    // Why: CUSTOM's first and last days (noon of each in the device's zone, as the pickers give them); null until picked.
+    /*
+     * Why: a moment of CUSTOM's first and last days (noon from the pickers, the day's start from Statistics); null until
+     * picked.
+     */
     val customStartMillis: Long?,
     val customEndMillis: Long?,
     val share: ShareFilter,

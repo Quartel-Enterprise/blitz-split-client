@@ -4,9 +4,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.model.findSpanOrNull
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
-import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.utils.TypoTolerantQuery
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
@@ -14,18 +14,17 @@ import com.quare.blitzsplit.feature.groups.presentation.model.ExpenseSort
 import com.quare.blitzsplit.feature.groups.presentation.model.FilterGroupOption
 import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
-import kotlinx.datetime.DatePeriod
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.minus
 
 /*
  * Why: each bill with its group and what it does to this device's user's balance; a bill whose group isn't read yet, or
- * which they aren't in after all, is left out.
+ * which they aren't in after all, is left out, but in everyBillGroupId (opened from its statistics), where a bill of
+ * others does nothing to their balance.
  */
 internal fun myExpensesOf(
     expenses: List<Expense>,
     groups: List<Group>,
+    everyBillGroupId: String?,
 ): List<LatestExpense> {
     val groupsById = groups.associateBy { it.id }
     return expenses.mapNotNull { expense ->
@@ -34,7 +33,9 @@ internal fun myExpensesOf(
         LatestExpense(
             group = group,
             expense = expense,
-            myBalanceMinor = expense.balanceOf(meId) ?: return@mapNotNull null,
+            myBalanceMinor = expense.balanceOf(meId)
+                ?: 0L.takeIf { expense.groupId == everyBillGroupId }
+                ?: return@mapNotNull null,
         )
     }
 }
@@ -75,41 +76,24 @@ internal class DatedSpan(
     operator fun contains(epochMillis: Long): Boolean = SpentDay.dateOf(epochMillis, timeZone) in span
 }
 
-/*
- * Why: the period's days as the statistics count them: this year and this month up to today, last month whole, a
- * custom span as picked; null for the whole history (and for CUSTOM before its days, which never happens).
- */
+// Why: the period's days as the statistics count them (findSpanOrNull); null for the whole history.
 internal fun AllExpensesFilters.periodSpanOrNull(
     nowMillis: Long,
     timeZone: TimeZone,
 ): DatedSpan? {
-    val today = SpentDay.dateOf(nowMillis, timeZone)
-    val monthStart = LocalDate(today.year, today.month, 1)
-    val span = when (period) {
-        ExpensePeriod.ALL -> null
-
-        ExpensePeriod.THIS_YEAR -> DateSpan(LocalDate(today.year, 1, 1), today)
-
-        ExpensePeriod.THIS_MONTH -> DateSpan(monthStart, today)
-
-        ExpensePeriod.LAST_MONTH -> DateSpan(
-            start = monthStart.minus(DatePeriod(months = 1)),
-            end = monthStart.minus(DatePeriod(days = 1)),
-        )
-
-        ExpensePeriod.CUSTOM -> {
-            val start = customStartMillis
-            val end = customEndMillis
-            if (start != null &&
-                end != null
-            ) {
-                DateSpan(SpentDay.dateOf(start, timeZone), SpentDay.dateOf(end, timeZone))
-            } else {
-                null
-            }
-        }
+    val start = customStartMillis
+    val end = customEndMillis
+    val customSpan = if (start != null && end != null) {
+        DateSpan(SpentDay.dateOf(start, timeZone), SpentDay.dateOf(end, timeZone))
+    } else {
+        null
     }
-    return span?.let { DatedSpan(it, timeZone) }
+    return period
+        .findSpanOrNull(
+            SpentDay.dateOf(nowMillis, timeZone),
+            wholeSpan = null,
+            customSpan = customSpan,
+        )?.let { DatedSpan(it, timeZone) }
 }
 
 private fun LatestExpense.isPassing(

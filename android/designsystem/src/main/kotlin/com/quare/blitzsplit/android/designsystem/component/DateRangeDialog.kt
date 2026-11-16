@@ -33,8 +33,9 @@ import java.time.ZoneOffset
 private const val NOON = 12
 
 /*
- * Why: "Pick dates…" of Statistics and "Custom range…" of All expenses, from one day to another, never after today. The picker works in UTC days, so each local day
- * goes in and out of it as midnight UTC, and the ViewModel gets noon of each day in the device's time zone.
+ * Why: "Pick dates…" of Statistics and of All expenses' Period, from one day to another, never after today. The picker
+ * works in UTC days, so each local day goes in and out of it as midnight UTC, and the ViewModel gets noon of each day
+ * in the device's time zone.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

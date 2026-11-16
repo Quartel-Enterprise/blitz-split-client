@@ -348,7 +348,10 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     own that listed the same bills with category chips: All expenses has the search built in and saves a screen. "The
     whole trip" or "All time" goes as the whole history, "This year", "This month" and "Last month" as themselves
     (they follow today there too), picked dates as their days. Statistics' currency chip doesn't go: All expenses
-    lists the bills in every currency, each in its own. All expenses is a page on every size, as from Home or the
+    lists the bills in every currency, each in its own. Opened from Statistics it lists every bill of the group, a
+    bill only others shared included (with no share of yours under its amount), as "Expenses by category" did, so the
+    list adds up to what the chart counted (Pierre's call, 2026-11-16); from Home or a group's "See all" it still
+    lists only the bills you paid or take part in. All expenses is a page on every size, as from Home or the
     group's "See all": on a tablet lying down it covers the groups' pane rather than drawing in it, and on the web and
     the Mac it keeps its own title and back rather than a breadcrumb.
   - "Duplicate", only in a bill's ⋮ on Expenses (Bill's top bar has no such button), opens "Split a bill" as a new bill

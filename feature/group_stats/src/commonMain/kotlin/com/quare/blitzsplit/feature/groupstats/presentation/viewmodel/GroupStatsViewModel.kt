@@ -14,7 +14,6 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
-import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.StatsChartPreferences
@@ -436,13 +435,7 @@ class GroupStatsViewModel(
             next = Route.AllExpenses(
                 groupId = route.groupId,
                 categoryId = categoryId,
-                period = when (state.period) {
-                    StatsPeriod.ALL -> ExpensePeriod.ALL
-                    StatsPeriod.THIS_YEAR -> ExpensePeriod.THIS_YEAR
-                    StatsPeriod.THIS_MONTH -> ExpensePeriod.THIS_MONTH
-                    StatsPeriod.LAST_MONTH -> ExpensePeriod.LAST_MONTH
-                    StatsPeriod.CUSTOM -> ExpensePeriod.CUSTOM
-                },
+                period = state.period.expensePeriod,
                 customStartMillis = state.periodStartMillis.takeIf { isCustom },
                 customEndMillis = state.periodEndMillis.takeIf { isCustom },
             ),

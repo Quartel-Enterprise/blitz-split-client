@@ -25,9 +25,10 @@ sealed interface AllExpensesUiEvent : UiEvent {
 
             is OnCategoryToggled -> filterChanged("category")
 
-            is OnPeriodPicked -> filterChanged("period")
+            // Why: only a period that changed, never "Pick dates…" before its days.
+            is OnPeriodPicked -> EventAnalytics.Manual("all_expenses_filter_changed")
 
-            is OnCustomPeriodPicked -> filterChanged("period")
+            is OnCustomPeriodPicked -> EventAnalytics.Manual("all_expenses_filter_changed")
 
             is OnShareFilterPicked -> filterChanged("share")
 
@@ -71,7 +72,7 @@ sealed interface AllExpensesUiEvent : UiEvent {
         val period: ExpensePeriod,
     ) : AllExpensesUiEvent
 
-    // Why: "Custom range…"'s days, noon of the first and the last in the device's zone, as Statistics' picker gives them.
+    // Why: "Pick dates…"' days: a moment of the first and the last (noon, as the pickers give them).
     data class OnCustomPeriodPicked(
         val startMillis: Long,
         val endMillis: Long,

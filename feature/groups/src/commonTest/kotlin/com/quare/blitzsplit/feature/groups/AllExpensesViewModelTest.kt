@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpensesIn
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
@@ -2998,6 +2999,97 @@ class AllExpensesViewModelTest {
         }
 
     @Test
+    fun `GIVEN a bill next week WHEN picking custom days past today THEN holds them to today`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("next-week", spentAt = inBrasilia("2026-11-07T10:00")),
+                    bill("today", spentAt = inBrasilia("2026-10-31T09:00")),
+                ),
+                timeZone = brasilia,
+            )
+            val event = AllExpensesUiEvent.OnCustomPeriodPicked(
+                startMillis = inBrasilia("2026-10-30T12:00"),
+                endMillis = inBrasilia("2026-11-08T12:00"),
+            )
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("today"), shownIds())
+            assertEquals(now, viewModel.uiState.value.filters.customEndMillis)
+        }
+
+    @Test
+    fun `GIVEN no custom days yet WHEN picking Pick dates THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedGroups = listOf(trio()))
+        val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.CUSTOM)
+
+        // When
+        viewModel.onEvent(event)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a Food bill only others shared WHEN opening from statistics THEN lists it with no share of yours`() =
+        runTest(testDispatcher) {
+            // Given
+            val others = bill(
+                "others",
+                paidBy = "Ana",
+                splitOver = listOf("Ana", "Bruno"),
+                categoryId = AppCategory.FOOD.key,
+            )
+            val mine = bill(
+                "mine",
+                spentAt = daysAgo(6),
+                categoryId = AppCategory.FOOD.key,
+            )
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(others, mine),
+                route = fromStatistics(period = ExpensePeriod.ALL),
+            )
+
+            // When
+            val shown = viewModel.uiState.value.days
+                .flatMap { it.bills }
+
+            // Then
+            assertEquals(listOf("others", "mine"), shown.map { it.id })
+            assertEquals(0L, shown.first { it.id == "others" }.myBalanceMinor)
+        }
+
+    @Test
+    fun `GIVEN a bill only others shared WHEN opening from a group See all THEN leaves it out`() =
+        runTest(testDispatcher) {
+            // Given
+            val others = bill(
+                "others",
+                paidBy = "Ana",
+                splitOver = listOf("Ana", "Bruno"),
+            )
+            val mine = bill("mine", spentAt = daysAgo(6))
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(others, mine),
+                route = Route.AllExpenses.create(groupId = "trio"),
+            )
+
+            // When
+            val shown = shownIds()
+
+            // Then
+            assertEquals(listOf("mine"), shown)
+        }
+
+    @Test
     fun `GIVEN a statistics category WHEN opening before reading THEN picks its group category and period`() =
         runTest(testDispatcher) {
             // Given
@@ -3437,6 +3529,10 @@ class AllExpensesViewModelTest {
             observeMyExpensesIn = ObserveMyExpensesIn { groupIds, limit ->
                 val page = expenses.observeMyExpensesIn(groupIds, limit)
                 pagesRead.filter { it }.flatMapLatest { page }
+            },
+            observeExpenses = ObserveExpenses { groupId ->
+                val bills = expenses.observeExpenses(groupId)
+                pagesRead.filter { it }.flatMapLatest { bills }
             },
             observeGroups = ObserveGroupsUseCase(groups),
             observeMapCategories = ObserveMapCategoriesUseCase(FakeCategoryRepository(storedCategories)),

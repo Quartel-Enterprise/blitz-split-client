@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupSpending
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitBarColors
+import com.quare.blitzsplit.core.expenses.domain.model.findSpanOrNull
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
@@ -24,10 +25,8 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleVie
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
-import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.minus
 import kotlin.math.ceil
 
 /*
@@ -62,23 +61,11 @@ internal class StatsCalculator(
     fun findSpanOrNull(
         period: StatsPeriod,
         customSpan: DateSpan?,
-    ): DateSpan? {
-        val monthStart = LocalDate(today.year, today.month, 1)
-        return when (period) {
-            StatsPeriod.ALL -> allSpan
-
-            StatsPeriod.THIS_YEAR -> DateSpan(LocalDate(today.year, 1, 1), today)
-
-            StatsPeriod.THIS_MONTH -> DateSpan(monthStart, today)
-
-            StatsPeriod.LAST_MONTH -> DateSpan(
-                start = monthStart.minus(DatePeriod(months = 1)),
-                end = monthStart.minus(DatePeriod(days = 1)),
-            )
-
-            StatsPeriod.CUSTOM -> customSpan
-        }
-    }
+    ): DateSpan? = period.expensePeriod.findSpanOrNull(
+        today,
+        wholeSpan = allSpan,
+        customSpan = customSpan,
+    )
 
     fun toRangeStyle(
         period: StatsPeriod,
