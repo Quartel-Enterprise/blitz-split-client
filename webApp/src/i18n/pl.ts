@@ -65,6 +65,7 @@ export const pl: Record<MessageKey, string> = {
   welcome_legalTerms: "Warunki korzystania",
   welcome_legalPrivacy: "Politykę prywatności",
   welcome_noAccountNote: 'Bez konta Twoje dane są usuwane po 30 dniach nieużywania. Połącz Google lub Apple, aby je zachować.',
+  welcome_noAccountNoteOffline: 'Bez konta Twoje dane są usuwane po 30 dniach nieużywania. Połącz Google lub Apple później, w Profilu, aby je zachować.',
   welcome_expiredTitle: 'Twoje dane zostały usunięte',
   welcome_expiredBody: 'Aplikacja była używana bez konta i nie była otwierana przez 30 dni, więc Twoje dane zostały usunięte. Połącz Google lub Apple, aby następnym razem ich nie stracić.',
   welcome_expiredOk: 'OK',

@@ -62,6 +62,7 @@ export const fr: Record<MessageKey, string> = {
   welcome_legalTerms: "Conditions d’utilisation",
   welcome_legalPrivacy: "Politique de confidentialité",
   welcome_noAccountNote: 'Sans compte, tes données sont effacées après 30 jours sans utilisation. Connecte Google ou Apple pour les garder.',
+  welcome_noAccountNoteOffline: 'Sans compte, tes données sont effacées après 30 jours sans utilisation. Connecte Google ou Apple plus tard, dans Profil, pour les garder.',
   welcome_expiredTitle: 'Tes données ont été effacées',
   welcome_expiredBody: 'Tu utilisais l’app sans compte et tu ne l’as pas ouverte pendant 30 jours, donc tes données ont été effacées. Connecte Google ou Apple pour ne plus les perdre.',
   welcome_expiredOk: 'OK',

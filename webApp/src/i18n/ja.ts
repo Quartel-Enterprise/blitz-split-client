@@ -62,6 +62,7 @@ export const ja: Record<MessageKey, string> = {
   welcome_legalTerms: "利用規約",
   welcome_legalPrivacy: "プライバシーポリシー",
   welcome_noAccountNote: 'アカウントなしの場合、30日間使わないとデータは削除されます。GoogleまたはAppleを連携すると保持できます。',
+  welcome_noAccountNoteOffline: 'アカウントなしの場合、30日間使わないとデータは削除されます。あとでプロフィールからGoogleまたはAppleを連携すると保持できます。',
   welcome_expiredTitle: 'データが削除されました',
   welcome_expiredBody: 'アカウントなしで使用し、30日間アプリを開かなかったため、データが削除されました。次回からはGoogleまたはAppleを連携すると保持できます。',
   welcome_expiredOk: 'OK',

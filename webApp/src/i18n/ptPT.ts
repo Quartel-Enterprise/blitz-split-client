@@ -28,6 +28,7 @@ export const ptPT: Partial<Record<MessageKey, string>> = {
   welcome_usedOnAnotherDevice: 'Já usei noutro dispositivo',
   welcome_legalNotice: "Ao continuares, aceitas os {terms} e declaras estar ciente da {privacy}.",
   welcome_noAccountNote: 'Sem conta, os teus dados são apagados após 30 dias sem utilização. Liga o Google ou a Apple para os manteres.',
+  welcome_noAccountNoteOffline: 'Sem conta, os teus dados são apagados após 30 dias sem utilização. Liga o Google ou a Apple depois, em Perfil, para os manteres.',
   welcome_expiredTitle: 'Os teus dados foram apagados',
   welcome_expiredBody: 'Usavas a app sem conta e estiveste 30 dias sem a abrir, por isso os teus dados foram apagados. Liga o Google ou a Apple para não os perderes da próxima vez.',
   profileSetup_title: 'Como te chamam os teus amigos?',

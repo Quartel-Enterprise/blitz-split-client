@@ -10,6 +10,7 @@
     <string name="welcome_sign_in_failed">Não foi possível iniciar sessão agora. Tenta novamente.</string>
     <string name="welcome_legal_notice">Ao continuares, aceitas os %1$s e declaras estar ciente da %2$s.</string>
     <string name="welcome_no_account_note">Sem conta, os teus dados são apagados após 30 dias sem utilização. Liga o Google ou a Apple para os manteres.</string>
+    <string name="welcome_no_account_note_offline">Sem conta, os teus dados são apagados após 30 dias sem utilização. Liga o Google ou a Apple depois, em Perfil, para os manteres.</string>
     <string name="welcome_expired_title">Os teus dados foram apagados</string>
     <string name="welcome_expired_body">Usavas a app sem conta e estiveste 30 dias sem a abrir, por isso os teus dados foram apagados. Liga o Google ou a Apple para não os perderes da próxima vez.</string>
 </resources>

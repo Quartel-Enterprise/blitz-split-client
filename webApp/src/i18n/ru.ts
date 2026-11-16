@@ -66,6 +66,7 @@ export const ru: Record<MessageKey, string> = {
   welcome_legalTerms: 'Условия использования',
   welcome_legalPrivacy: 'Политикой конфиденциальности',
   welcome_noAccountNote: 'Без аккаунта твои данные удаляются через 30 дней без использования. Подключи Google или Apple, чтобы их сохранить.',
+  welcome_noAccountNoteOffline: 'Без аккаунта твои данные удаляются через 30 дней без использования. Подключи Google или Apple позже в Профиле, чтобы их сохранить.',
   welcome_expiredTitle: 'Твои данные удалены',
   welcome_expiredBody: 'Ты пользовался(-ась) приложением без аккаунта и не открывал(а) его 30 дней, поэтому твои данные удалены. Подключи Google или Apple, чтобы в следующий раз они сохранились.',
   welcome_expiredOk: 'ОК',

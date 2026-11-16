@@ -63,6 +63,7 @@ export const nl: Record<MessageKey, string> = {
   welcome_legalTerms: "Servicevoorwaarden",
   welcome_legalPrivacy: "Privacybeleid",
   welcome_noAccountNote: 'Zonder account worden je gegevens na 30 dagen zonder gebruik verwijderd. Koppel Google of Apple om ze te behouden.',
+  welcome_noAccountNoteOffline: 'Zonder account worden je gegevens na 30 dagen zonder gebruik verwijderd. Koppel later in Profiel Google of Apple om ze te behouden.',
   welcome_expiredTitle: 'Je gegevens zijn verwijderd',
   welcome_expiredBody: 'Je gebruikte de app zonder account en hebt hem 30 dagen niet geopend, dus je gegevens zijn verwijderd. Koppel Google of Apple om ze de volgende keer te behouden.',
   welcome_expiredOk: 'OK',

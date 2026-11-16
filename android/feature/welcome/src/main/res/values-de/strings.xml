@@ -17,6 +17,7 @@
     <string name="welcome_legal_terms">Nutzungsbedingungen</string>
     <string name="welcome_legal_privacy">Datenschutzerklärung</string>
     <string name="welcome_no_account_note">Ohne Konto werden deine Daten nach 30 Tagen ohne Nutzung gelöscht. Verbinde Google oder Apple, um sie zu behalten.</string>
+    <string name="welcome_no_account_note_offline">Ohne Konto werden deine Daten nach 30 Tagen ohne Nutzung gelöscht. Verbinde Google oder Apple später im Profil, um sie zu behalten.</string>
     <string name="welcome_expired_title">Deine Daten wurden gelöscht</string>
     <string name="welcome_expired_body">Du hast die App ohne Konto genutzt und 30 Tage lang nicht geöffnet, deshalb wurden deine Daten gelöscht. Verbinde Google oder Apple, damit das nicht wieder passiert.</string>
     <string name="welcome_expired_ok">OK</string>

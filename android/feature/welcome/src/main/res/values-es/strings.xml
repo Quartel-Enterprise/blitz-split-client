@@ -17,6 +17,7 @@
     <string name="welcome_legal_terms">Términos de Servicio</string>
     <string name="welcome_legal_privacy">Política de Privacidad</string>
     <string name="welcome_no_account_note">Sin cuenta, tus datos se borran tras 30 días sin uso. Conecta Google o Apple para conservarlos.</string>
+    <string name="welcome_no_account_note_offline">Sin cuenta, tus datos se borran tras 30 días sin uso. Conecta Google o Apple más tarde, en Perfil, para conservarlos.</string>
     <string name="welcome_expired_title">Tus datos se borraron</string>
     <string name="welcome_expired_body">Usabas la app sin cuenta y no la abriste durante 30 días, así que tus datos se borraron. Conecta Google o Apple para no perderlos la próxima vez.</string>
     <string name="welcome_expired_ok">OK</string>

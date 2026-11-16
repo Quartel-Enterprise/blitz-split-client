@@ -463,7 +463,13 @@ private fun WelcomeActionsSection(
             )
         }
         Text(
-            text = stringResource(R.string.welcome_no_account_note),
+            text = stringResource(
+                if (state.showsOfflineNotice) {
+                    R.string.welcome_no_account_note_offline
+                } else {
+                    R.string.welcome_no_account_note
+                },
+            ),
             modifier = Modifier.fillMaxWidth(),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

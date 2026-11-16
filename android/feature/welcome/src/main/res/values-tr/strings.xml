@@ -17,6 +17,7 @@
     <string name="welcome_legal_terms">Hizmet Şartları’nı</string>
     <string name="welcome_legal_privacy">Gizlilik Politikası’nı</string>
     <string name="welcome_no_account_note">Hesap olmadan, 30 gün kullanılmazsa verilerin silinir. Saklamak için Google ya da Apple bağla.</string>
+    <string name="welcome_no_account_note_offline">Hesap olmadan, 30 gün kullanılmazsa verilerin silinir. Saklamak için sonra Profil bölümünden Google ya da Apple bağla.</string>
     <string name="welcome_expired_title">Verilerin silindi</string>
     <string name="welcome_expired_body">Uygulamayı hesapsız kullanıyordun ve 30 gün boyunca açmadın, bu yüzden verilerin silindi. Bir dahaki sefere kaybetmemek için Google ya da Apple bağla.</string>
     <string name="welcome_expired_ok">Tamam</string>

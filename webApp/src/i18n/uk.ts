@@ -66,6 +66,7 @@ export const uk: Record<MessageKey, string> = {
   welcome_legalTerms: 'Умови використання',
   welcome_legalPrivacy: 'Політикою конфіденційності',
   welcome_noAccountNote: 'Без облікового запису твої дані буде видалено після 30 днів без використання. Підключи Google чи Apple, щоб зберегти їх.',
+  welcome_noAccountNoteOffline: 'Без облікового запису твої дані буде видалено після 30 днів без використання. Підключи Google чи Apple пізніше в Профілі, щоб зберегти їх.',
   welcome_expiredTitle: 'Твої дані видалено',
   welcome_expiredBody: 'Ти користувався(-лася) застосунком без облікового запису й не відкривав(-ла) його 30 днів, тому твої дані видалено. Наступного разу підключи Google чи Apple, щоб їх зберегти.',
   welcome_expiredOk: 'OK',

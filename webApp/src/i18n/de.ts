@@ -63,6 +63,7 @@ export const de: Record<MessageKey, string> = {
   welcome_legalTerms: "Nutzungsbedingungen",
   welcome_legalPrivacy: "Datenschutzerklärung",
   welcome_noAccountNote: 'Ohne Konto werden deine Daten nach 30 Tagen ohne Nutzung gelöscht. Verbinde Google oder Apple, um sie zu behalten.',
+  welcome_noAccountNoteOffline: 'Ohne Konto werden deine Daten nach 30 Tagen ohne Nutzung gelöscht. Verbinde Google oder Apple später im Profil, um sie zu behalten.',
   welcome_expiredTitle: 'Deine Daten wurden gelöscht',
   welcome_expiredBody: 'Du hast die App ohne Konto genutzt und 30 Tage lang nicht geöffnet, deshalb wurden deine Daten gelöscht. Verbinde Google oder Apple, damit das nicht wieder passiert.',
   welcome_expiredOk: 'OK',

@@ -58,7 +58,7 @@ export function WelcomeScreen() {
             <Button size="lg" onClick={() => presenter.useWithoutAccount()}>
               {t('welcome_useWithoutAccount')}
             </Button>
-            <p className="text-center text-xs text-muted-foreground">{t('welcome_noAccountNote')}</p>
+            <p className="text-center text-xs text-muted-foreground">{t(state.showsOfflineNotice ? 'welcome_noAccountNoteOffline' : 'welcome_noAccountNote')}</p>
             <Button variant="link" onClick={() => presenter.usedOnAnotherDevice()}>
               {t('welcome_usedOnAnotherDevice')}
             </Button>

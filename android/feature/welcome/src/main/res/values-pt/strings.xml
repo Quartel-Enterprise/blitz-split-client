@@ -17,6 +17,7 @@
     <string name="welcome_legal_terms">Termos de Serviço</string>
     <string name="welcome_legal_privacy">Política de Privacidade</string>
     <string name="welcome_no_account_note">Sem conta, seus dados são apagados após 30 dias sem uso. Conecte Google ou Apple para mantê-los.</string>
+    <string name="welcome_no_account_note_offline">Sem conta, seus dados são apagados após 30 dias sem uso. Conecte Google ou Apple depois, em Perfil, para mantê-los.</string>
     <string name="welcome_expired_title">Seus dados foram apagados</string>
     <string name="welcome_expired_body">Você usava o app sem conta e ficou 30 dias sem abrir, então seus dados foram apagados. Conecte Google ou Apple para não perder da próxima vez.</string>
     <string name="welcome_expired_ok">OK</string>
