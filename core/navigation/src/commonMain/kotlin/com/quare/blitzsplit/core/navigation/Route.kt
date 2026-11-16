@@ -303,9 +303,13 @@ sealed interface Route {
 
     /*
      * Why: "Todas as despesas", which Início's "Ver tudo" over "Últimas despesas" opens over Início: every bill this
-     * device's user paid or takes part in, across groups, by day, each with its ⋮ (Pierre's call, beta feedback).
+     * device's user paid or takes part in, across groups, by day, each with its ⋮ (Pierre's call, beta feedback). The
+     * group's Expenses opens it over the group with groupId already picked in its Group filter (beta feedback of
+     * 2026-11-16), which the person may clear there; Início opens it with none.
      */
-    data object AllExpenses : Route
+    data class AllExpenses(
+        val groupId: String?,
+    ) : Route
 
     /*
      * Why: the home's third tab, "Saldos" (flow 8): each person once, netted across every group. Right above Início,

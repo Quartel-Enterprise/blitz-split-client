@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.navigation.findHomeTabUnder
 import com.quare.blitzsplit.core.navigation.navigateBackFrom
 import com.quare.blitzsplit.core.navigation.openBillFrom
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
@@ -53,9 +54,11 @@ internal const val ALL_EXPENSES_PAGE_SIZE = 30
  * Why: "Todas as despesas" (Início's "Ver tudo"). Offline first, it reads the device only: the first page, then one more
  * each time the list nears its end, as a window that grows (a LIMIT over Room's query, one more bill to know whether
  * more are left). Room keeps the window live, so a bill edited, deleted or synced in changes in place, never a stale
- * page. A bill's ⋮ is the group's (BillMenuController), its options opening over this screen.
+ * page. A bill's ⋮ is the group's (BillMenuController), its options opening over this screen. From a group's Expenses
+ * the route names the group, picked in the Group filter from the start.
  */
 class AllExpensesViewModel(
+    private val route: Route.AllExpenses,
     private val navigator: Navigator,
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
@@ -68,7 +71,12 @@ class AllExpensesViewModel(
     trackEvent: TrackEvent,
 ) : TrackedViewModel<AllExpensesUiEvent>(trackEvent) {
     val uiState: StateFlow<AllExpensesUiState>
-        field = MutableStateFlow(AllExpensesUiState.initial)
+        field = MutableStateFlow(
+            AllExpensesUiState.initial.copy(
+                filters = AllExpensesFilters.none.copy(groupIds = setOfNotNull(route.groupId)),
+                homeTab = navigator.backStack.value.findHomeTabUnder(route),
+            ),
+        )
 
     val uiAction: SharedFlow<AllExpensesUiAction>
         field = MutableSharedFlow<AllExpensesUiAction>()
@@ -78,7 +86,7 @@ class AllExpensesViewModel(
 
     // Why: how many bills the list shows; grows a page at a time, back to one page when the filters change.
     private val limit = MutableStateFlow(ALL_EXPENSES_PAGE_SIZE)
-    private val filters = MutableStateFlow(AllExpensesFilters.none)
+    private val filters = MutableStateFlow(uiState.value.filters)
 
     private val billMenu = billMenuControllerOf(
         useCases = billMenuUseCases,
@@ -129,11 +137,11 @@ class AllExpensesViewModel(
 
     override fun handleEvent(event: AllExpensesUiEvent) {
         when (event) {
-            AllExpensesUiEvent.OnBackClicked -> navigator.navigateBackFrom(Route.AllExpenses)
+            AllExpensesUiEvent.OnBackClicked -> navigator.navigateBackFrom(route)
 
             // Why: straight over Todas as despesas, as from Início, so back comes back here (Pierre's call).
             is AllExpensesUiEvent.OnBillClicked -> navigator.openBillFrom(
-                from = Route.AllExpenses,
+                from = route,
                 bill = Route.BillDetail(event.groupId, event.expenseId, focusCommentId = null),
             )
 
@@ -215,7 +223,7 @@ class AllExpensesViewModel(
         }
     }
 
-    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == Route.AllExpenses
+    private fun isOnTop(): Boolean = navigator.backStack.value.lastOrNull() == route
 }
 
 // Why: what the device gave: a window of its bills (windowSize) or every one of them (null).

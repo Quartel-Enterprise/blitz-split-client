@@ -904,7 +904,7 @@ class HomeViewModelTest {
         viewModel.onEvent(HomeUiEvent.OnSeeAllBillsClicked)
 
         // Then
-        assertEquals(listOf(Route.Home, Route.AllExpenses), navigator.backStack.value)
+        assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
         assertTrue(actions.isEmpty())
     }
 
@@ -992,7 +992,7 @@ class HomeViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.AllExpenses), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
             assertTrue(tracked("bill_edit_clicked").isEmpty())
         }
 
@@ -1011,7 +1011,7 @@ class HomeViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.AllExpenses), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
             assertTrue(tracked("bill_share_clicked").isEmpty())
         }
 

@@ -192,8 +192,8 @@ object BlitzSplitApple : KoinComponent {
     fun createHomeViewModel(): ViewModelHolder<HomeViewModel> = ViewModelHolder(HomeViewModel::class) { get() }
 
     // Why: "Todas as despesas", which Início's "Ver tudo" opens.
-    fun createAllExpensesViewModel(): ViewModelHolder<AllExpensesViewModel> =
-        ViewModelHolder(AllExpensesViewModel::class) { get() }
+    fun createAllExpensesViewModel(route: Route.AllExpenses): ViewModelHolder<AllExpensesViewModel> =
+        ViewModelHolder(AllExpensesViewModel::class) { get { parametersOf(route) } }
 
     fun createGroupsViewModel(): ViewModelHolder<GroupsViewModel> = ViewModelHolder(GroupsViewModel::class) { get() }
 

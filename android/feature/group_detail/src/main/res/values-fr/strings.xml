@@ -43,6 +43,7 @@
     <string name="group_detail_tab_expenses">Dépenses</string>
     <string name="group_detail_tab_balances">Soldes</string>
     <string name="group_detail_tab_members">Membres</string>
+    <string name="group_detail_see_all_bills">Tout voir</string>
     <string name="group_detail_today">Aujourd’hui</string>
     <string name="group_detail_yesterday">Hier</string>
     <string name="group_detail_queued">en attente</string>

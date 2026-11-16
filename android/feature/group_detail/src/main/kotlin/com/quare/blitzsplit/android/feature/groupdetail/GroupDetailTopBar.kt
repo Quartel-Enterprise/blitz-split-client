@@ -75,9 +75,10 @@ private val collapsedBadgeSize = 32.dp
 private val expandedBarHeight = 168.dp
 
 /*
- * Why: the canvas's medium flexible bar: the group's square, name and totals, collapsing to one line as the list
- * scrolls. Its open title draws the avatar at 64 dp, shrinking as the bar folds while the one-line title, 32 dp, fades
- * in over it; only the open one is the group's shared avatar and name, which fly in from the row tapped.
+ * Why: the canvas's medium flexible bar: the group's square, name and totals, collapsing to one line of the square and
+ * the name as the list scrolls. Its open title draws the avatar at 64 dp, shrinking as the bar folds while the one-line
+ * title, 32 dp, fades in over it; only the open one is the group's shared avatar and name, which fly in from the row
+ * tapped.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,14 +128,19 @@ internal fun GroupTopBar(
                 )
             }
         },
-        // Why: the totals ellipsize short of the bar's actions instead of running into the chart button.
-        subtitle = {
-            Text(
-                text = meta,
-                modifier = Modifier.padding(end = 16.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+        /*
+         * Why: the totals ellipsize short of the bar's actions instead of running into the chart button. Only the open
+         * bar has them: the folded line is the avatar and the name alone (beta feedback of 2026-11-16).
+         */
+        subtitle = { isExpanded ->
+            if (isExpanded) {
+                Text(
+                    text = meta,
+                    modifier = Modifier.padding(end = 16.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         },
         navigationIcon = { GroupBackButton(onAction) },
         actions = {

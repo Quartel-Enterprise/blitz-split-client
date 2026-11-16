@@ -39,6 +39,7 @@
     <string name="group_detail_tab_expenses">支出</string>
     <string name="group_detail_tab_balances">残高</string>
     <string name="group_detail_tab_members">メンバー</string>
+    <string name="group_detail_see_all_bills">すべて見る</string>
     <string name="group_detail_today">今日</string>
     <string name="group_detail_yesterday">昨日</string>
     <string name="group_detail_queued">送信待ち</string>

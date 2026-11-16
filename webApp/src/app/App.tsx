@@ -345,9 +345,9 @@ function Screen({ name, route }: { name: string; route: JsRoute | undefined }) {
     // Why: a push notification replaces a contact's Atividade, or Início's bills, with everyone's, which is a new page.
     case 'activity':
       return route ? <ActivityScreen key={`${route.personKey ?? ''}:${route.showsBillsOnly}`} route={route} /> : null
-    // Why: Início's "Ver tudo" over "Últimas despesas", a page over the home.
+    // Why: Início's "Ver tudo" over "Últimas despesas", a page over the home; a group's, over the group, filtered by it.
     case 'all-expenses':
-      return <AllExpensesScreen />
+      return route ? <AllExpensesScreen key={route.groupId ?? ''} route={route} /> : null
     // Why: on a tablet and a phone the profile takes the list's place inside Contatos, which stays mounted under it;
     // one opened from Saldos draws the same page.
     case 'contacts':

@@ -27,7 +27,9 @@ import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
+import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
@@ -602,7 +604,7 @@ class AllExpensesViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.AllExpenses,
+                    Route.AllExpenses(groupId = null),
                     Route.BillDetail("trio", "dinner", focusCommentId = null),
                 ),
                 navigator.backStack.value,
@@ -626,7 +628,7 @@ class AllExpensesViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.AllExpenses,
+                    Route.AllExpenses(groupId = null),
                     Route.BillDetail("trio", "lunch", focusCommentId = null),
                 ),
                 navigator.backStack.value,
@@ -697,7 +699,7 @@ class AllExpensesViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.AllExpenses, Route.SplitBill.createEditing("trio", "dinner")),
+                listOf(Route.Home, Route.AllExpenses(groupId = null), Route.SplitBill.createEditing("trio", "dinner")),
                 navigator.backStack.value,
             )
             assertEquals(listOf("bill_edit_clicked" to fromAllExpenses), trackedEvents)
@@ -718,7 +720,11 @@ class AllExpensesViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.AllExpenses, Route.SplitBill.createDuplicating("trio", "dinner")),
+                listOf(
+                    Route.Home,
+                    Route.AllExpenses(groupId = null),
+                    Route.SplitBill.createDuplicating("trio", "dinner"),
+                ),
                 navigator.backStack.value,
             )
             assertEquals(listOf("bill_duplicate_clicked" to fromAllExpenses), trackedEvents)
@@ -741,7 +747,7 @@ class AllExpensesViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.AllExpenses,
+                    Route.AllExpenses(groupId = null),
                     Route.ShareBill(
                         groupId = "trio",
                         expenseId = "dinner",
@@ -787,7 +793,7 @@ class AllExpensesViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.AllExpenses), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
             assertTrue(trackedEvents.isEmpty())
         }
 
@@ -805,7 +811,7 @@ class AllExpensesViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.AllExpenses), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
             assertTrue(trackedEvents.isEmpty())
         }
 
@@ -823,7 +829,7 @@ class AllExpensesViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.AllExpenses), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
         }
 
     @Test
@@ -872,7 +878,7 @@ class AllExpensesViewModelTest {
             assertEquals(listOf("taxi"), shownIds())
             assertNull(viewModel.uiState.value.billToDelete)
             assertFalse(viewModel.uiState.value.isDeletingBill)
-            assertEquals(listOf(Route.Home, Route.AllExpenses), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
             assertTrue(actions.isEmpty())
         }
 
@@ -2090,6 +2096,304 @@ class AllExpensesViewModelTest {
         assertTrue(trackedEvents.isEmpty())
     }
 
+    @Test
+    fun `GIVEN See all of a group WHEN All expenses opens before reading THEN that group is already picked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = listOf(bill("h1"), bill("t1", groupId = "trip")),
+                billsRead = false,
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+
+            // When
+            val filters = viewModel.uiState.value.filters
+
+            // Then
+            assertEquals(setOf("trip"), filters.groupIds)
+            assertTrue(filters.isFiltering)
+        }
+
+    @Test
+    fun `GIVEN See all of a group with bills in three groups WHEN All expenses opens THEN shows only its bills`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip"), trio(id = "work")),
+                storedExpenses = listOf(
+                    bill("h1", spentAt = hoursAgo(1)),
+                    bill(
+                        "t1",
+                        groupId = "trip",
+                        spentAt = hoursAgo(2),
+                    ),
+                    bill(
+                        "w1",
+                        groupId = "work",
+                        spentAt = hoursAgo(3),
+                    ),
+                    bill(
+                        "t2",
+                        groupId = "trip",
+                        spentAt = hoursAgo(4),
+                    ),
+                ),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+
+            // When
+            val ids = shownIds()
+
+            // Then
+            assertEquals(listOf("t1", "t2"), ids)
+            assertEquals(setOf("trip"), viewModel.uiState.value.filters.groupIds)
+        }
+
+    @Test
+    fun `GIVEN 31 recent bills elsewhere WHEN See all of a group opens THEN still shows that group older bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = manyBills(31) + bill(
+                    "t1",
+                    groupId = "trip",
+                    spentAt = daysAgo(30),
+                ),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+
+            // When
+            val ids = shownIds()
+
+            // Then
+            assertEquals(listOf("t1"), ids)
+            assertFalse(viewModel.uiState.value.hasMore)
+        }
+
+    @Test
+    fun `GIVEN See all of a group WHEN letting the group go THEN shows the bills of every group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = listOf(
+                    bill("h1", spentAt = hoursAgo(1)),
+                    bill(
+                        "t1",
+                        groupId = "trip",
+                        spentAt = hoursAgo(2),
+                    ),
+                ),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+            val event = AllExpensesUiEvent.OnGroupToggled("trip")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("h1", "t1"), shownIds())
+            assertTrue(
+                viewModel.uiState.value.filters.groupIds
+                    .isEmpty(),
+            )
+            assertFalse(viewModel.uiState.value.filters.isFiltering)
+        }
+
+    @Test
+    fun `GIVEN See all of a group WHEN clearing the filters THEN shows the bills of every group`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = listOf(
+                    bill("h1", spentAt = hoursAgo(1)),
+                    bill(
+                        "t1",
+                        groupId = "trip",
+                        spentAt = hoursAgo(2),
+                    ),
+                ),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+            val event = AllExpensesUiEvent.OnClearFiltersClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("h1", "t1"), shownIds())
+            assertEquals(AllExpensesFilters.none, viewModel.uiState.value.filters)
+        }
+
+    @Test
+    fun `GIVEN See all of a group with no bills of Pierre WHEN All expenses opens THEN shows no results`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = listOf(bill("h1")),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.days.isEmpty())
+            assertTrue(state.showsNoResults)
+            assertFalse(state.showsEmpty)
+            assertFalse(state.showsSkeleton)
+        }
+
+    @Test
+    fun `GIVEN See all of a group not on the device WHEN All expenses opens THEN keeps it picked and shows nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("h1")),
+                route = Route.AllExpenses(groupId = "gone"),
+                underneath = listOf(Route.Home, groupScreen("gone")),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(setOf("gone"), state.filters.groupIds)
+            assertTrue(state.days.isEmpty())
+            assertTrue(state.showsNoResults)
+            assertFalse(state.showsEmpty)
+        }
+
+    @Test
+    fun `GIVEN All expenses over a group WHEN tapping back THEN returns to the group screen`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(id = "trip")),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+            val event = AllExpensesUiEvent.OnBackClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(Route.Home, groupScreen("trip")), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN All expenses over a group WHEN tapping a bill THEN opens its bill over All expenses`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(id = "trip")),
+                storedExpenses = listOf(bill("dinner", groupId = "trip")),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+            val event = AllExpensesUiEvent.OnBillClicked("trip", "dinner")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    groupScreen("trip"),
+                    Route.AllExpenses(groupId = "trip"),
+                    Route.BillDetail("trip", "dinner", focusCommentId = null),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN All expenses over a group WHEN tapping Edit in a bill menu THEN opens Edit bill over the list`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(id = "trip")),
+                storedExpenses = listOf(bill("dinner", groupId = "trip")),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+            val event = BillMenuEvent.OnEditClicked("trip", "dinner")
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(
+                listOf(
+                    Route.Home,
+                    groupScreen("trip"),
+                    Route.AllExpenses(groupId = "trip"),
+                    Route.SplitBill.createEditing("trip", "dinner"),
+                ),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN All expenses opened from Home See all WHEN it opens THEN sits in the Home tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+
+            // When
+            val homeTab = viewModel.uiState.value.homeTab
+
+            // Then
+            assertEquals(HomeTab.HOME, homeTab)
+        }
+
+    @Test
+    fun `GIVEN a group Home opened WHEN its See all opens All expenses THEN sits in the Home tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(id = "trip")),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, groupScreen("trip")),
+            )
+
+            // When
+            val homeTab = viewModel.uiState.value.homeTab
+
+            // Then
+            assertEquals(HomeTab.HOME, homeTab)
+        }
+
+    @Test
+    fun `GIVEN a group opened from the Groups tab WHEN its See all opens All expenses THEN sits in the Groups tab`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(id = "trip")),
+                route = Route.AllExpenses(groupId = "trip"),
+                underneath = listOf(Route.Home, Route.Groups, groupScreen("trip")),
+            )
+
+            // When
+            val homeTab = viewModel.uiState.value.homeTab
+
+            // Then
+            assertEquals(HomeTab.GROUPS, homeTab)
+        }
+
     private val everyone = listOf("Pierre", "Ana", "Bruno")
 
     private val fromAllExpenses: Map<String, Any> = mapOf("source" to "all_expenses")
@@ -2145,6 +2449,14 @@ class AllExpensesViewModelTest {
         createdByMemberId = null,
         isDeleted = false,
         isPending = false,
+    )
+
+    // Why: the group's screen on its Expenses tab, whose "See all" opens All expenses over it.
+    private fun groupScreen(id: String): Route.GroupDetail = Route.GroupDetail(
+        groupId = id,
+        joinedAs = null,
+        tab = GroupTab.EXPENSES,
+        isOverBill = false,
     )
 
     // Why: Pierre is this device's user, in a group with Ana and Bruno.
@@ -2219,18 +2531,25 @@ class AllExpensesViewModelTest {
         billsRead: Boolean = true,
         downloading: FirstDownloadProgress? = null,
         storedCategories: List<GroupCategory> = emptyList(),
+        route: Route.AllExpenses = Route.AllExpenses(groupId = null),
+        // Why: what lies under All expenses: Home, or the group whose "See all" opened it.
+        underneath: List<Route> = listOf(Route.Home),
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses.inCurrencyOf(storedGroups)).also {
             it.myMemberIds.value = myMemberIds
         }
         val settlements = FakeSettlementRepository()
-        navigator = BackStackNavigator(startRoute = Route.Home).also { it.navigate(Route.AllExpenses) }
+        navigator = BackStackNavigator(startRoute = underneath.first()).also { stack ->
+            underneath.drop(1).forEach(stack::navigate)
+            stack.navigate(route)
+        }
         minutes = MutableStateFlow(0)
         firstDownload = MutableStateFlow(downloading)
         pagesRead = MutableStateFlow(billsRead)
         clockMillis = now
         viewModel = AllExpensesViewModel(
+            route = route,
             navigator = navigator,
             // Why: a page asked for while the device holds its reads only arrives once pagesRead turns true.
             observeMyExpenses = ObserveMyExpenses { limit ->

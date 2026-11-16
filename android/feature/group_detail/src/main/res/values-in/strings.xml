@@ -39,6 +39,7 @@
     <string name="group_detail_tab_expenses">Pengeluaran</string>
     <string name="group_detail_tab_balances">Saldo</string>
     <string name="group_detail_tab_members">Anggota</string>
+    <string name="group_detail_see_all_bills">Lihat semua</string>
     <string name="group_detail_today">Hari ini</string>
     <string name="group_detail_yesterday">Kemarin</string>
     <string name="group_detail_queued">dalam antrean</string>

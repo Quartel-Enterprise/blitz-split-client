@@ -1,7 +1,7 @@
 import { ArrowLeft, ReceiptText, SearchX } from 'lucide-react'
-import { AllExpensesPresenter, type JsAllExpensesState } from 'blitzsplit-shared'
+import { AllExpensesPresenter, type JsAllExpensesState, type JsRoute } from 'blitzsplit-shared'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
-import { pageContentClass } from '@/components/HomeShell'
+import { pageContentClass, type HomeTab } from '@/components/HomeShell'
 import { PageShell } from '@/components/HomeSidebar'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonRows } from '@/components/ui/skeleton'
@@ -16,12 +16,12 @@ import { cn } from '@/lib/utils'
 
 /**
  * "All expenses", which Home's "See all" opens over it: every bill you paid or take part in, across groups, by day, as
- * Home's list draws them, each with its ⋮ (a right click too). A page in the home's frame on every width, Home's tab
- * selected, one column (a long list a page at a time reads better as a page than in a dialog); the phone has its own
- * bar with back. The next page is asked for as the list's end scrolls into view.
+ * Home's list draws them, each with its ⋮ (a right click too). A group's "See all" opens it over the group, filtered by
+ * it. A page in the home's frame on every width, the tab it opened over selected (Home's, or the group's), one column
+ * (a long list a page at a time reads better as a page than in a dialog); the phone has its own bar with back. The next page is asked for as the list's end scrolls into view.
  */
-export function AllExpensesScreen() {
-  const presenter = usePresenter(() => new AllExpensesPresenter())
+export function AllExpensesScreen({ route }: { route: JsRoute }) {
+  const presenter = usePresenter(() => new AllExpensesPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsAllExpensesState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
   const itemCount = state ? Array.from(state.days).reduce((count, day) => count + day.bills.length, 0) : 0
@@ -29,7 +29,12 @@ export function AllExpensesScreen() {
   if (!presenter || !state) return null
 
   return (
-    <PageShell selected="home" phoneBars="nav">
+    <PageShell
+      selected={state.homeTab as HomeTab}
+      groups={route.groupId ? { selectedId: route.groupId } : undefined}
+      // Why: over a group, as the group's own pages, the phone keeps only this page's bar with back.
+      phoneBars={route.groupId ? 'none' : 'nav'}
+    >
       <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b bg-background/95 px-2 backdrop-blur md:hidden">
         <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
           <ArrowLeft />

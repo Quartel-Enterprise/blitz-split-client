@@ -335,6 +335,7 @@ export const it: Record<MessageKey, string> = {
   groupDetail_breadcrumb: 'Sei qui',
   groupDetail_joinedTitle: 'Ora sei nel gruppo come {name}',
   groupDetail_joinedMessage: 'Tutto quello che viene aggiunto per te compare qui.',
+  groupDetail_seeAllBills: 'Vedi tutte',
   groupDetail_protectTitle: 'Proteggi il tuo accesso',
   groupDetail_protectMessage: 'Sei nel gruppo senza account. Salva il codice o collega Google o Apple.',
   groupDetail_metaTotal: '{members} · {total} in totale',

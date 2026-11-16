@@ -51,11 +51,13 @@ import com.quare.blitzsplit.android.designsystem.layout.LocalFormBleed
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.calculateCenteredColumnMargin
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiState
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 // Why: one column, as Atividade's, centered on a tablet or a book: the rows read as Início's, never stretched.
@@ -68,7 +70,10 @@ private val sideBleed = FormBleed.ofMargin(sideMargin)
  * reads better full height than in a dialog), back on the left, the bills by day as Início draws them, each with its ⋮.
  */
 @Composable
-fun AllExpensesScreen(viewModel: AllExpensesViewModel = koinViewModel()) {
+fun AllExpensesScreen(
+    route: Route.AllExpenses,
+    viewModel: AllExpensesViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
         when (action) {

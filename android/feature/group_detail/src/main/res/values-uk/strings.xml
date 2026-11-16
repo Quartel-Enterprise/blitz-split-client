@@ -45,6 +45,7 @@
     <string name="group_detail_tab_expenses">Витрати</string>
     <string name="group_detail_tab_balances">Баланси</string>
     <string name="group_detail_tab_members">Учасники</string>
+    <string name="group_detail_see_all_bills">Переглянути все</string>
     <string name="group_detail_today">Сьогодні</string>
     <string name="group_detail_yesterday">Учора</string>
     <string name="group_detail_queued">у черзі</string>

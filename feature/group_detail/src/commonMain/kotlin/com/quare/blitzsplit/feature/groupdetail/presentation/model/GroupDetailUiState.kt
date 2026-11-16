@@ -74,6 +74,14 @@ data class GroupDetailUiState(
     val isEmpty: Boolean
         get() = isLoaded && !awaitsFullSync && days.isEmpty()
 
+    /*
+     * Why: Despesas' "Ver tudo", at the end of its first day's heading (as Início's over "Últimas despesas"), while the
+     * list holds a bill of this person's: "Todas as despesas" lists only the bills they paid or take part in (those with
+     * a share, myBalanceMinor), never payments, so the link never opens onto nothing.
+     */
+    val showsSeeAllBills: Boolean
+        get() = days.any { day -> day.entries.any { it is ExpenseRow && it.myBalanceMinor != null } }
+
     // Why: Despesas' skeleton rows, while no bill is on the device yet and some may still be coming.
     val isLoadingBills: Boolean
         get() = isLoaded && awaitsFullSync && days.isEmpty()

@@ -41,6 +41,7 @@
     <string name="group_detail_tab_expenses">Harcamalar</string>
     <string name="group_detail_tab_balances">Bakiyeler</string>
     <string name="group_detail_tab_members">Üyeler</string>
+    <string name="group_detail_see_all_bills">Tümünü gör</string>
     <string name="group_detail_today">Bugün</string>
     <string name="group_detail_yesterday">Dün</string>
     <string name="group_detail_queued">sırada</string>

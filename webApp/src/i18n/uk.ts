@@ -339,6 +339,7 @@ export const uk: Record<MessageKey, string> = {
   groupDetail_breadcrumb: 'Ти тут',
   groupDetail_joinedTitle: 'Ти приєднався(-лася) як {name}',
   groupDetail_joinedMessage: "Усе, що додано для тебе, з'явиться тут.",
+  groupDetail_seeAllBills: 'Переглянути все',
   groupDetail_protectTitle: 'Захисти свій доступ',
   groupDetail_protectMessage: 'Ти приєднався(-лася) без облікового запису. Збережи код або підключи Google чи Apple.',
   groupDetail_metaTotal: '{members} · усього {total}',

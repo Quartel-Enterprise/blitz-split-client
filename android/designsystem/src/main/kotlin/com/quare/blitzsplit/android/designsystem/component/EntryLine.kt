@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -215,15 +216,54 @@ fun BillAmountsColumn(
 // Why: "Today", "Yesterday" or the date over a day's lines, read as a heading.
 @Composable
 fun EntryDayHeading(text: String) {
-    Text(
+    DayHeadingText(
         text = text,
+        modifier = Modifier.padding(
+            start = 20.dp,
+            end = 20.dp,
+            top = 20.dp,
+            bottom = 8.dp,
+        ),
+    )
+}
+
+/*
+ * Why: the first day's heading of the group's Despesas with "Ver tudo" at its end, as Início's "Últimas despesas" draws
+ * its link; the button's own height takes the heading's top margin, so the rows start where they would without it.
+ */
+@Composable
+fun EntryDayHeading(
+    text: String,
+    action: String,
+    onAction: () -> Unit,
+) {
+    Row(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(
                 start = 20.dp,
-                end = 20.dp,
-                top = 20.dp,
-                bottom = 8.dp,
-            ).semantics { heading() },
+                end = 8.dp,
+                top = 4.dp,
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        DayHeadingText(
+            text = text,
+            modifier = Modifier.weight(1f),
+        )
+        TextButton(onClick = onAction) { Text(action) }
+    }
+}
+
+// Why: the day's words as every heading draws them, so the one with "Ver tudo" never looks unlike the others.
+@Composable
+private fun DayHeadingText(
+    text: String,
+    modifier: Modifier,
+) {
+    Text(
+        text = text,
+        modifier = modifier.semantics { heading() },
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )

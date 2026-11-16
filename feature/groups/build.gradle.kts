@@ -9,7 +9,8 @@ kotlin {
             api(project(":core:model"))
             // Why: the dialogs of "Sair do grupo" and "Apagar grupo" draw core:expenses' models, as the group's do.
             api(project(":core:expenses"))
-            implementation(project(":core:navigation"))
+            // Why: AllExpensesViewModel takes its Route.AllExpenses, which the UIs hand it.
+            api(project(":core:navigation"))
             implementation(project(":core:profile"))
             implementation(project(":core:account"))
             implementation(project(":core:sync"))

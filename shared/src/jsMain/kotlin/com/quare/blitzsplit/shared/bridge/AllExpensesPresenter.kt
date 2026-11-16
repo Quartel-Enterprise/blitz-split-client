@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
@@ -11,6 +12,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
 import com.quare.blitzsplit.feature.groups.presentation.viewmodel.AllExpensesViewModel
 import kotlinx.coroutines.flow.map
+import org.koin.core.parameter.parametersOf
 import org.koin.mp.KoinPlatform
 
 // Why: "Todas as despesas", the bills by day as Início draws them, read a page at a time.
@@ -45,10 +47,17 @@ class JsAllExpensesState(
     val hasMore: Boolean,
     val billToDelete: JsBillDeletion?,
     val isDeletingBill: Boolean,
+    // Why: the sidebar's tab: "home", or the tab of the group whose "See all" opened it.
+    val homeTab: String,
 )
 
-class AllExpensesPresenter {
-    private val holder = ViewModelHolder(AllExpensesViewModel::class) { KoinPlatform.getKoin().get() }
+class AllExpensesPresenter(
+    route: JsRoute,
+) {
+    private val allExpensesRoute = route.route as Route.AllExpenses
+    private val holder = ViewModelHolder(AllExpensesViewModel::class) {
+        KoinPlatform.getKoin().get { parametersOf(allExpensesRoute) }
+    }
     private val viewModel get() = holder.viewModel
 
     // Why: a bill's ⋮, the row's right click too.
@@ -78,6 +87,7 @@ class AllExpensesPresenter {
                 hasMore = state.hasMore,
                 billToDelete = state.billToDelete?.let(::toJsBillDeletion),
                 isDeletingBill = state.isDeletingBill,
+                homeTab = toJsHomeTab(state.homeTab),
             )
         }
         val watch = FlowWatcher(states).observe(onChange)

@@ -183,8 +183,13 @@ function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: Grou
 function ExpensesTable({ presenter, state }: { presenter: GroupDetailPresenter; state: JsGroupDetailState }) {
   return (
     <DayRowsTable label={t('group_tabExpenses')}>
-      {state.days.map((day) => (
-        <DayRowGroup key={day.dayStartMillis} dayStartMillis={day.dayStartMillis} relativeDay={day.relativeDay}>
+      {state.days.map((day, index) => (
+        <DayRowGroup
+          key={day.dayStartMillis}
+          dayStartMillis={day.dayStartMillis}
+          relativeDay={day.relativeDay}
+          action={index === 0 && state.showsSeeAllBills ? { label: t('groupDetail_seeAllBills'), onClick: () => presenter.seeAllBills() } : undefined}
+        >
           {day.entries.map((entry) =>
             entry.expense ? (
               <ExpenseRowItem key={entry.id} presenter={presenter} expense={entry.expense} />

@@ -43,6 +43,7 @@
     <string name="group_detail_tab_expenses">Spese</string>
     <string name="group_detail_tab_balances">Saldi</string>
     <string name="group_detail_tab_members">Membri</string>
+    <string name="group_detail_see_all_bills">Vedi tutte</string>
     <string name="group_detail_today">Oggi</string>
     <string name="group_detail_yesterday">Ieri</string>
     <string name="group_detail_queued">in coda</string>

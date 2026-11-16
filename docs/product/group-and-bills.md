@@ -18,9 +18,19 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     as an entry of its own (`Route.GroupDetail.isOverBill`, see [Split a bill](split-bill.md)), and whose "Split a
     bill" goes back to that new bill's form rather than opening a second one. On Android the top bar's subtitle ("2
     members · R$ 3,418.31 in total") ellipsizes 16 dp short of the bar's actions, so the Statistics button keeps room
-    around it (beta bugs of 2026-11-10). On an Android phone upright that bar folds to its one line on a scroll down
+    around it (beta bugs of 2026-11-10), and only the open bar shows it: folded to its one line the bar is the avatar
+    and the name alone (Pierre's call, beta feedback of 2026-11-16), as iPhone's inline title and the web's folded
+    header already were; the Mac's toolbar never folds and keeps it as the window's subtitle. On an Android phone upright that bar folds to its one line on a scroll down
     and opens again on a scroll up, from anywhere in the list; wider, it opens only back at the top. On iPhone the
     bars stay put (see [the bars on scroll](home-and-shell.md)).
+  - "See all" at the end of Expenses' first day heading ("Today … See all", drawn as Home's "See all" beside "Latest
+    expenses"; on the Mac, whose table's day headings take no button, at the right over the table) opens "All
+    expenses" with the group already picked in its Group filter (Pierre's call, beta feedback of 2026-11-16;
+    `Route.AllExpenses.groupId`, `GroupDetailUiEvent.OnSeeAllBillsClicked`), which the person may clear there for every
+    group. It opens over the group, so back comes back to it, and a bill tapped there opens over All expenses as from
+    Home. It shows while the list holds a bill you paid or take part in (`GroupDetailUiState.showsSeeAllBills`): All
+    expenses lists only those, never payments nor bills you have no part in, so the link never opens onto nothing.
+    Apple's words are Home's own for the link ("See everything" in English), as both open the same screen.
   - "Export group data" (the group's ⋮/⋯ menu, after "Pin to Home"; Pierre's call, beta feedback of 2026-11-14) asks
     for a format, CSV, "Excel (XLSX)", JSON or "Text (TXT)" (Android's dialog, a drawer on a phone's web, Apple's
     confirmation dialog: an action sheet on iPhone, a dialog on iPad and the Mac, whose item reads "Export group

@@ -52,13 +52,14 @@ The home tab, its shortcuts and pinned groups.
     reversing "no ⋮ on Home"; [group-and-bills.md](group-and-bills.md) has what each does). They open over Home, not
     over the group (`BillMenuController` in `:core:expenses`, which the group's Expenses shares). The web's desktop table
     has the ⋮ in a last column. "See all" opens "All expenses" over Home (Pierre's call, beta feedback; it opened
-    Activity on its bills before), `Route.AllExpenses`: every bill you paid or take part in, across groups, by day,
+    Activity on its bills before), `Route.AllExpenses`; the group's Expenses has its own "See all", which opens it over
+    the group with that group already picked in "Group" (beta feedback of 2026-11-16, [group-and-bills.md](group-and-bills.md)), the web's sidebar keeping the group's tab picked: every bill you paid or take part in, across groups, by day,
     drawn as Home's rows, each with the same ⋮, a tap opening its Bill right over All expenses as from Home. A page on every
     platform and size (on an Android book the filters sit before the hinge and the bills after it, as a category's
     expenses do; on an iPhone Duo open the column keeps to the leading half, off the fold, as Activity's; the contrast
     and responsiveness sweep of 2026-11-12), back on the left (a long list read a page at a time reads better full height than in a
     dialog): Android a column of up to 640 dp centered, iOS and the Mac pushed over Home in its tab, a column of up to
-    520 pt, the web a page in the home's frame with Home's tab selected. It reads the device only, a page of 30 bills
+    520 pt, the web a page in the home's frame with the tab it opened over selected (Home's, or the group's). It reads the device only, a page of 30 bills
     at first and 30 more each time the list nears its end (`AllExpensesViewModel`: a growing `LIMIT` over Room's
     `observeMyExpenses`, so a bill edited, deleted or synced in changes in place), with skeleton rows while the first
     page is read, under the last row while the next one is (or while a new device's first download may still bring

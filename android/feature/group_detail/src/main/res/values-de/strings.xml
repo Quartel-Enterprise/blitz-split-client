@@ -41,6 +41,7 @@
     <string name="group_detail_tab_expenses">Ausgaben</string>
     <string name="group_detail_tab_balances">Salden</string>
     <string name="group_detail_tab_members">Mitglieder</string>
+    <string name="group_detail_see_all_bills">Alle ansehen</string>
     <string name="group_detail_today">Heute</string>
     <string name="group_detail_yesterday">Gestern</string>
     <string name="group_detail_queued">in der Warteschlange</string>
