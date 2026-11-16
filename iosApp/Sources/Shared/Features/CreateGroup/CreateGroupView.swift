@@ -112,6 +112,29 @@ private struct CreateGroupForm: View {
     }
 
     var body: some View {
+        ScrollViewReader { proxy in
+            formColumns
+                // The suggestions show under the draft, which the keyboard would cover: the list scrolls to the last
+                // once they show, not on each later keystroke, which would undo a scroll of the person's own
+                .onChange(of: state.suggestions.isEmpty) { _, isEmpty in
+                    guard !isEmpty, let last = model.current.suggestions.last?.key else { return }
+                    withAnimation { proxy.scrollTo(last, anchor: .bottom) }
+                }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Palette.groupedBackground)
+        .measuringScreenLayout($layout)
+        .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(CreateGroupUiEventOnPhotoCrop(event: $0)) }
+        #if os(macOS)
+        // The Mac's sheet opens on the name, ready to type; iOS waits for a tap, which brings the keyboard up
+        .onAppear {
+            if model.current.name.isEmpty { isNameFocused = true }
+        }
+        #endif
+    }
+
+    @ViewBuilder
+    private var formColumns: some View {
         Group {
             if usesTwoColumns {
                 TwoColumnsLayout(firstWidth: 300, spacing: 28) {
@@ -129,16 +152,6 @@ private struct CreateGroupForm: View {
                 .formStyle(.grouped)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Palette.groupedBackground)
-        .measuringScreenLayout($layout)
-        .photoCrop(state.photoCrop, frame: .roundedSquare) { model.send(CreateGroupUiEventOnPhotoCrop(event: $0)) }
-        #if os(macOS)
-        // The Mac's sheet opens on the name, ready to type; iOS waits for a tap, which brings the keyboard up
-        .onAppear {
-            if model.current.name.isEmpty { isNameFocused = true }
-        }
-        #endif
     }
 
     /// The error, the avatar and the name, type and currency.
@@ -315,6 +328,13 @@ private struct MembersSection: View {
                         .buttonStyle(.borderless)
                 }
             }
+            // The app's Contacts matching the name typed, so the group is created with that same person
+            ForEach(state.suggestions, id: \.key) { suggestion in
+                SuggestionRow(suggestion: suggestion) {
+                    model.send(CreateGroupUiEventOnSuggestionClicked(key: suggestion.key))
+                }
+                .id(suggestion.key)
+            }
         } header: {
             HStack {
                 Text("Who's in")
@@ -348,13 +368,41 @@ private struct MembersSection: View {
     }
 }
 
+/// A contact under the draft: their face and name, and a + that says a tap adds them.
+private struct SuggestionRow: View {
+    let suggestion: CreateGroupSuggestion
+    let onAdd: () -> Void
+
+    var body: some View {
+        Button(action: onAdd) {
+            HStack(spacing: 12) {
+                AvatarPhoto(
+                    initial: suggestion.initials,
+                    color: suggestion.avatarColor,
+                    photoUrl: suggestion.photoUrl,
+                    size: 32,
+                )
+                Text(verbatim: suggestion.name)
+                Spacer()
+                Image(systemName: "plus")
+                    .foregroundStyle(Palette.accent)
+                    .accessibilityHidden(true)
+            }
+            .contentShape(.rect)
+        }
+        // Plain, so the name reads as a person's, not a link; the + keeps the accent
+        .buttonStyle(.plain)
+        .accessibilityHint(Text("Add"))
+    }
+}
+
 private struct MemberRow: View {
     let member: CreateGroupMember
     let onRemove: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
-            AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 32)
+            AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
             VStack(alignment: .leading, spacing: 0) {
                 Text(verbatim: member.name)
                 if member.isMe {

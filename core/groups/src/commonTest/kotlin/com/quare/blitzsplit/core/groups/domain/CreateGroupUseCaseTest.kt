@@ -130,6 +130,22 @@ class CreateGroupUseCaseTest {
         }
 
     @Test
+    fun `GIVEN a contact with an account WHEN creating the group THEN they are in as that account and joined`() =
+        runTest {
+            // Given
+            prepareScenario()
+            val members = listOf(me, ana.copy(userId = "ana"), bruno)
+
+            // When
+            createGroup(members = members)
+
+            // Then
+            val created = repository.createdGroups.single().members
+            assertEquals(listOf(null, "ana", null), created.map { it.userId })
+            assertEquals(listOf(true, true, false), created.map { it.hasJoined })
+        }
+
+    @Test
     fun `GIVEN members with their colors WHEN creating the group THEN keeps each color`() = runTest {
         // Given
         prepareScenario()
@@ -362,16 +378,19 @@ class CreateGroupUseCaseTest {
         name = "Pierre",
         avatarColor = AvatarColor.LILAC,
         isMe = true,
+        userId = null,
     )
     private val ana = NewGroupMember(
         name = "Ana",
         avatarColor = AvatarColor.GREEN,
         isMe = false,
+        userId = null,
     )
     private val bruno = NewGroupMember(
         name = "Bruno",
         avatarColor = AvatarColor.SAND,
         isMe = false,
+        userId = null,
     )
     private val uuid = Regex("^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 

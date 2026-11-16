@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.creategroup
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -23,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.personNameKeyboardOptions
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
+import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupSuggestion
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiState
 
@@ -92,10 +97,83 @@ internal fun MembersSection(
             shape = RoundedCornerShape(
                 topStart = if (state.members.isEmpty()) listEndRadius else listInnerRadius,
                 topEnd = if (state.members.isEmpty()) listEndRadius else listInnerRadius,
-                bottomStart = listEndRadius,
-                bottomEnd = listEndRadius,
+                bottomStart = if (state.suggestions.isEmpty()) listEndRadius else listInnerRadius,
+                bottomEnd = if (state.suggestions.isEmpty()) listEndRadius else listInnerRadius,
             ),
         )
+        /*
+         * Why: the app's Contacts matching the name typed, so the group is created with that same person. They show
+         * under the field, where the keyboard would cover them, so the form scrolls to the last once they show; not
+         * on each later keystroke, which would undo a scroll of the person's own.
+         */
+        val lastSuggestion = remember { BringIntoViewRequester() }
+        val showsSuggestions = state.suggestions.isNotEmpty()
+        LaunchedEffect(showsSuggestions) {
+            if (showsSuggestions) lastSuggestion.bringIntoView()
+        }
+        state.suggestions.forEachIndexed { index, suggestion ->
+            val isLast = index == state.suggestions.lastIndex
+            SuggestionRow(
+                suggestion = suggestion,
+                shape = RoundedCornerShape(
+                    topStart = listInnerRadius,
+                    topEnd = listInnerRadius,
+                    bottomStart = if (isLast) listEndRadius else listInnerRadius,
+                    bottomEnd = if (isLast) listEndRadius else listInnerRadius,
+                ),
+                onEvent = onEvent,
+                modifier = if (isLast) Modifier.bringIntoViewRequester(lastSuggestion) else Modifier,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SuggestionRow(
+    suggestion: CreateGroupSuggestion,
+    shape: RoundedCornerShape,
+    onEvent: (CreateGroupUiEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        shape = shape,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier = modifier,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                // Why: TalkBack reads the name, then "double tap to Add".
+                .clickable(onClickLabel = stringResource(R.string.create_group_add)) {
+                    onEvent(CreateGroupUiEvent.OnSuggestionClicked(suggestion.key))
+                }.heightIn(min = 56.dp)
+                .padding(
+                    start = 16.dp,
+                    end = 20.dp,
+                    top = 6.dp,
+                    bottom = 6.dp,
+                ),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            AvatarBadge(
+                initial = suggestion.initials,
+                color = suggestion.avatarColor,
+                photoUrl = suggestion.photoUrl,
+                size = 36.dp,
+            )
+            Text(
+                text = suggestion.name,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Icon(
+                imageVector = Icons.Outlined.Add,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        }
     }
 }
 
@@ -125,6 +203,7 @@ private fun MemberRow(
             AvatarBadge(
                 initial = member.initials,
                 color = member.avatarColor,
+                photoUrl = member.photoUrl,
                 size = 36.dp,
             )
             Column(modifier = Modifier.weight(1f)) {

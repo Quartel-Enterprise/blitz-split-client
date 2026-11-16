@@ -194,7 +194,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
         <ul className="flex flex-col divide-y rounded-lg border">
           {state.members.map((member) => (
             <li key={member.id} className="flex items-center gap-3 px-3 py-2">
-              <Avatar initial={member.initials} color={member.avatarColor} className="size-8 text-xs" />
+              <Avatar initial={member.initials} color={member.avatarColor} photoUrl={member.photoUrl} className="size-8 text-xs" />
               <span className="min-w-0 flex-1 truncate text-sm font-medium">{member.name}</span>
               {member.isMe ? (
                 <span className="text-xs text-muted-foreground">{t('createGroup_me')}</span>
@@ -246,6 +246,25 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
               {t('createGroup_add')}
             </Button>
           </li>
+          {/* Why: the app's Contacts matching the name typed, so the group is created with that same person. */}
+          {state.suggestions.map((suggestion) => (
+            <li key={suggestion.key}>
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+                aria-label={`${suggestion.name}, ${t('createGroup_add')}`}
+                onClick={() => {
+                  presenter.addSuggestion(suggestion.key)
+                  // Why: the field stays focused for the next name, as after Enter.
+                  draftRef.current?.focus()
+                }}
+              >
+                <Avatar initial={suggestion.initials} color={suggestion.avatarColor} photoUrl={suggestion.photoUrl} className="size-8 text-xs" />
+                <span className="min-w-0 flex-1 truncate text-sm">{suggestion.name}</span>
+                <Plus aria-hidden className="size-4 shrink-0 text-primary" />
+              </button>
+            </li>
+          ))}
         </ul>
         <p className="text-sm text-muted-foreground">{t('createGroup_noAppNotice')}</p>
       </section>

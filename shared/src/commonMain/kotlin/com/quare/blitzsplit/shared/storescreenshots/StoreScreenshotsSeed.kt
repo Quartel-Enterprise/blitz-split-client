@@ -146,7 +146,14 @@ internal class StoreScreenshotsSeed(
                 shape = GroupShape.fallback,
                 photo = null,
                 currency = trip.currency,
-                members = people.map { NewGroupMember(trip.people[it], SampleTrips.avatarColorOf(it), isMe = it == 0) },
+                members = people.map {
+                    NewGroupMember(
+                        trip.people[it],
+                        SampleTrips.avatarColorOf(it),
+                        isMe = it == 0,
+                        userId = null,
+                    )
+                },
             ).getOrThrow()
         val group = get<ObserveGroup>().invoke(groupId).filterNotNull().first()
         return SeededMembers(

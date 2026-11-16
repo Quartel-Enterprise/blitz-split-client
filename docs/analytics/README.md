@@ -238,6 +238,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_currency_selected` | `currency`, `source` (`create_group`, `edit_group`) | A default currency picked, in New group or Edit group (with bills or not) | `:feature:create_group`, `:feature:edit_group` |
 | `create_group_add_member_clicked` | none | New group's "Add" (or the keyboard's Done) | `:feature:create_group` |
 | `create_group_remove_member_clicked` | none | A person taken off the new group | `:feature:create_group` |
+| `create_group_contact_suggestion_clicked` | none | A contact picked from the suggestions under New group's "Add by name" | `:feature:create_group` |
 | `create_group_create_clicked` | none | New group's Create, also when the form can't create yet | `:feature:create_group` |
 | `group_created` | `type`, `currency`, `members` (how many: you, those added and a valid name still typed in the field), `has_photo` | A new group saved | `:feature:create_group` |
 | `update_accepted` | `source` (`startup`, `manual`) | "Open in the App Store" on "Update available" (iOS, macOS) | `in_app_update` |

@@ -16,7 +16,16 @@ Creating a group and inviting people.
     group" alike. A tap or click on the +, as one on the field, focuses the name field and opens the keyboard
     (beta feedback 3, items 6 and 10), anywhere on the row on Android and the web; on iOS and the Mac only the + and
     the field, so no gesture over the field takes the clicks that place its cursor and select; on the Mac the row is the field itself, "Add by name" its
-    placeholder, not a label on the left with the field at the far right. The avatar's corner holds the photo's menu (Take photo where there is a camera, Choose
+    placeholder, not a label on the left with the field at the far right. While a name is typed, the rows under "Add by name" suggest
+    the app's Contacts ([Contacts](balances-and-contacts.md), people already shared a group with, guests included) whose
+    name or one of its words starts with it, ignoring case and accents: up to five, a name starting with it first,
+    with their photo over the initials, leaving out whoever is hidden from Contacts or already in the list (feedback of
+    2026-11-16, Pierre's call: the app's Contacts, never the phone's address book; `CreateGroupUiState.suggestions`).
+    A tap adds that same person as Contacts' "Add to a group" does: someone who uses the app goes in as their account,
+    joined, a guest as their name, in their own color unless someone in the list has it; it works offline from the
+    device's data and goes up with the group's first sync. A name typed and added (Add, Return) is still a new guest,
+    even one written as a contact is. "Who's in" shows the profile photos over the initials, yours too (the one the
+    home's avatar shows; the initial without one). The avatar's corner holds the photo's menu (Take photo where there is a camera, Choose
     photo, the Mac's "Choose photo…" a file, and Remove photo once there is one), which opens "Adjust photo"; while a
     photo is on, the tap changes nothing, and the photo goes up with the group's first sync as Edit group's does.
   - "Invite" opens in the new group's place right after it is created (`Route.Invite` with `isNewGroup`), the

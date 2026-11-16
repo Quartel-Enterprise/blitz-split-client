@@ -53,6 +53,8 @@ sealed interface CreateGroupUiEvent : UiEvent {
 
             is OnRemoveMemberClicked -> EventAnalytics.Automatic("create_group_remove_member_clicked")
 
+            is OnSuggestionClicked -> EventAnalytics.Automatic("create_group_contact_suggestion_clicked")
+
             // Why: the tap, and the group it created once saved, with what kind of group it is.
             OnCreateClicked -> EventAnalytics.Manual(setOf("create_group_create_clicked", "group_created"))
         }
@@ -96,6 +98,11 @@ sealed interface CreateGroupUiEvent : UiEvent {
 
     // Why: "Adicionar", and the keyboard's done key in the draft.
     data object OnAddMemberClicked : CreateGroupUiEvent
+
+    // Why: a suggestion under "Adicionar pelo nome", which adds that contact as the same person, their account included.
+    data class OnSuggestionClicked(
+        val key: String,
+    ) : CreateGroupUiEvent
 
     data class OnRemoveMemberClicked(
         val memberId: String,

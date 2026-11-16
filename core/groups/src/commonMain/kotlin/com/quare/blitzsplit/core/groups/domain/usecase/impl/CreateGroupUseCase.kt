@@ -52,8 +52,8 @@ class CreateGroupUseCase(
                             name = GroupNameRules.toCapped(member.name.trim()),
                             avatarColor = member.avatarColor,
                             isMe = member.isMe,
-                            hasJoined = member.isMe,
-                            userId = null,
+                            hasJoined = member.isMe || member.userId != null,
+                            userId = member.userId.takeUnless { member.isMe },
                             inviteCode = null,
                             photoUrl = null,
                         )

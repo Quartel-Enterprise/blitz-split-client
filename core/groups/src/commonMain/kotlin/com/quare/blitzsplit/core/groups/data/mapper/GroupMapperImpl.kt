@@ -130,7 +130,8 @@ class GroupMapperImpl : GroupMapper {
             groupId = group.id,
             name = member.name,
             avatarColor = member.avatarColor.code,
-            userId = ownerUserId.takeIf { member.isMe },
+            // Why: a contact picked in New group goes up as their account, as "Adicionar a um grupo" adds them.
+            userId = if (member.isMe) ownerUserId else member.userId,
             isMe = member.isMe,
             addedAt = createdAt + index,
             updatedAt = createdAt,
