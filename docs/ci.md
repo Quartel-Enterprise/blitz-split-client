@@ -112,6 +112,13 @@ or comments on it while it is open; it does the same when `apple-app` fails or a
 request of its own, checked on the Mac, since that pull request's `apple-tests` runs macOS only:
 `./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test`. Close the issue once `main` is green.
 
+The simulator's suites run one module at a time, while Gradle still links their test binaries side by side: the
+`blitzsplit.kotlin.multiplatform` plugin gives every `iosSimulatorArm64Test` a shared build service with a single slot.
+Each suite starts its own `simctl`, and two at once could crash CoreSimulator while it reported the device set
+(`Invalid parameter not satisfying: devicePair`), failing one module's suite with exit code 134 before any of its tests
+ran. A suite, the boot of its own simulator included, took 3 seconds on the Mac (`:core:model`), so running the
+modules with tests in turn adds a few minutes to the step, well within its 80.
+
 The Kotlin/Native entry (`~/.konan`) holds the toolchain and the native code each library is compiled to on its first
 link. Every Kotlin/Native job restores the newest entry of its Kotlin version, and `apple-tests` saves it on `main`
 when it ends, under a key with a fingerprint of the libraries compiled in it and the run that saved it: a link that
