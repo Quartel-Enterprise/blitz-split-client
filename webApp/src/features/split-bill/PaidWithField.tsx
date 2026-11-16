@@ -47,9 +47,10 @@ export function PaidWithField({
     }
     if (!showsAdd) return null
     return (
+      // Why: outline, quieter than a filled button, as the form's own fields come first (beta feedback).
       <Button
         type="button"
-        variant="secondary"
+        variant="outline"
         size="sm"
         className="self-start rounded-full"
         aria-description={t('payingMethod_paidWithPrivate')}

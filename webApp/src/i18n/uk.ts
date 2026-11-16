@@ -111,7 +111,7 @@ export const uk: Record<MessageKey, string> = {
   qrScanner_cameraFailed: 'Не вдалося відкрити камеру. Дозволь доступ у браузері або введи код.',
 
   recoveryCode_title: 'Збережи свій код відновлення',
-  recoveryCode_body: 'Ти користуєшся без облікового запису. Ці 12 слів повернуть твої групи, якщо очистиш дані браузера або зміниш пристрій. Запиши їх по порядку.',
+  recoveryCode_body: "Ти користуєшся без облікового запису. Ці 12 слів повернуть твої дані, якщо очистиш браузер або зміниш пристрій. Запиши їх по порядку. Після 30 днів без використання дані буде видалено, і слова перестануть діяти.",
   recoveryCode_copy: 'Копіювати',
   recoveryCode_copied: 'Слова скопійовано',
   recoveryCode_download: 'Завантажити як файл',
@@ -122,7 +122,7 @@ export const uk: Record<MessageKey, string> = {
   recoveryCode_remindLater: 'Нагадати пізніше',
   recoveryCode_saved: 'Я зберіг(-ла) його',
   recoveryCode_fileName: 'blitz-split-recovery-code.txt',
-  recoveryCode_fileText: 'Blitz Split · код відновлення\n\n{code}\n\nВикористай його в «Я вже користуюся на іншому пристрої», щоб повернути свої групи.\n',
+  recoveryCode_fileText: "Blitz Split · код відновлення\n\n{code}\n\nВикористай його в «Я користувався(-лася) ним на іншому пристрої», щоб повернути свої дані.\n",
 
   groups_title: 'Групи',
   groups_mainNavigation: 'Головна навігація',

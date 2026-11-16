@@ -85,6 +85,10 @@ class RecoveryCodeViewModel(
         when (event) {
             RecoveryCodeUiEvent.OnCopyClicked -> emitWithCode(RecoveryCodeUiAction::CopyToClipboard)
 
+            RecoveryCodeUiEvent.OnDownloadClicked -> emitWithWords { words ->
+                RecoveryCodeUiAction.DownloadFile(RecoveryWords.buildNumberedLines(words))
+            }
+
             RecoveryCodeUiEvent.OnSaveToPasswordManagerClicked -> emitWithCode(
                 RecoveryCodeUiAction::SaveToPasswordManager,
             )
@@ -106,8 +110,12 @@ class RecoveryCodeViewModel(
     }
 
     private fun emitWithCode(action: (String) -> RecoveryCodeUiAction) {
+        emitWithWords { words -> action(words.joinToString(" ")) }
+    }
+
+    private fun emitWithWords(action: (List<String>) -> RecoveryCodeUiAction) {
         val words = uiState.value.recoveryWords ?: return
-        viewModelScope.launch { uiAction.emit(action(words.joinToString(" "))) }
+        viewModelScope.launch { uiAction.emit(action(words)) }
     }
 
     private fun handleProviderClicked(provider: AccountProvider) {

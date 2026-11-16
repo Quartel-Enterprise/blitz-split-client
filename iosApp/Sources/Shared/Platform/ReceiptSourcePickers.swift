@@ -48,7 +48,7 @@ extension View {
     /// "Scan receipt"'s choice: "Take photo" (where there is a camera), "Choose from Photos" and "Choose File…", as
     /// a bill's "Add" offers them; the Mac has no camera to frame it with.
     func receiptSourceDialog(isPresented: Binding<Bool>, pick: @escaping (ReceiptPhotoSource) -> Void) -> some View {
-        confirmationDialog(receiptSourceTitle, isPresented: isPresented, titleVisibility: .visible) {
+        confirmationDialog(ReceiptSource.title, isPresented: isPresented, titleVisibility: .visible) {
             #if os(iOS)
             Button("Take photo") { pick(.camera) }
             Button("Choose from Photos") { pick(.photos) }
@@ -72,14 +72,6 @@ extension View {
         showsDialog: Bool = true,
     ) -> some View {
         modifier(ReceiptSourcePickersModifier(request: request, isActive: isActive, showsDialog: showsDialog))
-    }
-
-    private var receiptSourceTitle: Text {
-        #if os(macOS)
-        Text("Scan Receipt")
-        #else
-        Text("Scan receipt")
-        #endif
     }
 }
 
@@ -146,6 +138,15 @@ private struct ReceiptSourcePickersModifier: ViewModifier {
 }
 
 enum ReceiptSource {
+    /// "Scan receipt", the choice's title and the top bar icon's name; the Mac writes it in title case.
+    static var title: Text {
+        #if os(macOS)
+        Text("Scan Receipt")
+        #else
+        Text("Scan receipt")
+        #endif
+    }
+
     /// A device without a camera (or one restricted) has nothing to choose but Photos, which opens at once.
     static var hasChoice: Bool {
         #if os(iOS)

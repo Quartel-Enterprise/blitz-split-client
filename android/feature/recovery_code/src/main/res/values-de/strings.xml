@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Speichere deinen Wiederherstellungscode</string>
-    <string name="recovery_code_body">Du nutzt die App ohne Konto. Mit diesen 12 Wörtern bekommst du deine Gruppen zurück, wenn du das Gerät wechselst oder verlierst. Schreib sie der Reihe nach auf.</string>
+    <string name="recovery_code_body">Du nutzt die App ohne Konto. Mit diesen 12 Wörtern bekommst du deine Daten zurück, wenn du das Gerät wechselst oder verlierst. Schreib sie der Reihe nach auf. Nach 30 Tagen ohne Nutzung werden deine Daten gelöscht und die Wörter funktionieren nicht mehr.</string>
     <string name="recovery_code_copy">Wörter kopieren</string>
     <string name="recovery_code_save_to_password_manager">Im Passwortmanager speichern</string>
     <string name="recovery_code_connect_instead">Stattdessen Google oder Apple verbinden</string>
@@ -10,4 +10,7 @@
     <string name="recovery_code_also_in_profile">Du findest ihn auch unter Profil › Wiederherstellung.</string>
     <string name="recovery_code_remind_later">Später erinnern</string>
     <string name="recovery_code_saved">Ich habe ihn gespeichert</string>
+    <string name="recovery_code_download">Herunterladen</string>
+    <string name="recovery_code_file_name">blitz-split-wiederherstellungscode.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · Wiederherstellungscode\n\n%1$s\n\nGib ihn unter „Ich habe die App schon auf einem anderen Gerät genutzt“ ein, um deine Daten zurückzuholen.\n</string>
 </resources>

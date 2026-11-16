@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Shield
@@ -178,20 +180,41 @@ private fun RecoveryCodeBox(
             words = words,
             isCompact = isCompact,
         )
-        TextButton(
-            onClick = { onEvent(RecoveryCodeUiEvent.OnCopyClicked) },
+        // Why: a long language may not fit both on one line, so Copy wraps under Download instead of clipping.
+        FlowRow(
             modifier = Modifier.align(Alignment.End),
+            horizontalArrangement = Arrangement.End,
         ) {
-            Icon(
-                imageVector = Icons.Outlined.ContentCopy,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp),
+            WordsBoxButton(
+                icon = Icons.Outlined.FileDownload,
+                text = stringResource(R.string.recovery_code_download),
+                onClick = { onEvent(RecoveryCodeUiEvent.OnDownloadClicked) },
             )
-            Text(
+            WordsBoxButton(
+                icon = Icons.Outlined.ContentCopy,
                 text = stringResource(R.string.recovery_code_copy),
-                modifier = Modifier.padding(start = 8.dp),
+                onClick = { onEvent(RecoveryCodeUiEvent.OnCopyClicked) },
             )
         }
+    }
+}
+
+@Composable
+private fun WordsBoxButton(
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit,
+) {
+    TextButton(onClick = onClick) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+        )
+        Text(
+            text = text,
+            modifier = Modifier.padding(start = 8.dp),
+        )
     }
 }
 

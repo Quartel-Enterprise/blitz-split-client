@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Bewaar je herstelcode</string>
-    <string name="recovery_code_body">Je gebruikt de app zonder account. Deze 12 woorden brengen je groepen terug als je van apparaat wisselt of het kwijtraakt. Schrijf ze op in de juiste volgorde.</string>
+    <string name="recovery_code_body">Je gebruikt de app zonder account. Deze 12 woorden brengen je gegevens terug als je van apparaat wisselt of het kwijtraakt. Schrijf ze op in de juiste volgorde. Na 30 dagen zonder gebruik worden je gegevens verwijderd en werken de woorden niet meer.</string>
     <string name="recovery_code_copy">Woorden kopiëren</string>
     <string name="recovery_code_save_to_password_manager">Opslaan in wachtwoordbeheer</string>
     <string name="recovery_code_connect_instead">Koppel liever Google of Apple</string>
@@ -10,4 +10,7 @@
     <string name="recovery_code_also_in_profile">Hij staat ook in Profiel › Herstelcode.</string>
     <string name="recovery_code_remind_later">Herinner me later</string>
     <string name="recovery_code_saved">Ik heb hem bewaard</string>
+    <string name="recovery_code_download">Downloaden</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · herstelcode\n\n%1$s\n\nGebruik hem bij “Ik heb het op een ander apparaat gebruikt” om je gegevens terug te halen.\n</string>
 </resources>

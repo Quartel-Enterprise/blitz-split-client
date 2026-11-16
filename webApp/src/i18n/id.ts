@@ -106,7 +106,7 @@ export const id: Record<MessageKey, string> = {
   qrScanner_cameraFailed: 'Tidak bisa membuka kamera. Izinkan akses di browser atau ketik kodenya.',
 
   recoveryCode_title: 'Simpan kode pemulihanmu',
-  recoveryCode_body: 'Kamu memakai tanpa akun. 12 kata ini mengembalikan grupmu jika kamu menghapus data browser atau ganti perangkat. Catat sesuai urutannya.',
+  recoveryCode_body: "Kamu memakai tanpa akun. 12 kata ini mengembalikan datamu jika kamu membersihkan browser atau ganti perangkat. Catat sesuai urutannya. Setelah 30 hari tidak dipakai, datamu dihapus dan kata-kata ini tidak berlaku lagi.",
   recoveryCode_copy: 'Salin',
   recoveryCode_copied: 'Kata disalin',
   recoveryCode_download: 'Unduh sebagai file',
@@ -117,7 +117,7 @@ export const id: Record<MessageKey, string> = {
   recoveryCode_remindLater: 'Ingatkan nanti',
   recoveryCode_saved: 'Sudah saya simpan',
   recoveryCode_fileName: 'blitz-split-recovery-code.txt',
-  recoveryCode_fileText: 'Blitz Split · kode pemulihan\n\n{code}\n\nPakai di “Saya sudah pernah pakai di perangkat lain” untuk mengembalikan grupmu.\n',
+  recoveryCode_fileText: "Blitz Split · kode pemulihan\n\n{code}\n\nPakai di “Saya sudah pernah pakai di perangkat lain” untuk mengembalikan datamu.\n",
 
   groups_title: 'Grup',
   groups_mainNavigation: 'Navigasi utama',

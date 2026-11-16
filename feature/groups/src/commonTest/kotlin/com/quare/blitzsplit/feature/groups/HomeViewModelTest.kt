@@ -2820,6 +2820,55 @@ class HomeViewModelTest {
         }
 
     @Test
+    fun `GIVEN Inicio shows groups and the failed badge WHEN the retry runs THEN shows no syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.FAILED,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            syncState.value = SyncState.SYNCING
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the full sync awaited and Inicio showing groups WHEN a sync runs THEN shows no syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCED,
+                awaitsFullSync = true,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            syncState.value = SyncState.SYNCING
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the syncing badge with no group yet WHEN the first group arrives THEN hides the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCING,
+                awaitsFullSync = true,
+            )
+
+            // When
+            groups.groups.value = listOf(trio())
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
     fun `GIVEN the failed badge WHEN tapping it THEN asks for one sync`() = runTest(testDispatcher) {
         // Given
         prepareScenario(syncState = SyncState.FAILED)
