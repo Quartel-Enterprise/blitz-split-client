@@ -115,7 +115,9 @@ jobs:
       matrix:
         branch: ${{ fromJSON(needs.sweep.outputs.branches || format('[{0}]', toJSON(github.event.pull_request.head.ref || github.event.workflow_run.head_branch))) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    # The wait for the checks whose completion starts nothing takes up to 15 minutes of it, and
+    # each of its rounds reads GitHub's API two or three times.
+    timeout-minutes: 30
     permissions:
       actions: write
       checks: read
@@ -178,11 +180,29 @@ jobs:
           pr=$(jq -r .number <<< "$match")
           head=$(jq -r .headRefOid <<< "$match")
 
-          # The check code scanning adds (CodeQL) is no workflow run: it turns green a little after
-          # the codeql workflow's run completes, and nothing starts this workflow then. So while the
-          # only checks left are pending ones no run of Actions owns, the checks are read again, for
-          # two minutes at most.
-          for attempt in 0 1 2 3 4 5 6; do
+          # Some checks turn green with nothing to start this workflow then. The check code scanning
+          # adds (CodeQL) is no workflow run: it turns green a little after the codeql workflow's run
+          # completes. The "Analyze" checks of GitHub's Code Quality are jobs of a run GitHub starts on
+          # its own on every push (event "dynamic": its workflow is no file of the repository, and it
+          # is named after the pull request), which no workflow_run announces; on a pull request whose
+          # changes run no check workflow (docs only) they are the last to finish. So while the only
+          # checks left are pending ones of those two kinds, or such a run of the head commit is still
+          # going, the checks are read again, every 20 seconds for 15 minutes at most: a Code Quality
+          # run takes a minute as a rule, and took 13 at its longest.
+          last_attempt=45
+          for attempt in $(seq 0 "$last_attempt"); do
+            # The head commit's runs GitHub started on its own that are still going. Read before the
+            # checks: a run that ends in between has its checks settled by the time they are read. A
+            # read that fails is no answer, and never counts as "none": the checks still end this run
+            # at once when one failed, and anything else is read again in the next round.
+            unread=false
+            if ! unannounced=$(GH_TOKEN="$GITHUB_TOKEN" gh api --method GET "repos/$GH_REPO/actions/runs" \
+              -f head_sha="$head" -f event=dynamic -f per_page=100 \
+              --jq '[.workflow_runs[] | select(.status != "completed") | (.id | tostring)]'); then
+              unread=true
+              unannounced='[]'
+            fi
+
             # gh exits with 8 while checks are pending and with 1 when one failed or none exists. Those
             # are answers here, not errors, so the JSON it prints is what gets inspected. A pull request
             # whose changes run no check workflow (docs only) has nothing to wait for. GITHUB_TOKEN reads
@@ -228,21 +248,47 @@ jobs:
               | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)
               | "\(.name): \(.bucket)"' <<< "$others")
             if [ -z "$unfinished" ]; then
-              break
+              # Every check there is passed, but a run GitHub started may not have given its jobs their
+              # checks yet: it is waited for like a pending check of its own, and never merged past.
+              if [ "$unread" = false ] && [ "$unannounced" = '[]' ]; then
+                break
+              fi
+              unfinished="the runs GitHub started on its own: $([ "$unread" = true ] && echo unread || echo "$unannounced still going")"
+              starts_nothing=true
+            else
+              # Pending, and either no run of Actions owns the check or one of those runs does. With
+              # those runs unread, a pending check of any run may be one of theirs.
+              starts_nothing=$(jq --argjson unannounced "$unannounced" --argjson unread "$unread" '[.[]
+                | select(.bucket != "pass" and .bucket != "skipping")
+                | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)]
+                | all(.[]; .bucket == "pending"
+                  and ((((.link // "") | capture("/actions/runs/(?<id>[0-9]+)/").id) // null) as $run
+                    | $run == null or $unread or any($unannounced[]; . == $run)))' <<< "$others")
             fi
-            outside_actions=$(jq '[.[] | select(.bucket != "pass" and .bucket != "skipping")
-              | select(((.name | startswith("review-gate")) and .bucket == "fail") | not)]
-              | all(.[]; .bucket == "pending" and (((.link // "") | contains("/actions/runs/")) | not))' <<< "$others")
-            if [ "$outside_actions" = true ] && [ "$attempt" -lt 6 ]; then
-              echo "Waiting for the checks no workflow run owns:"
+            if [ "$starts_nothing" = true ] && [ "$attempt" -lt "$last_attempt" ]; then
+              echo "Waiting for what starts no workflow when it completes:"
               echo "$unfinished"
               sleep 20
               continue
+            fi
+            if [ "$unread" = true ]; then
+              echo "::warning::The runs GitHub started on its own for #$pr couldn't be read: not merged by this run."
             fi
             echo "#$pr is not green yet:"
             echo "$unfinished"
             exit 0
           done
+
+          # The wait above can be long, and the pull request may no longer be the one read before it:
+          # merged or closed by someone, made a draft, its label taken off by whoever changed their
+          # mind, or pushed to, in which case the checks just read are the new commit's and that
+          # commit's own runs decide.
+          now=$(gh pr view "$pr" --json state,isDraft,labels,headRefOid \
+            --jq '"\(.state) \(.isDraft) \(any(.labels[]; .name == "merge-when-green")) \(.headRefOid)"')
+          if [ "$now" != "OPEN false true $head" ]; then
+            echo "#$pr changed while its checks were read (state, draft, labeled, head: $now): not merged by this run."
+            exit 0
+          fi
 
           # A job waiting on another (the checks behind review-gate) has no check until it starts, so
           # while review-gate waits for the review, or right after it passes, every check can be green
