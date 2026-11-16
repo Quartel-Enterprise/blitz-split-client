@@ -14,6 +14,7 @@ import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
 import com.quare.blitzsplit.android.designsystem.layout.FormFloatingAction
+import com.quare.blitzsplit.android.designsystem.layout.FormIconAction
 import com.quare.blitzsplit.android.designsystem.layout.TabletopForm
 import com.quare.blitzsplit.android.designsystem.layout.rememberUsesTabletopHalves
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -45,8 +46,8 @@ fun SplitBillContent(
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
     /*
-     * Why: the tabletop's halves leave "Ler cupom fiscal" out of the form; Início's shortcut still asks where the
-     * photo comes from.
+     * Why: the tabletop's halves leave the bottom "Ler cupom fiscal" out of the form; the top bar's icon still offers
+     * it.
      */
     val usesTabletopHalves = rememberUsesTabletopHalves(isDialog)
     /*
@@ -71,7 +72,16 @@ fun SplitBillContent(
             onConfirm = { onEvent(SplitBillUiEvent.OnSaveClicked) },
             cancelLabel = stringResource(R.string.split_bill_cancel),
             isNavigationAtEndInDialog = true,
-            iconAction = null,
+            /*
+             * Why: "Ler cupom fiscal" also beside "Salvar", in sight before the keyboard covers the FAB (beta feedback),
+             * a dialog's header and a tabletop's top bar included; dimmed while it can't start (offline, saving).
+             */
+            iconAction = FormIconAction(
+                icon = Icons.Outlined.DocumentScanner,
+                label = scanLabel,
+                onClick = { onEvent(SplitBillUiEvent.OnScanReceiptClicked) },
+                isEnabled = state.canScanReceipt,
+            ).takeIf { state.showsScanReceipt },
         ),
         isDialog = isDialog,
         snackbarHostState = snackbarHostState,
