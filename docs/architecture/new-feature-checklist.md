@@ -30,6 +30,10 @@ each platform.
       `settings.gradle.kts` and add it to `androidApp/build.gradle.kts`
 - [ ] `XScreen(viewModel: XViewModel = koinViewModel())`: collects `uiState` with `collectAsStateWithLifecycle()`,
       handles `uiAction` in a `LaunchedEffect(viewModel)`, calls `XContent`
+- [ ] A ViewModel created inside part of a screen that comes and goes takes its own scope, not the entry's: a pane
+      per pick or pager pages kept across swipes get `rememberViewModelStoreProvider()` with a key each, a piece that
+      may start over (a lazy item with a stable `key`) gets `rememberViewModelStoreOwner()` (see
+      [dependency-injection.md](dependency-injection.md#which-scope-a-compose-viewmodel-takes))
 - [ ] `XContent(state, onEvent, modifier)`: stateless, adaptive through `AdaptiveScreen` / `DeviceLayout` and, where
       the boards draw a foldable of their own, `FormFactor` and the hinge layouts (see
       [responsive-layouts.md](responsive-layouts.md)), with `@DevicePreviews` previews wrapped in `BlitzSplitTheme`
