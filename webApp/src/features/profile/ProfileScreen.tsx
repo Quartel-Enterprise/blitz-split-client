@@ -471,7 +471,7 @@ function AccountCard({ presenter, state, className }: CardProps) {
         {state.showsUserId && (
           // Why: a quiet last row, the id shortened and the whole one copied, for a survey to tell who answered.
           <Row title={t('profile_userId')} detail={state.shortUserId}>
-            <Button size="icon" variant="ghost" className="shrink-0" aria-label={t('profile_userIdCopy')} onClick={() => presenter.copyUserId()}>
+            <Button size="icon" variant="ghost" className="shrink-0" aria-label={t('profile_userIdCopy')} title={t('profile_userIdCopy')} onClick={() => presenter.copyUserId()}>
               <Copy />
             </Button>
           </Row>

@@ -6,8 +6,9 @@ import { t } from '@/i18n'
  * it is there when given.
  */
 export function copyLink(link: string, copied?: string, failed: string = t('invite_copyFailed')) {
-  navigator.clipboard
-    .writeText(link)
+  // Why: a page outside a secure context has no navigator.clipboard, which would throw before the catch says so.
+  const written = navigator.clipboard?.writeText(link) ?? Promise.reject(new Error('No clipboard'))
+  written
     .then(() => copied && toast(copied))
     .catch(() => toast(failed))
 }
