@@ -3,7 +3,9 @@ package com.quare.blitzsplit.core.navigation
 import com.quare.blitzsplit.core.model.GroupTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class GroupTabsTest {
     private lateinit var navigator: BackStackNavigator
@@ -369,6 +371,39 @@ class GroupTabsTest {
 
         // Then
         assertNull(groupId)
+    }
+
+    @Test
+    fun `GIVEN a bill opened from All expenses over the group WHEN asking whether it is over the group THEN is not`() {
+        // Given
+        prepareScenario(
+            Route.Home,
+            Route.GroupDetail.expensesOf(GROUP_ID),
+            Route.AllExpenses(groupId = GROUP_ID),
+            Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null),
+        )
+
+        // When
+        val isOver = navigator.isOverGroupScreen(GROUP_ID)
+
+        // Then
+        assertFalse(isOver)
+    }
+
+    @Test
+    fun `GIVEN a bill opened from the group WHEN asking whether it is over the group THEN is`() {
+        // Given
+        prepareScenario(
+            Route.Home,
+            Route.GroupDetail.expensesOf(GROUP_ID),
+            Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null),
+        )
+
+        // When
+        val isOver = navigator.isOverGroupScreen(GROUP_ID)
+
+        // Then
+        assertTrue(isOver)
     }
 
     // Why: the back stack after each change, so a case sees whether a screen in between ever was on top.

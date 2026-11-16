@@ -216,17 +216,14 @@ fun BillAmountsColumn(
 // Why: "Today", "Yesterday" or the date over a day's lines, read as a heading.
 @Composable
 fun EntryDayHeading(text: String) {
-    Text(
+    DayHeadingText(
         text = text,
-        modifier = Modifier
-            .padding(
-                start = 20.dp,
-                end = 20.dp,
-                top = 20.dp,
-                bottom = 8.dp,
-            ).semantics { heading() },
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(
+            start = 20.dp,
+            end = 20.dp,
+            top = 20.dp,
+            bottom = 8.dp,
+        ),
     )
 }
 
@@ -250,14 +247,24 @@ fun EntryDayHeading(
             ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
+        DayHeadingText(
             text = text,
-            modifier = Modifier
-                .weight(1f)
-                .semantics { heading() },
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f),
         )
         TextButton(onClick = onAction) { Text(action) }
     }
+}
+
+// Why: the day's words as every heading draws them, so the one with "Ver tudo" never looks unlike the others.
+@Composable
+private fun DayHeadingText(
+    text: String,
+    modifier: Modifier,
+) {
+    Text(
+        text = text,
+        modifier = modifier.semantics { heading() },
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
