@@ -50,6 +50,7 @@
     <string name="default_split_list_percent">Porcentagem de cada um</string>
     <string name="default_split_list_income">Renda de cada um</string>
     <string name="default_split_income_note">Quem está no grupo vê essas rendas e pode dividir contas por elas.</string>
+    <string name="default_split_income_net_note">Coloque a renda líquida de cada um, depois dos impostos.</string>
     <string name="default_split_parts_of">Partes de %s</string>
     <string name="default_split_percent_of">Porcentagem de %s</string>
     <string name="default_split_income_of">Renda de %s</string>
@@ -67,6 +68,7 @@
     <string name="default_split_row_shares">%d%% de cada conta</string>
     <string name="default_split_row_percent">%1$s de cada %2$s</string>
     <string name="default_split_row_income">Renda por mês · %d%% de cada conta</string>
+    <string name="default_split_row_income_blank">Renda por mês</string>
     <string name="default_split_row_new">%s · acabou de entrar</string>
     <string name="default_split_me">%s (você)</string>
     <string name="default_split_exceptions">Exceções por categoria</string>

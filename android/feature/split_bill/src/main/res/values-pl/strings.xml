@@ -397,7 +397,7 @@
         <item quantity="many">Według dochodów na %d</item>
         <item quantity="other">Według dochodów na %d</item>
     </plurals>
-    <string name="split_bill_hint_income">Część każdej osoby zależy od jej dochodu. Dochody należą do grupy; zmiana tutaj dotyczy tylko tego wydatku.</string>
+    <string name="split_bill_hint_income">Część każdej osoby zależy od jej dochodu. Dochody należą do grupy; zmiana tutaj dotyczy tylko tego wydatku. Wpisz dochód netto każdej osoby, po opodatkowaniu.</string>
     <string name="split_bill_list_income">Dochód każdej osoby</string>
     <string name="split_bill_person_income">Dochód: %s</string>
     <string name="split_bill_default_now_income">według dochodów</string>

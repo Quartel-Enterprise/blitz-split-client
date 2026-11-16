@@ -77,7 +77,7 @@ enum SplitBillCopy {
             bundle: .appLanguage,
         )
         case .income: return String(
-            localized: "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill.",
+            localized: "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill. Enter each one's net income, after taxes.",
             bundle: .appLanguage,
         )
         default: return String(

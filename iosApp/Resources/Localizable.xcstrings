@@ -156291,85 +156291,85 @@
         }
       }
     },
-    "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill." : {
+    "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill. Enter each one's net income, after taxes." : {
       "comment" : "Split: the hint under the modes while splitting by income",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeder Anteil richtet sich nach dem Einkommen. Die Einkommen gehören zur Gruppe; eine Änderung hier gilt nur für diese Ausgabe."
+            "value" : "Jeder Anteil richtet sich nach dem Einkommen. Die Einkommen gehören zur Gruppe; eine Änderung hier gilt nur für diese Ausgabe. Gib das Nettoeinkommen jeder Person an, nach Steuern."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La parte de cada uno sigue sus ingresos. Los ingresos son del grupo; cambiarlos aquí solo vale para este gasto."
+            "value" : "La parte de cada uno sigue sus ingresos. Los ingresos son del grupo; cambiarlos aquí solo vale para este gasto. Pon los ingresos netos de cada uno, después de impuestos."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La part de chacun suit son revenu. Les revenus sont ceux du groupe ; les changer ici ne vaut que pour cette dépense."
+            "value" : "La part de chacun suit son revenu. Les revenus sont ceux du groupe ; les changer ici ne vaut que pour cette dépense. Indique le revenu net de chacun, après impôts."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bagian masing-masing sesuai penghasilannya. Penghasilan ini milik grup; mengubahnya di sini hanya berlaku untuk tagihan ini."
+            "value" : "Bagian masing-masing sesuai penghasilannya. Penghasilan ini milik grup; mengubahnya di sini hanya berlaku untuk tagihan ini. Masukkan penghasilan bersih masing-masing, setelah pajak."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La parte di ognuno segue il suo reddito. I redditi sono del gruppo; cambiarli qui vale solo per questa spesa."
+            "value" : "La parte di ognuno segue il suo reddito. I redditi sono del gruppo; cambiarli qui vale solo per questa spesa. Inserisci il reddito netto di ognuno, dopo le tasse."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "各自の負担が収入に応じて決まります。収入はグループで共有され、ここでの変更はこの支出にだけ適用されます。"
+            "value" : "各自の負担が収入に応じて決まります。収入はグループで共有され、ここでの変更はこの支出にだけ適用されます。各自の税引き後の手取り収入を入力してください。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ieders deel volgt het inkomen. De inkomens zijn van de groep; ze hier wijzigen geldt alleen voor deze uitgave."
+            "value" : "Ieders deel volgt het inkomen. De inkomens zijn van de groep; ze hier wijzigen geldt alleen voor deze uitgave. Vul ieders netto-inkomen in, na belasting."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Część każdej osoby zależy od jej dochodu. Dochody należą do grupy; zmiana tutaj dotyczy tylko tego wydatku."
+            "value" : "Część każdej osoby zależy od jej dochodu. Dochody należą do grupy; zmiana tutaj dotyczy tylko tego wydatku. Wpisz dochód netto każdej osoby, po opodatkowaniu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A parte de cada um segue a renda. As rendas são do grupo; mudar aqui vale só para esta conta."
+            "value" : "A parte de cada um segue a renda. As rendas são do grupo; mudar aqui vale só para esta conta. Coloque a renda líquida de cada um, depois dos impostos."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A parte de cada um segue o rendimento. Os rendimentos são do grupo; mudar aqui vale só para esta conta."
+            "value" : "A parte de cada um segue o rendimento. Os rendimentos são do grupo; mudar aqui vale só para esta conta. Indica o rendimento líquido de cada um, depois dos impostos."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Доля каждого зависит от его дохода. Доходы общие для группы; изменение здесь касается только этого счёта."
+            "value" : "Доля каждого зависит от его дохода. Доходы общие для группы; изменение здесь касается только этого счёта. Укажите чистый доход каждого, после налогов."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir."
+            "value" : "Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir. Herkesin vergiler sonrası net gelirini girin."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Частка кожного залежить від його доходу. Доходи належать групі; зміна тут діє лише для цього рахунку."
+            "value" : "Частка кожного залежить від його доходу. Доходи належать групі; зміна тут діє лише для цього рахунку. Вкажіть чистий дохід кожного, після податків."
           }
         }
       }
@@ -164679,6 +164679,172 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Системний"
+          }
+        }
+      }
+    },
+    "Enter each one's net income, after taxes." : {
+      "comment" : "Default split's By income: under the incomes, which income to type, the net one",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gib das Nettoeinkommen jeder Person an, nach Steuern."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pon los ingresos netos de cada uno, después de impuestos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indique le revenu net de chacun, après impôts."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masukkan penghasilan bersih masing-masing, setelah pajak."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inserisci il reddito netto di ognuno, dopo le tasse."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各自の税引き後の手取り収入を入力してください。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vul ieders netto-inkomen in, na belasting."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wpisz dochód netto każdej osoby, po opodatkowaniu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coloque a renda líquida de cada um, depois dos impostos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indica o rendimento líquido de cada um, depois dos impostos."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Укажите чистый доход каждого, после налогов."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herkesin vergiler sonrası net gelirini girin."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкажіть чистий дохід кожного, після податків."
+          }
+        }
+      }
+    },
+    "Income per month" : {
+      "comment" : "Default split's By income: a person's line while no income is typed, without the percentages",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einkommen pro Monat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresos por mes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revenu par mois"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Penghasilan per bulan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reddito mensile"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月収"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inkomen per maand"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dochód miesięczny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renda por mês"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rendimento por mês"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доход в месяц"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aylık gelir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дохід на місяць"
           }
         }
       }

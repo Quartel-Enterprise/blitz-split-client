@@ -50,6 +50,7 @@
     <string name="default_split_list_percent">Percentage per persoon</string>
     <string name="default_split_list_income">Inkomen per persoon</string>
     <string name="default_split_income_note">De leden van de groep zien deze inkomens en kunnen uitgaven ernaar verdelen.</string>
+    <string name="default_split_income_net_note">Vul ieders netto-inkomen in, na belasting.</string>
     <string name="default_split_parts_of">Aandelen van %s</string>
     <string name="default_split_percent_of">Percentage van %s</string>
     <string name="default_split_income_of">Inkomen van %s</string>
@@ -67,6 +68,7 @@
     <string name="default_split_row_shares">%d%% van elke uitgave</string>
     <string name="default_split_row_percent">%1$s van elke %2$s</string>
     <string name="default_split_row_income">Inkomen per maand · %d%% van elke uitgave</string>
+    <string name="default_split_row_income_blank">Inkomen per maand</string>
     <string name="default_split_row_new">%s · net lid geworden</string>
     <string name="default_split_me">%s (jij)</string>
     <string name="default_split_exceptions">Uitzonderingen per categorie</string>

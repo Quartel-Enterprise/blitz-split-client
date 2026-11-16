@@ -50,6 +50,7 @@
     <string name="default_split_list_percent">Prozent pro Person</string>
     <string name="default_split_list_income">Einkommen pro Person</string>
     <string name="default_split_income_note">Die Mitglieder der Gruppe sehen diese Einkommen und können Ausgaben danach aufteilen.</string>
+    <string name="default_split_income_net_note">Gib das Nettoeinkommen jeder Person an, nach Steuern.</string>
     <string name="default_split_parts_of">Anteile von %s</string>
     <string name="default_split_percent_of">Prozentsatz von %s</string>
     <string name="default_split_income_of">Einkommen von %s</string>
@@ -67,6 +68,7 @@
     <string name="default_split_row_shares">%d%% jeder Ausgabe</string>
     <string name="default_split_row_percent">%1$s von je %2$s</string>
     <string name="default_split_row_income">Einkommen pro Monat · %d%% jeder Ausgabe</string>
+    <string name="default_split_row_income_blank">Einkommen pro Monat</string>
     <string name="default_split_row_new">%s · gerade beigetreten</string>
     <string name="default_split_me">%s (du)</string>
     <string name="default_split_exceptions">Ausnahmen nach Kategorie</string>

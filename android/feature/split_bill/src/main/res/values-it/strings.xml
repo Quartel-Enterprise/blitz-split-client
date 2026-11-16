@@ -371,7 +371,7 @@
         <item quantity="many">Per reddito tra %d</item>
         <item quantity="other">Per reddito tra %d</item>
     </plurals>
-    <string name="split_bill_hint_income">La parte di ognuno segue il suo reddito. I redditi sono del gruppo; cambiarli qui vale solo per questa spesa.</string>
+    <string name="split_bill_hint_income">La parte di ognuno segue il suo reddito. I redditi sono del gruppo; cambiarli qui vale solo per questa spesa. Inserisci il reddito netto di ognuno, dopo le tasse.</string>
     <string name="split_bill_list_income">Il reddito di ognuno</string>
     <string name="split_bill_person_income">Reddito di %s</string>
     <string name="split_bill_default_now_income">per reddito</string>

@@ -49,6 +49,7 @@
     <string name="default_split_list_percent">Persen masing-masing</string>
     <string name="default_split_list_income">Penghasilan masing-masing</string>
     <string name="default_split_income_note">Anggota grup melihat penghasilan ini dan bisa membagi tagihan berdasarkan penghasilan.</string>
+    <string name="default_split_income_net_note">Masukkan penghasilan bersih masing-masing, setelah pajak.</string>
     <string name="default_split_parts_of">Jumlah bagian %s</string>
     <string name="default_split_percent_of">Persen %s</string>
     <string name="default_split_income_of">Penghasilan %s</string>
@@ -66,6 +67,7 @@
     <string name="default_split_row_shares">%d%% dari setiap tagihan</string>
     <string name="default_split_row_percent">%1$s dari setiap %2$s</string>
     <string name="default_split_row_income">Penghasilan per bulan · %d%% dari setiap tagihan</string>
+    <string name="default_split_row_income_blank">Penghasilan per bulan</string>
     <string name="default_split_row_new">%s · baru bergabung</string>
     <string name="default_split_me">%s (kamu)</string>
     <string name="default_split_exceptions">Pengecualian per kategori</string>

@@ -49,6 +49,7 @@
     <string name="default_split_list_percent">各自の割合</string>
     <string name="default_split_list_income">各自の収入</string>
     <string name="default_split_income_note">グループのメンバーはこれらの収入を見て、支出を収入に応じて分けられます。</string>
+    <string name="default_split_income_net_note">各自の税引き後の手取り収入を入力してください。</string>
     <string name="default_split_parts_of">%sの口数</string>
     <string name="default_split_percent_of">%sの割合</string>
     <string name="default_split_income_of">%sの収入</string>
@@ -66,6 +67,7 @@
     <string name="default_split_row_shares">各支出の%d%%</string>
     <string name="default_split_row_percent">%2$sごとに%1$s</string>
     <string name="default_split_row_income">月収 · 各支出の%d%%</string>
+    <string name="default_split_row_income_blank">月収</string>
     <string name="default_split_row_new">%s · 参加したばかり</string>
     <string name="default_split_me">%s（あなた）</string>
     <string name="default_split_exceptions">カテゴリ別の例外</string>

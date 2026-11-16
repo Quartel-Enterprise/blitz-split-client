@@ -53,6 +53,8 @@ class JsDefaultSplitState(
     val remainingPercent: Double,
     val addsUp: Boolean,
     val showsPercentError: Boolean,
+    // Why: "Income per month" alone while By income has no income typed.
+    val showsIncomePercents: Boolean,
     // Why: "Carla entrou no grupo", the names of whoever joined since the split was saved.
     val joinedPeople: Array<String>,
     val isLoaded: Boolean,
@@ -119,6 +121,7 @@ class DefaultSplitPresenter(
                 remainingPercent = state.remainingPercent.toDouble(),
                 addsUp = state.addsUp,
                 showsPercentError = state.showsPercentError,
+                showsIncomePercents = state.showsIncomePercents,
                 joinedPeople = state.joinedPeople.map { it.name }.toTypedArray(),
                 isLoaded = state.isLoaded,
                 isSaving = state.isSaving,

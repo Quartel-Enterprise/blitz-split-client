@@ -164,12 +164,17 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     (whole numbers adding up to 100, else "It adds up to 90%. 10% missing." and Save disabled) or By income, whose
     incomes are the group's (Pierre's call): each member's income syncs to the group's members, prefilled on any of
     their devices (`group_member_income`, the server's `group_member_incomes`, Last-Write-Wins per member), and "The
-    group's members see these incomes and can split bills by them." says so under them. The default keeps the
+    group's members see these incomes and can split bills by them." says so under them, after "Enter each one's net
+    income, after taxes." (beta feedback of 2026-11-16, Pierre's call: the ratio of what each one takes home is the
+    fair one), both in the same quiet style. Each person's line says "Income per month · 75% of each bill", the
+    percentage the typed incomes give, only while at least one field holds an income above 0
+    (`DefaultSplitUiState.showsIncomePercents`); with every field blank it says just "Income per month" (beta feedback
+    of 2026-11-16, Pierre's call), though "On a R$ 100 bill:" still shows what Save keeps. The default keeps the
     percentages they give (`IncomePercents`); saving By income saves the incomes typed or cleared there, a field cleared removing that
-    person's (fields left blank while it shows the saved percentages change nothing), and saving another way leaves them as they are, for a bill's By income (in
+    person's (fields left blank while the default holds saved percentages change nothing: Save keeps them), and saving another way leaves them as they are, for a bill's By income (in
     [split-bill.md](split-bill.md)). The incomes are in minor units of the group's currency and only their ratio counts.
-    When the saved percentages are no longer what the incomes give (an older version's save), the screen shows the
-    percentages. Incomes an older version kept on one device (`split_group.splitIncomes`) became that device's rows
+    When the saved percentages are no longer what the incomes give (an older version's save), the fields open blank
+    and the example shows the saved percentages. Incomes an older version kept on one device (`split_group.splitIncomes`) became that device's rows
     once, waiting to go up (Room 45, `GroupIncomesMigrationSpec`). A new bill's Split may also save its split as the default or its
     category's exception ("Use as the group default", in [split-bill.md](split-bill.md)). "On a R$ 100 bill:" with the bar in
     each one's color and "Pierre R$ 75", "Ana R$ 25" under it, each after a dot of their color, is always in sight, the cents as Split a bill shares them (Equal's
