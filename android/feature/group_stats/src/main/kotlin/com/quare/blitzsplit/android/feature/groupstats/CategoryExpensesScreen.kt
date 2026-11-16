@@ -74,6 +74,7 @@ import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -170,6 +171,8 @@ private fun CategoryExpensesScaffold(
     val money = rememberMoneyFormatter(state.currency)
     val times = rememberDateTimeTextFormatter()
     val isBook = rememberFoldLayout().bookSplit != null
+    // Why: the pane beside the groups keeps one column, however wide a tablet makes it.
+    val isInDetailPane = LocalInDetailPane.current
     // Why: one list for both layouts, so folding and unfolding keeps the place.
     val listState = rememberLazyListState()
     Scaffold(
@@ -243,7 +246,7 @@ private fun CategoryExpensesScaffold(
                     .padding(padding),
                 contentAlignment = Alignment.TopCenter,
             ) {
-                if (maxWidth >= sideColumnMinWidth) {
+                if (!isInDetailPane && maxWidth >= sideColumnMinWidth) {
                     Row(
                         modifier = Modifier
                             .widthIn(max = sideColumnWidth + sideColumnGap + listMaxWidth)
@@ -271,6 +274,11 @@ private fun CategoryExpensesScaffold(
                                 bottom = 24.dp,
                             ),
                         ) {
+                            // Why: an empty header where one column draws the chips, so the shared list state keeps its row.
+                            item(
+                                key = "header",
+                                contentType = "header",
+                            ) {}
                             categoryExpenseItems(state, money, times, onEvent)
                         }
                     }

@@ -90,11 +90,15 @@ struct CategoryExpensesView: View {
         }
     }
 
-    /// Lying down or with an iPad's room; the window's until this screen has measured itself, so it never opens in one
-    /// column and then splits.
+    /// Lying down, or with an iPad's room on iOS (an iPad upright too); a Mac window only when wide. The window's until
+    /// this screen has measured itself, so it never opens in one column and then splits.
     private var usesSideColumn: Bool {
         let measured = layout.or(windowLayout)
+        #if os(macOS)
+        return measured.usesTwoColumns
+        #else
         return measured.usesTwoColumns || measured.isLarge
+        #endif
     }
 
     /// "Viagem Floripa · October 2026", or "Viagem Floripa · The whole trip" for the whole history.
@@ -122,7 +126,7 @@ private struct CategoryExpensesList: View {
 
     var body: some View {
         if usesSideColumn {
-            TwoColumnsLayout(firstWidth: 300, spacing: 8, maxWidth: 1100) {
+            TwoColumnsLayout(firstWidth: 300) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 14) {
                         CategoryChipsFlow(model: model)

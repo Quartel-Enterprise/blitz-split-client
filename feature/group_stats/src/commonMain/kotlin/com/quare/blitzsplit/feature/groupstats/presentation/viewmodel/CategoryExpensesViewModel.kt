@@ -149,7 +149,7 @@ class CategoryExpensesViewModel(
             is CategoryExpensesUiEvent.OnRailTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
 
             CategoryExpensesUiEvent.OnRailSearchClicked -> if (isOnTop() && navigator.openSearchFromPage()) {
-                trackEvent("search_opened", mapOf("source" to "category_expenses"))
+                trackEvent("search_opened", mapOf("source" to CATEGORY_EXPENSES_SOURCE))
             }
 
             is CategoryExpensesUiEvent.OnCategoryToggled -> toggle(event.categoryId)
@@ -158,14 +158,23 @@ class CategoryExpensesViewModel(
 
             is CategoryExpensesUiEvent.OnExpenseClicked -> openBill(event.expenseId)
 
-            is CategoryExpensesUiEvent.OnExpenseEditClicked -> openOption(BillMenuOption.EDIT, event.expenseId)
-
-            is CategoryExpensesUiEvent.OnExpenseDuplicateClicked -> openOption(
-                BillMenuOption.DUPLICATE,
+            is CategoryExpensesUiEvent.OnExpenseEditClicked -> billMenu.open(
+                BillMenuOption.EDIT,
+                route.groupId,
                 event.expenseId,
             )
 
-            is CategoryExpensesUiEvent.OnExpenseShareClicked -> openOption(BillMenuOption.SHARE, event.expenseId)
+            is CategoryExpensesUiEvent.OnExpenseDuplicateClicked -> billMenu.open(
+                BillMenuOption.DUPLICATE,
+                route.groupId,
+                event.expenseId,
+            )
+
+            is CategoryExpensesUiEvent.OnExpenseShareClicked -> billMenu.open(
+                BillMenuOption.SHARE,
+                route.groupId,
+                event.expenseId,
+            )
 
             is CategoryExpensesUiEvent.OnExpenseDeleteClicked -> billMenu.askToDelete(route.groupId, event.expenseId)
 
@@ -186,13 +195,6 @@ class CategoryExpensesViewModel(
             BillMenuStep.DELETE_CONFIRMED -> trackEvent("bill_delete_confirmed", params)
             BillMenuStep.DELETE_CANCELLED -> trackEvent("bill_delete_cancelled", params)
         }
-    }
-
-    private fun openOption(
-        option: BillMenuOption,
-        expenseId: String,
-    ) {
-        billMenu.open(option, route.groupId, expenseId)
     }
 
     private fun toggle(categoryId: String) {

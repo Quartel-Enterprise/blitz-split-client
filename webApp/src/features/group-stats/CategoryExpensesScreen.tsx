@@ -64,7 +64,7 @@ export function CategoryExpensesScreen({ route }: { route: JsRoute }) {
       </div>
 
       <div className="flex flex-col gap-4 sm:gap-5 xl:grid xl:grid-cols-[minmax(0,240px)_minmax(0,1fr)] xl:items-start xl:gap-8">
-        <div className="flex flex-col gap-4 sm:gap-5 xl:sticky xl:top-6">
+        <div className="flex flex-col gap-4 sm:gap-5 xl:sticky xl:top-6 xl:max-h-[calc(100dvh-3rem)] xl:overflow-y-auto xl:p-1 xl:-m-1">
           <CategoryChips state={state} presenter={presenter} />
           <p aria-live="polite" className="text-[15px] font-semibold tabular-nums">
             {t('categoryExpenses_summary', {
