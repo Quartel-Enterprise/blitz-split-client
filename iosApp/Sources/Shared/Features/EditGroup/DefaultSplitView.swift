@@ -447,7 +447,7 @@ private struct ShareLegend: View {
     let state: DefaultSplitUiState
 
     var body: some View {
-        TermFlowLayout(spacing: 8) {
+        TermFlowLayout(spacing: 12, lineSpacing: 4) {
             ForEach(state.rows.filter { $0.weight > 0 }, id: \.person.id) { row in
                 HStack(spacing: 6) {
                     Circle()

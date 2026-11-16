@@ -608,13 +608,16 @@ extension View {
     }
 }
 
-/// The chips of a line, wrapping onto the next one when the row is full.
+/// The chips of a line, wrapping onto the next one when the row is full. A chip wider than the line is given the
+/// line's width, so its text wraps inside it instead of running past the edge.
 struct TermFlowLayout: Layout {
     var spacing: CGFloat = 8
+    /// The space between lines; the same as across when nil.
+    var lineSpacing: CGFloat?
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache _: inout ()) -> CGSize {
         let rows = rowsOf(subviews, width: proposal.width ?? .infinity)
-        let height = rows.map(\.height).reduce(0, +) + spacing * CGFloat(max(rows.count - 1, 0))
+        let height = rows.map(\.height).reduce(0, +) + verticalSpacing * CGFloat(max(rows.count - 1, 0))
         let width = rows.map(\.width).max() ?? 0
         return CGSize(width: proposal.width ?? width, height: height)
     }
@@ -624,13 +627,15 @@ struct TermFlowLayout: Layout {
         for row in rowsOf(subviews, width: bounds.width) {
             var x = bounds.minX
             for index in row.indices {
-                let size = subviews[index].sizeThatFits(.unspecified)
+                let size = sizeOf(subviews[index], width: bounds.width)
                 subviews[index].place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
                 x += size.width + spacing
             }
-            y += row.height + spacing
+            y += row.height + verticalSpacing
         }
     }
+
+    private var verticalSpacing: CGFloat { lineSpacing ?? spacing }
 
     private struct Row {
         var indices: [Int] = []
@@ -638,11 +643,17 @@ struct TermFlowLayout: Layout {
         var height: CGFloat = 0
     }
 
+    private func sizeOf(_ subview: LayoutSubview, width: CGFloat) -> CGSize {
+        let natural = subview.sizeThatFits(.unspecified)
+        guard width.isFinite, natural.width > width else { return natural }
+        return subview.sizeThatFits(ProposedViewSize(width: width, height: nil))
+    }
+
     private func rowsOf(_ subviews: Subviews, width: CGFloat) -> [Row] {
         var rows: [Row] = []
         var current = Row()
         for index in subviews.indices {
-            let size = subviews[index].sizeThatFits(.unspecified)
+            let size = sizeOf(subviews[index], width: width)
             let added = current.indices.isEmpty ? size.width : current.width + spacing + size.width
             if added > width, !current.indices.isEmpty {
                 rows.append(current)
