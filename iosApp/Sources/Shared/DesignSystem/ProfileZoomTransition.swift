@@ -86,7 +86,8 @@ private struct ProfileZoomSourceModifier: ViewModifier {
 
     @Environment(\.profileZoomScope) private var scope
     @Environment(\.showsGroupBesideList) private var showsGroupBesideList
-    /// Half the face's shorter side, the radius that draws it as its circle.
+    /// Half the face's shorter side, the radius that draws it as its circle, less half a point so rounding never pushes
+    /// it past half the side, which hides the face.
     @State private var radius: CGFloat = 0
 
     func body(content: Content) -> some View {
@@ -95,7 +96,7 @@ private struct ProfileZoomSourceModifier: ViewModifier {
             // The zoom clips only to a rounded rectangle, so one of half the face's side draws it as its circle. A
             // radius past that hides the face altogether, outside the zoom too
             content
-                .onGeometryChange(for: CGFloat.self) { min($0.size.width, $0.size.height) / 2 } action: { radius = $0 }
+                .onGeometryChange(for: CGFloat.self) { max(min($0.size.width, $0.size.height) / 2 - 0.5, 0) } action: { radius = $0 }
                 .matchedTransitionSource(id: faceId, in: scope.namespace) { source in
                     source.clipShape(.rect(cornerRadius: radius, style: .circular))
                 }
