@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">정산 알림</string>
+    <string name="push_bill_created">%1$s 님이 나도 포함된 ‘%2$s’ 지출을 추가했어요</string>
+    <string name="push_bill_edited">%1$s 님이 ‘%2$s’ 지출을 수정했어요</string>
+    <string name="push_bill_deleted">%1$s 님이 ‘%2$s’ 지출을 삭제했어요</string>
+    <string name="push_comment_added">%1$s 님이 ‘%2$s’ 지출에 댓글을 남겼어요: %3$s</string>
+    <string name="push_payment_paid_you">%1$s 님이 나에게 송금했다고 기록했어요</string>
+    <string name="push_payment_to_you">%1$s 님이 기록했어요: %2$s 님이 나에게 송금했어요</string>
+    <string name="push_payment_received_yours">%1$s 님이 내 송금을 받았다고 표시했어요</string>
+    <string name="push_payment_from_you">%1$s 님이 기록했어요: 내가 %2$s 님에게 송금했어요</string>
+    <string name="push_payment_undone">%1$s 님이 나와의 송금 기록을 취소했어요</string>
+    <string name="push_charge_sent">%1$s 님이 정산 알림을 보냈어요</string>
+    <string name="push_settle_reminder">‘%1$s’ 그룹에 미정산 잔액이 있어요</string>
+    <string name="push_settle_reminders">그룹 %1$s개에 미정산 잔액이 있어요</string>
+    <string name="push_added_to_group">%1$s 님이 나를 그룹에 추가했어요</string>
+    <string name="push_member_joined">%1$s 님이 그룹에 참여했어요</string>
+    <string name="push_debts_simplified_to_you">%1$s 님이 빚을 단순화했어요. 이제 %2$s 님이 나에게 보낼 돈: %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s 님이 빚을 단순화했어요. 이제 내가 %2$s 님에게 보낼 돈: %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s 님이 빚을 단순화했어요. 나에게 어떻게 바뀌었는지 확인해 보세요.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s 님이 ‘정산 간소화’를 껐어요. 이제 %2$s 님이 나에게 보낼 돈: %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s 님이 ‘정산 간소화’를 껐어요. 이제 내가 %2$s 님에게 보낼 돈: %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s 님이 ‘정산 간소화’를 껐어요. 나에게 어떻게 바뀌었는지 확인해 보세요.</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">이 그룹의 멤버가 아니에요</string>
+    <string name="bill_link_not_in_group_message">이 댓글은 내가 속하지 않은 그룹에 있어요. 링크를 보낸 사람에게 초대를 요청하세요.</string>
+    <string name="bill_link_offline_title">인터넷 연결 없음</string>
+    <string name="bill_link_offline_message">다시 온라인이 되면 링크를 다시 열어 주세요.</string>
+    <string name="bill_link_go_home">홈으로</string>
+    <string name="discard_changes_title">변경 사항을 버릴까요?</string>
+    <string name="discard_changes_message">저장하지 않은 변경 사항은 사라져요.</string>
+    <string name="discard_changes_discard">버리기</string>
+    <string name="discard_changes_keep_editing">계속 수정</string>
+</resources>

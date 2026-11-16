@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">지원팀에 문의</string>
+    <string name="contact_support_description">메시지가 준비된 상태로 이메일 앱을 열어요. 무슨 일이 있었는지 적어서 보내 주세요. 모든 메시지는 실제 사람이 읽어요.</string>
+    <string name="contact_support_to">받는 사람</string>
+    <string name="contact_support_diagnostics">이메일에 포함될 정보</string>
+    <string name="contact_support_app_version">앱 버전</string>
+    <string name="contact_support_platform">플랫폼</string>
+    <string name="contact_support_language">언어</string>
+    <string name="contact_support_account">계정</string>
+    <string name="contact_support_profile">프로필</string>
+    <string name="contact_support_language_system">시스템 설정</string>
+    <string name="contact_support_account_local">이 기기에만</string>
+    <string name="contact_support_account_anonymous">연결 안 됨</string>
+    <string name="contact_support_open_email">이메일 열기</string>
+    <string name="contact_support_copy_email">이메일 주소 복사</string>
+    <string name="contact_support_notice_copied">이메일 주소를 복사했어요.</string>
+    <string name="contact_support_notice_no_app">이메일 앱이 없어요. 대신 주소를 복사했어요.</string>
+    <string name="contact_support_close">닫기</string>
+</resources>

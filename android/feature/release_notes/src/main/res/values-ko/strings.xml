@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">새로운 기능</string>
+    <string name="release_notes_show_beta">베타 버전 표시</string>
+    <string name="release_notes_beta_badge">베타 %1$d</string>
+    <string name="release_notes_installed_badge">현재 버전</string>
+    <string name="release_notes_empty">아직 새로운 기능 소식이 없어요.</string>
+    <string name="release_notes_empty_only_betas">아직 정식 버전이 없어요. 테스트 중인 기능을 보려면 베타 버전을 켜세요.</string>
+    <string name="release_notes_load_failed_title">새로운 기능을 불러오지 못했어요</string>
+    <string name="release_notes_load_failed_body">인터넷 연결을 확인하고 다시 시도해 주세요.</string>
+    <string name="release_notes_retry">다시 시도</string>
+    <string name="release_notes_open_on_github">GitHub에서 열기</string>
+</resources>

@@ -19,7 +19,8 @@
         "tr": "Profil'de yeni bir \"Saat biçimi\" tercihi var: sistemi izle ya da harcamalarda, Etkinlik'te, yorumlarda ve saat seçerken saatleri her zaman 24 saat (14:30) veya AM ve PM ile 12 saat (2:30 PM) biçiminde göster.",
         "id": "Profil kini punya preferensi \"Format waktu\": ikuti sistem, atau selalu tampilkan jam dalam format 24 jam (14:30) atau 12 jam dengan AM dan PM (2:30 PM), di tagihan, Aktivitas, komentar, dan saat memilih jam.",
         "ru": "В профиле появилась настройка «Формат времени»: как в системе или всегда в 24-часовом (14:30) или 12-часовом формате с AM и PM (2:30 PM) — в счетах, в Активности, в комментариях и при выборе времени.",
-        "uk": "У профілі з’явилося налаштування «Формат часу»: як у системі або завжди в 24-годинному (14:30) чи 12-годинному форматі з AM і PM (2:30 PM) — у рахунках, в Активності, у коментарях і під час вибору часу."
+        "uk": "У профілі з’явилося налаштування «Формат часу»: як у системі або завжди в 24-годинному (14:30) чи 12-годинному форматі з AM і PM (2:30 PM) — у рахунках, в Активності, у коментарях і під час вибору часу.",
+        "ko": "프로필에 새로운 ‘시간 형식’ 설정이 생겼어요. 시스템 설정을 따르거나, 지출, 활동, 댓글, 시간 선택에서 항상 24시간(14:30) 또는 오전/오후가 붙은 12시간(오후 2:30)으로 표시할 수 있어요."
       }
     }
   ]

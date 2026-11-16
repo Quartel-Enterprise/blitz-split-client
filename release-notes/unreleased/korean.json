@@ -1,0 +1,50 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Korean: pick \"한국어\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala coreano: escolha \"한국어\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora coreano: escolhe \"한국어\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla coreano: elige \"한국어\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais coréen : choisis « 한국어 » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Koreanisch: Wähle „한국어“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla coreano: scegli \"한국어\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po koreańsku: wybierz „한국어” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Koreaans: kies \"한국어\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリが韓国語に対応しました。プロフィール › 言語で「한국어」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Korece konuşuyor: Profil › Dil'den \"한국어\"yu seç ya da cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Korea: pilih \"한국어\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит по-корейски: выбери «한국어» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить корейською: обери «한국어» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 한국어를 쓸 수 있어요. 프로필 › 언어에서 ‘한국어’를 고르거나 기기 언어를 따르게 하세요."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the South Korean won (KRW), and a group made in South Korea starts in it.",
+        "pt": "Os grupos agora podem dividir em won sul-coreano (KRW), e um grupo criado na Coreia do Sul já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em won sul-coreano (KRW), e um grupo criado na Coreia do Sul começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en won surcoreano (KRW), y un grupo creado en Corea del Sur empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en won sud-coréen (KRW), et un groupe créé en Corée du Sud démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Südkoreanischem Won (KRW) teilen, und eine in Südkorea erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in won sudcoreano (KRW), e un gruppo creato in Corea del Sud parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w wonach południowokoreańskich (KRW), a grupa założona w Korei Południowej startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Zuid-Koreaanse won (KRW), en een groep die in Zuid-Korea wordt gemaakt, start in die valuta.",
+        "ja": "グループで韓国ウォン（KRW）が使えるようになり、韓国で作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık Güney Kore wonu (KRW) ile bölebiliyor; Güney Kore'de açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam won Korea Selatan (KRW), dan grup yang dibuat di Korea Selatan langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в южнокорейских вонах (KRW), а группа, созданная в Южной Корее, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати в південнокорейських вонах (KRW), а група, створена в Південній Кореї, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 대한민국 원(KRW)으로 나눌 수 있고, 한국에서 만든 그룹은 원으로 시작해요."
+      }
+    }
+  ]
+}

@@ -240,6 +240,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Korean tag WHEN reading it THEN is Korean`() {
+        // Given
+        val tags = listOf("ko", "ko-KR", "ko_KR", "KO-kr", "ko-Kore-KR")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.KOREAN }, languages)
+    }
+
+    @Test
     fun `GIVEN a Portuguese tag of Portugal in other spellings WHEN reading it THEN is the Portuguese of Portugal`() {
         // Given
         val tags = listOf("pt-PT-x-private", "PT-PT", "pt-pt", "pt_pt_x_private", "pt-Latn-pt-u-fw-mon")
@@ -285,7 +297,25 @@ class AppLanguageTest {
 
         // Then
         assertEquals(
-            listOf(null, "EN", "BR", "PT", "419", "ES", "FR", "DE", "IT", "PL", "NL", "JA", "TR", "ID", "RU", "UA"),
+            listOf(
+                null,
+                "EN",
+                "BR",
+                "PT",
+                "419",
+                "ES",
+                "FR",
+                "DE",
+                "IT",
+                "PL",
+                "NL",
+                "JA",
+                "TR",
+                "ID",
+                "RU",
+                "UA",
+                "KO",
+            ),
             codes,
         )
         assertEquals(codes.filterNotNull().size, codes.filterNotNull().distinct().size)

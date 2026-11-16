@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">계정 삭제</string>
+    <string name="delete_account_offline_title">인터넷 연결 없음.</string>
+    <string name="delete_account_offline_body">계정을 삭제하려면 인터넷 연결이 필요해요. 연결한 후 다시 시도해 주세요.</string>
+    <string name="delete_account_heading">계정과 데이터를 삭제할까요?</string>
+    <string name="delete_account_deleted_title">삭제되는 항목</string>
+    <string name="delete_account_deleted_profile">내 프로필(이름, 사진, 색상)</string>
+    <string name="delete_account_deleted_keys">내 Pix 및 Bitcoin 키</string>
+    <string name="delete_account_deleted_provider">%1$s 계정 연결</string>
+    <string name="delete_account_deleted_recovery_code">내 복구 코드</string>
+    <string name="delete_account_deleted_device">이 기기에 있는 데이터 사본</string>
+    <string name="delete_account_kept_title">그룹에 남는 항목</string>
+    <string name="delete_account_kept_groups">다른 멤버를 위해 그룹과 그 안의 지출, 송금</string>
+    <string name="delete_account_kept_member">각 그룹의 내 이름(계정 없는 멤버로)</string>
+    <string name="delete_account_kept_comments">내 이름으로 남긴 댓글과 추가한 사진</string>
+    <string name="delete_account_export">먼저 내 데이터 내보내기</string>
+    <string name="delete_account_confirm">되돌릴 수 없다는 것을 이해했어요</string>
+    <string name="delete_account_delete">계정 삭제</string>
+    <string name="delete_account_cancel">취소</string>
+    <string name="delete_account_failed">계정을 삭제하지 못했어요. 다시 시도해 주세요.</string>
+</resources>

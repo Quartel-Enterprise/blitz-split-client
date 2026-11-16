@@ -20,7 +20,8 @@
         "tr": "İstatistikler'de \"Kişiye göre\" halkasının ortası, pay seninse artık sadece \"Sen\" yazıyor; uzun bir isim de halkaya değmek yerine \"…\" ile bitiyor.",
         "id": "Di Statistik, bagian tengah cincin \"Per orang\" kini hanya menulis \"Kamu\" saat bagiannya milikmu, dan nama panjang diakhiri \"…\" alih-alih menyentuh cincin.",
         "ru": "В «Статистике» в центре кольца «По людям» теперь написано просто «Ты», когда доля твоя, а длинное имя обрывается на «…», не касаясь кольца.",
-        "uk": "У «Статистиці» в центрі кільця «За людьми» тепер написано просто «Ти», коли частка твоя, а довге ім’я обривається на «…», не торкаючись кільця."
+        "uk": "У «Статистиці» в центрі кільця «За людьми» тепер написано просто «Ти», коли частка твоя, а довге ім’я обривається на «…», не торкаючись кільця.",
+        "ko": "통계의 ‘사람별’ 링 가운데에 내 몫일 때는 ‘나’라고만 표시되고, 긴 이름은 링에 닿지 않고 ‘…’로 줄여져요."
       }
     }
   ]

@@ -5,8 +5,8 @@ description: "Add a language to Bora Rachar on every platform: the AppLanguage e
 
 # Add a language
 
-French (PR #249) was the pilot, Spanish (PR #222) the model before it: their diffs show every place a language
-touches. This skill is the order of the work and the decisions to take, not the rules: the product rules are
+French (PR #249) was the pilot, Spanish (PR #222) the model before it; Russian and Ukrainian (PR #396) and Korean
+are the latest, with the store screenshots and a currency: their diffs show every place a language touches. This skill is the order of the work and the decisions to take, not the rules: the product rules are
 in [docs/product/general.md](../../../docs/product/general.md) and [profile.md](../../../docs/product/profile.md).
 
 Start it with `worktree-start-task` (type `feature`, `add-<language>`). One language per branch: two branches adding a
@@ -25,6 +25,11 @@ Product choices nobody wrote down are Pierre's call. Ask, in one question, only 
 - **A language that reads right to left** (Arabic, Hebrew) or whose plural has more than `one`/`other` (Russian, Polish,
   Arabic): say so, it is more than a translation (RTL layouts on three UIs; more plural categories in every `plurals`
   and plural variation).
+- **A language whose particles or suffixes follow the sound of the word before them** (Turkish, Korean, Hungarian,
+  Finnish): ask whether to never glue one to a value the app fills in (Turkish's and Korean's answer: "Ödeme: Ana",
+  "Ana 님이") or to pick it by sound in code on three platforms.
+- **Its currency**: when the app has none for the language's main country (`GroupCurrency.entries`), ask whether it
+  comes with it, as the ruble and hryvnia came with Russian and Ukrainian, and the won with Korean. See step 3.
 
 Write the decisions in `docs/product/general.md`, next to the Spanish and French ones.
 
@@ -54,6 +59,22 @@ Every translator, human or agent, reads it first; without it each one picks its 
   pattern of `webApp/src/lib/currency.ts`, which keeps the currency names in the UI's language.
 - Android needs nothing else: `generateLocaleConfig` builds the per-app language list from the `values-xx` folders.
   Apple needs nothing else either: the languages are the ones `Localizable.xcstrings` has.
+- The tests that list every language: `AppLanguageTest` (its tags, the chips of every entry),
+  `ObserveSpokenLanguageUseCaseTest` (the picks, the devices, the regional variants) and `ProfileUiStateTest` (both
+  names, every option list). `./gradlew jvmTest` fails on the `when`s until each has it.
+- A language written without spaces between words (Japanese; Chinese, Thai): add it to `unspacedLanguages`
+  (`WordSpacing.kt`), `WordGap.swift` and the web's `wordGap`, `fullStop` and `clauseBreak` in `i18n/index.ts`.
+- A currency that comes with the language (Pierre's call, step 1): its `GroupCurrency` (code, regions, `fractionDigits`
+  when it has none, as the yen, rupiah and won) after the last one in `entries`, a `GroupCurrencyTest` for its region,
+  `ExpenseRules.maxAmountMinorFor` when 100 million of it is too little (the rupiah), and its paragraph in
+  `general.md` next to the ruble's, saying what an older app version shows (a currency with no decimals shows 100
+  times smaller there). The UIs name it and write its symbol from the platform, so nothing else changes in them.
+- The store screenshots ([docs/store-listing-screenshots.md](../../../docs/store-listing-screenshots.md)): the
+  language's sample trip in `SampleTrips.kt` (`copies`, `currencies`, and a round rate in `priceOf` for a new
+  currency), its banners in `BannerCopies.kt` (one per `StoreScreen`), its `StoreLocale`, its listing locales in
+  build-logic's `StoreScreenshots.kt` (`listingLocales`, `playLocales`, `appStoreLocales`, the stores' own codes) and
+  `scripts/store-screenshots/locales.tsv`, and the count in the `Fastfile`'s description and the docs that say "in all
+  N languages".
 
 ## 4. The activity sentences
 
@@ -69,7 +90,14 @@ ending. French, German and Italian require every verb phrase to start with their
 doesn't know, starts every verb phrase with a past in "ł(a)" and turns it into "łeś(-aś)". Pick the simplest rule the
 language allows, put it in the glossary, add it to the three helpers and describe it in
 [activity-and-push.md](../../../docs/product/activity-and-push.md). A language whose verb does not change with the
-person needs none of this.
+person needs none of this, unless something after the actor depends on who it is.
+
+Korean is that case: its particles follow the last sound of the name, so someone else is "Ana 님이" (님 always takes
+이) and every Korean verb phrase starts with "님이", which the user's rows drop after the user's subject word "내가"
+(the rule is in the three helpers). A language like it needs the subject word apart from the standalone "You": the
+subject keys are Android's `activity_you` and `bill_detail_history_you`, the web's `activity_you` and Apple's "You,
+who did it"; every other "You" (a list, a chip, a payment's "You → Ana", Android's `activity_person_you`) is the
+standalone one. Tell the translators which is which in the glossary.
 
 A language that conjugates also says the deleted-item notice with who deleted it first ("Tu as supprimé…"): add it to
 `youSubjectLanguages` in `SecondPersonVerbs.kt`, so Android uses "You" and the verb rule instead of "by you". So does a
@@ -85,13 +113,21 @@ Translate from the English, never from another translation:
   `values-in` for Indonesian, `values-iw` for Hebrew; add each legacy code's mapping to `AppLanguage.fromTag` and the web's `pickLocale`, as Indonesian's "in" is) next to each `res/values/strings.xml` (about 28 modules, `androidApp` and
   `android/designsystem` included), same keys, same order, every plural category the language needs.
 - **Apple**: an `xx` localization for every key of `iosApp/Resources/Localizable.xcstrings` and
-  `InfoPlist.xcstrings`, with the same plural and device variations as `es`. Edit the JSON with a script that keeps
-  Xcode's formatting, so the diff shows only the added entries.
+  `InfoPlist.xcstrings`, with the same plural and device variations as `es` (only the plural categories the language
+  has). Edit the JSON with a script that keeps Xcode's formatting, so the diff shows only the added entries: Python's
+  `json.dumps(d, indent=2, separators=(',', ' : '), ensure_ascii=False) + '\n'` writes the file back byte for byte.
+  The keys of `strings` are in insertion order, not sorted (a new key goes next to its siblings, as "Korean" after
+  "Ukrainian"); the languages inside a key's `localizations` are sorted. Hand the translators slices of the keys
+  (each key's English and a translated language's shape) and have each write its translations to a file of its own,
+  then merge them in one script: two agents editing the 4 MB catalog at once overwrite each other.
 - **Web**: `webApp/src/i18n/xx.ts`, typed by `MessageKey`, exporting `xx`.
 
-This is a lot of text and the files are independent, so hand each platform (the Android modules in two halves) to a
-subagent with the glossary, and tell it not to build or commit. Read what comes back: have it list the strings it was
-unsure about.
+This is a lot of text (about 2,400 Android strings, 1,950 Apple keys and 2,300 web lines), so hand it to subagents with
+the glossary, one per independent file set, in parallel: the Android modules in three groups (each module's
+`values-xx` is its own file), the Apple keys in two slices and the web dictionary in two halves (each writing a file of
+its own in the scratchpad, merged by you), and the release notes with the store listing. Tell each not to build or
+commit. Read what comes back: have it list the strings it was unsure about and the words it chose that the glossary
+lacks, and make those agree across platforms before the checks.
 
 ## 6. Make the checks know it
 
@@ -121,7 +157,25 @@ unsure about.
   `.claude/skills/review-conventions/SKILL.md`, the comments of `androidApp/build.gradle.kts` and `iosApp/project.yml`.
   `grep -rn "Spanish"` finds the places the last language reached.
 
-## 7. Verify
+## 7. The other repositories
+
+A language isn't done until the site and the API speak it too: open a pull request in each, as part of this task,
+once the client's is open (Pierre's call). Fetch each repository first and branch from its `origin/main`, since
+their checkouts sit on stale branches. Link the three pull requests to each other in their descriptions. Either may
+merge first.
+
+- `blitz-split-site`: the language's release notes folder, which a release needs before it writes the language
+  ([docs/release-notes.md](../../../docs/release-notes.md#adding-a-language)), and its legal pages
+  (`public/legal/<page>.<language>.md`, translated from English), which the apps read in English until then
+  ([profile.md](../../../docs/product/profile.md)). Plus whatever else the site lists per language: follow its own
+  docs.
+- `blitz-split-api`: the language of the invite and bill link previews (`invite_preview.ts` and the preview texts),
+  picked by a currency of the language, as `JPY` gives Japanese
+  ([joining-and-folds.md](../../../docs/product/joining-and-folds.md)); and a new currency's minor digits and cap
+  (`supabase/functions/_shared/app_currencies.ts`, when they differ from ISO's or the usual cap). Update the
+  client's `joining-and-folds.md` with the currency's language in the client's pull request.
+
+## 8. Verify
 
 Through `./scripts/heavy-check.sh`, one build at a time: `./gradlew jvmTest`, `./gradlew lintDebug`,
 `./scripts/ktlint.sh`, `npm --prefix webApp run check:messages` and `npm --prefix webApp run build`,

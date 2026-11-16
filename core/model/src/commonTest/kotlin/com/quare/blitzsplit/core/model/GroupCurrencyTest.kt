@@ -190,6 +190,18 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN South Korea WHEN picking its currency THEN it is the won typed without decimals`() {
+        // Given
+        val region = "KR"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.KRW to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN the rupiah WHEN picking the digits to type THEN it types none though ISO gives it 2`() {
         // Given
         val currency = GroupCurrency.IDR

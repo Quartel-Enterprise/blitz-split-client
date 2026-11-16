@@ -78,7 +78,11 @@ The feed, unread state, real time and push notifications.
     the person, so a verb phrase written for both genders, as Polish's, serves the user as it is ("Ана разделил(а)…",
     "Ты разделил(а)…"; "Ти розділив(-ла)…"), and the name it follows is never declined. Their deleted-item notice starts
     with who deleted it ("Ты удалил(а)…"), as in Spanish, rather than a "by you" that would decline everyone else's
-    name. The same rules say a bill's photo line to the user who attached it, in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
+    name. Korean verbs don't change with the person either, but a particle after a name would follow its sound, so
+    someone else is "Ana 님이" (님 always takes 이) and every Korean verb phrase starts with "님이": the user's rows drop
+    it after the user's subject word "내가", which holds its own particle ("Ana 님이 ‘저녁’ 지출을 나눴어요", "내가 ‘저녁’
+    지출을 나눴어요"; Android's `toSecondPerson`, Apple's `SecondPerson`, the web's `verbForYou`). Its deleted-item
+    notice starts with who deleted it too ("내가 …"). Every other "You" (a list, a payment's "나 → Ana") is "나". The same rules say a bill's photo line to the user who attached it, in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
     "Tu l’as joint…", "Ty dodałeś(-aś) je…". A Spanish object pronoun before the verb stays ("lo adjuntó" to "lo
     adjuntaste"), and French's and Italian's elided auxiliaries change as the bare ones do ("l’a" to "l’as", "l’ha" to
     "l’hai"). A line written without a verb after the name stays as it is (German's "Du · heute um 21:10 angehängt",

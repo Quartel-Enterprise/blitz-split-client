@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">그룹 되찾기</string>
+    <string name="restore_subtitle">전에 계정으로 로그인했나요? 다시 로그인하면 돼요. 아니라면 복구 코드나 이전 기기의 QR 코드를 사용하세요.</string>
+    <string name="restore_no_connection_title">인터넷 연결 없음</string>
+    <string name="restore_no_connection_body">계정이나 코드로 로그인하려면 그룹을 내려받을 인터넷이 필요해요. 입력한 내용은 그대로 남아 있어요.</string>
+    <string name="restore_code_label">또는 복구 코드 사용</string>
+    <string name="restore_code_hint">12개 단어를 순서대로 입력하세요. 한 칸에 모두 붙여 넣으면 모든 칸이 채워져요.</string>
+    <string name="restore_scan_qr_title">이전 기기의 QR 코드 스캔</string>
+    <string name="restore_scan_qr_body">이전 기기에서: 프로필 › 복구 코드 › QR 코드 보기</string>
+    <string name="restore_recover">복구</string>
+    <string name="restore_try_again">다시 시도</string>
+    <string name="restore_start_fresh">이 기기에서 새로 시작</string>
+    <string name="restore_error_invalid_code">코드를 찾을 수 없어요. 단어와 순서를 확인하고 다시 시도해 주세요.</string>
+    <string name="restore_error_too_many_attempts">시도 횟수가 너무 많아요. 몇 분 후에 다시 시도해 주세요.</string>
+    <string name="restore_error_sign_in_failed">지금은 로그인할 수 없어요. 다시 시도해 주세요.</string>
+    <string name="restore_error_unknown">문제가 발생했어요. 다시 시도해 주세요.</string>
+</resources>

@@ -71,6 +71,7 @@
     <string name="profile_language_indonesian">Індонезійська</string>
     <string name="profile_language_russian">Російська</string>
     <string name="profile_language_ukrainian">Українська</string>
+    <string name="profile_language_korean">Корейська</string>
     <string name="profile_language_system_detail">Мова пристрою</string>
     <string name="profile_notifications">Сповіщення</string>
     <plurals name="profile_notifications_active">

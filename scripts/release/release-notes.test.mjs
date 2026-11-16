@@ -56,7 +56,7 @@ describe("a fragment", () => {
   });
 
   test("is refused with a language the notes don't have", () => {
-    refuses(fragmentOf(note("new", "x", { text: { ...textOf("x"), ko: "x" } })), /not ko/);
+    refuses(fragmentOf(note("new", "x", { text: { ...textOf("x"), vi: "x" } })), /not vi/);
   });
 
   test("is refused with text the apps can't draw as it is", () => {
@@ -303,8 +303,8 @@ describe("the commands", () => {
   });
 
   test("a site with a language the fragments don't have stops the release, naming it", () => {
-    const newer = siteWith([...LANGS, "ko"]);
-    assert.throws(() => run("collect", "3.0.1-beta_2", "--site", newer), /release-notes\/ko: the site has release notes in ko and the fragments don't/);
+    const newer = siteWith([...LANGS, "vi"]);
+    assert.throws(() => run("collect", "3.0.1-beta_2", "--site", newer), /release-notes\/vi: the site has release notes in vi and the fragments don't/);
     rmSync(newer, { recursive: true, force: true });
   });
 

@@ -20,7 +20,8 @@
         "tr": "Kategoriye göre harcamalar ekranında her harcamada artık grubun harcamalarındaki ⋮ menüsü var: açmadan düzenleyin, çoğaltın, paylaşın veya silin.",
         "id": "Di Pengeluaran per kategori, setiap pengeluaran kini punya menu ⋮ yang sama seperti di pengeluaran grup: edit, duplikat, bagikan, atau hapus tanpa membukanya.",
         "ru": "В «Расходах по категориям» у каждого расхода теперь то же меню ⋮, что и в расходах группы: изменяйте, дублируйте, делитесь или удаляйте, не открывая его.",
-        "uk": "У «Витратах за категоріями» кожна витрата тепер має те саме меню ⋮, що й у витратах групи: редагуйте, дублюйте, діліться або видаляйте, не відкриваючи її."
+        "uk": "У «Витратах за категоріями» кожна витрата тепер має те саме меню ⋮, що й у витратах групи: редагуйте, дублюйте, діліться або видаляйте, не відкриваючи її.",
+        "ko": "카테고리별 지출의 각 지출에도 그룹 지출과 같은 ⋮ 메뉴가 생겨서, 열지 않고도 수정, 복제, 공유, 삭제할 수 있어요."
       }
     },
     {
@@ -43,7 +44,8 @@
         "tr": "Geniş ekranlarda (yatay telefon, tabletler, Mac ve web) Kategoriye göre harcamalar, kategorileri ve toplamı harcamaların yanındaki bir sütunda gösteriyor.",
         "id": "Di layar lebar (ponsel mendatar, tablet, Mac, dan web), Pengeluaran per kategori menampilkan kategori dan totalnya di kolom samping pengeluaran.",
         "ru": "На широких экранах (телефон горизонтально, планшеты, Mac и веб) «Расходы по категориям» показывают категории и итог в колонке рядом с расходами.",
-        "uk": "На широких екранах (телефон горизонтально, планшети, Mac і веб) «Витрати за категоріями» показують категорії та підсумок у колонці поруч із витратами."
+        "uk": "На широких екранах (телефон горизонтально, планшети, Mac і веб) «Витрати за категоріями» показують категорії та підсумок у колонці поруч із витратами.",
+        "ko": "넓은 화면(가로로 둔 휴대폰, 태블릿, Mac, 웹)에서는 카테고리별 지출의 카테고리와 합계가 지출 옆의 열에 표시돼요."
       }
     },
     {
@@ -66,7 +68,8 @@
         "tr": "Grubun İstatistikler ekranında dönem düğmesi (\"Tüm zamanlar\") artık iki satıra bölünmüyor: ikisi sığmadığında tarihler altına geçiyor.",
         "id": "Di Statistik grup, tombol periode (\"Sepanjang waktu\") tidak lagi terpotong jadi dua baris: tanggalnya pindah ke bawah saat keduanya tidak muat.",
         "ru": "В «Статистике» группы кнопка периода («За всё время») больше не переносится на две строки: если не помещаются вместе, даты уходят под неё.",
-        "uk": "У «Статистиці» групи кнопка періоду («За весь час») більше не переноситься на два рядки: якщо не вміщаються разом, дати переходять під неї."
+        "uk": "У «Статистиці» групи кнопка періоду («За весь час») більше не переноситься на два рядки: якщо не вміщаються разом, дати переходять під неї.",
+        "ko": "그룹 통계에서 기간 버튼(‘전체 기간’)이 두 줄로 나뉘지 않아요. 한 줄에 들어가지 않으면 날짜가 그 아래로 옮겨져요."
       }
     }
   ]

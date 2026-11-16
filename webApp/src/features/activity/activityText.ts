@@ -155,11 +155,16 @@ function sentenceSegments(sentence: string, who: string, subject: string | null,
   return segments
 }
 
-/** `verbForYou` on the words between the names, keeping the gaps around them. */
+/**
+ * `verbForYou` on the words between the names, keeping the gaps around them, but one gap when it says none of them
+ * (Korean's "{who} 님이 {subject}" for the user is "내가 {subject}").
+ */
 function secondPerson(words: string): string {
   const core = words.trim()
   const start = words.indexOf(core)
-  return `${words.slice(0, start)}${verbForYou(core)}${words.slice(start + core.length)}`
+  const said = verbForYou(core)
+  if (core && !said) return words.slice(0, start)
+  return `${words.slice(0, start)}${said}${words.slice(start + core.length)}`
 }
 
 /** The headline as one sentence, for a row's accessible name and the detail's region. */

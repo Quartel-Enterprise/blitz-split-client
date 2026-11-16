@@ -16,6 +16,8 @@ private const val DUTCH = "nl"
 private const val TURKISH = "tr"
 private const val RUSSIAN = "ru"
 private const val UKRAINIAN = "uk"
+private const val KOREAN = "ko"
+private const val KOREAN_HONORIFIC_SUBJECT = "님이"
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
@@ -38,6 +40,7 @@ private val youSubjectLanguages = setOf(
     TURKISH,
     RUSSIAN,
     UKRAINIAN,
+    KOREAN,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -66,8 +69,11 @@ private val irregularSecondPerson = mapOf(
  * with a past in "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü",
  * "Sen böldün". Portugal's Portuguese (pt-PT, "tu") ends the verb's preterite in "-aste", "-este" or "-iste": "Ana
  * dividiu", "Tu dividiste". Any other language keeps the verb as it is, Brazil's Portuguese too ("Você dividiu"), and
- * Russian and Ukrainian, whose past says the gender but not the person ("Ана разделил(а)", "Ты разделил(а)"). Same
- * rules as the web's and the Apple app's `verbForYou`.
+ * Russian and Ukrainian, whose past says the gender but not the person ("Ана разделил(а)", "Ты разделил(а)"). Korean
+ * doesn't conjugate for the person either, but writes someone else as "Ana 님이" (님 always takes 이, so no particle
+ * hangs on the sound of a name) and the user as "내가", the user's subject word holding its own particle: every Korean
+ * verb phrase starts with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요"). Same rules as the web's
+ * and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -86,6 +92,8 @@ fun toSecondPerson(
     }
 
     TURKISH -> toTurkishSecondPerson(verb)
+
+    KOREAN -> toKoreanSecondPerson(verb)
 
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
@@ -109,6 +117,12 @@ private fun toTurkishSecondPerson(verb: String): String {
     val clause = verb.substringBefore(':').trimEnd()
     if (!turkishPast.containsMatchIn(clause)) return verb
     return clause + "n" + verb.substring(clause.length)
+}
+
+// Why: "님이 나눴어요" → "나눴어요", "님이 " → "": the user's subject word ("내가") already holds the particle.
+private fun toKoreanSecondPerson(verb: String): String {
+    val words = verb.split(' ')
+    return if (words.first() == KOREAN_HONORIFIC_SUBJECT) words.drop(1).joinToString(" ") else verb
 }
 
 // Why: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste"; the first word is the verb.
@@ -146,6 +160,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * Why: Spanish, Portugal's Portuguese, French, German, Italian, Polish, Dutch and Turkish say "Tú", "Tu", "Du", "Ty",
  * "Jij" or "Sen" and conjugate the verb for it, unlike the other languages. Russian and Ukrainian say "Ты" and "Ти"
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
+ * Korean says "내가" rather than a "by you" that would put "님이" after "나".
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

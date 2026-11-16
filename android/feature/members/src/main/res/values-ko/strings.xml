@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">초대 링크</string>
+    <string name="members_link_pending">아직 만들지 않았어요</string>
+    <string name="members_share">공유</string>
+    <string name="members_me">%s (나)</string>
+    <string name="members_status_this_device">이 기기</string>
+    <string name="members_status_joined">참여함</string>
+    <string name="members_status_not_joined">아직 참여 안 함</string>
+    <string name="members_options">옵션: %s</string>
+    <string name="members_rename">이름 변경</string>
+    <string name="members_personal_invite">%s 님 개인 초대</string>
+    <string name="members_personal_message">이 링크를 여는 사람은 목록에서 고르지 않고 바로 %s 님으로 참여해요. 한 번만 쓸 수 있어요.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="other">이 링크를 여는 사람은 목록에서 고르지 않고 바로 %1$s 님으로 참여하고, 지금까지 추가된 지출 %3$d건에서 자기 몫 %2$s도 바로 볼 수 있어요. 한 번만 쓸 수 있어요.</item>
+    </plurals>
+    <string name="members_personal_copy">링크 복사</string>
+    <string name="members_personal_copied">복사했어요</string>
+    <string name="members_personal_share">%s 님에게 공유</string>
+    <string name="members_personal_share_message">Blitz Split에서 %2$s 님으로 ‘%1$s’ 그룹에 참여하세요: %3$s</string>
+    <string name="members_remove">그룹에서 삭제</string>
+    <string name="members_remove_joined">%s 님은 이미 그룹에 참여했어요</string>
+    <string name="members_remove_title">%s 님을 그룹에서 삭제할까요?</string>
+    <string name="members_remove_message">%s 님은 아직 참여하지 않았어요. 나중에 다시 추가할 수 있어요.</string>
+    <string name="members_remove_confirm">삭제</string>
+    <string name="members_release">이름 연결 해제</string>
+    <string name="members_release_title">%s 님의 이름 연결을 해제할까요?</string>
+    <string name="members_release_message">%1$s 님으로 참여한 사람은 그룹에서 나가요. %1$s 님의 이름, 색상, 지출은 그대로 남고, 그룹 링크로 %1$s 님을 다시 선택할 수 있어요.</string>
+    <string name="members_release_confirm">해제</string>
+    <string name="members_release_error">이름 연결을 해제하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.</string>
+    <string name="members_add">사람 추가</string>
+    <string name="members_invite_instead">앱이 있나요? 링크로 초대하세요</string>
+    <string name="members_name_label">이름</string>
+    <string name="members_save">저장</string>
+    <string name="members_cancel">취소</string>
+    <string name="members_change_error">변경 사항을 저장하지 못했어요. 다시 시도해 주세요.</string>
+    <string name="members_remove_open_balance">%s 님은 미정산 잔액이 있어요</string>
+    <string name="members_balance_to_get_back">받을 돈 %s</string>
+    <string name="members_balance_owes">줄 돈 %s</string>
+    <string name="members_balance_settled">정산 완료</string>
+</resources>
