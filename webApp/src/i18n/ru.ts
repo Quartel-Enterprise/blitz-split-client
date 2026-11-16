@@ -342,8 +342,6 @@ export const ru: Record<MessageKey, string> = {
   groupDetail_seeAllBills: 'Все',
   groupDetail_protectTitle: 'Защити свой доступ',
   groupDetail_protectMessage: 'Ты присоединился(-ась) без аккаунта. Сохрани код или подключи Google или Apple.',
-  groupDetail_metaTotal: '{members} · всего {total}',
-  groupDetail_metaEmpty: '{members} · расходов пока нет',
   groupDetail_notJoinedOne: '{count} ещё не присоединился(-ась)',
   groupDetail_notJoinedOther: '{count} ещё не присоединился|{count} ещё не присоединились|{count} ещё не присоединились',
   groupDetail_seeMembers: 'Посмотреть участников',

@@ -15,6 +15,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarStackRow
 import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
@@ -36,8 +38,17 @@ internal fun GroupFacesRow(
     // Why: where the faces of the row tapped land (beta feedback of 2026-11-16).
     facesModifier: Modifier = Modifier,
 ) {
+    /*
+     * Why: the faces tell how many people the group has; TalkBack says it, as the header's line under the name did,
+     * with who hasn't joined, since a merged row's own description replaces its children's text.
+     */
+    val members = pluralStringResource(R.plurals.group_detail_member_count, header.memberCount, header.memberCount)
+    val notJoined =
+        pluralStringResource(R.plurals.group_detail_not_joined, header.notJoinedCount, header.notJoinedCount)
+    val description = if (header.notJoinedCount > 0) "$members, $notJoined" else members
     Row(
         modifier = modifier
+            .semantics { contentDescription = description }
             .clip(RoundedCornerShape(20.dp))
             .clickable(
                 onClickLabel = stringResource(R.string.group_detail_see_members),
@@ -63,11 +74,7 @@ internal fun GroupFacesRow(
         )
         if (header.notJoinedCount > 0) {
             Text(
-                text = pluralStringResource(
-                    R.plurals.group_detail_not_joined,
-                    header.notJoinedCount,
-                    header.notJoinedCount,
-                ),
+                text = notJoined,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

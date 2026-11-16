@@ -447,7 +447,6 @@ class GroupDetailViewModel(
             it.copy(
                 header = groupHeaderOf(
                     group = group,
-                    expenses = expenses,
                     balances = byCurrency,
                     pickedCurrency = pickedCurrency,
                     isPinned = screen.isPinned,

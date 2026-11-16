@@ -42,7 +42,6 @@ internal fun createPreviewHeader(hasBills: Boolean = true): GroupHeader = GroupH
     faces = previewFaces,
     memberCount = 6,
     notJoinedCount = 1,
-    totalSpentMinor = if (hasBills) 241_860L else 0L,
     myBalance = if (hasBills) {
         MemberBalance(
             receivesMinor = 33_290L,

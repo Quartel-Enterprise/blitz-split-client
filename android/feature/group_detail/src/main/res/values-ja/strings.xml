@@ -29,8 +29,6 @@
     <plurals name="group_detail_member_count">
         <item quantity="other">メンバー%d人</item>
     </plurals>
-    <string name="group_detail_meta_total">%1$s · 合計%2$s</string>
-    <string name="group_detail_meta_empty">%s · まだ支出はありません</string>
     <plurals name="group_detail_not_joined">
         <item quantity="other">%d人が未参加</item>
     </plurals>

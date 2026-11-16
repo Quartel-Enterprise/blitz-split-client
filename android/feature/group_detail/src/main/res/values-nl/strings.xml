@@ -30,8 +30,6 @@
         <item quantity="one">%d lid</item>
         <item quantity="other">%d leden</item>
     </plurals>
-    <string name="group_detail_meta_total">%1$s · %2$s in totaal</string>
-    <string name="group_detail_meta_empty">%s · nog geen uitgaven</string>
     <plurals name="group_detail_not_joined">
         <item quantity="one">%d is nog geen lid</item>
         <item quantity="other">%d zijn nog geen lid</item>

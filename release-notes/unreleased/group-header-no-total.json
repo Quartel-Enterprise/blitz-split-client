@@ -1,0 +1,26 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "A group's header is cleaner: the line with the member count and the total under its name is gone. The faces show who's in, and Statistics shows the total.",
+        "pt": "O topo do grupo ficou mais limpo: saiu a linha com o número de membros e o total embaixo do nome. As fotos mostram quem está no grupo, e as Estatísticas mostram o total.",
+        "pt-PT": "O topo do grupo está mais limpo: saiu a linha com o número de membros e o total por baixo do nome. As fotos mostram quem está no grupo, e as Estatísticas mostram o total.",
+        "es": "La cabecera del grupo está más limpia: se quitó la línea con el número de miembros y el total bajo su nombre. Las caras muestran quién está, y Estadísticas muestra el total.",
+        "fr": "L’en-tête d’un groupe est plus épuré : la ligne avec le nombre de membres et le total sous son nom a disparu. Les visages montrent qui en fait partie, et les Statistiques le total.",
+        "de": "Der Kopf einer Gruppe ist aufgeräumter: Die Zeile mit der Mitgliederzahl und der Gesamtsumme unter dem Namen ist weg. Die Gesichter zeigen, wer dabei ist, die Statistiken die Gesamtsumme.",
+        "it": "L’intestazione del gruppo è più pulita: la riga con il numero di membri e il totale sotto il nome non c’è più. I volti mostrano chi c’è, e le Statistiche il totale.",
+        "pl": "Nagłówek grupy jest czystszy: zniknęła linia z liczbą członków i sumą pod nazwą. Twarze pokazują, kto jest w grupie, a Statystyki pokazują sumę.",
+        "nl": "De kop van een groep is rustiger: de regel met het aantal leden en het totaal onder de naam is weg. De gezichten laten zien wie erin zit, en Statistieken het totaal.",
+        "ja": "グループの上部がすっきりしました。名前の下にあったメンバー数と合計の行はなくなりました。メンバーは顔アイコンで、合計は統計で確認できます。",
+        "tr": "Grubun üst kısmı sadeleşti: adının altındaki üye sayısı ve toplam satırı kaldırıldı. Yüzler grupta kimlerin olduğunu, İstatistikler ise toplamı gösteriyor.",
+        "id": "Bagian atas grup kini lebih rapi: baris jumlah anggota dan total di bawah namanya sudah dihapus. Wajah-wajah menunjukkan siapa saja anggotanya, dan Statistik menunjukkan totalnya.",
+        "ru": "Шапка группы стала чище: строка с числом участников и общей суммой под названием убрана. Лица показывают, кто в группе, а общая сумма есть в Статистике.",
+        "uk": "Шапка групи стала чистішою: рядок із кількістю учасників і загальною сумою під назвою прибрано. Обличчя показують, хто в групі, а загальна сума є в Статистиці."
+      }
+    }
+  ]
+}

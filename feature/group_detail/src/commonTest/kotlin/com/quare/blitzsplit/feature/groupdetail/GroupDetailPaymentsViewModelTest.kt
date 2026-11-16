@@ -306,52 +306,23 @@ class GroupDetailPaymentsViewModelTest {
         }
 
     @Test
-    fun `GIVEN only payments in the group WHEN the screen opens THEN lists them without counting them as spent`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedSettlements = listOf(
-                    settlement(
-                        id = "pay-1",
-                        amountMinor = 7_000,
-                    ),
+    fun `GIVEN only payments in the group WHEN the screen opens THEN lists them`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            storedSettlements = listOf(
+                settlement(
+                    id = "pay-1",
+                    amountMinor = 7_000,
                 ),
-            )
+            ),
+        )
 
-            // When
-            val state = viewModel.uiState.value
+        // When
+        val state = viewModel.uiState.value
 
-            // Then
-            assertEquals(listOf("pay-1"), state.days.flatMap { day -> day.entries.map { it.id } })
-            assertEquals(0L, state.header.totalSpentMinor)
-        }
-
-    @Test
-    fun `GIVEN a bill and a payment WHEN the screen opens THEN the total adds the bill only`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(
-                storedExpenses = listOf(
-                    expense(
-                        "dinner",
-                        spentAt = thisMorning,
-                        amountMinor = 12_000,
-                    ),
-                ),
-                storedSettlements = listOf(
-                    settlement(
-                        id = "pay-1",
-                        amountMinor = 6_000,
-                    ),
-                ),
-            )
-
-            // When
-            val total = viewModel.uiState.value.header.totalSpentMinor
-
-            // Then
-            assertEquals(12_000L, total)
-        }
+        // Then
+        assertEquals(listOf("pay-1"), state.days.flatMap { day -> day.entries.map { it.id } })
+    }
 
     @Test
     fun `GIVEN a payment of another group WHEN the screen opens THEN it is not on the list`() =

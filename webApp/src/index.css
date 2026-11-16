@@ -265,9 +265,9 @@
 }
 
 /*
- * The group's header (GroupPage): open at the top of the page, its photo big over the name and "2 members · R$ 3,418.31
- * in total", and folded into a compact bar as the page scrolls, the photo shrinking to 32 px and the name to the
- * body's title as the line under it fades. `--p` goes from 0 (open) to 1 (folded) with the scroll itself
+ * The group's header (GroupPage): open at the top of the page, its photo big beside the name, and folded into a
+ * compact bar as the page scrolls, the photo shrinking to 32 px and the name to the body's title. `--p` goes from 0
+ * (open) to 1 (folded) with the scroll itself
  * (useCollapsingHeader), never on a timer. The header stays sticky at the top while its height shrinks by what its
  * bottom margin gains, so the page under it never jumps. A phone folds it into its own bar, between back and the
  * icons; from the tablet up it has no bar, and its row (with Statistics, Invite, the main button and ⋯) is the bar.
@@ -322,12 +322,6 @@
 .group-header-name {
   font-size: calc(var(--name-open) - var(--p, 0) * (var(--name-open) - 16px));
   line-height: 1.25;
-}
-
-.group-header-meta {
-  max-height: calc((1 - var(--p, 0)) * 20px);
-  opacity: max(0, 1 - var(--p, 0) * 2);
-  overflow: hidden;
 }
 
 @media (width >= 48rem) {

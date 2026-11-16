@@ -342,8 +342,6 @@ export const uk: Record<MessageKey, string> = {
   groupDetail_seeAllBills: 'Переглянути все',
   groupDetail_protectTitle: 'Захисти свій доступ',
   groupDetail_protectMessage: 'Ти приєднався(-лася) без облікового запису. Збережи код або підключи Google чи Apple.',
-  groupDetail_metaTotal: '{members} · усього {total}',
-  groupDetail_metaEmpty: '{members} · витрат ще немає',
   groupDetail_notJoinedOne: '{count} людина ще не приєдналася',
   groupDetail_notJoinedOther: '{count} людина ще не приєдналася|{count} людини ще не приєдналися|{count} людей ще не приєдналися',
   groupDetail_seeMembers: 'Переглянути учасників',

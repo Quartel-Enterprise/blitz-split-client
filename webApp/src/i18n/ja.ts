@@ -338,8 +338,6 @@ export const ja: Record<MessageKey, string> = {
   groupDetail_seeAllBills: 'すべて見る',
   groupDetail_protectTitle: 'アクセスを守る',
   groupDetail_protectMessage: 'アカウントなしで参加しました。コードを保存するか、GoogleかAppleに接続してください。',
-  groupDetail_metaTotal: '{members} · 合計{total}',
-  groupDetail_metaEmpty: '{members} · 支出はまだありません',
   groupDetail_notJoinedOne: '{count}人がまだ参加していません',
   groupDetail_notJoinedOther: '{count}人がまだ参加していません',
   groupDetail_seeMembers: 'メンバーを見る',

@@ -32,8 +32,6 @@
         <item quantity="many">%d członków</item>
         <item quantity="other">%d członka</item>
     </plurals>
-    <string name="group_detail_meta_total">%1$s · łącznie %2$s</string>
-    <string name="group_detail_meta_empty">%s · na razie bez wydatków</string>
     <plurals name="group_detail_not_joined">
         <item quantity="one">%d osoba jeszcze nie dołączyła</item>
         <item quantity="few">%d osoby jeszcze nie dołączyły</item>

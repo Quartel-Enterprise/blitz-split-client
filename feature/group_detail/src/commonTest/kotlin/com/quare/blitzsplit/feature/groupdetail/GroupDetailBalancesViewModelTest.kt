@@ -748,7 +748,6 @@ class GroupDetailBalancesViewModelTest {
         // Then
         val state = viewModel.uiState.value
         assertEquals(listOf(CARLA to ANA), state.otherDebts.map { it.fromMemberId to it.toMemberId })
-        assertEquals(14_000L, state.header.totalSpentMinor)
     }
 
     @Test
