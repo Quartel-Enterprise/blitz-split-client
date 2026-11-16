@@ -1,0 +1,73 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "betaOnly": true,
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "In Expenses by category, each bill now has the same ⋮ menu as in a group's expenses: edit, duplicate, share or delete it without opening it.",
+        "pt": "Em Despesas por categoria, cada despesa agora tem o mesmo menu ⋮ das despesas do grupo: edite, duplique, compartilhe ou apague sem precisar abrir.",
+        "pt-PT": "Em Despesas por categoria, cada despesa tem agora o mesmo menu ⋮ das despesas do grupo: edita, duplica, partilha ou apaga sem a abrires.",
+        "es": "En Gastos por categoría, cada gasto ahora tiene el mismo menú ⋮ que en los gastos del grupo: edítalo, duplícalo, compártelo o bórralo sin abrirlo.",
+        "fr": "Dans Dépenses par catégorie, chaque dépense a désormais le même menu ⋮ que dans les dépenses du groupe : modifiez-la, dupliquez-la, partagez-la ou supprimez-la sans l’ouvrir.",
+        "de": "In „Ausgaben nach Kategorie“ hat jede Ausgabe jetzt dasselbe ⋮-Menü wie in den Ausgaben der Gruppe: bearbeiten, duplizieren, teilen oder löschen, ohne sie zu öffnen.",
+        "it": "In Spese per categoria ogni spesa ha ora lo stesso menu ⋮ delle spese del gruppo: modificala, duplicala, condividila o eliminala senza aprirla.",
+        "pl": "W Wydatkach według kategorii każdy wydatek ma teraz to samo menu ⋮ co w wydatkach grupy: edytuj, duplikuj, udostępnij lub usuń go bez otwierania.",
+        "nl": "In Uitgaven per categorie heeft elke uitgave nu hetzelfde ⋮-menu als bij de uitgaven van de groep: bewerk, dupliceer, deel of verwijder hem zonder hem te openen.",
+        "ja": "「カテゴリ別の支出」の各支出に、グループの支出と同じ ⋮ メニューが付きました。開かずに編集、複製、共有、削除できます。",
+        "tr": "Kategoriye göre harcamalar ekranında her harcamada artık grubun harcamalarındaki ⋮ menüsü var: açmadan düzenleyin, çoğaltın, paylaşın veya silin.",
+        "id": "Di Pengeluaran per kategori, setiap pengeluaran kini punya menu ⋮ yang sama seperti di pengeluaran grup: edit, duplikat, bagikan, atau hapus tanpa membukanya.",
+        "ru": "В «Расходах по категориям» у каждого расхода теперь то же меню ⋮, что и в расходах группы: изменяйте, дублируйте, делитесь или удаляйте, не открывая его.",
+        "uk": "У «Витратах за категоріями» кожна витрата тепер має те саме меню ⋮, що й у витратах групи: редагуйте, дублюйте, діліться або видаляйте, не відкриваючи її."
+      }
+    },
+    {
+      "kind": "improved",
+      "betaOnly": true,
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "On wide screens (a phone lying down, tablets, the Mac and the web), Expenses by category keeps its categories and total in a column beside the bills.",
+        "pt": "Em telas largas (celular deitado, tablets, Mac e web), Despesas por categoria mostra as categorias e o total numa coluna ao lado das despesas.",
+        "pt-PT": "Em ecrãs largos (telemóvel deitado, tablets, Mac e web), Despesas por categoria mostra as categorias e o total numa coluna ao lado das despesas.",
+        "es": "En pantallas anchas (un teléfono en horizontal, tablets, el Mac y la web), Gastos por categoría muestra las categorías y el total en una columna junto a los gastos.",
+        "fr": "Sur les écrans larges (téléphone à l’horizontale, tablettes, Mac et web), Dépenses par catégorie affiche les catégories et le total dans une colonne à côté des dépenses.",
+        "de": "Auf breiten Bildschirmen (Smartphone quer, Tablets, Mac und Web) zeigt „Ausgaben nach Kategorie“ die Kategorien und die Summe in einer Spalte neben den Ausgaben.",
+        "it": "Sugli schermi larghi (telefono in orizzontale, tablet, Mac e web), Spese per categoria mostra le categorie e il totale in una colonna accanto alle spese.",
+        "pl": "Na szerokich ekranach (telefon w poziomie, tablety, Mac i web) Wydatki według kategorii pokazują kategorie i sumę w kolumnie obok wydatków.",
+        "nl": "Op brede schermen (een liggende telefoon, tablets, de Mac en het web) toont Uitgaven per categorie de categorieën en het totaal in een kolom naast de uitgaven.",
+        "ja": "横向きのスマートフォン、タブレット、Mac、Web などの広い画面では、「カテゴリ別の支出」のカテゴリと合計が支出の横の列に表示されます。",
+        "tr": "Geniş ekranlarda (yatay telefon, tabletler, Mac ve web) Kategoriye göre harcamalar, kategorileri ve toplamı harcamaların yanındaki bir sütunda gösteriyor.",
+        "id": "Di layar lebar (ponsel mendatar, tablet, Mac, dan web), Pengeluaran per kategori menampilkan kategori dan totalnya di kolom samping pengeluaran.",
+        "ru": "На широких экранах (телефон горизонтально, планшеты, Mac и веб) «Расходы по категориям» показывают категории и итог в колонке рядом с расходами.",
+        "uk": "На широких екранах (телефон горизонтально, планшети, Mac і веб) «Витрати за категоріями» показують категорії та підсумок у колонці поруч із витратами."
+      }
+    },
+    {
+      "kind": "fixed",
+      "betaOnly": true,
+      "platforms": [
+        "ios"
+      ],
+      "text": {
+        "en": "In a group's Statistics, the period button (\"All time\") no longer breaks onto two lines: the dates move under it when both don't fit.",
+        "pt": "Nas Estatísticas do grupo, o botão do período (\"Todo o período\") não quebra mais em duas linhas: as datas vão para baixo dele quando não cabem juntos.",
+        "pt-PT": "Nas Estatísticas do grupo, o botão do período (\"Todo o período\") já não se parte em duas linhas: as datas passam para baixo dele quando não cabem juntos.",
+        "es": "En las Estadísticas del grupo, el botón del período (\"Todo el período\") ya no se parte en dos líneas: las fechas pasan debajo cuando no caben juntos.",
+        "fr": "Dans les Statistiques d’un groupe, le bouton de période (« Depuis toujours ») ne se coupe plus sur deux lignes : les dates passent dessous quand les deux ne tiennent pas.",
+        "de": "In den Statistiken einer Gruppe bricht die Zeitraum-Schaltfläche („Gesamter Zeitraum“) nicht mehr in zwei Zeilen um: Die Daten rutschen darunter, wenn beides nicht passt.",
+        "it": "Nelle Statistiche del gruppo il pulsante del periodo (\"Da sempre\") non va più a capo su due righe: le date passano sotto quando non c’è spazio per entrambi.",
+        "pl": "W Statystykach grupy przycisk okresu („Cały czas”) nie łamie się już na dwie linie: daty przechodzą pod niego, gdy oba się nie mieszczą.",
+        "nl": "In de Statistieken van een groep breekt de periodeknop (\"Altijd\") niet meer over twee regels: de datums gaan eronder als ze niet samen passen.",
+        "ja": "グループの統計で、期間ボタン（「全期間」）が2行に折り返さなくなりました。並べて収まらないときは日付がその下に表示されます。",
+        "tr": "Grubun İstatistikler ekranında dönem düğmesi (\"Tüm zamanlar\") artık iki satıra bölünmüyor: ikisi sığmadığında tarihler altına geçiyor.",
+        "id": "Di Statistik grup, tombol periode (\"Sepanjang waktu\") tidak lagi terpotong jadi dua baris: tanggalnya pindah ke bawah saat keduanya tidak muat.",
+        "ru": "В «Статистике» группы кнопка периода («За всё время») больше не переносится на две строки: если не помещаются вместе, даты уходят под неё.",
+        "uk": "У «Статистиці» групи кнопка періоду («За весь час») більше не переноситься на два рядки: якщо не вміщаються разом, дати переходять під неї."
+      }
+    }
+  ]
+}

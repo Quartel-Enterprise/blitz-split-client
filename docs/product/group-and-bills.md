@@ -238,7 +238,10 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     month", "Last month", "All time" (the default, as the notes say) and "Pick dates…" (each platform's date
     range picker, never after today; Android's headline keeps each date whole and puts the end date under the start
     one when both don't fit, "25 Oct 2026 –" then "14 Nov 2026", Pierre's feedback of 2026-11-15, where Material's
-    wrapped it a letter or two per line; iOS and the web ask "From" and "To" in fields of their own). Total spent, how many bills, "Average per person" (the total over every member,
+    wrapped it a letter or two per line; iOS and the web ask "From" and "To" in fields of their own). The period
+    pull-down never wraps its name (beta feedback of 2026-11-15: iOS broke "All time" in two beside its dates): on iOS
+    the dates move under it when both don't fit on one line, in any language and text size, and only a pull-down
+    wider than the screen by itself, at the largest text, cuts its name with an ellipsis. Total spent, how many bills, "Average per person" (the total over every member,
     who hasn't joined included), "Your share" and "You paid", on a neutral card under a neutral period chip on every
     platform (a pale blue fill read as one more slice of the ring);
     "By person" shows Consumed (each part as each bill
@@ -316,11 +319,19 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     take the place of either. A main category takes its subcategories' bills
     (Food takes Restaurant and Market), and there are no subcategory chips: each line names its own subcategory in its
     meta ("21:30 · Bruno paid · Restaurant"). Under the chips "R$ 610 · 4 expenses" adds up the bills shown, then the
-    bills by day as the group's Expenses draws them, never the payments, with no ⋮ (a tap opens Bill, as
-    from Expenses, where its options are). The chips are only this screen's: opening it
+    bills by day as the group's Expenses draws them, never the payments. A tap opens Bill, as from Expenses, and each
+    line ends in the same ⋮ as a bill's on Expenses and Home's "Latest expenses" (beta feedback of 2026-11-15): Edit,
+    Duplicate and Share open over this screen, Delete asks "Delete this bill?" first, and a long press (a right click
+    on the Mac and the web) opens it too. The chips are only this screen's: opening it
     again starts from the category tapped. It lays out as Statistics: in the group's pane beside the groups on an
-    Android tablet and an iPad lying down, one column of up to 624 dp elsewhere on Android (a book's chips before the
-    hinge and the bills after it), a List on iOS and the Mac, a page in the home's frame on the web, under the
+    Android tablet and an iPad lying down. Where the window is wide (beta feedback of 2026-11-15) the chips and the
+    total keep a column of their own (300 dp or pt, 240 px on the web) beside the bills, scrolling on its own: Android
+    wherever the screen has 700 dp beside the rail (a phone lying down, a tablet drawn alone; up to 948 dp in all,
+    never a foldable upright nor the pane beside the groups), iOS lying down and with an iPad's room (an iPhone Duo open
+    included, each column on its side of the fold), a wide Mac window, and the web from `xl` (1280 px) up, where the
+    column stays put as the bills scroll (narrower, beside the sidebar, it left the table no room for the bills'
+    names). Elsewhere it is one column: up to 624 dp on Android (a book's chips before
+    the hinge and the bills after it), a List on iOS and the Mac, a page in the home's frame on the web, under the
     breadcrumb "Groups › Viagem Floripa › Statistics › Expenses by category" from the tablet up (the group's crumb
     going back to the group past Statistics), with the group's Expenses table. Its subtitle writes the period as
     Statistics did: "This month" and "Last month" as the month, picked dates as their days.

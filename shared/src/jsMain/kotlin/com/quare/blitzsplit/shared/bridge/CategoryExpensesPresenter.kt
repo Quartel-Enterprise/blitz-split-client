@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpenseRow
+import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiAction
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.CategoryExpensesViewModel
@@ -55,6 +56,9 @@ class JsCategoryExpensesState(
     val isLoaded: Boolean,
     // Why: the home tab the group was opened from, which the sidebar selects ("home", "groups"…).
     val homeTab: String,
+    // Why: "Delete this bill?" from a bill's ⋮, open while not null, as on the group's Expenses.
+    val billToDelete: JsBillDeletion?,
+    val isDeletingBill: Boolean,
 )
 
 class CategoryExpensesPresenter(
@@ -69,6 +73,17 @@ class CategoryExpensesPresenter(
     fun observeState(onChange: (JsCategoryExpensesState) -> Unit): JsWatch {
         val states = viewModel.uiState.map(::toJsCategoryExpensesState)
         val watch = FlowWatcher(states).observe(onChange)
+        return JsWatch(watch::cancel)
+    }
+
+    // Why: "bill-delete-error", a toast in the page's words, when a bill deleted from its ⋮ couldn't be.
+    fun observeActions(onAction: (String) -> Unit): JsWatch {
+        val actions = viewModel.uiAction.map { action ->
+            when (action) {
+                CategoryExpensesUiAction.ShowBillDeleteError -> "bill-delete-error"
+            }
+        }
+        val watch = FlowWatcher(actions).observe(onAction)
         return JsWatch(watch::cancel)
     }
 
@@ -90,6 +105,30 @@ class CategoryExpensesPresenter(
 
     fun openExpense(expenseId: String) {
         viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseClicked(expenseId))
+    }
+
+    fun editExpense(expenseId: String) {
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseEditClicked(expenseId))
+    }
+
+    fun duplicateExpense(expenseId: String) {
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDuplicateClicked(expenseId))
+    }
+
+    fun shareExpense(expenseId: String) {
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseShareClicked(expenseId))
+    }
+
+    fun askToDeleteExpense(expenseId: String) {
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked(expenseId))
+    }
+
+    fun confirmExpenseDelete() {
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteConfirmed)
+    }
+
+    fun dismissExpenseDelete() {
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteDismissed)
     }
 
     fun dispose() {
@@ -123,6 +162,8 @@ private fun toJsCategoryExpensesState(state: CategoryExpensesUiState): JsCategor
         isPeriodEmpty = state.isPeriodEmpty,
         isLoaded = state.isLoaded,
         homeTab = toJsHomeTab(state.homeTab),
+        billToDelete = state.billToDelete?.let(::toJsBillDeletion),
+        isDeletingBill = state.isDeletingBill,
     )
 
 // Why: the group's Expenses' row as the page draws it, which its table takes as it is.

@@ -1,6 +1,10 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuOption
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuStep
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
+import com.quare.blitzsplit.core.expenses.billmenu.navigatingBillMenuControllerOf
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.CurrentTimeZone
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
@@ -23,20 +27,26 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.feature.groupstats.presentation.model.CATEGORY_EXPENSES_SOURCE
+import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiAction
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryFilterChip
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 
 /*
  * Why: "Expenses by category" (Pierre's beta feedback), from a category of the statistics: the group's bills of the
  * period the statistics showed, of the main categories its chips pick, from the bills on the device, offline included.
- * The chips are only this screen's: back and opening it again start from the category tapped.
+ * The chips are only this screen's: back and opening it again start from the category tapped. A bill's ⋮ is the
+ * group's Expenses' (BillMenuController), its options opening over this screen (beta feedback).
  */
 class CategoryExpensesViewModel(
     private val route: Route.CategoryExpenses,
@@ -47,6 +57,7 @@ class CategoryExpensesViewModel(
     observeExpenses: ObserveExpenses,
     observeCategoryTree: ObserveCategoryTree,
     observeFirstDownload: ObserveFirstDownload,
+    billMenuUseCases: BillMenuUseCases,
     trackEvent: TrackEvent,
 ) : TrackedViewModel<CategoryExpensesUiEvent>(trackEvent) {
     val uiState: StateFlow<CategoryExpensesUiState>
@@ -65,10 +76,33 @@ class CategoryExpensesViewModel(
                 isFirstDownload = false,
                 isLoaded = false,
                 homeTab = navigator.backStack.value.findHomeTabUnder(route),
+                billToDelete = null,
+                isDeletingBill = false,
             ),
         )
 
+    val uiAction: SharedFlow<CategoryExpensesUiAction>
+        field = MutableSharedFlow<CategoryExpensesUiAction>()
+
     val stateWatcher: FlowWatcher<CategoryExpensesUiState> = FlowWatcher(uiState)
+    val actionWatcher: FlowWatcher<CategoryExpensesUiAction> = FlowWatcher(uiAction)
+
+    private val billMenu = navigatingBillMenuControllerOf(
+        useCases = billMenuUseCases,
+        scope = viewModelScope,
+        navigator = navigator,
+        isOnTop = ::isOnTop,
+        track = ::trackBillMenuStep,
+        showDeleteError = { uiAction.emit(CategoryExpensesUiAction.ShowBillDeleteError) },
+        show = { menu ->
+            uiState.update {
+                it.copy(
+                    billToDelete = menu.billToDelete,
+                    isDeletingBill = menu.isDeleting,
+                )
+            }
+        },
+    )
 
     private var group: Group? = null
     private var expenses: List<Expense> = emptyList()
@@ -115,7 +149,7 @@ class CategoryExpensesViewModel(
             is CategoryExpensesUiEvent.OnRailTabClicked -> if (isOnTop()) navigator.openHomeTab(event.tab)
 
             CategoryExpensesUiEvent.OnRailSearchClicked -> if (isOnTop() && navigator.openSearchFromPage()) {
-                trackEvent("search_opened", mapOf("source" to "category_expenses"))
+                trackEvent("search_opened", mapOf("source" to CATEGORY_EXPENSES_SOURCE))
             }
 
             is CategoryExpensesUiEvent.OnCategoryToggled -> toggle(event.categoryId)
@@ -123,6 +157,43 @@ class CategoryExpensesViewModel(
             CategoryExpensesUiEvent.OnClearClicked -> clear()
 
             is CategoryExpensesUiEvent.OnExpenseClicked -> openBill(event.expenseId)
+
+            is CategoryExpensesUiEvent.OnExpenseEditClicked -> billMenu.open(
+                BillMenuOption.EDIT,
+                route.groupId,
+                event.expenseId,
+            )
+
+            is CategoryExpensesUiEvent.OnExpenseDuplicateClicked -> billMenu.open(
+                BillMenuOption.DUPLICATE,
+                route.groupId,
+                event.expenseId,
+            )
+
+            is CategoryExpensesUiEvent.OnExpenseShareClicked -> billMenu.open(
+                BillMenuOption.SHARE,
+                route.groupId,
+                event.expenseId,
+            )
+
+            is CategoryExpensesUiEvent.OnExpenseDeleteClicked -> billMenu.askToDelete(route.groupId, event.expenseId)
+
+            CategoryExpensesUiEvent.OnExpenseDeleteConfirmed -> billMenu.confirmDelete()
+
+            CategoryExpensesUiEvent.OnExpenseDeleteDismissed -> billMenu.dismissDelete()
+        }
+    }
+
+    // Why: each step under its own name, which the analytics catalog finds next to the Manual that declares it.
+    private fun trackBillMenuStep(step: BillMenuStep) {
+        val params = mapOf("source" to CATEGORY_EXPENSES_SOURCE)
+        when (step) {
+            BillMenuStep.EDIT_OPENED -> trackEvent("bill_edit_clicked", params)
+            BillMenuStep.DUPLICATE_OPENED -> trackEvent("bill_duplicate_clicked", params)
+            BillMenuStep.SHARE_OPENED -> trackEvent("bill_share_clicked", params)
+            BillMenuStep.DELETE_ASKED -> trackEvent("bill_delete_clicked", params)
+            BillMenuStep.DELETE_CONFIRMED -> trackEvent("bill_delete_confirmed", params)
+            BillMenuStep.DELETE_CANCELLED -> trackEvent("bill_delete_cancelled", params)
         }
     }
 
@@ -202,6 +273,8 @@ class CategoryExpensesViewModel(
             isFirstDownload = isFirstDownload == true,
             isLoaded = isFirstDownload != null,
             homeTab = uiState.value.homeTab,
+            billToDelete = uiState.value.billToDelete,
+            isDeletingBill = uiState.value.isDeletingBill,
         )
     }
 

@@ -5,7 +5,7 @@ import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 
 // Why: the screen these events come from, as their source param says.
-private const val SOURCE = "category_expenses"
+internal const val CATEGORY_EXPENSES_SOURCE = "category_expenses"
 
 sealed interface CategoryExpensesUiEvent : UiEvent {
     override val analytics: EventAnalytics
@@ -28,7 +28,22 @@ sealed interface CategoryExpensesUiEvent : UiEvent {
             // Why: only while a chip is picked, as "Clear" shows only then.
             OnClearClicked -> EventAnalytics.Manual("category_filter_cleared")
 
-            is OnExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to SOURCE))
+            is OnExpenseClicked -> EventAnalytics.Automatic("bill_clicked", mapOf("source" to CATEGORY_EXPENSES_SOURCE))
+
+            // Why: only once the screen opened, as on the group's Expenses: never for a bill gone or a list covered.
+            is OnExpenseEditClicked -> EventAnalytics.Manual("bill_edit_clicked")
+
+            is OnExpenseDuplicateClicked -> EventAnalytics.Manual("bill_duplicate_clicked")
+
+            is OnExpenseShareClicked -> EventAnalytics.Manual("bill_share_clicked")
+
+            // Why: only when the question opens, not a second tap before it draws.
+            is OnExpenseDeleteClicked -> EventAnalytics.Manual("bill_delete_clicked")
+
+            // Why: only an answer to a question still open and not deleting yet.
+            OnExpenseDeleteConfirmed -> EventAnalytics.Manual("bill_delete_confirmed")
+
+            OnExpenseDeleteDismissed -> EventAnalytics.Manual("bill_delete_cancelled")
         }
 
     data object OnBackClicked : CategoryExpensesUiEvent
@@ -56,4 +71,30 @@ sealed interface CategoryExpensesUiEvent : UiEvent {
     data class OnExpenseClicked(
         val expenseId: String,
     ) : CategoryExpensesUiEvent
+
+    // Why: "Edit" on a bill's ⋮ (or its long press, its right click), which opens Edit bill over this list.
+    data class OnExpenseEditClicked(
+        val expenseId: String,
+    ) : CategoryExpensesUiEvent
+
+    // Why: "Duplicate", which opens Split a bill filled in with the bill.
+    data class OnExpenseDuplicateClicked(
+        val expenseId: String,
+    ) : CategoryExpensesUiEvent
+
+    // Why: "Share", which opens Share bill.
+    data class OnExpenseShareClicked(
+        val expenseId: String,
+    ) : CategoryExpensesUiEvent
+
+    // Why: "Delete", which asks "Delete this bill?" first, as Bill does.
+    data class OnExpenseDeleteClicked(
+        val expenseId: String,
+    ) : CategoryExpensesUiEvent
+
+    // Why: "Delete" on "Delete this bill?".
+    data object OnExpenseDeleteConfirmed : CategoryExpensesUiEvent
+
+    // Why: "Cancel" on "Delete this bill?", or the dialog closed some other way.
+    data object OnExpenseDeleteDismissed : CategoryExpensesUiEvent
 }

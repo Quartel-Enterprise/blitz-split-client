@@ -4,13 +4,16 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -31,12 +34,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -52,12 +58,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.BillAmountsColumn
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
+import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.EntryDayHeading
-import com.quare.blitzsplit.android.designsystem.component.EntryLineSurface
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
+import com.quare.blitzsplit.android.designsystem.component.MenuEntryLine
 import com.quare.blitzsplit.android.designsystem.component.ShimmerListSkeleton
 import com.quare.blitzsplit.android.designsystem.component.WithGroupNavigationRail
+import com.quare.blitzsplit.android.designsystem.component.billMenuItemsOf
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
+import com.quare.blitzsplit.android.designsystem.component.rememberActionSnackbarHostState
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.categoryName
@@ -65,6 +74,7 @@ import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
+import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -73,14 +83,23 @@ import com.quare.blitzsplit.android.designsystem.theme.toDataColor
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpenseRow
+import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiAction
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryFilterChip
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.CategoryExpensesViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
+/*
+ * Why: the side column holds the chips and the total beside the bills, two or three chips a line, from where the bills
+ * still keep a phone's width beside it (a phone lying down, a tablet), never a foldable upright's.
+ */
 private val listMaxWidth = 624.dp
+private val sideColumnGap = 24.dp
+private val sideColumnWidth = 300.dp
+private val sideColumnMinWidth = 700.dp
 
 @Composable
 fun CategoryExpensesScreen(
@@ -88,23 +107,44 @@ fun CategoryExpensesScreen(
     viewModel: CategoryExpensesViewModel = koinViewModel(key = route.toString()) { parametersOf(route) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = rememberActionSnackbarHostState(viewModel.uiAction) { action ->
+        when (action) {
+            CategoryExpensesUiAction.ShowBillDeleteError -> DesignR.string.designsystem_delete_bill_error
+        }
+    }
     BackHandler { viewModel.onEvent(CategoryExpensesUiEvent.OnBackClicked) }
     CategoryExpensesContent(
         state = state,
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
     )
+    // Why: "Delete this bill?" from a bill's ⋮, as the group's Expenses asks it.
+    state.billToDelete?.let { deletion ->
+        DeleteBillDialog(
+            description = deletion.description,
+            myBalanceMinor = deletion.myBalanceMinor,
+            settledPair = deletion.settledPair,
+            isDeleting = state.isDeletingBill,
+            currency = deletion.currency,
+            onConfirm = { viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteConfirmed) },
+            onDismiss = { viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteDismissed) },
+        )
+    }
 }
 
 /*
  * Why: "Expenses by category", from a category of the statistics: the chips and the total over the bills by day, as
- * the group's Expenses lists them. One column up to a tablet's width, with the home's rail beside it as beside the
- * statistics; a book puts the chips and the total before the hinge and the bills after it.
+ * the group's Expenses lists them, with the home's rail beside it as beside the statistics. Where the screen has 700 dp
+ * (a phone lying down, a tablet drawn alone) the chips and the total keep a column of their own beside the bills (beta
+ * feedback); narrower (a phone or a foldable upright, the pane beside the groups) one column; a book puts them before
+ * the hinge and the bills after it.
  */
 @Composable
 fun CategoryExpensesContent(
     state: CategoryExpensesUiState,
     onEvent: (CategoryExpensesUiEvent) -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     WithGroupNavigationRail(
         selected = state.homeTab,
@@ -115,6 +155,7 @@ fun CategoryExpensesContent(
         CategoryExpensesScaffold(
             state = state,
             onEvent = onEvent,
+            snackbarHostState = snackbarHostState,
         )
     }
 }
@@ -124,11 +165,14 @@ fun CategoryExpensesContent(
 private fun CategoryExpensesScaffold(
     state: CategoryExpensesUiState,
     onEvent: (CategoryExpensesUiEvent) -> Unit,
+    snackbarHostState: SnackbarHostState,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val money = rememberMoneyFormatter(state.currency)
     val times = rememberDateTimeTextFormatter()
     val isBook = rememberFoldLayout().bookSplit != null
+    // Why: the pane beside the groups keeps one column, however wide a tablet makes it.
+    val isInDetailPane = LocalInDetailPane.current
     // Why: one list for both layouts, so folding and unfolding keeps the place.
     val listState = rememberLazyListState()
     Scaffold(
@@ -162,6 +206,7 @@ private fun CategoryExpensesScaffold(
                 scrollBehavior = scrollBehavior,
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         val listPadding = PaddingValues(
             start = 16.dp,
@@ -194,30 +239,69 @@ private fun CategoryExpensesScaffold(
                     .padding(padding),
             )
         } else {
-            Box(
+            // Why: the room the screen has decides, so the pane beside the groups and a foldable upright keep one column.
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
                 contentAlignment = Alignment.TopCenter,
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .widthIn(max = listMaxWidth)
-                        .fillMaxWidth(),
-                    state = listState,
-                    contentPadding = listPadding,
-                ) {
-                    item(
-                        key = "header",
-                        contentType = "header",
+                if (!isInDetailPane && maxWidth >= sideColumnMinWidth) {
+                    Row(
+                        modifier = Modifier
+                            .widthIn(max = sideColumnWidth + sideColumnGap + listMaxWidth)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(sideColumnGap),
                     ) {
+                        // Why: a group with many categories wraps its chips past a phone lying down's height.
                         CategoryFilterHeader(
                             state = state,
                             money = money,
                             onEvent = onEvent,
+                            modifier = Modifier
+                                .width(sideColumnWidth)
+                                .verticalScroll(rememberScrollState())
+                                .padding(
+                                    start = 16.dp,
+                                    bottom = 24.dp,
+                                ),
                         )
+                        LazyColumn(
+                            modifier = Modifier.weight(1f),
+                            state = listState,
+                            contentPadding = PaddingValues(
+                                end = 16.dp,
+                                bottom = 24.dp,
+                            ),
+                        ) {
+                            // Why: an empty header where one column draws the chips, so the shared list state keeps its row.
+                            item(
+                                key = "header",
+                                contentType = "header",
+                            ) {}
+                            categoryExpenseItems(state, money, times, onEvent)
+                        }
                     }
-                    categoryExpenseItems(state, money, times, onEvent)
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .widthIn(max = listMaxWidth)
+                            .fillMaxWidth(),
+                        state = listState,
+                        contentPadding = listPadding,
+                    ) {
+                        item(
+                            key = "header",
+                            contentType = "header",
+                        ) {
+                            CategoryFilterHeader(
+                                state = state,
+                                money = money,
+                                onEvent = onEvent,
+                            )
+                        }
+                        categoryExpenseItems(state, money, times, onEvent)
+                    }
                 }
             }
         }
@@ -390,7 +474,7 @@ private fun LazyListScope.categoryExpenseItems(
                 expense = expense,
                 money = money,
                 times = times,
-                onClick = { onEvent(CategoryExpensesUiEvent.OnExpenseClicked(expense.id)) },
+                onEvent = onEvent,
                 modifier = Modifier.padding(bottom = 2.dp),
                 index = index,
                 count = day.expenses.size,
@@ -399,21 +483,30 @@ private fun LazyListScope.categoryExpenseItems(
     }
 }
 
-// Why: a bill as the group's Expenses draws it, with no ⋮: as on the home's "Latest expenses", a tap opens it in Bill.
+/*
+ * Why: a bill as the group's Expenses draws it: a tap opens it in Bill, its ⋮ (or a long press) offers Bill's options
+ * without opening it, as on the group's Expenses and the home's "Latest expenses" (beta feedback).
+ */
 @Composable
 private fun CategoryExpenseLine(
     expense: CategoryExpenseRow,
     money: MoneyFormatter,
     times: DateTimeTextFormatter,
-    onClick: () -> Unit,
+    onEvent: (CategoryExpensesUiEvent) -> Unit,
     index: Int,
     count: Int,
     modifier: Modifier = Modifier,
 ) {
-    EntryLineSurface(
+    MenuEntryLine(
         title = expense.description,
         shape = groupedRowShapeOf(index, count),
-        onClick = onClick,
+        onClick = { onEvent(CategoryExpensesUiEvent.OnExpenseClicked(expense.id)) },
+        menuItems = billMenuItemsOf(
+            onEdit = { onEvent(CategoryExpensesUiEvent.OnExpenseEditClicked(expense.id)) },
+            onDuplicate = { onEvent(CategoryExpensesUiEvent.OnExpenseDuplicateClicked(expense.id)) },
+            onShare = { onEvent(CategoryExpensesUiEvent.OnExpenseShareClicked(expense.id)) },
+            onDelete = { onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked(expense.id)) },
+        ),
         modifier = modifier,
         leading = { CategoryBadge(category = expense.category) },
         meta = {
