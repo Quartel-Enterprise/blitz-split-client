@@ -37,7 +37,6 @@ private val previewPeople = listOf(
     Triple("Elisa", AvatarColor.SAND, 32_990L),
     Triple("Diego", AvatarColor.GREEN, 25_350L),
 )
-
 // Why: the people's shares, rounded down with the points left over on the largest, so the ring closes at 100.
 private val previewPercents = previewPeople
     .map { it.third * 100 / previewPeople.sumOf { person -> person.third } }
