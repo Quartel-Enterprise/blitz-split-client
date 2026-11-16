@@ -83,7 +83,7 @@
     </plurals>
     <string name="groups_row_more">Інші дії: %s</string>
     <string name="groups_actions_title">Дії для групи %s</string>
-    <string name="groups_action_invite">Запросити людей</string>
+    <string name="groups_action_invite">Додати людей</string>
     <string name="groups_action_invite_hint">Посилання на групу або QR-код</string>
     <string name="groups_action_leave">Вийти з групи</string>
     <string name="groups_action_leave_hint">Спершу розрахуйся: %s</string>

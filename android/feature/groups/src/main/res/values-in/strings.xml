@@ -65,7 +65,7 @@
     </plurals>
     <string name="groups_row_more">Tindakan lain: %s</string>
     <string name="groups_actions_title">Tindakan untuk %s</string>
-    <string name="groups_action_invite">Undang orang</string>
+    <string name="groups_action_invite">Tambah orang</string>
     <string name="groups_action_invite_hint">Tautan grup atau kode QR</string>
     <string name="groups_action_leave">Keluar dari grup</string>
     <string name="groups_action_leave_hint">Lunasi %s dulu</string>

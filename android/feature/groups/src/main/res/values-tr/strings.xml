@@ -71,7 +71,7 @@
     </plurals>
     <string name="groups_row_more">Diğer işlemler: %s</string>
     <string name="groups_actions_title">İşlemler: %s</string>
-    <string name="groups_action_invite">Kişi davet et</string>
+    <string name="groups_action_invite">Kişi ekle</string>
     <string name="groups_action_invite_hint">Grup bağlantısı ya da QR kodu</string>
     <string name="groups_action_leave">Gruptan ayrıl</string>
     <string name="groups_action_leave_hint">Önce %s tutarını kapat</string>

@@ -76,7 +76,7 @@ struct RootView: View {
             screen(for: route)
         }
         #endif
-        // The Mac's invite over a group's tab, drawn by that tab's "Invite people"
+        // The Mac's invite over a group's tab, drawn by that tab's "Add people"
         .environment(\.invitePopover, app.invitePopover)
         .environment(\.dismissInvitePopover, { app.invitePopover = nil })
         .tint(Palette.accent)

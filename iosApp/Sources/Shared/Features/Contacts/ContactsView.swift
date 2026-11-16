@@ -143,6 +143,11 @@ struct ContactsView: View {
     /// The row the arrow keys moved to in a narrow window, where a person opens over the list only on Return or a
     /// double click.
     @State private var narrowSelection: String?
+    #else
+    /// "Split a bill" spelled out in the bar while the list is at its top (`splitBillExpandsAtTop`).
+    @State private var isSplitBillExpanded = true
+    /// An iPhone Duo's vertical bar (iOS 27.1), which takes "Split a bill" as its icon alone.
+    @State private var hasVerticalBar = false
     #endif
 
     var body: some View {
@@ -167,6 +172,7 @@ struct ContactsView: View {
                 }
                 #if os(iOS)
                 .listStyle(.insetGrouped)
+                .splitBillExpandsAtTop($isSplitBillExpanded)
                 #else
                 // A right-click offers the profile (and Show for someone hidden); a double click or Return opens it
                 .contextMenu(forSelectionType: String.self) { keys in
@@ -184,30 +190,47 @@ struct ContactsView: View {
         .background(Palette.groupedBackground)
         .navigationTitle("Contacts")
         #if os(iOS)
+        // The list comes back at its top after the empty state, so "Split a bill" is spelled out again with it
+        .onChange(of: state.isEmpty) { _, isEmpty in
+            if isEmpty { isSplitBillExpanded = true }
+        }
+        .readingVerticalBar($hasVerticalBar)
         .tabTitleDisplayMode()
-        .phoneMinimizesNavigationBar()
         #endif
         .toolbar {
             #if os(iOS)
             TabTitle(title: String(localized: "Contacts", bundle: .appLanguage))
-            #endif
-            #if os(macOS)
+            // "Split a bill" asks the group first, as on Groups (beta feedback of 2026-11-15); the Mac keeps it on
+            // Home and Groups
+            TabTrailingItems(
+                showsSplitBill: state.showsSplitBillButton,
+                showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
+                onSplitBill: { model.send(ContactsUiEventOnSplitBillClicked.shared) },
+            ) {
+                profileButton
+            }
+            #else
             ToolbarItem(placement: .primaryAction) {
                 Button("Invite with a link or QR code", systemImage: "qrcode") {
                     model.send(ContactsUiEventOnInviteWithLinkClicked.shared)
                 }
             }
+            ToolbarItem(placement: .primaryAction) { profileButton }
             #endif
-            ToolbarItem(placement: .primaryAction) {
-                ProfileToolbarButton(initial: state.avatarInitial, color: state.avatarColor, photoUrl: state.photoUrl) {
-                    model.send(ContactsUiEventOnProfileClicked.shared)
-                }
-            }
-            .prefersVerticalBar()
         }
         .glassToast([
             GlassToastMessage(text: "Couldn't save the change. Try again.", trigger: model.changeErrorCount),
         ])
+    }
+
+    private var profileButton: some View {
+        ProfileToolbarButton(
+            initial: model.state.avatarInitial,
+            color: model.state.avatarColor,
+            photoUrl: model.state.photoUrl,
+        ) {
+            model.send(ContactsUiEventOnProfileClicked.shared)
+        }
     }
 
     #if os(macOS)

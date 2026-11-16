@@ -25,6 +25,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,8 +40,9 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsSummary
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 
 /*
- * Why: "Saldo geral", the sum of your net in each group, one line per currency. "A receber" and "A pagar" will open
- * the global Saldos already filtered (flow 8), and stay disabled while there is nothing in them.
+ * Why: "Saldo geral", the sum of your net in each group, one line per currency. A tap on the card opens the global
+ * Saldos (beta feedback of 2026-11-15); "A receber" and "A pagar" keep their own targets, Saldos already filtered
+ * (flow 8), and stay disabled while there is nothing in them.
  */
 @Composable
 internal fun GroupsSummaryCard(
@@ -52,8 +54,17 @@ internal fun GroupsSummaryCard(
 ) {
     val formatters = rememberMoneyFormatters(summary.totals.map { it.currency })
     val signed = { currency: GroupCurrency, minor: Long -> formatters.getValue(currency).toSignedText(minor) }
+    val seeBalances = stringResource(R.string.groups_home_see_balances)
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        onClick = { onEvent(GroupsUiEvent.OnOverallBalanceClicked) },
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics {
+                onClick(
+                    label = seeBalances,
+                    action = null,
+                )
+            },
         shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,

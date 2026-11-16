@@ -117,7 +117,7 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     splits on the fold with nothing in its band (Groups' and Contacts' lists end at it, Balances, the group over the whole tab with its header and
     "Your balance in this group" before it and the tabs after it, Statistics with
     the total and categories before it and By person after it), and a form sheet opens in the leading half
-    (`foldSheetPlacement()`). Open upright, as a notebook, Invite people (QR and link on top), Invite (the group on top),
+    (`foldSheetPlacement()`). Open upright, as a notebook, Add people (QR and link on top), Invite (the group on top),
     the group (the header and "Your balance" on top, the tabs and what they hold below, on every tab), Record payment (who and how much on top, how and when below), Statistics (the total and Over time on top),
     Split a bill (description and amount on top) and Split (the summary and modes on top, the people below) split on
     the fold (`FoldHalves`); everything else is an iPad's upright. Pix and Bitcoin keys stay a sheet in the leading

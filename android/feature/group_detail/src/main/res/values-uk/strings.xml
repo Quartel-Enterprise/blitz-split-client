@@ -2,7 +2,7 @@
 <resources>
     <string name="group_detail_back">Назад</string>
     <string name="group_detail_stats">Статистика</string>
-    <string name="group_detail_invite">Запросити людей</string>
+    <string name="group_detail_invite">Додати людей</string>
     <string name="group_detail_more">Інші параметри групи</string>
     <string name="group_detail_pin">Закріпити на головній</string>
     <string name="group_detail_unpin">Відкріпити з головної</string>

@@ -114,11 +114,12 @@ struct HomeView: View {
     @State private var division: FoldDivision?
     /// An iPhone Duo's vertical bar (iOS 27.1), which takes "Split a bill" under the profile.
     @State private var hasVerticalBar = false
-
     #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
-    #else
+    /// "Split a bill" spelled out in the bar while the list is at its top (`splitBillExpandsAtTop`).
+    @State private var isSplitBillExpanded = true
+    #endif
+
+    #if os(macOS)
     @Environment(\.frontRoute) private var frontRoute
     #endif
 
@@ -175,6 +176,10 @@ struct HomeView: View {
         .navigationTitle(HomeCopy.tabTitle)
         #if os(iOS)
         .tabTitleDisplayMode()
+        // The list comes back at its top after the first use's card, so "Split a bill" is spelled out again with it
+        .onChange(of: state.showsHome) { _, showsHome in
+            if !showsHome { isSplitBillExpanded = true }
+        }
         .toolbar {
             TabTitle(title: HomeCopy.tabTitle)
             // The sync status takes the bar's empty leading side, so it comes and goes without moving the content
@@ -187,7 +192,7 @@ struct HomeView: View {
             }
             TabTrailingItems(
                 showsSplitBill: state.showsSplitBillButton,
-                showsSplitBillTitle: !hasVerticalBar && !isUprightIPhone,
+                showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
                 onSplitBill: { model.send(HomeUiEventOnSplitBillClicked.shared) },
             ) {
                 bellButton
@@ -235,9 +240,15 @@ struct HomeView: View {
                         .padding(.top, 4)
                         .padding(.bottom, 24)
                 }
+                .splitBillExpandsAtTop($isSplitBillExpanded)
             }
         }
         .refreshable { await model.refresh() }
+        // The quarters of an iPhone Duo upright have no one list to fold it on: spelled out there, and again at the
+        // top of the column it gives way to
+        .onChange(of: acrossFold != nil) { _, isAcross in
+            if isAcross { isSplitBillExpanded = true }
+        }
         #else
         ScrollView {
             if layout.size.width >= Self.macWideWidth {
@@ -283,11 +294,6 @@ struct HomeView: View {
         return division.frame
     }
 
-    /// An iPhone upright, whose bar has the room for "Split a bill"'s icon alone beside the bell and the profile, as
-    /// Groups draws it.
-    private var isUprightIPhone: Bool {
-        horizontalSizeClass == .compact && verticalSizeClass == .regular
-    }
     #endif
 
     @ViewBuilder

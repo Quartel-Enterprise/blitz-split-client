@@ -1,7 +1,7 @@
 import Shared
 import SwiftUI
 
-/// "Invite people", "Leave group" and "Delete group" of a home's row (5.3, 5.4), the same in the ⋯ menu at its end
+/// "Add people", "Leave group" and "Delete group" of a home's row (5.3, 5.4), the same in the ⋯ menu at its end
 /// and in its long press (the context menu on iOS, the right click on the Mac). Offline, Leave and Delete say they
 /// need the internet; online, what blocks them shows before the tap, which still opens the dialog listing what is
 /// open. The Mac's items that open a dialog end in "…".
@@ -15,7 +15,7 @@ struct GroupRowActions: View {
             send(GroupsUiEventOnInviteClicked(groupId: group.id))
         } label: {
             Label {
-                Text("Invite people")
+                Text("Add people")
                 Text("Group link or QR code")
             } icon: {
                 Image(systemName: "person.badge.plus")

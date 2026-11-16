@@ -77,7 +77,7 @@
     </plurals>
     <string name="groups_row_more">Más acciones: %s</string>
     <string name="groups_actions_title">Acciones para %s</string>
-    <string name="groups_action_invite">Invitar personas</string>
+    <string name="groups_action_invite">Agregar personas</string>
     <string name="groups_action_invite_hint">Enlace o código QR del grupo</string>
     <string name="groups_action_leave">Salir del grupo</string>
     <string name="groups_action_leave_hint">Primero salda %s</string>

@@ -2,7 +2,7 @@
 <resources>
     <string name="group_detail_back">Kembali</string>
     <string name="group_detail_stats">Statistik</string>
-    <string name="group_detail_invite">Undang orang</string>
+    <string name="group_detail_invite">Tambah orang</string>
     <string name="group_detail_more">Opsi grup lainnya</string>
     <string name="group_detail_pin">Sematkan ke Beranda</string>
     <string name="group_detail_unpin">Lepas dari Beranda</string>

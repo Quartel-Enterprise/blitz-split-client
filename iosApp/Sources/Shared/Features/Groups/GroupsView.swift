@@ -65,7 +65,12 @@ final class GroupsModel {
 
 struct GroupsView: View {
     let model: GroupsModel
-    #if os(macOS)
+    #if os(iOS)
+    /// "Split a bill" spelled out in the bar while the list is at its top (`splitBillExpandsAtTop`).
+    @State private var isSplitBillExpanded = true
+    /// An iPhone Duo's vertical bar (iOS 27.1), which takes "Split a bill" as its icon alone.
+    @State private var hasVerticalBar = false
+    #else
     @Environment(\.isNarrowWindow) private var isNarrowWindow
     @Environment(\.frontRoute) private var frontRoute
     #endif
@@ -81,7 +86,7 @@ struct GroupsView: View {
             #endif
             if showsList {
                 #if os(iOS)
-                GroupsList(model: model)
+                GroupsList(model: model, isSplitBillExpanded: $isSplitBillExpanded)
                 #else
                 GroupsTable(model: model)
                 #endif
@@ -124,12 +129,17 @@ struct GroupsView: View {
         )
         .navigationTitle("Groups")
         #if os(iOS)
+        // The list comes back at its top after the empty state, so "Split a bill" is spelled out again with it
+        .onChange(of: state.groups.isEmpty) { _, isEmpty in
+            if isEmpty { isSplitBillExpanded = true }
+        }
+        .readingVerticalBar($hasVerticalBar)
         .tabTitleDisplayMode()
         .toolbar {
             TabTitle(title: String(localized: "Groups", bundle: .appLanguage))
             TabTrailingItems(
                 showsSplitBill: state.showsSplitBillButton,
-                showsSplitBillTitle: false,
+                showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
                 onSplitBill: { model.send(GroupsUiEventOnSplitBillClicked.shared) },
             ) {
                 joinButton

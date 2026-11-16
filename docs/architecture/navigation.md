@@ -164,7 +164,7 @@ group's tabs and Membros' Compartilhar alike; the profile goes over the bill, si
 "Todas as despesas" open a bill right over themselves, and another bill tapped there takes its place the same way
 (`Navigator.openBillFrom`). On the Mac, a group's
 Convidar over the group is `AppModel.invitePopover` instead: the root hands it down (`\.invitePopover`) and the
-group's "Convidar pessoas" draws it (`.invitePopover(host:)`), Membros' Compartilhar while that tab is picked; closing
+group's "Adicionar pessoas" draws it (`.invitePopover(host:)`), Membros' Compartilhar while that tab is picked; closing
 it pops it the same way.
 
 #### The Mac's Ajustes: two windows, one back stack

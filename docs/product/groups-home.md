@@ -13,8 +13,12 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     currency with the most groups first (`GroupsSummary`, built by `summaryOf(PeopleBalances)`); a row shows one amount,
     in the group's default currency or the first one with something open for this person; "To get back" and "To pay" are the
     same totals, as the global Balances sums them, are disabled at zero and open Balances (flow 8) on Owed to you and You owe; "To pay" goes straight to
-    settling up when only one person is in You owe. "Split a bill"
-    (Android's FAB, iOS's +, the main button on the web and the Mac, ⌘N there, with ⇧⌘N for the toolbar's "New
+    settling up when only one person is in You owe. A tap anywhere else on the card opens Balances on All, as its tab
+    does (`GroupsUiEvent.OnOverallBalanceClicked`, on every platform since the beta feedback of 2026-11-15). On iOS the
+    "Open" section's button to create a group reads "+ Group" (VoiceOver says "New group") and never wraps, at any text
+    size (beta feedback of 2026-11-15). "Split a bill"
+    (Android's FAB, iOS's top bar item, spelled out at the list's top and its icon alone once it scrolls down, see
+    [Home](home-tab.md), the main button on the web and the Mac, ⌘N there, with ⇧⌘N for the toolbar's "New
     group") opens New group while there's no group, and
     otherwise Split a bill asking which group first (7.1i). The sync status shows only when it asks for attention,
     "Syncing…" only during the account's first full sync (later syncs run silently, see
@@ -33,9 +37,9 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     and "Open on the phone", which says "Open your phone to continue", since no app can open the phone; no list,
     search, form nor the recovery code's prompt.
   - The home's group actions (5.3, 5.4): every row of Groups and Settled up ends in a ⋮ (⋯ on iOS, macOS and the web)
-    with "Invite people", "Leave group" and "Delete group", the same as its long press (a bottom sheet with the
+    with "Add people", "Leave group" and "Delete group", the same as its long press (a bottom sheet with the
     group and your balance on Android, the context menu on iOS) and its right click (the Mac's and the web's table);
-    the web's menu starts with "Open group". Invite people opens that group's `Route.Invite`, not as a new group. Leave and Delete open the group's own dialogs, rules and errors (`GroupExitController`), and stay on the home: "Settle up"
+    the web's menu starts with "Open group". Add people opens that group's `Route.Invite`, not as a new group. Leave and Delete open the group's own dialogs, rules and errors (`GroupExitController`), and stay on the home: "Settle up"
     opens Record payment and "See balances" the group's Balances over it. Once that Record payment closes, the
     home shows "Ana's payment recorded." with "Undo", as the group's screens do, and consumes it, so the
     group never shows it later (`GroupsUiState.recordedPayment`). Offline both show disabled with "Needs internet" (Android's sheet adds "Leaving and deleting need the internet…"); online, "Settle the R$ 98 first" (what
@@ -116,7 +120,7 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
   - The home's list and detail (5.1): an Android tablet lying down, an unfolded book (the tabletop alike) and an iPad
     lying down draw the list (with the rail on Android) and, beside it, the group tapped, its Expenses, Balances and
     Members switching in place there, its row or card highlighted (`GroupsUiState.selectedGroupId`). A group
-    tapped beside another takes its place; Invite people, Leave, Delete and "See balances" work from the list with the group
+    tapped beside another takes its place; Add people, Leave, Delete and "See balances" work from the list with the group
     beside it, and a group left or deleted from its row closes the pane. Before a group is picked, or once back
     closed it, the pane holds the canvas' shapes, with no words (no group opens by itself). With no group at all
     (1.3), a tablet lying down and an iPad draw the empty home in one pane, the detail only once the first group
@@ -124,7 +128,7 @@ The groups list, its actions, list or grid, search, and list and detail layouts.
     (`GroupsUiState.showsEmptyState`). Only the group's tabs go in the pane, and the Statistics they open on a
     tablet lying down and an iPad lying down (decision 2: with its back arrow, the list still tappable beside it; a
     book and an iPhone Duo open draw it across the fold): anything else above the groups (the profile, a joined
-    invite, Invite people on an Android tablet and an iPad) covers the whole window,
+    invite, Add people on an Android tablet and an iPad) covers the whole window,
     and a dialog or sheet (Split a bill, Bill) both panes, so the list never shows while it can't take taps. In the pane the group has no back arrow and, on Android, no "Split a bill": the rail's opens it with that
     group marked. A phone, a phone lying down, anything upright, the Mac and the web keep the group over the list;
     turning the device upright leaves the group open, drawn over it.

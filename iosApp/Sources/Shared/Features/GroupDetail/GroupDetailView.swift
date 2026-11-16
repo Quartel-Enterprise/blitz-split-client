@@ -527,7 +527,7 @@ private struct EmptyExpenses: View {
                 PrimaryButton(title: "Split a bill") {
                     send(GroupDetailUiEventOnSplitBillClicked.shared)
                 }
-                TintedButton(title: "Invite people") {
+                TintedButton(title: "Add people") {
                     send(GroupDetailUiEventOnInviteClicked.shared)
                 }
             }

@@ -71,7 +71,7 @@
     </plurals>
     <string name="groups_row_more">More actions: %s</string>
     <string name="groups_actions_title">Actions for %s</string>
-    <string name="groups_action_invite">Invite people</string>
+    <string name="groups_action_invite">Add people</string>
     <string name="groups_action_invite_hint">Group link or QR code</string>
     <string name="groups_action_leave">Leave group</string>
     <string name="groups_action_leave_hint">Settle the %s first</string>

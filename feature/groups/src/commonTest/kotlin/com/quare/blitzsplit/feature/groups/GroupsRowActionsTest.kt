@@ -76,7 +76,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-// Why: flows 5.3 and 5.4, "Convidar pessoas", "Sair do grupo" and "Apagar grupo" from a row of the home.
+// Why: flows 5.3 and 5.4, "Adicionar pessoas", "Sair do grupo" and "Apagar grupo" from a row of the home.
 class GroupsRowActionsTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -101,7 +101,7 @@ class GroupsRowActionsTest {
     }
 
     @Test
-    fun `GIVEN a group WHEN tapping Convidar pessoas on its row THEN opens its invite as an old group`() =
+    fun `GIVEN a group WHEN tapping Adicionar pessoas on its row THEN opens its invite as an old group`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -114,7 +114,7 @@ class GroupsRowActionsTest {
         }
 
     @Test
-    fun `GIVEN another screen over the home WHEN tapping Convidar pessoas THEN opens nothing`() =
+    fun `GIVEN another screen over the home WHEN tapping Adicionar pessoas THEN opens nothing`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -538,7 +538,7 @@ class GroupsRowActionsTest {
     }
 
     @Test
-    fun `GIVEN a group WHEN tapping Convidar pessoas on its row THEN tracks invite_clicked with only the source`() =
+    fun `GIVEN a group WHEN tapping Adicionar pessoas on its row THEN tracks invite_clicked with only the source`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()

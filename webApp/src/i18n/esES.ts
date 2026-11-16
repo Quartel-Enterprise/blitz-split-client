@@ -23,6 +23,7 @@ export const esES: Partial<Record<MessageKey, string>> = {
   members_personalMessageBillOne: 'Quien abra este enlace entra directamente como {name}, sin elegir de la lista, y ya ve su parte de {amount} en el gasto añadido hasta ahora. Funciona una sola vez.',
   members_personalMessageBillOther: 'Quien abra este enlace entra directamente como {name}, sin elegir de la lista, y ya ve su parte de {amount} en los {count} gastos añadidos hasta ahora. Funciona una sola vez.',
   groupDetail_joinedMessage: 'Todo lo que se añada para ti aparece aquí.',
+  groupDetail_invitePeople: 'Añadir personas',
   groupDetail_emptyBody: 'Añade el primer gasto o invita a quienes dividen contigo. Las personas sin la app también cuentan.',
   billDetail_addPhoto: 'Añadir foto',
   billDetail_takePhoto: 'Hacer foto',

@@ -40,7 +40,7 @@ private val cardPadding = Modifier.padding(
     top = 16.dp,
 )
 
-// Why: "Nenhuma despesa ainda", with "Rachar conta" and "Convidar pessoas" in it.
+// Why: "Nenhuma despesa ainda", with "Rachar conta" and "Adicionar pessoas" in it.
 @Composable
 internal fun EmptyExpensesCard(onAction: (GroupAction) -> Unit) {
     GroupStateCard(

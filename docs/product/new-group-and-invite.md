@@ -39,7 +39,7 @@ Creating a group and inviting people.
     title and buttons below. "Change the link?" takes a book's right half and a tabletop's top half. iOS opens it as a
     sheet on an iPhone (two columns lying down) and pushes it full screen with an iPad's room (two columns lying
     down, the QR card first upright); the Mac opens the new group's in a sheet and the group's as a popover on the
-    group's "Invite people" (or Members' Share), with "Change link…" under its share button. The Mac's popover is
+    group's "Add people" (or Members' Share), with "Change link…" under its share button. The Mac's popover is
     the exception to the order below: it keeps "Add someone without the app" as a link at its end and has no "See who
     joined", since it opens over the group already. The buttons, on every other Invite (beta bugs of 2026-11-10): the share button first ("Share link" on Android, "Share invite" on iOS, "Share…"
     on the Mac and the web), then "Add someone without the app" as the second, outlined

@@ -53316,7 +53316,7 @@
       }
     },
     "Group link or QR code" : {
-      "comment" : "Under Invite people in a home row's actions",
+      "comment" : "Under Add people in a home row's actions",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -84567,79 +84567,85 @@
         }
       }
     },
-    "Invite people" : {
+    "Add people" : {
       "comment" : "Opens the group's invite",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Personen einladen"
+            "value" : "Personen hinzufügen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Invitar personas"
+            "value" : "Agregar personas"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir personas"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inviter des personnes"
+            "value" : "Ajouter des personnes"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Undang orang"
+            "value" : "Tambah orang"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Invita persone"
+            "value" : "Aggiungi persone"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "メンバーを招待"
+            "value" : "メンバーを追加"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mensen uitnodigen"
+            "value" : "Mensen toevoegen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaproś osoby"
+            "value" : "Dodaj osoby"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Convidar pessoas"
+            "value" : "Adicionar pessoas"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Пригласить людей"
+            "value" : "Добавить людей"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kişi davet et"
+            "value" : "Kişi ekle"
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Запросити людей"
+            "value" : "Додати людей"
           }
         }
       }

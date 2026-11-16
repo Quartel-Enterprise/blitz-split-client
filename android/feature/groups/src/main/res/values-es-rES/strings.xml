@@ -5,4 +5,5 @@
     <string name="groups_cover_latest_by_me">Añadiste %1$s, %2$s, en %3$s</string>
     <string name="groups_home_notifications_body">Recibe una notificación cuando alguien añada un gasto contigo o marque un pago a tu favor.</string>
     <string name="groups_home_notifications_off_body">Actívalas en los ajustes de Android para enterarte cuando alguien añada un gasto contigo.</string>
+    <string name="groups_action_invite">Añadir personas</string>
 </resources>

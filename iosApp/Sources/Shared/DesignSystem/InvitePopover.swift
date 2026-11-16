@@ -1,7 +1,7 @@
 import Shared
 import SwiftUI
 
-/// The invite a group's tab opened on the Mac (F2Mac): `host` is the tab under it, whose "Invite people" anchors the
+/// The invite a group's tab opened on the Mac (F2Mac): `host` is the tab under it, whose "Add people" anchors the
 /// popover, and `route` the invite it shows.
 struct InvitePopover: Equatable {
     let host: AppRoute

@@ -160,10 +160,10 @@ sealed interface GroupDetailUiEvent : UiEvent {
     // Why: the group's avatar in its header, which opens the photo big (Route.GroupPhoto).
     data object OnPhotoClicked : GroupDetailUiEvent
 
-    // Why: "Convidar pessoas", the top bar's and the empty state's.
+    // Why: "Adicionar pessoas", the top bar's (the ⋯ menu's on iPhone and iPad) and the empty state's.
     data object OnInviteClicked : GroupDetailUiEvent
 
-    // Why: "Estatísticas" in the top bar, next to "Convidar pessoas".
+    // Why: "Estatísticas" in the top bar.
     data object OnStatsClicked : GroupDetailUiEvent
 
     // Why: a currency chip of the header and Saldos, drawn while the group has money in more than one.

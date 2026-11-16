@@ -2,7 +2,7 @@
 <resources>
     <string name="group_detail_back">Geri</string>
     <string name="group_detail_stats">İstatistikler</string>
-    <string name="group_detail_invite">Kişileri davet et</string>
+    <string name="group_detail_invite">Kişi ekle</string>
     <string name="group_detail_more">Diğer grup seçenekleri</string>
     <string name="group_detail_pin">Ana Sayfa\'ya sabitle</string>
     <string name="group_detail_unpin">Ana Sayfa\'dan kaldır</string>

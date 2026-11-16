@@ -2,7 +2,7 @@
 <resources>
     <string name="group_detail_back">Wstecz</string>
     <string name="group_detail_stats">Statystyki</string>
-    <string name="group_detail_invite">Zaproś osoby</string>
+    <string name="group_detail_invite">Dodaj osoby</string>
     <string name="group_detail_more">Więcej opcji grupy</string>
     <string name="group_detail_pin">Przypnij do Startu</string>
     <string name="group_detail_unpin">Odepnij od Startu</string>

@@ -373,25 +373,24 @@ class GroupsViewModelTest {
         }
 
     @Test
-    fun `GIVEN a group open over the groups WHEN tapping the Overall balance card THEN closes it and opens Balances`() =
+    fun `GIVEN a group open over the groups WHEN a late tap on the Overall balance card THEN stays on the group`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(storedGroups = listOf(trio()))
-            navigator.navigate(
-                Route.GroupDetail(
-                    "trio",
-                    joinedAs = null,
-                    tab = GroupTab.EXPENSES,
-                    isOverBill = false,
-                ),
+            val group = Route.GroupDetail(
+                "trio",
+                joinedAs = null,
+                tab = GroupTab.EXPENSES,
+                isOverBill = false,
             )
+            navigator.navigate(group)
 
             // When
             viewModel.onEvent(GroupsUiEvent.OnOverallBalanceClicked)
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.GlobalBalances(BalancesFilter.ALL)),
+                listOf(Route.Home, Route.Groups, group),
                 navigator.backStack.value,
             )
         }

@@ -47,8 +47,9 @@ final class GlobalBalancesModel {
 /// then whom you owe and who owes you. On iPhone, on iPad upright and in a narrow Mac window "By group" opens in the
 /// row; on iPad lying down and in a wide Mac window the person picked fills a column beside the list (the Mac's
 /// inspector), with their groups and actions. An iPhone lying down (8.1) keeps the overall balance and the filter
-/// still in a 300 pt column on the left, the people scrolling on the right. No "Split a bill": the actions are on each
-/// person.
+/// still in a 300 pt column on the left, the people scrolling on the right. "Split a bill" is the top bar's tinted glass
+/// item on an iPhone and an iPad, asking the group first, as on Groups (beta feedback of 2026-11-15); the Mac keeps it
+/// on Home and Groups.
 struct GlobalBalancesView: View {
     let route: RouteGlobalBalances
 
@@ -58,6 +59,21 @@ struct GlobalBalancesView: View {
     @State private var layout = ScreenLayout()
     /// The iPhone Duo's fold, which the list ends at and the person picked starts after (iOS 27.1).
     @State private var division: FoldDivision?
+    #if os(iOS)
+    /// "Split a bill" spelled out in the bar while the list is at its top (`splitBillExpandsAtTop`).
+    @State private var isSplitBillExpanded = true
+    /// An iPhone Duo's vertical bar (iOS 27.1), which takes "Split a bill" as its icon alone.
+    @State private var hasVerticalBar = false
+    #endif
+
+    /// The list's hold on "Split a bill"'s words, which only the iPhone's and the iPad's bar spell out.
+    private var splitBillExpansion: Binding<Bool> {
+        #if os(iOS)
+        $isSplitBillExpanded
+        #else
+        .constant(true)
+        #endif
+    }
 
     /// The fold down the window, which the list ends at.
     private var fold: CGRect? {
@@ -95,8 +111,13 @@ struct GlobalBalancesView: View {
                             .padding(.trailing, BalancesSideColumn.spacing)
                     }
                     #endif
-                    GlobalBalancesList(model: model, showsDetail: showsDetail, showsSummary: !usesSideColumn)
-                        .frame(width: showsDetail ? fold?.minX : nil)
+                    GlobalBalancesList(
+                        model: model,
+                        showsDetail: showsDetail,
+                        showsSummary: !usesSideColumn,
+                        isSplitBillExpanded: splitBillExpansion,
+                    )
+                    .frame(width: showsDetail ? fold?.minX : nil)
                     if showsDetail {
                         // An iPhone Duo open: the people before the fold, the person picked after it
                         ListDetailSeparator(fold: fold)
@@ -119,32 +140,33 @@ struct GlobalBalancesView: View {
         .readingFoldDivision($division)
         .navigationTitle("Balances")
         #if os(iOS)
+        // The list comes back at its top after the shimmer, so "Split a bill" is spelled out again with it
+        .onChange(of: model?.state.isLoaded == true) { _, isLoaded in
+            if !isLoaded { isSplitBillExpanded = true }
+        }
+        .readingVerticalBar($hasVerticalBar)
         .tabTitleDisplayMode()
-        .phoneMinimizesNavigationBar()
         #else
         .navigationSubtitle(model.map { GlobalBalancesCopy.macSubtitle($0.state) } ?? "")
         #endif
         .toolbar {
             #if os(iOS)
             TabTitle(title: String(localized: "Balances", bundle: .appLanguage))
-            #endif
-            #if os(macOS)
+            TabTrailingItems(
+                showsSplitBill: model?.state.showsSplitBillButton == true,
+                showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
+                onSplitBill: { model?.send(GlobalBalancesUiEventOnSplitBillClicked.shared) },
+            ) {
+                profileButton
+            }
+            #else
             if let model {
                 ToolbarItem(placement: .principal) {
                     FilterPicker(model: model)
                 }
             }
+            ToolbarItem(placement: .primaryAction) { profileButton }
             #endif
-            ToolbarItem(placement: .primaryAction) {
-                ProfileToolbarButton(
-                    initial: model?.state.avatarInitial ?? "",
-                    color: model?.state.avatarColor ?? .blue,
-                    photoUrl: model?.state.photoUrl,
-                ) {
-                    model?.send(GlobalBalancesUiEventOnProfileClicked.shared)
-                }
-            }
-            .prefersVerticalBar()
         }
         .glassToast([
             GlassToastMessage(text: "Coming soon", trigger: model?.comingSoonCount ?? 0),
@@ -158,6 +180,16 @@ struct GlobalBalancesView: View {
         )
         .onAppear {
             if model == nil { model = GlobalBalancesModel(route: route) }
+        }
+    }
+
+    private var profileButton: some View {
+        ProfileToolbarButton(
+            initial: model?.state.avatarInitial ?? "",
+            color: model?.state.avatarColor ?? .blue,
+            photoUrl: model?.state.photoUrl,
+        ) {
+            model?.send(GlobalBalancesUiEventOnProfileClicked.shared)
         }
     }
 }
@@ -259,6 +291,8 @@ private struct GlobalBalancesList: View {
     let showsDetail: Bool
     /// The overall balance and the filter heading the list, unless they stay still beside it (an iPhone lying down).
     let showsSummary: Bool
+    /// "Split a bill" spelled out in the bar while the list is at its top (iPhone and iPad).
+    @Binding var isSplitBillExpanded: Bool
 
     #if os(macOS)
     /// The row the arrow keys moved to in a narrow window, where nothing shows beside the list.
@@ -315,6 +349,7 @@ private struct GlobalBalancesList: View {
         List {
             sections
         }
+        .splitBillExpandsAtTop($isSplitBillExpanded)
     }
     #endif
 

@@ -291,7 +291,7 @@ enum AppRoute: Hashable, Identifiable {
     }
 
     /// A group's screen, whatever tab it shows: the screen that roots the column beside the list, and the one whose
-    /// "Invite people" (Members' Share) anchors the Mac's invite popover.
+    /// "Add people" (Members' Share) anchors the Mac's invite popover.
     var isGroupScreen: Bool {
         if case .groupDetail = self { return true }
         return false

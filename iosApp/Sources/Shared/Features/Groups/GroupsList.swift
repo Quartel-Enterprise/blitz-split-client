@@ -10,6 +10,8 @@ import SwiftUI
 /// 300 pt column on the left, the list scrolling on the right.
 struct GroupsList: View {
     let model: GroupsModel
+    /// "Split a bill" spelled out in the bar while the list is at its top.
+    @Binding var isSplitBillExpanded: Bool
     @Environment(\.showsGroupBesideList) private var showsGroupBesideList
     @Environment(\.groupZoomScope) private var zoomScope
     @State private var layout = ScreenLayout()
@@ -32,6 +34,7 @@ struct GroupsList: View {
                     .frame(width: 300)
             }
             list(showsSummary: !usesSideColumn)
+                .splitBillExpandsAtTop($isSplitBillExpanded)
         }
         .measuringScreenLayout($layout)
     }
@@ -121,11 +124,18 @@ struct GroupsList: View {
                     Spacer()
                     GroupsDisplayMenu(state: state, send: { model.send($0) })
                         .textCase(nil)
-                    Button("New group", systemImage: "plus") {
+                    // "+ Group", on one line at any text size: "New group" wrapped beside the count and the
+                    // display menu (beta feedback of 2026-11-15). VoiceOver still reads "New group".
+                    Button {
                         model.send(GroupsUiEventOnCreateGroupClicked.shared)
+                    } label: {
+                        Label("Group", systemImage: "plus")
+                            .lineLimit(1)
                     }
                     .buttonStyle(.bordered)
+                    .fixedSize()
                     .textCase(nil)
+                    .accessibilityLabel(Text("New group"))
                 }
             }
             let settled = state.settledGroups
@@ -178,8 +188,9 @@ struct GroupsList: View {
     }
 }
 
-/// "Overall balance": the sum of your net in each group, one line per currency. "To get back" and "To pay" will
-/// open the global Balances already filtered, and stay disabled while there is nothing in them. In an iPhone lying
+/// "Overall balance": the sum of your net in each group, one line per currency. A tap on the card opens the global
+/// Balances, as Home's card does (beta feedback of 2026-11-15); "To get back" and "To pay" keep their own targets, the
+/// global Balances already filtered, and stay disabled while there is nothing in them. In an iPhone lying
 /// down's column the buttons go side by side under the amount, as the canvas draws it.
 private struct GroupsSummaryCard: View {
     let summary: GroupsSummary
@@ -208,7 +219,16 @@ private struct GroupsSummaryCard: View {
                 .padding(20)
             }
         }
-        .background(Palette.card, in: .rect(cornerRadius: isStacked ? 26 : 28))
+        // The card is a button behind its content: the two buttons on top keep their taps, disabled or not.
+        .background {
+            Button {
+                send(GroupsUiEventOnOverallBalanceClicked.shared)
+            } label: {
+                RoundedRectangle(cornerRadius: isStacked ? 26 : 28).fill(Palette.card)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text("See balances"))
+        }
     }
 
     private var amount: some View {
@@ -229,6 +249,8 @@ private struct GroupsSummaryCard: View {
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
+        // Its text takes no tap, so a tap on it opens Balances through the card behind
+        .allowsHitTesting(false)
     }
 
     @ViewBuilder

@@ -26,8 +26,10 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     payment's, Send on ⌘Return (Return adds a line to the message, as in a comment) and Close on Esc, which also
     closes it while the request is still being read. It all works offline on the device's data. Android draws "Split a bill" on Balances as on its other three tabs (the FAB on a
     phone upright, the rail's button anywhere wider, `GlobalBalancesUiEvent.OnSplitBillClicked`; the beta's feedback),
-    asking the group first with the most recently used one marked, once there is a group; the Apple apps and the web
-    keep it on Home and Groups. An Android tablet lying down, an unfolded book, an
+    asking the group first with the most recently used one marked, once there is a group. iPhone and iPad draw it too
+    (beta feedback of 2026-11-15), the top bar's tinted glass item after the profile, spelled out while the list is at
+    its top and its icon alone once it scrolls down (see [Home](home-tab.md)), which keeps that bar whole on a scroll
+    rather than minimizing it; the Mac and the web keep it on Home and Groups (Pierre's call). An Android tablet lying down, an unfolded book, an
     iPad lying down, the web's desktop (from 1024 px) and a Mac window wide enough for the inspector list the people
     beside the one picked (`GlobalBalancesUiState.selectedPerson`, the first listed until a row is picked or once the
     filter hides the pick): their groups by name, "Carla owes you R$ 32,90" with the actions, "By group" (a table on
@@ -87,7 +89,7 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     included, once (Balances' person key, `PeopleBalances.keyOf`), A to Z ignoring case and accents, each with their
     net in the first currency they have one ("+R$ 32,90 owes you", "R$ 0 · settled") and "3 groups" or the group's
     name, under the card "You owe / Owed to you / See balances" (Balances' totals). It all works offline on the device's
-    data ("Offline · this device's contacts"). Android draws "Split a bill" here too, as on Balances
+    data ("Offline · this device's contacts"). Android, iPhone and iPad draw "Split a bill" here too, as on Balances
     (`ContactsUiEvent.OnSplitBillClicked`), beside a profile the pane shows as well. Search, the navigation's item (the sidebar's first on the Mac), opens the home's "Search" (5.2) over Contacts (Pierre's call: the people are in its People, each once opening this profile, then once per group opening its Members), and the agenda is searched only in "Invite from contacts". "Hidden" holds whoever
     was hidden ("Hide from Contacts", only while the balance with them is zero, asked first), synced to the user's
     other devices (`hidden_contact`, the server's `hidden_contacts`), with "Show"; someone hidden comes back by

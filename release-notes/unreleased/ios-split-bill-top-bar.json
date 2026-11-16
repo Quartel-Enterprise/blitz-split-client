@@ -1,0 +1,94 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "ios"
+      ],
+      "text": {
+        "en": "\"Split a bill\" is now also at the top of Balances and Contacts, and on the group screen it moved to the top bar instead of floating over the list, with \"Add people\" now in the ⋯ menu. It starts with its name and shrinks to its icon as you scroll.",
+        "pt": "\"Rachar conta\" agora também fica no topo de Saldos e Contatos, e na tela do grupo foi para a barra do topo em vez de flutuar sobre a lista, com \"Adicionar pessoas\" agora no menu ⋯. Ele começa com o nome e encolhe para o ícone conforme você rola.",
+        "pt-PT": "\"Dividir conta\" está agora também no topo de Saldos e Contactos, e no ecrã do grupo passou para a barra de cima em vez de flutuar sobre a lista, com \"Adicionar pessoas\" agora no menu ⋯. Começa com o nome e encolhe para o ícone à medida que fazes scroll.",
+        "es": "\"Dividir gasto\" ahora también está arriba en Saldos y Contactos, y en la pantalla del grupo pasó a la barra superior en vez de flotar sobre la lista, con \"Agregar personas\" ahora en el menú ⋯. Empieza con su nombre y se reduce a su ícono al desplazarte.",
+        "fr": "« Partager une dépense » est désormais aussi en haut de Soldes et Contacts, et sur l’écran du groupe il passe dans la barre du haut au lieu de flotter sur la liste, avec « Ajouter des personnes » désormais dans le menu ⋯. Il commence avec son nom et se réduit à son icône quand tu fais défiler.",
+        "de": "„Ausgabe aufteilen“ steht jetzt auch oben in Salden und Kontakte, und auf dem Gruppenbildschirm ist es in die obere Leiste gewandert, statt über der Liste zu schweben; „Personen hinzufügen“ steht jetzt im ⋯-Menü. Es beginnt mit seinem Namen und schrumpft beim Scrollen auf sein Symbol.",
+        "it": "\"Dividi una spesa\" ora è in alto anche in Saldi e Contatti, e nella schermata del gruppo è passato nella barra in alto invece di galleggiare sopra l'elenco, con \"Aggiungi persone\" ora nel menu ⋯. Parte con il suo nome e si riduce alla sua icona mentre scorri.",
+        "pl": "„Podziel wydatek” jest teraz na górze także w Saldach i Kontaktach, a na ekranie grupy przeniósł się na górny pasek zamiast unosić się nad listą; „Dodaj osoby” jest teraz w menu ⋯. Zaczyna z nazwą i zmniejsza się do ikony, gdy przewijasz.",
+        "nl": "\"Uitgave verdelen\" staat nu ook bovenaan in Saldi en Contacten, en op het groepsscherm staat het in de bovenste balk in plaats van boven de lijst te zweven, met \"Mensen toevoegen\" nu in het ⋯-menu. Het begint met de naam en krimpt tot het pictogram als je scrolt.",
+        "ja": "「支出を割り勘」が残高と連絡先の上部にも表示され、グループ画面ではリストの上に浮かばず上部のバーに移りました。「メンバーを追加」は ⋯ メニューに入りました。最初は名前付きで、スクロールするとアイコンだけになります。",
+        "tr": "\"Harcama böl\" artık Bakiyeler ve Kişiler'de de en üstte; grup ekranında listenin üzerinde süzülmek yerine üst çubuğa taşındı ve \"Kişi ekle\" artık ⋯ menüsünde. Adıyla başlıyor ve kaydırdıkça simgesine küçülüyor.",
+        "id": "\"Bagi tagihan\" kini juga ada di atas Saldo dan Kontak, dan di layar grup pindah ke bilah atas alih-alih melayang di atas daftar, dengan \"Tambah orang\" kini di menu ⋯. Tombolnya mulai dengan nama dan mengecil jadi ikon saat kamu menggulir.",
+        "ru": "«Разделить счёт» теперь есть и вверху «Балансов» и «Контактов», а на экране группы кнопка переехала в верхнюю панель и больше не парит над списком; «Добавить людей» теперь в меню ⋯. Сначала кнопка с названием, а при прокрутке сжимается до значка.",
+        "uk": "«Розділити рахунок» тепер є й угорі «Балансів» і «Контактів», а на екрані групи кнопка переїхала у верхню панель і більше не висить над списком; «Додати людей» тепер у меню ⋯. Спочатку кнопка з назвою, а під час прокручування стискається до значка."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "android",
+        "ios"
+      ],
+      "text": {
+        "en": "In Groups, tapping the Overall balance card opens Balances.",
+        "pt": "Em Grupos, tocar no card de Saldo geral abre Saldos.",
+        "pt-PT": "Em Grupos, tocar no cartão de Saldo geral abre Saldos.",
+        "es": "En Grupos, tocar la tarjeta de Saldo general abre Saldos.",
+        "fr": "Dans Groupes, toucher la carte Solde global ouvre Soldes.",
+        "de": "In Gruppen öffnet ein Tippen auf die Karte Gesamtsaldo die Salden.",
+        "it": "In Gruppi, toccare la scheda Saldo complessivo apre Saldi.",
+        "pl": "W Grupach dotknięcie karty Saldo ogólne otwiera Salda.",
+        "nl": "In Groepen opent een tik op de kaart Totaalsaldo de Saldi.",
+        "ja": "グループで「全体の残高」カードをタップすると、残高が開くようになりました。",
+        "tr": "Gruplar'da Genel bakiye kartına dokunmak Bakiyeler'i açıyor.",
+        "id": "Di Grup, mengetuk kartu Saldo keseluruhan kini membuka Saldo.",
+        "ru": "В «Группах» нажатие на карточку «Общий баланс» открывает «Балансы».",
+        "uk": "У «Групах» натискання на картку «Загальний баланс» відкриває «Баланси»."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "\"Invite people\" in a group is now called \"Add people\".",
+        "pt": "\"Convidar pessoas\" no grupo agora se chama \"Adicionar pessoas\".",
+        "pt-PT": "\"Convidar pessoas\" no grupo chama-se agora \"Adicionar pessoas\".",
+        "es": "\"Invitar personas\" en un grupo ahora se llama \"Agregar personas\".",
+        "fr": "« Inviter des personnes » dans un groupe s’appelle désormais « Ajouter des personnes ».",
+        "de": "„Personen einladen“ in einer Gruppe heißt jetzt „Personen hinzufügen“.",
+        "it": "\"Invita persone\" in un gruppo ora si chiama \"Aggiungi persone\".",
+        "pl": "„Zaproś osoby” w grupie nazywa się teraz „Dodaj osoby”.",
+        "nl": "\"Mensen uitnodigen\" in een groep heet nu \"Mensen toevoegen\".",
+        "ja": "グループの「メンバーを招待」は「メンバーを追加」という名前になりました。",
+        "tr": "Bir gruptaki \"Kişi davet et\" artık \"Kişi ekle\" adını taşıyor.",
+        "id": "\"Undang orang\" di grup kini bernama \"Tambah orang\".",
+        "ru": "«Пригласить людей» в группе теперь называется «Добавить людей».",
+        "uk": "«Запросити людей» у групі тепер називається «Додати людей»."
+      }
+    },
+    {
+      "kind": "fixed",
+      "platforms": [
+        "ios"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "In Groups, the button to create a group now reads \"+ Group\" and no longer breaks onto two lines.",
+        "pt": "Em Grupos, o botão de criar grupo agora diz \"+ Grupo\" e não quebra mais em duas linhas.",
+        "pt-PT": "Em Grupos, o botão para criar um grupo diz agora \"+ Grupo\" e já não se divide em duas linhas.",
+        "es": "En Grupos, el botón para crear un grupo ahora dice \"+ Grupo\" y ya no se parte en dos líneas.",
+        "fr": "Dans Groupes, le bouton pour créer un groupe affiche désormais « + Groupe » et ne passe plus sur deux lignes.",
+        "de": "In Gruppen heißt die Schaltfläche zum Erstellen einer Gruppe jetzt „+ Gruppe“ und bricht nicht mehr in zwei Zeilen um.",
+        "it": "In Gruppi, il pulsante per creare un gruppo ora dice \"+ Gruppo\" e non va più a capo su due righe.",
+        "pl": "W Grupach przycisk tworzenia grupy ma teraz napis „+ Grupa” i nie łamie się już na dwie linie.",
+        "nl": "In Groepen heet de knop om een groep te maken nu \"+ Groep\" en loopt hij niet meer over twee regels.",
+        "ja": "グループで、グループを作成するボタンが「+ グループ」になり、2行に折り返さなくなりました。",
+        "tr": "Gruplar'da grup oluşturma düğmesi artık \"+ Grup\" diyor ve iki satıra bölünmüyor.",
+        "id": "Di Grup, tombol untuk membuat grup kini bertuliskan \"+ Grup\" dan tidak lagi terpotong jadi dua baris.",
+        "ru": "В «Группах» кнопка создания группы теперь называется «+ Группа» и больше не переносится на две строки.",
+        "uk": "У «Групах» кнопка створення групи тепер називається «+ Група» і більше не переноситься на два рядки."
+      }
+    }
+  ]
+}

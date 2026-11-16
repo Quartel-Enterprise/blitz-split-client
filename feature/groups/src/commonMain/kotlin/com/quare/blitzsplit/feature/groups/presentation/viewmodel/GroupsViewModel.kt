@@ -403,9 +403,10 @@ class GroupsViewModel(
                 navigator.openHomeTab(Route.Home)
             }
 
-            GroupsUiEvent.OnBalancesTabClicked,
-            GroupsUiEvent.OnOverallBalanceClicked,
-            -> openTab(toBalancesTab(BalancesFilter.ALL))
+            GroupsUiEvent.OnBalancesTabClicked -> openTab(toBalancesTab(BalancesFilter.ALL))
+
+            // Why: as "A receber", only from the groups on top: a late tap never closes a group that just opened.
+            GroupsUiEvent.OnOverallBalanceClicked -> if (isListShown()) openTab(toBalancesTab(BalancesFilter.ALL))
 
             GroupsUiEvent.OnGroupsTabClicked -> navigator.popToGroups()
 

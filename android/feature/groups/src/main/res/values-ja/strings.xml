@@ -65,7 +65,7 @@
     </plurals>
     <string name="groups_row_more">その他の操作：%s</string>
     <string name="groups_actions_title">%sの操作</string>
-    <string name="groups_action_invite">メンバーを招待</string>
+    <string name="groups_action_invite">メンバーを追加</string>
     <string name="groups_action_invite_hint">グループのリンクまたはQRコード</string>
     <string name="groups_action_leave">グループから退出</string>
     <string name="groups_action_leave_hint">先に%sを精算してください</string>
