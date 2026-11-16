@@ -356,7 +356,7 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN a recovery code WHEN drawing the profile THEN has a code to show`() {
         // Given
-        val profile = state(formattedRecoveryCode = "K7QM-4XPA-9TRE")
+        val profile = state(recoveryWords = RECOVERY_CODE.split(" "))
 
         // When
         val hasCode = profile.hasRecoveryCode
@@ -368,7 +368,7 @@ class ProfileUiStateTest {
     @Test
     fun `GIVEN no recovery code WHEN drawing the profile THEN has no code to show`() {
         // Given
-        val profile = state(formattedRecoveryCode = null)
+        val profile = state(recoveryWords = null)
 
         // When
         val hasCode = profile.hasRecoveryCode
@@ -382,7 +382,7 @@ class ProfileUiStateTest {
         // Given
         val profile = state(
             accountProvider = null,
-            formattedRecoveryCode = "K7QM-4XPA-9TRE",
+            recoveryWords = RECOVERY_CODE.split(" "),
         )
 
         // When
@@ -397,7 +397,7 @@ class ProfileUiStateTest {
         // Given
         val profile = state(
             accountProvider = null,
-            formattedRecoveryCode = null,
+            recoveryWords = null,
         )
 
         // When
@@ -412,7 +412,7 @@ class ProfileUiStateTest {
         // Given
         val profile = state(
             accountProvider = AccountProvider.APPLE,
-            formattedRecoveryCode = "K7QM-4XPA-9TRE",
+            recoveryWords = RECOVERY_CODE.split(" "),
         )
 
         // When
@@ -494,7 +494,7 @@ class ProfileUiStateTest {
         // Given
         val profile = state(
             hasAnonymousId = true,
-            formattedRecoveryCode = "ABCD-EFGH-JKLM",
+            recoveryWords = RECOVERY_CODE.split(" "),
         )
 
         // When
@@ -509,7 +509,7 @@ class ProfileUiStateTest {
         // Given
         val profile = state(
             hasAnonymousId = true,
-            formattedRecoveryCode = null,
+            recoveryWords = null,
         )
 
         // When
@@ -524,7 +524,7 @@ class ProfileUiStateTest {
         // Given
         val profile = state(
             accountProvider = AccountProvider.GOOGLE,
-            formattedRecoveryCode = null,
+            recoveryWords = null,
         )
 
         // When
@@ -594,7 +594,7 @@ class ProfileUiStateTest {
         val profile = state(
             isLoaded = false,
             accountProvider = AccountProvider.GOOGLE,
-            formattedRecoveryCode = "K7QM-4XPA-9TRE",
+            recoveryWords = RECOVERY_CODE.split(" "),
         )
 
         // When
@@ -956,7 +956,7 @@ class ProfileUiStateTest {
         accountProvider: AccountProvider? = null,
         hasAnonymousId: Boolean = false,
         isConnectExpanded: Boolean = false,
-        formattedRecoveryCode: String? = null,
+        recoveryWords: List<String>? = null,
         language: AppLanguage = AppLanguage.SYSTEM,
         languageQuery: String = "",
     ): ProfileUiState = ProfileUiState(
@@ -968,7 +968,7 @@ class ProfileUiStateTest {
         accountProvider = accountProvider,
         hasAnonymousId = hasAnonymousId,
         email = null,
-        formattedRecoveryCode = formattedRecoveryCode,
+        recoveryWords = recoveryWords,
         showsRecoveryCodePrompt = false,
         isOnline = isOnline,
         syncStatus = syncStatus,
@@ -997,4 +997,8 @@ class ProfileUiStateTest {
         hasSignOutFailed = false,
         appInvite = null,
     )
+
+    private companion object {
+        private const val RECOVERY_CODE = "legal winner thank year wave sausage worth useful legal winner thank yellow"
+    }
 }

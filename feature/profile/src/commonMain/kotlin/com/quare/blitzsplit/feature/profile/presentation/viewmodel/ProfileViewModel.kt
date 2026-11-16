@@ -58,7 +58,7 @@ import com.quare.blitzsplit.core.sync.domain.usecase.ObserveSyncState
 import com.quare.blitzsplit.core.sync.domain.usecase.RetrySync
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOut
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
-import com.quare.blitzsplit.core.utils.RecoveryCodeFormat
+import com.quare.blitzsplit.core.utils.RecoveryWords
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toItemOrNull
 import com.quare.blitzsplit.feature.profile.presentation.mapper.toProfileAppInvite
 import com.quare.blitzsplit.feature.profile.presentation.model.PROFILE_SOURCE
@@ -388,7 +388,7 @@ class ProfileViewModel(
                 email = email,
                 // Why: the email's info explains a row that is gone once the account no longer shows an email.
                 dialog = it.dialog.takeUnless { dialog -> dialog == ProfileDialog.EMAIL_INFO && email == null },
-                formattedRecoveryCode = account.recoveryCode?.let(RecoveryCodeFormat::format),
+                recoveryWords = account.recoveryCode?.let(RecoveryWords::wordsOf),
                 showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
                 isSignOutScheduled = account.signOutWhenSynced,
             )
@@ -457,9 +457,9 @@ class ProfileViewModel(
     }
 
     private fun copyCode() {
-        val code = uiState.value.formattedRecoveryCode ?: return
+        val words = uiState.value.recoveryWords ?: return
         trackEvent("erase_code_copy_clicked", emptyMap())
-        emit(ProfileUiAction.CopyToClipboard(code))
+        emit(ProfileUiAction.CopyToClipboard(words.joinToString(" ")))
     }
 
     private fun expandConnect() {

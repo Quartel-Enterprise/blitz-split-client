@@ -1,8 +1,8 @@
 package com.quare.blitzsplit.feature.restore.presentation.mapper
 
 /*
- * Why: the old device's QR holds borarachar://recover?code=..., but a code typed into any QR
- * generator should work too.
+ * Why: a QR holding borarachar://recover?code=word+word+... works, as does one with the bare words typed into any QR
+ * generator. The words are split on any non-letter, so "+" and "%20" need no decoding.
  */
 fun String.toRecoveryCodeFromQr(): String = substringAfter("code=", missingDelimiterValue = this)
     .substringBefore('&')

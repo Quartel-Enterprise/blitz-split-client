@@ -4,6 +4,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
 
   - The recovery code's "Connect Google or Apple instead" expands in place into one button per provider
     (`RecoveryCodeUiState.isConnectExpanded`).
+  - The recovery code is 12 English words of the BIP39 list, in every language (Pierre's call, November 2026: a code of
+    12 letters and digits was easy to copy wrong by hand, and said nothing about which character was wrong). Every
+    platform shows them numbered, row by row (three columns, two in Profile's sign out dialog), with Copy, which copies
+    them joined by spaces, and the web's file lists them one a line. Restoring takes them in 12 numbered fields, one per
+    word: pasting or typing several words into any field fills the fields from it on, a space or the keyboard's next
+    after a whole word moves on, up to three words of the list starting with the field's letters show to tap, and a
+    field no word can come out of is marked at once. Only the first four letters of a word count. The codes from before
+    the words stopped working, as Pierre decided the anonymous accounts of the beta would be deleted anyway.
   - Apple's sign in button comes before Google's on iOS, macOS and in the browser of an Apple device (Mac, iPhone,
     iPad); Google comes first on Android and in any other browser.
   - An account without Google or Apple is deleted once none of its devices synced for 30 days (Pierre's call,

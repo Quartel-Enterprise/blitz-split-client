@@ -119,7 +119,7 @@
         <item quantity="one">%d wijziging is nog niet geüpload en gaat verloren.</item>
         <item quantity="other">%d wijzigingen zijn nog niet geüpload en gaan verloren.</item>
     </plurals>
-    <string name="profile_copy_code">Code kopiëren</string>
+    <string name="profile_copy_code">Woorden kopiëren</string>
     <string name="profile_export">Mijn gegevens exporteren</string>
     <string name="profile_export_detail">Een JSON-bestand met je profiel en sleutels</string>
     <string name="profile_delete_account">Account en gegevens verwijderen</string>

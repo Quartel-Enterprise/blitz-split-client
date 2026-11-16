@@ -115,7 +115,7 @@
     <plurals name="profile_erase_pending_warning">
         <item quantity="other">%d件の変更がまだアップロードされておらず、失われます。</item>
     </plurals>
-    <string name="profile_copy_code">コードをコピー</string>
+    <string name="profile_copy_code">単語をコピー</string>
     <string name="profile_export">データをエクスポート</string>
     <string name="profile_export_detail">プロフィールとキーを含むJSONファイル</string>
     <string name="profile_delete_account">アカウントとデータを削除</string>

@@ -1,7 +1,8 @@
-import { Copy, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import type { JsProfileState, ProfilePresenter } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { providerLabel } from '@/components/common'
+import { RecoveryWordsBox } from '@/components/RecoveryWordsBox'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -63,7 +64,7 @@ export function ProfileDialogs({ presenter, state }: { presenter: ProfilePresent
  * waits for the box saying it is kept, or that losing it is understood when there is none yet.
  */
 function EraseProfileDialog({ presenter, state, onClose }: { presenter: ProfilePresenter; state: JsProfileState; onClose: () => void }) {
-  const code = state.formattedRecoveryCode
+  const words = state.recoveryWords
   return (
     <ResponsiveDialog
       // An anonymous account signs out like any other and comes back with its code; only without one is it erased
@@ -77,14 +78,7 @@ function EraseProfileDialog({ presenter, state, onClose }: { presenter: ProfileP
               {t(state.pendingChangeCount === 1 ? 'profile_erasePendingOne' : 'profile_erasePendingOther', { count: state.pendingChangeCount })}
             </p>
           )}
-          {code && (
-            <div className="flex items-center justify-between gap-2.5 rounded-lg border border-dashed border-muted-foreground/50 bg-muted py-2.5 pr-2.5 pl-3.5">
-              <span className="font-mono text-xl font-semibold tracking-[0.12em]">{code}</span>
-              <Button variant="outline" size="sm" onClick={() => presenter.copyCode()}>
-                <Copy /> {t('recoveryCode_copy')}
-              </Button>
-            </div>
-          )}
+          {words && <RecoveryWordsBox words={words} columns={2} onCopy={() => presenter.copyCode()} />}
           <label className="flex items-center gap-2.5 text-sm">
             <input
               type="checkbox"

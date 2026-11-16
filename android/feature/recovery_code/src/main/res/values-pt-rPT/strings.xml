@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Guarda o teu código de recuperação</string>
-    <string name="recovery_code_body">Estás a usar sem conta. Este código recupera os teus grupos se trocares ou perderes o dispositivo.</string>
+    <string name="recovery_code_body">Estás a usar sem conta. Estas 12 palavras recuperam os teus grupos se trocares ou perderes o dispositivo. Anota-as pela ordem.</string>
     <string name="recovery_code_save_to_password_manager">Guardar no gestor de palavras-passe</string>
     <string name="recovery_code_connect_instead">Ligar Google ou Apple em vez disso</string>
     <string name="recovery_code_sign_in_failed">Não foi possível ligar agora. Tenta novamente.</string>

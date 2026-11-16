@@ -127,7 +127,7 @@
         <item quantity="many">%d zmian nie zostało jeszcze wysłanych i przepadnie.</item>
         <item quantity="other">%d zmiany nie zostały jeszcze wysłane i przepadną.</item>
     </plurals>
-    <string name="profile_copy_code">Kopiuj kod</string>
+    <string name="profile_copy_code">Kopiuj słowa</string>
     <string name="profile_export">Eksportuj moje dane</string>
     <string name="profile_export_detail">Plik JSON z twoim profilem i kluczami</string>
     <string name="profile_delete_account">Usuń konto i dane</string>

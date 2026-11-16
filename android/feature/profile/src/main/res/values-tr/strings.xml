@@ -119,7 +119,7 @@
         <item quantity="one">%d değişiklik henüz yüklenmedi ve kaybolacak.</item>
         <item quantity="other">%d değişiklik henüz yüklenmedi ve kaybolacak.</item>
     </plurals>
-    <string name="profile_copy_code">Kodu kopyala</string>
+    <string name="profile_copy_code">Kelimeleri kopyala</string>
     <string name="profile_export">Verilerimi dışa aktar</string>
     <string name="profile_export_detail">Profilini ve anahtarlarını içeren bir JSON dosyası</string>
     <string name="profile_delete_account">Hesabı ve verileri sil</string>

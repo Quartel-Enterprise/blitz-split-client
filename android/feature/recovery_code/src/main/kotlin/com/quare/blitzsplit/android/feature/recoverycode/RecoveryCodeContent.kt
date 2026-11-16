@@ -19,14 +19,12 @@ import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,19 +34,21 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.component.AppleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.GoogleSignInButton
+import com.quare.blitzsplit.android.designsystem.component.RecoveryWordsGrid
 import com.quare.blitzsplit.android.designsystem.layout.DeviceLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiEvent
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiState
+
+private val previewWords =
+    "legal winner thank year wave sausage worth useful legal winner thank yellow".split(" ")
 
 /*
  * Why: the body shared by the bottom sheet (phone) and the dialog (tablet). Lying down on a phone
@@ -57,7 +57,7 @@ import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCode
  */
 @Composable
 fun RecoveryCodeContent(
-    formattedCode: String,
+    words: List<String>,
     state: RecoveryCodeUiState,
     layout: DeviceLayout,
     isInHalf: Boolean,
@@ -75,7 +75,7 @@ fun RecoveryCodeContent(
             ) {
                 RecoveryCodeHeader(isCompact = true)
                 RecoveryCodeBox(
-                    formattedCode = formattedCode,
+                    words = words,
                     onEvent = onEvent,
                     isCompact = true,
                 )
@@ -102,7 +102,7 @@ fun RecoveryCodeContent(
         ) {
             RecoveryCodeHeader(isCompact = false)
             RecoveryCodeBox(
-                formattedCode = formattedCode,
+                words = words,
                 onEvent = onEvent,
                 isCompact = false,
             )
@@ -150,12 +150,12 @@ private fun RecoveryCodeHeader(isCompact: Boolean) {
 
 @Composable
 private fun RecoveryCodeBox(
-    formattedCode: String,
+    words: List<String>,
     onEvent: (RecoveryCodeUiEvent) -> Unit,
     isCompact: Boolean,
 ) {
     val outline = MaterialTheme.colorScheme.outline
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .drawBehind {
@@ -168,31 +168,28 @@ private fun RecoveryCodeBox(
                     ),
                 )
             }.padding(
-                start = 18.dp,
-                end = 12.dp,
-                top = 12.dp,
-                bottom = 12.dp,
+                start = 16.dp,
+                end = 8.dp,
+                top = if (isCompact) 12.dp else 16.dp,
+                bottom = 4.dp,
             ),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = formattedCode,
-            modifier = Modifier.weight(1f),
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = if (isCompact) 18.sp else 22.sp,
-            letterSpacing = if (isCompact) 1.sp else 2.sp,
-            maxLines = 1,
+        RecoveryWordsGrid(
+            words = words,
+            isCompact = isCompact,
         )
-        FilledTonalIconButton(
+        TextButton(
             onClick = { onEvent(RecoveryCodeUiEvent.OnCopyClicked) },
-            modifier = Modifier
-                .minimumInteractiveComponentSize()
-                .size(44.dp),
+            modifier = Modifier.align(Alignment.End),
         ) {
             Icon(
                 imageVector = Icons.Outlined.ContentCopy,
-                contentDescription = stringResource(R.string.recovery_code_copy),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+            )
+            Text(
+                text = stringResource(R.string.recovery_code_copy),
+                modifier = Modifier.padding(start = 8.dp),
             )
         }
     }
@@ -353,9 +350,9 @@ private fun RecoveryCodeContentPreview() {
     BlitzSplitTheme {
         Surface(color = MaterialTheme.colorScheme.surfaceContainerLow) {
             RecoveryCodeContent(
-                formattedCode = "K7QM-4XPA-9TRE",
+                words = previewWords,
                 state = RecoveryCodeUiState(
-                    formattedCode = "K7QM-4XPA-9TRE",
+                    recoveryWords = previewWords,
                     isPromptDue = true,
                     isOnline = true,
                     connectingProvider = null,

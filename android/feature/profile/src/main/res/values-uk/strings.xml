@@ -127,7 +127,7 @@
         <item quantity="many">%d змін ще не вивантажено, і їх буде втрачено.</item>
         <item quantity="other">%d зміни ще не вивантажено, і їх буде втрачено.</item>
     </plurals>
-    <string name="profile_copy_code">Копіювати код</string>
+    <string name="profile_copy_code">Копіювати слова</string>
     <string name="profile_export">Експортувати мої дані</string>
     <string name="profile_export_detail">Файл JSON із твоїм профілем і ключами</string>
     <string name="profile_delete_account">Видалити обліковий запис і дані</string>

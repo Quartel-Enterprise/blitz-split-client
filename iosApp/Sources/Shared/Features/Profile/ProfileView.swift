@@ -36,7 +36,7 @@ final class ProfileModel {
     private func handle(_ action: any ProfileUiAction) {
         switch action {
         case let copy as ProfileUiActionCopyToClipboard:
-            RecoveryCodeSaver.copy(copy.formattedCode)
+            RecoveryCodeSaver.copy(copy.code)
             didCopy = true
         case let open as ProfileUiActionOpenUrl:
             ExternalURL.open(open.url)

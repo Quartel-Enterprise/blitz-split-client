@@ -128,7 +128,7 @@
         <item quantity="many">%d изменений ещё не загружено и будут потеряны.</item>
         <item quantity="other">%d изменения ещё не загружено и будут потеряны.</item>
     </plurals>
-    <string name="profile_copy_code">Копировать код</string>
+    <string name="profile_copy_code">Копировать слова</string>
     <string name="profile_export">Экспортировать мои данные</string>
     <string name="profile_export_detail">Файл JSON с твоим профилем и ключами</string>
     <string name="profile_delete_account">Удалить аккаунт и данные</string>

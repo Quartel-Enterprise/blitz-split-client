@@ -123,7 +123,7 @@
         <item quantity="many">%d cambios aún no se han subido y se perderán.</item>
         <item quantity="other">%d cambios aún no se han subido y se perderán.</item>
     </plurals>
-    <string name="profile_copy_code">Copiar código</string>
+    <string name="profile_copy_code">Copiar palabras</string>
     <string name="profile_export">Exportar mis datos</string>
     <string name="profile_export_detail">Un archivo JSON con tu perfil y tus claves</string>
     <string name="profile_delete_account">Eliminar cuenta y datos</string>

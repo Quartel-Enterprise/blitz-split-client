@@ -34,7 +34,7 @@ Conventions for automated tests in this project. Follow these when adding or cha
 | Repository | `core/<name>/src/commonTest/.../data/XRepositoryImplTest.kt` | Private fakes of its local and remote data sources, at the end of the file |
 | Use case with logic | `core/<name>/src/commonTest/.../XUseCaseTest.kt` | The shared fakes |
 | `SyncCoordinator` | `core/sync/src/commonTest/.../SyncCoordinatorTest.kt` | The shared fakes, a `MutableStateFlow` for connectivity, `backgroundScope` as its scope |
-| Pure logic | next to it (`RecoveryCodeFormatTest`, `BackStackNavigatorTest`) | none |
+| Pure logic | next to it (`RecoveryWordsTest`, `BackStackNavigatorTest`) | none |
 
 A ViewModel test asserts what the person would see or where they end up: `viewModel.uiState.value`, the collected
 `UiAction`s, `navigator.backStack.value`, and the calls recorded by the fakes (`account.restoredCodes`,

@@ -46,6 +46,8 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
+private const val RECOVERY_CODE = "legal winner thank year wave sausage worth useful legal winner thank yellow"
+
 class AccountRepositoryImplTest {
     private lateinit var local: FakeAccountLocalDataSource
     private lateinit var remote: FakeAccountRemoteDataSource
@@ -234,8 +236,8 @@ class AccountRepositoryImplTest {
         val result = repository.createRecoveryCode()
 
         // Then
-        assertEquals("K7QM4XPA9TRE", result.getOrNull())
-        assertEquals("K7QM4XPA9TRE", repository.observeAccount().first().recoveryCode)
+        assertEquals(RECOVERY_CODE, result.getOrNull())
+        assertEquals(RECOVERY_CODE, repository.observeAccount().first().recoveryCode)
         assertEquals(RecoveryCodePrompt.DUE, repository.observeAccount().first().recoveryCodePrompt)
     }
 
@@ -253,7 +255,7 @@ class AccountRepositoryImplTest {
         assertEquals(
             AccountSnapshot(
                 status = AccountStatus.Anonymous("anonymous"),
-                recoveryCode = "K7QM4XPA9TRE",
+                recoveryCode = RECOVERY_CODE,
                 recoveryCodePrompt = RecoveryCodePrompt.DUE,
                 email = null,
                 signOutWhenSynced = false,
@@ -287,7 +289,7 @@ class AccountRepositoryImplTest {
         prepareScenario(currentUser = null)
 
         // When
-        val result = repository.restoreWithRecoveryCode("K7QM-4XPA")
+        val result = repository.restoreWithRecoveryCode("legal winner thank")
 
         // Then
         assertIs<InvalidRecoveryCodeException>(result.exceptionOrNull())
@@ -295,19 +297,20 @@ class AccountRepositoryImplTest {
     }
 
     @Test
-    fun `GIVEN a valid code WHEN restoring THEN signs in with the credentials and keeps the code as saved`() = runTest {
-        // Given
-        prepareScenario(currentUser = null)
+    fun `GIVEN loosely typed words WHEN restoring THEN signs in with the credentials and keeps the code as saved`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
 
-        // When
-        val result = repository.restoreWithRecoveryCode("k7qm-4xpa-9tre")
+            // When
+            val result = repository.restoreWithRecoveryCode(TYPED_RECOVERY_CODE)
 
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(listOf("K7QM4XPA9TRE"), remote.exchangedCodes)
-        assertEquals(AccountStatus.Anonymous("restored"), repository.observeStatus().first())
-        assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
-    }
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf(RECOVERY_CODE), remote.exchangedCodes)
+            assertEquals(AccountStatus.Anonymous("restored"), repository.observeStatus().first())
+            assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
+        }
 
     @Test
     fun `GIVEN an anonymous user WHEN connecting Apple in the browser THEN links and remembers the pending link`() =
@@ -2660,7 +2663,7 @@ class AccountRepositoryImplTest {
         startLostAnonymousAccount()
 
         // When
-        val result = repository.restoreWithRecoveryCode("k7qm-4xpa-9tre")
+        val result = repository.restoreWithRecoveryCode(TYPED_RECOVERY_CODE)
 
         // Then
         assertTrue(result.isSuccess)
@@ -3081,7 +3084,7 @@ class AccountRepositoryImplTest {
         val before = local.get()
 
         // When
-        val result = repository.restoreWithRecoveryCode("k7qm-4xpa-9tre")
+        val result = repository.restoreWithRecoveryCode(TYPED_RECOVERY_CODE)
 
         // Then
         assertIs<AccountExpiredException>(result.exceptionOrNull())
@@ -3402,7 +3405,7 @@ class AccountRepositoryImplTest {
         repository.endExpiredSession()
 
         // When
-        val result = repository.restoreWithRecoveryCode("k7qm-4xpa-9tre")
+        val result = repository.restoreWithRecoveryCode(TYPED_RECOVERY_CODE)
 
         // Then
         val account = repository.observeAccount().first()
@@ -3565,6 +3568,12 @@ class AccountRepositoryImplTest {
             // Why: runs what a sign in leaves to the app's scope right away, so a test reads it on return.
             scope = CoroutineScope(Dispatchers.Unconfined),
         )
+    }
+
+    private companion object {
+        // Why: a list's numbers, any case and only the first four letters of a word, as people type them.
+        private const val TYPED_RECOVERY_CODE =
+            "1. Legal 2. winn\n3. thank year wave sausage worth useful legal winner thank yellow"
     }
 }
 
@@ -3736,7 +3745,7 @@ private class FakeAccountRemoteDataSource(
 
     override suspend fun createRecoveryCode(): String {
         issueError?.let { throw it }
-        return "K7QM4XPA9TRE"
+        return RECOVERY_CODE
     }
 
     override suspend fun keepAppleToken(token: AppleToken) {

@@ -7,8 +7,9 @@
     <string name="restore_code_label">Ou usa o código de recuperação</string>
     <string name="restore_scan_qr_title">Ler o QR do dispositivo antigo</string>
     <string name="restore_start_fresh">Começar do zero neste dispositivo</string>
-    <string name="restore_error_invalid_code">Código não encontrado. Verifica as letras e tenta novamente.</string>
+    <string name="restore_error_invalid_code">Código não encontrado. Verifica as palavras e a ordem delas e tenta novamente.</string>
     <string name="restore_error_too_many_attempts">Demasiadas tentativas. Aguarda alguns minutos e tenta novamente.</string>
     <string name="restore_error_sign_in_failed">Não foi possível iniciar sessão agora. Tenta novamente.</string>
     <string name="restore_error_unknown">Algo correu mal. Tenta novamente.</string>
+    <string name="restore_code_hint">As 12 palavras, pela ordem. Cola-as todas num campo para preencher tudo.</string>
 </resources>

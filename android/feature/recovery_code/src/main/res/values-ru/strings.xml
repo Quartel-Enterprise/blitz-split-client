@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Сохрани код восстановления</string>
-    <string name="recovery_code_body">Ты пользуешься приложением без аккаунта. Этот код вернёт твои группы, если ты сменишь или потеряешь устройство.</string>
-    <string name="recovery_code_copy">Копировать код</string>
+    <string name="recovery_code_body">Ты пользуешься приложением без аккаунта. Эти 12 слов вернут твои группы, если ты сменишь или потеряешь устройство. Запиши их по порядку.</string>
+    <string name="recovery_code_copy">Копировать слова</string>
     <string name="recovery_code_save_to_password_manager">Сохранить в менеджер паролей</string>
     <string name="recovery_code_connect_instead">Лучше подключить Google или Apple</string>
     <string name="recovery_code_connect_instead_body">Код не понадобится</string>

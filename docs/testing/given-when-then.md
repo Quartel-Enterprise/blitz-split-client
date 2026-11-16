@@ -15,15 +15,15 @@ named `val`s rather than inline in the **When**.
 
 ```kotlin
 @Test
-fun `GIVEN dashes spaces and lower case WHEN normalizing THEN returns the 12 upper case characters`() {
+fun `GIVEN a mistyped ending WHEN reading a word THEN returns the word its first four letters stand for`() {
     // Given
-    val typed = "k7qm-4xpa 9tre"
+    val typed = "Abandom"
 
     // When
-    val normalized = RecoveryCodeFormat.normalize(typed)
+    val word = RecoveryWords.wordOf(typed)
 
     // Then
-    assertEquals("K7QM4XPA9TRE", normalized)
+    assertEquals("abandon", word)
 }
 ```
 
@@ -35,7 +35,7 @@ would need two **When**s checks two behaviors and is split:
 fun `GIVEN an unknown code WHEN restoring THEN shows the invalid code error`() = runTest(testDispatcher) {
     // Given
     prepareScenario(restoreError = InvalidRecoveryCodeException())
-    viewModel.onEvent(RestoreUiEvent.OnCodeChanged("K7QM-4XPA-9TRE"))
+    viewModel.onEvent(RestoreUiEvent.OnWordChanged(index = 0, text = RECOVERY_CODE))
 
     // When
     viewModel.onEvent(RestoreUiEvent.OnRestoreClicked)
@@ -57,7 +57,7 @@ An expected failure is captured in the **When** and asserted in the **Then**:
 
 ```kotlin
 // When
-val result = repository.restoreWithRecoveryCode("K7QM-4XPA")
+val result = repository.restoreWithRecoveryCode("legal winner thank")
 
 // Then
 assertIs<InvalidRecoveryCodeException>(result.exceptionOrNull())

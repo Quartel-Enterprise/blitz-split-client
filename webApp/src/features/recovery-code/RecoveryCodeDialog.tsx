@@ -1,9 +1,10 @@
-import { Copy, Download, ShieldCheck } from 'lucide-react'
+import { Download, ShieldCheck } from 'lucide-react'
 import { RecoveryCodePresenter, type JsRecoveryCodeAction, type JsRecoveryCodeState } from 'blitzsplit-shared'
 import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons } from '@/components/common'
+import { numberedRecoveryWords, RecoveryWordsBox } from '@/components/RecoveryWordsBox'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -22,12 +23,12 @@ export function RecoveryCodeDialog() {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   useActions(presenter, (p, onAction: (action: JsRecoveryCodeAction) => void) => p.observeActions(onAction), (action) => {
     if (action.type === 'copy') {
-      void navigator.clipboard.writeText(action.formattedCode).then(() => toast(t('recoveryCode_copied')))
+      void navigator.clipboard.writeText(action.code).then(() => toast(t('recoveryCode_copied')))
     } else if (action.type === 'download') {
-      downloadCode(action.formattedCode)
+      downloadCode(action.code)
     }
   })
-  if (!presenter || !state?.formattedCode) return null
+  if (!presenter || !state?.recoveryWords) return null
 
   const onOpenChange = (open: boolean) => {
     if (!open) presenter.remindLater()
@@ -75,12 +76,7 @@ export function RecoveryCodeDialog() {
 function RecoveryCodeBody({ presenter, state }: { presenter: RecoveryCodePresenter; state: JsRecoveryCodeState }) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-2.5 rounded-lg border border-dashed border-muted-foreground/50 bg-muted py-2.5 pr-2.5 pl-3.5">
-        <span className="font-mono text-xl font-semibold tracking-[0.12em]">{state.formattedCode}</span>
-        <Button variant="outline" size="sm" onClick={() => presenter.copy()}>
-          <Copy /> {t('recoveryCode_copy')}
-        </Button>
-      </div>
+      <RecoveryWordsBox words={state.recoveryWords ?? []} onCopy={() => presenter.copy()} />
       <Option icon={<Download className="size-4" />} title={t('recoveryCode_download')} onClick={() => presenter.download()} />
       {state.isConnectExpanded ? (
         <AccountButtons
@@ -120,7 +116,7 @@ function Option({ icon, title, subtitle, disabled, onClick }: { icon: ReactNode;
   )
 }
 
-function downloadCode(formattedCode: string) {
-  const text = t('recoveryCode_fileText', { code: formattedCode })
+function downloadCode(code: string) {
+  const text = t('recoveryCode_fileText', { code: numberedRecoveryWords(code) })
   downloadFile(text, t('recoveryCode_fileName'), 'text/plain;charset=utf-8')
 }

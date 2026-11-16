@@ -608,9 +608,20 @@ returning user to the profile setup would make a new local profile that overwrit
 
 ### Recovery code
 
-For people without Google or Apple: 12 Crockford base32 characters, hashed server side. `RecoveryCodeFormat` mirrors
-the API's rules so a mistyped code is caught before any request: `normalize` uppercases, drops dashes and spaces and
-reads `O` as `0` and `I`/`L` as `1`; `format` groups by four (`K7QM-4XPA-9TRE`).
+For people without Google or Apple: 12 words of the BIP39 English list (128 random bits and a 4 bit checksum), stored
+server side as an HMAC-SHA256 keyed by a Supabase secret. The account row keeps them as the full words joined by single
+spaces. `RecoveryWords` (in `:core:utils`, with the list in `Bip39English.kt`) mirrors the API's rules so a word that
+isn't in the list is caught before any request: `split` takes the runs of letters of anything typed or pasted (a list's
+numbers, commas, new lines and a QR link's `+` split words), only the first four letters of a word count, as BIP39 tells
+its words apart by them (`wordOf("abandom")` is `abandon`), and `normalize` returns the 12 full words or null. The
+checksum is the server's to check: a word mistyped into another word of the list, or two swapped, comes back as
+`invalid_code`. `wordsOf` drops a code stored before the words, so it is never drawn as words.
+
+The restore screen has one field per word (`RestoreUiState.words`). A text with several words, typed or pasted into
+any field, fills the fields from it on, and all 12 from the first when it holds 12 or more; a space after a whole word
+completes it and moves on (`RestoreUiAction.FocusWord`), as picking one of `suggestions` does. A field no word can
+come out of is marked at once (`RestoreWordField.isDeadEnd`), and leaving a field shows the whole word its first
+letters stand for.
 
 The `account` row tracks a `RecoveryCodePrompt`:
 
@@ -623,4 +634,4 @@ The `account` row tracks a `RecoveryCodePrompt`:
 
 Restoring (`restoreWithRecoveryCode`) normalizes the code, trades it at the `recover` function for one-time email
 and password credentials, signs in with them and marks the prompt `SAVED`; then `CompleteSignIn` pulls the profile.
-The old device's QR holds `borarachar://recover?code=...` and `toRecoveryCodeFromQr` also accepts a bare code.
+A QR holding `borarachar://recover?code=word+word+...` restores, and `toRecoveryCodeFromQr` also accepts the bare words.

@@ -5,13 +5,13 @@
     <string name="restore_no_connection_title">Нет подключения</string>
     <string name="restore_no_connection_body">Для входа через аккаунт или по коду нужен интернет, чтобы загрузить твои группы. Введённое сохранится.</string>
     <string name="restore_code_label">Или используй код восстановления</string>
-    <string name="restore_code_hint">12 букв и цифр. Дефисы не обязательны.</string>
+    <string name="restore_code_hint">12 слов по порядку. Вставь их все в одно поле, чтобы заполнить все поля.</string>
     <string name="restore_scan_qr_title">Отсканируй QR-код со старого устройства</string>
     <string name="restore_scan_qr_body">Там: Профиль › Восстановление › Показать QR-код</string>
     <string name="restore_recover">Восстановить</string>
     <string name="restore_try_again">Попробовать ещё раз</string>
     <string name="restore_start_fresh">Начать с нуля на этом устройстве</string>
-    <string name="restore_error_invalid_code">Код не найден. Проверь буквы и попробуй ещё раз.</string>
+    <string name="restore_error_invalid_code">Код не найден. Проверь слова и их порядок и попробуй ещё раз.</string>
     <string name="restore_error_too_many_attempts">Слишком много попыток. Подожди несколько минут и попробуй ещё раз.</string>
     <string name="restore_error_sign_in_failed">Сейчас не удалось войти. Попробуй ещё раз.</string>
     <string name="restore_error_unknown">Что-то пошло не так. Попробуй ещё раз.</string>

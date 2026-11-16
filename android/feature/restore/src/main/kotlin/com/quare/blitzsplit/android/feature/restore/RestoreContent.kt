@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -31,7 +29,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,14 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.component.AppleSignInButton
 import com.quare.blitzsplit.android.designsystem.component.ConnectionAlertCard
 import com.quare.blitzsplit.android.designsystem.component.GoogleSignInButton
@@ -61,6 +53,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreError
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiEvent
 import com.quare.blitzsplit.feature.restore.presentation.model.RestoreUiState
+import com.quare.blitzsplit.feature.restore.presentation.model.RestoreWordField
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 private val singleColumnMaxWidth = 560.dp
@@ -391,25 +384,23 @@ private fun RestoreCodeSection(
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            OutlinedTextField(
-                value = state.code,
-                onValueChange = { onEvent(RestoreUiEvent.OnCodeChanged(it)) },
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = MaterialTheme.typography.headlineSmall.copy(
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 2.sp,
-                ),
-                singleLine = true,
+            RestoreWordFieldsGrid(
+                state = state,
+                onEvent = onEvent,
                 isError = codeError != null,
-                supportingText = { Text(stringResource(codeError ?: R.string.restore_code_hint)) },
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Characters,
-                    autoCorrectEnabled = false,
-                    keyboardType = KeyboardType.Ascii,
-                    imeAction = ImeAction.Done,
-                ),
-                keyboardActions = KeyboardActions(onDone = { onEvent(RestoreUiEvent.OnRestoreClicked) }),
+            )
+            RestoreWordSuggestionsRow(
+                suggestions = state.suggestions,
+                onEvent = onEvent,
+            )
+            Text(
+                text = stringResource(codeError ?: R.string.restore_code_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = if (codeError != null) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
             )
         }
         TappableCard(
@@ -577,8 +568,17 @@ private fun RestoreOfflinePreview() {
 }
 
 private fun createPreviewState(isOnline: Boolean): RestoreUiState = RestoreUiState(
-    code = "K7QM-4XPA-9TRE",
-    isCodeComplete = true,
+    words = "legal winner thank year wave sausage worth useful legal winner thank yellow"
+        .split(" ")
+        .mapIndexed { index, word ->
+            RestoreWordField(
+                text = if (index < 7) word else "",
+                isDeadEnd = false,
+            )
+        },
+    focusedWordIndex = 6,
+    suggestions = listOf("worth", "would"),
+    isCodeComplete = false,
     isOnline = isOnline,
     isRestoring = false,
     connectingProvider = null,

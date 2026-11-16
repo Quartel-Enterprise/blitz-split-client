@@ -138,7 +138,7 @@
         <item quantity="one">%d change hasn\'t uploaded yet and will be lost.</item>
         <item quantity="other">%d changes haven\'t uploaded yet and will be lost.</item>
     </plurals>
-    <string name="profile_copy_code">Copy code</string>
+    <string name="profile_copy_code">Copy words</string>
     <string name="profile_export">Export my data</string>
     <string name="profile_export_detail">A JSON file with your profile and keys</string>
     <string name="profile_delete_account">Delete account and data</string>

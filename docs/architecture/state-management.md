@@ -114,13 +114,14 @@ stays the only place that reacts to it.
 
 ```kotlin
 sealed interface RecoveryCodeUiAction {
+    // Why: the words joined by single spaces, which the restore screen takes back pasted whole.
     data class CopyToClipboard(
-        val formattedCode: String,
+        val code: String,
     ) : RecoveryCodeUiAction
 
     // Why: a password manager entry on Android and Apple; on the web it becomes a file download.
     data class SaveToPasswordManager(
-        val formattedCode: String,
+        val code: String,
     ) : RecoveryCodeUiAction
 
     data class LaunchNativeSignIn(
