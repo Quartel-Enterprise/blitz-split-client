@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.sync
 
+import com.quare.blitzsplit.core.account.domain.model.SessionRefreshingException
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
@@ -508,6 +509,41 @@ class SyncCoordinatorTest {
             status = anonymous,
         )
         profile.pullError = IllegalStateException("session refreshing")
+        coordinator.start()
+        runCurrent()
+        profile.pullError = null
+
+        // When
+        account.sessionRecoveries.emit(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a synced device WHEN a sync is put off while the session refreshes THEN the sync state is not failed`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            coordinator.syncNow()
+            profile.pullError = IllegalStateException("wrapped", SessionRefreshingException())
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a sync put off while the session refreshed WHEN it gets a token again THEN syncs again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+        )
+        profile.pullError = SessionRefreshingException()
         coordinator.start()
         runCurrent()
         profile.pullError = null

@@ -63,6 +63,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.GroupsUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SearchUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
+import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge.Companion.unlessSyncingOver
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -215,6 +216,7 @@ class GroupsViewModel(
                         isOnline = isOnline,
                         awaitsFullSync = account.awaitsFullSync,
                         previous = state.syncBadge,
+                        showsData = state.groups.isNotEmpty(),
                     ),
                     showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
                 )
@@ -258,6 +260,7 @@ class GroupsViewModel(
                     it.copy(
                         groups = home.rows,
                         hasLoadedGroups = true,
+                        syncBadge = it.syncBadge.unlessSyncingOver(showsData = home.rows.isNotEmpty()),
                         pendingChangeCount = home.pendingChangeCount,
                         latestBill = home.latestBill,
                         /*

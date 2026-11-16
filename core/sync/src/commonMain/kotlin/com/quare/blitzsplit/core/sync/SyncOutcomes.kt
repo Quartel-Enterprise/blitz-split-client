@@ -18,11 +18,24 @@ internal class SyncOutcomes(
     private val connectivityObserver: NetworkConnectivityObserver,
 ) {
     private val mutableLastSyncFailed = MutableStateFlow(false)
+    private val mutableLastSyncPutOff = MutableStateFlow(false)
     private var hasReportedFailure = false
 
     val lastSyncFailed: StateFlow<Boolean> = mutableLastSyncFailed
 
+    // Why: the last sync failed or was put off for the session's refresh, so the token coming back runs it again.
+    val lastSyncWentThrough: Boolean
+        get() = !mutableLastSyncFailed.value && !mutableLastSyncPutOff.value
+
     suspend fun onSyncEnded(result: Result<Unit>) {
+        /*
+         * Why: a sync put off for the session's refresh changes nothing the screens show: not "No response from the
+         * server", whose retry then said "Syncing…" on every return to the front (beta feedback), nor the first
+         * download's wait, nor Crashlytics. Only the rerun once the token comes back.
+         */
+        val isPutOff = result.exceptionOrNull()?.isPutOffForSession() == true
+        mutableLastSyncPutOff.value = isPutOff
+        if (isPutOff) return
         mutableLastSyncFailed.value = result.isFailure
         if (result.isFailure) firstDownload.syncFailed() else firstDownload.syncSucceeded()
         val failure = result.exceptionOrNull()

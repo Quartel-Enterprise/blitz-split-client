@@ -27,6 +27,12 @@ internal fun Throwable.isConnectionFailure(): Boolean = getCauses().any { cause 
 }
 
 /*
+ * Why: a sync that ran while the session waited for its refresh, as on coming back to the front with an expired token:
+ * it asked the server nothing, so it is put off until the token comes back rather than failed.
+ */
+internal fun Throwable.isPutOffForSession(): Boolean = getCauses().any { cause -> cause is SessionRefreshingException }
+
+/*
  * Why: what a failed sync doesn't report: a connection failure, and the sync of an account the server deleted for
  * inactivity, which only waits for the device to be erased.
  */

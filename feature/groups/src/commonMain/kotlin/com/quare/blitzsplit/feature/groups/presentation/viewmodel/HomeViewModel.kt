@@ -73,6 +73,7 @@ import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.HomeUiState
 import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge
+import com.quare.blitzsplit.feature.groups.presentation.model.SyncBadge.Companion.unlessSyncingOver
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -209,7 +210,13 @@ class HomeViewModel(
                     avatarColor = badge.avatarColor,
                     photoUrl = badge.photoUrl,
                     accountProvider = badge.accountProvider,
-                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline, account.awaitsFullSync, state.syncBadge),
+                    syncBadge = SyncBadge.ofOrNull(
+                        syncState = syncState,
+                        isOnline = isOnline,
+                        awaitsFullSync = account.awaitsFullSync,
+                        previous = state.syncBadge,
+                        showsData = state.groupCount > 0,
+                    ),
                     isOnline = isOnline,
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&
@@ -249,6 +256,7 @@ class HomeViewModel(
                     it.copy(
                         isLoaded = true,
                         groupCount = rows.size,
+                        syncBadge = it.syncBadge.unlessSyncingOver(showsData = rows.isNotEmpty()),
                         groups = homeGroupsOf(rows, pinnedIds),
                         billDays = billDaysOf(latestBills, clock),
                         pendingChangeCount = data.pendingChangeCount,

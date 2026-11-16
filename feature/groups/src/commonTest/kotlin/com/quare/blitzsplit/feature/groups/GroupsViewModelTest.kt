@@ -780,6 +780,22 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the groups showing and the failed badge WHEN the retry runs THEN shows no syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.FAILED,
+                storedGroups = listOf(trio()),
+            )
+
+            // When
+            syncState.value = SyncState.SYNCING
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
     fun `GIVEN the failed badge WHEN the retry fails again THEN shows the failed badge`() = runTest(testDispatcher) {
         // Given
         prepareScenario(syncState = SyncState.FAILED)
