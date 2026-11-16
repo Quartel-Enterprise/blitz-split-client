@@ -490,7 +490,8 @@ private fun BillOriginRow(
             extraCount = bill.extraPayerCount,
             size = billOriginSize,
             ringColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-            modifier = payersModifier,
+            // Why: a bill whose payers all left shows no face here, so nothing grows out of an empty stack.
+            modifier = payersModifier.takeIf { bill.payerFaces.isNotEmpty() || bill.extraPayerCount > 0 } ?: Modifier,
         )
         if (bill.isPending) {
             PendingIndicator()

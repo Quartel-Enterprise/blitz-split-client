@@ -143,7 +143,7 @@ function groupPlan(groupId: string, from: HTMLElement, to: string): Plan {
       const avatar = holder.querySelector<HTMLElement>('[data-group-avatar]')
       const title = holder.querySelector<HTMLElement>('[data-group-name]')
       const faces = holder.matches('[data-group-header]')
-        ? document.querySelector<HTMLElement>(`[data-group-faces="${CSS.escape(groupId)}"]`)
+        ? topmostInView(`[data-group-faces="${CSS.escape(groupId)}"]`)
         : holder.querySelector<HTMLElement>('[data-group-faces]')
       if (avatar) avatar.style.viewTransitionName = `group-avatar-${cssIdent(groupId)}`
       if (title) title.style.viewTransitionName = `group-name-${cssIdent(groupId)}`

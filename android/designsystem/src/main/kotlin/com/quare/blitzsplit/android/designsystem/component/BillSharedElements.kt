@@ -64,13 +64,13 @@ fun rememberBillSharedModifiers(
     val groupKey = "$origin-$groupId".takeIf { origin == SharedOrigin.GROUP && groupId != null }
     return BillSharedModifiers(
         category = scopes.element("bill-category-${scopes.key}"),
-        title = scopes.text("bill-title-${scopes.key}"),
-        total = scopes.text("bill-total-${scopes.key}"),
-        share = scopes.text("bill-share-${scopes.key}"),
+        title = scopes.scaled("bill-title-${scopes.key}"),
+        total = scopes.scaled("bill-total-${scopes.key}"),
+        share = scopes.scaled("bill-share-${scopes.key}"),
         group = scopes.element(groupKey?.let { "group-bill-avatar-$it" } ?: "bill-group-${scopes.key}"),
-        groupName = groupKey?.let { scopes.text("group-bill-name-$it") } ?: Modifier,
-        payers = scopes.text("bill-payers-${scopes.key}"),
-        time = scopes.text("bill-time-${scopes.key}"),
+        groupName = groupKey?.let { scopes.scaled("group-bill-name-$it") } ?: Modifier,
+        payers = scopes.scaled("bill-payers-${scopes.key}"),
+        time = scopes.scaled("bill-time-${scopes.key}"),
     )
 }
 
@@ -99,6 +99,6 @@ fun rememberGroupBillSharedModifiers(groupId: String?): GroupBillSharedModifiers
     val scopes = rememberSharedScopes(groupId, origin) ?: return GroupBillSharedModifiers.None
     return GroupBillSharedModifiers(
         avatar = scopes.element("group-bill-avatar-${scopes.key}"),
-        name = scopes.text("group-bill-name-${scopes.key}"),
+        name = scopes.scaled("group-bill-name-${scopes.key}"),
     )
 }

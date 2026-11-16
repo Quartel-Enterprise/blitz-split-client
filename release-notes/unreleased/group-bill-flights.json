@@ -29,20 +29,20 @@
         "android"
       ],
       "text": {
-        "en": "Opening a bill, who paid and the time now travel from its row into the bill, and the group's photo and name from the group's screen, and back when you leave.",
-        "pt": "Ao abrir uma conta, quem pagou e o horário agora vão da linha para a conta, e a foto e o nome do grupo vêm da tela do grupo, e voltam quando você sai.",
-        "pt-PT": "Ao abrir uma conta, quem pagou e a hora passam agora da linha para a conta, e a foto e o nome do grupo vêm do ecrã do grupo, e voltam quando sais.",
-        "es": "Al abrir un gasto, quién pagó y la hora ahora viajan de su fila al gasto, y la foto y el nombre del grupo desde la pantalla del grupo, y vuelven al salir.",
-        "fr": "En ouvrant une dépense, qui a payé et l’heure passent désormais de sa ligne à la dépense, et la photo et le nom du groupe depuis l’écran du groupe, puis reviennent quand tu en sors.",
-        "de": "Öffnest du eine Ausgabe, wandern wer bezahlt hat und die Uhrzeit jetzt aus ihrer Zeile hinein, Foto und Name der Gruppe aus der Gruppe, und beim Verlassen zurück.",
-        "it": "Aprendo una spesa, chi ha pagato e l’orario ora passano dalla sua riga alla spesa, e la foto e il nome del gruppo dalla schermata del gruppo, e tornano quando esci.",
-        "pl": "Po otwarciu wydatku to, kto zapłacił, i godzina przechodzą teraz z jego wiersza do wydatku, a zdjęcie i nazwa grupy z ekranu grupy, i wracają, gdy wychodzisz.",
-        "nl": "Open je een uitgave, dan gaan wie betaalde en de tijd nu van de rij naar de uitgave, en de foto en naam van de groep vanuit het scherm van de groep, en terug als je weggaat.",
-        "ja": "支出を開くと、支払った人と時刻が行から支出の画面へ、グループの写真と名前がグループの画面から移動し、戻るときも元の位置に戻るようになりました。",
-        "tr": "Bir harcamayı açtığında, kimin ödediği ve saat artık satırından harcamaya, grubun fotoğrafı ve adı da grubun ekranından geçiyor ve çıkınca geri dönüyor.",
-        "id": "Saat membuka tagihan, siapa yang membayar dan jamnya kini berpindah dari barisnya ke tagihan, serta foto dan nama grup dari layar grup, dan kembali saat kamu keluar.",
-        "ru": "Когда открываешь счёт, кто заплатил и время теперь переходят из строки в счёт, а фото и название группы — с экрана группы, и возвращаются, когда выходишь.",
-        "uk": "Коли відкриваєш рахунок, хто заплатив і час тепер переходять із рядка в рахунок, а фото й назва групи — з екрана групи, і повертаються, коли виходиш."
+        "en": "On a phone, opening a bill, who paid and the time now travel from its row into the bill, and the group's photo and name from the group's screen, and back when you leave.",
+        "pt": "No celular, ao abrir uma conta, quem pagou e o horário agora vão da linha para a conta, e a foto e o nome do grupo vêm da tela do grupo, e voltam quando você sai.",
+        "pt-PT": "No telemóvel, ao abrir uma conta, quem pagou e a hora passam agora da linha para a conta, e a foto e o nome do grupo vêm do ecrã do grupo, e voltam quando sais.",
+        "es": "En el teléfono, al abrir un gasto, quién pagó y la hora ahora viajan de su fila al gasto, y la foto y el nombre del grupo desde la pantalla del grupo, y vuelven al salir.",
+        "fr": "Sur un téléphone, en ouvrant une dépense, qui a payé et l’heure passent désormais de sa ligne à la dépense, et la photo et le nom du groupe depuis l’écran du groupe, puis reviennent quand tu en sors.",
+        "de": "Auf dem Handy: Öffnest du eine Ausgabe, wandern wer bezahlt hat und die Uhrzeit jetzt aus ihrer Zeile hinein, Foto und Name der Gruppe aus der Gruppe, und beim Verlassen zurück.",
+        "it": "Sul telefono, aprendo una spesa, chi ha pagato e l’orario ora passano dalla sua riga alla spesa, e la foto e il nome del gruppo dalla schermata del gruppo, e tornano quando esci.",
+        "pl": "Na telefonie po otwarciu wydatku to, kto zapłacił, i godzina przechodzą teraz z jego wiersza do wydatku, a zdjęcie i nazwa grupy z ekranu grupy, i wracają, gdy wychodzisz.",
+        "nl": "Op een telefoon: open je een uitgave, dan gaan wie betaalde en de tijd nu van de rij naar de uitgave, en de foto en naam van de groep vanuit het scherm van de groep, en terug als je weggaat.",
+        "ja": "スマートフォンでは、支出を開くと、支払った人と時刻が行から支出の画面へ、グループの写真と名前がグループの画面から移動し、戻るときも元の位置に戻るようになりました。",
+        "tr": "Telefonda bir harcamayı açtığında, kimin ödediği ve saat artık satırından harcamaya, grubun fotoğrafı ve adı da grubun ekranından geçiyor ve çıkınca geri dönüyor.",
+        "id": "Di ponsel, saat membuka tagihan, siapa yang membayar dan jamnya kini berpindah dari barisnya ke tagihan, serta foto dan nama grup dari layar grup, dan kembali saat kamu keluar.",
+        "ru": "На телефоне, когда открываешь счёт, кто заплатил и время теперь переходят из строки в счёт, а фото и название группы — с экрана группы, и возвращаются, когда выходишь.",
+        "uk": "На телефоні, коли відкриваєш рахунок, хто заплатив і час тепер переходять із рядка в рахунок, а фото й назва групи — з екрана групи, і повертаються, коли виходиш."
       }
     },
     {

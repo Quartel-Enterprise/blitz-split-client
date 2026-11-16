@@ -61,11 +61,11 @@ fun rememberGroupSharedModifiers(groupId: String?): GroupSharedModifiers {
     val scopes = rememberSharedScopes(groupId) ?: return GroupSharedModifiers.None
     return GroupSharedModifiers(
         avatar = scopes.element("group-avatar-${scopes.key}"),
-        name = scopes.text("group-name-${scopes.key}"),
-        balance = scopes.text("group-balance-${scopes.key}"),
-        balanceWord = scopes.text("group-balance-word-${scopes.key}"),
-        // Why: scaled as a text is, so the row's small stack grows into the header's, whatever faces each one shows.
-        faces = scopes.text("group-faces-${scopes.key}"),
+        name = scopes.scaled("group-name-${scopes.key}"),
+        balance = scopes.scaled("group-balance-${scopes.key}"),
+        balanceWord = scopes.scaled("group-balance-word-${scopes.key}"),
+        // Why: scaled, so the row's small stack grows into the header's, whatever faces each one shows.
+        faces = scopes.scaled("group-faces-${scopes.key}"),
     )
 }
 
@@ -85,9 +85,12 @@ class SharedScopes internal constructor(
         )
     }
 
-    // Why: a text, whose two sides crossfade while it scales from one size to the other, from its start.
+    /*
+     * Why: a text or a stack of faces, whose two sides crossfade while it scales from one size to the other, from its
+     * start: a name, an amount, the faces of a group or of who paid.
+     */
     @Composable
-    fun text(id: String): Modifier = with(transitionScope) {
+    fun scaled(id: String): Modifier = with(transitionScope) {
         Modifier.sharedBounds(
             sharedContentState = rememberSharedContentState(id),
             animatedVisibilityScope = visibilityScope,

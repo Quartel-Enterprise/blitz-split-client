@@ -29,7 +29,7 @@ The home tab, its shortcuts and pinned groups.
     "New group". Every platform draws them in the page, each with its name, never as bare icons in a bar (on the Mac
     under Overall balance, beside the faces in a wide window). "Your groups": up to three open groups, the pinned
     first, then the latest activity, as Groups draws them; "See all" opens Groups. On Android a card's avatar, name and
-    balance fly into the group's screen, and a bill row's badge, title, total, share and group square into the bill's
+    balance fly into the group's screen, and a bill row's badge, title, total, share, group square and payer faces into the bill's
     ([the group screen](group-and-bills.md)); the top bar's avatar flies into Profile's photo on Android, iOS and the
     web ([Balances, Contacts and people](balances-and-contacts.md)). "Latest expenses": the five latest
     bills you paid or take part in, by day, with your share and its category's badge exactly as the group's Expenses

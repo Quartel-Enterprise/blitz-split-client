@@ -185,9 +185,9 @@ private fun ExpenseMetaLine(
 ) {
     EntryMetaLine(
         isPending = expense.isPending,
+        time = dates.toTimeText(expense.spentAt),
         timeModifier = timeModifier,
         parts = listOfNotNull(
-            dates.toTimeText(expense.spentAt),
             stringResource(R.string.group_detail_queued).takeIf { expense.isPending },
             paidTextOrNull(
                 expense.payers,
