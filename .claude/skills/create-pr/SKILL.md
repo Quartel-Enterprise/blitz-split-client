@@ -376,7 +376,8 @@ whose checks fail.
 `README.md` opens with an image of the group screen's Expenses tab captured from the real Android,
 iPhone, Mac and web apps. Once the checks pass, decide whether the branch visibly changes something
 that image shows, as step 1 of [`update-readme-screenshots`](../update-readme-screenshots/SKILL.md)
-says (the group screen, the Mac's and the web's sidebar, the theme, the sample trip). If it does, run
+says (the group screen, the Mac's and the web's sidebar, the theme, the sample trip), and whether `main`'s
+image is already behind a pull request merged before this one, as that same step checks. If either is true, run
 that skill now and commit the two refreshed images in this same pull request, so the README never
 shows an older app than `main`. If it doesn't, skip it. Either way, add one line to the description
 of step 6 saying which: "The README's image is refreshed (Android, web)" or "The README's image
@@ -384,7 +385,8 @@ doesn't show this change".
 
 Skip this when the task's brief says another session refreshes the README at the end, as
 [`whatsapp-feedback`](../whatsapp-feedback/SKILL.md) does for its pieces: then write in the
-description only whether the change shows in the image, and which platforms, so that session knows.
+description only whether the change shows in the image, and which platforms, so that session knows. That line is
+required: without it, nothing records that a refresh is still owed if that session never reaches its end.
 
 The images change on every run, so two open pull requests that both refresh them conflict once one
 merges: step 12's conflict outcome says how to resolve it (take `main`'s, capture again).

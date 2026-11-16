@@ -190,7 +190,9 @@ Every brief is self-contained, since the session sees nothing of this conversati
   see the screen), verify the fix on a device when it is visual, and open the PR with `create-pr`,
   which labels it `merge-when-green` and drives it until it merges. It skips `create-pr`'s step
   that refreshes the README's image: this session does that once for every piece, at the end (step
-  8). Its PR description still says whether its change shows in that image, and on which platforms.
+  8). Its PR description must still say whether its change shows in that image, and on which
+  platforms ("The README's image shows this change (iPhone, web)" or "doesn't show this change"):
+  step 8 reads that line, and so does the next `create-pr` if this session never gets there.
 - For the backend: merging to `main` of `blitz-split-api` runs its deploy workflow against the
   production Supabase project, so its PR says what the migration does to existing data. For the
   site: never `wrangler deploy` from this Mac, Cloudflare deploys it on merge.
@@ -222,6 +224,14 @@ every piece), run `update-readme-screenshots`, and open the PR with `create-pr`.
 change this session makes itself, since it is no app code and needs every piece merged first; it
 counts as a building session for step 5. Wait for it to merge, or to stop on a capture this Mac
 can't take, before reporting.
+
+This step is easy to lose. The person leaves, this session goes idle while the last pieces are still in CI, and
+nothing brings it back. That happened on 2026-11-15 and 2026-11-16: #414 and #427 merged after their
+coordinators had stopped, and the README kept the old app. So while any piece is still open, don't end
+a turn with only a report. Say which pieces are still running, and that step 8 is still owed. Whenever this
+session is continued, by the person or by a session's note, check first whether every piece has
+settled, and if so, do this step before anything else. `create-pr`'s README check is the safety net
+if it is still lost: the next pull request that reaches the image refreshes it.
 
 A piece still stuck at that point whose change shows in the image would merge after the refresh,
 with the README missing it. Message its session (`SendMessage`) that the refresh is now its own: it
