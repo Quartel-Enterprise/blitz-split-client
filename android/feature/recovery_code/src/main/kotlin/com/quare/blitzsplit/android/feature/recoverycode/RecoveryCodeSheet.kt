@@ -29,7 +29,6 @@ import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.rememberFullSheetState
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.RecoveryCodeSaver
-import com.quare.blitzsplit.android.platform.rememberFileSaver
 import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
@@ -50,9 +49,19 @@ private const val TEXT_MIME_TYPE = "text/plain"
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
+fun RecoveryCodeSheet(
+    /*
+     * Why: from the screen's entry, which outlives the sheet, so a save sheet still open when the prompt goes keeps
+     * its result and writes the file instead of leaving it empty.
+     */
+    saveFile: (fileName: String, mimeType: String, bytes: ByteArray) -> Unit,
+    viewModel: RecoveryCodeViewModel = koinViewModel(),
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    RecoveryCodeActionsEffect(viewModel = viewModel)
+    RecoveryCodeActionsEffect(
+        viewModel = viewModel,
+        saveFile = saveFile,
+    )
     val words = state.recoveryWords ?: return
     val layout = rememberDeviceLayout()
     val onDismiss = { viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked) }
@@ -108,13 +117,16 @@ fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
 }
 
 @Composable
-private fun RecoveryCodeActionsEffect(viewModel: RecoveryCodeViewModel) {
+private fun RecoveryCodeActionsEffect(
+    viewModel: RecoveryCodeViewModel,
+    saveFile: (fileName: String, mimeType: String, bytes: ByteArray) -> Unit,
+) {
     val context = LocalContext.current
     val saver = remember(context) { RecoveryCodeSaver(context) }
     val scope = rememberCoroutineScope()
     // Why: the collector outlives a recomposition, so it reads the current language's resources and saver.
     val resources by rememberUpdatedState(LocalResources.current)
-    val saveFile by rememberUpdatedState(rememberFileSaver())
+    val currentSaveFile by rememberUpdatedState(saveFile)
     val launchGoogleSignIn = rememberGoogleSignInLauncher { result ->
         viewModel.onEvent(
             when (result) {
@@ -137,7 +149,7 @@ private fun RecoveryCodeActionsEffect(viewModel: RecoveryCodeViewModel) {
             when (action) {
                 is RecoveryCodeUiAction.CopyToClipboard -> saver.copyToClipboard(action.code)
 
-                is RecoveryCodeUiAction.DownloadFile -> saveFile(
+                is RecoveryCodeUiAction.DownloadFile -> currentSaveFile(
                     resources.getString(R.string.recovery_code_file_name),
                     TEXT_MIME_TYPE,
                     resources

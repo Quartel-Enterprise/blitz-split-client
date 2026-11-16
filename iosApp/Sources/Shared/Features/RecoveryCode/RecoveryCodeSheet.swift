@@ -273,6 +273,29 @@ enum RecoveryCodeFile {
     }
 }
 
+/// The recovery code's text file as the document the save sheet writes, plain text only. Nonisolated, since the
+/// exporter writes the file off the main actor.
+nonisolated struct RecoveryCodeDocument: FileDocument {
+    static let readableContentTypes: [UTType] = [.plainText]
+
+    let text: String
+
+    init(text: String) {
+        self.text = text
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents,
+              let text = String(data: data, encoding: .utf8)
+        else { throw CocoaError(.fileReadCorruptFile) }
+        self.text = text
+    }
+
+    func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: Data(text.utf8))
+    }
+}
+
 private extension View {
     /// Opens the save sheet (the save panel on the Mac) once Download hands over the text, and forgets it when the
     /// sheet closes, saved or not.
@@ -284,7 +307,7 @@ private extension View {
                     if !isPresented { text.wrappedValue = nil }
                 },
             ),
-            document: text.wrappedValue.map { GroupExportDocument(data: Data($0.utf8)) },
+            document: text.wrappedValue.map(RecoveryCodeDocument.init(text:)),
             contentType: .plainText,
             defaultFilename: RecoveryCodeFile.name,
         ) { _ in
