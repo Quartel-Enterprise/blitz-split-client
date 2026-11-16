@@ -28,7 +28,7 @@ private const val GENERATE_TASK = "testDebugUnitTest"
 private const val DUO_CLOSED = "iphoneduo"
 private const val DUO_OPEN = "iphoneduoopen"
 private val listingLocales =
-    listOf("en-US", "pt-BR", "pt-PT", "es", "es-ES", "fr", "de", "it", "pl", "nl", "tr", "id", "ja")
+    listOf("en-US", "pt-BR", "pt-PT", "es", "es-ES", "fr", "de", "it", "pl", "nl", "tr", "id", "ru", "uk", "ja")
 private val playLocales = mapOf(
     "en-US" to listOf("en-US"),
     "pt-BR" to listOf("pt-BR"),
@@ -42,6 +42,8 @@ private val playLocales = mapOf(
     "nl" to listOf("nl-NL"),
     "tr" to listOf("tr-TR"),
     "id" to listOf("id"),
+    "ru" to listOf("ru-RU"),
+    "uk" to listOf("uk"),
     "ja" to listOf("ja-JP"),
 )
 private val appStoreLocales = mapOf(
@@ -57,6 +59,8 @@ private val appStoreLocales = mapOf(
     "nl" to listOf("nl-NL"),
     "tr" to listOf("tr"),
     "id" to listOf("id"),
+    "ru" to listOf("ru"),
+    "uk" to listOf("uk"),
     "ja" to listOf("ja"),
 )
 private val playDevices = mapOf(

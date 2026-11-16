@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Новый ключ Pix</string>
+    <string name="payment_key_title_pix_edit">Изменить ключ Pix</string>
+    <string name="payment_key_title_bitcoin_new">Новый ключ Bitcoin</string>
+    <string name="payment_key_title_bitcoin_edit">Изменить ключ Bitcoin</string>
+    <string name="payment_key_save">Сохранить</string>
+
+    <string name="payment_key_pix_intro">Тот, кто тебе платит, видит этот ключ при расчёте. Какой тип ключа?</string>
+    <string name="payment_key_pix_question">Какой тип ключа?</string>
+    <string name="payment_key_pix_explanation">Тот, кто тебе платит, видит этот ключ при расчёте.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Телефон</string>
+    <string name="payment_key_type_email">Эл. почта</string>
+    <string name="payment_key_type_random">Случайный</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Номер мобильного с кодом города</string>
+    <string name="payment_key_label_email">Эл. почта</string>
+    <string name="payment_key_label_random">Случайный ключ</string>
+
+    <string name="payment_key_bitcoin_intro">Как ты хочешь получать?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">быстро, низкая комиссия</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">в блокчейне</string>
+    <string name="payment_key_label_lightning">Lightning Address или LNURL</string>
+    <string name="payment_key_label_onchain">Адрес Bitcoin</string>
+
+    <string name="payment_key_paste">Вставить</string>
+
+    <string name="payment_key_hint_cpf">Формат: 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Формат: +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Формат: name@domain.com</string>
+    <string name="payment_key_hint_random">32 буквы и цифры, как их показывает твой банк</string>
+    <string name="payment_key_hint_lightning">Например, name@wallet.com или LNURL1…</string>
+    <string name="payment_key_hint_onchain">Адрес mainnet, начинающийся с bc1q или bc1p</string>
+
+    <string name="payment_key_valid_cpf">Формат 000.000.000-00 · контрольные цифры совпадают</string>
+    <string name="payment_key_valid_phone">Формат: +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Формат: name@domain.com</string>
+    <string name="payment_key_valid_random">Случайный ключ распознан (32 символа)</string>
+    <string name="payment_key_valid_lightning_address">Корректный Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Корректный LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Неверный CPF: контрольные цифры не совпадают.</string>
+    <string name="payment_key_error_invalid_phone">Неполный номер мобильного: укажи код города и 9 цифр, начиная с 9.</string>
+    <string name="payment_key_error_invalid_email">Неполный адрес почты: не хватает домена, например .com или .com.br.</string>
+    <string name="payment_key_error_invalid_random">Неполный случайный ключ: в нём 32 буквы и цифры.</string>
+    <string name="payment_key_error_invalid_lightning">Это не Lightning Address (name@wallet) и не LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Это Lightning-счёт (lnbc…): он оплачивается один раз и истекает. Вставь Lightning Address или LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Неверный адрес. Используй адрес mainnet bc1q или bc1p.</string>
+    <string name="payment_key_error_testnet_address">Это адрес testnet (tb1…). Здесь работает только Bitcoin mainnet с адресами bc1….</string>
+    <string name="payment_key_error_already_saved">У тебя уже есть этот ключ.</string>
+
+    <string name="payment_key_switched_to_onchain">Это адрес on-chain, поэтому мы переключились на On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Это Lightning Address, поэтому мы переключились на Lightning.</string>
+    <string name="payment_key_cpf_notice">Тот, кто тебе платит, видит твой CPF полностью. Если не хочешь им делиться, используй телефон, почту или случайный ключ.</string>
+    <string name="payment_key_held_notice">Ключ Pix этого типа может быть только один, поэтому здесь тот, что ты уже сохранил(а). Если хочешь, измени его здесь.</string>
+
+    <string name="payment_key_accepted_title">Мы принимаем</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">Основной ключ Pix</string>
+    <string name="payment_key_default_bitcoin_title">Основной ключ Bitcoin</string>
+    <string name="payment_key_default_pix_detail">Показывается первым при расчёте.</string>
+    <string name="payment_key_default_bitcoin_detail">Показывается первым, когда кто-то платит в BTC.</string>
+    <string name="payment_key_default_now">Сейчас: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Чтобы это изменить, сделай основным другой ключ.</string>
+    <string name="payment_key_default_locked_new">Твой первый ключ этого вида становится основным.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">телефон</string>
+    <string name="payment_key_default_type_email">эл. почта</string>
+    <string name="payment_key_default_type_random">случайный ключ</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split не переводит деньги: плательщик платит в приложении своего банка. Проверь, что ключ оформлен на твоё имя.</string>
+    <string name="payment_key_footer_bitcoin">При расчёте мы показываем сумму в sats по текущему курсу. Это только оценка: плательщик подтверждает её в своём кошельке.</string>
+
+    <string name="payment_key_delete">Удалить ключ</string>
+    <string name="payment_key_delete_title">Удалить этот ключ?</string>
+    <string name="payment_key_delete_body">Те, кто тебе должен, больше не увидят его при расчёте.</string>
+    <string name="payment_key_delete_confirm">Удалить</string>
+</resources>

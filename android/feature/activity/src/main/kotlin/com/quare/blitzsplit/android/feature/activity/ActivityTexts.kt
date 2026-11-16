@@ -364,8 +364,8 @@ internal fun deletedNoticeTextOf(
         ?: stringResource(if (deletion.isGroup) R.string.activity_this_group else R.string.activity_this_bill)
     val atMillis = deletion.atMillis
     /*
-     * Why: in Spanish, Portugal's Portuguese, French, German, Italian, Polish, Dutch and Turkish the sentence starts with
-     * who did it, "Tú…".
+     * Why: in Spanish, Portugal's Portuguese, French, German, Italian, Polish, Dutch, Turkish, Russian and Ukrainian the
+     * sentence starts with who did it, "Tú…".
      */
     val isYouSubject = deletion.byMe && isYouSubjectUi()
     val byName = when {

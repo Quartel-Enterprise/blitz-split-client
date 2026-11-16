@@ -28,8 +28,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     another tab on the web), with no checkbox nor step of its own (Pierre's call, #184): Analytics rests on legitimate
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
-  - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish and Indonesian: the device's language, English
-    for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+  - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+    Russian and Ukrainian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -54,7 +54,13 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Turkish suffix follows the sound of the word before it, no suffix is ever glued to a name or amount the app fills
     in ("Ödeme: Ana", "Ana kişisine"), and its dotted and dotless i ("İptal", "ı") are kept apart. Indonesian
     (Pierre's call) is one variant, talks to the user as "kamu", never "Anda", calls the app Blitz Split, and its
-    plurals have only one form. The brand
+    plurals have only one form. Russian and Ukrainian (Pierre's calls, added together) are one variant each for every
+    tag of theirs (ru-KZ is `ru`), talk to the user informally ("ты", "ти"), never "Вы"/"Ви", and call the app Blitz
+    Split. Like Polish, their past says the gender, so they prefer impersonal wording and, where a past about a person
+    can't be avoided, write both forms ("добавил(а)", "додав(-ла)"); and they never decline a name the app fills in,
+    putting a noun before it in the case the sentence needs ("участника Иван"). Their plurals have three forms past
+    the singular's one: one (1, 21, 31…: "21 группа"), few ("2 группы") and many ("5 групп"), in every plural of the
+    three platforms (the web writes an `…Other` message as "one|few|many"). The brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
@@ -194,6 +200,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     (Pierre's call: 100 million rupiah is only about US$ 6,000). An app version from before it reads IDR as an
     unknown code with two decimals and shows its amounts 100 times smaller until it updates (Pierre's call: an
     accepted beta trade-off, since no group split in rupiah before).
+  - The ruble (RUB) and the hryvnia (UAH) follow the rupiah (Pierre's call, with Russian and Ukrainian), and start a
+    new group in Russia and Ukraine. Both have 2 decimals and the usual 100 million cap, so an app version from before
+    them shows their amounts by the raw code, with the right decimals.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Як тебе називають друзі?</string>
+    <string name="profile_setup_subtitle">Твоє ім\'я бачать твої групи й усі, хто має посилання на твій профіль.</string>
+    <string name="profile_setup_avatar_color">Колір аватара</string>
+    <string name="profile_setup_add_photo">Додати фото</string>
+    <string name="profile_setup_photo_error">Не вдалося використати це фото. Спробуй інше.</string>
+    <string name="profile_setup_name_label">Твоє ім\'я</string>
+    <string name="profile_setup_name_placeholder">Іван Петренко</string>
+    <string name="profile_setup_name_too_short">Мінімальна кількість літер: %d.</string>
+    <string name="profile_setup_name_too_long">Використай не більше %d символів.</string>
+    <string name="profile_setup_name_hint">Ти зможеш змінити його пізніше в «Профілі».</string>
+    <string name="profile_setup_saved_locally">Поки що збережено лише на цьому пристрої.</string>
+    <string name="profile_setup_continue">Продовжити</string>
+</resources>

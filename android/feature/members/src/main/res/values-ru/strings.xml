@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Ссылка-приглашение</string>
+    <string name="members_link_pending">Ещё не создана</string>
+    <string name="members_share">Поделиться</string>
+    <string name="members_me">%s (ты)</string>
+    <string name="members_status_this_device">Это устройство</string>
+    <string name="members_status_joined">Присоединился(-ась)</string>
+    <string name="members_status_not_joined">Ещё не присоединился(-ась)</string>
+    <string name="members_options">Параметры участника %s</string>
+    <string name="members_rename">Переименовать</string>
+    <string name="members_personal_invite">Личное приглашение для участника %s</string>
+    <string name="members_personal_message">Кто откроет эту ссылку, сразу присоединится как %s, без выбора из списка. Она работает один раз.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Кто откроет эту ссылку, сразу присоединится как %1$s, без выбора из списка, и уже увидит свою часть %2$s в %3$d добавленном счёте. Она работает один раз.</item>
+        <item quantity="few">Кто откроет эту ссылку, сразу присоединится как %1$s, без выбора из списка, и уже увидит свою часть %2$s в %3$d добавленных счетах. Она работает один раз.</item>
+        <item quantity="many">Кто откроет эту ссылку, сразу присоединится как %1$s, без выбора из списка, и уже увидит свою часть %2$s в %3$d добавленных счетах. Она работает один раз.</item>
+        <item quantity="other">Кто откроет эту ссылку, сразу присоединится как %1$s, без выбора из списка, и уже увидит свою часть %2$s в %3$d добавленного счёта. Она работает один раз.</item>
+    </plurals>
+    <string name="members_personal_copy">Копировать ссылку</string>
+    <string name="members_personal_copied">Скопировано</string>
+    <string name="members_personal_share">Поделиться с участником %s</string>
+    <string name="members_personal_share_message">Присоединяйся к группе %1$s как %2$s в Blitz Split: %3$s</string>
+    <string name="members_remove">Удалить из группы</string>
+    <string name="members_remove_joined">%s уже присоединился(-ась) к группе</string>
+    <string name="members_remove_title">Удалить участника %s из группы?</string>
+    <string name="members_remove_message">%s ещё не присоединился(-ась). Позже можно будет добавить снова.</string>
+    <string name="members_remove_confirm">Удалить</string>
+    <string name="members_release">Освободить имя</string>
+    <string name="members_release_title">Освободить имя %s?</string>
+    <string name="members_release_message">Тот, кто присоединился как %1$s, выйдет из группы. Имя %1$s, цвет и счета останутся, и %1$s снова можно будет выбрать по ссылке группы.</string>
+    <string name="members_release_confirm">Освободить</string>
+    <string name="members_release_error">Не удалось освободить имя. Проверь подключение и попробуй ещё раз.</string>
+    <string name="members_add">Добавить человека</string>
+    <string name="members_invite_instead">Есть приложение? Пригласи по ссылке</string>
+    <string name="members_name_label">Имя</string>
+    <string name="members_save">Сохранить</string>
+    <string name="members_cancel">Отмена</string>
+    <string name="members_change_error">Не удалось сохранить изменение. Попробуй ещё раз.</string>
+    <string name="members_remove_open_balance">У участника %s открытый баланс</string>
+    <string name="members_balance_to_get_back">получит %s</string>
+    <string name="members_balance_owes">должен(-на) %s</string>
+    <string name="members_balance_settled">Расчёты закрыты</string>
+</resources>

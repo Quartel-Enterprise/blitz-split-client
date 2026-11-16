@@ -16,21 +16,13 @@ enum SimplifyDebtsCopy {
         )
     }
 
-    /// The word beside a big count, "payment" or "payments", in the confirmation's "7 payments → 5 payments".
+    /// The word beside a big count, "payment" or "payments", in the confirmation's "7 payments → 5 payments": the
+    /// count's own "5 payments" without its number, since Russian and Ukrainian say "2 платежа" but "5 платежей" and a
+    /// plural variation can't leave the number out.
     static func paymentsWord(_ count: Int32) -> String {
-        count == 1
-            ? String(
-                localized: "simplify.payments.one",
-                defaultValue: "payment",
-                bundle: .appLanguage,
-                comment: "After a big 1: one payment",
-            )
-            : String(
-                localized: "simplify.payments.other",
-                defaultValue: "payments",
-                bundle: .appLanguage,
-                comment: "After a big count: payments",
-            )
+        payments(count)
+            .replacingOccurrences(of: String(count), with: "")
+            .trimmingCharacters(in: .whitespaces)
     }
 
     /// "you" inside a sentence, a name, or "Former member" for someone no longer in the group.

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Дели счёт без хлопот</string>
+    <string name="welcome_offline_title">Работает офлайн</string>
+    <string name="welcome_offline_body">Всё хранится на твоём устройстве и синхронизируется позже.</string>
+    <string name="welcome_optional_title">Аккаунт не обязателен</string>
+    <string name="welcome_optional_body">Google или Apple нужны только для того, чтобы ничего не потерять при смене устройства.</string>
+    <string name="welcome_invite_title">Приглашай по ссылке или QR-коду</string>
+    <string name="welcome_invite_body">Друзья присоединяются к группе без создания аккаунта.</string>
+    <string name="welcome_no_connection_title">Нет подключения.</string>
+    <string name="welcome_no_connection_body">Для входа в аккаунт нужен интернет. Пользуйся без аккаунта сейчас, а подключи его позже в «Профиле».</string>
+    <string name="welcome_or">или</string>
+    <string name="welcome_use_without_account">Пользоваться без аккаунта</string>
+    <string name="welcome_used_on_another_device">Я уже пользовался(-ась) на другом устройстве</string>
+    <string name="welcome_sign_in_failed">Сейчас не удалось войти. Попробуй ещё раз.</string>
+    <string name="welcome_legal_notice">Продолжая, ты принимаешь %1$s и подтверждаешь, что прочитал(а) %2$s.</string>
+    <string name="welcome_legal_terms">Условия использования</string>
+    <string name="welcome_legal_privacy">Политику конфиденциальности</string>
+    <string name="welcome_no_account_note">Твои данные удаляются через 30 дней без использования.</string>
+    <string name="welcome_expired_title">Твои данные удалены</string>
+    <string name="welcome_expired_body">Ты пользовался(-ась) приложением без аккаунта и не открывал(а) его 30 дней, поэтому твои данные удалены. Подключи Google или Apple, чтобы в следующий раз их сохранить.</string>
+    <string name="welcome_expired_ok">ОК</string>
+</resources>

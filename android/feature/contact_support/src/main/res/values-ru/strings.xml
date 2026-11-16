@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Написать в поддержку</string>
+    <string name="contact_support_description">Мы откроем твоё почтовое приложение с готовым письмом. Опиши, что случилось, и отправь: каждое письмо читают живые люди.</string>
+    <string name="contact_support_to">Кому</string>
+    <string name="contact_support_diagnostics">Будет добавлено в письмо</string>
+    <string name="contact_support_app_version">Версия приложения</string>
+    <string name="contact_support_platform">Платформа</string>
+    <string name="contact_support_language">Язык</string>
+    <string name="contact_support_account">Аккаунт</string>
+    <string name="contact_support_profile">Профиль</string>
+    <string name="contact_support_language_system">Системный</string>
+    <string name="contact_support_account_local">Только это устройство</string>
+    <string name="contact_support_account_anonymous">Не подключён</string>
+    <string name="contact_support_open_email">Открыть почту</string>
+    <string name="contact_support_copy_email">Копировать адрес эл. почты</string>
+    <string name="contact_support_notice_copied">Адрес эл. почты скопирован.</string>
+    <string name="contact_support_notice_no_app">Почтовое приложение не найдено. Вместо этого адрес скопирован.</string>
+    <string name="contact_support_close">Закрыть</string>
+</resources>

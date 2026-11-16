@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Збережи свій код відновлення</string>
+    <string name="recovery_code_body">Ти користуєшся застосунком без облікового запису. Цей код поверне твої групи, якщо ти зміниш або загубиш пристрій.</string>
+    <string name="recovery_code_copy">Копіювати код</string>
+    <string name="recovery_code_save_to_password_manager">Зберегти в менеджері паролів</string>
+    <string name="recovery_code_connect_instead">Натомість підключити Google чи Apple</string>
+    <string name="recovery_code_connect_instead_body">Код не потрібен</string>
+    <string name="recovery_code_sign_in_failed">Зараз не вдалося підключитися. Спробуй ще раз.</string>
+    <string name="recovery_code_also_in_profile">Він також є тут: Профіль › Код відновлення.</string>
+    <string name="recovery_code_remind_later">Нагадати пізніше</string>
+    <string name="recovery_code_saved">Я зберіг(-ла) його</string>
+</resources>

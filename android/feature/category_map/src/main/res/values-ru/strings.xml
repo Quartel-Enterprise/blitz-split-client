@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Нет слов</string>
+    <string name="category_map_title">Карта категорий</string>
+    <string name="category_map_search">Поиск слов</string>
+    <string name="category_map_add">Добавить слово</string>
+    <string name="category_map_more">Другие действия</string>
+    <string name="category_map_restore">Восстановить по умолчанию</string>
+    <string name="category_map_back">Назад</string>
+    <string name="category_map_intro">Когда в названии счёта есть одно из этих слов, категория подставляется сама. «Такси домой» попадает в «Транспорт».</string>
+    <string name="category_map_intro_offline">Карта работает офлайн: изменения сразу действуют на этом устройстве и дойдут до других, когда снова будешь онлайн.</string>
+    <string name="category_map_device_only">Твоя карта хранится только на этом устройстве. Чтобы перенести её на другие устройства, войди через Google или Apple в профиле.</string>
+    <string name="category_map_open_profile">Открыть профиль</string>
+    <string name="category_map_longest_wins">Если с названием совпадают два слова, выигрывает самое длинное.</string>
+    <string name="category_map_no_result">Нет слова с «%1$s»</string>
+    <string name="category_map_no_result_body">Добавь его, и счета с этим словом в названии будут сразу получать нужную категорию.</string>
+    <string name="category_map_add_query">Добавить «%1$s»</string>
+    <string name="category_map_empty_title">Твоя карта пуста</string>
+    <string name="category_map_empty_body">Без слов категория не определяется по названию: ты выбираешь её в каждом счёте.</string>
+    <string name="category_map_group_category"> · категория группы %1$s</string>
+    <string name="category_map_only_main">Только %1$s</string>
+    <string name="category_map_only_in_group">только в группе %1$s</string>
+    <string name="category_map_no_terms_yet">Слов пока нет.</string>
+    <string name="category_map_add_in">Добавить слово в категорию %1$s</string>
+    <string name="category_map_tip">Нажми на слово, чтобы изменить его категорию или удалить его. Совпадение ищется по целому слову, без учёта ударений и регистра.</string>
+    <string name="category_map_queued">в очереди</string>
+    <string name="category_map_term_action">%1$s, %2$s. Изменить</string>
+    <string name="category_map_new_term">Новое слово</string>
+    <string name="category_map_edit_term">Изменить слово</string>
+    <string name="category_map_term_label">Слово или фраза</string>
+    <string name="category_map_term_help">Совпадение по целому слову, без учёта ударений и регистра.</string>
+    <string name="category_map_term_help_app">Слово из приложения. «Восстановить по умолчанию» вернёт его в исходном виде.</string>
+    <string name="category_map_term_duplicate">«%1$s» уже выбирает категорию %2$s. У каждого слова одна категория.</string>
+    <string name="category_map_term_too_short">Минимум 2 буквы.</string>
+    <string name="category_map_term_too_long">Максимум 30 букв.</string>
+    <string name="category_map_term_invalid">Используй только буквы, цифры и пробелы.</string>
+    <string name="category_map_category">Категория</string>
+    <string name="category_map_category_help">Это может быть категория или подкатегория.</string>
+    <string name="category_map_category_help_edit">Если изменить её здесь, слово перейдёт в другую категорию.</string>
+    <string name="category_map_category_help_move">При перемещении слово уходит из категории %1$s.</string>
+    <string name="category_map_example">Пример</string>
+    <string name="category_map_example_move">После перемещения</string>
+    <string name="category_map_remove">Удалить</string>
+    <string name="category_map_cancel">Отмена</string>
+    <string name="category_map_save">Сохранить</string>
+    <string name="category_map_move_to">Переместить в категорию %1$s</string>
+    <string name="category_map_removed">Слово «%1$s» удалено из карты</string>
+    <string name="category_map_undo">Отменить</string>
+    <string name="category_map_restore_title">Восстановить карту по умолчанию?</string>
+    <string name="category_map_restore_body">60 слов приложения вернутся в исходном виде, включая те, что ты удалил(а) или переместил(а).</string>
+    <string name="category_map_restore_own_one">Созданное тобой слово «%1$s» останется.</string>
+    <string name="category_map_restore_confirm">Восстановить</string>
+    <string name="category_map_save_error">Не удалось сохранить карту. Попробуй ещё раз.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d слово</item>
+        <item quantity="few">%d слова</item>
+        <item quantity="many">%d слов</item>
+        <item quantity="other">%d слова</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d подкатегория</item>
+        <item quantity="few">%d подкатегории</item>
+        <item quantity="many">%d подкатегорий</item>
+        <item quantity="other">%d подкатегории</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d слово с «%2$s»</item>
+        <item quantity="few">%1$d слова с «%2$s»</item>
+        <item quantity="many">%1$d слов с «%2$s»</item>
+        <item quantity="other">%1$d слова с «%2$s»</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Офлайн · %d изменение в очереди</item>
+        <item quantity="few">Офлайн · %d изменения в очереди</item>
+        <item quantity="many">Офлайн · %d изменений в очереди</item>
+        <item quantity="other">Офлайн · %d изменения в очереди</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d созданное тобой слово останется.</item>
+        <item quantity="few">%d созданных тобой слова останутся.</item>
+        <item quantity="many">%d созданных тобой слов останутся.</item>
+        <item quantity="other">%d созданного тобой слова останутся.</item>
+    </plurals>
+    <string name="category_map_new_category">Новая категория</string>
+    <string name="category_map_new_subcategory_in">Новая подкатегория в категории %s</string>
+    <string name="category_map_edit_category">Изменить категорию %s</string>
+    <string name="category_map_category_group">Группа</string>
+    <string name="category_map_change_color">Изменить цвет категории %1$s</string>
+    <string name="category_map_restore_color">Восстановить цвет</string>
+    <string name="category_map_color_done">Готово</string>
+</resources>

@@ -16,7 +16,9 @@
         "nl": "De rij met personen op Start toonde in het Portugees van Portugal \"te deve\" onder een naam in plaats van \"deve-te\"; dat is opgelost.",
         "ja": "ポルトガルのポルトガル語で、ホームの人の列の名前の下に「deve-te」ではなく「te deve」と表示されていた問題を修正しました。",
         "tr": "Portekiz Portekizcesinde Ana Sayfa'daki kişiler satırında adın altında \"deve-te\" yerine \"te deve\" yazması düzeltildi.",
-        "id": "Memperbaiki baris orang di Beranda dalam bahasa Portugis Portugal, yang menampilkan \"te deve\" di bawah nama, bukan \"deve-te\"."
+        "id": "Memperbaiki baris orang di Beranda dalam bahasa Portugis Portugal, yang menampilkan \"te deve\" di bawah nama, bukan \"deve-te\".",
+        "ru": "Исправлен ряд людей на экране «Главная» в португальском для Португалии: под именем было «te deve» вместо «deve-te».",
+        "uk": "Виправлено ряд людей на екрані «Головна» в португальській для Португалії: під іменем було «te deve» замість «deve-te»."
       }
     }
   ]

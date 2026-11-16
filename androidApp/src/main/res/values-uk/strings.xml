@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Нагадування про розрахунок</string>
+    <string name="push_bill_created">%1$s додав(-ла) «%2$s» з тобою</string>
+    <string name="push_bill_edited">%1$s змінив(-ла) «%2$s»</string>
+    <string name="push_bill_deleted">%1$s видалив(-ла) «%2$s»</string>
+    <string name="push_comment_added">%1$s прокоментував(-ла) «%2$s»: %3$s</string>
+    <string name="push_payment_paid_you">%1$s позначив(-ла), що заплатив(-ла) тобі</string>
+    <string name="push_payment_to_you">%1$s позначив(-ла), що %2$s заплатив(-ла) тобі</string>
+    <string name="push_payment_received_yours">%1$s позначив(-ла) твій платіж як отриманий</string>
+    <string name="push_payment_from_you">%1$s позначив(-ла), що ти заплатив(-ла) учаснику %2$s</string>
+    <string name="push_payment_undone">%1$s скасував(-ла) платіж з тобою</string>
+    <string name="push_charge_sent">%1$s нагадав(-ла) тобі про розрахунок</string>
+    <string name="push_settle_reminder">У тебе відкритий баланс у групі %1$s</string>
+    <string name="push_settle_reminders">У тебе відкриті баланси в кількох групах: %1$s</string>
+    <string name="push_added_to_group">%1$s додав(-ла) тебе до групи</string>
+    <string name="push_member_joined">%1$s приєднався(-лася) до групи</string>
+    <string name="push_debts_simplified_to_you">%1$s спростив(-ла) борги. Тепер %2$s платить тобі %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s спростив(-ла) борги. Тепер ти платиш учаснику %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s спростив(-ла) борги. Подивись, що змінилося для тебе.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s вимкнув(-ла) «Спростити борги». Тепер %2$s платить тобі %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s вимкнув(-ла) «Спростити борги». Тепер ти платиш учаснику %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s вимкнув(-ла) «Спростити борги». Подивись, що змінилося для тебе.</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Ти не в цій групі</string>
+    <string name="bill_link_not_in_group_message">Цей коментар у групі, де тебе немає. Попроси запрошення в того, хто надіслав тобі посилання.</string>
+    <string name="bill_link_offline_title">Немає інтернету</string>
+    <string name="bill_link_offline_message">Відкрий посилання знову, коли будеш онлайн.</string>
+    <string name="bill_link_go_home">На головну</string>
+    <string name="discard_changes_title">Скасувати зміни?</string>
+    <string name="discard_changes_message">Незбережені зміни буде втрачено.</string>
+    <string name="discard_changes_discard">Скасувати зміни</string>
+    <string name="discard_changes_keep_editing">Продовжити редагування</string>
+</resources>

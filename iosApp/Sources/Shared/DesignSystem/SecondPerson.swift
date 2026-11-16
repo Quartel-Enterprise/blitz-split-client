@@ -5,7 +5,8 @@ import SwiftUI
 /// verdeeld", Polish "Ana podzielił(a)" but "Ty podzieliłeś(-aś)" and Turkish "Ana böldü" but "Sen böldün": one
 /// localized sentence serves every actor, so when the actor is this device's user the verb of the "Tú", "Tu", "Du",
 /// "Jij", "Ty" or "Sen" is conjugated to the second person, and so is Portugal's Portuguese ("Ana dividiu", "Tu
-/// dividiste"). Other languages are left as they are, Brazil's Portuguese too ("Você dividiu").
+/// dividiste"). Other languages are left as they are, Brazil's Portuguese too ("Você dividiu"), and Russian and
+/// Ukrainian, whose past says the gender but not the person ("Ты разделил(а)").
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.

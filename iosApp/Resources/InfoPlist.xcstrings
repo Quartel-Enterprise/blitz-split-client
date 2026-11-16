@@ -71,7 +71,19 @@
             "value" : "Blitz Split"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -149,7 +161,19 @@
             "value" : "Blitz Split"
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "uk" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -227,10 +251,22 @@
             "value" : "Para ler o código QR de um convite ou do teu aparelho antigo, e tirar a fotografia do teu perfil e as fotografias das contas."
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чтобы сканировать QR-код приглашения или со старого устройства, а также фотографировать себя для профиля и снимать счета."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bir davetin ya da eski cihazının QR kodunu taramak, profil fotoğrafını ve harcama fotoğraflarını çekmek için."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щоб сканувати QR-код запрошення або зі старого пристрою, а також робити фото профілю й фото рахунків."
           }
         }
       }
@@ -305,10 +341,22 @@
             "value" : "Para convidar pessoas dos teus contactos com o link de um grupo. Os números ficam só neste aparelho."
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чтобы приглашать людей из контактов по ссылке группы. Их номера остаются на этом устройстве."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kişilerinden birini bir grubun bağlantısıyla davet etmek için. Numaraları bu cihazda kalır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щоб запрошувати людей з твоїх контактів за посиланням на групу. Їхні номери залишаються на цьому пристрої."
           }
         }
       }
@@ -383,10 +431,22 @@
             "value" : "Para guardar as fotografias das contas na tua galeria."
           }
         },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чтобы сохранять фото счетов в твою медиатеку."
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bir harcamanın fotoğraflarını fotoğraf arşivine kaydetmek için."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щоб зберігати фото рахунків у твою фототеку."
           }
         }
       }

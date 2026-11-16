@@ -29,6 +29,8 @@ class ProfileUiStateTest {
             AppLanguage.JAPANESE -> listOf("日本語", "Japanese")
             AppLanguage.TURKISH -> listOf("Türkçe", "Turkish")
             AppLanguage.INDONESIAN -> listOf("Bahasa Indonesia", "Indonesian")
+            AppLanguage.RUSSIAN -> listOf("Русский", "Russian")
+            AppLanguage.UKRAINIAN -> listOf("Українська", "Ukrainian")
         }
     }
 
@@ -56,6 +58,8 @@ class ProfileUiStateTest {
         AppLanguage.JAPANESE,
         AppLanguage.TURKISH,
         AppLanguage.INDONESIAN,
+        AppLanguage.RUSSIAN,
+        AppLanguage.UKRAINIAN,
     )
 
     @Test
@@ -627,6 +631,8 @@ class ProfileUiStateTest {
                 AppLanguage.JAPANESE,
                 AppLanguage.TURKISH,
                 AppLanguage.INDONESIAN,
+                AppLanguage.RUSSIAN,
+                AppLanguage.UKRAINIAN,
             ),
             options,
         )
@@ -657,6 +663,8 @@ class ProfileUiStateTest {
                 AppLanguage.JAPANESE,
                 AppLanguage.TURKISH,
                 AppLanguage.INDONESIAN,
+                AppLanguage.RUSSIAN,
+                AppLanguage.UKRAINIAN,
             ),
             options,
         )
@@ -756,6 +764,18 @@ class ProfileUiStateTest {
 
         // Then
         assertEquals(listOf(AppLanguage.PORTUGUESE, AppLanguage.PORTUGUESE_PORTUGAL), options)
+    }
+
+    @Test
+    fun `GIVEN ua or uk typed and no names WHEN searching the languages THEN finds Ukrainian by chip or code`() {
+        // Given
+        val queries = listOf("ua", "uk")
+
+        // When
+        val options = queries.map { state(languageQuery = it).findLanguageOptions({ emptyList() }) }
+
+        // Then
+        assertEquals(List(queries.size) { listOf(AppLanguage.UKRAINIAN) }, options)
     }
 
     @Test

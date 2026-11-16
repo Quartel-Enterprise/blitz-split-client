@@ -120,13 +120,18 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.JAPANESE,
                 AppLanguage.TURKISH,
                 AppLanguage.INDONESIAN,
+                AppLanguage.RUSSIAN,
+                AppLanguage.UKRAINIAN,
             )
 
             // When
             val spoken = picks.map { spokenWith(it) }
 
             // Then
-            assertEquals(listOf("en", "pt", "pt", "es", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id"), spoken)
+            assertEquals(
+                listOf("en", "pt", "pt", "es", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk"),
+                spoken,
+            )
         }
 
     @Test
@@ -148,13 +153,13 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in each language of the app THEN it is that language`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id")
+        val devices = listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk")
 
         // When
         val spoken = devices.map { spokenOn(it) }
 
         // Then
-        assertEquals(listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id"), spoken)
+        assertEquals(listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk"), spoken)
     }
 
     @Test
@@ -178,6 +183,8 @@ class ObserveSpokenLanguageUseCaseTest {
                 "ja-JP",
                 "tr-CY",
                 "id-ID",
+                "ru-KZ",
+                "uk-UA",
             )
 
             // When
@@ -185,7 +192,25 @@ class ObserveSpokenLanguageUseCaseTest {
 
             // Then
             assertEquals(
-                listOf("pt", "pt", "es", "es", "es", "en", "en", "fr", "de", "it", "pl", "nl", "ja", "tr", "id"),
+                listOf(
+                    "pt",
+                    "pt",
+                    "es",
+                    "es",
+                    "es",
+                    "en",
+                    "en",
+                    "fr",
+                    "de",
+                    "it",
+                    "pl",
+                    "nl",
+                    "ja",
+                    "tr",
+                    "id",
+                    "ru",
+                    "uk",
+                ),
                 spoken,
             )
         }

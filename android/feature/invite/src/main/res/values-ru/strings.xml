@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Закрыть</string>
+    <string name="invite_group_created">Группа создана</string>
+    <string name="invite_title">Пригласи всех в группу %s</string>
+    <string name="invite_qr_description">QR-код ссылки-приглашения в группу</string>
+    <string name="invite_copy">Копировать</string>
+    <string name="invite_copied">Скопировано</string>
+    <string name="invite_who_picks">Кто откроет ссылку, выберет себя в списке: %s. Аккаунт не нужен.</string>
+    <string name="invite_names_or">%1$s или %2$s</string>
+    <string name="invite_anyone_joins">Кто откроет ссылку, присоединится к группе. Аккаунт не нужен.</string>
+    <string name="invite_pending_title">Ссылка ожидает</string>
+    <string name="invite_pending_offline">Она будет создана, как только ты будешь онлайн.</string>
+    <string name="invite_pending_online">Создаём ссылку…</string>
+    <string name="invite_failed_title">Не удалось создать ссылку</string>
+    <string name="invite_failed_body">Что-то пошло не так при синхронизации группы.</string>
+    <string name="invite_retry">Попробовать ещё раз</string>
+    <string name="invite_share">Поделиться ссылкой</string>
+    <string name="invite_see_who_joined">Посмотреть, кто присоединился</string>
+    <string name="invite_add_person">Добавить человека без приложения</string>
+    <string name="invite_go_to_group">Перейти в группу</string>
+    <string name="invite_change_link">Сменить ссылку</string>
+    <string name="invite_change_link_title">Сменить ссылку-приглашение?</string>
+    <string name="invite_change_link_message">Текущая ссылка и QR-код перестанут работать, включая неиспользованные личные приглашения. Кто уже присоединился, останется в группе.</string>
+    <string name="invite_change_link_failed">Не удалось сменить ссылку. Попробуй ещё раз.</string>
+    <string name="invite_share_message">Давай делить счета группы %1$s в Blitz Split. Присоединяйся по этой ссылке: %2$s</string>
+</resources>

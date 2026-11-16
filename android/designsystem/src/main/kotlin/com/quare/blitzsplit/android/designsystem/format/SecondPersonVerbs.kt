@@ -14,6 +14,8 @@ private const val ITALIAN = "it"
 private const val POLISH = "pl"
 private const val DUTCH = "nl"
 private const val TURKISH = "tr"
+private const val RUSSIAN = "ru"
+private const val UKRAINIAN = "uk"
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
@@ -25,7 +27,18 @@ private val secondPersonAuxiliaries = mapOf(
     DUTCH to mapOf("heeft" to "hebt", "is" to "bent"),
 )
 private val turkishPast = Regex("[dt][ıiuü]$")
-private val youSubjectLanguages = setOf(SPANISH, PORTUGAL_PORTUGUESE, FRENCH, GERMAN, ITALIAN, POLISH, DUTCH, TURKISH)
+private val youSubjectLanguages = setOf(
+    SPANISH,
+    PORTUGAL_PORTUGUESE,
+    FRENCH,
+    GERMAN,
+    ITALIAN,
+    POLISH,
+    DUTCH,
+    TURKISH,
+    RUSSIAN,
+    UKRAINIAN,
+)
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
     "fez" to "fizeste",
@@ -52,7 +65,8 @@ private val irregularSecondPerson = mapOf(
  * verdeeld", "Jij hebt verdeeld". Polish's past says the gender, which the app doesn't know, so its verb phrases start
  * with a past in "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü",
  * "Sen böldün". Portugal's Portuguese (pt-PT, "tu") ends the verb's preterite in "-aste", "-este" or "-iste": "Ana
- * dividiu", "Tu dividiste". Any other language keeps the verb as it is, Brazil's Portuguese too ("Você dividiu"). Same
+ * dividiu", "Tu dividiste". Any other language keeps the verb as it is, Brazil's Portuguese too ("Você dividiu"), and
+ * Russian and Ukrainian, whose past says the gender but not the person ("Ана разделил(а)", "Ты разделил(а)"). Same
  * rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
@@ -130,7 +144,8 @@ private fun toSpanishSecondPerson(verb: String): String {
 
 /*
  * Why: Spanish, Portugal's Portuguese, French, German, Italian, Polish, Dutch and Turkish say "Tú", "Tu", "Du", "Ty",
- * "Jij" or "Sen" and conjugate the verb for it, unlike the other languages.
+ * "Jij" or "Sen" and conjugate the verb for it, unlike the other languages. Russian and Ukrainian say "Ты" and "Ти"
+ * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

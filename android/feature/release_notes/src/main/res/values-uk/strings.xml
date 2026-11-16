@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Що нового</string>
+    <string name="release_notes_show_beta">Показувати бета-версії</string>
+    <string name="release_notes_beta_badge">Бета %1$d</string>
+    <string name="release_notes_installed_badge">Ця версія</string>
+    <string name="release_notes_empty">Поки немає опису змін.</string>
+    <string name="release_notes_empty_only_betas">Стабільної версії ще немає. Увімкни бета-версії, щоб побачити, що зараз тестується.</string>
+    <string name="release_notes_load_failed_title">Не вдалося завантажити опис змін</string>
+    <string name="release_notes_load_failed_body">Перевір з\'єднання й спробуй ще раз.</string>
+    <string name="release_notes_retry">Спробувати ще раз</string>
+    <string name="release_notes_open_on_github">Відкрити на GitHub</string>
+</resources>

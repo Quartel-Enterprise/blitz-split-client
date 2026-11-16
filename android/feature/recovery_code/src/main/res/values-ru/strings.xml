@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Сохрани код восстановления</string>
+    <string name="recovery_code_body">Ты пользуешься приложением без аккаунта. Этот код вернёт твои группы, если ты сменишь или потеряешь устройство.</string>
+    <string name="recovery_code_copy">Копировать код</string>
+    <string name="recovery_code_save_to_password_manager">Сохранить в менеджер паролей</string>
+    <string name="recovery_code_connect_instead">Лучше подключить Google или Apple</string>
+    <string name="recovery_code_connect_instead_body">Код не понадобится</string>
+    <string name="recovery_code_sign_in_failed">Сейчас не удалось подключиться. Попробуй ещё раз.</string>
+    <string name="recovery_code_also_in_profile">Он также есть в разделе Профиль › Восстановление.</string>
+    <string name="recovery_code_remind_later">Напомнить позже</string>
+    <string name="recovery_code_saved">Я сохранил(а) его</string>
+</resources>

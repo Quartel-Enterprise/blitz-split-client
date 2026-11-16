@@ -206,6 +206,34 @@ object SampleTrips {
             court = "Sewa lapangan",
             items = italianDishes,
         ),
+        "ru" to SampleTripCopy(
+            groupName = "Поездка в Лиссабон",
+            people = listOf("Аня", "Миша", "Катя", "Дима", "Оля"),
+            dinner = "Ужин в траттории",
+            apartment = "Квартира в Алфаме",
+            groceries = "Продукты",
+            carRental = "Аренда машины",
+            boatTour = "Прогулка на лодке",
+            taxi = "Такси из аэропорта",
+            roommates = "Соседи по квартире",
+            soccer = "Футбол по пятницам",
+            court = "Аренда поля",
+            items = italianDishes,
+        ),
+        "uk" to SampleTripCopy(
+            groupName = "Подорож до Лісабона",
+            people = listOf("Оксана", "Тарас", "Соломія", "Богдан", "Ірина"),
+            dinner = "Вечеря в траторії",
+            apartment = "Квартира в Алфамі",
+            groceries = "Продукти",
+            carRental = "Оренда авто",
+            boatTour = "Прогулянка човном",
+            taxi = "Таксі з аеропорту",
+            roommates = "Сусіди по квартирі",
+            soccer = "Футбол щоп'ятниці",
+            court = "Оренда поля",
+            items = italianDishes,
+        ),
         "ja" to SampleTripCopy(
             groupName = "リスボン旅行",
             people = listOf("葵", "蓮", "陽菜", "大和", "結衣"),
@@ -234,6 +262,8 @@ object SampleTrips {
         "nl" to GroupCurrency.EUR,
         "tr" to GroupCurrency.TRY,
         "id" to GroupCurrency.IDR,
+        "ru" to GroupCurrency.RUB,
+        "uk" to GroupCurrency.UAH,
         "ja" to GroupCurrency.JPY,
     )
 
@@ -411,6 +441,8 @@ object SampleTrips {
             GroupCurrency.PLN -> 4.0 to 50L
             GroupCurrency.TRY -> 40.0 to 500L
             GroupCurrency.IDR -> 16_000.0 to 1_000L
+            GroupCurrency.RUB -> 90.0 to 1_000L
+            GroupCurrency.UAH -> 40.0 to 500L
             GroupCurrency.JPY -> 150.0 to 10L
             else -> 1.0 to 50L
         }

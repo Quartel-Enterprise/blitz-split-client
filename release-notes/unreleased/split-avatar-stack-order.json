@@ -16,7 +16,9 @@
         "nl": "De bel \"+N\" van een stapel gezichten verscheen onder het eerste gezicht in plaats van erover; dat is opgelost.",
         "ja": "顔アイコンの重なりで「+N」の丸が最初の顔の下に隠れていた問題を修正しました。",
         "tr": "Yüz yığınındaki \"+N\" balonunun ilk yüzün üstünde değil altında görünmesi düzeltildi.",
-        "id": "Memperbaiki gelembung \"+N\" pada tumpukan wajah yang muncul di bawah wajah pertama, bukan di atasnya."
+        "id": "Memperbaiki gelembung \"+N\" pada tumpukan wajah yang muncul di bawah wajah pertama, bukan di atasnya.",
+        "ru": "Исправлен кружок «+N» в стопке аватаров, который показывался под первым аватаром, а не поверх него.",
+        "uk": "Виправлено кружечок «+N» у стосі аватарів, який показувався під першим аватаром, а не поверх нього."
       }
     }
   ]

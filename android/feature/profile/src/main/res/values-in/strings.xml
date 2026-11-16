@@ -62,6 +62,8 @@
     <string name="profile_language_japanese">Bahasa Jepang</string>
     <string name="profile_language_turkish">Bahasa Turki</string>
     <string name="profile_language_indonesian">Bahasa Indonesia</string>
+    <string name="profile_language_russian">Bahasa Rusia</string>
+    <string name="profile_language_ukrainian">Bahasa Ukraina</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>
     <plurals name="profile_notifications_active">

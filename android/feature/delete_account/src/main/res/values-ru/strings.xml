@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Удалить аккаунт</string>
+    <string name="delete_account_offline_title">Нет интернета.</string>
+    <string name="delete_account_offline_body">Чтобы удалить аккаунт, нужно подключение к интернету. Подключись и попробуй ещё раз.</string>
+    <string name="delete_account_heading">Удалить твой аккаунт и данные?</string>
+    <string name="delete_account_deleted_title">Что будет удалено</string>
+    <string name="delete_account_deleted_profile">Твой профиль (имя, фото и цвет)</string>
+    <string name="delete_account_deleted_keys">Твои ключи Pix и Bitcoin</string>
+    <string name="delete_account_deleted_provider">Привязка к твоему аккаунту %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Твой код восстановления</string>
+    <string name="delete_account_deleted_device">Копия твоих данных на этом устройстве</string>
+    <string name="delete_account_kept_title">Что останется в твоих группах</string>
+    <string name="delete_account_kept_groups">Группы с их счетами и платежами — для остальных участников</string>
+    <string name="delete_account_kept_member">Твоё имя в каждой группе, как участника без аккаунта</string>
+    <string name="delete_account_kept_comments">Твои комментарии и добавленные тобой фото, под твоим именем</string>
+    <string name="delete_account_export">Сначала экспортировать мои данные</string>
+    <string name="delete_account_confirm">Я понимаю, что это нельзя отменить</string>
+    <string name="delete_account_delete">Удалить аккаунт</string>
+    <string name="delete_account_cancel">Отмена</string>
+    <string name="delete_account_failed">Не удалось удалить аккаунт. Попробуй ещё раз.</string>
+</resources>

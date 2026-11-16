@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Написати в підтримку</string>
+    <string name="contact_support_description">Ми відкриємо твій поштовий застосунок з готовим листом. Опиши, що сталося, і надішли: кожен лист читають живі люди.</string>
+    <string name="contact_support_to">Кому</string>
+    <string name="contact_support_diagnostics">Буде додано до листа</string>
+    <string name="contact_support_app_version">Версія застосунку</string>
+    <string name="contact_support_platform">Платформа</string>
+    <string name="contact_support_language">Мова</string>
+    <string name="contact_support_account">Обліковий запис</string>
+    <string name="contact_support_profile">Профіль</string>
+    <string name="contact_support_language_system">Системна</string>
+    <string name="contact_support_account_local">Лише цей пристрій</string>
+    <string name="contact_support_account_anonymous">Не підключено</string>
+    <string name="contact_support_open_email">Відкрити пошту</string>
+    <string name="contact_support_copy_email">Копіювати адресу ел. пошти</string>
+    <string name="contact_support_notice_copied">Адресу ел. пошти скопійовано.</string>
+    <string name="contact_support_notice_no_app">Поштовий застосунок не знайдено. Натомість адресу скопійовано.</string>
+    <string name="contact_support_close">Закрити</string>
+</resources>

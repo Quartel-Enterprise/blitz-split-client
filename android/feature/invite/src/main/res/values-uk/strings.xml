@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Закрити</string>
+    <string name="invite_group_created">Групу створено</string>
+    <string name="invite_title">Запроси всіх до групи %s</string>
+    <string name="invite_qr_description">QR-код посилання-запрошення групи</string>
+    <string name="invite_copy">Копіювати</string>
+    <string name="invite_copied">Скопійовано</string>
+    <string name="invite_who_picks">Той, хто відкриє посилання, обере себе зі списку: %s. Обліковий запис не потрібен.</string>
+    <string name="invite_names_or">%1$s або %2$s</string>
+    <string name="invite_anyone_joins">Той, хто відкриє посилання, приєднається до групи. Обліковий запис не потрібен.</string>
+    <string name="invite_pending_title">Посилання очікує</string>
+    <string name="invite_pending_offline">Його буде створено, щойно ти будеш онлайн.</string>
+    <string name="invite_pending_online">Створюємо посилання…</string>
+    <string name="invite_failed_title">Не вдалося створити посилання</string>
+    <string name="invite_failed_body">Під час синхронізації групи щось пішло не так.</string>
+    <string name="invite_retry">Спробувати ще раз</string>
+    <string name="invite_share">Поділитися посиланням</string>
+    <string name="invite_see_who_joined">Хто приєднався</string>
+    <string name="invite_add_person">Додати людину без застосунку</string>
+    <string name="invite_go_to_group">Перейти до групи</string>
+    <string name="invite_change_link">Змінити посилання</string>
+    <string name="invite_change_link_title">Змінити посилання-запрошення?</string>
+    <string name="invite_change_link_message">Поточне посилання й QR-код перестануть працювати, включно з невикористаними особистими запрошеннями. Ті, хто вже приєднався, залишаться в групі.</string>
+    <string name="invite_change_link_failed">Не вдалося змінити посилання. Спробуй ще раз.</string>
+    <string name="invite_share_message">Розділімо рахунки групи %1$s у Blitz Split. Приєднуйся за цим посиланням: %2$s</string>
+</resources>

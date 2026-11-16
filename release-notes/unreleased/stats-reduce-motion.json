@@ -19,7 +19,9 @@
         "nl": "Met Verminder beweging aan toont Statistieken van een groep de grafieken nu meteen, zonder groeiende staven of een ring die rondloopt.",
         "ja": "「視差効果を減らす」がオンのとき、グループの統計はバーが伸びたりリングが回ったりせず、グラフをすぐに表示するようになりました。",
         "tr": "Hareketi Azalt açıkken bir grubun İstatistikler ekranı artık grafikleri çubuklar büyümeden ve halka dönmeden hemen gösteriyor.",
-        "id": "Dengan Kurangi Gerakan aktif, Statistik grup kini menampilkan grafiknya langsung, tanpa batang yang tumbuh atau cincin yang berputar."
+        "id": "Dengan Kurangi Gerakan aktif, Statistik grup kini menampilkan grafiknya langsung, tanpa batang yang tumbuh atau cincin yang berputar.",
+        "ru": "Когда включено «Уменьшение движения», «Статистика» группы теперь сразу показывает графики — без растущих столбиков и вращающегося кольца.",
+        "uk": "Коли ввімкнено «Зменшення руху», «Статистика» групи тепер одразу показує діаграми — без стовпчиків, що ростуть, і кільця, що обертається."
       }
     }
   ]

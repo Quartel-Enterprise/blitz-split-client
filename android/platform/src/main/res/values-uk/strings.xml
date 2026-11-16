@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · код відновлення</string>
+    <string name="platform_export_file_name">blitz-split-dani-%1$s.json</string>
+    <string name="platform_camera_denied">Дозволь доступ до камери в налаштуваннях, щоб зробити фото.</string>
+    <string name="platform_camera_settings">Налаштування</string>
+    <string name="platform_receipt_source_camera">Зробити фото</string>
+    <string name="platform_receipt_source_gallery">Обрати з галереї</string>
+    <string name="platform_receipt_source_file">Обрати файл</string>
+    <string name="platform_receipt_camera_title">Сканувати чек</string>
+    <string name="platform_receipt_camera_close">Закрити</string>
+    <string name="platform_receipt_camera_flash_on">Увімкнути спалах</string>
+    <string name="platform_receipt_camera_flash_off">Вимкнути спалах</string>
+    <string name="platform_receipt_camera_hint">Розмісти весь чек у кадрі. Ми заповнимо суму, дату й опис; ти перевіриш перед збереженням.</string>
+    <string name="platform_receipt_camera_gallery">Обрати з галереї</string>
+    <string name="platform_receipt_camera_shutter">Зробити фото</string>
+    <string name="platform_receipt_camera_unavailable">Камера недоступна. Обери фото чека з галереї.</string>
+    <string name="platform_receipt_camera_permission">Дозволь доступ до камери, щоб відсканувати чек, або обери фото з галереї.</string>
+    <string name="platform_receipt_camera_allow">Дозволити камеру</string>
+    <string name="platform_receipt_camera_settings">Відкрити налаштування</string>
+</resources>

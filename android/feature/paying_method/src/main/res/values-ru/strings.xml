@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Новый способ оплаты</string>
+    <string name="paying_method_edit_title">Изменить способ оплаты</string>
+    <string name="paying_method_type">Тип</string>
+    <string name="paying_method_name">Название</string>
+    <string name="paying_method_name_optional">Название (необязательно)</string>
+    <string name="paying_method_color">Цвет</string>
+    <string name="paying_method_default">Способ по умолчанию</string>
+    <string name="paying_method_default_hint">Новые счета, которые ты оплачиваешь, начинаются с него.</string>
+    <string name="paying_method_delete">Удалить способ оплаты</string>
+    <string name="paying_method_delete_title">Удалить этот способ оплаты?</string>
+    <string name="paying_method_delete_body">В счетах, где ты его отметил(а), он больше не будет показан.</string>
+    <string name="paying_method_delete_confirm">Удалить</string>
+    <string name="paying_method_save">Сохранить</string>
+</resources>

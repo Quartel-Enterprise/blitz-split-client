@@ -51,6 +51,8 @@ const nativeLanguageNames: Record<string, string> = {
   ja: '日本語',
   tr: 'Türkçe',
   id: 'Bahasa Indonesia',
+  ru: 'Русский',
+  uk: 'Українська',
 }
 
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
@@ -68,6 +70,8 @@ const languageNames: Record<string, MessageKey> = {
   ja: 'profile_languageJapanese',
   tr: 'profile_languageTurkish',
   id: 'profile_languageIndonesian',
+  ru: 'profile_languageRussian',
+  uk: 'profile_languageUkrainian',
 }
 
 /**

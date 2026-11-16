@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Немає термінів</string>
+    <string name="category_map_title">Мапа категорій</string>
+    <string name="category_map_search">Шукати терміни</string>
+    <string name="category_map_add">Додати термін</string>
+    <string name="category_map_more">Інші параметри</string>
+    <string name="category_map_restore">Відновити стандартну</string>
+    <string name="category_map_back">Назад</string>
+    <string name="category_map_intro">Коли в назві рахунку є одне з цих слів, категорія визначається сама. «Uber додому» стає «Транспортом».</string>
+    <string name="category_map_intro_offline">Мапа працює офлайн: зміни діють одразу на цьому пристрої й дійдуть до інших твоїх пристроїв, щойно ти будеш онлайн.</string>
+    <string name="category_map_device_only">Твоя мапа зберігається лише на цьому пристрої. Щоб перенести її на інші пристрої, увійди через Google або Apple у «Профілі».</string>
+    <string name="category_map_open_profile">Відкрити профіль</string>
+    <string name="category_map_longest_wins">Коли назві відповідають два терміни, перемагає довший.</string>
+    <string name="category_map_no_result">Немає терміна з «%1$s»</string>
+    <string name="category_map_no_result_body">Додай його, і рахунки з цим словом у назві отримуватимуть правильну категорію.</string>
+    <string name="category_map_add_query">Додати «%1$s»</string>
+    <string name="category_map_empty_title">Твоя мапа порожня</string>
+    <string name="category_map_empty_body">Без термінів категорія не визначається з назви: ти обираєш її для кожного рахунку.</string>
+    <string name="category_map_group_category"> · категорія групи %1$s</string>
+    <string name="category_map_only_main">Лише %1$s</string>
+    <string name="category_map_only_in_group">лише в групі %1$s</string>
+    <string name="category_map_no_terms_yet">Поки немає термінів.</string>
+    <string name="category_map_add_in">Додати термін у категорію %1$s</string>
+    <string name="category_map_tip">Торкнись терміна, щоб змінити його категорію або прибрати його. Термін збігається з цілим словом, без урахування наголосів і регістру.</string>
+    <string name="category_map_queued">у черзі</string>
+    <string name="category_map_term_action">%1$s, %2$s. Змінити</string>
+    <string name="category_map_new_term">Новий термін</string>
+    <string name="category_map_edit_term">Редагувати термін</string>
+    <string name="category_map_term_label">Слово або фраза</string>
+    <string name="category_map_term_help">Збігається з цілим словом, без урахування наголосів і регістру.</string>
+    <string name="category_map_term_help_app">Термін застосунку. «Відновити стандартну» поверне його таким, яким він був.</string>
+    <string name="category_map_term_duplicate">«%1$s» уже обирає %2$s. Кожен термін має одну категорію.</string>
+    <string name="category_map_term_too_short">Використай щонайменше 2 літери.</string>
+    <string name="category_map_term_too_long">Використай щонайбільше 30 літер.</string>
+    <string name="category_map_term_invalid">Використовуй лише літери, цифри й пробіли.</string>
+    <string name="category_map_category">Категорія</string>
+    <string name="category_map_category_help">Це може бути категорія або підкатегорія.</string>
+    <string name="category_map_category_help_edit">Зміна тут переносить термін до іншої категорії.</string>
+    <string name="category_map_category_help_move">Перенесення прибирає термін з категорії %1$s.</string>
+    <string name="category_map_example">Приклад</string>
+    <string name="category_map_example_move">Після перенесення</string>
+    <string name="category_map_remove">Видалити</string>
+    <string name="category_map_cancel">Скасувати</string>
+    <string name="category_map_save">Зберегти</string>
+    <string name="category_map_move_to">Перенести в %1$s</string>
+    <string name="category_map_removed">«%1$s» прибрано з мапи</string>
+    <string name="category_map_undo">Скасувати</string>
+    <string name="category_map_restore_title">Відновити стандартну мапу?</string>
+    <string name="category_map_restore_body">60 термінів застосунку повернуться такими, якими були, включно з тими, що ти прибрав(-ла) або переніс(-ла).</string>
+    <string name="category_map_restore_own_one">Створений тобою термін «%1$s» залишиться.</string>
+    <string name="category_map_restore_confirm">Відновити</string>
+    <string name="category_map_save_error">Не вдалося зберегти мапу. Спробуй ще раз.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d термін</item>
+        <item quantity="few">%d терміни</item>
+        <item quantity="many">%d термінів</item>
+        <item quantity="other">%d терміна</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d підкатегорія</item>
+        <item quantity="few">%d підкатегорії</item>
+        <item quantity="many">%d підкатегорій</item>
+        <item quantity="other">%d підкатегорії</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d термін з «%2$s»</item>
+        <item quantity="few">%1$d терміни з «%2$s»</item>
+        <item quantity="many">%1$d термінів з «%2$s»</item>
+        <item quantity="other">%1$d терміна з «%2$s»</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Офлайн · %d зміна в черзі</item>
+        <item quantity="few">Офлайн · %d зміни в черзі</item>
+        <item quantity="many">Офлайн · %d змін у черзі</item>
+        <item quantity="other">Офлайн · %d зміни в черзі</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Створений тобою %d термін залишиться.</item>
+        <item quantity="few">Створені тобою %d терміни залишаться.</item>
+        <item quantity="many">Створені тобою %d термінів залишаться.</item>
+        <item quantity="other">Створені тобою %d терміна залишаться.</item>
+    </plurals>
+    <string name="category_map_new_category">Нова категорія</string>
+    <string name="category_map_new_subcategory_in">Нова підкатегорія в %s</string>
+    <string name="category_map_edit_category">Змінити %s</string>
+    <string name="category_map_category_group">Група</string>
+    <string name="category_map_change_color">Змінити колір: %1$s</string>
+    <string name="category_map_restore_color">Відновити колір</string>
+    <string name="category_map_color_done">Готово</string>
+</resources>
