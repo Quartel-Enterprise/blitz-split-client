@@ -187,7 +187,9 @@ Every brief is self-contained, since the session sees nothing of this conversati
   through `./scripts/heavy-check.sh`.
 - How it ends: start with `worktree-start-task` (with a simulator or emulator only when it needs to
   see the screen), verify the fix on a device when it is visual, and open the PR with `create-pr`,
-  which labels it `merge-when-green` and drives it until it merges.
+  which labels it `merge-when-green` and drives it until it merges. It skips `create-pr`'s step
+  that refreshes the README's image: this session does that once for every piece, at the end (step
+  8). Its PR description still says whether its change shows in that image, and on which platforms.
 - For the backend: merging to `main` of `blitz-split-api` runs its deploy workflow against the
   production Supabase project, so its PR says what the migration does to existing data. For the
   site: never `wrangler deploy` from this Mac, Cloudflare deploys it on merge.
@@ -206,9 +208,19 @@ Then:
   their words quoted.
 - Never write the fix here, and never merge a PR yourself unless the person asks.
 
-## 8. Report
+## 8. Refresh the README and report
 
-Once every piece has a merged PR, or is stuck on something only the person can settle, report: a
-table of the items, each with its PR (a full `owner/repo#n` link) and its state; the items left out
-and why; and the decisions still open. Then offer, in one question, to run `finish-task` for the
+Once every piece has a merged PR, or is stuck on something only the person can settle, look at the
+merged client PRs: their descriptions say whether the change shows in the README's image (check the
+diff, as step 1 of [`update-readme-screenshots`](../update-readme-screenshots/SKILL.md) says, when
+one doesn't). If none does, skip to the report. If any does, refresh the image once for all of them,
+in one PR: start it with `worktree-start-task` (a `chore` branch from the `origin/main` that now has
+every piece), run `update-readme-screenshots`, and open the PR with `create-pr`. This is the one
+change this session makes itself, since it is no app code and needs every piece merged first; it
+counts as a building session for step 5. Wait for it to merge, or to stop on a capture this Mac
+can't take, before reporting.
+
+Then report: a
+table of the items, each with its PR (a full `owner/repo#n` link) and its state; the README's PR, or
+why there was none; the items left out and why; and the decisions still open. Then offer, in one question, to run `finish-task` for the
 merged worktrees and archive the finished sessions. Archive only on the person's yes.

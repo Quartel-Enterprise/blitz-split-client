@@ -167,6 +167,7 @@ file the branch changes, as gathered in step 1 (commits ahead of `main` and unco
 alike), is one of these:
 
 - Markdown (`.md`), skills included
+- `docs/images/readme-hero-dark.webp` and `readme-hero-light.webp`, the README's image
 - `version.properties`, the only file a version bump touches
 - `gradle/libs.versions.toml`, for a dependency bump with no code changes
 
@@ -368,6 +369,21 @@ user.
 
 If any check fails, stop and report which one and why. Fix it before going on; never push a branch
 whose checks fail.
+
+#### The README's image
+
+`README.md` opens with an image of the group screen's Expenses tab captured from the real Android,
+iPhone, Mac and web apps. Once the checks pass, decide whether the branch visibly changes something
+that image shows, as step 1 of [`update-readme-screenshots`](../update-readme-screenshots/SKILL.md)
+says (the group screen, the Mac's and the web's sidebar, the theme, the sample trip). If it does, run
+that skill now and commit the two refreshed images in this same pull request, so the README never
+shows an older app than `main`. If it doesn't, skip it. Either way, add one line to the description
+of step 6 saying which: "The README's image is refreshed (Android, web)" or "The README's image
+doesn't show this change".
+
+Skip this when the task's brief says another session refreshes the README at the end, as
+[`whatsapp-feedback`](../whatsapp-feedback/SKILL.md) does for its pieces: then write in the
+description only whether the change shows in the image, and which platforms, so that session knows.
 
 ### 9. Commit all uncommitted changes
 
