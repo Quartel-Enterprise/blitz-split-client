@@ -484,7 +484,8 @@ private struct TimeFormatName: View {
             switch timeFormat {
             case .twentyFourHour: Text("24-hour")
             case .twelveHour: Text("12-hour")
-            default: Text("System")
+            // Its own key: "System" agrees with the format, not the theme, in Russian and Ukrainian
+            default: Text("System time format")
             }
             if showsSample {
                 Text(verbatim: sample)

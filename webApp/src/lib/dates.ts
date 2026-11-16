@@ -26,12 +26,14 @@ export function getTimeFormat(): TimeFormat {
   return currentTimeFormat
 }
 
+const periodOf = (hour: number) =>
+  timeFormats['12h'].formatToParts(new Date(2000, 0, 1, hour)).find((part) => part.type === 'dayPeriod')?.value
+
 /** The language's words for the morning and the afternoon on a 12-hour clock: "AM" and "PM", "午前" and "午後". */
-export function uiDayPeriods(): [string, string] {
-  const periodOf = (hour: number) =>
-    timeFormats['12h'].formatToParts(new Date(2000, 0, 1, hour)).find((part) => part.type === 'dayPeriod')?.value
-  return [periodOf(9) ?? 'AM', periodOf(21) ?? 'PM']
-}
+export const uiDayPeriods: readonly [string, string] = [periodOf(9) ?? 'AM', periodOf(21) ?? 'PM']
+
+/** The language's names of a time's fields, for the time selects: "Hora", "Minuto", "AM/PM". */
+export const uiTimeFieldNames = new Intl.DisplayNames(uiTag, { type: 'dateTimeField' })
 
 /** 14:30 today in `format`, Profile's example of each option ("14:30", "2:30 PM"). */
 export function formatSampleTime(format: TimeFormat): string {

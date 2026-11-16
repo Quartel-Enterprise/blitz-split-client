@@ -47,6 +47,7 @@ internal fun TimeFormatDialog(
     onDismiss: () -> Unit,
     placement: DialogPlacement,
 ) {
+    val isSystem24Hour = rememberIsSystem24HourClock()
     FoldAlertDialog(
         onDismissRequest = onDismiss,
         title = stringResource(R.string.profile_time_format),
@@ -56,6 +57,7 @@ internal fun TimeFormatDialog(
                     TimeFormatOption(
                         option = option,
                         isSelected = option == state.timeFormat,
+                        isSystem24Hour = isSystem24Hour,
                         onClick = { onEvent(ProfileUiEvent.OnTimeFormatSelected(option)) },
                     )
                 }
@@ -72,6 +74,7 @@ internal fun TimeFormatDialog(
 private fun TimeFormatOption(
     option: TimeFormatPreference,
     isSelected: Boolean,
+    isSystem24Hour: Boolean,
     onClick: () -> Unit,
 ) {
     Row(
@@ -95,7 +98,7 @@ private fun TimeFormatOption(
                 style = MaterialTheme.typography.bodyLarge,
             )
             Text(
-                text = rememberSampleTime(option),
+                text = rememberSampleTime(option, isSystem24Hour),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -105,9 +108,11 @@ private fun TimeFormatOption(
 
 // Why: 14:30 today, in the option's clock ("14:30" or "2:30 PM", in the UI's language).
 @Composable
-private fun rememberSampleTime(option: TimeFormatPreference): String {
+private fun rememberSampleTime(
+    option: TimeFormatPreference,
+    isSystem24Hour: Boolean,
+): String {
     val locale = LocalLocale.current.platformLocale
-    val isSystem24Hour = rememberIsSystem24HourClock()
     val is24Hour = option.isTwentyFourHour(isSystem24Hour)
     return remember(locale, is24Hour) {
         val zone = ZoneId.systemDefault()

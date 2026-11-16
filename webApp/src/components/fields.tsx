@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { t } from '@/i18n'
-import { formatWhen, fromDateTimeInputs, getTimeFormat, toDateInputValue, toTimeInputValue, uiDayPeriods } from '@/lib/dates'
+import { formatWhen, fromDateTimeInputs, getTimeFormat, toDateInputValue, toTimeInputValue, uiDayPeriods, uiTimeFieldNames } from '@/lib/dates'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
-import { uiTag } from '@/lib/currency'
 import { cn } from '@/lib/utils'
 
 /** A button that looks like a field: "Quem pagou", "Quando". */
@@ -246,13 +245,12 @@ function ClockInput({ id, value, onChange }: { id: string; value: string; onChan
   const isTwelveHour = timeFormat === '12h'
   const isAfternoon = hour >= 12
   const change = (nextHour: number, nextMinute: number) => onChange(`${pad(nextHour)}:${pad(nextMinute)}`)
-  const fields = new Intl.DisplayNames(uiTag, { type: 'dateTimeField' })
-  const [morning, afternoon] = uiDayPeriods()
+  const [morning, afternoon] = uiDayPeriods
   return (
     <div role="group" aria-labelledby={`${id}-label`} className="flex items-center gap-1.5">
       <select
         id={id}
-        aria-label={fields.of('hour')}
+        aria-label={uiTimeFieldNames.of('hour')}
         value={isTwelveHour ? hour % 12 || 12 : hour}
         onChange={(event) => {
           const picked = Number(event.target.value)
@@ -267,7 +265,7 @@ function ClockInput({ id, value, onChange }: { id: string; value: string; onChan
         ))}
       </select>
       <span aria-hidden>:</span>
-      <select aria-label={fields.of('minute')} value={minute} onChange={(event) => change(hour, Number(event.target.value))} className={selectClass}>
+      <select aria-label={uiTimeFieldNames.of('minute')} value={minute} onChange={(event) => change(hour, Number(event.target.value))} className={selectClass}>
         {[...Array(60).keys()].map((option) => (
           <option key={option} value={option}>
             {pad(option)}
@@ -276,7 +274,7 @@ function ClockInput({ id, value, onChange }: { id: string; value: string; onChan
       </select>
       {isTwelveHour && (
         <select
-          aria-label={fields.of('dayPeriod')}
+          aria-label={uiTimeFieldNames.of('dayPeriod')}
           value={isAfternoon ? 'pm' : 'am'}
           onChange={(event) => change((hour % 12) + (event.target.value === 'pm' ? 12 : 0), minute)}
           className={selectClass}

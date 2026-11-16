@@ -19,15 +19,16 @@ final class BitcoinUnit {
 final class ClockFormat {
     static let shared = ClockFormat()
 
-    var preference: TimeFormatPreference = .system
-
-    private init() {}
+    var preference: TimeFormatPreference = .system {
+        didSet { locale = locale(from: .autoupdatingCurrent) }
+    }
 
     /// The device's locale on the hour cycle picked: 24 hours ("14:30") or 12 with AM and PM ("2:30 PM"), in the
-    /// device's own way of writing them; the device's locale as it is while it follows the system.
-    var locale: Locale {
-        locale(from: .autoupdatingCurrent)
-    }
+    /// device's own way of writing them; the device's locale as it is while it follows the system. Kept, not built
+    /// again for each row a list formats.
+    private(set) var locale: Locale = .autoupdatingCurrent
+
+    private init() {}
 
     /// `base` on the hour cycle picked, so a time picker drawn in the app's language (the windows' `locale`) keeps it.
     func locale(from base: Locale) -> Locale {
