@@ -90,9 +90,9 @@ internal suspend fun syncAppInviteDismissals(
 }
 
 /*
- * Why: a sync while the session waited for its refresh was put off and left the device as it was, and nothing else changes
- * when its token comes back (the same user, maybe online all along), so that sync runs again then. One that went
- * through needs no other.
+ * Why: a sync while the session waited for its refresh was put off and left the device as it was, and nothing else
+ * changes when its token comes back (the same user, maybe online all along), so that sync runs again then. One that
+ * went through needs no other.
  */
 internal suspend fun syncOnSessionRecovery(
     accountRepository: AccountRepository,

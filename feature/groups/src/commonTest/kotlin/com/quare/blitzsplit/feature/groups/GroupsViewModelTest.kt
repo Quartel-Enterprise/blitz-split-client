@@ -796,6 +796,37 @@ class GroupsViewModelTest {
         }
 
     @Test
+    fun `GIVEN the full sync awaited and the groups showing WHEN a sync runs THEN shows no syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                syncState = SyncState.SYNCED,
+                storedGroups = listOf(trio()),
+            )
+            account.awaitsFullSync = true
+
+            // When
+            syncState.value = SyncState.SYNCING
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
+    fun `GIVEN the syncing badge with no group yet WHEN the first group arrives THEN hides the syncing badge`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(syncState = SyncState.SYNCING)
+            account.awaitsFullSync = true
+
+            // When
+            groups.groups.value = listOf(trio())
+
+            // Then
+            assertNull(viewModel.uiState.value.syncBadge)
+        }
+
+    @Test
     fun `GIVEN the failed badge WHEN the retry fails again THEN shows the failed badge`() = runTest(testDispatcher) {
         // Given
         prepareScenario(syncState = SyncState.FAILED)

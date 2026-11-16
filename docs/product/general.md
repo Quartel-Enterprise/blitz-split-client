@@ -290,7 +290,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     restore's first full sync and a retry run silently too, and "Syncing…" goes as the first group arrives; the first
     download's own "Syncing… 3 of 7 groups" still counts them. A sync that runs while the session waits for its token's
     refresh, as on coming back to the front after a while, asked the server nothing: it is put off, not failed, so it
-    shows neither "No response from the server" nor, once the token comes back and it runs again, "Syncing…". "Offline · 1 change queued" and "No response from the server" still
+    shows neither "No response from the server" nor, once the token comes back and it runs again, "Syncing…". Only a
+    session still refreshing 30 seconds later (Supabase tries every 10) counts as failed: the server doesn't answer. "Offline · 1 change queued" and "No response from the server" still
     show as they did, and win over "Syncing…" (`SyncBadge.ofOrNull`, so no UI special-cases it). Pulling down
     (Android, iOS) keeps its own spinner until that sync ends, as Activity's refresh does on the Mac (View › Refresh,
     ⌘R) and the web; the Mac's and the web's Home and Groups have no refresh of their own. Profile's "Account and sync" row still says

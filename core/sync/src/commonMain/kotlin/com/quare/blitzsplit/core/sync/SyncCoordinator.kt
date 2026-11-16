@@ -108,7 +108,7 @@ class SyncCoordinator(
 
     // Why: counts the syncs waiting on the lock too, so the state stays SYNCING between two queued ones.
     private val requestedSyncs = MutableStateFlow(0)
-    private val outcomes = SyncOutcomes(firstDownload, crashReporter, connectivityObserver)
+    private val outcomes = SyncOutcomes(firstDownload, crashReporter, connectivityObserver, scope)
 
     /*
      * Why: how many syncs began reading the groups, the bills and the rest real time tells of, so a channel that joined

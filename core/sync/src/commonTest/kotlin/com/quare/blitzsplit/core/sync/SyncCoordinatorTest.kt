@@ -537,6 +537,72 @@ class SyncCoordinatorTest {
         }
 
     @Test
+    fun `GIVEN a sync put off WHEN the session still refreshes past the grace THEN the sync state is failed`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = SessionRefreshingException()
+            coordinator.syncNow()
+
+            // When
+            advanceTimeBy(PUT_OFF_GRACE)
+            runCurrent()
+
+            // Then
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a sync put off WHEN the next one goes through within the grace THEN the sync state stays synced`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = SessionRefreshingException()
+            coordinator.syncNow()
+            profile.pullError = null
+            coordinator.syncNow()
+
+            // When
+            advanceTimeBy(PUT_OFF_GRACE)
+            runCurrent()
+
+            // Then
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a failed sync WHEN the next one is put off for the session THEN the sync state stays failed`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = IllegalStateException("server down")
+            coordinator.syncNow()
+            profile.pullError = SessionRefreshingException()
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a first download WHEN its sync is put off for the session THEN keeps waiting for the copy`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+        )
+        profile.pullError = SessionRefreshingException()
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertFalse(firstDownload.observeHasSyncFailed().value)
+    }
+
+    @Test
     fun `GIVEN a sync put off while the session refreshed WHEN it gets a token again THEN syncs again`() = runTest {
         // Given
         prepareScenario(
