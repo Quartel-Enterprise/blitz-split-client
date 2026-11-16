@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.expenses.domain
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMyExpensesInUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveMyExpensesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -74,6 +75,33 @@ class ObserveMyExpensesUseCaseTest {
         // Then
         assertEquals(listOf("mine"), expenses.map { it.id })
     }
+
+    @Test
+    fun `GIVEN my bills in two groups WHEN observing a page of one group THEN asks for it and gives only its bills`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = listOf(
+                    expense(
+                        id = "here",
+                        groupId = "group-1",
+                        spentAt = 1_000L,
+                    ),
+                    expense(
+                        id = "there",
+                        groupId = "group-2",
+                        spentAt = 2_000L,
+                    ),
+                ),
+            )
+
+            // When
+            val expenses = ObserveMyExpensesInUseCase(repository)(setOf("group-1"), limit = 2).first()
+
+            // Then
+            assertEquals(listOf(setOf("group-1") to 2), repository.myExpenseInReads)
+            assertEquals(listOf("here"), expenses.map { it.id })
+        }
 
     private fun expense(
         id: String,

@@ -13,6 +13,12 @@ interface ExpenseLocalDataSource {
     // Why: the first `limit` bills this device's user paid or takes part in, every group's, the most recent first.
     fun observeMyExpenses(limit: Int): Flow<List<ExpenseWithEditor>>
 
+    // Why: the same, of the groups picked only.
+    fun observeMyExpensesIn(
+        groupIds: Set<String>,
+        limit: Int,
+    ): Flow<List<ExpenseWithEditor>>
+
     // Why: null once the bill is deleted, here or by a sync.
     fun observeExpense(id: String): Flow<ExpenseWithEditor?>
 

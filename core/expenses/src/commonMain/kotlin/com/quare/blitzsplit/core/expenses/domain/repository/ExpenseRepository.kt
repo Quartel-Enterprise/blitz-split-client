@@ -17,6 +17,12 @@ interface ExpenseRepository {
      */
     fun observeMyExpenses(limit: Int): Flow<List<Expense>>
 
+    // Why: the same, of the groups picked only ("All expenses" narrowed by group, as a group's "See all" opens it).
+    fun observeMyExpensesIn(
+        groupIds: Set<String>,
+        limit: Int,
+    ): Flow<List<Expense>>
+
     // Why: one bill, null once it is deleted, here or on another device.
     fun observeExpense(id: String): Flow<Expense?>
 

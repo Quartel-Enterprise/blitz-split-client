@@ -384,6 +384,38 @@ class RoomExpenseLocalDataSourceTest {
         }
 
     @Test
+    fun `GIVEN my bills in two groups WHEN observing those of one THEN gives only that group bills`() = runTest {
+        // Given
+        prepareScenario(
+            members = listOf(
+                member(
+                    id = ME_HERE,
+                    groupId = MY_GROUP,
+                    userId = USER_ID,
+                ).copy(isMe = true),
+                member(
+                    id = ME_THERE,
+                    groupId = OTHER_USER_GROUP,
+                    userId = USER_ID,
+                ).copy(isMe = true),
+            ),
+            stored = listOf(
+                expense(id = "here").copy(payersJson = "[{\"memberId\":\"$ME_HERE\",\"amountMinor\":1000}]"),
+                expense(
+                    id = "there",
+                    groupId = OTHER_USER_GROUP,
+                ).copy(payersJson = "[{\"memberId\":\"$ME_THERE\",\"amountMinor\":1000}]"),
+            ),
+        )
+
+        // When
+        val expenses = dataSource.observeMyExpensesIn(setOf(MY_GROUP), limit = 10).first()
+
+        // Then
+        assertEquals(listOf("here"), expenses.map { it.expense.id })
+    }
+
+    @Test
     fun `GIVEN bills of two groups and a deleted one WHEN observing all THEN shows each group newest first`() =
         runTest {
             // Given
@@ -644,5 +676,9 @@ class RoomExpenseLocalDataSourceTest {
         const val USER_ID = "user-1"
         const val MY_GROUP = "group-1"
         const val OTHER_USER_GROUP = "group-2"
+
+        // Why: member ids are UUIDs, as the device makes them.
+        const val ME_HERE = "3f6c1a2e-8b4d-4e7a-9c1f-2a5b6c7d8e90"
+        const val ME_THERE = "7a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d"
     }
 }

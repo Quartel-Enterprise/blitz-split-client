@@ -131,6 +131,30 @@ class ExpenseRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN my bills of two groups WHEN observing those of one THEN shows only its bills as bills`() = runTest {
+        // Given
+        prepareScenario(
+            stored = listOf(
+                entity(id = "bill-1"),
+                entity(
+                    id = "bill-new-mode",
+                    splitMode = "itemized",
+                ),
+                entity(
+                    id = "bill-2",
+                    groupId = OTHER_GROUP_ID,
+                ),
+            ),
+        )
+
+        // When
+        val expenses = repository.observeMyExpensesIn(setOf(GROUP_ID), limit = 10).first()
+
+        // Then
+        assertEquals(listOf("bill-1" to GROUP_ID), expenses.map { it.id to it.groupId })
+    }
+
+    @Test
     fun `GIVEN one of my bills this version cannot read WHEN observing my bills THEN shows the rest`() = runTest {
         // Given
         prepareScenario(
@@ -923,6 +947,16 @@ private class FakeExpenseLocalDataSource(
     // Why: who takes part is Room's query, covered in core/provider/room; here every bill reads as the user's.
     override fun observeMyExpenses(limit: Int): Flow<List<ExpenseWithEditor>> = entities.map { list ->
         list.filter { !it.isDeleted }.take(limit).map { ExpenseWithEditor(it, editors[it.id]) }
+    }
+
+    override fun observeMyExpensesIn(
+        groupIds: Set<String>,
+        limit: Int,
+    ): Flow<List<ExpenseWithEditor>> = entities.map { list ->
+        list
+            .filter { !it.isDeleted && it.groupId in groupIds }
+            .take(limit)
+            .map { ExpenseWithEditor(it, editors[it.id]) }
     }
 
     override fun observeExpense(id: String): Flow<ExpenseWithEditor?> = entities.map { list ->

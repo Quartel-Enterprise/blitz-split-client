@@ -74,8 +74,8 @@ The home tab, its shortcuts and pinned groups.
     field and a row of filter chips that scrolls sideways (out into the column's side margins, the first chip at rest
     lined up with the search field, as Dividir's modes do in [split-bill.md](split-bill.md)), iOS and the Mac the bar's own search field (`.searchable`)
     and a row of menus, the web an input and a row of menu buttons that wraps on a phone. At their default the list
-    reads the device a page at a time; any filter, search or other order reads every bill of the device once and
-    shows them a page at a time (`AllExpensesFilters`), the page going back to the first on each change.
+    reads the device a page at a time, and so does a pick of groups alone, each page of those groups' bills only; any
+    other filter, search or order reads every bill of the device once and shows them a page at a time (`AllExpensesFilters`), the page going back to the first on each change.
     "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac), on iOS the tinted glass item at the end of
     the top bar, never floating over the tab bar. On iPhone and iPad it starts spelled out and shrinks to its icon as
     the list scrolls down, spelled out again back at the top, as Android's extended FAB does (beta feedback of
