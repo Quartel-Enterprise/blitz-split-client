@@ -397,7 +397,7 @@
         <item quantity="many">По доходу на %d чел.</item>
         <item quantity="other">По доходу на %d чел.</item>
     </plurals>
-    <string name="split_bill_hint_income">Часть каждого зависит от его дохода. Доходы задаются в группе; изменение здесь касается только этого счёта.</string>
+    <string name="split_bill_hint_income">Часть каждого зависит от его дохода. Доходы задаются в группе; изменение здесь касается только этого счёта. Укажи чистый доход каждого, после налогов.</string>
     <string name="split_bill_list_income">Доход каждого</string>
     <string name="split_bill_person_income">Доход участника %s</string>
     <string name="split_bill_default_now_income">по доходу</string>

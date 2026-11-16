@@ -50,6 +50,7 @@
     <string name="default_split_list_percent">Each one\'s percentage</string>
     <string name="default_split_list_income">Each one\'s income</string>
     <string name="default_split_income_note">The group\'s members see these incomes and can split bills by them.</string>
+    <string name="default_split_income_net_note">Enter each one\'s net income, after taxes.</string>
     <string name="default_split_parts_of">%s\'s shares</string>
     <string name="default_split_percent_of">%s\'s percentage</string>
     <string name="default_split_income_of">%s\'s income</string>
@@ -67,6 +68,7 @@
     <string name="default_split_row_shares">%d%% of each bill</string>
     <string name="default_split_row_percent">%1$s of each %2$s</string>
     <string name="default_split_row_income">Income per month · %d%% of each bill</string>
+    <string name="default_split_row_income_blank">Income per month</string>
     <string name="default_split_row_new">%s · just joined</string>
     <string name="default_split_me">%s (you)</string>
     <string name="default_split_exceptions">Exceptions by category</string>

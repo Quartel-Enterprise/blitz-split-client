@@ -221,7 +221,10 @@ private struct DefaultSplitPeople: View {
             Text(verbatim: DefaultSplitCopy.listLabel(state.mode))
         } footer: {
             if state.mode == .income {
-                Label("The group's members see these incomes and can split bills by them.", systemImage: "person.2")
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("Enter each one's net income, after taxes.", systemImage: "info.circle")
+                    Label("The group's members see these incomes and can split bills by them.", systemImage: "lock")
+                }
             }
         }
         Section {
@@ -305,10 +308,12 @@ private struct DefaultSplitPersonRow: View {
                 bundle: .appLanguage,
             )
         case .income:
-            String(
-                localized: "Income per month · \(SplitBillCopy.percent(row.weight)) of each bill",
-                bundle: .appLanguage,
-            )
+            state.showsIncomePercents
+                ? String(
+                    localized: "Income per month · \(SplitBillCopy.percent(row.weight)) of each bill",
+                    bundle: .appLanguage,
+                )
+                : String(localized: "Income per month", bundle: .appLanguage)
         default:
             row.weight > 0
                 ? String(

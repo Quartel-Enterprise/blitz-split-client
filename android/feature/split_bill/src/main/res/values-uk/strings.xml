@@ -397,7 +397,7 @@
         <item quantity="many">За доходом між %d</item>
         <item quantity="other">За доходом між %d</item>
     </plurals>
-    <string name="split_bill_hint_income">Частина кожного залежить від його доходу. Доходи задано в групі; зміна тут стосується лише цього рахунку.</string>
+    <string name="split_bill_hint_income">Частина кожного залежить від його доходу. Доходи задано в групі; зміна тут стосується лише цього рахунку. Вкажи чистий дохід кожного, після податків.</string>
     <string name="split_bill_list_income">Дохід кожного</string>
     <string name="split_bill_person_income">Дохід: %s</string>
     <string name="split_bill_default_now_income">за доходом</string>

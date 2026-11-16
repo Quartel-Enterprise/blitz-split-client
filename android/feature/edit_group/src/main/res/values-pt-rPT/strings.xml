@@ -18,12 +18,14 @@
     <string name="default_split_list_percent">Percentagem de cada um</string>
     <string name="default_split_list_income">Rendimento de cada um</string>
     <string name="default_split_income_note">Quem está no grupo vê estes rendimentos e pode dividir contas com base neles.</string>
+    <string name="default_split_income_net_note">Indica o rendimento líquido de cada um, depois dos impostos.</string>
     <string name="default_split_percent_of">Percentagem de %s</string>
     <string name="default_split_income_of">Rendimento de %s</string>
     <string name="default_split_sum_help">Ajusta as percentagens até somarem 100% para guardar.</string>
     <string name="default_split_example_equal_help">Quem não estiver numa despesa fica de fora ao dividir.</string>
     <string name="default_split_row_out">Fica de fora por predefinição</string>
     <string name="default_split_row_income">Rendimento por mês · %d%% de cada conta</string>
+    <string name="default_split_row_income_blank">Rendimento por mês</string>
     <string name="default_split_me">%s (tu)</string>
     <string name="default_split_exception_lead">As despesas desta categoria dividem-se de outra forma.</string>
     <string name="default_split_exception_percent">Percentagem, %s</string>

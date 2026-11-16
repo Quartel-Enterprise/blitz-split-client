@@ -54,6 +54,15 @@ data class DefaultSplitUiState(
     val includedCount: Int
         get() = weights.values.count { it > 0 }
 
+    /*
+     * Why: "Pela renda" says each one's percentage only once an income is typed, the percentages it gives; with every
+     * field blank it says just "Renda por mês" (beta feedback of 2026-11-16), though the example still shows the
+     * percentages Salvar keeps. Fallback percentages that don't add up (someone in them left) still show, so "A soma dá
+     * 80%" points at them.
+     */
+    val showsIncomePercents: Boolean
+        get() = mode != DefaultSplitMode.INCOME || figures.usesTypedIncomes || showsPercentError
+
     // Why: "A soma dá 90%".
     val percentSum: Long
         get() = if (usesPercent) weights.values.sum() else GroupDefaultSplit.FULL_PERCENT

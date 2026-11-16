@@ -1,4 +1,4 @@
-import { ArrowLeft, CircleAlert, Loader2, Lock, Minus, Plus, UserPlus } from 'lucide-react'
+import { ArrowLeft, CircleAlert, Info, Loader2, Lock, Minus, Plus, UserPlus } from 'lucide-react'
 import { DefaultSplitPresenter, type JsDefaultSplitRow, type JsDefaultSplitState, type JsRoute } from 'blitzsplit-shared'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
@@ -233,10 +233,16 @@ function People({ presenter, state }: { presenter: DefaultSplitPresenter; state:
         ))}
       </ul>
       {state.mode === 'income' && (
-        <p className="flex items-start gap-2 text-[13px] text-muted-foreground">
-          <Lock aria-hidden className="mt-0.5 size-3.5 shrink-0" />
-          {t('defaultSplit_incomeNote')}
-        </p>
+        <>
+          <p className="flex items-start gap-2 text-[13px] text-muted-foreground">
+            <Info aria-hidden className="mt-0.5 size-3.5 shrink-0" />
+            {t('defaultSplit_incomeNetNote')}
+          </p>
+          <p className="flex items-start gap-2 text-[13px] text-muted-foreground">
+            <Lock aria-hidden className="mt-0.5 size-3.5 shrink-0" />
+            {t('defaultSplit_incomeNote')}
+          </p>
+        </>
       )}
     </div>
   )
@@ -255,7 +261,7 @@ function PersonRow({ presenter, state, row }: { presenter: DefaultSplitPresenter
       line = t('defaultSplit_rowPercent', { amount: money(row.exampleMinor ?? 0), total: money(state.exampleTotalMinor) })
       break
     case 'income':
-      line = t('defaultSplit_rowIncome', { percent: formatPercent(row.weight) })
+      line = state.showsIncomePercents ? t('defaultSplit_rowIncome', { percent: formatPercent(row.weight) }) : t('defaultSplit_rowIncomeBlank')
       break
     default:
       line =

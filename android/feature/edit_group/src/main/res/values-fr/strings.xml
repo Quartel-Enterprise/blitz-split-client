@@ -51,6 +51,7 @@
     <string name="default_split_list_percent">Pourcentage de chacun</string>
     <string name="default_split_list_income">Revenu de chacun</string>
     <string name="default_split_income_note">Les membres du groupe voient ces revenus et peuvent répartir les dépenses selon eux.</string>
+    <string name="default_split_income_net_note">Indique le revenu net de chacun, après impôts.</string>
     <string name="default_split_parts_of">Parts (%s)</string>
     <string name="default_split_percent_of">Pourcentage (%s)</string>
     <string name="default_split_income_of">Revenu (%s)</string>
@@ -68,6 +69,7 @@
     <string name="default_split_row_shares">%d%% de chaque dépense</string>
     <string name="default_split_row_percent">%1$s de chaque %2$s</string>
     <string name="default_split_row_income">Revenu par mois · %d%% de chaque dépense</string>
+    <string name="default_split_row_income_blank">Revenu par mois</string>
     <string name="default_split_row_new">%s · vient de rejoindre</string>
     <string name="default_split_me">%s (toi)</string>
     <string name="default_split_exceptions">Exceptions par catégorie</string>
