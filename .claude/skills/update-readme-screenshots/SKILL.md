@@ -54,6 +54,21 @@ no visible effect or a change the sample trip never reaches (an empty group, an 
 as it is. Decide by whether a reader comparing the old and new image would see a difference, and name the platforms
 whose screen changes.
 
+Then check whether `main`'s image is already behind, whatever this branch changes. A refresh owed by an
+earlier pull request can be lost: `whatsapp-feedback`'s pieces skip it for a final refresh that their
+coordinating session may never reach. #405, #407, #414 and #427 all merged that way, and the README showed the old
+app for a day. List what merged since the image last changed:
+
+```bash
+since=$(git log -1 --format=%H origin/main -- docs/images/readme-hero-light.webp)
+git log --oneline "$since"..origin/main
+```
+
+For each pull request in that list that touches a path of the table, read its description's README line
+(`gh pr view <n> --json body`), or its diff when there is none. If any shows in the image, the image is behind:
+refresh it in this branch even when this branch's own change doesn't show, and name those pull requests in the
+description ("The README's image is refreshed for #427 too").
+
 If nothing shows, stop here and say so in one line (in `create-pr`, one line of the pull request description is
 enough: "The README's image doesn't show this change").
 

@@ -20,9 +20,19 @@ import com.quare.blitzsplit.shared.storescreenshots.SampleBill
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrip
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
 
-// Friday 23 October 2026, 00:00 UTC: the day the Play shots are "taken". The iOS capture seeds relative to now.
-internal const val TODAY_MILLIS = 1_792_713_600_000L
 internal const val DAY_MILLIS = 86_400_000L
+
+// Friday 23 October 2026, 00:00 UTC: the day the Play shots are "taken". The iOS capture seeds relative to now.
+private const val PLAY_SHOTS_DAY_MILLIS = 1_792_713_600_000L
+
+// Why: the README's image (ReadmeHeroScreens) sets the Android phone beside the iPhone, Mac and web captures, which
+// count the trip's days back from the day they run, so its "Tue, Oct 20" would sit beside their "Fri, Nov 13".
+internal val TODAY_MILLIS: Long =
+    if (System.getProperty("readmeHero.outputDir") != null) {
+        System.currentTimeMillis() / DAY_MILLIS * DAY_MILLIS
+    } else {
+        PLAY_SHOTS_DAY_MILLIS
+    }
 internal const val MINUTE_MILLIS = 60_000L
 
 /** Member ids are the people's indexes, as in SampleTrip's items. */
