@@ -340,7 +340,6 @@ export const tr: Record<MessageKey, string> = {
   groupDetail_notJoinedOne: '{count} kişi henüz katılmadı',
   groupDetail_notJoinedOther: '{count} kişi henüz katılmadı',
   groupDetail_seeMembers: 'Üyeleri gör',
-  groupDetail_invite: 'Davet et',
   groupDetail_invitePeople: 'Kişi ekle',
   groupDetail_splitBill: 'Harcama böl',
   groupDetail_columnExpense: 'Harcama',

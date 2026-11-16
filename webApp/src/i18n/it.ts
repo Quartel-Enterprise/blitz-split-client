@@ -340,7 +340,6 @@ export const it: Record<MessageKey, string> = {
   groupDetail_notJoinedOne: '{count} non è ancora nel gruppo',
   groupDetail_notJoinedOther: '{count} non sono ancora nel gruppo',
   groupDetail_seeMembers: 'Vedi i membri',
-  groupDetail_invite: 'Invita',
   groupDetail_invitePeople: 'Aggiungi persone',
   groupDetail_splitBill: 'Dividi una spesa',
   groupDetail_columnExpense: 'Spesa',

@@ -49,8 +49,9 @@ struct SplitBillButton: View {
     var titleRoom: CGFloat = .infinity
     let action: () -> Void
 
-    /// The words' width, measured in the button's own font.
-    @State private var titleWidth: CGFloat = 0
+    /// The words' width, measured in the button's own font; until that first measure, as wide as nothing fits, so a
+    /// tight bar opens with the icon rather than the words jumping out of it.
+    @State private var titleWidth: CGFloat = .infinity
 
     var body: some View {
         Button(action: action) {

@@ -340,7 +340,6 @@ export const ja: Record<MessageKey, string> = {
   groupDetail_notJoinedOne: '{count}人がまだ参加していません',
   groupDetail_notJoinedOther: '{count}人がまだ参加していません',
   groupDetail_seeMembers: 'メンバーを見る',
-  groupDetail_invite: '招待',
   groupDetail_invitePeople: 'メンバーを追加',
   groupDetail_splitBill: '支出を割り勘',
   groupDetail_columnExpense: '支出',

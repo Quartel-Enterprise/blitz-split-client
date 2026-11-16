@@ -339,7 +339,6 @@ export const pt: Record<MessageKey, string> = {
   groupDetail_notJoinedOne: '{count} ainda não entrou',
   groupDetail_notJoinedOther: '{count} ainda não entraram',
   groupDetail_seeMembers: 'Ver membros',
-  groupDetail_invite: 'Convidar',
   groupDetail_invitePeople: 'Adicionar pessoas',
   groupDetail_splitBill: 'Rachar conta',
   groupDetail_columnExpense: 'Despesa',

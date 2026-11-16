@@ -344,7 +344,6 @@ export const uk: Record<MessageKey, string> = {
   groupDetail_notJoinedOne: '{count} людина ще не приєдналася',
   groupDetail_notJoinedOther: '{count} людина ще не приєдналася|{count} людини ще не приєдналися|{count} людей ще не приєдналися',
   groupDetail_seeMembers: 'Переглянути учасників',
-  groupDetail_invite: 'Запросити',
   groupDetail_invitePeople: 'Додати людей',
   groupDetail_splitBill: 'Розділити рахунок',
   groupDetail_columnExpense: 'Витрата',

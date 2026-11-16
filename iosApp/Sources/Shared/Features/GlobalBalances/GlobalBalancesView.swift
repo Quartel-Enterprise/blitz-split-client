@@ -66,6 +66,15 @@ struct GlobalBalancesView: View {
     @State private var hasVerticalBar = false
     #endif
 
+    /// The list's hold on "Split a bill"'s words, which only the iPhone's and the iPad's bar spell out.
+    private var splitBillExpansion: Binding<Bool> {
+        #if os(iOS)
+        $isSplitBillExpanded
+        #else
+        .constant(true)
+        #endif
+    }
+
     /// The fold down the window, which the list ends at.
     private var fold: CGRect? {
         division?.verticalFrame
@@ -102,18 +111,13 @@ struct GlobalBalancesView: View {
                             .padding(.trailing, BalancesSideColumn.spacing)
                     }
                     #endif
-                    #if os(iOS)
                     GlobalBalancesList(
                         model: model,
                         showsDetail: showsDetail,
                         showsSummary: !usesSideColumn,
-                        isSplitBillExpanded: $isSplitBillExpanded,
+                        isSplitBillExpanded: splitBillExpansion,
                     )
                     .frame(width: showsDetail ? fold?.minX : nil)
-                    #else
-                    GlobalBalancesList(model: model, showsDetail: showsDetail, showsSummary: !usesSideColumn)
-                        .frame(width: showsDetail ? fold?.minX : nil)
-                    #endif
                     if showsDetail {
                         // An iPhone Duo open: the people before the fold, the person picked after it
                         ListDetailSeparator(fold: fold)
@@ -136,6 +140,10 @@ struct GlobalBalancesView: View {
         .readingFoldDivision($division)
         .navigationTitle("Balances")
         #if os(iOS)
+        // The list comes back at its top after the shimmer, so "Split a bill" is spelled out again with it
+        .onChange(of: model?.state.isLoaded == true) { _, isLoaded in
+            if !isLoaded { isSplitBillExpanded = true }
+        }
         .readingVerticalBar($hasVerticalBar)
         .tabTitleDisplayMode()
         #else
@@ -283,10 +291,8 @@ private struct GlobalBalancesList: View {
     let showsDetail: Bool
     /// The overall balance and the filter heading the list, unless they stay still beside it (an iPhone lying down).
     let showsSummary: Bool
-    #if os(iOS)
-    /// "Split a bill" spelled out in the bar while the list is at its top.
+    /// "Split a bill" spelled out in the bar while the list is at its top (iPhone and iPad).
     @Binding var isSplitBillExpanded: Bool
-    #endif
 
     #if os(macOS)
     /// The row the arrow keys moved to in a narrow window, where nothing shows beside the list.

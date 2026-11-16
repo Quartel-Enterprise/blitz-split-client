@@ -344,7 +344,6 @@ export const ru: Record<MessageKey, string> = {
   groupDetail_notJoinedOne: '{count} ещё не присоединился(-ась)',
   groupDetail_notJoinedOther: '{count} ещё не присоединился|{count} ещё не присоединились|{count} ещё не присоединились',
   groupDetail_seeMembers: 'Посмотреть участников',
-  groupDetail_invite: 'Пригласить',
   groupDetail_invitePeople: 'Добавить людей',
   groupDetail_splitBill: 'Разделить счёт',
   groupDetail_columnExpense: 'Расход',

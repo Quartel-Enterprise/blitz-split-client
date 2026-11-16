@@ -99,15 +99,21 @@ private struct GroupScreenBars: ViewModifier {
     #endif
     /// An iPhone Duo's vertical bar (iOS 27.1), which takes the main button as its plus alone.
     @State private var hasVerticalBar = false
+    #if os(iOS)
     /// The screen's width, which leaves "Split a bill" its room after Back, Statistics and ⋯.
     @State private var width: CGFloat = 0
+    /// What the bar takes besides the words of "Split a bill": Back, the glass of Statistics and ⋯, the margins and
+    /// gaps, and the button's own icon and padding (measured on an iPhone 17 Pro, with a few points to spare), growing
+    /// with the text size so a larger one falls back to the icon sooner rather than into iOS's overflow. SwiftUI
+    /// doesn't hand a toolbar item its siblings' widths, so this is the measure.
+    @ScaledMetric(relativeTo: .body) private var barItemsWidth: CGFloat = 275
 
-    /// Room for the words of "Split a bill" in the bar: the width less Back, the glass of Statistics and ⋯, the
-    /// margins and gaps, and the button's own icon and padding (measured on an iPhone 17 Pro, with a few points to
-    /// spare). "Partager une dépense" doesn't fit on a 402 pt iPhone; "Split a bill" fits on a 375 pt one.
+    /// Room for the words of "Split a bill" in the bar. "Partager une dépense" doesn't fit on a 402 pt iPhone;
+    /// "Split a bill" fits on a 375 pt one.
     private var splitBillTitleRoom: CGFloat {
-        width == 0 ? .infinity : width - 275
+        width == 0 ? 0 : width - barItemsWidth
     }
+    #endif
 
     private var isLoaded: Bool {
         header != nil
@@ -116,7 +122,9 @@ private struct GroupScreenBars: ViewModifier {
     func body(content: Content) -> some View {
         content
             .readingVerticalBar($hasVerticalBar)
+            #if os(iOS)
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
+            #endif
             .navigationTitle(Text(verbatim: header?.groupName ?? ""))
             #if os(iOS)
             .toolbarTitleDisplayMode(.inline)
@@ -527,6 +535,10 @@ struct PhoneGroupScaffold<Sections: View>: View {
             }
         }
         .background(Palette.groupedBackground)
+        // Turning the device builds the other layout's list at its top, so "Split a bill" is spelled out again
+        .onChange(of: usesTwoColumns) {
+            headerScroll.isAtTop = true
+        }
     }
 
     /// The header and the card beside or above the tabs.

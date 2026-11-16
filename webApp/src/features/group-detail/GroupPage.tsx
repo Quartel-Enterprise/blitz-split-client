@@ -126,9 +126,9 @@ export function GroupPage({
                   <BarChart3 />
                   <span className="hidden lg:inline">{t('stats_title')}</span>
                 </Button>
-                <Button variant="outline" aria-label={t('groupDetail_invite')} title={t('groupDetail_invite')} onClick={() => events.invite()}>
+                <Button variant="outline" aria-label={t('groupDetail_invitePeople')} title={t('groupDetail_invitePeople')} onClick={() => events.invite()}>
                   <UserPlus />
-                  <span className="hidden lg:inline">{t('groupDetail_invite')}</span>
+                  <span className="hidden lg:inline">{t('groupDetail_invitePeople')}</span>
                 </Button>
                 {showsSplitBillButton && (
                   <Button onClick={() => events.splitBill()}>
