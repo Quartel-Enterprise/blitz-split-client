@@ -3,11 +3,9 @@ package com.quare.blitzsplit.core.expenses.domain
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
-import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillAttachmentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AttachBillImageUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeBillAttachmentRepository
 import com.quare.blitzsplit.core.provider.image.BillImage
-import com.quare.blitzsplit.core.provider.image.ImageTooLargeException
-import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,13 +14,12 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 import kotlin.uuid.Uuid
 
-class AddBillAttachmentUseCaseTest {
+class AttachBillImageUseCaseTest {
     private lateinit var repository: FakeBillAttachmentRepository
-    private lateinit var useCase: AddBillAttachmentUseCase
-    private val encodedSources = mutableListOf<ByteArray>()
+    private lateinit var useCase: AttachBillImageUseCase
 
     @Test
-    fun `GIVEN a picked photo WHEN adding it THEN stores its JPEG pending at the current time with no account yet`() =
+    fun `GIVEN a framed photo WHEN attaching it THEN stores its JPEG pending at the current time with no account`() =
         runTest {
             // Given
             prepareScenario(now = 7_000L)
@@ -54,49 +51,35 @@ class AddBillAttachmentUseCaseTest {
         }
 
     @Test
-    fun `GIVEN a picked photo WHEN adding it THEN encodes the bytes as picked`() = runTest {
+    fun `GIVEN a receipt image already encoded WHEN attaching it THEN stores it as it is`() = runTest {
         // Given
-        prepareScenario()
+        prepareScenario(now = 7_000L)
+        val readJpeg = byteArrayOf(5, 6, 7)
 
         // When
-        addAttachment(kind = BillAttachmentKind.PHOTO)
+        val result = useCase(
+            expenseId = BILL_ID,
+            groupId = GROUP_ID,
+            kind = BillAttachmentKind.RECEIPT,
+            image = BillImage(
+                jpeg = readJpeg,
+                width = 1_200,
+                height = 1_600,
+            ),
+            addedByMemberId = "member-ana",
+        )
 
         // Then
-        assertTrue(source.contentEquals(encodedSources.single()))
+        assertEquals(BillAttachmentAddition.ADDED, result.getOrNull())
+        val saved = repository.attachments.value.single()
+        assertEquals(BillAttachmentKind.RECEIPT, saved.kind)
+        assertEquals(1_200, saved.width)
+        assertEquals(1_600, saved.height)
+        assertTrue(readJpeg.contentEquals(repository.pendingImages.getValue(saved.id)))
     }
 
     @Test
-    fun `GIVEN a receipt image already encoded WHEN attaching it THEN stores it as it is without encoding it again`() =
-        runTest {
-            // Given
-            prepareScenario(now = 7_000L)
-            val readJpeg = byteArrayOf(5, 6, 7)
-
-            // When
-            val result = useCase(
-                expenseId = BILL_ID,
-                groupId = GROUP_ID,
-                kind = BillAttachmentKind.RECEIPT,
-                image = BillImage(
-                    jpeg = readJpeg,
-                    width = 1_200,
-                    height = 1_600,
-                ),
-                addedByMemberId = "member-ana",
-            )
-
-            // Then
-            assertEquals(BillAttachmentAddition.ADDED, result.getOrNull())
-            assertTrue(encodedSources.isEmpty())
-            val saved = repository.attachments.value.single()
-            assertEquals(BillAttachmentKind.RECEIPT, saved.kind)
-            assertEquals(1_200, saved.width)
-            assertEquals(1_600, saved.height)
-            assertTrue(readJpeg.contentEquals(repository.pendingImages.getValue(saved.id)))
-        }
-
-    @Test
-    fun `GIVEN a picked photo WHEN adding it THEN its id is a new uuid`() = runTest {
+    fun `GIVEN a framed photo WHEN attaching it THEN its id is a new uuid`() = runTest {
         // Given
         prepareScenario()
 
@@ -173,45 +156,6 @@ class AddBillAttachmentUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a file that is no image WHEN adding it THEN says it is unreadable and stores nothing`() = runTest {
-        // Given
-        prepareScenario(encodeError = UnsupportedImageException())
-
-        // When
-        val result = addAttachment(kind = BillAttachmentKind.PHOTO)
-
-        // Then
-        assertEquals(BillAttachmentAddition.UNREADABLE, result.getOrNull())
-        assertTrue(repository.attachments.value.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN a photo too large at every quality WHEN adding it THEN says so and stores nothing`() = runTest {
-        // Given
-        prepareScenario(encodeError = ImageTooLargeException())
-
-        // When
-        val result = addAttachment(kind = BillAttachmentKind.PHOTO)
-
-        // Then
-        assertEquals(BillAttachmentAddition.TOO_LARGE, result.getOrNull())
-        assertTrue(repository.attachments.value.isEmpty())
-    }
-
-    @Test
-    fun `GIVEN the encoder fails for another reason WHEN adding a photo THEN fails and stores nothing`() = runTest {
-        // Given
-        prepareScenario(encodeError = IllegalStateException("out of memory"))
-
-        // When
-        val result = addAttachment(kind = BillAttachmentKind.PHOTO)
-
-        // Then
-        assertIs<IllegalStateException>(result.exceptionOrNull())
-        assertTrue(repository.attachments.value.isEmpty())
-    }
-
-    @Test
     fun `GIVEN the device fails to store it WHEN adding a photo THEN fails`() = runTest {
         // Given
         prepareScenario(addError = IllegalStateException("No bill bill-1"))
@@ -224,8 +168,6 @@ class AddBillAttachmentUseCaseTest {
         assertTrue(repository.attachments.value.isEmpty())
     }
 
-    private val source = byteArrayOf(1, 2, 3, 4)
-
     private val encodedJpeg = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 9)
 
     private suspend fun addAttachment(
@@ -235,31 +177,25 @@ class AddBillAttachmentUseCaseTest {
         expenseId = BILL_ID,
         groupId = GROUP_ID,
         kind = kind,
-        source = source,
+        image = BillImage(
+            jpeg = encodedJpeg,
+            width = 1_600,
+            height = 1_200,
+        ),
         addedByMemberId = addedByMemberId,
     )
 
     private fun prepareScenario(
         now: Long = 1_000L,
         hasRoom: Boolean = true,
-        encodeError: Throwable? = null,
         addError: Throwable? = null,
     ) {
         repository = FakeBillAttachmentRepository().also {
             it.hasRoom = hasRoom
             it.addError = addError
         }
-        useCase = AddBillAttachmentUseCase(
+        useCase = AttachBillImageUseCase(
             repository = repository,
-            encodeImage = { picked ->
-                encodedSources += picked
-                encodeError?.let { throw it }
-                BillImage(
-                    jpeg = encodedJpeg,
-                    width = 1_600,
-                    height = 1_200,
-                )
-            },
             currentTimeMillis = { now },
         )
     }

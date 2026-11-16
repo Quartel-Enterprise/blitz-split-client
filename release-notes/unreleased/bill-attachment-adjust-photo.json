@@ -1,0 +1,26 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "A photo you add to a bill now opens in Adjust photo first, so you frame the square that gets attached.",
+        "pt": "A foto que você adiciona a uma conta agora abre primeiro em Ajustar foto, para você enquadrar o quadrado que vai ser anexado.",
+        "pt-PT": "A foto que adicionas a uma conta abre agora primeiro em Ajustar foto, para enquadrares o quadrado que vai ser anexado.",
+        "es": "La foto que agregas a un gasto ahora se abre primero en Ajustar foto, para que encuadres el cuadrado que se adjunta.",
+        "fr": "La photo que vous ajoutez à une dépense s'ouvre d'abord dans Ajuster la photo, pour cadrer le carré qui sera joint.",
+        "de": "Ein Foto, das du einer Ausgabe hinzufügst, öffnet sich jetzt zuerst in Foto anpassen, damit du den Ausschnitt wählst, der angehängt wird.",
+        "it": "La foto che aggiungi a una spesa ora si apre prima in Regola foto, così inquadri il quadrato che verrà allegato.",
+        "pl": "Zdjęcie dodawane do wydatku otwiera się teraz najpierw w Dopasuj zdjęcie, żeby wykadrować kwadrat, który zostanie dołączony.",
+        "nl": "Een foto die je aan een uitgave toevoegt, opent nu eerst in Foto aanpassen, zodat je het vierkant kiest dat wordt bijgevoegd.",
+        "ja": "支出に追加する写真は、まず「写真を調整」で開くようになりました。添付する正方形を自分で決められます。",
+        "tr": "Bir harcamaya eklediğin fotoğraf artık önce Fotoğrafı ayarla'da açılıyor; eklenecek kareyi sen seçiyorsun.",
+        "id": "Foto yang kamu tambahkan ke tagihan kini dibuka dulu di Atur foto, jadi kamu bisa membingkai persegi yang dilampirkan.",
+        "ru": "Фото, которое вы добавляете к счёту, теперь сначала открывается в «Настроить фото», чтобы выбрать квадрат для вложения.",
+        "uk": "Фото, яке ви додаєте до рахунку, тепер спершу відкривається в «Налаштувати фото», щоб вибрати квадрат для вкладення."
+      }
+    }
+  ]
+}

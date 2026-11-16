@@ -10,6 +10,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
+import com.quare.blitzsplit.android.designsystem.component.PhotoCropDialog
+import com.quare.blitzsplit.android.designsystem.component.PhotoCropFrame
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
 import com.quare.blitzsplit.android.platform.shareText
@@ -99,6 +101,14 @@ fun BillDetailScreen(
             onDismiss = { viewModel.onEvent(BillDetailUiEvent.OnViewerDismissed) },
         ),
     )
+    // Why: a photo picked is framed in the attachment tile's rounded square before it is attached.
+    state.photoCrop?.let { editor ->
+        PhotoCropDialog(
+            editor = editor,
+            frame = PhotoCropFrame.ROUNDED_SQUARE,
+            onEvent = { event -> viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(event)) },
+        )
+    }
     state.deletion?.let { deletion ->
         DeleteBillDialog(
             description = deletion.description,

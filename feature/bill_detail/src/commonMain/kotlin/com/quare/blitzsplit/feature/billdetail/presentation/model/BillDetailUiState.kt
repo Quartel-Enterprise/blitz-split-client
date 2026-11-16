@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.PhotoCropEditor
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.countShownComments
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.findComment
 import com.quare.blitzsplit.feature.billdetail.presentation.mapper.isUnchangedEdit
@@ -82,6 +83,8 @@ data class BillDetailUiState(
     val viewedAttachmentId: String?,
     // Why: a photo picked and being made ready, which takes a moment on a large one.
     val isAddingPhoto: Boolean,
+    // Why: "Ajustar foto" while the photo picked is being framed, in the rounded square of an attachment's tile.
+    val photoCrop: PhotoCropEditor?,
     // Why: "Paid with", the method this device's user marked the bill with; only they see it, null for none.
     val paidWith: PayingMethod?,
 ) {
@@ -100,9 +103,9 @@ data class BillDetailUiState(
     val showsAddPhoto: Boolean
         get() = photoCount?.let { it < photoLimit } == true
 
-    // Why: "Adicionar foto" while the bill has room, offline too.
+    // Why: "Adicionar foto" while the bill has room, offline too, and no photo picked is being framed.
     val canAddPhoto: Boolean
-        get() = areActionsEnabled && !isAddingPhoto && showsAddPhoto
+        get() = areActionsEnabled && !isAddingPhoto && photoCrop == null && showsAddPhoto
 
     // Why: the viewer's page, gone with the attachment (removed on another device meanwhile).
     val viewedAttachmentIndex: Int?
