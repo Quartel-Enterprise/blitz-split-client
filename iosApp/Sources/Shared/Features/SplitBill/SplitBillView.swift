@@ -305,14 +305,16 @@ private struct PhoneSplitBill: View {
     @FocusState private var focusedField: Field?
     /// Whether this sheet has settled, so "Split in which group?" can present over it.
     @State private var isSettled = false
-    /// "Scan receipt" on screen, which the source choice then points at; else the form holds it.
+    /// The bottom toolbar's "Scan receipt" on screen.
     @State private var isScanButtonShown = false
-    /// The top bar's icon was the last "Scan receipt" tapped, so the choice points at it (an iPad's popover).
+    /// The top bar's icon was the last "Scan receipt" tapped.
     @State private var isScanFromTopBar = false
 
-    /// Only while the icon is there: once a photo is picked it leaves, and "Take another photo" asks from the form.
-    private var anchorsChoiceAtTopBar: Bool {
-        isScanFromTopBar && state.showsScanReceipt
+    /// The one place the source choice points at: the button tapped while it is there; once a photo is picked both
+    /// leave, and "Take another photo" asks from the form.
+    private var scanChoiceAnchor: ScanChoiceAnchor {
+        if isScanFromTopBar, state.showsScanReceipt { return .topBar }
+        return isScanButtonShown ? .bottomBar : .form
     }
 
     private enum Field {
@@ -340,7 +342,7 @@ private struct PhoneSplitBill: View {
                     model: model,
                     isSettled: isSettled,
                     isShown: $isScanButtonShown,
-                    anchorsChoice: !anchorsChoiceAtTopBar,
+                    anchorsChoice: scanChoiceAnchor == .bottomBar,
                     onTap: { isScanFromTopBar = false },
                 )
             }
@@ -401,7 +403,7 @@ private struct PhoneSplitBill: View {
                 ToolbarItem(placement: .primaryAction) {
                     ScanReceiptTopBarButton(
                         model: model,
-                        anchorsChoice: isSettled && anchorsChoiceAtTopBar,
+                        anchorsChoice: isSettled && scanChoiceAnchor == .topBar,
                         onTap: { isScanFromTopBar = true },
                     )
                 }
@@ -428,7 +430,7 @@ private struct PhoneSplitBill: View {
         .receiptSourceChoice(
             model: model,
             isSettled: isSettled,
-            isAnchoredAtButton: isScanButtonShown || anchorsChoiceAtTopBar,
+            isAnchoredAtButton: scanChoiceAnchor != .form,
         )
         .sheet(isPresented: payerShown) {
             // Why: "Several people" swaps the sheet's content, since a second sheet can't open while one closes.

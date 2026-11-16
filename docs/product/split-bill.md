@@ -265,7 +265,7 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     is disabled while it can't start (`canScanReceipt`: offline, saving, a group loading), and it opens the same source
     choice. It shows on an Android tabletop and an iPhone Duo open upright too, where the boards leave the bottom one
     out: the top bar has room for it, and it is the form's only way in there (so the offline notice shows there too;
-    settled while Pierre was away). Online only: offline "Needs internet. Fill it in by
+    left to this change by Pierre's brief, beta feedback of November 16, 2026). Online only: offline "Needs internet. Fill it in by
     hand or scan the receipt once you're back online." shows under "Split", and the bottom button leaves (Android's FAB,
     the web's footer) or stays disabled (iOS's toolbar, so a source choice already open survives the drop), while the
     top one stays, disabled. It asks first where the photo comes from (Pierre's call, beta feedback

@@ -220,7 +220,7 @@ struct ScanReceiptToolbarButton: View {
     let model: SplitBillModel
     let isSettled: Bool
     @Binding var isShown: Bool
-    /// Whether the choice points here: not once the top bar's icon was the one tapped (`ScanReceiptTopBarButton`).
+    /// Whether the choice points here (`ScanChoiceAnchor.bottomBar`), as the form decides.
     var anchorsChoice = true
     var onTap: () -> Void = {}
 
@@ -240,10 +240,10 @@ struct ScanReceiptToolbarButton: View {
         .buttonStyle(.glassProminent)
         .prominentLabel()
         .disabled(!model.state.canScanReceipt)
-        // Why: the choice points at the button while it is on screen, and only one of the two dialogs binds to it.
+        // Why: the choice points at the button while the form's one anchor is it, so only one dialog binds to it.
         .receiptSourceDialog(
             isPresented: model.receiptSourceRequest.choiceShown(
-                isActive: isSettled && ReceiptSource.hasChoice && isShown && anchorsChoice,
+                isActive: isSettled && ReceiptSource.hasChoice && anchorsChoice,
             ),
             pick: model.receiptSourceRequest.pick,
         )
@@ -262,7 +262,7 @@ struct ScanReceiptTopBarButton: View {
     var onTap: () -> Void = {}
 
     var body: some View {
-        Button {
+        let button = Button {
             onTap()
             model.send(SplitBillUiEventOnScanReceiptClicked.shared)
         } label: {
@@ -275,12 +275,27 @@ struct ScanReceiptTopBarButton: View {
         .labelStyle(.iconOnly)
         .help(ReceiptSource.title)
         .disabled(!model.state.canScanReceipt)
-        .receiptSourceDialog(
-            isPresented: model.receiptSourceRequest.choiceShown(isActive: anchorsChoice && ReceiptSource.hasChoice),
-            pick: model.receiptSourceRequest.pick,
+        #if os(iOS)
+        let request = model.receiptSourceRequest
+        button.receiptSourceDialog(
+            isPresented: request.choiceShown(isActive: anchorsChoice && ReceiptSource.hasChoice),
+            pick: request.pick,
         )
+        #else
+        // The Mac's choice is the form's dialog
+        button
+        #endif
     }
 }
+
+#if os(iOS)
+/// Which "Scan receipt" the source choice points at (an iPad's popover): exactly one of them presents it.
+enum ScanChoiceAnchor {
+    case bottomBar
+    case topBar
+    case form
+}
+#endif
 
 #if os(macOS)
 /// The form's "Cupom:" row: "Ler Cupom Fiscal…" until a receipt is picked, then "Foto do cupom anexada", read or
