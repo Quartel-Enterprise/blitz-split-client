@@ -14,18 +14,19 @@ import { pt } from './pt'
 import { ru } from './ru'
 import { tr } from './tr'
 import { uk } from './uk'
+import { ko } from './ko'
 
 export type { MessageKey }
 /**
  * `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently.
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko']
 
 // Why: the first two-letter subtag before any extension ("-u-fw-mon", whose keys are no region), as AppLanguage.regionOf.
 function regionOf(subtags: readonly string[]): string | undefined {
@@ -37,9 +38,9 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag
  * (es, es-MX, es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any
- * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru` or `uk` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the
- * legacy in-ID, ru-KZ, uk-UA…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian or Ukrainian,
- * any `en` tag is English, and English when none matches.
+ * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk` or `ko` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID,
+ * the legacy in-ID, ru-KZ, uk-UA, ko-KR…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
+ * Ukrainian or Korean, any `en` tag is English, and English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
@@ -105,6 +106,7 @@ const documentLanguages: Record<Locale, string> = {
   id: 'id',
   ru: 'ru',
   uk: 'uk',
+  ko: 'ko',
 }
 
 const documentLanguage = documentLanguages[locale]
@@ -175,7 +177,8 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * ones start with a past in "ł(a)", the app not knowing the gender: "podzielił(a)" becomes "podzieliłeś(-aś)". Turkish
  * ones end with their simple past, which takes an "n": "böldü" becomes "böldün". Other languages keep the verb as it
  * is, Brazil's Portuguese too ("Você dividiu"), and Russian and Ukrainian, whose past says the gender but not the
- * person ("Ты разделил(а)"). Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or
+ * person ("Ты разделил(а)"). Korean writes someone else as "Ana 님이" and the user as "내가", whose subject word holds its
+ * own particle, so its verb phrases all start with "님이", which the user's drops: "님이 나눴어요" becomes "나눴어요". Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or
  * "-iste": "dividiu" becomes "dividiste". Same rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
 export function verbForYou(verb: string): string {
@@ -186,6 +189,7 @@ export function verbForYou(verb: string): string {
     return Object.hasOwn(auxiliary, first) ? [auxiliary[first], ...rest].join(' ') : verb
   }
   if (locale === 'tr') return turkishVerbForYou(verb)
+  if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
   if (!isSpanish) return verb
   const [first, ...rest] = verb.split(' ')

@@ -19,7 +19,8 @@
         "tr": "Google ya da Apple bağlı olmayan hesaplar artık 30 gün kullanılmazsa siliniyor. Karşılama ekranı ve Profil bunu belirtiyor; Google ya da Apple bağlarsan verilerin korunur.",
         "id": "Akun tanpa Google atau Apple sekarang dihapus setelah 30 hari tidak dipakai. Layar sambutan dan Profil memberitahukannya, dan menghubungkan Google atau Apple menjaga datamu.",
         "ru": "Аккаунт без Google или Apple теперь удаляется после 30 дней без использования. Об этом говорят экран приветствия и «Профиль», а если подключить Google или Apple, твои данные сохранятся.",
-        "uk": "Обліковий запис без Google чи Apple тепер видаляється після 30 днів без використання. Про це повідомляють екран привітання та «Профіль», а якщо підключити Google чи Apple, твої дані збережуться."
+        "uk": "Обліковий запис без Google чи Apple тепер видаляється після 30 днів без використання. Про це повідомляють екран привітання та «Профіль», а якщо підключити Google чи Apple, твої дані збережуться.",
+        "ko": "Google이나 Apple을 연결하지 않은 계정은 30일 동안 사용하지 않으면 삭제돼요. 환영 화면과 프로필에서 알려 주고, Google이나 Apple을 연결하면 데이터가 유지돼요."
       }
     }
   ]

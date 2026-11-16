@@ -19,7 +19,8 @@
         "tr": "Uygulama artık Rusça ve Ukraynaca konuşuyor: Profil › Dil'den \"Русский\" ya da \"Українська\"yı seç ya da cihazının dilini izlesin.",
         "id": "Aplikasi kini berbahasa Rusia dan Ukraina: pilih \"Русский\" atau \"Українська\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
         "ru": "Приложение теперь говорит по-русски и по-украински: выбери «Русский» или «Українська» в «Профиль › Язык» или оставь язык устройства.",
-        "uk": "Застосунок тепер говорить російською та українською: обери «Русский» або «Українська» в «Профіль › Мова» або залиш мову пристрою."
+        "uk": "Застосунок тепер говорить російською та українською: обери «Русский» або «Українська» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 러시아어와 우크라이나어를 쓸 수 있어요. 프로필 › 언어에서 ‘Русский’나 ‘Українська’를 고르거나 기기 언어를 따르게 하세요."
       }
     },
     {
@@ -41,7 +42,8 @@
         "tr": "Gruplar artık Rus rublesi (RUB) ve Ukrayna grivnası (UAH) ile bölebiliyor; Rusya'da ya da Ukrayna'da açılan bir grup o ülkenin para birimiyle başlıyor.",
         "id": "Grup kini bisa membagi dalam rubel Rusia (RUB) dan hryvnia Ukraina (UAH), dan grup yang dibuat di Rusia atau Ukraina langsung memakai mata uangnya.",
         "ru": "Группы теперь могут делить расходы в российских рублях (RUB) и украинских гривнах (UAH), а группа, созданная в России или Украине, сразу начинает в её валюте.",
-        "uk": "Групи тепер можуть ділити витрати в українських гривнях (UAH) і російських рублях (RUB), а група, створена в Україні чи Росії, одразу починає в її валюті."
+        "uk": "Групи тепер можуть ділити витрати в українських гривнях (UAH) і російських рублях (RUB), а група, створена в Україні чи Росії, одразу починає в її валюті.",
+        "ko": "이제 그룹에서 러시아 루블(RUB)과 우크라이나 흐리우냐(UAH)로 나눌 수 있고, 러시아나 우크라이나에서 만든 그룹은 그 나라 통화로 시작해요."
       }
     }
   ]

@@ -19,7 +19,8 @@
         "tr": "\"Gelire göre\" artık herkesin vergiler sonrası net gelirini girmeni hatırlatıyor; \"Varsayılan bölüşüm\" de herkesin yüzdesini ancak bir gelir girildiğinde gösteriyor.",
         "id": "\"Sesuai penghasilan\" kini mengingatkanmu untuk memasukkan penghasilan bersih masing-masing, setelah pajak, dan \"Pembagian default\" baru menampilkan persentase masing-masing setelah ada penghasilan yang diisi.",
         "ru": "«По доходу» теперь напоминает указывать чистый доход каждого, после налогов, а «Разделение по умолчанию» показывает процент каждого, только когда введён какой-нибудь доход.",
-        "uk": "«За доходом» тепер нагадує вказувати чистий дохід кожного, після податків, а «Розподіл за замовчуванням» показує відсоток кожного, лише коли введено якийсь дохід."
+        "uk": "«За доходом» тепер нагадує вказувати чистий дохід кожного, після податків, а «Розподіл за замовчуванням» показує відсоток кожного, лише коли введено якийсь дохід.",
+        "ko": "‘소득별’에서 각자의 세후 실수령 소득을 입력하라고 안내하고, ‘기본 분담 방식’은 소득을 입력한 뒤에만 각자의 비율을 보여 줘요."
       }
     }
   ]

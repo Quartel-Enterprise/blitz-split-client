@@ -20,7 +20,8 @@
         "tr": "Kişiler veya Bakiyeler'den birini açtığında artık adı ve bakiyesi fotoğrafla birlikte profiline taşınıyor, geri döndüğünde de yerine dönüyor.",
         "id": "Membuka seseorang dari Kontak atau Saldo kini membawa nama dan saldonya ke profil bersama fotonya, lalu kembali lagi saat kamu kembali.",
         "ru": "Когда ты открываешь человека из «Контактов» или «Балансов», его имя и баланс теперь переезжают в профиль вместе с фото, а при возврате — обратно.",
-        "uk": "Коли ти відкриваєш людину з «Контактів» або «Балансів», її ім’я та баланс тепер переїжджають у профіль разом із фото, а під час повернення — назад."
+        "uk": "Коли ти відкриваєш людину з «Контактів» або «Балансів», її ім’я та баланс тепер переїжджають у профіль разом із фото, а під час повернення — назад.",
+        "ko": "연락처나 잔액에서 사람을 열면 사진과 함께 이름과 잔액도 프로필로 이동하고, 돌아올 때 다시 제자리로 돌아가요."
       }
     }
   ]

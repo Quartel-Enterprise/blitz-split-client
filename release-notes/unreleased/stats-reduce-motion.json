@@ -21,7 +21,8 @@
         "tr": "Hareketi Azalt açıkken bir grubun İstatistikler ekranı artık grafikleri çubuklar büyümeden ve halka dönmeden hemen gösteriyor.",
         "id": "Dengan Kurangi Gerakan aktif, Statistik grup kini menampilkan grafiknya langsung, tanpa batang yang tumbuh atau cincin yang berputar.",
         "ru": "Когда включено «Уменьшение движения», «Статистика» группы теперь сразу показывает графики — без растущих столбиков и вращающегося кольца.",
-        "uk": "Коли ввімкнено «Зменшення руху», «Статистика» групи тепер одразу показує діаграми — без стовпчиків, що ростуть, і кільця, що обертається."
+        "uk": "Коли ввімкнено «Зменшення руху», «Статистика» групи тепер одразу показує діаграми — без стовпчиків, що ростуть, і кільця, що обертається.",
+        "ko": "‘동작 줄이기’가 켜져 있으면 그룹 통계의 막대가 자라거나 링이 돌지 않고 차트가 바로 표시돼요."
       }
     }
   ]

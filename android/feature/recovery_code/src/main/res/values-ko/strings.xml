@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">복구 코드를 저장하세요</string>
+    <string name="recovery_code_body">계정 없이 사용하고 있어요. 기기를 바꾸거나 잃어버려도 이 12개 단어로 데이터를 되찾을 수 있어요. 순서대로 적어 두세요. 30일 동안 사용하지 않으면 데이터가 삭제되고 단어도 더 이상 작동하지 않아요.</string>
+    <string name="recovery_code_copy">단어 복사</string>
+    <string name="recovery_code_save_to_password_manager">비밀번호 관리자에 저장</string>
+    <string name="recovery_code_connect_instead">대신 Google이나 Apple 연결</string>
+    <string name="recovery_code_connect_instead_body">코드가 필요 없어요</string>
+    <string name="recovery_code_sign_in_failed">지금은 연결할 수 없어요. 다시 시도해 주세요.</string>
+    <string name="recovery_code_also_in_profile">프로필 › 복구 코드에도 있어요.</string>
+    <string name="recovery_code_remind_later">나중에 알림</string>
+    <string name="recovery_code_saved">저장했어요</string>
+    <string name="recovery_code_download">다운로드</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · 복구 코드\n\n%1$s\n\n\"다른 기기에서 사용한 적이 있어요\"에서 이 코드를 입력하면 데이터를 되찾을 수 있어요.\n</string>
+</resources>

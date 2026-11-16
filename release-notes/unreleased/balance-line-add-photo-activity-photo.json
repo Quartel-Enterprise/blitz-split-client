@@ -19,7 +19,8 @@
         "tr": "Etkinlik'te her satır artık grubun fotoğrafı varsa onu grubun adının yanında gösteriyor.",
         "id": "Di Aktivitas, setiap baris kini menampilkan foto grup di samping namanya, jika grup punya foto.",
         "ru": "В «Активности» рядом с названием группы теперь показывается её фото, если оно есть.",
-        "uk": "В «Активності» поруч із назвою групи тепер показується її фото, якщо воно є."
+        "uk": "В «Активності» поруч із назвою групи тепер показується її фото, якщо воно є.",
+        "ko": "활동의 각 줄에 그룹 사진이 있으면 그룹 이름 옆에 표시돼요."
       }
     },
     {
@@ -41,7 +42,8 @@
         "tr": "Bu gruptaki bakiyen, yalnızca alacağın ya da yalnızca borcun olduğunda tutarı ikinci bir satırda tekrarlamıyor.",
         "id": "Saldomu di grup ini tidak lagi mengulang jumlahnya di baris kedua saat kamu hanya menerima atau hanya berutang.",
         "ru": "Твой баланс в группе больше не повторяет сумму второй строкой, когда тебе только должны или только ты должен(-на).",
-        "uk": "Твій баланс у групі більше не повторює суму другим рядком, коли тобі лише винні або лише ти винен(-на)."
+        "uk": "Твій баланс у групі більше не повторює суму другим рядком, коли тобі лише винні або лише ти винен(-на).",
+        "ko": "이 그룹의 내 잔액은 받을 돈이나 줄 돈만 있을 때 두 번째 줄에 같은 금액을 반복하지 않아요."
       }
     },
     {
@@ -64,7 +66,8 @@
         "tr": "Bir harcamanın eklerindeki \"Fotoğraf ekle\" yazısının ilk harfi artık kesilmiyor.",
         "id": "Huruf pertama \"Tambah foto\" di lampiran tagihan tidak lagi terpotong.",
         "ru": "Первая буква «Добавить фото» под вложениями счёта больше не обрезается.",
-        "uk": "Перша літера «Додати фото» під вкладеннями рахунку більше не обрізається."
+        "uk": "Перша літера «Додати фото» під вкладеннями рахунку більше не обрізається.",
+        "ko": "지출 첨부 파일 아래 ‘사진 추가’의 첫 글자가 더 이상 잘리지 않아요."
       }
     }
   ]

@@ -20,7 +20,8 @@
         "tr": "Gruplar'dan bir grup açtığında, üyelerin yüzleri artık satırdan grubun ekranına geçiyor ve çıkınca geri dönüyor.",
         "id": "Saat membuka grup dari Grup, wajah para anggotanya kini berpindah dari baris ke layar grup, dan kembali saat kamu keluar.",
         "ru": "Когда открываешь группу из «Групп», лица участников теперь переходят из строки на экран группы и возвращаются, когда выходишь.",
-        "uk": "Коли відкриваєш групу з «Груп», обличчя учасників тепер переходять із рядка на екран групи й повертаються, коли виходиш."
+        "uk": "Коли відкриваєш групу з «Груп», обличчя учасників тепер переходять із рядка на екран групи й повертаються, коли виходиш.",
+        "ko": "그룹에서 그룹을 열면 멤버들의 얼굴이 목록의 줄에서 그룹 화면으로 이동하고, 나갈 때 다시 돌아가요."
       }
     },
     {
@@ -42,7 +43,8 @@
         "tr": "Telefonda bir harcamayı açmak artık daha fazlasını beraberinde getiriyor: kimin ödediği Ana Sayfa ve Tüm harcamalar'daki satırından, saat grubun Harcamalar'ındaki satırından, grubun fotoğrafı ve adı da grubun ekranından geliyor. Çıkınca geri dönüyorlar.",
         "id": "Di ponsel, membuka tagihan kini membawa lebih banyak hal: siapa yang membayar berpindah dari barisnya di Beranda dan Semua pengeluaran, jamnya dari barisnya di Pengeluaran grup, serta foto dan nama grup dari layar grup. Semuanya kembali saat kamu keluar.",
         "ru": "На телефоне открытие счёта теперь переносит больше: кто заплатил — из строки на Главной и во «Всех расходах», время — из строки в «Расходах» группы, а фото и название группы — с экрана группы. Когда выходишь, всё возвращается обратно.",
-        "uk": "На телефоні відкриття рахунку тепер переносить більше: хто заплатив — із рядка на Головній і в «Усіх витратах», час — із рядка у «Витратах» групи, а фото й назва групи — з екрана групи. Коли виходиш, усе повертається назад."
+        "uk": "На телефоні відкриття рахунку тепер переносить більше: хто заплатив — із рядка на Головній і в «Усіх витратах», час — із рядка у «Витратах» групи, а фото й назва групи — з екрана групи. Коли виходиш, усе повертається назад.",
+        "ko": "휴대폰에서 지출을 열면 더 많은 요소가 함께 이동해요. 낸 사람은 홈과 전체 지출의 줄에서, 시간은 그룹 지출의 줄에서, 그룹 사진과 이름은 그룹 화면에서 이동하고, 나갈 때 다시 돌아가요."
       }
     },
     {
@@ -65,7 +67,8 @@
         "tr": "Bir grubun adı artık yalnızca dönüşte değil, açarken de grubun ekranına geçiyor.",
         "id": "Nama grup kini berpindah ke layar grup saat dibuka, tidak hanya saat kembali.",
         "ru": "Название группы теперь переходит на экран группы и при открытии, а не только при возвращении.",
-        "uk": "Назва групи тепер переходить на екран групи й під час відкриття, а не лише на зворотному шляху."
+        "uk": "Назва групи тепер переходить на екран групи й під час відкриття, а не лише на зворотному шляху.",
+        "ko": "그룹 이름이 돌아올 때만이 아니라 열 때도 그룹 화면으로 이동해요."
       }
     }
   ]

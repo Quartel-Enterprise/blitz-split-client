@@ -122,6 +122,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.INDONESIAN,
                 AppLanguage.RUSSIAN,
                 AppLanguage.UKRAINIAN,
+                AppLanguage.KOREAN,
             )
 
             // When
@@ -129,7 +130,7 @@ class ObserveSpokenLanguageUseCaseTest {
 
             // Then
             assertEquals(
-                listOf("en", "pt", "pt", "es", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk"),
+                listOf("en", "pt", "pt", "es", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko"),
                 spoken,
             )
         }
@@ -153,13 +154,13 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in each language of the app THEN it is that language`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk")
+        val devices = listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko")
 
         // When
         val spoken = devices.map { spokenOn(it) }
 
         // Then
-        assertEquals(listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk"), spoken)
+        assertEquals(listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko"), spoken)
     }
 
     @Test
@@ -185,6 +186,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "id-ID",
                 "ru-KZ",
                 "uk-UA",
+                "ko-KR",
             )
 
             // When
@@ -210,6 +212,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "id",
                     "ru",
                     "uk",
+                    "ko",
                 ),
                 spoken,
             )
@@ -260,7 +263,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in a language the app does not have THEN it is en`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("ca", "ca-ES", "zh", "zh-CN", "zh-Hans-CN", "zh-Hant-TW", "fil", "fil-PH", "ko-KR")
+        val devices = listOf("ca", "ca-ES", "zh", "zh-CN", "zh-Hans-CN", "zh-Hant-TW", "fil", "fil-PH", "vi-VN")
 
         // When
         val spoken = devices.map { spokenOn(it) }

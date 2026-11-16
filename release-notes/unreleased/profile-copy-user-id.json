@@ -19,7 +19,8 @@
         "tr": "Profil'deki \"Hesap ve eşitleme\" artık kullanıcı kimliğini gösteriyor. Tek dokunuşla kopyalayıp anketlerimizden birini yanıtlarken kim olduğunu bize söyleyebilirsin.",
         "id": "\"Akun dan sinkronisasi\" di Profil kini menampilkan ID penggunamu, yang bisa kamu salin dengan sekali ketuk, untuk memberi tahu kami siapa kamu saat menjawab salah satu survei kami.",
         "ru": "В разделе «Аккаунт и синхронизация» профиля теперь есть твой ID пользователя: его можно скопировать одним касанием, чтобы сообщить нам, кто ты, когда отвечаешь на наш опрос.",
-        "uk": "У розділі «Обліковий запис і синхронізація» профілю тепер є твій ID користувача: його можна скопіювати одним дотиком, щоб повідомити нам, хто ти, коли відповідаєш на наше опитування."
+        "uk": "У розділі «Обліковий запис і синхронізація» профілю тепер є твій ID користувача: його можна скопіювати одним дотиком, щоб повідомити нам, хто ти, коли відповідаєш на наше опитування.",
+        "ko": "프로필의 ‘계정 및 동기화’에 내 사용자 ID가 표시되고 탭 한 번으로 복사할 수 있어요. 설문에 답할 때 누구인지 알려 주기 좋아요."
       }
     }
   ]

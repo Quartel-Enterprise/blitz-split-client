@@ -6,7 +6,9 @@ import SwiftUI
 /// localized sentence serves every actor, so when the actor is this device's user the verb of the "Tú", "Tu", "Du",
 /// "Jij", "Ty" or "Sen" is conjugated to the second person, and so is Portugal's Portuguese ("Ana dividiu", "Tu
 /// dividiste"). Other languages are left as they are, Brazil's Portuguese too ("Você dividiu"), and Russian and
-/// Ukrainian, whose past says the gender but not the person ("Ты разделил(а)").
+/// Ukrainian, whose past says the gender but not the person ("Ты разделил(а)"). Korean writes someone else as "Ana 님이"
+/// (님 always takes 이, so no particle hangs on the sound of a name) and the user as "내가", whose subject word holds its
+/// own particle, so its verb phrases all start with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요").
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -47,12 +49,14 @@ enum SecondPerson {
     /// Portugal's Portuguese: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste".
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
     /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
-    /// "böldün:". Another language keeps the verb as it is.
+    /// "böldün:". Korean: every verb phrase starts with "님이" after the actor, which the user's drops, since the user's
+    /// subject word ("내가") holds its own particle, so "님이 나눴어요" → "나눴어요". Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
         case "pt-PT": return portugueseVerbForYou(verb)
         case "tr": return turkishVerbForYou(verb)
+        case "ko": return koreanVerbForYou(verb)
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }
@@ -60,6 +64,14 @@ enum SecondPerson {
             return replacingFirstWord(of: verb) { auxiliaries[code]?[$0] }
         default: return verb
         }
+    }
+
+    /// Korean: "님이 나눴어요" → "나눴어요", "님이 " → "": the user's subject word ("내가") already holds the particle.
+    private static func koreanVerbForYou(_ verb: String) -> String {
+        guard verb.hasPrefix("님이") else { return verb }
+        let rest = verb.dropFirst("님이".count)
+        guard rest.isEmpty || rest.first == " " else { return verb }
+        return String(rest.dropFirst())
     }
 
     /// The verb phrase with its first word replaced, or as it is when `replacement` has none for that word.

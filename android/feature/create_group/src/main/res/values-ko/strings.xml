@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">새 그룹</string>
+    <string name="create_group_close">닫기</string>
+    <string name="create_group_create">만들기</string>
+    <string name="create_group_change_color">그룹 색상 변경</string>
+    <string name="create_group_name_label">그룹 이름</string>
+    <string name="create_group_type_label">그룹 유형</string>
+    <string name="create_group_members_title">함께하는 사람</string>
+    <plurals name="create_group_member_count">
+        <item quantity="other">%d명</item>
+    </plurals>
+    <string name="create_group_me">나</string>
+    <string name="create_group_remove_member">삭제: %s</string>
+    <string name="create_group_add_placeholder">이름으로 추가</string>
+    <string name="create_group_add">추가</string>
+    <string name="create_group_no_app_notice">지금은 아무도 앱이 없어도 돼요. 모두의 지출을 바로 추가하고 링크는 나중에 보내면 돼요.</string>
+    <string name="create_group_currency">기본 통화</string>
+    <string name="create_group_currency_caption">새 지출은 이 통화로 시작해요. 지출마다 다른 통화를 쓸 수 있어요.</string>
+    <string name="create_group_save_error">그룹을 저장하지 못했어요. 다시 시도해 주세요.</string>
+    <string name="create_group_photo">그룹 사진</string>
+    <string name="create_group_take_photo">사진 찍기</string>
+    <string name="create_group_choose_photo">사진 선택</string>
+    <string name="create_group_remove_photo">사진 삭제</string>
+    <string name="create_group_photo_error">이 사진을 사용할 수 없어요. 다른 사진을 선택해 주세요.</string>
+</resources>

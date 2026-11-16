@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">잔액</string>
+    <string name="global_balances_profile">프로필</string>
+    <string name="global_balances_offline">오프라인 · 이 기기의 잔액</string>
+    <string name="global_balances_filter">보기</string>
+    <string name="global_balances_filter_all">전체</string>
+    <string name="global_balances_filter_you_owe">줄 돈</string>
+    <string name="global_balances_filter_owes_you">받을 돈</string>
+    <string name="global_balances_hint">여러 그룹의 금액을 이미 합산했어요. 사람마다 한 번씩만 보여요.</string>
+    <string name="global_balances_hint_empty">이 기기의 모든 그룹을 합산하고 있어요.</string>
+    <string name="global_balances_section_you_owe">줄 돈 · %d</string>
+    <string name="global_balances_section_owes_you">받을 돈 · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">그룹 %d개</item>
+    </plurals>
+    <string name="global_balances_guest">%s · 게스트</string>
+    <string name="global_balances_you_owe">줄 돈</string>
+    <string name="global_balances_owes_you">받을 돈</string>
+    <string name="global_balances_by_group_show">%s 님 그룹별 보기</string>
+    <string name="global_balances_by_group_hide">%s 님 그룹별 숨기기</string>
+    <string name="global_balances_received">받음</string>
+    <string name="global_balances_received_from">%s 님에게 받음</string>
+    <string name="global_balances_settle">정산하기</string>
+    <string name="global_balances_settle_with">%s 님과 정산하기</string>
+    <string name="global_balances_charge">요청</string>
+    <string name="global_balances_charge_person">%s 님에게 요청</string>
+    <string name="global_balances_detail_pane">%s 님과의 잔액</string>
+    <string name="global_balances_detail_owes_you">%s 님에게 받을 돈</string>
+    <string name="global_balances_detail_you_owe">%s 님에게 줄 돈</string>
+    <string name="global_balances_detail_guest">%s · 앱이 없는 게스트</string>
+    <string name="global_balances_detail_note_owed">순액은 이미 여러 그룹을 합산한 금액이에요. 요청과 받음에 쓰이는 금액: %s. 앱이 그룹마다 송금을 기록해요.</string>
+    <string name="global_balances_detail_note_settle">순액은 이미 여러 그룹을 합산한 금액이에요. 정산하기에 쓰이는 금액: %s. 앱이 그룹마다 송금을 기록해요.</string>
+    <string name="global_balances_detail_note_single">%s 님과 정산이 남은 그룹은 하나뿐이에요.</string>
+    <string name="global_balances_settled_title">모두 정산 완료</string>
+    <string name="global_balances_settled_body">받을 돈도 줄 돈도 없어요. 누군가 지출을 추가하면 잔액이 여기에 표시돼요.</string>
+    <string name="global_balances_settled_action">그룹 보기</string>
+    <string name="global_balances_nothing_to_pay_title">줄 돈이 없어요</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">모두와 정산했어요. 아직 %1$d명에게 받을 돈이 %2$s 남아 있어요.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">받을 사람 보기</string>
+    <string name="global_balances_nothing_to_receive_title">받을 돈이 없어요</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">아직 %1$d명에게 줄 돈이 %2$s 있어요.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">줄 사람 보기</string>
+    <string name="global_balances_coming_soon">준비 중</string>
+    <string name="global_balances_change_error">변경 사항을 저장하지 못했어요. 다시 시도해 주세요.</string>
+    <string name="global_balances_copied">복사했어요</string>
+    <string name="global_balances_charge_title">%s 님에게 요청</string>
+    <string name="global_balances_charge_owes">받을 돈 %1$s · %2$s</string>
+    <string name="global_balances_charge_close">닫기</string>
+    <string name="global_balances_charge_guest">%s 님은 앱이 없는 게스트예요. 이 메시지로만 알게 되니 어떤 지출인지도 메시지에 이미 적혀 있어요.</string>
+    <string name="global_balances_charge_message">메시지</string>
+    <string name="global_balances_charge_pix">내 Pix 키 포함</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">메시지 복사</string>
+    <string name="global_balances_charge_send">보내기</string>
+    <string name="global_balances_message">%1$s 님, 안녕하세요! Blitz Split 계산으로 %3$s에서 저에게 줄 돈: %2$s.</string>
+    <string name="global_balances_message_guest">%1$s 님, 안녕하세요! %3$s에서 저에게 줄 돈이 있어요. 지출 %4$s 중 %1$s 님 몫: %2$s.</string>
+    <string name="global_balances_message_guest_paid">%1$s 님, 안녕하세요! %3$s에서 저에게 줄 돈이 있어요. 지출 %4$s 중 %1$s 님 몫(이미 낸 %5$s 제외): %2$s.</string>
+    <string name="global_balances_message_group">‘%s’ 그룹</string>
+    <string name="global_balances_message_groups">‘%s’ 그룹</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">전화번호</string>
+    <string name="global_balances_key_email">이메일</string>
+    <string name="global_balances_key_random">랜덤 키</string>
+    <string name="global_balances_message_reroute">‘%1$s’ 그룹에서 빚을 단순화해서 %2$s 님 대신 저에게 바로 보내면 돼요. 총액은 그대로예요.</string>
+</resources>

@@ -17,7 +17,8 @@
         "tr": "Ana Sayfa veya Tüm harcamalar üzerinden açılan bir harcama artık grubuna uğramadan doğrudan açtığınız yere geri döner.",
         "id": "Tagihan yang dibuka dari Beranda atau Semua pengeluaran kini kembali langsung ke tempat Anda membukanya, tanpa melewati grupnya.",
         "ru": "Счёт, открытый с экрана «Главная» или «Все расходы», теперь при возврате ведёт прямо туда, откуда его открыли, а не в свою группу.",
-        "uk": "Рахунок, відкритий з екрана «Головна» або «Усі витрати», тепер під час повернення веде просто туди, звідки його відкрили, а не до своєї групи."
+        "uk": "Рахунок, відкритий з екрана «Головна» або «Усі витрати», тепер під час повернення веде просто туди, звідки його відкрили, а не до своєї групи.",
+        "ko": "홈이나 전체 지출에서 연 지출은 그룹을 거치지 않고 연 곳으로 바로 돌아가요."
       }
     }
   ]

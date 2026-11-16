@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">닫기</string>
+    <string name="invite_group_created">그룹을 만들었어요</string>
+    <string name="invite_title">‘%s’ 그룹에 모두 초대하세요</string>
+    <string name="invite_qr_description">그룹 초대 링크 QR 코드</string>
+    <string name="invite_copy">복사</string>
+    <string name="invite_copied">복사했어요</string>
+    <string name="invite_who_picks">링크를 연 사람이 목록에서 자신을 골라요: %s. 계정은 필요 없어요.</string>
+    <string name="invite_names_or">%1$s 또는 %2$s</string>
+    <string name="invite_anyone_joins">링크를 연 사람은 그룹에 참여해요. 계정은 필요 없어요.</string>
+    <string name="invite_pending_title">링크 대기 중</string>
+    <string name="invite_pending_offline">온라인이 되면 바로 만들어져요.</string>
+    <string name="invite_pending_online">링크를 만드는 중…</string>
+    <string name="invite_failed_title">링크를 만들지 못했어요</string>
+    <string name="invite_failed_body">그룹을 동기화하는 중에 문제가 생겼어요.</string>
+    <string name="invite_retry">다시 시도</string>
+    <string name="invite_share">링크 공유</string>
+    <string name="invite_see_who_joined">참여한 사람 보기</string>
+    <string name="invite_add_person">앱이 없는 사람 추가</string>
+    <string name="invite_go_to_group">그룹으로 이동</string>
+    <string name="invite_change_link">링크 변경</string>
+    <string name="invite_change_link_title">초대 링크를 변경할까요?</string>
+    <string name="invite_change_link_message">지금 링크와 QR 코드는 더 이상 작동하지 않아요. 사용하지 않은 개인 초대도 마찬가지예요. 이미 참여한 사람은 그룹에 남아요.</string>
+    <string name="invite_change_link_failed">링크를 변경하지 못했어요. 다시 시도해 주세요.</string>
+    <string name="invite_share_message">Blitz Split에서 ‘%1$s’ 그룹의 지출을 함께 나눠요. 이 링크로 참여하세요: %2$s</string>
+</resources>

@@ -72,6 +72,7 @@
     <string name="profile_language_indonesian">Indonesian</string>
     <string name="profile_language_russian">Russian</string>
     <string name="profile_language_ukrainian">Ukrainian</string>
+    <string name="profile_language_korean">Korean</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English</string>
@@ -89,6 +90,7 @@
     <string name="profile_language_native_indonesian" translatable="false">Bahasa Indonesia</string>
     <string name="profile_language_native_russian" translatable="false">Русский</string>
     <string name="profile_language_native_ukrainian" translatable="false">Українська</string>
+    <string name="profile_language_native_korean" translatable="false">한국어</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>

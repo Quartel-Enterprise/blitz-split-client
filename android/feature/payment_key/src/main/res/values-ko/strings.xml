@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">새 Pix 키</string>
+    <string name="payment_key_title_pix_edit">Pix 키 수정</string>
+    <string name="payment_key_title_bitcoin_new">새 Bitcoin 키</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin 키 수정</string>
+    <string name="payment_key_save">저장</string>
+
+    <string name="payment_key_pix_intro">나에게 송금하는 사람은 정산할 때 이 키를 봐요. 어떤 유형의 키인가요?</string>
+    <string name="payment_key_pix_question">어떤 유형의 키인가요?</string>
+    <string name="payment_key_pix_explanation">나에게 송금하는 사람은 정산할 때 이 키를 봐요.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">전화번호</string>
+    <string name="payment_key_type_email">이메일</string>
+    <string name="payment_key_type_random">랜덤</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">지역 번호를 포함한 휴대폰 번호</string>
+    <string name="payment_key_label_email">이메일</string>
+    <string name="payment_key_label_random">랜덤 키</string>
+
+    <string name="payment_key_bitcoin_intro">어떻게 받을까요?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">빠르고 수수료가 낮아요</string>
+    <string name="payment_key_network_onchain">온체인</string>
+    <string name="payment_key_network_onchain_detail">블록체인에서</string>
+    <string name="payment_key_label_lightning">Lightning Address 또는 LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin 주소</string>
+
+    <string name="payment_key_paste">붙여넣기</string>
+
+    <string name="payment_key_hint_cpf">형식 000.000.000-00</string>
+    <string name="payment_key_hint_phone">형식 +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">형식 name@domain.com</string>
+    <string name="payment_key_hint_random">은행 앱에 표시된 영문자와 숫자 32자</string>
+    <string name="payment_key_hint_lightning">예: name@wallet.com 또는 LNURL1…</string>
+    <string name="payment_key_hint_onchain">bc1q 또는 bc1p로 시작하는 메인넷 주소</string>
+
+    <string name="payment_key_valid_cpf">형식 000.000.000-00 · 검증 숫자 일치</string>
+    <string name="payment_key_valid_phone">형식 +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">형식 name@domain.com</string>
+    <string name="payment_key_valid_random">랜덤 키 인식됨(32자)</string>
+    <string name="payment_key_valid_lightning_address">올바른 Lightning Address</string>
+    <string name="payment_key_valid_lnurl">올바른 LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · 메인넷</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · 메인넷</string>
+
+    <string name="payment_key_error_invalid_cpf">올바르지 않은 CPF예요. 검증 숫자가 일치하지 않아요.</string>
+    <string name="payment_key_error_invalid_phone">휴대폰 번호가 완전하지 않아요. 지역 번호와 9로 시작하는 9자리 숫자를 입력하세요.</string>
+    <string name="payment_key_error_invalid_email">이메일이 완전하지 않아요. .com이나 .com.br 같은 도메인이 빠졌어요.</string>
+    <string name="payment_key_error_invalid_random">랜덤 키가 완전하지 않아요. 영문자와 숫자 32자여야 해요.</string>
+    <string name="payment_key_error_invalid_lightning">Lightning Address(name@wallet)나 LNURL이 아니에요.</string>
+    <string name="payment_key_error_lightning_invoice">Lightning 인보이스(lnbc…)예요. 한 번만 결제되고 만료돼요. Lightning Address나 LNURL을 붙여넣으세요.</string>
+    <string name="payment_key_error_invalid_onchain">올바르지 않은 주소예요. bc1q 또는 bc1p로 시작하는 메인넷 주소를 사용하세요.</string>
+    <string name="payment_key_error_testnet_address">테스트넷 주소(tb1…)예요. 여기서는 bc1…으로 시작하는 Bitcoin 메인넷 주소만 사용할 수 있어요.</string>
+    <string name="payment_key_error_already_saved">이미 있는 키예요.</string>
+
+    <string name="payment_key_switched_to_onchain">온체인 주소라서 온체인으로 바꿨어요.</string>
+    <string name="payment_key_switched_to_lightning">Lightning Address라서 Lightning으로 바꿨어요.</string>
+    <string name="payment_key_cpf_notice">나에게 송금하는 사람은 CPF 전체를 봐요. 공유하고 싶지 않다면 전화번호, 이메일, 랜덤 키를 사용하세요.</string>
+    <string name="payment_key_held_notice">이 유형의 Pix 키는 하나만 가질 수 있어서, 저장해 둔 키가 여기 있어요. 원하면 여기서 바꾸세요.</string>
+
+    <string name="payment_key_accepted_title">지원 형식</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">기본 Pix 키</string>
+    <string name="payment_key_default_bitcoin_title">기본 Bitcoin 키</string>
+    <string name="payment_key_default_pix_detail">정산할 때 가장 먼저 보여요.</string>
+    <string name="payment_key_default_bitcoin_detail">누군가 BTC로 송금할 때 가장 먼저 보여요.</string>
+    <string name="payment_key_default_now">현재: %1$s.</string>
+    <string name="payment_key_default_locked_editing">바꾸려면 다른 키를 기본으로 지정하세요.</string>
+    <string name="payment_key_default_locked_new">이 종류의 첫 번째 키가 기본 키가 돼요.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">전화번호</string>
+    <string name="payment_key_default_type_email">이메일</string>
+    <string name="payment_key_default_type_random">랜덤 키</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">온체인</string>
+
+    <string name="payment_key_footer_pix">Blitz Split은 돈을 옮기지 않아요. 송금하는 사람이 자기 은행 앱에서 송금해요. 키가 내 이름으로 되어 있는지 확인하세요.</string>
+    <string name="payment_key_footer_bitcoin">정산할 때 현재 환율로 금액을 sats로 보여 줘요. 추정치일 뿐이고, 송금하는 사람이 지갑에서 확인해요.</string>
+
+    <string name="payment_key_delete">키 삭제</string>
+    <string name="payment_key_delete_title">이 키를 삭제할까요?</string>
+    <string name="payment_key_delete_body">나에게 줄 돈이 있는 사람이 정산할 때 더 이상 이 키를 볼 수 없어요.</string>
+    <string name="payment_key_delete_confirm">삭제</string>
+</resources>
