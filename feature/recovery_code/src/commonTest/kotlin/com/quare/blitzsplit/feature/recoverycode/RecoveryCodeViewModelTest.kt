@@ -84,6 +84,30 @@ class RecoveryCodeViewModelTest {
     }
 
     @Test
+    fun `GIVEN the code WHEN downloading THEN asks the platform to save the numbered words as a file`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                code = RECOVERY_CODE,
+                prompt = RecoveryCodePrompt.DUE,
+            )
+
+            // When
+            viewModel.onEvent(RecoveryCodeUiEvent.OnDownloadClicked)
+
+            // Then
+            assertEquals(
+                listOf<RecoveryCodeUiAction>(
+                    RecoveryCodeUiAction.DownloadFile(
+                        "1. legal\n2. winner\n3. thank\n4. year\n5. wave\n6. sausage\n" +
+                            "7. worth\n8. useful\n9. legal\n10. winner\n11. thank\n12. yellow",
+                    ),
+                ),
+                actions,
+            )
+        }
+
+    @Test
     fun `GIVEN the sheet WHEN reminding later THEN snoozes the prompt`() = runTest(testDispatcher) {
         // Given
         prepareScenario(
@@ -420,6 +444,21 @@ class RecoveryCodeViewModelTest {
 
         // Then
         assertEquals(listOf("recovery_code_copy_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the code WHEN downloading THEN tracks the download without the code`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            code = RECOVERY_CODE,
+            prompt = RecoveryCodePrompt.DUE,
+        )
+
+        // When
+        viewModel.onEvent(RecoveryCodeUiEvent.OnDownloadClicked)
+
+        // Then
+        assertEquals(listOf("recovery_code_download_clicked" to emptyMap<String, Any>()), trackedEvents)
     }
 
     @Test

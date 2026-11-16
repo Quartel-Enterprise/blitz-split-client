@@ -29,9 +29,9 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -301,14 +301,17 @@ fun PaidWithChip(
     }
 }
 
-// Why: "Add a payment method" in Paid with's place while the person has none; the method saved comes back picked.
+/*
+ * Why: "Add a payment method" in Paid with's place while the person has none; the method saved comes back picked. An
+ * outlined button, quieter than a filled one, as the form's own fields come first (beta feedback).
+ */
 @Composable
 fun AddPaidWithButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    FilledTonalButton(
+    OutlinedButton(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,

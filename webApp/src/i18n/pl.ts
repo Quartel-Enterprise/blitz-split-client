@@ -110,7 +110,7 @@ export const pl: Record<MessageKey, string> = {
   qrScanner_cameraFailed: 'Nie udało się otworzyć aparatu. Zezwól na dostęp w przeglądarce lub wpisz kod.',
 
   recoveryCode_title: 'Zapisz swój kod odzyskiwania',
-  recoveryCode_body: 'Korzystasz bez konta. Te 12 słów przywróci twoje grupy, jeśli wyczyścisz dane przeglądarki lub zmienisz urządzenie. Zapisz je po kolei.',
+  recoveryCode_body: "Korzystasz bez konta. Te 12 słów przywróci twoje dane, jeśli wyczyścisz przeglądarkę lub zmienisz urządzenie. Zapisz je po kolei. Po 30 dniach nieużywania twoje dane są usuwane, a słowa przestają działać.",
   recoveryCode_copy: 'Kopiuj',
   recoveryCode_copied: 'Skopiowano słowa',
   recoveryCode_download: 'Pobierz jako plik',
@@ -121,7 +121,7 @@ export const pl: Record<MessageKey, string> = {
   recoveryCode_remindLater: 'Przypomnij mi później',
   recoveryCode_saved: 'Mam go zapisany',
   recoveryCode_fileName: 'blitz-split-kod-odzyskiwania.txt',
-  recoveryCode_fileText: 'Blitz Split · kod odzyskiwania\n\n{code}\n\nUżyj go w „Korzystam już na innym urządzeniu”, aby odzyskać swoje grupy.\n',
+  recoveryCode_fileText: "Blitz Split · kod odzyskiwania\n\n{code}\n\nUżyj go w „Korzystam już na innym urządzeniu”, aby odzyskać swoje dane.\n",
 
   groups_title: 'Grupy',
   groups_mainNavigation: 'Nawigacja główna',

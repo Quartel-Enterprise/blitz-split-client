@@ -170,6 +170,20 @@ export function SplitBillDialog({ route, isCovered = false }: { route: JsRoute; 
 function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money: Money, receiptPicker: ReceiptPicker): PaneParts {
   return {
     title: t(state.isEditing ? 'splitBill_editTitle' : 'splitBill_title'),
+    // Why: a new bill's, at the top too, in sight while a phone's keyboard covers the footer; dimmed offline or saving.
+    titleAction: state.showsScanReceipt && (
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        disabled={!state.canScanReceipt}
+        onClick={receiptPicker.pick}
+        aria-label={t('splitBill_scanReceipt')}
+        title={t('splitBill_scanReceipt')}
+      >
+        <ScanText aria-hidden />
+      </Button>
+    ),
     body: <BillForm presenter={presenter} state={state} money={money} receiptPicker={receiptPicker} />,
     // Why: keys of their own, so React never turns another pane's button into this submit button mid-click.
     footer: (

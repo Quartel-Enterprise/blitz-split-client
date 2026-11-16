@@ -1,0 +1,50 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "android",
+        "ios",
+        "mac"
+      ],
+      "text": {
+        "en": "You can now download your recovery code's 12 words as a text file.",
+        "pt": "Agora você pode baixar as 12 palavras do seu código de recuperação como arquivo de texto.",
+        "pt-PT": "Agora podes transferir as 12 palavras do teu código de recuperação como ficheiro de texto.",
+        "es": "Ahora puedes descargar las 12 palabras de tu código de recuperación como archivo de texto.",
+        "fr": "Tu peux maintenant télécharger les 12 mots de ton code de récupération en fichier texte.",
+        "de": "Du kannst die 12 Wörter deines Wiederherstellungscodes jetzt als Textdatei herunterladen.",
+        "it": "Ora puoi scaricare le 12 parole del tuo codice di recupero come file di testo.",
+        "pl": "Możesz teraz pobrać 12 słów kodu odzyskiwania jako plik tekstowy.",
+        "nl": "Je kunt de 12 woorden van je herstelcode nu als tekstbestand downloaden.",
+        "ja": "復元コードの12個の単語をテキストファイルとしてダウンロードできるようになりました。",
+        "tr": "Artık kurtarma kodunun 12 kelimesini metin dosyası olarak indirebilirsin.",
+        "id": "Sekarang kamu bisa mengunduh 12 kata kode pemulihanmu sebagai file teks.",
+        "ru": "Теперь 12 слов кода восстановления можно скачать текстовым файлом.",
+        "uk": "Тепер 12 слів коду відновлення можна завантажити текстовим файлом."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Save your recovery code now says it brings back your data, and that without use for 30 days the data is deleted.",
+        "pt": "Guarde seu código de recuperação agora diz que ele traz de volta seus dados, e que eles são apagados após 30 dias sem uso.",
+        "pt-PT": "Guarda o teu código de recuperação agora diz que ele traz de volta os teus dados, e que são apagados após 30 dias sem utilização.",
+        "es": "Guarda tu código de recuperación ahora dice que recupera tus datos, y que se borran tras 30 días sin uso.",
+        "fr": "Enregistre ton code de récupération indique maintenant qu’il te rend tes données, et qu’elles sont effacées après 30 jours sans utilisation.",
+        "de": "Speichere deinen Wiederherstellungscode sagt jetzt, dass er deine Daten zurückholt und dass sie nach 30 Tagen ohne Nutzung gelöscht werden.",
+        "it": "Salva il tuo codice di recupero ora dice che riporta i tuoi dati, e che dopo 30 giorni di inutilizzo vengono cancellati.",
+        "pl": "Zapisz swój kod odzyskiwania mówi teraz, że kod przywraca twoje dane i że po 30 dniach nieużywania są one usuwane.",
+        "nl": "Bewaar je herstelcode zegt nu dat hij je gegevens terugbrengt, en dat ze na 30 dagen zonder gebruik worden verwijderd.",
+        "ja": "「復元コードを保存」に、コードでデータを復元できること、30日間使わないとデータが削除されることを記載しました。",
+        "tr": "Kurtarma kodunu kaydet artık verilerini geri getirdiğini ve 30 gün kullanılmazsa verilerin silindiğini söylüyor.",
+        "id": "Simpan kode pemulihanmu kini menjelaskan bahwa kode itu mengembalikan datamu, dan data dihapus setelah 30 hari tidak dipakai.",
+        "ru": "«Сохрани код восстановления» теперь говорит, что код возвращает твои данные и что через 30 дней без использования они удаляются.",
+        "uk": "«Збережи свій код відновлення» тепер каже, що код повертає твої дані і що через 30 днів без використання їх буде видалено."
+      }
+    }
+  ]
+}

@@ -199,7 +199,7 @@ private fun ReceiptError.toMessageRes(): Int = when (this) {
     ReceiptError.OFFLINE -> R.string.split_bill_receipt_offline
 }
 
-// Why: where "Ler cupom fiscal" sits: a FAB full screen, in the form in a dialog, nowhere on a tabletop's board.
+// Why: where the bottom "Ler cupom fiscal" sits: a FAB full screen, in the form in a dialog, nowhere on a tabletop's board.
 internal enum class ScanReceiptPlacement {
     FLOATING,
     INLINE,
@@ -228,7 +228,8 @@ internal fun ReceiptSection(
 
         scanPlacement == ScanReceiptPlacement.INLINE -> ScanReceiptButton(state, onEvent)
 
-        scanPlacement == ScanReceiptPlacement.FLOATING && !state.isOnline -> ScanReceiptHelpText(state)
+        // Why: offline, why the FAB left and the top bar's icon is dimmed; a tabletop has the icon alone.
+        !state.isOnline -> ScanReceiptHelpText(state)
     }
 }
 

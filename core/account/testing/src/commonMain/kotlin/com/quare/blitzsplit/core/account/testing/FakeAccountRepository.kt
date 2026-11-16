@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.InactivityExpiry
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -137,8 +138,12 @@ class FakeAccountRepository(
 
     override suspend fun getCurrentUserOrNull(): SessionUser? = sessionUser
 
+    // Holds the registration, and the sync it starts, until completed.
+    var registerGate: CompletableDeferred<Unit>? = null
+
     override suspend fun ensureRegistered(): Result<String> {
         registrationCount++
+        registerGate?.await()
         registerError?.let { return Result.failure(it) }
         val current = status
         return when (current) {

@@ -107,7 +107,7 @@ export const it: Record<MessageKey, string> = {
   qrScanner_cameraFailed: 'Impossibile aprire la fotocamera. Consenti l’accesso nel browser o scrivi il codice.',
 
   recoveryCode_title: 'Salva il tuo codice di recupero',
-  recoveryCode_body: 'Stai usando l’app senza account. Queste 12 parole recuperano i tuoi gruppi se cancelli i dati del browser o cambi dispositivo. Annotale in ordine.',
+  recoveryCode_body: "Stai usando l’app senza account. Queste 12 parole recuperano i tuoi dati se svuoti il browser o cambi dispositivo. Annotale in ordine. Dopo 30 giorni di inutilizzo, i tuoi dati vengono cancellati e le parole smettono di funzionare.",
   recoveryCode_copy: 'Copia',
   recoveryCode_copied: 'Parole copiate',
   recoveryCode_download: 'Scarica come file',
@@ -118,7 +118,7 @@ export const it: Record<MessageKey, string> = {
   recoveryCode_remindLater: 'Ricordamelo più tardi',
   recoveryCode_saved: 'L’ho salvato',
   recoveryCode_fileName: 'blitz-split-codice-di-recupero.txt',
-  recoveryCode_fileText: 'Blitz Split · codice di recupero\n\n{code}\n\nUsalo in «L’ho già usata su un altro dispositivo» per recuperare i tuoi gruppi.\n',
+  recoveryCode_fileText: "Blitz Split · codice di recupero\n\n{code}\n\nUsalo in «L’ho già usata su un altro dispositivo» per recuperare i tuoi dati.\n",
 
   groups_title: 'Gruppi',
   groups_mainNavigation: 'Navigazione principale',
