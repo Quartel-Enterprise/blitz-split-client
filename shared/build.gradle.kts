@@ -1,5 +1,8 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+
 plugins {
     alias(libs.plugins.blitzsplit.kotlin.multiplatform)
+    alias(libs.plugins.buildkonfig)
 }
 
 // The modules SwiftUI and React talk to directly: their ViewModels, UiState, UiEvent and UiAction
@@ -101,6 +104,45 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.koin.test)
+        }
+    }
+}
+
+/*
+ * Why: each anonymous account a development task's installs sign in carries the task's branch (`TaskTag`), so
+ * finish-task deletes the task's test accounts and the server expires a forgotten one after a day. A build that could
+ * reach real people never carries it: CI (every pull request, beta and release), a release build (an Android release
+ * task, a release framework, Xcode's Release configuration) and main. The Mac app has none either, since a task's
+ * build shares its sandbox container, and so its account, with the App Store app on the same Mac. It lives in the
+ * composition root, so a new branch rebuilds this module only, not the cached ones below it.
+ */
+private val isReleaseBuild: Boolean = providers.environmentVariable("CI").isPresent ||
+    providers.environmentVariable("CONFIGURATION").orNull == "Release" ||
+    gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }
+
+private val taskBranch: String = if (isReleaseBuild) {
+    ""
+} else {
+    runCatching {
+        providers
+            .exec {
+                commandLine("git", "branch", "--show-current")
+                isIgnoreExitValue = true
+            }.standardOutput.asText
+            .get()
+            .trim()
+    }.getOrDefault("").takeUnless { it == "main" }.orEmpty()
+}
+
+buildkonfig {
+    packageName = "com.quare.blitzsplit.shared.generated"
+    objectName = "SharedConfig"
+    defaultConfigs {
+        buildConfigField(FieldSpec.Type.STRING, "TASK_BRANCH", taskBranch)
+    }
+    targetConfigs {
+        create("macosArm64") {
+            buildConfigField(FieldSpec.Type.STRING, "TASK_BRANCH", "")
         }
     }
 }

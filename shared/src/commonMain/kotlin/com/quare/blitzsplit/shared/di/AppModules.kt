@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.shared.di
 
+import com.quare.blitzsplit.core.account.data.datasource.TaskTag
 import com.quare.blitzsplit.core.account.di.accountModule
 import com.quare.blitzsplit.core.activity.di.activityModule
 import com.quare.blitzsplit.core.contacts.di.contactModule
@@ -59,6 +60,7 @@ import com.quare.blitzsplit.shared.app.DisplayPreferenceUseCases
 import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.app.SiteTextUseCases
 import com.quare.blitzsplit.shared.app.StorePromptUseCases
+import com.quare.blitzsplit.shared.generated.SharedConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -76,6 +78,7 @@ private val appModule = module {
     single<RandomCode> { SecureRandomCode() }
     single<MinuteTicks> { SystemMinuteTicks(get()) }
     single { LinkInbox() }
+    single { TaskTag(SharedConfig.TASK_BRANCH) }
     factoryOf(::SiteTextUseCases)
     factoryOf(::DisplayPreferenceUseCases)
     factoryOf(::StorePromptUseCases)
