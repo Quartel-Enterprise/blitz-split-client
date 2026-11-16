@@ -71,7 +71,7 @@
     </plurals>
     <string name="groups_row_more">Meer acties: %s</string>
     <string name="groups_actions_title">Acties voor %s</string>
-    <string name="groups_action_invite">Mensen uitnodigen</string>
+    <string name="groups_action_invite">Mensen toevoegen</string>
     <string name="groups_action_invite_hint">Groepslink of QR-code</string>
     <string name="groups_action_leave">Groep verlaten</string>
     <string name="groups_action_leave_hint">Verreken eerst de %s</string>

@@ -339,7 +339,7 @@ export const en = {
   groupDetail_notJoinedOther: "{count} haven't joined yet",
   groupDetail_seeMembers: 'See members',
   groupDetail_invite: 'Invite',
-  groupDetail_invitePeople: 'Invite people',
+  groupDetail_invitePeople: 'Add people',
   groupDetail_splitBill: 'Split a bill',
   groupDetail_columnExpense: 'Expense',
   groupDetail_columnTotal: 'Total',

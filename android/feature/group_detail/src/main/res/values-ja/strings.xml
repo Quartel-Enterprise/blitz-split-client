@@ -2,7 +2,7 @@
 <resources>
     <string name="group_detail_back">戻る</string>
     <string name="group_detail_stats">統計</string>
-    <string name="group_detail_invite">メンバーを招待</string>
+    <string name="group_detail_invite">メンバーを追加</string>
     <string name="group_detail_more">グループのその他のオプション</string>
     <string name="group_detail_pin">ホームにピン留め</string>
     <string name="group_detail_unpin">ホームのピン留めを解除</string>

@@ -340,7 +340,7 @@ export const id: Record<MessageKey, string> = {
   groupDetail_notJoinedOther: '{count} belum bergabung',
   groupDetail_seeMembers: 'Lihat anggota',
   groupDetail_invite: 'Undang',
-  groupDetail_invitePeople: 'Undang orang',
+  groupDetail_invitePeople: 'Tambah orang',
   groupDetail_splitBill: 'Bagi tagihan',
   groupDetail_columnExpense: 'Pengeluaran',
   groupDetail_columnTotal: 'Total',

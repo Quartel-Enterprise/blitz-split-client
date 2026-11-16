@@ -2,7 +2,7 @@
 <resources>
     <string name="group_detail_back">Terug</string>
     <string name="group_detail_stats">Statistieken</string>
-    <string name="group_detail_invite">Mensen uitnodigen</string>
+    <string name="group_detail_invite">Mensen toevoegen</string>
     <string name="group_detail_more">Meer groepsopties</string>
     <string name="group_detail_pin">Vastzetten op Start</string>
     <string name="group_detail_unpin">Losmaken van Start</string>

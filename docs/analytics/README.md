@@ -260,7 +260,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `settled_groups_toggled` | `is_shown` | Settled up expanded or collapsed, or its tab | `:feature:groups` |
 | `groups_display_changed` | `display` (`list`, `grid`) | "List or grid", for another way than the one showing | `:feature:groups` |
 | `groups_grid_size_changed` | `size` | Another size the grid takes: Compact, Standard or Large, once per size the Mac's slider passes | `:feature:groups` |
-| `invite_clicked` | `source` (`groups`, `group_detail`) | "Invite people" | `:feature:groups`, `:feature:group_detail` |
+| `invite_clicked` | `source` (`groups`, `group_detail`) | "Add people" | `:feature:groups`, `:feature:group_detail` |
 | `leave_group_clicked` | `source` (`groups`, `group_detail`) | "Leave group" | `:feature:groups`, `:feature:group_detail` |
 | `delete_group_clicked` | `source` (`groups`, `group_detail`) | "Delete group" | `:feature:groups`, `:feature:group_detail` |
 | `group_exit_confirmed` | `dialog` (`leave_blocked`, `confirm_leave`, `delete_blocked`, `confirm_delete`), `source` (`groups`, `group_detail`) | The dialog's main button (Leave, Delete for everyone, Settle up, See balances), while it could be answered | `:feature:groups`, `:feature:group_detail` |

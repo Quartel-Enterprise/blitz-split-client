@@ -48,14 +48,14 @@ The home's four tabs and the web's and the Mac's shell.
     `.tabBarMinimizeBehavior(.onScrollDown)`, so the tab bar shrinks to a compact floating control on a scroll down, and
     iOS opens it again only at the top of the list or on a tap, not on a scroll up as Android's bars come back (iOS
     27.2 keeps it minimized on a scroll up even in Apple's plain sample, though its documentation says otherwise;
-    Pierre kept Apple's behavior over forcing the bar open, which left it not minimizing again reliably). Balances,
-    Contacts and Activity add `.toolbarMinimizationBehavior(.onScrollDown, for: .navigationBar)` (iOS 27; on iOS 26
+    Pierre kept Apple's behavior over forcing the bar open, which left it not minimizing again reliably). Activity
+    adds `.toolbarMinimizationBehavior(.onScrollDown, for: .navigationBar)` (iOS 27; on iOS 26
     the bar keeps its standard behavior), and that bar does come back on a scroll up, so there a scroll up brings the
     top bar back while the tab bar stays compact until the top: Pierre accepted that mismatch over keeping the top bar
-    minimized until the top too (`.toolbarMinimizationRestoration(.atScrollEdge, for: .navigationBar)`). Home's and
-    Groups' navigation bars stay whole, since "Split a bill", the sync status and the profile live there and iOS has no
-    floating button; so does a group's screen (its bottom bar is already replaced, and its name only shows in the bar
-    once the header scrolls away), Search (the field lives in the bar), the profile and every form or short screen. The
+    minimized until the top too (`.toolbarMinimizationRestoration(.atScrollEdge, for: .navigationBar)`). Home's,
+    Groups', Balances' and Contacts' navigation bars stay whole, since "Split a bill" lives there (its label folding
+    into its icon on a scroll down instead, see [Home](home-tab.md)) and iOS has no floating button; so does a group's
+    screen (its name only shows in the bar once the header scrolls away), Search (the field lives in the bar), the profile and every form or short screen. The
     app has no bottom accessory to move. Lying down, on an iPad and on the Mac the bars stay put, as everywhere else
     (Apple supports minimizing on iPhone only), and an iPhone Duo's vertical bar is never minimized.
   - What a tab keeps once shown. Apple's tabs keep their content: back on Balances or Contacts, the screen is already

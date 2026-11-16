@@ -407,7 +407,7 @@ final class AppModel {
         }
     }
 
-    /// The Mac's invite over the group that opened it (F2Mac): a popover on the group's "Invite people" (Members'
+    /// The Mac's invite over the group that opened it (F2Mac): a popover on the group's "Add people" (Members'
     /// Share) rather than a sheet. The new group's invite has no group behind it, so it stays a sheet. Closing it pops it.
     var invitePopover: InvitePopover? {
         get {

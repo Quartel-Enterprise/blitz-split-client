@@ -12,7 +12,7 @@ import { t } from '@/i18n'
 import { formatMoney } from '@/lib/money'
 
 /**
- * The ⋯ at the end of a row (5.4): Abrir grupo, Convidar pessoas, Sair do grupo and Apagar grupo. A right click on
+ * The ⋯ at the end of a row (5.4): Abrir grupo, Adicionar pessoas, Sair do grupo and Apagar grupo. A right click on
  * the row opens it too, through `open`. Offline, Sair and Apagar say they need the internet; online, what blocks them
  * shows before the click, which still opens the dialog listing what is open.
  */

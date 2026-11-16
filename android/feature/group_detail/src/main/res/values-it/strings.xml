@@ -2,7 +2,7 @@
 <resources>
     <string name="group_detail_back">Indietro</string>
     <string name="group_detail_stats">Statistiche</string>
-    <string name="group_detail_invite">Invita persone</string>
+    <string name="group_detail_invite">Aggiungi persone</string>
     <string name="group_detail_more">Altre opzioni del gruppo</string>
     <string name="group_detail_pin">Fissa in Home</string>
     <string name="group_detail_unpin">Rimuovi da Home</string>

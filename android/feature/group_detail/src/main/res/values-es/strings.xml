@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="group_detail_back">Atrás</string>
     <string name="group_detail_stats">Estadísticas</string>
-    <string name="group_detail_invite">Invitar personas</string>
+    <string name="group_detail_invite">Agregar personas</string>
     <string name="group_detail_more">Más opciones del grupo</string>
     <string name="group_detail_pin">Fijar en Inicio</string>
     <string name="group_detail_unpin">Quitar de Inicio</string>

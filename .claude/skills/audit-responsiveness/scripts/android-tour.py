@@ -121,7 +121,7 @@ if tap(GROUP, starts=True):
     if tap("More group options"):
         shot("group-menu")
         back()
-    if tap("Invite people"):
+    if tap("Add people"):
         shot("invite")
         back()
 launch()

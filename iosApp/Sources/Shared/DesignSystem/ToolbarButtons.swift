@@ -40,14 +40,21 @@ struct ProfileToolbarButton: View {
 
 /// "Split a bill" spelled out with its receipt and plus (the legacy app's icon, `SplitBill` in the asset catalog), a
 /// toolbar draws a Label as its icon only: iOS's tinted glass item (iOS has no FAB), the Mac window's prominent
-/// button. In an iPhone Duo's vertical bar, which has no room for words, the icon alone (`showsTitle`).
+/// button. On an iPhone and an iPad it shrinks to its icon alone once the list scrolls down from its top
+/// (`splitBillExpandsAtTop`), and in an iPhone Duo's vertical bar, which has no room for words, it is always the icon
+/// alone (`showsTitle`). Where its bar leaves it little room (`titleRoom`, the words' width at most), it is the icon
+/// alone too, rather than iOS moving it into its own "⋯" overflow, out of sight.
 struct SplitBillButton: View {
     var showsTitle = true
+    var titleRoom: CGFloat = .infinity
     let action: () -> Void
+
+    /// The words' width, measured in the button's own font.
+    @State private var titleWidth: CGFloat = 0
 
     var body: some View {
         Button(action: action) {
-            if showsTitle {
+            if showsTitle && titleWidth <= titleRoom {
                 HStack(spacing: 6) {
                     Image(decorative: "SplitBill")
                     Text("Split a bill")
@@ -57,6 +64,15 @@ struct SplitBillButton: View {
                 Label { Text("Split a bill") } icon: { Image(decorative: "SplitBill") }
                     .labelStyle(.iconOnly)
                     .fontWeight(.semibold)
+            }
+        }
+        .background {
+            if titleRoom.isFinite {
+                Text("Split a bill")
+                    .fontWeight(.semibold)
+                    .fixedSize()
+                    .hidden()
+                    .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { titleWidth = $0 }
             }
         }
         #if os(iOS)
@@ -70,11 +86,13 @@ struct SplitBillButton: View {
 }
 
 #if os(iOS)
-/// A home tab's trailing items (Home, Groups): its two buttons grouped in glass, then "Split a bill" as the bar's
-/// tinted glass item on its own, never a FAB floating over the tab bar. Both go into an iPhone Duo's vertical bar.
+/// A home tab's trailing items (Home, Groups, Balances, Contacts): its buttons grouped in glass, then "Split a bill" as
+/// the bar's tinted glass item on its own, never a FAB floating over the tab bar. Both go into an iPhone Duo's
+/// vertical bar.
 struct TabTrailingItems<Buttons: View>: ToolbarContent {
     let showsSplitBill: Bool
-    /// Home spells it out where its bar has room (lying down, an iPad); Groups draws its icon alone everywhere.
+    /// Spelled out while the list is at its top, the icon alone once it scrolls down and in an iPhone Duo's vertical
+    /// bar.
     let showsSplitBillTitle: Bool
     let onSplitBill: () -> Void
     let buttons: Buttons
@@ -100,6 +118,22 @@ struct TabTrailingItems<Buttons: View>: ToolbarContent {
                 SplitBillButton(showsTitle: showsSplitBillTitle, action: onSplitBill)
             }
             .prefersVerticalBar()
+        }
+    }
+}
+
+extension View {
+    /// Keeps `isExpanded` on whether this list is at its top, which spells "Split a bill" out in the top bar: it starts
+    /// expanded and shrinks to its icon as the list scrolls down, growing back at the top, as Android's extended FAB
+    /// does (beta feedback of 2026-11-15). A list too short to scroll keeps it spelled out. Put on the screen's
+    /// vertical list.
+    func splitBillExpandsAtTop(_ isExpanded: Binding<Bool>) -> some View {
+        onScrollGeometryChange(for: Bool.self) { geometry in
+            let insets = geometry.contentInsets
+            let scrolls = geometry.contentSize.height > geometry.containerSize.height - insets.top - insets.bottom
+            return !scrolls || geometry.contentOffset.y + insets.top <= 1
+        } action: { _, isAtTop in
+            withAnimation(.snappy) { isExpanded.wrappedValue = isAtTop }
         }
     }
 }
@@ -153,8 +187,8 @@ extension View {
     }
 
     /// The same for the navigation bar of a long list that holds no main action (iOS 27; before it the bar keeps its
-    /// standard behavior): Balances, Contacts and Activity. Home and Groups keep theirs, since "Split a bill" lives
-    /// there, and so does a group's screen, whose inline title only shows once the header scrolls away.
+    /// standard behavior): Activity. Home, Groups, Balances and Contacts keep theirs, since "Split a bill" lives there,
+    /// and so does a group's screen, whose inline title only shows once the header scrolls away.
     func phoneMinimizesNavigationBar() -> some View {
         modifier(PhoneBarMinimization(bar: .navigationBar))
     }

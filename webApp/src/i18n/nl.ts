@@ -342,7 +342,7 @@ export const nl: Record<MessageKey, string> = {
   groupDetail_notJoinedOther: '{count} zijn nog geen lid',
   groupDetail_seeMembers: 'Leden bekijken',
   groupDetail_invite: 'Uitnodigen',
-  groupDetail_invitePeople: 'Mensen uitnodigen',
+  groupDetail_invitePeople: 'Mensen toevoegen',
   groupDetail_splitBill: 'Uitgave verdelen',
   groupDetail_columnExpense: 'Uitgave',
   groupDetail_columnTotal: 'Totaal',

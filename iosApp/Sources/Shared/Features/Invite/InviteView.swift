@@ -38,11 +38,11 @@ final class InviteModel {
 /// "Invite", right after a group is created, taking the new group's place, or from the group (2.2). A sheet on an
 /// iPhone, two columns inside it lying down; pushed full screen with an iPad's room (decision 1: an iPad, an iPhone
 /// Duo open or upright), two columns lying down and the QR card first upright; on the Mac a sheet right after
-/// creating, and a popover on the group's "Invite people" once the group is behind it (F2Mac, `InvitePopover`).
+/// creating, and a popover on the group's "Add people" once the group is behind it (F2Mac, `InvitePopover`).
 /// The QR code and the link come once the group's first sync brings its code; until then a dashed box says why.
 struct InviteView: View {
     let route: RouteInvite
-    /// The Mac's popover over the group's "Invite people", which has no toolbar of its own.
+    /// The Mac's popover over the group's "Add people", which has no toolbar of its own.
     var isPopover = false
 
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
@@ -450,7 +450,7 @@ private func inviteShareMessage(groupName: String) -> Text {
 }
 
 #if os(macOS)
-/// The Mac's popover over the group's "Invite people" (F2Mac): the code beside who picks, the link with Copy,
+/// The Mac's popover over the group's "Add people" (F2Mac): the code beside who picks, the link with Copy,
 /// "Share…", for the group's creator "Change link…", and "Add someone without the app".
 private struct InvitePopoverContent: View {
     let model: InviteModel

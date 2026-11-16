@@ -47,9 +47,10 @@ struct GroupScreenActions {
 }
 
 extension View {
-    /// The bars of the group's screen: its name, "Statistics", "Invite people", the "⋯" menu and "Split a bill", the
-    /// main button on every tab (the bottom toolbar's prominent glass item on iPhone, iOS has no FAB; the window
-    /// toolbar's primary button on the Mac, with the tabs in the toolbar). `header` is nil until the screen is loaded,
+    /// The bars of the group's screen: its name, "Statistics", the "⋯" menu and "Split a bill", the main button on
+    /// every tab (the top bar's tinted glass item on iPhone and iPad, iOS has no FAB, spelled out while the list is at
+    /// its top; the window toolbar's primary button on the Mac, with the tabs and "Add people" in the toolbar).
+    /// On iPhone and iPad "Add people" is the "⋯" menu's first item (beta feedback of 2026-11-15). `header` is nil until the screen is loaded,
     /// which keeps the buttons out of the bars rather than drawing them disabled. Offline, the menu's Leave and Delete
     /// need the internet; the dialogs they open come with the bars.
     func groupScreenBars(
@@ -80,7 +81,7 @@ extension View {
 
 private struct GroupScreenBars: ViewModifier {
     let tab: GroupTab
-    /// The group's screen in the shared back stack, whose "Invite people" anchors the Mac's invite popover, except on
+    /// The group's screen in the shared back stack, whose "Add people" anchors the Mac's invite popover, except on
     /// Members, whose Share does.
     let host: AppRoute
     let header: GroupHeader?
@@ -92,13 +93,21 @@ private struct GroupScreenBars: ViewModifier {
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @Environment(\.verticalSizeClass) private var verticalSizeClass
     #else
     @Environment(\.isNarrowWindow) private var isNarrowWindow
     @Environment(\.frontRoute) private var frontRoute
     #endif
     /// An iPhone Duo's vertical bar (iOS 27.1), which takes the main button as its plus alone.
     @State private var hasVerticalBar = false
+    /// The screen's width, which leaves "Split a bill" its room after Back, Statistics and ⋯.
+    @State private var width: CGFloat = 0
+
+    /// Room for the words of "Split a bill" in the bar: the width less Back, the glass of Statistics and ⋯, the
+    /// margins and gaps, and the button's own icon and padding (measured on an iPhone 17 Pro, with a few points to
+    /// spare). "Partager une dépense" doesn't fit on a 402 pt iPhone; "Split a bill" fits on a 375 pt one.
+    private var splitBillTitleRoom: CGFloat {
+        width == 0 ? .infinity : width - 275
+    }
 
     private var isLoaded: Bool {
         header != nil
@@ -107,6 +116,7 @@ private struct GroupScreenBars: ViewModifier {
     func body(content: Content) -> some View {
         content
             .readingVerticalBar($hasVerticalBar)
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
             .navigationTitle(Text(verbatim: header?.groupName ?? ""))
             #if os(iOS)
             .toolbarTitleDisplayMode(.inline)
@@ -145,10 +155,12 @@ private struct GroupScreenBars: ViewModifier {
             ToolbarItem(placement: .primaryAction) {
                 Button("Statistics", systemImage: "chart.bar", action: actions.stats)
             }
+            #if os(macOS)
             ToolbarItem(placement: .primaryAction) {
-                Button("Invite people", systemImage: "person.badge.plus", action: actions.invite)
+                Button("Add people", systemImage: "person.badge.plus", action: actions.invite)
                     .invitePopover(host: host, isAnchor: tab != .members)
             }
+            #endif
             ToolbarItem(placement: .primaryAction) { groupMenu }
         }
         if showsSplitBill {
@@ -159,13 +171,10 @@ private struct GroupScreenBars: ViewModifier {
     @ToolbarContentBuilder
     private var splitBillItem: some ToolbarContent {
         #if os(iOS)
-        if usesBottomBar {
-            ToolbarSpacer(.flexible, placement: .bottomBar)
-            ToolbarItem(placement: .bottomBar) { splitBillButton }
-        } else {
-            ToolbarItem(placement: .primaryAction) { splitBillButton }
-                .prefersVerticalBar()
-        }
+        // On its own after the group's buttons, as on the home's tabs (`TabTrailingItems`)
+        ToolbarSpacer(.fixed, placement: .primaryAction)
+        ToolbarItem(placement: .primaryAction) { splitBillButton }
+            .prefersVerticalBar()
         #else
         ToolbarItem(placement: .primaryAction) {
             // File › Split a Bill (⌘N) runs it, as on Home and Groups: a bill in this group (`newItemCommands`)
@@ -180,6 +189,9 @@ private struct GroupScreenBars: ViewModifier {
     /// dialog end in "…".
     private var groupMenu: some View {
         Menu("More group options", systemImage: "ellipsis") {
+            #if os(iOS)
+            Button("Add people", systemImage: "person.badge.plus", action: actions.invite)
+            #endif
             Button(editGroupTitle, systemImage: "pencil", action: actions.editGroup)
             if header?.isPinned == true {
                 Button("Unpin from Home", systemImage: "pin.slash", action: actions.togglePin)
@@ -244,16 +256,16 @@ private struct GroupScreenBars: ViewModifier {
     }
 
     private var splitBillButton: some View {
-        SplitBillButton(showsTitle: !hasVerticalBar, action: actions.splitBill)
+        #if os(iOS)
+        SplitBillButton(
+            showsTitle: headerScroll.isAtTop && !hasVerticalBar,
+            titleRoom: splitBillTitleRoom,
+            action: actions.splitBill,
+        )
+        #else
+        SplitBillButton(action: actions.splitBill)
+        #endif
     }
-
-    #if os(iOS)
-    /// The upright iPhone: "Split a bill" goes to the bottom toolbar, under the thumb, except into an iPhone Duo's
-    /// vertical bar, right under Back, as the boards draw it.
-    private var usesBottomBar: Bool {
-        horizontalSizeClass == .compact && verticalSizeClass == .regular && !hasVerticalBar
-    }
-    #endif
 }
 
 /// "Your balance in this group" once there is a bill; while the account's copy isn't whole the balance isn't known yet,
@@ -481,8 +493,9 @@ struct PhoneGroupScaffold<Sections: View>: View {
     let hasExpenses: Bool
     let tab: GroupTab
     let usesTwoColumns: Bool
-    /// Only the header's avatar and the bar's title read it, so a scroll never draws the rest of the screen again.
-    let headerScroll: GroupHeaderScroll
+    /// Only the header's avatar, the bar's title and "Split a bill" read it, so a scroll never draws the rest of the
+    /// screen again.
+    @Bindable var headerScroll: GroupHeaderScroll
     let actions: GroupScreenActions
     @ViewBuilder let sections: Sections
 
@@ -598,12 +611,13 @@ struct PhoneGroupScaffold<Sections: View>: View {
         .onAppear {
             if !withHeader { headerScroll.offset = 0 }
         }
+        .splitBillExpandsAtTop($headerScroll.isAtTop)
     }
 }
 #endif
 
-/// How far the group's list scrolled past its top. Only the header's avatar and the bar's title read it, so the
-/// rest of the screen isn't drawn again on every frame of a scroll.
+/// How far the group's list scrolled past its top. Only the header's avatar, the bar's title and "Split a bill" read
+/// it, so the rest of the screen isn't drawn again on every frame of a scroll.
 @Observable
 final class GroupHeaderScroll {
     /// The header's avatar at the top of the list on iPhone and iPad (Pierre's beta feedback of 2026-11-12: bigger,
@@ -614,6 +628,10 @@ final class GroupHeaderScroll {
 
     /// Scrolled past the top, in points, 0 at the top.
     var offset: CGFloat = 0
+
+    /// The list at its top (or too short to scroll), whatever the layout: "Split a bill" is spelled out in the bar
+    /// then, its icon alone once the list scrolls down, as on the home's tabs (`splitBillExpandsAtTop`).
+    var isAtTop = true
 
     /// The header's avatar shrinks to half its side over the first 88 pt of scroll, the time it takes to go under
     /// the bar, and fades as its last part goes.

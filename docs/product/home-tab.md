@@ -77,8 +77,13 @@ The home tab, its shortcuts and pinned groups.
     reads the device a page at a time; any filter, search or other order reads every bill of the device once and
     shows them a page at a time (`AllExpensesFilters`), the page going back to the first on each change.
     "Split a bill" is Groups' (asks the group first, 7.1i; ⌘N on the Mac), on iOS the tinted glass item at the end of
-    the top bar, never floating over the tab bar: its icon alone on an iPhone upright, as on Groups, and in an iPhone
-    Duo's vertical bar, under the profile; spelled out lying down and on iPad. "Search" is the home's (5.2), over
+    the top bar, never floating over the tab bar. On iPhone and iPad it starts spelled out and shrinks to its icon as
+    the list scrolls down, spelled out again back at the top, as Android's extended FAB does (beta feedback of
+    2026-11-15; `splitBillExpandsAtTop`, the same on Groups, Balances, Contacts and a group's screen); always its icon
+    alone in an iPhone Duo's vertical bar, under the profile; always spelled out on the Mac. On a group's screen, whose bar also holds Back, Statistics and ⋯, the words show only
+    where they fit (a long label on a small iPhone is the icon alone). On an iPad upright the tab
+    bar in the top bar's middle leaves room for one trailing item, so iOS moves the rest, "Split a bill" included, into
+    its own ⋯ overflow, on every tab and on a group's screen (as before this rule; still open, Pierre's call). "Search" is the home's (5.2), over
     Home. States: a shimmer until Room is read; no group yet shows only the first use's card (1.3), and only
     once the account's copy is whole; a new device's first download (an account restored on a device with no profile,
     or a sign in that switched to another user, until a sync settled, also across relaunches, `FirstDownload`,

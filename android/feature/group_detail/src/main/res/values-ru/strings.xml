@@ -2,7 +2,7 @@
 <resources>
     <string name="group_detail_back">Назад</string>
     <string name="group_detail_stats">Статистика</string>
-    <string name="group_detail_invite">Пригласить людей</string>
+    <string name="group_detail_invite">Добавить людей</string>
     <string name="group_detail_more">Другие действия с группой</string>
     <string name="group_detail_pin">Закрепить на Главной</string>
     <string name="group_detail_unpin">Открепить с Главной</string>

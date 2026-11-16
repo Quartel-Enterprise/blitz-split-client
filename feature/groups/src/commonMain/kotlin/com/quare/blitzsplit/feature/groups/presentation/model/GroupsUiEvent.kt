@@ -120,7 +120,7 @@ sealed interface GroupsUiEvent : UiEvent {
     // Why: "Rachar conta", the FAB on Android, + on iOS, the main button on the web and the Mac.
     data object OnSplitBillClicked : GroupsUiEvent
 
-    // Why: the "Saldo geral" card of the web and the Mac, a button of the page rather than the Saldos tab beside it.
+    // Why: the "Saldo geral" card on every platform, a button of the page rather than the Saldos tab beside it.
     data object OnOverallBalanceClicked : GroupsUiEvent
 
     // Why: the "A receber" and "A pagar" buttons of "Saldo geral".
@@ -148,7 +148,7 @@ sealed interface GroupsUiEvent : UiEvent {
     ) : GroupsUiEvent
 
     /*
-     * Why: the row's ⋮ menu (⋯ on Apple and the web) or its long press: "Convidar pessoas", "Sair do grupo" and
+     * Why: the row's ⋮ menu (⋯ on Apple and the web) or its long press: "Adicionar pessoas", "Sair do grupo" and
      * "Apagar grupo" of that group, without opening it.
      */
     data class OnInviteClicked(

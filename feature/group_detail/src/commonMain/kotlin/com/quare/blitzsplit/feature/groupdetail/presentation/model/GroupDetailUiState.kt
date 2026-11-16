@@ -70,7 +70,7 @@ data class GroupDetailUiState(
     val showsProtectAccess: Boolean
         get() = joinedAs != null && isAccountUnprotected
 
-    // Why: Despesas' "Nenhuma despesa ainda", with "Rachar conta" and "Convidar pessoas" in it; never a guess.
+    // Why: Despesas' "Nenhuma despesa ainda", with "Rachar conta" and "Adicionar pessoas" in it; never a guess.
     val isEmpty: Boolean
         get() = isLoaded && !awaitsFullSync && days.isEmpty()
 
