@@ -14,7 +14,6 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.sync.connect.ProviderConnectorImpl
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
-import com.quare.blitzsplit.core.utils.RecoveryWords
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiAction
 import com.quare.blitzsplit.feature.recoverycode.presentation.model.RecoveryCodeUiEvent
 import com.quare.blitzsplit.feature.recoverycode.presentation.viewmodel.RecoveryCodeViewModel
@@ -99,7 +98,10 @@ class RecoveryCodeViewModelTest {
             // Then
             assertEquals(
                 listOf<RecoveryCodeUiAction>(
-                    RecoveryCodeUiAction.DownloadFile(RecoveryWords.buildNumberedLines(RECOVERY_CODE.split(" "))),
+                    RecoveryCodeUiAction.DownloadFile(
+                        "1. legal\n2. winner\n3. thank\n4. year\n5. wave\n6. sausage\n" +
+                            "7. worth\n8. useful\n9. legal\n10. winner\n11. thank\n12. yellow",
+                    ),
                 ),
                 actions,
             )

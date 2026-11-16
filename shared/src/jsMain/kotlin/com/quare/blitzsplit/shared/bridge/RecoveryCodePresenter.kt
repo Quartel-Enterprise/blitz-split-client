@@ -20,10 +20,10 @@ class JsRecoveryCodeState(
     val isConnectExpanded: Boolean,
 )
 
-// Why: `code` is the words joined by spaces for "copy", and numbered one a line for "download".
+// Why: `text` is the words joined by spaces for "copy", and numbered one a line for "download".
 class JsRecoveryCodeAction(
     val type: String,
-    val code: String,
+    val text: String,
 )
 
 class RecoveryCodePresenter {

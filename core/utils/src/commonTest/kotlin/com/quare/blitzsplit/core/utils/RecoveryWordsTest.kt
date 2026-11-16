@@ -486,7 +486,11 @@ class RecoveryWordsTest {
         val lines = RecoveryWords.buildNumberedLines(words)
 
         // Then
-        assertEquals(words.mapIndexed { index, word -> "${index + 1}. $word" }, lines.lines())
+        assertEquals(
+            "1. legal\n2. winner\n3. thank\n4. year\n5. wave\n6. sausage\n" +
+                "7. worth\n8. useful\n9. legal\n10. winner\n11. thank\n12. yellow",
+            lines,
+        )
     }
 
     @Test

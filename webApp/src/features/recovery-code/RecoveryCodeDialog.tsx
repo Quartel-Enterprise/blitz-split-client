@@ -23,9 +23,9 @@ export function RecoveryCodeDialog() {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   useActions(presenter, (p, onAction: (action: JsRecoveryCodeAction) => void) => p.observeActions(onAction), (action) => {
     if (action.type === 'copy') {
-      void navigator.clipboard.writeText(action.code).then(() => toast(t('recoveryCode_copied')))
+      void navigator.clipboard.writeText(action.text).then(() => toast(t('recoveryCode_copied')))
     } else if (action.type === 'download') {
-      downloadCode(action.code)
+      downloadCode(action.text)
     }
   })
   if (!presenter || !state?.recoveryWords) return null
