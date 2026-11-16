@@ -16,7 +16,18 @@ class JsCreateGroupMember(
     val name: String,
     val initials: String,
     val avatarColor: String,
+    // Why: the profile photo over the initials, null for none.
+    val photoUrl: String?,
     val isMe: Boolean,
+)
+
+// Why: a contact matching the name typed in "Add by name"; addSuggestion(key) adds that same person.
+class JsCreateGroupSuggestion(
+    val key: String,
+    val name: String,
+    val initials: String,
+    val avatarColor: String,
+    val photoUrl: String?,
 )
 
 class JsCreateGroupState(
@@ -42,6 +53,7 @@ class JsCreateGroupState(
     val cryptoCurrencies: Array<String>,
     val members: Array<JsCreateGroupMember>,
     val draft: String,
+    val suggestions: Array<JsCreateGroupSuggestion>,
     val isCreating: Boolean,
     val showsCreateError: Boolean,
     val canAddMember: Boolean,
@@ -79,10 +91,21 @@ class CreateGroupPresenter {
                             name = member.name,
                             initials = member.initials,
                             avatarColor = member.avatarColor.code,
+                            photoUrl = member.photoUrl,
                             isMe = member.isMe,
                         )
                     }.toTypedArray(),
                 draft = state.draft,
+                suggestions = state.suggestions
+                    .map { suggestion ->
+                        JsCreateGroupSuggestion(
+                            key = suggestion.key,
+                            name = suggestion.name,
+                            initials = suggestion.initials,
+                            avatarColor = suggestion.avatarColor.code,
+                            photoUrl = suggestion.photoUrl,
+                        )
+                    }.toTypedArray(),
                 isCreating = state.isCreating,
                 showsCreateError = state.showsCreateError,
                 canAddMember = state.canAddMember,
@@ -140,6 +163,10 @@ class CreateGroupPresenter {
 
     fun addMember() {
         viewModel.onEvent(CreateGroupUiEvent.OnAddMemberClicked)
+    }
+
+    fun addSuggestion(key: String) {
+        viewModel.onEvent(CreateGroupUiEvent.OnSuggestionClicked(key))
     }
 
     fun removeMember(memberId: String) {

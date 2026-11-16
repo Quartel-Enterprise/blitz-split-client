@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.groups.data.datasource.GroupPhotoRemoteDataSour
 import com.quare.blitzsplit.core.groups.data.datasource.GroupRemoteDataSource
 import com.quare.blitzsplit.core.groups.data.dto.GroupDto
 import com.quare.blitzsplit.core.groups.data.dto.GroupExitResultDto
+import com.quare.blitzsplit.core.groups.data.dto.GroupMemberDto
 import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.mapper.GroupMapper
 import com.quare.blitzsplit.core.groups.domain.model.Group
@@ -14,6 +15,7 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.InviteCodeTakenException
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
+import com.quare.blitzsplit.core.groups.domain.model.MemberAccountRefusedException
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.repository.GroupDeletionRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
@@ -26,6 +28,7 @@ import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.profile.data.datasource.ProfileLocalDataSource
 import com.quare.blitzsplit.core.profile.data.mapper.ProfileMapper
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
+import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.utils.RandomCode
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -345,8 +348,7 @@ class GroupRepositoryImpl(
             local.markGroupsOnServer(keptRows.map { it.id } + groupsToPush.filter { it.isOnServer }.map { it.id })
         }
         if (pendingMembers.isNotEmpty()) {
-            val codesById = remote
-                .upsertMembers(pendingMembers.map(mapper::toDto))
+            val codesById = upsertMembersKeepingRefusedAsGuests(pendingMembers)
                 .mapNotNull { dto -> dto.inviteCode?.let { dto.id to it } }
                 .toMap()
             if (codesById.isNotEmpty()) local.updateMemberInviteCodes(codesById)
@@ -380,6 +382,24 @@ class GroupRepositoryImpl(
         }
         photoErrors.firstOrNull()?.let { throw it }
     }
+
+    /*
+     * Why: a member this device linked to someone else's account (Contacts' "Add to a group", a contact picked in New
+     * group) goes up with it, as the device last read it. When the server no longer takes that account, the whole upload
+     * would fail on every sync and hold the group, so the members go once more with those accounts as plain names
+     * (guests), which the device keeps only once the server took them. Any other refusal still fails the upload.
+     */
+    private suspend fun upsertMembersKeepingRefusedAsGuests(members: List<GroupMemberEntity>): List<GroupMemberDto> =
+        try {
+            remote.upsertMembers(members.map(mapper::toDto))
+        } catch (refused: MemberAccountRefusedException) {
+            val linkedIds = members
+                .filter { !it.isMe && it.userId != null && it.inviteCode == null }
+                .mapTo(mutableSetOf(), GroupMemberEntity::id)
+            if (linkedIds.isEmpty()) throw refused
+            val asGuests = members.map { if (it.id in linkedIds) it.copy(userId = null) else it }
+            remote.upsertMembers(asGuests.map(mapper::toDto)).also { local.dropMemberAccounts(linkedIds.toList()) }
+        }
 
     /*
      * Why: another group may have the code this device made, which the server refuses with the whole upload. It

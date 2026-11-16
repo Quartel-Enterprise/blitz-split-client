@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.groups.data.dto.ReleaseMemberParamsDto
 import com.quare.blitzsplit.core.groups.data.dto.RemovedGroupDto
 import com.quare.blitzsplit.core.groups.data.dto.RotateInviteCodeParamsDto
 import com.quare.blitzsplit.core.groups.domain.model.InviteCodeTakenException
+import com.quare.blitzsplit.core.groups.domain.model.MemberAccountRefusedException
 import com.quare.blitzsplit.core.groups.domain.model.NotGroupCreatorException
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
@@ -42,10 +43,21 @@ class SupabaseGroupRemoteDataSource(
     private fun PostgrestRestException.isInviteCodeTaken(): Boolean = INVITE_CODE_TAKEN in error ||
         (code == UNIQUE_VIOLATION && INVITE_CODE_UNIQUE in error)
 
-    override suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto> = postgrest
-        .from(MEMBERS)
-        .upsert(members) { select() }
-        .decodeList<GroupMemberDto>()
+    /*
+     * Why: the insert policy refuses an account the user may no longer link (no group shared), and the foreign key one
+     * that was deleted; either fails the whole upload.
+     */
+    override suspend fun upsertMembers(members: List<GroupMemberDto>): List<GroupMemberDto> = try {
+        postgrest
+            .from(MEMBERS)
+            .upsert(members) { select() }
+            .decodeList<GroupMemberDto>()
+    } catch (exception: PostgrestRestException) {
+        if (exception.code == INSUFFICIENT_PRIVILEGE || exception.code == FOREIGN_KEY_VIOLATION) {
+            throw MemberAccountRefusedException()
+        }
+        throw exception
+    }
 
     // Why: a few ids per request, so the filter in the URL stays short.
     override suspend fun deleteMembers(ids: List<String>) {
@@ -181,6 +193,7 @@ class SupabaseGroupRemoteDataSource(
         // Why: the Postgres code rotate_invite_code raises for anyone but the group's creator.
         const val INSUFFICIENT_PRIVILEGE = "42501"
         const val UNIQUE_VIOLATION = "23505"
+        const val FOREIGN_KEY_VIOLATION = "23503"
         const val INVITE_CODE_TAKEN = "invite_code_taken"
         const val INVITE_CODE_UNIQUE = "groups_invite_code_key"
         const val LEAVE_GROUP = "leave_group"

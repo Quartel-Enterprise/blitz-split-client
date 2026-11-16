@@ -70,6 +70,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
+import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupSuggestion
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiState
 
@@ -519,12 +520,57 @@ private fun buildPreviewState(draft: String): CreateGroupUiState = CreateGroupUi
     type = GroupType.TRIP,
     currency = GroupCurrency.BRL,
     members = listOf(
-        CreateGroupMember("1", "Pierre", previewInitialsOf("Pierre"), AvatarColor.BLUE, isMe = true),
-        CreateGroupMember("2", "Ana", previewInitialsOf("Ana"), AvatarColor.GREEN, isMe = false),
-        CreateGroupMember("3", "Bruno", previewInitialsOf("Bruno"), AvatarColor.PEACH, isMe = false),
-        CreateGroupMember("4", "Carla", previewInitialsOf("Carla"), AvatarColor.LILAC, isMe = false),
+        CreateGroupMember(
+            "1",
+            "Pierre",
+            previewInitialsOf("Pierre"),
+            AvatarColor.BLUE,
+            photoUrl = null,
+            isMe = true,
+            userId = null,
+        ),
+        CreateGroupMember(
+            "2",
+            "Ana",
+            previewInitialsOf("Ana"),
+            AvatarColor.GREEN,
+            photoUrl = null,
+            isMe = false,
+            userId = null,
+        ),
+        CreateGroupMember(
+            "3",
+            "Bruno",
+            previewInitialsOf("Bruno"),
+            AvatarColor.PEACH,
+            photoUrl = null,
+            isMe = false,
+            userId = null,
+        ),
+        CreateGroupMember(
+            "4",
+            "Carla",
+            previewInitialsOf("Carla"),
+            AvatarColor.LILAC,
+            photoUrl = null,
+            isMe = false,
+            userId = null,
+        ),
     ),
     draft = draft,
+    suggestions = if (draft.isEmpty()) {
+        emptyList()
+    } else {
+        listOf(
+            CreateGroupSuggestion(
+                "user:diego",
+                "Diego Souza",
+                previewInitialsOf("Diego Souza"),
+                AvatarColor.SAND,
+                null,
+            ),
+        )
+    },
     isCreating = false,
     showsCreateError = false,
     openedColor = AvatarColor.PEACH,

@@ -18,7 +18,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 const formId = 'create-group-form'
 const nameId = 'create-group-name'
@@ -101,6 +101,18 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
   const members = state.members.length
   const photo = usePhotoPicker()
   const draftRef = useRef<HTMLInputElement>(null)
+  const lastSuggestionRef = useRef<HTMLLIElement>(null)
+  const showsSuggestions = state.suggestions.length > 0
+  /*
+   * Why: the suggestions show under the field, where a phone's keyboard would cover them, so the list scrolls to the
+   * last once they show while the name is being typed, as on Android and iOS; not on each keystroke, nor when a sync
+   * brings them while another field is edited.
+   */
+  useEffect(() => {
+    if (showsSuggestions && document.activeElement === draftRef.current) {
+      lastSuggestionRef.current?.scrollIntoView({ block: 'nearest' })
+    }
+  }, [showsSuggestions])
   return (
     <form
       id={formId}
@@ -194,7 +206,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
         <ul className="flex flex-col divide-y rounded-lg border">
           {state.members.map((member) => (
             <li key={member.id} className="flex items-center gap-3 px-3 py-2">
-              <Avatar initial={member.initials} color={member.avatarColor} className="size-8 text-xs" />
+              <Avatar initial={member.initials} color={member.avatarColor} photoUrl={member.photoUrl} className="size-8 text-xs" />
               <span className="min-w-0 flex-1 truncate text-sm font-medium">{member.name}</span>
               {member.isMe ? (
                 <span className="text-xs text-muted-foreground">{t('createGroup_me')}</span>
@@ -246,6 +258,25 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
               {t('createGroup_add')}
             </Button>
           </li>
+          {/* Why: the app's Contacts matching the name typed, so the group is created with that same person. */}
+          {state.suggestions.map((suggestion, index) => (
+            <li key={suggestion.key} ref={index === state.suggestions.length - 1 ? lastSuggestionRef : undefined}>
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+                aria-label={`${suggestion.name}, ${t('createGroup_add')}`}
+                onClick={() => {
+                  presenter.addSuggestion(suggestion.key)
+                  // Why: the field stays focused for the next name, as after Enter.
+                  draftRef.current?.focus()
+                }}
+              >
+                <Avatar initial={suggestion.initials} color={suggestion.avatarColor} photoUrl={suggestion.photoUrl} className="size-8 text-xs" />
+                <span className="min-w-0 flex-1 truncate text-sm">{suggestion.name}</span>
+                <Plus aria-hidden className="size-4 shrink-0 text-primary" />
+              </button>
+            </li>
+          ))}
         </ul>
         <p className="text-sm text-muted-foreground">{t('createGroup_noAppNotice')}</p>
       </section>

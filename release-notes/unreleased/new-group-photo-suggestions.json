@@ -1,0 +1,45 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": ["all"],
+      "text": {
+        "en": "In New group, \"Add by name\" now suggests people from your Contacts as you type, with their photo: tap one to create the group with that same person.",
+        "pt": "No Novo grupo, o \"Adicionar pelo nome\" agora sugere pessoas dos seus Contatos enquanto você digita, com a foto delas: toque em uma para criar o grupo com essa mesma pessoa.",
+        "pt-PT": "No Novo grupo, o \"Adicionar pelo nome\" sugere agora pessoas dos teus Contactos enquanto escreves, com a fotografia delas: toca numa para criares o grupo com essa mesma pessoa.",
+        "es": "En Nuevo grupo, \"Agregar por nombre\" ahora sugiere personas de tus Contactos mientras escribes, con su foto: toca una para crear el grupo con esa misma persona.",
+        "fr": "Dans Nouveau groupe, « Ajouter par nom » propose maintenant des personnes de tes Contacts pendant que tu écris, avec leur photo : touche-en une pour créer le groupe avec cette même personne.",
+        "de": "In „Neue Gruppe“ schlägt „Nach Namen hinzufügen“ jetzt beim Tippen Personen aus deinen Kontakten vor, mit ihrem Foto: Tippe auf eine, um die Gruppe mit genau dieser Person zu erstellen.",
+        "it": "In Nuovo gruppo, \"Aggiungi per nome\" ora suggerisce persone dai tuoi Contatti mentre scrivi, con la loro foto: tocca una per creare il gruppo con quella stessa persona.",
+        "pl": "W „Nowa grupa” pole „Dodaj po imieniu” podpowiada teraz podczas pisania osoby z Twoich Kontaktów, z ich zdjęciem: dotknij jednej, aby utworzyć grupę z tą samą osobą.",
+        "nl": "In Nieuwe groep stelt \"Toevoegen op naam\" nu tijdens het typen mensen uit je Contacten voor, met hun foto: tik op iemand om de groep met diezelfde persoon te maken.",
+        "ja": "「新しいグループ」の「名前で追加」で、入力中に連絡先の人が写真付きで候補に表示されるようになりました。タップすると、その本人を入れてグループを作成できます。",
+        "tr": "Yeni grup ekranında \"Adıyla ekle\" artık sen yazarken Kişiler'inden insanları fotoğraflarıyla öneriyor: grubu o kişiyle oluşturmak için birine dokun.",
+        "id": "Di Grup baru, \"Tambah dengan nama\" kini menyarankan orang dari Kontak saat kamu mengetik, lengkap dengan fotonya: ketuk salah satunya untuk membuat grup dengan orang yang sama itu.",
+        "ru": "В «Новой группе» поле «Добавить по имени» теперь предлагает людей из твоих Контактов, пока ты печатаешь, с их фото: нажми на человека, чтобы создать группу именно с ним.",
+        "uk": "У «Новій групі» поле «Додати за ім'ям» тепер пропонує людей із твоїх Контактів, поки ти друкуєш, з їхнім фото: натисни на людину, щоб створити групу саме з нею."
+      }
+    },
+    {
+      "kind": "fixed",
+      "platforms": ["all"],
+      "betaOnly": true,
+      "text": {
+        "en": "New group's \"Who's in\" shows your profile photo instead of your initial.",
+        "pt": "O \"Quem participa\" do Novo grupo mostra a sua foto de perfil em vez da sua inicial.",
+        "pt-PT": "O \"Quem participa\" do Novo grupo mostra a tua fotografia de perfil em vez da tua inicial.",
+        "es": "\"Quiénes participan\" de Nuevo grupo muestra tu foto de perfil en vez de tu inicial.",
+        "fr": "« Qui participe » de Nouveau groupe affiche ta photo de profil au lieu de ton initiale.",
+        "de": "„Wer ist dabei“ in „Neue Gruppe“ zeigt dein Profilfoto statt deines Anfangsbuchstabens.",
+        "it": "\"Chi partecipa\" di Nuovo gruppo mostra la tua foto profilo invece della tua iniziale.",
+        "pl": "„Kto bierze udział” w „Nowa grupa” pokazuje Twoje zdjęcie profilowe zamiast inicjału.",
+        "nl": "\"Wie doet mee\" in Nieuwe groep toont je profielfoto in plaats van je initiaal.",
+        "ja": "「新しいグループ」の「参加メンバー」に、イニシャルではなくあなたのプロフィール写真が表示されるようになりました。",
+        "tr": "Yeni grup ekranındaki \"Kimler var\" artık baş harfin yerine profil fotoğrafını gösteriyor.",
+        "id": "\"Siapa saja yang ikut\" di Grup baru kini menampilkan foto profilmu, bukan inisialmu.",
+        "ru": "В «Новой группе» в разделе «Кто участвует» теперь видно твоё фото профиля, а не инициал.",
+        "uk": "У «Новій групі» в розділі «Хто бере участь» тепер видно твоє фото профілю, а не ініціал."
+      }
+    }
+  ]
+}

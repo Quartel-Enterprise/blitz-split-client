@@ -98,6 +98,8 @@ private struct CreateGroupForm: View {
     /// The sheet's own size, which decides the columns.
     @State private var layout = ScreenLayout()
     @FocusState private var isNameFocused: Bool
+    /// "Add by name", held here so the scroll to the suggestions follows only the name being typed.
+    @FocusState private var isDraftFocused: Bool
 
     private var state: CreateGroupUiState {
         model.state
@@ -112,22 +114,15 @@ private struct CreateGroupForm: View {
     }
 
     var body: some View {
-        Group {
-            if usesTwoColumns {
-                TwoColumnsLayout(firstWidth: 300, spacing: 28) {
-                    Form { groupSections }
-                        .formStyle(.grouped)
-                } second: {
-                    Form { MembersSection(model: model) }
-                        .formStyle(.grouped)
+        ScrollViewReader { proxy in
+            formColumns
+                // The suggestions show under the draft, which the keyboard would cover: the list scrolls to the last
+                // once they show while the name is being typed; not on each later keystroke, nor when a sync brings
+                // them while another field is edited, which would undo a scroll of the person's own
+                .onChange(of: state.suggestions.isEmpty) { _, isEmpty in
+                    guard !isEmpty, isDraftFocused, let last = model.current.suggestions.last?.key else { return }
+                    withAnimation { proxy.scrollTo(last, anchor: .bottom) }
                 }
-            } else {
-                Form {
-                    groupSections
-                    MembersSection(model: model)
-                }
-                .formStyle(.grouped)
-            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Palette.groupedBackground)
@@ -139,6 +134,27 @@ private struct CreateGroupForm: View {
             if model.current.name.isEmpty { isNameFocused = true }
         }
         #endif
+    }
+
+    @ViewBuilder
+    private var formColumns: some View {
+        Group {
+            if usesTwoColumns {
+                TwoColumnsLayout(firstWidth: 300, spacing: 28) {
+                    Form { groupSections }
+                        .formStyle(.grouped)
+                } second: {
+                    Form { MembersSection(model: model, isDraftFocused: $isDraftFocused) }
+                        .formStyle(.grouped)
+                }
+            } else {
+                Form {
+                    groupSections
+                    MembersSection(model: model, isDraftFocused: $isDraftFocused)
+                }
+                .formStyle(.grouped)
+            }
+        }
     }
 
     /// The error, the avatar and the name, type and currency.
@@ -270,7 +286,7 @@ private struct CreateGroupIcon: View {
 /// draft row adds on Return, keeping the keyboard up for the next name.
 private struct MembersSection: View {
     let model: CreateGroupModel
-    @FocusState private var isDraftFocused: Bool
+    var isDraftFocused: FocusState<Bool>.Binding
 
     private var state: CreateGroupUiState {
         model.state
@@ -301,19 +317,26 @@ private struct MembersSection: View {
                     #if os(macOS)
                     .multilineTextAlignment(.leading)
                     #endif
-                    .focused($isDraftFocused)
+                    .focused(isDraftFocused)
                     .submitLabel(.next)
                     .onSubmit {
                         // The ViewModel's state now: the watcher may not have brought the last keystroke yet
                         let adds = model.current.canAddMember
                         model.send(CreateGroupUiEventOnAddMemberClicked.shared)
                         // Only after a name went in: Return on an empty draft lets the keyboard go
-                        if adds { isDraftFocused = true }
+                        if adds { isDraftFocused.wrappedValue = true }
                     }
                 if state.canAddMember {
                     Button("Add") { model.send(CreateGroupUiEventOnAddMemberClicked.shared) }
                         .buttonStyle(.borderless)
                 }
+            }
+            // The app's Contacts matching the name typed, so the group is created with that same person
+            ForEach(state.suggestions, id: \.key) { suggestion in
+                SuggestionRow(suggestion: suggestion) {
+                    model.send(CreateGroupUiEventOnSuggestionClicked(key: suggestion.key))
+                }
+                .id(suggestion.key)
             }
         } header: {
             HStack {
@@ -330,13 +353,13 @@ private struct MembersSection: View {
     /// setting the same value again would bring nothing back. The Mac has no keyboard to bring back, and focusing its
     /// field again would select the name typed so far, which the next key would replace.
     private func focusDraft() {
-        guard isDraftFocused else {
-            isDraftFocused = true
+        guard isDraftFocused.wrappedValue else {
+            isDraftFocused.wrappedValue = true
             return
         }
         #if os(iOS)
-        isDraftFocused = false
-        Task { @MainActor in isDraftFocused = true }
+        isDraftFocused.wrappedValue = false
+        Task { @MainActor in isDraftFocused.wrappedValue = true }
         #endif
     }
 
@@ -348,13 +371,41 @@ private struct MembersSection: View {
     }
 }
 
+/// A contact under the draft: their face and name, and a + that says a tap adds them.
+private struct SuggestionRow: View {
+    let suggestion: CreateGroupSuggestion
+    let onAdd: () -> Void
+
+    var body: some View {
+        Button(action: onAdd) {
+            HStack(spacing: 12) {
+                AvatarPhoto(
+                    initial: suggestion.initials,
+                    color: suggestion.avatarColor,
+                    photoUrl: suggestion.photoUrl,
+                    size: 32,
+                )
+                Text(verbatim: suggestion.name)
+                Spacer()
+                Image(systemName: "plus")
+                    .foregroundStyle(Palette.accent)
+                    .accessibilityHidden(true)
+            }
+            .contentShape(.rect)
+        }
+        // Plain, so the name reads as a person's, not a link; the + keeps the accent
+        .buttonStyle(.plain)
+        .accessibilityHint(Text("Add"))
+    }
+}
+
 private struct MemberRow: View {
     let member: CreateGroupMember
     let onRemove: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
-            AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: nil, size: 32)
+            AvatarPhoto(initial: member.initials, color: member.avatarColor, photoUrl: member.photoUrl, size: 32)
             VStack(alignment: .leading, spacing: 0) {
                 Text(verbatim: member.name)
                 if member.isMe {

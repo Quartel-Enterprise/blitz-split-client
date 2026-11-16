@@ -25,6 +25,8 @@ data class CreateGroupUiState(
     val members: List<CreateGroupMember>,
     // Why: what is typed in "Adicionar pelo nome", not a member yet.
     val draft: String,
+    // Why: Contacts matching the draft, drawn under the field; empty while nothing is typed or nobody matches.
+    val suggestions: List<CreateGroupSuggestion>,
     val isCreating: Boolean,
     // Why: the device couldn't save the group; cleared by the next try.
     val showsCreateError: Boolean,

@@ -526,6 +526,33 @@ class GroupMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a contact picked with their account WHEN mapping the new members THEN that member carries it`() {
+        // Given
+        val group = newGroup.copy(
+            members = newGroup.members.mapIndexed { index, member ->
+                if (index == 1) {
+                    member.copy(
+                        userId = "carla",
+                        hasJoined = true,
+                    )
+                } else {
+                    member
+                }
+            },
+        )
+
+        // When
+        val entities = mapper.toMemberEntities(
+            group = group,
+            createdAt = 1_000L,
+            ownerUserId = "user-1",
+        )
+
+        // Then
+        assertEquals(listOf("user-1", "carla", null), entities.map { it.userId })
+    }
+
+    @Test
     fun `GIVEN a group with its creator WHEN mapping it to a DTO THEN keeps that creator`() {
         // Given
         val entity = groupEntity(

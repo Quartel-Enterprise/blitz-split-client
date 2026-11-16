@@ -1,5 +1,8 @@
 package com.quare.blitzsplit.feature.creategroup
 
+import com.quare.blitzsplit.core.contacts.domain.model.Contact
+import com.quare.blitzsplit.core.contacts.domain.model.ContactBookSnapshot
+import com.quare.blitzsplit.core.contacts.domain.model.ContactNet
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
@@ -21,6 +24,7 @@ import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUi
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -43,6 +47,13 @@ class CreateGroupViewModelTest {
     private lateinit var groups: FakeGroupRepository
     private lateinit var navigator: BackStackNavigator
     private lateinit var viewModel: CreateGroupViewModel
+    private val contactBook = MutableStateFlow(
+        ContactBookSnapshot(
+            contacts = emptyList(),
+            groups = emptyList(),
+            money = emptyMap(),
+        ),
+    )
     private lateinit var loadGate: CompletableDeferred<Unit>
     private lateinit var prepareGate: CompletableDeferred<Unit>
     private var loadError: Throwable? = null
@@ -76,6 +87,35 @@ class CreateGroupViewModelTest {
         assertEquals(AvatarColor.BLUE, me.avatarColor)
         assertTrue(me.isMe)
     }
+
+    @Test
+    fun `GIVEN a profile with a photo WHEN the screen opens THEN the creator shows that photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = pierre.copy(photo = ProfilePhoto.Remote("https://cdn.example/pierre.jpg")))
+
+            // When
+            val me = viewModel.uiState.value.members
+                .single()
+
+            // Then
+            assertEquals("https://cdn.example/pierre.jpg", me.photoUrl)
+        }
+
+    @Test
+    fun `GIVEN a profile without a photo WHEN the screen opens THEN the creator shows the initial`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(profile = pierre.copy(photo = null))
+
+            // When
+            val me = viewModel.uiState.value.members
+                .single()
+
+            // Then
+            assertNull(me.photoUrl)
+            assertEquals("P", me.initials)
+        }
 
     @Test
     fun `GIVEN a padded lower case name WHEN the screen opens THEN the creator is trimmed with a capital initial`() =
@@ -552,11 +592,26 @@ class CreateGroupViewModelTest {
             assertEquals(GroupCurrency.EUR, group.currency)
             assertEquals(
                 listOf(
-                    NewGroupMember("Pierre", AvatarColor.BLUE, isMe = true),
-                    NewGroupMember("Ana", AvatarColor.PEACH, isMe = false),
-                    NewGroupMember("Bia", AvatarColor.GREEN, isMe = false),
+                    NewGroupMember(
+                        "Pierre",
+                        AvatarColor.BLUE,
+                        isMe = true,
+                        userId = null,
+                    ),
+                    NewGroupMember(
+                        "Ana",
+                        AvatarColor.PEACH,
+                        isMe = false,
+                        userId = null,
+                    ),
+                    NewGroupMember(
+                        "Bia",
+                        AvatarColor.GREEN,
+                        isMe = false,
+                        userId = null,
+                    ),
                 ),
-                group.members.map { NewGroupMember(it.name, it.avatarColor, it.isMe) },
+                group.members.map { NewGroupMember(it.name, it.avatarColor, it.isMe, it.userId) },
             )
         }
 
@@ -2144,6 +2199,479 @@ class CreateGroupViewModelTest {
         assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
     }
 
+    @Test
+    fun `GIVEN Ana Paula in Contacts WHEN typing ana THEN suggests her`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(contacts = listOf(anaPaula, diego))
+        val draft = CreateGroupUiEvent.OnDraftChanged("ana")
+
+        // When
+        viewModel.onEvent(draft)
+
+        // Then
+        assertEquals(
+            listOf("user:u-ana"),
+            viewModel.uiState.value.suggestions
+                .map { it.key },
+        )
+    }
+
+    @Test
+    fun `GIVEN suggestions shown WHEN the draft is cleared THEN suggests nobody`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(contacts = listOf(anaPaula))
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+        val cleared = CreateGroupUiEvent.OnDraftChanged("")
+
+        // When
+        viewModel.onEvent(cleared)
+
+        // Then
+        assertTrue(
+            viewModel.uiState.value.suggestions
+                .isEmpty(),
+        )
+    }
+
+    @Test
+    fun `GIVEN ana typed and nobody matching WHEN a sync brings Ana Paula to Contacts THEN suggests her`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(contacts = listOf(diego))
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+
+            // When
+            contactBook.value = contactBookOf(diego, anaPaula)
+
+            // Then
+            assertEquals(
+                listOf("Ana Paula"),
+                viewModel.uiState.value.suggestions
+                    .map { it.name },
+            )
+        }
+
+    @Test
+    fun `GIVEN Ana Paula picked WHEN typing ana again THEN suggests only the other Ana`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(contacts = listOf(anaBia, anaPaula))
+        pickSuggestion(
+            draft = "ana",
+            key = anaPaula.key,
+        )
+        val draft = CreateGroupUiEvent.OnDraftChanged("ana")
+
+        // When
+        viewModel.onEvent(draft)
+
+        // Then
+        assertEquals(
+            listOf("Ana Bia"),
+            viewModel.uiState.value.suggestions
+                .map { it.name },
+        )
+    }
+
+    @Test
+    fun `GIVEN Ana Paula picked and ana typed again WHEN removing Ana Paula THEN suggests her again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(contacts = listOf(anaPaula))
+            pickSuggestion(
+                draft = "ana",
+                key = anaPaula.key,
+            )
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+            val remove = CreateGroupUiEvent.OnRemoveMemberClicked(memberIdOf("Ana Paula"))
+
+            // When
+            viewModel.onEvent(remove)
+
+            // Then
+            assertEquals(
+                listOf("Ana Paula"),
+                viewModel.uiState.value.suggestions
+                    .map { it.name },
+            )
+        }
+
+    @Test
+    fun `GIVEN diego typed and added as a guest WHEN typing die THEN does not suggest the guest Diego`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(contacts = listOf(diego))
+            addMember("diego")
+            val draft = CreateGroupUiEvent.OnDraftChanged("die")
+
+            // When
+            viewModel.onEvent(draft)
+
+            // Then
+            assertTrue(
+                viewModel.uiState.value.suggestions
+                    .isEmpty(),
+            )
+        }
+
+    @Test
+    fun `GIVEN Diego typed as a guest and die typed again WHEN removing that guest THEN suggests Diego again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(contacts = listOf(diego))
+            addMember("Diego")
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("die"))
+            val remove = CreateGroupUiEvent.OnRemoveMemberClicked(memberIdOf("Diego"))
+
+            // When
+            viewModel.onEvent(remove)
+
+            // Then
+            assertEquals(
+                listOf("Diego"),
+                viewModel.uiState.value.suggestions
+                    .map { it.name },
+            )
+        }
+
+    @Test
+    fun `GIVEN ana typed WHEN tapping Ana Paula THEN adds her as the same person with her account and photo`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(contacts = listOf(anaPaula))
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+            val tap = CreateGroupUiEvent.OnSuggestionClicked(anaPaula.key)
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            val members = viewModel.uiState.value.members
+            assertEquals(2, members.size)
+            val ana = members.last()
+            assertEquals("Ana Paula", ana.name)
+            assertEquals("AP", ana.initials)
+            assertEquals("https://cdn.example/ana.jpg", ana.photoUrl)
+            assertEquals("u-ana", ana.userId)
+            assertEquals("user:u-ana", ana.personKey)
+            assertFalse(ana.isMe)
+        }
+
+    @Test
+    fun `GIVEN ana typed WHEN tapping Ana Paula THEN clears the draft and the suggestions`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(contacts = listOf(anaPaula, anaBia))
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+        val tap = CreateGroupUiEvent.OnSuggestionClicked(anaPaula.key)
+
+        // When
+        viewModel.onEvent(tap)
+
+        // Then
+        assertEquals("", viewModel.uiState.value.draft)
+        assertTrue(
+            viewModel.uiState.value.suggestions
+                .isEmpty(),
+        )
+    }
+
+    @Test
+    fun `GIVEN die typed WHEN tapping the guest Diego THEN adds him as a guest with his key`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(contacts = listOf(diego))
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("die"))
+            val tap = CreateGroupUiEvent.OnSuggestionClicked(diego.key)
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            val added = viewModel.uiState.value.members
+                .last()
+            assertEquals("Diego", added.name)
+            assertNull(added.userId)
+            assertNull(added.photoUrl)
+            assertEquals("name:diego", added.personKey)
+        }
+
+    @Test
+    fun `GIVEN a contact in a color nobody has WHEN tapping her THEN she keeps her own color`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                profile = pierre.copy(avatarColor = AvatarColor.BLUE),
+                contacts = listOf(anaPaula),
+            )
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+            val tap = CreateGroupUiEvent.OnSuggestionClicked(anaPaula.key)
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            assertEquals(
+                AvatarColor.GREEN,
+                viewModel.uiState.value.members
+                    .last()
+                    .avatarColor,
+            )
+        }
+
+    @Test
+    fun `GIVEN a contact in the creator color WHEN tapping her THEN she takes the least used color`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                profile = pierre.copy(avatarColor = AvatarColor.GREEN),
+                contacts = listOf(anaPaula),
+            )
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+            val tap = CreateGroupUiEvent.OnSuggestionClicked(anaPaula.key)
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            assertEquals(
+                AvatarColor.BLUE,
+                viewModel.uiState.value.members
+                    .last()
+                    .avatarColor,
+            )
+        }
+
+    @Test
+    fun `GIVEN ana typed WHEN tapping a key Contacts does not list THEN adds nobody`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(contacts = listOf(anaPaula))
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+        val tap = CreateGroupUiEvent.OnSuggestionClicked("user:u-nobody")
+
+        // When
+        viewModel.onEvent(tap)
+
+        // Then
+        assertEquals(
+            listOf("Pierre"),
+            viewModel.uiState.value.members
+                .map { it.name },
+        )
+        assertEquals("ana", viewModel.uiState.value.draft)
+    }
+
+    @Test
+    fun `GIVEN Ana Paula already picked WHEN tapping her again THEN adds her only once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(contacts = listOf(anaPaula))
+        pickSuggestion(
+            draft = "ana",
+            key = anaPaula.key,
+        )
+        val tap = CreateGroupUiEvent.OnSuggestionClicked(anaPaula.key)
+
+        // When
+        viewModel.onEvent(tap)
+
+        // Then
+        assertEquals(
+            listOf("Pierre", "Ana Paula"),
+            viewModel.uiState.value.members
+                .map { it.name },
+        )
+    }
+
+    @Test
+    fun `GIVEN a save in flight WHEN tapping Ana Paula THEN adds nobody`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(contacts = listOf(anaPaula))
+        groups.createGate = CompletableDeferred()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+        val tap = CreateGroupUiEvent.OnSuggestionClicked(anaPaula.key)
+
+        // When
+        viewModel.onEvent(tap)
+
+        // Then
+        assertEquals(
+            listOf("Pierre"),
+            viewModel.uiState.value.members
+                .map { it.name },
+        )
+    }
+
+    @Test
+    fun `GIVEN no profile read yet WHEN typing ana THEN suggests nobody`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            profile = null,
+            contacts = listOf(anaPaula),
+        )
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+
+        // Then
+        assertTrue(
+            viewModel.uiState.value.suggestions
+                .isEmpty(),
+        )
+    }
+
+    @Test
+    fun `GIVEN ana typed before the profile WHEN the profile is read THEN suggests Ana Paula`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                profile = null,
+                contacts = listOf(anaPaula),
+            )
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+
+            // When
+            profiles.profile.value = pierre
+
+            // Then
+            assertEquals(
+                listOf(anaPaula.key),
+                viewModel.uiState.value.suggestions
+                    .map { it.key },
+            )
+        }
+
+    @Test
+    fun `GIVEN no profile read yet WHEN tapping Ana Paula THEN adds nobody`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            profile = null,
+            contacts = listOf(anaPaula),
+        )
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+        val tap = CreateGroupUiEvent.OnSuggestionClicked(anaPaula.key)
+
+        // When
+        viewModel.onEvent(tap)
+
+        // Then
+        assertTrue(
+            viewModel.uiState.value.members
+                .isEmpty(),
+        )
+    }
+
+    @Test
+    fun `GIVEN Ana Paula in Contacts WHEN typing her full name and adding it THEN adds a guest of that name`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(contacts = listOf(anaPaula))
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana Paula"))
+            val add = CreateGroupUiEvent.OnAddMemberClicked
+
+            // When
+            viewModel.onEvent(add)
+
+            // Then
+            val added = viewModel.uiState.value.members
+                .last()
+            assertEquals("Ana Paula", added.name)
+            assertNull(added.userId)
+            assertNull(added.photoUrl)
+        }
+
+    @Test
+    fun `GIVEN Ana Paula picked and guests typed WHEN creating THEN only Ana Paula goes in as her account`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(contacts = listOf(anaPaula))
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            pickSuggestion(
+                draft = "ana",
+                key = anaPaula.key,
+            )
+            addMember("Bia")
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("Ana Paula"))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            val members = groups.createdGroups.single().members
+            assertEquals(
+                listOf("Pierre" to null, "Ana Paula" to "u-ana", "Bia" to null, "Ana Paula" to null),
+                members.map { it.name to it.userId },
+            )
+            assertTrue(members.single { it.userId == "u-ana" }.hasJoined)
+        }
+
+    @Test
+    fun `GIVEN ana typed WHEN tapping Ana Paula THEN sends the suggestion event with no params`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(contacts = listOf(anaPaula))
+            viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged("ana"))
+            val tap = CreateGroupUiEvent.OnSuggestionClicked(anaPaula.key)
+
+            // When
+            viewModel.onEvent(tap)
+
+            // Then
+            assertEquals(
+                listOf("create_group_contact_suggestion_clicked" to emptyMap<String, Any>()),
+                trackedEvents,
+            )
+        }
+
+    private val anaPaula = contact(
+        key = "user:u-ana",
+        name = "Ana Paula",
+        userId = "u-ana",
+        color = AvatarColor.GREEN,
+        photoUrl = "https://cdn.example/ana.jpg",
+    )
+
+    private val anaBia = contact(
+        key = "user:u-bia",
+        name = "Ana Bia",
+        userId = "u-bia",
+    )
+
+    private val diego = contact(
+        key = "name:diego",
+        name = "Diego",
+        color = AvatarColor.SAND,
+    )
+
+    private fun contact(
+        key: String,
+        name: String,
+        userId: String? = null,
+        color: AvatarColor = AvatarColor.BLUE,
+        photoUrl: String? = null,
+    ): Contact = Contact(
+        key = key,
+        name = name,
+        color = color,
+        photoUrl = photoUrl,
+        userId = userId,
+        groups = emptyList(),
+        nets = listOf(ContactNet(GroupCurrency.BRL, 0L)),
+        isHidden = false,
+    )
+
+    private fun contactBookOf(vararg contacts: Contact): ContactBookSnapshot = ContactBookSnapshot(
+        contacts = contacts.toList(),
+        groups = emptyList(),
+        money = emptyMap(),
+    )
+
+    private fun pickSuggestion(
+        draft: String,
+        key: String,
+    ) {
+        viewModel.onEvent(CreateGroupUiEvent.OnDraftChanged(draft))
+        viewModel.onEvent(CreateGroupUiEvent.OnSuggestionClicked(key))
+    }
+
     private val pierre = UserProfile("Pierre", AvatarColor.BLUE, null)
 
     private val firstPhoto = byteArrayOf(1, 2, 3)
@@ -2169,7 +2697,9 @@ class CreateGroupViewModelTest {
         region: String? = "BR",
         isLoadHeld: Boolean = false,
         isPrepareHeld: Boolean = false,
+        contacts: List<Contact> = emptyList(),
     ) {
+        contactBook.value = contactBookOf(*contacts.toTypedArray())
         loadGate = CompletableDeferred<Unit>().also { if (!isLoadHeld) it.complete(Unit) }
         prepareGate = CompletableDeferred<Unit>().also { if (!isPrepareHeld) it.complete(Unit) }
         profiles = FakeProfileRepository(profile)
@@ -2188,6 +2718,7 @@ class CreateGroupViewModelTest {
             ),
             checkMemberName = CheckMemberNameUseCase(),
             observeProfile = ObserveProfileUseCase(profiles),
+            observeContactBook = { contactBook },
             deviceRegion = { region },
             loadCropPhoto = { source ->
                 loadedSources += source

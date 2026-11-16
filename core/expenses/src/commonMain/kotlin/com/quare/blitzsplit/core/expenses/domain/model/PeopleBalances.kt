@@ -58,8 +58,11 @@ data class PeopleBalances(
          * still pays each group its own pair, so two people of one name never move money between groups. Someone no
          * longer in the group is only themselves.
          */
-        fun keyOf(member: GroupMember): String = member.userId?.let(::toUserKey)
-            ?: "name:${member.name.lowercase().split(' ', '\t', '\n').filter { it.isNotEmpty() }.joinToString(" ")}"
+        fun keyOf(member: GroupMember): String = member.userId?.let(::toUserKey) ?: toNameKey(member.name)
+
+        // Why: the key of a name nobody joined as, the same person wherever it is written the same.
+        fun toNameKey(name: String): String =
+            "name:${name.lowercase().split(' ', '\t', '\n').filter { it.isNotEmpty() }.joinToString(" ")}"
 
         // Why: the key of an account, as keyOf makes it for whoever joined as it (a profile link names the account).
         fun toUserKey(userId: String): String = "$USER_KEY_PREFIX$userId"

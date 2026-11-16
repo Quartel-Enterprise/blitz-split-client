@@ -142,6 +142,9 @@ interface GroupLocalDataSource {
 
     suspend fun updateMemberInviteCodes(codesById: Map<String, String>)
 
+    // Why: the accounts the server refused for these members, who stay as names nobody joined as.
+    suspend fun dropMemberAccounts(ids: List<String>)
+
     suspend fun applyRemoteMember(entity: GroupMemberEntity)
 
     suspend fun claimUnowned(ownerUserId: String)

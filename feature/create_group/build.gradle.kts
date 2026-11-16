@@ -11,6 +11,8 @@ kotlin {
             implementation(project(":core:utils"))
             implementation(project(":core:profile"))
             implementation(project(":core:groups"))
+            // Why: "Add by name" suggests the app's Contacts.
+            implementation(project(":core:contacts"))
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
             implementation(libs.koin.core.viewmodel)

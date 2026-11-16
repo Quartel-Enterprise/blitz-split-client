@@ -65,4 +65,28 @@ class MemberColorsTest {
         // Then
         assertEquals(AvatarColor.BLUE, picked)
     }
+
+    @Test
+    fun `GIVEN a preferred color nobody has WHEN finding the color of a contact THEN keeps it`() {
+        // Given
+        val colors = listOf(AvatarColor.BLUE, AvatarColor.GREEN)
+
+        // When
+        val picked = MemberColors.findFor(AvatarColor.PEACH, colors)
+
+        // Then
+        assertEquals(AvatarColor.PEACH, picked)
+    }
+
+    @Test
+    fun `GIVEN a preferred color someone has WHEN finding the color of a contact THEN takes the least used`() {
+        // Given
+        val colors = listOf(AvatarColor.BLUE, AvatarColor.PEACH)
+
+        // When
+        val picked = MemberColors.findFor(AvatarColor.PEACH, colors)
+
+        // Then
+        assertEquals(MemberColors.findLeastUsed(colors), picked)
+    }
 }

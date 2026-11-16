@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.feature.creategroup.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.contacts.domain.model.Contact
+import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.MemberColors
@@ -13,6 +15,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ProfilePhoto
+import com.quare.blitzsplit.core.model.toImageUrl
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.guardUnsavedInput
@@ -24,6 +27,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.utils.DeviceRegion
+import com.quare.blitzsplit.feature.creategroup.presentation.model.ContactSuggestions
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiState
@@ -41,6 +45,7 @@ class CreateGroupViewModel(
     private val createGroup: CreateGroup,
     private val checkMemberName: CheckMemberName,
     observeProfile: ObserveProfile,
+    observeContactBook: ObserveContactBook,
     deviceRegion: DeviceRegion,
     loadCropPhoto: LoadCropPhoto,
     prepareProfilePhoto: PrepareProfilePhoto,
@@ -60,6 +65,7 @@ class CreateGroupViewModel(
                 currency = GroupCurrency.ofRegion(deviceRegion()),
                 members = emptyList(),
                 draft = "",
+                suggestions = emptyList(),
                 isCreating = false,
                 showsCreateError = false,
                 openedColor = AvatarColor.default,
@@ -81,6 +87,9 @@ class CreateGroupViewModel(
         isBusy = { uiState.value.isCreating },
     )
 
+    // Why: the device's Contacts, offline too, kept current so a sync landing while someone types suggests it too.
+    private var contacts: List<Contact> = emptyList()
+
     /*
      * Why: the creator is the group's first member, with the name and color of their profile, and the group starts
      * in the first color that isn't theirs. Read once, so a sync landing while someone types changes nothing here.
@@ -94,15 +103,28 @@ class CreateGroupViewModel(
                 name = creatorName,
                 initials = Initials.firstOf(creatorName),
                 avatarColor = profile.avatarColor,
+                photoUrl = profile.photo?.toImageUrl(),
                 isMe = true,
+                userId = null,
             )
             uiState.update { state ->
                 val color = AvatarColor.entries.first { it != profile.avatarColor }
-                state.copy(
-                    color = color,
-                    openedColor = color,
-                    members = listOf(me) + state.members,
+                withSuggestions(
+                    state.copy(
+                        color = color,
+                        openedColor = color,
+                        members = listOf(me) + state.members,
+                    ),
                 )
+            }
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            observeContactBook().collect { snapshot ->
+                contacts = snapshot.contacts
+                uiState.update(::withSuggestions)
             }
         }
     }
@@ -135,6 +157,8 @@ class CreateGroupViewModel(
             is CreateGroupUiEvent.OnDraftChanged -> changeDraft(event.draft)
 
             CreateGroupUiEvent.OnAddMemberClicked -> addDraft()
+
+            is CreateGroupUiEvent.OnSuggestionClicked -> addContact(event.key)
 
             is CreateGroupUiEvent.OnRemoveMemberClicked -> removeMember(event.memberId)
 
@@ -192,7 +216,7 @@ class CreateGroupViewModel(
     }
 
     private fun changeDraft(draft: String) {
-        uiState.update { it.copy(draft = GroupNameRules.toCapped(draft)) }
+        uiState.update { withSuggestions(it.copy(draft = GroupNameRules.toCapped(draft))) }
     }
 
     // Why: a name may repeat in the group (beta feedback 3, item 29); people are told apart by their member ids.
@@ -203,24 +227,75 @@ class CreateGroupViewModel(
 
     private fun add(name: String) {
         uiState.update { state ->
-            state.copy(
-                members = state.members + CreateGroupMember(
+            state.withMember(
+                CreateGroupMember(
                     id = Uuid.random().toString(),
                     name = name,
                     initials = Initials.of(name),
                     avatarColor = findLeastUsedColor(state.members),
+                    photoUrl = null,
                     isMe = false,
+                    userId = null,
                 ),
-                draft = "",
             )
         }
     }
+
+    /*
+     * Why: the same person Contacts lists, as its "Add to a group" adds them: someone who uses the app as their account,
+     * a guest as their name, in their own color unless someone added already has it.
+     */
+    private fun addContact(key: String) {
+        val state = uiState.value
+        if (state.isCreating || state.members.none { it.isMe }) return
+        if (state.members.any { it.personKey == key }) return
+        val contact = contacts.firstOrNull { it.key == key } ?: return
+        val name = (checkMemberName(contact.name) as? MemberNameCheck.Available)?.name ?: return
+        uiState.update { current ->
+            current.withMember(
+                CreateGroupMember(
+                    id = Uuid.random().toString(),
+                    name = name,
+                    initials = Initials.of(name),
+                    avatarColor = MemberColors.findFor(
+                        contact.color,
+                        current.members.map(CreateGroupMember::avatarColor),
+                    ),
+                    photoUrl = contact.photoUrl,
+                    isMe = false,
+                    userId = contact.userId,
+                ),
+            )
+        }
+    }
+
+    private fun CreateGroupUiState.withMember(member: CreateGroupMember): CreateGroupUiState = withSuggestions(
+        copy(
+            members = members + member,
+            draft = "",
+        ),
+    )
+
+    // Why: none until this device's user is in the list, since a pick needs them there first (addContact).
+    private fun withSuggestions(state: CreateGroupUiState): CreateGroupUiState = state.copy(
+        suggestions = if (state.members.none { it.isMe }) {
+            emptyList()
+        } else {
+            ContactSuggestions.of(
+                contacts = contacts,
+                draft = state.draft,
+                addedKeys = state.members.mapNotNullTo(mutableSetOf(), CreateGroupMember::personKey),
+            )
+        },
+    )
 
     private fun findLeastUsedColor(members: List<CreateGroupMember>): AvatarColor =
         MemberColors.findLeastUsed(members.map(CreateGroupMember::avatarColor))
 
     private fun removeMember(memberId: String) {
-        uiState.update { state -> state.copy(members = state.members.filterNot { it.id == memberId && !it.isMe }) }
+        uiState.update { state ->
+            withSuggestions(state.copy(members = state.members.filterNot { it.id == memberId && !it.isMe }))
+        }
     }
 
     private fun create() {
@@ -239,6 +314,7 @@ class CreateGroupViewModel(
                 name = it.name,
                 avatarColor = it.avatarColor,
                 isMe = it.isMe,
+                userId = it.userId,
             )
         } + listOfNotNull(
             draft?.let {
@@ -246,6 +322,7 @@ class CreateGroupViewModel(
                     name = it.name,
                     avatarColor = findLeastUsedColor(state.members),
                     isMe = false,
+                    userId = null,
                 )
             },
         )
