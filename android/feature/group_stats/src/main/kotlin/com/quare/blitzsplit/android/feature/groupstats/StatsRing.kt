@@ -104,7 +104,7 @@ internal fun StatsRingDisplay(
                 ),
         ) {
             val margin = popOut.toPx()
-            val stroke = (this.size.minDimension - margin * HALF) * RING_FRACTION
+            val stroke = ringStroke(this.size.minDimension, margin)
             val ringInset = margin + stroke / HALF
             if (percents.none { it > 0 }) {
                 drawArc(
@@ -144,7 +144,7 @@ internal fun StatsRingDisplay(
             }
         }
         // Why: kept inside the hole with centerGap on each side, so a long name ends in an ellipsis before it touches the ring.
-        val hole = size - (popOut + (size - popOut * HALF) * RING_FRACTION) * HALF
+        val hole = size - (popOut + ringStroke(size.value, popOut.value).dp) * HALF
         Box(
             modifier = Modifier.width((hole - centerGap * HALF).coerceAtLeast(0.dp)),
             contentAlignment = Alignment.Center,
@@ -153,6 +153,12 @@ internal fun StatsRingDisplay(
         }
     }
 }
+
+// Why: the ring's thickness for its side and the pop-out margin around it, in pixels to draw it and in dp for its hole.
+private fun ringStroke(
+    side: Float,
+    margin: Float,
+): Float = (side - margin * HALF) * RING_FRACTION
 
 /*
  * Why: the slice under a point of the ring, by its angle from the top clockwise; null deep in the hole (a touch just

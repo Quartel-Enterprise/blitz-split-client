@@ -3,12 +3,13 @@ import { categoryStyle } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 import { useReplay } from './useReplay'
 
+const viewBoxSide = 132
 const radius = 52
 const stroke = 18
 const circumference = 2 * Math.PI * radius
-// Why: the hole's share of the ring's width (its inner edge over the 132 of the view box), and the room the middle
+// Why: the hole's share of the ring's width (its inner edge over the view box's side), and the room the middle
 // keeps on each side from it.
-const holeFraction = (2 * (radius - stroke / 2)) / 132
+const holeFraction = (2 * (radius - stroke / 2)) / viewBoxSide
 const centerGap = 10
 const gap = 2
 
@@ -51,7 +52,7 @@ export function StatsRing({
   return (
     <div role="img" aria-label={label} className="relative shrink-0" style={{ width: size, height: size }}>
       <svg
-        viewBox="0 0 132 132"
+        viewBox={`0 0 ${viewBoxSide} ${viewBoxSide}`}
         className="size-full -rotate-90"
         onPointerLeave={(event) => {
           if (event.pointerType === 'mouse') onPick(null)
