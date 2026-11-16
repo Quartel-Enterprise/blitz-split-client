@@ -114,9 +114,7 @@ private fun PersonSummaryRow(
      * Why: the face flies into the profile it opens and back (beta feedback of 2026-11-15), the name and the net with its
      * word into the profile's name and balance (beta feedback of 2026-11-16); the list's pick opens none.
      */
-    val flight = if (onPersonClick !=
-        null
-    ) {
+    val flight = if (onPersonClick != null) {
         rememberProfileFlightSource(balanceKey = row.currency.code)
     } else {
         ProfileFlightSource.None
