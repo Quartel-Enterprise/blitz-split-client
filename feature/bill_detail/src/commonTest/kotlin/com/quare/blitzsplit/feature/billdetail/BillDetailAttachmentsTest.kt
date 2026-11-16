@@ -935,6 +935,24 @@ class BillDetailAttachmentsTest {
     }
 
     @Test
+    fun `GIVEN a photo framed while the bill is deleted WHEN tapping Done THEN closes the editor and adds nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(deleteGate = CompletableDeferred())
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+            viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(0, additions)
+            assertNull(viewModel.uiState.value.photoCrop)
+            assertFalse(viewModel.uiState.value.isAddingPhoto)
+        }
+
+    @Test
     fun `GIVEN another device filled the five photos WHEN picking a photo THEN says the bill has no room`() =
         runTest(testDispatcher) {
             // Given

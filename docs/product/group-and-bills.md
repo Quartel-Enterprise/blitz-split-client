@@ -218,7 +218,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     photo added on another device shows only online. History says who added or removed them; the feed doesn't.
     A photo taken or picked through "Add photo" opens "Adjust photo" first ([Profile](profile.md)), framed in the
     tile's rounded square (Pierre's call, beta feedback of 2026-11-16: "square like the preview"), and only "Done"
-    attaches it: the square the frame holds, at as many pixels as the photo has there (at most 1600 px, never blown
+    attaches it: the square the frame holds, cut from the editor's photo (already upright and at most 1600 px, as
+    any bill photo), at as many pixels as that photo has there (its shorter side divided by the zoom, never blown
     up), under the same 1.5 MB (`PrepareBillPhoto`, `BillCropEncoder`); ✕, Cancel or back attach nothing. The tile
     spins while the photo is read and while the square is kept. The receipt Scan receipt attaches is not framed: it
     keeps the whole image it was read from.

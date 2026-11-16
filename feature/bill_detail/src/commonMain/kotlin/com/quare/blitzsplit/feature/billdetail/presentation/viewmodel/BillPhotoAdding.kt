@@ -16,6 +16,8 @@ import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAc
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiState
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillPhotoError
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -36,6 +38,12 @@ internal class BillPhotoAdding(
     private val myMemberId: () -> String?,
     private val emit: suspend (BillDetailUiAction) -> Unit,
 ) {
+    /*
+     * Why: a square confirmed is encoded and kept even when Conta closes right after "Pronto" (back), which clears
+     * viewModelScope with the entry; only the state nobody draws any more is updated in vain.
+     */
+    private val attachScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
     // Why: whether it took the pick, which Analytics counts.
     fun pick(source: ByteArray): Boolean {
         if (!uiState.value.canAddPhoto) return false
@@ -61,8 +69,15 @@ internal class BillPhotoAdding(
     fun onCropEvent(event: PhotoCropEvent) {
         val editor = uiState.value.photoCrop ?: return
         when (event) {
-            PhotoCropEvent.OnConfirmClicked -> attach(editor)
+            // Why: a bill being deleted takes no photo; the editor just closes.
+            PhotoCropEvent.OnConfirmClicked -> if (uiState.value.areActionsEnabled) {
+                attach(editor)
+            } else {
+                uiState.update { it.copy(photoCrop = null) }
+            }
+
             PhotoCropEvent.OnDismissed -> uiState.update { it.copy(photoCrop = null) }
+
             else -> uiState.update { it.copy(photoCrop = editor.toEdited(event)) }
         }
     }
@@ -75,7 +90,7 @@ internal class BillPhotoAdding(
                 isAddingPhoto = true,
             )
         }
-        scope.launch {
+        attachScope.launch {
             val error = prepareBillPhoto(editor.photo, editor.crop).fold(
                 onSuccess = { image ->
                     attachBillImage(

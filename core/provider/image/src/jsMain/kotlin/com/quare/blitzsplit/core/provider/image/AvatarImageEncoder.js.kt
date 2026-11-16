@@ -14,12 +14,12 @@ internal actual fun createAvatarImageEncoder(): AvatarImageEncoder = BrowserAvat
 
 internal actual fun createBillImageEncoder(): BillImageEncoder = BrowserBillImageEncoder()
 
+internal actual fun createBillCropEncoder(): BillCropEncoder = BrowserBillCropEncoder()
+
 /*
  * Why: the browser decodes every format it shows (HEIC only on Safari) and createImageBitmap
  * applies the EXIF rotation, so a canvas does the crop, through the editor's transform, and the JPEG encoding.
  */
-internal actual fun createBillCropEncoder(): BillCropEncoder = BrowserBillCropEncoder()
-
 internal class BrowserAvatarImageEncoder : AvatarImageEncoder {
     override suspend fun invoke(
         source: ByteArray,
