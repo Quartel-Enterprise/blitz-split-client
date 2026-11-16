@@ -28,7 +28,20 @@ final class ClockFormat {
     /// again for each row a list formats.
     private(set) var locale: Locale = .autoupdatingCurrent
 
-    private init() {}
+    private init() {
+        // A picked hour cycle sits on a copy of the device's locale, so a region changed while the app runs is taken
+        // again, as System's autoupdating locale takes it.
+        NotificationCenter.default.addObserver(
+            forName: NSLocale.currentLocaleDidChangeNotification,
+            object: nil,
+            queue: .main,
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.locale = self.locale(from: .autoupdatingCurrent)
+            }
+        }
+    }
 
     /// `base` on the hour cycle picked, so a time picker drawn in the app's language (the windows' `locale`) keeps it.
     func locale(from base: Locale) -> Locale {

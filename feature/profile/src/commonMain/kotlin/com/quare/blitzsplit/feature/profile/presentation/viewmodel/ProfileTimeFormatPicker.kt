@@ -21,12 +21,23 @@ internal class ProfileTimeFormatPicker(
     private val trackEvent: TrackEvent,
     private val scope: CoroutineScope,
 ) {
+    // Why: the last pick not stored yet, so an older stored value still on its way never shows over it.
+    private var pending: TimeFormatPreference? = null
+
     // Why: Android's dialog closes on the pick; only another format counts and is written.
     fun select(timeFormat: TimeFormatPreference) {
         if (uiState.value.dialog == ProfileDialog.TIME_FORMAT) uiState.update { it.copy(dialog = null) }
         if (timeFormat == uiState.value.timeFormat) return
         trackEvent("time_format_selected", mapOf("time_format" to timeFormat))
+        pending = timeFormat
         uiState.update { it.copy(timeFormat = timeFormat) }
         scope.launch { updateTimeFormat(timeFormat) }
+    }
+
+    // Why: what the state shows for a stored format: the pending pick until the store reaches it, then the store's.
+    fun toShown(stored: TimeFormatPreference): TimeFormatPreference {
+        val pick = pending ?: return stored
+        if (pick == stored) pending = null
+        return pick
     }
 }

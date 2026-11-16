@@ -1973,6 +1973,41 @@ class ProfileViewModelTest {
     }
 
     @Test
+    fun `GIVEN 12-hour picked but not stored yet WHEN an older stored 24-hour arrives THEN keeps showing 12-hour`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                timeFormat = TimeFormatPreference.SYSTEM,
+                timeFormatWriteHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWELVE_HOUR))
+
+            // When
+            storedTimeFormat.value = TimeFormatPreference.TWENTY_FOUR_HOUR
+
+            // Then
+            assertEquals(TimeFormatPreference.TWELVE_HOUR, viewModel.uiState.value.timeFormat)
+        }
+
+    @Test
+    fun `GIVEN 12-hour picked and then stored WHEN another format is stored THEN shows the stored one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                timeFormat = TimeFormatPreference.SYSTEM,
+                timeFormatWriteHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWELVE_HOUR))
+            storedTimeFormat.value = TimeFormatPreference.TWELVE_HOUR
+
+            // When
+            storedTimeFormat.value = TimeFormatPreference.TWENTY_FOUR_HOUR
+
+            // Then
+            assertEquals(TimeFormatPreference.TWENTY_FOUR_HOUR, viewModel.uiState.value.timeFormat)
+        }
+
+    @Test
     fun `GIVEN the time format dialog open on 24-hour WHEN picking 24-hour again THEN only closes the dialog`() =
         runTest(testDispatcher) {
             // Given

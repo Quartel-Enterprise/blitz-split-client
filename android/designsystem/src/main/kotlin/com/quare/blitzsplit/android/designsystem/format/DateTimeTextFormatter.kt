@@ -22,9 +22,11 @@ class DateTimeTextFormatter(
     private val zone: ZoneId,
     is24Hour: Boolean,
 ) {
-    private val weekdayDate = formatterOf(WEEKDAY_DATE_SKELETON)
-    private val date = formatterOf(DATE_SKELETON)
-    private val time = formatterOf(if (is24Hour) TIME_24_HOUR_SKELETON else TIME_12_HOUR_SKELETON)
+    // Why: each pattern is resolved on first use, so a caller that only writes times (Time format's examples) pays for one.
+    private val weekdayDate by lazy { formatterOf(WEEKDAY_DATE_SKELETON) }
+    private val date by lazy { formatterOf(DATE_SKELETON) }
+    private val timeSkeleton = if (is24Hour) TIME_24_HOUR_SKELETON else TIME_12_HOUR_SKELETON
+    private val time by lazy { formatterOf(timeSkeleton) }
 
     fun toWeekdayDateText(epochMillis: Long): String = weekdayDate
         .format(zonedOf(epochMillis))

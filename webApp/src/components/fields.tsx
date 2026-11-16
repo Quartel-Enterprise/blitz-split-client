@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { t } from '@/i18n'
-import { formatWhen, fromDateTimeInputs, getTimeFormat, pad, toDateInputValue, toTimeInputValue, uiDayPeriods, uiTimeFieldNames } from '@/lib/dates'
+import { formatWhen, fromDateTimeInputs, getTimeFormat, pad, toDateInputValue, toTimeInputValue, uiDayPeriods, uiTimeFieldName } from '@/lib/dates'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
 import { cn } from '@/lib/utils'
 
@@ -250,7 +250,7 @@ function ClockInput({ id, value, onChange }: { id: string; value: string; onChan
     <div role="group" aria-labelledby={`${id}-label`} className="flex items-center gap-1.5">
       <select
         id={id}
-        aria-label={uiTimeFieldNames.of('hour')}
+        aria-label={uiTimeFieldName('hour')}
         value={isTwelveHour ? hour % 12 || 12 : hour}
         onChange={(event) => {
           const picked = Number(event.target.value)
@@ -265,7 +265,7 @@ function ClockInput({ id, value, onChange }: { id: string; value: string; onChan
         ))}
       </select>
       <span aria-hidden>:</span>
-      <select aria-label={uiTimeFieldNames.of('minute')} value={minute} onChange={(event) => change(hour, Number(event.target.value))} className={selectClass}>
+      <select aria-label={uiTimeFieldName('minute')} value={minute} onChange={(event) => change(hour, Number(event.target.value))} className={selectClass}>
         {[...Array(60).keys()].map((option) => (
           <option key={option} value={option}>
             {pad(option)}
@@ -274,7 +274,7 @@ function ClockInput({ id, value, onChange }: { id: string; value: string; onChan
       </select>
       {isTwelveHour && (
         <select
-          aria-label={uiTimeFieldNames.of('dayPeriod')}
+          aria-label={uiTimeFieldName('dayPeriod')}
           value={isAfternoon ? 'pm' : 'am'}
           onChange={(event) => change((hour % 12) + (event.target.value === 'pm' ? 12 : 0), minute)}
           className={selectClass}

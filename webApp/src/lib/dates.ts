@@ -32,8 +32,21 @@ const periodOf = (hour: number) =>
 /** The language's words for the morning and the afternoon on a 12-hour clock: "AM" and "PM", "午前" and "午後". */
 export const uiDayPeriods: readonly [string, string] = [periodOf(9) ?? 'AM', periodOf(21) ?? 'PM']
 
-/** The language's names of a time's fields, for the time selects: "Hora", "Minuto", "AM/PM". */
-export const uiTimeFieldNames = new Intl.DisplayNames(uiTag, { type: 'dateTimeField' })
+// Why: built on first use and only where the browser has it (Chrome 98, Safari 15.4, Firefox 96), so an older browser
+// still loads every screen that imports this file; null leaves the selects to their field's label.
+let timeFieldNames: Intl.DisplayNames | null | undefined
+
+/** The language's name of a time's field, for the time selects: "Hora", "Minuto", "AM/PM"; undefined if unknown. */
+export function uiTimeFieldName(field: 'hour' | 'minute' | 'dayPeriod'): string | undefined {
+  if (timeFieldNames === undefined) {
+    try {
+      timeFieldNames = new Intl.DisplayNames(uiTag, { type: 'dateTimeField' })
+    } catch {
+      timeFieldNames = null
+    }
+  }
+  return timeFieldNames?.of(field)
+}
 
 /** 14:30 today in `format`, Profile's example of each option ("14:30", "2:30 PM"). */
 export function formatSampleTime(format: TimeFormat): string {

@@ -206,7 +206,7 @@ class ProfileViewModel(
                         usesDynamicColors = isDynamic,
                         showsBitcoinInSats = sats,
                         sharesUsageData = usage,
-                        timeFormat = timeFormat,
+                        timeFormat = timeFormatPicker.toShown(timeFormat),
                     )
                 }
             },
