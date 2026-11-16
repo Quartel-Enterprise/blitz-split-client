@@ -47,6 +47,7 @@ import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.theme.negativeAmountColor
 import com.quare.blitzsplit.android.designsystem.theme.positiveAmountColor
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactRow
 import com.quare.blitzsplit.feature.contacts.presentation.model.ContactsUiEvent
@@ -262,7 +263,7 @@ private fun SummaryTotalCell(
             color = when {
                 !isEnabled -> MaterialTheme.colorScheme.onSurfaceVariant
                 isOwed -> positiveAmountColor()
-                else -> MaterialTheme.colorScheme.error
+                else -> negativeAmountColor()
             },
         )
     }

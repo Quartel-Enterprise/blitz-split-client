@@ -6,6 +6,14 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
+// Why: the brand's orange of what is owed is the schemes' error tone too, so it is declared before they read it.
+private val lightNegative = Color(0xFF8E4D31)
+private val darkNegative = Color(0xFFFFB599)
+private val lightPositive = Color(0xFF006C4C)
+private val darkPositive = Color(0xFF6EDBAA)
+private val lightPending = Color(0xFF7C5800)
+private val darkPending = Color(0xFFF9BC3E)
+
 /*
  * Why: the tokens of the design canvas (Android, Material 3 Expressive), seeded from #266489. Every role is set, the
  * fixed ones included: one left out falls back to Material's baseline purple (a lilac field, a pink dot) among
@@ -25,7 +33,7 @@ internal val lightBlitzSplitColors: ColorScheme = lightColorScheme(
     onTertiary = Color(0xFFFFFFFF),
     tertiaryContainer = Color(0xFFC3E7FF),
     onTertiaryContainer = Color(0xFF001E2C),
-    error = Color(0xFF8E4D31),
+    error = lightNegative,
     onError = Color(0xFFFFFFFF),
     errorContainer = Color(0xFFFFDBCE),
     onErrorContainer = Color(0xFF370E00),
@@ -63,7 +71,7 @@ internal val darkBlitzSplitColors: ColorScheme = darkColorScheme(
     onTertiary = Color(0xFF0E3446),
     tertiaryContainer = Color(0xFF004C69),
     onTertiaryContainer = Color(0xFFC3E7FF),
-    error = Color(0xFFFFB599),
+    error = darkNegative,
     onError = Color(0xFF552108),
     errorContainer = Color(0xFF71361C),
     onErrorContainer = Color(0xFFFFDBCE),
@@ -87,11 +95,6 @@ internal val darkBlitzSplitColors: ColorScheme = darkColorScheme(
     surfaceBright = Color(0xFF353A3E),
 ).withFixedRoles()
 
-private val lightPositive = Color(0xFF006C4C)
-private val darkPositive = Color(0xFF6EDBAA)
-private val lightPending = Color(0xFF7C5800)
-private val darkPending = Color(0xFFF9BC3E)
-
 // Why: the attachment viewer stays black in both themes, so it takes the dark theme's amber, as the camera does.
 val pendingOnBlackColor: Color = darkPending
 
@@ -101,6 +104,14 @@ val pendingOnBlackColor: Color = darkPending
  */
 @Composable
 fun positiveAmountColor(): Color = if (LocalIsDarkTheme.current) darkPositive else lightPositive
+
+/*
+ * Why: what the user owes (a negative net, "você deve") is the brand's orange on every platform, the scheme's error
+ * tone without Dynamic colors. Outside the scheme too: the dynamic schemes give Material's red, which has the green's
+ * luminance (1.01:1), so people with red-green color blindness would lose the cue. Real errors keep colorScheme.error.
+ */
+@Composable
+fun negativeAmountColor(): Color = if (LocalIsDarkTheme.current) darkNegative else lightNegative
 
 /*
  * Why: what is saved here and not on the server yet (the queue's dot, "Aguardando envio") is amber on every platform:

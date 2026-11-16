@@ -244,7 +244,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
   - "Dynamic colors" (Material You) shows in Appearance only where the platform hands the app its system colors,
     Android 12 and later (`DynamicColorSupport`, `ProfileUiState.showsDynamicColors`): off by default, it swaps the
     brand's Material scheme for the Android system's in light and dark alike, while the groups', avatars' and
-    categories' own colors stay the brand's. Its subtitle ("Use your Android system colors in the app") and its ⓘ
+    categories' own colors stay the brand's, and so do the amounts' green and orange ([general.md](general.md)). Its subtitle ("Use your Android system colors in the app") and its ⓘ
     say the colors are the Android system's, which come from the wallpaper or from a palette picked in Android's
     settings, never that they always come from the wallpaper (Pierre's call, beta feedback, November 2026). Kept per
     device and never synced (`usesDynamicColors` in `device_settings`, so it outlives a sign out); a choice restored

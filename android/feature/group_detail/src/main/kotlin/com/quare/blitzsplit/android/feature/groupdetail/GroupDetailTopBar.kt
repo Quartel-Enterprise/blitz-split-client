@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Logout
@@ -17,6 +20,8 @@ import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,10 +45,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -51,6 +59,7 @@ import androidx.compose.ui.unit.lerp
 import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
+import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
@@ -80,6 +89,10 @@ internal fun GroupTopBar(
     money: MoneyFormatter,
     scrollBehavior: TopAppBarScrollBehavior,
     onAction: (GroupAction) -> Unit,
+    // Why: "Rachar conta" in the bar wherever it doesn't float (anywhere wider than a phone upright); null otherwise.
+    splitBillButton: GroupTabFloatingButton? = null,
+    // Why: keeps the button's room while a tab has none (the empty Despesas), so the bar's icons never jump sideways.
+    reservesSplitBillSlot: Boolean = false,
     // Why: the group whose row the avatar and name fly from; null where nothing flies (previews, screenshots).
     sharedGroupId: String? = null,
 ) {
@@ -125,6 +138,23 @@ internal fun GroupTopBar(
         },
         navigationIcon = { GroupBackButton(onAction) },
         actions = {
+            when {
+                splitBillButton != null -> GroupBarSplitBillButton(
+                    icon = splitBillButton.icon,
+                    label = splitBillButton.label,
+                    onClick = splitBillButton.onClick,
+                )
+
+                reservesSplitBillSlot -> GroupBarSplitBillButton(
+                    icon = splitBillIcon(),
+                    label = stringResource(R.string.group_detail_split_bill),
+                    onClick = {},
+                    modifier = Modifier
+                        .alpha(0f)
+                        .clearAndSetSemantics {},
+                    isEnabled = false,
+                )
+            }
             GroupBarActionsComponent(
                 header = header,
                 isOnline = isOnline,
@@ -215,6 +245,35 @@ internal fun GroupBackButton(onAction: (GroupAction) -> Unit) {
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
             contentDescription = stringResource(R.string.group_detail_back),
+        )
+    }
+}
+
+// Why: the floating button's icon and words, as a filled button ahead of the bar's icons.
+@Composable
+private fun GroupBarSplitBillButton(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.padding(horizontal = 8.dp),
+        enabled = isEnabled,
+        contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(ButtonDefaults.IconSize),
+        )
+        Spacer(Modifier.width(ButtonDefaults.IconSpacing))
+        Text(
+            text = label,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

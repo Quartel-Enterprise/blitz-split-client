@@ -3,7 +3,10 @@
 Group expenses, Bill, comments, attachments, sharing, Statistics, editing and deleting a bill.
 
   - A group tapped on the home opens "Group expenses" (`Route.GroupDetail`): the bills by day, the most recent on
-    top, with "Split a bill" (Android's extended FAB, iOS's glass toolbar item, a primary button on macOS, ⌘N, and the
+    top, with "Split a bill" (Android's extended FAB on a phone upright and a filled button at the head of the top
+    bar's actions anywhere wider, as the home's tabs leave it to the rail there: on a phone lying down by Pierre's
+    call, beta feedback of 2026-11-15, and on a tabletop or a tablet by the same rule, for Pierre to confirm; iOS's
+    glass toolbar item, a primary button on macOS, ⌘N, and the
     web), the group's main button on every tab, Members included, in the same place. Its tabs Expenses / Balances / Members are one screen (`Route.GroupDetail.tab` only says which it opens on):
     the header, "Your balance in this group" and the tabs stay, only what is under them changes, with no transition nor
     check on the tab picked (`GroupDetailUiState.tab`), the back stack never moves, and back from any tab leaves the

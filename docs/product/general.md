@@ -19,8 +19,11 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     offline in a row count too. The server does it (`expire-anonymous-accounts` in blitz-split-api), as a deletion
     asked in Profile: the person's name stays in their groups with no account, and a group left with no account goes.
     Every platform says so in the same four places:
-    - Welcome, in a small centered line right under "Use without an account": "Your data is deleted after 30 days
-      without use."
+    - Welcome, in a small centered line right under "Use without an account": "Without an account, your data is
+      deleted after 30 days without use. Connect Google or Apple to keep it." It starts with "Without an account" so a
+      person who signs in with Google or Apple does not read it as a rule for them (Pierre's call, November 2026).
+      Offline, while the Google and Apple buttons are disabled, it ends "Connect Google or Apple later, in Profile, to
+      keep it." instead, like the offline notice (`WelcomeUiState.showsOfflineNotice`).
     - Profile's "No account" row, whose line reads "Deleted after 30 days without use" once the account is on the
       server ([profile.md](profile.md)).
     - The sign out of such an account, whose dialog adds that after 30 days without use the account is deleted and
@@ -103,8 +106,11 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     buttons (Android's Saldo geral alone keeps its filled card's colors), and never swapped for the Android system's by
     Dynamic colors. Zero stays muted, debts between two others keep their color, and a status that adds up
     ("Adds up") stays the accent. No preference inverts them: the sign and the words already say which way the money
-    goes. With Android's Dynamic colors on, what you owe takes the Android system scheme's red for now
-    ([#179](https://github.com/Quartel-Enterprise/blitz-split-client/issues/179) decides it).
+    goes. What you owe keeps the brand's orange with Android's Dynamic colors on too (Pierre's call,
+    [#179](https://github.com/Quartel-Enterprise/blitz-split-client/issues/179)), `#8E4D31` light and `#FFB599` dark,
+    fixed outside the scheme like the green (Android's `negativeAmountColor()` beside `positiveAmountColor()`): the
+    dynamic schemes' red has the green's luminance (1.01:1), which red-green colorblind eyes can't tell apart. Real
+    errors (a failed action, a field to fix, Delete) keep the scheme's error color, the Dynamic red included.
   - What is saved here and not on the server yet (the queue's dot, "queued", "Waiting to send", a profile change
     not up yet) is amber (chosen in the contrast audit, for Pierre to confirm), `#7C5800` light and `#F9BC3E` dark,
     with `#FFDEA8` / `#5E4200` behind a badge or a notice, and `#F9BC3E` in both themes on what stays dark (the
@@ -229,7 +235,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Apple app has no floating action button (Pierre's call): a screen's main button ("Split a bill", on every
     tab of a group) is a toolbar item, the bar's tinted glass item on iPhone and iPad (the bottom toolbar inside a group
     on an iPhone upright, except on an iPhone Duo, whose vertical bar takes it as its icon alone) and the window
-    toolbar's primary button on the Mac. Android keeps its FABs.
+    toolbar's primary button on the Mac. Android keeps its FABs on a phone upright; anywhere wider a group's "Split a
+    bill" sits in its top bar ([group-and-bills.md](group-and-bills.md)).
   - A Mac sheet ends in a trailing row of regular-size buttons, as a Mac dialog's (Record payment, Split a bill and
     its editors, Request, the new group's Invite, a personal invite): Cancel or Close on Esc, then the main one,
     prominent, on Return (⌘Return where Return types a new line, as in Request's message). The large buttons are the iPhone's and iPad's, for a thumb; a footer shared with them

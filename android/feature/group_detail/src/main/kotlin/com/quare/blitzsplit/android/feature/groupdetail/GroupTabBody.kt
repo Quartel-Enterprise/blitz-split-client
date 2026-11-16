@@ -5,11 +5,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 /*
  * Why: what a tab of the group draws under the group's header, which stays put while the tabs swap: its rows in the
- * group's list and the button floating over it, if any ("Rachar conta" on every tab but the empty Despesas).
+ * group's list and its main button, if any ("Rachar conta" on every tab but the empty Despesas), floating over the list
+ * on a phone upright and in the top bar anywhere wider.
  */
 internal class GroupTabBody(
     val listContent: LazyListScope.() -> Unit,
-    val floatingButton: GroupTabFloatingButton?,
+    val splitBillButton: GroupTabFloatingButton?,
 )
 
 internal class GroupTabFloatingButton(

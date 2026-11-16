@@ -313,8 +313,11 @@ READMEHERO_CAPTURES=web ./scripts/readme-hero/generate.sh          # capture aga
 READMEHERO_CAPTURES=none ./scripts/readme-hero/generate.sh         # the image again, from the captures in build/
 ```
 
-Run it after a change to the group's screen on any platform, and commit the two images. Each platform comes from the
-store screenshots' own tools:
+Run it after a change to the group's screen on any platform, and commit the two images: the
+`update-readme-screenshots` skill decides when a change shows, runs it and checks the result, and `create-pr` runs
+that skill on every branch that changes what the image shows. The pieces of a `whatsapp-feedback` run are the
+exception: they leave it to one refresh, in one PR, once they have all merged. Each platform comes from the store
+screenshots' own tools:
 
 - **Android:** `ReadmeHeroScreens` in `:android:store_screenshots` draws the Compose screen under Robolectric, bare
   (no frame, no banner), on a Pixel 9's screen. Only `-PreadmeHero` runs it, and then nothing else.

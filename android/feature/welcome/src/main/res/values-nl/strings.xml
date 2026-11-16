@@ -16,7 +16,8 @@
     <string name="welcome_legal_notice">Door verder te gaan, accepteer je de %1$s en bevestig je dat je het %2$s kent.</string>
     <string name="welcome_legal_terms">Servicevoorwaarden</string>
     <string name="welcome_legal_privacy">Privacybeleid</string>
-    <string name="welcome_no_account_note">Je gegevens worden na 30 dagen zonder gebruik verwijderd.</string>
+    <string name="welcome_no_account_note">Zonder account worden je gegevens na 30 dagen zonder gebruik verwijderd. Koppel Google of Apple om ze te behouden.</string>
+    <string name="welcome_no_account_note_offline">Zonder account worden je gegevens na 30 dagen zonder gebruik verwijderd. Koppel later in Profiel Google of Apple om ze te behouden.</string>
     <string name="welcome_expired_title">Je gegevens zijn verwijderd</string>
     <string name="welcome_expired_body">Je gebruikte de app zonder account en hebt hem 30 dagen niet geopend, dus je gegevens zijn verwijderd. Koppel Google of Apple om ze de volgende keer te behouden.</string>
     <string name="welcome_expired_ok">OK</string>

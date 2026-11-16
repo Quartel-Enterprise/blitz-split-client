@@ -8,7 +8,8 @@ The home's four tabs and the web's and the Mac's shell.
     each puts it, in [groups-home.md](groups-home.md)). Home (`Route.Home`) is the root and where the app opens; every other tab is one route
     right above it, taking each other's place (`Navigator.openHomeTab`). Android's rail drops its labels on a phone
     lying down and a tabletop, where it also draws "Split a bill" as the small button so the tabs and Search fit its
-    height (Android has "Split a bill" on all four tabs: the FAB on a phone upright, the rail's button anywhere wider), and its items scroll should they still not (Search, the last, is never cut off); it stays, without "Split a bill", beside a group's Expenses, Balances, Members and
+    height (Android has "Split a bill" on all four tabs: the FAB on a phone upright, the rail's button anywhere wider; a
+    phone lying down never floats it, neither on the tabs nor on a group, whose top bar holds it), and its items scroll should they still not (Search, the last, is never cut off); it stays, without "Split a bill", beside a group's Expenses, Balances, Members and
     Statistics drawn alone anywhere wider than a phone upright (a phone lying down, a tablet or a foldable upright,
     Statistics over a whole book; never on a tabletop, nor beside the home's list, which has its own), the
     tab the group was opened from selected (`homeTab`, `findHomeTabUnder`); each of its tabs, that one included, goes back
