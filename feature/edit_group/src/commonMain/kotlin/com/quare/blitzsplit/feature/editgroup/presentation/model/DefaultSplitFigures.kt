@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.editgroup.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.AmountInput
 import com.quare.blitzsplit.core.expenses.domain.model.BillSplit
+import com.quare.blitzsplit.core.expenses.domain.model.SplitBarColors
 import com.quare.blitzsplit.core.expenses.domain.model.SplitEntry
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
@@ -122,7 +123,7 @@ data class DefaultSplitFigures(
                     ?.associate { it.memberId to it.amountMinor }
                     .orEmpty()
             }
-            return people.zip(entries) { person, entry ->
+            return people.zip(entries).mapIndexed { index, (person, entry) ->
                 DefaultSplitRow(
                     person = person,
                     weight = entry.value,
@@ -132,6 +133,7 @@ data class DefaultSplitFigures(
                     } else {
                         null
                     },
+                    color = SplitBarColors.getAt(index),
                 )
             }
         }

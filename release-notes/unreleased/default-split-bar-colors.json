@@ -1,0 +1,24 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": ["all"],
+      "text": {
+        "en": "In Default split, each person's part of the example bill now has a color of its own, with a matching dot before their name, so two people never look like one.",
+        "pt": "Na Divisão padrão, a parte de cada pessoa na conta de exemplo agora tem uma cor própria, com um ponto da mesma cor antes do nome, e duas pessoas nunca parecem uma só.",
+        "pt-PT": "Na Divisão predefinida, a parte de cada pessoa na conta de exemplo tem agora uma cor própria, com um ponto da mesma cor antes do nome, e duas pessoas nunca parecem uma só.",
+        "es": "En División predeterminada, la parte de cada persona en la cuenta de ejemplo ahora tiene un color propio, con un punto del mismo color antes de su nombre, así dos personas nunca parecen una sola.",
+        "fr": "Dans Répartition par défaut, la part de chaque personne sur la dépense d’exemple a désormais sa propre couleur, avec un point assorti avant son nom, pour que deux personnes ne se confondent jamais.",
+        "de": "In der Standardaufteilung hat jetzt jeder Anteil an der Beispielrechnung eine eigene Farbe, mit einem passenden Punkt vor dem Namen, damit zwei Personen nie wie eine aussehen.",
+        "it": "In Divisione predefinita, la parte di ogni persona nella spesa di esempio ora ha un colore tutto suo, con un punto dello stesso colore prima del nome, così due persone non sembrano mai una sola.",
+        "pl": "W Domyślnym podziale część każdej osoby w przykładowym rachunku ma teraz własny kolor, z kropką w tym samym kolorze przed imieniem, więc dwie osoby nigdy nie wyglądają jak jedna.",
+        "nl": "In Standaardverdeling heeft het deel van elke persoon in de voorbeeldrekening nu een eigen kleur, met een bijpassende stip voor de naam, zodat twee mensen nooit op één lijken.",
+        "ja": "「デフォルトの分け方」の例の支出で、各メンバーの分がそれぞれ別の色になり、名前の前に同じ色の点が付くようになりました。2人が1人に見えることはもうありません。",
+        "tr": "Varsayılan bölüşümde örnek hesaptaki herkesin payı artık kendine ait bir renkte, adının önünde aynı renkte bir nokta var; böylece iki kişi asla tek kişi gibi görünmüyor.",
+        "id": "Di Pembagian default, bagian setiap orang pada tagihan contoh kini punya warna sendiri, dengan titik berwarna sama di depan namanya, jadi dua orang tidak pernah terlihat seperti satu.",
+        "ru": "В «Разделении по умолчанию» доля каждого в примере счёта теперь своего цвета, с точкой того же цвета перед именем, так что два человека больше не сливаются в одного.",
+        "uk": "У «Розподілі за замовчуванням» частка кожного в прикладі рахунку тепер має власний колір, з крапкою того ж кольору перед іменем, тож двоє людей більше не зливаються в одного."
+      }
+    }
+  ]
+}

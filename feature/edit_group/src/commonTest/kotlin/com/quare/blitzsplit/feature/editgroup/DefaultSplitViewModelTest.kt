@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.editgroup
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
@@ -87,6 +88,30 @@ class DefaultSplitViewModelTest {
             // Then
             assertEquals(12_000L, state.exampleTotalMinor)
             assertEquals(2_000L, state.exampleEachMinor)
+        }
+
+    @Test
+    fun `GIVEN six people of one avatar color WHEN reading the rows THEN each has the bar color of their place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroup = home.copy(members = (1..6).map { member("member-$it", "Pessoa $it") }))
+
+            // When
+            val colors = viewModel.uiState.value.rows
+                .map { it.color }
+
+            // Then
+            assertEquals(
+                listOf(
+                    CategoryColor.BLUE,
+                    CategoryColor.YELLOW,
+                    CategoryColor.PINK,
+                    CategoryColor.LIME,
+                    CategoryColor.PURPLE,
+                    CategoryColor.BLUE,
+                ),
+                colors,
+            )
         }
 
     @Test

@@ -4,11 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
@@ -78,15 +81,20 @@ internal fun ExampleCard(
                 )
             }
             ShareBar(state)
-            Text(
-                text = exampleDetailOf(state, money),
-                style = MaterialTheme.typography.bodySmall,
-                color = if (isError) {
-                    MaterialTheme.colorScheme.onErrorContainer
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-            )
+            val help = exampleHelpOf(state)
+            if (help != null) {
+                Text(
+                    text = help,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (isError) {
+                        MaterialTheme.colorScheme.onErrorContainer
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+            } else {
+                ShareLegendRow(state, money)
+            }
         }
     }
 }
@@ -107,7 +115,7 @@ private fun ShareBar(state: DefaultSplitUiState) {
                 modifier = Modifier
                     .weight(row.basisPoints.toFloat())
                     .height(8.dp)
-                    .background(row.person.avatarColor.toDataColor(isDark), RoundedCornerShape(4.dp)),
+                    .background(row.color.toDataColor(isDark), RoundedCornerShape(4.dp)),
             )
         }
         if (missing > 0f) {
@@ -142,22 +150,46 @@ private fun exampleTitleOf(
 }
 
 @Composable
-private fun exampleDetailOf(
+private fun exampleHelpOf(state: DefaultSplitUiState): String? = when {
+    state.showsPercentError -> stringResource(R.string.default_split_sum_help)
+    state.mode == DefaultSplitMode.EQUAL -> stringResource(R.string.default_split_example_equal_help)
+    else -> null
+}
+
+// Why: each one's part of the example bill after a dot in their segment's color, so the bar reads without counting.
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ShareLegendRow(
     state: DefaultSplitUiState,
     money: MoneyFormatter,
-): String = when {
-    state.showsPercentError -> stringResource(R.string.default_split_sum_help)
-
-    state.mode == DefaultSplitMode.EQUAL -> stringResource(R.string.default_split_example_equal_help)
-
-    else ->
+) {
+    val isDark = LocalIsDarkTheme.current
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
         state.rows
             .filter { it.weight > 0 }
-            .map { row ->
-                stringResource(
-                    R.string.default_split_example_part,
-                    row.person.name,
-                    money.toText(row.exampleMinor ?: 0L),
-                )
-            }.joinToString(" · ")
+            .forEach { row ->
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(row.color.toDataColor(isDark), CircleShape),
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.default_split_example_part,
+                            row.person.name,
+                            money.toText(row.exampleMinor ?: 0L),
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+    }
 }
