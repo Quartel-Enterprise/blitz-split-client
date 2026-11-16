@@ -82,6 +82,7 @@
     <string name="group_stats_category_share">%1$s: %2$d%% dari total</string>
     <string name="group_stats_category_percent">%d%%</string>
     <string name="group_stats_category_pie">Pembagian per kategori: %s</string>
+    <string name="group_stats_person_pie">Pembagian per orang: %s</string>
     <string name="group_stats_category_pie_part">%1$s %2$d%%</string>
     <string name="group_stats_settling">Pelunasan</string>
     <string name="group_stats_settles_fastest">Paling cepat melunasi</string>

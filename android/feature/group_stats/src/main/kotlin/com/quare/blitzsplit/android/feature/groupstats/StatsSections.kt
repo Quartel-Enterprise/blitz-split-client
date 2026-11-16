@@ -42,24 +42,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
-import com.quare.blitzsplit.android.designsystem.component.ConnectedButtonRow
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.opensProfile
 import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightSource
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
-import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
-import com.quare.blitzsplit.android.designsystem.theme.toDataColor
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
-import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
-import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsSettler
-import com.quare.blitzsplit.android.designsystem.R as DesignR
 
-private val sectionPadding = Modifier.padding(
+// Why: a section heading's room, shared by every section of the screen.
+internal val sectionPadding = Modifier.padding(
     start = 4.dp,
     end = 4.dp,
     top = 20.dp,
@@ -294,121 +289,6 @@ internal fun StatsSectionHeading(
     )
 }
 
-// Why: "Por pessoa": Consumo or Pagou, a bar per person scaled by the largest, and what each one means.
-@Composable
-internal fun StatsPeopleSection(
-    state: GroupStatsUiState,
-    money: MoneyFormatter,
-    onEvent: (GroupStatsUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val views = listOf(StatsPeopleView.CONSUMPTION, StatsPeopleView.PAID)
-    Column(modifier = modifier) {
-        StatsSectionHeading(stringResource(R.string.group_stats_by_person), modifier = sectionPadding)
-        ConnectedButtonRow(
-            labels = listOf(
-                stringResource(R.string.group_stats_consumption),
-                stringResource(R.string.group_stats_paid),
-            ),
-            selectedIndex = views.indexOf(state.peopleView),
-            groupLabel = stringResource(R.string.group_stats_show_by_person),
-            onClick = { index -> onEvent(GroupStatsUiEvent.OnPeopleViewPicked(views[index])) },
-            height = 40.dp,
-            modifier = Modifier.padding(bottom = 8.dp),
-        )
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            state.people.forEachIndexed { index, person ->
-                val shape = groupedRowShapeOf(index, state.people.size)
-                // Why: keyed by the person, so a face's id stays with them when the view reorders the list.
-                key(person.memberId) {
-                    // Why: the row opens their profile (Perfil for this device's user), its face flying into it; an ex-member has none.
-                    val flight = rememberProfileFlightSource()
-                    StatsPersonRowItem(
-                        person = person,
-                        money = money,
-                        modifier = Modifier
-                            .clip(shape)
-                            .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
-                            .opensProfile(
-                                flight.toFlyingClickOrNull(
-                                    {
-                                        onEvent(
-                                            GroupStatsUiEvent.OnPersonClicked(person.memberId),
-                                        )
-                                    }.takeIf { person.opensProfile },
-                                ),
-                            ),
-                        faceModifier = flight.face,
-                    )
-                }
-            }
-        }
-        val showsPaid = state.peopleView == StatsPeopleView.PAID
-        Text(
-            text = stringResource(
-                if (showsPaid) R.string.group_stats_note_paid else R.string.group_stats_note_consumption,
-            ),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(
-                start = 4.dp,
-                end = 4.dp,
-                top = 12.dp,
-            ),
-        )
-    }
-}
-
-@Composable
-private fun StatsPersonRowItem(
-    person: StatsPersonRow,
-    money: MoneyFormatter,
-    modifier: Modifier = Modifier,
-    faceModifier: Modifier = Modifier,
-) {
-    val formerMember = stringResource(DesignR.string.designsystem_former_member)
-    val name =
-        person.name?.let { if (person.isMe) stringResource(R.string.group_stats_you, it) else it } ?: formerMember
-    val amount = money.toText(person.amountMinor)
-    StatsAvatarRow(
-        initials = person.initials,
-        avatarColor = person.avatarColor,
-        photoUrl = person.photoUrl,
-        description = "$name: $amount",
-        modifier = modifier,
-        faceModifier = faceModifier,
-    ) {
-        val hasAmount = person.amountMinor > 0
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.titleSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
-                Text(
-                    text = amount,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = if (hasAmount) {
-                        MaterialTheme.colorScheme.onSurface
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                )
-            }
-            StatsAmountBarIndicator(
-                fraction = person.barFraction.toFloat(),
-                color = person.avatarColor.toDataColor(LocalIsDarkTheme.current),
-            )
-        }
-    }
-}
-
 // Why: the two person boards stacked, as every layout but the phone's list draws them.
 @Composable
 internal fun StatsPeopleAndSettlingColumn(
@@ -534,7 +414,7 @@ private fun StatsSettlerRow(
 
 // Why: a person's row of Por pessoa and Acertos, read as one sentence by a screen reader.
 @Composable
-private fun StatsAvatarRow(
+internal fun StatsAvatarRow(
     initials: String,
     avatarColor: AvatarColor,
     photoUrl: String?,
@@ -564,7 +444,7 @@ private fun StatsAvatarRow(
     }
 }
 
-// Why: the bar takes the color of what it measures (the category's slice, the person's face), never the accent.
+// Why: the bar takes the color of what it measures (the category's slice), never the accent.
 @Composable
 internal fun StatsAmountBarIndicator(
     fraction: Float,

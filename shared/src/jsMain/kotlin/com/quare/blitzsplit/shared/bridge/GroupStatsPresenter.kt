@@ -34,7 +34,10 @@ class JsStatsPeriodOption(
     val expenseCount: Int,
 )
 
-// Why: a person of "Por pessoa", amounts in the currency's minor unit; name null for "Ex-membro".
+/*
+ * Why: a person of "Por pessoa", amounts in the currency's minor unit; name null for "Ex-membro". color is their face's
+ * avatar color, sliceColor the category color of their slice and legend dot (categoryStyle).
+ */
 class JsStatsPerson(
     val memberId: String,
     val name: String?,
@@ -43,7 +46,8 @@ class JsStatsPerson(
     val photoUrl: String?,
     val isMe: Boolean,
     val amountMinor: Double,
-    val barFraction: Double,
+    val percent: Int,
+    val sliceColor: String,
     // Why: the row opens their profile (openPerson), Perfil for isMe; "Ex-membro" has none.
     val opensProfile: Boolean,
 )
@@ -134,6 +138,8 @@ class JsGroupStatsState(
     val myPaidCount: Int,
     val peopleView: String,
     val people: Array<JsStatsPerson>,
+    // Why: the ring by person has a share to show (GroupStatsUiState.topPerson); false leaves it bare and neutral.
+    val hasPersonShares: Boolean,
     val chartType: String,
     val grain: String,
     val grains: Array<JsStatsGrain>,
@@ -287,6 +293,7 @@ private fun toJsGroupStatsState(state: GroupStatsUiState): JsGroupStatsState = J
     myPaidCount = state.myPaidCount,
     peopleView = if (state.peopleView == StatsPeopleView.PAID) "paid" else "consumption",
     people = state.people.map(::toJsStatsPerson).toTypedArray(),
+    hasPersonShares = state.topPerson != null,
     chartType = state.chartType.code,
     grain = state.grain.code,
     grains = state.grains.map { JsStatsGrain(it.grain.code, it.isEnabled) }.toTypedArray(),
@@ -344,7 +351,8 @@ private fun toJsStatsPerson(row: StatsPersonRow): JsStatsPerson = JsStatsPerson(
     photoUrl = row.photoUrl,
     isMe = row.isMe,
     amountMinor = row.amountMinor.toDouble(),
-    barFraction = row.barFraction,
+    percent = row.percent,
+    sliceColor = row.color.code,
     opensProfile = row.opensProfile,
 )
 

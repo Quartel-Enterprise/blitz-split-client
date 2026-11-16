@@ -3,12 +3,14 @@ package com.quare.blitzsplit.android.feature.groupstats
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.SplitBarColors
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
+import com.quare.blitzsplit.feature.groupstats.presentation.model.RoundedPercents
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBiggestExpense
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
@@ -36,6 +38,7 @@ private val previewPeople = listOf(
     Triple("Elisa", AvatarColor.SAND, 32_990L),
     Triple("Diego", AvatarColor.GREEN, 25_350L),
 )
+private val previewPercents = RoundedPercents.of(previewPeople.map { it.third })
 
 internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsUiState {
     val end = PREVIEW_START + previewDay * (previewDays.size - 1)
@@ -76,7 +79,8 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
                 photoUrl = null,
                 isMe = name == "Pierre",
                 amountMinor = amount,
-                barFraction = amount.toDouble() / previewPeople.first().third,
+                percent = previewPercents[index],
+                color = SplitBarColors.getAt(index),
             )
         },
         chartType = StatsChartType.BARS,

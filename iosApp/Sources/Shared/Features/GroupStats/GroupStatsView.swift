@@ -487,12 +487,28 @@ struct StatsSectionTitle: View {
     }
 }
 
-/// "By person": Consumed or Paid, a bar per person scaled by the largest, and what each one means.
+/// "By person": Consumed or Paid, a ring of each person's share in their own color with the largest in its center, the
+/// people under it as its legend (each one's dot, share and amount), and what each view means. A slice tapped, or a
+/// slice or a row the pointer is over, pops out and takes the center; a row still opens the person's profile.
 private struct StatsPeopleSection: View {
     let model: GroupStatsModel
+    private let ringSize: CGFloat = 160
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    @State private var selected: Int?
+
+    /// What resets the pick and plays the ring again: the period, the view and each person's share.
+    private var ringKey: String {
+        let state = model.state
+        return "\(state.periodStartMillis)-\(state.periodEndMillis)-\(state.peopleView)-"
+            + state.people.map { "\($0.memberId):\($0.percent)" }.joined(separator: ",")
+    }
 
     var body: some View {
         let state = model.state
+        let people = state.people
+        let picked = selected.flatMap { state.topPerson != nil && people.indices.contains($0) ? $0 : nil }
         VStack(alignment: .leading, spacing: 8) {
             StatsSectionTitle(title: "By person")
                 .padding(.horizontal, 20)
@@ -503,17 +519,47 @@ private struct StatsPeopleSection: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
+            StatsRing(
+                slices: people.map { StatsRingSlice(id: $0.memberId, percent: Double($0.percent), color: $0.color.data) },
+                size: ringSize,
+                ringKey: ringKey,
+                label: Text("Split by person: \(people.map { "\(GroupStatsCopy.name($0)) \($0.percent)%" }.joined(separator: ", "))"),
+                selected: Binding(get: { picked }, set: { selected = $0 }),
+                // A finger's tap picks a slice and a second one lets it go. A click picks the slice the pointer is over,
+                // which its hover already did, so it never lets go of it; nor does a finger's tap while a trackpad's
+                // pointer rests over the ring, the one case SwiftUI's tap can't tell apart
+                onTap: { index, isPointer in
+                    selected = isPointer || selected != index ? index : nil
+                },
+            ) {
+                if state.topPerson != nil {
+                    let shown = people[picked ?? 0]
+                    StatsRingCenter(percent: shown.percent, name: GroupStatsCopy.name(shown))
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(16)
+            .background(Palette.card, in: .rect(cornerRadius: 26))
             VStack(spacing: 0) {
-                ForEach(Array(state.people.enumerated()), id: \.element.memberId) { index, person in
+                ForEach(Array(people.enumerated()), id: \.element.memberId) { index, person in
                     StatsPersonLine(person: person, currency: state.currency) {
                         model.send(GroupStatsUiEventOnPersonClicked(memberId: person.memberId))
                     }
-                    if index < state.people.count - 1 {
+                    .opacity(picked == nil || picked == index ? 1 : 0.4)
+                    .onHover { isOver in
+                        if isOver, state.topPerson != nil, person.percent > 0 {
+                            selected = index
+                        } else if selected == index {
+                            selected = nil
+                        }
+                    }
+                    if index < people.count - 1 {
                         Divider().padding(.leading, 64)
                     }
                 }
             }
             .background(Palette.card, in: .rect(cornerRadius: 26))
+            .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: picked)
             Group {
                 if state.peopleView == .paid {
                     Text("What each one paid at the time. The difference between what they paid and what they consumed becomes a balance, in Balances.")
@@ -526,6 +572,7 @@ private struct StatsPeopleSection: View {
             .padding(.horizontal, 20)
             .fixedSize(horizontal: false, vertical: true)
         }
+        .onChange(of: ringKey) { selected = nil }
     }
 
     private var viewBinding: Binding<StatsPeopleView> {
@@ -536,7 +583,8 @@ private struct StatsPeopleSection: View {
     }
 }
 
-/// A person of "By person": the row opens their profile (Profile for you), which a former member doesn't have.
+/// A person of "By person", a line of the ring's legend: the face, the slice's color before the name, the share and
+/// the amount. The row opens their profile (Profile for you), which a former member doesn't have.
 private struct StatsPersonLine: View {
     let person: StatsPersonRow
     let currency: GroupCurrency
@@ -547,19 +595,27 @@ private struct StatsPersonLine: View {
             initial: person.initials,
             color: person.avatarColor,
             photoUrl: person.photoUrl,
-            label: "\(GroupStatsCopy.name(person)): \(currency.format(person.amountMinor))",
+            label: String(
+                localized: "\(GroupStatsCopy.name(person)): \(Int(person.percent))% of the total, \(currency.format(person.amountMinor))",
+                bundle: .appLanguage,
+            ),
         ) {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(verbatim: GroupStatsCopy.name(person))
-                        .lineLimit(1)
-                    Spacer(minLength: 8)
-                    Text(verbatim: currency.format(person.amountMinor))
-                        .font(.subheadline.weight(.semibold))
-                        .monospacedDigit()
-                        .foregroundStyle(person.amountMinor > 0 ? .primary : .secondary)
-                }
-                StatsAmountBar(fraction: person.barFraction, color: person.avatarColor.data)
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Circle()
+                    .fill(person.color.data)
+                    .frame(width: 10, height: 10)
+                    .alignmentGuide(.firstTextBaseline) { $0[VerticalAlignment.center] + 4 }
+                Text(verbatim: GroupStatsCopy.name(person))
+                    .lineLimit(1)
+                Spacer(minLength: 8)
+                Text(verbatim: "\(person.percent)%")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+                Text(verbatim: currency.format(person.amountMinor))
+                    .font(.subheadline.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(person.amountMinor > 0 ? .primary : .secondary)
             }
         }
         .opensProfile(person.opensProfile ? onOpen : nil)
@@ -587,7 +643,7 @@ struct StatsAvatarRow<Content: View>: View {
     }
 }
 
-/// The bar takes the color of what it measures (the category's slice, the person's face), never the accent.
+/// The bar takes the color of what it measures (the category's slice), never the accent.
 struct StatsAmountBar: View {
     let fraction: Double
     let color: Color

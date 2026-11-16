@@ -2058,6 +2058,7 @@ export const nl: Record<MessageKey, string> = {
   splitBill_defaultExceptionTitle: 'Groepsuitzondering voor {name}: {description}',
   groupStats_byCategory: 'Per categorie',
   groupStats_categoryPie: 'Verdeling per categorie: {parts}',
+  groupStats_personPie: 'Verdeling per persoon: {parts}',
   groupStats_categoryShare: '{name}: {percent}% van het totaal',
   groupStats_categoryOpen: '{name}, {percent}%: uitgaven bekijken',
   categoryExpenses_title: 'Uitgaven per categorie',

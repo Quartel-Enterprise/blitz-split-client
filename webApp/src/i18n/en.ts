@@ -2055,6 +2055,7 @@ export const en = {
   splitBill_defaultExceptionTitle: 'Group exception for {name}: {description}',
   groupStats_byCategory: 'By category',
   groupStats_categoryPie: 'Split by category: {parts}',
+  groupStats_personPie: 'Split by person: {parts}',
   groupStats_categoryShare: '{name}: {percent}% of the total',
   groupStats_categoryOpen: '{name}, {percent}%: see expenses',
   categoryExpenses_title: 'Expenses by category',

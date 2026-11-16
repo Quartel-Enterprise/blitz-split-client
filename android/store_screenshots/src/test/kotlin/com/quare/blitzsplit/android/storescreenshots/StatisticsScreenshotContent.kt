@@ -2,10 +2,12 @@ package com.quare.blitzsplit.android.storescreenshots
 
 import androidx.compose.runtime.Composable
 import com.quare.blitzsplit.android.feature.groupstats.GroupStatsContent
+import com.quare.blitzsplit.core.expenses.domain.model.SplitBarColors
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
+import com.quare.blitzsplit.feature.groupstats.presentation.model.RoundedPercents
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBiggestExpense
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
@@ -43,6 +45,7 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
         .associateWith { person -> bills.sumOf { sharesOf(it)[person] ?: 0L } }
         .entries
         .sortedByDescending { it.value }
+    val percents = RoundedPercents.of(consumed.map { it.value })
     val days = (firstDay downTo 0).map { daysAgo -> daysAgo to bills.filter { it.daysAgo == daysAgo } }
     val peak = days.maxBy { (_, dayBills) -> dayBills.sumOf { it.totalMinor } }.first
     val biggest = bills.maxBy { it.totalMinor }
@@ -80,7 +83,7 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
         myPaidMinor = bills.sumOf { bill -> bill.payers.filter { it.person == me }.sumOf { it.amountMinor } },
         myPaidCount = bills.count { bill -> bill.payers.any { it.person == me } },
         peopleView = StatsPeopleView.CONSUMPTION,
-        people = consumed.map { (person, amount) ->
+        people = consumed.mapIndexed { index, (person, amount) ->
             StatsPersonRow(
                 memberId = memberIdOf(person),
                 name = people[person],
@@ -89,7 +92,8 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
                 photoUrl = photoUrlOf(person),
                 isMe = person == me,
                 amountMinor = amount,
-                barFraction = amount.toDouble() / consumed.first().value,
+                percent = percents[index],
+                color = SplitBarColors.getAt(person),
             )
         },
         chartType = StatsChartType.BARS,

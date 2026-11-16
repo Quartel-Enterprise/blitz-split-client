@@ -2061,6 +2061,7 @@ export const uk: Record<MessageKey, string> = {
   splitBill_defaultExceptionTitle: 'Виняток групи для категорії {name}: {description}',
   groupStats_byCategory: 'За категоріями',
   groupStats_categoryPie: 'Розподіл за категоріями: {parts}',
+  groupStats_personPie: 'Розподіл за людьми: {parts}',
   groupStats_categoryShare: '{name}: {percent}% від загальної суми',
   groupStats_categoryOpen: '{name}, {percent}%: переглянути витрати',
   categoryExpenses_title: 'Витрати за категоріями',

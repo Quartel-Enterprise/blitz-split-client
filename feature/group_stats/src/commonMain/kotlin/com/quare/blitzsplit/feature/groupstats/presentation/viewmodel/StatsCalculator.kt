@@ -1,16 +1,19 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupSpending
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.model.SplitBarColors
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.StatsGrain
+import com.quare.blitzsplit.feature.groupstats.presentation.model.RoundedPercents
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBiggestExpense
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
@@ -173,13 +176,17 @@ internal class StatsCalculator(
         }
     }
 
+    /*
+     * Why: everyone in the group, then whoever left with money in the period, the largest amount first; each person's
+     * color is Default split's for their place in the group's list, a former member's the neutral Gray.
+     */
     fun createPeople(
         spending: GroupSpending,
         view: StatsPeopleView,
     ): List<StatsPersonRow> {
         val amounts = if (view == StatsPeopleView.CONSUMPTION) spending.consumedByMember else spending.paidByMember
         val memberIds = group.members.map { it.id }.toSet()
-        val members = group.members.map { member ->
+        val members = group.members.mapIndexed { index, member ->
             StatsPersonRow(
                 memberId = member.id,
                 name = member.name,
@@ -188,7 +195,8 @@ internal class StatsCalculator(
                 photoUrl = member.photoUrl,
                 isMe = member.isMe,
                 amountMinor = amounts[member.id] ?: 0L,
-                barFraction = 0.0,
+                percent = 0,
+                color = SplitBarColors.getAt(index),
             )
         }
         val formerIds = (spending.consumedByMember.keys + spending.paidByMember.keys).filterNot { it in memberIds }
@@ -201,14 +209,13 @@ internal class StatsCalculator(
                 photoUrl = null,
                 isMe = false,
                 amountMinor = amounts[id] ?: 0L,
-                barFraction = 0.0,
+                percent = 0,
+                color = CategoryColor.GRAY,
             )
         }
         val rows = (members + formers).sortedByDescending { it.amountMinor }
-        val largest = rows.firstOrNull()?.amountMinor ?: 0L
-        return rows.map { row ->
-            row.copy(barFraction = if (largest > 0) row.amountMinor.toDouble() / largest else 0.0)
-        }
+        val percents = RoundedPercents.of(rows.map { it.amountMinor })
+        return rows.mapIndexed { index, row -> row.copy(percent = percents[index]) }
     }
 
     fun createBiggestOrNull(spending: GroupSpending): StatsBiggestExpense? {
@@ -240,7 +247,7 @@ internal class StatsCalculator(
             .groupBy { categories.mainOf(categories.resolve(it.categoryId)) }
             .map { (main, bills) -> main to bills.sumOf { it.amountMinor } }
             .sortedByDescending { it.second }
-        val percents = findRoundedPercents(mains.map { it.second }, total)
+        val percents = RoundedPercents.of(mains.map { it.second }, total)
         val largest = mains.firstOrNull()?.second ?: 0L
         return mains.mapIndexed { index, (main, amount) ->
             StatsCategoryRow(
@@ -252,21 +259,6 @@ internal class StatsCalculator(
         }
     }
 
-    private fun findRoundedPercents(
-        amounts: List<Long>,
-        total: Long,
-    ): List<Int> {
-        if (total <= 0) return amounts.map { 0 }
-        val exact = amounts.map { it * PERCENT_UNITS }
-        val floors = exact.map { (it / total).toInt() }.toMutableList()
-        val missing = PERCENT_UNITS.toInt() - floors.sum()
-        exact.indices
-            .sortedByDescending { exact[it] % total }
-            .take(missing.coerceAtLeast(0))
-            .forEach { floors[it] += 1 }
-        return floors
-    }
-
     private fun maxLabelsOf(grain: StatsGrain): Int = when (grain) {
         StatsGrain.WEEK -> MAX_WEEK_LABELS
         StatsGrain.MONTH -> MAX_MONTH_LABELS
@@ -274,7 +266,6 @@ internal class StatsCalculator(
     }
 
     private companion object {
-        const val PERCENT_UNITS = 100L
         const val MAX_DOTS = 12
         const val MAX_LABELS = 7
 

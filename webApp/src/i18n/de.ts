@@ -2058,6 +2058,7 @@ export const de: Record<MessageKey, string> = {
   splitBill_defaultExceptionTitle: 'Gruppenausnahme für {name}: {description}',
   groupStats_byCategory: 'Nach Kategorie',
   groupStats_categoryPie: 'Aufteilung nach Kategorie: {parts}',
+  groupStats_personPie: 'Aufteilung nach Person: {parts}',
   groupStats_categoryShare: '{name}: {percent} % vom Gesamtbetrag',
   groupStats_categoryOpen: '{name}, {percent} %: Ausgaben ansehen',
   categoryExpenses_title: 'Ausgaben nach Kategorie',

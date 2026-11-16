@@ -167,7 +167,8 @@ export function PersonButton({
   flightKey?: string
   children?: ReactNode
 }) {
-  if (!onOpen) return <span className={className}>{children}</span>
+  // Why: a row that opens nothing (a former member's) still reads as one sentence when it has a label.
+  if (!onOpen) return <span role={label ? 'group' : undefined} aria-label={label} className={className}>{children}</span>
   return (
     <button
       type="button"

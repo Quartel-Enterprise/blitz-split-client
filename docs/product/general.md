@@ -129,7 +129,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     the first two and `avatar-mark`, `avatar-stroke` and `avatar-edge` the data tone): a badge or a face is the
     container with the content on it, and a mark that carries the color by itself (a slice, a legend dot, a bar, a segment of the default split, a group's dot in Activity) takes the data
     tone, Material tone 50 light and 75 dark of the color's hue (4:1 and 7:1 on a card), since the container reads at
-    under 2:1 there. A bar measures in the color of what it measures, never the accent (the default split's bar alone takes a color per person by place, [members-and-payments.md](members-and-payments.md)), and a picked icon in the
+    under 2:1 there. A bar measures in the color of what it measures, never the accent (the default split's bar and Statistics' "By person" ring alone take a color per person by place, the same on both, [members-and-payments.md](members-and-payments.md)), and a picked icon in the
     category form sits on the category's color, not the accent's.
   - A group is always its rounded square, a person always a circle: the group's photo, or its initials on its color,
     with corners at 8% of the side at every size (the group photo viewer's 16 on its 200, beta feedback of 2026-11-12,

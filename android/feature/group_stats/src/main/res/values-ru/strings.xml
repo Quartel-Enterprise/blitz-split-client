@@ -88,6 +88,7 @@
     <string name="group_stats_category_share">%1$s: %2$d%% от общей суммы</string>
     <string name="group_stats_category_percent">%d%%</string>
     <string name="group_stats_category_pie">Распределение по категориям: %s</string>
+    <string name="group_stats_person_pie">Распределение по людям: %s</string>
     <string name="group_stats_category_pie_part">%1$s %2$d%%</string>
     <string name="group_stats_settling">Расчёты</string>
     <string name="group_stats_settles_fastest">Рассчитывается быстрее всех</string>
