@@ -1,9 +1,12 @@
 import { Check } from 'lucide-react'
 import { CategoryExpensesPresenter, type JsCategoryExpensesState, type JsRoute } from 'blitzsplit-shared'
-import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
+import { billMenuOptions } from '@/components/BillRowMenu'
 import { CrumbButton, type HomeTab } from '@/components/HomeShell'
 import { Button } from '@/components/ui/button'
 import { SkeletonRows } from '@/components/ui/skeleton'
+import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
+import { toastGroupAction } from '@/features/group-detail/GroupExitDialog'
 import { DayRowGroup, DayRowsTable, ExpenseLine } from '@/features/group-detail/ExpenseRows'
 import { GroupPageSkeleton } from '@/features/group-detail/GroupPage'
 import { t } from '@/i18n'
@@ -17,12 +20,13 @@ import { expenseCountText, formatRange, periodLabel } from './statsFormat'
 /**
  * "Expenses by category", from a category of the statistics' "By category": the group's bills of the period the
  * statistics showed, of the main categories its chips pick (all of them while none is), in the group's Expenses table
- * with no ⋮ (as the home's latest expenses, a click opens the bill, whose options are in Bill). A page of its own over
- * the statistics, as they are over the group; back goes to them.
+ * with its ⋮ (a right click too), as there and on the home's latest expenses. A page of its own over the statistics,
+ * as they are over the group; back goes to them. From xl up the chips and the total keep a column beside the bills.
  */
 export function CategoryExpensesScreen({ route }: { route: JsRoute }) {
   const presenter = usePresenter(() => new CategoryExpensesPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsCategoryExpensesState) => void) => p.observeState(onChange))
+  useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
   if (!presenter || !state) return null
   const homeTab = state.homeTab as HomeTab
   if (!state.isLoaded) {
@@ -59,41 +63,64 @@ export function CategoryExpensesScreen({ route }: { route: JsRoute }) {
         <span className="text-sm text-muted-foreground">{subtitle}</span>
       </div>
 
-      <CategoryChips state={state} presenter={presenter} />
-      <p aria-live="polite" className="text-[15px] font-semibold tabular-nums">
-        {t('categoryExpenses_summary', {
-          total: formatMoney(state.totalMinor, state.currency, state.fractionDigits),
-          count: expenseCountText(state.expenseCount),
-        })}
-      </p>
-
-      {state.isLoadingBills ? (
-        <SkeletonRows count={5} leading="square" className="rounded-xl border bg-card" />
-      ) : state.isEmpty || state.isPeriodEmpty ? (
-        <div className="flex flex-col items-center gap-2 rounded-xl border bg-card px-6 py-12 text-center">
-          <p className="font-semibold">{t(state.isEmpty ? 'categoryExpenses_emptyTitle' : 'categoryExpenses_periodEmpty')}</p>
-          {state.isEmpty && <p className="max-w-sm text-sm text-muted-foreground">{t('categoryExpenses_emptyBody')}</p>}
+      <div className="flex flex-col gap-4 sm:gap-5 xl:grid xl:grid-cols-[minmax(0,240px)_minmax(0,1fr)] xl:items-start xl:gap-8">
+        <div className="flex flex-col gap-4 sm:gap-5 xl:sticky xl:top-6">
+          <CategoryChips state={state} presenter={presenter} />
+          <p aria-live="polite" className="text-[15px] font-semibold tabular-nums">
+            {t('categoryExpenses_summary', {
+              total: formatMoney(state.totalMinor, state.currency, state.fractionDigits),
+              count: expenseCountText(state.expenseCount),
+            })}
+          </p>
         </div>
-      ) : (
-        <DayRowsTable label={t('categoryExpenses_title')}>
-          {state.days.map((day) => (
-            <DayRowGroup key={day.dayStartMillis} dayStartMillis={day.dayStartMillis} relativeDay={day.relativeDay}>
-              {day.expenses.map((expense) => (
-                <ExpenseLine
-                  key={expense.id}
-                  expense={expense}
-                  currency={state.currency}
-                  fractionDigits={state.fractionDigits}
-                  extraMeta={categoryName(expense.category)}
-                  options={[]}
-                  onOpen={() => presenter.openExpense(expense.id)}
-                />
-              ))}
-            </DayRowGroup>
-          ))}
-        </DayRowsTable>
+        <CategoryBills state={state} presenter={presenter} />
+      </div>
+      {state.billToDelete && (
+        <BillDeleteDialog
+          deletion={state.billToDelete}
+          isDeleting={state.isDeletingBill}
+          onConfirm={() => presenter.confirmExpenseDelete()}
+          onDismiss={() => presenter.dismissExpenseDelete()}
+        />
       )}
     </StatsPage>
+  )
+}
+
+/** The skeletons, an empty state, or the bills by day in the group's Expenses table, each with its ⋮. */
+function CategoryBills({ state, presenter }: { state: JsCategoryExpensesState; presenter: CategoryExpensesPresenter }) {
+  if (state.isLoadingBills) return <SkeletonRows count={5} leading="square" className="rounded-xl border bg-card" />
+  if (state.isEmpty || state.isPeriodEmpty) {
+    return (
+      <div className="flex flex-col items-center gap-2 rounded-xl border bg-card px-6 py-12 text-center">
+        <p className="font-semibold">{t(state.isEmpty ? 'categoryExpenses_emptyTitle' : 'categoryExpenses_periodEmpty')}</p>
+        {state.isEmpty && <p className="max-w-sm text-sm text-muted-foreground">{t('categoryExpenses_emptyBody')}</p>}
+      </div>
+    )
+  }
+  return (
+    <DayRowsTable label={t('categoryExpenses_title')}>
+      {state.days.map((day) => (
+        <DayRowGroup key={day.dayStartMillis} dayStartMillis={day.dayStartMillis} relativeDay={day.relativeDay}>
+          {day.expenses.map((expense) => (
+            <ExpenseLine
+              key={expense.id}
+              expense={expense}
+              currency={state.currency}
+              fractionDigits={state.fractionDigits}
+              extraMeta={categoryName(expense.category)}
+              options={billMenuOptions({
+                onEdit: () => presenter.editExpense(expense.id),
+                onDuplicate: () => presenter.duplicateExpense(expense.id),
+                onShare: () => presenter.shareExpense(expense.id),
+                onDelete: () => presenter.askToDeleteExpense(expense.id),
+              })}
+              onOpen={() => presenter.openExpense(expense.id)}
+            />
+          ))}
+        </DayRowGroup>
+      ))}
+    </DayRowsTable>
   )
 }
 

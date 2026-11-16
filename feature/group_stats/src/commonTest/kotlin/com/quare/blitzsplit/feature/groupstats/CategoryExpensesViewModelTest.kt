@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupstats
 
+import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
+import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
@@ -8,10 +10,14 @@ import com.quare.blitzsplit.core.expenses.domain.model.GroupCategory
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveCategoryTreeUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveExpensesUseCase
 import com.quare.blitzsplit.core.expenses.testing.FakeCategoryRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
+import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
@@ -27,14 +33,18 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpenseRow
+import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiAction
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiEvent
 import com.quare.blitzsplit.feature.groupstats.presentation.model.CategoryExpensesUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPayer
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
 import com.quare.blitzsplit.feature.groupstats.presentation.viewmodel.CategoryExpensesViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -47,12 +57,14 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class CategoryExpensesViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
+    private val actions = mutableListOf<CategoryExpensesUiAction>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var groups: FakeGroupRepository
     private lateinit var expenses: FakeExpenseRepository
@@ -1035,6 +1047,427 @@ class CategoryExpensesViewModelTest {
             assertEquals(GroupCurrency.USD, state.currency)
         }
 
+    @Test
+    fun `GIVEN the list WHEN tapping Edit on a bill THEN Edit bill opens over the list`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseEditClicked("market"))
+
+        // Then
+        assertEquals(listStack + Route.SplitBill.createEditing(GROUP_ID, "market"), navigator.backStack.value)
+        assertEquals(listOf("bill_edit_clicked" to fromList), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the list WHEN tapping Duplicate on a bill THEN Split a bill opens over the list filled with it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDuplicateClicked("market"))
+
+            // Then
+            assertEquals(
+                listStack + Route.SplitBill.createDuplicating(GROUP_ID, "market"),
+                navigator.backStack.value,
+            )
+            assertEquals(listOf("bill_duplicate_clicked" to fromList), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the list WHEN tapping Share on a bill THEN Share bill opens over the list`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseShareClicked("market"))
+
+        // Then
+        assertEquals(
+            listStack + Route.ShareBill(
+                groupId = GROUP_ID,
+                expenseId = "market",
+            ),
+            navigator.backStack.value,
+        )
+        assertEquals(listOf("bill_share_clicked" to fromList), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN a profile over the list WHEN a late Edit arrives THEN nothing opens and nothing is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+            val stack = navigator.backStack.value
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseEditClicked("market"))
+
+            // Then
+            assertEquals(stack, navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill over the list WHEN a late Duplicate arrives THEN nothing opens and nothing is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseClicked("dinner"))
+            val stack = navigator.backStack.value
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDuplicateClicked("market"))
+
+            // Then
+            assertEquals(stack, navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a profile over the list WHEN a late Share arrives THEN nothing opens and nothing is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigate(Route.Profile)
+            val stack = navigator.backStack.value
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseShareClicked("market"))
+
+            // Then
+            assertEquals(stack, navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill no longer on the device WHEN tapping Edit on it THEN nothing opens and nothing is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            expenses.expenses.value = expenses.expenses.value.filterNot { it.id == "market" }
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseEditClicked("market"))
+
+            // Then
+            assertEquals(listStack, navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill no longer on the device WHEN tapping Share on it THEN nothing opens and nothing is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            expenses.expenses.value = expenses.expenses.value.filterNot { it.id == "market" }
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseShareClicked("market"))
+
+            // Then
+            assertEquals(listStack, navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill in a currency this version does not know WHEN tapping Edit THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = octoberBills + unknownCurrencyBill)
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseEditClicked("xyz-market"))
+
+            // Then
+            assertEquals(listStack, navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill in a currency this version does not know WHEN tapping Duplicate THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = octoberBills + unknownCurrencyBill)
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDuplicateClicked("xyz-market"))
+
+            // Then
+            assertEquals(listStack, navigator.backStack.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a bill in a currency this version does not know WHEN tapping Share THEN Share bill opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = octoberBills + unknownCurrencyBill)
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseShareClicked("xyz-market"))
+
+            // Then
+            assertEquals(
+                listStack + Route.ShareBill(
+                    groupId = GROUP_ID,
+                    expenseId = "xyz-market",
+                ),
+                navigator.backStack.value,
+            )
+            assertEquals(listOf("bill_share_clicked" to fromList), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the list WHEN tapping Delete on a bill THEN asks to delete it described as it is now`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+
+            // Then
+            val billToDelete = assertNotNull(viewModel.uiState.value.billToDelete)
+            assertEquals("market", billToDelete.description)
+            assertEquals(2_500L, billToDelete.myBalanceMinor)
+            assertEquals(GroupCurrency.BRL, billToDelete.currency)
+            assertFalse(viewModel.uiState.value.isDeletingBill)
+            assertEquals(listStack, navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the list WHEN tapping Delete on a bill THEN sends the delete clicked from the list once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+
+            // Then
+            assertEquals(listOf("bill_delete_clicked" to fromList), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN tapping Delete on another bill THEN the question and events stay`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("dinner"))
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertEquals(
+                "market",
+                viewModel.uiState.value.billToDelete
+                    ?.description,
+            )
+            assertEquals(listOf("bill_delete_clicked" to fromList), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN confirming THEN deletes the bill and closes the question`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf("market"), expenses.deletedIds)
+            assertNull(state.billToDelete)
+            assertFalse(state.isDeletingBill)
+            assertEquals(listOf(listOf("lunch"), listOf("dinner")), idsByDay(state))
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN confirming THEN sends the delete confirmed from the list`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteConfirmed)
+
+            // Then
+            assertEquals(listOf("bill_delete_confirmed" to fromList), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a delete in flight WHEN the device is still deleting THEN the question stays open and waits`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            expenses.deleteGate = CompletableDeferred()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("market", state.billToDelete?.description)
+            assertTrue(state.isDeletingBill)
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN dismissing THEN closes it and keeps the bill`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteDismissed)
+
+        // Then
+        val state = viewModel.uiState.value
+        assertNull(state.billToDelete)
+        assertFalse(state.isDeletingBill)
+        assertTrue(expenses.deletedIds.isEmpty())
+        assertEquals(listOf(listOf("lunch", "market"), listOf("dinner")), idsByDay(state))
+        assertEquals(listOf("bill_delete_cancelled" to fromList), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN no delete question WHEN a confirm arrives THEN nothing is deleted and nothing is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteConfirmed)
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertTrue(expenses.deletedIds.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no delete question WHEN a dismiss arrives THEN nothing changes and nothing is sent`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val before = viewModel.uiState.value
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteDismissed)
+
+            // Then
+            assertEquals(before, viewModel.uiState.value)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN the delete fails THEN closes it says so and keeps the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            expenses.deleteError = IllegalStateException("Room is busy")
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteConfirmed)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.billToDelete)
+            assertFalse(state.isDeletingBill)
+            assertEquals(listOf<CategoryExpensesUiAction>(CategoryExpensesUiAction.ShowBillDeleteError), actions)
+            assertEquals(listOf(listOf("lunch", "market"), listOf("dinner")), idsByDay(state))
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN a chip is toggled THEN the question stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+
+            // When
+            viewModel.onEvent(CategoryExpensesUiEvent.OnCategoryToggled(AppCategory.TRAVEL.key))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("market", state.billToDelete?.description)
+            assertFalse(state.isDeletingBill)
+            assertEquals(listOf(listOf("boat", "lunch", "market"), listOf("dinner")), idsByDay(state))
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN a new bill arrives THEN the question stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+            val breakfast = expense("breakfast", 2_000, millisOf("2026-10-29T10:00:00Z"), AppCategory.FOOD_BAKERY.key)
+
+            // When
+            expenses.expenses.value = expenses.expenses.value + breakfast
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals("market", state.billToDelete?.description)
+            assertEquals(listOf(listOf("breakfast"), listOf("lunch", "market"), listOf("dinner")), idsByDay(state))
+            assertEquals(listOf("bill_delete_clicked" to fromList), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN the bill changes elsewhere THEN the question describes it as it is now`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+
+            // When
+            expenses.expenses.value = expenses.expenses.value.map {
+                if (it.id == "market") it.copy(description = "Supermercado") else it
+            }
+
+            // Then
+            assertEquals(
+                "Supermercado",
+                viewModel.uiState.value.billToDelete
+                    ?.description,
+            )
+            assertEquals(listOf("bill_delete_clicked" to fromList), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN the delete question open WHEN the bill is deleted elsewhere THEN the question closes`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CategoryExpensesUiEvent.OnExpenseDeleteClicked("market"))
+
+            // When
+            expenses.expenses.value = expenses.expenses.value.filterNot { it.id == "market" }
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.billToDelete)
+            assertFalse(state.isDeletingBill)
+            assertTrue(expenses.deletedIds.isEmpty())
+        }
+
     private fun rowsOf(state: CategoryExpensesUiState): List<CategoryExpenseRow> = state.days.flatMap { it.expenses }
 
     private fun idsByDay(state: CategoryExpensesUiState): List<List<String>> =
@@ -1220,6 +1653,18 @@ class CategoryExpensesViewModelTest {
         ),
     )
 
+    // Why: a market in a code a newer app wrote, which this version shows but can't edit or duplicate.
+    private val unknownCurrencyBill = expense(
+        id = "xyz-market",
+        amountMinor = 3_000,
+        spentAt = millisOf("2026-10-27T10:00:00Z"),
+        categoryId = AppCategory.FOOD_MARKET.key,
+        currency = GroupCurrency.fromCode("XYZ"),
+    )
+
+    // Why: the source every bill menu event of this screen sends.
+    private val fromList = mapOf<String, Any>("source" to "category_expenses")
+
     private val statsRoute = Route.GroupStats(GROUP_ID)
 
     // Why: the statistics over the group's Expenses over Grupos, where back from the list returns.
@@ -1244,7 +1689,7 @@ class CategoryExpensesViewModelTest {
         isWaitingForInternet = false,
     )
 
-    private fun prepareScenario(
+    private fun TestScope.prepareScenario(
         route: Route.CategoryExpenses = thisMonth(AppCategory.FOOD.key),
         group: Group = trip,
         stored: List<Expense> = octoberBills + septemberHotel,
@@ -1285,8 +1730,14 @@ class CategoryExpensesViewModelTest {
             observeExpenses = if (areBillsRead) ObserveExpensesUseCase(expenses) else ObserveExpenses { emptyFlow() },
             observeCategoryTree = ObserveCategoryTreeUseCase(categories),
             observeFirstDownload = ObserveFirstDownload { if (isDownloadRead) flowOf(downloading) else emptyFlow() },
+            billMenuUseCases = BillMenuUseCases(
+                observeExpense = ObserveExpenseUseCase(expenses),
+                observeBillDeletion = ObserveBillDeletionUseCase(groups, expenses, FakeSettlementRepository()),
+                deleteExpense = DeleteExpenseUseCase(expenses, InMemoryDeletedBillRepository()) { today },
+            ),
             trackEvent = { name, params -> trackedEvents += name to params },
         )
+        backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
     }
 
     private companion object {

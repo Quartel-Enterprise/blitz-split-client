@@ -16,6 +16,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
@@ -94,6 +98,46 @@ fun EntryLineSurface(
             end?.invoke()
         }
     }
+}
+
+/*
+ * Why: a line ending in its ⋮, which a long press on the line opens too: the group's Expenses and the statistics'
+ * "Expenses by category" (beta feedback) draw their bills with it, so both offer the same options the same way.
+ */
+@Composable
+fun MenuEntryLine(
+    title: String,
+    shape: Shape,
+    onClick: () -> Unit,
+    menuItems: List<RowMenuItem>,
+    modifier: Modifier,
+    leading: @Composable () -> Unit,
+    meta: @Composable () -> Unit,
+    titleModifier: Modifier = Modifier,
+    trailing: @Composable ColumnScope.() -> Unit,
+) {
+    var isMenuOpen by rememberSaveable { mutableStateOf(false) }
+    val optionsLabel = rowOptionsLabelOf(title)
+    EntryLineSurface(
+        title = title,
+        shape = shape,
+        onClick = onClick,
+        modifier = modifier,
+        leading = leading,
+        meta = meta,
+        onLongClick = { isMenuOpen = true },
+        onLongClickLabel = optionsLabel,
+        titleModifier = titleModifier,
+        end = {
+            RowMenuButton(
+                contentDescription = optionsLabel,
+                items = menuItems,
+                isOpen = isMenuOpen,
+                onOpenChange = { isMenuOpen = it },
+            )
+        },
+        trailing = trailing,
+    )
 }
 
 // Why: a payment's icon (a bill shows its category's badge instead), in the badge's size.

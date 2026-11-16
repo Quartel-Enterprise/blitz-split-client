@@ -298,24 +298,42 @@ private struct StatsTopLine: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
             if state.showsPeriodPicker {
-                HStack(spacing: 10) {
-                    StatsPeriodMenu(model: model, pickDates: pickDates)
-                        .buttonStyle(.bordered)
-                        .buttonBorderShape(.capsule)
-                        .fontWeight(.semibold)
-                    Text(verbatim: GroupStatsCopy.range(
-                        state.periodRangeStyle,
-                        start: state.periodStartMillis,
-                        end: state.periodEndMillis,
-                    ))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                // The pull-down never wraps (beta feedback: "All time" broke in two): the dates go under it when both
+                // don't fit on one line, and only a pull-down wider than the screen alone, at the largest text, is cut
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 10) {
+                        periodMenu.fixedSize()
+                        range.fixedSize()
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        periodMenu
+                        range
+                    }
                 }
             }
         }
         .padding(.horizontal, 4)
         .padding(.top, 4)
         .padding(.bottom, 14)
+    }
+
+    private var periodMenu: some View {
+        StatsPeriodMenu(model: model, pickDates: pickDates)
+            .buttonStyle(.bordered)
+            .buttonBorderShape(.capsule)
+            .fontWeight(.semibold)
+            .lineLimit(1)
+    }
+
+    private var range: some View {
+        let state = model.state
+        return Text(verbatim: GroupStatsCopy.range(
+            state.periodRangeStyle,
+            start: state.periodStartMillis,
+            end: state.periodEndMillis,
+        ))
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
     }
 }
 

@@ -69,5 +69,7 @@ internal fun createPreviewCategoryExpensesState(): CategoryExpensesUiState {
         isFirstDownload = false,
         isLoaded = true,
         homeTab = HomeTab.GROUPS,
+        billToDelete = null,
+        isDeletingBill = false,
     )
 }

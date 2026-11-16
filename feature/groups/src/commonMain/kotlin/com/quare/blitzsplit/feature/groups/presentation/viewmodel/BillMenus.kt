@@ -5,18 +5,13 @@ import com.quare.blitzsplit.core.expenses.billmenu.BillMenuOption
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuState
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuStep
 import com.quare.blitzsplit.core.expenses.billmenu.BillMenuUseCases
+import com.quare.blitzsplit.core.expenses.billmenu.navigatingBillMenuControllerOf
 import com.quare.blitzsplit.core.navigation.Navigator
-import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.groups.presentation.model.BillMenuEvent
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
-/*
- * Why: a bill's ⋮ on Início and "Todas as despesas", whose options open over the list itself (not over the group, as
- * a tap on the row does), and only while the list is on top, so a late tap never stacks them over what it opened.
- */
+// Why: a bill's ⋮ on Início and "Todas as despesas", whose options open over the list itself, with the list's source.
 internal fun billMenuControllerOf(
     useCases: BillMenuUseCases,
     scope: CoroutineScope,
@@ -27,30 +22,15 @@ internal fun billMenuControllerOf(
     showDeleteError: suspend () -> Unit,
     // Why: where the screen keeps "Apagar esta conta?", copied from the controller each time it changes.
     show: (BillMenuState) -> Unit,
-): BillMenuController = BillMenuController(
+): BillMenuController = navigatingBillMenuControllerOf(
     useCases = useCases,
     scope = scope,
-    openOption = { option, groupId, expenseId ->
-        isOnTop().also { canOpen ->
-            if (canOpen) {
-                navigator.navigate(
-                    when (option) {
-                        BillMenuOption.EDIT -> Route.SplitBill.createEditing(groupId, expenseId)
-
-                        BillMenuOption.DUPLICATE -> Route.SplitBill.createDuplicating(groupId, expenseId)
-
-                        BillMenuOption.SHARE -> Route.ShareBill(
-                            groupId = groupId,
-                            expenseId = expenseId,
-                        )
-                    },
-                )
-            }
-        }
-    },
+    navigator = navigator,
+    isOnTop = isOnTop,
     track = { step -> trackBillMenuStep(trackEvent, step, mapOf("source" to source)) },
     showDeleteError = showDeleteError,
-).also { controller -> controller.state.onEach(show).launchIn(scope) }
+    show = show,
+)
 
 private fun trackBillMenuStep(
     trackEvent: TrackEvent,
@@ -67,6 +47,7 @@ private fun trackBillMenuStep(
     }
 }
 
+// Why: Início's and "Todas as despesas"' ⋮ name the bill's group, since their bills come from every group.
 internal fun BillMenuController.onEvent(event: BillMenuEvent) {
     when (event) {
         is BillMenuEvent.OnEditClicked -> open(BillMenuOption.EDIT, event.groupId, event.expenseId)

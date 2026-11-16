@@ -7,10 +7,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,14 +17,13 @@ import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.component.ENTRY_META_SEPARATOR
 import com.quare.blitzsplit.android.designsystem.component.EntryDayHeading
 import com.quare.blitzsplit.android.designsystem.component.EntryIconTile
-import com.quare.blitzsplit.android.designsystem.component.EntryLineSurface
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
 import com.quare.blitzsplit.android.designsystem.component.LocalBillOpensAsDialog
+import com.quare.blitzsplit.android.designsystem.component.MenuEntryLine
 import com.quare.blitzsplit.android.designsystem.component.RowMenuItem
 import com.quare.blitzsplit.android.designsystem.component.SharedOrigin
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
-import com.quare.blitzsplit.android.designsystem.component.rowOptionsLabelOf
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.paidTextOrNull
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
@@ -155,25 +150,15 @@ internal fun EntryFrameRow(
     titleModifier: Modifier = Modifier,
     trailing: @Composable ColumnScope.() -> Unit,
 ) {
-    var isMenuOpen by rememberSaveable { mutableStateOf(false) }
-    EntryLineSurface(
+    MenuEntryLine(
         title = title,
         shape = shape,
         onClick = onClick,
+        menuItems = menuItems,
         modifier = modifier,
         leading = leading ?: { EntryIconTile(icon) },
         meta = meta,
-        onLongClick = { isMenuOpen = true },
-        onLongClickLabel = rowOptionsLabelOf(title),
         titleModifier = titleModifier,
-        end = {
-            EntryMenu(
-                title = title,
-                items = menuItems,
-                isOpen = isMenuOpen,
-                onOpenChange = { isMenuOpen = it },
-            )
-        },
         trailing = trailing,
     )
 }

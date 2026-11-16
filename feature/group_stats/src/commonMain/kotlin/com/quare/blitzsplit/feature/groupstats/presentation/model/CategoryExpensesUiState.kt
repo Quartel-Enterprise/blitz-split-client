@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.model
 
+import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
 
@@ -28,6 +29,10 @@ data class CategoryExpensesUiState(
     val isLoaded: Boolean,
     // Why: the home tab the group was opened from, which the web's sidebar and Android's rail select.
     val homeTab: HomeTab,
+    // Why: "Delete this bill?" from a bill's ⋮, open while not null, as on the group's Expenses.
+    val billToDelete: BillDeletion?,
+    // Why: its "Delete" waits while the device deletes the bill.
+    val isDeletingBill: Boolean,
 ) {
     // Why: "Clear" shows only while a chip is picked.
     val showsClear: Boolean
