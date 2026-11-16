@@ -285,6 +285,12 @@ class AppPresenter {
         return JsWatch(watch::cancel)
     }
 
+    // Why: Profile's "Time format", which every time of day the page writes follows: its code, "system", "24h" or "12h".
+    fun observeTimeFormat(onChange: (String) -> Unit): JsWatch {
+        val watch = FlowWatcher(holder.viewModel.timeFormat).observe { onChange(it.code) }
+        return JsWatch(watch::cancel)
+    }
+
     fun navigateBack() {
         navigator.navigateBack()
     }

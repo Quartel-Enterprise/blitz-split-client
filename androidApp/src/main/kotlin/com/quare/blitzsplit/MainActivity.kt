@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.quare.blitzsplit.android.designsystem.format.FormattersRoot
 import com.quare.blitzsplit.android.designsystem.format.LocalShowsBitcoinInSats
+import com.quare.blitzsplit.android.designsystem.format.LocalTimeFormat
 import com.quare.blitzsplit.android.designsystem.layout.FoldLayoutRoot
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.feature.inappupdate.InAppUpdateDownloadOverlay
@@ -68,6 +69,7 @@ class MainActivity : ComponentActivity() {
             val theme by appViewModel.theme.collectAsStateWithLifecycle()
             val usesDynamicColors by appViewModel.usesDynamicColors.collectAsStateWithLifecycle()
             val showsBitcoinInSats by appViewModel.showsBitcoinInSats.collectAsStateWithLifecycle()
+            val timeFormat by appViewModel.timeFormat.collectAsStateWithLifecycle()
             val isDark = when (theme) {
                 ThemePreference.SYSTEM -> isSystemInDarkTheme()
                 ThemePreference.LIGHT -> false
@@ -85,7 +87,10 @@ class MainActivity : ComponentActivity() {
                 isDark = isDark,
                 usesDynamicColors = usesDynamicColors,
             ) {
-                CompositionLocalProvider(LocalShowsBitcoinInSats provides showsBitcoinInSats) {
+                CompositionLocalProvider(
+                    LocalShowsBitcoinInSats provides showsBitcoinInSats,
+                    LocalTimeFormat provides timeFormat,
+                ) {
                     FormattersRoot {
                         FoldLayoutRoot {
                             AppNavDisplay(appViewModel = appViewModel)

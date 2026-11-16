@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.core.utils.toAppLanguageUppercase
 import software.quare.loadable.Loadable
 import software.quare.loadable.isLoaded
@@ -67,6 +68,8 @@ data class ProfileUiState(
     val language: AppLanguage,
     // Why: what is typed in Android's "Search languages", empty when the picker opens.
     val languageQuery: String,
+    // Why: Preferences' "Time format", this device's pick, SYSTEM following the device's own 12 or 24 hours.
+    val timeFormat: TimeFormatPreference,
     /*
      * Why: "5 active" under "Notifications", the rows whose push is on; the toggles live on their own screen or section. Loading like
      * the keys, since a restored account's choices only come with its first full sync.

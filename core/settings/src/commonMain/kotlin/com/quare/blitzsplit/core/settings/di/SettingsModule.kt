@@ -19,6 +19,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastUpdatePrompt
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveTimeFormatPreference
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.RefreshAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateAppLanguage
@@ -30,6 +31,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationP
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastUpdatePromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateTimeFormatPreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.DismissAppBannerUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.FollowUsageDataSharingUseCase
@@ -44,6 +46,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveLastUpdateP
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveSpokenLanguageUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveThemePreferenceUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveTimeFormatPreferenceUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveUsageDataSharingUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.RefreshAppLanguageUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateAppLanguageUseCase
@@ -55,6 +58,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateLastNotifica
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateLastUpdatePromptAtUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateThemePreferenceUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateTimeFormatPreferenceUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateUsageDataSharingUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -74,6 +78,8 @@ val settingsModule = module {
     factoryOf(::UpdateDynamicColorsUseCase).bind<UpdateDynamicColors>()
     factoryOf(::ObserveBitcoinInSatsUseCase).bind<ObserveBitcoinInSats>()
     factoryOf(::UpdateBitcoinInSatsUseCase).bind<UpdateBitcoinInSats>()
+    factoryOf(::ObserveTimeFormatPreferenceUseCase).bind<ObserveTimeFormatPreference>()
+    factoryOf(::UpdateTimeFormatPreferenceUseCase).bind<UpdateTimeFormatPreference>()
     factoryOf(::ObserveLastUpdatePromptAtUseCase).bind<ObserveLastUpdatePromptAt>()
     factoryOf(::UpdateLastUpdatePromptAtUseCase).bind<UpdateLastUpdatePromptAt>()
     factoryOf(::ObserveLastNotificationPromptAtUseCase).bind<ObserveLastNotificationPromptAt>()

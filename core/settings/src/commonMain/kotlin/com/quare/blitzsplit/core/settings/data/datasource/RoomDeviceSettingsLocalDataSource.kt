@@ -23,6 +23,7 @@ class RoomDeviceSettingsLocalDataSource(
         isAppBannerDismissed = false,
         sharesUsageData = true,
         showsBetaReleaseNotes = null,
+        timeFormat = null,
     )
 
     override fun observe(): Flow<DeviceSettingsEntity?> = dao.observe()

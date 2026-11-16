@@ -17,6 +17,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.core.navigation.ForwardHistory
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
@@ -29,9 +30,6 @@ import com.quare.blitzsplit.core.profile.domain.model.ProfileLink
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.StartScreenViews
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveAppLanguage
-import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
-import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
-import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
 import com.quare.blitzsplit.core.settings.domain.usecase.RefreshAppLanguage
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveAppForeground
 import com.quare.blitzsplit.core.sync.domain.usecase.StartSync
@@ -67,9 +65,7 @@ class AppViewModel(
     private val observeProfile: ObserveProfile,
     val navigator: Navigator,
     private val observeBrowserSignInReturningToProfile: ObserveBrowserSignInReturningToProfile,
-    private val observeThemePreference: ObserveThemePreference,
-    private val observeDynamicColors: ObserveDynamicColors,
-    private val observeBitcoinInSats: ObserveBitcoinInSats,
+    private val displayPreferences: DisplayPreferenceUseCases,
     private val observeAppLanguage: ObserveAppLanguage,
     private val refreshAppLanguage: RefreshAppLanguage,
     private val linkInbox: LinkInbox,
@@ -104,6 +100,10 @@ class AppViewModel(
     val showsBitcoinInSats: StateFlow<Boolean>
         field = MutableStateFlow(false)
 
+    // Why: Profile's "Time format", which every time of day the platforms draw follows, in a list as in a picker.
+    val timeFormat: StateFlow<TimeFormatPreference>
+        field = MutableStateFlow(TimeFormatPreference.SYSTEM)
+
     /*
      * Why: Profile › Language, which the Apple app's root draws its strings in at once; Android and the web apply it
      * themselves, before any screen draws.
@@ -120,6 +120,7 @@ class AppViewModel(
     val discardWatcher: FlowWatcher<Boolean> = FlowWatcher(navigator.pendingDiscard)
     val themeWatcher: FlowWatcher<ThemePreference> = FlowWatcher(theme)
     val bitcoinInSatsWatcher: FlowWatcher<Boolean> = FlowWatcher(showsBitcoinInSats)
+    val timeFormatWatcher: FlowWatcher<TimeFormatPreference> = FlowWatcher(timeFormat)
     val languageWatcher: FlowWatcher<AppLanguage> = FlowWatcher(language)
 
     // Why: "Você não está neste grupo" over wherever the app is, while a comment's link can't open its bill.
@@ -179,17 +180,20 @@ class AppViewModel(
 
     /*
      * Why: the first frame waits for the chosen theme and colors, so neither flashes the system's or the brand's, and
-     * for bitcoin's unit, so no amount shows in bitcoin before turning into sats.
+     * for bitcoin's unit and the time format, so no amount shows in bitcoin before turning into sats, nor a time in
+     * the system's clock before the one picked.
      */
     private fun followTheme() {
         combine(
-            observeThemePreference(),
-            observeDynamicColors(),
-            observeBitcoinInSats(),
-        ) { preference, isDynamic, sats ->
+            displayPreferences.observeThemePreference(),
+            displayPreferences.observeDynamicColors(),
+            displayPreferences.observeBitcoinInSats(),
+            displayPreferences.observeTimeFormat(),
+        ) { preference, isDynamic, sats, timeFormat ->
             theme.value = preference
             usesDynamicColors.value = isDynamic
             showsBitcoinInSats.value = sats
+            this.timeFormat.value = timeFormat
             isThemeKnown.complete(Unit)
         }.launchIn(viewModelScope)
     }

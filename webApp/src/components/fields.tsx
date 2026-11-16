@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { t } from '@/i18n'
-import { formatWhen, fromDateTimeInputs, toDateInputValue, toTimeInputValue } from '@/lib/dates'
+import { formatWhen, fromDateTimeInputs, getTimeFormat, toDateInputValue, toTimeInputValue, uiDayPeriods } from '@/lib/dates'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
+import { uiTag } from '@/lib/currency'
 import { cn } from '@/lib/utils'
 
 /** A button that looks like a field: "Quem pagou", "Quando". */
@@ -222,11 +223,77 @@ function WhenInputs({
         <Input id={`${id}-date`} type="date" value={date} max={toDateInputValue(latestMillis)} required onChange={(event) => onDate(event.target.value)} />
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`${id}-time`}>{t('splitBill_time')}</Label>
-        <Input id={`${id}-time`} type="time" value={time} required onChange={(event) => onTime(event.target.value)} />
+        <Label id={`${id}-time-label`} htmlFor={`${id}-time`}>{t('splitBill_time')}</Label>
+        <ClockInput id={`${id}-time`} value={time} onChange={onTime} />
       </div>
     </>
   )
+}
+
+/**
+ * A time of day, "HH:mm" in and out. The browser's own time input draws it on the browser's clock for the language, so
+ * it stays while Profile's "Time format" follows the system; a format picked draws the hour (0 to 23, or 1 to 12 with
+ * AM and PM) and the minute as selects, so the field reads as every time the app writes.
+ */
+function ClockInput({ id, value, onChange }: { id: string; value: string; onChange: (value: string) => void }) {
+  const timeFormat = getTimeFormat()
+  if (timeFormat === 'system') {
+    return <Input id={id} type="time" value={value} required onChange={(event) => onChange(event.target.value)} />
+  }
+  const clock = /^(\d{2}):(\d{2})/.exec(value)
+  const hour = clock ? Number(clock[1]) : 0
+  const minute = clock ? Number(clock[2]) : 0
+  const isTwelveHour = timeFormat === '12h'
+  const isAfternoon = hour >= 12
+  const change = (nextHour: number, nextMinute: number) => onChange(`${pad(nextHour)}:${pad(nextMinute)}`)
+  const fields = new Intl.DisplayNames(uiTag, { type: 'dateTimeField' })
+  const [morning, afternoon] = uiDayPeriods()
+  return (
+    <div role="group" aria-labelledby={`${id}-label`} className="flex items-center gap-1.5">
+      <select
+        id={id}
+        aria-label={fields.of('hour')}
+        value={isTwelveHour ? hour % 12 || 12 : hour}
+        onChange={(event) => {
+          const picked = Number(event.target.value)
+          change(isTwelveHour ? (picked % 12) + (isAfternoon ? 12 : 0) : picked, minute)
+        }}
+        className={selectClass}
+      >
+        {(isTwelveHour ? [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] : [...Array(24).keys()]).map((option) => (
+          <option key={option} value={option}>
+            {isTwelveHour ? option : pad(option)}
+          </option>
+        ))}
+      </select>
+      <span aria-hidden>:</span>
+      <select aria-label={fields.of('minute')} value={minute} onChange={(event) => change(hour, Number(event.target.value))} className={selectClass}>
+        {[...Array(60).keys()].map((option) => (
+          <option key={option} value={option}>
+            {pad(option)}
+          </option>
+        ))}
+      </select>
+      {isTwelveHour && (
+        <select
+          aria-label={fields.of('dayPeriod')}
+          value={isAfternoon ? 'pm' : 'am'}
+          onChange={(event) => change((hour % 12) + (event.target.value === 'pm' ? 12 : 0), minute)}
+          className={selectClass}
+        >
+          <option value="am">{morning}</option>
+          <option value="pm">{afternoon}</option>
+        </select>
+      )}
+    </div>
+  )
+}
+
+const selectClass =
+  'h-9 rounded-md border border-field-border bg-card px-2 text-sm tabular-nums outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring dark:bg-input/30'
+
+function pad(value: number): string {
+  return String(value).padStart(2, '0')
 }
 
 /** The button of "Quando", in words, and the popover with its inputs and "Concluído". */

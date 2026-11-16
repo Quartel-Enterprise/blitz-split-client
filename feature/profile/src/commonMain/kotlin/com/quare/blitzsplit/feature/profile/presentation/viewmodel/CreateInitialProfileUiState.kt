@@ -3,6 +3,7 @@ package com.quare.blitzsplit.feature.profile.presentation.viewmodel
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiState
 import software.quare.loadable.Loadable
 
@@ -36,6 +37,7 @@ internal fun createInitialProfileUiState(
     sharesUsageData = true,
     language = AppLanguage.SYSTEM,
     languageQuery = "",
+    timeFormat = TimeFormatPreference.SYSTEM,
     activeNotificationCount = Loadable.Loading,
     showsCheckForUpdates = showsCheckForUpdates,
     showsRateApp = showsRateApp,

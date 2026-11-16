@@ -21,4 +21,7 @@ enum class ProfileDialog {
 
     // Why: Android's "Language", System and each language with a radio, as Bible Planner's language sheet.
     LANGUAGE,
+
+    // Why: Android's "Time format", System, 24-hour and 12-hour with a radio each.
+    TIME_FORMAT,
 }

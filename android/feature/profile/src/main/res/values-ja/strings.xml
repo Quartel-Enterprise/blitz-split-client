@@ -45,6 +45,10 @@
     <string name="profile_section_preferences">設定</string>
     <string name="profile_appearance">外観</string>
     <string name="profile_language">言語</string>
+    <string name="profile_time_format">時刻の表示形式</string>
+    <string name="profile_time_format_system">システム</string>
+    <string name="profile_time_format_24_hour">24時間表示</string>
+    <string name="profile_time_format_12_hour">12時間表示</string>
     <string name="profile_language_search">言語を検索</string>
     <string name="profile_language_search_clear">検索をクリア</string>
     <string name="profile_language_no_results">「%1$s」に一致する言語はありません</string>

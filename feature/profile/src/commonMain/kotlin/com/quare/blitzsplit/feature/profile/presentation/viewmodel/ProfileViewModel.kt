@@ -42,11 +42,13 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveTimeFormatPreference
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateTimeFormatPreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateUsageDataSharing
 import com.quare.blitzsplit.core.support.domain.usecase.FindRateAppLink
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
@@ -117,6 +119,8 @@ class ProfileViewModel(
     observeUsageDataSharing: ObserveUsageDataSharing,
     observeAppLanguage: ObserveAppLanguage,
     updateAppLanguage: UpdateAppLanguage,
+    observeTimeFormat: ObserveTimeFormatPreference,
+    updateTimeFormat: UpdateTimeFormatPreference,
     dynamicColorSupport: DynamicColorSupport,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
@@ -143,6 +147,8 @@ class ProfileViewModel(
     private val dialogs = ProfileDialogs(uiState, trackEvent)
 
     private val languagePicker = ProfileLanguagePicker(uiState, updateAppLanguage, trackEvent, ::emit)
+
+    private val timeFormatPicker = ProfileTimeFormatPicker(uiState, updateTimeFormat, trackEvent, viewModelScope)
 
     private val updateCheck = ProfileUpdateCheck(
         uiState = uiState,
@@ -203,6 +209,7 @@ class ProfileViewModel(
             .onEach { uiState.update { it.copy(isLoaded = true) } }
             .launchIn(viewModelScope)
         languagePicker.follow(observeAppLanguage, viewModelScope)
+        timeFormatPicker.follow(observeTimeFormat)
         val firstDownload = observeFirstDownload()
         payingMethodRows.follow(observePayingMethods(), firstDownload, viewModelScope)
         /*
@@ -312,6 +319,10 @@ class ProfileViewModel(
             is ProfileUiEvent.OnLanguageSelected -> languagePicker.select(event.language)
 
             is ProfileUiEvent.OnLanguageQueryChanged -> languagePicker.search(event.query)
+
+            ProfileUiEvent.OnTimeFormatClicked -> dialogs.openTimeFormat()
+
+            is ProfileUiEvent.OnTimeFormatSelected -> timeFormatPicker.select(event.timeFormat)
 
             ProfileUiEvent.OnDynamicColorsInfoClicked -> dialogs.openDynamicColorsInfo()
 

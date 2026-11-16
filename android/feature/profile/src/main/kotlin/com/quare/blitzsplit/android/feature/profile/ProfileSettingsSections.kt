@@ -14,6 +14,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Description
@@ -80,6 +81,22 @@ internal fun PreferencesSection(
             modifier = Modifier.clickable(enabled = state.isLoaded) { onEvent(ProfileUiEvent.OnLanguageClicked) },
             supporting = languageName(state.language),
             supportingLanguageTag = state.language.tag,
+            trailing = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+        )
+        HorizontalDivider()
+        // Why: opens Time format (System, 24-hour, 12-hour), which every time of day the app draws follows.
+        SectionRow(
+            icon = Icons.Outlined.AccessTime,
+            headline = stringResource(R.string.profile_time_format),
+            modifier = Modifier.clickable(enabled = state.isLoaded) { onEvent(ProfileUiEvent.OnTimeFormatClicked) },
+            supporting = stringResource(state.timeFormat.labelRes),
+            isSupportingLoading = !state.isLoaded,
             trailing = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,

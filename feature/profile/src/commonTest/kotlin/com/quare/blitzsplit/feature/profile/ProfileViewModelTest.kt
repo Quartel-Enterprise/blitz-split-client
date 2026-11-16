@@ -38,6 +38,7 @@ import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.model.StoreListing
 import com.quare.blitzsplit.core.model.SyncState
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.core.model.UpdatePromptSource
 import com.quare.blitzsplit.core.model.UserProfile
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
@@ -126,6 +127,9 @@ class ProfileViewModelTest {
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
     private lateinit var storedDynamicColors: MutableStateFlow<Boolean?>
     private val storedBitcoinInSats = MutableStateFlow(false)
+    private lateinit var storedTimeFormat: MutableStateFlow<TimeFormatPreference>
+    private var timeFormatWriteHangs = false
+    private val timeFormatWrites = mutableListOf<TimeFormatPreference>()
     private val storedUsageDataSharing = MutableStateFlow(true)
     private lateinit var storedLanguage: MutableStateFlow<AppLanguage>
     private val languageWrites = mutableListOf<AppLanguage>()
@@ -1775,6 +1779,306 @@ class ProfileViewModelTest {
         // Then
         assertTrue(trackedEvents.isEmpty())
     }
+
+    @Test
+    fun `GIVEN no time format picked WHEN the profile opens THEN follows the system`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(TimeFormatPreference.SYSTEM, state.timeFormat)
+    }
+
+    @Test
+    fun `GIVEN 12-hour stored WHEN the profile opens THEN shows 12-hour`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(timeFormat = TimeFormatPreference.TWELVE_HOUR)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(TimeFormatPreference.TWELVE_HOUR, state.timeFormat)
+    }
+
+    @Test
+    fun `GIVEN the system time format WHEN 24-hour is stored elsewhere THEN shows 24-hour at once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(timeFormat = TimeFormatPreference.SYSTEM)
+
+            // When
+            storedTimeFormat.value = TimeFormatPreference.TWENTY_FOUR_HOUR
+
+            // Then
+            assertEquals(TimeFormatPreference.TWENTY_FOUR_HOUR, viewModel.uiState.value.timeFormat)
+        }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping Time format THEN opens the time format dialog`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+
+        // Then
+        assertEquals(ProfileDialog.TIME_FORMAT, viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping Time format THEN sends the time format clicked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+
+        // Then
+        assertEquals(listOf("profile_time_format_clicked" to emptyMap<String, Any>()), trackedEvents)
+    }
+
+    @Test
+    fun `GIVEN the profile not loaded yet WHEN tapping Time format THEN opens nothing and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(theme = null)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN a sign out under way WHEN tapping Time format THEN keeps the sign out dialog and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                signOutHangs = true,
+            )
+            viewModel.onEvent(ProfileUiEvent.OnSignOutClicked)
+            viewModel.onEvent(ProfileUiEvent.OnSignOutConfirmed)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+
+            // Then
+            assertEquals(ProfileDialog.SIGN_OUT, viewModel.uiState.value.dialog)
+            assertTrue(viewModel.uiState.value.isSigningOut)
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the time format dialog open WHEN tapping Time format again THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+            assertEquals(ProfileDialog.TIME_FORMAT, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN the time format dialog open WHEN dismissing it THEN closes it and stores nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(timeFormat = TimeFormatPreference.SYSTEM)
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnDialogDismissed)
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertTrue(timeFormatWrites.isEmpty())
+            assertEquals(TimeFormatPreference.SYSTEM, viewModel.uiState.value.timeFormat)
+        }
+
+    @Test
+    fun `GIVEN the time format dialog open WHEN picking 24-hour THEN stores it once shows it and closes the dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(timeFormat = TimeFormatPreference.SYSTEM)
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWENTY_FOUR_HOUR))
+
+            // Then
+            assertEquals(listOf(TimeFormatPreference.TWENTY_FOUR_HOUR), timeFormatWrites)
+            assertEquals(TimeFormatPreference.TWENTY_FOUR_HOUR, storedTimeFormat.value)
+            assertEquals(TimeFormatPreference.TWENTY_FOUR_HOUR, viewModel.uiState.value.timeFormat)
+            assertNull(viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN the time format dialog open WHEN picking 12-hour THEN sends the time format selected`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(timeFormat = TimeFormatPreference.SYSTEM)
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWELVE_HOUR))
+
+            // Then
+            assertEquals(
+                listOf("time_format_selected" to mapOf<String, Any>("time_format" to TimeFormatPreference.TWELVE_HOUR)),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN a slow store WHEN picking 12-hour THEN shows 12-hour before it is stored`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            timeFormat = TimeFormatPreference.SYSTEM,
+            timeFormatWriteHangs = true,
+        )
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWELVE_HOUR))
+
+        // Then
+        assertEquals(TimeFormatPreference.TWELVE_HOUR, viewModel.uiState.value.timeFormat)
+        assertEquals(TimeFormatPreference.SYSTEM, storedTimeFormat.value)
+    }
+
+    @Test
+    fun `GIVEN the time format dialog open on 24-hour WHEN picking 24-hour again THEN only closes the dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(timeFormat = TimeFormatPreference.TWENTY_FOUR_HOUR)
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWENTY_FOUR_HOUR))
+
+            // Then
+            assertNull(viewModel.uiState.value.dialog)
+            assertTrue(timeFormatWrites.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertEquals(TimeFormatPreference.TWENTY_FOUR_HOUR, viewModel.uiState.value.timeFormat)
+        }
+
+    @Test
+    fun `GIVEN the system time format and no dialog WHEN picking the system again THEN stores and sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(timeFormat = TimeFormatPreference.SYSTEM)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.SYSTEM))
+
+            // Then
+            assertTrue(timeFormatWrites.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+            assertNull(viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN no dialog open as on Apple and the web WHEN picking 12-hour THEN stores it and opens no dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                timeFormat = TimeFormatPreference.SYSTEM,
+                clientPlatform = ClientPlatform.IOS,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWELVE_HOUR))
+
+            // Then
+            assertEquals(listOf(TimeFormatPreference.TWELVE_HOUR), timeFormatWrites)
+            assertEquals(TimeFormatPreference.TWELVE_HOUR, viewModel.uiState.value.timeFormat)
+            assertNull(viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN Appearance open WHEN a time format is picked THEN keeps Appearance open`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(timeFormat = TimeFormatPreference.SYSTEM)
+        viewModel.onEvent(ProfileUiEvent.OnAppearanceClicked)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWELVE_HOUR))
+
+        // Then
+        assertEquals(ProfileDialog.APPEARANCE, viewModel.uiState.value.dialog)
+    }
+
+    @Test
+    fun `GIVEN the language sheet open WHEN a time format is picked THEN keeps the language sheet open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(timeFormat = TimeFormatPreference.SYSTEM)
+            viewModel.onEvent(ProfileUiEvent.OnLanguageClicked)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWENTY_FOUR_HOUR))
+
+            // Then
+            assertEquals(ProfileDialog.LANGUAGE, viewModel.uiState.value.dialog)
+        }
+
+    @Test
+    fun `GIVEN an anonymous profile WHEN picking 24-hour THEN stores it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = anonymous)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWENTY_FOUR_HOUR))
+
+        // Then
+        assertEquals(listOf(TimeFormatPreference.TWENTY_FOUR_HOUR), timeFormatWrites)
+        assertEquals(TimeFormatPreference.TWENTY_FOUR_HOUR, viewModel.uiState.value.timeFormat)
+    }
+
+    @Test
+    fun `GIVEN a profile connected with Google and offline WHEN picking 12-hour THEN stores it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = connectedWithGoogle,
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(TimeFormatPreference.TWELVE_HOUR))
+
+            // Then
+            assertEquals(listOf(TimeFormatPreference.TWELVE_HOUR), timeFormatWrites)
+            assertEquals(TimeFormatPreference.TWELVE_HOUR, viewModel.uiState.value.timeFormat)
+        }
+
+    @Test
+    fun `GIVEN a profile connected with Google WHEN tapping Time format THEN opens the time format dialog`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = connectedWithGoogle)
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+
+            // Then
+            assertEquals(ProfileDialog.TIME_FORMAT, viewModel.uiState.value.dialog)
+        }
 
     @Test
     fun `GIVEN the language sheet open WHEN dismissing it THEN sends nothing`() = runTest(testDispatcher) {
@@ -7318,6 +7622,8 @@ class ProfileViewModelTest {
         themeWriteHangs: Boolean = false,
         invite: AppInvite? = null,
         language: AppLanguage = AppLanguage.SYSTEM,
+        timeFormat: TimeFormatPreference = TimeFormatPreference.SYSTEM,
+        timeFormatWriteHangs: Boolean = false,
         clientPlatform: ClientPlatform = ClientPlatform.ANDROID,
         shareCode: String? = null,
         pixRuleOn: Boolean = true,
@@ -7362,6 +7668,9 @@ class ProfileViewModelTest {
         storedDynamicColors = MutableStateFlow(dynamicColors)
         storedLanguage = MutableStateFlow(language)
         languageWrites.clear()
+        storedTimeFormat = MutableStateFlow(timeFormat)
+        timeFormatWrites.clear()
+        this@ProfileViewModelTest.timeFormatWriteHangs = timeFormatWriteHangs
         this@ProfileViewModelTest.supportsDynamicColors = supportsDynamicColors
         navigator = BackStackNavigator(startRoute = Route.Groups).also { it.navigate(Route.Profile) }
         viewModel = ProfileViewModel(
@@ -7446,6 +7755,12 @@ class ProfileViewModelTest {
                 storedLanguage.value = it
             },
             observeAppLanguage = { storedLanguage },
+            updateTimeFormat = {
+                timeFormatWrites += it
+                if (this@ProfileViewModelTest.timeFormatWriteHangs) awaitCancellation()
+                storedTimeFormat.value = it
+            },
+            observeTimeFormat = { storedTimeFormat },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }

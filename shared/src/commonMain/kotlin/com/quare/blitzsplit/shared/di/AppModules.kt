@@ -55,6 +55,7 @@ import com.quare.blitzsplit.feature.splitbill.di.splitBillModule
 import com.quare.blitzsplit.feature.welcome.di.welcomeModule
 import com.quare.blitzsplit.shared.app.AnalyticsChoices
 import com.quare.blitzsplit.shared.app.AppViewModel
+import com.quare.blitzsplit.shared.app.DisplayPreferenceUseCases
 import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.app.SiteTextUseCases
 import com.quare.blitzsplit.shared.app.StorePromptUseCases
@@ -76,6 +77,7 @@ private val appModule = module {
     single<MinuteTicks> { SystemMinuteTicks(get()) }
     single { LinkInbox() }
     factoryOf(::SiteTextUseCases)
+    factoryOf(::DisplayPreferenceUseCases)
     factoryOf(::StorePromptUseCases)
     viewModelOf(::AppViewModel)
     // Why: a single that owns its scope, following the choices for the app's whole life, as SyncCoordinator does.

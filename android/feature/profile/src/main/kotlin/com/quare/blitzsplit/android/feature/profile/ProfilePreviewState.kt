@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.PaymentKeyFormat
 import com.quare.blitzsplit.core.model.PaymentKeyType
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.feature.profile.presentation.model.PaymentKeyItem
 import com.quare.blitzsplit.feature.profile.presentation.model.PendingChange
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileSyncStatus
@@ -91,6 +92,7 @@ internal fun createPreviewProfileState(
     sharesUsageData = true,
     language = AppLanguage.SYSTEM,
     languageQuery = "",
+    timeFormat = TimeFormatPreference.SYSTEM,
     activeNotificationCount = 3.toLoaded(),
     showsCheckForUpdates = true,
     showsRateApp = true,

@@ -5,6 +5,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import software.quare.loadable.toLoaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -984,6 +985,7 @@ class ProfileUiStateTest {
         sharesUsageData = true,
         language = language,
         languageQuery = languageQuery,
+        timeFormat = TimeFormatPreference.SYSTEM,
         activeNotificationCount = 3.toLoaded(),
         showsCheckForUpdates = true,
         showsRateApp = false,

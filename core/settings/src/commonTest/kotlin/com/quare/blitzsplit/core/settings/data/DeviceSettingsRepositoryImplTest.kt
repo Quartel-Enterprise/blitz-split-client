@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.StatsChartPreferences
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.core.provider.room.entity.DeviceSettingsEntity
 import com.quare.blitzsplit.core.provider.room.entity.SINGLE_ROW_ID
 import com.quare.blitzsplit.core.settings.data.datasource.DeviceSettingsLocalDataSource
@@ -31,6 +32,7 @@ class DeviceSettingsRepositoryImplTest {
     private lateinit var observedDynamicColors: MutableList<Boolean>
     private lateinit var observedBitcoinInSats: MutableList<Boolean>
     private lateinit var observedUsageDataSharing: MutableList<Boolean>
+    private lateinit var observedTimeFormats: MutableList<TimeFormatPreference>
 
     @Test
     fun `GIVEN a fresh install with no theme stored WHEN observing the theme THEN follows the system`() = runTest {
@@ -928,6 +930,354 @@ class DeviceSettingsRepositoryImplTest {
             assertEquals(true, repository.observeBetaReleaseNotesChoice().first())
         }
 
+    @Test
+    fun `GIVEN a fresh install with no row WHEN observing the time format THEN follows the system`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        val timeFormats = observedTimeFormats.toList()
+
+        // Then
+        assertEquals(listOf(TimeFormatPreference.SYSTEM), timeFormats)
+    }
+
+    @Test
+    fun `GIVEN a device row with no time format picked WHEN observing the time format THEN follows the system`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "dark",
+                    timeFormat = null,
+                ),
+            )
+
+            // When
+            val timeFormats = observedTimeFormats.toList()
+
+            // Then
+            assertEquals(listOf(TimeFormatPreference.SYSTEM), timeFormats)
+        }
+
+    @Test
+    fun `GIVEN system picked on this device WHEN observing the time format THEN follows the system`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                timeFormat = "system",
+            ),
+        )
+
+        // When
+        val timeFormats = observedTimeFormats.toList()
+
+        // Then
+        assertEquals(listOf(TimeFormatPreference.SYSTEM), timeFormats)
+    }
+
+    @Test
+    fun `GIVEN 24h picked on this device WHEN observing the time format THEN is 24 hours`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                timeFormat = "24h",
+            ),
+        )
+
+        // When
+        val timeFormats = observedTimeFormats.toList()
+
+        // Then
+        assertEquals(listOf(TimeFormatPreference.TWENTY_FOUR_HOUR), timeFormats)
+    }
+
+    @Test
+    fun `GIVEN 12h picked on this device WHEN observing the time format THEN is 12 hours`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                timeFormat = "12h",
+            ),
+        )
+
+        // When
+        val timeFormats = observedTimeFormats.toList()
+
+        // Then
+        assertEquals(listOf(TimeFormatPreference.TWELVE_HOUR), timeFormats)
+    }
+
+    @Test
+    fun `GIVEN a time format code this version does not know WHEN observing the time format THEN follows the system`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "system",
+                    timeFormat = "36h",
+                ),
+            )
+
+            // When
+            val timeFormats = observedTimeFormats.toList()
+
+            // Then
+            assertEquals(listOf(TimeFormatPreference.SYSTEM), timeFormats)
+        }
+
+    @Test
+    fun `GIVEN a fresh install WHEN picking 24h THEN creates the device row with the defaults and observers see it`() =
+        runTest {
+            // Given
+            prepareScenario(stored = null)
+
+            // When
+            repository.updateTimeFormat(TimeFormatPreference.TWENTY_FOUR_HOUR)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "system",
+                        timeFormat = "24h",
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(
+                listOf(TimeFormatPreference.SYSTEM, TimeFormatPreference.TWENTY_FOUR_HOUR),
+                observedTimeFormats,
+            )
+        }
+
+    @Test
+    fun `GIVEN 24h picked WHEN picking 12h THEN replaces 24h in the single device row`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                timeFormat = "24h",
+            ),
+        )
+
+        // When
+        repository.updateTimeFormat(TimeFormatPreference.TWELVE_HOUR)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "system",
+                    timeFormat = "12h",
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(
+            listOf(TimeFormatPreference.TWENTY_FOUR_HOUR, TimeFormatPreference.TWELVE_HOUR),
+            observedTimeFormats,
+        )
+    }
+
+    @Test
+    fun `GIVEN 12h picked WHEN picking system THEN stores the system code and observers follow the system`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                timeFormat = "12h",
+            ),
+        )
+
+        // When
+        repository.updateTimeFormat(TimeFormatPreference.SYSTEM)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "system",
+                    timeFormat = "system",
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(TimeFormatPreference.TWELVE_HOUR, TimeFormatPreference.SYSTEM), observedTimeFormats)
+    }
+
+    @Test
+    fun `GIVEN every other device setting picked WHEN picking 12h THEN stores it keeping them all`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                groupsDisplay = "grid",
+                groupGridSize = "large",
+                statsChartType = "line",
+                statsGrain = "week",
+                usesDynamicColors = true,
+                showsBitcoinInSats = true,
+                lastUpdatePromptAt = 42L,
+                lastNotificationPromptAt = 7L,
+                isAppBannerDismissed = true,
+                sharesUsageData = false,
+                showsBetaReleaseNotes = true,
+            ),
+        )
+
+        // When
+        repository.updateTimeFormat(TimeFormatPreference.TWELVE_HOUR)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    groupsDisplay = "grid",
+                    groupGridSize = "large",
+                    statsChartType = "line",
+                    statsGrain = "week",
+                    usesDynamicColors = true,
+                    showsBitcoinInSats = true,
+                    lastUpdatePromptAt = 42L,
+                    lastNotificationPromptAt = 7L,
+                    isAppBannerDismissed = true,
+                    sharesUsageData = false,
+                    showsBetaReleaseNotes = true,
+                    timeFormat = "12h",
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(listOf(ThemePreference.DARK), observed)
+        assertEquals(listOf(true), observedDynamicColors)
+        assertEquals(listOf(true), observedBitcoinInSats)
+        assertEquals(listOf(false), observedUsageDataSharing)
+    }
+
+    @Test
+    fun `GIVEN 12h picked WHEN picking dark THEN keeps 12h and time format observers are not notified again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "system",
+                    timeFormat = "12h",
+                ),
+            )
+
+            // When
+            repository.updateTheme(ThemePreference.DARK)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "dark",
+                        timeFormat = "12h",
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(listOf(TimeFormatPreference.TWELVE_HOUR), observedTimeFormats)
+        }
+
+    @Test
+    fun `GIVEN 24h picked WHEN other settings change THEN time format observers are not notified again`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "system",
+                timeFormat = "24h",
+            ),
+        )
+
+        // When
+        repository.updateBitcoinInSats(true)
+        repository.updateDynamicColors(true)
+        repository.updateUsageDataSharing(false)
+
+        // Then
+        assertEquals(listOf(TimeFormatPreference.TWENTY_FOUR_HOUR), observedTimeFormats)
+        assertEquals(
+            "24h",
+            local.rows.values
+                .single()
+                .timeFormat,
+        )
+    }
+
+    @Test
+    fun `GIVEN 24h stored WHEN the device row is emitted again unchanged THEN observers are not notified again`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "system",
+                    timeFormat = "24h",
+                ),
+            )
+
+            // When
+            local.emitAgain()
+
+            // Then
+            assertEquals(listOf(TimeFormatPreference.TWENTY_FOUR_HOUR), observedTimeFormats)
+        }
+
+    @Test
+    fun `GIVEN a fresh install WHEN picking system THEN stores it and time format observers are not notified again`() =
+        runTest {
+            // Given
+            prepareScenario(stored = null)
+
+            // When
+            repository.updateTimeFormat(TimeFormatPreference.SYSTEM)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "system",
+                        timeFormat = "system",
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(listOf(TimeFormatPreference.SYSTEM), observedTimeFormats)
+        }
+
+    @Test
+    fun `GIVEN a time format code this version does not know WHEN picking system THEN observers are not notified`() =
+        runTest {
+            // Given
+            prepareScenario(
+                stored = settings(
+                    theme = "system",
+                    timeFormat = "36h",
+                ),
+            )
+
+            // When
+            repository.updateTimeFormat(TimeFormatPreference.SYSTEM)
+
+            // Then
+            assertEquals(
+                listOf(
+                    settings(
+                        theme = "system",
+                        timeFormat = "system",
+                    ),
+                ),
+                local.rows.values.toList(),
+            )
+            assertEquals(listOf(TimeFormatPreference.SYSTEM), observedTimeFormats)
+        }
+
     private fun settings(
         theme: String,
         groupsDisplay: String? = null,
@@ -941,6 +1291,7 @@ class DeviceSettingsRepositoryImplTest {
         isAppBannerDismissed: Boolean = false,
         sharesUsageData: Boolean = true,
         showsBetaReleaseNotes: Boolean? = null,
+        timeFormat: String? = null,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -955,6 +1306,7 @@ class DeviceSettingsRepositoryImplTest {
         isAppBannerDismissed = isAppBannerDismissed,
         sharesUsageData = sharesUsageData,
         showsBetaReleaseNotes = showsBetaReleaseNotes,
+        timeFormat = timeFormat,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -966,6 +1318,7 @@ class DeviceSettingsRepositoryImplTest {
         observedDynamicColors = mutableListOf()
         observedBitcoinInSats = mutableListOf()
         observedUsageDataSharing = mutableListOf()
+        observedTimeFormats = mutableListOf()
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeTheme().collect(observed::add)
         }
@@ -983,6 +1336,9 @@ class DeviceSettingsRepositoryImplTest {
         }
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
             repository.observeUsageDataSharing().collect(observedUsageDataSharing::add)
+        }
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            repository.observeTimeFormat().collect(observedTimeFormats::add)
         }
     }
 }
@@ -1019,6 +1375,7 @@ private class FakeDeviceSettingsLocalDataSource(
             isAppBannerDismissed = false,
             sharesUsageData = true,
             showsBetaReleaseNotes = null,
+            timeFormat = null,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

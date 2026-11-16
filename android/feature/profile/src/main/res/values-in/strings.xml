@@ -45,6 +45,10 @@
     <string name="profile_section_preferences">Preferensi</string>
     <string name="profile_appearance">Tampilan</string>
     <string name="profile_language">Bahasa</string>
+    <string name="profile_time_format">Format waktu</string>
+    <string name="profile_time_format_system">Sistem</string>
+    <string name="profile_time_format_24_hour">24 jam</string>
+    <string name="profile_time_format_12_hour">12 jam</string>
     <string name="profile_language_search">Cari bahasa</string>
     <string name="profile_language_search_clear">Hapus pencarian</string>
     <string name="profile_language_no_results">Tidak ada bahasa yang cocok dengan “%1$s”</string>

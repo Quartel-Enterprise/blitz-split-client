@@ -47,6 +47,10 @@
     <string name="profile_section_preferences">Preferenze</string>
     <string name="profile_appearance">Aspetto</string>
     <string name="profile_language">Lingua</string>
+    <string name="profile_time_format">Formato ora</string>
+    <string name="profile_time_format_system">Sistema</string>
+    <string name="profile_time_format_24_hour">24 ore</string>
+    <string name="profile_time_format_12_hour">12 ore</string>
     <string name="profile_language_search">Cerca una lingua</string>
     <string name="profile_language_search_clear">Cancella ricerca</string>
     <string name="profile_language_no_results">Nessuna lingua corrisponde a “%1$s”</string>

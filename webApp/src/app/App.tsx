@@ -52,6 +52,7 @@ import { WelcomeScreen } from '@/features/welcome/WelcomeScreen'
 import { t } from '@/i18n'
 import { isBrowserBackBlocked } from '@/lib/browserBack'
 import { setSkipsNextGroupTransition, withGroupTransition } from '@/lib/groupTransition'
+import { setTimeFormat } from '@/lib/dates'
 import { setShowsBitcoinInSats } from '@/lib/money'
 import { applyTheme } from '@/lib/theme'
 
@@ -71,6 +72,9 @@ export function App() {
   const showsBitcoinInSats = useWatch(app, (presenter, onChange: (isOn: boolean) => void) => presenter.observeBitcoinInSats(onChange))
   // Why: set before the screens under it draw, so this render's amounts already follow it; a change redraws them all.
   setShowsBitcoinInSats(showsBitcoinInSats ?? false)
+  const timeFormat = useWatch(app, (presenter, onChange: (code: string) => void) => presenter.observeTimeFormat(onChange))
+  // Why: as bitcoin's unit, set before the screens under it draw; a change redraws every time of day.
+  setTimeFormat(timeFormat ?? 'system')
   // The theme is the database's once the app is ready; until then the last visit's stays painted.
   useEffect(() => {
     if (isReady && theme) applyTheme(theme)

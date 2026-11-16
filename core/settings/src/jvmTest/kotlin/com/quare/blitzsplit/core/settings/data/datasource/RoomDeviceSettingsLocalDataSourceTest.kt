@@ -46,6 +46,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
+                timeFormat = null,
             ),
             dataSource.observe().first(),
         )
@@ -81,6 +82,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
+                timeFormat = null,
             ),
             dataSource.observe().first(),
         )
@@ -110,6 +112,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
+                timeFormat = null,
             ),
             dataSource.observe().first(),
         )
@@ -146,6 +149,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
+                timeFormat = null,
             ),
             dataSource.observe().first(),
         )
@@ -176,6 +180,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
+                timeFormat = null,
             ),
             dataSource.observe().first(),
         )
@@ -212,6 +217,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
+                timeFormat = null,
             ),
             dataSource.observe().first(),
         )
@@ -242,6 +248,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                     isAppBannerDismissed = false,
                     sharesUsageData = false,
                     showsBetaReleaseNotes = null,
+                    timeFormat = null,
                 ),
                 dataSource.observe().first(),
             )
@@ -271,6 +278,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 isAppBannerDismissed = false,
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
+                timeFormat = null,
             ),
             dataSource.observe().first(),
         )
@@ -309,6 +317,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 isAppBannerDismissed = false,
                 sharesUsageData = false,
                 showsBetaReleaseNotes = null,
+                timeFormat = null,
             ),
             dataSource.observe().first(),
         )
@@ -339,6 +348,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 isAppBannerDismissed = false,
                 sharesUsageData = false,
                 showsBetaReleaseNotes = null,
+                timeFormat = null,
             ),
             dataSource.observe().first(),
         )
@@ -354,6 +364,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                     theme = "dark",
                     sharesUsageData = false,
                     showsBetaReleaseNotes = null,
+                    timeFormat = null,
                 )
             }
 
@@ -376,6 +387,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                     isAppBannerDismissed = false,
                     sharesUsageData = true,
                     showsBetaReleaseNotes = null,
+                    timeFormat = null,
                 ),
                 dataSource.observe().first(),
             )
@@ -393,6 +405,119 @@ class RoomDeviceSettingsLocalDataSourceTest {
 
             // Then
             assertEquals(true, dataSource.observe().first()?.sharesUsageData)
+        }
+
+    @Test
+    fun `GIVEN a fresh install WHEN 24h is picked THEN stores it with every other setting at its default`() = runTest {
+        // Given
+        prepareScenario()
+
+        // When
+        dataSource.update { it.copy(timeFormat = "24h") }
+
+        // Then
+        assertEquals(
+            DeviceSettingsEntity(
+                id = SINGLE_ROW_ID,
+                theme = "system",
+                groupsDisplay = null,
+                groupGridSize = null,
+                statsChartType = null,
+                statsGrain = null,
+                usesDynamicColors = false,
+                showsBitcoinInSats = false,
+                lastUpdatePromptAt = null,
+                lastNotificationPromptAt = null,
+                isAppBannerDismissed = false,
+                sharesUsageData = true,
+                showsBetaReleaseNotes = null,
+                timeFormat = "24h",
+            ),
+            dataSource.observe().first(),
+        )
+    }
+
+    @Test
+    fun `GIVEN dark Material You sats and sharing off WHEN 12h is picked THEN they all stay`() = runTest {
+        // Given
+        prepareScenario()
+        dataSource.update {
+            it.copy(
+                theme = "dark",
+                usesDynamicColors = true,
+                showsBitcoinInSats = true,
+                sharesUsageData = false,
+            )
+        }
+
+        // When
+        dataSource.update { it.copy(timeFormat = "12h") }
+
+        // Then
+        assertEquals(
+            DeviceSettingsEntity(
+                id = SINGLE_ROW_ID,
+                theme = "dark",
+                groupsDisplay = null,
+                groupGridSize = null,
+                statsChartType = null,
+                statsGrain = null,
+                usesDynamicColors = true,
+                showsBitcoinInSats = true,
+                lastUpdatePromptAt = null,
+                lastNotificationPromptAt = null,
+                isAppBannerDismissed = false,
+                sharesUsageData = false,
+                showsBetaReleaseNotes = null,
+                timeFormat = "12h",
+            ),
+            dataSource.observe().first(),
+        )
+    }
+
+    @Test
+    fun `GIVEN 12h picked WHEN dark is picked THEN 12h stays`() = runTest {
+        // Given
+        prepareScenario()
+        dataSource.update { it.copy(timeFormat = "12h") }
+
+        // When
+        dataSource.update { it.copy(theme = "dark") }
+
+        // Then
+        assertEquals(
+            DeviceSettingsEntity(
+                id = SINGLE_ROW_ID,
+                theme = "dark",
+                groupsDisplay = null,
+                groupGridSize = null,
+                statsChartType = null,
+                statsGrain = null,
+                usesDynamicColors = false,
+                showsBitcoinInSats = false,
+                lastUpdatePromptAt = null,
+                lastNotificationPromptAt = null,
+                isAppBannerDismissed = false,
+                sharesUsageData = true,
+                showsBetaReleaseNotes = null,
+                timeFormat = "12h",
+            ),
+            dataSource.observe().first(),
+        )
+    }
+
+    @Test
+    fun `GIVEN a device row written without the time format column WHEN reading it THEN no time format is picked`() =
+        runTest {
+            // Given
+            prepareScenario()
+            val insertWithoutTimeFormat = "INSERT INTO device_settings (id, theme) VALUES ('$SINGLE_ROW_ID', 'dark')"
+
+            // When
+            database.useConnection(isReadOnly = false) { connection -> connection.executeSQL(insertWithoutTimeFormat) }
+
+            // Then
+            assertEquals(null, dataSource.observe().first()?.timeFormat)
         }
 
     private fun prepareScenario() {

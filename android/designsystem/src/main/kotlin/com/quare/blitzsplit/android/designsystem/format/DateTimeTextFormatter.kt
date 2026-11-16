@@ -4,7 +4,6 @@ import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import java.time.Instant
 import java.time.ZoneId
@@ -14,7 +13,8 @@ import java.util.Locale
 
 /*
  * Why: the shared code hands days and times as epoch millis; the platform writes them in the UI's language, in the
- * device's time zone and with its 12 or 24 hour clock ("Sex., 24 de out.", "28 de out.", "21:30" or "9:30 PM").
+ * device's time zone and with the 12 or 24 hour clock of Profile's "Time format", the system's by default ("Sex., 24
+ * de out.", "28 de out.", "21:30" or "9:30 PM").
  */
 @Stable
 class DateTimeTextFormatter(
@@ -52,8 +52,7 @@ fun rememberDateTimeTextFormatter(): DateTimeTextFormatter {
     val locale = LocalLocale.current.platformLocale
     val cache = LocalFormatterCache.current
     if (cache != null && cache.isFor(locale)) return cache.dates
-    val context = LocalContext.current
-    val is24Hour = DateFormat.is24HourFormat(context)
+    val is24Hour = rememberIs24HourClock()
     return remember(locale, is24Hour) {
         DateTimeTextFormatter(
             locale = locale,

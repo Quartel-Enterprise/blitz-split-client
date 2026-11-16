@@ -4,13 +4,47 @@ import { uiTag } from '@/lib/currency'
 // Why: "today", "yesterday" or "other", as the presenters send a day.
 export type RelativeDay = 'today' | 'yesterday' | 'other'
 
-const timeFormat = new Intl.DateTimeFormat(uiTag, { hour: 'numeric', minute: '2-digit' })
+// Why: Profile's "Time format", as the presenter sends it: the browser's own clock for the language, or always 24 or 12 hours.
+export type TimeFormat = 'system' | '24h' | '12h'
+
+const timeFormats: Record<TimeFormat, Intl.DateTimeFormat> = {
+  system: new Intl.DateTimeFormat(uiTag, { hour: 'numeric', minute: '2-digit' }),
+  '24h': new Intl.DateTimeFormat(uiTag, { hour: 'numeric', minute: '2-digit', hourCycle: 'h23' }),
+  '12h': new Intl.DateTimeFormat(uiTag, { hour: 'numeric', minute: '2-digit', hourCycle: 'h12' }),
+}
+let timeFormat = timeFormats.system
+let currentTimeFormat: TimeFormat = 'system'
+
+/** Set by the app's root, before the screens draw, so every time of day follows Profile's "Time format". */
+export function setTimeFormat(code: string) {
+  currentTimeFormat = code === '24h' || code === '12h' ? code : 'system'
+  timeFormat = timeFormats[currentTimeFormat]
+}
+
+/** The time format every time of day follows now: the time inputs draw their own clock on it. */
+export function getTimeFormat(): TimeFormat {
+  return currentTimeFormat
+}
+
+/** The language's words for the morning and the afternoon on a 12-hour clock: "AM" and "PM", "午前" and "午後". */
+export function uiDayPeriods(): [string, string] {
+  const periodOf = (hour: number) =>
+    timeFormats['12h'].formatToParts(new Date(2000, 0, 1, hour)).find((part) => part.type === 'dayPeriod')?.value
+  return [periodOf(9) ?? 'AM', periodOf(21) ?? 'PM']
+}
+
+/** 14:30 today in `format`, Profile's example of each option ("14:30", "2:30 PM"). */
+export function formatSampleTime(format: TimeFormat): string {
+  const sample = new Date()
+  sample.setHours(14, 30, 0, 0)
+  return timeFormats[format].format(sample)
+}
 const dayMonthFormat = new Intl.DateTimeFormat(uiTag, { day: 'numeric', month: 'short' })
 const dayMonthYearFormat = new Intl.DateTimeFormat(uiTag, { day: 'numeric', month: 'short', year: 'numeric' })
 const weekdayFormat = new Intl.DateTimeFormat(uiTag, { weekday: 'short', day: 'numeric', month: 'short' })
 const weekdayYearFormat = new Intl.DateTimeFormat(uiTag, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
 
-/** "21:30" in Portuguese, "9:30 PM" in English. */
+/** "21:30" in Portuguese, "9:30 PM" in English, or always 24 or 12 hours as Profile's "Time format" says. */
 export function formatTime(millis: number): string {
   return timeFormat.format(millis)
 }
