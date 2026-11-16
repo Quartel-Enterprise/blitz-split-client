@@ -357,6 +357,7 @@
     <string name="split_bill_receipt_failed">Impossible de lire le reçu. Réessaie avec plus de lumière et le reçu entier sur la photo, ou remplis à la main.</string>
     <string name="split_bill_receipt_retake">Prendre une autre photo</string>
     <string name="split_bill_receipt_reader_unavailable">Le lecteur de reçus n’a pas répondu. Ce n’est pas ta photo : réessaie dans un instant, ou remplis à la main.</string>
+    <string name="split_bill_receipt_statement">On dirait un relevé de carte ou de banque, qui n’est pas lu comme une seule dépense. Remplis à la main.</string>
     <string name="split_bill_receipt_limit_reached">Tu as déjà lu 30 reçus ces dernières 24 heures. Remplis à la main, ou réessaie demain.</string>
     <string name="split_bill_receipt_offline">Pas de connexion. La photo n’a pas atteint le lecteur : réessaie une fois reconnecté, ou remplis à la main.</string>
     <string name="split_bill_receipt_retry">Réessayer</string>

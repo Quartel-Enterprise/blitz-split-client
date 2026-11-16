@@ -722,6 +722,8 @@ export const ptPT: Partial<Record<MessageKey, string>> = {
   splitBill_receiptChoosePhoto: 'Escolher fotografia',
   splitBill_receiptUnavailableTitle: 'O leitor de talões não respondeu',
   splitBill_receiptUnavailableBody: 'Não é problema da tua foto. Tenta de novo daqui a pouco ou preenche à mão.',
+  splitBill_receiptStatementTitle: 'Isto parece uma fatura',
+  splitBill_receiptStatementBody: 'Faturas e extratos não são lidos como uma conta só. Preenche à mão.',
   splitBill_receiptLimitBody: 'Já leste 30 talões nas últimas 24 horas. Preenche à mão ou lê de novo amanhã.',
   splitBill_receiptOfflineTitle: 'Sem ligação',
   splitBill_receiptOfflineBody: 'A foto não chegou ao leitor. Tenta de novo quando voltares a ter ligação, ou preenche à mão.',

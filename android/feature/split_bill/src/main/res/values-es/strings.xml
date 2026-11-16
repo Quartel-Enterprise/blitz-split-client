@@ -357,6 +357,7 @@
     <string name="split_bill_receipt_failed">No se pudo leer el recibo. Inténtalo de nuevo con más luz y todo el recibo en la foto, o complétalo a mano.</string>
     <string name="split_bill_receipt_retake">Tomar otra foto</string>
     <string name="split_bill_receipt_reader_unavailable">El lector de recibos no respondió. No es culpa de tu foto: inténtalo de nuevo en un momento, o complétalo a mano.</string>
+    <string name="split_bill_receipt_statement">Parece un extracto de tarjeta o del banco, que no se lee como un solo gasto. Rellénalo a mano.</string>
     <string name="split_bill_receipt_limit_reached">Leíste 30 recibos en las últimas 24 horas. Complétalo a mano, o vuelve a leerlo mañana.</string>
     <string name="split_bill_receipt_offline">Sin conexión. La foto no llegó al lector: inténtalo de nuevo cuando vuelvas a tener conexión, o complétalo a mano.</string>
     <string name="split_bill_receipt_retry">Intentar de nuevo</string>

@@ -332,6 +332,7 @@
     <string name="split_bill_receipt_failed">Fiş okunamadı. Daha fazla ışıkla ve fişin tamamı fotoğrafta olacak şekilde tekrar dene ya da elle doldur.</string>
     <string name="split_bill_receipt_retake">Başka fotoğraf çek</string>
     <string name="split_bill_receipt_reader_unavailable">Fiş okuyucu yanıt vermedi. Sorun fotoğrafında değil: biraz sonra tekrar dene ya da elle doldur.</string>
+    <string name="split_bill_receipt_statement">Bu bir kart veya banka ekstresine benziyor, tek bir hesap olarak okunmaz. Elle doldur.</string>
     <string name="split_bill_receipt_limit_reached">Son 24 saatte 30 fiş okuttun. Elle doldur ya da yarın tekrar okut.</string>
     <string name="split_bill_receipt_offline">Bağlantı yok. Fotoğraf okuyucuya ulaşmadı: tekrar çevrimiçi olunca yeniden dene ya da elle doldur.</string>
     <string name="split_bill_receipt_retry">Tekrar dene</string>

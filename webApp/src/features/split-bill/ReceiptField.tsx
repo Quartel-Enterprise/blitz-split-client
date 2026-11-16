@@ -92,6 +92,7 @@ const UNREADABLE_COPY = { title: 'splitBill_receiptFailedTitle', body: 'splitBil
 
 const ERROR_COPY: Record<string, { title: MessageKey; body: MessageKey } | undefined> = {
   unreadable: UNREADABLE_COPY,
+  statement: { title: 'splitBill_receiptStatementTitle', body: 'splitBill_receiptStatementBody' },
   reader_unavailable: { title: 'splitBill_receiptUnavailableTitle', body: 'splitBill_receiptUnavailableBody' },
   limit_reached: { title: 'splitBill_receiptLimitTitle', body: 'splitBill_receiptLimitBody' },
   offline: { title: 'splitBill_receiptOfflineTitle', body: 'splitBill_receiptOfflineBody' },

@@ -8,6 +8,9 @@ enum class ReceiptError(
     // Why: "Não deu para ler o cupom…" with "Tirar outra foto": no receipt nor total, or a photo that couldn't be opened.
     UNREADABLE(canRetry = false),
 
+    // Why: "Isso parece uma fatura de cartão…" with no button: another photo of it won't do, so it is filled in by hand.
+    STATEMENT(canRetry = false),
+
     // Why: "O leitor de cupom não respondeu. Não é a sua foto…" with "Tentar de novo".
     READER_UNAVAILABLE(canRetry = true),
 

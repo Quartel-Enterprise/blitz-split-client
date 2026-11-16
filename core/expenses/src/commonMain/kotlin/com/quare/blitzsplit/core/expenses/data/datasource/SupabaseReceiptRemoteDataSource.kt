@@ -12,11 +12,19 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 private const val HTTP_PAYLOAD_TOO_LARGE = 413
 private const val HTTP_UNPROCESSABLE = 422
 private const val HTTP_TOO_MANY_REQUESTS = 429
+private const val STATEMENT_ERROR = "statement"
+
+@Serializable
+private class ReadReceiptErrorDto(
+    @SerialName("error") val error: String?,
+)
 
 class SupabaseReceiptRemoteDataSource(
     private val functions: Functions,
@@ -38,7 +46,7 @@ class SupabaseReceiptRemoteDataSource(
                 }
             }
         } catch (exception: RestException) {
-            val failure = receiptReadFailureOf(exception.statusCode)
+            val failure = receiptReadFailureOf(exception.statusCode, exception.errorCodeOrNull())
             if (failure == ReceiptReadFailure.UNREADABLE) return null
             throw ReceiptReaderException(failure, exception)
         } catch (exception: HttpRequestException) {
@@ -46,6 +54,11 @@ class SupabaseReceiptRemoteDataSource(
         }
         return json.decodeFromString<ReadReceiptResponseDto>(response.bodyAsText())
     }
+
+    // Why: the server's own code for a 422 (`{"error":"statement"}`); a body that can't be read is just no code.
+    private suspend fun RestException.errorCodeOrNull(): String? = runCatching {
+        json.decodeFromString<ReadReceiptErrorDto>(response.bodyAsText()).error
+    }.getOrNull()
 
     private companion object {
         const val READ_RECEIPT_FUNCTION = "read-receipt"
@@ -61,10 +74,15 @@ class SupabaseReceiptRemoteDataSource(
 
 /*
  * Why: what read-receipt answered besides a reading. A photo with no receipt or no total (422) or too large (413) is
- * the photo's own fault, which another photo can fix; anything else isn't: the reader is down, not set up or failed.
+ * the photo's own fault, which another photo can fix; a 422 coded `statement` is a card or bank statement, which no
+ * other photo of it fixes; anything else isn't the photo's fault: the reader is down, not set up or failed.
  */
-internal fun receiptReadFailureOf(statusCode: Int): ReceiptReadFailure = when (statusCode) {
-    HTTP_UNPROCESSABLE, HTTP_PAYLOAD_TOO_LARGE -> ReceiptReadFailure.UNREADABLE
-    HTTP_TOO_MANY_REQUESTS -> ReceiptReadFailure.LIMIT_REACHED
+internal fun receiptReadFailureOf(
+    statusCode: Int,
+    errorCode: String? = null,
+): ReceiptReadFailure = when {
+    statusCode == HTTP_UNPROCESSABLE && errorCode == STATEMENT_ERROR -> ReceiptReadFailure.STATEMENT
+    statusCode == HTTP_UNPROCESSABLE || statusCode == HTTP_PAYLOAD_TOO_LARGE -> ReceiptReadFailure.UNREADABLE
+    statusCode == HTTP_TOO_MANY_REQUESTS -> ReceiptReadFailure.LIMIT_REACHED
     else -> ReceiptReadFailure.READER_UNAVAILABLE
 }

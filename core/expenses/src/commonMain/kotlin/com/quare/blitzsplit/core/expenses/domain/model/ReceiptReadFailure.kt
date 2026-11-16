@@ -5,6 +5,9 @@ enum class ReceiptReadFailure {
     // Why: no receipt nor total in the photo, or a photo that couldn't be opened: another photo may do.
     UNREADABLE,
 
+    // Why: the photo is a credit card or bank statement ("fatura", "extrato"), which isn't read as one bill: another photo of it won't do.
+    STATEMENT,
+
     // Why: the server's reader didn't answer, isn't set up or failed: not the photo's fault, so the same one may do later.
     READER_UNAVAILABLE,
 

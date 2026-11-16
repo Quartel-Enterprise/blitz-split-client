@@ -357,6 +357,7 @@
     <string name="split_bill_receipt_failed">Impossibile leggere lo scontrino. Riprova con più luce e lo scontrino intero nella foto, o compila a mano.</string>
     <string name="split_bill_receipt_retake">Scatta un’altra foto</string>
     <string name="split_bill_receipt_reader_unavailable">Il lettore di scontrini non ha risposto. Non è colpa della tua foto: riprova tra un momento, o compila a mano.</string>
+    <string name="split_bill_receipt_statement">Sembra un estratto conto della carta o della banca, che non viene letto come un’unica spesa. Compila a mano.</string>
     <string name="split_bill_receipt_limit_reached">Hai letto 30 scontrini nelle ultime 24 ore. Compila a mano, o riprova domani.</string>
     <string name="split_bill_receipt_offline">Nessuna connessione. La foto non è arrivata al lettore: riprova quando torni online, o compila a mano.</string>
     <string name="split_bill_receipt_retry">Riprova</string>
