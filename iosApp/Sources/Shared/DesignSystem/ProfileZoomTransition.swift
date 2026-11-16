@@ -51,8 +51,9 @@ extension View {
         modifier(ProfileZoomScopeModifier())
     }
 
-    /// A face a profile zooms out of: `faceId` names it apart from the stack's other faces, the same id its tap arms.
-    func profileZoomSource(faceId: String) -> some View {
+    /// A face a profile zooms out of: `faceId` names it apart from the stack's other faces, the same id its tap arms;
+    /// nil where nothing zooms.
+    func profileZoomSource(faceId: String?) -> some View {
         modifier(ProfileZoomSourceModifier(faceId: faceId))
     }
 
@@ -81,18 +82,26 @@ private struct ProfileZoomScopeModifier: ViewModifier {
 }
 
 private struct ProfileZoomSourceModifier: ViewModifier {
-    let faceId: String
+    let faceId: String?
 
     @Environment(\.profileZoomScope) private var scope
     @Environment(\.showsGroupBesideList) private var showsGroupBesideList
+    /// Half the face's shorter side, the radius that draws it as its circle, less half a point so rounding never pushes
+    /// it past half the side, which hides the face.
+    @State private var radius: CGFloat = 0
 
     func body(content: Content) -> some View {
         #if os(iOS)
-        if let scope, !showsGroupBesideList {
-            // The zoom clips only to a rounded rectangle: one rounder than any face draws it as its circle
-            content.matchedTransitionSource(id: faceId, in: scope.namespace) { source in
-                source.clipShape(.rect(cornerRadius: 1_000, style: .circular))
-            }
+        if let faceId, let scope, !showsGroupBesideList {
+            // The zoom clips only to a rounded rectangle, so one of half the face's side draws it as its circle. A
+            // radius past that hides the face altogether, outside the zoom too
+            content
+                .onGeometryChange(for: CGFloat.self) { max(min($0.size.width, $0.size.height) / 2 - 0.5, 0) } action: {
+                    radius = $0
+                }
+                .matchedTransitionSource(id: faceId, in: scope.namespace) { source in
+                    source.clipShape(.rect(cornerRadius: radius, style: .circular))
+                }
         } else {
             content
         }

@@ -503,9 +503,7 @@ private struct ActivityRow: View {
                 .padding(.top, Self.faceSize / 2 - 4)
                 .accessibilityHidden(true)
             HStack(alignment: .top, spacing: 12) {
-                ActivityFace(item: item, size: Self.faceSize)
-                    // The face zooms into the profile it opens (beta feedback of 2026-11-15)
-                    .profileZoomSource(faceId: faceId)
+                ActivityFace(item: item, size: Self.faceSize, zoomFaceId: faceId)
                 VStack(alignment: .leading, spacing: 3) {
                     ActivityCopy.headline(item)
                         .font(rowFont)
@@ -721,11 +719,15 @@ struct ActivityChangeLine: View {
 struct ActivityFace: View {
     let item: ActivityItem
     let size: CGFloat
+    /// The face the profile it opens zooms out of (beta feedback of 2026-11-15); nil where nothing zooms.
+    var zoomFaceId: String?
 
     var body: some View {
         let colors = ActivityCopy.iconColors(item)
         let badge = (size * 0.5).rounded()
         AvatarPhoto(initial: item.actor.initials, color: item.actor.color, photoUrl: item.actor.photoUrl, size: size)
+            // The face alone, so the zoom's clip leaves the badge on its corner whole
+            .profileZoomSource(faceId: zoomFaceId)
             .overlay(alignment: .bottomTrailing) {
                 Image(systemName: ActivityCopy.icon(item))
                     .font(.system(size: badge * 0.5, weight: .bold))
