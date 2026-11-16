@@ -115,8 +115,19 @@ export function headline(item: JsActivityItem): Headline {
         ? item.isSimplifyTurnedOn ? 'activity_simplifyOn' : 'activity_simplifyOff'
         : (sentences[item.kind] ?? 'activity_billEdited')
   const isPayment = item.kind === 'payment_recorded' || item.kind === 'payment_undone'
-  const subject = isPayment ? null : groupKinds.has(item.kind) ? item.groupName : (item.subject ?? item.groupName)
+  // Why: as Android's objectOf, the group's own events name the group first and the others their subject first.
+  const known = groupKinds.has(item.kind) ? (item.groupName ?? item.subject) : (item.subject ?? item.groupName)
+  const subject = isPayment ? null : (known ?? unknownSubject(item.kind))
   return sentenceSegments(t(sentenceKey), actorName(item), subject ?? null, item.actorIsMe)
+}
+
+// Why: a sentence with its subject cut reads broken where the subject sits mid-sentence ("Ana hat … von geändert",
+// "Anaがを割り勘しました"), so a bill or a group the device can't name is "this bill" or "this group", as the
+// deleted-item notice says it. A person's name has no such stand-in, so those sentences drop it.
+function unknownSubject(kind: string): string | null {
+  if (kind.startsWith('bill_') || kind.startsWith('comment_')) return t('activity_thisBill')
+  if (kind.startsWith('group_') || groupKinds.has(kind)) return t('activity_thisGroup')
+  return null
 }
 
 /**
