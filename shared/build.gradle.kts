@@ -1,5 +1,8 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+
 plugins {
     alias(libs.plugins.blitzsplit.kotlin.multiplatform)
+    alias(libs.plugins.buildkonfig)
 }
 
 // The modules SwiftUI and React talk to directly: their ViewModels, UiState, UiEvent and UiAction
@@ -102,5 +105,27 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.koin.test)
         }
+    }
+}
+
+// The branch this checkout builds, which each anonymous account its installs sign in carries (`TaskTag`), so
+// finish-task deletes a development task's test accounts and the server expires a forgotten one after a day. Empty
+// on main and on a detached HEAD, which is how CI checks out every pull request and release. It lives in the
+// composition root, so a new branch rebuilds this module only, not the cached ones below it.
+private val taskBranch: String = runCatching {
+    providers
+        .exec {
+            commandLine("git", "rev-parse", "--abbrev-ref", "HEAD")
+            isIgnoreExitValue = true
+        }.standardOutput.asText
+        .get()
+        .trim()
+}.getOrDefault("").takeUnless { it == "main" || it == "HEAD" }.orEmpty()
+
+buildkonfig {
+    packageName = "com.quare.blitzsplit.shared.generated"
+    objectName = "SharedConfig"
+    defaultConfigs {
+        buildConfigField(FieldSpec.Type.STRING, "TASK_BRANCH", taskBranch)
     }
 }

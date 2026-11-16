@@ -520,6 +520,10 @@ pending nor trigger a sync.
 The account is optional. Every install starts `AccountStatus.LocalOnly`, becomes `Anonymous` on its first sync and
 `Connected` once Google or Apple is attached.
 
+A build from a branch other than `main` signs its anonymous users in with that branch as their metadata (`TaskTag`,
+from `SharedConfig.TASK_BRANCH`): the server deletes them when the development task ends and after one idle day
+otherwise (see [getting-started](../getting-started.md#supabase)).
+
 The server deletes an `Anonymous` account once none of its devices synced for 30 days (`expire-anonymous-accounts` in
 blitz-split-api, which counts from `platforms_seen.last_seen_at`, moved on each sync, and from the last token a
 session of the account got), and keeps the deleted user's id. A device that comes back finds its session refused,

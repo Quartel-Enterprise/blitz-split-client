@@ -83,6 +83,29 @@ If the task left a device running (an emulator, a simulator, the web dev server 
 shut it down first, as the "Task devices" section of
 [`start-task`](../start-task/SKILL.md#task-devices) describes.
 
+**The task's anonymous accounts, in both modes:** every install the task ran made an anonymous
+account on the hosted Supabase project, tagged with the task's branch (see "the task's accounts are
+tagged" in [`start-task`](../start-task/SKILL.md)). Ask the server to delete them, through the Supabase MCP
+(`execute_sql` on the project `cfgnuyijsncgpgywoldf`):
+
+```sql
+select private.request_task_account_cleanup('<branch>');
+```
+
+It returns the id of the request it hands to `expire-anonymous-accounts` (deleting an account also
+removes its avatar, which only that function may do). A few seconds later, read the answer and what
+is left:
+
+```sql
+select status_code, content::text from net._http_response where id = <request id>;
+select count(*) from auth.users where is_anonymous and raw_user_meta_data->>'task' = '<branch>';
+```
+
+`200` with `{"deleted": n, "failed": 0, "left": 0}` and a count of 0 is done. Report how many were
+deleted. Only anonymous accounts of that tag go: one that connected Google or Apple stays. If the
+Supabase MCP isn't connected, or the call fails, say so and go on with the rest: the daily expiry
+deletes a tagged account after one day without use anyway.
+
 **Worktree mode:**
 
 ```bash

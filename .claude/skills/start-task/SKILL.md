@@ -132,6 +132,19 @@ If the task touches Apple and `iosApp/BoraRachar.xcodeproj` is missing, run
 `./iosApp/generate-project.sh`; if it touches the web and `webApp/node_modules` is missing, run
 `npm --prefix webApp run shared` and `npm --prefix webApp install`.
 
+#### Both modes: the task's accounts are tagged
+
+Every build of a task talks to the hosted Supabase project, and the first sync of each install makes
+an anonymous account there. Nothing to do for it: a build compiles the checked-out branch into
+`SharedConfig.TASK_BRANCH` (`main` and a detached HEAD give none), and each anonymous account it
+signs in carries it (`user_metadata.task`). `finish-task` deletes them, and the server expires a
+tagged account after one day without use instead of 30, for a task dropped without `finish-task`.
+
+The macOS app (the store's bundle id) and the web dev server (`localhost:5173`) keep one account
+for every task, tagged with the branch of whichever task signed in first: another task's
+`finish-task` or the one day expiry may delete it, and the app then takes the session for lost and
+signs in a new anonymous account, tagged with its own branch. Never keep real data in a task's build.
+
 ### 5. Create the task's devices, if the task needs them
 
 Decide from the user's request (and anything else known about the task) whether it will need a

@@ -48,6 +48,7 @@ class SupabaseAccountRemoteDataSource(
     private val auth: Auth,
     private val functions: Functions,
     private val postgrest: Postgrest,
+    private val taskTag: TaskTag,
 ) : AccountRemoteDataSource {
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -105,7 +106,7 @@ class SupabaseAccountRemoteDataSource(
         }.distinctUntilChanged()
 
     override suspend fun signInAnonymously(): SessionUser {
-        auth.signInAnonymously()
+        auth.signInAnonymously(data = taskTag.metadata)
         return requireNotNull(auth.currentUserOrNull()?.let(::toSessionUser))
     }
 
