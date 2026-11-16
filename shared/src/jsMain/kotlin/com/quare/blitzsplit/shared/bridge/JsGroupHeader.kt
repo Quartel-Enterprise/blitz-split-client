@@ -47,7 +47,6 @@ class JsGroupHeader(
     val extraMemberCount: Int,
     val memberCount: Int,
     val notJoinedCount: Int,
-    val totalSpentMinor: Double,
     val myBalance: JsMemberBalance?,
     /*
      * Why: the line under the balance's amount, a BalanceDetail code ("everyone_settled", "others_settling",
@@ -71,7 +70,6 @@ internal fun toJsGroupHeader(header: GroupHeader): JsGroupHeader = JsGroupHeader
     extraMemberCount = header.extraMemberCount,
     memberCount = header.memberCount,
     notJoinedCount = header.notJoinedCount,
-    totalSpentMinor = header.totalSpentMinor.toDouble(),
     myBalance = header.myBalance?.let(::toJsMemberBalance),
     myBalanceDetail = header.myBalance?.detailOf(header.isEveryoneSettled)?.let(::toJsBalanceDetail),
     isEveryoneSettled = header.isEveryoneSettled,

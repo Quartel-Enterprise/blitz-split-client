@@ -338,8 +338,6 @@ export const tr: Record<MessageKey, string> = {
   groupDetail_seeAllBills: 'Tümünü gör',
   groupDetail_protectTitle: 'Erişimini koru',
   groupDetail_protectMessage: 'Hesapsız katıldın. Kodu kaydet ya da Google veya Apple bağla.',
-  groupDetail_metaTotal: '{members} · toplam {total}',
-  groupDetail_metaEmpty: '{members} · henüz harcama yok',
   groupDetail_notJoinedOne: '{count} kişi henüz katılmadı',
   groupDetail_notJoinedOther: '{count} kişi henüz katılmadı',
   groupDetail_seeMembers: 'Üyeleri gör',

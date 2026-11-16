@@ -56,7 +56,6 @@ internal fun SampleTrip.groupHeader(): GroupHeader {
             .map { faceOf(it) },
         memberCount = people.size,
         notJoinedCount = 0,
-        totalSpentMinor = totalSpentMinor,
         myBalance = MemberBalance(
             receivesMinor = debts.filter { it.toMemberId == myId }.sumOf { it.amountMinor },
             owesMinor = debts.filter { it.fromMemberId == myId }.sumOf { it.amountMinor },

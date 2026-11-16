@@ -59,7 +59,6 @@ fun GroupDetailContent(
             header = state.header,
             sharedGroupId = sharedGroupId,
             selectedTab = state.tab,
-            hasBills = state.hasBills,
             isLoaded = state.isLoaded,
             isMyBalanceLoading = state.isMyBalanceLoading,
             isOnline = state.exit.isOnline,

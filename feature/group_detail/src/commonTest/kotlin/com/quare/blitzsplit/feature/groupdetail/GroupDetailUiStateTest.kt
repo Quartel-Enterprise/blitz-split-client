@@ -519,7 +519,6 @@ class GroupDetailUiStateTest {
             faces = List(faceCount) { GroupFace("A", AvatarColor.PEACH, photoUrl = null) },
             memberCount = memberCount,
             notJoinedCount = 0,
-            totalSpentMinor = if (hasBills) 12_000 else 0,
             myBalance = null,
             isEveryoneSettled = false,
             isPinned = false,

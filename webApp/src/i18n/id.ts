@@ -337,8 +337,6 @@ export const id: Record<MessageKey, string> = {
   groupDetail_seeAllBills: 'Lihat semua',
   groupDetail_protectTitle: 'Lindungi aksesmu',
   groupDetail_protectMessage: 'Kamu bergabung tanpa akun. Simpan kodenya atau hubungkan Google atau Apple.',
-  groupDetail_metaTotal: '{members} · total {total}',
-  groupDetail_metaEmpty: '{members} · belum ada pengeluaran',
   groupDetail_notJoinedOne: '{count} belum bergabung',
   groupDetail_notJoinedOther: '{count} belum bergabung',
   groupDetail_seeMembers: 'Lihat anggota',

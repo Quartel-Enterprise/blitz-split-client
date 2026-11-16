@@ -51,7 +51,6 @@ internal val emptyGroupHeader = GroupHeader(
     faces = emptyList(),
     memberCount = 0,
     notJoinedCount = 0,
-    totalSpentMinor = 0L,
     myBalance = null,
     isEveryoneSettled = false,
     isPinned = false,
@@ -321,7 +320,6 @@ internal class GroupScreen(
 
 internal fun groupHeaderOf(
     group: Group,
-    expenses: List<Expense>,
     balances: List<CurrencyBalances>,
     pickedCurrency: GroupCurrency?,
     isPinned: Boolean,
@@ -340,7 +338,6 @@ internal fun groupHeaderOf(
         faces = group.members.toStackedFaces(FaceStack.ROOMY).map(::faceOf),
         memberCount = group.members.size,
         notJoinedCount = group.members.count { !it.hasJoined },
-        totalSpentMinor = expenses.filter { it.currency == currency }.sumOf { it.amountMinor },
         // Why: a balance counted before the group's bills came would read as settled; the UIs shimmer it meanwhile.
         myBalance = shown?.balances?.balanceOrNull(meId)?.takeIf { isCopyWhole },
         // Why: bills still coming down may leave someone owing; "Apagar grupo" waits for the whole copy.

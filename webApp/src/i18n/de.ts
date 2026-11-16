@@ -339,8 +339,6 @@ export const de: Record<MessageKey, string> = {
   groupDetail_seeAllBills: 'Alle ansehen',
   groupDetail_protectTitle: 'Sichere deinen Zugang',
   groupDetail_protectMessage: 'Du bist ohne Konto beigetreten. Speichere den Code oder verbinde Google oder Apple.',
-  groupDetail_metaTotal: '{members} · {total} insgesamt',
-  groupDetail_metaEmpty: '{members} · noch keine Ausgaben',
   groupDetail_notJoinedOne: '{count} ist noch nicht beigetreten',
   groupDetail_notJoinedOther: '{count} sind noch nicht beigetreten',
   groupDetail_seeMembers: 'Mitglieder ansehen',

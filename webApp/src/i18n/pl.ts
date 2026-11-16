@@ -341,8 +341,6 @@ export const pl: Record<MessageKey, string> = {
   groupDetail_seeAllBills: 'Zobacz wszystkie',
   groupDetail_protectTitle: 'Zabezpiecz swój dostęp',
   groupDetail_protectMessage: 'Jesteś w grupie bez konta. Zapisz kod lub połącz Google albo Apple.',
-  groupDetail_metaTotal: '{members} · łącznie {total}',
-  groupDetail_metaEmpty: '{members} · jeszcze bez wydatków',
   groupDetail_notJoinedOne: '{count} osoba jeszcze nie dołączyła',
   groupDetail_notJoinedOther: '{count} osoby jeszcze nie dołączyły|{count} osób jeszcze nie dołączyło',
   groupDetail_seeMembers: 'Zobacz członków',

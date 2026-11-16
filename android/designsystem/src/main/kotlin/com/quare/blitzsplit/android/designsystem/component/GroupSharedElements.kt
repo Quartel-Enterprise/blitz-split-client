@@ -132,8 +132,7 @@ internal fun sharedKeyOf(
  * Why: Material's top bars read their title's baseline while they measure, which places the title once ahead of the
  * real placement, only to compute the line. A shared text placed there took the screen's own spot as where it flies
  * from, so the group's name popped into the header instead of flying in, while it flew back fine (beta feedback of
- * 2026-11-16). Placed only for real, the flight starts from the row's text; the bar's subtitle under it still gives
- * the baseline the bar aligns on. Every scaled shared element takes it, in a top bar or not: none sits in a parent that
+ * 2026-11-16). Placed only for real, the flight starts from the row's text. Every scaled shared element takes it, in a top bar or not: none sits in a parent that
  * aligns by its baseline, and the alignment-only placement is never where a flight should start.
  */
 private fun Modifier.skipsBaselinePlacement(): Modifier = layout { measurable, constraints ->

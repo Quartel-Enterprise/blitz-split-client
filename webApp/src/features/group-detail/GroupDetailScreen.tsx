@@ -78,7 +78,6 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
       homeTab={state.homeTab as HomeTab}
       header={state.header}
       tab={tab}
-      hasExpenses={state.hasBills}
       // Why: with a bill, your balance in it is known once the account's copy is whole; null till then.
       isBalanceLoading={state.isMyBalanceLoading}
       showsSplitBillButton={state.showsSplitBillButton}

@@ -20,7 +20,6 @@ import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useCollapsingHeader } from '@/hooks/useCollapsingHeader'
 import { t } from '@/i18n'
 import { GROUP_SHAPE } from '@/lib/avatar'
-import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { GroupExitDialog, type GroupExitEvents } from './GroupExitDialog'
 
@@ -42,10 +41,10 @@ export interface GroupPageEvents extends GroupExitEvents {
 
 /**
  * The group's page around the tab picked, in the home's frame with the group selected among the open ones: the
- * breadcrumb, the group's name, total and faces (which pick Membros), "Estatísticas", "Convidar", "Rachar conta" (the
+ * breadcrumb, the group's name and faces (which pick Membros), "Estatísticas", "Convidar", "Rachar conta" (the
  * main button on every tab, Membros included) and the ⋯ menu beside them, "Seu saldo neste grupo" and the
  * tabs. The phone has no frame: back and the icons on top, the main button at the bottom. The header (the group's
- * photo, name and meta) opens big at the top and folds into a compact bar as the page scrolls (`.group-header`), and
+ * photo and name) opens big at the top and folds into a compact bar as the page scrolls (`.group-header`), and
  * its photo and name are where the row that opened the group lands (`data-group-header`, lib/groupTransition).
  */
 export function GroupPage({
@@ -53,7 +52,6 @@ export function GroupPage({
   homeTab,
   header,
   tab,
-  hasExpenses,
   isBalanceLoading,
   showsSplitBillButton,
   exit,
@@ -66,7 +64,6 @@ export function GroupPage({
   homeTab: HomeTab
   header: JsGroupHeader
   tab: GroupTab
-  hasExpenses: boolean
   // Why: "Seu saldo neste grupo" shimmers while a restored account's copy isn't whole, instead of hiding.
   isBalanceLoading: boolean
   showsSplitBillButton: boolean
@@ -77,9 +74,6 @@ export function GroupPage({
   children: ReactNode
 }) {
   const members = t(header.memberCount === 1 ? 'members_countOne' : 'members_countOther', { count: header.memberCount })
-  const meta = hasExpenses
-    ? t('groupDetail_metaTotal', { members, total: formatMoney(header.totalSpentMinor, header.currency, header.fractionDigits) })
-    : t('groupDetail_metaEmpty', { members })
   const notJoined =
     header.notJoinedCount > 0
       ? t(header.notJoinedCount === 1 ? 'groupDetail_notJoinedOne' : 'groupDetail_notJoinedOther', { count: header.notJoinedCount })
@@ -112,14 +106,12 @@ export function GroupPage({
               >
                 <GroupAvatar data-group-avatar initials={header.groupInitials} color={header.groupColor} photoUrl={header.groupPhotoUrl} className="size-full" />
               </button>
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <h1 className="group-header-name flex min-w-0 font-semibold tracking-tight">
-                  <span data-group-name className="truncate">
-                    {header.groupName}
-                  </span>
-                </h1>
-                <span className="group-header-meta truncate text-sm text-muted-foreground">{meta}</span>
-              </div>
+              {/* Why: no line under the name: the faces tell how many people, Statistics the total (beta feedback of 2026-11-16). */}
+              <h1 className="group-header-name flex min-w-0 flex-1 font-semibold tracking-tight">
+                <span data-group-name className="truncate">
+                  {header.groupName}
+                </span>
+              </h1>
               <div className="pointer-events-auto hidden items-center gap-2 md:flex">
                 {/* Why: below the desktop the two are icons, as on the phone's bar, so the group's name keeps its room. */}
                 <Button variant="outline" aria-label={t('stats_title')} title={t('stats_title')} onClick={() => events.stats()}>
@@ -227,10 +219,7 @@ export function GroupPageSkeleton({ groupId, homeTab, onBack, children }: { grou
             <header className="group-header bg-background/95 backdrop-blur">
               <div className="group-header-row">
                 <Skeleton className={cn('group-header-photo shrink-0', GROUP_SHAPE)} />
-                <span className="flex flex-1 flex-col gap-2">
-                  <SkeletonLine className="h-5 w-48" />
-                  <SkeletonLine className="w-36" />
-                </span>
+                <SkeletonLine className="h-5 w-48" />
               </div>
               <div className="absolute inset-x-0 top-0 flex h-14 items-center gap-1 px-2 md:hidden">
                 <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={onBack}>

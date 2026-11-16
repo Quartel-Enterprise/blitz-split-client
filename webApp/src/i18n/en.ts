@@ -336,8 +336,6 @@ export const en = {
   groupDetail_seeAllBills: 'See all',
   groupDetail_protectTitle: 'Protect your access',
   groupDetail_protectMessage: 'You joined without an account. Save the code or connect Google or Apple.',
-  groupDetail_metaTotal: '{members} · {total} in total',
-  groupDetail_metaEmpty: '{members} · no expenses yet',
   groupDetail_notJoinedOne: "{count} hasn't joined yet",
   groupDetail_notJoinedOther: "{count} haven't joined yet",
   groupDetail_seeMembers: 'See members',

@@ -339,8 +339,6 @@ export const nl: Record<MessageKey, string> = {
   groupDetail_seeAllBills: 'Alles bekijken',
   groupDetail_protectTitle: 'Bescherm je toegang',
   groupDetail_protectMessage: 'Je bent lid geworden zonder account. Bewaar de code of verbind Google of Apple.',
-  groupDetail_metaTotal: '{members} · {total} in totaal',
-  groupDetail_metaEmpty: '{members} · nog geen uitgaven',
   groupDetail_notJoinedOne: '{count} is nog geen lid',
   groupDetail_notJoinedOther: '{count} zijn nog geen lid',
   groupDetail_seeMembers: 'Leden bekijken',
