@@ -39,13 +39,16 @@ The code that draws it, to sort a diff by (`git diff --name-only origin/main...H
 
 | Platform | Paths |
 |---|---|
-| Shared | `feature/group_detail` (what the `GroupDetailUiState` holds), the formatting of amounts and dates in `core/*`, the sample trip in `shared/src/commonMain/kotlin/com/quare/blitzsplit/shared/storescreenshots/` |
+| Shared | `feature/group_detail` (what the `GroupDetailUiState` holds), `feature/groups` (the Mac's and the web's sidebar: `HomeSidebarViewModel`, `HomeSidebarUiState`), the formatting of amounts and dates in `core/*`, the sample trip and its seed in `shared/src/commonMain/kotlin/com/quare/blitzsplit/shared/storescreenshots/` |
 | Android | `android/feature/group_detail`, `android/designsystem`, `android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/GroupScreenshotContent.kt` and `ReadmeHeroScreens.kt` |
-| iPhone and Mac | `iosApp/Sources/Shared/Features/GroupDetail`, `iosApp/Sources/Shared/Features/Home` (the Mac's sidebar), `iosApp/Sources/Shared/DesignSystem`, `iosApp/Sources/Shared/App`, the English strings of `Localizable.xcstrings` |
-| Web | `webApp/src/features/group-detail`, `webApp/src/components` (`HomeShell.tsx`, `HomeSidebar.tsx` and the pieces the group uses), `webApp/src/app` (the shadcn/ui components), `webApp/src/index.css`, `webApp/src/i18n/en.ts` |
+| iPhone and Mac | `iosApp/Sources/Shared/Features/GroupDetail`, `iosApp/Sources/Shared/Features/Home` (the Mac's sidebar), `iosApp/Sources/Shared/DesignSystem`, `iosApp/Sources/Shared/App`, the English strings of `iosApp/Resources/Localizable.xcstrings` |
+| Web | `webApp/src/features/group-detail`, `webApp/src/features/balances/BalanceCard.tsx`, `webApp/src/components` (`HomeShell.tsx`, `HomeSidebar.tsx` and the pieces the group uses), the shadcn/ui components in `webApp/src/components/ui`, `webApp/src/lib/money.ts` and `dates.ts`, `webApp/src/index.css`, `webApp/src/i18n/en.ts` |
+| The captures | Android: `ReadmeHeroScreens.kt` above and `build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt`. Apple: `scripts/store-screenshots/capture-ios.sh`, `capture-mac.sh`, `assets.tsv`, `iosApp/UITests/StoreScreenshotsUITests.swift`, `iosApp/Sources/Shared/App/StoreScreenshotsRun.swift`, `shared/src/appleMain/kotlin/com/quare/blitzsplit/shared/storescreenshots/`. Web: `shared/src/jsMain/kotlin/com/quare/blitzsplit/shared/bridge/StoreScreenshotsWeb.kt`, `webApp/src/bridge/storeScreenshots.ts`, `scripts/readme-hero/capture-web.mjs`, `chrome.mjs` |
 | The image's layout | `scripts/readme-hero/` (`hero.html`, `compose.mjs`) |
 
-A path in the table is a reason to look, not a verdict: a change to `android/designsystem` that only touches a
+A change to a capture's own code may not change a pixel, but it can break the capture: run the skill for it, so a
+broken capture shows up now and not in the next branch that needs the image. For the rest, a path in the table is a
+reason to look, not a verdict: a change to `android/designsystem` that only touches a
 component the group screen doesn't use, a Balances tab change, a dialog, a tablet layout, another language, a fix with
 no visible effect or a change the sample trip never reaches (an empty group, an error state, offline) leaves the image
 as it is. Decide by whether a reader comparing the old and new image would see a difference, and name the platforms
@@ -58,8 +61,9 @@ enough: "The README's image doesn't show this change").
 
 What it needs, all on this Mac: Xcode and its iOS runtime (the iPhone capture creates its own simulator, "Store
 screenshots iphone63", an iPhone 17 Pro), Google Chrome (`CHROME` points at another binary), Node, and for the Mac
-capture an unlocked screen and the Screen Recording permission for whatever runs the script: it brings the app's window
-to the front for about half a minute. No emulator, and not the task's own simulator.
+capture an unlocked screen and the Screen Recording permission for whatever runs the script. For about half a minute
+the Mac capture hides every other app's window and brings the app's to the front (`StoreScreenshotsRun.swift`), so if
+the person is at the Mac, tell them in one line before starting it. No emulator, and not the task's own simulator.
 
 The captures land in `build/outputs/readme-hero/` of the checkout, and `generate.sh` draws the image only once all
 eight (four platforms, two themes) are there. A fresh worktree has none, so capture all four, even when the change
@@ -75,14 +79,17 @@ Apple UI tests and the web's shared library, each queued behind other worktrees'
 `scripts/heavy-check.sh`, and takes from several minutes to much longer when other sessions build. Don't wrap it in
 `heavy-check.sh` yourself and don't poll it.
 
-Once the captures exist, a fix to one platform needs only that one again, and drawing again needs none:
+Once this branch's captures exist, a fix to one platform needs only that one again, and drawing again needs none.
+Captures carry over only within the same branch, since this run: `build/outputs/readme-hero/` of an in-place checkout
+may hold another task's captures from days ago, with other screens and other dates. After switching tasks, or merging
+`main` into the branch, capture all four again.
 
 ```bash
 READMEHERO_CAPTURES=web ./scripts/readme-hero/generate.sh      # android, ios, mac, web, comma separated
 READMEHERO_CAPTURES=none ./scripts/readme-hero/generate.sh     # only hero.html and compose.mjs changed
 ```
 
-If a capture can't run here (the screen is locked, the Screen Recording permission is missing, Xcode or Chrome is
+If a capture can't run here (the screen is locked, as it often is when the person is away, the Screen Recording permission is missing, Xcode or Chrome is
 missing), don't ship an image with an old screen beside new ones: leave both images as they are, and say which
 capture failed and why in the pull request description and the report, so the person can run it later. Don't touch
 system settings to get past it.

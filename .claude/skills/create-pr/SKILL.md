@@ -222,8 +222,9 @@ git diff --name-only main...HEAD
 git status -s
 ```
 
-If every file the branch changes is Markdown (`.md`), commits ahead of `main` and uncommitted
-changes alike, skip this step. Nothing builds those files, and the checks take minutes.
+If every file the branch changes is Markdown (`.md`) or one of the README's two images
+(`docs/images/readme-hero-*.webp`), commits ahead of `main` and uncommitted changes alike, skip this
+step, its README's image part included. Nothing builds those files, and the checks take minutes.
 
 Otherwise, sort the changed files into the areas below and run the checks of every area that has at
 least one. Put the Gradle tasks of every area into one `./gradlew` call, so they share one
@@ -384,6 +385,9 @@ doesn't show this change".
 Skip this when the task's brief says another session refreshes the README at the end, as
 [`whatsapp-feedback`](../whatsapp-feedback/SKILL.md) does for its pieces: then write in the
 description only whether the change shows in the image, and which platforms, so that session knows.
+
+The images change on every run, so two open pull requests that both refresh them conflict once one
+merges: step 12's conflict outcome says how to resolve it (take `main`'s, capture again).
 
 ### 9. Commit all uncommitted changes
 
@@ -556,8 +560,9 @@ exit 4
 
 Every fix below goes the same way, without asking: pull first, before any local commit
 (`git pull --ff-only`: the opening `claude-review` may have pushed its fix commit), fix, run step 2
-again if a Kotlin file changed and the step 8 checks of the areas the fix touches, commit it with
-step 9's message rules, push (step 10), and wait again as above. Never amend, rebase or force push
+again if a Kotlin file changed and the step 8 checks of the areas the fix touches, run
+`update-readme-screenshots` again if the fix changes what the README's image shows (step 8's last
+part), commit it with step 9's message rules, push (step 10), and wait again as above. Never amend, rebase or force push
 what is already on `origin`, and never skip, disable or loosen a test or a check to get it green.
 When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
 
@@ -602,7 +607,9 @@ When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
     no fix was pushed.
   - **A conflict with `main`**: merge `origin/main` into the branch (a merge commit, never a
     rebase), resolve the conflicts keeping what both sides meant, then push as above and add the
-    label again. Ask the user only when a conflict needs a product choice nobody wrote down yet.
+    label again. The README's two images can't be merged: when they conflict, take `main`'s copies
+    (`git checkout --theirs` during the merge), finish the merge, and run `update-readme-screenshots`
+    again, so the image holds both branches' changes. Ask the user only when a conflict needs a product choice nobody wrote down yet.
   - **GitHub refused the merge for another reason**, or **a `review-gate` check failed without
     holding anything**: tell the user what the comment and the `merge-when-green` run say, and stop.
     When the pull request changes a file under `.github/workflows/` and the reason names the

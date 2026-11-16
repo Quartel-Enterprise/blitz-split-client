@@ -11,7 +11,8 @@ screenshot, sometimes a voice note nobody transcribed. This skill turns an expor
 into merged PRs: it reads every message and image, lists the items (each bug or improvement), asks
 everything it needs at once, then splits the work into sessions that run in parallel, each in a
 worktree of its own and each ending in a PR made by [`create-pr`](../create-pr/SKILL.md). This
-session coordinates: it writes no app code itself.
+session coordinates: it writes no app code itself, and its one PR of its own is the README's image at
+the end (step 8).
 
 The person usually leaves once the questions are answered. So every question goes in step 4, in one
 round, and from step 5 on the skill decides by the docs, the sensible default, or a line in a PR
@@ -206,7 +207,9 @@ Then:
   main`, or tell its session to.
 - A session asking a product question: forward it to the person as asked, and their answer back with
   their words quoted.
-- Never write the fix here, and never merge a PR yourself unless the person asks.
+- Never write the fix here, and never merge a PR yourself unless the person asks. The README's PR
+  of step 8 is the exception: the person asked for it with this skill, and `create-pr` merges it
+  as it merges every piece's.
 
 ## 8. Refresh the README and report
 
@@ -219,6 +222,10 @@ every piece), run `update-readme-screenshots`, and open the PR with `create-pr`.
 change this session makes itself, since it is no app code and needs every piece merged first; it
 counts as a building session for step 5. Wait for it to merge, or to stop on a capture this Mac
 can't take, before reporting.
+
+A piece still stuck at that point whose change shows in the image would merge after the refresh,
+with the README missing it. Message its session (`SendMessage`) that the refresh is now its own: it
+runs `create-pr`'s README step before its PR merges. Say so in the report.
 
 Then report: a
 table of the items, each with its PR (a full `owner/repo#n` link) and its state; the README's PR, or
