@@ -50,7 +50,7 @@
     <string name="default_split_list_percent">Herkesin yüzdesi</string>
     <string name="default_split_list_income">Herkesin geliri</string>
     <string name="default_split_income_note">Grup üyeleri bu gelirleri görür ve harcamaları bunlara göre bölüşebilir.</string>
-    <string name="default_split_income_net_note">Herkesin vergiler sonrası net gelirini girin.</string>
+    <string name="default_split_income_net_note">Herkesin vergiler sonrası net gelirini gir.</string>
     <string name="default_split_parts_of">%s adlı kişinin payları</string>
     <string name="default_split_percent_of">%s adlı kişinin yüzdesi</string>
     <string name="default_split_income_of">%s adlı kişinin geliri</string>

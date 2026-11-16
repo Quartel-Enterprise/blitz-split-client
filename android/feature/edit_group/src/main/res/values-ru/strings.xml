@@ -52,7 +52,7 @@
     <string name="default_split_list_percent">Процент каждого</string>
     <string name="default_split_list_income">Доход каждого</string>
     <string name="default_split_income_note">Участники группы видят эти доходы и могут делить по ним счета.</string>
-    <string name="default_split_income_net_note">Укажите чистый доход каждого, после налогов.</string>
+    <string name="default_split_income_net_note">Укажи чистый доход каждого, после налогов.</string>
     <string name="default_split_parts_of">Доли участника %s</string>
     <string name="default_split_percent_of">Процент участника %s</string>
     <string name="default_split_income_of">Доход участника %s</string>

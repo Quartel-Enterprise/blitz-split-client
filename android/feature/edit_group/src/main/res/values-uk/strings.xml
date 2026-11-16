@@ -52,7 +52,7 @@
     <string name="default_split_list_percent">Відсоток кожного</string>
     <string name="default_split_list_income">Дохід кожного</string>
     <string name="default_split_income_note">Учасники групи бачать ці доходи й можуть ділити рахунки за ними.</string>
-    <string name="default_split_income_net_note">Вкажіть чистий дохід кожного, після податків.</string>
+    <string name="default_split_income_net_note">Вкажи чистий дохід кожного, після податків.</string>
     <string name="default_split_parts_of">Частки: %s</string>
     <string name="default_split_percent_of">Відсоток: %s</string>
     <string name="default_split_income_of">Дохід: %s</string>

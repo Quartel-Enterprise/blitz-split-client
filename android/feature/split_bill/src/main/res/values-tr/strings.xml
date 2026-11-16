@@ -345,7 +345,7 @@
         <item quantity="one">%d kişi arasında gelire göre</item>
         <item quantity="other">%d kişi arasında gelire göre</item>
     </plurals>
-    <string name="split_bill_hint_income">Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir. Herkesin vergiler sonrası net gelirini girin.</string>
+    <string name="split_bill_hint_income">Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir. Herkesin vergiler sonrası net gelirini gir.</string>
     <string name="split_bill_list_income">Herkesin geliri</string>
     <string name="split_bill_person_income">%s adlı kişinin geliri</string>
     <string name="split_bill_default_now_income">gelire göre</string>

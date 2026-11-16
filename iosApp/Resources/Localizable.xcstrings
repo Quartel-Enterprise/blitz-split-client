@@ -156357,19 +156357,19 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Доля каждого зависит от его дохода. Доходы общие для группы; изменение здесь касается только этого счёта. Укажите чистый доход каждого, после налогов."
+            "value" : "Доля каждого зависит от его дохода. Доходы общие для группы; изменение здесь касается только этого счёта. Укажи чистый доход каждого, после налогов."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir. Herkesin vergiler sonrası net gelirini girin."
+            "value" : "Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir. Herkesin vergiler sonrası net gelirini gir."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Частка кожного залежить від його доходу. Доходи належать групі; зміна тут діє лише для цього рахунку. Вкажіть чистий дохід кожного, після податків."
+            "value" : "Частка кожного залежить від його доходу. Доходи належать групі; зміна тут діє лише для цього рахунку. Вкажи чистий дохід кожного, після податків."
           }
         }
       }
@@ -164749,19 +164749,19 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Укажите чистый доход каждого, после налогов."
+            "value" : "Укажи чистый доход каждого, после налогов."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Herkesin vergiler sonrası net gelirini girin."
+            "value" : "Herkesin vergiler sonrası net gelirini gir."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вкажіть чистий дохід кожного, після податків."
+            "value" : "Вкажи чистий дохід кожного, після податків."
           }
         }
       }
