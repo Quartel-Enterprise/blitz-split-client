@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.sync
 
+import com.quare.blitzsplit.core.account.domain.model.SessionRefreshingException
 import com.quare.blitzsplit.core.account.domain.repository.AccountRepository
 import com.quare.blitzsplit.core.account.testing.FakeAccountRepository
 import com.quare.blitzsplit.core.activity.domain.repository.ActivityRepository
@@ -518,6 +519,175 @@ class SyncCoordinatorTest {
 
         // Then
         assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a synced device WHEN a sync is put off while the session refreshes THEN the sync state is not failed`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            coordinator.syncNow()
+            profile.pullError = IllegalStateException("wrapped", SessionRefreshingException())
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a sync put off WHEN the session still refreshes past the grace THEN the sync state is failed`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = SessionRefreshingException()
+            coordinator.syncNow()
+
+            // When
+            advanceTimeBy(PUT_OFF_GRACE)
+            runCurrent()
+
+            // Then
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a sync put off WHEN another one is put off within the grace THEN the grace still ends on time`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = SessionRefreshingException()
+            coordinator.syncNow()
+            advanceTimeBy(20.seconds)
+            coordinator.syncNow()
+
+            // When
+            advanceTimeBy(PUT_OFF_GRACE - 20.seconds)
+            runCurrent()
+
+            // Then
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a sync put off WHEN the token comes back and its sync outlasts the grace THEN keeps waiting for it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                pullHangs = true,
+            )
+            account.registerError = SessionRefreshingException()
+            coordinator.start()
+            runCurrent()
+            account.registerError = null
+
+            // When
+            account.sessionRecoveries.emit(Unit)
+            advanceTimeBy(PUT_OFF_GRACE)
+            runCurrent()
+
+            // Then
+            assertFalse(firstDownload.observeHasSyncFailed().value)
+        }
+
+    @Test
+    fun `GIVEN a sync put off WHEN the next one goes through within the grace THEN the sync state stays synced`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = SessionRefreshingException()
+            coordinator.syncNow()
+            profile.pullError = null
+            coordinator.syncNow()
+
+            // When
+            advanceTimeBy(PUT_OFF_GRACE)
+            runCurrent()
+
+            // Then
+            assertEquals(SyncState.SYNCED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a failed sync WHEN the next one is put off for the session THEN the sync state stays failed`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = IllegalStateException("server down")
+            coordinator.syncNow()
+            profile.pullError = SessionRefreshingException()
+
+            // When
+            coordinator.syncNow()
+
+            // Then
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a first download WHEN its sync is put off for the session THEN keeps waiting for the copy`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            firstDownloadPending = true,
+        )
+        profile.pullError = SessionRefreshingException()
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertFalse(firstDownload.observeHasSyncFailed().value)
+    }
+
+    @Test
+    fun `GIVEN a sync put off while the session refreshed WHEN it gets a token again THEN syncs again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+        )
+        profile.pullError = SessionRefreshingException()
+        coordinator.start()
+        runCurrent()
+        profile.pullError = null
+
+        // When
+        account.sessionRecoveries.emit(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
+    }
+
+    @Test
+    fun `GIVEN a sync running WHEN the session comes back before it is put off THEN syncs again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+        )
+        coordinator.start()
+        runCurrent()
+        val gate = CompletableDeferred<Unit>()
+        account.registerGate = gate
+        profile.pullError = SessionRefreshingException()
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+        val pullsBefore = profile.downloadedUserIds.size
+
+        // When
+        account.sessionRecoveries.emit(Unit)
+        runCurrent()
+        account.registerGate = null
+        gate.complete(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(pullsBefore + 2, profile.downloadedUserIds.size)
     }
 
     @Test
