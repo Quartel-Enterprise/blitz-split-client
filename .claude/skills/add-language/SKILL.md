@@ -57,8 +57,11 @@ Every translator, human or agent, reads it first; without it each one picks its 
 
 ## 4. The activity sentences
 
-An activity row is "<actor> <verb phrase> <object>", one sentence for every actor. A language that conjugates by person
-needs the user's rows turned to the second person: `toSecondPerson` (Android `SecondPersonVerbs.kt`), `SecondPerson`
+An activity row is one whole sentence per kind with the actor and the object in it, placed where the language's word
+order puts them: Android's `activity_kind_*` with `%1$s` and `%2$s`, Apple's `SecondPerson` stand-ins, the web's
+`activity_*` messages with `{who}` and `{subject}` ("{who} hat {subject} aufgeteilt"). Write the web's as Android's, and
+start each with the actor. A language that conjugates by person needs the user's rows turned to the second person, on
+the words right after the actor (the verb phrase): `toSecondPerson` (Android `SecondPersonVerbs.kt`), `SecondPerson`
 (Apple) and `verbForYou` (web `i18n/index.ts`) do it the same way on the three platforms. Spanish rewrites the verb's
 ending. French, German and Italian require every verb phrase to start with their perfect's auxiliary and swap it
 ("a" → "as", "hat"/"ist" → "hast"/"bist", "ha" → "hai"): a language like them only adds its entry to the auxiliary maps

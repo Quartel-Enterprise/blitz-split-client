@@ -1,6 +1,6 @@
 import { ArrowLeft, BellRing, CheckCheck, ChevronDown, CircleCheck, Clock, CloudOff, Info, Link2, ListFilter, Loader2, MessageSquare, Pencil, Receipt, RefreshCw, RotateCcw, Send, Trash2, TriangleAlert, UserMinus, UserPlus, UserRound } from 'lucide-react'
 import { ActivityPresenter, type JsActivityItem, type JsActivityState, type JsRoute } from 'blitzsplit-shared'
-import { useEffect, type ReactNode } from 'react'
+import { Fragment, useEffect, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, AvatarPhoto, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useEndReached } from '@/hooks/useEndReached'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t, wordGap } from '@/i18n'
+import { t } from '@/i18n'
 import { avatarStyle, GROUP_SHAPE } from '@/lib/avatar'
 import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { formatDayTime, formatLongDayLabel, formatTime } from '@/lib/dates'
@@ -269,19 +269,10 @@ function InlineChanges({ presenter, item }: { presenter: ActivityPresenter; item
 
 /** "**Bruno** editou **Jantar no Ostradamus**", the names bolder while the item is unread. */
 function HeadlineLine({ item, isBold = item.isUnread, className }: { item: JsActivityItem; isBold?: boolean; className?: string }) {
-  const line = headline(item)
   const strong = isBold ? 'font-bold' : 'font-semibold'
   return (
     <span className={className}>
-      <strong className={strong}>{line.who}</strong>
-      {wordGap}
-      {line.verb}
-      {line.subject && (
-        <>
-          {wordGap}
-          <strong className={strong}>{line.subject}</strong>
-        </>
-      )}
+      {headline(item).map((segment, index) => (segment.isName ? <strong key={index} className={strong}>{segment.text}</strong> : <Fragment key={index}>{segment.text}</Fragment>))}
     </span>
   )
 }
