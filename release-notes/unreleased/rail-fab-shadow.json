@@ -1,0 +1,27 @@
+{
+  "notes": [
+    {
+      "kind": "fixed",
+      "platforms": [
+        "android"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "On tablets and with the phone lying down, the shadow of \"Split a bill\" at the top of the side bar is no longer cut off at its edges.",
+        "pt": "Em tablets e com o celular deitado, a sombra do \"Rachar conta\" no alto da barra lateral não aparece mais cortada nas bordas.",
+        "pt-PT": "Em tablets e com o telemóvel deitado, a sombra do \"Dividir conta\" no topo da barra lateral já não aparece cortada nas margens.",
+        "es": "En tablets y con el teléfono acostado, la sombra de \"Dividir un gasto\" arriba de la barra lateral ya no aparece cortada en los bordes.",
+        "fr": "Sur tablette et téléphone à l’horizontale, l’ombre de « Partager une dépense » en haut de la barre latérale n’est plus coupée sur les bords.",
+        "de": "Auf Tablets und bei quer gehaltenem Handy wird der Schatten von „Ausgabe aufteilen“ oben in der Seitenleiste nicht mehr an den Rändern abgeschnitten.",
+        "it": "Sui tablet e con il telefono in orizzontale, l'ombra di \"Dividi una spesa\" in cima alla barra laterale non è più tagliata ai bordi.",
+        "pl": "Na tabletach i przy telefonie w poziomie cień przycisku „Podziel wydatek” na górze bocznego paska nie jest już ucięty na krawędziach.",
+        "nl": "Op tablets en met de telefoon liggend wordt de schaduw van \"Uitgave verdelen\" bovenaan de zijbalk niet meer aan de randen afgesneden.",
+        "ja": "タブレットやスマートフォンを横向きにしたとき、サイドバー上部の「支出を割り勘」の影が端で切れなくなりました。",
+        "tr": "Tabletlerde ve telefon yatay tutulduğunda, yan çubuğun üstündeki \"Harcama böl\" düğmesinin gölgesi artık kenarlarından kesilmiyor.",
+        "id": "Di tablet dan saat ponsel mendatar, bayangan \"Bagi tagihan\" di atas bilah samping tidak lagi terpotong di tepinya.",
+        "ru": "На планшетах и когда телефон лежит горизонтально, тень кнопки «Разделить счёт» вверху боковой панели больше не обрезается по краям.",
+        "uk": "На планшетах і коли телефон лежить горизонтально, тінь кнопки «Розділити рахунок» угорі бічної панелі більше не обрізається по краях."
+      }
+    }
+  ]
+}
