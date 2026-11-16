@@ -8,15 +8,21 @@ import { uiTag } from '@/lib/currency'
 import { formatDayTime, formatLongDay, relativeDayOf } from '@/lib/dates'
 import { formatMoney, formatNames } from '@/lib/money'
 
-/** "Bruno editou Jantar no Ostradamus": who in bold, what they did, and what it was about in bold (none for a payment). */
-export interface Headline {
-  who: string
-  verb: string
-  subject: string | null
+/** A piece of a headline: a name drawn in bold (who, and what it was about), or the words around them. */
+export interface HeadlineSegment {
+  text: string
+  isName: boolean
 }
 
-// Why: by ActivityKind's code, what each kind did; a group edit of only the default split says so.
-const verbs: Record<string, MessageKey> = {
+/**
+ * "**Bruno** editou **Jantar no Ostradamus**", "**Ana** hat **Abendessen** aufgeteilt": the kind's whole sentence in
+ * the user's language, split around its names, so each language puts them where its word order does.
+ */
+export type Headline = HeadlineSegment[]
+
+// Why: by ActivityKind's code, the sentence of what each kind did, with its {who} and {subject} (none for a payment),
+// as Android's activity_kind_*; a group edit of only the default split says so.
+const sentences: Record<string, MessageKey> = {
   bill_created: 'activity_billCreated',
   bill_edited: 'activity_billEdited',
   bill_deleted: 'activity_billDeleted',
@@ -101,24 +107,64 @@ export function actorName(item: JsActivityItem): string {
 export function headline(item: JsActivityItem): Headline {
   const isDefaultSplitOnly = item.kind === 'group_edited' && item.changes.length === 1 && item.changes[0].field === 'default_split'
   // Why: a comment deleted since reads "Ana apagou um comentário em Jantar", with no text under it.
-  const verbKey = isDefaultSplitOnly
+  const sentenceKey = isDefaultSplitOnly
     ? 'activity_groupDefaultSplit'
     : item.isCommentDeleted
       ? 'activity_commentDeleted'
       : item.kind === SIMPLIFY_KIND
         ? item.isSimplifyTurnedOn ? 'activity_simplifyOn' : 'activity_simplifyOff'
-        : (verbs[item.kind] ?? 'activity_billEdited')
-  // Why: Spanish says "Ana dividió" but "Tú dividiste".
-  const verb = item.actorIsMe ? verbForYou(t(verbKey)) : t(verbKey)
+        : (sentences[item.kind] ?? 'activity_billEdited')
   const isPayment = item.kind === 'payment_recorded' || item.kind === 'payment_undone'
-  const subject = isPayment ? null : groupKinds.has(item.kind) ? item.groupName : (item.subject ?? item.groupName)
-  return { who: actorName(item), verb, subject: subject ?? null }
+  // Why: as Android's objectOf, the group's own events name the group first and the others their subject first.
+  const known = groupKinds.has(item.kind) ? (item.groupName ?? item.subject) : (item.subject ?? item.groupName)
+  const subject = isPayment ? null : (known ?? unknownSubject(item.kind))
+  return sentenceSegments(t(sentenceKey), actorName(item), subject ?? null, item.actorIsMe)
+}
+
+// Why: a sentence with its subject cut reads broken where the subject sits mid-sentence ("Ana hat … von geändert",
+// "Anaがを割り勘しました"), so a bill or a group the device can't name is "this bill" or "this group", as the
+// deleted-item notice says it. A person's name has no such stand-in, so those sentences drop it.
+function unknownSubject(kind: string): string | null {
+  if (kind.startsWith('bill_') || kind.startsWith('comment_')) return t('activity_thisBill')
+  if (kind.startsWith('group_') || groupKinds.has(kind)) return t('activity_thisGroup')
+  return null
+}
+
+/**
+ * The sentence split at its {who} and {subject}. When the user is the actor, the words right after {who} take the
+ * second person ("Tú dividiste", "Du hast … aufgeteilt"), as Android's `templateForActorOf` does. A subject the device
+ * doesn't know drops out with the gap before it.
+ */
+function sentenceSegments(sentence: string, who: string, subject: string | null, actorIsMe: boolean): Headline {
+  const segments: Headline = []
+  let isAfterWho = false
+  for (const piece of sentence.split(/(\{who\}|\{subject\})/)) {
+    if (piece === '{who}') {
+      segments.push({ text: who, isName: true })
+      isAfterWho = true
+    } else if (piece === '{subject}') {
+      const last = segments.at(-1)
+      if (subject) segments.push({ text: subject, isName: true })
+      else if (last && !last.isName) last.text = last.text.trimEnd()
+      isAfterWho = false
+    } else if (piece) {
+      segments.push({ text: isAfterWho && actorIsMe ? secondPerson(piece) : piece, isName: false })
+      isAfterWho = false
+    }
+  }
+  return segments
+}
+
+/** `verbForYou` on the words between the names, keeping the gaps around them. */
+function secondPerson(words: string): string {
+  const core = words.trim()
+  const start = words.indexOf(core)
+  return `${words.slice(0, start)}${verbForYou(core)}${words.slice(start + core.length)}`
 }
 
 /** The headline as one sentence, for a row's accessible name and the detail's region. */
 export function headlineText(item: JsActivityItem): string {
-  const line = headline(item)
-  return [line.who, line.verb, line.subject].filter(Boolean).join(wordGap)
+  return headline(item).map((segment) => segment.text).join('')
 }
 
 function amountOf(item: JsActivityItem): string {

@@ -66,8 +66,8 @@ The feed, unread state, real time and push notifications.
     every Dutch verb phrase is a perfect starting with "heeft" or "is" ("Ana heeft Diner verdeeld", "Ana is lid
     geworden van Reis"), which the user's rows turn into "hebt" or "bent" ("Jij hebt Diner verdeeld", "Jij bent lid
     geworden van Reis"). The deleted-item notice starts with who deleted it in these four languages too, as in Spanish
-    and French. Japanese doesn't conjugate by person, so its rows need no rule: the verb phrase starts with its
-    particle and follows the name with no space ("Anaが支出を割り勘しました：夕食", "あなたが…"), and the sentences the
+    and French. Japanese doesn't conjugate by person, so its rows need no rule: the sentence follows the name with
+    its particle and no space ("Anaが夕食を割り勘しました", "あなたが…"), and the sentences the
     code joins (a deleted item's date, Simplify debts' detail) go together with no space and end with "。". Turkish
     puts the verb last: every Turkish verb phrase ends with its simple past in "-dı/-di/-du/-dü" (or "-tı…"), before
     the colon that leads to the object ("Ana bir harcamayı böldü: Akşam yemeği"), and the user's rows add an "n" to
@@ -83,6 +83,13 @@ The feed, unread state, real time and push notifications.
     adjuntaste"), and French's and Italian's elided auxiliaries change as the bare ones do ("l’a" to "l’as", "l’ha" to
     "l’hai"). A line written without a verb after the name stays as it is (German's "Du · heute um 21:10 angehängt",
     Turkish's "Sen · bugün, 21:10 eklendi").
+  - Each kind's headline is one whole sentence per language with the actor's name and the subject in it, never a verb
+    phrase glued between the names, so each language puts the subject where its word order does: "Ana split Dinner",
+    "Ana hat Abendessen aufgeteilt", "Ana heeft Diner verdeeld", "Anaが夕食を割り勘しました" (Android's
+    `activity_kind_*`, the Apple app's `SecondPerson` stand-ins, the web's `{who}` / `{subject}` messages, issue #283).
+    The second-person rules above change the words right after the actor's name. Both names stay bold wherever the
+    sentence puts them. Turkish keeps the colon before the subject on every platform ("Ana bir harcamayı böldü: Akşam
+    yemeği"), as its verb comes last.
   - Real time (beta feedback 13, Pierre's call): while the app is in front and online, the other members' changes
     show on the device right away, with no sync to wait for: someone joining, leaving, added, removed or released, a
     group renamed or edited, a bill created, edited or deleted, a payment recorded or undone, and everything else

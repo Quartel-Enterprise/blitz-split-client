@@ -69,7 +69,7 @@ export const esES: Partial<Record<MessageKey, string>> = {
   profile_appBodyPhone: 'Descárgala desde la tienda de tu móvil.',
   appBanner_body: 'Añade gastos al instante y recibe avisos de pagos',
   activity_notificationSettings: 'Ajustes de notificaciones',
-  activity_memberAdded: 'añadió a',
+  activity_memberAdded: '{who} añadió a {subject}',
   contactProfile_addToGroup: 'Añadir a un grupo',
   contactProfile_addToGroupPerson: 'Añadir a {name} a un grupo',
   contactProfile_add: 'Añadir',

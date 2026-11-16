@@ -1,0 +1,26 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "web"
+      ],
+      "text": {
+        "en": "In German, Dutch and Japanese, Activity's sentences now read in each language's natural word order, with no colon before the bill or group's name.",
+        "pt": "Em alemão, holandês e japonês, as frases da Atividade agora seguem a ordem natural de cada idioma, sem dois-pontos antes do nome da conta ou do grupo.",
+        "pt-PT": "Em alemão, neerlandês e japonês, as frases da Atividade seguem agora a ordem natural de cada língua, sem dois pontos antes do nome da despesa ou do grupo.",
+        "es": "En alemán, neerlandés y japonés, las frases de Actividad ahora siguen el orden natural de cada idioma, sin dos puntos antes del nombre del gasto o del grupo.",
+        "fr": "En allemand, en néerlandais et en japonais, les phrases d’Activité suivent désormais l’ordre naturel de chaque langue, sans deux-points avant le nom de la dépense ou du groupe.",
+        "de": "Die Sätze unter Aktivität stehen jetzt in natürlicher Wortstellung, ohne Doppelpunkt vor dem Namen der Ausgabe oder Gruppe: „Ana hat Abendessen aufgeteilt“.",
+        "it": "In tedesco, olandese e giapponese, le frasi di Attività ora seguono l’ordine naturale di ogni lingua, senza i due punti prima del nome della spesa o del gruppo.",
+        "pl": "Po niemiecku, niderlandzku i japońsku zdania w Aktywności mają teraz naturalny szyk każdego języka, bez dwukropka przed nazwą wydatku lub grupy.",
+        "nl": "De zinnen in Activiteit staan nu in de natuurlijke woordvolgorde, zonder dubbele punt voor de naam van de uitgave of groep: \"Ana heeft Diner verdeeld\".",
+        "ja": "アクティビティの文が自然な語順になり、支出やグループの名前の前にコロンが付かなくなりました（例：「Anaが夕食を割り勘しました」）。",
+        "tr": "Almanca, Felemenkçe ve Japoncada Etkinlik cümleleri artık her dilin doğal söz dizimiyle, harcama ya da grup adından önce iki nokta olmadan okunuyor.",
+        "id": "Dalam bahasa Jerman, Belanda, dan Jepang, kalimat di Aktivitas kini mengikuti urutan kata alami tiap bahasa, tanpa titik dua sebelum nama tagihan atau grup.",
+        "ru": "На немецком, нидерландском и японском фразы в «Активности» теперь звучат в естественном порядке слов, без двоеточия перед названием счёта или группы.",
+        "uk": "Німецькою, нідерландською та японською фрази в «Активності» тепер мають природний порядок слів, без двокрапки перед назвою рахунку чи групи."
+      }
+    }
+  ]
+}
