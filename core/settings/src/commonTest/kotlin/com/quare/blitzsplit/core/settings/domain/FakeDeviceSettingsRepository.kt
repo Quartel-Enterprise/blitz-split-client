@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.settings.domain
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.StatsChartPreferences
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.core.settings.domain.repository.DeviceSettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,8 @@ internal class FakeDeviceSettingsRepository(
     val updatedDynamicColors = mutableListOf<Boolean>()
     val bitcoinInSats = MutableStateFlow(false)
     val updatedBitcoinInSats = mutableListOf<Boolean>()
+    val timeFormat = MutableStateFlow(TimeFormatPreference.SYSTEM)
+    val updatedTimeFormats = mutableListOf<TimeFormatPreference>()
     val lastUpdatePromptAt = MutableStateFlow<Long?>(null)
     val usageDataSharing = MutableStateFlow(true)
     val updatedUsageDataSharing = mutableListOf<Boolean>()
@@ -59,6 +62,13 @@ internal class FakeDeviceSettingsRepository(
     override suspend fun updateBitcoinInSats(isOn: Boolean) {
         updatedBitcoinInSats += isOn
         bitcoinInSats.value = isOn
+    }
+
+    override fun observeTimeFormat(): Flow<TimeFormatPreference> = timeFormat
+
+    override suspend fun updateTimeFormat(timeFormat: TimeFormatPreference) {
+        updatedTimeFormats += timeFormat
+        this.timeFormat.value = timeFormat
     }
 
     override fun observeLastUpdatePromptAt(): Flow<Long?> = lastUpdatePromptAt

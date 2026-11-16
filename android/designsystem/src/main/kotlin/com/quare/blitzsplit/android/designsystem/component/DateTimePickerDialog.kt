@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import com.quare.blitzsplit.android.designsystem.R
+import com.quare.blitzsplit.android.designsystem.format.rememberIs24HourClock
 import com.quare.blitzsplit.android.designsystem.layout.DialogPlacement
 import com.quare.blitzsplit.android.designsystem.layout.FoldDialog
 import com.quare.blitzsplit.android.designsystem.layout.rememberFoldLayout
@@ -158,6 +159,7 @@ fun TimeOfDayPickerDialog(
     val timeState = rememberTimePickerState(
         initialHour = initialHour,
         initialMinute = initialMinute,
+        is24Hour = rememberIs24HourClock(),
     )
     val dismiss: @Composable () -> Unit = {
         TextButton(onClick = onDismiss) { Text(stringResource(R.string.designsystem_picker_cancel)) }

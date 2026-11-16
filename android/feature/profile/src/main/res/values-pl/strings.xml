@@ -48,6 +48,10 @@
     <string name="profile_section_preferences">Preferencje</string>
     <string name="profile_appearance">Wygląd</string>
     <string name="profile_language">Język</string>
+    <string name="profile_time_format">Format godziny</string>
+    <string name="profile_time_format_system">Systemowy</string>
+    <string name="profile_time_format_24_hour">24-godzinny</string>
+    <string name="profile_time_format_12_hour">12-godzinny</string>
     <string name="profile_language_search">Szukaj języka</string>
     <string name="profile_language_search_clear">Wyczyść wyszukiwanie</string>
     <string name="profile_language_no_results">Brak języków pasujących do „%1$s”</string>

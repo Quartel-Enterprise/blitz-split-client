@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.settings.domain.repository
 import com.quare.blitzsplit.core.model.GroupsLayout
 import com.quare.blitzsplit.core.model.StatsChartPreferences
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import kotlinx.coroutines.flow.Flow
 
 interface DeviceSettingsRepository {
@@ -25,6 +26,10 @@ interface DeviceSettingsRepository {
     fun observeBitcoinInSats(): Flow<Boolean>
 
     suspend fun updateBitcoinInSats(isOn: Boolean)
+
+    fun observeTimeFormat(): Flow<TimeFormatPreference>
+
+    suspend fun updateTimeFormat(timeFormat: TimeFormatPreference)
 
     fun observeLastUpdatePromptAt(): Flow<Long?>
 

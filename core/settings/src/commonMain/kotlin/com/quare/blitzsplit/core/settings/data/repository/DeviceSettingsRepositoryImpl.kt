@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.StatsChartPreferences
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.core.settings.data.datasource.DeviceSettingsLocalDataSource
 import com.quare.blitzsplit.core.settings.domain.repository.DeviceSettingsRepository
 import kotlinx.coroutines.flow.Flow
@@ -83,6 +84,16 @@ class DeviceSettingsRepositoryImpl(
 
     override suspend fun updateBitcoinInSats(isOn: Boolean) {
         local.update { entity -> entity.copy(showsBitcoinInSats = isOn) }
+    }
+
+    // Why: no row yet, nothing picked, or a code from a newer version follows the system's clock.
+    override fun observeTimeFormat(): Flow<TimeFormatPreference> = local
+        .observe()
+        .map { entity -> entity?.timeFormat?.let(TimeFormatPreference::fromCodeOrNull) ?: TimeFormatPreference.SYSTEM }
+        .distinctUntilChanged()
+
+    override suspend fun updateTimeFormat(timeFormat: TimeFormatPreference) {
+        local.update { entity -> entity.copy(timeFormat = timeFormat.code) }
     }
 
     override fun observeLastUpdatePromptAt(): Flow<Long?> = local

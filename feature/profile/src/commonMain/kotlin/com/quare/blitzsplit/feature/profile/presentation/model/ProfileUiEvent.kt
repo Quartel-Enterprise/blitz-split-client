@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
 import com.quare.blitzsplit.core.presentation.analytics.SignInAnalytics
@@ -104,6 +105,10 @@ sealed interface ProfileUiEvent : UiEvent {
             is OnLanguageSelected -> EventAnalytics.Manual("language_selected")
 
             is OnLanguageQueryChanged -> EventAnalytics.NotTracked
+
+            OnTimeFormatClicked -> EventAnalytics.Manual("profile_time_format_clicked")
+
+            is OnTimeFormatSelected -> EventAnalytics.Manual("time_format_selected")
 
             OnDynamicColorsInfoClicked -> EventAnalytics.Manual("profile_dynamic_colors_info_clicked")
 
@@ -211,6 +216,13 @@ sealed interface ProfileUiEvent : UiEvent {
     // Why: Android's "Search languages" field, over the Language sheet or screen.
     data class OnLanguageQueryChanged(
         val query: String,
+    ) : ProfileUiEvent
+
+    // Why: Android's "Time format" row, which opens its dialog; the Apple apps and the web pick in place.
+    data object OnTimeFormatClicked : ProfileUiEvent
+
+    data class OnTimeFormatSelected(
+        val timeFormat: TimeFormatPreference,
     ) : ProfileUiEvent
 
     data object OnDynamicColorsInfoClicked : ProfileUiEvent

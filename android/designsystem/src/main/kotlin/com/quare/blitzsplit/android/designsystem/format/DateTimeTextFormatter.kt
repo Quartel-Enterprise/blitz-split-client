@@ -4,7 +4,6 @@ import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import java.time.Instant
 import java.time.ZoneId
@@ -14,7 +13,8 @@ import java.util.Locale
 
 /*
  * Why: the shared code hands days and times as epoch millis; the platform writes them in the UI's language, in the
- * device's time zone and with its 12 or 24 hour clock ("Sex., 24 de out.", "28 de out.", "21:30" or "9:30 PM").
+ * device's time zone and with the 12 or 24 hour clock of Profile's "Time format", the system's by default ("Sex., 24
+ * de out.", "28 de out.", "21:30" or "9:30 PM").
  */
 @Stable
 class DateTimeTextFormatter(
@@ -22,9 +22,11 @@ class DateTimeTextFormatter(
     private val zone: ZoneId,
     is24Hour: Boolean,
 ) {
-    private val weekdayDate = formatterOf(WEEKDAY_DATE_SKELETON)
-    private val date = formatterOf(DATE_SKELETON)
-    private val time = formatterOf(if (is24Hour) TIME_24_HOUR_SKELETON else TIME_12_HOUR_SKELETON)
+    // Why: each pattern is resolved on first use, so a caller that only writes times (Time format's examples) pays for one.
+    private val weekdayDate by lazy { formatterOf(WEEKDAY_DATE_SKELETON) }
+    private val date by lazy { formatterOf(DATE_SKELETON) }
+    private val timeSkeleton = if (is24Hour) TIME_24_HOUR_SKELETON else TIME_12_HOUR_SKELETON
+    private val time by lazy { formatterOf(timeSkeleton) }
 
     fun toWeekdayDateText(epochMillis: Long): String = weekdayDate
         .format(zonedOf(epochMillis))
@@ -52,8 +54,7 @@ fun rememberDateTimeTextFormatter(): DateTimeTextFormatter {
     val locale = LocalLocale.current.platformLocale
     val cache = LocalFormatterCache.current
     if (cache != null && cache.isFor(locale)) return cache.dates
-    val context = LocalContext.current
-    val is24Hour = DateFormat.is24HourFormat(context)
+    val is24Hour = rememberIs24HourClock()
     return remember(locale, is24Hour) {
         DateTimeTextFormatter(
             locale = locale,

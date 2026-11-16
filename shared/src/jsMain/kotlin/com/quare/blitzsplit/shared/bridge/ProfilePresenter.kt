@@ -5,6 +5,7 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.PaymentMethod
 import com.quare.blitzsplit.core.model.ThemePreference
+import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.feature.profile.presentation.model.ProfileUiAction
@@ -51,6 +52,8 @@ class JsProfileState(
     val sharesUsageData: Boolean,
     // Why: Preferences' "Language": "system", or the tag of the language picked ("en", "pt-BR").
     val language: String,
+    // Why: Preferences' "Time format": "system", "24h" or "12h".
+    val timeFormat: String,
     // Why: the codes of the options, in the order every UI lists them.
     val languageOptions: Array<String>,
     // Why: null while it loads, also while a restored account's choices haven't come down.
@@ -138,6 +141,7 @@ class ProfilePresenter {
                 showsBitcoinInSats = state.showsBitcoinInSats,
                 sharesUsageData = state.sharesUsageData,
                 language = state.language.code,
+                timeFormat = state.timeFormat.code,
                 languageOptions = state.languageOptions.map { it.code }.toTypedArray(),
                 activeNotificationCount = state.activeNotificationCount.valueOrNull(),
                 dialog = state.dialog?.name,
@@ -280,6 +284,11 @@ class ProfilePresenter {
     fun selectTheme(themeCode: String) {
         val theme = ThemePreference.fromCodeOrNull(themeCode) ?: return
         viewModel.onEvent(ProfileUiEvent.OnThemeSelected(theme))
+    }
+
+    fun selectTimeFormat(timeFormatCode: String) {
+        val timeFormat = TimeFormatPreference.fromCodeOrNull(timeFormatCode) ?: return
+        viewModel.onEvent(ProfileUiEvent.OnTimeFormatSelected(timeFormat))
     }
 
     fun selectLanguage(languageCode: String) {

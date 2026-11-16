@@ -42,11 +42,13 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveTimeFormatPreference
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveUsageDataSharing
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateAppLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateTimeFormatPreference
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateUsageDataSharing
 import com.quare.blitzsplit.core.support.domain.usecase.FindRateAppLink
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
@@ -117,6 +119,8 @@ class ProfileViewModel(
     observeUsageDataSharing: ObserveUsageDataSharing,
     observeAppLanguage: ObserveAppLanguage,
     updateAppLanguage: UpdateAppLanguage,
+    observeTimeFormat: ObserveTimeFormatPreference,
+    updateTimeFormat: UpdateTimeFormatPreference,
     dynamicColorSupport: DynamicColorSupport,
     observeNotificationPreferences: ObserveNotificationPreferences,
     observePendingNotificationPreferenceChanges: ObservePendingNotificationPreferenceChanges,
@@ -143,6 +147,8 @@ class ProfileViewModel(
     private val dialogs = ProfileDialogs(uiState, trackEvent)
 
     private val languagePicker = ProfileLanguagePicker(uiState, updateAppLanguage, trackEvent, ::emit)
+
+    private val timeFormatPicker = ProfileTimeFormatPicker(uiState, updateTimeFormat, trackEvent, viewModelScope)
 
     private val updateCheck = ProfileUpdateCheck(
         uiState = uiState,
@@ -173,7 +179,10 @@ class ProfileViewModel(
     val actionWatcher: FlowWatcher<ProfileUiAction> = FlowWatcher(uiAction)
 
     init {
-        // Why: isLoaded once the profile, account, theme, colors, bitcoin's unit and what waits to go up each answered.
+        /*
+         * Why: isLoaded once the profile, account, theme, colors, bitcoin's unit, the time format and what waits to go
+         * up each answered.
+         */
         combine(
             observeProfile().onEach(::updateProfile),
             observeAccount().onEach(::updateAccount),
@@ -190,12 +199,14 @@ class ProfileViewModel(
                 observeDynamicColors(),
                 observeBitcoinInSats(),
                 observeUsageDataSharing(),
-            ) { isDynamic, sats, usage ->
+                observeTimeFormat(),
+            ) { isDynamic, sats, usage, timeFormat ->
                 uiState.update {
                     it.copy(
                         usesDynamicColors = isDynamic,
                         showsBitcoinInSats = sats,
                         sharesUsageData = usage,
+                        timeFormat = timeFormatPicker.toShown(timeFormat),
                     )
                 }
             },
@@ -312,6 +323,10 @@ class ProfileViewModel(
             is ProfileUiEvent.OnLanguageSelected -> languagePicker.select(event.language)
 
             is ProfileUiEvent.OnLanguageQueryChanged -> languagePicker.search(event.query)
+
+            ProfileUiEvent.OnTimeFormatClicked -> dialogs.openTimeFormat()
+
+            is ProfileUiEvent.OnTimeFormatSelected -> timeFormatPicker.select(event.timeFormat)
 
             ProfileUiEvent.OnDynamicColorsInfoClicked -> dialogs.openDynamicColorsInfo()
 

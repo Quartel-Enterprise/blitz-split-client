@@ -58,6 +58,7 @@ final class AppModel {
         mainWindowLanguage = language
         AppLocale.apply(language)
         BitcoinUnit.shared.showsSats = (viewModel.showsBitcoinInSats.value as? KotlinBoolean)?.boolValue ?? false
+        ClockFormat.shared.preference = viewModel.timeFormat.value as? TimeFormatPreference ?? .system
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.isReady = state == .ready
         })
@@ -84,6 +85,9 @@ final class AppModel {
         })
         watches.add(viewModel.bitcoinInSatsWatcher.observe { showsSats in
             BitcoinUnit.shared.showsSats = showsSats.boolValue
+        })
+        watches.add(viewModel.timeFormatWatcher.observe { timeFormat in
+            ClockFormat.shared.preference = timeFormat
         })
         watches.add(viewModel.reviewRequestWatcher.observe { [weak self] _ in
             self?.reviewRequestCount += 1

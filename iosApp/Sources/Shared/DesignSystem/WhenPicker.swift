@@ -26,6 +26,7 @@ struct WhenPickerRows: View {
             )
             .datePickerStyle(.graphical)
             .labelsHidden()
+            .clockHourCycle()
         }
     }
 }
@@ -60,6 +61,7 @@ struct BillWhenPickerRows: View {
             Spacer()
             DatePicker("Time", selection: $time, displayedComponents: [.hourAndMinute])
                 .labelsHidden()
+                .clockHourCycle()
         }
     }
 }
@@ -126,6 +128,7 @@ struct MacWhenField: View {
                         displayedComponents: [.hourAndMinute],
                     )
                     .datePickerStyle(.stepperField)
+                    .clockHourCycle()
                 }
                 .padding()
             }
@@ -165,8 +168,25 @@ struct MacBillWhenField: View {
                 DatePicker("Time", selection: $time, displayedComponents: [.hourAndMinute])
                     .datePickerStyle(.stepperField)
                     .labelsHidden()
+                    .clockHourCycle()
             }
         }
     }
 }
 #endif
+
+/// A time picker on Profile's "Time format" (`ClockFormat`), in the windows' language: 24 hours or 12 with AM and PM,
+/// the device's own clock by default, as every time the app writes.
+private struct ClockHourCycle: ViewModifier {
+    @Environment(\.locale) private var locale
+
+    func body(content: Content) -> some View {
+        content.environment(\.locale, ClockFormat.shared.locale(from: locale))
+    }
+}
+
+extension View {
+    func clockHourCycle() -> some View {
+        modifier(ClockHourCycle())
+    }
+}

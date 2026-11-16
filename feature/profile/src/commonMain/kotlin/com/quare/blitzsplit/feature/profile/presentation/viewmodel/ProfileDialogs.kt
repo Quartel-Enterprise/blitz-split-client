@@ -37,6 +37,13 @@ internal class ProfileDialogs(
         }
     }
 
+    // Why: the format picked shows only once it was read, never the default guessed.
+    fun openTimeFormat() {
+        if (uiState.value.isLoaded && show(ProfileDialog.TIME_FORMAT)) {
+            trackEvent("profile_time_format_clicked", emptyMap())
+        }
+    }
+
     // Why: only where the switch it explains shows, and over Appearance, where its button is.
     fun openDynamicColorsInfo() {
         val state = uiState.value

@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.designsystem.format
 
-import android.text.format.DateFormat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -63,14 +62,14 @@ fun FormattersRoot(content: @Composable () -> Unit) {
     val showsSats = LocalShowsBitcoinInSats.current
     val satsText = rememberSatsText()
     val context = LocalContext.current
-    var is24Hour by remember { mutableStateOf(DateFormat.is24HourFormat(context)) }
+    val is24Hour = rememberIs24HourClock()
     var zone by remember { mutableStateOf(ZoneId.systemDefault()) }
     /*
-     * Why: the clock's 12 or 24 hours and the time zone change in the system's settings, while the app is away. The
-     * cache is only built again when one of them really changed, so coming back from a picker redraws nothing.
+     * Why: the time zone changes in the system's settings, while the app is away, as the clock's 12 or 24 hours do
+     * (rememberIs24HourClock). The cache is only built again when one of them really changed, so coming back from a
+     * picker redraws nothing.
      */
     LifecycleResumeEffect(context) {
-        is24Hour = DateFormat.is24HourFormat(context)
         zone = ZoneId.systemDefault()
         onPauseOrDispose {}
     }

@@ -139,6 +139,13 @@ internal fun ProfileDialogsOverlay(
             placement = placement,
         )
 
+        ProfileDialog.TIME_FORMAT -> TimeFormatDialog(
+            state = state,
+            onEvent = onEvent,
+            onDismiss = onDismiss,
+            placement = placement,
+        )
+
         ProfileDialog.APPEARANCE, ProfileDialog.LANGUAGE, null -> Unit
     }
 }

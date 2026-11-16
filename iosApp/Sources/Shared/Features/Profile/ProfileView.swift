@@ -420,6 +420,22 @@ private struct PreferencesSection: View {
                 // The row shows the pick by its own name alone, the menu's subtitle being for choosing
                 LanguageName(language: model.state.language, showsTranslation: false)
             }
+            Picker(
+                selection: Binding(
+                    get: { model.state.timeFormat },
+                    set: { model.send(ProfileUiEventOnTimeFormatSelected(timeFormat: $0)) },
+                ),
+            ) {
+                ForEach(TimeFormatPreference.entries, id: \.self) { timeFormat in
+                    TimeFormatName(timeFormat: timeFormat).tag(timeFormat)
+                }
+            } label: {
+                Text("Time format")
+            } currentValueLabel: {
+                // The row shows the pick alone, the menu's example being for choosing
+                TimeFormatName(timeFormat: model.state.timeFormat, showsSample: false)
+            }
+            .disabled(!model.state.isLoaded)
             Toggle(
                 isOn: Binding(
                     get: { model.state.showsBitcoinInSats },
@@ -453,6 +469,34 @@ private struct PreferencesSection: View {
             #endif
             CategoryMapRow(model: model)
         }
+    }
+}
+
+/// An option of Profile's "Time format", with how 2:30 in the afternoon reads in it under it ("14:30", "2:30 PM"; the
+/// device's own clock for System), which a menu draws as the item's subtitle.
+private struct TimeFormatName: View {
+    let timeFormat: TimeFormatPreference
+    var showsSample = true
+
+    var body: some View {
+        // One view, so the Picker takes it as one option, its second line as the menu item's subtitle
+        VStack(alignment: .leading) {
+            switch timeFormat {
+            case .twentyFourHour: Text("24-hour")
+            case .twelveHour: Text("12-hour")
+            // Its own key: "System" agrees with the format, not the theme, in Russian and Ukrainian
+            default: Text("System time format")
+            }
+            if showsSample {
+                Text(verbatim: sample)
+            }
+        }
+    }
+
+    private var sample: String {
+        let sample = Calendar.current.date(bySettingHour: 14, minute: 30, second: 0, of: .now) ?? .now
+        let locale = ClockFormat.shared.locale(from: .autoupdatingCurrent, as: timeFormat)
+        return sample.formatted(Date.FormatStyle(date: .omitted, time: .shortened, locale: locale))
     }
 }
 

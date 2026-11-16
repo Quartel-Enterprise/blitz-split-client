@@ -46,6 +46,10 @@
     <string name="profile_section_preferences">Voorkeuren</string>
     <string name="profile_appearance">Weergave</string>
     <string name="profile_language">Taal</string>
+    <string name="profile_time_format">Tijdnotatie</string>
+    <string name="profile_time_format_system">Systeem</string>
+    <string name="profile_time_format_24_hour">24-uursklok</string>
+    <string name="profile_time_format_12_hour">12-uursklok</string>
     <string name="profile_language_search">Taal zoeken</string>
     <string name="profile_language_search_clear">Zoekopdracht wissen</string>
     <string name="profile_language_no_results">Geen taal gevonden voor ‘%1$s’</string>

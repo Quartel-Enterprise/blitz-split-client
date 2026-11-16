@@ -13,6 +13,55 @@ final class BitcoinUnit {
     private init() {}
 }
 
+/// Profile's "Time format" as `AppModel` last read it: every time of day drawn, and the time pickers, follow it, and a
+/// view that writes one redraws when it changes, since `ExpenseFormat.time` reads it inside the body.
+@Observable
+final class ClockFormat {
+    static let shared = ClockFormat()
+
+    var preference: TimeFormatPreference = .system {
+        didSet { locale = locale(from: .autoupdatingCurrent) }
+    }
+
+    /// The device's locale on the hour cycle picked: 24 hours ("14:30") or 12 with AM and PM ("2:30 PM"), in the
+    /// device's own way of writing them; the device's locale as it is while it follows the system. Kept, not built
+    /// again for each row a list formats.
+    private(set) var locale: Locale = .autoupdatingCurrent
+
+    private init() {
+        // A picked hour cycle sits on a copy of the device's locale, so a region changed while the app runs is taken
+        // again, as System's autoupdating locale takes it.
+        NotificationCenter.default.addObserver(
+            forName: NSLocale.currentLocaleDidChangeNotification,
+            object: nil,
+            queue: .main,
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.locale = self.locale(from: .autoupdatingCurrent)
+            }
+        }
+    }
+
+    /// `base` on the hour cycle picked, so a time picker drawn in the app's language (the windows' `locale`) keeps it.
+    func locale(from base: Locale) -> Locale {
+        locale(from: base, as: preference)
+    }
+
+    /// `base` on `timeFormat`'s hour cycle, whatever was picked: Profile's examples of each option.
+    func locale(from base: Locale, as timeFormat: TimeFormatPreference) -> Locale {
+        let hourCycle: Locale.HourCycle? = switch timeFormat {
+        case .twentyFourHour: .zeroToTwentyThree
+        case .twelveHour: .oneToTwelve
+        default: nil
+        }
+        guard let hourCycle else { return base }
+        var components = Locale.Components(locale: base)
+        components.hourCycle = hourCycle
+        return Locale(components: components)
+    }
+}
+
 /// Amounts arrive in the group currency's minor unit (cents, or whole yen) and dates as epoch millis: each is
 /// written here the way the device's language writes it.
 extension GroupCurrency {
@@ -114,9 +163,9 @@ enum ExpenseFormat {
         Int64((date.timeIntervalSince1970 * 1000).rounded())
     }
 
-    /// "21:30" or "9:30 PM".
+    /// "21:30" or "9:30 PM", on Profile's "Time format" (the device's own clock by default).
     static func time(_ millis: Int64) -> String {
-        date(of: millis).formatted(date: .omitted, time: .shortened)
+        date(of: millis).formatted(Date.FormatStyle(date: .omitted, time: .shortened, locale: ClockFormat.shared.locale))
     }
 
     /// A day of the group's list: "Today", "Yesterday" or "Fri, Oct 24".

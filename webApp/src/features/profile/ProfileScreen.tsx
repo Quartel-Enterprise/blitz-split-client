@@ -18,6 +18,7 @@ import { Switch } from '@/components/ui/switch'
 import { NotificationSettingsCard } from '@/features/notification-settings/NotificationSettingsCard'
 import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
+import { formatSampleTime, type TimeFormat } from '@/lib/dates'
 import { downloadExport } from '@/lib/export'
 import { copyLink, shareOrCopy } from '@/lib/share'
 import type { PaymentKeyFormat, PaymentKeyType } from '@/lib/paymentKey'
@@ -31,6 +32,13 @@ const themes: { code: string; label: MessageKey }[] = [
   { code: 'system', label: 'profile_themeSystem' },
   { code: 'light', label: 'profile_themeLight' },
   { code: 'dark', label: 'profile_themeDark' },
+]
+
+// Why: Profile's "Time format", System (the browser's clock for the language) first, as the theme's segments.
+const timeFormats: { code: TimeFormat; label: MessageKey }[] = [
+  { code: 'system', label: 'profile_timeFormatSystem' },
+  { code: '24h', label: 'profile_timeFormat24Hour' },
+  { code: '12h', label: 'profile_timeFormat12Hour' },
 ]
 
 /**
@@ -567,6 +575,34 @@ function AppearanceCard({ presenter, state, className }: CardProps) {
                     <span lang={nativeName ? code : undefined}>{nativeName ?? name}</span>
                     {/* The app's own name for it, unless both read the same ("Italiano") */}
                     {nativeName && nativeName !== name && <span className="text-xs font-normal">{name}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+        {state.isLoaded && (
+          <div className="mt-4 flex flex-col gap-2">
+            <span id="time-format" className="text-sm font-medium">
+              {t('profile_timeFormat')}
+            </span>
+            <div role="radiogroup" aria-labelledby="time-format" className="grid grid-cols-3 gap-1 rounded-lg bg-muted p-1">
+              {timeFormats.map((timeFormat) => {
+                const isSelected = timeFormat.code === state.timeFormat
+                return (
+                  <button
+                    key={timeFormat.code}
+                    role="radio"
+                    aria-checked={isSelected}
+                    onClick={() => presenter.selectTimeFormat(timeFormat.code)}
+                    className={cn(
+                      'flex min-h-8 flex-col items-center justify-center rounded-md px-2 py-1 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                      segmentClass(isSelected),
+                    )}
+                  >
+                    <span>{t(timeFormat.label)}</span>
+                    {/* How 2:30 in the afternoon reads in it, the browser's own clock for System */}
+                    <span className="text-xs font-normal tabular-nums">{formatSampleTime(timeFormat.code)}</span>
                   </button>
                 )
               })}

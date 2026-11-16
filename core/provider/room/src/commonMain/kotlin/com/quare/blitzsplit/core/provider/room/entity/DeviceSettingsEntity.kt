@@ -55,4 +55,7 @@ data class DeviceSettingsEntity(
      */
     @ColumnInfo(defaultValue = "NULL")
     val showsBetaReleaseNotes: Boolean?,
+    // Why: Profile's "Time format" ("system", "24h" or "12h"); null until picked on this device, when it follows the system.
+    @ColumnInfo(defaultValue = "NULL")
+    val timeFormat: String?,
 )

@@ -241,6 +241,23 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     launch. The web picks it in the Appearance card's segments and
     reloads the page in it, back on the profile. Neither has the search: the Apple menu is the system's, scrolling
     where it doesn't fit, and the web's segments sit in the page, never over it.
+  - Profile › Preferences › "Time format", right under "Language" (Pierre's beta feedback, November 2026): "System",
+    the default, which follows the device's own 12 or 24 hours (the browser's clock for the language on the web), "24-hour"
+    ("14:30") and "12-hour" with AM and PM ("2:30 PM"); Android's dialog and the web's segments show how 2:30 in the
+    afternoon reads in each under its name (System's in the device's clock), and the Apple menu does where the system
+    draws a menu item's subtitle (the Mac), as Language's. Every time of day the app draws follows it, on every platform: the group's bill and
+    payment rows, Bill's "When", its comments, attachments and History, Activity, a merge request's time, Split a bill's
+    and Record payment's "When" and their time pickers (Android's clock dial, the Apple pickers, the web's time field),
+    always in the device's own way of writing a time ("14 h 30" stays the language's). Each platform routes them through
+    one formatter that reads it: Android's `DateTimeTextFormatter` and `rememberIs24HourClock`, the Apple apps'
+    `ExpenseFormat.time` and `ClockFormat`, the web's `formatTime`. Kept per device and never synced, like the theme
+    (`timeFormat` in `device_settings`, so it outlives a sign out; `TimeFormatPreference`), and read before the first frame,
+    so no time shows on the system's clock before turning into the one picked (`AppViewModel.timeFormat`). Android's row
+    ("System", "24-hour") opens a dialog with a radio per option, closed by a pick (`ProfileDialog.TIME_FORMAT`; a book's
+    right half); the Apple apps pick in Preferences' menu, Settings on the Mac, and the web in the Appearance card's
+    segments, under Language. The web's time field stays the browser's own while it follows the system, and turns into
+    an hour and a minute select (and AM or PM) once a format is picked, since a browser's time input can't be told which
+    clock to draw.
   - "Dynamic colors" (Material You) shows in Appearance only where the platform hands the app its system colors,
     Android 12 and later (`DynamicColorSupport`, `ProfileUiState.showsDynamicColors`): off by default, it swaps the
     brand's Material scheme for the Android system's in light and dark alike, while the groups', avatars' and
