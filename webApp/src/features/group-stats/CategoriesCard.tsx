@@ -5,12 +5,7 @@ import { t } from '@/i18n'
 import { categoryStyle } from '@/lib/avatar'
 import { CategoryBadge, categoryName } from '@/lib/categories'
 import { cn } from '@/lib/utils'
-import { useReplay } from './useReplay'
-
-const radius = 52
-const stroke = 18
-const circumference = 2 * Math.PI * radius
-const gap = 2
+import { StatsRing, StatsRingCenter } from './StatsRing'
 
 /**
  * "Por categoria" (6.6): the ring of slices in each main category's fixed color, the largest in its center and the
@@ -34,7 +29,6 @@ export function CategoriesCard({
   const rows = state.categories
   const ringKey = `${state.periodStartMillis}-${state.periodEndMillis}-${rows.map((row) => `${row.category.id}:${row.percent}`).join(',')}`
   const [selected, setSelected] = useState<number | null>(null)
-  const isSwept = useReplay(ringKey)
 
   useEffect(() => setSelected(null), [ringKey])
 
@@ -47,46 +41,17 @@ export function CategoriesCard({
         {t('groupStats_byCategory')}
       </h2>
       <div className="flex items-center gap-5">
-        <div role="img" aria-label={description} className="relative size-[132px] shrink-0">
-          <svg
-            viewBox="0 0 132 132"
-            className="size-full -rotate-90"
-            onPointerLeave={(event) => {
-              if (event.pointerType === 'mouse') setSelected(null)
-            }}
-            onPointerMove={(event) => {
-              // Why: the mouse in the hole lets go, as on Android and Apple; a slice under it is the event's target.
-              if (event.pointerType === 'mouse' && event.target === event.currentTarget) setSelected(null)
-            }}
-          >
-            {slicesOf(rows).map(({ row, offset, length }, index) => (
-              <circle
-                key={row.category.id}
-                cx="66"
-                cy="66"
-                r={radius}
-                fill="none"
-                strokeWidth={stroke}
-                className={cn(
-                  'avatar-stroke origin-center cursor-pointer transition-[stroke-dasharray,stroke-dashoffset,scale,opacity] duration-300 ease-out [transform-box:view-box] motion-reduce:transition-none',
-                  selected === index && 'scale-[1.07]',
-                  selected !== null && selected !== index && 'opacity-40',
-                )}
-                style={categoryStyle(row.category.color)}
-                strokeDasharray={isSwept ? `${length} ${circumference - length}` : `0 ${circumference}`}
-                strokeDashoffset={isSwept ? -offset : 0}
-                onPointerEnter={(event) => {
-                  if (event.pointerType === 'mouse') setSelected(index)
-                }}
-                onClick={() => onOpen(row.category.id, 'ring')}
-              />
-            ))}
-          </svg>
-          <span aria-hidden className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
-            <span className="text-lg font-bold tabular-nums">{top.percent}%</span>
-            <span className="w-full truncate text-[11px] text-muted-foreground">{categoryName(top.category)}</span>
-          </span>
-        </div>
+        <StatsRing
+          slices={rows.map((row) => ({ id: row.category.id, percent: row.percent, color: row.category.color }))}
+          ringKey={ringKey}
+          label={description}
+          selected={selected}
+          size={132}
+          onPick={setSelected}
+          onTap={(index) => onOpen(rows[index].category.id, 'ring')}
+        >
+          <StatsRingCenter percent={top.percent} name={categoryName(top.category)} />
+        </StatsRing>
         <ul className="flex min-w-0 flex-col gap-0.5 text-[13px]">
           {rows.map((row, index) => (
             <li key={row.category.id} className="flex min-w-0">
@@ -149,16 +114,4 @@ function CategoryLine({ row, money, onOpen }: { row: JsStatsCategory; money: (mi
       </button>
     </li>
   )
-}
-
-// Why: each slice's length along the ring, with a thin gap after it while there is more than one.
-function slicesOf(rows: JsStatsCategory[]): { row: JsStatsCategory; offset: number; length: number }[] {
-  let offset = 0
-  return rows.map((row) => {
-    const full = (row.percent / 100) * circumference
-    const length = Math.max(0, rows.length > 1 ? full - gap : full)
-    const slice = { row, offset, length }
-    offset += full
-    return slice
-  })
 }

@@ -84,6 +84,7 @@
     <string name="group_stats_category_share">%1$s: toplamın %%%2$d kadarı</string>
     <string name="group_stats_category_percent">%%%d</string>
     <string name="group_stats_category_pie">Kategoriye göre dağılım: %s</string>
+    <string name="group_stats_person_pie">Kişiye göre dağılım: %s</string>
     <string name="group_stats_category_pie_part">%1$s %%%2$d</string>
     <string name="group_stats_settling">Hesaplaşma</string>
     <string name="group_stats_settles_fastest">En hızlı hesaplaşan</string>

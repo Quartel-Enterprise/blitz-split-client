@@ -2061,6 +2061,7 @@ export const ru: Record<MessageKey, string> = {
   splitBill_defaultExceptionTitle: 'Исключение группы для категории {name}: {description}',
   groupStats_byCategory: 'По категориям',
   groupStats_categoryPie: 'Разбивка по категориям: {parts}',
+  groupStats_personPie: 'Разбивка по людям: {parts}',
   groupStats_categoryShare: '{name}: {percent}% от итога',
   groupStats_categoryOpen: '{name}, {percent}%: посмотреть расходы',
   categoryExpenses_title: 'Расходы по категориям',

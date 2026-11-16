@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groupstats
 
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
@@ -157,7 +158,7 @@ class GroupStatsViewModelTest {
         // Then
         assertEquals(listOf(ANA, BRUNO, PIERRE), people.map { it.memberId })
         assertEquals(listOf(35_000L, 30_000L, 25_000L), people.map { it.amountMinor })
-        assertEquals(1.0, people.first().barFraction)
+        assertEquals(listOf(39, 33, 28), people.map { it.percent })
         assertTrue(people.single { it.memberId == PIERRE }.isMe)
     }
 
@@ -175,7 +176,7 @@ class GroupStatsViewModelTest {
             assertEquals(StatsPeopleView.PAID, state.peopleView)
             assertEquals(listOf(PIERRE, ANA, BRUNO), state.people.map { it.memberId })
             assertEquals(listOf(60_000L, 30_000L, 0L), state.people.map { it.amountMinor })
-            assertEquals(0.0, state.people.last().barFraction)
+            assertEquals(listOf(67, 33, 0), state.people.map { it.percent })
         }
 
     @Test
@@ -199,6 +200,247 @@ class GroupStatsViewModelTest {
             assertNull(former.name)
             assertEquals(10_000L, former.amountMinor)
         }
+
+    @Test
+    fun `GIVEN Consumo WHEN the statistics open THEN each person has the color of their place`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val people = viewModel.uiState.value.people
+
+            // Then
+            assertEquals(
+                listOf(ANA to CategoryColor.YELLOW, BRUNO to CategoryColor.PINK, PIERRE to CategoryColor.BLUE),
+                people.map { it.memberId to it.color },
+            )
+        }
+
+    @Test
+    fun `GIVEN Consumo WHEN picking Pagou THEN the list reorders but each person keeps their color`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val consumedColors = viewModel.uiState.value.people
+                .associate { it.memberId to it.color }
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeopleViewPicked(StatsPeopleView.PAID))
+
+            // Then
+            val people = viewModel.uiState.value.people
+            assertEquals(listOf(PIERRE, ANA, BRUNO), people.map { it.memberId })
+            assertEquals(consumedColors, people.associate { it.memberId to it.color })
+        }
+
+    @Test
+    fun `GIVEN someone who left in Por pessoa WHEN the statistics open THEN the former member is gray`() =
+        runTest(testDispatcher) {
+            // Given
+            val withFormer = expense(
+                id = "dinner",
+                amountMinor = 40_000,
+                spentAt = today,
+                payers = listOf(paid(FORMER, 40_000)),
+                shares = listOf(share(FORMER, 25_000), share(PIERRE, 5_000), share(ANA, 5_000), share(BRUNO, 5_000)),
+            )
+            prepareScenario(stored = listOf(withFormer))
+
+            // When
+            val people = viewModel.uiState.value.people
+
+            // Then
+            assertEquals(FORMER, people.first().memberId)
+            assertEquals(
+                mapOf(
+                    FORMER to CategoryColor.GRAY,
+                    PIERRE to CategoryColor.BLUE,
+                    ANA to CategoryColor.YELLOW,
+                    BRUNO to CategoryColor.PINK,
+                ),
+                people.associate { it.memberId to it.color },
+            )
+        }
+
+    @Test
+    fun `GIVEN Pagou with someone who left WHEN picking it THEN the former member stays gray`() =
+        runTest(testDispatcher) {
+            // Given
+            val withFormer = expense(
+                id = "dinner",
+                amountMinor = 20_000,
+                spentAt = today,
+                payers = listOf(paid(FORMER, 20_000)),
+                shares = listOf(share(PIERRE, 20_000)),
+            )
+            prepareScenario(stored = listOf(withFormer))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeopleViewPicked(StatsPeopleView.PAID))
+
+            // Then
+            val former = viewModel.uiState.value.people
+                .first()
+            assertEquals(FORMER, former.memberId)
+            assertEquals(CategoryColor.GRAY, former.color)
+            assertEquals(100, former.percent)
+        }
+
+    @Test
+    fun `GIVEN a group of six WHEN the statistics open THEN the sixth member wraps back to the first color`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                group = groupOfSix,
+                stored = listOf(sixEqualParts),
+            )
+
+            // When
+            val people = viewModel.uiState.value.people
+
+            // Then
+            assertEquals(
+                mapOf(
+                    PIERRE to CategoryColor.BLUE,
+                    ANA to CategoryColor.YELLOW,
+                    BRUNO to CategoryColor.PINK,
+                    CARLA to CategoryColor.LIME,
+                    DANI to CategoryColor.PURPLE,
+                    EDU to CategoryColor.BLUE,
+                ),
+                people.associate { it.memberId to it.color },
+            )
+        }
+
+    @Test
+    fun `GIVEN six equal parts WHEN the statistics open THEN the largest remainders round them to 100`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                group = groupOfSix,
+                stored = listOf(sixEqualParts),
+            )
+
+            // When
+            val percents = viewModel.uiState.value.people
+                .map { it.percent }
+
+            // Then
+            assertEquals(listOf(17, 17, 17, 17, 16, 16), percents)
+        }
+
+    @Test
+    fun `GIVEN three equal parts WHEN the statistics open THEN they round to 34 33 and 33`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(stored = listOf(tripBills[0]))
+
+        // When
+        val percents = viewModel.uiState.value.people
+            .map { it.percent }
+
+        // Then
+        assertEquals(listOf(34, 33, 33), percents)
+    }
+
+    @Test
+    fun `GIVEN awkward remainders WHEN the statistics open THEN the largest remainders take the missing points`() =
+        runTest(testDispatcher) {
+            // Given
+            val bill = expense(
+                id = "dinner",
+                amountMinor = 3_000,
+                spentAt = today,
+                shares = listOf(share(PIERRE, 1_010), share(ANA, 1_005), share(BRUNO, 985)),
+            )
+            prepareScenario(stored = listOf(bill))
+
+            // When
+            val people = viewModel.uiState.value.people
+
+            // Then
+            assertEquals(listOf(PIERRE, ANA, BRUNO), people.map { it.memberId })
+            assertEquals(listOf(34, 33, 33), people.map { it.percent })
+        }
+
+    @Test
+    fun `GIVEN one person with everything WHEN the statistics open THEN they have 100 and are the top person`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = listOf(expense("boat", 60_000, today)))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(listOf(PIERRE to 100, ANA to 0, BRUNO to 0), state.people.map { it.memberId to it.percent })
+            assertEquals(PIERRE, state.topPerson?.memberId)
+        }
+
+    @Test
+    fun `GIVEN the trip WHEN the statistics open THEN the top person is who consumed the most`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val top = viewModel.uiState.value.topPerson
+
+            // Then
+            assertEquals(ANA, top?.memberId)
+        }
+
+    @Test
+    fun `GIVEN only a bill of zero WHEN the statistics open THEN everyone has 0 and there is no top person`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(stored = listOf(expense("free", 0, today)))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(setOf(PIERRE, ANA, BRUNO), state.people.map { it.memberId }.toSet())
+            assertEquals(listOf(0, 0, 0), state.people.map { it.percent })
+            assertNull(state.topPerson)
+        }
+
+    @Test
+    fun `GIVEN a bill nobody paid WHEN picking Pagou THEN everyone has 0 and there is no top person`() =
+        runTest(testDispatcher) {
+            // Given
+            val unpaid = expense(
+                id = "dinner",
+                amountMinor = 30_000,
+                spentAt = today,
+                payers = emptyList(),
+                shares = listOf(share(PIERRE, 10_000), share(ANA, 10_000), share(BRUNO, 10_000)),
+            )
+            prepareScenario(stored = listOf(unpaid))
+
+            // When
+            viewModel.onEvent(GroupStatsUiEvent.OnPeopleViewPicked(StatsPeopleView.PAID))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertEquals(listOf(0, 0, 0), state.people.map { it.percent })
+            assertNull(state.topPerson)
+        }
+
+    // Why: Pierre, Ana, Bruno, Carla, Dani and Edu, one more than Default split's five colors.
+    private val groupOfSix: Group
+        get() = trip.copy(
+            members = listOf(pierre, ana, bruno, member(CARLA, "Carla"), member(DANI, "Dani"), member(EDU, "Edu")),
+        )
+
+    // Why: a R$ 6 bill split in six parts of R$ 1, so each one is 16.67%.
+    private val sixEqualParts: Expense
+        get() = expense(
+            id = "coffee",
+            amountMinor = 600,
+            spentAt = today,
+            shares = listOf(PIERRE, ANA, BRUNO, CARLA, DANI, EDU).map { share(it, 100) },
+        )
 
     @Test
     fun `GIVEN a trip over two weeks WHEN the statistics open THEN go by day with month and year off`() =
@@ -2657,5 +2899,8 @@ class GroupStatsViewModelTest {
         const val ANA = "member-2"
         const val BRUNO = "member-3"
         const val FORMER = "member-9"
+        const val CARLA = "member-4"
+        const val DANI = "member-5"
+        const val EDU = "member-6"
     }
 }

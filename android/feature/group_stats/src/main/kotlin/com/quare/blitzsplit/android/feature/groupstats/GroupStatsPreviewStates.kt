@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.groupstats
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
+import com.quare.blitzsplit.core.expenses.domain.model.SplitBarColors
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
@@ -76,7 +77,8 @@ internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsU
                 photoUrl = null,
                 isMe = name == "Pierre",
                 amountMinor = amount,
-                barFraction = amount.toDouble() / previewPeople.first().third,
+                percent = (amount * 100 / previewPeople.sumOf { it.third }).toInt(),
+                color = SplitBarColors.getAt(index),
             )
         },
         chartType = StatsChartType.BARS,

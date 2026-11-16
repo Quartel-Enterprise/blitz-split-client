@@ -18,13 +18,14 @@ import { nameOrFormer } from '@/features/balances/BalanceCard'
 import { GroupPageSkeleton } from '@/features/group-detail/GroupPage'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
+import { categoryStyle } from '@/lib/avatar'
 import { CategoryBadge } from '@/lib/categories'
 import { formatDayTime, fromDateTimeInputs, toDateInputValue } from '@/lib/dates'
 import { formatMoney, formatPercent } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { CategoriesCard } from './CategoriesCard'
 import { StatsChart } from './StatsChart'
+import { StatsRing, StatsRingCenter } from './StatsRing'
 import { StatsPage } from './StatsPage'
 import {
   averageLabel,
@@ -323,9 +324,21 @@ function SummaryCards({ state, money }: { state: JsGroupStatsState; money: (mino
   )
 }
 
-/** "Por pessoa": Consumo or Pagou, a bar per person scaled by the largest, and what each one means. */
+/**
+ * "Por pessoa": Consumo or Pagou, a ring of each person's share in their own color with the largest in its middle, the
+ * people under it as its legend (each one's dot, share and amount), and what each view means. A slice tapped, or a
+ * slice or a row the mouse is over (or focused), pops out and takes the middle; a row still opens the person's profile.
+ */
 function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; presenter: GroupStatsPresenter; money: (minor: number) => string }) {
   const isPaid = state.peopleView === 'paid'
+  const people = state.people
+  const hasShares = people.some((person) => person.amountMinor > 0)
+  const ringKey = `${state.periodStartMillis}-${state.periodEndMillis}-${state.peopleView}-${people.map((person) => `${person.memberId}:${person.percent}`).join(',')}`
+  const [selected, setSelected] = useState<number | null>(null)
+  useEffect(() => setSelected(null), [ringKey])
+  const picked = hasShares && selected !== null && selected < people.length ? selected : null
+  const names = people.map((person) => (person.isMe ? t('stats_you', { name: nameOrFormer(person.name) }) : nameOrFormer(person.name)))
+  const shown = picked ?? 0
   return (
     <section aria-labelledby="statsPeople" className={cardClass}>
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -353,29 +366,51 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
           ))}
         </div>
       </div>
-      <div className="flex flex-col gap-2.5">
-        {state.people.map((person) => {
-          const name = person.isMe ? t('stats_you', { name: nameOrFormer(person.name) }) : nameOrFormer(person.name)
-          return (
-            // Why: the row opens their profile (Perfil for you); an ex-member has none.
+      <div className="flex justify-center">
+        <StatsRing
+          slices={people.map((person) => ({ id: person.memberId, percent: person.percent, color: person.sliceColor }))}
+          ringKey={ringKey}
+          label={t('groupStats_personPie', { parts: people.map((person, index) => `${names[index]} ${person.percent}%`).join(', ') })}
+          selected={picked}
+          size={160}
+          onPick={(index) => setSelected(hasShares ? index : null)}
+          onTap={(index) => setSelected(selected === index ? null : index)}
+        >
+          {hasShares && <StatsRingCenter percent={people[shown].percent} name={names[shown]} />}
+        </StatsRing>
+      </div>
+      <div className="flex flex-col gap-1">
+        {people.map((person, index) => (
+          // Why: hovering or focusing a row picks its slice; the row opens their profile (Perfil for you), an ex-member has none.
+          <div
+            key={person.memberId}
+            onPointerEnter={(event) => {
+              if (event.pointerType === 'mouse' && hasShares) setSelected(index)
+            }}
+            onPointerLeave={(event) => {
+              if (event.pointerType === 'mouse') setSelected(null)
+            }}
+            onFocus={() => hasShares && setSelected(index)}
+            onBlur={() => setSelected(null)}
+            className={cn('flex transition-opacity', picked !== null && picked !== index && 'opacity-40')}
+          >
             <PersonButton
-              key={person.memberId}
               onOpen={person.opensProfile ? () => presenter.openPerson(person.memberId) : null}
               flightKey={`stats-${person.memberId}`}
-              className="flex items-center gap-2.5"
+              className="-mx-1 flex min-w-0 flex-1 items-center gap-2.5 px-1 py-0.5"
             >
               <Avatar initial={person.initials} color={person.color} photoUrl={person.photoUrl} className="size-7 text-[11px]" />
-              <span className="w-[72px] shrink-0 truncate font-medium min-[360px]:w-[108px]">{name}</span>
-              <span role="img" aria-label={`${name}: ${money(person.amountMinor)}`} className="flex h-2 min-w-0 flex-1 rounded-full bg-muted">
-                {/* Why: the bar takes the person's color, as their face, never the accent. */}
-                <span className="avatar-mark rounded-full" style={{ ...avatarStyle(person.color), width: `${person.barFraction * 100}%` }} />
-              </span>
-              <span className={cn('w-[92px] shrink-0 text-right font-semibold tabular-nums', person.amountMinor === 0 && 'text-muted-foreground')}>
-                {money(person.amountMinor)}
+              {/* Why: the dot takes the person's slice color, as Default split's bar does, never the accent. */}
+              <span aria-hidden className="avatar-mark size-2.5 shrink-0 rounded-full" style={categoryStyle(person.sliceColor)} />
+              <span className="min-w-0 flex-1 truncate font-medium">{names[index]}</span>
+              {/* Why: the share under the amount, so a narrow column keeps room for the name. */}
+              <span className="flex shrink-0 flex-col items-end leading-tight">
+                <span className={cn('font-semibold tabular-nums', person.amountMinor === 0 && 'text-muted-foreground')}>{money(person.amountMinor)}</span>
+                <span className="text-xs text-muted-foreground tabular-nums">{person.percent}%</span>
               </span>
             </PersonButton>
-          )
-        })}
+          </div>
+        ))}
       </div>
       <p className="text-xs leading-normal text-muted-foreground">{t(isPaid ? 'stats_notePaid' : 'stats_noteConsumption')}</p>
     </section>

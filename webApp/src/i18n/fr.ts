@@ -2057,6 +2057,7 @@ export const fr: Record<MessageKey, string> = {
   splitBill_defaultExceptionTitle: 'Exception du groupe pour {name} : {description}',
   groupStats_byCategory: 'Par catégorie',
   groupStats_categoryPie: 'Répartition par catégorie : {parts}',
+  groupStats_personPie: 'Répartition par personne : {parts}',
   groupStats_categoryShare: '{name} : {percent} % du total',
   groupStats_categoryOpen: '{name}, {percent} % : voir les dépenses',
   categoryExpenses_title: 'Dépenses par catégorie',

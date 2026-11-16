@@ -1,4 +1,3 @@
-import Charts
 import Shared
 import SwiftUI
 
@@ -16,8 +15,6 @@ struct StatsCategoriesSection: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var selected: Int?
-    /// 0 to 1 as the ring sweeps in, clockwise from the top.
-    @State private var sweep: Double = 0
 
     /// What resets the pick and plays the ring again: the period and its categories.
     private var ringKey: String {
@@ -26,67 +23,24 @@ struct StatsCategoriesSection: View {
 
     var body: some View {
         if let largest = state.topCategory {
-            // Reduce Motion shows the ring whole from its first frame, with no sweep
-            let swept = reduceMotion ? 1 : sweep
             let top = selected.flatMap { state.categories.indices.contains($0) ? state.categories[$0] : nil } ?? largest
             VStack(alignment: .leading, spacing: 8) {
                 StatsSectionTitle(title: "By category")
                     .padding(.horizontal, 20)
                     .padding(.top, 18)
                 HStack(spacing: 20) {
-                    Chart {
-                        ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in
-                            SectorMark(
-                                angle: .value("Share", Double(row.percent) * swept),
-                                innerRadius: .ratio(0.62),
-                                outerRadius: .ratio(selected == index ? 1 : 0.92),
-                                angularInset: state.categories.count > 1 ? 1.5 : 0,
-                            )
-                            .foregroundStyle(row.category.color.data)
-                            .opacity(selected == nil || selected == index ? 1 : 0.4)
-                        }
-                        // The rest of the turn while the ring sweeps in, drawn in no color
-                        SectorMark(angle: .value("Share", 100 * (1 - swept)), innerRadius: .ratio(0.62), outerRadius: .ratio(0.92))
-                            .foregroundStyle(.clear)
+                    StatsRing(
+                        slices: state.categories.map {
+                            StatsRingSlice(id: $0.category.id, percent: Double($0.percent), color: $0.category.color.data)
+                        },
+                        size: pieSize,
+                        ringKey: ringKey,
+                        label: Text("Split by category: \(pieDescription)"),
+                        selected: $selected,
+                        onTap: { open(state.categories[$0].category.id, .ring) },
+                    ) {
+                        StatsRingCenter(percent: top.percent, name: CategoryCopy.name(top.category))
                     }
-                    .chartLegend(.hidden)
-                    .chartOverlay { _ in
-                        GeometryReader { geometry in
-                            Rectangle()
-                                .fill(.clear)
-                                .contentShape(Rectangle())
-                                .onTapGesture { location in
-                                    if let index = slice(at: location, in: geometry.size) {
-                                        open(state.categories[index].category.id, .ring)
-                                    }
-                                }
-                                .onContinuousHover { phase in
-                                    switch phase {
-                                    case let .active(location):
-                                        selected = slice(at: location, in: geometry.size)
-                                    case .ended:
-                                        selected = nil
-                                    }
-                                }
-                        }
-                    }
-                    .frame(width: pieSize, height: pieSize)
-                    .overlay {
-                        VStack(spacing: 0) {
-                            Text(verbatim: "\(top.percent)%")
-                                .font(.headline.weight(.bold))
-                                .monospacedDigit()
-                                .contentTransition(.numericText())
-                            Text(verbatim: CategoryCopy.name(top.category))
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                        }
-                        .padding(.horizontal, 24)
-                        .allowsHitTesting(false)
-                    }
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel(Text("Split by category: \(pieDescription)"))
                     VStack(alignment: .leading, spacing: 2) {
                         ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in
                             Button {
@@ -126,7 +80,6 @@ struct StatsCategoriesSection: View {
                 // The picked slice pops out at once with Reduce Motion, as the web's does
                 .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: selected)
                 .onChange(of: ringKey) { selected = nil }
-                .playsIn($sweep, id: ringKey, duration: 0.6)
                 VStack(spacing: 0) {
                     ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in
                         Button {
@@ -144,25 +97,6 @@ struct StatsCategoriesSection: View {
                 .background(Palette.card, in: .rect(cornerRadius: 26))
             }
         }
-    }
-
-    /// The slice under a point of the ring, by its angle clockwise from the top; nil deep in the hole or outside it.
-    private func slice(at point: CGPoint, in size: CGSize) -> Int? {
-        let radius = min(size.width, size.height) / 2
-        let dx = point.x - size.width / 2
-        let dy = point.y - size.height / 2
-        let distance = (dx * dx + dy * dy).squareRoot()
-        guard distance <= radius, distance >= radius * 0.4 else { return nil }
-        var degrees = atan2(dy, dx) * 180 / .pi + 90
-        if degrees < 0 { degrees += 360 }
-        let total = Double(state.categories.reduce(0) { $0 + Int($1.percent) })
-        guard total > 0 else { return nil }
-        var end = 0.0
-        for (index, row) in state.categories.enumerated() {
-            end += Double(row.percent) / total * 360
-            if degrees < end { return index }
-        }
-        return state.categories.count - 1
     }
 
     private var pieDescription: String {

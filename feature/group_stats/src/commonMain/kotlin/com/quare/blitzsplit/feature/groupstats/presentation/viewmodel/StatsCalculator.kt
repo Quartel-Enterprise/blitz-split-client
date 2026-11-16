@@ -1,10 +1,12 @@
 package com.quare.blitzsplit.feature.groupstats.presentation.viewmodel
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
 import com.quare.blitzsplit.core.expenses.domain.model.GroupSpending
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
+import com.quare.blitzsplit.core.expenses.domain.model.SplitBarColors
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
@@ -173,13 +175,17 @@ internal class StatsCalculator(
         }
     }
 
+    /*
+     * Why: everyone in the group, then whoever left with money in the period, the largest amount first; each person's
+     * color is Default split's for their place in the group's list, a former member's the neutral Gray.
+     */
     fun createPeople(
         spending: GroupSpending,
         view: StatsPeopleView,
     ): List<StatsPersonRow> {
         val amounts = if (view == StatsPeopleView.CONSUMPTION) spending.consumedByMember else spending.paidByMember
         val memberIds = group.members.map { it.id }.toSet()
-        val members = group.members.map { member ->
+        val members = group.members.mapIndexed { index, member ->
             StatsPersonRow(
                 memberId = member.id,
                 name = member.name,
@@ -188,7 +194,8 @@ internal class StatsCalculator(
                 photoUrl = member.photoUrl,
                 isMe = member.isMe,
                 amountMinor = amounts[member.id] ?: 0L,
-                barFraction = 0.0,
+                percent = 0,
+                color = SplitBarColors.getAt(index),
             )
         }
         val formerIds = (spending.consumedByMember.keys + spending.paidByMember.keys).filterNot { it in memberIds }
@@ -201,14 +208,13 @@ internal class StatsCalculator(
                 photoUrl = null,
                 isMe = false,
                 amountMinor = amounts[id] ?: 0L,
-                barFraction = 0.0,
+                percent = 0,
+                color = CategoryColor.GRAY,
             )
         }
         val rows = (members + formers).sortedByDescending { it.amountMinor }
-        val largest = rows.firstOrNull()?.amountMinor ?: 0L
-        return rows.map { row ->
-            row.copy(barFraction = if (largest > 0) row.amountMinor.toDouble() / largest else 0.0)
-        }
+        val percents = findRoundedPercents(rows.map { it.amountMinor }, rows.sumOf { it.amountMinor })
+        return rows.mapIndexed { index, row -> row.copy(percent = percents[index]) }
     }
 
     fun createBiggestOrNull(spending: GroupSpending): StatsBiggestExpense? {

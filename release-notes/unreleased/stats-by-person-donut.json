@@ -1,0 +1,26 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "In a group's Statistics, By person is now a donut of each one's share, in the same color each person has in Default split, with the list of names and amounts under it as its legend. Consumed and Paid switch what it shows.",
+        "pt": "Nas Estatísticas do grupo, Por pessoa agora é uma rosca com a parte de cada um, na mesma cor que cada pessoa tem na Divisão padrão, com a lista de nomes e valores embaixo como legenda. Consumo e Pagou trocam o que ela mostra.",
+        "pt-PT": "Nas Estatísticas do grupo, Por pessoa é agora um anel com a parte de cada um, na mesma cor que cada pessoa tem na Divisão predefinida, com a lista de nomes e valores por baixo como legenda. Consumo e Pagou trocam o que mostra.",
+        "es": "En las Estadísticas del grupo, Por persona ahora es una dona con la parte de cada uno, en el mismo color que cada persona tiene en División predeterminada, con la lista de nombres y montos debajo como leyenda. Consumido y Pagado cambian lo que muestra.",
+        "fr": "Dans les Statistiques du groupe, Par personne est désormais un anneau de la part de chacun, dans la couleur que chaque personne a dans Répartition par défaut, avec la liste des noms et des montants en dessous comme légende. Consommé et Payé changent ce qu’il montre.",
+        "de": "In der Gruppenstatistik ist Nach Person jetzt ein Ring mit dem Anteil jedes Einzelnen, in derselben Farbe wie in der Standardaufteilung, mit der Liste der Namen und Beträge darunter als Legende. Verbraucht und Bezahlt wechseln, was er zeigt.",
+        "it": "Nelle Statistiche del gruppo, Per persona ora è un anello con la parte di ciascuno, nello stesso colore che ogni persona ha in Divisione predefinita, con l’elenco di nomi e importi sotto come legenda. Consumato e Pagato cambiano ciò che mostra.",
+        "pl": "W Statystykach grupy widok Według osób to teraz pierścień z udziałem każdego, w tym samym kolorze, który każda osoba ma w Domyślnym podziale, z listą imion i kwot pod nim jako legendą. Skonsumowane i Zapłacone przełączają to, co pokazuje.",
+        "nl": "In de Statistieken van een groep is Per persoon nu een ring met ieders deel, in dezelfde kleur die elke persoon in Standaardverdeling heeft, met de lijst van namen en bedragen eronder als legenda. Verbruikt en Betaald wisselen wat hij toont.",
+        "ja": "グループの統計の「メンバー別」が、各メンバーの割合を示すドーナツグラフになりました。色は「デフォルトの分け方」と同じで、その下に名前と金額のリストが凡例として並びます。「負担額」と「支払額」で表示が切り替わります。",
+        "tr": "Grup İstatistiklerinde Kişiye göre artık herkesin payını gösteren bir halka; her kişi Varsayılan bölüşümdeki rengiyle görünüyor, isimler ve tutarların listesi de altında açıklama olarak duruyor. Tüketilen ve Ödenen gösterilen şeyi değiştiriyor.",
+        "id": "Di Statistik grup, Per orang kini berupa donat bagian masing-masing, dengan warna yang sama seperti di Pembagian default, dan daftar nama serta jumlah di bawahnya sebagai keterangan. Dipakai dan Dibayar mengganti yang ditampilkan.",
+        "ru": "В статистике группы раздел «По людям» теперь кольцевая диаграмма с долей каждого, в том же цвете, что и в «Разделении по умолчанию», а список имён и сумм под ней служит легендой. «Потреблено» и «Оплачено» переключают то, что она показывает.",
+        "uk": "У статистиці групи розділ «За людьми» тепер кільцева діаграма з часткою кожного, у тому ж кольорі, що й у «Розподілі за замовчуванням», а список імен і сум під нею слугує легендою. «Спожито» та «Сплачено» перемикають те, що вона показує."
+      }
+    }
+  ]
+}

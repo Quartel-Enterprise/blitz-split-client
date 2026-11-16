@@ -47,7 +47,7 @@ data class GroupStatsUiState(
     val myPaidMinor: Long?,
     val myPaidCount: Int,
     val peopleView: StatsPeopleView,
-    // Why: the largest amount first.
+    // Why: the largest amount first, each with their share and their slice's color.
     val people: List<StatsPersonRow>,
     val chartType: StatsChartType,
     val grain: StatsGrain,
@@ -89,6 +89,13 @@ data class GroupStatsUiState(
     // Why: the period has nothing to pick from in a group without bills.
     val showsPeriodPicker: Boolean
         get() = isLoaded && allStartMillis != null
+
+    /*
+     * Why: "Por pessoa"'s ring names the largest share in its center; null while nobody has an amount, when it is a bare
+     * neutral ring.
+     */
+    val topPerson: StatsPersonRow?
+        get() = people.firstOrNull()?.takeIf { it.amountMinor > 0 }
 
     // Why: the pie's center names the largest category.
     val topCategory: StatsCategoryRow?

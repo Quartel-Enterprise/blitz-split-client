@@ -1,10 +1,6 @@
 package com.quare.blitzsplit.android.feature.groupstats
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,10 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -52,19 +44,6 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiEv
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryTarget
-import kotlin.math.atan2
-import kotlin.math.hypot
-
-private const val FULL_TURN = 360f
-private const val START_ANGLE = -90f
-private const val SLICE_GAP_DEGREES = 2f
-private const val PERCENT = 100f
-private const val RING_FRACTION = 0.16f
-private const val DIMMED_ALPHA = 0.4f
-private const val SWEEP_MILLIS = 600
-private const val HALF = 2f
-private const val HOLE_FRACTION = 0.4f
-private val popOut = 6.dp
 
 /*
  * Why: how the ring and its legend share the slice the pointer is over, so either one highlights it in the other, and
@@ -164,9 +143,9 @@ internal fun StatsCategoriesSection(
 }
 
 /*
- * Why: a ring of slices with a thin gap between them, sweeping in when the period changes. The slice the mouse is over
- * (or its legend line) pops out, the others fade, and the middle names it with its share; without one, the middle
- * names the largest category. A tap or a click on a slice opens its category's bills.
+ * Why: the ring by category: the slice the mouse is over (or its legend line) pops out, the others fade, and the
+ * middle names it with its share; without one, the middle names the largest category. A tap or a click on a slice
+ * opens its category's bills.
  */
 @Composable
 private fun CategoryPieDisplay(
@@ -183,112 +162,51 @@ private fun CategoryPieDisplay(
             it.percent,
         )
     }
-    val description = stringResource(R.string.group_stats_category_pie, parts.joinToString(", "))
-    val colors = rows.map { it.category.color.toDataColor(isDark) }
-    val pops = rows.indices.map { index ->
-        animateFloatAsState(if (pick.selected == index) 1f else 0f, label = "slice").value
-    }
-    val sweep = remember { Animatable(0f) }
-    LaunchedEffect(periodKey) {
-        sweep.snapTo(0f)
-        sweep.animateTo(1f, tween(SWEEP_MILLIS))
-    }
     val shown = rows.getOrNull(pick.selected ?: -1) ?: rows.first()
-    Box(
-        modifier = Modifier
-            .size(size)
-            .semantics { contentDescription = description },
-        contentAlignment = Alignment.Center,
+    StatsRing(
+        slices = rows.map { StatsRingSlice(it.percent, it.category.color.toDataColor(isDark)) },
+        selected = pick.selected,
+        sweepKey = periodKey,
+        description = stringResource(R.string.group_stats_category_pie, parts.joinToString(", ")),
+        size = size,
+        onPick = pick.onPick,
+        onTap = { index, _ -> pick.onOpen(index, StatsCategoryTarget.RING) },
     ) {
-        Canvas(
-            modifier = Modifier
-                .size(size)
-                .pointerInput(rows) {
-                    detectPickTaps { offset, _ ->
-                        // Why: this.size is the pointer area's, in pixels; a bare size is the ring's Dp parameter.
-                        findSliceAt(offset, this.size.width.toFloat(), rows)?.let {
-                            pick.onOpen(it, StatsCategoryTarget.RING)
-                        }
-                    }
-                }.onMouseHover(
-                    key = rows,
-                    onMove = { position -> pick.onPick(findSliceAt(position, this.size.width.toFloat(), rows)) },
-                    onExit = { pick.onPick(null) },
-                ),
-        ) {
-            val margin = popOut.toPx()
-            val stroke = (this.size.minDimension - margin * HALF) * RING_FRACTION
-            var angle = START_ANGLE
-            val gap = if (rows.size > 1) SLICE_GAP_DEGREES else 0f
-            rows.forEachIndexed { index, row ->
-                val slice = row.percent / PERCENT * FULL_TURN * sweep.value
-                if (slice > gap) {
-                    // Why: the picked slice grows outward only, its inner edge staying on the ring.
-                    val extra = margin * pops[index]
-                    val inset = margin + stroke / HALF - extra / HALF
-                    val color = colors[index]
-                    drawArc(
-                        color = if (pick.selected == null || pick.selected == index) {
-                            color
-                        } else {
-                            color.copy(alpha = DIMMED_ALPHA)
-                        },
-                        startAngle = angle,
-                        sweepAngle = slice - gap,
-                        useCenter = false,
-                        topLeft = Offset(inset, inset),
-                        size = Size(this.size.width - inset * HALF, this.size.height - inset * HALF),
-                        style = Stroke(width = stroke + extra),
-                    )
-                }
-                angle += slice
-            }
-        }
-        Crossfade(
-            targetState = shown,
-            label = "center",
-        ) { row ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    text = stringResource(R.string.group_stats_category_percent, row.percent),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    text = categoryName(row.category),
-                    style = MaterialTheme.typography.labelSmall,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                )
-            }
-        }
+        StatsRingCenter(
+            key = shown,
+            percent = shown.percent,
+            label = categoryName(shown.category),
+        )
     }
 }
 
-/*
- * Why: the slice under a point of the ring, by its angle from the top clockwise; null deep in the hole (a touch just
- * inside the ring still picks its slice) or outside it.
- */
-private fun findSliceAt(
-    point: Offset,
-    side: Float,
-    rows: List<StatsCategoryRow>,
-): Int? {
-    val radius = side / HALF
-    val dx = point.x - radius
-    val dy = point.y - radius
-    val distance = hypot(dx, dy)
-    if (distance > radius || distance < radius * HOLE_FRACTION) return null
-    val degrees = Math.toDegrees(atan2(dy, dx).toDouble()).toFloat()
-    val fromTop = (degrees - START_ANGLE + FULL_TURN) % FULL_TURN
-    var end = 0f
-    rows.forEachIndexed { index, row ->
-        end += row.percent / PERCENT * FULL_TURN
-        if (fromTop < end) return index
+// Why: the ring's middle, its share over its name, fading from one pick to the next.
+@Composable
+internal fun StatsRingCenter(
+    key: Any,
+    percent: Int,
+    label: String,
+) {
+    Crossfade(
+        targetState = key to (percent to label),
+        label = "center",
+    ) { (_, shown) ->
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = stringResource(R.string.group_stats_category_percent, shown.first),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = shown.second,
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 24.dp),
+            )
+        }
     }
-    return rows.lastIndex
 }
 
 // Why: a legend line highlights its slice with the mouse over it and opens it with a tap, so even a 2% slice is easy to reach.
@@ -310,7 +228,7 @@ private fun LegendLine(
                 key = index,
                 onMove = { pick.onPick(index) },
                 onExit = { pick.onPick(null) },
-            ).alpha(if (pick.selected == null || isSelected) 1f else DIMMED_ALPHA)
+            ).alpha(if (pick.selected == null || isSelected) 1f else RING_DIMMED_ALPHA)
             .padding(
                 vertical = 3.dp,
                 horizontal = 4.dp,

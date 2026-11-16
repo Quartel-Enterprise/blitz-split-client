@@ -2057,6 +2057,7 @@ export const ja: Record<MessageKey, string> = {
   splitBill_defaultExceptionTitle: '{name}のグループ例外：{description}',
   groupStats_byCategory: 'カテゴリ別',
   groupStats_categoryPie: 'カテゴリ別の内訳：{parts}',
+  groupStats_personPie: '人別の内訳：{parts}',
   groupStats_categoryShare: '{name}：合計の{percent}%',
   groupStats_categoryOpen: '{name}、{percent}%：支出を見る',
   categoryExpenses_title: 'カテゴリ別の支出',

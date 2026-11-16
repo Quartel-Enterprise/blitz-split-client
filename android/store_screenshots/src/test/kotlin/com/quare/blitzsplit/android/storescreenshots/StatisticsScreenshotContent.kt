@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.storescreenshots
 
 import androidx.compose.runtime.Composable
 import com.quare.blitzsplit.android.feature.groupstats.GroupStatsContent
+import com.quare.blitzsplit.core.expenses.domain.model.SplitBarColors
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
@@ -89,7 +90,8 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
                 photoUrl = photoUrlOf(person),
                 isMe = person == me,
                 amountMinor = amount,
-                barFraction = amount.toDouble() / consumed.first().value,
+                percent = (amount * PERCENT / total).toInt(),
+                color = SplitBarColors.getAt(person),
             )
         },
         chartType = StatsChartType.BARS,

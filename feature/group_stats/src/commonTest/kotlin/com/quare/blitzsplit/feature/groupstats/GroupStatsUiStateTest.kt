@@ -1,5 +1,7 @@
 package com.quare.blitzsplit.feature.groupstats
 
+import com.quare.blitzsplit.core.expenses.domain.model.CategoryColor
+import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
@@ -8,9 +10,11 @@ import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiSt
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeopleView
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPeriod
+import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsPersonRow
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class GroupStatsUiStateTest {
     @Test
@@ -88,6 +92,68 @@ class GroupStatsUiStateTest {
         assertEquals(1L, top)
     }
 
+    @Test
+    fun `GIVEN the largest person with an amount WHEN reading the top person THEN it is them`() {
+        // Given
+        val state = state(
+            ticks = emptyList(),
+            amounts = emptyList(),
+            people = listOf(person("member-2", 35_000L), person("member-1", 25_000L)),
+        )
+
+        // When
+        val top = state.topPerson
+
+        // Then
+        assertEquals("member-2", top?.memberId)
+    }
+
+    @Test
+    fun `GIVEN nobody with an amount WHEN reading the top person THEN there is none`() {
+        // Given
+        val state = state(
+            ticks = emptyList(),
+            amounts = emptyList(),
+            people = listOf(person("member-1", 0L), person("member-2", 0L)),
+        )
+
+        // When
+        val top = state.topPerson
+
+        // Then
+        assertNull(top)
+    }
+
+    @Test
+    fun `GIVEN nobody in Por pessoa WHEN reading the top person THEN there is none`() {
+        // Given
+        val state = state(
+            ticks = emptyList(),
+            amounts = emptyList(),
+        )
+
+        // When
+        val top = state.topPerson
+
+        // Then
+        assertNull(top)
+    }
+
+    private fun person(
+        memberId: String,
+        amountMinor: Long,
+    ): StatsPersonRow = StatsPersonRow(
+        memberId = memberId,
+        name = memberId,
+        initials = "M",
+        avatarColor = AvatarColor.BLUE,
+        photoUrl = null,
+        isMe = false,
+        amountMinor = amountMinor,
+        percent = 0,
+        color = CategoryColor.BLUE,
+    )
+
     private fun bar(
         index: Int,
         amountMinor: Long,
@@ -105,6 +171,7 @@ class GroupStatsUiStateTest {
     private fun state(
         ticks: List<Long>,
         amounts: List<Long>,
+        people: List<StatsPersonRow> = emptyList(),
     ): GroupStatsUiState = GroupStatsUiState(
         groupName = "Viagem Floripa",
         currency = GroupCurrency.BRL,
@@ -130,7 +197,7 @@ class GroupStatsUiStateTest {
         myPaidMinor = null,
         myPaidCount = 0,
         peopleView = StatsPeopleView.CONSUMPTION,
-        people = emptyList(),
+        people = people,
         chartType = StatsChartType.BARS,
         grain = StatsGrain.DAY,
         grains = emptyList(),

@@ -2060,6 +2060,7 @@ export const pl: Record<MessageKey, string> = {
   splitBill_defaultExceptionTitle: 'Wyjątek grupy dla kategorii {name}: {description}',
   groupStats_byCategory: 'Według kategorii',
   groupStats_categoryPie: 'Podział według kategorii: {parts}',
+  groupStats_personPie: 'Podział według osób: {parts}',
   groupStats_categoryShare: '{name}: {percent}% sumy',
   groupStats_categoryOpen: '{name}, {percent}%: zobacz wydatki',
   categoryExpenses_title: 'Wydatki według kategorii',

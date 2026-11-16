@@ -2056,6 +2056,7 @@ export const id: Record<MessageKey, string> = {
   splitBill_defaultExceptionTitle: 'Pengecualian grup untuk {name}: {description}',
   groupStats_byCategory: 'Per kategori',
   groupStats_categoryPie: 'Pembagian per kategori: {parts}',
+  groupStats_personPie: 'Pembagian per orang: {parts}',
   groupStats_categoryShare: '{name}: {percent}% dari total',
   groupStats_categoryOpen: '{name}, {percent}%: lihat pengeluaran',
   categoryExpenses_title: 'Pengeluaran per kategori',
