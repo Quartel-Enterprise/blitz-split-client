@@ -22,9 +22,8 @@ internal class SyncFailure(
  * online (supabase-kt wraps every failure in HttpRequestException except Ktor's request timeout, which it rethrows);
  * and a session whose token refresh got no answer the same way, so the sync didn't ask the server anything.
  */
-internal fun Throwable.isConnectionFailure(): Boolean = getCauses().any { cause ->
-    cause is HttpRequestException || cause is HttpRequestTimeoutException || cause is SessionRefreshingException
-}
+internal fun Throwable.isConnectionFailure(): Boolean = isPutOffForSession() ||
+    getCauses().any { cause -> cause is HttpRequestException || cause is HttpRequestTimeoutException }
 
 /*
  * Why: a sync that ran while the session waited for its refresh, as on coming back to the front with an expired token:

@@ -553,6 +553,47 @@ class SyncCoordinatorTest {
         }
 
     @Test
+    fun `GIVEN a sync put off WHEN another one is put off within the grace THEN the grace still ends on time`() =
+        runTest {
+            // Given
+            prepareScenario(storedProfile = pierre)
+            profile.pullError = SessionRefreshingException()
+            coordinator.syncNow()
+            advanceTimeBy(20.seconds)
+            coordinator.syncNow()
+
+            // When
+            advanceTimeBy(PUT_OFF_GRACE - 20.seconds)
+            runCurrent()
+
+            // Then
+            assertEquals(SyncState.FAILED, coordinator.observeState().first())
+        }
+
+    @Test
+    fun `GIVEN a sync put off WHEN the token comes back and its sync outlasts the grace THEN keeps waiting for it`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                pullHangs = true,
+            )
+            account.registerError = SessionRefreshingException()
+            coordinator.start()
+            runCurrent()
+            account.registerError = null
+
+            // When
+            account.sessionRecoveries.emit(Unit)
+            advanceTimeBy(PUT_OFF_GRACE)
+            runCurrent()
+
+            // Then
+            assertFalse(firstDownload.observeHasSyncFailed().value)
+        }
+
+    @Test
     fun `GIVEN a sync put off WHEN the next one goes through within the grace THEN the sync state stays synced`() =
         runTest {
             // Given

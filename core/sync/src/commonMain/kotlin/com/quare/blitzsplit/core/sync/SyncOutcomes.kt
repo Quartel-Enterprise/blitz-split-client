@@ -52,21 +52,32 @@ internal class SyncOutcomes(
         mutex.withLock { endSync(result) }
     }
 
+    /*
+     * Why: the session came back, or ended, so the refresh a put-off sync waited for is over: the sync that runs next
+     * decides the outcome, never the grace of a session no longer refreshing, which would fail it midway.
+     */
+    suspend fun onSessionSettled() {
+        mutex.withLock { putOffTimeout?.cancel() }
+    }
+
     private suspend fun endSync(result: Result<Unit>) {
-        putOffTimeout?.cancel()
         val failure = result.exceptionOrNull()
         /*
          * Why: a sync put off for the session's refresh changes nothing the screens show for a while: not "No response
          * from the server", whose retry then said "Syncing…" on every return to the front (beta feedback), nor the
-         * first download's wait. Only once the session stays refreshing past the grace does it count as failed.
+         * first download's wait. Only once the session stays refreshing past the grace does it count as failed. The
+         * grace runs from the first sync put off, so syncs put off one after another never push it back.
          */
         isLastSyncPutOff = failure?.isPutOffForSession() == true
         if (failure != null && isLastSyncPutOff) {
-            putOffTimeout = scope.launch {
-                delay(PUT_OFF_GRACE)
-                mutex.withLock { recordOutcome(failure) }
+            if (putOffTimeout?.isActive != true) {
+                putOffTimeout = scope.launch {
+                    delay(PUT_OFF_GRACE)
+                    mutex.withLock { recordOutcome(failure) }
+                }
             }
         } else {
+            putOffTimeout?.cancel()
             recordOutcome(failure)
         }
     }
