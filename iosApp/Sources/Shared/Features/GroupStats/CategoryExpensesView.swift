@@ -83,7 +83,8 @@ struct CategoryExpensesView: View {
         .navigationSubtitle(subtitle)
         #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
-        .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
+        // The group's own bars, without the app's tabs, as on the group's screen
+        .groupFlowHidesTabBar()
         #endif
         .onAppear {
             if model == nil { model = CategoryExpensesModel(route: route) }

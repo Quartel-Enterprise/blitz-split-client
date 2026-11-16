@@ -92,6 +92,7 @@ struct ContactsColumns: View {
                         ContactsView(model: model, showsDetail: showsDetail)
                             .navigationDestination(for: AppRoute.self) { MainTabView.destination($0) }
                     }
+                    .environment(\.isInTabListColumn, showsDetail)
                     .frame(width: showsDetail ? listWidth : nil)
                     if showsDetail {
                         ListDetailSeparator(fold: verticalFold)
@@ -195,6 +196,7 @@ struct ContactsView: View {
             if isEmpty { isSplitBillExpanded = true }
         }
         .readingVerticalBar($hasVerticalBar)
+        .tabButtonsRow { profileButton }
         .tabTitleDisplayMode()
         #endif
         .toolbar {

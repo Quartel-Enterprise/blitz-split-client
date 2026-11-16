@@ -134,6 +134,10 @@ struct GroupsView: View {
             if isEmpty { isSplitBillExpanded = true }
         }
         .readingVerticalBar($hasVerticalBar)
+        .tabButtonsRow {
+            joinButton
+            profileButton
+        }
         .tabTitleDisplayMode()
         .toolbar {
             TabTitle(title: String(localized: "Groups", bundle: .appLanguage))

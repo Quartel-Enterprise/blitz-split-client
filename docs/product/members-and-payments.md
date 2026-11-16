@@ -180,7 +180,7 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     which sit near the money green and the debt orange. A sixth person takes Blue again, so neighbors in the list never
     match; a color stays with its person while others go in or out of the split, so in a group of six or more two
     people of one color can still meet in the bar when everyone between them is out, the order and names telling them
-    apart (palette, place and repeat chosen while fixing that feedback, for Pierre to confirm). It is one field of the group row (`groups.default_split`,
+    apart (palette, place and repeat chosen while fixing that feedback, which Pierre confirmed). It is one field of the group row (`groups.default_split`,
     `GroupDefaultSplit`), saved alone by its own Save (back goes to Edit group unsaved) and synced with the
     group's Last-Write-Wins, by any member, offline too, keeping the keys a newer app adds to it (this version
     writes only `mode`, `weights` and `exceptions` over the stored object); Equal with everyone in and no exception

@@ -81,9 +81,9 @@ The home tab, its shortcuts and pinned groups.
     the list scrolls down, spelled out again back at the top, as Android's extended FAB does (beta feedback of
     2026-11-15; `splitBillExpandsAtTop`, the same on Groups, Balances, Contacts and a group's screen); always its icon
     alone in an iPhone Duo's vertical bar, under the profile; always spelled out on the Mac. On a group's screen, whose bar also holds Back, Statistics and ⋯, the words show only
-    where they fit (a long label on a small iPhone is the icon alone). On an iPad upright the tab
-    bar in the top bar's middle leaves room for one trailing item, so iOS moves the rest, "Split a bill" included, into
-    its own ⋯ overflow, on every tab and on a group's screen (as before this rule; still open, Pierre's call). "Search" is the home's (5.2), over
+    where they fit (a long label on a small iPhone is the icon alone). On an iPad whose tabs crowd
+    the top bar (upright, a narrow Stage Manager window), "Split a bill" is the bar's only item and the bell and the
+    profile go to a row atop the content (see [The home and the shells](home-and-shell.md)). "Search" is the home's (5.2), over
     Home. States: a shimmer until Room is read; no group yet shows only the first use's card (1.3), and only
     once the account's copy is whole; a new device's first download (an account restored on a device with no profile,
     or a sign in that switched to another user, until a sync settled, also across relaunches, `FirstDownload`,

@@ -124,8 +124,11 @@ sheet still knows what it opened over, and into `AppModel.isLargeWindow`, which 
 an iPad's room, so a live resize never redraws the root: `AppRoute.presentsAsSheet(isLargeWindow:)` opens a key, a
 bill and Editar perfil as a sheet with an iPad's room, pushed on an iPhone, and Convidar the other way round (a sheet on an iPhone,
 pushed full screen with an iPad's room). Until that first measure the root draws nothing, so a back
-stack that already ends in a key or a bill never shows pushed and then jumps into a sheet. The only idiom check left
-is `DeviceName`, the word the copy says ("iPhone", "iPad"), since an iPhone Duo is an iPhone whatever its size.
+stack that already ends in a key or a bill never shows pushed and then jumps into a sheet. The idiom checks left
+are `DeviceName`, the word the copy says ("iPhone", "iPad"), since an iPhone Duo is an iPhone whatever its size, and
+the bars, which iOS draws by idiom: minimizing them on scroll is the iPhone's (`PhoneBarMinimization`), and the
+sidebar by default and the crowded top bar's rule are the iPad's (`MainTabView`, `isTabBarCrowded`), since an iPhone
+Duo open keeps its tabs in the system's vertical bar.
 
 The pieces in `iosApp/Sources/Shared/DesignSystem`:
 

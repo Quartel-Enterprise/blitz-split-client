@@ -175,6 +175,10 @@ struct HomeView: View {
         )
         .navigationTitle(HomeCopy.tabTitle)
         #if os(iOS)
+        .tabButtonsRow {
+            bellButton
+            profileButton
+        }
         .tabTitleDisplayMode()
         // The list comes back at its top after the first use's card, so "Split a bill" is spelled out again with it
         .onChange(of: state.showsHome) { _, showsHome in

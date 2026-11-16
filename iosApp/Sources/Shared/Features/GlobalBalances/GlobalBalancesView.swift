@@ -145,6 +145,7 @@ struct GlobalBalancesView: View {
             if !isLoaded { isSplitBillExpanded = true }
         }
         .readingVerticalBar($hasVerticalBar)
+        .tabButtonsRow { profileButton }
         .tabTitleDisplayMode()
         #else
         .navigationSubtitle(model.map { GlobalBalancesCopy.macSubtitle($0.state) } ?? "")

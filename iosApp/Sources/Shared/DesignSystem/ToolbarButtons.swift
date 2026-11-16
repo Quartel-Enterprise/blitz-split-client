@@ -91,6 +91,10 @@ struct SplitBillButton: View {
 /// the bar's tinted glass item on its own, never a FAB floating over the tab bar. Both go into an iPhone Duo's
 /// vertical bar.
 struct TabTrailingItems<Buttons: View>: ToolbarContent {
+    @Environment(\.windowLayout) private var window
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.isInTabListColumn) private var isInTabListColumn
+
     let showsSplitBill: Bool
     /// Spelled out while the list is at its top, the icon alone once it scrolls down and in an iPhone Duo's vertical
     /// bar.
@@ -111,10 +115,16 @@ struct TabTrailingItems<Buttons: View>: ToolbarContent {
     }
 
     var body: some ToolbarContent {
-        ToolbarItemGroup(placement: .primaryAction) { buttons }
-            .prefersVerticalBar()
+        // A crowded tab bar leaves room for "Split a bill" alone: the buttons go to the row atop the content
+        // (`tabButtonsRow`)
+        if !isTabBarCrowded(window, sizeClass, inListColumn: isInTabListColumn) {
+            ToolbarItemGroup(placement: .primaryAction) { buttons }
+                .prefersVerticalBar()
+        }
         if showsSplitBill {
-            ToolbarSpacer(.fixed, placement: .primaryAction)
+            if !isTabBarCrowded(window, sizeClass, inListColumn: isInTabListColumn) {
+                ToolbarSpacer(.fixed, placement: .primaryAction)
+            }
             ToolbarItem(placement: .primaryAction) {
                 SplitBillButton(showsTitle: showsSplitBillTitle, action: onSplitBill)
             }
@@ -226,6 +236,73 @@ private struct PhoneBarMinimization: ViewModifier {
                 content.toolbarMinimizationBehavior(isPhoneUpright ? .onScrollDown : .automatic, for: .navigationBar)
             } else {
                 content
+            }
+        }
+    }
+}
+
+/// An iPad window under 1100 pt wide with a regular width (an iPad upright, the 13" one included, Stage Manager's
+/// narrower windows): its tabs
+/// sit in the top bar's middle whenever the sidebar is closed (it can't stay beside the content there), which leaves the
+/// bar's trailing side room for one item. "Split a bill" keeps it; the tab's other buttons go to a row atop the content
+/// (`tabButtonsRow`), so iOS never hides any in its own "⋯" (Pierre's call, beta feedback of 2026-11-15). A compact
+/// window has its tab bar at the bottom, as an iPhone. A tab's list column beside a detail (`inListColumn`: Groups'
+/// beside a group, Contacts' beside a person) is crowded at any window width: its own bar, under the tabs, has room
+/// for "Split a bill" alone too. An 11" iPad lying down (1194 pt) has room for all of them beside its tabs.
+///
+/// The idiom check is on purpose, as `PhoneBarMinimization`'s: an iPhone Duo open has an iPad's room but its tabs stay
+/// in the system's vertical bar, never in the top bar's middle.
+func isTabBarCrowded(_ window: ScreenLayout, _ sizeClass: UserInterfaceSizeClass?, inListColumn: Bool = false) -> Bool {
+    guard UIDevice.current.userInterfaceIdiom == .pad, sizeClass == .regular else { return false }
+    return inListColumn || (window.size != .zero && window.size.width < 1100)
+}
+
+extension View {
+    /// A group's screens (the group, its Statistics, its expenses by category) keep their own bars without the app's
+    /// tabs on an iPhone, and on an iPad whose tabs would crowd the top bar (`isTabBarCrowded`), where they left the
+    /// group's buttons no room; not beside Groups' list, whose column keeps the tabs.
+    func groupFlowHidesTabBar() -> some View {
+        modifier(GroupFlowTabBar())
+    }
+
+    /// The tab's buttons (Home's bell and profile, Groups' QR and profile, the profile of Balances and Contacts) in a
+    /// row of glass atop the content, at its trailing side, while a crowded tab bar leaves them no room in the top bar
+    /// (`isTabBarCrowded`); nothing anywhere else.
+    func tabButtonsRow(@ViewBuilder buttons: () -> some View) -> some View {
+        modifier(TabButtonsRow(buttons: buttons()))
+    }
+}
+
+private struct GroupFlowTabBar: ViewModifier {
+    @Environment(\.windowLayout) private var window
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.showsGroupBesideList) private var showsGroupBesideList
+
+    func body(content: Content) -> some View {
+        let hides = sizeClass == .compact || (isTabBarCrowded(window, sizeClass) && !showsGroupBesideList)
+        content.toolbar(hides ? .hidden : .automatic, for: .tabBar)
+    }
+}
+
+private struct TabButtonsRow<Buttons: View>: ViewModifier {
+    let buttons: Buttons
+    @Environment(\.windowLayout) private var window
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.isInTabListColumn) private var isInTabListColumn
+
+    func body(content: Content) -> some View {
+        content.safeAreaInset(edge: .top, spacing: 0) {
+            if isTabBarCrowded(window, sizeClass, inListColumn: isInTabListColumn) {
+                HStack(spacing: 10) {
+                    Spacer(minLength: 0)
+                    buttons
+                        .buttonStyle(.glass)
+                        .buttonBorderShape(.circle)
+                        .controlSize(.large)
+                        .labelStyle(.iconOnly)
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 6)
             }
         }
     }

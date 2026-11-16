@@ -74,8 +74,8 @@ struct GroupStatsView: View {
         .navigationTitle("Statistics")
         #if os(iOS)
         .toolbarTitleDisplayMode(.large)
-        // On iPhone the statistics keep the group's own bars, without the app's tabs
-        .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
+        // The group's own bars, without the app's tabs, as on the group's screen
+        .groupFlowHidesTabBar()
         #else
         .navigationSubtitle(macSubtitle)
         .toolbar {

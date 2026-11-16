@@ -13,7 +13,7 @@ enum MainTab: Hashable {
     case search
 }
 
-/// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable), on the Mac with the
+/// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable, open by default), on the Mac with the
 /// open groups under the tabs. Home is the root of the shared back stack and every other tab the entry right above it,
 /// so the first entry of `path` says which tab is in front: Groups, Balances, Contacts, or else Home, whose own stack
 /// is then the whole path (Activity, which its bell pushes, included).
@@ -107,6 +107,11 @@ struct MainTabView: View {
         }
         .tabViewStyle(.sidebarAdaptable)
         #if os(iOS)
+        // An iPad opens with its tabs in the sidebar, not in the top bar's middle, where they left the trailing items
+        // room for one button and iOS hid "Split a bill" in its own overflow (Pierre's call, beta feedback of
+        // 2026-11-15). Its toggle still turns them into the top bar. An iPhone keeps its floating tab bar, an iPhone Duo
+        // open its vertical bar: the idiom, not the window, since a Duo open has an iPad's room.
+        .defaultAdaptableTabBarPlacement(UIDevice.current.userInterfaceIdiom == .pad ? .sidebar : .automatic)
         .searchTabApart()
         // Apple's guideline, kept as iOS does it (`phoneMinimizesTabBar` says why it never opens on a scroll up).
         // iPhone only (an iPad's top bar or sidebar never minimizes). The app has no bottom accessory to move.

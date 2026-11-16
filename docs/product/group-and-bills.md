@@ -5,7 +5,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
   - A group tapped on the home opens "Group expenses" (`Route.GroupDetail`): the bills by day, the most recent on
     top, with "Split a bill" (Android's extended FAB on a phone upright and a filled button at the head of the top
     bar's actions anywhere wider, as the home's tabs leave it to the rail there: on a phone lying down by Pierre's
-    call, beta feedback of 2026-11-15, and on a tabletop or a tablet by the same rule, for Pierre to confirm; on
+    call, beta feedback of 2026-11-15, and on a tabletop or a tablet by the same rule, which Pierre confirmed; on
     iPhone and iPad the top bar's tinted glass item after Statistics and ⋯, spelled out at the list's top and its
     icon alone once it scrolls down, never a floating capsule over the list, beta feedback of 2026-11-15, see
     [Home](home-tab.md), with "Add people" moved from that bar to the top of ⋯ to leave it the room, Pierre's call; a

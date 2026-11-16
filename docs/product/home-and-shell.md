@@ -28,6 +28,19 @@ The home's four tabs and the web's and the Mac's shell.
     tabletop, the rail beside Groups' list and detail on a tablet and an unfolded foldable, and no rail beside a group
     in the pane by the list nor on a tabletop's group. Apple keeps one `TabView` (the iPad's and Mac's sidebar) above
     the tabs, and the web one frame (`HomeFrame`), so their bars never redraw either.
+  - An iPad opens with its tabs in the sidebar (`defaultAdaptableTabBarPlacement(.sidebar)`, the iPad only, Pierre's
+    call, beta feedback of 2026-11-15), its button still turning them into the bar's tabs. Lying down the sidebar sits
+    beside the content and the top bar keeps its whole width. Upright, and in a Stage Manager window under 1100 pt
+    wide, iPadOS has no room to keep it there: it opens over the content, and once closed the tabs sit in the top
+    bar's middle, which leaves the bar's trailing side room for one item. There "Split a bill" is a home tab's only
+    item in the bar, and its other buttons (Home's bell and profile, Groups' QR and profile, the profile of Balances
+    and Contacts) go to a row of glass atop the content, at its trailing side (`isTabBarCrowded`, `tabButtonsRow`), so
+    iOS never hides one in its own ⋯; a list column beside a detail (Groups' beside a group, Contacts' beside a
+    person), under the tabs, does the same at any width. The row rather than the sidebar's header holds those buttons,
+    since the sidebar is closed whenever the tabs crowd the bar. A group's screens (the group, Statistics, expenses by
+    category) hide the tabs there, as on an iPhone (`groupFlowHidesTabBar`; not beside Groups' list, whose column keeps
+    them), so the group's bar keeps Statistics, ⋯ and "Split a bill". A compact window (Stage Manager's narrowest,
+    Slide Over) draws the tabs at the bottom, as an iPhone, and an iPhone Duo open keeps them in its vertical bar.
   - The bars make room for the content on a phone upright, on Android and the web (Pierre's call, beta feedback): a
     scroll down slides the top bar up and the bottom bar down, animated, and a scroll up brings both back from
     anywhere in the list, as Material's enter-always top bar does. On Android the top bar follows Material
@@ -96,7 +109,7 @@ The home's four tabs and the web's and the Mac's shell.
   - A home tab (Home, Groups, Balances, Contacts, Activity) shows its title only on a wide screen, on every platform
     (Pierre's call): the web from the tablet up (768 px, atop the content), an Android tablet or unfolded foldable
     (`HomeTabTitle`, 600 dp on the short side; a phone lying down stays untitled), an iPad's room (a large title under the
-    floating tab bar, which hides an inline one: `TabTitle`, `tabTitleDisplayMode()`, `ScreenLayout.isLarge`) and the
+    bar, whose tabs, when the sidebar is closed, hide an inline one: `TabTitle`, `tabTitleDisplayMode()`, `ScreenLayout.isLarge`) and the
     Mac's toolbar. On a phone the selected tab already names the screen, which keeps
     its title for screen readers only.
   - Where an Android home tab puts something beside its list (Contacts' profile or agenda pane on a phone lying down, a

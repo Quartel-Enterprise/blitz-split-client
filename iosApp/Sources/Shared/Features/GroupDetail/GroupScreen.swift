@@ -128,8 +128,9 @@ private struct GroupScreenBars: ViewModifier {
             .navigationTitle(Text(verbatim: header?.groupName ?? ""))
             #if os(iOS)
             .toolbarTitleDisplayMode(.inline)
-            // On iPhone the group's own bar replaces the app's tabs, as the canvas draws it
-            .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
+            // On iPhone the group's own bar replaces the app's tabs, as the canvas draws it, and on an iPad whose tabs
+            // would leave Statistics, ⋯ and "Split a bill" no room
+            .groupFlowHidesTabBar()
             #else
             .navigationSubtitle(header.map { groupMeta($0, hasExpenses: hasExpenses) } ?? "")
             // File › Split a Bill (⌘N): a bill in this group, while this screen is the one in front
