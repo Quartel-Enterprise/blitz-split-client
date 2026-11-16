@@ -179,7 +179,10 @@ class ProfileViewModel(
     val actionWatcher: FlowWatcher<ProfileUiAction> = FlowWatcher(uiAction)
 
     init {
-        // Why: isLoaded once the profile, account, theme, colors, bitcoin's unit and what waits to go up each answered.
+        /*
+         * Why: isLoaded once the profile, account, theme, colors, bitcoin's unit, the time format and what waits to go
+         * up each answered.
+         */
         combine(
             observeProfile().onEach(::updateProfile),
             observeAccount().onEach(::updateAccount),
@@ -196,12 +199,14 @@ class ProfileViewModel(
                 observeDynamicColors(),
                 observeBitcoinInSats(),
                 observeUsageDataSharing(),
-            ) { isDynamic, sats, usage ->
+                observeTimeFormat(),
+            ) { isDynamic, sats, usage, timeFormat ->
                 uiState.update {
                     it.copy(
                         usesDynamicColors = isDynamic,
                         showsBitcoinInSats = sats,
                         sharesUsageData = usage,
+                        timeFormat = timeFormat,
                     )
                 }
             },
@@ -209,7 +214,6 @@ class ProfileViewModel(
             .onEach { uiState.update { it.copy(isLoaded = true) } }
             .launchIn(viewModelScope)
         languagePicker.follow(observeAppLanguage, viewModelScope)
-        timeFormatPicker.follow(observeTimeFormat)
         val firstDownload = observeFirstDownload()
         payingMethodRows.follow(observePayingMethods(), firstDownload, viewModelScope)
         /*

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { t } from '@/i18n'
-import { formatWhen, fromDateTimeInputs, getTimeFormat, toDateInputValue, toTimeInputValue, uiDayPeriods, uiTimeFieldNames } from '@/lib/dates'
+import { formatWhen, fromDateTimeInputs, getTimeFormat, pad, toDateInputValue, toTimeInputValue, uiDayPeriods, uiTimeFieldNames } from '@/lib/dates'
 import { amountPlaceholder, currencySymbol } from '@/lib/money'
 import { cn } from '@/lib/utils'
 
@@ -289,10 +289,6 @@ function ClockInput({ id, value, onChange }: { id: string; value: string; onChan
 
 const selectClass =
   'h-9 rounded-md border border-field-border bg-card px-2 text-sm tabular-nums outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring dark:bg-input/30'
-
-function pad(value: number): string {
-  return String(value).padStart(2, '0')
-}
 
 /** The button of "Quando", in words, and the popover with its inputs and "Concluído". */
 function WhenPopover({

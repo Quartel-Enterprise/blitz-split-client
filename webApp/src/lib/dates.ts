@@ -135,7 +135,8 @@ function capitalize(text: string): string {
   return text.charAt(0).toLocaleUpperCase(uiTag) + text.slice(1)
 }
 
-const pad = (value: number) => String(value).padStart(2, '0')
+/** "09", a time or date field's two digits. */
+export const pad = (value: number) => String(value).padStart(2, '0')
 
 /** "2026-10-28", a date input's value for an instant, in the browser's time zone. */
 export function toDateInputValue(millis: number): string {

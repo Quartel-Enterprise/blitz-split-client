@@ -127,7 +127,7 @@ class ProfileViewModelTest {
     private lateinit var storedTheme: MutableStateFlow<ThemePreference?>
     private lateinit var storedDynamicColors: MutableStateFlow<Boolean?>
     private val storedBitcoinInSats = MutableStateFlow(false)
-    private lateinit var storedTimeFormat: MutableStateFlow<TimeFormatPreference>
+    private lateinit var storedTimeFormat: MutableStateFlow<TimeFormatPreference?>
     private var timeFormatWriteHangs = false
     private val timeFormatWrites = mutableListOf<TimeFormatPreference>()
     private val storedUsageDataSharing = MutableStateFlow(true)
@@ -1816,6 +1816,19 @@ class ProfileViewModelTest {
             // Then
             assertEquals(TimeFormatPreference.TWENTY_FOUR_HOUR, viewModel.uiState.value.timeFormat)
         }
+
+    @Test
+    fun `GIVEN the time format not read yet WHEN tapping Time format THEN opens nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(timeFormat = null)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnTimeFormatClicked)
+
+        // Then
+        assertFalse(viewModel.uiState.value.isLoaded)
+        assertNull(viewModel.uiState.value.dialog)
+    }
 
     @Test
     fun `GIVEN the profile WHEN tapping Time format THEN opens the time format dialog`() = runTest(testDispatcher) {
@@ -7622,7 +7635,7 @@ class ProfileViewModelTest {
         themeWriteHangs: Boolean = false,
         invite: AppInvite? = null,
         language: AppLanguage = AppLanguage.SYSTEM,
-        timeFormat: TimeFormatPreference = TimeFormatPreference.SYSTEM,
+        timeFormat: TimeFormatPreference? = TimeFormatPreference.SYSTEM,
         timeFormatWriteHangs: Boolean = false,
         clientPlatform: ClientPlatform = ClientPlatform.ANDROID,
         shareCode: String? = null,
@@ -7760,7 +7773,7 @@ class ProfileViewModelTest {
                 if (this@ProfileViewModelTest.timeFormatWriteHangs) awaitCancellation()
                 storedTimeFormat.value = it
             },
-            observeTimeFormat = { storedTimeFormat },
+            observeTimeFormat = { storedTimeFormat.filterNotNull() },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
         )
         backgroundScope.launch { viewModel.uiAction.collect(actions::add) }
