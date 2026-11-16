@@ -9,7 +9,7 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, D
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
-import { avatarStyle } from '@/lib/avatar'
+import { categoryStyle } from '@/lib/avatar'
 import { uiTag } from '@/lib/currency'
 import { amountPlaceholder, currencySymbol, formatMoney, formatNames, formatPercent } from '@/lib/money'
 import { cn } from '@/lib/utils'
@@ -408,14 +408,11 @@ function Example({ state }: { state: JsDefaultSplitState }) {
     : state.mode === 'equal' && state.includedCount > 0
       ? t('defaultSplit_exampleEqual', { total, each: money(state.exampleEachMinor) })
       : t('defaultSplit_example', { total })
-  const detail = isError
+  const help = isError
     ? t('defaultSplit_sumHelp', { full: formatPercent(100) })
     : state.mode === 'equal'
       ? t('defaultSplit_exampleEqualHelp')
-      : state.rows
-          .filter((row) => row.weight > 0)
-          .map((row) => `${row.name} ${money(row.exampleMinor ?? 0)}`)
-          .join(' · ')
+      : undefined
   const parts = state.rows.filter((row) => row.basisPoints > 0)
   const missing = isError && state.remainingPercent > 0 ? state.remainingPercent * 100 : 0
   return (
@@ -426,11 +423,24 @@ function Example({ state }: { state: JsDefaultSplitState }) {
       </strong>
       <span aria-hidden className="flex h-2 gap-0.5 overflow-hidden rounded-full">
         {parts.map((row) => (
-          <span key={row.id} className="avatar-mark rounded-full" style={{ ...avatarStyle(row.color), flex: `${row.basisPoints} 1 0` }} />
+          <span key={row.id} className="avatar-mark rounded-full" style={{ ...categoryStyle(row.barColor), flex: `${row.basisPoints} 1 0` }} />
         ))}
         {missing > 0 && <span className="rounded-full bg-muted" style={{ flex: `${missing} 1 0` }} />}
       </span>
-      <span className="text-[13px] text-muted-foreground tabular-nums">{detail}</span>
+      {help !== undefined ? (
+        <span className="text-[13px] text-muted-foreground tabular-nums">{help}</span>
+      ) : (
+        <ul className="flex flex-wrap gap-x-3 gap-y-1 text-[13px] text-muted-foreground tabular-nums">
+          {state.rows
+            .filter((row) => row.weight > 0)
+            .map((row) => (
+              <li key={row.id} className="flex items-center gap-1.5">
+                <span aria-hidden className="avatar-mark size-2 shrink-0 rounded-full" style={categoryStyle(row.barColor)} />
+                {`${row.name} ${money(row.exampleMinor ?? 0)}`}
+              </li>
+            ))}
+        </ul>
+      )}
     </div>
   )
 }

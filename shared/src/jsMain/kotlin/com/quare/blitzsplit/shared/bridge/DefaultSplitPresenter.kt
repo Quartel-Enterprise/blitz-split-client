@@ -33,6 +33,8 @@ class JsDefaultSplitRow(
     val weight: Double,
     val basisPoints: Double,
     val exampleMinor: Double?,
+    // Why: the CategoryColor's code of their segment of the example's bar and of the dot before their name under it.
+    val barColor: String,
 )
 
 class JsDefaultSplitState(
@@ -283,4 +285,5 @@ private fun toJsRow(row: DefaultSplitRow): JsDefaultSplitRow = JsDefaultSplitRow
     weight = row.weight.toDouble(),
     basisPoints = row.basisPoints.toDouble(),
     exampleMinor = row.exampleMinor?.toDouble(),
+    barColor = row.color.code,
 )

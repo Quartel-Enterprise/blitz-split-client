@@ -396,10 +396,14 @@ private struct DefaultSplitExample: View {
             ShareBar(state: state)
                 .frame(height: 8)
                 .accessibilityHidden(true)
-            Text(verbatim: detail)
-                .font(.footnote)
-                .foregroundStyle(state.showsPercentError ? AnyShapeStyle(Palette.onErrorContainer) : AnyShapeStyle(.secondary))
-                .monospacedDigit()
+            if let help {
+                Text(verbatim: help)
+                    .font(.footnote)
+                    .foregroundStyle(state.showsPercentError ? AnyShapeStyle(Palette.onErrorContainer) : AnyShapeStyle(.secondary))
+                    .monospacedDigit()
+            } else {
+                ShareLegend(state: state)
+            }
         }
         .foregroundStyle(state.showsPercentError ? Palette.onErrorContainer : Color.primary)
         .accessibilityElement(children: .combine)
@@ -424,7 +428,7 @@ private struct DefaultSplitExample: View {
         return String(localized: "On a \(total) bill:", bundle: .appLanguage)
     }
 
-    private var detail: String {
+    private var help: String? {
         if state.showsPercentError {
             return String(
                 localized: "Adjust the percentages until they add up to \(SplitBillCopy.percent(100)) to save.",
@@ -434,14 +438,32 @@ private struct DefaultSplitExample: View {
         if state.mode == .equal {
             return String(localized: "Whoever isn't in an expense leaves it when splitting.", bundle: .appLanguage)
         }
-        return state.rows
-            .filter { $0.weight > 0 }
-            .map { "\($0.person.name) \(state.currency.format($0.exampleMinor?.int64Value ?? 0))" }
-            .joined(separator: " · ")
+        return nil
     }
 }
 
-/// Each one's slice of every bill in their avatar's color; the part still missing stays empty.
+/// Each one's part of the example bill after a dot in their segment's color, so the bar reads without counting.
+private struct ShareLegend: View {
+    let state: DefaultSplitUiState
+
+    var body: some View {
+        TermFlowLayout(spacing: 12, lineSpacing: 4) {
+            ForEach(state.rows.filter { $0.weight > 0 }, id: \.person.id) { row in
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(row.color.data)
+                        .frame(width: 8, height: 8)
+                    Text(verbatim: "\(row.person.name) \(state.currency.format(row.exampleMinor?.int64Value ?? 0))")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .monospacedDigit()
+                }
+            }
+        }
+    }
+}
+
+/// Each one's slice of every bill in their own color of the split; the part still missing stays empty.
 private struct ShareBar: View {
     let state: DefaultSplitUiState
 
@@ -455,7 +477,7 @@ private struct ShareBar: View {
             HStack(spacing: 2) {
                 ForEach(rows, id: \.person.id) { row in
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(row.person.avatarColor.data)
+                        .fill(row.color.data)
                         .frame(width: total > 0 ? width * Double(row.basisPoints) / total : 0)
                 }
                 if missing > 0 {

@@ -171,9 +171,16 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     When the saved percentages are no longer what the incomes give (an older version's save), the screen shows the
     percentages. Incomes an older version kept on one device (`split_group.splitIncomes`) became that device's rows
     once, waiting to go up (Room 45, `GroupIncomesMigrationSpec`). A new bill's Split may also save its split as the default or its
-    category's exception ("Use as the group default", in [split-bill.md](split-bill.md)). "On a R$ 100 bill: Pierre R$ 75 ·
-    Ana R$ 25" with the bar in each one's color is always in sight, the cents as Split a bill shares them (Equal's
-    example is the first round bill everyone gets the same of, R$ 120 among six). It is one field of the group row (`groups.default_split`,
+    category's exception ("Use as the group default", in [split-bill.md](split-bill.md)). "On a R$ 100 bill:" with the bar in
+    each one's color and "Pierre R$ 75", "Ana R$ 25" under it, each after a dot of their color, is always in sight, the cents as Split a bill shares them (Equal's
+    example is the first round bill everyone gets the same of, R$ 120 among six). Each person's segment and the dot
+    before their name under it take a color of the split by their place in the group's list, Blue, Yellow, Pink, Lime
+    and Purple (the category colors' data tones, `SplitBarColors`), not their avatar's, since two people may share one
+    (a photo over the default Blue, beta feedback of 2026-11-15). The palette leaves out Green, Teal, Orange and Brown,
+    which sit near the money green and the debt orange. A sixth person takes Blue again, so neighbors in the list never
+    match; a color stays with its person while others go in or out of the split, so in a group of six or more two
+    people of one color can still meet in the bar when everyone between them is out, the order and names telling them
+    apart (palette, place and repeat chosen while fixing that feedback, for Pierre to confirm). It is one field of the group row (`groups.default_split`,
     `GroupDefaultSplit`), saved alone by its own Save (back goes to Edit group unsaved) and synced with the
     group's Last-Write-Wins, by any member, offline too, keeping the keys a newer app adds to it (this version
     writes only `mode`, `weights` and `exceptions` over the stored object); Equal with everyone in and no exception
