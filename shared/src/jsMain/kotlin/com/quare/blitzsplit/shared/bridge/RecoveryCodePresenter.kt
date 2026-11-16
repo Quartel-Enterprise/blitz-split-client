@@ -20,10 +20,10 @@ class JsRecoveryCodeState(
     val isConnectExpanded: Boolean,
 )
 
-// Why: on the web "save to the password manager" becomes downloading the code as a file.
+// Why: `text` is the words joined by spaces for "copy", and numbered one a line for "download".
 class JsRecoveryCodeAction(
     val type: String,
-    val code: String,
+    val text: String,
 )
 
 class RecoveryCodePresenter {
@@ -49,8 +49,11 @@ class RecoveryCodePresenter {
         val actions = viewModel.uiAction.mapNotNull { action ->
             when (action) {
                 is RecoveryCodeUiAction.CopyToClipboard -> JsRecoveryCodeAction("copy", action.code)
-                is RecoveryCodeUiAction.SaveToPasswordManager -> JsRecoveryCodeAction("download", action.code)
-                is RecoveryCodeUiAction.LaunchNativeSignIn -> null
+
+                is RecoveryCodeUiAction.DownloadFile -> JsRecoveryCodeAction("download", action.numberedWords)
+
+                // Why: the web has no password manager to hand the code to, so it offers the download only.
+                is RecoveryCodeUiAction.SaveToPasswordManager, is RecoveryCodeUiAction.LaunchNativeSignIn -> null
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -62,7 +65,7 @@ class RecoveryCodePresenter {
     }
 
     fun download() {
-        viewModel.onEvent(RecoveryCodeUiEvent.OnSaveToPasswordManagerClicked)
+        viewModel.onEvent(RecoveryCodeUiEvent.OnDownloadClicked)
     }
 
     fun connectInstead() {

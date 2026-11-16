@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">復元コードを保存</string>
-    <string name="recovery_code_body">アカウントなしで使っています。デバイスを替えたりなくしたりしたときは、この12個の単語でグループを復元できます。順番どおりに書き留めてください。</string>
+    <string name="recovery_code_body">アカウントなしで使っています。デバイスを替えたりなくしたりしたときは、この12個の単語でデータを復元できます。順番どおりに書き留めてください。30日間使わないとデータは削除され、単語も使えなくなります。</string>
     <string name="recovery_code_copy">単語をコピー</string>
     <string name="recovery_code_save_to_password_manager">パスワードマネージャーに保存</string>
     <string name="recovery_code_connect_instead">代わりにGoogleまたはAppleと連携</string>
@@ -10,4 +10,7 @@
     <string name="recovery_code_also_in_profile">プロフィール › 復元 からも確認できます。</string>
     <string name="recovery_code_remind_later">後で通知</string>
     <string name="recovery_code_saved">保存しました</string>
+    <string name="recovery_code_download">ダウンロード</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · 復元コード\n\n%1$s\n\n「別のデバイスで使ったことがある」で入力すると、データを復元できます。\n</string>
 </resources>

@@ -12,6 +12,7 @@ sealed interface RecoveryCodeUiEvent : UiEvent {
     override val analytics: EventAnalytics
         get() = when (this) {
             OnCopyClicked -> EventAnalytics.Automatic("recovery_code_copy_clicked")
+            OnDownloadClicked -> EventAnalytics.Automatic("recovery_code_download_clicked")
             OnSaveToPasswordManagerClicked -> EventAnalytics.Automatic("recovery_code_password_manager_clicked")
             OnConnectInsteadClicked -> EventAnalytics.Automatic("recovery_code_connect_instead_clicked")
             is OnProviderClicked -> SignInAnalytics.buildProviderClicked(provider, SOURCE)
@@ -23,6 +24,8 @@ sealed interface RecoveryCodeUiEvent : UiEvent {
         }
 
     data object OnCopyClicked : RecoveryCodeUiEvent
+
+    data object OnDownloadClicked : RecoveryCodeUiEvent
 
     data object OnSaveToPasswordManagerClicked : RecoveryCodeUiEvent
 

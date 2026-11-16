@@ -24,11 +24,3 @@ export function RecoveryWordsBox({ words, onCopy, columns = 3 }: { words: string
     </div>
   )
 }
-
-// A numbered list, one word a line, so the downloaded file is read as it is written down.
-export function numberedRecoveryWords(code: string): string {
-  return code
-    .split(' ')
-    .map((word, index) => `${index + 1}. ${word}`)
-    .join('\n')
-}

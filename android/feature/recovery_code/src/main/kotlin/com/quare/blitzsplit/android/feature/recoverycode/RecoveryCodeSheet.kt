@@ -14,8 +14,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +38,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 private val landscapeSheetMaxWidth = 640.dp
+private const val TEXT_MIME_TYPE = "text/plain"
 
 /*
  * Why: shown over the groups once the first sync issued a code. A phone gets a bottom sheet (at
@@ -46,9 +49,19 @@ private val landscapeSheetMaxWidth = 640.dp
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
+fun RecoveryCodeSheet(
+    /*
+     * Why: from the screen's entry, which outlives the sheet, so a save sheet still open when the prompt goes keeps
+     * its result and writes the file instead of leaving it empty.
+     */
+    saveFile: (fileName: String, mimeType: String, bytes: ByteArray) -> Unit,
+    viewModel: RecoveryCodeViewModel = koinViewModel(),
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    RecoveryCodeActionsEffect(viewModel = viewModel)
+    RecoveryCodeActionsEffect(
+        viewModel = viewModel,
+        saveFile = saveFile,
+    )
     val words = state.recoveryWords ?: return
     val layout = rememberDeviceLayout()
     val onDismiss = { viewModel.onEvent(RecoveryCodeUiEvent.OnRemindLaterClicked) }
@@ -104,10 +117,16 @@ fun RecoveryCodeSheet(viewModel: RecoveryCodeViewModel = koinViewModel()) {
 }
 
 @Composable
-private fun RecoveryCodeActionsEffect(viewModel: RecoveryCodeViewModel) {
+private fun RecoveryCodeActionsEffect(
+    viewModel: RecoveryCodeViewModel,
+    saveFile: (fileName: String, mimeType: String, bytes: ByteArray) -> Unit,
+) {
     val context = LocalContext.current
     val saver = remember(context) { RecoveryCodeSaver(context) }
     val scope = rememberCoroutineScope()
+    // Why: the collector outlives a recomposition, so it reads the current language's resources and saver.
+    val resources by rememberUpdatedState(LocalResources.current)
+    val currentSaveFile by rememberUpdatedState(saveFile)
     val launchGoogleSignIn = rememberGoogleSignInLauncher { result ->
         viewModel.onEvent(
             when (result) {
@@ -129,6 +148,16 @@ private fun RecoveryCodeActionsEffect(viewModel: RecoveryCodeViewModel) {
         viewModel.uiAction.collect { action ->
             when (action) {
                 is RecoveryCodeUiAction.CopyToClipboard -> saver.copyToClipboard(action.code)
+
+                is RecoveryCodeUiAction.DownloadFile -> currentSaveFile(
+                    resources.getString(R.string.recovery_code_file_name),
+                    TEXT_MIME_TYPE,
+                    resources
+                        .getString(
+                            R.string.recovery_code_file_text,
+                            action.numberedWords,
+                        ).encodeToByteArray(),
+                )
 
                 is RecoveryCodeUiAction.SaveToPasswordManager -> scope.launch {
                     saver.saveToPasswordManager(action.code)
