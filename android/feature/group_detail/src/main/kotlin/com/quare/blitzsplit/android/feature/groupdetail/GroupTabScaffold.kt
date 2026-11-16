@@ -239,10 +239,12 @@ private fun GroupSideHeader(
         top = 12.dp,
     )
     Column {
+        val shared = rememberGroupSharedModifiers(frame.sharedGroupId)
         GroupFacesRow(
             header = frame.header,
             onAction = onAction,
             modifier = modifier,
+            facesModifier = shared.faces,
         )
         val balance = frame.header.myBalance
         if (frame.isMyBalanceLoading) {
@@ -264,7 +266,7 @@ private fun GroupSideHeader(
                 money = frame.money,
                 onSettleClick = { onAction(GroupAction.SETTLE) },
                 modifier = balancePadding,
-                shared = rememberGroupSharedModifiers(frame.sharedGroupId),
+                shared = shared,
             )
         }
         GroupTabsRow(

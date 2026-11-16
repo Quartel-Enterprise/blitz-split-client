@@ -2,6 +2,9 @@ import { getStackedExtraCount, getStackedFaceCount } from 'blitzsplit-shared'
 import { Avatar } from '@/components/common'
 import { cn } from '@/lib/utils'
 
+// Why: a mark a shared transition finds the stack by (`data-group-faces`), set on the stack's own root.
+export type StackMarks = { 'data-group-faces'?: string }
+
 /** One face of a stack, whoever it stands for: a member, a payer, someone in a split. */
 export type StackFace = { initials: string; color: string; photoUrl?: string | null }
 
@@ -36,16 +39,17 @@ export function AvatarStack({
   size = 'sm',
   ring = 'ring-card',
   className,
+  ...marks
 }: {
   faces: StackFace[]
   extraCount: number
   size?: keyof typeof sizes
   ring?: string
   className?: string
-}) {
+} & StackMarks) {
   const classes = sizes[size]
   return (
-    <span aria-hidden className={cn('flex shrink-0 items-center', className)}>
+    <span aria-hidden {...marks} className={cn('flex shrink-0 items-center', className)}>
       {faces.map((face, index) => (
         <Avatar key={index} initial={face.initials} color={face.color} photoUrl={face.photoUrl} className={cn(classes.face, 'ring-2', ring, index > 0 && classes.overlap)} />
       ))}

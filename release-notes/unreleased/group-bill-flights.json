@@ -1,0 +1,72 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "android",
+        "web"
+      ],
+      "text": {
+        "en": "Opening a group from Groups, its members' faces now travel from the row into the group's screen, and back when you leave.",
+        "pt": "Ao abrir um grupo em Grupos, os rostos dos membros agora vão da linha para a tela do grupo, e voltam quando você sai.",
+        "pt-PT": "Ao abrir um grupo em Grupos, as caras dos membros passam agora da linha para o ecrã do grupo, e voltam quando sais.",
+        "es": "Al abrir un grupo desde Grupos, las caras de sus miembros ahora viajan de la fila a la pantalla del grupo, y vuelven al salir.",
+        "fr": "En ouvrant un groupe depuis Groupes, les visages de ses membres passent désormais de la ligne à l’écran du groupe, et reviennent quand tu en sors.",
+        "de": "Öffnest du eine Gruppe unter Gruppen, wandern die Gesichter der Mitglieder jetzt aus der Zeile in die Gruppe und beim Verlassen zurück.",
+        "it": "Aprendo un gruppo da Gruppi, i volti dei membri ora passano dalla riga alla schermata del gruppo, e tornano quando esci.",
+        "pl": "Po otwarciu grupy z Grup twarze jej członków przechodzą teraz z wiersza na ekran grupy i wracają, gdy z niej wychodzisz.",
+        "nl": "Open je een groep vanuit Groepen, dan gaan de gezichten van de leden nu van de rij naar het scherm van de groep, en terug als je weggaat.",
+        "ja": "「グループ」からグループを開くと、メンバーの顔が行からグループの画面へ移動し、戻るときも元の位置に戻るようになりました。",
+        "tr": "Gruplar'dan bir grup açtığında, üyelerin yüzleri artık satırdan grubun ekranına geçiyor ve çıkınca geri dönüyor.",
+        "id": "Saat membuka grup dari Grup, wajah para anggotanya kini berpindah dari baris ke layar grup, dan kembali saat kamu keluar.",
+        "ru": "Когда открываешь группу из «Групп», лица участников теперь переходят из строки на экран группы и возвращаются, когда выходишь.",
+        "uk": "Коли відкриваєш групу з «Груп», обличчя учасників тепер переходять із рядка на екран групи й повертаються, коли виходиш."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "android"
+      ],
+      "text": {
+        "en": "On a phone, opening a bill now carries more of it along: who paid travels from its row on Home and All expenses, the time from its row in the group's Expenses, and the group's photo and name from the group's screen. They travel back when you leave.",
+        "pt": "No celular, abrir uma conta agora leva mais coisas junto: quem pagou vem da linha no Início e em Todas as despesas, o horário vem da linha nas Despesas do grupo, e a foto e o nome do grupo vêm da tela do grupo. Eles voltam quando você sai.",
+        "pt-PT": "No telemóvel, abrir uma conta leva agora mais coisas consigo: quem pagou vem da linha no Início e em Todas as despesas, a hora vem da linha nas Despesas do grupo, e a foto e o nome do grupo vêm do ecrã do grupo. Voltam quando sais.",
+        "es": "En el teléfono, abrir un gasto ahora lleva más cosas consigo: quién pagó viaja desde su fila en Inicio y Todos los gastos, la hora desde su fila en los Gastos del grupo, y la foto y el nombre del grupo desde la pantalla del grupo. Vuelven al salir.",
+        "fr": "Sur un téléphone, ouvrir une dépense emporte désormais plus d’éléments : qui a payé part de sa ligne dans Accueil et Toutes les dépenses, l’heure de sa ligne dans les Dépenses du groupe, et la photo et le nom du groupe de l’écran du groupe. Ils reviennent quand tu en sors.",
+        "de": "Auf dem Handy nimmt das Öffnen einer Ausgabe jetzt mehr mit: Wer bezahlt hat, kommt aus der Zeile in Start und Alle Ausgaben, die Uhrzeit aus der Zeile in den Ausgaben der Gruppe, Foto und Name der Gruppe aus der Gruppe. Beim Verlassen wandern sie zurück.",
+        "it": "Sul telefono, aprire una spesa ora porta con sé più elementi: chi ha pagato arriva dalla sua riga in Home e Tutte le spese, l’orario dalla sua riga nelle Spese del gruppo, e la foto e il nome del gruppo dalla schermata del gruppo. Tornano indietro quando esci.",
+        "pl": "Na telefonie otwarcie wydatku przenosi teraz więcej: kto zapłacił przechodzi z wiersza na Start i we Wszystkich wydatkach, godzina z wiersza w Wydatkach grupy, a zdjęcie i nazwa grupy z ekranu grupy. Wracają, gdy wychodzisz.",
+        "nl": "Op een telefoon neemt het openen van een uitgave nu meer mee: wie betaalde komt uit de rij op Start en Alle uitgaven, de tijd uit de rij in de Uitgaven van de groep, en de foto en naam van de groep uit het scherm van de groep. Ze gaan terug als je weggaat.",
+        "ja": "スマートフォンで支出を開くと、より多くの要素が一緒に移動するようになりました。支払った人はホームと「すべての支出」の行から、時刻はグループの「支出」の行から、グループの写真と名前はグループの画面から移動し、戻るときも元の位置に戻ります。",
+        "tr": "Telefonda bir harcamayı açmak artık daha fazlasını beraberinde getiriyor: kimin ödediği Ana Sayfa ve Tüm harcamalar'daki satırından, saat grubun Harcamalar'ındaki satırından, grubun fotoğrafı ve adı da grubun ekranından geliyor. Çıkınca geri dönüyorlar.",
+        "id": "Di ponsel, membuka tagihan kini membawa lebih banyak hal: siapa yang membayar berpindah dari barisnya di Beranda dan Semua pengeluaran, jamnya dari barisnya di Pengeluaran grup, serta foto dan nama grup dari layar grup. Semuanya kembali saat kamu keluar.",
+        "ru": "На телефоне открытие счёта теперь переносит больше: кто заплатил — из строки на Главной и во «Всех расходах», время — из строки в «Расходах» группы, а фото и название группы — с экрана группы. Когда выходишь, всё возвращается обратно.",
+        "uk": "На телефоні відкриття рахунку тепер переносить більше: хто заплатив — із рядка на Головній і в «Усіх витратах», час — із рядка у «Витратах» групи, а фото й назва групи — з екрана групи. Коли виходиш, усе повертається назад."
+      }
+    },
+    {
+      "kind": "fixed",
+      "platforms": [
+        "android"
+      ],
+      "betaOnly": true,
+      "text": {
+        "en": "A group's name now travels into the group's screen as it opens, not only on the way back.",
+        "pt": "O nome do grupo agora vai para a tela do grupo ao abri-lo, não só na volta.",
+        "pt-PT": "O nome do grupo passa agora para o ecrã do grupo ao abri-lo, não só no regresso.",
+        "es": "El nombre de un grupo ahora viaja a la pantalla del grupo al abrirlo, no solo al volver.",
+        "fr": "Le nom d’un groupe passe désormais dans l’écran du groupe à l’ouverture, pas seulement au retour.",
+        "de": "Der Name einer Gruppe wandert jetzt auch beim Öffnen in die Gruppe, nicht nur auf dem Rückweg.",
+        "it": "Il nome di un gruppo ora passa nella schermata del gruppo quando lo apri, non solo al ritorno.",
+        "pl": "Nazwa grupy przechodzi teraz na ekran grupy także przy otwieraniu, a nie tylko w drodze powrotnej.",
+        "nl": "De naam van een groep gaat nu ook bij het openen naar het scherm van de groep, niet alleen op de terugweg.",
+        "ja": "グループの名前が、戻るときだけでなく開くときにもグループの画面へ移動するようになりました。",
+        "tr": "Bir grubun adı artık yalnızca dönüşte değil, açarken de grubun ekranına geçiyor.",
+        "id": "Nama grup kini berpindah ke layar grup saat dibuka, tidak hanya saat kembali.",
+        "ru": "Название группы теперь переходит на экран группы и при открытии, а не только при возвращении.",
+        "uk": "Назва групи тепер переходить на екран групи й під час відкриття, а не лише на зворотному шляху."
+      }
+    }
+  ]
+}

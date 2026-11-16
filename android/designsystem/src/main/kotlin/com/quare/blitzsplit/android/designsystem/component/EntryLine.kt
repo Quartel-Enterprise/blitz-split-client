@@ -158,11 +158,16 @@ fun EntryIconTile(icon: ImageVector) {
     }
 }
 
-// Why: "17:40 · queued · You paid", with the home's pending dot while the line waits for the server.
+/*
+ * Why: "17:40 · queued · You paid", with the home's pending dot while the line waits for the server. A time given apart
+ * is a text of its own ahead of the parts, which flies into the bill's date and time (beta feedback of 2026-11-16).
+ */
 @Composable
 fun EntryMetaLine(
     isPending: Boolean,
     parts: List<String>,
+    time: String? = null,
+    timeModifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -171,14 +176,38 @@ fun EntryMetaLine(
         if (isPending) {
             PendingIndicator()
         }
-        Text(
-            text = parts.joinToString(ENTRY_META_SEPARATOR),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        Row {
+            if (time != null) {
+                EntryMetaText(
+                    text = time,
+                    modifier = timeModifier,
+                )
+            }
+            if (parts.isNotEmpty()) {
+                EntryMetaText(
+                    text = parts.joinToString(
+                        separator = ENTRY_META_SEPARATOR,
+                        prefix = if (time != null) ENTRY_META_SEPARATOR else "",
+                    ),
+                )
+            }
+        }
     }
+}
+
+@Composable
+private fun EntryMetaText(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        modifier = modifier,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
 }
 
 // Why: a bill's total, and under it what it does to this device's user's balance ("+R$ 600,00"), when they are in it.

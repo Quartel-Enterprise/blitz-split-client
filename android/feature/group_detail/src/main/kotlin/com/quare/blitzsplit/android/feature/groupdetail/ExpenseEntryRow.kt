@@ -18,10 +18,9 @@ import com.quare.blitzsplit.android.designsystem.component.ENTRY_META_SEPARATOR
 import com.quare.blitzsplit.android.designsystem.component.EntryDayHeading
 import com.quare.blitzsplit.android.designsystem.component.EntryIconTile
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
-import com.quare.blitzsplit.android.designsystem.component.LocalBillOpensAsDialog
 import com.quare.blitzsplit.android.designsystem.component.MenuEntryLine
 import com.quare.blitzsplit.android.designsystem.component.RowMenuItem
-import com.quare.blitzsplit.android.designsystem.component.SharedOrigin
+import com.quare.blitzsplit.android.designsystem.component.groupBillOrigin
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -108,10 +107,13 @@ private fun ExpenseEntryRow(
 ) {
     // Why: the bill's own currency, not the one picked above the balances.
     val money = rememberMoneyFormatter(expense.currency)
-    // Why: the badge, title, total and share fly into the bill's screen as Home's rows do (beta feedback of 2026-11-15).
+    /*
+     * Why: the badge, title, total and share fly into the bill's screen as Home's rows do (beta feedback of 2026-11-15),
+     * and the time into its date and time (beta feedback of 2026-11-16).
+     */
     val shared = rememberBillSharedModifiers(
         billId = expense.id,
-        origin = SharedOrigin.GROUP.takeUnless { LocalBillOpensAsDialog.current },
+        origin = groupBillOrigin(),
     )
     EntryFrameRow(
         icon = Icons.AutoMirrored.Outlined.ReceiptLong,
@@ -131,6 +133,7 @@ private fun ExpenseEntryRow(
             ExpenseMetaLine(
                 expense = expense,
                 dates = dates,
+                timeModifier = shared.time,
             )
         },
     ) {
@@ -177,11 +180,13 @@ internal fun EntryFrameRow(
 private fun ExpenseMetaLine(
     expense: ExpenseRow,
     dates: DateTimeTextFormatter,
+    timeModifier: Modifier,
 ) {
     EntryMetaLine(
         isPending = expense.isPending,
+        time = dates.toTimeText(expense.spentAt),
+        timeModifier = timeModifier,
         parts = listOfNotNull(
-            dates.toTimeText(expense.spentAt),
             stringResource(R.string.group_detail_queued).takeIf { expense.isPending },
             paidTextOrNull(
                 expense.payers,

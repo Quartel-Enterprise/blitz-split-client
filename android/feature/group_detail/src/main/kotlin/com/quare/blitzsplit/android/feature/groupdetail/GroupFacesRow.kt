@@ -33,6 +33,8 @@ internal fun GroupFacesRow(
     header: GroupHeader,
     onAction: (GroupAction) -> Unit,
     modifier: Modifier = Modifier,
+    // Why: where the faces of the row tapped land (beta feedback of 2026-11-16).
+    facesModifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
@@ -57,6 +59,7 @@ internal fun GroupFacesRow(
             extraCount = header.extraMemberCount,
             size = faceSize,
             ringColor = MaterialTheme.colorScheme.surface,
+            modifier = facesModifier,
         )
         if (header.notJoinedCount > 0) {
             Text(

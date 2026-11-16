@@ -363,6 +363,7 @@ internal fun HomeBillRow(
                     bill = bill,
                     description = meta,
                     groupModifier = shared.group,
+                    payersModifier = shared.payers,
                 )
             }
             Column(
@@ -469,6 +470,8 @@ private fun BillOriginRow(
     description: String,
     // Why: the group's square flies into the bill's top bar, beside the group's name (beta feedback of 2026-11-15).
     groupModifier: Modifier,
+    // Why: who paid flies into the bill's "Larissa paid" faces (beta feedback of 2026-11-16).
+    payersModifier: Modifier,
 ) {
     Row(
         modifier = Modifier.clearAndSetSemantics { contentDescription = description },
@@ -487,6 +490,8 @@ private fun BillOriginRow(
             extraCount = bill.extraPayerCount,
             size = billOriginSize,
             ringColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            // Why: a bill whose payers all left shows no face here, so nothing grows out of an empty stack.
+            modifier = payersModifier.takeIf { bill.payerFaces.isNotEmpty() || bill.extraPayerCount > 0 } ?: Modifier,
         )
         if (bill.isPending) {
             PendingIndicator()
