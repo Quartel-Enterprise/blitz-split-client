@@ -1,0 +1,26 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "ios"
+      ],
+      "text": {
+        "en": "On iPad, the tabs open in the sidebar, and when they sit in the top bar, as with the iPad upright, \"Split a bill\" stays in sight there while the other buttons move to a row just below.",
+        "pt": "No iPad, as abas abrem na barra lateral, e quando ficam na barra do topo, como com o iPad em pé, \"Rachar conta\" continua à vista ali, enquanto os outros botões passam para uma fileira logo abaixo.",
+        "pt-PT": "No iPad, os separadores abrem na barra lateral, e quando ficam na barra de cima, como com o iPad na vertical, \"Dividir conta\" continua à vista aí, enquanto os outros botões passam para uma fila logo abaixo.",
+        "es": "En el iPad, las pestañas se abren en la barra lateral, y cuando quedan en la barra superior, como con el iPad en vertical, \"Dividir gasto\" sigue a la vista ahí, mientras los demás botones pasan a una fila justo debajo.",
+        "fr": "Sur iPad, les onglets s’ouvrent dans la barre latérale, et quand ils sont dans la barre du haut, comme avec l’iPad à la verticale, « Partager une dépense » y reste visible, tandis que les autres boutons passent dans une rangée juste en dessous.",
+        "de": "Auf dem iPad öffnen sich die Tabs in der Seitenleiste, und wenn sie in der oberen Leiste stehen, etwa beim iPad im Hochformat, bleibt „Ausgabe aufteilen“ dort sichtbar, während die anderen Schaltflächen in eine Reihe direkt darunter wandern.",
+        "it": "Su iPad, le schede si aprono nella barra laterale, e quando stanno nella barra in alto, come con l'iPad in verticale, \"Dividi una spesa\" resta in vista lì, mentre gli altri pulsanti passano in una riga appena sotto.",
+        "pl": "Na iPadzie karty otwierają się na pasku bocznym, a gdy są na górnym pasku, jak przy iPadzie w pionie, „Podziel wydatek” zostaje tam na widoku, natomiast pozostałe przyciski przechodzą do rzędu tuż pod nim.",
+        "nl": "Op de iPad openen de tabbladen in de navigatiekolom, en staan ze in de bovenste balk, zoals bij een staande iPad, dan blijft \"Uitgave verdelen\" daar in beeld en gaan de andere knoppen naar een rij er net onder.",
+        "ja": "iPad ではタブがサイドバーに表示されるようになり、iPad を縦向きにしたときなどタブが上部のバーに並ぶ場合も「支出を割り勘」はそこに表示されたままで、ほかのボタンはすぐ下の行に移ります。",
+        "tr": "iPad'de sekmeler artık kenar çubuğunda açılıyor; iPad dikeyken olduğu gibi sekmeler üst çubukta durduğunda \"Harcama böl\" orada görünür kalıyor, diğer düğmeler hemen altındaki bir sıraya geçiyor.",
+        "id": "Di iPad, tab kini terbuka di bilah samping, dan saat tab ada di bilah atas, seperti saat iPad tegak, \"Bagi tagihan\" tetap terlihat di sana, sementara tombol lainnya pindah ke baris tepat di bawahnya.",
+        "ru": "На iPad вкладки теперь открываются в боковой панели, а когда они стоят в верхней панели, например при вертикальном iPad, «Разделить счёт» остаётся там на виду, тогда как остальные кнопки переходят в ряд прямо под ней.",
+        "uk": "На iPad вкладки тепер відкриваються в бічній панелі, а коли вони стоять у верхній панелі, наприклад коли iPad вертикально, «Розділити рахунок» лишається там на виду, тоді як інші кнопки переходять у ряд просто під нею."
+      }
+    }
+  ]
+}

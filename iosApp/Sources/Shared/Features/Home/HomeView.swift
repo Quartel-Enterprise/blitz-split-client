@@ -175,6 +175,14 @@ struct HomeView: View {
         )
         .navigationTitle(HomeCopy.tabTitle)
         #if os(iOS)
+        .tabTrailingButtons(
+            showsSplitBill: state.showsSplitBillButton,
+            showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
+            onSplitBill: { model.send(HomeUiEventOnSplitBillClicked.shared) },
+        ) {
+            bellButton
+            profileButton
+        }
         .tabTitleDisplayMode()
         // The list comes back at its top after the first use's card, so "Split a bill" is spelled out again with it
         .onChange(of: state.showsHome) { _, showsHome in
@@ -189,14 +197,6 @@ struct HomeView: View {
                         model.send(HomeUiEventOnRetrySyncClicked.shared)
                     }
                 }
-            }
-            TabTrailingItems(
-                showsSplitBill: state.showsSplitBillButton,
-                showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
-                onSplitBill: { model.send(HomeUiEventOnSplitBillClicked.shared) },
-            ) {
-                bellButton
-                profileButton
             }
         }
         #else

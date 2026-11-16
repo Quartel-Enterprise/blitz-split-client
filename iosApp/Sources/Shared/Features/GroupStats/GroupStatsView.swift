@@ -50,10 +50,6 @@ struct GroupStatsView: View {
     /// In the iPad's column beside the groups, upright as it is, the boards still draw two columns.
     @Environment(\.showsGroupBesideList) private var showsGroupBesideList
 
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    #endif
-
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
@@ -74,8 +70,8 @@ struct GroupStatsView: View {
         .navigationTitle("Statistics")
         #if os(iOS)
         .toolbarTitleDisplayMode(.large)
-        // On iPhone the statistics keep the group's own bars, without the app's tabs
-        .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
+        // The group's own bars, without the app's tabs, as on the group's screen
+        .groupFlowHidesTabBar()
         #else
         .navigationSubtitle(macSubtitle)
         .toolbar {

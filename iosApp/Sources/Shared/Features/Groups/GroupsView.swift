@@ -134,17 +134,17 @@ struct GroupsView: View {
             if isEmpty { isSplitBillExpanded = true }
         }
         .readingVerticalBar($hasVerticalBar)
+        .tabTrailingButtons(
+            showsSplitBill: state.showsSplitBillButton,
+            showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
+            onSplitBill: { model.send(GroupsUiEventOnSplitBillClicked.shared) },
+        ) {
+            joinButton
+            profileButton
+        }
         .tabTitleDisplayMode()
         .toolbar {
             TabTitle(title: String(localized: "Groups", bundle: .appLanguage))
-            TabTrailingItems(
-                showsSplitBill: state.showsSplitBillButton,
-                showsSplitBillTitle: isSplitBillExpanded && !hasVerticalBar,
-                onSplitBill: { model.send(GroupsUiEventOnSplitBillClicked.shared) },
-            ) {
-                joinButton
-                profileButton
-            }
         }
         #else
         .navigationSubtitle(macSubtitle)

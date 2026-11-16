@@ -20,6 +20,9 @@ extension EnvironmentValues {
     /// The home's list has the group it opened beside it (an iPad lying down), so that group's row or card is
     /// highlighted; elsewhere the group covers the list and nothing is.
     @Entry var showsGroupBesideList = false
+    /// A home tab's list in its column beside a detail (Groups' beside a group, Contacts' beside a person), whose own
+    /// bar is narrow: its buttons leave it for the row atop the content (`isTabBarCrowded`).
+    @Entry var isInTabListColumn = false
 }
 
 extension View {

@@ -65,6 +65,7 @@ struct GroupsColumns<ListContent: View>: View {
                 list()
                     .navigationDestination(for: AppRoute.self) { MainTabView.destination($0) }
             }
+            .environment(\.isInTabListColumn, showsDetail)
             .frame(width: showsDetail ? listWidth : nil)
             if showsDetail {
                 ListDetailSeparator(fold: division?.verticalFrame)

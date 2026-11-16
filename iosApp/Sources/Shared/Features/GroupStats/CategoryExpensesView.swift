@@ -50,10 +50,6 @@ struct CategoryExpensesView: View {
     @State private var layout = ScreenLayout()
     @Environment(\.windowLayout) private var windowLayout
 
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    #endif
-
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
@@ -83,7 +79,8 @@ struct CategoryExpensesView: View {
         .navigationSubtitle(subtitle)
         #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
-        .toolbar(horizontalSizeClass == .compact ? .hidden : .automatic, for: .tabBar)
+        // The group's own bars, without the app's tabs, as on the group's screen
+        .groupFlowHidesTabBar()
         #endif
         .onAppear {
             if model == nil { model = CategoryExpensesModel(route: route) }
