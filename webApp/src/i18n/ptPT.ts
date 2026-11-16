@@ -747,7 +747,6 @@ export const ptPT: Partial<Record<MessageKey, string>> = {
   splitBill_categoryOffline: 'Sem internet: a categoria já pode ser usada neste navegador e aparece no grupo quando a ligação voltar.',
   splitBill_categorySaveError: 'Não foi possível guardar a categoria. Tenta de novo.',
   splitBill_categoryDeleteError: 'Não foi possível apagar a categoria. Tenta de novo.',
-  categoryExpenses_emptyBody: 'Escolhe outras categorias acima, ou limpa para ver todas as despesas do período.',
   defaultSplit_exceptionLead: 'Despesas desta categoria dividem de outra forma.',
   defaultSplit_exceptionPercent: 'Percentagem, {values}',
   defaultSplit_exceptionPick: 'Escolhe uma categoria para a exceção.',

@@ -20,6 +20,8 @@ struct StatsRing<Center: View>: View {
     @Binding var selected: Int?
     /// The slice tapped, and whether a pointer (the Mac's, an iPad's trackpad) was over the ring when it was.
     let onTap: (Int, Bool) -> Void
+    /// A tap on the ring's square off every slice (its hole, its corners), which lets a picked slice go.
+    var onTapOff: (() -> Void)? = nil
     @ViewBuilder let center: Center
 
     /// The hole's radius over the ring's, which is also its diameter over the ring's size.
@@ -70,6 +72,8 @@ struct StatsRing<Center: View>: View {
                     .onTapGesture { location in
                         if let index = slice(at: location, in: geometry.size) {
                             onTap(index, isHovered)
+                        } else {
+                            onTapOff?()
                         }
                     }
                     .onContinuousHover { phase in

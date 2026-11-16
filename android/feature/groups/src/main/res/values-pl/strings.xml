@@ -216,4 +216,10 @@
     <string name="groups_all_expenses_clear">Wyczyść filtry</string>
     <string name="groups_all_expenses_no_results_title">Brak pasujących wydatków</string>
     <string name="groups_all_expenses_no_results_body">Spróbuj innych słów lub wyczyść filtry.</string>
+    <string name="groups_all_expenses_period">Okres</string>
+    <string name="groups_all_expenses_period_all">Cały okres</string>
+    <string name="groups_all_expenses_period_this_year">Ten rok</string>
+    <string name="groups_all_expenses_period_this_month">Ten miesiąc</string>
+    <string name="groups_all_expenses_period_last_month">Poprzedni miesiąc</string>
+    <string name="groups_all_expenses_period_custom">Wybierz daty…</string>
 </resources>

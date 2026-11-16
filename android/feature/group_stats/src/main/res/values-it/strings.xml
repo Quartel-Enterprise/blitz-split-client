@@ -67,11 +67,6 @@
     <string name="group_stats_period_empty_body">Tutte le spese di questo gruppo sono di %s.</string>
     <string name="group_stats_see_whole_trip">Vedi tutto il viaggio</string>
     <string name="group_stats_see_whole_period">Vedi da sempre</string>
-    <string name="group_stats_apply">Applica</string>
-    <string name="group_stats_cancel">Annulla</string>
-    <string name="group_stats_range_start">Data di inizio</string>
-    <string name="group_stats_range_end">Data di fine</string>
-    <string name="group_stats_range_none">Nessuna selezionata</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d spesa</item>
         <item quantity="many">%d spese</item>
@@ -100,15 +95,4 @@
     <string name="group_stats_settling_open">%s ancora aperto</string>
     <string name="group_stats_settling_note">Quanto tempo impiega ciascuno, in media, a saldare la propria quota delle spese del periodo. Ciò che è ancora aperto conta fino a oggi.</string>
     <string name="group_stats_category_open">Vedi spese</string>
-    <string name="category_expenses_title">Spese per categoria</string>
-    <string name="category_expenses_subtitle">%1$s · %2$s</string>
-    <string name="category_expenses_back">Torna a Statistiche</string>
-    <string name="category_expenses_clear">Cancella</string>
-    <string name="category_expenses_summary">%1$s · %2$s</string>
-    <string name="category_expenses_empty_title">Nessuna spesa in queste categorie</string>
-    <string name="category_expenses_period_empty">Nessuna spesa in questo periodo</string>
-    <string name="category_expenses_empty_body">Scegli altre categorie qui sopra, o deselezionale per vedere tutte le spese del periodo.</string>
-    <string name="category_expenses_today">Oggi</string>
-    <string name="category_expenses_yesterday">Ieri</string>
-    <string name="category_expenses_queued">in coda</string>
 </resources>

@@ -67,11 +67,6 @@
     <string name="group_stats_period_empty_body">このグループの支出はすべて%sのものです。</string>
     <string name="group_stats_see_whole_trip">旅行全体を見る</string>
     <string name="group_stats_see_whole_period">全期間を見る</string>
-    <string name="group_stats_apply">適用</string>
-    <string name="group_stats_cancel">キャンセル</string>
-    <string name="group_stats_range_start">開始日</string>
-    <string name="group_stats_range_end">終了日</string>
-    <string name="group_stats_range_none">未選択</string>
     <plurals name="group_stats_expenses">
         <item quantity="other">%d件の支出</item>
     </plurals>
@@ -94,15 +89,4 @@
     <string name="group_stats_settling_open">%sが未精算</string>
     <string name="group_stats_settling_note">期間内の支出の負担分を、各メンバーが精算するまでにかかる平均日数です。未精算のものは今日までの日数で数えます。</string>
     <string name="group_stats_category_open">支出を見る</string>
-    <string name="category_expenses_title">カテゴリ別の支出</string>
-    <string name="category_expenses_subtitle">%1$s · %2$s</string>
-    <string name="category_expenses_back">統計に戻る</string>
-    <string name="category_expenses_clear">クリア</string>
-    <string name="category_expenses_summary">%1$s · %2$s</string>
-    <string name="category_expenses_empty_title">これらのカテゴリの支出はありません</string>
-    <string name="category_expenses_period_empty">この期間の支出はありません</string>
-    <string name="category_expenses_empty_body">上で別のカテゴリを選ぶか、選択をクリアして期間内のすべての支出を表示してください。</string>
-    <string name="category_expenses_today">今日</string>
-    <string name="category_expenses_yesterday">昨日</string>
-    <string name="category_expenses_queued">送信待ち</string>
 </resources>

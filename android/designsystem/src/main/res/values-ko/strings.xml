@@ -294,4 +294,8 @@
     <string name="designsystem_paid_with_private">나만 볼 수 있어요.</string>
     <string name="designsystem_paid_with_only_payers">이 지출을 낸 사람만 결제 수단을 선택할 수 있어요.</string>
     <string name="designsystem_paid_with_add">결제 수단 추가</string>
+    <string name="designsystem_range_apply">적용</string>
+    <string name="designsystem_range_start">시작 날짜</string>
+    <string name="designsystem_range_end">종료 날짜</string>
+    <string name="designsystem_range_none">선택 안 함</string>
 </resources>

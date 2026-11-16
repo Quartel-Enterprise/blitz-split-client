@@ -63,8 +63,6 @@ internal fun toRouteName(route: Route): String = when (route) {
 
     is Route.GroupStats -> "group-stats"
 
-    is Route.CategoryExpenses -> "category-expenses"
-
     is Route.JoinInvite -> "join-invite"
 
     is Route.JoinPick -> "join-pick"

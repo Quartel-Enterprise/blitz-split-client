@@ -275,8 +275,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     It is a donut over the list (Pierre's call, beta feedback of 2026-11-16, in place of a bar per person): "By
     category"'s ring, at 160 dp/pt/px centered on its own card, its slices each person's share
     (`StatsPersonRow.percent`, rounded to add up to 100 as the categories' are) and its middle the largest one, "39%"
-    over "Ana", or the one picked (a tap on a slice, a second tap letting go; with a mouse, the slice or the row it is
-    over), the others fading. When that one is this device's user (`StatsPersonRow.isMe`) the middle says just "You",
+    over "Ana", or the one picked (a tap on a slice, a second tap letting go, as does a tap anywhere else on its card
+    or in the hole, Pierre's call, beta feedback of 2026-11-16; with a mouse, the slice or the row it is over), the
+    others fading. When that one is this device's user (`StatsPersonRow.isMe`) the middle says just "You",
     the row under the ring keeping "Pierre (you)" (beta feedback of 2026-11-16). The middle of both
     rings stays inside the hole with 10 dp/pt/px to spare on each side of the ring's inner edge, so a long name ends
     in an ellipsis instead of touching the ring. Consumed and Paid switch what it shows, and it sweeps in again with them and the period.
@@ -324,15 +325,15 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     Then the most expensive one, and "Biggest expense", which opens its Bill and draws its category's badge as the
     group's Expenses draws the bill (its subcategory when it has one, "Other" for none). A group without bills says "Nothing to show yet" with "Split a bill"; a period without bills offers "See the whole trip". "By category" draws the
     period's spending as a ring in each main category's color (its own, or the one the person gave it), the largest in its center, then each main
-    category with its amount and its bar (the ring, the legend's dots, the bars and Expenses by category's chips in the
+    category with its amount and its bar (the ring, the legend's dots, the bars and All expenses' category badges in the
     color's data tone, a person's bar in their face's, never the accent), and no list of subcategories under it, which would only crowd the row
     (`StatsCategoryRow`, whole percentages adding up to 100), a bill without a category counted in Other and one of
     a deleted category in its parent or Other.
     The slice the mouse is over, or its legend line hovered (focused, on the web), pops out while the others fade,
     and the ring's middle names it with its share instead of the largest category. A tap or a click on a slice, a
-    legend line (which makes even a 2% slice easy to reach) or a category's row, which ends in a chevron, opens that
-    category's bills, "Expenses by category" (Pierre's beta feedback, `Route.CategoryExpenses`, below); a tap in the
-    hole does nothing. The ring sweeps in when the period changes; with reduced motion on it comes in without animating,
+    legend line (which makes even a 2% slice easy to reach) or a category's row, which ends in a chevron, opens "All
+    expenses" with the group, that category and the period picked (below); a tap in the hole, or off the ring, lets a
+    picked slice go (only a mouse picks one here: a tap on a slice opens it). The ring sweeps in when the period changes; with reduced motion on it comes in without animating,
     and the picked slice pops out at once.
     While a new device's first download still brings bills down it counts what came, as "Total spent so far"
     (5.1d, `GroupStatsUiState.isFirstDownload`). A phone, a tablet and a foldable upright
@@ -345,35 +346,19 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     "Biggest expense". The web from the tablet up and the Mac put "Over time" and "Biggest expense" in a second
     column, with four summary cards, "Settling up" under "By person"; the Mac's cards go two by two where four in a
     row would be under 170 pt each, and each keeps two lines for its note ("38% of the total · you paid R$ 1.234,56").
-  - "Expenses by category" (`Route.CategoryExpenses`, `CategoryExpensesViewModel`), from a category of "By category":
-    a screen of its own over Statistics, back returning to them, rather than the group's Expenses filtered (whose
-    header, tabs and payments aren't about a category, and whose back would leave the statistics). Its subtitle is
-    the group and the period Statistics showed ("Viagem Floripa · October 2026"); "The whole trip" or "All time"
-    follows new bills, any other period stays those days. On Android its bar is Statistics's: small, with the title
-    and subtitle in it, leaving with the content on scroll. Chips list the period's main categories, the largest first
-    as "By category" does, the one tapped picked: a tap picks or lets go of more (several at once), "Clear" shows while
-    one is picked, and with none picked the list shows every bill of the period; a category picked with no bill left
-    stays as a picked chip, over "No expenses in these categories"; with none picked and no bill left in the period it
-    says "No expenses in this period", and while a new device's first download may still bring the bills, skeletons
-    take the place of either. A main category takes its subcategories' bills
-    (Food takes Restaurant and Market), and there are no subcategory chips: each line names its own subcategory in its
-    meta ("21:30 · Bruno paid · Restaurant"). Under the chips "R$ 610 · 4 expenses" adds up the bills shown, then the
-    bills by day as the group's Expenses draws them, never the payments. A tap opens Bill, as from Expenses, and each
-    line ends in the same ⋮ as a bill's on Expenses and Home's "Latest expenses" (beta feedback of 2026-11-15): Edit,
-    Duplicate and Share open over this screen, Delete asks "Delete this bill?" first, and a long press (a right click
-    on the Mac and the web) opens it too. The chips are only this screen's: opening it
-    again starts from the category tapped. It lays out as Statistics: in the group's pane beside the groups on an
-    Android tablet and an iPad lying down. Where the window is wide (beta feedback of 2026-11-15) the chips and the
-    total keep a column of their own (300 dp or pt, 240 px on the web) beside the bills, scrolling on its own: Android
-    wherever the screen has 700 dp beside the rail (a phone lying down, a tablet drawn alone; up to 948 dp in all,
-    never a foldable upright nor the pane beside the groups), iOS lying down and with an iPad's room (an iPhone Duo open
-    included, each column on its side of the fold), a wide Mac window, and the web from `xl` (1280 px) up, where the
-    column stays put as the bills scroll (narrower, beside the sidebar, it left the table no room for the bills'
-    names). Elsewhere it is one column: up to 624 dp on Android (a book's chips before
-    the hinge and the bills after it), a List on iOS and the Mac, a page in the home's frame on the web, under the
-    breadcrumb "Groups › Viagem Floripa › Statistics › Expenses by category" from the tablet up (the group's crumb
-    going back to the group past Statistics), with the group's Expenses table. Its subtitle writes the period as
-    Statistics did: "This month" and "Last month" as the month, picked dates as their days.
+  - A category of "By category" opens "All expenses" ([home-tab.md](home-tab.md), `Route.AllExpenses` with its
+    `categoryId` and `period`) over Statistics, back returning to them: the group, that main category and the period
+    Statistics showed already picked in its filters, which lead its row of menus in that order (period, category,
+    group; Pierre's call, beta feedback of 2026-11-16). It took the place of "Expenses by category", a screen of its
+    own that listed the same bills with category chips: All expenses has the search built in and saves a screen. "The
+    whole trip" or "All time" goes as the whole history, "This year", "This month" and "Last month" as themselves
+    (they follow today there too), picked dates as their days. Statistics' currency chip doesn't go: All expenses
+    lists the bills in every currency, each in its own. Opened from Statistics it lists every bill of the group, a
+    bill only others shared included (with no share of yours under its amount), as "Expenses by category" did, so the
+    list adds up to what the chart counted (Pierre's call, 2026-11-16), while its Group filter holds that group alone;
+    any other pick of groups, and Home's or a group's "See all", list only the bills you paid or take part in. All expenses is a page on every size, as from Home or the
+    group's "See all": on a tablet lying down it covers the groups' pane rather than drawing in it, and on the web and
+    the Mac it keeps its own title and back rather than a breadcrumb.
   - "Duplicate", only in a bill's ⋮ on Expenses (Bill's top bar has no such button), opens "Split a bill" as a new bill
     in the same group (`Route.SplitBill.duplicatesExpenseId`) filled in with the original's description, amount,
     currency, category, payers and split, spent now, to change whatever the person wants before saving; nothing is

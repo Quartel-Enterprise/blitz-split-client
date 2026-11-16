@@ -379,7 +379,7 @@ class GroupTabsTest {
         prepareScenario(
             Route.Home,
             Route.GroupDetail.expensesOf(GROUP_ID),
-            Route.AllExpenses(groupId = GROUP_ID),
+            Route.AllExpenses.create(groupId = GROUP_ID),
             Route.BillDetail(GROUP_ID, "dinner", focusCommentId = null),
         )
 

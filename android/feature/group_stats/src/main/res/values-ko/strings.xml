@@ -67,11 +67,6 @@
     <string name="group_stats_period_empty_body">이 그룹의 지출은 모두 이 기간에 있어요: %s</string>
     <string name="group_stats_see_whole_trip">여행 전체 보기</string>
     <string name="group_stats_see_whole_period">전체 기간 보기</string>
-    <string name="group_stats_apply">적용</string>
-    <string name="group_stats_cancel">취소</string>
-    <string name="group_stats_range_start">시작 날짜</string>
-    <string name="group_stats_range_end">종료 날짜</string>
-    <string name="group_stats_range_none">선택 안 됨</string>
     <plurals name="group_stats_expenses">
         <item quantity="other">지출 %d건</item>
     </plurals>
@@ -94,15 +89,4 @@
     <string name="group_stats_settling_open">미정산 %s</string>
     <string name="group_stats_settling_note">각자 기간 내 지출의 자기 몫을 정산하는 데 평균 얼마나 걸리는지 보여 줘요. 아직 정산되지 않은 건은 오늘까지로 계산해요.</string>
     <string name="group_stats_category_open">지출 보기</string>
-    <string name="category_expenses_title">카테고리별 지출</string>
-    <string name="category_expenses_subtitle">%1$s · %2$s</string>
-    <string name="category_expenses_back">통계로 돌아가기</string>
-    <string name="category_expenses_clear">지우기</string>
-    <string name="category_expenses_summary">%1$s · %2$s</string>
-    <string name="category_expenses_empty_title">이 카테고리에는 지출이 없어요</string>
-    <string name="category_expenses_period_empty">이 기간에는 지출이 없어요</string>
-    <string name="category_expenses_empty_body">위에서 다른 카테고리를 고르거나, 선택을 지워 이 기간의 모든 지출을 보세요.</string>
-    <string name="category_expenses_today">오늘</string>
-    <string name="category_expenses_yesterday">어제</string>
-    <string name="category_expenses_queued">대기 중</string>
 </resources>

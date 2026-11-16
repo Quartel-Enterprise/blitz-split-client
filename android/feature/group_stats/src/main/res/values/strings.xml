@@ -67,11 +67,6 @@
     <string name="group_stats_period_empty_body">All of this group\'s expenses are from %s.</string>
     <string name="group_stats_see_whole_trip">See the whole trip</string>
     <string name="group_stats_see_whole_period">See all time</string>
-    <string name="group_stats_apply">Apply</string>
-    <string name="group_stats_cancel">Cancel</string>
-    <string name="group_stats_range_start">Start date</string>
-    <string name="group_stats_range_end">End date</string>
-    <string name="group_stats_range_none">None selected</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d expense</item>
         <item quantity="other">%d expenses</item>
@@ -97,15 +92,4 @@
     <string name="group_stats_settling_open">%s still open</string>
     <string name="group_stats_settling_note">How long each one takes, on average, to settle their share of the period\'s bills. What\'s still open counts until today.</string>
     <string name="group_stats_category_open">See expenses</string>
-    <string name="category_expenses_title">Expenses by category</string>
-    <string name="category_expenses_subtitle">%1$s · %2$s</string>
-    <string name="category_expenses_back">Back to Statistics</string>
-    <string name="category_expenses_clear">Clear</string>
-    <string name="category_expenses_summary">%1$s · %2$s</string>
-    <string name="category_expenses_empty_title">No expenses in these categories</string>
-    <string name="category_expenses_period_empty">No expenses in this period</string>
-    <string name="category_expenses_empty_body">Pick other categories above, or clear them to see every expense of the period.</string>
-    <string name="category_expenses_today">Today</string>
-    <string name="category_expenses_yesterday">Yesterday</string>
-    <string name="category_expenses_queued">queued</string>
 </resources>

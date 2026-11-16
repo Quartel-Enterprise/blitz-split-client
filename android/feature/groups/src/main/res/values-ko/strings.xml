@@ -188,4 +188,10 @@
     <string name="groups_all_expenses_clear">필터 지우기</string>
     <string name="groups_all_expenses_no_results_title">일치하는 지출이 없어요</string>
     <string name="groups_all_expenses_no_results_body">다른 단어로 검색하거나 필터를 지워 보세요.</string>
+    <string name="groups_all_expenses_period">기간</string>
+    <string name="groups_all_expenses_period_all">전체 기간</string>
+    <string name="groups_all_expenses_period_this_year">올해</string>
+    <string name="groups_all_expenses_period_this_month">이번 달</string>
+    <string name="groups_all_expenses_period_last_month">지난달</string>
+    <string name="groups_all_expenses_period_custom">날짜 선택…</string>
 </resources>

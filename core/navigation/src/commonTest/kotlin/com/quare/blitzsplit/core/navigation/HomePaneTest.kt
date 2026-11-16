@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.core.navigation
 
 import com.quare.blitzsplit.core.model.BalancesFilter
-import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupTab
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -129,37 +128,6 @@ class HomePaneTest {
 
         // Then
         assertEquals("trip", groupId)
-    }
-
-    @Test
-    fun `GIVEN a category list over the Estatisticas WHEN reading the pane THEN keeps the group`() {
-        // Given
-        prepareScenario(
-            Route.Groups,
-            Route.GroupDetail(
-                "trip",
-                joinedAs = null,
-                GroupTab.EXPENSES,
-                isOverBill = false,
-            ),
-            Route.GroupStats("trip"),
-            Route.CategoryExpenses(
-                "trip",
-                categoryId = "food",
-                currency = GroupCurrency.BRL,
-                periodStartMillis = null,
-                periodEndMillis = null,
-                isMonthPeriod = false,
-            ),
-        )
-
-        // When
-        val groupId = navigator.backStack.value.groupBesideGroupsOrNull()
-        val showsOnlyPane = navigator.backStack.value.showsOnlyPaneAboveGroups()
-
-        // Then
-        assertEquals("trip", groupId)
-        assertTrue(showsOnlyPane)
     }
 
     @Test

@@ -207,4 +207,10 @@
     <string name="groups_all_expenses_clear">Cancella filtri</string>
     <string name="groups_all_expenses_no_results_title">Nessuna spesa corrisponde</string>
     <string name="groups_all_expenses_no_results_body">Prova altre parole o cancella i filtri.</string>
+    <string name="groups_all_expenses_period">Periodo</string>
+    <string name="groups_all_expenses_period_all">Da sempre</string>
+    <string name="groups_all_expenses_period_this_year">Quest’anno</string>
+    <string name="groups_all_expenses_period_this_month">Questo mese</string>
+    <string name="groups_all_expenses_period_last_month">Il mese scorso</string>
+    <string name="groups_all_expenses_period_custom">Scegli le date…</string>
 </resources>

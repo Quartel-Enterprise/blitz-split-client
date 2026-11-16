@@ -35,12 +35,14 @@ internal fun Modifier.onMouseHover(
 
 /*
  * Why: a tap that says whether a mouse made it, so a click keeps what hovering already picked while a second tap of a
- * finger lets it go. A drag that another detector consumes is no tap.
+ * finger lets it go. A drag that another detector consumes is no tap. The tap is consumed, so a card's own tap around
+ * the chart (the ring's card letting go of its slice) never takes it too.
  */
 internal suspend fun PointerInputScope.detectPickTaps(onTap: (position: Offset, isMouse: Boolean) -> Unit) {
     awaitEachGesture {
         val down = awaitFirstDown()
         val up = waitForUpOrCancellation() ?: return@awaitEachGesture
+        up.consume()
         onTap(up.position, down.type == PointerType.Mouse)
     }
 }

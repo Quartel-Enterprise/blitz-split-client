@@ -67,11 +67,6 @@
     <string name="group_stats_period_empty_body">Semua pengeluaran grup ini berasal dari %s.</string>
     <string name="group_stats_see_whole_trip">Lihat seluruh perjalanan</string>
     <string name="group_stats_see_whole_period">Lihat sepanjang waktu</string>
-    <string name="group_stats_apply">Terapkan</string>
-    <string name="group_stats_cancel">Batal</string>
-    <string name="group_stats_range_start">Tanggal mulai</string>
-    <string name="group_stats_range_end">Tanggal selesai</string>
-    <string name="group_stats_range_none">Tidak ada yang dipilih</string>
     <plurals name="group_stats_expenses">
         <item quantity="other">%d pengeluaran</item>
     </plurals>
@@ -94,15 +89,4 @@
     <string name="group_stats_settling_open">%s masih terbuka</string>
     <string name="group_stats_settling_note">Berapa lama rata-rata masing-masing melunasi bagiannya dari tagihan periode ini. Yang masih terbuka dihitung sampai hari ini.</string>
     <string name="group_stats_category_open">Lihat pengeluaran</string>
-    <string name="category_expenses_title">Pengeluaran per kategori</string>
-    <string name="category_expenses_subtitle">%1$s · %2$s</string>
-    <string name="category_expenses_back">Kembali ke Statistik</string>
-    <string name="category_expenses_clear">Hapus</string>
-    <string name="category_expenses_summary">%1$s · %2$s</string>
-    <string name="category_expenses_empty_title">Tidak ada pengeluaran di kategori ini</string>
-    <string name="category_expenses_period_empty">Tidak ada pengeluaran di periode ini</string>
-    <string name="category_expenses_empty_body">Pilih kategori lain di atas, atau hapus pilihan untuk melihat semua pengeluaran periode ini.</string>
-    <string name="category_expenses_today">Hari ini</string>
-    <string name="category_expenses_yesterday">Kemarin</string>
-    <string name="category_expenses_queued">dalam antrean</string>
 </resources>

@@ -6,12 +6,10 @@ import { Avatar, PendingDot, PersonButton, segmentClass } from '@/components/com
 import { CurrencyChips } from '@/components/CurrencyChips'
 import { controlClass } from '@/components/fields'
 import { CrumbButton, type HomeTab } from '@/components/HomeShell'
-import { ResponsiveDialog } from '@/components/ResponsiveDialog'
+import { PickDatesDialog } from '@/components/PickDatesDialog'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { LoadingRegion, Skeleton, SkeletonLine } from '@/components/ui/skeleton'
 import { nameOrFormer } from '@/features/balances/BalanceCard'
@@ -20,7 +18,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { categoryStyle } from '@/lib/avatar'
 import { CategoryBadge } from '@/lib/categories'
-import { formatDayTime, fromDateTimeInputs, toDateInputValue } from '@/lib/dates'
+import { formatDayTime } from '@/lib/dates'
 import { formatMoney, formatPercent } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { CategoriesCard } from './CategoriesCard'
@@ -117,6 +115,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
           {isPickingDates && (
             <PickDatesDialog
               isDesktop={isDesktop}
+              description={t('stats_pickDatesBody')}
               initialStart={state.periodStartMillis}
               initialEnd={state.periodEndMillis}
               onPick={(start, end) => {
@@ -366,7 +365,13 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
           ))}
         </div>
       </div>
-      <div className="flex justify-center">
+      {/* Why: a tap beside the ring, or in its hole, lets the picked slice go (Pierre's call, beta feedback of 2026-11-16). */}
+      <div
+        className="flex justify-center"
+        onClick={(event) => {
+          if (!(event.target as Element).closest('circle')) setSelected(null)
+        }}
+      >
         <StatsRing
           slices={people.map((person) => ({ id: person.memberId, percent: person.percent, color: person.sliceColor }))}
           ringKey={ringKey}
@@ -611,60 +616,3 @@ function EmptyCard({ title, body, children }: { title: string; body: string; chi
   )
 }
 
-/** "Escolher datas": the first and the last day, never after today; a dialog, a drawer on the phone. */
-function PickDatesDialog({
-  isDesktop,
-  initialStart,
-  initialEnd,
-  onPick,
-  onClose,
-}: {
-  isDesktop: boolean
-  initialStart: number
-  initialEnd: number
-  onPick: (startMillis: number, endMillis: number) => void
-  onClose: () => void
-}) {
-  const [start, setStart] = useState(toDateInputValue(initialStart))
-  const [end, setEnd] = useState(toDateInputValue(initialEnd))
-  const today = toDateInputValue(Date.now())
-  // Why: noon of the day typed, so the day stays the same in the browser's time zone.
-  const startMillis = fromDateTimeInputs(start, '12:00')
-  const endMillis = fromDateTimeInputs(end, '12:00')
-  const canApply = startMillis != null && endMillis != null
-  return (
-    <ResponsiveDialog
-      isDesktop={isDesktop}
-      onOpenChange={(open) => {
-        if (!open) onClose()
-      }}
-      className="sm:max-w-[400px]"
-      pane={{
-        title: t('stats_pickDatesTitle'),
-        description: t('stats_pickDatesBody'),
-        body: (
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="statsFrom">{t('stats_from')}</Label>
-              <Input id="statsFrom" type="date" max={today} value={start} onChange={(event) => setStart(event.target.value)} />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="statsTo">{t('stats_to')}</Label>
-              <Input id="statsTo" type="date" max={today} value={end} onChange={(event) => setEnd(event.target.value)} />
-            </div>
-          </div>
-        ),
-        footer: (
-          <>
-            <Button variant="outline" onClick={onClose}>
-              {t('common_cancel')}
-            </Button>
-            <Button disabled={!canApply} onClick={() => canApply && onPick(startMillis, endMillis)}>
-              {t('stats_apply')}
-            </Button>
-          </>
-        ),
-      }}
-    />
-  )
-}

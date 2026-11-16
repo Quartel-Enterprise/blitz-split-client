@@ -198,4 +198,10 @@
     <string name="groups_all_expenses_clear">Filters wissen</string>
     <string name="groups_all_expenses_no_results_title">Geen uitgaven gevonden</string>
     <string name="groups_all_expenses_no_results_body">Probeer andere woorden of wis de filters.</string>
+    <string name="groups_all_expenses_period">Periode</string>
+    <string name="groups_all_expenses_period_all">Altijd</string>
+    <string name="groups_all_expenses_period_this_year">Dit jaar</string>
+    <string name="groups_all_expenses_period_this_month">Deze maand</string>
+    <string name="groups_all_expenses_period_last_month">Vorige maand</string>
+    <string name="groups_all_expenses_period_custom">Datums kiezen…</string>
 </resources>

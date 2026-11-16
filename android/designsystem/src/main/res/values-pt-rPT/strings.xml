@@ -101,4 +101,5 @@
     <string name="designsystem_custom_color_in_use_message">%1$s usa esta cor. Troca a cor dela primeiro e depois elimina esta.</string>
     <string name="designsystem_category_color_brown">Castanho</string>
     <string name="designsystem_paid_with_private">Só tu vês isto.</string>
+    <string name="designsystem_range_end">Data de fim</string>
 </resources>

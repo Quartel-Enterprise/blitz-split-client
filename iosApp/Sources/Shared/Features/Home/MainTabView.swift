@@ -349,14 +349,12 @@ struct MainTabView: View {
         switch path.last {
         case let .groupDetail(route): route.groupId
         case let .groupStats(route): route.groupId
-        case let .categoryExpenses(route): route.groupId
         default: nil
         }
     }
     #endif
 
-    /// What the tabs push over themselves: Activity, a group's expenses, balances, members or statistics (and a
-    /// category's bills they open), how
+    /// What the tabs push over themselves: Activity, a group's expenses, balances, members or statistics, how
     /// simplifying debts works, a bill, an invite
     /// opened from its link, a group's invite with an iPad's room, the profile, its category map and, on
     /// iPhone, a key.
@@ -380,7 +378,6 @@ struct MainTabView: View {
         // A bill's link opened over a tab; the same link shared at a comment opens again as a page of its own
         case let .sharedBill(route): SharedBillView(route: route).id(route)
         case let .groupStats(route): GroupStatsView(route: route)
-        case let .categoryExpenses(route): CategoryExpensesView(route: route)
         // "How it works" of Simplify debts, from the group's Balances; the Mac opens it as a sheet
         case let .simplifyDebtsInfo(route): SimplifyDebtsInfoView(route: route)
         case let .joinInvite(route): JoinInviteView(route: route)
@@ -393,7 +390,8 @@ struct MainTabView: View {
         case let .globalBalances(route): GlobalBalancesView(route: route).id(route)
         // Home's bell, or a contact's "See all", pushes Activity
         case let .activity(route): ActivityView(route: route).id(route)
-        // Home's "See everything" over "Latest expenses", or a group's "See all", pushes All expenses
+        // Home's "See everything" over "Latest expenses", a group's "See all" or a category of its Statistics pushes
+        // All expenses
         case let .allExpenses(route): AllExpensesView(route: route).id(route)
         // The search over Home, Balances or Contacts; every platform here has the search tab instead
         case .search: SearchView()

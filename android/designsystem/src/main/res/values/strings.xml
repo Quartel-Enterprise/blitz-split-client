@@ -304,4 +304,8 @@
     <string name="designsystem_paid_with_private">Only you see this.</string>
     <string name="designsystem_paid_with_only_payers">Only those who paid this bill can mark what they paid with.</string>
     <string name="designsystem_paid_with_add">Add a payment method</string>
+    <string name="designsystem_range_apply">Apply</string>
+    <string name="designsystem_range_start">Start date</string>
+    <string name="designsystem_range_end">End date</string>
+    <string name="designsystem_range_none">None selected</string>
 </resources>

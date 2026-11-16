@@ -2,6 +2,7 @@
 
 package com.quare.blitzsplit.shared.bridge
 
+import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -32,6 +33,12 @@ class JsAllExpensesState(
     val query: String,
     val groupIds: Array<String>,
     val categoryIds: Array<String>,
+    // Why: ExpensePeriod's name ("ALL", "THIS_MONTH", "CUSTOM"…), with CUSTOM's days (noon of each) once picked.
+    val period: String,
+    val customStartMillis: Double?,
+    val customEndMillis: Double?,
+    // Why: AllExpensesFilter's names in the order the row draws its chips ("SORT", "GROUP"…).
+    val filterOrder: Array<String>,
     // Why: ShareFilter's, PayerFilter's and ExpenseSort's names: "ALL", "TO_RECEIVE", "YOU", "LARGEST"…
     val share: String,
     val payer: String,
@@ -71,6 +78,10 @@ class AllExpensesPresenter(
                 query = state.filters.query,
                 groupIds = state.filters.groupIds.toTypedArray(),
                 categoryIds = state.filters.categoryIds.toTypedArray(),
+                period = state.filters.period.name,
+                customStartMillis = state.filters.customStartMillis?.toDouble(),
+                customEndMillis = state.filters.customEndMillis?.toDouble(),
+                filterOrder = state.filterOrder.map { it.name }.toTypedArray(),
                 share = state.filters.share.name,
                 payer = state.filters.payer.name,
                 sort = state.filters.sort.name,
@@ -136,6 +147,18 @@ class AllExpensesPresenter(
     // Why: by ShareFilter's, PayerFilter's and ExpenseSort's names, as the state sends them.
     fun pickShare(share: String) {
         viewModel.onEvent(AllExpensesUiEvent.OnShareFilterPicked(ShareFilter.valueOf(share)))
+    }
+
+    // Why: by ExpensePeriod's name; "CUSTOM" only switches back to days already picked.
+    fun pickPeriod(period: String) {
+        viewModel.onEvent(AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.valueOf(period)))
+    }
+
+    fun pickCustomPeriod(
+        startMillis: Double,
+        endMillis: Double,
+    ) {
+        viewModel.onEvent(AllExpensesUiEvent.OnCustomPeriodPicked(startMillis.toLong(), endMillis.toLong()))
     }
 
     fun pickPayer(payer: String) {

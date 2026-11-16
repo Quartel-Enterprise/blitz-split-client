@@ -2,22 +2,22 @@ import Shared
 import SwiftUI
 
 /// Over "All expenses"' bills (Pierre's call, beta feedback): the order and the filters as a row of menus that scrolls
-/// sideways, a menu tinted while its filter narrows the list, and "Clear filters" once one does. The search is the
-/// screen's own search field (`.searchable`).
+/// sideways, in `filterOrder` (what the statistics picked first), a menu tinted while its filter narrows the list, and
+/// "Clear filters" once one does. The search is the screen's own search field (`.searchable`).
 struct AllExpensesFilterBar: View {
     let state: AllExpensesUiState
     let send: (any AllExpensesUiEvent) -> Void
+
+    @State private var isPickingDates = false
 
     private var filters: AllExpensesFilters { state.filters }
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                sortMenu
-                groupMenu
-                categoryMenu
-                shareMenu
-                payerMenu
+                ForEach(state.filterOrder, id: \.self) { filter in
+                    menu(filter)
+                }
                 if filters.isFiltering {
                     Button("Clear filters") { send(AllExpensesUiEventOnClearFiltersClicked.shared) }
                         .buttonStyle(.borderless)
@@ -26,6 +26,58 @@ struct AllExpensesFilterBar: View {
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 4)
+        }
+        .sheet(isPresented: $isPickingDates) {
+            let now = ExpenseFormat.millis(of: .now)
+            DateRangeSheet(
+                startMillis: filters.customStartMillis?.int64Value ?? now,
+                endMillis: filters.customEndMillis?.int64Value ?? now,
+            ) { start, end in
+                isPickingDates = false
+                send(AllExpensesUiEventOnCustomPeriodPicked(startMillis: start, endMillis: end))
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func menu(_ filter: AllExpensesFilter) -> some View {
+        switch filter {
+        case .sort: sortMenu
+        case .group: groupMenu
+        case .category: categoryMenu
+        case .period: periodMenu
+        case .share: shareMenu
+        default: payerMenu
+        }
+    }
+
+    /// The statistics' periods; "Pick dates…" opens the sheet, and a custom period names its days.
+    private var periodMenu: some View {
+        Menu {
+            ForEach(Self.periods, id: \.self) { period in
+                checked(Self.title(period), isOn: filters.period == period) {
+                    if period == .custom {
+                        isPickingDates = true
+                    } else {
+                        send(AllExpensesUiEventOnPeriodPicked(period: period))
+                    }
+                }
+            }
+        } label: {
+            chip(periodText, isActive: filters.period != .all)
+        }
+    }
+
+    private var periodText: String {
+        if filters.period == .custom, let start = filters.customStartMillis, let end = filters.customEndMillis {
+            let range = ExpenseFormat.date(of: start.int64Value)..<ExpenseFormat.date(of: end.int64Value)
+            return range.formatted(.interval.day().month(.abbreviated).year())
+        }
+        return switch filters.period {
+        case .thisYear: String(localized: "This year", bundle: .appLanguage)
+        case .thisMonth: String(localized: "This month", bundle: .appLanguage)
+        case .lastMonth: String(localized: "Last month", bundle: .appLanguage)
+        default: String(localized: "Period", bundle: .appLanguage)
         }
     }
 
@@ -151,6 +203,7 @@ struct AllExpensesFilterBar: View {
         return names.count > 1 ? "\(label) · \(names.count)" : label
     }
 
+    private static let periods: [ExpensePeriod] = [.all, .thisYear, .thisMonth, .lastMonth, .custom]
     private static let sorts: [ExpenseSort] = [.newest, .oldest, .largest, .smallest]
     private static let shares: [ShareFilter] = [.all, .toReceive, .toPay]
     private static let payers: [PayerFilter] = [.all, .you, .others]
@@ -161,6 +214,16 @@ struct AllExpensesFilterBar: View {
         case .largest: "Largest first"
         case .smallest: "Smallest first"
         default: "Newest first"
+        }
+    }
+
+    private static func title(_ period: ExpensePeriod) -> LocalizedStringKey {
+        switch period {
+        case .thisYear: "This year"
+        case .thisMonth: "This month"
+        case .lastMonth: "Last month"
+        case .custom: "Pick dates…"
+        default: "All time"
         }
     }
 

@@ -417,9 +417,10 @@ class GroupStatsViewModel(
     }
 
     /*
-     * Why: over the statistics, or in the place of the bill the Mac's inspector draws beside them (which leaves the
-     * ring and the rows clickable), as a person opens; the period shown, the whole history as null so new bills of the
-     * category join the list.
+     * Why: "All expenses" (in the place of "Expenses by category", beta feedback of 2026-11-16) with the group, the
+     * category and the period shown already picked, over the statistics, or in the place of the bill the Mac's inspector
+     * draws beside them (which leaves the ring and the rows clickable), as a person opens. A period that follows today
+     * goes as its kind, so it reads the same there; a custom one with its days.
      */
     private fun openCategory(
         categoryId: String,
@@ -427,17 +428,17 @@ class GroupStatsViewModel(
     ) {
         val state = uiState.value
         if (state.categories.none { it.category.id == categoryId }) return
-        val isWhole = state.period == StatsPeriod.ALL
+        val isCustom = state.period == StatsPeriod.CUSTOM
         val isOpened = navigator.openFromGroupScreen(
             from = route,
             groupId = route.groupId,
-            next = Route.CategoryExpenses(
+            next = Route.AllExpenses(
                 groupId = route.groupId,
                 categoryId = categoryId,
-                currency = state.currency,
-                periodStartMillis = state.periodStartMillis.takeUnless { isWhole },
-                periodEndMillis = state.periodEndMillis.takeUnless { isWhole },
-                isMonthPeriod = state.periodRangeStyle == StatsRangeStyle.MONTH,
+                period = state.period.expensePeriod,
+                customStartMillis = state.periodStartMillis.takeIf { isCustom },
+                customEndMillis = state.periodEndMillis.takeIf { isCustom },
+                isFromStatistics = true,
             ),
         )
         if (isOpened) trackEvent("stats_category_clicked", mapOf("target" to target.name.lowercase()))
