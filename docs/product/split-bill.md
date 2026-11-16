@@ -41,7 +41,8 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     paid": the chip turns disabled and comes back with its pick once this device's user pays again.
   - "Add a payment method" (Pierre's call, feedback of November 15, 2026): in the chip's place while this device's
     user pays the bill and has no method yet, once their methods were read (`SplitBillUiState.showsAddPayingMethod`), a
-    button slightly more visible than the chip (Android's tonal button, Apple's bordered one, the web's secondary one). It opens
+    quiet button, a step more visible than the chip but not filled (Pierre's call, beta feedback of November 16, 2026:
+    the tonal one stood out too much; Android's outlined button, Apple's borderless one, the web's outline one). It opens
     "New payment method" (`Route.PayingMethod(methodId = null)`) over Split a bill, as the sheet or dialog
     [Profile](profile.md) opens (the web draws it in the bill's place, which comes back with what was typed, settled
     while Pierre was away, see PR #376). The
@@ -255,10 +256,19 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     glass button in the bottom toolbar, the web the footer's first button (its top on a phone, its start on a
     dialog). A dialog on an Android tablet and the Mac's form keep it in the form, under "Split", with its hint
     ("Fills in the amount, date and description from the photo."); elsewhere the button's label says enough and the
-    hint went. Never on "Edit bill", nor on an Android tabletop nor an iPhone Duo open upright, as the boards
-    leave it out there; Home's shortcut still opens it. Online only: offline "Needs internet. Fill it in by
-    hand or scan the receipt once you're back online." shows under "Split", and the button leaves (Android's FAB,
-    the web's footer) or stays disabled (iOS's toolbar, so a source choice already open survives the drop). It asks first where the photo comes from (Pierre's call, beta feedback
+    hint went. Never on "Edit bill"; the bottom button is neither on an Android tabletop nor an iPhone Duo open upright, as the boards
+    leave it out there; Home's shortcut still opens it. The form's top bar also has it as an icon beside Save (Pierre's
+    call, beta feedback of November 16, 2026: the bottom one hides behind the keyboard), named "Scan receipt" for screen
+    readers and in a tooltip (Android's long press, Apple's and the web's hover): Android's top app bar and a tablet's
+    dialog header (before ×), iOS and iPadOS the navigation bar's primary action, the Mac at the end of the sheet's
+    title, the web at the end of the dialog's or the drawer's title. It follows `SplitBillUiState.showsScanReceipt` and
+    is disabled while it can't start (`canScanReceipt`: offline, saving, a group loading), and it opens the same source
+    choice. It shows on an Android tabletop and an iPhone Duo open upright too, where the boards leave the bottom one
+    out: the top bar has room for it, and it is the form's only way in there (so the offline notice shows there too;
+    left to this change by Pierre's brief, beta feedback of November 16, 2026). Online only: offline "Needs internet. Fill it in by
+    hand or scan the receipt once you're back online." shows under "Split", and the bottom button leaves (Android's FAB,
+    the web's footer) or stays disabled (iOS's toolbar, so a source choice already open survives the drop), while the
+    top one stays, disabled. It asks first where the photo comes from (Pierre's call, beta feedback
     part 2, item 7, `SplitBillUiState.showsReceiptSourceChoice`, `OnReceiptSourcePicked`, `OnReceiptChoiceSkipped` where there is no camera), as Home's shortcut and
     "Take another photo" do too: Android a bottom sheet "Scan receipt" with "Take photo", "Choose from gallery"
     (the system Photo Picker, no storage permission) and "Choose file" (the documents picker, an image saved as a

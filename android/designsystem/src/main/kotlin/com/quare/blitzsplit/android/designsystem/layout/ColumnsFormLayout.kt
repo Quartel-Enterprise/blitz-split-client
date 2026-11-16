@@ -26,12 +26,17 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -69,7 +74,7 @@ class FormChrome(
     val cancelLabel: String,
     // Why: Rachar conta's dialog closes from its header's end, Dividir's goes back from its start, as the canvas has.
     val isNavigationAtEndInDialog: Boolean,
-    // Why: an icon before "Pronto", Item's "Apagar item"; null for none.
+    // Why: an icon before "Pronto" or "Salvar", Item's "Apagar item" or Rachar conta's "Ler cupom fiscal"; null for none.
     val iconAction: FormIconAction?,
 )
 
@@ -77,6 +82,8 @@ class FormIconAction(
     val icon: ImageVector,
     val label: String,
     val onClick: () -> Unit,
+    // Why: "Ler cupom fiscal" stays in the top bar, dimmed, while it can't start (offline, saving).
+    val isEnabled: Boolean = true,
 )
 
 /*
@@ -414,13 +421,24 @@ private fun DialogHeader(chrome: FormChrome) {
     }
 }
 
+// Why: an icon alone says little, so a long press or a hover names it, as the label screen readers hear.
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun IconActionButton(action: FormIconAction) {
-    IconButton(onClick = action.onClick) {
-        Icon(
-            imageVector = action.icon,
-            contentDescription = action.label,
-        )
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below),
+        tooltip = { PlainTooltip { Text(action.label) } },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(
+            onClick = action.onClick,
+            enabled = action.isEnabled,
+        ) {
+            Icon(
+                imageVector = action.icon,
+                contentDescription = action.label,
+            )
+        }
     }
 }
 

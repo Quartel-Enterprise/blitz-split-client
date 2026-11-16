@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Simpan kode pemulihanmu</string>
-    <string name="recovery_code_body">Kamu memakai aplikasi tanpa akun. 12 kata ini mengembalikan grupmu jika kamu ganti atau kehilangan perangkat. Catat sesuai urutannya.</string>
+    <string name="recovery_code_body">Kamu memakai aplikasi tanpa akun. 12 kata ini mengembalikan datamu jika kamu ganti atau kehilangan perangkat. Catat sesuai urutannya. Setelah 30 hari tidak dipakai, datamu dihapus dan kata-kata ini tidak berlaku lagi.</string>
     <string name="recovery_code_copy">Salin kata</string>
     <string name="recovery_code_save_to_password_manager">Simpan ke pengelola sandi</string>
     <string name="recovery_code_connect_instead">Hubungkan Google atau Apple saja</string>
@@ -10,4 +10,7 @@
     <string name="recovery_code_also_in_profile">Kode ini juga ada di Profil › Kode pemulihan.</string>
     <string name="recovery_code_remind_later">Ingatkan nanti</string>
     <string name="recovery_code_saved">Sudah saya simpan</string>
+    <string name="recovery_code_download">Unduh</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · kode pemulihan\n\n%1$s\n\nPakai di “Saya pernah memakainya di perangkat lain” untuk mengembalikan datamu.\n</string>
 </resources>

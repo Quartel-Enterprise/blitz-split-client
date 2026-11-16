@@ -6,7 +6,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
 | `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi` (with `compileCommonMainKotlinMetadata` and the store screenshots' `compileDebugUnitTestKotlin` in the same job), `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
-| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `macosArm64Test`, `compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, and `iosSimulatorArm64Test` too on `main` and on a pull request that changes the version catalog; both schemes of the Apple app, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
+| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `macosArm64Test`, `compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, and `iosSimulatorArm64Test` too on `main` and on a pull request that changes the version catalog, all skipped when the change is to the Swift app alone; both schemes of the Apple app, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
@@ -78,6 +78,26 @@ one: the suite is the same `commonTest`, the actuals it reaches are `appleMain`'
 main and the test code for the simulator before the pull request opens, and `apple-app` links `Shared` for it. A pull
 request that changes `gradle/libs.versions.toml` runs the simulator's suite too: a library publishes its code for each
 target apart, so a bump is the change the two targets can take differently.
+
+A change to the Swift app alone skips `apple-tests`: the `changes` job, on a Linux runner, lists what the pull request
+changes, or what the push to `main` brought, and when every file is under `iosApp/` or `release-notes/`, or is
+Markdown, no input of a Gradle task of the Apple targets changed. The job would then hold a macOS runner for five
+minutes to restore its tests from the cache, and those runners are the ones a pull request waits for, up to ten minutes
+when several run. A moved file counts under both of its paths, and a diff that fails (a forced push, whose previous
+commit can't be fetched) counts as a change to the Kotlin code. A skipped check counts as passed for
+`merge-when-green`. `apple-app` always runs, and its Gradle time has a floor the cache can't lower: Kotlin/Native
+caches the link of a test binary but not the link of a framework, so each scheme links `Shared` again, two to three
+minutes each, with every module's compilation restored.
+
+On `main`, a failed `apple-tests` leaves no Gradle home in the cache: the `drop-failed-cache` job deletes the entry
+the run saved. setup-gradle saves the home when the job ends, whatever its result, and every later run restores the
+newest entry. A run that lost the network restored nothing, found no plugin to configure the build with, and saved an
+empty home; the next run of `main` restored it and compiled everything (40 minutes, with no task from the cache), and
+so did the pull requests opened meanwhile. Without that entry they restore the one of the last run that passed. When
+the job warns that the cache lists no home of the run, look for one yourself
+(`gh cache list --ref refs/heads/main --key gradle-home-`, the key that has `apple-tests` in it and ends with the
+commit) and delete it with `gh cache delete <id>`. The jobs of `build-and-test` save their homes the same way, and
+nothing deletes those yet.
 
 `apple-tests` bounds its test step rather than the job, since only the step knows which targets run: 60 minutes on
 macOS alone, where recompiling everything took 22, and 80 with the simulator too, where it took up to 48 on `main`.

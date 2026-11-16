@@ -209,7 +209,13 @@ class HomeViewModel(
                     avatarColor = badge.avatarColor,
                     photoUrl = badge.photoUrl,
                     accountProvider = badge.accountProvider,
-                    syncBadge = SyncBadge.ofOrNull(syncState, isOnline, account.awaitsFullSync, state.syncBadge),
+                    syncBadge = SyncBadge.ofOrNull(
+                        syncState = syncState,
+                        isOnline = isOnline,
+                        awaitsFullSync = account.awaitsFullSync,
+                        previous = state.syncBadge,
+                        showsData = state.groupCount > 0,
+                    ),
                     isOnline = isOnline,
                     showsRecoveryCodeCard = isAnonymous &&
                         account.recoveryCodePrompt == RecoveryCodePrompt.SNOOZED &&
@@ -249,6 +255,7 @@ class HomeViewModel(
                     it.copy(
                         isLoaded = true,
                         groupCount = rows.size,
+                        syncBadge = SyncBadge.toShown(it.syncBadge, showsData = rows.isNotEmpty()),
                         groups = homeGroupsOf(rows, pinnedIds),
                         billDays = billDaysOf(latestBills, clock),
                         pendingChangeCount = data.pendingChangeCount,

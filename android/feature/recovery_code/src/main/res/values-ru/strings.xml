@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Сохрани код восстановления</string>
-    <string name="recovery_code_body">Ты пользуешься приложением без аккаунта. Эти 12 слов вернут твои группы, если ты сменишь или потеряешь устройство. Запиши их по порядку.</string>
+    <string name="recovery_code_body">Ты пользуешься приложением без аккаунта. Эти 12 слов вернут твои данные, если ты сменишь или потеряешь устройство. Запиши их по порядку. Через 30 дней без использования данные удаляются, и слова перестают работать.</string>
     <string name="recovery_code_copy">Копировать слова</string>
     <string name="recovery_code_save_to_password_manager">Сохранить в менеджер паролей</string>
     <string name="recovery_code_connect_instead">Лучше подключить Google или Apple</string>
@@ -10,4 +10,7 @@
     <string name="recovery_code_also_in_profile">Он также есть в разделе Профиль › Восстановление.</string>
     <string name="recovery_code_remind_later">Напомнить позже</string>
     <string name="recovery_code_saved">Я сохранил(а) его</string>
+    <string name="recovery_code_download">Скачать</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · код восстановления\n\n%1$s\n\nВведи его в «Я уже пользовался(-ась) на другом устройстве», чтобы вернуть свои данные.\n</string>
 </resources>

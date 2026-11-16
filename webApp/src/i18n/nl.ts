@@ -108,7 +108,7 @@ export const nl: Record<MessageKey, string> = {
   qrScanner_cameraFailed: 'Kan de camera niet openen. Sta toegang toe in de browser of typ de code.',
 
   recoveryCode_title: 'Bewaar je herstelcode',
-  recoveryCode_body: 'Je gebruikt het zonder account. Deze 12 woorden halen je groepen terug als je je browsergegevens wist of van apparaat wisselt. Schrijf ze op in de juiste volgorde.',
+  recoveryCode_body: "Je gebruikt het zonder account. Deze 12 woorden halen je gegevens terug als je je browser wist of van apparaat wisselt. Schrijf ze op in de juiste volgorde. Na 30 dagen zonder gebruik worden je gegevens verwijderd en werken de woorden niet meer.",
   recoveryCode_copy: 'Kopiëren',
   recoveryCode_copied: 'Woorden gekopieerd',
   recoveryCode_download: 'Downloaden als bestand',
@@ -119,7 +119,7 @@ export const nl: Record<MessageKey, string> = {
   recoveryCode_remindLater: 'Herinner me later',
   recoveryCode_saved: 'Ik heb hem bewaard',
   recoveryCode_fileName: 'blitz-split-recovery-code.txt',
-  recoveryCode_fileText: 'Blitz Split · herstelcode\n\n{code}\n\nGebruik hem bij “Ik heb het op een ander apparaat gebruikt” om je groepen terug te halen.\n',
+  recoveryCode_fileText: "Blitz Split · herstelcode\n\n{code}\n\nGebruik hem bij “Ik heb het op een ander apparaat gebruikt” om je gegevens terug te halen.\n",
 
   groups_title: 'Groepen',
   groups_mainNavigation: 'Hoofdnavigatie',

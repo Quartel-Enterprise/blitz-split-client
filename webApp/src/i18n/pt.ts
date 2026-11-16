@@ -106,7 +106,7 @@ export const pt: Record<MessageKey, string> = {
   qrScanner_cameraFailed: 'Não deu para abrir a câmera. Permita o acesso no navegador ou digite o código.',
 
   recoveryCode_title: 'Guarde seu código de recuperação',
-  recoveryCode_body: 'Você está usando sem conta. Estas 12 palavras recuperam seus grupos se você limpar os dados do navegador ou trocar de aparelho. Anote-as na ordem.',
+  recoveryCode_body: "Você está usando sem conta. Estas 12 palavras recuperam seus dados se você limpar o navegador ou trocar de aparelho. Anote-as na ordem. Após 30 dias sem uso, seus dados são apagados e as palavras deixam de funcionar.",
   recoveryCode_copy: 'Copiar',
   recoveryCode_copied: 'Palavras copiadas',
   recoveryCode_download: 'Baixar como arquivo',
@@ -117,7 +117,7 @@ export const pt: Record<MessageKey, string> = {
   recoveryCode_remindLater: 'Lembrar depois',
   recoveryCode_saved: 'Já guardei',
   recoveryCode_fileName: 'bora-rachar-codigo-de-recuperacao.txt',
-  recoveryCode_fileText: 'Bora Rachar · código de recuperação\n\n{code}\n\nUse em "Já usei em outro aparelho" para trazer seus grupos.\n',
+  recoveryCode_fileText: "Bora Rachar · código de recuperação\n\n{code}\n\nUse em \"Já usei em outro aparelho\" para trazer seus dados.\n",
 
   groups_title: 'Grupos',
   groups_mainNavigation: 'Navegação principal',

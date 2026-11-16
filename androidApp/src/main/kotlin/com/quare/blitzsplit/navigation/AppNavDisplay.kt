@@ -86,6 +86,7 @@ import com.quare.blitzsplit.android.feature.releasenotes.ReleaseNotesScreen
 import com.quare.blitzsplit.android.feature.restore.RestoreScreen
 import com.quare.blitzsplit.android.feature.splitbill.SplitBillScreen
 import com.quare.blitzsplit.android.feature.welcome.WelcomeScreen
+import com.quare.blitzsplit.android.platform.rememberFileSaver
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.groupScreenIdOrNull
@@ -291,26 +292,31 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             entry<Route.Restore> { RestoreScreen() }
             // Why: Início, the root of the home; the other tabs open right above it.
             entry<Route.Home>(metadata = homeTabMetadata) {
+                val saveRecoveryFile = rememberFileSaver()
                 EntryTransitionLayout(origin = SharedOrigin.HOME) {
                     HomeScreen(
-                        recoveryCodeSheet = { RecoveryCodeSheet() },
+                        recoveryCodeSheet = { RecoveryCodeSheet(saveFile = saveRecoveryFile) },
                         isPushConfigured = PushSetup.isConfigured,
                     )
                 }
             }
             // Why: on a tablet lying down and an unfolded book, the list beside the group open over it.
             entry<Route.Groups>(metadata = groupsMetadata) {
+                val saveRecoveryFile = rememberFileSaver()
                 // Why: beside the group the list stays where it is, so its rows fly nowhere.
                 EntryTransitionLayout(origin = SharedOrigin.GROUPS.takeIf { listDetail == null }) {
                     GroupsScreen(
-                        recoveryCodeSheet = { RecoveryCodeSheet() },
+                        recoveryCodeSheet = { RecoveryCodeSheet(saveFile = saveRecoveryFile) },
                         onEmptyChanged = { isGroupsScreenEmpty = it },
                     )
                 }
             }
             // Why: "Buscar" over Início, Saldos, Contatos or Atividade, full screen as Grupos' own takes its place.
             entry<Route.Search>(metadata = homeTabMetadata) { SearchScreen() }
-            entry<Route.Profile> { ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet() }) }
+            entry<Route.Profile> {
+                val saveRecoveryFile = rememberFileSaver()
+                ProfileScreen(recoveryCodeSheet = { RecoveryCodeSheet(saveFile = saveRecoveryFile) })
+            }
             // Why: a sheet over the profile on a phone, a dialog wider (a book's right half), full screen on a tabletop.
             entry<Route.EditProfile>(metadata = formPresentationMetadata) {
                 // Why: an open scene keeps the way it opened when the fold changes under it, so its content does too.

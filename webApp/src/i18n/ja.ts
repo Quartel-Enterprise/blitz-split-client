@@ -107,7 +107,7 @@ export const ja: Record<MessageKey, string> = {
   qrScanner_cameraFailed: 'カメラを開けませんでした。ブラウザでアクセスを許可するか、コードを入力してください。',
 
   recoveryCode_title: '復元コードを保存',
-  recoveryCode_body: 'アカウントなしで使っています。ブラウザのデータを消去したりデバイスを替えたりしても、この12個の単語でグループを復元できます。順番どおりに書き留めてください。',
+  recoveryCode_body: "アカウントなしで使っています。ブラウザを消去したりデバイスを替えたりしても、この12個の単語でデータを復元できます。順番どおりに書き留めてください。30日間使わないとデータは削除され、単語も使えなくなります。",
   recoveryCode_copy: 'コピー',
   recoveryCode_copied: '単語をコピーしました',
   recoveryCode_download: 'ファイルとしてダウンロード',
@@ -118,7 +118,7 @@ export const ja: Record<MessageKey, string> = {
   recoveryCode_remindLater: 'あとで通知',
   recoveryCode_saved: '保存しました',
   recoveryCode_fileName: 'blitz-split-recovery-code.txt',
-  recoveryCode_fileText: 'Blitz Split · 復元コード\n\n{code}\n\n「別のデバイスで使っていました」で入力すると、グループを復元できます。\n',
+  recoveryCode_fileText: "Blitz Split · 復元コード\n\n{code}\n\n「別のデバイスで使っていました」で入力すると、データを復元できます。\n",
 
   groups_title: 'グループ',
   groups_mainNavigation: 'メインナビゲーション',

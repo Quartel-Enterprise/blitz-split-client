@@ -1,11 +1,14 @@
 import Observation
 import Shared
 import SwiftUI
+import UniformTypeIdentifiers
 
 @Observable
 final class RecoveryCodeModel {
     private(set) var state: RecoveryCodeUiState
     private(set) var didCopy = false
+    /// The text file Download hands to the save sheet (the save panel on the Mac), until that sheet closes.
+    var downloadText: String?
     /// "I've saved it" or "Remind me later" answered the prompt, so closing the sheet afterwards answers nothing more,
     /// even while the account's prompt hasn't caught up yet.
     private(set) var hasAnswered = false
@@ -37,6 +40,8 @@ final class RecoveryCodeModel {
         case let copy as RecoveryCodeUiActionCopyToClipboard:
             RecoveryCodeSaver.copy(copy.code)
             didCopy = true
+        case let download as RecoveryCodeUiActionDownloadFile:
+            downloadText = RecoveryCodeFile.text(download.numberedWords)
         case let save as RecoveryCodeUiActionSaveToPasswordManager:
             Task { _ = await RecoveryCodeSaver.saveToPasswords(save.code) }
         case is RecoveryCodeUiActionLaunchNativeSignIn:
@@ -92,6 +97,7 @@ struct RecoveryCodeSheet: View {
         .frame(minHeight: 420)
         #endif
         .interactiveDismissDisabled(false)
+        .recoveryCodeExporter(text: $model.downloadText)
         .onDisappear {
             if !model.hasAnswered, model.state.isPromptDue {
                 model.send(RecoveryCodeUiEventOnRemindLaterClicked.shared)
@@ -114,7 +120,7 @@ private struct RecoveryCodeContent: View {
                 Text("Save your recovery code")
                     .font(.title2.bold())
                     .multilineTextAlignment(.center)
-                Text("You're using it without an account. These 12 words bring your groups back if you switch or lose your \(DeviceName.current). Write them down in order.")
+                Text("You're using it without an account. These 12 words bring your data back if you switch or lose your \(DeviceName.current). Write them down in order. After 30 days without use, your data is deleted and the words stop working.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -124,8 +130,10 @@ private struct RecoveryCodeContent: View {
                     VStack(alignment: .trailing, spacing: 4) {
                         RecoveryWordsGrid(words: state.recoveryWords ?? [])
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        Button(model.didCopy ? "Copied" : "Copy" as LocalizedStringKey) {
-                            model.send(RecoveryCodeUiEventOnCopyClicked.shared)
+                        // A large text size or a long language stacks the two instead of truncating them
+                        ViewThatFits(in: .horizontal) {
+                            HStack(spacing: 20) { wordsButtons }
+                            VStack(alignment: .trailing, spacing: 8) { wordsButtons }
                         }
                         .buttonStyle(.borderless)
                         .frame(minHeight: 36)
@@ -174,6 +182,16 @@ private struct RecoveryCodeContent: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             actions
+        }
+    }
+
+    @ViewBuilder
+    private var wordsButtons: some View {
+        Button("Download") {
+            model.send(RecoveryCodeUiEventOnDownloadClicked.shared)
+        }
+        Button(model.didCopy ? "Copied" : "Copy" as LocalizedStringKey) {
+            model.send(RecoveryCodeUiEventOnCopyClicked.shared)
         }
     }
 
@@ -237,5 +255,63 @@ private struct OptionRow: View {
         .buttonStyle(.plain)
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.4)
+    }
+}
+
+/// The text file Download saves: the app's name, the numbered words the ViewModel hands over, and where to type
+/// them, in the app's language.
+enum RecoveryCodeFile {
+    static func text(_ words: String) -> String {
+        String(
+            localized: "Blitz Split · recovery code\n\n\(words)\n\nUse it in \"I've used it on another device\" to bring your data back.\n",
+            bundle: .appLanguage,
+        )
+    }
+
+    static var name: String {
+        String(localized: "blitz-split-recovery-code.txt", bundle: .appLanguage)
+    }
+}
+
+/// The recovery code's text file as the document the save sheet writes, plain text only. Nonisolated, since the
+/// exporter writes the file off the main actor.
+nonisolated struct RecoveryCodeDocument: FileDocument {
+    static let readableContentTypes: [UTType] = [.plainText]
+
+    let text: String
+
+    init(text: String) {
+        self.text = text
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents,
+              let text = String(data: data, encoding: .utf8)
+        else { throw CocoaError(.fileReadCorruptFile) }
+        self.text = text
+    }
+
+    func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: Data(text.utf8))
+    }
+}
+
+private extension View {
+    /// Opens the save sheet (the save panel on the Mac) once Download hands over the text, and forgets it when the
+    /// sheet closes, saved or not.
+    func recoveryCodeExporter(text: Binding<String?>) -> some View {
+        fileExporter(
+            isPresented: Binding(
+                get: { text.wrappedValue != nil },
+                set: { isPresented in
+                    if !isPresented { text.wrappedValue = nil }
+                },
+            ),
+            document: text.wrappedValue.map(RecoveryCodeDocument.init(text:)),
+            contentType: .plainText,
+            defaultFilename: RecoveryCodeFile.name,
+        ) { _ in
+            text.wrappedValue = nil
+        }
     }
 }
