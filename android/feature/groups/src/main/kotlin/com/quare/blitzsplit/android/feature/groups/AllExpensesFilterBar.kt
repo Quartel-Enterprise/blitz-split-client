@@ -176,8 +176,14 @@ private fun PeriodChip(
         label = when {
             filters.period == ExpensePeriod.ALL -> stringResource(R.string.groups_all_expenses_period)
 
-            filters.period == ExpensePeriod.CUSTOM && customStart != null && customEnd != null -> DateUtils
-                .formatDateRange(context, customStart, customEnd, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH)
+            filters.period == ExpensePeriod.CUSTOM && customStart != null && customEnd != null ->
+                DateUtils
+                    .formatDateRange(
+                        context,
+                        customStart,
+                        customEnd,
+                        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH,
+                    )
 
             else -> periodLabel(filters.period)
         },

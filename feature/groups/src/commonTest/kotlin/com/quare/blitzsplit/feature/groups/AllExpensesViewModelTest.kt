@@ -26,6 +26,7 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupsUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
@@ -37,6 +38,7 @@ import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
 import com.quare.blitzsplit.core.utils.MinuteTicks
+import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesFilters
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiAction
 import com.quare.blitzsplit.feature.groups.presentation.model.AllExpensesUiEvent
@@ -59,7 +61,11 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.UtcOffset
+import kotlinx.datetime.asTimeZone
+import kotlinx.datetime.toInstant
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -2518,6 +2524,698 @@ class AllExpensesViewModelTest {
             assertEquals(HomeTab.GROUPS, homeTab)
         }
 
+    @Test
+    fun `GIVEN bills of October and of late 30 September WHEN picking this month THEN shows only October`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("today", spentAt = inBrasilia("2026-10-31T09:00")),
+                    bill("first", spentAt = inBrasilia("2026-10-01T00:10")),
+                    bill("september", spentAt = inBrasilia("2026-09-30T23:30")),
+                ),
+                timeZone = brasilia,
+            )
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("today", "first"), shownIds())
+            assertEquals(ExpensePeriod.THIS_MONTH, viewModel.uiState.value.filters.period)
+        }
+
+    @Test
+    fun `GIVEN bills around September WHEN picking last month THEN shows September whole by its local days`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("october", spentAt = inBrasilia("2026-10-01T00:10")),
+                    bill("september-last", spentAt = inBrasilia("2026-09-30T23:30")),
+                    bill("september-first", spentAt = inBrasilia("2026-09-01T00:10")),
+                    bill("august", spentAt = inBrasilia("2026-08-31T23:50")),
+                ),
+                timeZone = brasilia,
+            )
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.LAST_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("september-last", "september-first"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN bills of this year and of last December WHEN picking this year THEN leaves last December out`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("october", spentAt = inBrasilia("2026-10-20T10:00")),
+                    bill("new-year", spentAt = inBrasilia("2026-01-01T00:10")),
+                    bill("new-year-eve", spentAt = inBrasilia("2025-12-31T23:30")),
+                ),
+                timeZone = brasilia,
+            )
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_YEAR)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("october", "new-year"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN a bill dated next week WHEN picking this year THEN leaves it out as after today`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill("next-week", spentAt = inBrasilia("2026-11-07T10:00")),
+                    bill("today", spentAt = inBrasilia("2026-10-31T09:00")),
+                ),
+                timeZone = brasilia,
+            )
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_YEAR)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("today"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN bills around three days WHEN picking them as custom days THEN shows both ends whole only`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = customRangeBills(),
+                timeZone = brasilia,
+            )
+            val event = AllExpensesUiEvent.OnCustomPeriodPicked(
+                startMillis = tenthNoon,
+                endMillis = twelfthNoon,
+            )
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val filters = viewModel.uiState.value.filters
+            assertEquals(listOf("last-day", "first-day"), shownIds())
+            assertEquals(ExpensePeriod.CUSTOM, filters.period)
+            assertEquals(tenthNoon, filters.customStartMillis)
+            assertEquals(twelfthNoon, filters.customEndMillis)
+        }
+
+    @Test
+    fun `GIVEN bills around three days WHEN picking the custom range last day first THEN swaps them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = customRangeBills(),
+                timeZone = brasilia,
+            )
+            val event = AllExpensesUiEvent.OnCustomPeriodPicked(
+                startMillis = twelfthNoon,
+                endMillis = tenthNoon,
+            )
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val filters = viewModel.uiState.value.filters
+            assertEquals(tenthNoon, filters.customStartMillis)
+            assertEquals(twelfthNoon, filters.customEndMillis)
+            assertEquals(listOf("last-day", "first-day"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN no custom days picked yet WHEN picking a custom range THEN changes nothing and reads nothing more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = customRangeBills(),
+                timeZone = brasilia,
+            )
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.CUSTOM)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(AllExpensesFilters.none, viewModel.uiState.value.filters)
+            assertEquals(listOf("after", "last-day", "first-day", "before"), shownIds())
+            assertEquals(listOf(31), expenses.myExpenseLimits)
+        }
+
+    @Test
+    fun `GIVEN custom days then this month picked WHEN picking custom again THEN shows those days again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = customRangeBills() + bill("later", spentAt = inBrasilia("2026-10-20T10:00")),
+                timeZone = brasilia,
+            )
+            viewModel.onEvent(
+                AllExpensesUiEvent.OnCustomPeriodPicked(
+                    startMillis = tenthNoon,
+                    endMillis = twelfthNoon,
+                ),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_MONTH))
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.CUSTOM)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val filters = viewModel.uiState.value.filters
+            assertEquals(ExpensePeriod.CUSTOM, filters.period)
+            assertEquals(tenthNoon, filters.customStartMillis)
+            assertEquals(twelfthNoon, filters.customEndMillis)
+            assertEquals(listOf("last-day", "first-day"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN bills of last year only WHEN picking last month THEN shows no results and not the empty list`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("old", spentAt = inBrasilia("2025-06-10T10:00"))),
+                timeZone = brasilia,
+            )
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.LAST_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.filters.isFiltering)
+            assertTrue(state.showsNoResults)
+            assertFalse(state.showsEmpty)
+        }
+
+    @Test
+    fun `GIVEN All expenses open WHEN picking this month THEN reads every bill of the device`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(5),
+            )
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(31, Int.MAX_VALUE), expenses.myExpenseLimits)
+        }
+
+    @Test
+    fun `GIVEN custom days picked WHEN picking the whole history THEN stops filtering and reads a page again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = customRangeBills(),
+                timeZone = brasilia,
+            )
+            viewModel.onEvent(
+                AllExpensesUiEvent.OnCustomPeriodPicked(
+                    startMillis = tenthNoon,
+                    endMillis = twelfthNoon,
+                ),
+            )
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.ALL)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(31, Int.MAX_VALUE, 31), expenses.myExpenseLimits)
+            assertFalse(viewModel.uiState.value.filters.isFiltering)
+            assertEquals(listOf("after", "last-day", "first-day", "before"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN 40 bills this month WHEN picking this month THEN shows 30 and says more are left`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(40),
+            )
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(30, shownCount())
+            assertTrue(viewModel.uiState.value.hasMore)
+        }
+
+    @Test
+    fun `GIVEN this month picked with 40 bills WHEN the list reaches its end THEN shows 40 and none left`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = manyBills(40),
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_MONTH))
+            val event = AllExpensesUiEvent.OnEndReached
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(40, shownCount())
+            assertFalse(viewModel.uiState.value.hasMore)
+        }
+
+    @Test
+    fun `GIVEN custom days and an order picked WHEN clearing the filters THEN resets the period and keeps the order`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = customRangeBills(),
+                timeZone = brasilia,
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnSortPicked(ExpenseSort.OLDEST))
+            viewModel.onEvent(
+                AllExpensesUiEvent.OnCustomPeriodPicked(
+                    startMillis = tenthNoon,
+                    endMillis = twelfthNoon,
+                ),
+            )
+            val event = AllExpensesUiEvent.OnClearFiltersClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            val filters = viewModel.uiState.value.filters
+            assertEquals(AllExpensesFilters.none.copy(sort = ExpenseSort.OLDEST), filters)
+            assertNull(filters.customStartMillis)
+            assertEquals(listOf("before", "first-day", "last-day", "after"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN Food and Transport bills of two months WHEN picking Food and this month THEN shows October Food`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "food-october",
+                        spentAt = inBrasilia("2026-10-20T10:00"),
+                        categoryId = AppCategory.FOOD_MARKET.key,
+                    ),
+                    bill(
+                        "fuel-october",
+                        spentAt = inBrasilia("2026-10-19T10:00"),
+                        categoryId = AppCategory.TRANSPORT_FUEL.key,
+                    ),
+                    bill(
+                        "food-september",
+                        spentAt = inBrasilia("2026-09-20T10:00"),
+                        categoryId = AppCategory.FOOD.key,
+                    ),
+                ),
+                timeZone = brasilia,
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnCategoryToggled(AppCategory.FOOD.key))
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("food-october"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN bills of two groups and months WHEN picking a group and last month THEN shows its September bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = listOf(
+                    bill("trio-september", spentAt = inBrasilia("2026-09-21T10:00")),
+                    bill(
+                        "trip-october",
+                        groupId = "trip",
+                        spentAt = inBrasilia("2026-10-20T10:00"),
+                    ),
+                    bill(
+                        "trip-september",
+                        groupId = "trip",
+                        spentAt = inBrasilia("2026-09-20T10:00"),
+                    ),
+                ),
+                timeZone = brasilia,
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnGroupToggled("trip"))
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.LAST_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("trip-september"), shownIds())
+        }
+
+    @Test
+    fun `GIVEN sorted by largest WHEN picking this month THEN lists only this month largest first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(
+                    bill(
+                        "small",
+                        amountMinor = 800L,
+                        spentAt = inBrasilia("2026-10-25T10:00"),
+                    ),
+                    bill(
+                        "big",
+                        amountMinor = 12_000L,
+                        spentAt = inBrasilia("2026-10-05T10:00"),
+                    ),
+                    bill(
+                        "huge-september",
+                        amountMinor = 90_000L,
+                        spentAt = inBrasilia("2026-09-30T23:30"),
+                    ),
+                ),
+                timeZone = brasilia,
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnSortPicked(ExpenseSort.LARGEST))
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf("big", "small"), shownIds())
+            assertFalse(viewModel.uiState.value.showsDayHeadings)
+        }
+
+    @Test
+    fun `GIVEN this month picked on its last day WHEN midnight passes THEN its bills leave the list`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = listOf(bill("today", spentAt = inBrasilia("2026-10-31T09:00"))),
+                timeZone = brasilia,
+            )
+            viewModel.onEvent(AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_MONTH))
+
+            // When
+            clockMillis = inBrasilia("2026-11-01T00:01")
+            minutes.value += 1
+
+            // Then
+            assertEquals(emptyList(), shownIds())
+            assertTrue(viewModel.uiState.value.showsNoResults)
+        }
+
+    @Test
+    fun `GIVEN All expenses open WHEN picking a period THEN tracks the period filter changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.LAST_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(filterChanged("period")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN All expenses open WHEN picking custom days THEN tracks the period filter changed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            val event = AllExpensesUiEvent.OnCustomPeriodPicked(
+                startMillis = tenthNoon,
+                endMillis = twelfthNoon,
+            )
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(listOf(filterChanged("period")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a statistics category WHEN All expenses opens before reading THEN picks its group category and period`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                billsRead = false,
+                route = fromStatistics(period = ExpensePeriod.THIS_MONTH),
+                underneath = listOf(Route.Home, groupScreen("trio")),
+            )
+
+            // When
+            val filters = viewModel.uiState.value.filters
+
+            // Then
+            assertEquals(setOf("trio"), filters.groupIds)
+            assertEquals(setOf(AppCategory.FOOD.key), filters.categoryIds)
+            assertEquals(ExpensePeriod.THIS_MONTH, filters.period)
+        }
+
+    @Test
+    fun `GIVEN a statistics category and bills elsewhere WHEN All expenses opens THEN shows only what it counted`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio(), trio(id = "trip")),
+                storedExpenses = listOf(
+                    bill(
+                        "counted",
+                        spentAt = inBrasilia("2026-10-20T10:00"),
+                        categoryId = AppCategory.FOOD_RESTAURANT.key,
+                    ),
+                    bill(
+                        "september",
+                        spentAt = inBrasilia("2026-09-30T23:30"),
+                        categoryId = AppCategory.FOOD.key,
+                    ),
+                    bill(
+                        "fuel",
+                        spentAt = inBrasilia("2026-10-19T10:00"),
+                        categoryId = AppCategory.TRANSPORT_FUEL.key,
+                    ),
+                    bill(
+                        "other-group",
+                        groupId = "trip",
+                        spentAt = inBrasilia("2026-10-18T10:00"),
+                        categoryId = AppCategory.FOOD.key,
+                    ),
+                ),
+                route = fromStatistics(period = ExpensePeriod.THIS_MONTH),
+                underneath = listOf(Route.Home, groupScreen("trio")),
+                timeZone = brasilia,
+            )
+
+            // When
+            val ids = shownIds()
+
+            // Then
+            assertEquals(listOf("counted"), ids)
+        }
+
+    @Test
+    fun `GIVEN a statistics category with a period WHEN All expenses opens THEN period category and group lead`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                route = fromStatistics(period = ExpensePeriod.LAST_MONTH),
+                underneath = listOf(Route.Home, groupScreen("trio")),
+            )
+
+            // When
+            val order = viewModel.uiState.value.filterOrder
+
+            // Then
+            assertEquals(
+                listOf(
+                    AllExpensesFilter.PERIOD,
+                    AllExpensesFilter.CATEGORY,
+                    AllExpensesFilter.GROUP,
+                    AllExpensesFilter.SORT,
+                    AllExpensesFilter.SHARE,
+                    AllExpensesFilter.PAYER,
+                ),
+                order,
+            )
+        }
+
+    @Test
+    fun `GIVEN a statistics category of all time and no group WHEN All expenses opens THEN only category leads`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                route = fromStatistics(
+                    groupId = null,
+                    period = ExpensePeriod.ALL,
+                ),
+            )
+
+            // When
+            val order = viewModel.uiState.value.filterOrder
+
+            // Then
+            assertEquals(
+                listOf(
+                    AllExpensesFilter.CATEGORY,
+                    AllExpensesFilter.SORT,
+                    AllExpensesFilter.GROUP,
+                    AllExpensesFilter.PERIOD,
+                    AllExpensesFilter.SHARE,
+                    AllExpensesFilter.PAYER,
+                ),
+                order,
+            )
+        }
+
+    @Test
+    fun `GIVEN a category of the statistics with custom days WHEN All expenses opens THEN shows only those days`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = customRangeBills(categoryId = AppCategory.FOOD.key),
+                route = fromStatistics(
+                    period = ExpensePeriod.CUSTOM,
+                    customStartMillis = tenthNoon,
+                    customEndMillis = twelfthNoon,
+                ),
+                underneath = listOf(Route.Home, groupScreen("trio")),
+                timeZone = brasilia,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(ExpensePeriod.CUSTOM, state.filters.period)
+            assertEquals(tenthNoon, state.filters.customStartMillis)
+            assertEquals(twelfthNoon, state.filters.customEndMillis)
+            assertEquals(listOf("last-day", "first-day"), shownIds())
+            assertEquals(AllExpensesFilter.PERIOD, state.filterOrder.first())
+        }
+
+    @Test
+    fun `GIVEN statistics custom days without the last WHEN All expenses opens THEN falls back to the whole history`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                storedExpenses = customRangeBills(categoryId = AppCategory.FOOD.key),
+                route = fromStatistics(
+                    groupId = null,
+                    period = ExpensePeriod.CUSTOM,
+                    customStartMillis = tenthNoon,
+                ),
+                timeZone = brasilia,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(ExpensePeriod.ALL, state.filters.period)
+            assertNull(state.filters.customStartMillis)
+            assertNull(state.filters.customEndMillis)
+            assertEquals(listOf("after", "last-day", "first-day", "before"), shownIds())
+            assertEquals(AllExpensesFilter.CATEGORY, state.filterOrder.first())
+        }
+
+    @Test
+    fun `GIVEN See all of a group WHEN All expenses opens THEN the chips keep their default order`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                route = Route.AllExpenses(groupId = "trio"),
+                underneath = listOf(Route.Home, groupScreen("trio")),
+            )
+
+            // When
+            val order = viewModel.uiState.value.filterOrder
+
+            // Then
+            assertEquals(AllExpensesFilter.entries, order)
+        }
+
+    @Test
+    fun `GIVEN Home See all WHEN picking a period and a category THEN the chips keep their default order`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedGroups = listOf(trio()))
+            viewModel.onEvent(AllExpensesUiEvent.OnCategoryToggled(AppCategory.FOOD.key))
+            val event = AllExpensesUiEvent.OnPeriodPicked(ExpensePeriod.THIS_MONTH)
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(AllExpensesFilter.entries, viewModel.uiState.value.filterOrder)
+        }
+
+    @Test
+    fun `GIVEN a statistics category WHEN clearing the filters THEN the chips keep the order they opened with`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(trio()),
+                route = fromStatistics(period = ExpensePeriod.THIS_MONTH),
+                underneath = listOf(Route.Home, groupScreen("trio")),
+            )
+            val opened = viewModel.uiState.value.filterOrder
+            val event = AllExpensesUiEvent.OnClearFiltersClicked
+
+            // When
+            viewModel.onEvent(event)
+
+            // Then
+            assertEquals(AllExpensesFilters.none, viewModel.uiState.value.filters)
+            assertEquals(opened, viewModel.uiState.value.filterOrder)
+            assertEquals(AllExpensesFilter.PERIOD, opened.first())
+        }
+
     private val everyone = listOf("Pierre", "Ana", "Bruno")
 
     private val fromAllExpenses: Map<String, Any> = mapOf("source" to "all_expenses")
@@ -2648,6 +3346,57 @@ class AllExpensesViewModelTest {
         categoryId = categoryId,
     )
 
+    // Why: UTC-3 with no summer time, so a bill late in the evening there falls on the next day in UTC.
+    private val brasilia = UtcOffset(hours = -3).asTimeZone()
+
+    // Why: noon of 10 and 12 October 2026 in UTC-3, as the custom range picker gives its days.
+    private val tenthNoon = inBrasilia("2026-10-10T12:00")
+    private val twelfthNoon = inBrasilia("2026-10-12T12:00")
+
+    // Why: a moment as a clock in UTC-3 reads it.
+    private fun inBrasilia(dateTime: String): Long = LocalDateTime
+        .parse(dateTime)
+        .toInstant(brasilia)
+        .toEpochMilliseconds()
+
+    // Why: a bill just before, at the very start of, at the very end of and just after 10 to 12 October in UTC-3.
+    private fun customRangeBills(categoryId: String? = null): List<Expense> = listOf(
+        bill(
+            "after",
+            spentAt = inBrasilia("2026-10-13T00:10"),
+            categoryId = categoryId,
+        ),
+        bill(
+            "last-day",
+            spentAt = inBrasilia("2026-10-12T23:50"),
+            categoryId = categoryId,
+        ),
+        bill(
+            "first-day",
+            spentAt = inBrasilia("2026-10-10T00:10"),
+            categoryId = categoryId,
+        ),
+        bill(
+            "before",
+            spentAt = inBrasilia("2026-10-09T23:30"),
+            categoryId = categoryId,
+        ),
+    )
+
+    // Why: a main category of the statistics, which opens All expenses with what they showed.
+    private fun fromStatistics(
+        groupId: String? = "trio",
+        period: ExpensePeriod,
+        customStartMillis: Long? = null,
+        customEndMillis: Long? = null,
+    ): Route.AllExpenses = Route.AllExpenses(
+        groupId = groupId,
+        categoryId = AppCategory.FOOD.key,
+        period = period,
+        customStartMillis = customStartMillis,
+        customEndMillis = customEndMillis,
+    )
+
     private fun TestScope.prepareScenario(
         storedGroups: List<Group> = emptyList(),
         storedExpenses: List<Expense> = emptyList(),
@@ -2658,6 +3407,7 @@ class AllExpensesViewModelTest {
         route: Route.AllExpenses = Route.AllExpenses(groupId = null),
         // Why: what lies under All expenses: Home, or the group whose "See all" opened it.
         underneath: List<Route> = listOf(Route.Home),
+        timeZone: TimeZone = TimeZone.UTC,
     ) {
         groups = FakeGroupRepository(initialGroups = storedGroups)
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses.inCurrencyOf(storedGroups)).also {
@@ -2688,7 +3438,7 @@ class AllExpensesViewModelTest {
             observeMapCategories = ObserveMapCategoriesUseCase(FakeCategoryRepository(storedCategories)),
             observeFirstDownload = ObserveFirstDownload { firstDownload },
             currentTimeMillis = CurrentTimeMillis { clockMillis },
-            currentTimeZone = CurrentTimeZone { TimeZone.UTC },
+            currentTimeZone = CurrentTimeZone { timeZone },
             minuteTicks = MinuteTicks { minutes.map { } },
             billMenuUseCases = BillMenuUseCases(
                 observeExpense = ObserveExpenseUseCase(expenses),

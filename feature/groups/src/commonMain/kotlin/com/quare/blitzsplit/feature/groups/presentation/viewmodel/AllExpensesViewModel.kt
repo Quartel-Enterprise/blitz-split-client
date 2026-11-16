@@ -10,8 +10,8 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMapCategories
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveMyExpensesIn
 import com.quare.blitzsplit.core.groups.domain.model.Group
-import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroups
+import com.quare.blitzsplit.core.model.ExpensePeriod
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.findHomeTabUnder
@@ -173,7 +173,13 @@ class AllExpensesViewModel(
 
             is AllExpensesUiEvent.OnPeriodPicked -> narrow {
                 // Why: "Custom range…" waits for its days, which the picker sends as OnCustomPeriodPicked.
-                if (event.period == ExpensePeriod.CUSTOM && it.customStartMillis == null) it else it.copy(period = event.period)
+                if (event.period == ExpensePeriod.CUSTOM &&
+                    it.customStartMillis == null
+                ) {
+                    it
+                } else {
+                    it.copy(period = event.period)
+                }
             }
 
             is AllExpensesUiEvent.OnCustomPeriodPicked -> narrow {

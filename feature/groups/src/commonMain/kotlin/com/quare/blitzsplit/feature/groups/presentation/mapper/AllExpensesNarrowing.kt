@@ -2,8 +2,8 @@ package com.quare.blitzsplit.feature.groups.presentation.mapper
 
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
 import com.quare.blitzsplit.core.expenses.domain.model.DateSpan
-import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.Expense
+import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.ExpensePeriod
@@ -51,7 +51,10 @@ internal fun narrowedOf(
     // Why: the days of the period picked, in the device's zone; null for the whole history.
     period: DatedSpan?,
 ): List<LatestExpense> {
-    val filtered = bills.filter { it.isPassing(filters, categories) && (period == null || period.holds(it.expense.spentAt)) }
+    val filtered = bills.filter {
+        it.isPassing(filters, categories) &&
+            (period == null || period.holds(it.expense.spentAt))
+    }
     val typed = TypoTolerantQuery.of(filters.query)
     val found = if (typed.isEmpty) {
         filtered
@@ -97,7 +100,13 @@ internal fun AllExpensesFilters.periodSpanOrNull(
         ExpensePeriod.CUSTOM -> {
             val start = customStartMillis
             val end = customEndMillis
-            if (start != null && end != null) DateSpan(SpentDay.dateOf(start, timeZone), SpentDay.dateOf(end, timeZone)) else null
+            if (start != null &&
+                end != null
+            ) {
+                DateSpan(SpentDay.dateOf(start, timeZone), SpentDay.dateOf(end, timeZone))
+            } else {
+                null
+            }
         }
     }
     return span?.let { DatedSpan(it, timeZone) }

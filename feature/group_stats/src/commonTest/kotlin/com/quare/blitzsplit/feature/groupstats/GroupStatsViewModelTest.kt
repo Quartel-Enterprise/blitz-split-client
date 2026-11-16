@@ -2123,42 +2123,20 @@ class GroupStatsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the whole trip WHEN tapping Food THEN opens All expenses with the group and Food of the whole history`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(stored = categorizedTripBills)
-
-        // When
-        viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.ROW))
-
-        // Then
-        assertEquals(
-            statsStack + Route.AllExpenses(
-                groupId = GROUP_ID,
-                categoryId = AppCategory.FOOD.key,
-                period = ExpensePeriod.ALL,
-                customStartMillis = null,
-                customEndMillis = null,
-            ),
-            navigator.backStack.value,
-        )
-    }
-
-    @Test
-    fun `GIVEN this month WHEN tapping Food THEN opens All expenses on this month`() =
+    fun `GIVEN the whole trip WHEN tapping Food THEN opens All expenses with the group and Food of the whole history`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(stored = categorizedTripBills)
-            viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
 
             // When
-            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.RING))
+            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.ROW))
 
             // Then
             assertEquals(
                 statsStack + Route.AllExpenses(
                     groupId = GROUP_ID,
                     categoryId = AppCategory.FOOD.key,
-                    period = ExpensePeriod.THIS_MONTH,
+                    period = ExpensePeriod.ALL,
                     customStartMillis = null,
                     customEndMillis = null,
                 ),
@@ -2167,32 +2145,53 @@ class GroupStatsViewModelTest {
         }
 
     @Test
-    fun `GIVEN picked dates WHEN tapping Food THEN opens All expenses on the days picked`() =
-        runTest(testDispatcher) {
-            // Given
-            prepareScenario(stored = categorizedTripBills)
-            viewModel.onEvent(
-                GroupStatsUiEvent.OnCustomPeriodPicked(
-                    startMillis = millisOf("2026-10-24T12:00:00Z"),
-                    endMillis = millisOf("2026-10-26T12:00:00Z"),
-                ),
-            )
+    fun `GIVEN this month WHEN tapping Food THEN opens All expenses on this month`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(stored = categorizedTripBills)
+        viewModel.onEvent(GroupStatsUiEvent.OnPeriodPicked(StatsPeriod.THIS_MONTH))
 
-            // When
-            viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.LEGEND))
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.RING))
 
-            // Then
-            assertEquals(
-                statsStack + Route.AllExpenses(
-                    groupId = GROUP_ID,
-                    categoryId = AppCategory.FOOD.key,
-                    period = ExpensePeriod.CUSTOM,
-                    customStartMillis = millisOf("2026-10-24T00:00:00Z"),
-                    customEndMillis = millisOf("2026-10-26T00:00:00Z"),
-                ),
-                navigator.backStack.value,
-            )
-        }
+        // Then
+        assertEquals(
+            statsStack + Route.AllExpenses(
+                groupId = GROUP_ID,
+                categoryId = AppCategory.FOOD.key,
+                period = ExpensePeriod.THIS_MONTH,
+                customStartMillis = null,
+                customEndMillis = null,
+            ),
+            navigator.backStack.value,
+        )
+    }
+
+    @Test
+    fun `GIVEN picked dates WHEN tapping Food THEN opens All expenses on the days picked`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(stored = categorizedTripBills)
+        viewModel.onEvent(
+            GroupStatsUiEvent.OnCustomPeriodPicked(
+                startMillis = millisOf("2026-10-24T12:00:00Z"),
+                endMillis = millisOf("2026-10-26T12:00:00Z"),
+            ),
+        )
+
+        // When
+        viewModel.onEvent(GroupStatsUiEvent.OnCategoryClicked(AppCategory.FOOD.key, StatsCategoryTarget.LEGEND))
+
+        // Then
+        assertEquals(
+            statsStack + Route.AllExpenses(
+                groupId = GROUP_ID,
+                categoryId = AppCategory.FOOD.key,
+                period = ExpensePeriod.CUSTOM,
+                customStartMillis = millisOf("2026-10-24T00:00:00Z"),
+                customEndMillis = millisOf("2026-10-26T00:00:00Z"),
+            ),
+            navigator.backStack.value,
+        )
+    }
 
     @Test
     fun `GIVEN picked dates without Travel WHEN tapping Travel THEN nothing opens`() = runTest(testDispatcher) {
