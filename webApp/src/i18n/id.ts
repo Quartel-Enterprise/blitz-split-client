@@ -787,6 +787,7 @@ export const id: Record<MessageKey, string> = {
   profile_userId: 'ID pengguna',
   profile_userIdCopy: 'Salin ID pengguna',
   profile_userIdCopied: 'ID pengguna disalin',
+  profile_userIdCopyFailed: 'Tidak dapat menyalin ID pengguna',
   profileLink_unreachableTitle: 'Profil ini tidak bisa dibuka',
   profileLink_unreachableBody: 'Periksa koneksimu. Profil ini terbuka sendiri saat kamu kembali online.',
   profileLink_retry: 'Coba lagi',

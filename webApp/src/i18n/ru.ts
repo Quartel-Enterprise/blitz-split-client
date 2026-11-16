@@ -792,6 +792,7 @@ export const ru: Record<MessageKey, string> = {
   profile_userId: 'ID пользователя',
   profile_userIdCopy: 'Скопировать ID пользователя',
   profile_userIdCopied: 'ID пользователя скопирован',
+  profile_userIdCopyFailed: 'Не удалось скопировать ID пользователя',
   profileLink_unreachableTitle: 'Не удалось открыть этот профиль',
   profileLink_unreachableBody: 'Проверь подключение. Профиль откроется сам, когда будешь онлайн.',
   profileLink_retry: 'Попробовать ещё раз',

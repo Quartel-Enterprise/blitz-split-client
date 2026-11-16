@@ -792,6 +792,7 @@ export const uk: Record<MessageKey, string> = {
   profile_userId: 'ID користувача',
   profile_userIdCopy: 'Копіювати ID користувача',
   profile_userIdCopied: 'ID користувача скопійовано',
+  profile_userIdCopyFailed: 'Не вдалося скопіювати ID користувача',
   profileLink_unreachableTitle: 'Не вдалося відкрити цей профіль',
   profileLink_unreachableBody: "Перевір з'єднання. Профіль відкриється сам, щойно ти будеш онлайн.",
   profileLink_retry: 'Спробувати ще раз',

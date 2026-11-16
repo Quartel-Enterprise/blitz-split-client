@@ -788,6 +788,7 @@ export const tr: Record<MessageKey, string> = {
   profile_userId: 'Kullanıcı kimliği',
   profile_userIdCopy: 'Kullanıcı kimliğini kopyala',
   profile_userIdCopied: 'Kullanıcı kimliği kopyalandı',
+  profile_userIdCopyFailed: 'Kullanıcı kimliği kopyalanamadı',
   profileLink_unreachableTitle: 'Bu profil açılamadı',
   profileLink_unreachableBody: 'Bağlantını kontrol et. Yeniden çevrimiçi olduğunda kendiliğinden açılır.',
   profileLink_retry: 'Tekrar dene',

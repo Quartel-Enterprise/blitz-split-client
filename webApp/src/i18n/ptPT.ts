@@ -880,4 +880,5 @@ export const ptPT: Partial<Record<MessageKey, string>> = {
   profile_userId: 'ID de utilizador',
   profile_userIdCopy: 'Copiar ID de utilizador',
   profile_userIdCopied: 'ID de utilizador copiado',
+  profile_userIdCopyFailed: 'Não foi possível copiar o ID de utilizador',
 }

@@ -789,6 +789,7 @@ export const nl: Record<MessageKey, string> = {
   profile_userId: 'Gebruikers-ID',
   profile_userIdCopy: 'Gebruikers-ID kopiëren',
   profile_userIdCopied: 'Gebruikers-ID gekopieerd',
+  profile_userIdCopyFailed: 'Kon gebruikers-ID niet kopiëren',
   profileLink_unreachableTitle: 'Dit profiel kon niet worden geopend',
   profileLink_unreachableBody: 'Controleer je verbinding. Het opent vanzelf zodra je weer online bent.',
   profileLink_retry: 'Opnieuw proberen',

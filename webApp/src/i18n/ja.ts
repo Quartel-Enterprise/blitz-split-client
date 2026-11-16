@@ -788,6 +788,7 @@ export const ja: Record<MessageKey, string> = {
   profile_userId: 'ユーザーID',
   profile_userIdCopy: 'ユーザーIDをコピー',
   profile_userIdCopied: 'ユーザーIDをコピーしました',
+  profile_userIdCopyFailed: 'ユーザーIDをコピーできませんでした',
   profileLink_unreachableTitle: 'このプロフィールを開けませんでした',
   profileLink_unreachableBody: '接続を確認してください。オンラインに戻ると自動的に開きます。',
   profileLink_retry: '再試行',

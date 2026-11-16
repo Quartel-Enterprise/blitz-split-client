@@ -786,6 +786,7 @@ export const en = {
   profile_userId: 'User ID',
   profile_userIdCopy: 'Copy user ID',
   profile_userIdCopied: 'User ID copied',
+  profile_userIdCopyFailed: "Couldn't copy the user ID",
   profileLink_unreachableTitle: "Couldn't open this profile",
   profileLink_unreachableBody: "Check your connection. It opens by itself once you're back online.",
   profileLink_retry: 'Try again',

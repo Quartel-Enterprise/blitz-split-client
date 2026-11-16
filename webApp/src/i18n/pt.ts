@@ -787,6 +787,7 @@ export const pt: Record<MessageKey, string> = {
   profile_userId: 'ID de usuário',
   profile_userIdCopy: 'Copiar ID de usuário',
   profile_userIdCopied: 'ID de usuário copiado',
+  profile_userIdCopyFailed: 'Não foi possível copiar o ID de usuário',
   profileLink_unreachableTitle: 'Não deu para abrir este perfil',
   profileLink_unreachableBody: 'Confira sua conexão. Ele abre sozinho quando você voltar a ficar online.',
   profileLink_retry: 'Tentar de novo',
