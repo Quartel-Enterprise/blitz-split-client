@@ -416,6 +416,7 @@ private fun HiddenContactRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = row.name,
+                    modifier = flight.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,

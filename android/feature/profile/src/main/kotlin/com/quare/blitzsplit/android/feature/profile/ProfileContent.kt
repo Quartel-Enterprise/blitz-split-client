@@ -25,7 +25,7 @@ fun ProfileContent(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     // Why: read as the profile first draws, before Room is, so the face tapped is still the last second's.
-    CompositionLocalProvider(LocalProfileFaceFlight provides rememberProfileFlightTarget()) {
+    CompositionLocalProvider(LocalProfileFaceFlight provides rememberProfileFlightTarget().face) {
         ProfileScaffold(
             state = state,
             appVersion = appVersion,

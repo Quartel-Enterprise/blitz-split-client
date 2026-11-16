@@ -1,7 +1,6 @@
 package com.quare.blitzsplit.android.feature.contacts
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -46,26 +44,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.OfflineChip
+import com.quare.blitzsplit.android.designsystem.component.ProfileFlightPieces
 import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlightTarget
 import com.quare.blitzsplit.android.designsystem.layout.TwoHalvesLayout
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
@@ -81,7 +68,6 @@ private val phoneLandscapeStartWidth = 330.dp
 private val tabletStartWidth = 380.dp
 private val tabletMaxWidth = 1016.dp
 private val bookGap = 72.dp
-private val barAvatarSize = 32.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,8 +88,17 @@ internal fun ContactProfileContent(
      * feedback of 2026-11-14). Beside Contacts' list the pane keeps one column.
      */
     val usesTwoColumns = !isInPane && (isBook || layout.usesTwoColumns)
-    // Why: the face tapped flies into this one and back (beta feedback of 2026-11-15); beside the list nothing flies.
-    val faceFlight = if (isInPane) Modifier else rememberProfileFlightTarget()
+    /*
+     * Why: the face tapped flies into this one and back (beta feedback of 2026-11-15), and with it the row's name and
+     * balance into the header's name and the balance card's (beta feedback of 2026-11-16); beside the list nothing flies.
+     */
+    val flight = if (isInPane) {
+        ProfileFlightPieces.None
+    } else {
+        rememberProfileFlightTarget(
+            balanceKey = contact?.net?.currency?.code,
+        )
+    }
     val listState = rememberLazyListState()
     val startScroll = rememberScrollState()
     var headerHeight by remember { mutableIntStateOf(0) }
@@ -194,7 +189,7 @@ internal fun ContactProfileContent(
                 state = state,
                 contact = contact,
                 avatarSize = if (isInPane || layout.isLandscape) 72.dp else 88.dp,
-                faceFlight = faceFlight,
+                flight = flight,
                 fold = { headerFold },
                 onEvent = onEvent,
                 modifier = Modifier.onSizeChanged { headerHeight = it.height },
@@ -204,6 +199,7 @@ internal fun ContactProfileContent(
             !usesTwoColumns -> ProfileSingleColumn(
                 state = state,
                 contact = contact,
+                flight = flight,
                 listState = listState,
                 maxWidth = if (layout.isTablet || isInPane) tabletColumnMaxWidth else columnMaxWidth,
                 header = header,
@@ -216,6 +212,7 @@ internal fun ContactProfileContent(
                     ProfileStartColumn(
                         state = state,
                         contact = contact,
+                        flight = flight,
                         scrollState = startScroll,
                         header = header,
                         onEvent = onEvent,
@@ -252,6 +249,7 @@ internal fun ContactProfileContent(
                     ProfileStartColumn(
                         state = state,
                         contact = contact,
+                        flight = flight,
                         scrollState = startScroll,
                         header = header,
                         onEvent = onEvent,
@@ -278,6 +276,7 @@ internal fun ContactProfileContent(
 private fun ProfileSingleColumn(
     state: ContactProfileUiState,
     contact: Contact,
+    flight: ProfileFlightPieces,
     listState: LazyListState,
     maxWidth: Dp,
     header: @Composable () -> Unit,
@@ -311,6 +310,7 @@ private fun ProfileSingleColumn(
                 ProfileSummarySection(
                     state = state,
                     contact = contact,
+                    flight = flight,
                     onEvent = onEvent,
                 )
             }
@@ -328,6 +328,7 @@ private fun ProfileSingleColumn(
 private fun ProfileStartColumn(
     state: ContactProfileUiState,
     contact: Contact,
+    flight: ProfileFlightPieces,
     scrollState: ScrollState,
     header: @Composable () -> Unit,
     onEvent: (ContactProfileUiEvent) -> Unit,
@@ -347,6 +348,7 @@ private fun ProfileStartColumn(
         ProfileSummarySection(
             state = state,
             contact = contact,
+            flight = flight,
             onEvent = onEvent,
         )
     }
@@ -382,6 +384,7 @@ private fun ProfileEndColumn(
 private fun ProfileSummarySection(
     state: ContactProfileUiState,
     contact: Contact,
+    flight: ProfileFlightPieces,
     onEvent: (ContactProfileUiEvent) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -412,6 +415,7 @@ private fun ProfileSummarySection(
         BalanceCard(
             state = state,
             contact = contact,
+            flight = flight,
             onEvent = onEvent,
         )
     }
@@ -468,116 +472,6 @@ private fun LazyListScope.sharedItems(
                 name = contact.name,
                 index = index,
                 count = state.history.size,
-            )
-        }
-    }
-}
-
-/*
- * Why: the face and the name in the bar, coming in as the header goes up under it (beta feedback of 2026-11-14), so
- * whose profile it is stays in sight. TalkBack reads the header's, never both.
- */
-@Composable
-private fun BarTitle(
-    state: ContactProfileUiState,
-    contact: Contact,
-    fold: () -> Float,
-) {
-    val slide = with(LocalDensity.current) { 8.dp.toPx() }
-    Row(
-        modifier = Modifier
-            .graphicsLayer {
-                val shown = ((fold() - 0.5f) * 2f).coerceIn(0f, 1f)
-                alpha = shown
-                translationY = (1f - shown) * slide
-            }.clearAndSetSemantics {},
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AvatarBadge(
-            initial = state.initials,
-            color = contact.color,
-            photoUrl = contact.photoUrl,
-            size = barAvatarSize,
-        )
-        Text(
-            text = contact.name,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
-/*
- * Why: the face shrinks and fades towards the bar as the header goes up, the name and the line under it fading with
- * it, while the bar's own face and name come in.
- */
-@Composable
-private fun ProfileHeader(
-    state: ContactProfileUiState,
-    contact: Contact,
-    avatarSize: Dp,
-    faceFlight: Modifier,
-    fold: () -> Float,
-    onEvent: (ContactProfileUiEvent) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        // Why: the face opens big, as the profile's avatar and the group's photo do.
-        AvatarBadge(
-            initial = state.initials,
-            color = contact.color,
-            photoUrl = contact.photoUrl,
-            size = avatarSize,
-            modifier = faceFlight
-                .graphicsLayer {
-                    val progress = fold()
-                    val scale = 1f - progress * 0.5f
-                    scaleX = scale
-                    scaleY = scale
-                    alpha = 1f - progress
-                    transformOrigin = TransformOrigin(0.5f, 1f)
-                }.clip(CircleShape)
-                .clickable(
-                    onClickLabel = stringResource(R.string.contacts_profile_photo_open),
-                    role = Role.Button,
-                    onClick = { onEvent(ContactProfileUiEvent.OnPhotoClicked) },
-                ),
-        )
-        Column(
-            modifier = Modifier.graphicsLayer { alpha = (1f - fold() * 1.5f).coerceIn(0f, 1f) },
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Text(
-                text = contact.name,
-                modifier = Modifier
-                    .padding(top = 6.dp)
-                    .semantics { heading() },
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                text = if (contact.isGuest) {
-                    stringResource(R.string.contacts_profile_meta_guest)
-                } else {
-                    stringResource(
-                        R.string.contacts_profile_meta_user,
-                        pluralStringResource(
-                            R.plurals.contacts_groups_in_common,
-                            contact.groups.size,
-                            contact.groups.size,
-                        ),
-                    )
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
             )
         }
     }

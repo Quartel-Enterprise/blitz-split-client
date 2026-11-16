@@ -1,0 +1,27 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "android",
+        "web"
+      ],
+      "text": {
+        "en": "Opening someone from Contacts or Balances now carries their name and balance into their profile along with the photo, and back again when you return.",
+        "pt": "Abrir alguém em Contatos ou Saldos agora leva o nome e o saldo da pessoa até o perfil junto com a foto, e de volta quando você retorna.",
+        "pt-PT": "Abrir alguém em Contactos ou Saldos leva agora o nome e o saldo da pessoa até ao perfil juntamente com a foto, e de volta quando regressas.",
+        "es": "Al abrir a alguien desde Contactos o Saldos, su nombre y su saldo ahora viajan con la foto hasta su perfil, y vuelven cuando regresas.",
+        "fr": "Ouvrir quelqu’un depuis Contacts ou Soldes emmène désormais son nom et son solde jusqu’à son profil avec la photo, et les ramène quand tu reviens.",
+        "de": "Wenn du jemanden in Kontakte oder Salden öffnest, wandern Name und Saldo jetzt mit dem Foto in das Profil und beim Zurückgehen wieder zurück.",
+        "it": "Aprendo qualcuno da Contatti o Saldi, ora il nome e il saldo arrivano nel suo profilo insieme alla foto, e tornano indietro quando torni.",
+        "pl": "Otwarcie kogoś z Kontaktów lub Sald przenosi teraz jego imię i saldo do profilu razem ze zdjęciem, a przy powrocie z powrotem.",
+        "nl": "Als je iemand opent vanuit Contacten of Saldi, gaan de naam en het saldo nu samen met de foto mee naar het profiel, en weer terug als je teruggaat.",
+        "ja": "連絡先や残高から相手を開くと、写真と一緒に名前と残高もプロフィールへ移動し、戻るときも元の位置に戻るようになりました。",
+        "tr": "Kişiler veya Bakiyeler'den birini açtığında artık adı ve bakiyesi fotoğrafla birlikte profiline taşınıyor, geri döndüğünde de yerine dönüyor.",
+        "id": "Membuka seseorang dari Kontak atau Saldo kini membawa nama dan saldonya ke profil bersama fotonya, lalu kembali lagi saat kamu kembali.",
+        "ru": "Когда ты открываешь человека из «Контактов» или «Балансов», его имя и баланс теперь переезжают в профиль вместе с фото, а при возврате — обратно.",
+        "uk": "Коли ти відкриваєш людину з «Контактів» або «Балансів», її ім’я та баланс тепер переїжджають у профіль разом із фото, а під час повернення — назад."
+      }
+    }
+  ]
+}

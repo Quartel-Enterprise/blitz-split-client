@@ -294,7 +294,7 @@ function PersonSummary({ row, name, onPersonClick }: { row: JsPersonRow; name: s
     <>
       <PersonFace row={row} className="size-9 text-sm" />
       <span className="flex min-w-0 flex-1 flex-col text-left">
-        <span className="truncate font-medium">{name}</span>
+        <span data-profile-piece="name" className="max-w-full self-start truncate font-medium">{name}</span>
         <span className="truncate text-xs text-muted-foreground">{meta}</span>
       </span>
     </>
@@ -305,10 +305,10 @@ function PersonSummary({ row, name, onPersonClick }: { row: JsPersonRow; name: s
         {face}
       </PersonButton>
       <span className="flex flex-col items-end">
-        <span className={cn('font-semibold tabular-nums', balanceTone(row.netMinor))}>
+        <span data-profile-piece="amount" data-profile-balance={row.currency} className={cn('font-semibold tabular-nums', balanceTone(row.netMinor))}>
           {formatSignedMoney(row.netMinor, row.currency, row.fractionDigits)}
         </span>
-        <span className="text-xs text-muted-foreground">{t(row.owesYou ? 'globalBalances_rowOwesYou' : 'globalBalances_rowYouOwe')}</span>
+        <span data-profile-piece="word" data-profile-balance={row.currency} className="text-xs text-muted-foreground">{t(row.owesYou ? 'globalBalances_rowOwesYou' : 'globalBalances_rowYouOwe')}</span>
       </span>
     </div>
   )

@@ -110,8 +110,17 @@ private fun PersonSummaryRow(
     money: MoneyFormatter,
     onPersonClick: (() -> Unit)? = null,
 ) {
-    // Why: the face flies into the profile it opens and back (beta feedback of 2026-11-15); the list's pick opens none.
-    val flight = if (onPersonClick != null) rememberProfileFlightSource() else ProfileFlightSource.None
+    /*
+     * Why: the face flies into the profile it opens and back (beta feedback of 2026-11-15), the name and the net with its
+     * word into the profile's name and balance (beta feedback of 2026-11-16); the list's pick opens none.
+     */
+    val flight = if (onPersonClick !=
+        null
+    ) {
+        rememberProfileFlightSource(balanceKey = row.currency.code)
+    } else {
+        ProfileFlightSource.None
+    }
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -136,6 +145,7 @@ private fun PersonSummaryRow(
             ) {
                 Text(
                     text = name,
+                    modifier = flight.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
@@ -156,6 +166,7 @@ private fun PersonSummaryRow(
         ) {
             Text(
                 text = money.toSignedText(row.netMinor),
+                modifier = flight.amount,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = amountColorOf(row.netMinor),
@@ -164,6 +175,7 @@ private fun PersonSummaryRow(
                 text = stringResource(
                     if (row.owesYou) R.string.global_balances_owes_you else R.string.global_balances_you_owe,
                 ),
+                modifier = flight.word,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
