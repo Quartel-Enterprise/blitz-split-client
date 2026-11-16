@@ -108,7 +108,10 @@ private fun ExpenseEntryRow(
 ) {
     // Why: the bill's own currency, not the one picked above the balances.
     val money = rememberMoneyFormatter(expense.currency)
-    // Why: the badge, title, total and share fly into the bill's screen as Home's rows do (beta feedback of 2026-11-15).
+    /*
+     * Why: the badge, title, total and share fly into the bill's screen as Home's rows do (beta feedback of 2026-11-15),
+     * and the time into its date and time (beta feedback of 2026-11-16).
+     */
     val shared = rememberBillSharedModifiers(
         billId = expense.id,
         origin = SharedOrigin.GROUP.takeUnless { LocalBillOpensAsDialog.current },
@@ -131,6 +134,7 @@ private fun ExpenseEntryRow(
             ExpenseMetaLine(
                 expense = expense,
                 dates = dates,
+                timeModifier = shared.time,
             )
         },
     ) {
@@ -177,9 +181,11 @@ internal fun EntryFrameRow(
 private fun ExpenseMetaLine(
     expense: ExpenseRow,
     dates: DateTimeTextFormatter,
+    timeModifier: Modifier,
 ) {
     EntryMetaLine(
         isPending = expense.isPending,
+        timeModifier = timeModifier,
         parts = listOfNotNull(
             dates.toTimeText(expense.spentAt),
             stringResource(R.string.group_detail_queued).takeIf { expense.isPending },

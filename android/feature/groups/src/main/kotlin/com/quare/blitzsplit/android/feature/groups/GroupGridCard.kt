@@ -149,6 +149,7 @@ internal fun GroupGridCard(
                         MemberFacesRow(
                             group = group,
                             ringColor = selectableRowColorOf(isSelected),
+                            modifier = shared.faces,
                         )
                     }
                     if (group.isPending) PendingIndicator()

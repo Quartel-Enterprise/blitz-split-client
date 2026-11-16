@@ -58,7 +58,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.rememberGroupBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
+import com.quare.blitzsplit.android.designsystem.component.skipsBaselinePlacement
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
@@ -208,6 +210,8 @@ private fun GroupTitle(
     sharedGroupId: String? = null,
 ) {
     val shared = rememberGroupSharedModifiers(sharedGroupId)
+    // Why: the square and name also fly into the top bar of a bill opened from the Expenses (beta feedback of 2026-11-16).
+    val billShared = rememberGroupBillSharedModifiers(sharedGroupId)
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -231,12 +235,15 @@ private fun GroupTitle(
                 color = header.groupColor,
                 photoUrl = header.groupPhotoUrl,
                 size = badgeSize,
-                modifier = shared.avatar,
+                modifier = shared.avatar.then(billShared.avatar),
             )
         }
         Text(
             text = header.groupName,
-            modifier = shared.name,
+            modifier = Modifier
+                .skipsBaselinePlacement()
+                .then(shared.name)
+                .then(billShared.name),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

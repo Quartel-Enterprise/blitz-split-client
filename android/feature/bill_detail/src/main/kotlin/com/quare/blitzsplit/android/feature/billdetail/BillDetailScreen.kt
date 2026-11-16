@@ -80,6 +80,7 @@ fun BillDetailScreen(
         pickers = pickers,
         onEvent = viewModel::onEvent,
         sharedBillId = route.expenseId,
+        sharedGroupId = route.groupId,
     )
     val attachments = state.attachments.valueOrNull().orEmpty()
     BillAttachmentViewerDialog(

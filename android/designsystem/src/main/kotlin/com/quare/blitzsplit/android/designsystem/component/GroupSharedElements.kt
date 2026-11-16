@@ -11,6 +11,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
 
 /*
  * Why: the navigation's shared transition scope, null wherever the group's row and the group's screen can't swap
@@ -25,7 +26,7 @@ val LocalEntryVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { n
 // Why: where the group's or the bill's rows and screen fly from and to; null where nothing flies (beside the list).
 val LocalSharedOrigin = compositionLocalOf<SharedOrigin?> { null }
 
-// Why: the modifiers a group's avatar, name and balance take to fly between its row or card and its screen's header.
+// Why: the modifiers a group's avatar, name, balance and faces take to fly between its row or card and its screen's header.
 @Immutable
 class GroupSharedModifiers(
     val avatar: Modifier,
@@ -34,6 +35,8 @@ class GroupSharedModifiers(
     val balance: Modifier,
     // Why: "to receive" or "you owe" under or beside it.
     val balanceWord: Modifier,
+    // Why: the members' stacked faces, which land on the group's faces under its header (beta feedback of 2026-11-16).
+    val faces: Modifier,
 ) {
     companion object {
         val None = GroupSharedModifiers(
@@ -41,6 +44,7 @@ class GroupSharedModifiers(
             name = Modifier,
             balance = Modifier,
             balanceWord = Modifier,
+            faces = Modifier,
         )
     }
 }
@@ -60,6 +64,8 @@ fun rememberGroupSharedModifiers(groupId: String?): GroupSharedModifiers {
         name = scopes.text("group-name-${scopes.key}"),
         balance = scopes.text("group-balance-${scopes.key}"),
         balanceWord = scopes.text("group-balance-word-${scopes.key}"),
+        // Why: scaled as a text is, so the row's small stack grows into the header's, whatever faces each one shows.
+        faces = scopes.text("group-faces-${scopes.key}"),
     )
 }
 
@@ -109,5 +115,20 @@ internal fun rememberSharedScopes(
             visibilityScope = visibilityScope,
             key = "$origin-$id",
         )
+    }
+}
+
+/*
+ * Why: Material's top bars read their title's baseline while they measure, which places the title once ahead of the
+ * real placement, only to compute the line. A shared text placed there took the screen's own spot as where it flies
+ * from, so the group's name popped into the header instead of flying in, while it flew back fine (beta feedback of
+ * 2026-11-16). Placed only for real, the flight starts from the row's text; the bar's subtitle under it still gives
+ * the baseline the bar aligns on. Put it before the shared modifier, on a text no parent aligns by its baseline.
+ */
+fun Modifier.skipsBaselinePlacement(): Modifier = layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints)
+    layout(placeable.width, placeable.height) {
+        // Why: no coordinates while the parent places its children only to read their alignment lines.
+        if (coordinates != null) placeable.place(0, 0)
     }
 }

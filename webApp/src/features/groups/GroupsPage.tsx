@@ -364,7 +364,7 @@ function GroupsTable({ presenter, groups, menuOf, onContextMenu }: GroupRowsProp
               </td>
               <td className="px-3">
                 <span aria-label={membersText(group.memberCount)}>
-                  <span aria-hidden>
+                  <span aria-hidden data-group-faces="" className="inline-flex">
                     <Faces group={group} />
                   </span>
                 </span>

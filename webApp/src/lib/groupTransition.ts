@@ -6,7 +6,9 @@ import { flushSync } from 'react-dom'
  * Android's shared elements do: the View Transitions API morphs the two snapshots, the page crossfading under them.
  *
  * The marks: a row (Groups' list, table and grid, Home's "Your groups") carries `data-group-link={id}`, the group's
- * header `data-group-header={id}`, and each holds a `data-group-avatar` and a `data-group-name` element. The names
+ * header `data-group-header={id}`, and each holds a `data-group-avatar` and a `data-group-name` element. The members'
+ * faces fly too (beta feedback of 2026-11-16): a row's `data-group-faces` (the table and the grid, which show them) and
+ * the group's own, under its header and outside it, `data-group-faces={id}`. The names
  * (`view-transition-name`) must be unique on a page, so they are set only for a transition, on the one row clicked
  * (or found again on the way back) and the header, and cleared once it ends.
  *
@@ -140,9 +142,13 @@ function groupPlan(groupId: string, from: HTMLElement, to: string): Plan {
     mark: (holder) => {
       const avatar = holder.querySelector<HTMLElement>('[data-group-avatar]')
       const title = holder.querySelector<HTMLElement>('[data-group-name]')
+      const faces = holder.matches('[data-group-header]')
+        ? document.querySelector<HTMLElement>(`[data-group-faces="${CSS.escape(groupId)}"]`)
+        : holder.querySelector<HTMLElement>('[data-group-faces]')
       if (avatar) avatar.style.viewTransitionName = `group-avatar-${cssIdent(groupId)}`
       if (title) title.style.viewTransitionName = `group-name-${cssIdent(groupId)}`
-      return [avatar, title].filter((element): element is HTMLElement => element !== null)
+      if (faces) faces.style.viewTransitionName = `group-faces-${cssIdent(groupId)}`
+      return [avatar, title, faces].filter((element): element is HTMLElement => element !== null)
     },
   }
 }

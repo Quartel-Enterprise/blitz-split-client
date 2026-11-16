@@ -94,6 +94,7 @@ internal fun BillSummaryColumn(
         )
         Text(
             text = spentAtText,
+            modifier = shared.time,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -112,10 +113,13 @@ internal fun BillSummaryColumn(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            PayerFacesRow(
-                payers = payers,
-                modifier = payerFlight.face,
-            )
+            // Why: the row's payer faces land here (beta feedback of 2026-11-16), the profile's flight inside them.
+            Box(modifier = shared.payers) {
+                PayerFacesRow(
+                    payers = payers,
+                    modifier = payerFlight.face,
+                )
+            }
             Text(
                 text = payerTextOf(payers),
                 style = MaterialTheme.typography.bodyLarge,

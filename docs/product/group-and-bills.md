@@ -85,11 +85,16 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     gesture, following the finger (beta feedback of 2026-11-12): from Groups' list and grid and Home's group cards.
     On Android the balance and its word ("+R$ 313,81", "to receive") fly too, into "Your balance in this group"'s
     amount and word (beta feedback of 2026-11-15); once you are settled the group's screen shows the settled line,
-    which has no amount, so only the avatar and name fly.
+    which has no amount, so only the avatar and name fly. The members' stacked faces fly too, from the rows and cards
+    that show them (Groups' list and grid, not Home's cards, which have none) into the faces under the group's header
+    (beta feedback of 2026-11-16), scaling from the row's small stack to the header's whatever faces each one picks.
     Android: Compose's shared elements (`SharedTransitionLayout` around Navigation 3, `rememberGroupSharedModifiers`),
     keyed by the screen the group opens from (`SharedOrigin`), so a tab switch between Home and Groups flies
     nothing. That screen is kept while the group is on the back stack and read back once it leaves: back pops the group before
-    its exit runs, so read live it found nothing and the avatar and name stopped flying home (beta feedback of 2026-11-14). From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
+    its exit runs, so read live it found nothing and the avatar and name stopped flying home (beta feedback of 2026-11-14).
+    The name also flew home but not in (beta feedback of 2026-11-16): Material's top bar reads its title's baseline as
+    it measures, which placed the name once at the header's spot before the flight began, so the flight started there;
+    the name in a top bar is placed only for real (`skipsBaselinePlacement`), the bar aligning on its subtitle. From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
     over the list, while beside it (a tablet lying down, a book) the row stays where it is. So the group opens over
     Groups as over Home, a screen of its own, outside Material's list-detail scene, wherever the two don't show side by
     side. The web: the View Transitions API
@@ -103,13 +108,18 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     never beside the list nor on the Mac. Reduced motion turns it off everywhere: Android's animations off end it at
     once, the web skips it under `prefers-reduced-motion`, and iOS's Reduce Motion turns the zoom into the system's
     crossfade and stills the header's scale and rise, keeping its fades. iOS's zoom already carries the whole card,
-    balance included; the web names only the avatar and name, so its balance crossfades with the page. A bill's
+    balance included; the web names the avatar, the name and the faces (where the row shows them: Groups' table and
+    grid, not the phone's list nor Home's cards), so its balance crossfades with the page. A bill's
     "Latest expenses" row on Home shows the group's avatar but opens the bill, so the group's avatar flies into the
     bill's top bar instead (below).
   - A bill's category badge, title, total and share fly from its row on Home's "Latest expenses", "All expenses" or
     the group's Expenses into the bill's screen (the badge, the title, the big total and "Your share"'s amount), and
     back on back or the back gesture (beta feedback of 2026-11-15, the group's Expenses asked the same day); the row's
-    small group square on Home and "All expenses" flies into the group's square of the bill's top bar. Android only,
+    small group square on Home and "All expenses" flies into the group's square of the bill's top bar. The row's payer
+    faces on Home and "All expenses" fly into the faces of "Larissa paid", and the time of a row on the group's Expenses
+    ("19:22") into the bill's date and time ("Sat, Nov 14, 14:57"); opened from the group's Expenses, the group's square
+    and name in the group's top bar fly into the bill's top bar and back (all beta feedback of 2026-11-16, keyed there by
+    the group, `rememberGroupBillSharedModifiers`, as only one bill opens over it). Android only,
     where the bill covers the window (a phone; wider it is a dialog over the screen it opened from, and nothing flies,
     even once the window narrows under it): `rememberBillSharedModifiers`, keyed by the bill and the screen it opened
     from (`SharedOrigin`, `GROUP` for the group's Expenses), the screen under the bill kept as the group's is. The row's

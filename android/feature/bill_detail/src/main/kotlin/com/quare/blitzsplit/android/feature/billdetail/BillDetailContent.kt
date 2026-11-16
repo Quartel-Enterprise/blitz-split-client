@@ -44,6 +44,7 @@ import com.quare.blitzsplit.android.designsystem.component.DialogCard
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PaidWithCard
 import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
+import com.quare.blitzsplit.android.designsystem.component.skipsBaselinePlacement
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberDateTimeTextFormatter
@@ -83,12 +84,17 @@ fun BillDetailContent(
     modifier: Modifier = Modifier,
     // Why: the bill whose row's badge, title, total and share fly in; null in previews and screenshots.
     sharedBillId: String? = null,
+    // Why: its group, whose top bar's square and name fly in when the bill opens from the group's Expenses.
+    sharedGroupId: String? = null,
 ) {
     // Why: a dialog is two columns wide on a tablet lying down only, one column in a book's or a tabletop's half.
     val usesTwoColumns = rememberUsesFormColumns(isDialog)
     val money = rememberMoneyFormatter(state.currency)
     val dates = rememberDateTimeTextFormatter()
-    val shared = rememberBillSharedModifiers(sharedBillId)
+    val shared = rememberBillSharedModifiers(
+        billId = sharedBillId,
+        groupId = sharedGroupId,
+    )
     val first: @Composable ColumnScope.() -> Unit = {
         BillDetailBillSection(
             state = state,
@@ -161,6 +167,7 @@ fun BillDetailContent(
                         BillGroupTitle(
                             state = state,
                             badgeModifier = shared.group,
+                            nameModifier = shared.groupName,
                         )
                     },
                     navigationIcon = {
@@ -509,6 +516,8 @@ private fun BillGroupTitle(
     modifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
     badgeModifier: Modifier = Modifier,
+    // Why: the group's name, which flies from and back to the group's top bar.
+    nameModifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
@@ -526,6 +535,9 @@ private fun BillGroupTitle(
         }
         Text(
             text = state.groupName,
+            modifier = Modifier
+                .skipsBaselinePlacement()
+                .then(nameModifier),
             style = textStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

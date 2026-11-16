@@ -158,11 +158,16 @@ fun EntryIconTile(icon: ImageVector) {
     }
 }
 
-// Why: "17:40 · queued · You paid", with the home's pending dot while the line waits for the server.
+/*
+ * Why: "17:40 · queued · You paid", with the home's pending dot while the line waits for the server. With a
+ * timeModifier the first part, the time, is a text of its own, which flies into the bill's date and time (beta
+ * feedback of 2026-11-16).
+ */
 @Composable
 fun EntryMetaLine(
     isPending: Boolean,
     parts: List<String>,
+    timeModifier: Modifier? = null,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -171,14 +176,40 @@ fun EntryMetaLine(
         if (isPending) {
             PendingIndicator()
         }
-        Text(
-            text = parts.joinToString(ENTRY_META_SEPARATOR),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+        val time = parts.firstOrNull().takeIf { timeModifier != null }
+        Row {
+            if (time != null && timeModifier != null) {
+                EntryMetaText(
+                    text = time,
+                    modifier = timeModifier,
+                )
+            }
+            val rest = if (time != null) parts.drop(1) else parts
+            if (rest.isNotEmpty()) {
+                EntryMetaText(
+                    text = rest.joinToString(
+                        separator = ENTRY_META_SEPARATOR,
+                        prefix = if (time != null) ENTRY_META_SEPARATOR else "",
+                    ),
+                )
+            }
+        }
     }
+}
+
+@Composable
+private fun EntryMetaText(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        modifier = modifier,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
 }
 
 // Why: a bill's total, and under it what it does to this device's user's balance ("+R$ 600,00"), when they are in it.

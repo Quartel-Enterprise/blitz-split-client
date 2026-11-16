@@ -160,7 +160,10 @@ export function GroupPage({
             aria-label={[members, notJoined, t('groupDetail_seeMembers')].filter(Boolean).join(' · ')}
             className="-mt-1 flex items-center gap-2 self-start rounded-md text-[13px] text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
           >
-            <AvatarStack faces={Array.from(header.faces)} extraCount={header.extraMemberCount} size="md" ring="ring-background" />
+            {/* Why: where the faces of the row clicked land (beta feedback of 2026-11-16); outside the header, so marked with the group. */}
+            <span data-group-faces={groupId} className="inline-flex">
+              <AvatarStack faces={Array.from(header.faces)} extraCount={header.extraMemberCount} size="md" ring="ring-background" />
+            </span>
             {notJoined}
           </button>
 

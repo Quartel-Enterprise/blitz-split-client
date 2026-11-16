@@ -335,6 +335,7 @@ private fun GroupListRow(
                 )
                 GroupMetaRow(
                     group = group,
+                    facesModifier = shared.faces,
                     detail = detailTextOf(
                         group = group,
                         amountText = money::toAmountText,
@@ -397,6 +398,8 @@ private fun GroupMetaRow(
     group: GroupRow,
     detail: String,
     ringColor: Color,
+    // Why: the faces fly into the group's own faces under its header (beta feedback of 2026-11-16).
+    facesModifier: Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -405,6 +408,7 @@ private fun GroupMetaRow(
         MemberFacesRow(
             group = group,
             ringColor = ringColor,
+            modifier = facesModifier,
         )
         if (group.isPending) PendingIndicator()
         Text(
@@ -422,6 +426,7 @@ private fun GroupMetaRow(
 internal fun MemberFacesRow(
     group: GroupRow,
     ringColor: Color,
+    modifier: Modifier = Modifier,
 ) {
     val members = membersTextOf(group.memberCount)
     FacesRow(
@@ -429,7 +434,7 @@ internal fun MemberFacesRow(
         extraCount = group.extraMemberCount,
         size = 22.dp,
         ringColor = ringColor,
-        modifier = Modifier.clearAndSetSemantics { contentDescription = members },
+        modifier = modifier.clearAndSetSemantics { contentDescription = members },
     )
 }
 
