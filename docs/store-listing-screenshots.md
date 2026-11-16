@@ -156,10 +156,11 @@ therefore goes up once, closed or open:
 Open are the screens that use the inner display's width: the group and Home in two columns, Statistics, Activity's
 feed beside the item picked. Closed are the bill's sheets, which open are a sheet over the screen behind, Invite, and
 the light theme, so the group shows both ways. The shelf keeps the file names' order, so it starts open, on the
-group. The list is `duoScreensStagedOpen` in `build-logic/.../StoreScreenshots.kt`: a default nobody chose for the
-product yet, so it is Pierre's to change, in that one line. A display that wasn't captured gives its screens to the
-other one, so a release whose open capture failed uploads the ten closed, as before. `collectAppStoreScreenshots`
-still frames both whole, into `store_listings/ios/<locale>/iphone_duo/` and `iphone_duo_open/`.
+group. The list is `duoScreensStagedOpen` in `build-logic/.../StoreScreenshots.kt`, one line to change, then the table
+above. Which screens go up open is Pierre's call (November 2026: he kept these five). A display that wasn't
+captured gives its screens to the other one, so a release whose open capture failed uploads the ten closed, as
+before. `collectAppStoreScreenshots` still frames both whole, into `store_listings/ios/<locale>/iphone_duo/` and
+`iphone_duo_open/`.
 
 Not checked yet, since no Duo screenshot has gone to App Store Connect: that it files both sizes on that one shelf,
 upright and lying down side by side. Apple's page lists the four sizes under the one device and fastlane's change
