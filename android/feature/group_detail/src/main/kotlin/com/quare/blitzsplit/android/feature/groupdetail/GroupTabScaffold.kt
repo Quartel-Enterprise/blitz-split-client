@@ -112,8 +112,8 @@ private fun GroupTabScaffoldContent(
     val layout = rememberDeviceLayout()
     val listState = rememberLazyListState()
     // Why: "Rachar conta" floats only on a phone upright; lying down, on a tabletop or a tablet it sits in the bar.
-    val barButton = body.floatingButton.takeIf { layout.usesNavigationRail }
-    val floatingButton = body.floatingButton.takeUnless { layout.usesNavigationRail }
+    val barButton = body.splitBillButton.takeIf { layout.usesNavigationRail }
+    val floatingButton = body.splitBillButton.takeUnless { layout.usesNavigationRail }
     val listBottomPadding = if (floatingButton != null) fabClearance else listEndPadding
     /*
      * Why: on a phone upright the bar folds to its one line on a scroll down and opens again on a scroll up, wherever

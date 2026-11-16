@@ -244,6 +244,7 @@ private fun GroupBarSplitBillButton(button: GroupTabFloatingButton) {
         Text(
             text = button.label,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }

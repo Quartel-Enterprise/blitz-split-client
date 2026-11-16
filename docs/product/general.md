@@ -224,7 +224,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Apple app has no floating action button (Pierre's call): a screen's main button ("Split a bill", on every
     tab of a group) is a toolbar item, the bar's tinted glass item on iPhone and iPad (the bottom toolbar inside a group
     on an iPhone upright, except on an iPhone Duo, whose vertical bar takes it as its icon alone) and the window
-    toolbar's primary button on the Mac. Android keeps its FABs.
+    toolbar's primary button on the Mac. Android keeps its FABs on a phone upright; anywhere wider a group's "Split a
+    bill" sits in its top bar ([group-and-bills.md](group-and-bills.md)).
   - A Mac sheet ends in a trailing row of regular-size buttons, as a Mac dialog's (Record payment, Split a bill and
     its editors, Request, the new group's Invite, a personal invite): Cancel or Close on Esc, then the main one,
     prominent, on Return (⌘Return where Return types a new line, as in Request's message). The large buttons are the iPhone's and iPad's, for a thumb; a footer shared with them

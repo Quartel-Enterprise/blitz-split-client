@@ -6,9 +6,13 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// Why: the brand's orange of what is owed, the schemes' error tone too; declared first, as the schemes read it.
+// Why: the brand's orange of what is owed is the schemes' error tone too, so it is declared before they read it.
 private val lightNegative = Color(0xFF8E4D31)
 private val darkNegative = Color(0xFFFFB599)
+private val lightPositive = Color(0xFF006C4C)
+private val darkPositive = Color(0xFF6EDBAA)
+private val lightPending = Color(0xFF7C5800)
+private val darkPending = Color(0xFFF9BC3E)
 
 /*
  * Why: the tokens of the design canvas (Android, Material 3 Expressive), seeded from #266489. Every role is set, the
@@ -90,11 +94,6 @@ internal val darkBlitzSplitColors: ColorScheme = darkColorScheme(
     surfaceDim = Color(0xFF101417),
     surfaceBright = Color(0xFF353A3E),
 ).withFixedRoles()
-
-private val lightPositive = Color(0xFF006C4C)
-private val darkPositive = Color(0xFF6EDBAA)
-private val lightPending = Color(0xFF7C5800)
-private val darkPending = Color(0xFFF9BC3E)
 
 // Why: the attachment viewer stays black in both themes, so it takes the dark theme's amber, as the camera does.
 val pendingOnBlackColor: Color = darkPending
