@@ -1,0 +1,24 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": ["all"],
+      "text": {
+        "en": "Split a bill now has Scan receipt at the top too, beside Save, so the keyboard no longer hides it, and Add a payment method is quieter.",
+        "pt": "Rachar conta agora tem Ler cupom fiscal também no topo, ao lado de Salvar, então o teclado não esconde mais o botão, e Adicionar forma de pagamento ficou mais discreto.",
+        "pt-PT": "Dividir conta tem agora Ler talão também no topo, ao lado de Guardar, por isso o teclado já não o esconde, e Adicionar forma de pagamento está mais discreto.",
+        "es": "Dividir un gasto ahora también tiene Escanear recibo arriba, junto a Guardar, así el teclado ya no lo tapa, y Agregar método de pago es más discreto.",
+        "fr": "Partager une dépense propose maintenant aussi Scanne un reçu en haut, à côté d'Enregistre : le clavier ne le cache plus. Ajouter un moyen de paiement est plus discret.",
+        "de": "Ausgabe aufteilen hat Beleg scannen jetzt auch oben neben Speichern, damit die Tastatur es nicht mehr verdeckt, und Zahlungsmethode hinzufügen ist dezenter.",
+        "it": "Dividi una spesa ora ha Scansiona scontrino anche in alto, accanto a Salva, così la tastiera non lo nasconde più, e Aggiungi un metodo di pagamento è più discreto.",
+        "pl": "Podziel wydatek ma teraz Zeskanuj paragon także u góry, obok Zapisz, więc klawiatura już go nie zasłania, a Dodaj metodę płatności jest mniej widoczne.",
+        "nl": "Uitgave verdelen heeft Bonnetje scannen nu ook bovenaan, naast Opslaan, zodat het toetsenbord het niet meer verbergt, en Betaalmethode toevoegen valt minder op.",
+        "ja": "支出を割り勘の上部、保存の横にも「レシートを読み取る」が付き、キーボードで隠れなくなりました。「支払い方法を追加」は控えめな見た目になりました。",
+        "tr": "Harcama böl artık Fiş tara'yı üstte, Kaydet'in yanında da gösteriyor; klavye artık onu gizlemiyor. Ödeme yöntemi ekle daha sade.",
+        "id": "Bagi tagihan kini juga punya Pindai struk di atas, di samping Simpan, jadi tidak lagi tertutup keyboard, dan Tambah metode pembayaran kini lebih sederhana.",
+        "ru": "В «Разделить счёт» кнопка «Сканировать чек» теперь есть и вверху, рядом с «Сохранить», и клавиатура её больше не скрывает, а «Добавить способ оплаты» стала скромнее.",
+        "uk": "У «Розділити рахунок» кнопка «Сканувати чек» тепер є і вгорі, поруч із «Зберегти», тож клавіатура її більше не ховає, а «Додати спосіб оплати» стала скромнішою."
+      }
+    }
+  ]
+}

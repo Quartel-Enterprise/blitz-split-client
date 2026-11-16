@@ -3,10 +3,15 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { cn } from '@/lib/utils'
 
-/** What the dialog or the drawer draws: an optional top (faces), its title, an optional lead, the body and the buttons. */
+/**
+ * What the dialog or the drawer draws: an optional top (faces), its title with an optional icon button at its end, an
+ * optional lead, the body and the buttons.
+ */
 export interface PaneParts {
   leading?: ReactNode
   title: string
+  // Why: Rachar conta's "Ler cupom fiscal" at the top, in sight before the keyboard covers the footer (beta feedback).
+  titleAction?: ReactNode
   description?: string
   body: ReactNode
   footer: ReactNode
@@ -15,14 +20,15 @@ export interface PaneParts {
 const FOCUSABLE = 'input:not([disabled]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), a[href]'
 
 /**
- * Why: the top may hold buttons (Registrar pagamento's faces open a profile), which opening the form must not focus,
- * or a keyboard's Enter would leave it; the first field or button past them takes the focus instead.
+ * Why: the top may hold buttons (Registrar pagamento's faces open a profile, Rachar conta's "Ler cupom fiscal"), which
+ * opening the form must not focus, or a keyboard's Enter would leave it; the first field or button past them takes the
+ * focus instead.
  */
 function focusPastLeading(event: Event) {
   const content = event.currentTarget as HTMLElement
-  const leading = content.querySelector('[data-dialog-leading]')
-  if (!leading?.querySelector(FOCUSABLE)) return
-  const first = Array.from(content.querySelectorAll<HTMLElement>(FOCUSABLE)).find((element) => !leading.contains(element))
+  const tops = Array.from(content.querySelectorAll('[data-dialog-leading], [data-dialog-title-action]'))
+  if (!tops.some((top) => top.querySelector(FOCUSABLE))) return
+  const first = Array.from(content.querySelectorAll<HTMLElement>(FOCUSABLE)).find((element) => !tops.some((top) => top.contains(element)))
   if (!first) return
   event.preventDefault()
   first.focus()
@@ -50,7 +56,7 @@ export function ResponsiveDialog({
           <div data-dialog-leading className="contents">
             {pane.leading}
           </div>
-          <DialogTitle>{pane.title}</DialogTitle>
+          <PaneTitle title={<DialogTitle>{pane.title}</DialogTitle>} action={pane.titleAction} />
           <DialogDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DialogDescription>
         </DialogHeader>
         {pane.body}
@@ -64,12 +70,25 @@ export function ResponsiveDialog({
           <div data-dialog-leading className="contents">
             {pane.leading}
           </div>
-          <DrawerTitle>{pane.title}</DrawerTitle>
+          <PaneTitle title={<DrawerTitle>{pane.title}</DrawerTitle>} action={pane.titleAction} />
           <DrawerDescription className={cn(!pane.description && 'sr-only')}>{pane.description ?? pane.title}</DrawerDescription>
         </DrawerHeader>
         <div className="overflow-y-auto px-4 [--pane-gutter:--spacing(4)]">{pane.body}</div>
         <DrawerFooter className="flex-col-reverse">{pane.footer}</DrawerFooter>
       </DrawerContent>
     </Drawer>
+  )
+}
+
+/** The title, with its icon button at the end when the pane has one. */
+function PaneTitle({ title, action }: { title: ReactNode; action?: ReactNode }) {
+  if (action == null || action === false) return title
+  return (
+    <div className="flex items-center justify-between gap-2">
+      {title}
+      <div data-dialog-title-action className="-my-2 flex shrink-0">
+        {action}
+      </div>
+    </div>
   )
 }

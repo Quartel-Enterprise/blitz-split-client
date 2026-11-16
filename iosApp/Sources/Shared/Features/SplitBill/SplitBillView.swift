@@ -307,6 +307,13 @@ private struct PhoneSplitBill: View {
     @State private var isSettled = false
     /// "Scan receipt" on screen, which the source choice then points at; else the form holds it.
     @State private var isScanButtonShown = false
+    /// The top bar's icon was the last "Scan receipt" tapped, so the choice points at it (an iPad's popover).
+    @State private var isScanFromTopBar = false
+
+    /// Only while the icon is there: once a photo is picked it leaves, and "Take another photo" asks from the form.
+    private var anchorsChoiceAtTopBar: Bool {
+        isScanFromTopBar && state.showsScanReceipt
+    }
 
     private enum Field {
         case amount
@@ -329,7 +336,13 @@ private struct PhoneSplitBill: View {
         if showsScanButton {
             ToolbarSpacer(.flexible, placement: .bottomBar)
             ToolbarItem(placement: .bottomBar) {
-                ScanReceiptToolbarButton(model: model, isSettled: isSettled, isShown: $isScanButtonShown)
+                ScanReceiptToolbarButton(
+                    model: model,
+                    isSettled: isSettled,
+                    isShown: $isScanButtonShown,
+                    anchorsChoice: !anchorsChoiceAtTopBar,
+                    onTap: { isScanFromTopBar = false },
+                )
             }
         }
     }
@@ -355,8 +368,8 @@ private struct PhoneSplitBill: View {
                 } bottom: {
                     Form {
                         detailsSection
-                        // The board leaves "Ler cupom fiscal" out here; Início's shortcut still asks where the photo comes from
-                        ReceiptSection(model: model, showsScanNotice: false)
+                        // The board leaves the bottom "Ler cupom fiscal" out here; the top bar's still offers it
+                        ReceiptSection(model: model)
                         settledPairSection
                         deleteSection
                     }
@@ -383,6 +396,16 @@ private struct PhoneSplitBill: View {
                 }
                 .disabled(state.isSaving)
             }
+            // "Ler cupom fiscal" beside "Salvar" too, in sight while the keyboard covers the bottom toolbar (beta feedback)
+            if state.showsScanReceipt {
+                ToolbarItem(placement: .primaryAction) {
+                    ScanReceiptTopBarButton(
+                        model: model,
+                        anchorsChoice: isSettled && anchorsChoiceAtTopBar,
+                        onTap: { isScanFromTopBar = true },
+                    )
+                }
+            }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save", systemImage: "checkmark") {
                     model.send(SplitBillUiEventOnSaveClicked.shared)
@@ -402,7 +425,11 @@ private struct PhoneSplitBill: View {
             GroupSheet(model: model)
                 .foldSheetPlacement()
         }
-        .receiptSourceChoice(model: model, isSettled: isSettled, isAnchoredAtButton: isScanButtonShown)
+        .receiptSourceChoice(
+            model: model,
+            isSettled: isSettled,
+            isAnchoredAtButton: isScanButtonShown || anchorsChoiceAtTopBar,
+        )
         .sheet(isPresented: payerShown) {
             // Why: "Several people" swaps the sheet's content, since a second sheet can't open while one closes.
             if model.state.payerSelection == nil, model.shownPayerAmounts != nil {
@@ -893,11 +920,11 @@ private struct PaidWithControl: View {
                 .controlSize(.small)
                 .tint(.secondary)
         } else if state.showsAddPayingMethod {
+            // Quieter than a filled button, as the form's own fields come first (beta feedback)
             Button("Add a payment method", systemImage: "plus") {
                 model.send(SplitBillUiEventOnAddPayingMethodClicked.shared)
             }
-            .buttonStyle(.bordered)
-            .buttonBorderShape(.capsule)
+            .buttonStyle(.borderless)
             .accessibilityHint(Text("Only you see this."))
         } else if state.showsLockedPaidWith {
             LockedPaidWithChip(model: model)
@@ -1130,22 +1157,31 @@ private struct MacBillForm: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            VStack(alignment: .leading, spacing: 2) {
-                Group {
+            HStack(alignment: .top, spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Group {
+                        if state.isEditing {
+                            Text("Edit Bill")
+                        } else {
+                            Text("Split a Bill")
+                        }
+                    }
+                    .font(.title2.bold())
                     if state.isEditing {
-                        Text("Edit Bill")
+                        Text(verbatim: "\(state.description_) · \(state.groupName)")
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
                     } else {
-                        Text("Split a Bill")
+                        Text("A new expense in the group. Works without internet.")
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .font(.title2.bold())
-                if state.isEditing {
-                    Text(verbatim: "\(state.description_) · \(state.groupName)")
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                } else {
-                    Text("A new expense in the group. Works without internet.")
-                        .foregroundStyle(.secondary)
+                Spacer(minLength: 0)
+                // "Scan Receipt…" at the sheet's top too, as on the other platforms (beta feedback)
+                if state.showsScanReceipt {
+                    ScanReceiptTopBarButton(model: model)
+                        .buttonStyle(.borderless)
+                        .controlSize(.large)
                 }
             }
             if let conflict = state.conflict {

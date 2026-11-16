@@ -164,11 +164,9 @@ struct ReceiptThumbnail: View {
 #if os(iOS)
 /// Under "Detalhes": "Foto do cupom" once a receipt is picked, which the bill attaches once saved, with × to take it
 /// off. "Ler cupom fiscal" itself is the bottom toolbar's (`ScanReceiptToolbarButton`), under the thumb (beta
-/// feedback); offline, only why it isn't there stays here.
+/// feedback), and the top bar's (`ScanReceiptTopBarButton`); offline, only why they are dimmed stays here.
 struct ReceiptSection: View {
     let model: SplitBillModel
-    /// Where the board offers "Scan receipt" (not an iPhone Duo open upright), so its offline notice too.
-    var showsScanNotice = true
 
     private var state: SplitBillUiState {
         model.state
@@ -208,7 +206,7 @@ struct ReceiptSection: View {
                     .accessibilityLabel(Text("Remove the receipt photo"))
                 }
             }
-        } else if state.showsScanReceipt, showsScanNotice, !state.isOnline {
+        } else if state.showsScanReceipt, !state.isOnline {
             Section {} footer: {
                 Text("Needs internet. Fill it in by hand or scan the receipt once you reconnect.")
             }
@@ -222,9 +220,13 @@ struct ScanReceiptToolbarButton: View {
     let model: SplitBillModel
     let isSettled: Bool
     @Binding var isShown: Bool
+    /// Whether the choice points here: not once the top bar's icon was the one tapped (`ScanReceiptTopBarButton`).
+    var anchorsChoice = true
+    var onTap: () -> Void = {}
 
     var body: some View {
         Button {
+            onTap()
             model.send(SplitBillUiEventOnScanReceiptClicked.shared)
         } label: {
             // Why: icon and words side by side, as a toolbar draws a `Label` as its icon alone.
@@ -241,7 +243,7 @@ struct ScanReceiptToolbarButton: View {
         // Why: the choice points at the button while it is on screen, and only one of the two dialogs binds to it.
         .receiptSourceDialog(
             isPresented: model.receiptSourceRequest.choiceShown(
-                isActive: isSettled && ReceiptSource.hasChoice && isShown,
+                isActive: isSettled && ReceiptSource.hasChoice && isShown && anchorsChoice,
             ),
             pick: model.receiptSourceRequest.pick,
         )
@@ -250,6 +252,44 @@ struct ScanReceiptToolbarButton: View {
     }
 }
 #endif
+
+/// "Ler cupom fiscal" as an icon at the top, beside "Salvar", in sight before the keyboard covers the bottom one (beta
+/// feedback): a new bill only, dimmed while it can't start (offline, saving), as the bottom one.
+struct ScanReceiptTopBarButton: View {
+    let model: SplitBillModel
+    /// iPhone and iPad: the choice points here once this icon was the one tapped; the Mac's stays on the form.
+    var anchorsChoice = false
+    var onTap: () -> Void = {}
+
+    var body: some View {
+        Button {
+            onTap()
+            model.send(SplitBillUiEventOnScanReceiptClicked.shared)
+        } label: {
+            Label {
+                label
+            } icon: {
+                Image(systemName: "doc.viewfinder")
+            }
+        }
+        .labelStyle(.iconOnly)
+        .help(label)
+        .disabled(!model.state.canScanReceipt)
+        .receiptSourceDialog(
+            isPresented: model.receiptSourceRequest.choiceShown(isActive: anchorsChoice && ReceiptSource.hasChoice),
+            pick: model.receiptSourceRequest.pick,
+        )
+    }
+
+    /// The Mac writes the action in title case, as its "Scan Receipt…" row.
+    private var label: Text {
+        #if os(macOS)
+        Text("Scan Receipt")
+        #else
+        Text("Scan receipt")
+        #endif
+    }
+}
 
 #if os(macOS)
 /// The form's "Cupom:" row: "Ler Cupom Fiscal…" until a receipt is picked, then "Foto do cupom anexada", read or
