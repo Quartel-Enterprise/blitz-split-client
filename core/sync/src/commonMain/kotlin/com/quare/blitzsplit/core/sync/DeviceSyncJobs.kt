@@ -92,14 +92,19 @@ internal suspend fun syncAppInviteDismissals(
 /*
  * Why: a sync while the session waited for its refresh was put off and left the device as it was, and nothing else
  * changes when its token comes back (the same user, maybe online all along), so that sync runs again then. One that
- * went through needs no other.
+ * went through needs no other. Asked once the sync running at the recovery ended, whose outcome it is.
  */
 internal suspend fun syncOnSessionRecovery(
     accountRepository: AccountRepository,
-    lastSyncWentThrough: () -> Boolean,
+    syncLock: Mutex,
+    outcomes: SyncOutcomes,
     sync: suspend () -> Unit,
 ) {
-    accountRepository.observeSessionRecoveries().collect { if (!lastSyncWentThrough()) sync() }
+    accountRepository.observeSessionRecoveries().collect {
+        if (syncLock.withLock { outcomes.lastSyncWentThrough }) return@collect
+        outcomes.onSessionSettled()
+        sync()
+    }
 }
 
 /*

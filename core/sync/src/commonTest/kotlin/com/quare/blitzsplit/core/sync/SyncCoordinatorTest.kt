@@ -664,6 +664,33 @@ class SyncCoordinatorTest {
     }
 
     @Test
+    fun `GIVEN a sync running WHEN the session comes back before it is put off THEN syncs again`() = runTest {
+        // Given
+        prepareScenario(
+            storedProfile = pierre,
+            status = anonymous,
+        )
+        coordinator.start()
+        runCurrent()
+        val gate = CompletableDeferred<Unit>()
+        account.registerGate = gate
+        profile.pullError = SessionRefreshingException()
+        backgroundScope.launch { coordinator.syncNow() }
+        runCurrent()
+        val pullsBefore = profile.downloadedUserIds.size
+
+        // When
+        account.sessionRecoveries.emit(Unit)
+        runCurrent()
+        account.registerGate = null
+        gate.complete(Unit)
+        runCurrent()
+
+        // Then
+        assertEquals(pullsBefore + 2, profile.downloadedUserIds.size)
+    }
+
+    @Test
     fun `GIVEN the last sync went through WHEN the session gets a token again THEN syncs no more`() = runTest {
         // Given
         prepareScenario(

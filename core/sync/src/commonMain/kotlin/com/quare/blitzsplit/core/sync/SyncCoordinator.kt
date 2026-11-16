@@ -141,12 +141,7 @@ class SyncCoordinator(
         scope.launch { syncOnUserSwitch() }
         scope.launch { syncOnLostAnonymousUser(accountRepository, ::syncUntilSettled) }
         scope.launch { eraseExpiredAccount(accountRepository, profileRepository, syncLock, ::eraseDeviceCopy) }
-        scope.launch {
-            syncOnSessionRecovery(accountRepository, { outcomes.lastSyncWentThrough }) {
-                outcomes.onSessionSettled()
-                syncUntilSettled()
-            }
-        }
+        scope.launch { syncOnSessionRecovery(accountRepository, syncLock, outcomes, ::syncUntilSettled) }
         scope.launch { syncWhenDue() }
         scope.launch { registerPushDevice(pushDeviceRepository, accountRepository, connectivityObserver) }
         scope.launch {
