@@ -1,12 +1,16 @@
 package com.quare.blitzsplit.android.feature.groupstats
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -17,8 +21,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.atan2
@@ -47,7 +55,7 @@ internal data class StatsRingSlice(
  * onTap. Shares that are all 0 leave a bare neutral ring. The center is the caller's, the description TalkBack's.
  */
 @Composable
-internal fun StatsRing(
+internal fun StatsRingDisplay(
     slices: List<StatsRingSlice>,
     selected: Int?,
     sweepKey: Any,
@@ -154,4 +162,33 @@ private fun findSliceAt(
         if (percent > 0 && fromTop < end) return index
     }
     return percents.indexOfLast { it > 0 }
+}
+
+// Why: the ring's middle, its share over its name, fading from one pick to the next.
+@Composable
+internal fun StatsRingLabel(
+    key: Any,
+    percent: Int,
+    label: String,
+) {
+    Crossfade(
+        targetState = key to (percent to label),
+        label = "center",
+    ) { (_, shown) ->
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = stringResource(R.string.group_stats_category_percent, shown.first),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = shown.second,
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 24.dp),
+            )
+        }
+    }
 }

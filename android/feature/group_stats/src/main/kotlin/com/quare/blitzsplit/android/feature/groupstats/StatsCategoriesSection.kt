@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.groupstats
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,8 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -163,7 +160,7 @@ private fun CategoryPieDisplay(
         )
     }
     val shown = rows.getOrNull(pick.selected ?: -1) ?: rows.first()
-    StatsRing(
+    StatsRingDisplay(
         slices = rows.map { StatsRingSlice(it.percent, it.category.color.toDataColor(isDark)) },
         selected = pick.selected,
         sweepKey = periodKey,
@@ -172,40 +169,11 @@ private fun CategoryPieDisplay(
         onPick = pick.onPick,
         onTap = { index, _ -> pick.onOpen(index, StatsCategoryTarget.RING) },
     ) {
-        StatsRingCenter(
+        StatsRingLabel(
             key = shown,
             percent = shown.percent,
             label = categoryName(shown.category),
         )
-    }
-}
-
-// Why: the ring's middle, its share over its name, fading from one pick to the next.
-@Composable
-internal fun StatsRingCenter(
-    key: Any,
-    percent: Int,
-    label: String,
-) {
-    Crossfade(
-        targetState = key to (percent to label),
-        label = "center",
-    ) { (_, shown) ->
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = stringResource(R.string.group_stats_category_percent, shown.first),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text = shown.second,
-                style = MaterialTheme.typography.labelSmall,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 24.dp),
-            )
-        }
     }
 }
 
