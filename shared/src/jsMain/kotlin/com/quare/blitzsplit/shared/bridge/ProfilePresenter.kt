@@ -40,7 +40,7 @@ class JsProfileState(
     val hasAnonymousId: Boolean,
     // Why: "User ID" in "Account and sync", for any account the server keeps; the short one shown, the whole one copied.
     val showsUserId: Boolean,
-    val shortUserId: String?,
+    val shortUserId: String,
     // Why: the ProfileSyncStatus's name, null when everything is synced.
     val syncStatus: String?,
     val showsProfilePending: Boolean,

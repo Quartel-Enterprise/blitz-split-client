@@ -16,7 +16,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.GoogleSignInResult
 import com.quare.blitzsplit.android.platform.RecoveryCodeSaver
-import com.quare.blitzsplit.android.platform.copyLink
 import com.quare.blitzsplit.android.platform.copyText
 import com.quare.blitzsplit.android.platform.rememberExportFileSaver
 import com.quare.blitzsplit.android.platform.rememberGoogleSignInLauncher
@@ -64,6 +63,14 @@ fun ProfileScreen(
         )
     }
     LaunchedEffect(viewModel) {
+        // Why: every copy of Profile says so in the same snackbar, the newest replacing the last.
+        val copyAndConfirm = { text: String, messageRes: Int ->
+            context.copyText(text)
+            showReplacingSnackbar(
+                snackbarHostState = snackbarHostState,
+                message = resources.getString(messageRes),
+            )
+        }
         viewModel.uiAction.collect { action ->
             when (action) {
                 is ProfileUiAction.CopyToClipboard -> saver.copyToClipboard(action.code)
@@ -72,21 +79,9 @@ fun ProfileScreen(
                     resources.getString(R.string.profile_share_message, action.link),
                 )
 
-                is ProfileUiAction.CopyProfileLink -> {
-                    context.copyLink(action.link)
-                    showReplacingSnackbar(
-                        snackbarHostState = snackbarHostState,
-                        message = resources.getString(R.string.profile_link_copied),
-                    )
-                }
+                is ProfileUiAction.CopyProfileLink -> copyAndConfirm(action.link, R.string.profile_link_copied)
 
-                is ProfileUiAction.CopyUserId -> {
-                    context.copyText(action.userId)
-                    showReplacingSnackbar(
-                        snackbarHostState = snackbarHostState,
-                        message = resources.getString(R.string.profile_user_id_copied),
-                    )
-                }
+                is ProfileUiAction.CopyUserId -> copyAndConfirm(action.userId, R.string.profile_user_id_copied)
 
                 is ProfileUiAction.LaunchNativeSignIn -> launchGoogleSignIn()
 

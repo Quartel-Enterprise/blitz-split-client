@@ -402,7 +402,6 @@ class ProfileViewModel(
         uiState.update {
             it.copy(
                 accountProvider = connected?.provider,
-                hasAnonymousId = account.status is AccountStatus.Anonymous,
                 userId = account.status.userIdOrNull(),
                 email = email,
                 // Why: the email's info explains a row that is gone once the account no longer shows an email.

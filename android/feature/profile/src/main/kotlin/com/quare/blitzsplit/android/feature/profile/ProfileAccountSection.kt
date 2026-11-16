@@ -91,7 +91,7 @@ internal fun AccountSection(
             HorizontalDivider()
             UserIdRow(
                 onEvent = onEvent,
-                shortUserId = state.shortUserId.orEmpty(),
+                shortUserId = state.shortUserId,
             )
         }
     }

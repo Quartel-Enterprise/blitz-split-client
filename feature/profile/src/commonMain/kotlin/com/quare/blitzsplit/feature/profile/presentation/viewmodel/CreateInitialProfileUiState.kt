@@ -19,7 +19,6 @@ internal fun createInitialProfileUiState(
     photoUrl = null,
     shareLink = null,
     accountProvider = null,
-    hasAnonymousId = false,
     userId = null,
     email = null,
     recoveryWords = null,

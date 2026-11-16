@@ -10,7 +10,6 @@ import software.quare.loadable.toLoaded
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ProfileUiStateTest {
@@ -1003,7 +1002,7 @@ class ProfileUiStateTest {
     }
 
     @Test
-    fun `GIVEN a local only profile WHEN drawing the User ID row THEN has no short id`() {
+    fun `GIVEN a local only profile WHEN drawing the User ID row THEN its short id is empty`() {
         // Given
         val profile = state(userId = null)
 
@@ -1011,7 +1010,7 @@ class ProfileUiStateTest {
         val shortUserId = profile.shortUserId
 
         // Then
-        assertNull(shortUserId)
+        assertEquals("", shortUserId)
     }
 
     private fun state(
@@ -1038,8 +1037,8 @@ class ProfileUiStateTest {
         photoUrl = null,
         shareLink = null,
         accountProvider = accountProvider,
-        hasAnonymousId = hasAnonymousId,
-        userId = userId,
+        // Why: an anonymous account is one whose server id has no Google or Apple, so the flag gives it an id.
+        userId = userId ?: ANONYMOUS_USER_ID.takeIf { hasAnonymousId },
         email = null,
         recoveryWords = recoveryWords,
         showsRecoveryCodePrompt = false,
@@ -1075,5 +1074,6 @@ class ProfileUiStateTest {
     private companion object {
         private const val RECOVERY_CODE = "legal winner thank year wave sausage worth useful legal winner thank yellow"
         private const val USER_ID = "3f8c2a91-6b4e-4d2a-9c7f-1e5b8a0d4f27"
+        private const val ANONYMOUS_USER_ID = "anonymous-user-id"
     }
 }

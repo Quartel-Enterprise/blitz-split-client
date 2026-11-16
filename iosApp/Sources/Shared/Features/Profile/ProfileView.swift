@@ -809,7 +809,7 @@ private struct AccountSection: View {
                 }
             }
             if state.showsUserId {
-                UserIdRow(model: model, shortUserId: state.shortUserId ?? "")
+                UserIdRow(model: model, shortUserId: state.shortUserId)
             }
         }
     }

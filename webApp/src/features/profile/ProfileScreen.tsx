@@ -20,7 +20,7 @@ import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import { formatSampleTime, type TimeFormat } from '@/lib/dates'
 import { downloadExport } from '@/lib/export'
-import { copyLink, shareOrCopy } from '@/lib/share'
+import { copyLink, copyText, shareOrCopy } from '@/lib/share'
 import type { PaymentKeyFormat, PaymentKeyType } from '@/lib/paymentKey'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
@@ -103,7 +103,7 @@ export function ProfileScreen() {
     } else if (action.type === 'copyProfileLink') {
       copyLink(action.value, t('profile_linkCopied'))
     } else if (action.type === 'copyUserId') {
-      copyLink(action.value, t('profile_userIdCopied'), t('profile_userIdCopyFailed'))
+      copyText(action.value, t('profile_userIdCopyFailed'), t('profile_userIdCopied'))
     } else if (action.type === 'reload') {
       // The page reads its language once, before it draws (src/i18n)
       window.location.reload()

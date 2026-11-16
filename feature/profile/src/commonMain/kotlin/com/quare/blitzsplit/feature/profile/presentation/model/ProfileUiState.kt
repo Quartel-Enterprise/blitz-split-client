@@ -28,8 +28,6 @@ data class ProfileUiState(
     val shareLink: String?,
     // Why: null without Google or Apple, both before the first sync and while anonymous.
     val accountProvider: AccountProvider?,
-    // Why: a local only user has no ID on the server yet, so the account row can't call it anonymous.
-    val hasAnonymousId: Boolean,
     /*
      * Why: "User ID", the account's id on the server (Supabase's auth user id), which the person copies to say who they
      * are, as in a survey (Pierre's call, testers' feedback); null for a local only profile, which the server never saw.
@@ -191,11 +189,16 @@ data class ProfileUiState(
     val showsDeleteAccount: Boolean
         get() = isLoaded && !isLocalOnly
 
+    // Why: a local only user has no ID on the server yet, so the account row can't call it anonymous.
+    val hasAnonymousId: Boolean
+        get() = userId != null && !hasAccount
+
     val showsUserId: Boolean
         get() = isLoaded && userId != null
 
-    val shortUserId: String?
-        get() = userId?.toShortUserId()
+    // Why: only read while showsUserId, so the UIs never unwrap it.
+    val shortUserId: String
+        get() = userId?.toShortUserId().orEmpty()
 
     // Why: a key added before the account's own came down could take the default the server already gave another.
     val canAddPaymentKey: Boolean

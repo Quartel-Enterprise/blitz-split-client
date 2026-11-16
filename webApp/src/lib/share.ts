@@ -1,16 +1,18 @@
 import { toast } from 'sonner'
 import { t } from '@/i18n'
 
-/**
- * The link to the clipboard, saying so when it fails (`failed`, "Couldn't copy the link" by default), and `copied` once
- * it is there when given.
- */
-export function copyLink(link: string, copied?: string, failed: string = t('invite_copyFailed')) {
+/** `text` to the clipboard, toasting `copied` once it is there when given, and `failed` when it can't. */
+export function copyText(text: string, failed: string, copied?: string) {
   // Why: a page outside a secure context has no navigator.clipboard, which would throw before the catch says so.
-  const written = navigator.clipboard?.writeText(link) ?? Promise.reject(new Error('No clipboard'))
+  const written = navigator.clipboard?.writeText(text) ?? Promise.reject(new Error('No clipboard'))
   written
     .then(() => copied && toast(copied))
     .catch(() => toast(failed))
+}
+
+/** The link to the clipboard, saying so when it fails, and `copied` once it is there when given. */
+export function copyLink(link: string, copied?: string) {
+  copyText(link, t('invite_copyFailed'), copied)
 }
 
 /** The link to the clipboard with a "Link copied" toast, for a button that can't say "Copied" itself. */
