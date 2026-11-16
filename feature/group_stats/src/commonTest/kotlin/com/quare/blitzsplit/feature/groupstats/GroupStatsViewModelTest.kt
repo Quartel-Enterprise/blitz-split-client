@@ -2123,7 +2123,7 @@ class GroupStatsViewModelTest {
         }
 
     @Test
-    fun `GIVEN the whole trip WHEN tapping Food THEN opens All expenses with the group and Food of the whole history`() =
+    fun `GIVEN the whole trip WHEN tapping Food THEN opens All expenses on Food of the whole history`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(stored = categorizedTripBills)

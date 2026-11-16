@@ -33,7 +33,7 @@ class AllExpensesPeriodTest {
                 "2026-12-01T00:00",
                 "2026-12-31T23:59",
                 "2027-01-01T00:00",
-            ).map { span.holds(inBrasilia(it)) },
+            ).map { inBrasilia(it) in span },
         )
     }
 
@@ -47,8 +47,8 @@ class AllExpensesPeriodTest {
         val span = assertNotNull(filters.periodSpanOrNull(today, brasilia))
 
         // Then
-        assertTrue(span.holds(inBrasilia("2028-02-29T23:30")))
-        assertFalse(span.holds(inBrasilia("2028-03-01T00:10")))
+        assertTrue(inBrasilia("2028-02-29T23:30") in span)
+        assertFalse(inBrasilia("2028-03-01T00:10") in span)
     }
 
     @Test
@@ -68,7 +68,7 @@ class AllExpensesPeriodTest {
                 "2026-11-01T00:00",
                 "2026-11-01T23:59",
                 "2026-11-02T00:00",
-            ).map { span.holds(inBrasilia(it)) },
+            ).map { inBrasilia(it) in span },
         )
     }
 
@@ -82,8 +82,8 @@ class AllExpensesPeriodTest {
         val span = assertNotNull(filters.periodSpanOrNull(today, brasilia))
 
         // Then
-        assertTrue(span.holds(inBrasilia("2027-01-01T00:05")))
-        assertFalse(span.holds(inBrasilia("2026-12-31T23:55")))
+        assertTrue(inBrasilia("2027-01-01T00:05") in span)
+        assertFalse(inBrasilia("2026-12-31T23:55") in span)
     }
 
     @Test

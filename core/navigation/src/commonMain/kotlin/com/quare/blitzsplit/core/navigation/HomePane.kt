@@ -16,9 +16,10 @@ private fun List<Route>.findGroupsAboveGroups(): List<Route> {
 }
 
 // Why: the group whose screen the pane beside the groups draws: any of its tabs or its Estatísticas.
-private fun paneGroupIdOrNull(route: Route): String? = when (route) {
-    is Route.GroupStats -> route.groupId
-    else -> groupScreenIdOrNull(route)
+private fun paneGroupIdOrNull(route: Route): String? = if (route is Route.GroupStats) {
+    route.groupId
+} else {
+    groupScreenIdOrNull(route)
 }
 
 // Why: the group the pane beside the groups shows.

@@ -295,12 +295,23 @@ sealed interface Route {
      */
     data class AllExpenses(
         val groupId: String?,
-        val categoryId: String? = null,
-        val period: ExpensePeriod = ExpensePeriod.ALL,
+        val categoryId: String?,
+        val period: ExpensePeriod,
         // Why: CUSTOM's first and last days, as the statistics' picker gives them (noon of each, the device's zone).
-        val customStartMillis: Long? = null,
-        val customEndMillis: Long? = null,
-    ) : Route
+        val customStartMillis: Long?,
+        val customEndMillis: Long?,
+    ) : Route {
+        companion object {
+            // Why: Home's and a group's "See all": the group picked, if any, and every other filter at its default.
+            fun create(groupId: String?): AllExpenses = AllExpenses(
+                groupId = groupId,
+                categoryId = null,
+                period = ExpensePeriod.ALL,
+                customStartMillis = null,
+                customEndMillis = null,
+            )
+        }
+    }
 
     /*
      * Why: the home's third tab, "Saldos" (flow 8): each person once, netted across every group. Right above Início,

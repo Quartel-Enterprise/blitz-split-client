@@ -611,7 +611,7 @@ class AllExpensesViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.AllExpenses(groupId = null),
+                    Route.AllExpenses.create(groupId = null),
                     Route.BillDetail("trio", "dinner", focusCommentId = null),
                 ),
                 navigator.backStack.value,
@@ -635,7 +635,7 @@ class AllExpensesViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.AllExpenses(groupId = null),
+                    Route.AllExpenses.create(groupId = null),
                     Route.BillDetail("trio", "lunch", focusCommentId = null),
                 ),
                 navigator.backStack.value,
@@ -706,7 +706,11 @@ class AllExpensesViewModelTest {
 
             // Then
             assertEquals(
-                listOf(Route.Home, Route.AllExpenses(groupId = null), Route.SplitBill.createEditing("trio", "dinner")),
+                listOf(
+                    Route.Home,
+                    Route.AllExpenses.create(groupId = null),
+                    Route.SplitBill.createEditing("trio", "dinner"),
+                ),
                 navigator.backStack.value,
             )
             assertEquals(listOf("bill_edit_clicked" to fromAllExpenses), trackedEvents)
@@ -729,7 +733,7 @@ class AllExpensesViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.AllExpenses(groupId = null),
+                    Route.AllExpenses.create(groupId = null),
                     Route.SplitBill.createDuplicating("trio", "dinner"),
                 ),
                 navigator.backStack.value,
@@ -754,7 +758,7 @@ class AllExpensesViewModelTest {
             assertEquals(
                 listOf(
                     Route.Home,
-                    Route.AllExpenses(groupId = null),
+                    Route.AllExpenses.create(groupId = null),
                     Route.ShareBill(
                         groupId = "trio",
                         expenseId = "dinner",
@@ -800,7 +804,7 @@ class AllExpensesViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses.create(groupId = null)), navigator.backStack.value)
             assertTrue(trackedEvents.isEmpty())
         }
 
@@ -818,7 +822,7 @@ class AllExpensesViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses.create(groupId = null)), navigator.backStack.value)
             assertTrue(trackedEvents.isEmpty())
         }
 
@@ -836,7 +840,7 @@ class AllExpensesViewModelTest {
             viewModel.onEvent(event)
 
             // Then
-            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses.create(groupId = null)), navigator.backStack.value)
         }
 
     @Test
@@ -885,7 +889,7 @@ class AllExpensesViewModelTest {
             assertEquals(listOf("taxi"), shownIds())
             assertNull(viewModel.uiState.value.billToDelete)
             assertFalse(viewModel.uiState.value.isDeletingBill)
-            assertEquals(listOf(Route.Home, Route.AllExpenses(groupId = null)), navigator.backStack.value)
+            assertEquals(listOf(Route.Home, Route.AllExpenses.create(groupId = null)), navigator.backStack.value)
             assertTrue(actions.isEmpty())
         }
 
@@ -2234,7 +2238,7 @@ class AllExpensesViewModelTest {
                 storedGroups = listOf(trio(), trio(id = "trip")),
                 storedExpenses = listOf(bill("h1"), bill("t1", groupId = "trip")),
                 billsRead = false,
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
 
@@ -2270,7 +2274,7 @@ class AllExpensesViewModelTest {
                         spentAt = hoursAgo(4),
                     ),
                 ),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
 
@@ -2293,7 +2297,7 @@ class AllExpensesViewModelTest {
                     groupId = "trip",
                     spentAt = daysAgo(30),
                 ),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
 
@@ -2319,7 +2323,7 @@ class AllExpensesViewModelTest {
                         spentAt = hoursAgo(2),
                     ),
                 ),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
             val event = AllExpensesUiEvent.OnGroupToggled("trip")
@@ -2350,7 +2354,7 @@ class AllExpensesViewModelTest {
                         spentAt = hoursAgo(2),
                     ),
                 ),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
             val event = AllExpensesUiEvent.OnClearFiltersClicked
@@ -2370,7 +2374,7 @@ class AllExpensesViewModelTest {
             prepareScenario(
                 storedGroups = listOf(trio(), trio(id = "trip")),
                 storedExpenses = listOf(bill("h1")),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
 
@@ -2391,7 +2395,7 @@ class AllExpensesViewModelTest {
             prepareScenario(
                 storedGroups = listOf(trio()),
                 storedExpenses = listOf(bill("h1")),
-                route = Route.AllExpenses(groupId = "gone"),
+                route = Route.AllExpenses.create(groupId = "gone"),
                 underneath = listOf(Route.Home, groupScreen("gone")),
             )
 
@@ -2411,7 +2415,7 @@ class AllExpensesViewModelTest {
             // Given
             prepareScenario(
                 storedGroups = listOf(trio(id = "trip")),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
             val event = AllExpensesUiEvent.OnBackClicked
@@ -2430,7 +2434,7 @@ class AllExpensesViewModelTest {
             prepareScenario(
                 storedGroups = listOf(trio(id = "trip")),
                 storedExpenses = listOf(bill("dinner", groupId = "trip")),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
             val event = AllExpensesUiEvent.OnBillClicked("trip", "dinner")
@@ -2443,7 +2447,7 @@ class AllExpensesViewModelTest {
                 listOf(
                     Route.Home,
                     groupScreen("trip"),
-                    Route.AllExpenses(groupId = "trip"),
+                    Route.AllExpenses.create(groupId = "trip"),
                     Route.BillDetail("trip", "dinner", focusCommentId = null),
                 ),
                 navigator.backStack.value,
@@ -2457,7 +2461,7 @@ class AllExpensesViewModelTest {
             prepareScenario(
                 storedGroups = listOf(trio(id = "trip")),
                 storedExpenses = listOf(bill("dinner", groupId = "trip")),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
             val event = BillMenuEvent.OnEditClicked("trip", "dinner")
@@ -2470,7 +2474,7 @@ class AllExpensesViewModelTest {
                 listOf(
                     Route.Home,
                     groupScreen("trip"),
-                    Route.AllExpenses(groupId = "trip"),
+                    Route.AllExpenses.create(groupId = "trip"),
                     Route.SplitBill.createEditing("trip", "dinner"),
                 ),
                 navigator.backStack.value,
@@ -2496,7 +2500,7 @@ class AllExpensesViewModelTest {
             // Given
             prepareScenario(
                 storedGroups = listOf(trio(id = "trip")),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, groupScreen("trip")),
             )
 
@@ -2513,7 +2517,7 @@ class AllExpensesViewModelTest {
             // Given
             prepareScenario(
                 storedGroups = listOf(trio(id = "trip")),
-                route = Route.AllExpenses(groupId = "trip"),
+                route = Route.AllExpenses.create(groupId = "trip"),
                 underneath = listOf(Route.Home, Route.Groups, groupScreen("trip")),
             )
 
@@ -2994,7 +2998,7 @@ class AllExpensesViewModelTest {
         }
 
     @Test
-    fun `GIVEN a statistics category WHEN All expenses opens before reading THEN picks its group category and period`() =
+    fun `GIVEN a statistics category WHEN opening before reading THEN picks its group category and period`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -3169,7 +3173,7 @@ class AllExpensesViewModelTest {
             // Given
             prepareScenario(
                 storedGroups = listOf(trio()),
-                route = Route.AllExpenses(groupId = "trio"),
+                route = Route.AllExpenses.create(groupId = "trio"),
                 underneath = listOf(Route.Home, groupScreen("trio")),
             )
 
@@ -3404,7 +3408,7 @@ class AllExpensesViewModelTest {
         billsRead: Boolean = true,
         downloading: FirstDownloadProgress? = null,
         storedCategories: List<GroupCategory> = emptyList(),
-        route: Route.AllExpenses = Route.AllExpenses(groupId = null),
+        route: Route.AllExpenses = Route.AllExpenses.create(groupId = null),
         // Why: what lies under All expenses: Home, or the group whose "See all" opened it.
         underneath: List<Route> = listOf(Route.Home),
         timeZone: TimeZone = TimeZone.UTC,

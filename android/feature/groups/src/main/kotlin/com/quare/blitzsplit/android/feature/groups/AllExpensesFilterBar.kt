@@ -76,7 +76,7 @@ internal fun AllExpensesFilterBar(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             state.filterOrder.forEach { filter ->
-                FilterChipOf(
+                FilterMenuChip(
                     filter = filter,
                     state = state,
                     onEvent = onEvent,
@@ -92,7 +92,7 @@ internal fun AllExpensesFilterBar(
 }
 
 @Composable
-private fun FilterChipOf(
+private fun FilterMenuChip(
     filter: AllExpensesFilter,
     state: AllExpensesUiState,
     onEvent: (AllExpensesUiEvent) -> Unit,

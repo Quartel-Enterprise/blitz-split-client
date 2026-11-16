@@ -53,7 +53,7 @@ internal fun narrowedOf(
 ): List<LatestExpense> {
     val filtered = bills.filter {
         it.isPassing(filters, categories) &&
-            (period == null || period.holds(it.expense.spentAt))
+            (period == null || it.expense.spentAt in period)
     }
     val typed = TypoTolerantQuery.of(filters.query)
     val found = if (typed.isEmpty) {
@@ -72,7 +72,7 @@ internal class DatedSpan(
     private val span: DateSpan,
     private val timeZone: TimeZone,
 ) {
-    fun holds(epochMillis: Long): Boolean = SpentDay.dateOf(epochMillis, timeZone) in span
+    operator fun contains(epochMillis: Long): Boolean = SpentDay.dateOf(epochMillis, timeZone) in span
 }
 
 /*
