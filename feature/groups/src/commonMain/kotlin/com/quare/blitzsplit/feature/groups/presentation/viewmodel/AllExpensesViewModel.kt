@@ -230,11 +230,12 @@ class AllExpensesViewModel(
         limit.update { it + ALL_EXPENSES_PAGE_SIZE }
     }
 
-    // Why: the list starts again from its first page under what was just picked. Says whether anything changed.
+    // Why: the list starts again from its first page under what was just picked.
     private fun narrow(change: (AllExpensesFilters) -> AllExpensesFilters) {
         isNarrowed(change)
     }
 
+    // Why: narrow's own, saying whether anything changed, which the period's analytics need.
     private fun isNarrowed(change: (AllExpensesFilters) -> AllExpensesFilters): Boolean {
         val next = change(filters.value)
         if (next == filters.value) return false

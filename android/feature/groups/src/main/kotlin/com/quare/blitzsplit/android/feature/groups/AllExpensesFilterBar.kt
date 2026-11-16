@@ -48,6 +48,12 @@ import com.quare.blitzsplit.feature.groups.presentation.model.PayerFilter
 import com.quare.blitzsplit.feature.groups.presentation.model.ShareFilter
 
 /*
+ * Why: DateUtils reads an end at midnight as the day before, and Statistics sends a custom period's days as their
+ * start (the pickers, as their noon): half a day later stays on the last day either way, as Statistics' own text does.
+ */
+private const val RANGE_END_SHIFT_MILLIS = 12L * 60 * 60 * 1000
+
+/*
  * Why: over "All expenses"' bills (Pierre's call, beta feedback): the search, which finds bills by their description as
  * the home's search does, then a row of chips that scrolls sideways: the order, then Group, Category, Period, Your share
  * and Who paid (or what the statistics picked first, filterOrder), each a menu, a chip picked while its filter narrows
@@ -181,7 +187,7 @@ private fun PeriodChip(
                     .formatDateRange(
                         context,
                         customStart,
-                        customEnd,
+                        customEnd + RANGE_END_SHIFT_MILLIS,
                         DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH,
                     )
 

@@ -4,13 +4,14 @@ import com.quare.blitzsplit.core.model.ExpensePeriod
 
 /*
  * Why: what "All expenses" narrows its bills to (Pierre's call, beta feedback): the search's text over the description,
- * as the home's search finds bills, the groups and the main categories picked (none picked: all), your share, who paid,
- * and the order. All of them at their default, or apart from the groups picked, read the device a page at a time.
+ * as the home's search finds bills, the groups and the main categories picked (none picked: all), the period, your
+ * share, who paid, and the order. All of them at their default, or apart from the groups picked, read the device a page
+ * at a time.
  */
 data class AllExpensesFilters(
     val query: String,
     val groupIds: Set<String>,
-    // Why: main categories; one takes its subcategories' bills, as Statistics' chips do.
+    // Why: main categories; one takes its subcategories' bills, as Statistics' "By category" counts them.
     val categoryIds: Set<String>,
     val period: ExpensePeriod,
     /*
