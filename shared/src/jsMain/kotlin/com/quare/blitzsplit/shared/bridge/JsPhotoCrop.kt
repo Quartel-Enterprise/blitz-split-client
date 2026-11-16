@@ -36,7 +36,7 @@ internal fun PhotoCropEditor.toJs(): JsPhotoCropState = JsPhotoCropState(
     offsetY = crop.offsetY,
 )
 
-// Why: what "Ajustar foto" sends, the same from the profile setup, Editar perfil, Novo grupo and Editar grupo.
+// Why: what "Ajustar foto" sends, the same from the profile setup, Editar perfil, Novo grupo, Editar grupo and a bill's Anexos.
 class PhotoCropPresenter internal constructor(
     private val send: (PhotoCropEvent) -> Unit,
 ) {

@@ -271,7 +271,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
   - "Adjust photo" (Bible Planner's editor, Pierre's call): every photo taken or picked for a profile (Your profile,
     Edit profile, the Mac's Settings) or a group (New group, Edit group) opens it before it becomes the avatar,
-    never the Google or Apple account's photo. Dark, full screen on Android, iOS and a phone's browser, a 560×720
+    never the Google or Apple account's photo; a bill's "Add photo" opens it too, in a rounded square, before the
+    photo is attached ([The group screen and its bills](group-and-bills.md)). Dark, full screen on Android, iOS and a phone's browser, a 560×720
     sheet on the Mac and a 560 px dialog on the web from the tablet up. The photo moves under a fixed frame, a circle
     for a profile and a rounded square for a group (the group's one shape, its corners 8% of the side, see [General rules](general.md)): drag,
     pinch around the fingers (the trackpad's too; on the web a scroll moves it, Ctrl and the wheel zoom) and a 1× to 3× slider zoom, "Rotate" turns it 90°

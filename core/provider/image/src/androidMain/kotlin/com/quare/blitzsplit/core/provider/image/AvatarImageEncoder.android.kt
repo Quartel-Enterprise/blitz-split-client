@@ -15,62 +15,92 @@ import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import kotlin.math.hypot
 
+private const val HALF = 0.5f
+private const val MATRIX_VALUES = 9
+
 internal actual fun createAvatarImageEncoder(): AvatarImageEncoder = AndroidAvatarImageEncoder()
 
 internal actual fun createBillImageEncoder(): BillImageEncoder = AndroidBillImageEncoder()
+
+internal actual fun createBillCropEncoder(): BillCropEncoder = AndroidBillCropEncoder()
 
 internal class AndroidAvatarImageEncoder : AvatarImageEncoder {
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
     ): ByteArray = withContext(Dispatchers.Default) {
-        // Why: decoded whole, since the transform is in the photo's own pixels and the editor's is at most 1600 px.
-        var photo = decode(source) { _, _ -> 1 }
-        val matrix = transform.toMatrix()
-        /*
-         * Why: bilinear filtering only blends neighbors, so shrinking 1600 px to 512 in one pass aliases hair and
-         * text. Halved first until the last pass shrinks by half at most, as Apple's and the web's smoothing do.
-         */
-        while (matrix.findScale() < HALF && photo.width > 1 && photo.height > 1) {
-            val halved = Bitmap.createScaledBitmap(photo, photo.width / 2, photo.height / 2, true)
-            matrix.preScale(photo.width.toFloat() / halved.width, photo.height.toFloat() / halved.height)
-            photo.recycle()
-            photo = halved
-        }
-        val output = Bitmap.createBitmap(AVATAR_SIZE_PX, AVATAR_SIZE_PX, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(output)
-        canvas.drawColor(Color.WHITE)
-        canvas.drawBitmap(photo, matrix, Paint(Paint.FILTER_BITMAP_FLAG))
-        photo.recycle()
+        val output = createCrop(source, transform, AVATAR_SIZE_PX)
         output.toJpeg(AVATAR_JPEG_QUALITY).also { output.recycle() }
     }
+}
 
-    // Why: how much the matrix scales a length, the same whatever quarter turn or mirror it holds.
-    private fun Matrix.findScale(): Float {
-        val values = FloatArray(MATRIX_VALUES).also(::getValues)
-        return hypot(values[Matrix.MSCALE_X], values[Matrix.MSKEW_Y])
+internal class AndroidBillCropEncoder : BillCropEncoder {
+    override suspend fun invoke(
+        source: ByteArray,
+        transform: CropTransform,
+        side: Int,
+    ): BillImage = withContext(Dispatchers.Default) {
+        val output = createCrop(source, transform, side)
+        // Why: recycled also when no quality fits the limit, which throws.
+        try {
+            BillImage(
+                jpeg = encodeUnderLimit(output::toJpeg),
+                width = side,
+                height = side,
+            )
+        } finally {
+            output.recycle()
+        }
     }
+}
 
-    private companion object {
-        const val HALF = 0.5f
-        const val MATRIX_VALUES = 9
+// Why: the square of `side` pixels the editor framed, on white.
+private fun createCrop(
+    source: ByteArray,
+    transform: CropTransform,
+    side: Int,
+): Bitmap {
+    // Why: decoded whole, since the transform is in the photo's own pixels and the editor's is at most 1600 px.
+    var photo = decode(source) { _, _ -> 1 }
+    val matrix = transform.toMatrix()
+    /*
+     * Why: bilinear filtering only blends neighbors, so shrinking 1600 px to 512 in one pass aliases hair and
+     * text. Halved first until the last pass shrinks by half at most, as Apple's and the web's smoothing do.
+     */
+    while (matrix.findScale() < HALF && photo.width > 1 && photo.height > 1) {
+        val halved = Bitmap.createScaledBitmap(photo, photo.width / 2, photo.height / 2, true)
+        matrix.preScale(photo.width.toFloat() / halved.width, photo.height.toFloat() / halved.height)
+        photo.recycle()
+        photo = halved
     }
+    val output = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(output)
+    canvas.drawColor(Color.WHITE)
+    canvas.drawBitmap(photo, matrix, Paint(Paint.FILTER_BITMAP_FLAG))
+    photo.recycle()
+    return output
+}
 
-    private fun CropTransform.toMatrix(): Matrix = Matrix().apply {
-        setValues(
-            floatArrayOf(
-                scaleX.toFloat(),
-                skewX.toFloat(),
-                translateX.toFloat(),
-                skewY.toFloat(),
-                scaleY.toFloat(),
-                translateY.toFloat(),
-                0f,
-                0f,
-                1f,
-            ),
-        )
-    }
+// Why: how much the matrix scales a length, the same whatever quarter turn or mirror it holds.
+private fun Matrix.findScale(): Float {
+    val values = FloatArray(MATRIX_VALUES).also(::getValues)
+    return hypot(values[Matrix.MSCALE_X], values[Matrix.MSKEW_Y])
+}
+
+private fun CropTransform.toMatrix(): Matrix = Matrix().apply {
+    setValues(
+        floatArrayOf(
+            scaleX.toFloat(),
+            skewX.toFloat(),
+            translateX.toFloat(),
+            skewY.toFloat(),
+            scaleY.toFloat(),
+            translateY.toFloat(),
+            0f,
+            0f,
+            1f,
+        ),
+    )
 }
 
 internal class AndroidBillImageEncoder : BillImageEncoder {

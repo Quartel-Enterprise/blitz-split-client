@@ -12,7 +12,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.ExpensePayer
 import com.quare.blitzsplit.core.expenses.domain.model.ExpenseShare
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
-import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
+import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.LoadBillAttachmentUrls
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
@@ -44,12 +44,21 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.CropPhoto
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.GroupType
+import com.quare.blitzsplit.core.model.PhotoCrop
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.profile.domain.model.PhotoTooLargeException
+import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
+import com.quare.blitzsplit.core.profile.domain.usecase.PrepareBillPhoto
+import com.quare.blitzsplit.core.provider.image.BillImage
+import com.quare.blitzsplit.core.provider.image.ImageTooLargeException
+import com.quare.blitzsplit.core.provider.image.UnsupportedImageException
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.utils.MinuteTicks
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillDetailUiAction
@@ -77,6 +86,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
@@ -788,7 +798,7 @@ class BillDetailAttachmentsTest {
             val picked = byteArrayOf(9, 8, 7)
 
             // When
-            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(picked))
+            addPhoto(picked)
 
             // Then
             val added = attachments.attachments.value
@@ -811,7 +821,7 @@ class BillDetailAttachmentsTest {
             val picked = byteArrayOf(9, 8, 7)
 
             // When
-            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(picked))
+            addPhoto(picked)
 
             // Then
             val state = viewModel.uiState.value
@@ -832,7 +842,7 @@ class BillDetailAttachmentsTest {
         prepareScenario(online = false)
 
         // When
-        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        addPhoto(byteArrayOf(1))
 
         // Then
         assertEquals(1, attachments.attachments.value.size)
@@ -847,7 +857,7 @@ class BillDetailAttachmentsTest {
             prepareScenario(addGate = CompletableDeferred())
 
             // When
-            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            addPhoto(byteArrayOf(1))
 
             // Then
             val state = viewModel.uiState.value
@@ -860,7 +870,7 @@ class BillDetailAttachmentsTest {
         // Given
         val gate = CompletableDeferred<Unit>()
         prepareScenario(addGate = gate)
-        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        addPhoto(byteArrayOf(1))
 
         // When
         gate.complete(Unit)
@@ -874,10 +884,10 @@ class BillDetailAttachmentsTest {
     fun `GIVEN a photo being made ready WHEN picking another THEN only the first is added`() = runTest(testDispatcher) {
         // Given
         prepareScenario(addGate = CompletableDeferred())
-        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        addPhoto(byteArrayOf(1))
 
         // When
-        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(2)))
+        addPhoto(byteArrayOf(2))
 
         // Then
         assertEquals(1, additions)
@@ -890,7 +900,7 @@ class BillDetailAttachmentsTest {
         prepareScenario(storedAttachments = fivePhotos)
 
         // When
-        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        addPhoto(byteArrayOf(1))
 
         // Then
         assertEquals(0, additions)
@@ -904,7 +914,7 @@ class BillDetailAttachmentsTest {
         prepareScenario(isRoomRead = false)
 
         // When
-        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        addPhoto(byteArrayOf(1))
 
         // Then
         assertEquals(0, additions)
@@ -918,7 +928,7 @@ class BillDetailAttachmentsTest {
         viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
 
         // When
-        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        addPhoto(byteArrayOf(1))
 
         // Then
         assertEquals(0, additions)
@@ -931,7 +941,7 @@ class BillDetailAttachmentsTest {
             prepareScenario(hasRoom = false)
 
             // When
-            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            addPhoto(byteArrayOf(1))
 
             // Then
             assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowPhotoError(BillPhotoError.NO_ROOM)), actions)
@@ -942,10 +952,10 @@ class BillDetailAttachmentsTest {
     @Test
     fun `GIVEN a file that is no image WHEN picking it THEN says it cannot be opened`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(isUnreadable = true)
+        prepareScenario(loadError = UnsupportedImageException())
 
         // When
-        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        addPhoto(byteArrayOf(1))
 
         // Then
         assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowPhotoError(BillPhotoError.UNREADABLE)), actions)
@@ -959,12 +969,340 @@ class BillDetailAttachmentsTest {
         prepareScenario(addError = IllegalStateException("bill gone"))
 
         // When
-        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        addPhoto(byteArrayOf(1))
 
         // Then
         assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowPhotoError(BillPhotoError.FAILED)), actions)
         assertFalse(viewModel.uiState.value.isAddingPhoto)
     }
+
+    @Test
+    fun `GIVEN the bill is open WHEN picking a photo THEN opens Adjust photo on it as picked and adds nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val picked = byteArrayOf(9, 8, 7)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(picked))
+
+            // Then
+            val state = viewModel.uiState.value
+            val editor = state.photoCrop
+            assertTrue(picked.contentEquals(editor?.photo?.jpeg))
+            assertEquals(PhotoCrop.of(1600, 1200), editor?.crop)
+            assertFalse(state.isAddingPhoto)
+            assertEquals(0, additions)
+            assertTrue(preparations.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the picked photo is being read WHEN reading Anexos THEN the tile spins and Adjust photo is closed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(loadGate = CompletableDeferred())
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.isAddingPhoto)
+            assertNull(state.photoCrop)
+            assertFalse(state.canAddPhoto)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN reading Anexos THEN no other photo can be added`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.canAddPhoto)
+    }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN picking another photo THEN keeps framing the first and reads no other`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val first = byteArrayOf(1)
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(first))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(2)))
+
+            // Then
+            assertEquals(1, loads)
+            assertTrue(
+                first.contentEquals(
+                    viewModel.uiState.value.photoCrop
+                        ?.photo
+                        ?.jpeg,
+                ),
+            )
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN tapping Rotate THEN the photo turns a quarter in the frame`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+            // Then
+            val crop = viewModel.uiState.value.photoCrop
+                ?.crop
+            assertEquals(1, crop?.quarterTurns)
+            assertEquals(PhotoCrop.of(1600, 1200).toTurned(), crop)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN dragging the photo THEN it moves in the frame`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+        // When
+        viewModel.onEvent(
+            BillDetailUiEvent.OnPhotoCrop(
+                PhotoCropEvent.OnDragged(
+                    dx = 0.1f,
+                    dy = 0f,
+                ),
+            ),
+        )
+
+        // Then
+        assertEquals(
+            PhotoCrop.of(1600, 1200).toDragged(0.1f, 0f),
+            viewModel.uiState.value.photoCrop
+                ?.crop,
+        )
+    }
+
+    @Test
+    fun `GIVEN the photo turned in Adjust photo WHEN tapping Done THEN makes the square of that photo as framed`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+            val editor = viewModel.uiState.value.photoCrop
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            val (photo, crop) = preparations.single()
+            assertSame(editor?.photo, photo)
+            assertEquals(editor?.crop, crop)
+            assertEquals(1, crop.quarterTurns)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN tapping Done THEN attaches exactly the square made from it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertSame(preparedImages.single(), attachedImages.single())
+            val added = attachments.attachments.value
+                .single()
+            assertEquals(BillAttachmentKind.PHOTO, added.kind)
+            assertEquals(PIERRE, added.addedByMemberId)
+            assertEquals(1200, added.width)
+            assertEquals(1200, added.height)
+        }
+
+    @Test
+    fun `GIVEN the square is still being kept WHEN tapping Done THEN Adjust photo closes at once and the tile spins`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(addGate = CompletableDeferred())
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertTrue(state.isAddingPhoto)
+            assertFalse(state.canAddPhoto)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN tapping Cancel THEN it closes and nothing is added nor said`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertFalse(state.isAddingPhoto)
+            assertTrue(state.canAddPhoto)
+            assertTrue(preparations.isEmpty())
+            assertEquals(0, additions)
+            assertTrue(attachments.attachments.value.isEmpty())
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Adjust photo was cancelled WHEN a late Done arrives THEN nothing is added`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+        // Then
+        assertTrue(preparations.isEmpty())
+        assertEquals(0, additions)
+        assertFalse(viewModel.uiState.value.isAddingPhoto)
+        assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Adjust photo is not open WHEN a Rotate arrives THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+        // Then
+        assertNull(viewModel.uiState.value.photoCrop)
+        assertTrue(viewModel.uiState.value.canAddPhoto)
+    }
+
+    @Test
+    fun `GIVEN a photo too large to read WHEN picking it THEN says it is too large and opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(loadError = PhotoTooLargeException())
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // Then
+            assertEquals(
+                listOf<BillDetailUiAction>(BillDetailUiAction.ShowPhotoError(BillPhotoError.TOO_LARGE)),
+                actions,
+            )
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertFalse(state.isAddingPhoto)
+            assertEquals(0, additions)
+        }
+
+    @Test
+    fun `GIVEN the photo cannot be read for another reason WHEN picking it THEN says it failed and opens nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(loadError = IllegalStateException("disk"))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // Then
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowPhotoError(BillPhotoError.FAILED)), actions)
+            val state = viewModel.uiState.value
+            assertNull(state.photoCrop)
+            assertFalse(state.isAddingPhoto)
+            assertEquals(0, additions)
+        }
+
+    @Test
+    fun `GIVEN the square stays too large WHEN tapping Done THEN says it is too large and adds nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(prepareError = ImageTooLargeException())
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(
+                listOf<BillDetailUiAction>(BillDetailUiAction.ShowPhotoError(BillPhotoError.TOO_LARGE)),
+                actions,
+            )
+            assertFalse(viewModel.uiState.value.isAddingPhoto)
+            assertEquals(0, additions)
+        }
+
+    @Test
+    fun `GIVEN the square cannot be decoded WHEN tapping Done THEN says the image cannot be opened and adds nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(prepareError = UnsupportedImageException())
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(
+                listOf<BillDetailUiAction>(BillDetailUiAction.ShowPhotoError(BillPhotoError.UNREADABLE)),
+                actions,
+            )
+            assertFalse(viewModel.uiState.value.isAddingPhoto)
+            assertEquals(0, additions)
+        }
+
+    @Test
+    fun `GIVEN the square cannot be made for another reason WHEN tapping Done THEN says it failed and adds nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(prepareError = IllegalStateException("out of memory"))
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowPhotoError(BillPhotoError.FAILED)), actions)
+            assertFalse(viewModel.uiState.value.isAddingPhoto)
+            assertEquals(0, additions)
+        }
+
+    @Test
+    fun `GIVEN another device filled the five photos meanwhile WHEN tapping Done THEN says there is no room`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedAttachments = (1..4).map { attachment(id = "photo-$it") })
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            attachments.hasRoom = false
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowPhotoError(BillPhotoError.NO_ROOM)), actions)
+            assertFalse(viewModel.uiState.value.isAddingPhoto)
+            assertEquals(4, attachments.attachments.value.size)
+        }
 
     @Test
     fun `GIVEN the platform could not read the file WHEN it says so THEN says the image cannot be opened`() =
@@ -1375,6 +1713,160 @@ class BillDetailAttachmentsTest {
     }
 
     @Test
+    fun `GIVEN Adjust photo is open WHEN tapping Rotate THEN sends the photo turned from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+            // Then
+            assertEquals(listOf("photo_crop_turned" to mapOf<String, Any>("source" to "bill_detail")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN mirroring it sideways THEN sends the photo mirrored horizontally`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnMirrorHorizontallyClicked))
+
+            // Then
+            assertEquals(
+                listOf("photo_crop_mirrored" to mapOf<String, Any>("source" to "bill_detail", "axis" to "horizontal")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN mirroring it upside down THEN sends the photo mirrored vertically`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnMirrorVerticallyClicked))
+
+            // Then
+            assertEquals(
+                listOf("photo_crop_mirrored" to mapOf<String, Any>("source" to "bill_detail", "axis" to "vertical")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN tapping Done THEN sends the photo confirmed from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+            // Then
+            assertEquals(listOf("photo_crop_confirmed" to mapOf<String, Any>("source" to "bill_detail")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN tapping Cancel THEN sends the photo dismissed from Conta`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+
+            // Then
+            assertEquals(listOf("photo_crop_dismissed" to mapOf<String, Any>("source" to "bill_detail")), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN dragging pinching and sliding the zoom THEN sends nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(
+                BillDetailUiEvent.OnPhotoCrop(
+                    PhotoCropEvent.OnDragged(
+                        dx = 0.1f,
+                        dy = 0f,
+                    ),
+                ),
+            )
+            viewModel.onEvent(
+                BillDetailUiEvent.OnPhotoCrop(
+                    PhotoCropEvent.OnPinched(
+                        1.5f,
+                        focusX = 0f,
+                        focusY = 0f,
+                    ),
+                ),
+            )
+            viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnZoomChanged(2f)))
+
+            // Then
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN Adjust photo is not open WHEN a Rotate arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnTurnClicked))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Adjust photo was cancelled WHEN a late Done arrives THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnDismissed))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN Adjust photo is open WHEN picking another photo THEN sends nothing more`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(1)))
+        trackedEvents.clear()
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(byteArrayOf(2)))
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the platform could not read the file WHEN it says so THEN sends nothing`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -1659,8 +2151,16 @@ class BillDetailAttachmentsTest {
     private var nowMillis = Instant.parse("2026-10-30T15:00:00Z").toEpochMilliseconds()
     private val earlierToday = Instant.parse("2026-10-30T12:00:00Z").toEpochMilliseconds()
 
-    // Why: how many photos the add use case was asked to keep, whatever came of it.
+    // Why: how many framed photos the attach use case was asked to keep, whatever came of it.
     private var additions = 0
+
+    // Why: how many picked photos were read for "Ajustar foto", whatever came of it.
+    private var loads = 0
+
+    // Why: the photo and the framing "Pronto" handed to be made a square, and the squares made.
+    private val preparations = mutableListOf<Pair<CropPhoto, PhotoCrop>>()
+    private val preparedImages = mutableListOf<BillImage>()
+    private val attachedImages = mutableListOf<BillImage>()
 
     private val ana = member(ANA, "Ana")
     private val pierre = member(PIERRE, "Pierre", isMe = true)
@@ -1761,6 +2261,12 @@ class BillDetailAttachmentsTest {
     private val photoB = attachment(id = PHOTO_B)
     private val fivePhotos = (1..5).map { attachment(id = "photo-$it") }
 
+    // Why: a photo picked, then "Pronto" in "Ajustar foto" as it opened.
+    private fun addPhoto(source: ByteArray) {
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoPicked(source))
+        viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(PhotoCropEvent.OnConfirmClicked))
+    }
+
     private fun TestScope.prepareScenario(
         storedAttachments: List<BillAttachment> = emptyList(),
         isRoomRead: Boolean = true,
@@ -1769,7 +2275,9 @@ class BillDetailAttachmentsTest {
         pendingImages: Map<String, ByteArray> = emptyMap(),
         urlsError: Throwable? = null,
         hasRoom: Boolean = true,
-        isUnreadable: Boolean = false,
+        loadError: Throwable? = null,
+        loadGate: CompletableDeferred<Unit>? = null,
+        prepareError: Throwable? = null,
         addError: Throwable? = null,
         addGate: CompletableDeferred<Unit>? = null,
         removeError: Throwable? = null,
@@ -1825,11 +2333,34 @@ class BillDetailAttachmentsTest {
             observeFirstDownload = ObserveFirstDownload { flowOf(null) },
             observeBillComments = ObserveBillCommentsUseCase(comments),
             observeBillHistory = ObserveBillHistoryUseCase(activity),
-            // Why: the real use case decodes on the platform; this one keeps the picked bytes as the JPEG.
-            addBillAttachment = AddBillAttachment { expenseId, groupId, kind, source, memberId ->
+            // Why: the real use cases decode and crop on the platform; these keep the picked bytes as the JPEG.
+            loadCropPhoto = LoadCropPhoto { source ->
+                loads++
+                loadGate?.await()
+                loadError?.let { return@LoadCropPhoto Result.failure(it) }
+                Result.success(
+                    CropPhoto(
+                        jpeg = source,
+                        width = 1600,
+                        height = 1200,
+                    ),
+                )
+            },
+            prepareBillPhoto = PrepareBillPhoto { photo, crop ->
+                preparations += photo to crop
+                prepareError?.let { return@PrepareBillPhoto Result.failure(it) }
+                val image = BillImage(
+                    jpeg = photo.jpeg,
+                    width = 1200,
+                    height = 1200,
+                )
+                preparedImages += image
+                Result.success(image)
+            },
+            attachBillImage = AttachBillImage { expenseId, groupId, kind, image, memberId ->
                 additions++
+                attachedImages += image
                 addGate?.await()
-                if (isUnreadable) return@AddBillAttachment Result.success(BillAttachmentAddition.UNREADABLE)
                 attachments
                     .addAttachment(
                         BillAttachment(
@@ -1837,8 +2368,8 @@ class BillDetailAttachmentsTest {
                             expenseId = expenseId,
                             groupId = groupId,
                             kind = kind,
-                            width = 1600,
-                            height = 1200,
+                            width = image.width,
+                            height = image.height,
                             addedByUserId = null,
                             addedByMemberId = memberId,
                             addedAt = nowMillis,
@@ -1846,7 +2377,7 @@ class BillDetailAttachmentsTest {
                             isPending = true,
                             hasPendingImage = true,
                         ),
-                        jpeg = source,
+                        jpeg = image.jpeg,
                     ).map { added -> if (added) BillAttachmentAddition.ADDED else BillAttachmentAddition.NO_ROOM }
             },
             removeBillAttachment = RemoveBillAttachmentUseCase(attachments, currentTimeMillis = { nowMillis }),

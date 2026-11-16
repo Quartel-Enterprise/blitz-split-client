@@ -17,26 +17,49 @@ internal actual fun createAvatarImageEncoder(): AvatarImageEncoder = JvmAvatarIm
 
 internal actual fun createBillImageEncoder(): BillImageEncoder = JvmBillImageEncoder()
 
+internal actual fun createBillCropEncoder(): BillCropEncoder = JvmBillCropEncoder()
+
 internal class JvmAvatarImageEncoder : AvatarImageEncoder {
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
-    ): ByteArray {
-        val decoded = decode(source)
-        val output = BufferedImage(AVATAR_SIZE_PX, AVATAR_SIZE_PX, BufferedImage.TYPE_INT_RGB)
-        output.createGraphics().run {
-            color = Color.WHITE
-            fillRect(0, 0, AVATAR_SIZE_PX, AVATAR_SIZE_PX)
-            setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
-            drawImage(decoded, transform.toAffineTransform(), null)
-            dispose()
-        }
-        return output.toJpeg(AVATAR_JPEG_QUALITY)
-    }
-
-    private fun CropTransform.toAffineTransform(): AffineTransform =
-        AffineTransform(scaleX, skewY, skewX, scaleY, translateX, translateY)
+    ): ByteArray = createCrop(source, transform, AVATAR_SIZE_PX).toJpeg(AVATAR_JPEG_QUALITY)
 }
+
+internal class JvmBillCropEncoder : BillCropEncoder {
+    override suspend fun invoke(
+        source: ByteArray,
+        transform: CropTransform,
+        side: Int,
+    ): BillImage {
+        val output = createCrop(source, transform, side)
+        return BillImage(
+            jpeg = encodeUnderLimit(output::toJpeg),
+            width = side,
+            height = side,
+        )
+    }
+}
+
+private fun createCrop(
+    source: ByteArray,
+    transform: CropTransform,
+    side: Int,
+): BufferedImage {
+    val decoded = decode(source)
+    val output = BufferedImage(side, side, BufferedImage.TYPE_INT_RGB)
+    output.createGraphics().run {
+        color = Color.WHITE
+        fillRect(0, 0, side, side)
+        setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+        drawImage(decoded, transform.toAffineTransform(), null)
+        dispose()
+    }
+    return output
+}
+
+private fun CropTransform.toAffineTransform(): AffineTransform =
+    AffineTransform(scaleX, skewY, skewX, scaleY, translateX, translateY)
 
 internal class JvmBillImageEncoder : BillImageEncoder {
     override suspend fun invoke(source: ByteArray): BillImage {

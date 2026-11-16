@@ -5,8 +5,6 @@ import com.quare.blitzsplit.core.activity.domain.model.ActivityEvent
 import com.quare.blitzsplit.core.activity.domain.usecase.LoadBillHistory
 import com.quare.blitzsplit.core.activity.domain.usecase.ObserveBillHistory
 import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
-import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
-import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentKind
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
 import com.quare.blitzsplit.core.expenses.domain.model.CategoryTree
@@ -18,8 +16,8 @@ import com.quare.blitzsplit.core.expenses.domain.model.SettledPairChange
 import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SpentDay
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
-import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillComment
+import com.quare.blitzsplit.core.expenses.domain.usecase.AttachBillImage
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteBillComment
 import com.quare.blitzsplit.core.expenses.domain.usecase.DeleteExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.EditBillComment
@@ -47,6 +45,8 @@ import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.openPersonProfile
 import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
+import com.quare.blitzsplit.core.profile.domain.usecase.LoadCropPhoto
+import com.quare.blitzsplit.core.profile.domain.usecase.PrepareBillPhoto
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
@@ -92,10 +92,12 @@ class BillDetailViewModel(
     private val currentTimeMillis: CurrentTimeMillis,
     private val currentTimeZone: CurrentTimeZone,
     private val updateExpense: UpdateExpense,
-    private val addBillAttachment: AddBillAttachment,
     private val removeBillAttachment: RemoveBillAttachment,
     private val loadBillAttachmentImage: LoadBillAttachmentImage,
     noticeBillGone: NoticeBillGone,
+    loadCropPhoto: LoadCropPhoto,
+    prepareBillPhoto: PrepareBillPhoto,
+    attachBillImage: AttachBillImage,
     addBillComment: AddBillComment,
     editBillComment: EditBillComment,
     deleteBillComment: DeleteBillComment,
@@ -157,6 +159,7 @@ class BillDetailViewModel(
                 attachments = Loadable.Loading,
                 viewedAttachmentId = null,
                 isAddingPhoto = false,
+                photoCrop = null,
                 paidWith = null,
             ),
         )
@@ -221,6 +224,17 @@ class BillDetailViewModel(
     ).stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val leaving = BillDetailLeaving(navigator, route, noticeBillGone)
+
+    private val photoAdding = BillPhotoAdding(
+        route = route,
+        uiState = uiState,
+        scope = viewModelScope,
+        loadCropPhoto = loadCropPhoto,
+        prepareBillPhoto = prepareBillPhoto,
+        attachBillImage = attachBillImage,
+        myMemberId = { myMemberId },
+        emit = uiAction::emit,
+    )
 
     // Why: a sync may bring someone else's edit while the bill is open, or delete it, or the whole group.
     init {
@@ -298,6 +312,10 @@ class BillDetailViewModel(
         navigator.backStack.onEach { leaving.leaveIfGone() }.launchIn(viewModelScope)
     }
 
+    // Why: "Ajustar foto" only counts what is done while it is open, never a late tap after it closed.
+    override fun isAccepted(event: BillDetailUiEvent): Boolean =
+        event !is BillDetailUiEvent.OnPhotoCrop || uiState.value.photoCrop != null
+
     override fun handleEvent(event: BillDetailUiEvent) {
         when (event) {
             is BillDetailUiEvent.CommentEvent -> comments.onEvent(event)
@@ -322,7 +340,11 @@ class BillDetailViewModel(
 
             BillDetailUiEvent.OnUndoClicked -> undo()
 
-            is BillDetailUiEvent.OnPhotoPicked -> addPhoto(event.source)
+            is BillDetailUiEvent.OnPhotoPicked -> if (photoAdding.pick(event.source)) {
+                trackEvent("photo_picked", sourceParams)
+            }
+
+            is BillDetailUiEvent.OnPhotoCrop -> photoAdding.onCropEvent(event.event)
 
             BillDetailUiEvent.OnPhotoUnreadable -> viewModelScope.launch {
                 uiAction.emit(BillDetailUiAction.ShowPhotoError(BillPhotoError.UNREADABLE))
@@ -431,34 +453,6 @@ class BillDetailViewModel(
         if (!uiState.value.hasAttachment(attachmentId)) return false
         uiState.update { it.copy(viewedAttachmentId = attachmentId) }
         return true
-    }
-
-    // Why: on the device first, offline too, by this device's member; the sync takes it up.
-    private fun addPhoto(source: ByteArray) {
-        if (!uiState.value.canAddPhoto) return
-        trackEvent("photo_picked", sourceParams)
-        uiState.update { it.copy(isAddingPhoto = true) }
-        viewModelScope.launch {
-            val error = addBillAttachment(
-                expenseId = route.expenseId,
-                groupId = route.groupId,
-                kind = BillAttachmentKind.PHOTO,
-                source = source,
-                addedByMemberId = myMemberId,
-            ).fold(
-                onSuccess = { addition ->
-                    when (addition) {
-                        BillAttachmentAddition.ADDED -> null
-                        BillAttachmentAddition.NO_ROOM -> BillPhotoError.NO_ROOM
-                        BillAttachmentAddition.UNREADABLE -> BillPhotoError.UNREADABLE
-                        BillAttachmentAddition.TOO_LARGE -> BillPhotoError.TOO_LARGE
-                    }
-                },
-                onFailure = { BillPhotoError.FAILED },
-            )
-            uiState.update { it.copy(isAddingPhoto = false) }
-            error?.let { uiAction.emit(BillDetailUiAction.ShowPhotoError(it)) }
-        }
     }
 
     // Why: the viewer goes on to the next attachment, else the one before, and closes after the last.

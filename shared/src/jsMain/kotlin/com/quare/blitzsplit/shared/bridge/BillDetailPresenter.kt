@@ -222,6 +222,8 @@ class JsBillDetailState(
     val showsAddPhoto: Boolean,
     val canAddPhoto: Boolean,
     val isAddingPhoto: Boolean,
+    // Why: "Ajustar foto" while the photo picked is being framed, in the tile's rounded square.
+    val photoCrop: JsPhotoCropState?,
     // Why: "Paid with", this device's user's own mark, which only they see; null for none.
     val paidWith: JsPayingMethod?,
     // Why: the viewer's page while it is open, else null.
@@ -236,6 +238,9 @@ class BillDetailPresenter(
         KoinPlatform.getKoin().get { parametersOf(billRoute) }
     }
     private val viewModel get() = holder.viewModel
+
+    val crop: PhotoCropPresenter =
+        PhotoCropPresenter { event -> viewModel.onEvent(BillDetailUiEvent.OnPhotoCrop(event)) }
 
     fun observeState(onChange: (JsBillDetailState) -> Unit): JsWatch {
         val states = viewModel.uiState.map { state ->
@@ -297,6 +302,7 @@ class BillDetailPresenter(
                 showsAddPhoto = state.showsAddPhoto,
                 canAddPhoto = state.canAddPhoto,
                 isAddingPhoto = state.isAddingPhoto,
+                photoCrop = state.photoCrop?.toJs(),
                 paidWith = state.shownPaidWith?.toJsPayingMethod(),
                 viewedAttachmentIndex = state.viewedAttachmentIndex,
             )

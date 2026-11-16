@@ -216,6 +216,12 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     gallery on Android, the share sheet on iOS, a file on the Mac and the web). Each photo is an upright JPEG of at most
     1600 px under 1.5 MB (`BillImageEncoder`), in the private `bill-attachments` bucket, read through signed URLs, so a
     photo added on another device shows only online. History says who added or removed them; the feed doesn't.
+    A photo taken or picked through "Add photo" opens "Adjust photo" first ([Profile](profile.md)), framed in the
+    tile's rounded square (Pierre's call, beta feedback of 2026-11-16: "square like the preview"), and only "Done"
+    attaches it: the square the frame holds, at as many pixels as the photo has there (at most 1600 px, never blown
+    up), under the same 1.5 MB (`PrepareBillPhoto`, `BillCropEncoder`); ✕, Cancel or back attach nothing. The tile
+    spins while the photo is read and while the square is kept. The receipt Scan receipt attaches is not framed: it
+    keeps the whole image it was read from.
   - Bill's "Share bill" (7.3h, `Route.ShareBill`, `ShareBillViewModel`): the bill's link,
     `https://blitzsplit.com/c/<code>`, one per bill, whose code the server makes (`set_bill_link`). Opening it makes
     the link as "Only people in the bill" when there is none (the safer of the two, which History records as the link

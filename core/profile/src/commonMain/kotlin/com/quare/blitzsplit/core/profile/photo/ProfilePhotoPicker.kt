@@ -57,14 +57,9 @@ class ProfilePhotoPicker(
 
     fun onEvent(event: PhotoCropEvent) {
         when (event) {
-            is PhotoCropEvent.OnDragged -> editCrop { it.toDragged(event.dx, event.dy) }
-            is PhotoCropEvent.OnPinched -> editCrop { it.toZoomedBy(event.zoomChange, event.focusX, event.focusY) }
-            is PhotoCropEvent.OnZoomChanged -> editCrop { it.toZoomed(event.zoom) }
-            PhotoCropEvent.OnTurnClicked -> editCrop(PhotoCrop::toTurned)
-            PhotoCropEvent.OnMirrorHorizontallyClicked -> editCrop(PhotoCrop::toMirroredHorizontally)
-            PhotoCropEvent.OnMirrorVerticallyClicked -> editCrop(PhotoCrop::toMirroredVertically)
             PhotoCropEvent.OnConfirmClicked -> confirm()
             PhotoCropEvent.OnDismissed -> edit(null)
+            else -> editor?.let { edit(it.toEdited(event)) }
         }
     }
 
@@ -93,11 +88,6 @@ class ProfilePhotoPicker(
                 .onSuccess(onPrepared)
                 .onFailure { showStatus(false, true) }
         }
-    }
-
-    private fun editCrop(transform: (PhotoCrop) -> PhotoCrop) {
-        val current = editor ?: return
-        edit(current.copy(crop = transform(current.crop)))
     }
 
     private fun edit(editor: PhotoCropEditor?) {
