@@ -1,0 +1,27 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Profile's \"Account and sync\" now shows your User ID, which you can copy with one tap, so you can tell us who you are when you answer one of our surveys.",
+        "pt": "O \"Conta e sincronização\" do Perfil agora mostra o seu ID de usuário, que você copia com um toque, para dizer quem você é quando responder a uma das nossas pesquisas.",
+        "pt-PT": "A secção \"Conta e sincronização\" do Perfil mostra agora o teu ID de utilizador, que copias com um toque, para nos dizeres quem és quando responderes a um dos nossos inquéritos.",
+        "es": "\"Cuenta y sincronización\" del Perfil ahora muestra tu ID de usuario, que copias con un toque, para decirnos quién eres cuando respondas una de nuestras encuestas.",
+        "fr": "« Compte et synchronisation » du Profil affiche désormais ton ID utilisateur, que tu copies d’une touche, pour nous dire qui tu es quand tu réponds à l’un de nos sondages.",
+        "de": "„Konto und Synchronisierung“ im Profil zeigt jetzt deine Nutzer-ID, die du mit einem Tippen kopierst, damit du uns sagen kannst, wer du bist, wenn du an einer unserer Umfragen teilnimmst.",
+        "it": "\"Account e sincronizzazione\" del Profilo ora mostra il tuo ID utente, che copi con un tocco, per dirci chi sei quando rispondi a uno dei nostri sondaggi.",
+        "pl": "„Konto i synchronizacja” w Profilu pokazuje teraz twoje ID użytkownika, które kopiujesz jednym dotknięciem, żeby powiedzieć nam, kim jesteś, gdy odpowiadasz na jedną z naszych ankiet.",
+        "nl": "\"Account en synchronisatie\" in je Profiel toont nu je gebruikers-ID, die je met één tik kopieert, zodat je ons kunt laten weten wie je bent als je een van onze enquêtes invult.",
+        "ja": "プロフィールの「アカウントと同期」にユーザーIDが表示され、ワンタップでコピーできるようになりました。アンケートに回答するときに、どなたかをお知らせいただけます。",
+        "tr": "Profil'deki \"Hesap ve eşitleme\" artık kullanıcı kimliğini gösteriyor. Tek dokunuşla kopyalayıp anketlerimizden birini yanıtlarken kim olduğunu bize söyleyebilirsin.",
+        "id": "\"Akun dan sinkronisasi\" di Profil kini menampilkan ID penggunamu, yang bisa kamu salin dengan sekali ketuk, untuk memberi tahu kami siapa kamu saat menjawab salah satu survei kami.",
+        "ru": "В разделе «Аккаунт и синхронизация» профиля теперь есть твой ID пользователя: его можно скопировать одним касанием, чтобы сообщить нам, кто ты, когда отвечаешь на наш опрос.",
+        "uk": "У розділі «Обліковий запис і синхронізація» профілю тепер є твій ID користувача: його можна скопіювати одним дотиком, щоб повідомити нам, хто ти, коли відповідаєш на наше опитування.",
+        "ko": "프로필의 ‘계정 및 동기화’에 내 사용자 ID가 표시되고 탭 한 번으로 복사할 수 있어요. 설문에 답할 때 누구인지 알려 주기 좋아요."
+      }
+    }
+  ]
+}

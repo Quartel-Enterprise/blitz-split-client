@@ -30,8 +30,6 @@
         <item quantity="one">%d üye</item>
         <item quantity="other">%d üye</item>
     </plurals>
-    <string name="group_detail_meta_total">%1$s · toplam %2$s</string>
-    <string name="group_detail_meta_empty">%s · henüz harcama yok</string>
     <plurals name="group_detail_not_joined">
         <item quantity="one">%d kişi henüz katılmadı</item>
         <item quantity="other">%d kişi henüz katılmadı</item>

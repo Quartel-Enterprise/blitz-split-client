@@ -55,3 +55,17 @@ internal inline fun encodeUnderLimit(encode: (quality: Int) -> ByteArray): ByteA
 }
 
 internal expect fun createBillImageEncoder(): BillImageEncoder
+
+/*
+ * Why: a bill's photo framed in "Adjust photo" (Attachments): the square the editor framed, drawn through its transform
+ * at `side` pixels, upright and under the same limits as any bill's photo.
+ */
+fun interface BillCropEncoder {
+    suspend operator fun invoke(
+        source: ByteArray,
+        transform: CropTransform,
+        side: Int,
+    ): BillImage
+}
+
+internal expect fun createBillCropEncoder(): BillCropEncoder

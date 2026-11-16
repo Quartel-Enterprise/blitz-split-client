@@ -98,6 +98,7 @@ private fun SampleTrip.billDetailState(bill: SampleBill): BillDetailUiState {
         attachments = emptyList<BillAttachmentTile>().toLoaded(),
         viewedAttachmentId = null,
         isAddingPhoto = false,
+        photoCrop = null,
         paidWith = null,
     )
 }

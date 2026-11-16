@@ -49,6 +49,7 @@
     <string name="default_split_list_percent">각자 퍼센트</string>
     <string name="default_split_list_income">각자 소득</string>
     <string name="default_split_income_note">그룹 멤버는 이 소득을 볼 수 있고 소득에 따라 지출을 나눌 수 있어요.</string>
+    <string name="default_split_income_net_note">세후 실수령 소득을 입력하세요.</string>
     <string name="default_split_parts_of">%s 비율</string>
     <string name="default_split_percent_of">%s 퍼센트</string>
     <string name="default_split_income_of">%s 소득</string>
@@ -66,6 +67,7 @@
     <string name="default_split_row_shares">각 지출의 %d%%</string>
     <string name="default_split_row_percent">%2$s 중 %1$s</string>
     <string name="default_split_row_income">월 소득 · 각 지출의 %d%%</string>
+    <string name="default_split_row_income_blank">월 소득</string>
     <string name="default_split_row_new">%s · 방금 참여</string>
     <string name="default_split_me">%s (나)</string>
     <string name="default_split_exceptions">카테고리별 예외</string>

@@ -382,7 +382,6 @@ class GroupDetailViewModelTest {
             assertTrue(state.isEmpty)
             assertFalse(state.showsSplitBillButton)
             assertTrue(state.days.isEmpty())
-            assertEquals(0L, state.header.totalSpentMinor)
         }
 
     @Test
@@ -400,7 +399,7 @@ class GroupDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN bills in this group and another WHEN the screen opens THEN the total adds only this group bills`() =
+    fun `GIVEN bills in this group and another WHEN the screen opens THEN lists only this group bills`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario(
@@ -428,7 +427,6 @@ class GroupDetailViewModelTest {
             val state = viewModel.uiState.value
 
             // Then
-            assertEquals(76_545L, state.header.totalSpentMinor)
             assertEquals(listOf("expense-1", "expense-2"), state.days.flatMap { day -> day.entries.map { it.id } })
         }
 
@@ -879,7 +877,6 @@ class GroupDetailViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertEquals(listOf("lunch", "breakfast"), state.days.single().ids())
-            assertEquals(8_000L, state.header.totalSpentMinor)
             assertTrue(state.showsSplitBillButton)
         }
 

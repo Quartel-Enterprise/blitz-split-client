@@ -57,7 +57,6 @@ extension View {
         tab: GroupTab,
         host: AppRoute,
         header: GroupHeader?,
-        hasExpenses: Bool,
         showsSplitBill: Bool,
         headerScroll: GroupHeaderScroll,
         exit: GroupExitState?,
@@ -68,7 +67,6 @@ extension View {
                 tab: tab,
                 host: host,
                 header: header,
-                hasExpenses: hasExpenses,
                 showsSplitBill: showsSplitBill,
                 headerScroll: headerScroll,
                 isOnline: exit?.isOnline ?? true,
@@ -85,7 +83,6 @@ private struct GroupScreenBars: ViewModifier {
     /// Members, whose Share does.
     let host: AppRoute
     let header: GroupHeader?
-    let hasExpenses: Bool
     let showsSplitBill: Bool
     let headerScroll: GroupHeaderScroll
     let isOnline: Bool
@@ -130,7 +127,9 @@ private struct GroupScreenBars: ViewModifier {
             // would leave Statistics, ⋯ and "Split a bill" no room
             .groupFlowHidesTabBar()
             #else
-            .navigationSubtitle(header.map { groupMeta($0, hasExpenses: hasExpenses) } ?? "")
+            // No line under the group's name (beta feedback of 2026-11-16), and none of the root screen's showing
+            // through either
+            .navigationSubtitle(Text(verbatim: ""))
             // File › Split a Bill (⌘N): a bill in this group, while this screen is the one in front
             .newItemCommands(
                 isInFront: frontRoute == host,
@@ -325,15 +324,6 @@ struct GroupLoadingRows: View {
     }
 }
 
-/// "6 members · $2,418.60 in total" or "6 members · no expenses yet".
-func groupMeta(_ header: GroupHeader, hasExpenses: Bool) -> String {
-    let members = String(localized: "\(Int(header.memberCount)) members", bundle: .appLanguage)
-    let spent = hasExpenses
-        ? String(localized: "\(header.currency.format(header.totalSpentMinor)) in total", bundle: .appLanguage)
-        : String(localized: "no expenses yet", bundle: .appLanguage)
-    return "\(members) · \(spent)"
-}
-
 /// The faces of the group, "+N" for the rest, and "1 hasn't joined yet": a tap opens Members.
 struct GroupFaces: View {
     let header: GroupHeader
@@ -497,7 +487,6 @@ struct PhoneGroupScaffold<Sections: View>: View {
     let header: GroupHeader
     /// The account's copy isn't whole: "Your balance in this group" shimmers in its place rather than leaving it out.
     let isMyBalanceLoading: Bool
-    let hasExpenses: Bool
     let tab: GroupTab
     let usesTwoColumns: Bool
     /// Only the header's avatar, the bar's title and "Split a bill" read it, so a scroll never draws the rest of the
@@ -552,7 +541,8 @@ struct PhoneGroupScaffold<Sections: View>: View {
         }
     }
 
-    /// The group's avatar big, its name and "2 members · R$ 3,418.31 in total" under it, then its faces, centred.
+    /// The group's avatar big, its name under it, then its faces, centred: the faces tell how many people, Statistics
+    /// the total (beta feedback of 2026-11-16).
     /// Over the list the avatar shrinks as the header scrolls under the bar (`collapses`); beside the tabs or above
     /// the fold it stays, a little smaller to leave the card its room.
     private func top(collapses: Bool) -> some View {
@@ -572,9 +562,6 @@ struct PhoneGroupScaffold<Sections: View>: View {
                     .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
                         if collapses { headerScroll.nameHeight = height }
                     }
-                Text(verbatim: groupMeta(header, hasExpenses: hasExpenses))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
             }
             .multilineTextAlignment(.center)
             GroupFaces(header: header, size: 28) { actions.select(.members) }

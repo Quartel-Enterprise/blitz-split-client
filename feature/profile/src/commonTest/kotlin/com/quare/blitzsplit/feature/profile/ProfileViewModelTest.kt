@@ -7267,6 +7267,196 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN a local only profile WHEN the profile opens THEN shows no user id`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = AccountStatus.LocalOnly)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertNull(state.userId)
+        assertFalse(state.showsUserId)
+    }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN the profile opens THEN shows its server user id`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = AccountStatus.Anonymous(SERVER_USER_ID))
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertEquals(SERVER_USER_ID, state.userId)
+        assertTrue(state.showsUserId)
+    }
+
+    @Test
+    fun `GIVEN an account connected with Google WHEN the profile opens THEN shows its server user id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.Connected(SERVER_USER_ID, AccountProvider.GOOGLE))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SERVER_USER_ID, state.userId)
+            assertTrue(state.showsUserId)
+        }
+
+    @Test
+    fun `GIVEN an account connected with Apple WHEN the profile opens THEN shows its server user id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.Connected(SERVER_USER_ID, AccountProvider.APPLE))
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(SERVER_USER_ID, state.userId)
+            assertTrue(state.showsUserId)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account still loading WHEN the profile opens THEN hides the user id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous(SERVER_USER_ID),
+                dynamicColors = null,
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertFalse(state.showsUserId)
+        }
+
+    @Test
+    fun `GIVEN a local only profile open WHEN the first sync makes it anonymous THEN shows the new user id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
+
+            // When
+            account.status = AccountStatus.Anonymous(SERVER_USER_ID)
+
+            // Then
+            assertEquals(SERVER_USER_ID, viewModel.uiState.value.userId)
+            assertTrue(viewModel.uiState.value.showsUserId)
+        }
+
+    @Test
+    fun `GIVEN the profile open anonymously WHEN Google connects to another user THEN shows that user id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = anonymous)
+
+            // When
+            account.status = AccountStatus.Connected(SERVER_USER_ID, AccountProvider.GOOGLE)
+
+            // Then
+            assertEquals(SERVER_USER_ID, viewModel.uiState.value.userId)
+        }
+
+    @Test
+    fun `GIVEN an account connected with Apple WHEN it signs out to a local only profile THEN hides the user id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.Connected(SERVER_USER_ID, AccountProvider.APPLE))
+
+            // When
+            account.status = AccountStatus.LocalOnly
+
+            // Then
+            assertNull(viewModel.uiState.value.userId)
+            assertFalse(viewModel.uiState.value.showsUserId)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account WHEN copying the User ID THEN copies the whole id and tracks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.Anonymous(SERVER_USER_ID))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCopyUserIdClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyUserId(SERVER_USER_ID)), actions)
+            assertEquals(listOf("profile_user_id_copied" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN an account connected with Google WHEN copying the User ID THEN copies the whole id and tracks it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.Connected(SERVER_USER_ID, AccountProvider.GOOGLE))
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCopyUserIdClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyUserId(SERVER_USER_ID)), actions)
+            assertEquals(listOf("profile_user_id_copied" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN a local only profile WHEN copying the User ID THEN copies nothing and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.LocalOnly)
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCopyUserIdClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN the account signed out WHEN a stale User ID copy arrives THEN copies nothing and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(status = AccountStatus.Anonymous(SERVER_USER_ID))
+            account.status = AccountStatus.LocalOnly
+            actions.clear()
+            trackedEvents.clear()
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCopyUserIdClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(trackedEvents.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN no internet and an anonymous account WHEN copying the User ID THEN still copies the whole id`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                status = AccountStatus.Anonymous(SERVER_USER_ID),
+                online = false,
+            )
+
+            // When
+            viewModel.onEvent(ProfileUiEvent.OnCopyUserIdClicked)
+
+            // Then
+            assertEquals(listOf<ProfileUiAction>(ProfileUiAction.CopyUserId(SERVER_USER_ID)), actions)
+        }
+
+    @Test
     fun `GIVEN the Pix rule on WHEN the profile opens THEN shows Pix`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
@@ -7816,5 +8006,6 @@ class ProfileViewModelTest {
 
     private companion object {
         private const val RECOVERY_CODE = "legal winner thank year wave sausage worth useful legal winner thank yellow"
+        private const val SERVER_USER_ID = "3f8c2a91-6b4e-4d2a-9c7f-1e5b8a0d4f27"
     }
 }

@@ -38,6 +38,9 @@ class JsProfileState(
     val showsOfflineNotice: Boolean,
     // Why: the account is on the server with no Google or Apple, which deletes it after 30 days without use.
     val hasAnonymousId: Boolean,
+    // Why: "User ID" in "Account and sync", for any account the server keeps; the short one shown, the whole one copied.
+    val showsUserId: Boolean,
+    val shortUserId: String,
     // Why: the ProfileSyncStatus's name, null when everything is synced.
     val syncStatus: String?,
     val showsProfilePending: Boolean,
@@ -102,7 +105,8 @@ class JsPaymentKeyItem(
 class JsProfileAction(
     /*
      * Why: "copy" with the code, "open" with a URL, "export" with the JSON to save, "reload" for a language picked,
-     * "shareProfile" with the profile link (navigator.share, or a copy) or "copyProfileLink" with it.
+     * "shareProfile" with the profile link (navigator.share, or a copy), "copyProfileLink" with it or "copyUserId" with
+     * the account's whole id.
      */
     val type: String,
     val value: String,
@@ -131,6 +135,8 @@ class ProfilePresenter {
                 showsRecoveryCodePrompt = state.showsRecoveryCodePrompt,
                 showsOfflineNotice = state.showsOfflineNotice,
                 hasAnonymousId = state.hasAnonymousId,
+                showsUserId = state.showsUserId,
+                shortUserId = state.shortUserId,
                 syncStatus = state.syncStatus?.name,
                 showsProfilePending = state.showsProfilePending,
                 pendingChangeCount = state.pendingChangeCount,
@@ -198,6 +204,8 @@ class ProfilePresenter {
 
                 is ProfileUiAction.CopyProfileLink -> JsProfileAction("copyProfileLink", action.link)
 
+                is ProfileUiAction.CopyUserId -> JsProfileAction("copyUserId", action.userId)
+
                 // Why: the page reads its language once, before it draws; the reload comes back to the profile.
                 ProfileUiAction.ApplyLanguage -> {
                     keepProfileForLanguage()
@@ -222,6 +230,10 @@ class ProfilePresenter {
 
     fun copyProfileLink() {
         viewModel.onEvent(ProfileUiEvent.OnCopyProfileLinkClicked)
+    }
+
+    fun copyUserId() {
+        viewModel.onEvent(ProfileUiEvent.OnCopyUserIdClicked)
     }
 
     fun dismissDialog() {

@@ -948,6 +948,75 @@ class ProfileUiStateTest {
         assertEquals(listOf(AppLanguage.PORTUGUESE), options)
     }
 
+    @Test
+    fun `GIVEN a loaded profile with a server user id WHEN drawing Account and sync THEN shows the User ID row`() {
+        // Given
+        val profile = state(
+            hasAnonymousId = true,
+            userId = USER_ID,
+        )
+
+        // When
+        val showsUserId = profile.showsUserId
+
+        // Then
+        assertTrue(showsUserId)
+    }
+
+    @Test
+    fun `GIVEN a loaded local only profile WHEN drawing Account and sync THEN hides the User ID row`() {
+        // Given
+        val profile = state(userId = null)
+
+        // When
+        val showsUserId = profile.showsUserId
+
+        // Then
+        assertFalse(showsUserId)
+    }
+
+    @Test
+    fun `GIVEN a profile with a user id not loaded yet WHEN drawing Account and sync THEN hides the User ID row`() {
+        // Given
+        val profile = state(
+            isLoaded = false,
+            userId = USER_ID,
+        )
+
+        // When
+        val showsUserId = profile.showsUserId
+
+        // Then
+        assertFalse(showsUserId)
+    }
+
+    @Test
+    fun `GIVEN a server user id WHEN drawing the User ID row THEN shows its start and end`() {
+        // Given
+        val profile = state(
+            accountProvider = AccountProvider.GOOGLE,
+            userId = USER_ID,
+        )
+
+        // When
+        val shortUserId = profile.shortUserId
+
+        // Then
+        assertEquals("3f8c2a91…4f27", shortUserId)
+    }
+
+    @Test
+    fun `GIVEN a local only profile WHEN drawing the User ID row THEN its short id is empty`() {
+        // Given
+        val profile = state(userId = null)
+
+        // When
+        val shortUserId = profile.shortUserId
+
+        // Then
+        assertEquals("", shortUserId)
+    }
+
     private fun state(
         isLoaded: Boolean = true,
         displayName: String = "Pierre",
@@ -960,6 +1029,7 @@ class ProfileUiStateTest {
         isSignOutScheduled: Boolean = false,
         accountProvider: AccountProvider? = null,
         hasAnonymousId: Boolean = false,
+        userId: String? = null,
         isConnectExpanded: Boolean = false,
         recoveryWords: List<String>? = null,
         language: AppLanguage = AppLanguage.SYSTEM,
@@ -971,7 +1041,8 @@ class ProfileUiStateTest {
         photoUrl = null,
         shareLink = null,
         accountProvider = accountProvider,
-        hasAnonymousId = hasAnonymousId,
+        // Why: an anonymous account is one whose server id has no Google or Apple, so the flag gives it an id.
+        userId = userId ?: ANONYMOUS_USER_ID.takeIf { hasAnonymousId },
         email = null,
         recoveryWords = recoveryWords,
         showsRecoveryCodePrompt = false,
@@ -1006,5 +1077,7 @@ class ProfileUiStateTest {
 
     private companion object {
         private const val RECOVERY_CODE = "legal winner thank year wave sausage worth useful legal winner thank yellow"
+        private const val USER_ID = "3f8c2a91-6b4e-4d2a-9c7f-1e5b8a0d4f27"
+        private const val ANONYMOUS_USER_ID = "anonymous-user-id"
     }
 }

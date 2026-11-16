@@ -12,6 +12,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material3.Checkbox
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -64,22 +66,38 @@ internal fun PeopleSection(
         }
     }
     if (state.mode == DefaultSplitMode.INCOME) {
-        Row(
-            modifier = Modifier.padding(horizontal = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Lock,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = stringResource(R.string.default_split_income_note),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        IncomeNoteLine(
+            icon = Icons.Outlined.Info,
+            text = stringResource(R.string.default_split_income_net_note),
+        )
+        IncomeNoteLine(
+            icon = Icons.Outlined.Lock,
+            text = stringResource(R.string.default_split_income_note),
+        )
+    }
+}
+
+// Why: By income's quiet lines under the incomes: which income to type, and who sees it.
+@Composable
+private fun IncomeNoteLine(
+    icon: ImageVector,
+    text: String,
+) {
+    Row(
+        modifier = Modifier.padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -298,7 +316,11 @@ private fun personSubtitleOf(
             money.toText(state.exampleTotalMinor),
         )
 
-        DefaultSplitMode.INCOME -> stringResource(R.string.default_split_row_income, row.weight)
+        DefaultSplitMode.INCOME -> if (state.showsIncomePercents) {
+            stringResource(R.string.default_split_row_income, row.weight)
+        } else {
+            stringResource(R.string.default_split_row_income_blank)
+        }
     }
     return if (row.person.isNew) stringResource(R.string.default_split_row_new, subtitle) else subtitle
 }

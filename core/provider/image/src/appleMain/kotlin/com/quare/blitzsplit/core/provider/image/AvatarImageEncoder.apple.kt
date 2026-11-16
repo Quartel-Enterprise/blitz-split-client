@@ -81,66 +81,98 @@ internal actual fun createAvatarImageEncoder(): AvatarImageEncoder = AppleAvatar
 
 internal actual fun createBillImageEncoder(): BillImageEncoder = AppleBillImageEncoder()
 
-/*
- * Why: ImageIO and Core Graphics exist on iOS and macOS alike, so one encoder serves both. Core Graphics draws y up,
- * so the context flips the avatar's y and the photo's around the editor's transform, which has y down on both.
- */
-@OptIn(ExperimentalForeignApi::class)
+internal actual fun createBillCropEncoder(): BillCropEncoder = AppleBillCropEncoder()
+
+// Why: ImageIO and Core Graphics exist on iOS and macOS alike, so one encoder serves both.
 internal class AppleAvatarImageEncoder : AvatarImageEncoder {
+    @OptIn(ExperimentalForeignApi::class)
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
-    ): ByteArray = withContext(Dispatchers.IO) { encode(source, transform) }
-
-    private fun encode(
-        source: ByteArray,
-        transform: CropTransform,
-    ): ByteArray = withImageSource(source) { imageSource, width, height ->
-        // Why: decoded whole and upright, since the transform is in the photo's own pixels.
-        val upright = imageSource.createUprightThumbnail(maxOf(width, height)) ?: throw UnsupportedImageException()
-        val square = upright.createAvatar(transform)
-        CGImageRelease(upright)
-        square ?: throw UnsupportedImageException()
+    ): ByteArray = withContext(Dispatchers.IO) {
+        val square = createCrop(source, transform, AVATAR_SIZE_PX)
         square.toJpeg(AVATAR_JPEG_QUALITY).also { CGImageRelease(square) }
     }
+}
 
-    private fun CGImageRef.createAvatar(transform: CropTransform): CGImageRef? {
-        val side = AVATAR_SIZE_PX.toDouble()
-        val photoHeight = CGImageGetHeight(this).toDouble()
-        val colorSpace = CGColorSpaceCreateDeviceRGB()
-        val context = CGBitmapContextCreate(
-            data = null,
-            width = AVATAR_SIZE_PX.toULong(),
-            height = AVATAR_SIZE_PX.toULong(),
-            bitsPerComponent = BITS_PER_COMPONENT,
-            bytesPerRow = 0u,
-            space = colorSpace,
-            bitmapInfo = CGImageAlphaInfo.kCGImageAlphaNoneSkipLast.value,
-        )
-        CGColorSpaceRelease(colorSpace)
-        context ?: return null
-        CGContextSetInterpolationQuality(context, kCGInterpolationHigh)
-        CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0)
-        CGContextFillRect(context, CGRectMake(0.0, 0.0, side, side))
-        // Why: each call applies before the ones above it, so a point of the image goes up the list.
-        CGContextTranslateCTM(context, 0.0, side)
-        CGContextScaleCTM(context, 1.0, -1.0)
-        CGContextConcatCTM(
-            context,
-            CGAffineTransformMake(
-                a = transform.scaleX,
-                b = transform.skewY,
-                c = transform.skewX,
-                d = transform.scaleY,
-                tx = transform.translateX,
-                ty = transform.translateY,
-            ),
-        )
-        CGContextTranslateCTM(context, 0.0, photoHeight)
-        CGContextScaleCTM(context, 1.0, -1.0)
-        CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGImageGetWidth(this).toDouble(), photoHeight), this)
-        return CGBitmapContextCreateImage(context).also { CGContextRelease(context) }
+internal class AppleBillCropEncoder : BillCropEncoder {
+    @OptIn(ExperimentalForeignApi::class)
+    override suspend fun invoke(
+        source: ByteArray,
+        transform: CropTransform,
+        side: Int,
+    ): BillImage = withContext(Dispatchers.IO) {
+        val square = createCrop(source, transform, side)
+        // Why: released also when no quality fits the limit, which throws.
+        try {
+            BillImage(
+                jpeg = encodeUnderLimit(square::toJpeg),
+                width = side,
+                height = side,
+            )
+        } finally {
+            CGImageRelease(square)
+        }
     }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun createCrop(
+    source: ByteArray,
+    transform: CropTransform,
+    side: Int,
+): CGImageRef = withImageSource(source) { imageSource, width, height ->
+    // Why: decoded whole and upright, since the transform is in the photo's own pixels.
+    val upright = imageSource.createUprightThumbnail(maxOf(width, height)) ?: throw UnsupportedImageException()
+    val square = upright.createSquare(transform, side)
+    CGImageRelease(upright)
+    square ?: throw UnsupportedImageException()
+}
+
+/*
+ * Why: the square of `side` pixels the editor framed, on white. Core Graphics draws y up, so the context flips the
+ * square's y and the photo's around the editor's transform, which has y down on both.
+ */
+@OptIn(ExperimentalForeignApi::class)
+private fun CGImageRef.createSquare(
+    transform: CropTransform,
+    sidePx: Int,
+): CGImageRef? {
+    val side = sidePx.toDouble()
+    val photoHeight = CGImageGetHeight(this).toDouble()
+    val colorSpace = CGColorSpaceCreateDeviceRGB()
+    val context = CGBitmapContextCreate(
+        data = null,
+        width = sidePx.toULong(),
+        height = sidePx.toULong(),
+        bitsPerComponent = BITS_PER_COMPONENT,
+        bytesPerRow = 0u,
+        space = colorSpace,
+        bitmapInfo = CGImageAlphaInfo.kCGImageAlphaNoneSkipLast.value,
+    )
+    CGColorSpaceRelease(colorSpace)
+    context ?: return null
+    CGContextSetInterpolationQuality(context, kCGInterpolationHigh)
+    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0)
+    CGContextFillRect(context, CGRectMake(0.0, 0.0, side, side))
+    // Why: each call applies before the ones above it, so a point of the image goes up the list.
+    CGContextTranslateCTM(context, 0.0, side)
+    CGContextScaleCTM(context, 1.0, -1.0)
+    CGContextConcatCTM(
+        context,
+        CGAffineTransformMake(
+            a = transform.scaleX,
+            b = transform.skewY,
+            c = transform.skewX,
+            d = transform.scaleY,
+            tx = transform.translateX,
+            ty = transform.translateY,
+        ),
+    )
+    CGContextTranslateCTM(context, 0.0, photoHeight)
+    CGContextScaleCTM(context, 1.0, -1.0)
+    CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGImageGetWidth(this).toDouble(), photoHeight), this)
+    return CGBitmapContextCreateImage(context).also { CGContextRelease(context) }
 }
 
 @OptIn(ExperimentalForeignApi::class)

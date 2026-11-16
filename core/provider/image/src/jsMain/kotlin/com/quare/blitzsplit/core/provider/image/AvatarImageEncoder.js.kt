@@ -14,6 +14,8 @@ internal actual fun createAvatarImageEncoder(): AvatarImageEncoder = BrowserAvat
 
 internal actual fun createBillImageEncoder(): BillImageEncoder = BrowserBillImageEncoder()
 
+internal actual fun createBillCropEncoder(): BillCropEncoder = BrowserBillCropEncoder()
+
 /*
  * Why: the browser decodes every format it shows (HEIC only on Safari) and createImageBitmap
  * applies the EXIF rotation, so a canvas does the crop, through the editor's transform, and the JPEG encoding.
@@ -22,22 +24,43 @@ internal class BrowserAvatarImageEncoder : AvatarImageEncoder {
     override suspend fun invoke(
         source: ByteArray,
         transform: CropTransform,
-    ): ByteArray {
-        val bitmap = decode(source)
-        val canvas = createCanvas(AVATAR_SIZE_PX, AVATAR_SIZE_PX)
-        val context: dynamic = canvas.getContext("2d")
-        context.setTransform(
-            transform.scaleX,
-            transform.skewY,
-            transform.skewX,
-            transform.scaleY,
-            transform.translateX,
-            transform.translateY,
+    ): ByteArray = toJpeg(createCrop(source, transform, AVATAR_SIZE_PX), AVATAR_JPEG_QUALITY)
+}
+
+internal class BrowserBillCropEncoder : BillCropEncoder {
+    override suspend fun invoke(
+        source: ByteArray,
+        transform: CropTransform,
+        side: Int,
+    ): BillImage {
+        val canvas = createCrop(source, transform, side)
+        return BillImage(
+            jpeg = encodeUnderLimit { quality -> toJpeg(canvas, quality) },
+            width = side,
+            height = side,
         )
-        context.drawImage(bitmap, 0, 0)
-        bitmap.close()
-        return toJpeg(canvas, AVATAR_JPEG_QUALITY)
     }
+}
+
+private suspend fun createCrop(
+    source: ByteArray,
+    transform: CropTransform,
+    side: Int,
+): dynamic {
+    val bitmap = decode(source)
+    val canvas = createCanvas(side, side)
+    val context: dynamic = canvas.getContext("2d")
+    context.setTransform(
+        transform.scaleX,
+        transform.skewY,
+        transform.skewX,
+        transform.scaleY,
+        transform.translateX,
+        transform.translateY,
+    )
+    context.drawImage(bitmap, 0, 0)
+    bitmap.close()
+    return canvas
 }
 
 internal class BrowserBillImageEncoder : BillImageEncoder {

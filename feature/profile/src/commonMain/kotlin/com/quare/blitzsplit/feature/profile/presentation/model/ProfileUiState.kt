@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.model.TimeFormatPreference
 import com.quare.blitzsplit.core.utils.toAppLanguageUppercase
+import com.quare.blitzsplit.feature.profile.presentation.mapper.toShortUserId
 import software.quare.loadable.Loadable
 import software.quare.loadable.isLoaded
 
@@ -27,8 +28,11 @@ data class ProfileUiState(
     val shareLink: String?,
     // Why: null without Google or Apple, both before the first sync and while anonymous.
     val accountProvider: AccountProvider?,
-    // Why: a local only user has no ID on the server yet, so the account row can't call it anonymous.
-    val hasAnonymousId: Boolean,
+    /*
+     * Why: "User ID", the account's id on the server (Supabase's auth user id), which the person copies to say who they
+     * are, as in a survey (Pierre's call, testers' feedback); null for a local only profile, which the server never saw.
+     */
+    val userId: String?,
     /*
      * Why: the account's whole email, so the person sees which account it is (Pierre's call, testers' feedback);
      * only they see it, which the row's info button says. Null without Google or Apple, or when the provider gave none.
@@ -184,6 +188,17 @@ data class ProfileUiState(
      */
     val showsDeleteAccount: Boolean
         get() = isLoaded && !isLocalOnly
+
+    // Why: a local only user has no ID on the server yet, so the account row can't call it anonymous.
+    val hasAnonymousId: Boolean
+        get() = userId != null && !hasAccount
+
+    val showsUserId: Boolean
+        get() = isLoaded && userId != null
+
+    // Why: only read while showsUserId, so the UIs never unwrap it.
+    val shortUserId: String
+        get() = userId?.toShortUserId().orEmpty()
 
     // Why: a key added before the account's own came down could take the default the server already gave another.
     val canAddPaymentKey: Boolean

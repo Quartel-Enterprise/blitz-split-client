@@ -150,4 +150,7 @@
     <string name="profile_share_usage_data_detail">Экраны и нажатия — чтобы улучшить приложение. Никогда имена или суммы.</string>
     <string name="profile_section_paying_methods">Способы оплаты</string>
     <string name="profile_paying_methods_subtitle">Их видишь только ты. Отмечай, чем ты оплатил(а) счёт.</string>
+    <string name="profile_user_id">ID пользователя</string>
+    <string name="profile_user_id_copy">Скопировать ID пользователя</string>
+    <string name="profile_user_id_copied">ID пользователя скопирован</string>
 </resources>

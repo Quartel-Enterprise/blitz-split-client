@@ -67,6 +67,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfileShareLink
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.OpenLegalPage
+import com.quare.blitzsplit.core.profile.domain.usecase.PrepareBillPhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.domain.usecase.ResolveProfileLink
 import com.quare.blitzsplit.core.profile.domain.usecase.SavePaymentKey
@@ -94,6 +95,7 @@ import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileShare
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObservePushEnabledUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.OpenLegalPageUseCase
+import com.quare.blitzsplit.core.profile.domain.usecase.impl.PrepareBillPhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.PrepareProfilePhotoUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ResolveProfileLinkUseCase
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.SavePaymentKeyUseCase
@@ -124,6 +126,7 @@ val profileModule = module {
     factoryOf(::SaveProfileUseCase).bind<SaveProfile>()
     factoryOf(::LoadCropPhotoUseCase).bind<LoadCropPhoto>()
     factoryOf(::PrepareProfilePhotoUseCase).bind<PrepareProfilePhoto>()
+    factoryOf(::PrepareBillPhotoUseCase).bind<PrepareBillPhoto>()
     factoryOf(::ValidateDisplayNameUseCase).bind<ValidateDisplayName>()
     singleOf(::RoomPaymentKeyLocalDataSource).bind<PaymentKeyLocalDataSource>()
     singleOf(::RoomMemberPaymentKeyLocalDataSource).bind<MemberPaymentKeyLocalDataSource>()

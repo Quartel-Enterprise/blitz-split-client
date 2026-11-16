@@ -12,8 +12,6 @@ import com.quare.blitzsplit.core.activity.domain.usecase.impl.ObserveBillHistory
 import com.quare.blitzsplit.core.activity.testing.FakeActivityRepository
 import com.quare.blitzsplit.core.expenses.data.repository.InMemoryDeletedBillRepository
 import com.quare.blitzsplit.core.expenses.domain.model.AppCategory
-import com.quare.blitzsplit.core.expenses.domain.model.BillAttachment
-import com.quare.blitzsplit.core.expenses.domain.model.BillAttachmentAddition
 import com.quare.blitzsplit.core.expenses.domain.model.BillComment
 import com.quare.blitzsplit.core.expenses.domain.model.BillCommentLike
 import com.quare.blitzsplit.core.expenses.domain.model.BillDeletion
@@ -30,9 +28,9 @@ import com.quare.blitzsplit.core.expenses.domain.model.Settlement
 import com.quare.blitzsplit.core.expenses.domain.model.SettlementMethod
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.tint
-import com.quare.blitzsplit.core.expenses.domain.usecase.AddBillAttachment
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AddBillCommentUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.AttachBillImageUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteBillCommentUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.DeleteExpenseUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.EditBillCommentUseCase
@@ -5130,26 +5128,12 @@ class BillDetailViewModelTest {
             observeFirstDownload = ObserveFirstDownload { this@BillDetailViewModelTest.firstDownload },
             observeBillComments = ObserveBillCommentsUseCase(comments),
             observeBillHistory = ObserveBillHistoryUseCase(activity),
-            addBillAttachment = AddBillAttachment { expenseId, groupId, kind, source, memberId ->
-                attachments
-                    .addAttachment(
-                        BillAttachment(
-                            id = "photo-${attachments.attachments.value.size + 1}",
-                            expenseId = expenseId,
-                            groupId = groupId,
-                            kind = kind,
-                            width = 1600,
-                            height = 1200,
-                            addedByUserId = null,
-                            addedByMemberId = memberId,
-                            addedAt = nowMillis,
-                            updatedAt = nowMillis,
-                            isPending = true,
-                            hasPendingImage = true,
-                        ),
-                        jpeg = source,
-                    ).map { added -> if (added) BillAttachmentAddition.ADDED else BillAttachmentAddition.NO_ROOM }
-            },
+            loadCropPhoto = { Result.failure(UnsupportedOperationException()) },
+            prepareBillPhoto = { _, _ -> Result.failure(UnsupportedOperationException()) },
+            attachBillImage = AttachBillImageUseCase(
+                attachments,
+                currentTimeMillis = { nowMillis },
+            ),
             removeBillAttachment = RemoveBillAttachmentUseCase(attachments, currentTimeMillis = { nowMillis }),
             loadBillAttachmentUrls = LoadBillAttachmentUrlsUseCase(attachments),
             loadBillAttachmentImage = LoadBillAttachmentImageUseCase(attachments),

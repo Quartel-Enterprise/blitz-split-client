@@ -6,6 +6,7 @@ import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar, PendingDot, pendingSurfaceClass, PersonButton } from '@/components/common'
 import { AvatarStack, stackOf } from '@/components/AvatarStack'
 import { PayingMethodLabel } from '@/components/PayingMethodTile'
+import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { Button } from '@/components/ui/button'
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
@@ -101,6 +102,8 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     />
   )
   const commentDialogs = <CommentDialogs state={state} presenter={presenter} />
+  // Why: a photo picked is framed in the attachment tile's rounded square before it is attached.
+  const photoCrop = state.photoCrop && <PhotoCropDialog crop={state.photoCrop} presenter={presenter.crop} frame="rounded-square" />
 
   if (isDesktop) {
     const body = !isLoaded ? (
@@ -151,6 +154,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
         {viewer}
         {deletion}
         {commentDialogs}
+        {photoCrop}
       </>
     )
   }
@@ -186,6 +190,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       {viewer}
       {deletion}
       {commentDialogs}
+      {photoCrop}
     </>
   )
 }

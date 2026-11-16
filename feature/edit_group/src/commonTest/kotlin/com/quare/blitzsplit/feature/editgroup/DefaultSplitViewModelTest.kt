@@ -236,6 +236,71 @@ class DefaultSplitViewModelTest {
         }
 
     @Test
+    fun `GIVEN Pela renda with every income blank WHEN reading the state THEN no row says a percentage`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home.copy(defaultSplit = percent(75L, 25L).copy(mode = DefaultSplitMode.INCOME)),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsIncomePercents)
+            assertEquals(mapOf(PIERRE to 75L, ANA to 25L), state.weights)
+        }
+
+    @Test
+    fun `GIVEN Pela renda blank on percentages adding up to 90 WHEN reading the state THEN the rows say them`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home.copy(defaultSplit = percent(60L, 30L).copy(mode = DefaultSplitMode.INCOME)),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertTrue(state.showsPercentError)
+            assertTrue(state.showsIncomePercents)
+        }
+
+    @Test
+    fun `GIVEN Pela renda WHEN typing an income of 0 THEN the rows still say no percentage`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = home.copy(defaultSplit = percent(75L, 25L).copy(mode = DefaultSplitMode.INCOME)),
+            )
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnIncomeChanged(PIERRE, "0"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertFalse(state.showsIncomePercents)
+            assertEquals(mapOf(PIERRE to 75L, ANA to 25L), state.weights)
+        }
+
+    @Test
+    fun `GIVEN Pela renda with every income blank WHEN typing one income THEN the rows say the percentages`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(DefaultSplitUiEvent.OnModeSelected(DefaultSplitMode.INCOME))
+
+            // When
+            viewModel.onEvent(DefaultSplitUiEvent.OnIncomeChanged(PIERRE, "9.000,00"))
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state.showsIncomePercents)
+            assertEquals(mapOf(PIERRE to 100L, ANA to 0L), state.weights)
+        }
+
+    @Test
     fun `GIVEN incomes this device typed WHEN the screen opens THEN they fill the fields`() = runTest(testDispatcher) {
         // Given
         prepareScenario(

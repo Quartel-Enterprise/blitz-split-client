@@ -149,4 +149,7 @@
     <string name="profile_share_usage_data_detail">Екрани й натискання, щоб покращувати застосунок. Ніколи не імена й не суми.</string>
     <string name="profile_section_paying_methods">Способи оплати</string>
     <string name="profile_paying_methods_subtitle">Їх бачиш лише ти. Познач, яким із них ти сплатив(-ла) рахунок.</string>
+    <string name="profile_user_id">ID користувача</string>
+    <string name="profile_user_id_copy">Копіювати ID користувача</string>
+    <string name="profile_user_id_copied">ID користувача скопійовано</string>
 </resources>

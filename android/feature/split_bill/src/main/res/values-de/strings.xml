@@ -345,7 +345,7 @@
         <item quantity="one">Nach Einkommen auf %d</item>
         <item quantity="other">Nach Einkommen auf %d</item>
     </plurals>
-    <string name="split_bill_hint_income">Jeder Anteil richtet sich nach dem Einkommen. Die Einkommen gehören zur Gruppe; eine Änderung hier gilt nur für diese Ausgabe.</string>
+    <string name="split_bill_hint_income">Jeder Anteil richtet sich nach dem Einkommen. Die Einkommen gehören zur Gruppe; eine Änderung hier gilt nur für diese Ausgabe. Gib das Nettoeinkommen jeder Person an, nach Steuern.</string>
     <string name="split_bill_list_income">Einkommen pro Person</string>
     <string name="split_bill_person_income">Einkommen von %s</string>
     <string name="split_bill_default_now_income">nach Einkommen</string>

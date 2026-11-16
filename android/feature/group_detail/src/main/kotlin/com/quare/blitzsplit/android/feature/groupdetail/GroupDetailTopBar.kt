@@ -48,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -61,22 +60,25 @@ import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
-import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.LocalInDetailPane
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupHeader
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
  * Why: the header's avatar, big while the bar is open and shrinking with it into the one-line bar (beta feedback of
- * 2026-11-12), and the open bar's height, room under the one-line bar for it beside the name and the totals under them.
+ * 2026-11-12), and the open bar's height, room under the one-line bar for it beside the name. The open title keeps 12 dp
+ * over the faces, the room the line under the name used to leave: it has no baseline left for the bar to align on
+ * (skipsBaselinePlacement), so without it the avatar would sit on the faces.
  */
 private val expandedBadgeSize = 64.dp
 private val foldingBadgeSize = 40.dp
 private val collapsedBadgeSize = 32.dp
-private val expandedBarHeight = 168.dp
+private val expandedBarHeight = 160.dp
+private val expandedTitleBottomPadding = 12.dp
 
 /*
- * Why: the canvas's medium flexible bar: the group's square, name and totals, collapsing to one line of the square and
+ * Why: the canvas's medium flexible bar: the group's square and name, with no line under them (the faces under the bar
+ * tell how many people, Statistics the total; beta feedback of 2026-11-16), collapsing to one line of the square and
  * the name as the list scrolls. Its open title draws the avatar at 64 dp, shrinking as the bar folds while the one-line
  * title, 32 dp, fades in over it; only the open one is the group's shared avatar and name, which fly in from the row
  * tapped.
@@ -85,10 +87,7 @@ private val expandedBarHeight = 168.dp
 @Composable
 internal fun GroupTopBar(
     header: GroupHeader,
-    // Why: "nenhuma despesa ainda" instead of the total before the first bill.
-    hasBills: Boolean,
     isOnline: Boolean,
-    money: MoneyFormatter,
     scrollBehavior: TopAppBarScrollBehavior,
     onAction: (GroupAction) -> Unit,
     // Why: "Rachar conta" in the bar wherever it doesn't float (anywhere wider than a phone upright); null otherwise.
@@ -98,12 +97,6 @@ internal fun GroupTopBar(
     // Why: the group whose row the avatar and name fly from; null where nothing flies (previews, screenshots).
     sharedGroupId: String? = null,
 ) {
-    val members = pluralStringResource(R.plurals.group_detail_member_count, header.memberCount, header.memberCount)
-    val meta = if (hasBills) {
-        stringResource(R.string.group_detail_meta_total, members, money.toText(header.totalSpentMinor))
-    } else {
-        stringResource(R.string.group_detail_meta_empty, members)
-    }
     /*
      * Why: the title in sight carries the shared avatar and name, so back from a folded bar flies from the one line.
      * Derived, and the fold read only by the open title's badge, so a scroll redraws the badge, not the whole bar.
@@ -119,6 +112,7 @@ internal fun GroupTopBar(
                     badgeSize = lerp(expandedBadgeSize, foldingBadgeSize, scrollBehavior.state.collapsedFraction),
                     onAction = onAction,
                     sharedGroupId = sharedGroupId.takeIf { isMostlyOpen },
+                    modifier = Modifier.padding(bottom = expandedTitleBottomPadding),
                 )
             } else {
                 GroupTitle(
@@ -126,20 +120,6 @@ internal fun GroupTopBar(
                     badgeSize = collapsedBadgeSize,
                     onAction = onAction,
                     sharedGroupId = sharedGroupId.takeUnless { isMostlyOpen },
-                )
-            }
-        },
-        /*
-         * Why: the totals ellipsize short of the bar's actions instead of running into the chart button. Only the open
-         * bar has them: the folded line is the avatar and the name alone (beta feedback of 2026-11-16).
-         */
-        subtitle = { isExpanded ->
-            if (isExpanded) {
-                Text(
-                    text = meta,
-                    modifier = Modifier.padding(end = 16.dp),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
             }
         },
@@ -207,11 +187,13 @@ private fun GroupTitle(
     badgeSize: Dp,
     onAction: (GroupAction) -> Unit,
     sharedGroupId: String? = null,
+    modifier: Modifier = Modifier,
 ) {
     val shared = rememberGroupSharedModifiers(sharedGroupId)
     // Why: the square and name also fly into the top bar of a bill opened from the Expenses (beta feedback of 2026-11-16).
     val billShared = rememberGroupBillSharedModifiers(sharedGroupId)
     Row(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {

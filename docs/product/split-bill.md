@@ -89,9 +89,11 @@ Splitting a bill: payers, Split, Items, categories, Category map, receipts and c
     "By income" (`SplitMode.INCOME`, Pierre's call: the incomes are synced) has each one's income field, prefilled with
     the group's incomes (`group_member_income`, the same ones Default split's By income keeps, in the group's currency,
     moved to the bill's as a total is), blank for whoever has none, and under each name their share and the
-    percentage the incomes give (`IncomePercents`, whole numbers adding up to 100); someone at 0 or blank is out.
+    percentage the incomes give (`IncomePercents`, whole numbers adding up to 100); someone at 0 or blank is out, and
+    with every field blank nobody shows a percentage (beta feedback of 2026-11-16), only "Out".
     Switching to it starts from who is in the split now. The hint says the incomes are the group's and that changing
-    them there only counts for that bill: the bill keeps only the percentages, saved as "%" (`SplitMode.savedMode`),
+    them there only counts for that bill, then "Enter each one's net income, after taxes." (beta feedback of
+    2026-11-16, Pierre's call, as in Default split): the bill keeps only the percentages, saved as "%" (`SplitMode.savedMode`),
     so "Edit bill" and every other screen read it as %, and the group's incomes change only through Default split or
     "Use as the group default". A new bill starts
     from the group's "Default split" (By income opens By income on the group's incomes while they still give its

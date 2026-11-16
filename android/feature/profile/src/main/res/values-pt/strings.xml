@@ -142,4 +142,7 @@
     <string name="profile_share_usage_data_detail">Telas e toques, para melhorar o app. Nunca nomes ou valores.</string>
     <string name="profile_section_paying_methods">Formas de pagamento</string>
     <string name="profile_paying_methods_subtitle">Só você vê. Marque com qual pagou cada conta.</string>
+    <string name="profile_user_id">ID de usuário</string>
+    <string name="profile_user_id_copy">Copiar ID de usuário</string>
+    <string name="profile_user_id_copied">ID de usuário copiado</string>
 </resources>

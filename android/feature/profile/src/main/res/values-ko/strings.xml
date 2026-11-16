@@ -137,4 +137,7 @@
     <string name="profile_share_usage_data_detail">앱 개선을 위한 화면과 탭 기록이에요. 이름이나 금액은 절대 보내지 않아요.</string>
     <string name="profile_section_paying_methods">결제 수단</string>
     <string name="profile_paying_methods_subtitle">나만 볼 수 있어요. 어떤 수단으로 지출을 결제했는지 표시하세요.</string>
+    <string name="profile_user_id">사용자 ID</string>
+    <string name="profile_user_id_copy">사용자 ID 복사</string>
+    <string name="profile_user_id_copied">사용자 ID를 복사했어요</string>
 </resources>

@@ -1,0 +1,27 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "\"By income\" now reminds you to enter each one's net income, after taxes, and \"Default split\" only shows each one's percentage once an income is typed.",
+        "pt": "\"Pela renda\" agora lembra de colocar a renda líquida de cada um, depois dos impostos, e a \"Divisão padrão\" só mostra a porcentagem de cada um depois que alguma renda é digitada.",
+        "pt-PT": "\"Pelo rendimento\" lembra-te agora de indicar o rendimento líquido de cada um, depois dos impostos, e a \"Divisão predefinida\" só mostra a percentagem de cada um depois de escreveres algum rendimento.",
+        "es": "\"Por ingresos\" ahora te recuerda poner los ingresos netos de cada uno, después de impuestos, y la \"División predeterminada\" solo muestra el porcentaje de cada uno cuando hay algún ingreso escrito.",
+        "fr": "« Selon le revenu » te rappelle désormais d’indiquer le revenu net de chacun, après impôts, et la « Répartition par défaut » n’affiche le pourcentage de chacun qu’une fois un revenu saisi.",
+        "de": "„Nach Einkommen“ erinnert dich jetzt daran, das Nettoeinkommen jeder Person nach Steuern einzugeben, und die „Standardaufteilung“ zeigt den Prozentsatz jeder Person erst, sobald ein Einkommen eingetragen ist.",
+        "it": "\"Per reddito\" ora ti ricorda di inserire il reddito netto di ognuno, dopo le tasse, e la \"Divisione predefinita\" mostra la percentuale di ognuno solo dopo che è stato inserito un reddito.",
+        "pl": "„Według dochodów” przypomina teraz, żeby wpisać dochód netto każdej osoby, po opodatkowaniu, a „Domyślny podział” pokazuje procent każdej osoby dopiero po wpisaniu jakiegoś dochodu.",
+        "nl": "\"Op inkomen\" herinnert je er nu aan ieders netto-inkomen in te vullen, na belasting, en de \"Standaardverdeling\" toont ieders percentage pas zodra er een inkomen is ingevuld.",
+        "ja": "「収入に応じて」で、各自の税引き後の手取り収入を入力するよう案内が表示されるようになりました。また「デフォルトの分け方」では、収入が入力されるまで各自の割合は表示されません。",
+        "tr": "\"Gelire göre\" artık herkesin vergiler sonrası net gelirini girmeni hatırlatıyor; \"Varsayılan bölüşüm\" de herkesin yüzdesini ancak bir gelir girildiğinde gösteriyor.",
+        "id": "\"Sesuai penghasilan\" kini mengingatkanmu untuk memasukkan penghasilan bersih masing-masing, setelah pajak, dan \"Pembagian default\" baru menampilkan persentase masing-masing setelah ada penghasilan yang diisi.",
+        "ru": "«По доходу» теперь напоминает указывать чистый доход каждого, после налогов, а «Разделение по умолчанию» показывает процент каждого, только когда введён какой-нибудь доход.",
+        "uk": "«За доходом» тепер нагадує вказувати чистий дохід кожного, після податків, а «Розподіл за замовчуванням» показує відсоток кожного, лише коли введено якийсь дохід.",
+        "ko": "‘소득별’에서 각자의 세후 실수령 소득을 입력하라고 안내하고, ‘기본 분담 방식’은 소득을 입력한 뒤에만 각자의 비율을 보여 줘요."
+      }
+    }
+  ]
+}

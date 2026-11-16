@@ -195,7 +195,6 @@ struct GroupDetailView: View {
             let side = usesTwoColumns ? GroupSideColumn.avatarSize : GroupHeaderScroll.avatarSize
             ShimmerBlock(width: side, height: side, cornerRadius: side * GroupAvatar.cornerRatio)
             ShimmerLine(width: 180, height: 22)
-            ShimmerLine(width: 120, height: 12)
         }
         .frame(maxWidth: .infinity)
     }
@@ -221,7 +220,6 @@ struct GroupDetailView: View {
                 PhoneGroupScaffold(
                     header: model.state.header,
                     isMyBalanceLoading: model.state.isMyBalanceLoading,
-                    hasExpenses: model.state.hasBills,
                     tab: model.tab,
                     usesTwoColumns: usesTwoColumns,
                     headerScroll: headerScroll,
@@ -266,10 +264,7 @@ struct GroupDetailView: View {
                     ShimmerScreen {
                         HStack(spacing: 14) {
                             ShimmerBlock(width: 56, height: 56, cornerRadius: 56 * GroupAvatar.cornerRatio)
-                            VStack(alignment: .leading, spacing: 8) {
-                                ShimmerLine(width: 180, height: 22)
-                                ShimmerLine(width: 120, height: 12)
-                            }
+                            ShimmerLine(width: 180, height: 22)
                         }
                         shimmerCard
                         shimmerList
@@ -286,7 +281,6 @@ struct GroupDetailView: View {
             tab: model?.tab ?? GroupTab(route.tab),
             host: host,
             header: model?.state.isLoaded == true ? model?.state.header : nil,
-            hasExpenses: model?.state.hasBills == true,
             showsSplitBill: model?.state.showsSplitBillButton == true,
             headerScroll: headerScroll,
             exit: model?.state.exit,

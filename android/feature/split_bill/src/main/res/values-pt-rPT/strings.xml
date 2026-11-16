@@ -90,7 +90,7 @@
         <item quantity="many">Pelo rendimento entre %d</item>
         <item quantity="other">Pelo rendimento entre %d</item>
     </plurals>
-    <string name="split_bill_hint_income">A parte de cada um segue o rendimento. Os rendimentos são do grupo; mudar aqui vale só para esta conta.</string>
+    <string name="split_bill_hint_income">A parte de cada um segue o rendimento. Os rendimentos são do grupo; mudar aqui vale só para esta conta. Indica o rendimento líquido de cada um, depois dos impostos.</string>
     <string name="split_bill_list_income">Rendimento de cada um</string>
     <string name="split_bill_person_income">Rendimento de %s</string>
     <string name="split_bill_default_now_income">pelo rendimento</string>

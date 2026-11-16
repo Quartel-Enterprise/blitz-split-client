@@ -20,7 +20,7 @@ import { RecoveryCodeDialog } from '@/features/recovery-code/RecoveryCodeDialog'
 import { t, type MessageKey } from '@/i18n'
 import { formatSampleTime, type TimeFormat } from '@/lib/dates'
 import { downloadExport } from '@/lib/export'
-import { copyLink, shareOrCopy } from '@/lib/share'
+import { copyLink, copyText, shareOrCopy } from '@/lib/share'
 import type { PaymentKeyFormat, PaymentKeyType } from '@/lib/paymentKey'
 import type { AccountProvider } from '@/lib/platform'
 import { cn } from '@/lib/utils'
@@ -104,6 +104,8 @@ export function ProfileScreen() {
       shareOrCopy(t('profile_shareMessage', { link: action.value }), action.value)
     } else if (action.type === 'copyProfileLink') {
       copyLink(action.value, t('profile_linkCopied'))
+    } else if (action.type === 'copyUserId') {
+      copyText(action.value, t('profile_userIdCopyFailed'), t('profile_userIdCopied'))
     } else if (action.type === 'reload') {
       // The page reads its language once, before it draws (src/i18n)
       window.location.reload()
@@ -465,6 +467,14 @@ function AccountCard({ presenter, state, className }: CardProps) {
           <Row title={t('profile_signOutScheduled')} detail={t('profile_signOutScheduledDetail')}>
             <Button size="sm" variant="ghost" onClick={() => presenter.cancelScheduledSignOut()}>
               {t('common_cancel')}
+            </Button>
+          </Row>
+        )}
+        {state.showsUserId && (
+          // Why: a quiet last row, the id shortened and the whole one copied, for a survey to tell who answered.
+          <Row title={t('profile_userId')} detail={state.shortUserId}>
+            <Button size="icon" variant="ghost" className="shrink-0" aria-label={t('profile_userIdCopy')} title={t('profile_userIdCopy')} onClick={() => presenter.copyUserId()}>
+              <Copy />
             </Button>
           </Row>
         )}

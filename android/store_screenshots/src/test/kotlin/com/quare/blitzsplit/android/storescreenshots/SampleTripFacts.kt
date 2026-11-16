@@ -116,9 +116,6 @@ internal val SampleTrip.netBalances: Map<Int, Long>
         bills + payment
     }
 
-internal val SampleTrip.totalSpentMinor: Long
-    get() = bills.filter { it.currency == currency }.sumOf { it.totalMinor }
-
 /**
  * Who owes whom in the group's currency, bill by bill, as Balances shows a group with "Simplify debts" off, the way
  * the iOS seed creates it: the app's own GroupBalances works it out from the trip's bills and payment.

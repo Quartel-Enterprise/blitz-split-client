@@ -371,7 +371,7 @@
         <item quantity="many">Selon le revenu entre %d</item>
         <item quantity="other">Selon le revenu entre %d</item>
     </plurals>
-    <string name="split_bill_hint_income">La part de chacun suit son revenu. Les revenus sont ceux du groupe ; les changer ici ne vaut que pour cette dépense.</string>
+    <string name="split_bill_hint_income">La part de chacun suit son revenu. Les revenus sont ceux du groupe ; les changer ici ne vaut que pour cette dépense. Indique le revenu net de chacun, après impôts.</string>
     <string name="split_bill_list_income">Revenu de chacun</string>
     <string name="split_bill_person_income">Revenu (%s)</string>
     <string name="split_bill_default_now_income">selon le revenu</string>

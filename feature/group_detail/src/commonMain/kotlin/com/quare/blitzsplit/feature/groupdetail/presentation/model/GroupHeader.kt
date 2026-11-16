@@ -18,12 +18,10 @@ data class GroupHeader(
     val currencies: List<GroupCurrency>,
     // Why: the faces FaceStack.ROOMY shows: up to five, the first four of six or more; the rest is extraMemberCount.
     val faces: List<GroupFace>,
-    // Why: "6 membros".
+    // Why: the "+N" after the faces, and "6 membros" for screen readers on the faces.
     val memberCount: Int,
     // Why: "1 ainda não entrou".
     val notJoinedCount: Int,
-    // Why: "R$ 2.418,60 no total", the bills in the currency picked only, not the payments.
-    val totalSpentMinor: Long,
     // Why: "Seu saldo neste grupo" in the currency picked, null while there is no bill to owe anything for, and while the copy isn't whole.
     val myBalance: MemberBalance?,
     // Why: "Todo mundo acertou", the card that offers "Apagar grupo", with every currency settled; false while the account's copy isn't whole.

@@ -63,4 +63,7 @@
     <string name="profile_share_usage_data">Partilhar dados de utilização</string>
     <string name="profile_share_usage_data_detail">Ecrãs e toques, para melhorar a app. Nunca nomes nem valores.</string>
     <string name="profile_paying_methods_subtitle">Só tu vês. Marca com qual pagaste cada conta.</string>
+    <string name="profile_user_id">ID de utilizador</string>
+    <string name="profile_user_id_copy">Copiar ID de utilizador</string>
+    <string name="profile_user_id_copied">ID de utilizador copiado</string>
 </resources>

@@ -55,8 +55,6 @@ internal class GroupTabFrame(
     // Why: the group whose row its avatar and name fly from into the bar; null where nothing flies.
     val sharedGroupId: String?,
     val selectedTab: GroupTab,
-    // Why: "nenhuma despesa ainda" in the bar before the first bill.
-    val hasBills: Boolean,
     val isLoaded: Boolean,
     // Why: "Seu saldo neste grupo" shimmers while the account's copy isn't whole, rather than hiding as if settled.
     val isMyBalanceLoading: Boolean,
@@ -135,9 +133,7 @@ private fun GroupTabScaffoldContent(
             if (frame.isLoaded) {
                 GroupTopBar(
                     header = frame.header,
-                    hasBills = frame.hasBills,
                     isOnline = frame.isOnline,
-                    money = frame.money,
                     scrollBehavior = scrollBehavior,
                     onAction = onAction,
                     splitBillButton = barButton,

@@ -16,6 +16,8 @@ data class DefaultSplitFigures(
     val weights: Map<String, Long>,
     // Why: the incomes typed, by member id in minor units, which saving "Pela renda" keeps for the group.
     val incomes: Map<String, Long>,
+    // Why: "Pela renda" splits by the incomes typed once one is above 0, else by its fallback percentages.
+    val usesTypedIncomes: Boolean,
     val exampleTotalMinor: Long,
     val rows: List<DefaultSplitRow>,
 ) {
@@ -38,7 +40,8 @@ data class DefaultSplitFigures(
                 .mapNotNull { person ->
                     AmountInput.parse(person.incomeText, currency, showsSats)?.let { person.id to it }
                 }.toMap()
-            val weights = weightsOf(mode, people, incomes, incomeFallback)
+            val usesTypedIncomes = mode == DefaultSplitMode.INCOME && incomes.values.any { it > 0 }
+            val weights = weightsOf(mode, people, incomes, incomeFallback, usesTypedIncomes)
             val exampleTotalMinor = exampleTotalOf(
                 mode = mode,
                 count = weights.values.count { it > 0 },
@@ -48,6 +51,7 @@ data class DefaultSplitFigures(
             return DefaultSplitFigures(
                 weights = weights,
                 incomes = incomes,
+                usesTypedIncomes = usesTypedIncomes,
                 exampleTotalMinor = exampleTotalMinor,
                 rows = rowsOf(mode, people, weights, exampleTotalMinor),
             )
@@ -58,9 +62,10 @@ data class DefaultSplitFigures(
             people: List<DefaultSplitPerson>,
             incomes: Map<String, Long>,
             incomeFallback: Map<String, Long>,
+            usesTypedIncomes: Boolean,
         ): Map<String, Long> {
             if (mode != DefaultSplitMode.INCOME) return people.associate { it.id to it.toWeightIn(mode) }
-            return if (incomes.values.any { it > 0 }) {
+            return if (usesTypedIncomes) {
                 IncomePercents.of(people.map { it.id to (incomes[it.id] ?: 0L) })
             } else {
                 people.associate { it.id to (incomeFallback[it.id] ?: 0L) }

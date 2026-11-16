@@ -179,6 +179,94 @@
         }
       }
     },
+    "Copy user ID" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzer-ID kopieren"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar ID de usuario"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier l’ID utilisateur"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salin ID pengguna"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copia ID utente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザーIDをコピー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용자 ID 복사"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebruikers-ID kopiëren"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiuj ID użytkownika"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar ID de usuário"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar ID de utilizador"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скопировать ID пользователя"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanıcı kimliğini kopyala"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Копіювати ID користувача"
+          }
+        }
+      }
+    },
     "I am %@" : {
       "comment" : "A guest's merge sheet: the person using the app is this guest",
       "localizations" : {
@@ -25021,6 +25109,182 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Більше не подобається"
+          }
+        }
+      }
+    },
+    "User ID" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzer-ID"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID de usuario"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID utilisateur"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID pengguna"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID utente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザーID"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용자 ID"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebruikers-ID"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID użytkownika"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID de usuário"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID de utilizador"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID пользователя"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanıcı kimliği"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID користувача"
+          }
+        }
+      }
+    },
+    "User ID copied" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzer-ID kopiert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID de usuario copiado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID utilisateur copié"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID pengguna disalin"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID utente copiato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ユーザーIDをコピーしました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용자 ID를 복사했어요"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebruikers-ID gekopieerd"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skopiowano ID użytkownika"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID de usuário copiado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID de utilizador copiado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID пользователя скопирован"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kullanıcı kimliği kopyalandı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ID користувача скопійовано"
           }
         }
       }
@@ -57849,89 +58113,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Якщо це був ти, звернися до: %@."
-          }
-        }
-      }
-    },
-    "%@ in total" : {
-      "comment" : "Under a group's name: how much its bills add up to; %@ is the amount",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ insgesamt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ en total"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ au total"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Total %@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ in totale"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "合計%@"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "총 %@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ in totaal"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Łącznie %@"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ no total"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Всего %@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toplam %@"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Усього %@"
           }
         }
       }
@@ -114558,89 +114739,6 @@
         }
       }
     },
-    "no expenses yet" : {
-      "comment" : "Under a group's name, after its member count, while it has no bills",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "noch keine Ausgaben"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "aún sin gastos"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "pas encore de dépenses"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "belum ada pengeluaran"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ancora nessuna spesa"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "まだ支出なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "아직 지출 없음"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "nog geen uitgaven"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "na razie brak wydatków"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "nenhuma despesa ainda"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "расходов пока нет"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "henüz harcama yok"
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "витрат ще немає"
-          }
-        }
-      }
-    },
     "on the blockchain" : {
       "localizations" : {
         "de" : {
@@ -167619,91 +167717,91 @@
         }
       }
     },
-    "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill." : {
+    "Each one's part follows their income. The incomes are the group's; changing them here only counts for this bill. Enter each one's net income, after taxes." : {
       "comment" : "Split: the hint under the modes while splitting by income",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeder Anteil richtet sich nach dem Einkommen. Die Einkommen gehören zur Gruppe; eine Änderung hier gilt nur für diese Ausgabe."
+            "value" : "Jeder Anteil richtet sich nach dem Einkommen. Die Einkommen gehören zur Gruppe; eine Änderung hier gilt nur für diese Ausgabe. Gib das Nettoeinkommen jeder Person an, nach Steuern."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La parte de cada uno sigue sus ingresos. Los ingresos son del grupo; cambiarlos aquí solo vale para este gasto."
+            "value" : "La parte de cada uno sigue sus ingresos. Los ingresos son del grupo; cambiarlos aquí solo vale para este gasto. Pon los ingresos netos de cada uno, después de impuestos."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La part de chacun suit son revenu. Les revenus sont ceux du groupe ; les changer ici ne vaut que pour cette dépense."
+            "value" : "La part de chacun suit son revenu. Les revenus sont ceux du groupe ; les changer ici ne vaut que pour cette dépense. Indique le revenu net de chacun, après impôts."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bagian masing-masing sesuai penghasilannya. Penghasilan ini milik grup; mengubahnya di sini hanya berlaku untuk tagihan ini."
+            "value" : "Bagian masing-masing sesuai penghasilannya. Penghasilan ini milik grup; mengubahnya di sini hanya berlaku untuk tagihan ini. Masukkan penghasilan bersih masing-masing, setelah pajak."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La parte di ognuno segue il suo reddito. I redditi sono del gruppo; cambiarli qui vale solo per questa spesa."
+            "value" : "La parte di ognuno segue il suo reddito. I redditi sono del gruppo; cambiarli qui vale solo per questa spesa. Inserisci il reddito netto di ognuno, dopo le tasse."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "各自の負担が収入に応じて決まります。収入はグループで共有され、ここでの変更はこの支出にだけ適用されます。"
+            "value" : "各自の負担が収入に応じて決まります。収入はグループで共有され、ここでの変更はこの支出にだけ適用されます。各自の税引き後の手取り収入を入力してください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "각자의 몫이 소득에 따라 정해져요. 소득은 그룹의 설정이고, 여기서 바꾸면 이 지출에만 적용돼요."
+            "value" : "각자의 몫은 소득에 따라 정해져요. 소득은 그룹에 저장되며, 여기서 바꾸면 이 지출에만 적용돼요. 세후 실수령 소득을 입력하세요."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ieders deel volgt het inkomen. De inkomens zijn van de groep; ze hier wijzigen geldt alleen voor deze uitgave."
+            "value" : "Ieders deel volgt het inkomen. De inkomens zijn van de groep; ze hier wijzigen geldt alleen voor deze uitgave. Vul ieders netto-inkomen in, na belasting."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Część każdej osoby zależy od jej dochodu. Dochody należą do grupy; zmiana tutaj dotyczy tylko tego wydatku."
+            "value" : "Część każdej osoby zależy od jej dochodu. Dochody należą do grupy; zmiana tutaj dotyczy tylko tego wydatku. Wpisz dochód netto każdej osoby, po opodatkowaniu."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A parte de cada um segue a renda. As rendas são do grupo; mudar aqui vale só para esta conta."
+            "value" : "A parte de cada um segue a renda. As rendas são do grupo; mudar aqui vale só para esta conta. Coloque a renda líquida de cada um, depois dos impostos."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A parte de cada um segue o rendimento. Os rendimentos são do grupo; mudar aqui vale só para esta conta."
+            "value" : "A parte de cada um segue o rendimento. Os rendimentos são do grupo; mudar aqui vale só para esta conta. Indica o rendimento líquido de cada um, depois dos impostos."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Доля каждого зависит от его дохода. Доходы общие для группы; изменение здесь касается только этого счёта."
+            "value" : "Доля каждого зависит от его дохода. Доходы общие для группы; изменение здесь касается только этого счёта. Укажи чистый доход каждого, после налогов."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir."
+            "value" : "Herkesin payı gelirine göre belirlenir. Gelirler grubundur; burada değiştirmek yalnızca bu harcama için geçerlidir. Herkesin vergiler sonrası net gelirini gir."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Частка кожного залежить від його доходу. Доходи належать групі; зміна тут діє лише для цього рахунку."
+            "value" : "Частка кожного залежить від його доходу. Доходи належать групі; зміна тут діє лише для цього рахунку. Вкажи чистий дохід кожного, після податків."
           }
         }
       }
@@ -176714,6 +176812,184 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Системний"
+          }
+        }
+      }
+    },
+    "Enter each one's net income, after taxes." : {
+      "comment" : "Default split's By income: under the incomes, which income to type, the net one",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gib das Nettoeinkommen jeder Person an, nach Steuern."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pon los ingresos netos de cada uno, después de impuestos."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indique le revenu net de chacun, après impôts."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masukkan penghasilan bersih masing-masing, setelah pajak."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inserisci il reddito netto di ognuno, dopo le tasse."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各自の税引き後の手取り収入を入力してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "세후 실수령 소득을 입력하세요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vul ieders netto-inkomen in, na belasting."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wpisz dochód netto każdej osoby, po opodatkowaniu."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coloque a renda líquida de cada um, depois dos impostos."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indica o rendimento líquido de cada um, depois dos impostos."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Укажи чистый доход каждого, после налогов."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herkesin vergiler sonrası net gelirini gir."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вкажи чистий дохід кожного, після податків."
+          }
+        }
+      }
+    },
+    "Income per month" : {
+      "comment" : "Default split's By income: a person's line while no income is typed, without the percentages",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einkommen pro Monat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingresos por mes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revenu par mois"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Penghasilan per bulan"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reddito mensile"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月収"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "월 소득"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inkomen per maand"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dochód miesięczny"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Renda por mês"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rendimento por mês"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доход в месяц"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aylık gelir"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дохід на місяць"
           }
         }
       }

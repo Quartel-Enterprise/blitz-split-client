@@ -32,8 +32,6 @@
         <item quantity="many">%d участников</item>
         <item quantity="other">%d участника</item>
     </plurals>
-    <string name="group_detail_meta_total">%1$s · всего %2$s</string>
-    <string name="group_detail_meta_empty">%s · пока нет расходов</string>
     <plurals name="group_detail_not_joined">
         <item quantity="one">%d ещё не присоединился(-ась)</item>
         <item quantity="few">%d ещё не присоединились</item>

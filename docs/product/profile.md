@@ -65,6 +65,14 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     texts where the row is narrow for its font (under 300 dp times the font scale), so the line beside it never breaks inside a word. The row opens nothing and nothing disconnects the
     Google or Apple account from the user (Pierre's call, beta feedback). Who wants it gone signs out or deletes the
     account. The server has no `unlink-identity` function any more.
+  - "User ID" closes "Account and sync" for every account the server keeps, a Google or Apple one and an anonymous
+    one alike (`ProfileUiState.showsUserId`), never for a local only profile, which has no id on the server yet
+    (Pierre's call, testers' feedback of 2026-11-16: the public survey asks for it to tell who answered). It is the
+    account's Supabase auth user id, shown shortened, its first 8 and last 4 characters around an ellipsis
+    (`shortUserId`, as `3f8c2a91…4f27`), and copied whole: by a tap anywhere on the row on Android, iOS, iPadOS and
+    the Mac (the row is the button there, the copy icon at its end only marking the action), and by a copy button
+    beside it on the web. Copying says "User ID copied", in the snackbar on Android, a toast on Apple platforms and the web, as "Link
+    copied" does; a browser that refuses the clipboard says "Couldn't copy the user ID".
   - Delete account lists, truthfully to the server's `delete-account` function and its migrations, "What gets
     deleted" (the profile with its photo, the Pix and Bitcoin keys, the link to Google or Apple, an anonymous
     account's recovery code, the copy on this device) and then "What stays in your groups" (testers' feedback,
@@ -272,7 +280,8 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     color picker only shows while there is no photo (`EditProfileUiState.showsAvatarColors`).
   - "Adjust photo" (Bible Planner's editor, Pierre's call): every photo taken or picked for a profile (Your profile,
     Edit profile, the Mac's Settings) or a group (New group, Edit group) opens it before it becomes the avatar,
-    never the Google or Apple account's photo. Dark, full screen on Android, iOS and a phone's browser, a 560×720
+    never the Google or Apple account's photo; a bill's "Add photo" opens it too, in a rounded square, before the
+    photo is attached ([The group screen and its bills](group-and-bills.md)). Dark, full screen on Android, iOS and a phone's browser, a 560×720
     sheet on the Mac and a 560 px dialog on the web from the tablet up. The photo moves under a fixed frame, a circle
     for a profile and a rounded square for a group (the group's one shape, its corners 8% of the side, see [General rules](general.md)): drag,
     pinch around the fingers (the trackpad's too; on the web a scroll moves it, Ctrl and the wheel zoom) and a 1× to 3× slider zoom, "Rotate" turns it 90°

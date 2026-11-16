@@ -145,4 +145,7 @@
     <string name="profile_share_usage_data_detail">Pantallas y toques, para mejorar la app. Nunca nombres ni montos.</string>
     <string name="profile_section_paying_methods">Métodos de pago</string>
     <string name="profile_paying_methods_subtitle">Solo tú los ves. Marca con cuál pagaste cada gasto.</string>
+    <string name="profile_user_id">ID de usuario</string>
+    <string name="profile_user_id_copy">Copiar ID de usuario</string>
+    <string name="profile_user_id_copied">ID de usuario copiado</string>
 </resources>

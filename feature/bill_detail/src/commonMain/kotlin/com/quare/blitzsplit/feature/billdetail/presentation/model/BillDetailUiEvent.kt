@@ -1,7 +1,9 @@
 package com.quare.blitzsplit.feature.billdetail.presentation.model
 
+import com.quare.blitzsplit.core.model.PhotoCropEvent
 import com.quare.blitzsplit.core.presentation.UiEvent
 import com.quare.blitzsplit.core.presentation.analytics.EventAnalytics
+import com.quare.blitzsplit.core.presentation.analytics.toEventAnalytics
 
 sealed interface BillDetailUiEvent : UiEvent {
     override val analytics: EventAnalytics
@@ -64,6 +66,8 @@ sealed interface BillDetailUiEvent : UiEvent {
 
             // Why: a photo handed back, which stands for the tap that opened the camera or the picker.
             is OnPhotoPicked -> EventAnalytics.Manual("photo_picked")
+
+            is OnPhotoCrop -> event.toEventAnalytics(BILL_DETAIL_SOURCE)
 
             // Why: the picker handing back an item the UI couldn't read, not a tap.
             OnPhotoUnreadable -> EventAnalytics.NotTracked
@@ -154,6 +158,11 @@ sealed interface BillDetailUiEvent : UiEvent {
     // Why: the photo taken or picked from the gallery or the files, as the file came.
     class OnPhotoPicked(
         val source: ByteArray,
+    ) : BillDetailUiEvent
+
+    // Why: what was done in "Ajustar foto", which a picked photo opens in before it is attached.
+    data class OnPhotoCrop(
+        val event: PhotoCropEvent,
     ) : BillDetailUiEvent
 
     // Why: the platform couldn't read the file picked (a cloud photo not downloaded, say).

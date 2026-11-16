@@ -16,11 +16,10 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     group. Invite's "Go to the group" and "See who joined" open it in Invite's place (`openGroup`), so the
     group never stacks over itself; the one exception is "Split a bill"'s group, which opens the group over the form
     as an entry of its own (`Route.GroupDetail.isOverBill`, see [Split a bill](split-bill.md)), and whose "Split a
-    bill" goes back to that new bill's form rather than opening a second one. On Android the top bar's subtitle ("2
-    members · R$ 3,418.31 in total") ellipsizes 16 dp short of the bar's actions, so the Statistics button keeps room
-    around it (beta bugs of 2026-11-10), and only the open bar shows it: folded to its one line the bar is the avatar
-    and the name alone (Pierre's call, beta feedback of 2026-11-16), as iPhone's inline title and the web's folded
-    header already were; the Mac's toolbar never folds and keeps it as the window's subtitle. On an Android phone upright that bar folds to its one line on a scroll down
+    bill" goes back to that new bill's form rather than opening a second one. The header has no line under the
+    group's name on any platform, open or folded, the Mac's window subtitle included (Pierre's call, beta feedback of
+    2026-11-16: it was visual noise): the member faces tell how many people are in the group, and screen readers say
+    it on them ("6 members"), while the group's total spent lives in Statistics. On an Android phone upright that bar folds to its one line on a scroll down
     and opens again on a scroll up, from anywhere in the list; wider, it opens only back at the top. On iPhone the
     bars stay put (see [the bars on scroll](home-and-shell.md)).
   - "See all" at the end of Expenses' first day heading ("Today … See all", drawn as Home's "See all" beside "Latest
@@ -62,17 +61,16 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     - The file is named after the group and the day, "Trip-to-Rio-2026-11-14.xlsx" (characters a file system refuses
       dropped, spaces as dashes, at most 60 characters of name).
   - The group's avatar is big in the open header and shrinks into the bar as the list scrolls (beta feedback of
-    2026-11-12, Pierre's call), following the scroll, never a timed animation. Android: the open bar (168 dp) draws it
+    2026-11-12, Pierre's call), following the scroll, never a timed animation. Android: the open bar (160 dp) draws it
     at 64 dp beside the name, shrinking to 40 dp as the bar folds while the one-line bar's title, 32 dp, fades in over
-    it (Material's `TwoRowsTopAppBar`, folding by the rules above); a tabletop's one-line bar keeps 32 dp. The web:
+    it, 12 dp over the faces (Material's `TwoRowsTopAppBar`, folding by the rules above); a tabletop's one-line bar keeps 32 dp. The web:
     one sticky header at every width, open 136 px tall on a phone (the 64 px avatar and the 22 px name under the bar
     of back, Statistics, Invite and ⋯) and 96 px from the tablet up (80 px avatar, 24 px name, with Statistics,
     Invite, "Split a bill" and ⋯ in its row, Statistics and Invite as icons alone under 1024 px so the name keeps
     its room), folding over the first 80 px of scroll (40 px from the tablet up) into a
-    56 px bar with a 32 px avatar and a 16 px name; the subtitle fades out by half the fold and the bar's border fades
-    in, and the page under it never jumps. The member faces sit right under the header. iOS and iPadOS, whose bars
-    stay put: the header in the list is centred, the group's square at 88 pt over the name (two lines at most), the
-    subtitle and the faces; over the first 88 pt of scroll the square shrinks to half, fading out between 56 and 96
+    56 px bar with a 32 px avatar and a 16 px name; the bar's border fades in, and the page under it never jumps. The member faces sit right under the header. iOS and iPadOS, whose bars
+    stay put: the header in the list is centred, the group's square at 88 pt over the name (two lines at most) and
+    the faces; over the first 88 pt of scroll the square shrinks to half, fading out between 56 and 96
     pt, and between 100 and 132 pt a 30 pt square and the name fade into the bar's title, rising 8 pt (`GroupScreen`).
     Both squares open the photo big. Lying down with the whole tab to itself (any iPhone,
     by its compact height, an iPad, an iPhone Duo open; issue 388, Pierre's call) the screen is two columns: the header (a 72 pt square,
@@ -94,7 +92,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     its exit runs, so read live it found nothing and the avatar and name stopped flying home (beta feedback of 2026-11-14).
     The name also flew home but not in (beta feedback of 2026-11-16): Material's top bar reads its title's baseline as
     it measures, which placed the name once at the header's spot before the flight began, so the flight started there;
-    every shared text is placed only for real (`skipsBaselinePlacement` inside `SharedScopes.scaled`), the bar aligning on its subtitle. From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
+    every shared text is placed only for real (`skipsBaselinePlacement` inside `SharedScopes.scaled`). From Home it always flies, the group covering the window at any size; from Groups wherever the group opens
     over the list, while beside it (a tablet lying down, a book) the row stays where it is. So the group opens over
     Groups as over Home, a screen of its own, outside Material's list-detail scene, wherever the two don't show side by
     side. The web: the View Transitions API
@@ -216,6 +214,13 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     gallery on Android, the share sheet on iOS, a file on the Mac and the web). Each photo is an upright JPEG of at most
     1600 px under 1.5 MB (`BillImageEncoder`), in the private `bill-attachments` bucket, read through signed URLs, so a
     photo added on another device shows only online. History says who added or removed them; the feed doesn't.
+    A photo taken or picked through "Add photo" opens "Adjust photo" first ([Profile](profile.md)), framed in the
+    tile's rounded square (Pierre's call, beta feedback of 2026-11-16: "square like the preview"), and only "Done"
+    attaches it: the square the frame holds, cut from the editor's photo (already upright and at most 1600 px, as
+    any bill photo), at as many pixels as that photo has there (its shorter side divided by the zoom, never blown
+    up), under the same 1.5 MB (`PrepareBillPhoto`, `BillCropEncoder`); ✕, Cancel or back attach nothing. The tile
+    spins while the photo is read and while the square is kept. The receipt Scan receipt attaches is not framed: it
+    keeps the whole image it was read from.
   - Bill's "Share bill" (7.3h, `Route.ShareBill`, `ShareBillViewModel`): the bill's link,
     `https://blitzsplit.com/c/<code>`, one per bill, whose code the server makes (`set_bill_link`). Opening it makes
     the link as "Only people in the bill" when there is none (the safer of the two, which History records as the link
@@ -244,7 +249,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
   - Currencies (Pierre's call: the currency belongs to each bill and payment, see [General rules](general.md)): while the
     group has money in more than one currency, a chip row with each currency's code sits in the header and over
     Balances (`GroupHeader.currencies`, `OnCurrencySelected`), the group's default currency first and then the one with
-    the most bills; the header's total spent, "Your balance in this group" and Balances' pairs are the chip's currency
+    the most bills; "Your balance in this group" and Balances' pairs are the chip's currency
     only (`GroupHeader.currency`), and "Everyone is settled up" and "Delete group" wait for every currency to be
     settled. Each bill row and payment row writes its amounts in its own currency (`ExpenseRow.currency`,
     `PaymentRow.currency`), as do the bill's details and the "Search" and Home bill rows. Statistics have their own chip
