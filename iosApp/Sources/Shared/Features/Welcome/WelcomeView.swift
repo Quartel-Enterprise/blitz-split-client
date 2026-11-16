@@ -207,7 +207,14 @@ private struct WelcomeActions: View {
             TintedButton(title: "Use without an account") {
                 model.send(WelcomeUiEventOnUseWithoutAccountClicked.shared)
             }
-            Text("Your data is deleted after 30 days without use.")
+            // Offline the account buttons are disabled, so the note sends the person to Profile like the offline notice
+            Group {
+                if state.showsOfflineNotice {
+                    Text("Without an account, your data is deleted after 30 days without use. Connect Google or Apple later, in Profile, to keep it.")
+                } else {
+                    Text("Without an account, your data is deleted after 30 days without use. Connect Google or Apple to keep it.")
+                }
+            }
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
