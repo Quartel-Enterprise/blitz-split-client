@@ -7,6 +7,7 @@ import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
+import com.quare.blitzsplit.feature.groupstats.presentation.model.RoundedPercents
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBiggestExpense
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
@@ -44,9 +45,7 @@ private fun SampleTrip.groupStatsState(): GroupStatsUiState {
         .associateWith { person -> bills.sumOf { sharesOf(it)[person] ?: 0L } }
         .entries
         .sortedByDescending { it.value }
-    // Why: each share rounded down, the points left over going to the largest, so the ring closes at 100.
-    val percents = consumed.map { (it.value * PERCENT / total).toInt() }.toMutableList()
-    percents[0] += PERCENT.toInt() - percents.sum()
+    val percents = RoundedPercents.of(consumed.map { it.value })
     val days = (firstDay downTo 0).map { daysAgo -> daysAgo to bills.filter { it.daysAgo == daysAgo } }
     val peak = days.maxBy { (_, dayBills) -> dayBills.sumOf { it.totalMinor } }.first
     val biggest = bills.maxBy { it.totalMinor }

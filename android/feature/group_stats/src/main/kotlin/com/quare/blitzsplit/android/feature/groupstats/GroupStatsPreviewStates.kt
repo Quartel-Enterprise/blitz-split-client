@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.model.HomeTab
 import com.quare.blitzsplit.core.model.StatsChartType
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.GroupStatsUiState
+import com.quare.blitzsplit.feature.groupstats.presentation.model.RoundedPercents
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBiggestExpense
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
@@ -37,11 +38,7 @@ private val previewPeople = listOf(
     Triple("Elisa", AvatarColor.SAND, 32_990L),
     Triple("Diego", AvatarColor.GREEN, 25_350L),
 )
-private val previewPercents = previewPeople
-    .map { it.third * 100 / previewPeople.sumOf { person -> person.third } }
-    .map { it.toInt() }
-    .toMutableList()
-    .apply { this[0] += 100 - sum() }
+private val previewPercents = RoundedPercents.of(previewPeople.map { it.third })
 
 internal fun createPreviewGroupStatsState(hasBills: Boolean = true): GroupStatsUiState {
     val end = PREVIEW_START + previewDay * (previewDays.size - 1)

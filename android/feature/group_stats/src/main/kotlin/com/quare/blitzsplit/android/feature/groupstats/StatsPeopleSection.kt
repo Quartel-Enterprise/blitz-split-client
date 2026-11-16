@@ -62,7 +62,10 @@ internal fun StatsPeopleSection(
     val ringKey = listOf(state.periodStartMillis, state.periodEndMillis, state.peopleView, shares)
     LaunchedEffect(ringKey) { selected = null }
     val hasShares = state.topPerson != null
-    // Why: a row's hover keeps running across recompositions, so it reads whether anyone has a share now.
+    /*
+     * Why: a row's hover keeps running across recompositions, so it reads whether anyone has a share now; a row at 0%
+     * has no slice to pick.
+     */
     val currentHasShares by rememberUpdatedState(hasShares)
     val picked = selected?.takeIf { hasShares && it in people.indices }
     Column(modifier = modifier) {
@@ -103,7 +106,7 @@ internal fun StatsPeopleSection(
                             .background(MaterialTheme.colorScheme.surfaceContainerLowest, shape)
                             .onMouseHover(
                                 key = index,
-                                onMove = { if (currentHasShares) selected = index },
+                                onMove = { if (currentHasShares && person.percent > 0) selected = index },
                                 onExit = { selected = null },
                             ).alpha(if (picked == null || picked == index) 1f else RING_DIMMED_ALPHA)
                             .opensProfile(

@@ -73,12 +73,13 @@ struct StatsCategoriesSection: View {
                         }
                     }
                     .accessibilityHidden(true)
+                    // The legend fades with the pick; the ring animates its own slices
+                    .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: selected)
                 }
                 .padding(16)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Palette.card, in: .rect(cornerRadius: 26))
                 // The picked slice pops out at once with Reduce Motion, as the web's does
-                .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: selected)
                 .onChange(of: ringKey) { selected = nil }
                 VStack(spacing: 0) {
                     ForEach(Array(state.categories.enumerated()), id: \.element.category.id) { index, row in

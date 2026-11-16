@@ -384,16 +384,16 @@ function PeopleCard({ state, presenter, money }: { state: JsGroupStatsState; pre
       </div>
       <div className="flex flex-col gap-1">
         {people.map((person, index) => (
-          // Why: hovering or focusing a row picks its slice; the row opens their profile (Perfil for you), an ex-member has none.
+          // Why: hovering or focusing a row picks its slice (none at 0%); the row opens their profile (Perfil for you), an ex-member has none.
           <div
             key={person.memberId}
             onPointerEnter={(event) => {
-              if (event.pointerType === 'mouse' && hasShares) setSelected(index)
+              if (event.pointerType === 'mouse' && hasShares && person.percent > 0) setSelected(index)
             }}
             onPointerLeave={(event) => {
               if (event.pointerType === 'mouse') setSelected(null)
             }}
-            onFocus={() => hasShares && setSelected(index)}
+            onFocus={() => hasShares && person.percent > 0 && setSelected(index)}
             onBlur={() => setSelected(null)}
             className={cn('flex transition-opacity', picked !== null && picked !== index && 'opacity-40')}
           >

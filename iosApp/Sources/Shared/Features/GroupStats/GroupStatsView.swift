@@ -525,9 +525,11 @@ private struct StatsPeopleSection: View {
                 ringKey: ringKey,
                 label: Text("Split by person: \(people.map { "\(GroupStatsCopy.name($0)) \($0.percent)%" }.joined(separator: ", "))"),
                 selected: Binding(get: { picked }, set: { selected = $0 }),
-                // A finger's tap picks a slice and a second one lets it go; a pointer already picked it by hovering
+                // A finger's tap picks a slice and a second one lets it go. A click picks the slice the pointer is over,
+                // which its hover already did, so it never lets go of it; nor does a finger's tap while a trackpad's
+                // pointer rests over the ring, the one case SwiftUI's tap can't tell apart
                 onTap: { index, isPointer in
-                    if !isPointer { selected = selected == index ? nil : index }
+                    selected = isPointer || selected != index ? index : nil
                 },
             ) {
                 if state.topPerson != nil {
@@ -545,7 +547,7 @@ private struct StatsPeopleSection: View {
                     }
                     .opacity(picked == nil || picked == index ? 1 : 0.4)
                     .onHover { isOver in
-                        if isOver, state.topPerson != nil {
+                        if isOver, state.topPerson != nil, person.percent > 0 {
                             selected = index
                         } else if selected == index {
                             selected = nil

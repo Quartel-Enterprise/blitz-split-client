@@ -68,8 +68,9 @@ internal fun StatsRingDisplay(
     center: @Composable () -> Unit,
 ) {
     val track = MaterialTheme.colorScheme.surfaceContainerHighest
+    // Why: kept as states and read while drawing, so a slice popping out redraws the ring without recomposing it.
     val pops = slices.indices.map { index ->
-        animateFloatAsState(if (selected == index) 1f else 0f, label = "slice").value
+        animateFloatAsState(if (selected == index) 1f else 0f, label = "slice")
     }
     val sweep = remember { Animatable(0f) }
     LaunchedEffect(sweepKey) {
@@ -121,7 +122,7 @@ internal fun StatsRingDisplay(
                 val sweepAngle = slice.percent / PERCENT * FULL_TURN * sweep.value
                 if (sweepAngle > gap) {
                     // Why: the picked slice grows outward only, its inner edge staying on the ring.
-                    val extra = margin * pops[index]
+                    val extra = margin * pops[index].value
                     val inset = ringInset - extra / HALF
                     drawArc(
                         color = if (selected == null || selected == index) {

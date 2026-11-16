@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.StatsGrain
+import com.quare.blitzsplit.feature.groupstats.presentation.model.RoundedPercents
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBiggestExpense
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsCategoryRow
@@ -213,7 +214,7 @@ internal class StatsCalculator(
             )
         }
         val rows = (members + formers).sortedByDescending { it.amountMinor }
-        val percents = findRoundedPercents(rows.map { it.amountMinor }, rows.sumOf { it.amountMinor })
+        val percents = RoundedPercents.of(rows.map { it.amountMinor })
         return rows.mapIndexed { index, row -> row.copy(percent = percents[index]) }
     }
 
@@ -246,7 +247,7 @@ internal class StatsCalculator(
             .groupBy { categories.mainOf(categories.resolve(it.categoryId)) }
             .map { (main, bills) -> main to bills.sumOf { it.amountMinor } }
             .sortedByDescending { it.second }
-        val percents = findRoundedPercents(mains.map { it.second }, total)
+        val percents = RoundedPercents.of(mains.map { it.second }, total)
         val largest = mains.firstOrNull()?.second ?: 0L
         return mains.mapIndexed { index, (main, amount) ->
             StatsCategoryRow(
@@ -258,21 +259,6 @@ internal class StatsCalculator(
         }
     }
 
-    private fun findRoundedPercents(
-        amounts: List<Long>,
-        total: Long,
-    ): List<Int> {
-        if (total <= 0) return amounts.map { 0 }
-        val exact = amounts.map { it * PERCENT_UNITS }
-        val floors = exact.map { (it / total).toInt() }.toMutableList()
-        val missing = PERCENT_UNITS.toInt() - floors.sum()
-        exact.indices
-            .sortedByDescending { exact[it] % total }
-            .take(missing.coerceAtLeast(0))
-            .forEach { floors[it] += 1 }
-        return floors
-    }
-
     private fun maxLabelsOf(grain: StatsGrain): Int = when (grain) {
         StatsGrain.WEEK -> MAX_WEEK_LABELS
         StatsGrain.MONTH -> MAX_MONTH_LABELS
@@ -280,7 +266,6 @@ internal class StatsCalculator(
     }
 
     private companion object {
-        const val PERCENT_UNITS = 100L
         const val MAX_DOTS = 12
         const val MAX_LABELS = 7
 
