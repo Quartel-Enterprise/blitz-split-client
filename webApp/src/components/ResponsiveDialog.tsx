@@ -28,7 +28,10 @@ function focusPastLeading(event: Event) {
   const content = event.currentTarget as HTMLElement
   const tops = Array.from(content.querySelectorAll('[data-dialog-leading], [data-dialog-title-action]'))
   if (!tops.some((top) => top.querySelector(FOCUSABLE))) return
-  const first = Array.from(content.querySelectorAll<HTMLElement>(FOCUSABLE)).find((element) => !tops.some((top) => top.contains(element)))
+  // Why: a hidden file input (Rachar conta's receipt) matches too, and focusing it would leave the form unfocused.
+  const first = Array.from(content.querySelectorAll<HTMLElement>(FOCUSABLE)).find(
+    (element) => !element.hidden && element.tabIndex >= 0 && !tops.some((top) => top.contains(element)),
+  )
   if (!first) return
   event.preventDefault()
   first.focus()

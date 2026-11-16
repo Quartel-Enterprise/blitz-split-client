@@ -267,27 +267,18 @@ struct ScanReceiptTopBarButton: View {
             model.send(SplitBillUiEventOnScanReceiptClicked.shared)
         } label: {
             Label {
-                label
+                ReceiptSource.title
             } icon: {
                 Image(systemName: "doc.viewfinder")
             }
         }
         .labelStyle(.iconOnly)
-        .help(label)
+        .help(ReceiptSource.title)
         .disabled(!model.state.canScanReceipt)
         .receiptSourceDialog(
             isPresented: model.receiptSourceRequest.choiceShown(isActive: anchorsChoice && ReceiptSource.hasChoice),
             pick: model.receiptSourceRequest.pick,
         )
-    }
-
-    /// The Mac writes the action in title case, as its "Scan Receipt…" row.
-    private var label: Text {
-        #if os(macOS)
-        Text("Scan Receipt")
-        #else
-        Text("Scan receipt")
-        #endif
     }
 }
 
