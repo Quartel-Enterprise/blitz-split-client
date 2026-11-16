@@ -17,7 +17,7 @@ interface ExpenseRepository {
      */
     fun observeMyExpenses(limit: Int): Flow<List<Expense>>
 
-    // Why: the same, of the groups picked only ("All expenses" narrowed by group, as a group's "See all" opens it).
+    // Why: the same, of the groups picked only ("All expenses" narrowed by group alone).
     fun observeMyExpensesIn(
         groupIds: Set<String>,
         limit: Int,

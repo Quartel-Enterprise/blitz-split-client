@@ -23,15 +23,12 @@ data class AllExpensesFilters(
             payer != PayerFilter.ALL
 
     /*
-     * Why: at the default but for the groups picked (a group's "See all"), Room reads a window of those groups that
-     * grows a page at a time; anything else reads every bill of the device and narrows them here.
+     * Why: at the default but for the groups picked, Room reads a window of those groups that grows a page at a time;
+     * anything else reads every bill of the device and narrows them here. Derived from isFiltering so a new filter
+     * can't be left out of it, which the window, never narrowed here, would ignore.
      */
     val readsAWindow: Boolean
-        get() = query.isBlank() &&
-            categoryIds.isEmpty() &&
-            share == ShareFilter.ALL &&
-            payer == PayerFilter.ALL &&
-            sort == ExpenseSort.NEWEST
+        get() = !copy(groupIds = emptySet()).isFiltering && sort == ExpenseSort.NEWEST
 
     companion object {
         val none = AllExpensesFilters(

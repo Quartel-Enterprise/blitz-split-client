@@ -50,8 +50,8 @@ interface ExpenseDao {
     fun observeMyExpenses(limit: Int): Flow<List<ExpenseWithEditor>>
 
     /*
-     * Why: the same of the groups picked only ("All expenses" narrowed by group, as a group's "See all" opens it), still
-     * a window that grows rather than every bill of the device.
+     * Why: the same of the groups picked only ("All expenses" narrowed by group alone), still a window that grows rather
+     * than every bill of the device.
      */
     @Query(
         "SELECT expense.*, $EDITOR_COLUMN FROM expense WHERE isDeleted = 0 AND groupId IN (:groupIds) AND $IS_MINE " +

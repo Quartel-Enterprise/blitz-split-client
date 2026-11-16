@@ -103,8 +103,8 @@ class AllExpensesViewModel(
     init {
         /*
          * Why: at their default, a window of the device's bills that grows a page at a time (one more to know whether
-         * more are left), of the groups picked when only those differ (a group's "See all"); narrowed or sorted
-         * otherwise, every bill, which the list then shows a page at a time.
+         * more are left), of the groups picked when only those differ; narrowed or sorted otherwise, every bill, which
+         * the list then shows a page at a time.
          */
         val source = filters
             .map { picked -> picked.groupIds.takeIf { picked.readsAWindow } }
