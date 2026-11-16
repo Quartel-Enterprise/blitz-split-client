@@ -107,7 +107,7 @@ export const tr: Record<MessageKey, string> = {
   qrScanner_cameraFailed: 'Kamera açılamadı. Tarayıcıda erişime izin ver ya da kodu yaz.',
 
   recoveryCode_title: 'Kurtarma kodunu kaydet',
-  recoveryCode_body: 'Hesapsız kullanıyorsun. Tarayıcı verilerini temizlersen ya da cihaz değiştirirsen bu 12 kelime gruplarını geri getirir. Onları sırasıyla not al.',
+  recoveryCode_body: "Hesapsız kullanıyorsun. Tarayıcını temizlersen ya da cihaz değiştirirsen bu 12 kelime verilerini geri getirir. Onları sırasıyla not al. 30 gün kullanılmazsa verilerin silinir ve kelimeler çalışmaz.",
   recoveryCode_copy: 'Kopyala',
   recoveryCode_copied: 'Kelimeler kopyalandı',
   recoveryCode_download: 'Dosya olarak indir',
@@ -118,7 +118,7 @@ export const tr: Record<MessageKey, string> = {
   recoveryCode_remindLater: 'Sonra hatırlat',
   recoveryCode_saved: 'Kaydettim',
   recoveryCode_fileName: 'blitz-split-recovery-code.txt',
-  recoveryCode_fileText: 'Blitz Split · kurtarma kodu\n\n{code}\n\nGruplarını geri getirmek için “Başka bir cihazda kullandım” seçeneğinde kullan.\n',
+  recoveryCode_fileText: "Blitz Split · kurtarma kodu\n\n{code}\n\nVerilerini geri getirmek için “Başka bir cihazda kullandım” seçeneğinde kullan.\n",
 
   groups_title: 'Gruplar',
   groups_mainNavigation: 'Ana gezinme',

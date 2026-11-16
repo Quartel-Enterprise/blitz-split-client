@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Salva il tuo codice di recupero</string>
-    <string name="recovery_code_body">Stai usando l’app senza account. Queste 12 parole ti restituiscono i tuoi gruppi se cambi o perdi il dispositivo. Annotale in ordine.</string>
+    <string name="recovery_code_body">Stai usando l’app senza account. Queste 12 parole ti restituiscono i tuoi dati se cambi o perdi il dispositivo. Annotale in ordine. Dopo 30 giorni di inutilizzo, i tuoi dati vengono cancellati e le parole smettono di funzionare.</string>
     <string name="recovery_code_copy">Copia parole</string>
     <string name="recovery_code_save_to_password_manager">Salva nel gestore di password</string>
     <string name="recovery_code_connect_instead">Collega invece Google o Apple</string>
@@ -10,4 +10,7 @@
     <string name="recovery_code_also_in_profile">Lo trovi anche in Profilo › Recupero.</string>
     <string name="recovery_code_remind_later">Ricordamelo più tardi</string>
     <string name="recovery_code_saved">L’ho salvato</string>
+    <string name="recovery_code_download">Scarica</string>
+    <string name="recovery_code_file_name">blitz-split-codice-di-recupero.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · codice di recupero\n\n%1$s\n\nUsalo in «Ho già usato l’app su un altro dispositivo» per recuperare i tuoi dati.\n</string>
 </resources>

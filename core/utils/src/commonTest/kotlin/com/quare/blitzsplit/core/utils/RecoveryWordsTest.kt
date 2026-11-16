@@ -478,6 +478,35 @@ class RecoveryWordsTest {
     }
 
     @Test
+    fun `GIVEN the words WHEN numbering them THEN lists one numbered word a line`() {
+        // Given
+        val words = validCode.split(" ")
+
+        // When
+        val lines = RecoveryWords.buildNumberedLines(words)
+
+        // Then
+        assertEquals(
+            "1. legal\n2. winner\n3. thank\n4. year\n5. wave\n6. sausage\n" +
+                "7. worth\n8. useful\n9. legal\n10. winner\n11. thank\n12. yellow",
+            lines,
+        )
+    }
+
+    @Test
+    fun `GIVEN the numbered words inside the downloaded file WHEN finding the code THEN reads back the same words`() {
+        // Given
+        val file = "Blitz Split · recovery code\n\n${RecoveryWords.buildNumberedLines(validCode.split(" "))}\n\n" +
+            "Use it in \"I've used it on another device\" to bring your data back.\n"
+
+        // When
+        val code = RecoveryWords.findCodeIn(file)
+
+        // Then
+        assertEquals(validCode.split(" "), code)
+    }
+
+    @Test
     fun `GIVEN a heading of list words before the code WHEN finding the code THEN returns the run after the heading`() {
         // Given
         val note = "Recovery code: $validCode"

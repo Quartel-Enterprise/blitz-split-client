@@ -1,0 +1,27 @@
+{
+  "notes": [
+    {
+      "kind": "fixed",
+      "betaOnly": true,
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "\"Syncing…\" no longer keeps showing up on Home and Groups when you come back to the app: syncs run quietly once your groups are on screen.",
+        "pt": "O \"Sincronizando…\" não aparece mais toda hora no Início e em Grupos quando você volta ao app: com seus grupos na tela, a sincronização acontece em silêncio.",
+        "pt-PT": "O \"A sincronizar…\" já não aparece a toda a hora no Início e nos Grupos quando voltas à app: com os teus grupos no ecrã, a sincronização acontece em silêncio.",
+        "es": "\"Sincronizando…\" ya no aparece a cada rato en Inicio y Grupos al volver a la app: con tus grupos en pantalla, la sincronización ocurre en silencio.",
+        "fr": "« Synchronisation… » ne s’affiche plus sans arrêt sur Accueil et Groupes quand tu reviens dans l’app : une fois tes groupes à l’écran, la synchronisation se fait en silence.",
+        "de": "„Synchronisierung…“ taucht auf Start und Gruppen nicht mehr ständig auf, wenn du zur App zurückkehrst: Sind deine Gruppen zu sehen, synchronisiert die App still im Hintergrund.",
+        "it": "\"Sincronizzazione…\" non compare più di continuo in Home e Gruppi quando torni nell’app: con i tuoi gruppi sullo schermo, la sincronizzazione avviene in silenzio.",
+        "pl": "„Synchronizacja…” nie pojawia się już co chwilę na ekranach Start i Grupy po powrocie do aplikacji: gdy widać twoje grupy, synchronizacja działa po cichu.",
+        "nl": "\"Synchroniseren…\" verschijnt niet meer steeds op Start en Groepen als je terugkomt in de app: zodra je groepen in beeld zijn, synchroniseert de app stil.",
+        "ja": "アプリに戻るたびにホームとグループに「同期中…」が表示されることはなくなりました。グループが表示されていれば、同期は静かに行われます。",
+        "tr": "Uygulamaya döndüğünde Ana Sayfa ve Gruplar'da \"Eşitleniyor…\" artık sürekli görünmüyor: grupların ekrandayken eşitleme sessizce yapılıyor.",
+        "id": "\"Menyinkronkan…\" tidak lagi terus muncul di Beranda dan Grup saat kamu kembali ke aplikasi: begitu grupmu tampil, sinkronisasi berjalan diam-diam.",
+        "ru": "«Синхронизация…» больше не появляется то и дело на экранах «Главная» и «Группы», когда ты возвращаешься в приложение: если твои группы уже на экране, синхронизация идёт незаметно.",
+        "uk": "«Синхронізація…» більше не з’являється раз у раз на екранах «Головна» і «Групи», коли ти повертаєшся до застосунку: якщо твої групи вже на екрані, синхронізація йде непомітно."
+      }
+    }
+  ]
+}

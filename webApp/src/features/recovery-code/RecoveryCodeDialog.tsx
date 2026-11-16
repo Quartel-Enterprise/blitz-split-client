@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { toast } from 'sonner'
 import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AccountButtons } from '@/components/common'
-import { numberedRecoveryWords, RecoveryWordsBox } from '@/components/RecoveryWordsBox'
+import { RecoveryWordsBox } from '@/components/RecoveryWordsBox'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -23,9 +23,9 @@ export function RecoveryCodeDialog() {
   const isDesktop = useMediaQuery('(min-width: 768px)')
   useActions(presenter, (p, onAction: (action: JsRecoveryCodeAction) => void) => p.observeActions(onAction), (action) => {
     if (action.type === 'copy') {
-      void navigator.clipboard.writeText(action.code).then(() => toast(t('recoveryCode_copied')))
+      void navigator.clipboard.writeText(action.text).then(() => toast(t('recoveryCode_copied')))
     } else if (action.type === 'download') {
-      downloadCode(action.code)
+      downloadCode(action.text)
     }
   })
   if (!presenter || !state?.recoveryWords) return null
@@ -116,7 +116,7 @@ function Option({ icon, title, subtitle, disabled, onClick }: { icon: ReactNode;
   )
 }
 
-function downloadCode(code: string) {
-  const text = t('recoveryCode_fileText', { code: numberedRecoveryWords(code) })
+function downloadCode(numberedWords: string) {
+  const text = t('recoveryCode_fileText', { code: numberedWords })
   downloadFile(text, t('recoveryCode_fileName'), 'text/plain;charset=utf-8')
 }

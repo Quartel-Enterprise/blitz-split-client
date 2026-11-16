@@ -203,7 +203,7 @@ class GroupsViewModel(
             exit.setOnline(isOnline)
             val badge = UserBadge.of(profile, account.status)
             // Why: only the fields these flows own, so the groups' own flow below keeps what it set.
-            val update: (GroupsUiState) -> GroupsUiState = { state ->
+            return@combine { state: GroupsUiState ->
                 state.copy(
                     displayName = badge.displayName,
                     avatarInitial = badge.avatarInitial,
@@ -215,11 +215,11 @@ class GroupsViewModel(
                         isOnline = isOnline,
                         awaitsFullSync = account.awaitsFullSync,
                         previous = state.syncBadge,
+                        showsData = state.groups.isNotEmpty(),
                     ),
                     showsRecoveryCodePrompt = account.recoveryCodePrompt.isShown,
                 )
             }
-            update
         }.onEach(uiState::update)
             .launchIn(viewModelScope)
         observeFirstDownload()
@@ -258,6 +258,7 @@ class GroupsViewModel(
                     it.copy(
                         groups = home.rows,
                         hasLoadedGroups = true,
+                        syncBadge = SyncBadge.toShown(it.syncBadge, showsData = home.rows.isNotEmpty()),
                         pendingChangeCount = home.pendingChangeCount,
                         latestBill = home.latestBill,
                         /*

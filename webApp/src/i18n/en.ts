@@ -105,7 +105,7 @@ export const en = {
   qrScanner_cameraFailed: "Couldn't open the camera. Allow access in the browser or type the code.",
 
   recoveryCode_title: 'Save your recovery code',
-  recoveryCode_body: "You're using it without an account. These 12 words bring your groups back if you clear your browser data or switch devices. Write them down in order.",
+  recoveryCode_body: "You're using it without an account. These 12 words bring your data back if you clear this browser or switch devices. Write them down in order. After 30 days without use, your data is deleted and the words stop working.",
   recoveryCode_copy: 'Copy',
   recoveryCode_copied: 'Words copied',
   recoveryCode_download: 'Download as a file',
@@ -116,7 +116,7 @@ export const en = {
   recoveryCode_remindLater: 'Remind me later',
   recoveryCode_saved: "I've saved it",
   recoveryCode_fileName: 'blitz-split-recovery-code.txt',
-  recoveryCode_fileText: 'Blitz Split · recovery code\n\n{code}\n\nUse it in "I\'ve used it on another device" to bring your groups back.\n',
+  recoveryCode_fileText: "Blitz Split · recovery code\n\n{code}\n\nUse it in \"I've used it on another device\" to bring your data back.\n",
 
   groups_title: 'Groups',
   groups_mainNavigation: 'Main navigation',

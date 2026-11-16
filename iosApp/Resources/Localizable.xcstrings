@@ -1,6 +1,172 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Blitz Split · recovery code\n\n%@\n\nUse it in \"I've used it on another device\" to bring your data back.\n" : {
+      "comment" : "The text file the recovery code sheet's Download saves: the app name, the 12 numbered words and how to use them",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · Wiederherstellungscode\n\n%@\n\nGib ihn unter „Ich habe sie auf einem anderen Gerät genutzt“ ein, um deine Daten zurückzuholen.\n"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · código de recuperación\n\n%@\n\nÚsalo en \"Ya lo usé en otro dispositivo\" para recuperar tus datos.\n"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · code de récupération\n\n%@\n\nUtilise-le dans « Je l’ai utilisé sur un autre appareil » pour retrouver tes données.\n"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · kode pemulihan\n\n%@\n\nPakai di “Sudah kupakai di perangkat lain” untuk mengembalikan datamu.\n"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · codice di recupero\n\n%@\n\nUsalo in «L’ho usata su un altro dispositivo» per recuperare i tuoi dati.\n"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · 復元コード\n\n%@\n\n「別のデバイスで使用しました」で入力すると、データを復元できます。\n"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · herstelcode\n\n%@\n\nGebruik hem bij “Ik heb hem op een ander apparaat gebruikt” om je gegevens terug te halen.\n"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · kod odzyskiwania\n\n%@\n\nUżyj go w „Mam aplikację na innym urządzeniu”, aby odzyskać swoje dane.\n"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bora Rachar · código de recuperação\n\n%@\n\nUse em \"Já usei em outro aparelho\" para trazer seus dados.\n"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · código de recuperação\n\n%@\n\nUsa em \"Já usei noutro aparelho\" para trazer os teus dados.\n"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · код восстановления\n\n%@\n\nВведи его в «Я уже пользовался(-ась) на другом устройстве», чтобы вернуть свои данные.\n"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · kurtarma kodu\n\n%@\n\nVerilerini geri getirmek için “Başka bir cihazda kullandım” seçeneğinde kullan.\n"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split · код відновлення\n\n%@\n\nВикористай його в «Я користувався(-лася) ним на іншому пристрої», щоб повернути свої дані.\n"
+          }
+        }
+      }
+    },
+    "blitz-split-recovery-code.txt" : {
+      "comment" : "The name of the text file the recovery code sheet's Download saves",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-wiederherstellungscode.txt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-codigo-de-recuperacion.txt"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-recovery-code.txt"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-recovery-code.txt"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-codice-di-recupero.txt"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-recovery-code.txt"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-recovery-code.txt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-kod-odzyskiwania.txt"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bora-rachar-codigo-de-recuperacao.txt"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-codigo-de-recuperacao.txt"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-recovery-code.txt"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-recovery-code.txt"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "blitz-split-recovery-code.txt"
+          }
+        }
+      }
+    },
     "I am %@" : {
       "comment" : "A guest's merge sheet: the person using the app is this guest",
       "localizations" : {
@@ -8834,7 +9000,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Laden"
+            "value" : "Herunterladen"
           }
         },
         "es" : {
@@ -105523,85 +105689,85 @@
         }
       }
     },
-    "You're using it without an account. These 12 words bring your groups back if you switch or lose your %@. Write them down in order." : {
+    "You're using it without an account. These 12 words bring your data back if you switch or lose your %@. Write them down in order. After 30 days without use, your data is deleted and the words stop working." : {
       "comment" : "%@ is the device: iPhone, iPad or Mac",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Du nutzt die App ohne Konto. Diese 12 Wörter bringen deine Gruppen bei Wechsel oder Verlust deines %@ zurück. Schreib sie der Reihe nach auf."
+            "value" : "Du nutzt die App ohne Konto. Diese 12 Wörter bringen deine Daten bei Wechsel oder Verlust deines %@ zurück. Schreib sie der Reihe nach auf. Nach 30 Tagen ohne Nutzung werden deine Daten gelöscht und die Wörter funktionieren nicht mehr."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Estás usando la app sin cuenta. Estas 12 palabras recuperan tus grupos si cambias o pierdes tu %@. Anótalas en orden."
+            "value" : "Estás usando la app sin cuenta. Estas 12 palabras recuperan tus datos si cambias o pierdes tu %@. Anótalas en orden. Tras 30 días sin uso, tus datos se borran y las palabras dejan de funcionar."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu l’utilises sans compte. Ces 12 mots te rendent tes groupes si tu changes ou perds ton %@. Note-les dans l’ordre."
+            "value" : "Tu l’utilises sans compte. Ces 12 mots te rendent tes données si tu changes ou perds ton %@. Note-les dans l’ordre. Après 30 jours sans utilisation, tes données sont effacées et les mots ne fonctionnent plus."
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kamu memakainya tanpa akun. 12 kata ini mengembalikan grupmu kalau kamu mengganti atau kehilangan %@. Catat sesuai urutannya."
+            "value" : "Kamu memakainya tanpa akun. 12 kata ini mengembalikan datamu kalau kamu mengganti atau kehilangan %@. Catat sesuai urutannya. Setelah 30 hari tidak dipakai, datamu dihapus dan kata-kata ini tidak berlaku lagi."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stai usando l’app senza account. Queste 12 parole riportano i tuoi gruppi se cambi o perdi il tuo %@. Annotale in ordine."
+            "value" : "Stai usando l’app senza account. Queste 12 parole riportano i tuoi dati se cambi o perdi il tuo %@. Annotale in ordine. Dopo 30 giorni di inutilizzo, i tuoi dati vengono cancellati e le parole smettono di funzionare."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アカウントなしで使っています。%@を変えたりなくしたりしても、この12個の単語でグループを復元できます。順番どおりに書き留めてください。"
+            "value" : "アカウントなしで使っています。%@を変えたりなくしたりしても、この12個の単語でデータを復元できます。順番どおりに書き留めてください。30日間使わないとデータは削除され、単語も使えなくなります。"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je gebruikt de app zonder account. Deze 12 woorden brengen je groepen terug als je van %@ wisselt of hem kwijtraakt. Schrijf ze op in de juiste volgorde."
+            "value" : "Je gebruikt de app zonder account. Deze 12 woorden brengen je gegevens terug als je van %@ wisselt of hem kwijtraakt. Schrijf ze op in de juiste volgorde. Na 30 dagen zonder gebruik worden je gegevens verwijderd en werken de woorden niet meer."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Używasz aplikacji bez konta. Te 12 słów przywróci twoje grupy, jeśli zmienisz lub zgubisz urządzenie (%@). Zapisz je po kolei."
+            "value" : "Używasz aplikacji bez konta. Te 12 słów przywróci twoje dane, jeśli zmienisz lub zgubisz urządzenie (%@). Zapisz je po kolei. Po 30 dniach nieużywania twoje dane są usuwane, a słowa przestają działać."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Você está usando sem conta. Estas 12 palavras recuperam seus grupos se você trocar ou perder o %@. Anote-as na ordem."
+            "value" : "Você está usando sem conta. Estas 12 palavras recuperam seus dados se você trocar ou perder o %@. Anote-as na ordem. Após 30 dias sem uso, seus dados são apagados e as palavras deixam de funcionar."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Estás a usar sem conta. Estas 12 palavras recuperam os teus grupos se trocares ou perderes o %@. Anota-as pela ordem."
+            "value" : "Estás a usar sem conta. Estas 12 palavras recuperam os teus dados se trocares ou perderes o %@. Anota-as pela ordem. Após 30 dias sem utilização, os teus dados são apagados e as palavras deixam de funcionar."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ты пользуешься приложением без аккаунта. Эти 12 слов вернут твои группы, если ты сменишь или потеряешь %@. Запиши их по порядку."
+            "value" : "Ты пользуешься приложением без аккаунта. Эти 12 слов вернут твои данные, если ты сменишь или потеряешь %@. Запиши их по порядку. Через 30 дней без использования данные удаляются, и слова перестают работать."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hesapsız kullanıyorsun. Bu 12 kelime, %@ cihazını değiştirirsen ya da kaybedersen gruplarını geri getirir. Onları sırasıyla not al."
+            "value" : "Hesapsız kullanıyorsun. Bu 12 kelime, %@ cihazını değiştirirsen ya da kaybedersen verilerini geri getirir. Onları sırasıyla not al. 30 gün kullanılmazsa verilerin silinir ve kelimeler çalışmaz."
           }
         },
         "uk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ти користуєшся застосунком без облікового запису. Ці 12 слів повернуть твої групи, якщо ти зміниш або загубиш пристрій (%@). Запиши їх по порядку."
+            "value" : "Ти користуєшся застосунком без облікового запису. Ці 12 слів повернуть твої дані, якщо ти зміниш або загубиш пристрій (%@). Запиши їх по порядку. Після 30 днів без використання дані буде видалено, і слова перестануть діяти."
           }
         }
       }

@@ -9,7 +9,6 @@ import com.quare.blitzsplit.core.profile.domain.repository.ProfileRepository
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -91,16 +90,21 @@ internal suspend fun syncAppInviteDismissals(
 }
 
 /*
- * Why: a sync while the session waited for its refresh failed and left the device as it was, and nothing else changes
- * when its token comes back (the same user, maybe online all along), so that sync runs again then. One that went
- * through needs no other.
+ * Why: a sync while the session waited for its refresh was put off and left the device as it was, and nothing else
+ * changes when its token comes back (the same user, maybe online all along), so that sync runs again then. One that
+ * went through needs no other. Asked once the sync running at the recovery ended, whose outcome it is.
  */
 internal suspend fun syncOnSessionRecovery(
     accountRepository: AccountRepository,
-    lastSyncFailed: StateFlow<Boolean>,
+    syncLock: Mutex,
+    outcomes: SyncOutcomes,
     sync: suspend () -> Unit,
 ) {
-    accountRepository.observeSessionRecoveries().collect { if (lastSyncFailed.value) sync() }
+    accountRepository.observeSessionRecoveries().collect {
+        if (syncLock.withLock { outcomes.lastSyncWentThrough }) return@collect
+        outcomes.onSessionSettled()
+        sync()
+    }
 }
 
 /*

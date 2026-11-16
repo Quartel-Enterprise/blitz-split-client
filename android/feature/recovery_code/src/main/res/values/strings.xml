@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="recovery_code_title">Save your recovery code</string>
-    <string name="recovery_code_body">You\'re using it without an account. These 12 words bring your groups back if you switch or lose your device. Write them down in order.</string>
+    <string name="recovery_code_body">You\'re using it without an account. These 12 words bring your data back if you switch or lose your device. Write them down in order. After 30 days without use, your data is deleted and the words stop working.</string>
     <string name="recovery_code_copy">Copy words</string>
     <string name="recovery_code_save_to_password_manager">Save to password manager</string>
     <string name="recovery_code_connect_instead">Connect Google or Apple instead</string>
@@ -10,4 +10,7 @@
     <string name="recovery_code_also_in_profile">It\'s also in Profile › Recovery.</string>
     <string name="recovery_code_remind_later">Remind me later</string>
     <string name="recovery_code_saved">I\'ve saved it</string>
+    <string name="recovery_code_download">Download</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · recovery code\n\n%1$s\n\nUse it in \"I\'ve used it on another device\" to bring your data back.\n</string>
 </resources>

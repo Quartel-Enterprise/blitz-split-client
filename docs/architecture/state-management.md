@@ -119,7 +119,12 @@ sealed interface RecoveryCodeUiAction {
         val code: String,
     ) : RecoveryCodeUiAction
 
-    // Why: a password manager entry on Android and Apple; on the web it becomes a file download.
+    // Why: the words one "n. word" a line, which each UI puts in its own language's file text and Restore reads back.
+    data class DownloadFile(
+        val numberedWords: String,
+    ) : RecoveryCodeUiAction
+
+    // Why: a password manager entry on Android and Apple; the web has none and offers DownloadFile only.
     data class SaveToPasswordManager(
         val code: String,
     ) : RecoveryCodeUiAction
