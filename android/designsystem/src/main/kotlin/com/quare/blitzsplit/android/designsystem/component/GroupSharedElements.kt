@@ -116,10 +116,16 @@ internal fun rememberSharedScopes(
         SharedScopes(
             transitionScope = transitionScope,
             visibilityScope = visibilityScope,
-            key = "$origin-$id",
+            key = sharedKeyOf(origin, id),
         )
     }
 }
+
+// Why: the one key format both sides of a flight build, so a screen keying by another id still meets its row.
+internal fun sharedKeyOf(
+    origin: SharedOrigin,
+    id: String,
+): String = "$origin-$id"
 
 /*
  * Why: Material's top bars read their title's baseline while they measure, which places the title once ahead of the

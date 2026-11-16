@@ -535,9 +535,10 @@ private fun BillGroupTitle(
         }
         Text(
             text = state.groupName,
+            // Why: only once Room is read, as the square, so the name never flies into the empty one before it.
             modifier = Modifier
                 .skipsBaselinePlacement()
-                .then(nameModifier),
+                .then(if (state.isLoaded) nameModifier else Modifier),
             style = textStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

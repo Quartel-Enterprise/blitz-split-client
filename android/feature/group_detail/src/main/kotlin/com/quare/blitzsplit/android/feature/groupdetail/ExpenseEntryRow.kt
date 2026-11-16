@@ -18,10 +18,9 @@ import com.quare.blitzsplit.android.designsystem.component.ENTRY_META_SEPARATOR
 import com.quare.blitzsplit.android.designsystem.component.EntryDayHeading
 import com.quare.blitzsplit.android.designsystem.component.EntryIconTile
 import com.quare.blitzsplit.android.designsystem.component.EntryMetaLine
-import com.quare.blitzsplit.android.designsystem.component.LocalBillOpensAsDialog
 import com.quare.blitzsplit.android.designsystem.component.MenuEntryLine
 import com.quare.blitzsplit.android.designsystem.component.RowMenuItem
-import com.quare.blitzsplit.android.designsystem.component.SharedOrigin
+import com.quare.blitzsplit.android.designsystem.component.groupBillOrigin
 import com.quare.blitzsplit.android.designsystem.component.groupedRowShapeOf
 import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -114,7 +113,7 @@ private fun ExpenseEntryRow(
      */
     val shared = rememberBillSharedModifiers(
         billId = expense.id,
-        origin = SharedOrigin.GROUP.takeUnless { LocalBillOpensAsDialog.current },
+        origin = groupBillOrigin(),
     )
     EntryFrameRow(
         icon = Icons.AutoMirrored.Outlined.ReceiptLong,

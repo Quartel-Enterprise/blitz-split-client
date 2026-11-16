@@ -11,6 +11,10 @@ import androidx.compose.ui.Modifier
  */
 val LocalBillOpensAsDialog = staticCompositionLocalOf { false }
 
+// Why: the group's own flights into its bills (its Expenses' rows, its top bar), none where the bill is a dialog.
+@Composable
+fun groupBillOrigin(): SharedOrigin? = SharedOrigin.GROUP.takeUnless { LocalBillOpensAsDialog.current }
+
 // Why: the modifiers a bill's category badge, title, total and share take to fly between its row and its screen.
 @Immutable
 class BillSharedModifiers(
@@ -61,7 +65,7 @@ fun rememberBillSharedModifiers(
     groupId: String? = null,
 ): BillSharedModifiers {
     val scopes = rememberSharedScopes(billId, origin) ?: return BillSharedModifiers.None
-    val groupKey = "$origin-$groupId".takeIf { origin == SharedOrigin.GROUP && groupId != null }
+    val groupKey = groupId?.takeIf { origin == SharedOrigin.GROUP }?.let { sharedKeyOf(SharedOrigin.GROUP, it) }
     return BillSharedModifiers(
         category = scopes.element("bill-category-${scopes.key}"),
         title = scopes.scaled("bill-title-${scopes.key}"),
@@ -95,8 +99,7 @@ class GroupBillSharedModifiers(
  */
 @Composable
 fun rememberGroupBillSharedModifiers(groupId: String?): GroupBillSharedModifiers {
-    val origin = SharedOrigin.GROUP.takeUnless { LocalBillOpensAsDialog.current }
-    val scopes = rememberSharedScopes(groupId, origin) ?: return GroupBillSharedModifiers.None
+    val scopes = rememberSharedScopes(groupId, groupBillOrigin()) ?: return GroupBillSharedModifiers.None
     return GroupBillSharedModifiers(
         avatar = scopes.element("group-bill-avatar-${scopes.key}"),
         name = scopes.scaled("group-bill-name-${scopes.key}"),
