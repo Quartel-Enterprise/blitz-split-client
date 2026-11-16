@@ -47,7 +47,10 @@ class SupabaseReceiptRemoteDataSource(
                 }
             }
         } catch (exception: RestException) {
-            val failure = receiptReadFailureOf(exception.statusCode, exception.errorCodeOrNull())
+            val failure = receiptReadFailureOf(
+                exception.statusCode,
+                exception.takeIf { it.statusCode == HTTP_UNPROCESSABLE }?.errorCodeOrNull(),
+            )
             if (failure == ReceiptReadFailure.UNREADABLE) return null
             throw ReceiptReaderException(failure, exception)
         } catch (exception: HttpRequestException) {
