@@ -29,6 +29,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
+import androidx.navigationevent.NavigationEventTransitionState
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
 import com.quare.blitzsplit.android.designsystem.component.LocalBillOpensAsDialog
 import com.quare.blitzsplit.android.designsystem.component.LocalProfileFlight
@@ -550,7 +551,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 val navigationEventState = rememberNavigationEventState(sceneState)
                 NavigationBackHandler(sceneState, navigationEventState, onBackCompleted = onBack)
                 CompositionLocalProvider(
-                    LocalIsBackPreview provides { key -> sceneState.overlayScenes.none { it.key == key } },
+                    LocalIsBackPreview provides { key ->
+                        navigationEventState.transitionState is NavigationEventTransitionState.InProgress &&
+                            sceneState.overlayScenes.none { it.key == key }
+                    },
                 ) {
                     NavDisplay(
                         sceneState = sceneState,
