@@ -266,7 +266,7 @@ class AppLanguageTest {
     @Test
     fun `GIVEN any Chinese tag WHEN reading it THEN is Simplified Chinese`() {
         // Given
-        val tags = listOf("zh", "zh-Hans", "zh-CN", "zh_CN", "ZH-hans-cn", "zh-SG")
+        val tags = listOf("zh", "zh-Hans", "zh-CN", "zh_CN", "ZH-hans-cn", "zh-SG", "zh-Hans-HK", "zh-CN-u-nu-hant")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)
@@ -278,7 +278,7 @@ class AppLanguageTest {
     @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN follows the device`() {
         // Given
-        val tags = listOf("zh-TW", "zh-Hant", "zh-Hant-TW", "zh_HK", "zh-MO", "ZH-hant")
+        val tags = listOf("zh-TW", "zh-Hant", "zh-Hant-TW", "zh_HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)

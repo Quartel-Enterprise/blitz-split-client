@@ -31,6 +31,20 @@ const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': 
 // Why: the languages with one variant for every tag of theirs.
 const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'zh']
 
+/**
+ * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
+ * Traditional, zh-Hans-HK Simplified); without one, a region that writes them does (Taiwan, Hong Kong, Macau). Both
+ * are read before any extension, as AppLanguage's.
+ */
+function isTraditionalChinese(subtags: readonly string[]): boolean {
+  const end = subtags.findIndex((subtag) => subtag.length < 2)
+  const tagSubtags = end === -1 ? subtags : subtags.slice(0, end)
+  const script = tagSubtags.find((subtag) => /^[a-z]{4}$/.test(subtag))
+  if (script) return script === 'hant'
+  const region = regionOf(subtags)
+  return region === 'tw' || region === 'hk' || region === 'mo'
+}
+
 // Why: the first two-letter subtag before any extension ("-u-fw-mon", whose keys are no region), as AppLanguage.regionOf.
 function regionOf(subtags: readonly string[]): string | undefined {
   const end = subtags.findIndex((subtag) => subtag.length < 2)
@@ -51,8 +65,8 @@ export function pickLocale(languages: readonly string[]): Locale {
     const [subtag, ...rest] = tag.toLowerCase().split(/[-_]/)
     // Why: "in" is Indonesian's legacy code, which older Android WebViews still send; AppLanguage.fromTag maps it too.
     const language = subtag === 'in' ? 'id' : subtag
-    // Why: no Traditional Chinese yet, so a zh-Hant, zh-TW, zh-HK or zh-MO tag is skipped, as AppLanguage.fromTag does.
-    if (language === 'zh' && rest.some((subtag) => ['hant', 'tw', 'hk', 'mo'].includes(subtag))) continue
+    // Why: no Traditional Chinese yet, so a Traditional tag is skipped, as AppLanguage.fromTag does.
+    if (language === 'zh' && isTraditionalChinese(rest)) continue
     if (bareLocales.includes(language as Locale)) return language as Locale
     if (language === 'pt') return regionOf(rest) === 'pt' ? 'pt-PT' : 'pt'
     if (language === 'es') return regionOf(rest) === 'es' ? 'es-ES' : 'es'

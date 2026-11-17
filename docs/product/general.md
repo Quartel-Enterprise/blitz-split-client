@@ -91,7 +91,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     actor, apart after a name and one word with the user's "आपने", so the activity sentences follow Korean's rule
     with "ने" ([activity-and-push.md](activity-and-push.md)). Simplified Chinese (Pierre's call, issue #448) is
     mainland China's, `zh-Hans`, and talks to the user as "你", never "您" (friends splitting a bill); it calls the app
-    Blitz Split, writes no space between words nor around a name or number the code fills in, ends a sentence with
+    Blitz Split, writes no space between words nor around a name or number the code fills in (but between two
+    values side by side, a name and an amount, which would run together: "Ana又欠Bruno ¥10"), ends a sentence with
     "。" (the code too, as Japanese: `wordGapUi`, `WordGap`, `wordGap`), and its plurals have one form. Every `zh` tag
     picks it but a Traditional one (`zh-Hant`, `zh-TW`, `zh-HK`, `zh-MO`), which reads English, as Android and Apple
     have no Traditional resources, until Traditional Chinese, Taiwan's `zh-Hant`, comes as its own row of the picker

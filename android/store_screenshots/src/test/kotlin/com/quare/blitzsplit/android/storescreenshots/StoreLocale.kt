@@ -5,7 +5,7 @@ package com.quare.blitzsplit.android.storescreenshots
  * the app language's code, Portugal's Portuguese by its whole tag (pt-PT), since "pt" is Brazil's, and Spain's Spanish
  * by its own (es-ES), since "es" is Latin America's. [playLocale] is what Robolectric draws the Play screens in: the
  * resources' language and the region the amounts, dates and hours are written in, the tag itself for every set but
- * Latin America's Spanish. The stores' own codes (es-419, es-MX…) come from the tags in the staging tasks of
+ * Latin America's Spanish and Chinese, drawn in zh-CN for mainland China's yuan. The stores' own codes (es-419, es-MX…) come from the tags in the staging tasks of
  * build-logic's StoreScreenshots.kt.
  */
 internal data class StoreLocale(

@@ -132,7 +132,7 @@
     <string name="activity_detail_simplify_you_pay">现在你付给%1$s %2$s</string>
     <string name="activity_detail_simplify_and_owed_you">，%s也不再欠你了</string>
     <string name="activity_detail_simplify_and_you_owed">，你也不再欠%s了</string>
-    <string name="activity_detail_simplify_owed_you">%s不再欠你</string>
+    <string name="activity_detail_simplify_owed_you">%s不再欠你了</string>
     <string name="activity_detail_simplify_you_owed">你不再欠%s了</string>
     <string name="activity_simplify_owed_you">原本欠你%s</string>
     <string name="activity_simplify_you_owed">原本你欠%s</string>

@@ -78,13 +78,23 @@ enum class AppLanguage(
                 ?: SYSTEM
         }
 
-        // Why: Traditional Chinese's script, or a region that writes it (Taiwan, Hong Kong, Macau).
-        private fun isTraditionalChinese(tag: String?): Boolean = languageOf(tag) == CHINESE &&
-            tag
-                .orEmpty()
-                .split('-', '_')
-                .drop(1)
-                .any { subtag -> subtag.uppercase() in listOf(TRADITIONAL_SCRIPT, TAIWAN, HONG_KONG, MACAU) }
+        /*
+         * Why: a Chinese tag written in Traditional characters: its script says so when it has one (zh-Hant-CN is
+         * Traditional, zh-Hans-HK Simplified); without one, a region that writes them does (Taiwan, Hong Kong, Macau).
+         */
+        private fun isTraditionalChinese(tag: String?): Boolean {
+            if (languageOf(tag) != CHINESE) return false
+            val script = scriptOf(tag) ?: return regionOf(tag).let { it == TAIWAN || it == HONG_KONG || it == MACAU }
+            return script == TRADITIONAL_SCRIPT
+        }
+
+        // Why: a tag's script in upper case ("HANS" of zh-Hans-CN), before any extension, as regionOf reads its region.
+        private fun scriptOf(tag: String?): String? = tag
+            ?.split('-', '_')
+            ?.drop(1)
+            ?.takeWhile { it.length > 1 }
+            ?.firstOrNull { it.length == 4 && it.all(Char::isLetter) }
+            ?.uppercase()
 
         // Why: the entries of a language, the one for every other tag first (pt-BR before pt-PT, es before es-ES).
         private fun variantsOf(language: String?): List<AppLanguage> = if (language == null) {
