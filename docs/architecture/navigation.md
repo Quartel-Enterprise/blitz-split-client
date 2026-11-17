@@ -119,6 +119,15 @@ entry composed only for a while scopes its ViewModels to itself with `rememberVi
 [dependency-injection.md](dependency-injection.md#which-scope-a-compose-viewmodel-takes)). The system back
 gesture goes through `navigateBack()`, so the shared stack stays the source of truth.
 
+While a back gesture swipes the top screen away, Navigation 3 draws the scene under it in its animated content. For a
+sheet or a dialog (`BottomSheetSceneStrategy`, `FoldDialogSceneStrategy`) that would open a window mid-gesture, and the
+system takes it for the end of the gesture and cancels it: back over a profile opened from "Did Larissa pay you?"
+never left the profile. So `AppNavDisplay` owns the `SceneState` and the `NavigationEventState`, and tells the scenes
+(`LocalIsBackPreview`) when a gesture is in progress and one is not among the scene state's overlays:
+`OverlayOrPreviewComponent` draws the screen the sheet covers instead, and the sheet or the dialog opens once the
+scene is one of the overlays. A scene never counts as a preview without a gesture, or the screen it covers would be
+drawn twice while the sheet opens (a crash: "Key ... was used multiple times").
+
 Groups and Contacts are the one exception (`rememberAppNavEntries`, `HomeTabEntries.kt`): while one of them is
 the route right above Home, it is decorated with `rememberDecoratedNavEntries` on its own, outside the rest of the
 stack, so another tab taking its place doesn't pop its decorator state. Its ViewModel and saved state stay, as

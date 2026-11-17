@@ -33,16 +33,18 @@ private class FoldDialogScene<T : Any>(
     override val entries: List<NavEntry<T>> = listOf(entry)
 
     override val content: @Composable () -> Unit = {
-        FoldDialog(
-            onDismissRequest = onBack,
-            properties = properties,
-            placement = rememberDialogPlacement(isTopHalfOnTabletop = isTopHalfOnTabletop),
-        ) {
-            CompositionLocalProvider(
-                LocalLifecycleOwner provides rememberLifecycleOwner(),
-                LocalInOverlayScene provides true,
+        OverlayOrPreviewComponent(entry, overlaidEntries) {
+            FoldDialog(
+                onDismissRequest = onBack,
+                properties = properties,
+                placement = rememberDialogPlacement(isTopHalfOnTabletop = isTopHalfOnTabletop),
             ) {
-                entry.Content()
+                CompositionLocalProvider(
+                    LocalLifecycleOwner provides rememberLifecycleOwner(),
+                    LocalInOverlayScene provides true,
+                ) {
+                    entry.Content()
+                }
             }
         }
     }

@@ -35,26 +35,35 @@ private class BottomSheetScene<T : Any>(
     override val entries: List<NavEntry<T>> = listOf(entry)
 
     override val content: @Composable () -> Unit = {
-        val lock = remember { mutableStateOf(false) }
-        val blockedDismiss = remember { mutableStateOf<(() -> Unit)?>(null) }
-        ModalBottomSheet(
-            onDismissRequest = onBack,
-            sheetState = rememberFullSheetState(
-                confirmValueChange = { value ->
-                    val isAllowed = value != SheetValue.Hidden || !lock.value
-                    // Why: a form with unsaved input answers the dismissal itself, by asking "Discard changes?".
-                    if (!isAllowed) blockedDismiss.value?.invoke()
-                    isAllowed
-                },
-            ),
+        OverlayOrPreviewComponent(entry, overlaidEntries) { Sheet(entry, onBack) }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun <T : Any> Sheet(
+    entry: NavEntry<T>,
+    onBack: () -> Unit,
+) {
+    val lock = remember { mutableStateOf(false) }
+    val blockedDismiss = remember { mutableStateOf<(() -> Unit)?>(null) }
+    ModalBottomSheet(
+        onDismissRequest = onBack,
+        sheetState = rememberFullSheetState(
+            confirmValueChange = { value ->
+                val isAllowed = value != SheetValue.Hidden || !lock.value
+                // Why: a form with unsaved input answers the dismissal itself, by asking "Discard changes?".
+                if (!isAllowed) blockedDismiss.value?.invoke()
+                isAllowed
+            },
+        ),
+    ) {
+        CompositionLocalProvider(
+            LocalSheetDismissLock provides lock,
+            LocalSheetBlockedDismiss provides blockedDismiss,
+            LocalInOverlayScene provides true,
         ) {
-            CompositionLocalProvider(
-                LocalSheetDismissLock provides lock,
-                LocalSheetBlockedDismiss provides blockedDismiss,
-                LocalInOverlayScene provides true,
-            ) {
-                entry.Content()
-            }
+            entry.Content()
         }
     }
 }
