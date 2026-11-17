@@ -126,12 +126,15 @@ class MoneyFormatter(
 
     private fun createCurrencyFormat(fractionDigits: Int): NumberFormat =
         NumberFormat.getCurrencyInstance(formatLocale).apply {
-            if (writesOwnSymbol && this is DecimalFormat) {
+            if (!writesOwnSymbol) currency = Currency.getInstance(this@MoneyFormatter.currency.code)
+            /*
+             * Why: bitcoin's, ether's or a raw code's symbol written by hand; and in a right to left language every
+             * symbol in an isolate of its own, since Arabic writes "0 US$" and the "$" would drift to "$US 0".
+             */
+            if ((writesOwnSymbol || isolates) && this is DecimalFormat) {
                 decimalFormatSymbols = decimalFormatSymbols.apply {
-                    currencySymbol = symbol
+                    currencySymbol = symbol.toIsolatedIf(isolates)
                 }
-            } else {
-                currency = Currency.getInstance(this@MoneyFormatter.currency.code)
             }
             minimumFractionDigits = fractionDigits
             maximumFractionDigits = fractionDigits

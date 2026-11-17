@@ -1,5 +1,5 @@
 import { getKnownCurrencyCodes } from 'blitzsplit-shared'
-import { direction, t } from '@/i18n'
+import { isolated, t } from '@/i18n'
 import { uiTag } from '@/lib/currency'
 
 // Why: lists redraw every row on each keystroke, and building the Intl formatters each time is costly.
@@ -65,14 +65,6 @@ function shownDigits(minor: number, fractionDigits: number, currency?: string): 
   return digits
 }
 
-/**
- * An amount kept in one piece inside a right-to-left sentence: wrapped in FIRST STRONG ISOLATE … POP DIRECTIONAL
- * ISOLATE, so "−R$ 118,50" keeps its sign, symbol and digits in order among Arabic or Hebrew words. A left-to-right
- * language gets `amount` unchanged.
- */
-function isolated(amount: string): string {
-  return direction === 'rtl' ? `\u2068${amount}\u2069` : amount
-}
 
 /** The number an amount shows: the major unit, or whole sats for bitcoin in satoshis (its minor unit). */
 function shownNumber(minor: number, fractionDigits: number, currency?: string): number {
@@ -94,13 +86,10 @@ function moneyText(minor: number, currency: string, fractionDigits: number): str
   const digits = shownDigits(minor, fractionDigits, currency)
   try {
     const symbol = cryptoSymbols[currency]
-    if (symbol === undefined) return moneyFormat(currency, digits).format(major)
     // Why: the pattern of a currency with a symbol ("$0.5", "US$ 0,5"), as Android and Apple place ₿ and Ξ; Intl
     // spaces a currency it only knows by its code ("BTC 0.5").
-    return moneyFormat(SYMBOL_PATTERN_CURRENCY, digits)
-      .formatToParts(major)
-      .map((part) => (part.type === 'currency' ? symbol : part.value))
-      .join('')
+    const format = symbol === undefined ? moneyFormat(currency, digits) : moneyFormat(SYMBOL_PATTERN_CURRENCY, digits)
+    return withIsolatedSymbol(format.formatToParts(major), symbol)
   } catch {
     // Why: a code Intl refuses (not 3 letters, from a newer app) still takes the UI language's separators.
     return `${currency} ${plainMoneyText(minor, fractionDigits, currency)}`
@@ -120,7 +109,7 @@ export function formatCompactMoney(minor: number, currency: string, fractionDigi
       format = new Intl.NumberFormat(uiTag, { style: 'currency', currency, notation: 'compact', maximumSignificantDigits: 2 })
       formatters.set(key, format)
     }
-    return isolated(format.format(minor / 10 ** fractionDigits))
+    return isolated(withIsolatedSymbol(format.formatToParts(minor / 10 ** fractionDigits)))
   } catch {
     return formatMoney(minor, currency, fractionDigits)
   }
@@ -134,6 +123,14 @@ export function formatSignedMoney(minor: number, currency: string, fractionDigit
 /** A balance with its sign and no symbol, "+214,90" or "−98", where the currency is the line's own. */
 export function formatSignedPlainMoney(minor: number, fractionDigits: number, currency?: string): string {
   return isolated(withSign(minor, plainMoneyText(Math.abs(minor), fractionDigits, currency)))
+}
+
+/**
+ * The parts of an amount joined, its symbol (or `symbol` in its place) isolated in a right-to-left language: Arabic
+ * writes "0 US$", and without an isolate of its own the "$" of "US$" would drift to the other side ("$US 0").
+ */
+function withIsolatedSymbol(parts: Intl.NumberFormatPart[], symbol?: string): string {
+  return parts.map((part) => (part.type === 'currency' ? isolated(symbol ?? part.value) : part.value)).join('')
 }
 
 function withSign(minor: number, amount: string): string {
@@ -180,8 +177,15 @@ function cachedText(key: string, build: () => string): string {
 
 let namesFormat: Intl.ListFormat | undefined
 
-/** The symbol before an amount field: "R$", "$", or "US$" for dollars in Portuguese; "₿", "Ξ" or "sats". */
+/**
+ * The symbol before an amount field: "R$", "$", or "US$" for dollars in Portuguese; "₿", "Ξ" or "sats". Isolated in a
+ * right-to-left language, so "US$" never shows as "$US".
+ */
 export function currencySymbol(currency: string): string {
+  return isolated(bareCurrencySymbol(currency))
+}
+
+function bareCurrencySymbol(currency: string): string {
   if (isSats(currency)) return t('money_satsSymbol')
   const crypto = cryptoSymbols[currency]
   if (crypto !== undefined) return crypto

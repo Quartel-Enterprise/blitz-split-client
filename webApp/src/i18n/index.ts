@@ -124,6 +124,15 @@ export function isRightToLeft(tag: string): boolean {
 /** The page's direction, from the app's language: `rtl` for Arabic and Hebrew, `ltr` for the others. */
 export const direction: 'ltr' | 'rtl' = isRightToLeft(documentLanguage) ? 'rtl' : 'ltr'
 
+/**
+ * `text` kept in one piece inside a right-to-left sentence: wrapped in FIRST STRONG ISOLATE … POP DIRECTIONAL
+ * ISOLATE, so "−R$ 118,50" or a symbol's "US$" keeps its order among Arabic or Hebrew words. A left-to-right language
+ * gets `text` unchanged.
+ */
+export function isolated(text: string): string {
+  return direction === 'rtl' ? `\u2068${text}\u2069` : text
+}
+
 // Why: the languages whose own digits Intl would write ("١٢٫٥٠" in Arabic), which the amount fields can't parse.
 const latinDigitLanguages: ReadonlySet<string> = new Set(['ar'])
 

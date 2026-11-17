@@ -1,4 +1,4 @@
-import { formattingLocale, locale, pickLocale } from '@/i18n'
+import { formattingLocale, isolated, locale, pickLocale } from '@/i18n'
 import { browserLanguages } from '@/lib/platform'
 
 // Why: pickLocale answers English for a tag it doesn't know ("sv"), which must not pick that tag for the picker.
@@ -41,7 +41,7 @@ function buildCurrencyLabel(code: string, tag: string): string {
     const name = new Intl.DisplayNames(tag, { type: 'currency' }).of(code) ?? code
     const parts = new Intl.NumberFormat(tag, { style: 'currency', currency: code }).formatToParts(0)
     const symbol = parts.find((part) => part.type === 'currency')?.value.trim() || code
-    return `${name.charAt(0).toLocaleUpperCase(tag)}${name.slice(1)} (${symbol})`
+    return `${name.charAt(0).toLocaleUpperCase(tag)}${name.slice(1)} (${isolated(symbol)})`
   } catch {
     return code
   }

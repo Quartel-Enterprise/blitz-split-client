@@ -96,8 +96,10 @@ extension GroupCurrency {
 
     private func unisolated(_ minor: Int64) -> String {
         if showsSats { return String(localized: "\(unisolatedPlain(minor)) sats", bundle: .appLanguage) }
-        if let cryptoSymbol {
-            return Self.cryptoFormatter(symbol: cryptoSymbol, digits: shownDigits(of: minor))
+        // Arabic writes "0 US$": in a right-to-left language the symbol takes an isolate of its own, or its "$" would
+        // drift to the other side ("$US 0")
+        if let symbol = cryptoSymbol ?? (RightToLeft.isAppLanguage ? symbol : nil) {
+            return Self.symbolFormatter(symbol: RightToLeft.isolated(symbol), digits: shownDigits(of: minor))
                 .string(from: decimal(of: minor) as NSDecimalNumber) ?? unisolatedPlain(minor)
         }
         return decimal(of: minor).formatted(
@@ -152,21 +154,21 @@ extension GroupCurrency {
         Decimal(minor) / pow(Decimal(10), typedDigits)
     }
 
-    private static func cryptoFormatter(symbol: String, digits: Int) -> NumberFormatter {
+    private static func symbolFormatter(symbol: String, digits: Int) -> NumberFormatter {
         let key = "\(symbol):\(digits)"
-        if let formatter = cryptoFormatters[key] { return formatter }
+        if let formatter = symbolFormatters[key] { return formatter }
         let formatter = NumberFormatter()
         formatter.locale = AppNumbers.locale
         formatter.numberStyle = .currency
         formatter.currencySymbol = symbol
         formatter.minimumFractionDigits = digits
         formatter.maximumFractionDigits = digits
-        cryptoFormatters[key] = formatter
+        symbolFormatters[key] = formatter
         return formatter
     }
 
     private static var symbols: [String: String] = [:]
-    private static var cryptoFormatters: [String: NumberFormatter] = [:]
+    private static var symbolFormatters: [String: NumberFormatter] = [:]
 }
 
 enum ExpenseFormat {

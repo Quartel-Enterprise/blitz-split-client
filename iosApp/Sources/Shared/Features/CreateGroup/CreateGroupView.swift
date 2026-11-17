@@ -503,7 +503,7 @@ extension GroupCurrency {
         formatter.numberStyle = .currency
         formatter.currencyCode = code
         let symbol = formatter.currencySymbol ?? code
-        let label = "\(name.prefix(1).uppercased())\(name.dropFirst()) (\(symbol))"
+        let label = "\(name.prefix(1).uppercased())\(name.dropFirst()) (\(RightToLeft.isolated(symbol)))"
         Self.labels[code] = label
         return label
     }
