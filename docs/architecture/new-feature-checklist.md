@@ -47,7 +47,7 @@ each platform.
       `res/values-tr/strings.xml`, in Indonesian in `res/values-in/strings.xml` (Android's legacy code for `id`), in
       Russian in `res/values-ru/strings.xml` and in Ukrainian in `res/values-uk/strings.xml` (both with the few and
       many plurals, as Polish), in Korean in `res/values-ko/strings.xml` (no particle glued to a placeholder), in Hindi in
-      `res/values-hi/strings.xml`, and in Arabic in `res/values-ar/strings.xml` (all six plurals: zero, one, two, few,
+      `res/values-hi/strings.xml`, in Simplified Chinese in `res/values-b+zh+Hans/strings.xml`, and in Arabic in `res/values-ar/strings.xml` (all six plurals: zero, one, two, few,
       many, other)
 - [ ] Any resource of a `values-pt-rPT` or `values-es-rES` (a string, a bool) also in `values-pt` or `values-es`:
       Android 7 and later fall back to a child of the language when its bare folder lacks a resource, so a pt-BR

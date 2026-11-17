@@ -106,6 +106,12 @@
             "state" : "translated",
             "value" : "Blitz Split"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
         }
       }
     },
@@ -210,6 +216,12 @@
           }
         },
         "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -322,6 +334,12 @@
             "state" : "translated",
             "value" : "Щоб сканувати QR-код запрошення або зі старого пристрою, а також робити фото профілю й фото рахунків."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于扫描邀请或旧设备上的二维码，以及拍摄个人资料照片和账单照片。"
+          }
         }
       }
     },
@@ -430,6 +448,12 @@
             "state" : "translated",
             "value" : "Щоб запрошувати людей з твоїх контактів за посиланням на групу. Їхні номери залишаються на цьому пристрої."
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于通过群组链接邀请联系人。他们的号码只保存在这台设备上。"
+          }
         }
       }
     },
@@ -537,6 +561,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Щоб зберігати фото рахунків у твою фототеку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用于将账单照片保存到你的照片图库。"
           }
         }
       }

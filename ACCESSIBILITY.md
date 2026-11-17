@@ -32,7 +32,7 @@ keyboard in the browser.
 - **Keyboard and pointer.** On the Mac and the web, controls are reachable with the keyboard and show a focus ring;
   tablets work with a keyboard and a mouse or trackpad too.
 - **Language.** The app is translated into English, Portuguese (Brazil and Portugal), Spanish, French, German,
-  Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi and Arabic, and follows the device's language and number format.
+  Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic and Chinese (Simplified), and follows the device's language and number format.
 
 ## Known limitations
 

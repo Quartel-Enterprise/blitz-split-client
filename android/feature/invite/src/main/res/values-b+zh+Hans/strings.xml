@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">关闭</string>
+    <string name="invite_group_created">群组已创建</string>
+    <string name="invite_title">邀请大家加入“%s”</string>
+    <string name="invite_qr_description">群组邀请链接的二维码</string>
+    <string name="invite_copy">复制</string>
+    <string name="invite_copied">已复制</string>
+    <string name="invite_who_picks">打开链接的人从列表中选择自己是谁：%s。无需账号。</string>
+    <string name="invite_names_or">%1$s或%2$s</string>
+    <string name="invite_anyone_joins">打开链接的人即可加入群组。无需账号。</string>
+    <string name="invite_pending_title">链接待创建</string>
+    <string name="invite_pending_offline">联网后会立即创建。</string>
+    <string name="invite_pending_online">正在生成链接…</string>
+    <string name="invite_failed_title">无法创建链接</string>
+    <string name="invite_failed_body">同步群组时出了点问题。</string>
+    <string name="invite_retry">重试</string>
+    <string name="invite_share">分享链接</string>
+    <string name="invite_see_who_joined">查看谁已加入</string>
+    <string name="invite_add_person">添加没有应用的人</string>
+    <string name="invite_go_to_group">前往群组</string>
+    <string name="invite_change_link">更换链接</string>
+    <string name="invite_change_link_title">更换邀请链接？</string>
+    <string name="invite_change_link_message">当前的链接和二维码将失效，包括尚未使用的专属邀请。已加入的人会留在群组中。</string>
+    <string name="invite_change_link_failed">无法更换链接，请重试。</string>
+    <string name="invite_share_message">一起用Blitz Split分摊“%1$s”的账单吧。通过这个链接加入：%2$s</string>
+</resources>

@@ -26,6 +26,7 @@ enum class AppLanguage(
     KOREAN("ko"),
     HINDI("hi"),
     ARABIC("ar"),
+    CHINESE_SIMPLIFIED("zh-Hans"),
     ;
 
     /*
@@ -50,20 +51,51 @@ enum class AppLanguage(
 
         private const val UKRAINE = "UA"
 
+        private const val CHINESE = "zh"
+
+        private const val TRADITIONAL_SCRIPT = "HANT"
+
+        private const val TAIWAN = "TW"
+
+        private const val HONG_KONG = "HK"
+
+        private const val MACAU = "MO"
+
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
-         * Ukrainian, Korean, Hindi, Arabic or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL,
-         * nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, en-GB), SYSTEM for none or any other. Portuguese is two
-         * entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every
-         * other tag (es, es-MX, es-419…) the neutral Latin-American one.
+         * Ukrainian, Korean, Hindi, Arabic, Chinese or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH,
+         * pl-PL, nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, zh-CN, en-GB), SYSTEM for none or any
+         * other. Portuguese is two entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too:
+         * es-ES is Spain's, every other tag (es, es-MX, es-419…) the neutral Latin-American one. Chinese is Simplified,
+         * mainland China's zh-Hans, but for a Traditional tag (zh-Hant, zh-TW, zh-HK, zh-MO), which stays SYSTEM until
+         * the app has Traditional Chinese: Android and Apple show English to it, having no Hant resources.
          */
         fun fromTag(tag: String?): AppLanguage {
+            if (isTraditionalChinese(tag)) return SYSTEM
             val variants = variantsOf(languageOf(tag))
             val region = regionOf(tag)
             return variants.firstOrNull { region != null && regionOf(it.tag) == region }
                 ?: variants.firstOrNull()
                 ?: SYSTEM
         }
+
+        /*
+         * Why: a Chinese tag written in Traditional characters: its script says so when it has one (zh-Hant-CN is
+         * Traditional, zh-Hans-HK Simplified); without one, a region that writes them does (Taiwan, Hong Kong, Macau).
+         */
+        private fun isTraditionalChinese(tag: String?): Boolean {
+            if (languageOf(tag) != CHINESE) return false
+            val script = scriptOf(tag) ?: return regionOf(tag).let { it == TAIWAN || it == HONG_KONG || it == MACAU }
+            return script == TRADITIONAL_SCRIPT
+        }
+
+        // Why: a tag's script in upper case ("HANS" of zh-Hans-CN), before any extension, as regionOf reads its region.
+        private fun scriptOf(tag: String?): String? = tag
+            ?.split('-', '_')
+            ?.drop(1)
+            ?.takeWhile { it.length > 1 }
+            ?.firstOrNull { it.length == 4 && it.all(Char::isLetter) }
+            ?.uppercase()
 
         // Why: the entries of a language, the one for every other tag first (pt-BR before pt-PT, es before es-ES).
         private fun variantsOf(language: String?): List<AppLanguage> = if (language == null) {

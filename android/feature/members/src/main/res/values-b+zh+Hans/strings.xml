@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">邀请链接</string>
+    <string name="members_link_pending">尚未创建</string>
+    <string name="members_share">分享</string>
+    <string name="members_me">%s（你）</string>
+    <string name="members_status_this_device">此设备</string>
+    <string name="members_status_joined">已加入</string>
+    <string name="members_status_not_joined">尚未加入</string>
+    <string name="members_options">%s的选项</string>
+    <string name="members_rename">重命名</string>
+    <string name="members_personal_invite">给%s的专属邀请</string>
+    <string name="members_personal_message">打开这个链接的人会直接以%s的身份加入，无需从列表中选择。链接仅可使用一次。</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="other">打开这个链接的人会直接以%1$s的身份加入，无需从列表中选择，并能看到自己在目前已添加的%3$d笔账单中的份额%2$s。链接仅可使用一次。</item>
+    </plurals>
+    <string name="members_personal_copy">复制链接</string>
+    <string name="members_personal_copied">已复制</string>
+    <string name="members_personal_share">分享给%s</string>
+    <string name="members_personal_share_message">在Blitz Split上以%2$s的身份加入“%1$s”：%3$s</string>
+    <string name="members_remove">从群组中移除</string>
+    <string name="members_remove_joined">%s已经加入了群组</string>
+    <string name="members_remove_title">将%s从群组中移除？</string>
+    <string name="members_remove_message">%s尚未加入。你之后可以再把TA添加回来。</string>
+    <string name="members_remove_confirm">移除</string>
+    <string name="members_release">释放名字</string>
+    <string name="members_release_title">释放%s的名字？</string>
+    <string name="members_release_message">以%1$s身份加入的人将退出群组。%1$s的名字、颜色和账单都会保留，其他人也可以通过群组链接再次选择%1$s。</string>
+    <string name="members_release_confirm">释放</string>
+    <string name="members_release_error">无法释放名字。请检查网络连接后重试。</string>
+    <string name="members_add">添加成员</string>
+    <string name="members_invite_instead">对方有应用？用链接邀请</string>
+    <string name="members_name_label">名字</string>
+    <string name="members_save">保存</string>
+    <string name="members_cancel">取消</string>
+    <string name="members_change_error">无法保存更改，请重试。</string>
+    <string name="members_remove_open_balance">%s有未结清的余额</string>
+    <string name="members_balance_to_get_back">应收%s</string>
+    <string name="members_balance_owes">欠%s</string>
+    <string name="members_balance_settled">已结清</string>
+</resources>

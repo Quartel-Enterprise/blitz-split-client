@@ -26,7 +26,7 @@ import { fileURLToPath } from "node:url";
  * The languages of the notes, English first: the ones blitz-split-site's release notes have. Portugal's Portuguese,
  * pt-PT, is one of its own there, written in full, not the few words over Brazil's that the apps keep for it.
  */
-export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar"];
+export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh"];
 /** The platforms a note names, in the order it lists them; "all" stands alone, for every one of them. */
 export const PLATFORMS = ["android", "ios", "mac", "web"];
 /** What a note is, in the order a version lists its notes. Only "fixed" leaves the version a patch. */
@@ -65,6 +65,7 @@ const NOTHING_TO_SAY = {
   ko: "버그를 수정하고 성능을 개선했어요.",
   hi: "बग ठीक किए गए और परफ़ॉर्मेंस बेहतर हुई।",
   ar: "إصلاح الأخطاء وتحسين الأداء.",
+  zh: "修复了一些问题，并提升了性能。",
 };
 
 export class NotesError extends Error {}

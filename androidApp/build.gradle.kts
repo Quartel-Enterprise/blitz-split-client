@@ -58,8 +58,8 @@ android {
         buildConfig = true
     }
     // Lists English, Portuguese (pt and pt-PT), Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish,
-    // Indonesian (values-in, Android's legacy code for id), Russian, Ukrainian, Korean, Hindi and Arabic in the
-    // system's per-app language setting (Android 13+)
+    // Indonesian (values-in, Android's legacy code for id), Russian, Ukrainian, Korean, Hindi, Arabic and Simplified
+    // Chinese (values-b+zh+Hans) in the system's per-app language setting (Android 13+)
     androidResources {
         generateLocaleConfig = true
     }

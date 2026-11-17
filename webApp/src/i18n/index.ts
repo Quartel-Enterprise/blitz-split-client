@@ -17,18 +17,34 @@ import { uk } from './uk'
 import { ko } from './ko'
 import { hi } from './hi'
 import { ar } from './ar'
+import { zh } from './zh'
 
 export type { MessageKey }
 /**
  * `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently.
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
+ * `zh` is Simplified Chinese, mainland China's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh']
+
+/**
+ * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
+ * Traditional, zh-Hans-HK Simplified); without one, a region that writes them does (Taiwan, Hong Kong, Macau). Both
+ * are read before any extension, as AppLanguage's.
+ */
+function isTraditionalChinese(subtags: readonly string[]): boolean {
+  const end = subtags.findIndex((subtag) => subtag.length < 2)
+  const tagSubtags = end === -1 ? subtags : subtags.slice(0, end)
+  const script = tagSubtags.find((subtag) => /^[a-z]{4}$/.test(subtag))
+  if (script) return script === 'hant'
+  const region = regionOf(subtags)
+  return region === 'tw' || region === 'hk' || region === 'mo'
+}
 
 // Why: the first two-letter subtag before any extension ("-u-fw-mon", whose keys are no region), as AppLanguage.regionOf.
 function regionOf(subtags: readonly string[]): string | undefined {
@@ -42,13 +58,16 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * (es, es-MX, es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any
  * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi` or `ar` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY,
  * id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG…) is German, Italian, Polish, Dutch, Japanese, Turkish,
- * Indonesian, Russian, Ukrainian, Korean, Hindi or Arabic, any `en` tag is English, and English when none matches.
+ * Indonesian, Russian, Ukrainian, Korean, Hindi or Arabic, any `zh` tag but a Traditional one (zh-CN, zh-Hans, zh-SG…) is
+ * Simplified Chinese, any `en` tag is English, and English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
     const [subtag, ...rest] = tag.toLowerCase().split(/[-_]/)
     // Why: "in" is Indonesian's legacy code, which older Android WebViews still send; AppLanguage.fromTag maps it too.
     const language = subtag === 'in' ? 'id' : subtag
+    // Why: no Traditional Chinese yet, so a Traditional tag is skipped, as AppLanguage.fromTag does.
+    if (language === 'zh' && isTraditionalChinese(rest)) continue
     if (bareLocales.includes(language as Locale)) return language as Locale
     if (language === 'pt') return regionOf(rest) === 'pt' ? 'pt-PT' : 'pt'
     if (language === 'es') return regionOf(rest) === 'es' ? 'es-ES' : 'es'
@@ -76,24 +95,27 @@ export const locale: Locale = pickLocale([storedLanguage(), ...browserLanguages(
 /** Both Spanishes, for the few places where the language rather than the wording decides the grammar. */
 export const isSpanish = locale === 'es' || locale === 'es-ES'
 
-/**
- * What goes between the pieces of a sentence the code joins ("Ana" and "changed the category", two sentences of a
- * detail): a space, but nothing in Japanese, which writes "Anaがカテゴリを変更しました". Same rule as Android's
- * `wordGapUi`.
- */
-export const wordGap = locale === 'ja' ? '' : ' '
+// Why: Japanese and Chinese write no space between words, nor between two sentences.
+const isUnspaced = locale === 'ja' || locale === 'zh'
 
 /**
- * The end of a sentence the code finishes: Japanese's "。", Hindi's danda "।", the others' ".". Same rule as Android's
- * `fullStopUi`.
+ * What goes between the pieces of a sentence the code joins ("Ana" and "changed the category", two sentences of a
+ * detail): a space, but nothing in Japanese and Chinese, which write "Anaがカテゴリを変更しました". Same rule as
+ * Android's `wordGapUi`.
  */
-export const fullStop = locale === 'ja' ? '。' : locale === 'hi' ? '।' : '.'
+export const wordGap = isUnspaced ? '' : ' '
+
+/**
+ * The end of a sentence the code finishes: Japanese's and Chinese's "。", Hindi's danda "।", the others' ".". Same rule
+ * as Android's `fullStopUi`.
+ */
+export const fullStop = isUnspaced ? '。' : locale === 'hi' ? '।' : '.'
 
 /**
  * Between two clauses of one sentence the code joins ("…pays you $64, and Ana no longer owes you"): Japanese ends the
- * first sentence instead ("…払います。…なくなりました").
+ * first sentence instead ("…払います。…なくなりました"), and Chinese takes its own comma ("…，Ana不再欠你").
  */
-export const clauseBreak = locale === 'ja' ? '。' : ', '
+export const clauseBreak = locale === 'ja' ? '。' : locale === 'zh' ? '，' : ', '
 
 const documentLanguages: Record<Locale, string> = {
   en: 'en',
@@ -114,6 +136,7 @@ const documentLanguages: Record<Locale, string> = {
   ko: 'ko',
   hi: 'hi',
   ar: 'ar',
+  zh: 'zh-Hans',
 }
 
 const documentLanguage = documentLanguages[locale]

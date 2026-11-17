@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">找回你的群组</string>
+    <string name="restore_subtitle">之前用账号登录过？再登录一次就行。如果没有，请使用恢复码或旧设备上的二维码。</string>
+    <string name="restore_no_connection_title">无网络连接</string>
+    <string name="restore_no_connection_body">用账号或恢复码登录需要联网来下载你的群组。你输入的内容会保留。</string>
+    <string name="restore_code_label">或使用恢复码</string>
+    <string name="restore_code_hint">按顺序输入12个词。把它们全部粘贴到一个输入框中即可填满所有输入框。</string>
+    <string name="restore_scan_qr_title">扫描旧设备上的二维码</string>
+    <string name="restore_scan_qr_body">位置：个人资料 › 恢复 › 显示二维码</string>
+    <string name="restore_recover">恢复</string>
+    <string name="restore_try_again">重试</string>
+    <string name="restore_start_fresh">在此设备上重新开始</string>
+    <string name="restore_error_invalid_code">找不到这个恢复码。请检查词语及其顺序，然后重试。</string>
+    <string name="restore_error_too_many_attempts">尝试次数过多。请等几分钟后重试。</string>
+    <string name="restore_error_sign_in_failed">暂时无法登录，请重试。</string>
+    <string name="restore_error_unknown">出了点问题。请重试。</string>
+</resources>

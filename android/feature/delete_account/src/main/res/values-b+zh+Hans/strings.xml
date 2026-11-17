@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">删除账号</string>
+    <string name="delete_account_offline_title">没有网络。</string>
+    <string name="delete_account_offline_body">删除账号需要联网。请连接网络后重试。</string>
+    <string name="delete_account_heading">删除你的账号和数据？</string>
+    <string name="delete_account_deleted_title">将被删除的内容</string>
+    <string name="delete_account_deleted_profile">你的个人资料（名字、照片和颜色）</string>
+    <string name="delete_account_deleted_keys">你的Pix和比特币密钥</string>
+    <string name="delete_account_deleted_provider">与你的%1$s账号的关联</string>
+    <string name="delete_account_deleted_recovery_code">你的恢复码</string>
+    <string name="delete_account_deleted_device">此设备上的数据副本</string>
+    <string name="delete_account_kept_title">群组中保留的内容</string>
+    <string name="delete_account_kept_groups">群组及其中的账单和付款，供其他成员使用</string>
+    <string name="delete_account_kept_member">你在每个群组中的名字，作为无账号成员保留</string>
+    <string name="delete_account_kept_comments">你的评论和你添加的照片，仍以你的名字显示</string>
+    <string name="delete_account_export">先导出我的数据</string>
+    <string name="delete_account_confirm">我明白此操作无法撤销</string>
+    <string name="delete_account_delete">删除账号</string>
+    <string name="delete_account_cancel">取消</string>
+    <string name="delete_account_failed">无法删除你的账号，请重试。</string>
+</resources>
