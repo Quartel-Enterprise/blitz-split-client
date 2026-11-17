@@ -92,7 +92,7 @@ export function CategoryMapScreen() {
         <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
           <ArrowLeft />
         </Button>
-        <h1 className="mr-auto text-lg font-semibold">{t('categoryMap_title')}</h1>
+        <h1 className="me-auto text-lg font-semibold">{t('categoryMap_title')}</h1>
         {/* Why: a term added or the map restored before the whole map was read could overwrite what is coming. */}
         <Button size="sm" disabled={!state.canEditMap} onClick={() => presenter.addTerm(null, '')}>
           <Plus /> <span className="hidden sm:inline">{t('categoryMap_add')}</span>
@@ -112,8 +112,8 @@ export function CategoryMapScreen() {
       </header>
       <main className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4 sm:p-8">
         <div className="relative">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('categoryMap_search')} aria-label={t('categoryMap_search')} className="pl-9" />
+          <Search className="pointer-events-none absolute top-1/2 inset-s-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('categoryMap_search')} aria-label={t('categoryMap_search')} className="ps-9" />
         </div>
         <MapNotices presenter={presenter} state={state} />
         {!state.isLoaded ? (
@@ -132,7 +132,7 @@ export function CategoryMapScreen() {
                   aria-current={section.category.id === selected.category.id ? 'true' : undefined}
                   onClick={() => presenter.selectSection(section.category.id)}
                   className={cn(
-                    'flex items-center gap-3 rounded-lg p-2 text-left hover:bg-accent',
+                    'flex items-center gap-3 rounded-lg p-2 text-start hover:bg-accent',
                     section.category.id === selected.category.id && 'bg-secondary text-secondary-foreground',
                   )}
                 >
@@ -257,7 +257,7 @@ function SectionCard({
     <Card>
       <CardHeader className="flex flex-row items-center gap-3">
         <CategoryBadge category={section.category} />
-        <div className="mr-auto flex flex-col">
+        <div className="me-auto flex flex-col">
           <CardTitle>{categoryName(section.category)}</CardTitle>
           <span className="text-sm text-muted-foreground">
             {sectionCount(section)}
@@ -279,7 +279,7 @@ function SectionCard({
               {canCreateCategory && row.category.isGroupCategory && !row.isOnlyMain ? (
                 <button
                   type="button"
-                  className="self-start text-left underline-offset-2 hover:underline"
+                  className="self-start text-start underline-offset-2 hover:underline"
                   aria-label={t('splitBill_categoryEdit', { name: rowLabel(row) })}
                   onClick={() => presenter.editCategory(row.category.id)}
                 >
@@ -360,7 +360,7 @@ function SearchResults({ presenter, state }: { presenter: CategoryMapPresenter; 
 function ResultRow({ presenter, result }: { presenter: CategoryMapPresenter; result: JsMapSearchResult }) {
   const term = result.term.term
   return (
-    <button type="button" onClick={() => presenter.openTerm(result.term.key)} className="flex items-center gap-3 p-3 text-left hover:bg-accent">
+    <button type="button" onClick={() => presenter.openTerm(result.term.key)} className="flex items-center gap-3 p-3 text-start hover:bg-accent">
       <CategoryBadge category={(result.parent ?? result.category) as JsCategory} className="size-9" />
       <span className="flex flex-col">
         <span>

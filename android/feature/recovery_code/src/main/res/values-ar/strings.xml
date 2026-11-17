@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">حفظ رمز الاسترداد</string>
+    <string name="recovery_code_body">الاستخدام الحالي بدون حساب. هذه الكلمات الـ 12 تعيد بياناتك عند تغيير جهازك أو فقدانه. يجب تدوينها بالترتيب. بعد 30 يومًا من عدم الاستخدام، تُحذف بياناتك وتتوقف الكلمات عن العمل.</string>
+    <string name="recovery_code_copy">نسخ الكلمات</string>
+    <string name="recovery_code_save_to_password_manager">الحفظ في مدير كلمات المرور</string>
+    <string name="recovery_code_connect_instead">ربط Google أو Apple بدلًا من ذلك</string>
+    <string name="recovery_code_connect_instead_body">لا حاجة إلى رمز</string>
+    <string name="recovery_code_sign_in_failed">تعذر الربط الآن. يُرجى إعادة المحاولة.</string>
+    <string name="recovery_code_also_in_profile">موجود أيضًا في الملف الشخصي › الاسترداد.</string>
+    <string name="recovery_code_remind_later">التذكير لاحقًا</string>
+    <string name="recovery_code_saved">تم الحفظ</string>
+    <string name="recovery_code_download">تنزيل</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · رمز الاسترداد\n\n%1$s\n\nيُستخدم في «سبق لي استخدامه على جهاز آخر» لاستعادة بياناتك.\n</string>
+</resources>

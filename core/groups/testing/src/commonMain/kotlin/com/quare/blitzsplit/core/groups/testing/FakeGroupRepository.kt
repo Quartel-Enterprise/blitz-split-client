@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -183,6 +184,7 @@ class FakeGroupRepository(
         shape: GroupShape?,
         photo: ProfilePhoto?,
         currency: GroupCurrency,
+        reminder: GroupReminder,
         updatedAt: Long,
     ): Result<Unit> {
         updateGroupGate?.await()
@@ -198,6 +200,7 @@ class FakeGroupRepository(
                     shape = shape ?: group.shape,
                     photo = photo,
                     currency = currency,
+                    reminder = reminder,
                     isPending = true,
                 )
             } else {
@@ -205,6 +208,19 @@ class FakeGroupRepository(
             }
         }
         hasPendingChanges.value = true
+        return Result.success(Unit)
+    }
+
+    val dismissedReminders = mutableListOf<Pair<String, Long>>()
+
+    override suspend fun dismissReminder(
+        groupId: String,
+        occurrenceAt: Long,
+    ): Result<Unit> {
+        dismissedReminders += groupId to occurrenceAt
+        groups.value = groups.value.map { group ->
+            if (group.id == groupId) group.copy(reminderDismissedAt = occurrenceAt) else group
+        }
         return Result.success(Unit)
     }
 

@@ -41,7 +41,7 @@ export function PhotoViewerDialog({
           {children}
           <DialogPrimitive.Close
             aria-label={t('common_close')}
-            className="absolute top-3.5 right-3.5 flex size-11 items-center justify-center rounded-full bg-black/30 outline-none hover:bg-black/45 focus-visible:ring-[3px] focus-visible:ring-white/60"
+            className="absolute top-3.5 inset-e-3.5 flex size-11 items-center justify-center rounded-full bg-black/30 outline-none hover:bg-black/45 focus-visible:ring-[3px] focus-visible:ring-white/60"
           >
             <XIcon className="size-6" />
           </DialogPrimitive.Close>

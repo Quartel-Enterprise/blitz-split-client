@@ -148,6 +148,10 @@ sealed interface GroupDetailUiEvent : UiEvent {
                 mapOf("source" to GROUP_DETAIL_SOURCE),
             )
 
+            OnReminderBannerDismissed -> EventAnalytics.Automatic("group_reminder_banner_dismissed")
+
+            OnAddReminderToCalendarClicked -> EventAnalytics.Manual("group_reminder_calendar_clicked")
+
             OnSimplifyConflictActivityClicked -> EventAnalytics.Automatic(
                 "simplify_conflict_activity_clicked",
                 mapOf("source" to GROUP_DETAIL_SOURCE),
@@ -318,6 +322,12 @@ sealed interface GroupDetailUiEvent : UiEvent {
 
     // Why: the notice of 13.1e went away.
     data object OnSimplifyConflictDismissed : GroupDetailUiEvent
+
+    // Why: "Dismiss" on the reminder banner, until the next occurrence.
+    data object OnReminderBannerDismissed : GroupDetailUiEvent
+
+    // Why: "Add to calendar" beside the notice of joining the group.
+    data object OnAddReminderToCalendarClicked : GroupDetailUiEvent
 
     // Why: its "Ver na Atividade".
     data object OnSimplifyConflictActivityClicked : GroupDetailUiEvent

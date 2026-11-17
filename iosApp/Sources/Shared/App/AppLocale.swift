@@ -27,6 +27,7 @@ enum AppLocale {
             .url(forResource: identifier(of: language), withExtension: "lproj")
             .flatMap(Bundle.init(url:))
         strings.withLock { $0 = bundle }
+        RightToLeft.refresh()
     }
 
     /// The language's own tag ("pt-BR", "es-ES"), as the shared code writes it to AppleLanguages.
@@ -53,11 +54,17 @@ enum AppLocale {
 }
 
 extension View {
-    /// The windows' `locale` for Profile › Language, left as the system's for the language the app launched in.
+    /// The windows' `locale` for Profile › Language, left as the system's for the language the app launched in, and
+    /// their direction with it: a language picked while the app runs mirrors the windows (Arabic, Hebrew) or unmirrors
+    /// them at once, as the system does only at the next launch.
     @ViewBuilder
     func appLocale(_ language: AppLanguage) -> some View {
         if let locale = AppLocale.of(language) {
             environment(\.locale, locale)
+                .environment(
+                    \.layoutDirection,
+                    locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight,
+                )
         } else {
             self
         }

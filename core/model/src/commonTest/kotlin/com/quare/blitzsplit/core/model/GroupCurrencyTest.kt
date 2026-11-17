@@ -214,6 +214,21 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN the Arabic speaking regions WHEN picking their currencies THEN each has its own with 2 decimals`() {
+        // Given
+        val regions = listOf("SA", "AE", "EG", "MA")
+
+        // When
+        val currencies = regions.map { GroupCurrency.ofRegion(it) }
+
+        // Then
+        assertEquals(
+            listOf(GroupCurrency.SAR to 2, GroupCurrency.AED to 2, GroupCurrency.EGP to 2, GroupCurrency.MAD to 2),
+            currencies.map { it to it.fractionDigits },
+        )
+    }
+
+    @Test
     fun `GIVEN mainland China WHEN picking its currency THEN it is the yuan with its 2 decimals`() {
         // Given
         val region = "CN"

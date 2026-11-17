@@ -19,7 +19,7 @@ class BlitzSplitApplication : Application() {
      * Language's pick from the next start of the app.
      */
     override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(LegacyAppLocale.wrap(base))
+        super.attachBaseContext(LegacyAppLocale.wrapApplication(base))
     }
 
     override fun onCreate() {

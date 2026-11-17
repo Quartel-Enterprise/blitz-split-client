@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">تعديل الملف الشخصي</string>
+    <string name="edit_profile_save">حفظ</string>
+    <string name="edit_profile_change_photo">تغيير الصورة</string>
+    <string name="edit_profile_take_photo">التقاط صورة</string>
+    <string name="edit_profile_choose_photo">الاختيار من المعرض</string>
+    <string name="edit_profile_use_account_photo">استخدام صورة حساب %1$s</string>
+    <string name="edit_profile_remove_photo">إزالة الصورة</string>
+    <string name="edit_profile_photo_error">تعذر استخدام هذه الصورة. يمكن تجربة صورة أخرى.</string>
+    <string name="edit_profile_avatar_color">لون الصورة الرمزية</string>
+    <string name="edit_profile_avatar_color_hint">يظهر عند عدم وجود صورة.</string>
+    <string name="edit_profile_name_label">اسمك</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">الحد الأدنى من الأحرف: %d.</string>
+    <string name="edit_profile_name_too_long">الحد الأقصى من الأحرف: %d.</string>
+    <string name="edit_profile_account_notice">الاسم والصورة من حسابك على %1$s. تغييرهما هنا يسري على Blitz Split فقط ولا يغيّر حسابك على %1$s.</string>
+    <string name="edit_profile_footer">يرى اسمك وصورتك أعضاء مجموعاتك وكل من لديه رابط ملفك الشخصي.</string>
+    <string name="profile_photo_close">إغلاق</string>
+    <string name="profile_photo_camera">الكاميرا</string>
+    <string name="profile_photo_gallery">المعرض</string>
+    <string name="profile_photo_remove">إزالة</string>
+    <string name="profile_photo_title">صورة الملف الشخصي</string>
+</resources>

@@ -44,7 +44,7 @@ export function ActivityFilterButton({ presenter, state, isPhone }: { presenter:
         {draft && (
           <Drawer open onOpenChange={onOpenChange}>
             <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-              <DrawerHeader className="flex-row items-center justify-between group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+              <DrawerHeader className="flex-row items-center justify-between group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
                 <DrawerTitle>{t('activity_filterTitle')}</DrawerTitle>
                 <DrawerDescription className="sr-only">{t('activity_filterTitle')}</DrawerDescription>
                 <DrawerClose asChild>
@@ -158,7 +158,7 @@ export function ActiveFilters({ presenter, state }: { presenter: ActivityPresent
       {chips.map((chip) => (
         <li key={chip.key} className="flex">
           {/* Why: visible overflow, so the ✕'s 24 px target and its focus ring aren't clipped to the 24 px badge's padding box. */}
-          <Badge variant="secondary" className="h-6 gap-1 overflow-visible rounded-md pr-1">
+          <Badge variant="secondary" className="h-6 gap-1 overflow-visible rounded-md pe-1">
             {chip.label}
             <button
               aria-label={t('activity_removeFilter', { label: chip.label })}

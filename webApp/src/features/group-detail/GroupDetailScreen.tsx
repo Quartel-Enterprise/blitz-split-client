@@ -1,9 +1,11 @@
-import { ChevronRight, CircleCheck, HandCoins, ReceiptText, ShieldCheck, Trash2, X } from 'lucide-react'
+import { BellRing, CalendarPlus, ChevronRight, CircleCheck, HandCoins, ReceiptText, ShieldCheck, Trash2, X } from 'lucide-react'
 import {
   GroupDetailPresenter,
   type JsExpenseRow,
   type JsGroupDetailState,
   type JsGroupExportFile,
+  type JsReminderBanner,
+  type JsReminderCalendarEvent,
   type JsPaymentRow,
   type JsRoute,
 } from 'blitzsplit-shared'
@@ -21,6 +23,7 @@ import { nameOrFormer, paymentMethodLabel, useRecordedPaymentNotice } from '@/fe
 import { BalancesTab } from '@/features/balances/BalancesTab'
 import { BillDeleteDialog } from '@/features/bill-detail/BillDeleteDialog'
 import { MembersDialogs, MembersTab, useMembers } from '@/features/members/MembersTab'
+import { downloadReminderCalendarEvent, reminderSummary } from '@/features/group-reminder/reminder'
 import { useSimplifyConflictNotice } from '@/features/simplify-debts/simplify'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
@@ -46,6 +49,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
   const state = useWatch(presenter, (p, onChange: (state: JsGroupDetailState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: string) => void) => p.observeActions(onAction), toastGroupAction)
   useActions(presenter, (p, onExport: (file: JsGroupExportFile) => void) => p.observeExports(onExport), downloadGroupExport)
+  useActions(presenter, (p, onEvent: (event: JsReminderCalendarEvent) => void) => p.observeCalendarEvents(onEvent), downloadReminderCalendarEvent)
   // Why: back from a page the group opened draws the group anew, on the tab picked before it.
   const pageKey = useContext(PageKeyContext)
   useEffect(() => {
@@ -85,6 +89,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
       events={presenter}
       onSelectTab={(picked) => presenter.selectTab(picked)}
     >
+      {state.reminderBanner && <ReminderBannerCard presenter={presenter} banner={state.reminderBanner} />}
       {tab === 'expenses' && <ExpensesTab presenter={presenter} state={state} />}
       {tab === 'balances' && <BalancesTab presenter={presenter} state={state} />}
       {tab === 'members' &&
@@ -124,7 +129,7 @@ export function GroupDetailScreen({ route }: { route: JsRoute }) {
 function ExpensesTab({ presenter, state }: { presenter: GroupDetailPresenter; state: JsGroupDetailState }) {
   return (
     <>
-      {state.joinedAs != null && <JoinedNotice presenter={presenter} name={state.joinedAs} showsProtectAccess={state.showsProtectAccess} />}
+      {state.joinedAs != null && <JoinedNotice presenter={presenter} name={state.joinedAs} showsProtectAccess={state.showsProtectAccess} showsCalendarOffer={state.showsJoinCalendarOffer} />}
       {state.isLoadingBills ? (
         // Why: a restored account's bills may still be coming, so never "Nenhuma despesa ainda" before they did.
         <LoadingRegion isDelayed={false} isWaitingForInternet={state.isWaitingForInternet}>
@@ -152,7 +157,7 @@ function ExpensesTab({ presenter, state }: { presenter: GroupDetailPresenter; st
 }
 
 /** Right after joining through the link (3.3): "Você entrou como Bruno", and "Proteja seu acesso" while the account has no Google or Apple. */
-function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: GroupDetailPresenter; name: string; showsProtectAccess: boolean }) {
+function JoinedNotice({ presenter, name, showsProtectAccess, showsCalendarOffer }: { presenter: GroupDetailPresenter; name: string; showsProtectAccess: boolean; showsCalendarOffer: boolean }) {
   return (
     <>
       <section role="status" className="flex gap-3 rounded-xl border border-primary/30 bg-primary/10 p-4">
@@ -160,13 +165,19 @@ function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: Grou
         <div className="min-w-0 flex-1">
           <p className="font-semibold">{t('groupDetail_joinedTitle', { name })}</p>
           <p className="text-sm text-muted-foreground">{t('groupDetail_joinedMessage')}</p>
+          {showsCalendarOffer && (
+            <Button variant="outline" size="sm" className="mt-2" onClick={() => presenter.addReminderToCalendar()}>
+              <CalendarPlus />
+              {t('reminder_addToCalendarJoined')}
+            </Button>
+          )}
         </div>
         <Button variant="ghost" size="icon-sm" aria-label={t('home_dismiss')} className="-m-1 shrink-0 text-muted-foreground" onClick={() => presenter.dismissJoinedNotice()}>
           <X />
         </Button>
       </section>
       {showsProtectAccess && (
-        <button type="button" onClick={() => presenter.protectAccess()} className="flex items-center gap-3 rounded-xl border bg-card p-4 text-left hover:bg-muted/60">
+        <button type="button" onClick={() => presenter.protectAccess()} className="flex items-center gap-3 rounded-xl border bg-card p-4 text-start hover:bg-muted/60">
           <ShieldCheck className="size-5 shrink-0 text-primary" />
           <span className="flex-1">
             <span className="block font-semibold">{t('groupDetail_protectTitle')}</span>
@@ -176,6 +187,27 @@ function JoinedNotice({ presenter, name, showsProtectAccess }: { presenter: Grou
         </button>
       )}
     </>
+  )
+}
+
+/** "Hora de acertar": the group's reminder arrived or passed and this person owes; "Dispensar" hides it until the next one. */
+function ReminderBannerCard({ presenter, banner }: { presenter: GroupDetailPresenter; banner: JsReminderBanner }) {
+  return (
+    <section role="status" className="flex gap-3 rounded-xl border border-primary/30 bg-primary/10 p-4">
+      <BellRing aria-hidden className="mt-0.5 size-5 shrink-0 text-primary" />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold">{t('reminder_bannerTitle')}</p>
+        <p className="text-sm text-muted-foreground">{reminderSummary(banner.reminder)}</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button size="sm" onClick={() => presenter.settle()}>
+            {t('reminder_bannerSettle')}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => presenter.dismissReminderBanner()}>
+            {t('reminder_bannerDismiss')}
+          </Button>
+        </div>
+      </div>
+    </section>
   )
 }
 

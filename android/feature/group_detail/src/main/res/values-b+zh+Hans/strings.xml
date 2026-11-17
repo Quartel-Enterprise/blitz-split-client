@@ -94,4 +94,7 @@
     <string name="group_detail_balances_note_simplified">开启简化债务后，应用会给出最少的付款笔数。“已收款”和“已付款”用来记录在应用之外完成的付款（Pix、现金、转账）。</string>
     <string name="group_detail_photo_open">查看群组照片</string>
     <string name="group_export_payment_method">支付方式</string>
+    <string name="group_detail_reminder_title">该结清了</string>
+    <string name="group_detail_reminder_settle">去结清</string>
+    <string name="group_detail_reminder_dismiss">关闭</string>
 </resources>

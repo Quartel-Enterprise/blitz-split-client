@@ -106,4 +106,7 @@
     <string name="group_detail_balances_note_simplified">Зі спрощеними боргами застосунок пропонує найменше платежів. «Мені сплатили» і «Уже сплачено» записують платіж, зроблений поза застосунком (Pix, готівка, переказ).</string>
     <string name="group_detail_photo_open">Переглянути фото групи</string>
     <string name="group_export_payment_method">Спосіб оплати</string>
+    <string name="group_detail_reminder_title">Час розрахуватися</string>
+    <string name="group_detail_reminder_settle">Розрахуватися</string>
+    <string name="group_detail_reminder_dismiss">Приховати</string>
 </resources>

@@ -547,6 +547,7 @@ private struct LanguageName: View {
         case .ukrainian: "Українська"
         case .korean: "한국어"
         case .hindi: "हिन्दी"
+        case .arabic: "العربية"
         case .chineseSimplified: "中文（简体）"
         default: nil
         }
@@ -639,6 +640,8 @@ private struct LanguageName: View {
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )
+        case .arabic: String(
+            localized: "Arabic",
         case .chineseSimplified: String(
             localized: "Chinese (Simplified)",
             bundle: .appLanguage,
@@ -723,7 +726,7 @@ private struct IdentitySection: View {
                             }
                         }
                         Spacer()
-                        Image(systemName: "chevron.right")
+                        Image(systemName: "chevron.forward")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.tertiary)
                     }
@@ -795,7 +798,7 @@ private struct AccountSection: View {
                     model.send(ProfileUiEventOnRecoveryCodeClicked.shared)
                 } label: {
                     LabeledContent {
-                        Image(systemName: "chevron.right").foregroundStyle(.tertiary)
+                        Image(systemName: "chevron.forward").foregroundStyle(.tertiary)
                     } label: {
                         Text("Recovery code").foregroundStyle(.primary)
                         Text("View and keep · restores on another device")
@@ -1087,7 +1090,7 @@ private struct PayingMethodRow: View {
                     defaultValue: "Default",
                 )))
             }
-            Image(systemName: "chevron.right")
+            Image(systemName: "chevron.forward")
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.tertiary)
                 .accessibilityHidden(true)
@@ -1146,7 +1149,7 @@ private struct PaymentKeyRow: View {
             if key.isDefault {
                 DefaultBadge(title: Text("Default"))
             }
-            Image(systemName: "chevron.right")
+            Image(systemName: "chevron.forward")
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(.tertiary)
                 .accessibilityHidden(true)

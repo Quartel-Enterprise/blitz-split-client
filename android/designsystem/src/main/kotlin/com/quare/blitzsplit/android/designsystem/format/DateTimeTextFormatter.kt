@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLocale
 import java.time.Instant
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -36,10 +37,15 @@ class DateTimeTextFormatter(
 
     fun toTimeText(epochMillis: Long): String = time.format(zonedOf(epochMillis))
 
+    // Why: a time of day with no date, as a group's reminder keeps it, on the same clock and pattern as the rest.
+    fun toTimeText(timeOfDay: LocalTime): String = time.format(timeOfDay)
+
     private fun zonedOf(epochMillis: Long): ZonedDateTime = Instant.ofEpochMilli(epochMillis).atZone(zone)
 
-    private fun formatterOf(skeleton: String): DateTimeFormatter =
-        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(locale, skeleton), locale)
+    // Why: 0-9 in every language, as the amounts (MoneyFormatter); java.time's own digits are already 0-9.
+    private fun formatterOf(skeleton: String): DateTimeFormatter = locale.withLatinDigits().let { latin ->
+        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(latin, skeleton), latin)
+    }
 
     private companion object {
         const val WEEKDAY_DATE_SKELETON = "EEEMMMd"

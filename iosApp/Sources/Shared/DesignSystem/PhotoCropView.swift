@@ -115,6 +115,9 @@ struct PhotoCropView: View {
             .contentShape(Rectangle())
             .gesture(dragGesture(side: side).simultaneously(with: magnifyGesture(side: side, size: proxy.size)))
         }
+        // Why: the crop is about the picture, not the text: SwiftUI would mirror the offset and the drag in right to
+        // left, while the saved crop is cut from the model's physical offset
+        .environment(\.layoutDirection, .leftToRight)
     }
 
     /// The scrim with the frame cut out of it, and the frame's border.

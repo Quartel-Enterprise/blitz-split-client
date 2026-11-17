@@ -322,7 +322,7 @@ enum SplitBillCopy {
 
     /// "15%" as the device's language writes a percentage.
     static func percent(_ value: Int64) -> String {
-        (Double(value) / 100).formatted(.percent)
+        (Double(value) / 100).formatted(.percent.locale(AppNumbers.locale))
     }
 
     /// A person's second line in "Split", by mode: "Paid part of the bill" for one of several payers.

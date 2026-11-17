@@ -124,6 +124,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.UKRAINIAN,
                 AppLanguage.KOREAN,
                 AppLanguage.HINDI,
+                AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
             )
 
@@ -150,6 +151,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "uk",
                     "ko",
                     "hi",
+                    "ar",
                     "zh",
                 ),
                 spoken,
@@ -176,14 +178,32 @@ class ObserveSpokenLanguageUseCaseTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
         val devices =
-            listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "zh")
+            listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh")
 
         // When
         val spoken = devices.map { spokenOn(it) }
 
         // Then
         assertEquals(
-            listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "zh"),
+            listOf(
+                "en",
+                "pt",
+                "es",
+                "fr",
+                "de",
+                "it",
+                "pl",
+                "nl",
+                "ja",
+                "tr",
+                "id",
+                "ru",
+                "uk",
+                "ko",
+                "hi",
+                "ar",
+                "zh",
+            ),
             spoken,
         )
     }
@@ -213,6 +233,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "uk-UA",
                 "ko-KR",
                 "hi-IN",
+                "ar-EG",
                 "zh-CN",
             )
 
@@ -241,6 +262,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "uk",
                     "ko",
                     "hi",
+                    "ar",
                     "zh",
                 ),
                 spoken,

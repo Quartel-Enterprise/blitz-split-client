@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDraft } from '@/hooks/useDraft'
-import { t } from '@/i18n'
+import { forwardArrow, t } from '@/i18n'
 import { categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 
@@ -34,7 +34,7 @@ export function TermDialog({ presenter, state, form, isDesktop }: { presenter: C
   const isError = !!form.error || !!form.duplicateTerm
   const example =
     typed && form.category
-      ? `${form.duplicateTerm ? t('categoryMap_exampleMove') : t('categoryMap_example')}: “${typed.charAt(0).toUpperCase()}${typed.slice(1)}” → ${categoryPath(form.category, form.categoryParent)}`
+      ? `${form.duplicateTerm ? t('categoryMap_exampleMove') : t('categoryMap_example')}: “${typed.charAt(0).toUpperCase()}${typed.slice(1)}” ${forwardArrow} ${categoryPath(form.category, form.categoryParent)}`
       : null
   const saveLabel = form.duplicateTerm && form.category ? t('categoryMap_moveTo', { name: categoryName(form.category) }) : t('categoryMap_save')
   return (
@@ -60,7 +60,7 @@ export function TermDialog({ presenter, state, form, isDesktop }: { presenter: C
                 </SelectTrigger>
                 <SelectContent>
                   {state.options.map((option) => (
-                    <SelectItem key={option.category.id} value={option.category.id} className={cn(option.category.parentId && 'pl-6')}>
+                    <SelectItem key={option.category.id} value={option.category.id} className={cn(option.category.parentId && 'ps-6')}>
                       {categoryPath(option.category, option.parent)}
                       {option.groupName && ` · ${t('categoryMap_onlyInGroup', { group: option.groupName })}`}
                     </SelectItem>
@@ -81,7 +81,7 @@ export function TermDialog({ presenter, state, form, isDesktop }: { presenter: C
               {t('categoryMap_cancel')}
             </Button>
             {form.isEditing && (
-              <Button variant="ghost" className="text-destructive hover:text-destructive sm:mr-auto" onClick={() => presenter.removeTerm()}>
+              <Button variant="ghost" className="text-destructive hover:text-destructive sm:me-auto" onClick={() => presenter.removeTerm()}>
                 {t('categoryMap_remove')}
               </Button>
             )}

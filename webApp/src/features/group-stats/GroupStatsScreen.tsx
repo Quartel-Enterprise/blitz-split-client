@@ -97,7 +97,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
                       role="radio"
                       aria-checked={option.period === state.period}
                       onClick={() => pickPeriod(option)}
-                      className="flex min-h-14 items-center justify-between gap-3 border-b px-4 py-2 text-left last:border-b-0"
+                      className="flex min-h-14 items-center justify-between gap-3 border-b px-4 py-2 text-start last:border-b-0"
                     >
                       <PeriodOptionText option={option} isTrip={state.isTrip} />
                       {option.period === state.period && <Check aria-hidden className="size-[18px] text-primary" />}
@@ -167,7 +167,7 @@ export function GroupStatsScreen({ route }: { route: JsRoute }) {
                 <button
                   type="button"
                   onClick={() => presenter.openBiggestExpense()}
-                  className="-m-2 flex items-center gap-3 rounded-lg p-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
+                  className="-m-2 flex items-center gap-3 rounded-lg p-2 text-start outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
                 >
                   <CategoryBadge category={state.biggestExpense.category} className="size-9" />
                   <span className="flex min-w-0 flex-1 flex-col">
@@ -498,7 +498,7 @@ function OverTimeCard({ state, presenter, money }: { state: JsGroupStatsState; p
               onClick={() => presenter.pickChartType(type.code)}
               className={cn(
                 'flex size-8 items-center justify-center border outline-none focus-visible:ring-[3px] focus-visible:ring-ring [&_svg]:size-4',
-                index === 0 ? 'rounded-l-md' : '-ml-px rounded-r-md',
+                index === 0 ? 'rounded-s-md' : '-ms-px rounded-e-md',
                 state.chartType === type.code ? 'bg-accent text-foreground' : 'bg-card text-muted-foreground',
               )}
             >
@@ -580,7 +580,7 @@ function AverageLegend({ label, amount }: { label: string; amount: string }) {
           onMouseLeave={closeHoverSoon}
           className="flex w-fit cursor-pointer items-center gap-1 rounded-sm text-[13px] text-muted-foreground outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         >
-          <span aria-hidden className="mr-0.5 w-4 border-t-2 border-dashed border-muted-foreground" />
+          <span aria-hidden className="me-0.5 w-4 border-t-2 border-dashed border-muted-foreground" />
           {label} <strong className="font-semibold text-foreground tabular-nums">{amount}</strong>
         </button>
       </PopoverTrigger>

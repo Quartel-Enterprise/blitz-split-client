@@ -8,7 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class PushDeviceMapperImplTest {
-    private val mapper = PushDeviceMapperImpl()
+    private val mapper = PushDeviceMapperImpl(timeZoneId = { "Asia/Tokyo" })
 
     @Test
     fun `GIVEN an Android token WHEN mapping to the params THEN sends android with no APNs environment nor web keys`() {
@@ -32,6 +32,7 @@ class PushDeviceMapperImplTest {
                 apnsEnvironment = null,
                 webP256dh = null,
                 webAuth = null,
+                timeZone = "Asia/Tokyo",
             ),
             params,
         )
@@ -59,6 +60,7 @@ class PushDeviceMapperImplTest {
                 apnsEnvironment = "development",
                 webP256dh = null,
                 webAuth = null,
+                timeZone = "Asia/Tokyo",
             ),
             params,
         )
@@ -86,6 +88,7 @@ class PushDeviceMapperImplTest {
                 apnsEnvironment = "production",
                 webP256dh = null,
                 webAuth = null,
+                timeZone = "Asia/Tokyo",
             ),
             params,
         )
@@ -113,8 +116,32 @@ class PushDeviceMapperImplTest {
                 apnsEnvironment = null,
                 webP256dh = "BNcRd-p256dh",
                 webAuth = "tBHI-auth",
+                timeZone = "Asia/Tokyo",
             ),
             params,
         )
+    }
+
+    @Test
+    fun `GIVEN the device clock changes zone WHEN mapping twice THEN each registration sends the zone it has then`() {
+        // Given
+        var zone = "America/Sao_Paulo"
+        val travelling = PushDeviceMapperImpl(timeZoneId = { zone })
+        val device = PushDevice(
+            token = "fcm-1",
+            platform = PushPlatform.ANDROID,
+            apnsEnvironment = null,
+            webP256dh = null,
+            webAuth = null,
+        )
+
+        // When
+        val before = travelling.toParams(device)
+        zone = "Europe/Lisbon"
+        val after = travelling.toParams(device)
+
+        // Then
+        assertEquals("America/Sao_Paulo", before.timeZone)
+        assertEquals("Europe/Lisbon", after.timeZone)
     }
 }

@@ -106,4 +106,7 @@
     <string name="group_detail_balances_note_simplified">С упрощёнными долгами приложение предлагает минимум платежей. «Мне заплатили» и «Уже оплачено» записывают платёж, сделанный вне приложения (Pix, наличные, перевод).</string>
     <string name="group_detail_photo_open">Посмотреть фото группы</string>
     <string name="group_export_payment_method">Способ оплаты</string>
+    <string name="group_detail_reminder_title">Пора рассчитаться</string>
+    <string name="group_detail_reminder_settle">Рассчитаться</string>
+    <string name="group_detail_reminder_dismiss">Скрыть</string>
 </resources>

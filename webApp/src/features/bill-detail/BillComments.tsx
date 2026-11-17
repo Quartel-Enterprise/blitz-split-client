@@ -83,7 +83,7 @@ export function BillComments({
           <li key={thread.comment.id} className="mt-1.5 border-t first:mt-0 first:border-t-0">
             {comment(thread.comment, false)}
             {thread.replies.length > 0 && (
-              <ul className="flex flex-col pl-[38px]">
+              <ul className="flex flex-col ps-[38px]">
                 {thread.replies.map((reply) => (
                   <li key={reply.id}>{comment(reply, true)}</li>
                 ))}
@@ -222,7 +222,7 @@ function Comment({
           </span>
         )}
         {row.canInteract && (
-          <span className="-ml-2 flex items-center gap-2">
+          <span className="-ms-2 flex items-center gap-2">
             <CommentLikes row={row} canChange={canChange} presenter={presenter} />
             {onReply && (
               <Button variant="link" size="sm" className="h-7 px-0 text-[13px] text-muted-foreground" onClick={() => onReply(row.id)}>

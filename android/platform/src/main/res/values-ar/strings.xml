@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · رمز الاسترداد</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">يجب السماح بالكاميرا من الإعدادات لالتقاط صورة.</string>
+    <string name="platform_camera_settings">الإعدادات</string>
+    <string name="platform_receipt_source_camera">التقاط صورة</string>
+    <string name="platform_receipt_source_gallery">الاختيار من المعرض</string>
+    <string name="platform_receipt_source_file">اختيار ملف</string>
+    <string name="platform_receipt_camera_title">مسح الإيصال</string>
+    <string name="platform_receipt_camera_close">إغلاق</string>
+    <string name="platform_receipt_camera_flash_on">تشغيل الفلاش</string>
+    <string name="platform_receipt_camera_flash_off">إيقاف الفلاش</string>
+    <string name="platform_receipt_camera_hint">يجب أن يظهر الإيصال كاملًا داخل الإطار. نملأ المبلغ والتاريخ والوصف، وتتم المراجعة قبل الحفظ.</string>
+    <string name="platform_receipt_camera_gallery">الاختيار من المعرض</string>
+    <string name="platform_receipt_camera_shutter">التقاط صورة</string>
+    <string name="platform_receipt_camera_unavailable">الكاميرا غير متاحة. يمكن اختيار صورة الإيصال من المعرض.</string>
+    <string name="platform_receipt_camera_permission">يجب السماح بالكاميرا لمسح الإيصال، أو اختيار صورة من المعرض.</string>
+    <string name="platform_receipt_camera_allow">السماح بالكاميرا</string>
+    <string name="platform_receipt_camera_settings">فتح الإعدادات</string>
+</resources>

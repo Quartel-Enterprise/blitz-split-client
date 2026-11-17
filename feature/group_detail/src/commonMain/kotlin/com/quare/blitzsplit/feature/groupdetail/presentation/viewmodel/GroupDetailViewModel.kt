@@ -23,7 +23,9 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
+import com.quare.blitzsplit.core.groups.domain.usecase.BuildReminderCalendarEvent
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
+import com.quare.blitzsplit.core.groups.domain.usecase.DismissGroupReminder
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -41,6 +43,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUi
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.ReminderBanner
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,6 +67,8 @@ class GroupDetailViewModel(
     private val currentTimeZone: CurrentTimeZone,
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     private val consumeSimplifyDebtsConflict: ConsumeSimplifyDebtsConflict,
+    private val dismissGroupReminder: DismissGroupReminder,
+    private val buildReminderCalendarEvent: BuildReminderCalendarEvent,
     billMenuUseCases: BillMenuUseCases,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
     observeAddPersonRequest: ObserveAddPersonRequest,
@@ -102,6 +107,8 @@ class GroupDetailViewModel(
                 simplification = null,
                 simplifyConflict = null,
                 showsExportFormats = false,
+                reminderBanner = null,
+                reminder = null,
             ),
         )
 
@@ -386,12 +393,31 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnSimplifyConflictDismissed -> uiState.update { it.copy(simplifyConflict = null) }
 
+            GroupDetailUiEvent.OnReminderBannerDismissed -> dismissReminderBanner()
+
+            GroupDetailUiEvent.OnAddReminderToCalendarClicked -> addReminderToCalendar()
+
             // Why: Atividade lists both changes.
             GroupDetailUiEvent.OnSimplifyConflictActivityClicked -> {
                 uiState.update { it.copy(simplifyConflict = null) }
                 screen.openActivity()
             }
         }
+    }
+
+    // Why: hidden at once, then remembered on this device; the next occurrence's banner comes back by itself.
+    private fun dismissReminderBanner() {
+        val banner = uiState.value.reminderBanner ?: return
+        uiState.update { it.copy(reminderBanner = null) }
+        viewModelScope.launch { dismissGroupReminder(route.groupId, banner.occurrenceAt) }
+    }
+
+    private fun addReminderToCalendar() {
+        val group = shownGroup ?: return
+        val reminder = uiState.value.reminder ?: return
+        val event = buildReminderCalendarEvent(group.name, reminder) ?: return
+        trackEvent("group_reminder_calendar_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
+        viewModelScope.launch { uiAction.emit(GroupDetailUiAction.AddReminderToCalendar(event)) }
     }
 
     // Why: 13.1e shows once, on whichever screen of the group is on top first.
@@ -464,6 +490,8 @@ class GroupDetailViewModel(
                     shown?.let { debtRowOf(debt, it.currency, group, meId, it.balances) }
                 },
                 hasBills = byCurrency.hasBills,
+                reminderBanner = ReminderBanner.of(group, byCurrency, meId, now, timeZone),
+                reminder = group.reminder.takeIf { it.isEnabled },
                 simplification = balances?.let(DebtSimplificationSummary::ofOrNull),
                 isLoaded = true,
             )

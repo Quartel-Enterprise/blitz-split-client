@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -44,7 +45,14 @@ interface GroupRepository {
         // Why: a Pending one goes up with the next sync; null takes the photo off.
         photo: ProfilePhoto?,
         currency: GroupCurrency,
+        reminder: GroupReminder,
         updatedAt: Long,
+    ): Result<Unit>
+
+    // Why: "Dispensar" on the group's reminder banner, for this device only: the banner comes back with the next occurrence.
+    suspend fun dismissReminder(
+        groupId: String,
+        occurrenceAt: Long,
     ): Result<Unit>
 
     /*

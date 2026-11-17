@@ -142,7 +142,7 @@ SCREENSHOT_REORDER_REFUSED_MESSAGE = "Can't Add/Remove Relationship when reorder
 SCREENSHOT_REORDER_ATTEMPTS = 3
 SCREENSHOT_REORDER_WAIT_SECONDS = 10
 
-desc "Generate the store listing screenshots of both stores in all 18 languages, then upload them"
+desc "Generate the store listing screenshots of both stores in all 19 languages, then upload them"
 desc "Options: skip_upload:true only generates (store_listings/ and the fastlane folders); platform:android or"
 desc "platform:ios does one store (ios: iPhone, iPad, iPhone Duo and Mac); skip_capture:true reuses the Apple captures"
 desc "already in build/; skip_mac:true leaves the Mac out (its capture drives this Mac's screen); locale:<store code>"

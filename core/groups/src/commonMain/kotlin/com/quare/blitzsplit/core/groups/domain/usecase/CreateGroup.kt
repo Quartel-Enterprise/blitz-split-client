@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.groups.domain.usecase
 
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -18,5 +19,7 @@ fun interface CreateGroup {
         photo: ProfilePhoto.Pending?,
         currency: GroupCurrency,
         members: List<NewGroupMember>,
+        // Why: "Lembrete de acerto", Monday 10:00 unless the creator picked another schedule or turned it off.
+        reminder: GroupReminder,
     ): Result<String>
 }

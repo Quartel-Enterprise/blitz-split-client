@@ -78,7 +78,7 @@ export function DefaultSplitDialog({ route }: { route: JsRoute }) {
     const exceptionFooter = (
       <>
         {editor.editedCategoryId && (
-          <Button type="button" variant="ghost" className="text-destructive sm:mr-auto" onClick={() => presenter.removeException()}>
+          <Button type="button" variant="ghost" className="text-destructive sm:me-auto" onClick={() => presenter.removeException()}>
             {t('defaultSplit_exceptionRemove')}
           </Button>
         )}
@@ -93,7 +93,7 @@ export function DefaultSplitDialog({ route }: { route: JsRoute }) {
     return isDesktop ? (
       <Dialog open onOpenChange={onOpenChange}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[560px]">
-          <DialogHeader className="pr-8 text-left">
+          <DialogHeader className="pe-8 text-start">
             <DialogTitle>{t('defaultSplit_exceptionTitle')}</DialogTitle>
             <DialogDescription>{t('defaultSplit_exceptionLead')}</DialogDescription>
           </DialogHeader>
@@ -104,7 +104,7 @@ export function DefaultSplitDialog({ route }: { route: JsRoute }) {
     ) : (
       <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
         <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-          <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+          <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
             <DrawerTitle>{t('defaultSplit_exceptionTitle')}</DrawerTitle>
             <DrawerDescription>{t('defaultSplit_exceptionLead')}</DrawerDescription>
           </DrawerHeader>
@@ -118,7 +118,7 @@ export function DefaultSplitDialog({ route }: { route: JsRoute }) {
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className={cn('max-h-[calc(100dvh-2rem)] overflow-y-auto', isWide ? 'sm:max-w-[820px]' : 'sm:max-w-[560px]')}>
-        <DialogHeader className="flex-row items-center gap-2 pr-8 text-left">
+        <DialogHeader className="flex-row items-center gap-2 pe-8 text-start">
           {back}
           <span className="flex flex-col gap-0.5">
             <DialogTitle>{t('defaultSplit_title')}</DialogTitle>
@@ -135,7 +135,7 @@ export function DefaultSplitDialog({ route }: { route: JsRoute }) {
   ) : (
     <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
       <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-        <DrawerHeader className="flex-row items-center gap-2 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="flex-row items-center gap-2 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           {back}
           <span className="flex flex-col gap-0.5">
             <DrawerTitle>{t('defaultSplit_title')}</DrawerTitle>
@@ -204,7 +204,7 @@ function ModePicker({ presenter, state }: { presenter: DefaultSplitPresenter; st
               aria-checked={isSelected}
               onClick={() => presenter.selectMode(mode)}
               className={cn(
-                'flex items-center gap-3 rounded-lg border px-3 py-2.5 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                'flex items-center gap-3 rounded-lg border px-3 py-2.5 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
                 isSelected ? 'border-primary bg-primary/5' : 'hover:bg-accent/60',
               )}
             >
@@ -296,7 +296,7 @@ function PersonRow({ presenter, state, row }: { presenter: DefaultSplitPresenter
           aria-checked={row.isIncluded}
           aria-label={t('defaultSplit_includes', { name })}
           onClick={() => presenter.togglePerson(row.id)}
-          className="flex w-full items-center gap-3 px-3 py-2.5 text-left outline-none hover:bg-accent/60 focus-visible:bg-accent/60"
+          className="flex w-full items-center gap-3 px-3 py-2.5 text-start outline-none hover:bg-accent/60 focus-visible:bg-accent/60"
         >
           {content}
         </button>
@@ -383,6 +383,7 @@ function NumberField({
         </span>
       )}
       <input
+        dir="ltr"
         inputMode="numeric"
         autoComplete="off"
         value={draft}
@@ -390,7 +391,7 @@ function NumberField({
         aria-label={label}
         aria-invalid={isInvalid}
         onChange={(event) => setDraft(event.target.value)}
-        className="min-w-0 flex-1 bg-transparent text-right text-base font-semibold tabular-nums outline-none md:text-sm placeholder:text-muted-foreground"
+        className="min-w-0 flex-1 bg-transparent text-right rtl:text-left text-base font-semibold tabular-nums outline-none md:text-sm placeholder:text-muted-foreground"
       />
       {suffix && (
         <span aria-hidden className="text-muted-foreground">

@@ -256,14 +256,14 @@ private struct SplitPersonRow: View {
         switch editor.mode {
         case .amount:
             HStack(spacing: 4) {
-                Text(verbatim: editor.currency.symbol)
+                Text(verbatim: editor.currency.fieldSymbol)
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
                 valueField(prompt: editor.currency.zeroPlaceholder, width: 96)
             }
         case .income:
             HStack(spacing: 4) {
-                Text(verbatim: editor.currency.symbol)
+                Text(verbatim: editor.currency.fieldSymbol)
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
                 valueField(prompt: editor.currency.zeroPlaceholder, width: 96)

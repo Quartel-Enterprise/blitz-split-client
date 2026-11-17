@@ -55,7 +55,7 @@ export function ResponsiveDialog({
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className={cn('max-h-[calc(100dvh-2rem)] overflow-y-auto [--pane-gutter:--spacing(6)]', className)} onOpenAutoFocus={focusPastLeading}>
-        <DialogHeader className="pr-8">
+        <DialogHeader className="pe-8">
           <div data-dialog-leading className="contents">
             {pane.leading}
           </div>
@@ -69,7 +69,7 @@ export function ResponsiveDialog({
   ) : (
     <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
       <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]" onOpenAutoFocus={focusPastLeading}>
-        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           <div data-dialog-leading className="contents">
             {pane.leading}
           </div>

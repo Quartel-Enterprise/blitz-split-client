@@ -108,7 +108,7 @@ function InviteBody({ presenter, state, isDesktop }: { presenter: ContactInviteP
               onClick={() => presenter.pickGroup(group.groupId)}
               className={cn(
                 'flex h-8 items-center gap-1.5 rounded-md border bg-card px-3 text-[13px] font-medium whitespace-nowrap outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring',
-                isChecked && 'border-primary pl-2 ring-1 ring-primary',
+                isChecked && 'border-primary ps-2 ring-1 ring-primary',
               )}
             >
               {isChecked && <Check aria-hidden className="size-3.5 text-primary" />}
@@ -121,7 +121,7 @@ function InviteBody({ presenter, state, isDesktop }: { presenter: ContactInviteP
           <button
             type="button"
             onClick={() => presenter.newGroup()}
-            className="flex h-8 items-center gap-1.5 rounded-md border border-dashed pr-3 pl-2 text-[13px] font-medium whitespace-nowrap text-muted-foreground outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring"
+            className="flex h-8 items-center gap-1.5 rounded-md border border-dashed pe-3 ps-2 text-[13px] font-medium whitespace-nowrap text-muted-foreground outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring"
           >
             <Plus aria-hidden className="size-3.5" />
             {t('contactInvite_newGroup')}

@@ -245,7 +245,7 @@ struct PaymentFaces: View {
     var body: some View {
         HStack(spacing: 10) {
             face(from)
-            Image(systemName: "arrow.right")
+            Image(systemName: "arrow.forward")
                 .font(.headline)
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)

@@ -299,4 +299,19 @@
     <string name="designsystem_range_start">开始日期</string>
     <string name="designsystem_range_end">结束日期</string>
     <string name="designsystem_range_none">未选择</string>
+    <string name="designsystem_reminder_title">群组提醒</string>
+    <string name="designsystem_reminder_switch">提醒成员结清</string>
+    <string name="designsystem_reminder_caption">有欠款的成员会按各自的当地时间收到通知。</string>
+    <string name="designsystem_reminder_weekly">每周</string>
+    <string name="designsystem_reminder_monthly">每月</string>
+    <string name="designsystem_reminder_time">时间</string>
+    <string name="designsystem_reminder_day_of_month">日期</string>
+    <string name="designsystem_reminder_calendar_new">添加到我的日历</string>
+    <string name="designsystem_reminder_calendar_new_caption">创建群组时，在你的日历中添加一个重复日程。</string>
+    <string name="designsystem_reminder_calendar">添加到日历</string>
+    <string name="designsystem_reminder_calendar_join">将提醒添加到你的日历</string>
+    <string name="designsystem_reminder_schedule_weekly">每%1$s %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">每月%1$d日 %2$s</string>
+    <string name="designsystem_reminder_event_title">结清：%1$s</string>
+    <string name="designsystem_reminder_event_description">是时候在“%1$s”结清了。</string>
 </resources>

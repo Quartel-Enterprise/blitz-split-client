@@ -13,7 +13,7 @@ export function RecoveryWordsBox({ words, onCopy, columns = 3 }: { words: string
       <ol className={cn('grid gap-x-3 gap-y-1.5', columns === 3 ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2')}>
         {words.map((word, index) => (
           <li key={index} className="flex items-baseline gap-1.5">
-            <span className="min-w-5 text-right text-sm text-muted-foreground tabular-nums">{index + 1}</span>
+            <span className="min-w-5 text-end text-sm text-muted-foreground tabular-nums">{index + 1}</span>
             <span className="font-mono font-semibold">{word}</span>
           </li>
         ))}

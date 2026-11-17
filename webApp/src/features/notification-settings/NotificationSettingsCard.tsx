@@ -85,7 +85,7 @@ export function NotificationSettingsDialog() {
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[600px]">
-        <DialogHeader className="pr-8 text-left">
+        <DialogHeader className="pe-8 text-start">
           <DialogTitle>{t('notifications_title')}</DialogTitle>
           <DialogDescription>{t('notifications_footer')}</DialogDescription>
         </DialogHeader>
@@ -95,7 +95,7 @@ export function NotificationSettingsDialog() {
   ) : (
     <Drawer open onOpenChange={onOpenChange}>
       <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           <DrawerTitle>{t('notifications_title')}</DrawerTitle>
           <DrawerDescription>{t('notifications_footer')}</DrawerDescription>
         </DrawerHeader>

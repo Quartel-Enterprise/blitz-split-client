@@ -16,7 +16,7 @@ import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
-import { formatMoney, formatNames } from '@/lib/money'
+import { formatMoney, formatNames, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
@@ -55,6 +55,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   const isLoaded = state.isLoaded
 
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
+  const signedMoney: Money = (minor) => formatSignedMoney(minor, state.currency, state.fractionDigits)
   const onOpenChange = (open: boolean) => {
     if (!open) presenter.back()
   }
@@ -71,7 +72,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   const actions = isLoaded && <BillActions presenter={presenter} state={state} />
   // Why: the group's rounded square beside its name, as Android and iOS draw it over the bill (beta feedback of 2026-11-15).
   const groupName = isLoaded ? (
-    <span className="mr-auto flex min-w-0 items-center gap-2">
+    <span className="me-auto flex min-w-0 items-center gap-2">
       {/* Why: the avatar opens the group's photo big, as the group's header; the padding keeps a 44 px touch target. */}
       <button
         type="button"
@@ -84,7 +85,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       <span className="truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
     </span>
   ) : (
-    <SkeletonLine className="mr-auto w-28" />
+    <SkeletonLine className="me-auto w-28" />
   )
   const offline = isLoaded && !state.isOnline && (
     <p role="status" className={cn('rounded-lg border px-3.5 py-2.5 text-[13px] leading-[18px]', pendingSurfaceClass)}>
@@ -120,6 +121,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       <BillBody
         state={state}
         money={money}
+        signedMoney={signedMoney}
         attachments={attachments}
         onPerson={openPerson}
         title={<SheetTitle className={titleClass}>{state.description}</SheetTitle>}
@@ -130,7 +132,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       <>
         <Sheet open={!isCovered} onOpenChange={onOpenChange}>
           <SheetContent side="right" showCloseButton={false} className="w-full gap-0 sm:max-w-[560px] lg:max-w-[880px]">
-            <header className="flex h-14 shrink-0 items-center gap-1 border-b pr-3 pl-6">
+            <header className="flex h-14 shrink-0 items-center gap-1 border-b pe-3 ps-6">
               {groupName}
               {actions}
               <SheetClose asChild>
@@ -171,7 +173,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     <>
       <Drawer open={!isCovered} onOpenChange={onOpenChange} repositionInputs={false}>
         <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-          <DrawerHeader className="flex-row items-center gap-1 border-b py-2 pr-2 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+          <DrawerHeader className="flex-row items-center gap-1 border-b py-2 pe-2 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
             {groupName}
             {actions}
           </DrawerHeader>
@@ -181,6 +183,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
               <BillBody
                 state={state}
                 money={money}
+                signedMoney={signedMoney}
                 attachments={attachments}
                 onPerson={openPerson}
                 title={<DrawerTitle className={titleClass}>{state.description}</DrawerTitle>}
@@ -279,6 +282,7 @@ export type BillBodyState = Pick<JsBillDetailState, 'category' | 'categoryParent
 export function BillBody({
   state,
   money,
+  signedMoney = (minor) => `+${money(minor)}`,
   attachments,
   title,
   description,
@@ -286,6 +290,8 @@ export function BillBody({
 }: {
   state: BillBodyState
   money: Money
+  // Why: "+R$ 249,60" with the sign where the language puts it ("Sua parte"); a bill's link page has no such line.
+  signedMoney?: Money
   attachments: ReactNode
   title: ReactNode
   description: ReactNode
@@ -330,7 +336,7 @@ export function BillBody({
             </span>
           )}
         </div>
-        {state.showsMyPart && state.myBalanceMinor != null && <MyPart balance={state.myBalanceMinor} note={state.myPartNote} money={money} />}
+        {state.showsMyPart && state.myBalanceMinor != null && <MyPart balance={state.myBalanceMinor} note={state.myPartNote} money={money} signedMoney={signedMoney} />}
       </div>
 
       {attachments}
@@ -371,8 +377,8 @@ function paidText(payers: JsBillPayer[]): string {
 }
 
 /** "Sua parte": what the bill does to your balance, and with whom it settles. */
-function MyPart({ balance, note, money }: { balance: number; note: JsMyPartNote | null | undefined; money: Money }) {
-  const amount = balance > 0 ? `+${money(balance)}` : money(Math.abs(balance))
+function MyPart({ balance, note, money, signedMoney }: { balance: number; note: JsMyPartNote | null | undefined; money: Money; signedMoney: Money }) {
+  const amount = balance > 0 ? signedMoney(balance) : money(Math.abs(balance))
   const word = balance < 0 ? t('billDetail_myPartOwe') : balance > 0 ? t('billDetail_myPartGetBack') : t('billDetail_myPartSettled')
   const tone = balanceTone(balance)
   const noteText = note ? myPartNoteText(note, money) : null

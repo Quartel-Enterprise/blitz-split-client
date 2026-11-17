@@ -151,7 +151,7 @@ val profileModule = module {
     factoryOf(::ObservePendingNotificationPreferenceChangesUseCase).bind<ObservePendingNotificationPreferenceChanges>()
     factoryOf(::UpdateNotificationPreferenceUseCase).bind<UpdateNotificationPreference>()
     singleOf(::SupabasePushDeviceRemoteDataSource).bind<PushDeviceRemoteDataSource>()
-    singleOf(::PushDeviceMapperImpl).bind<PushDeviceMapper>()
+    single<PushDeviceMapper> { PushDeviceMapperImpl() }
     singleOf(::RoomPushSettingsLocalDataSource).bind<PushSettingsLocalDataSource>()
     singleOf(::PushDeviceRepositoryImpl).bind<PushDeviceRepository>()
     factoryOf(::SetPushDeviceUseCase).bind<SetPushDevice>()

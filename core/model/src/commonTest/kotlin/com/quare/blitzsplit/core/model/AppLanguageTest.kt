@@ -264,6 +264,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Arabic tag of any country WHEN reading it THEN is the one Arabic`() {
+        // Given
+        val tags = listOf("ar", "ar-SA", "ar_AE", "AR-eg", "ar-MA", "ar-Arab-EG", "ar-001")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.ARABIC }, languages)
+    }
+
+    @Test
     fun `GIVEN any Chinese tag WHEN reading it THEN is Simplified Chinese`() {
         // Given
         val tags = listOf("zh", "zh-Hans", "zh-CN", "zh_CN", "ZH-hans-cn", "zh-SG", "zh-Hans-HK", "zh-CN-u-nu-hant")
@@ -352,6 +364,7 @@ class AppLanguageTest {
                 "UA",
                 "KO",
                 "HI",
+                "AR",
                 "ZH",
             ),
             codes,

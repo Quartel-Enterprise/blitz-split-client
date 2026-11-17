@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.groups.domain.usecase
 
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
@@ -17,5 +18,7 @@ fun interface UpdateGroup {
         shape: GroupShape?,
         photo: ProfilePhoto?,
         currency: GroupCurrency,
+        // Why: "Lembrete de acerto", written whole: pass the group's own when this person didn't change it.
+        reminder: GroupReminder,
     ): Result<Unit>
 }

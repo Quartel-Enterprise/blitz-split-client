@@ -102,4 +102,7 @@
     <string name="group_detail_balances_note_simplified">Avec les dettes simplifiées, l’app suggère le moins de paiements possible. « Reçu » et « Déjà payé » enregistrent un paiement fait hors de l’app (Pix, espèces, virement).</string>
     <string name="group_detail_photo_open">Vois la photo du groupe</string>
     <string name="group_export_payment_method">Moyen de paiement</string>
+    <string name="group_detail_reminder_title">C’est l’heure de régler les comptes</string>
+    <string name="group_detail_reminder_settle">Régler</string>
+    <string name="group_detail_reminder_dismiss">Ignorer</string>
 </resources>

@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.model.tint
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
@@ -117,6 +118,8 @@ internal fun exportGroup(
     isSimplifyDebtsPending = false,
     simplifyDebtsChangedBy = null,
     simplifyDebtsConflictBy = null,
+    reminder = GroupReminder.Default,
+    reminderDismissedAt = 0L,
 )
 
 internal fun exportBill(

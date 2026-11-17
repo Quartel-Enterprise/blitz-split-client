@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">التواصل مع الدعم</string>
+    <string name="contact_support_description">سنفتح تطبيق البريد الإلكتروني برسالة جاهزة. يكفي وصف ما حدث وإرسالها: أشخاص حقيقيون يقرؤون كل رسالة.</string>
+    <string name="contact_support_to">إلى</string>
+    <string name="contact_support_diagnostics">سيُضمَّن في البريد الإلكتروني</string>
+    <string name="contact_support_app_version">إصدار التطبيق</string>
+    <string name="contact_support_platform">المنصة</string>
+    <string name="contact_support_language">اللغة</string>
+    <string name="contact_support_account">الحساب</string>
+    <string name="contact_support_profile">الملف الشخصي</string>
+    <string name="contact_support_language_system">النظام</string>
+    <string name="contact_support_account_local">هذا الجهاز فقط</string>
+    <string name="contact_support_account_anonymous">غير مرتبط</string>
+    <string name="contact_support_open_email">فتح البريد الإلكتروني</string>
+    <string name="contact_support_copy_email">نسخ عنوان البريد الإلكتروني</string>
+    <string name="contact_support_notice_copied">تم نسخ عنوان البريد الإلكتروني.</string>
+    <string name="contact_support_notice_no_app">لم يُعثر على تطبيق بريد إلكتروني. تم نسخ العنوان بدلًا من ذلك.</string>
+    <string name="contact_support_close">إغلاق</string>
+</resources>

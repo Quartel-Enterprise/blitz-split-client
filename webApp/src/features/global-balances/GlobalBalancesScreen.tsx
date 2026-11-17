@@ -166,7 +166,7 @@ function FilterCards({ presenter, state }: { presenter: GlobalBalancesPresenter;
             aria-pressed={isOn}
             onClick={() => presenter.changeFilter(filter)}
             className={cn(
-              'flex flex-col gap-1 rounded-xl border bg-card p-4 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring',
+              'flex flex-col gap-1 rounded-xl border bg-card p-4 text-start outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring',
               isOn && 'border-primary ring-1 ring-primary',
             )}
           >
@@ -260,18 +260,18 @@ function PersonRowItem({ presenter, row }: { presenter: GlobalBalancesPresenter;
           currency={row.currency}
           fractionDigits={row.fractionDigits}
           label={`${name} · ${t('globalBalances_byGroup')}`}
-          className="ml-12"
+          className="ms-12"
           onGroupClick={(groupId) => presenter.openGroup(groupId)}
         />
       )}
-      <div className="ml-12 flex items-center gap-2">
+      <div className="ms-12 flex items-center gap-2">
         <Button
           variant="ghost"
           size="sm"
           aria-expanded={row.isExpanded}
           aria-label={t(row.isExpanded ? 'globalBalances_hideByGroup' : 'globalBalances_showByGroup', { name })}
           onClick={() => presenter.togglePerson(row.id)}
-          className="-ml-3 text-muted-foreground"
+          className="-ms-3 text-muted-foreground"
         >
           {t('globalBalances_byGroup')}
           <ChevronDown aria-hidden className={cn('transition-transform', row.isExpanded && 'rotate-180')} />
@@ -293,7 +293,7 @@ function PersonSummary({ row, name, onPersonClick }: { row: JsPersonRow; name: s
   const face = (
     <>
       <PersonFace row={row} className="size-9 text-sm" />
-      <span className="flex min-w-0 flex-1 flex-col text-left">
+      <span className="flex min-w-0 flex-1 flex-col text-start">
         <span data-profile-piece="name" className="max-w-full self-start truncate font-medium">{name}</span>
         <span className="truncate text-xs text-muted-foreground">{meta}</span>
       </span>
@@ -405,10 +405,10 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
       <table className="w-full overflow-hidden rounded-lg border text-sm">
         <caption className="sr-only">{`${name} · ${t('globalBalances_byGroup')}`}</caption>
         <thead>
-          <tr className="h-10 border-b text-left text-[13px] text-muted-foreground">
+          <tr className="h-10 border-b text-start text-[13px] text-muted-foreground">
             <th scope="col" className="px-4 font-medium">{t('globalBalances_detailGroup')}</th>
             <th scope="col" className="w-36 px-4 font-medium">{t('globalBalances_detailStatus')}</th>
-            <th scope="col" className="w-32 px-4 text-right font-medium">{t('globalBalances_detailAmount')}</th>
+            <th scope="col" className="w-32 px-4 text-end font-medium">{t('globalBalances_detailAmount')}</th>
           </tr>
         </thead>
         <tbody>
@@ -423,17 +423,17 @@ function PersonDetail({ presenter, row }: { presenter: GlobalBalancesPresenter; 
                   <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-6 shrink-0 text-[10px]" />
                   <span className="truncate">{group.name}</span>
                 </button>
-                {group.isSimplified && <SimplifiedBadge className="mb-1.5 ml-[34px]" />}
+                {group.isSimplified && <SimplifiedBadge className="mb-1.5 ms-[34px]" />}
               </td>
               <td className="px-4 text-muted-foreground">{t(group.amountMinor < 0 ? 'globalBalances_rowYouOwe' : 'globalBalances_rowOwesYou')}</td>
-              <td className={cn('px-4 text-right tabular-nums', balanceTone(group.amountMinor))}>{signed(group.amountMinor)}</td>
+              <td className={cn('px-4 text-end tabular-nums', balanceTone(group.amountMinor))}>{signed(group.amountMinor)}</td>
             </tr>
           ))}
           <tr className="h-11 bg-muted font-semibold">
-            <th scope="row" colSpan={2} className="px-4 text-left">
+            <th scope="row" colSpan={2} className="px-4 text-start">
               {t(row.isNetOfSeveralGroups ? 'globalBalances_net' : 'globalBalances_total')}
             </th>
-            <td className={cn('px-4 text-right tabular-nums', balanceTone(row.netMinor))}>{signed(row.netMinor)}</td>
+            <td className={cn('px-4 text-end tabular-nums', balanceTone(row.netMinor))}>{signed(row.netMinor)}</td>
           </tr>
         </tbody>
       </table>

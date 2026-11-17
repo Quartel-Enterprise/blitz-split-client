@@ -137,7 +137,7 @@ export function ActivityBell({ unreadCount, onOpen, className }: { unreadCount: 
     >
       <Bell aria-hidden className="size-[18px]" />
       {unreadCount > 0 && (
-        <span aria-hidden className="absolute top-1 right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground tabular-nums">
+        <span aria-hidden className="absolute top-1 inset-e-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground tabular-nums">
           {unreadCount > 99 ? '99+' : unreadCount}
         </span>
       )}
@@ -248,11 +248,11 @@ export function HomeShellView({
   const barMotion = 'motion-safe:transition-transform motion-safe:duration-200 motion-safe:ease-out'
   return (
     <div className={cn('flex min-h-dvh', className)}>
-      <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-r bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
+      <aside className="sticky top-0 hidden h-dvh w-20 shrink-0 flex-col border-e bg-sidebar p-2 md:flex lg:w-60 lg:p-3">
         <button
           aria-label={t('appName')}
           onClick={openBrand}
-          className="rounded-md text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+          className="rounded-md text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         >
           <BrandMark showsName={false} className="h-10 px-1 lg:hidden" />
           <BrandMark className="hidden h-10 px-1.5 lg:flex" />
@@ -268,7 +268,7 @@ export function HomeShellView({
           >
             <Search aria-hidden className="size-4 shrink-0" />
             <span aria-hidden className="lg:hidden">{t('groups_search')}</span>
-            <span className="hidden flex-1 text-left lg:inline">{t('groups_searchButton')}</span>
+            <span className="hidden flex-1 text-start lg:inline">{t('groups_searchButton')}</span>
             {search.shortcut && <kbd className="hidden h-5 items-center rounded border bg-muted px-1.5 font-sans text-[11px] lg:flex">{search.shortcut}</kbd>}
           </button>
         )}
@@ -294,7 +294,7 @@ export function HomeShellView({
           onClick={onProfile}
           aria-current={isProfileSelected ? 'page' : undefined}
           className={cn(
-            'mt-auto flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-lg px-1.5 text-left outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:justify-start',
+            'mt-auto flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-lg px-1.5 text-start outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring lg:justify-start',
             isProfileSelected && 'bg-sidebar-accent text-sidebar-accent-foreground',
           )}
         >
@@ -332,7 +332,7 @@ export function HomeShellView({
             <button
               aria-label={t('appName')}
               onClick={openBrand}
-              className="mr-auto rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+              className="me-auto rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               <BrandMark />
             </button>
@@ -407,7 +407,7 @@ function SidebarGroups({ openGroups }: { openGroups: ShellOpenGroups }) {
             aria-current={group.id === openGroups.selectedId ? 'page' : undefined}
             onClick={() => openGroups.onOpen(group.id)}
             className={cn(
-              'flex h-9 shrink-0 items-center gap-2.5 rounded-md px-2.5 text-left text-sm outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring',
+              'flex h-9 shrink-0 items-center gap-2.5 rounded-md px-2.5 text-start text-sm outline-none hover:bg-sidebar-accent focus-visible:ring-[3px] focus-visible:ring-ring',
               group.id === openGroups.selectedId && 'bg-sidebar-accent font-medium text-sidebar-accent-foreground',
             )}
           >

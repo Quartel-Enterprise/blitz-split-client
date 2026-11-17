@@ -194,7 +194,7 @@ function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money:
             variant="ghost"
             disabled={!state.canDelete}
             onClick={() => presenter.deleteBill()}
-            className="text-destructive hover:text-destructive sm:mr-auto"
+            className="text-destructive hover:text-destructive sm:me-auto"
           >
             {t('splitBill_delete')}
           </Button>
@@ -214,7 +214,7 @@ function billPane(presenter: SplitBillPresenter, state: JsSplitBillState, money:
             variant="outline"
             disabled={!state.canScanReceipt}
             onClick={receiptPicker.pick}
-            className="md:order-first md:mr-auto"
+            className="md:order-first md:me-auto"
           >
             <ScanText aria-hidden />
             {t('splitBill_scanReceipt')}
@@ -463,7 +463,7 @@ function GroupField({ presenter, state }: { presenter: SplitBillPresenter; state
           className={cn(controlClass, 'flex-1')}
         >
           <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-5 text-[9px]" />
-          <span className="flex-1 truncate text-left">{state.groupName}</span>
+          <span className="flex-1 truncate text-start">{state.groupName}</span>
           <ChevronRight aria-hidden className="size-4 text-muted-foreground" />
         </button>
         {state.canChangeGroup && (
@@ -660,7 +660,7 @@ function SplitSummary({
     <button
       type="button"
       onClick={() => presenter.openSplit()}
-      className="flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+      className="flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-start outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
     >
       <AvatarStack {...stackOf(Array.from(split.included), 'compact')} />
       <span className="flex min-w-0 flex-1 flex-col">
@@ -741,7 +741,7 @@ function PayerRow({ isSelected, onPick, children }: { isSelected: boolean; onPic
       role="radio"
       aria-checked={isSelected}
       onClick={onPick}
-      className="flex min-h-12 items-center gap-3 px-3 py-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
+      className="flex min-h-12 items-center gap-3 px-3 py-2 text-start outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
     >
       {children}
       <span
@@ -832,13 +832,14 @@ function PayerAmountField({ presenter, row, currency, fractionDigits }: { presen
         {currencySymbol(currency)}
       </span>
       <input
+        dir="ltr"
         inputMode="numeric"
         autoComplete="off"
         value={value}
         placeholder={amountPlaceholder(fractionDigits, currency)}
         aria-label={t('splitBill_payerAmountLabel', { name })}
         onChange={(event) => setValue(event.target.value)}
-        className="w-full min-w-0 bg-transparent text-right font-mono text-base tabular-nums outline-none md:text-[13px] placeholder:text-muted-foreground"
+        className="w-full min-w-0 bg-transparent text-right rtl:text-left font-mono text-base tabular-nums outline-none md:text-[13px] placeholder:text-muted-foreground"
       />
     </span>
   )

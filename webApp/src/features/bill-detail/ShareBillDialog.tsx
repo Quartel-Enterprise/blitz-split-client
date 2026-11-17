@@ -119,7 +119,7 @@ function ShareBody({ presenter, state }: { presenter: ShareBillPresenter; state:
 
 /** The link with "Copiar", a shimmer while it is read or made, or "Tentar de novo" when that failed. */
 function LinkRow({ presenter, state }: { presenter: ShareBillPresenter; state: JsShareBillState }) {
-  const row = 'flex min-h-10 items-center gap-2 rounded-md border pr-1 pl-3'
+  const row = 'flex min-h-10 items-center gap-2 rounded-md border pe-1 ps-3'
   // Why: the server is asked for the link, so the shimmer shows at once in the link's shape.
   if (state.isLoading) {
     return (

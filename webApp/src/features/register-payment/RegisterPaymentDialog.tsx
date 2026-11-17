@@ -214,7 +214,7 @@ function PaymentForm({
           size="sm"
           aria-disabled={state.isFullDebt}
           onClick={() => !state.isFullDebt && presenter.fullDebt()}
-          className="mt-1.5 -ml-2.5 self-start text-primary hover:text-primary aria-disabled:pointer-events-none aria-disabled:opacity-60"
+          className="mt-1.5 -ms-2.5 self-start text-primary hover:text-primary aria-disabled:pointer-events-none aria-disabled:opacity-60"
         >
           {state.isFullDebt && <Check aria-hidden />}
           {t('registerPayment_fullDebt')}

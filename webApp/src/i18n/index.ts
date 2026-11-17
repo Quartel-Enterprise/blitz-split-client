@@ -16,6 +16,7 @@ import { tr } from './tr'
 import { uk } from './uk'
 import { ko } from './ko'
 import { hi } from './hi'
+import { ar } from './ar'
 import { zh } from './zh'
 
 export type { MessageKey }
@@ -24,12 +25,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'zh'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, zh }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'zh']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -55,10 +56,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag
  * (es, es-MX, es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any
- * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko` or `hi` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY,
- * id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN…) is German, Italian, Polish, Dutch, Japanese, Turkish,
- * Indonesian, Russian, Ukrainian, Korean or Hindi, any `zh` tag but a Traditional one (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, any
- * `en` tag is English, and English when none matches.
+ * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi` or `ar` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY,
+ * id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG…) is German, Italian, Polish, Dutch, Japanese, Turkish,
+ * Indonesian, Russian, Ukrainian, Korean, Hindi or Arabic, any `zh` tag but a Traditional one (zh-CN, zh-Hans, zh-SG…) is
+ * Simplified Chinese, any `en` tag is English, and English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
@@ -134,12 +135,59 @@ const documentLanguages: Record<Locale, string> = {
   uk: 'uk',
   ko: 'ko',
   hi: 'hi',
+  ar: 'ar',
   zh: 'zh-Hans',
 }
 
 const documentLanguage = documentLanguages[locale]
 
+// Why: the languages written right to left; "iw" is Hebrew's legacy code, which older browsers still send.
+const rightToLeftLanguages: ReadonlySet<string> = new Set(['ar', 'he', 'iw'])
+
+/** Whether `tag` ("ar", "he-IL", "ar_EG") is a language written right to left. */
+export function isRightToLeft(tag: string): boolean {
+  return rightToLeftLanguages.has(tag.toLowerCase().split(/[-_]/)[0])
+}
+
+/** The page's direction, from the app's language: `rtl` for Arabic and Hebrew, `ltr` for the others. */
+export const direction: 'ltr' | 'rtl' = isRightToLeft(documentLanguage) ? 'rtl' : 'ltr'
+
+/** "→", the arrow that points the way a line reads: "←" in a right-to-left language, where arrows don't mirror. */
+export const forwardArrow = direction === 'rtl' ? '←' : '→'
+
+/**
+ * `text` kept in one piece inside a right-to-left sentence: wrapped in FIRST STRONG ISOLATE … POP DIRECTIONAL
+ * ISOLATE, so "−R$ 118,50" or a symbol's "US$" keeps its order among Arabic or Hebrew words. A left-to-right language
+ * gets `text` unchanged.
+ */
+export function isolated(text: string): string {
+  return direction === 'rtl' ? `\u2068${text}\u2069` : text
+}
+
+// Why: the languages whose own digits Intl would write ("١٢٫٥٠" in Arabic), which the amount fields can't parse.
+const latinDigitLanguages: ReadonlySet<string> = new Set(['ar'])
+
+/**
+ * The tag to hand `Intl` for numbers, amounts and dates: `tag` itself, but with Latin digits (`-u-nu-latn`) for
+ * Arabic, so an amount reads "12.50" as the amount fields type it. Every other language gets `tag` unchanged.
+ */
+export function formattingLocale(tag: string): string {
+  if (!latinDigitLanguages.has(tag.toLowerCase().split(/[-_]/)[0])) return tag
+  const [base, extension] = tag.split(/-u-/i)
+  if (extension === undefined) return `${tag}-u-nu-latn`
+  const keys = extension.replace(/(^|-)nu-[a-z0-9]{3,8}/i, '').replace(/^-/, '')
+  return `${base}-u-${keys ? `${keys}-` : ''}nu-latn`
+}
+
 const pluralRules = new Intl.PluralRules(documentLanguage)
+
+// Why: the plural categories of a language with a dual (Arabic's zero, one, two, few, many, other), in the order its
+// "|" forms are written; undefined for the others, whose forms pluralFormOf picks by their count.
+const everyFormOrder: readonly Intl.LDMLPluralRule[] | undefined = (() => {
+  const categories = pluralRules.resolvedOptions().pluralCategories
+  if (!categories.includes('two')) return undefined
+  return (['zero', 'one', 'two', 'few', 'many', 'other'] as const).filter((category) => categories.includes(category))
+})()
 
 /**
  * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many
@@ -147,12 +195,18 @@ const pluralRules = new Intl.PluralRules(documentLanguage)
  * the one `count` takes (a fraction taking few's, as Polish does). Russian and Ukrainian also say 21 in the singular
  * ("21 группа"), so theirs hold three, one|few|many: "{count} группа|{count} группы|{count} групп". A fraction takes
  * few's, which is Russian's own; Ukrainian has a form of its own for it ("1,5 платежу"), which no count the app
- * passes needs. Any other message has one form. `count` must be the number itself, not a formatted string: one that
- * isn't a number gets the many form, the one most counts take.
+ * passes needs. Arabic has a dual, so its messages hold every category it has, in CLDR's order,
+ * "zero|one|two|few|many|other" (`everyFormOrder`), and so does any language whose plural has a two. Any other message
+ * has one form. `count` must be the number itself, not a formatted string: one that isn't a number gets the many
+ * form, the one most counts take (other, in a language that holds every form).
  */
 function pluralFormOf(message: string, count: string | number | undefined): string {
   if (!message.includes('|')) return message
   const forms = message.split('|')
+  if (everyFormOrder) {
+    const category = typeof count === 'number' ? pluralRules.select(count) : 'other'
+    return forms[everyFormOrder.indexOf(category)] ?? forms[forms.length - 1]
+  }
   const category = typeof count === 'number' ? pluralRules.select(count) : 'many'
   if (forms.length === 3) return forms[category === 'one' ? 0 : category === 'many' ? 2 : 1]
   return category === 'many' ? forms[1] : forms[0]
@@ -262,8 +316,9 @@ function turkishVerbForYou(verb: string): string {
   return verb.replace(/^([^:]*?[dt][ıiuü])(\s*(?::|$))/u, '$1n$2')
 }
 
-/** The page's language and title: Bora Rachar only in Brazil's Portuguese, Blitz Split everywhere else. */
+/** The page's language, direction and title: Bora Rachar only in Brazil's Portuguese, Blitz Split everywhere else. */
 export function applyDocumentLocale() {
   document.documentElement.lang = documentLanguage
+  document.documentElement.dir = direction
   document.title = t('appName')
 }

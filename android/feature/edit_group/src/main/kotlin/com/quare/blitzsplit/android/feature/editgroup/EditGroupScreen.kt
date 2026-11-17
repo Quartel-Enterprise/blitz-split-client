@@ -18,8 +18,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropDialog
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropFrame
 import com.quare.blitzsplit.android.designsystem.component.SimplifyConflictNoticeEffect
+import com.quare.blitzsplit.android.designsystem.component.rememberReminderCalendarLauncher
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiAction
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.viewmodel.EditGroupViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -41,6 +43,14 @@ fun EditGroupScreen(
         onPhotoPicked = { bytes -> viewModel.onEvent(EditGroupUiEvent.OnPhotoPicked(bytes)) },
         onPhotoUnreadable = { viewModel.onEvent(EditGroupUiEvent.OnPhotoUnreadable) },
     )
+    val addToCalendar = rememberReminderCalendarLauncher()
+    LaunchedEffect(viewModel) {
+        viewModel.uiAction.collect { action ->
+            when (action) {
+                is EditGroupUiAction.AddReminderToCalendar -> addToCalendar(action.event)
+            }
+        }
+    }
     Box {
         EditGroupContent(
             state = state,

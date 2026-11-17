@@ -159,7 +159,7 @@ private struct DetailSections: View {
             ? Text(LocalizedStringResource("Name (a payment method's)", defaultValue: "Name"))
             : Text("Name (optional)")
         Section {
-            KeptTextField(text: model.name, prompt: nameLabel) {
+            KeptTextField(text: model.name, prompt: nameLabel, isNumber: false) {
                 nameLabel
             }
             #if os(iOS)

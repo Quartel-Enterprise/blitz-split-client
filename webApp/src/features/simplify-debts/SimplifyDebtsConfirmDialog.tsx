@@ -95,7 +95,7 @@ export function SimplifyDebtsConfirmDialog({
   ) : (
     <Drawer open onOpenChange={onOpenChange}>
       <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{body}</DrawerDescription>
         </DrawerHeader>

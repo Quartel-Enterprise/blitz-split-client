@@ -54,6 +54,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarWithPhotoButton
 import com.quare.blitzsplit.android.designsystem.component.CurrencyMenuContent
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.GroupReminderSection
+import com.quare.blitzsplit.android.designsystem.component.ReminderCalendarControl
 import com.quare.blitzsplit.android.designsystem.component.ShimmerAvatarSkeleton
 import com.quare.blitzsplit.android.designsystem.component.ShimmerBox
 import com.quare.blitzsplit.android.designsystem.component.ShimmerFormSkeleton
@@ -253,6 +255,24 @@ private fun EditGroupFieldsSection(
     DefaultSplitRow(
         state = state,
         onEvent = onEvent,
+    )
+    GroupReminderSection(
+        reminder = state.reminder,
+        onEnabledChange = { onEvent(EditGroupUiEvent.OnReminderEnabledChanged(it)) },
+        onKindSelected = { onEvent(EditGroupUiEvent.OnReminderKindSelected(it)) },
+        onDaySelected = { onEvent(EditGroupUiEvent.OnReminderDaySelected(it)) },
+        onTimeSelected = { onEvent(EditGroupUiEvent.OnReminderTimeSelected(it)) },
+        isEnabled = !state.isSaving,
+        calendar = if (state.canAddReminderToCalendar) {
+            ReminderCalendarControl.Button(onClick = { onEvent(EditGroupUiEvent.OnAddReminderToCalendarClicked) })
+        } else {
+            ReminderCalendarControl.None
+        },
+        modifier = Modifier.padding(
+            start = 16.dp,
+            end = 16.dp,
+            top = 16.dp,
+        ),
     )
     SimplifyDebtsSection(
         state = state,

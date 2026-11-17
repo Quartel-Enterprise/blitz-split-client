@@ -308,4 +308,19 @@
     <string name="designsystem_range_start">Startdatum</string>
     <string name="designsystem_range_end">Enddatum</string>
     <string name="designsystem_range_none">Keins ausgewählt</string>
+    <string name="designsystem_reminder_title">Gruppenerinnerung</string>
+    <string name="designsystem_reminder_switch">Mitglieder ans Ausgleichen erinnern</string>
+    <string name="designsystem_reminder_caption">Wer noch etwas schuldet, bekommt eine Benachrichtigung, nach der eigenen Uhrzeit.</string>
+    <string name="designsystem_reminder_weekly">Wöchentlich</string>
+    <string name="designsystem_reminder_monthly">Monatlich</string>
+    <string name="designsystem_reminder_time">Uhrzeit</string>
+    <string name="designsystem_reminder_day_of_month">Tag des Monats</string>
+    <string name="designsystem_reminder_calendar_new">Zu meinem Kalender hinzufügen</string>
+    <string name="designsystem_reminder_calendar_new_caption">Fügt deinem Kalender beim Erstellen der Gruppe einen wiederkehrenden Termin hinzu.</string>
+    <string name="designsystem_reminder_calendar">Zum Kalender hinzufügen</string>
+    <string name="designsystem_reminder_calendar_join">Erinnerung zu deinem Kalender hinzufügen</string>
+    <string name="designsystem_reminder_schedule_weekly">Jeden %1$s um %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Jeden Monat am %1$d. um %2$s</string>
+    <string name="designsystem_reminder_event_title">Abrechnen: %1$s</string>
+    <string name="designsystem_reminder_event_description">Zeit, in %1$s abzurechnen.</string>
 </resources>

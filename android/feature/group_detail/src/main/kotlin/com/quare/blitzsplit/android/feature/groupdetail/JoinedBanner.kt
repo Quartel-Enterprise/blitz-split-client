@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Shield
@@ -17,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +28,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.TappableCard
+import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
  * Why: right after joining through the link (3.3), over the group's bills: "Você entrou como Bruno", and "Proteja seu
@@ -35,6 +38,8 @@ import com.quare.blitzsplit.android.designsystem.component.TappableCard
 internal fun JoinedBanner(
     name: String,
     showsProtectAccess: Boolean,
+    showsCalendarOffer: Boolean,
+    onAddToCalendarClick: () -> Unit,
     onProtectAccessClick: () -> Unit,
     onDismissClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -72,6 +77,20 @@ internal fun JoinedBanner(
                         text = stringResource(R.string.group_detail_joined_message),
                         style = MaterialTheme.typography.bodyMedium,
                     )
+                    if (showsCalendarOffer) {
+                        // Why: skippable, like the whole notice: nothing is added unless tapped (feedback of 2026-11-16).
+                        TextButton(onClick = onAddToCalendarClick) {
+                            Icon(
+                                imageVector = Icons.Outlined.CalendarMonth,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Text(
+                                text = stringResource(DesignR.string.designsystem_reminder_calendar_join),
+                                modifier = Modifier.padding(start = 8.dp),
+                            )
+                        }
+                    }
                 }
                 IconButton(
                     onClick = onDismissClick,
