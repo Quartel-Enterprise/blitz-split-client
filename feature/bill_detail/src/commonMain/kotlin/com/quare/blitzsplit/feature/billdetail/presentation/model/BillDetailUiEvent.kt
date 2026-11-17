@@ -56,6 +56,8 @@ sealed interface BillDetailUiEvent : UiEvent {
 
             OnShareClicked -> EventAnalytics.Manual("bill_share_clicked")
 
+            OnGroupPhotoClicked -> EventAnalytics.Manual("bill_group_photo_clicked")
+
             OnDeleteClicked -> EventAnalytics.Manual("bill_delete_clicked")
 
             OnDeleteConfirmed -> EventAnalytics.Manual("bill_delete_confirmed")
@@ -90,6 +92,9 @@ sealed interface BillDetailUiEvent : UiEvent {
 
     // Why: "Compartilhar" in the top bar, which opens "Compartilhar conta".
     data object OnShareClicked : BillDetailUiEvent
+
+    // Why: the group's avatar in the top bar, which opens the group's photo big (Route.GroupPhoto).
+    data object OnGroupPhotoClicked : BillDetailUiEvent
 
     // Why: "Apagar conta" in the top bar, which asks first.
     data object OnDeleteClicked : BillDetailUiEvent

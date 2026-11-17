@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="bill_detail_back">Geri</string>
+    <string name="bill_detail_group_photo_open">Grup fotoğrafını gör</string>
     <string name="bill_detail_edit">Düzenle</string>
     <string name="bill_detail_delete">Sil</string>
     <string name="bill_detail_when_today">Bugün, %s</string>

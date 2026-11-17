@@ -1,0 +1,25 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": ["all"],
+      "text": {
+        "en": "Tap the group's photo in a bill's top bar to see it big.",
+        "pt": "Toque na foto do grupo na barra de cima de uma conta para vê-la grande.",
+        "pt-PT": "Toca na foto do grupo na barra de cima de uma conta para a ver grande.",
+        "es": "Toca la foto del grupo en la barra superior de un gasto para verla en grande.",
+        "fr": "Touche la photo du groupe dans la barre du haut d'une dépense pour la voir en grand.",
+        "de": "Tippe in der oberen Leiste einer Ausgabe auf das Gruppenfoto, um es groß zu sehen.",
+        "it": "Tocca la foto del gruppo nella barra in alto di una spesa per vederla in grande.",
+        "pl": "Dotknij zdjęcia grupy na górnym pasku wydatku, aby zobaczyć je w dużym rozmiarze.",
+        "nl": "Tik op de groepsfoto in de bovenbalk van een uitgave om hem groot te zien.",
+        "ja": "支出の上部バーにあるグループの写真をタップすると、大きく表示されます。",
+        "tr": "Bir harcamanın üst çubuğundaki grup fotoğrafına dokunarak onu büyük görebilirsin.",
+        "id": "Ketuk foto grup di bilah atas sebuah tagihan untuk melihatnya besar.",
+        "ru": "Нажми на фото группы в верхней панели траты, чтобы увидеть его крупно.",
+        "uk": "Натисни на фото групи у верхній панелі витрати, щоб побачити його у великому розмірі.",
+        "ko": "지출의 상단 바에 있는 그룹 사진을 탭하면 크게 볼 수 있어요."
+      }
+    }
+  ]
+}

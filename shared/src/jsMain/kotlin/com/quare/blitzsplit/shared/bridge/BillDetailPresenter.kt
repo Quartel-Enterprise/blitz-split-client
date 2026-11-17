@@ -355,6 +355,11 @@ class BillDetailPresenter(
         viewModel.onEvent(BillDetailUiEvent.OnShareClicked)
     }
 
+    // Why: the group's avatar in Conta's header, which opens the group's photo big.
+    fun groupPhoto() {
+        viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
+    }
+
     fun edit() {
         viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
     }

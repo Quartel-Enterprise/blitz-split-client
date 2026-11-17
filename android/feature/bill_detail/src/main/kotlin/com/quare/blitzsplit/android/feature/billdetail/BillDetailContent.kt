@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.BillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
-import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.GroupPhotoButton
 import com.quare.blitzsplit.android.designsystem.component.PaidWithCard
 import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -167,6 +167,7 @@ fun BillDetailContent(
                             state = state,
                             badgeModifier = shared.group,
                             nameModifier = shared.groupName,
+                            onPhotoClick = { onEvent(BillDetailUiEvent.OnGroupPhotoClicked) },
                         )
                     },
                     navigationIcon = {
@@ -297,6 +298,7 @@ private fun DialogHeader(
                 .weight(1f)
                 .semantics { heading() },
             textStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+            onPhotoClick = { onEvent(BillDetailUiEvent.OnGroupPhotoClicked) },
         )
         BillTopBarAction(
             state = state,
@@ -512,6 +514,7 @@ private fun PreviewBillDetailContent(state: BillDetailUiState) {
 @Composable
 private fun BillGroupTitle(
     state: BillDetailUiState,
+    onPhotoClick: () -> Unit,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
     badgeModifier: Modifier = Modifier,
@@ -520,16 +523,19 @@ private fun BillGroupTitle(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        // Why: the 48 dp touch box already pads the badge by 8 dp each side, which makes up the rest of the 12 dp gap.
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (state.isLoaded) {
-            GroupBadge(
+            GroupPhotoButton(
                 initials = state.groupInitials,
                 color = state.groupColor,
                 photoUrl = state.groupPhotoUrl,
                 size = groupBadgeSize,
-                modifier = badgeModifier,
+                clickLabel = stringResource(R.string.bill_detail_group_photo_open),
+                onClick = onPhotoClick,
+                badgeModifier = badgeModifier,
             )
         }
         Text(
