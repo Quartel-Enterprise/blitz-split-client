@@ -164,6 +164,21 @@ Each suite starts its own `simctl`, and two at once could crash CoreSimulator wh
 ran. A suite, the boot of its own simulator included, took 3 seconds on the Mac (`:core:model`), so running the
 modules with tests in turn adds a few minutes to the step, well within its 80.
 
+The same service hands each suite its device, the one the Kotlin plugin picks by default: the first of the last iOS
+runtime that `xcrun simctl list devices available` lists. The plugin asks for it once per module and fails the
+module's suite when the answer has none (`Xcode does not support simulator tests for ios_simulator_arm64`). That
+happened on `main` twelve minutes after a run's first suite: the suites of 27 modules had passed, and the 22 after
+them failed without running a test, with nothing in the log to say why the devices were gone. So when the simulator
+lists no device, the service logs its state (every device with the reason it is unavailable, the runtimes, and the
+disk images they are mounted from), and on CI, where `CI` is `true`, the suite waits for a device to be listed again:
+up to about ten minutes for the whole build, so a simulator that never comes back holds the job once, not once per
+module: each suite left asks `simctl` once more and fails without waiting. A `simctl` that hangs counts as no device:
+each call gets a minute, and when it still hangs once the wait is over, the suites left fail without asking it again.
+An `xcrun` that cannot run at all is not waited for. Off CI the suite fails at once, with the same state in the log,
+since a Mac with no iOS runtime installed has nothing to wait for. When `apple-tests` fails with "The iOS simulator
+has no available device", look for "The iOS simulator lists no available device" in its log: what follows says what
+was missing.
+
 The Kotlin/Native entry (`~/.konan`) holds the toolchain and the native code each library is compiled to on its first
 link. Every Kotlin/Native job restores the newest entry of its Kotlin version, and `apple-tests` saves it on `main`
 when it ends, under a key with a fingerprint of the libraries compiled in it and the run that saved it: a link that

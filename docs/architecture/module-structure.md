@@ -54,7 +54,7 @@ build-logic/            # Convention plugins
 
 | Plugin | Applied to | What it sets up |
 | --- | --- | --- |
-| `blitzsplit.kotlin.multiplatform` | `:core:*`, `:feature:*`, `:shared` | `android` (`com.android.kotlin.multiplatform.library`), `iosArm64`, `iosSimulatorArm64`, `macosArm64`, `js` (browser, ES modules), `jvm`; the default hierarchy (`appleMain` for the three Apple targets); opt-ins for `ExperimentalTime`, `ExperimentalUuidApi`, `ExperimentalJsExport` and `ExperimentalCoroutinesApi`; `kotlin("test")` in `commonTest`; Kover (except on `:testing` modules); a shared build service that runs the `iosSimulatorArm64Test` suites one module at a time |
+| `blitzsplit.kotlin.multiplatform` | `:core:*`, `:feature:*`, `:shared` | `android` (`com.android.kotlin.multiplatform.library`), `iosArm64`, `iosSimulatorArm64`, `macosArm64`, `js` (browser, ES modules), `jvm`; the default hierarchy (`appleMain` for the three Apple targets); opt-ins for `ExperimentalTime`, `ExperimentalUuidApi`, `ExperimentalJsExport` and `ExperimentalCoroutinesApi`; `kotlin("test")` in `commonTest`; Kover (except on `:testing` modules); a shared build service that runs the `iosSimulatorArm64Test` suites one module at a time, each on the device it hands them, and on CI waits for a simulator that lists none |
 | `blitzsplit.android.compose` | `:android:*` | `com.android.library` + the Compose compiler, the Compose BOM, Material 3, lifecycle Compose, `koin-compose-viewmodel`, and `:android:designsystem` on every module but itself |
 
 `:androidApp` applies `com.android.application` directly. Both plugins name the module with `createNamespace()`:
