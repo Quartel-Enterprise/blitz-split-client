@@ -1,7 +1,6 @@
 import { RotateCcw, Scale, TriangleAlert, UserRound, type LucideIcon } from 'lucide-react'
 import { SimplifyDebtsInfoPresenter, type JsRoute } from 'blitzsplit-shared'
 import { useState } from 'react'
-import { Avatar } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
@@ -9,6 +8,9 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
+import carla from './faces/carla.jpg'
+import elisa from './faces/elisa.jpg'
+import you from './faces/you.jpg'
 import { paymentCount } from './simplify'
 
 const facts: { icon: LucideIcon; title: MessageKey; text: MessageKey }[] = [
@@ -91,11 +93,12 @@ function InfoBody({ example, total }: { example: string; total: string }) {
 
 /**
  * The boards' diagram: Carla, Elisa and you, with Carla → Elisa → you before and Carla → you once simplified (Elisa,
- * who pays nothing, dimmed). The arrows are an SVG under the faces, which keep the app's avatar colors in both themes.
+ * who pays nothing, dimmed). The arrows are an SVG under the faces, photos of the client's image bank (the only sample
+ * images the app ships).
  */
 function ExampleFigure({ isSimplified, amount }: { isSimplified: boolean; amount: string }) {
   const label = t(isSimplified ? 'simplifyInfo_afterLabel' : 'simplifyInfo_beforeLabel', { amount })
-  const node = 'absolute size-9 text-[11px]'
+  const node = 'absolute size-9 rounded-full object-cover'
   return (
     // Why: the result stands out by an accent edge, not a tint, which the blue face sat on (as Android and Apple draw it).
     <figure className={cn('m-0 flex flex-col gap-1.5 rounded-xl bg-card px-1.5 pt-2.5 pb-3', isSimplified ? 'border-2 border-primary' : 'border')}>
@@ -123,9 +126,9 @@ function ExampleFigure({ isSimplified, amount }: { isSimplified: boolean; amount
             )}
           </g>
         </svg>
-        <Avatar initial="CA" color="lilac" className={cn(node, 'top-[10px] left-[12px]')} />
-        <Avatar initial="EL" color="sand" className={cn(node, 'top-[10px] left-[116px]', isSimplified && 'opacity-40')} />
-        <Avatar initial={t('simplify_youCapital')} color="blue" className={cn(node, 'top-[90px] left-[64px] text-[10px]')} />
+        <img src={carla} alt="" className={cn(node, 'top-[10px] left-[12px]')} />
+        <img src={elisa} alt="" className={cn(node, 'top-[10px] left-[116px]', isSimplified && 'opacity-40')} />
+        <img src={you} alt="" className={cn(node, 'top-[90px] left-[64px]')} />
       </div>
       <strong className="text-center text-[13px] leading-[18px]">{paymentCount(isSimplified ? 1 : 2)}</strong>
     </figure>

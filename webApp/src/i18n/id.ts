@@ -2233,6 +2233,7 @@ export const id: Record<MessageKey, string> = {
   editGroup_simplifyPendingOn: 'Aktif di browser ini · menunggu diunggah',
   editGroup_simplifyPendingOff: 'Nonaktif di browser ini · menunggu diunggah',
   editGroup_simplifyNeedsThird: 'Dengan 2 orang, sudah cukup satu pembayaran. Tersedia setelah orang ketiga bergabung.',
+  editGroup_simplifyUnavailableToast: 'Sederhanakan utang tidak tersedia untuk grup dengan kurang dari 3 orang. Fitur ini tersedia setelah grup memiliki minimal 3 orang.',
   editGroup_simplifyOfflineNote: 'Tidak ada internet: saran pembayaran sudah berubah di browser ini. Grup melihatnya setelah tersambung lagi.',
   simplifyConfirm_titleOn: 'Sederhanakan utang?',
   simplifyConfirm_titleOff: 'Nonaktifkan Sederhanakan utang?',

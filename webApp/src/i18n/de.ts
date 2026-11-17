@@ -2235,6 +2235,7 @@ export const de: Record<MessageKey, string> = {
   editGroup_simplifyPendingOn: 'An in diesem Browser · wartet auf Upload',
   editGroup_simplifyPendingOff: 'Aus in diesem Browser · wartet auf Upload',
   editGroup_simplifyNeedsThird: 'Mit 2 Personen ist es schon eine einzige Zahlung. Verfügbar, sobald eine dritte Person beitritt.',
+  editGroup_simplifyUnavailableToast: 'Schulden vereinfachen ist mit weniger als 3 Personen nicht verfügbar. Es wird verfügbar, sobald die Gruppe mindestens 3 Personen hat.',
   editGroup_simplifyOfflineNote: 'Kein Internet: Die vorgeschlagenen Zahlungen haben sich in diesem Browser schon geändert. Die Gruppe sieht es, sobald er wieder verbunden ist.',
   simplifyConfirm_titleOn: 'Schulden vereinfachen?',
   simplifyConfirm_titleOff: '„Schulden vereinfachen“ ausschalten?',

@@ -300,4 +300,5 @@ private fun buildPreviewState(
     simplifyConfirmation = null,
     isChangingSimplifyDebts = false,
     simplifyConflict = null,
+    showsSimplifyUnavailableNotice = false,
 )

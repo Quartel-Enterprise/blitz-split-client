@@ -2232,6 +2232,7 @@ export const en = {
   editGroup_simplifyPendingOn: 'On in this browser · waiting to upload',
   editGroup_simplifyPendingOff: 'Off in this browser · waiting to upload',
   editGroup_simplifyNeedsThird: "With 2 people it's already a single payment. Available once a third person joins.",
+  editGroup_simplifyUnavailableToast: 'Simplify debts is unavailable with fewer than 3 people. It becomes available once the group has at least 3 people.',
   editGroup_simplifyOfflineNote: 'No internet: the suggested payments already changed in this browser. The group sees it once it reconnects.',
   simplifyConfirm_titleOn: 'Simplify debts?',
   simplifyConfirm_titleOff: 'Turn off Simplify debts?',

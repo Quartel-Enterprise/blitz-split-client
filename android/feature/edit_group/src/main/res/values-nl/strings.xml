@@ -112,6 +112,7 @@
     <string name="simplify_status_pending_on">Aan op dit apparaat · wacht op uploaden</string>
     <string name="simplify_status_pending_off">Uit op dit apparaat · wacht op uploaden</string>
     <string name="simplify_status_needs_third">Met 2 personen is het al één betaling. Beschikbaar zodra er een derde persoon lid wordt.</string>
+    <string name="simplify_unavailable_snackbar">Schulden vereenvoudigen is niet beschikbaar met minder dan 3 personen. Het wordt beschikbaar zodra de groep minstens 3 personen heeft.</string>
     <string name="simplify_how_it_works">Hoe het werkt</string>
     <string name="simplify_offline_note">Geen internet: de voorgestelde betalingen zijn op dit apparaat al gewijzigd. De groep ziet het zodra er weer verbinding is.</string>
     <string name="simplify_confirm_title_on">Schulden vereenvoudigen?</string>

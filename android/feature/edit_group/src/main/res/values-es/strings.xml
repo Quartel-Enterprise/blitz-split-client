@@ -115,6 +115,7 @@
     <string name="simplify_status_pending_on">Activado en este dispositivo · esperando para subir</string>
     <string name="simplify_status_pending_off">Desactivado en este dispositivo · esperando para subir</string>
     <string name="simplify_status_needs_third">Con 2 personas ya es un solo pago. Disponible cuando se una una tercera persona.</string>
+    <string name="simplify_unavailable_snackbar">Simplificar deudas no está disponible con menos de 3 personas. Estará disponible en cuanto el grupo tenga al menos 3 personas.</string>
     <string name="simplify_how_it_works">Cómo funciona</string>
     <string name="simplify_offline_note">Sin internet: los pagos sugeridos ya cambiaron en este dispositivo. El grupo lo verá cuando se reconecte.</string>
     <string name="simplify_confirm_title_on">¿Simplificar deudas?</string>

@@ -3,13 +3,17 @@ package com.quare.blitzsplit.android.feature.editgroup
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropDialog
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropFrame
@@ -65,6 +69,11 @@ fun EditGroupScreen(
         onActivityClick = { viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictActivityClicked) },
         onDismiss = { viewModel.onEvent(EditGroupUiEvent.OnSimplifyConflictDismissed) },
     )
+    SimplifyUnavailableNoticeEffect(
+        isShowing = state.showsSimplifyUnavailableNotice,
+        snackbarHostState = snackbarHostState,
+        onDismiss = { viewModel.onEvent(EditGroupUiEvent.OnSimplifyUnavailableNoticeDismissed) },
+    )
     // Why: the rounded square every group's photo is drawn in, whatever the group's shape.
     state.photoCrop?.let { editor ->
         PhotoCropDialog(
@@ -72,5 +81,30 @@ fun EditGroupScreen(
             frame = PhotoCropFrame.ROUNDED_SQUARE,
             onEvent = { event -> viewModel.onEvent(EditGroupUiEvent.OnPhotoCrop(event)) },
         )
+    }
+}
+
+// Why: a tap on the disabled "Simplificar dívidas" says it needs 3 people (13.1c); it replaces any snackbar on screen.
+@Composable
+private fun SimplifyUnavailableNoticeEffect(
+    isShowing: Boolean,
+    snackbarHostState: SnackbarHostState,
+    onDismiss: () -> Unit,
+) {
+    val message = stringResource(R.string.simplify_unavailable_snackbar)
+    val currentOnDismiss by rememberUpdatedState(onDismiss)
+    LaunchedEffect(isShowing) {
+        if (!isShowing) return@LaunchedEffect
+        snackbarHostState.currentSnackbarData?.dismiss()
+        // Why: also when the screen goes while the snackbar shows, or the flag would bring it back on the next visit.
+        try {
+            snackbarHostState.showSnackbar(
+                message = message,
+                withDismissAction = true,
+                duration = SnackbarDuration.Long,
+            )
+        } finally {
+            currentOnDismiss()
+        }
     }
 }

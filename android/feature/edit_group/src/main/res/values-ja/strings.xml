@@ -108,6 +108,7 @@
     <string name="simplify_status_pending_on">このデバイスでオン · アップロード待ち</string>
     <string name="simplify_status_pending_off">このデバイスでオフ · アップロード待ち</string>
     <string name="simplify_status_needs_third">2人ならすでに支払いは1回です。3人目が参加すると使えるようになります。</string>
+    <string name="simplify_unavailable_snackbar">3人未満のグループでは「精算をシンプルに」は使えません。グループが3人以上になると使えるようになります。</string>
     <string name="simplify_how_it_works">仕組み</string>
     <string name="simplify_offline_note">インターネットに接続されていません。提案される支払いはこのデバイスですでに変わりました。再接続するとグループにも反映されます。</string>
     <string name="simplify_confirm_title_on">精算をシンプルにしますか？</string>

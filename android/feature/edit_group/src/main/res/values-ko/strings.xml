@@ -108,6 +108,7 @@
     <string name="simplify_status_pending_on">이 기기에서 켜짐 · 업로드 대기 중</string>
     <string name="simplify_status_pending_off">이 기기에서 꺼짐 · 업로드 대기 중</string>
     <string name="simplify_status_needs_third">2명이면 이미 송금이 한 번뿐이에요. 세 번째 사람이 참여하면 사용할 수 있어요.</string>
+    <string name="simplify_unavailable_snackbar">3명 미만인 그룹에서는 정산 간소화를 사용할 수 없어요. 그룹이 3명 이상이 되면 사용할 수 있어요.</string>
     <string name="simplify_how_it_works">작동 방식</string>
     <string name="simplify_offline_note">인터넷에 연결되어 있지 않아요. 제안된 송금은 이 기기에서 이미 바뀌었어요. 다시 연결되면 그룹에도 반영돼요.</string>
     <string name="simplify_confirm_title_on">정산을 간소화할까요?</string>

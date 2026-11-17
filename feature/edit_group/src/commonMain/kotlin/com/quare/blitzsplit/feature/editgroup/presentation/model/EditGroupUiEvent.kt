@@ -74,6 +74,8 @@ sealed interface EditGroupUiEvent : UiEvent {
 
             OnSimplifyConflictDismissed -> EventAnalytics.NotTracked
 
+            OnSimplifyUnavailableNoticeDismissed -> EventAnalytics.NotTracked
+
             OnSimplifyConflictActivityClicked -> EventAnalytics.Automatic(
                 "simplify_conflict_activity_clicked",
                 mapOf("source" to SOURCE),
@@ -81,6 +83,9 @@ sealed interface EditGroupUiEvent : UiEvent {
         }
 
     data object OnCloseClicked : EditGroupUiEvent
+
+    // Why: the snackbar "needs a third person" (13.1c) went, by itself or by a swipe.
+    data object OnSimplifyUnavailableNoticeDismissed : EditGroupUiEvent
 
     data class OnNameChanged(
         val name: String,

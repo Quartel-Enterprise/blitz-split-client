@@ -1,0 +1,50 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Tapping the dimmed Simplify debts switch in a group of two now tells you it becomes available once the group has 3 people.",
+        "pt": "Tocar no botão apagado de Simplificar dívidas em um grupo de duas pessoas agora avisa que ele fica disponível quando o grupo tiver 3 pessoas.",
+        "pt-PT": "Tocar no botão apagado de Simplificar dívidas num grupo de duas pessoas avisa agora que fica disponível quando o grupo tiver 3 pessoas.",
+        "es": "Al tocar el interruptor atenuado de Simplificar deudas en un grupo de dos, ahora te avisa de que estará disponible cuando el grupo tenga 3 personas.",
+        "fr": "Toucher le bouton grisé de Simplifier les dettes dans un groupe de deux affiche désormais qu’il sera disponible dès que le groupe compte 3 personnes.",
+        "de": "Tippst du in einer Gruppe mit zwei Personen auf den abgeblendeten Schalter von Schulden vereinfachen, erfährst du jetzt, dass er ab 3 Personen verfügbar ist.",
+        "it": "Toccare l’interruttore disattivato di Semplifica debiti in un gruppo di due ora avvisa che sarà disponibile quando il gruppo avrà 3 persone.",
+        "pl": "Dotknięcie wyszarzonego przełącznika Uprość długi w grupie dwuosobowej pokazuje teraz, że będzie dostępny, gdy w grupie będą 3 osoby.",
+        "nl": "Tik je in een groep van twee op de gedimde schakelaar van Schulden vereenvoudigen, dan zie je nu dat die beschikbaar wordt zodra de groep 3 personen heeft.",
+        "ja": "2人のグループで淡色表示の「精算をシンプルに」のスイッチをタップすると、3人以上になると使えるようになることが表示されるようになりました。",
+        "tr": "İki kişilik bir grupta soluk Borçları sadeleştir anahtarına dokunmak artık grup 3 kişi olunca kullanılabilir olacağını söylüyor.",
+        "id": "Mengetuk sakelar Sederhanakan utang yang redup di grup berdua kini memberi tahu bahwa fitur itu tersedia setelah grup berisi 3 orang.",
+        "ru": "Если в группе из двух человек нажать на неактивный переключатель «Упростить долги», теперь появится подсказка, что он станет доступен, когда в группе будет 3 человека.",
+        "uk": "Якщо в групі з двох людей натиснути на неактивний перемикач «Спростити борги», тепер з’явиться підказка, що він стане доступним, коли в групі буде 3 людини.",
+        "ko": "두 명인 그룹에서 흐리게 표시된 정산 간소화 스위치를 누르면 그룹이 3명이 되면 사용할 수 있다는 안내가 나와요."
+      }
+    },
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "In Simplify debts’ How it works, the example now shows photos of people instead of initials.",
+        "pt": "No Como funciona de Simplificar dívidas, o exemplo agora mostra fotos de pessoas em vez de iniciais.",
+        "pt-PT": "No Como funciona de Simplificar dívidas, o exemplo mostra agora fotos de pessoas em vez de iniciais.",
+        "es": "En Cómo funciona de Simplificar deudas, el ejemplo ahora muestra fotos de personas en lugar de iniciales.",
+        "fr": "Dans Comment ça marche de Simplifier les dettes, l’exemple affiche désormais des photos de personnes au lieu d’initiales.",
+        "de": "Im So funktioniert’s von Schulden vereinfachen zeigt das Beispiel jetzt Fotos von Personen statt Initialen.",
+        "it": "In Come funziona di Semplifica debiti, l’esempio ora mostra le foto delle persone al posto delle iniziali.",
+        "pl": "W Jak to działa przy Uprość długi przykład pokazuje teraz zdjęcia osób zamiast inicjałów.",
+        "nl": "In Hoe het werkt van Schulden vereenvoudigen toont het voorbeeld nu foto’s van mensen in plaats van initialen.",
+        "ja": "「精算をシンプルに」の「仕組み」にある例で、イニシャルの代わりに人の写真が表示されるようになりました。",
+        "tr": "Borçları sadeleştir’in Nasıl çalışır ekranındaki örnek artık baş harfler yerine kişilerin fotoğraflarını gösteriyor.",
+        "id": "Di Cara kerjanya Sederhanakan utang, contohnya kini menampilkan foto orang, bukan inisial.",
+        "ru": "В разделе «Как это работает» у «Упростить долги» пример теперь показывает фотографии людей вместо инициалов.",
+        "uk": "У розділі «Як це працює» для «Спростити борги» приклад тепер показує фото людей замість ініціалів.",
+        "ko": "정산 간소화의 ‘작동 방식’ 예시에 이니셜 대신 사람 사진이 표시돼요."
+      }
+    }
+  ]
+}

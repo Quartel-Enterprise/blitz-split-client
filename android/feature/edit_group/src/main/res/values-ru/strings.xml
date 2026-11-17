@@ -120,6 +120,7 @@
     <string name="simplify_status_pending_on">Включено на этом устройстве · ждёт загрузки</string>
     <string name="simplify_status_pending_off">Выключено на этом устройстве · ждёт загрузки</string>
     <string name="simplify_status_needs_third">Для 2 человек это уже один платёж. Станет доступно, когда присоединится третий.</string>
+    <string name="simplify_unavailable_snackbar">«Упростить долги» недоступно, пока в группе меньше 3 человек. Станет доступно, когда в группе будет не меньше 3 человек.</string>
     <string name="simplify_how_it_works">Как это работает</string>
     <string name="simplify_offline_note">Нет интернета: предлагаемые платежи уже изменились на этом устройстве. Группа увидит это, когда подключение вернётся.</string>
     <string name="simplify_confirm_title_on">Упростить долги?</string>

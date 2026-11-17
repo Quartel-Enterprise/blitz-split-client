@@ -2238,6 +2238,7 @@ export const ru: Record<MessageKey, string> = {
   editGroup_simplifyPendingOn: 'Включено в этом браузере · ждёт загрузки',
   editGroup_simplifyPendingOff: 'Выключено в этом браузере · ждёт загрузки',
   editGroup_simplifyNeedsThird: 'При 2 людях это и так один платёж. Станет доступно, когда присоединится третий.',
+  editGroup_simplifyUnavailableToast: '«Упростить долги» недоступно, пока в группе меньше 3 человек. Станет доступно, когда в группе будет не меньше 3 человек.',
   editGroup_simplifyOfflineNote: 'Нет интернета: предложенные платежи уже изменились в этом браузере. Группа увидит это после подключения.',
   simplifyConfirm_titleOn: 'Упростить долги?',
   simplifyConfirm_titleOff: 'Выключить «Упростить долги»?',

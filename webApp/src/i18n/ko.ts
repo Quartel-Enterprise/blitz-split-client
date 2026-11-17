@@ -2234,6 +2234,7 @@ export const ko: Record<MessageKey, string> = {
   editGroup_simplifyPendingOn: '이 브라우저에서 켜짐 · 업로드 대기',
   editGroup_simplifyPendingOff: '이 브라우저에서 꺼짐 · 업로드 대기',
   editGroup_simplifyNeedsThird: '2명이면 이미 송금 한 번으로 충분해요. 세 번째 사람이 참여하면 사용할 수 있어요.',
+  editGroup_simplifyUnavailableToast: '3명 미만인 그룹에서는 정산 간소화를 사용할 수 없어요. 그룹이 3명 이상이 되면 사용할 수 있어요.',
   editGroup_simplifyOfflineNote: '인터넷에 연결되어 있지 않아요. 추천 송금은 이 브라우저에서 이미 바뀌었고, 다시 연결되면 그룹에 반영돼요.',
   simplifyConfirm_titleOn: '정산을 간소화할까요?',
   simplifyConfirm_titleOff: '정산 간소화를 끌까요?',

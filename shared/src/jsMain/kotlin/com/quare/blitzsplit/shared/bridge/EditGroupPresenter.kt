@@ -127,6 +127,7 @@ class JsEditGroupState(
     val isChangingSimplifyDebts: Boolean,
     // Why: 13.1e's toast, until dismissed.
     val simplifyConflict: JsSimplifyConflict?,
+    val showsSimplifyUnavailableNotice: Boolean,
 )
 
 class EditGroupPresenter(
@@ -189,6 +190,7 @@ class EditGroupPresenter(
                 simplifyConfirmation = state.simplifyConfirmation?.let(::toJsSimplifyConfirmation),
                 isChangingSimplifyDebts = state.isChangingSimplifyDebts,
                 simplifyConflict = state.simplifyConflict?.let(::toJsSimplifyConflict),
+                showsSimplifyUnavailableNotice = state.showsSimplifyUnavailableNotice,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -256,6 +258,10 @@ class EditGroupPresenter(
     // Why: "Como funciona" (13.2).
     fun openSimplifyDebtsInfo() {
         viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsInfoClicked)
+    }
+
+    fun dismissSimplifyUnavailableNotice() {
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyUnavailableNoticeDismissed)
     }
 
     fun dismissSimplifyConflict() {

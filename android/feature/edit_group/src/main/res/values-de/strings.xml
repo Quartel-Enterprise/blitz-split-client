@@ -112,6 +112,7 @@
     <string name="simplify_status_pending_on">An auf diesem Gerät · wartet auf Upload</string>
     <string name="simplify_status_pending_off">Aus auf diesem Gerät · wartet auf Upload</string>
     <string name="simplify_status_needs_third">Bei 2 Personen ist es schon eine einzige Zahlung. Verfügbar, sobald eine dritte Person beitritt.</string>
+    <string name="simplify_unavailable_snackbar">Schulden vereinfachen ist mit weniger als 3 Personen nicht verfügbar. Es wird verfügbar, sobald die Gruppe mindestens 3 Personen hat.</string>
     <string name="simplify_how_it_works">So funktioniert’s</string>
     <string name="simplify_offline_note">Kein Internet: Die vorgeschlagenen Zahlungen haben sich auf diesem Gerät schon geändert. Die Gruppe sieht es, sobald es wieder verbunden ist.</string>
     <string name="simplify_confirm_title_on">Schulden vereinfachen?</string>

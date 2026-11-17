@@ -108,6 +108,7 @@
     <string name="simplify_status_pending_on">Aktif di perangkat ini · menunggu diunggah</string>
     <string name="simplify_status_pending_off">Mati di perangkat ini · menunggu diunggah</string>
     <string name="simplify_status_needs_third">Dengan 2 orang, sudah cukup satu pembayaran. Tersedia setelah orang ketiga bergabung.</string>
+    <string name="simplify_unavailable_snackbar">Sederhanakan utang tidak tersedia untuk grup dengan kurang dari 3 orang. Fitur ini tersedia setelah grup memiliki minimal 3 orang.</string>
     <string name="simplify_how_it_works">Cara kerjanya</string>
     <string name="simplify_offline_note">Tidak ada internet: saran pembayaran sudah berubah di perangkat ini. Grup akan melihatnya setelah terhubung lagi.</string>
     <string name="simplify_confirm_title_on">Sederhanakan utang?</string>

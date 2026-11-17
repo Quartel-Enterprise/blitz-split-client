@@ -112,6 +112,7 @@
     <string name="simplify_status_pending_on">On on this device · waiting to upload</string>
     <string name="simplify_status_pending_off">Off on this device · waiting to upload</string>
     <string name="simplify_status_needs_third">With 2 people it\'s already a single payment. Available once a third person joins.</string>
+    <string name="simplify_unavailable_snackbar">Simplify debts is unavailable with fewer than 3 people. It becomes available once the group has at least 3 people.</string>
     <string name="simplify_how_it_works">How it works</string>
     <string name="simplify_offline_note">No internet: the suggested payments already changed on this device. The group sees it once it reconnects.</string>
     <string name="simplify_confirm_title_on">Simplify debts?</string>

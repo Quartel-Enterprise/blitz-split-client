@@ -2233,6 +2233,7 @@ export const pt: Record<MessageKey, string> = {
   editGroup_simplifyPendingOn: 'Ligado neste navegador · aguardando envio',
   editGroup_simplifyPendingOff: 'Desligado neste navegador · aguardando envio',
   editGroup_simplifyNeedsThird: 'Com 2 pessoas já é um pagamento só. Fica disponível quando entrar a terceira pessoa.',
+  editGroup_simplifyUnavailableToast: 'Simplificar dívidas não está disponível com menos de 3 pessoas. Fica disponível assim que o grupo tiver pelo menos 3 pessoas.',
   editGroup_simplifyOfflineNote: 'Sem internet: os pagamentos sugeridos já mudaram neste navegador. O grupo vê quando ele reconectar.',
   simplifyConfirm_titleOn: 'Simplificar dívidas?',
   simplifyConfirm_titleOff: 'Desligar Simplificar dívidas?',

@@ -52,6 +52,9 @@ struct EditGroupView: View {
     /// Made once the screen appears: SwiftUI rebuilds this view's value whenever its parent redraws.
     @State private var model: EditGroupModel?
 
+    /// Grows each time the disabled "Simplify debts" switch is tapped, which shows its toast (13.1c).
+    @State private var simplifyUnavailableToasts = 0
+
     var body: some View {
         Group {
             #if os(macOS)
@@ -108,6 +111,17 @@ struct EditGroupView: View {
             onActivity: { model?.send(EditGroupUiEventOnSimplifyConflictActivityClicked.shared) },
             onDismiss: { model?.send(EditGroupUiEventOnSimplifyConflictDismissed.shared) },
         )
+        // "Simplify debts isn't available with fewer than 3 people" (13.1c), over the form
+        .glassToast(
+            "Simplify debts is unavailable with fewer than 3 people. It becomes available once the group has at least 3 people.",
+            trigger: simplifyUnavailableToasts,
+            duration: .seconds(4),
+        )
+        .onChange(of: model?.state.showsSimplifyUnavailableNotice) { _, shown in
+            guard shown == true else { return }
+            simplifyUnavailableToasts += 1
+            model?.send(EditGroupUiEventOnSimplifyUnavailableNoticeDismissed.shared)
+        }
         #if os(iOS)
         .formSheetSizing()
         #endif
@@ -350,6 +364,11 @@ private struct EditGroupPaymentsSection: View {
         state.simplifyStatus != .needsThirdPerson
     }
 
+    /// Off for want of a third person: the switch stays disabled, and a tap on it says why.
+    private var isUnavailable: Bool {
+        !state.canChangeSimplifyDebts && !state.isChangingSimplifyDebts && state.isLoaded
+    }
+
     var body: some View {
         Section {
             HStack(alignment: .top, spacing: 12) {
@@ -380,8 +399,21 @@ private struct EditGroupPaymentsSection: View {
                 .controlSize(.small)
                 #endif
                 .disabled(!state.canChangeSimplifyDebts)
+                // Why: it looks disabled but still takes the tap, which says why in a toast (13.1c).
+                .overlay {
+                    if isUnavailable {
+                        Color.clear
+                            .contentShape(.rect)
+                            .onTapGesture { model.send(EditGroupUiEventOnSimplifyDebtsClicked.shared) }
+                    }
+                }
                 .accessibilityLabel(Text("Simplify debts"))
                 .accessibilityHint(Text(verbatim: SimplifyDebtsCopy.status(state)))
+                .accessibilityActions {
+                    if isUnavailable {
+                        Button("Simplify debts") { model.send(EditGroupUiEventOnSimplifyDebtsClicked.shared) }
+                    }
+                }
             }
             Button("How it works") {
                 model.send(EditGroupUiEventOnSimplifyDebtsInfoClicked.shared)

@@ -120,6 +120,7 @@
     <string name="simplify_status_pending_on">Włączone na tym urządzeniu · czeka na wysłanie</string>
     <string name="simplify_status_pending_off">Wyłączone na tym urządzeniu · czeka na wysłanie</string>
     <string name="simplify_status_needs_third">Przy 2 osobach to już jedna płatność. Dostępne, gdy dołączy trzecia osoba.</string>
+    <string name="simplify_unavailable_snackbar">Uprość długi nie jest dostępne przy mniej niż 3 osobach. Będzie dostępne, gdy w grupie będą co najmniej 3 osoby.</string>
     <string name="simplify_how_it_works">Jak to działa</string>
     <string name="simplify_offline_note">Brak internetu: proponowane płatności już zmieniły się na tym urządzeniu. Grupa zobaczy to po ponownym połączeniu.</string>
     <string name="simplify_confirm_title_on">Uprościć długi?</string>

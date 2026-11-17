@@ -2234,6 +2234,7 @@ export const ja: Record<MessageKey, string> = {
   editGroup_simplifyPendingOn: 'このブラウザでオン · アップロード待ち',
   editGroup_simplifyPendingOff: 'このブラウザでオフ · アップロード待ち',
   editGroup_simplifyNeedsThird: '2人ではすでに支払いは1件です。3人目が参加すると使えます。',
+  editGroup_simplifyUnavailableToast: '3人未満のグループでは「精算をシンプルに」は使えません。グループが3人以上になると使えるようになります。',
   editGroup_simplifyOfflineNote: 'インターネットに接続されていません。おすすめの支払いはこのブラウザですでに変わっています。再接続するとグループに反映されます。',
   simplifyConfirm_titleOn: '精算をシンプルにしますか？',
   simplifyConfirm_titleOff: '「精算をシンプルに」をオフにしますか？',

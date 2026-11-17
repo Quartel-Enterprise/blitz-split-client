@@ -120,6 +120,7 @@
     <string name="simplify_status_pending_on">Увімкнено на цьому пристрої · чекає на завантаження</string>
     <string name="simplify_status_pending_off">Вимкнено на цьому пристрої · чекає на завантаження</string>
     <string name="simplify_status_needs_third">Для 2 людей це вже один платіж. Стане доступним, коли приєднається третя людина.</string>
+    <string name="simplify_unavailable_snackbar">«Спростити борги» недоступно, поки в групі менше 3 людей. Стане доступно, коли в групі буде щонайменше 3 людей.</string>
     <string name="simplify_how_it_works">Як це працює</string>
     <string name="simplify_offline_note">Немає інтернету: запропоновані платежі вже змінилися на цьому пристрої. Група побачить це, щойно з\'явиться з\'єднання.</string>
     <string name="simplify_confirm_title_on">Спростити борги?</string>

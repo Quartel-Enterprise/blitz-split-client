@@ -116,6 +116,7 @@
     <string name="simplify_status_pending_on">Activé sur cet appareil · en attente d’envoi</string>
     <string name="simplify_status_pending_off">Désactivé sur cet appareil · en attente d’envoi</string>
     <string name="simplify_status_needs_third">À 2 personnes, c’est déjà un seul paiement. Disponible quand une troisième personne rejoint.</string>
+    <string name="simplify_unavailable_snackbar">Simplifier les dettes n’est pas disponible à moins de 3 personnes. Cela le devient dès que le groupe compte au moins 3 personnes.</string>
     <string name="simplify_how_it_works">Comment ça marche</string>
     <string name="simplify_offline_note">Pas d’internet : les paiements suggérés ont déjà changé sur cet appareil. Le groupe le verra à ta reconnexion.</string>
     <string name="simplify_confirm_title_on">Simplifier les dettes ?</string>

@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.android.feature.editgroup
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,13 +16,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
@@ -104,13 +111,56 @@ internal fun SimplifyDebtsSection(
                     contentPadding = PaddingValues(horizontal = 0.dp),
                 ) { Text(stringResource(R.string.simplify_how_it_works)) }
             }
-            Switch(
-                checked = state.simplifiesDebts,
-                onCheckedChange = { onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked) },
-                modifier = Modifier.semantics { contentDescription = title },
-                enabled = state.canChangeSimplifyDebts,
+            SimplifySwitch(
+                state = state,
+                title = title,
+                onEvent = onEvent,
             )
         }
+    }
+}
+
+/*
+ * Why: unavailable, the switch still looks disabled but takes the tap, which says why in a snackbar (13.1c); talkback
+ * reads it as off and unavailable, with the reason, and a tap on it performs the same.
+ */
+@Composable
+private fun SimplifySwitch(
+    state: EditGroupUiState,
+    title: String,
+    onEvent: (EditGroupUiEvent) -> Unit,
+) {
+    val unavailable = !state.canChangeSimplifyDebts && !state.isChangingSimplifyDebts && state.isLoaded
+    if (!unavailable) {
+        Switch(
+            checked = state.simplifiesDebts,
+            onCheckedChange = { onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked) },
+            modifier = Modifier.semantics { contentDescription = title },
+            enabled = state.canChangeSimplifyDebts,
+        )
+        return
+    }
+    val unavailableReason = stringResource(R.string.simplify_status_needs_third)
+    // Why: a disabled switch drops the touch, so a box laid over it (same size) takes it and the switch only draws.
+    Box(
+        modifier = Modifier.minimumInteractiveComponentSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Switch(
+            checked = state.simplifiesDebts,
+            onCheckedChange = null,
+            modifier = Modifier.clearAndSetSemantics {},
+            enabled = false,
+        )
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clickable(role = Role.Switch) { onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked) }
+                .semantics {
+                    contentDescription = title
+                    stateDescription = unavailableReason
+                },
+        )
     }
 }
 

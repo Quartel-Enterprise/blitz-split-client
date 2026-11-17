@@ -116,6 +116,7 @@
     <string name="simplify_status_pending_on">Attivo su questo dispositivo · in attesa di invio</string>
     <string name="simplify_status_pending_off">Disattivato su questo dispositivo · in attesa di invio</string>
     <string name="simplify_status_needs_third">Con 2 persone è già un solo pagamento. Disponibile quando entra una terza persona.</string>
+    <string name="simplify_unavailable_snackbar">Semplifica debiti non è disponibile con meno di 3 persone. Diventa disponibile quando il gruppo ha almeno 3 persone.</string>
     <string name="simplify_how_it_works">Come funziona</string>
     <string name="simplify_offline_note">Nessuna connessione: i pagamenti suggeriti sono già cambiati su questo dispositivo. Il gruppo lo vedrà appena si riconnette.</string>
     <string name="simplify_confirm_title_on">Semplificare i debiti?</string>

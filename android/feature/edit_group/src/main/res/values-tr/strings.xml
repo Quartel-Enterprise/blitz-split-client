@@ -112,6 +112,7 @@
     <string name="simplify_status_pending_on">Bu cihazda açık · yüklenmeyi bekliyor</string>
     <string name="simplify_status_pending_off">Bu cihazda kapalı · yüklenmeyi bekliyor</string>
     <string name="simplify_status_needs_third">2 kişiyle zaten tek bir ödeme var. Üçüncü bir kişi katılınca kullanılabilir.</string>
+    <string name="simplify_unavailable_snackbar">3 kişiden az olan grupta Borçları sadeleştir kullanılamaz. Grupta en az 3 kişi olunca kullanılabilir hale gelir.</string>
     <string name="simplify_how_it_works">Nasıl çalışır</string>
     <string name="simplify_offline_note">İnternet yok: önerilen ödemeler bu cihazda zaten değişti. Grup, bağlantı gelince görür.</string>
     <string name="simplify_confirm_title_on">Borçlar sadeleştirilsin mi?</string>

@@ -49,11 +49,19 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     members − 1, ties by the order they joined, so every device gets the same pairs offline; payments recorded only
     move the nets, and a group already at its fewest payments keeps its pairs (13.3c). Any member turns it on or off,
     offline too, at once and apart from Save ("Waiting to upload" with the amber dot meanwhile); with 2 people it is
-    off and disabled with the reason (13.1c), and a group already on can still turn it off. The switch opens its
+    off and disabled with the reason (13.1c), though the disabled switch still takes the tap: it stays looking
+    disabled (and reads as unavailable, with the reason, to a screen reader) and says in a snackbar (a toast on Apple and
+    the web) "Simplify debts is unavailable with fewer than 3 people. It becomes available once the group has at least 3
+    people." (`EditGroupUiState.showsSimplifyUnavailableNotice`, in every language). A group already on can still turn
+    it off. The switch opens its
     confirmation first: "7 payments → 5 payments" (per currency) and what changes for each person (you first, a guest with
     "let them know with Request", the payments still in the queue, 13.3d), "Turn on anyway" when it saves none; turning off
     names only what changes for you and counts the others (13.3b); "How it works" (13.2, `Route.SimplifyDebtsInfo`)
-    explains it. It syncs with its own Last-Write-Wins stamp (`groups.simplify_debts_at`), apart from the row's
+    explains it: its title "Simplify debts" sits in the top bar beside the back arrow (Android, iPhone and iPad; the
+    Mac's sheet and the web's dialog keep it in their header), and the example's Carla, Elisa and you are three photos of
+    the client's image bank (`scripts/store-screenshots/bank/faces/`, AI-generated, shrunk to 128 px and shipped in each
+    app: the only sample images it carries) in circles, never initials, Elisa dimmed once she pays nothing. It syncs
+    with its own Last-Write-Wins stamp (`groups.simplify_debts_at`), apart from the row's
     `updatedAt`, so an edit of the name never undoes it nor it the name; when someone's later change beats this
     device's, the group's screen or Edit group, whichever is on top first, says "Ana turned it off after you. The last change counts: Simplify debts is off." once,
     with "See in Activity" (Activity over Home, closing the group, 13.1e). Everything that reads the group's pairs follows it: Balances

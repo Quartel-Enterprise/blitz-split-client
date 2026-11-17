@@ -2235,6 +2235,7 @@ export const nl: Record<MessageKey, string> = {
   editGroup_simplifyPendingOn: 'Aan in deze browser · wacht op uploaden',
   editGroup_simplifyPendingOff: 'Uit in deze browser · wacht op uploaden',
   editGroup_simplifyNeedsThird: 'Met 2 personen is het al één betaling. Beschikbaar zodra er een derde persoon bij komt.',
+  editGroup_simplifyUnavailableToast: 'Schulden vereenvoudigen is niet beschikbaar met minder dan 3 personen. Het wordt beschikbaar zodra de groep minstens 3 personen heeft.',
   editGroup_simplifyOfflineNote: 'Geen internet: de voorgestelde betalingen zijn in deze browser al gewijzigd. De groep ziet het zodra er weer verbinding is.',
   simplifyConfirm_titleOn: 'Schulden vereenvoudigen?',
   simplifyConfirm_titleOff: 'Schulden vereenvoudigen uitzetten?',

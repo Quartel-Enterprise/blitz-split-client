@@ -35,6 +35,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
 import com.quare.blitzsplit.android.designsystem.layout.FormFactor
@@ -50,9 +51,10 @@ private const val TOTAL_CENTS = 12_140L
 private const val CENTS_PER_UNIT = 100L
 
 /*
- * Why: "Como funciona" of "Simplificar dívidas" (13.2), the same words for everyone with the example's amounts in the
- * group's currency. One column on a phone and upright (560dp); lying down the intro and the example on the left and
- * what to know on the right, a book splitting them on its hinge.
+ * Why: "Como funciona" of "Simplificar dívidas" (13.2), whose title sits in the top bar beside the back arrow. The
+ * same words for everyone, with the example's amounts in the group's currency. One column on a phone and upright
+ * (560dp); lying down the intro and the example on the left and what to know on the right, a book splitting them on
+ * its hinge.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +71,14 @@ fun SimplifyDebtsInfoContent(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = {},
+                title = {
+                    Text(
+                        text = stringResource(R.string.simplify_title),
+                        modifier = Modifier.semantics { heading() },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -145,22 +154,12 @@ private fun ScrollingColumn(content: @Composable () -> Unit) {
 
 @Composable
 private fun IntroSection() {
-    Column(
+    Text(
+        text = stringResource(R.string.simplify_info_intro),
         modifier = Modifier.padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.simplify_title),
-            modifier = Modifier.semantics { heading() },
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.SemiBold,
-        )
-        Text(
-            text = stringResource(R.string.simplify_info_intro),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 // Why: "Um exemplo": Carla owes Elisa, who owes you, before and after, the second in the primary container.

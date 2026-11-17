@@ -487,5 +487,6 @@ class EditGroupUiStateTest {
         simplifyConfirmation = null,
         isChangingSimplifyDebts = isChangingSimplifyDebts,
         simplifyConflict = null,
+        showsSimplifyUnavailableNotice = false,
     )
 }

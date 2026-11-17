@@ -2234,6 +2234,7 @@ export const tr: Record<MessageKey, string> = {
   editGroup_simplifyPendingOn: 'Bu tarayıcıda açık · yüklenmeyi bekliyor',
   editGroup_simplifyPendingOff: 'Bu tarayıcıda kapalı · yüklenmeyi bekliyor',
   editGroup_simplifyNeedsThird: '2 kişiyle zaten tek bir ödeme var. Üçüncü biri katılınca kullanılabilir.',
+  editGroup_simplifyUnavailableToast: '3 kişiden az olan grupta Borçları sadeleştir kullanılamaz. Grupta en az 3 kişi olunca kullanılabilir hale gelir.',
   editGroup_simplifyOfflineNote: 'İnternet yok: önerilen ödemeler bu tarayıcıda zaten değişti. Grup, bağlantı gelince görür.',
   simplifyConfirm_titleOn: 'Borçlar sadeleştirilsin mi?',
   simplifyConfirm_titleOff: '“Borçları sadeleştir” kapatılsın mı?',

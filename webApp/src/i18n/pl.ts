@@ -2237,6 +2237,7 @@ export const pl: Record<MessageKey, string> = {
   editGroup_simplifyPendingOn: 'Włączone w tej przeglądarce · czeka na wysłanie',
   editGroup_simplifyPendingOff: 'Wyłączone w tej przeglądarce · czeka na wysłanie',
   editGroup_simplifyNeedsThird: 'Przy 2 osobach to już jedna płatność. Dostępne, gdy dołączy trzecia osoba.',
+  editGroup_simplifyUnavailableToast: 'Uprość długi nie jest dostępne przy mniej niż 3 osobach. Będzie dostępne, gdy w grupie będą co najmniej 3 osoby.',
   editGroup_simplifyOfflineNote: 'Brak internetu: sugerowane płatności zmieniły się już w tej przeglądarce. Grupa zobaczy to po ponownym połączeniu.',
   simplifyConfirm_titleOn: 'Uprościć długi?',
   simplifyConfirm_titleOff: 'Wyłączyć „Uprość długi”?',

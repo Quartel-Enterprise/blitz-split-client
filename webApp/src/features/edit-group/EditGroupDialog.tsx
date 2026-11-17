@@ -16,7 +16,7 @@ import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupTypePicker } from '@/features/create-group/GroupTypePicker'
 import { SimplifyDebtsConfirmDialog } from '@/features/simplify-debts/SimplifyDebtsConfirmDialog'
 import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
-import { useSimplifyConflictNotice } from '@/features/simplify-debts/simplify'
+import { useSimplifyConflictNotice, useSimplifyUnavailableNotice } from '@/features/simplify-debts/simplify'
 import { defaultSplitModeLabel } from '@/features/split-bill/splitText'
 import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -45,6 +45,7 @@ export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovere
   const state = useWatch(presenter, (p, onChange: (state: JsEditGroupState) => void) => p.observeState(onChange))
   const isDesktop = useMediaQuery('(min-width: 768px)')
   useSimplifyConflictNotice(presenter, state?.simplifyConflict)
+  useSimplifyUnavailableNotice(presenter, state?.showsSimplifyUnavailableNotice)
   if (!presenter || !state || isCovered) return null
   if (!state.isLoaded) return <LoadingDialog isDesktop={isDesktop} title={t('editGroup_title')} onClose={() => presenter.close()} />
 
@@ -244,6 +245,8 @@ function simplifyStatusText(state: JsEditGroupState): string {
  */
 function SimplifyDebtsRow({ presenter, state }: { presenter: EditGroupPresenter; state: JsEditGroupState }) {
   const isPending = state.simplifyStatus === 'pending'
+  // Why: off for want of a third person, the switch looks disabled but its box takes the click, which says why (13.1c).
+  const isUnavailable = !state.canChangeSimplifyDebts && !state.isChangingSimplifyDebts && !state.isSaving
   return (
     <section aria-labelledby={paymentsId} className="flex flex-col gap-2">
       <h3 id={paymentsId} className="text-sm font-medium">
@@ -267,14 +270,16 @@ function SimplifyDebtsRow({ presenter, state }: { presenter: EditGroupPresenter;
           </Button>
         </span>
         {/* Why: controlled by the group's state; the click asks first, so it never flips by itself. */}
-        <Switch
-          id={simplifyId}
-          checked={state.simplifiesDebts}
-          disabled={!state.canChangeSimplifyDebts || state.isSaving}
-          aria-describedby={simplifyStatusId}
-          onCheckedChange={() => presenter.clickSimplifyDebts()}
-          className="mt-0.5"
-        />
+        <span className={cn('mt-0.5 inline-flex', isUnavailable && 'cursor-not-allowed')} onClick={isUnavailable ? () => presenter.clickSimplifyDebts() : undefined}>
+          <Switch
+            id={simplifyId}
+            checked={state.simplifiesDebts}
+            disabled={!state.canChangeSimplifyDebts || state.isSaving}
+            aria-describedby={simplifyStatusId}
+            onCheckedChange={() => presenter.clickSimplifyDebts()}
+            className={cn(isUnavailable && 'pointer-events-none')}
+          />
+        </span>
       </div>
     </section>
   )
