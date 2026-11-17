@@ -11,6 +11,11 @@ enum RightToLeft {
         Bundle.appLanguageCode.map(languageCodes.contains) ?? false
     }
 
+    /// "→", the arrow that points the way a line reads: "←" in a right-to-left language, where arrows don't mirror.
+    static var forwardArrow: String {
+        isAppLanguage ? "←" : "→"
+    }
+
     /// `text` between a first strong isolate and its pop, so an amount ("R$ 12,50", "−€ 3") keeps its order inside
     /// a right-to-left sentence; `text` as it is in every other language.
     static func isolated(_ text: String) -> String {

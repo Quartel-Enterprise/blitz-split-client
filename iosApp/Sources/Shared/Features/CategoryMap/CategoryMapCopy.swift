@@ -104,7 +104,7 @@ enum CategoryMapCopy {
             localized: "If moved",
             bundle: .appLanguage,
         )
-        return "\(label): “\(text.prefix(1).uppercased() + text.dropFirst())” → \(path(category, in: state))"
+        return "\(label): “\(text.prefix(1).uppercased() + text.dropFirst())” \(RightToLeft.forwardArrow) \(path(category, in: state))"
     }
 
     static func saveTitle(_ state: CategoryMapUiState) -> String {

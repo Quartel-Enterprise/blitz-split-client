@@ -189,7 +189,7 @@ enum ActivityCopy {
             let from = item.fromIsMe ? String(localized: "You", bundle: .appLanguage) : PaymentCopy.name(item.fromName)
             let to = item.toIsMe ? String(localized: "You", bundle: .appLanguage) : PaymentCopy.name(item.toName)
             let method = item.code.map { PaymentCopy.method(SettlementMethod.companion.fromCode(code: $0)) }
-            return joined(["\(from) → \(to)", amountText, method])
+            return joined(["\(from) \(RightToLeft.forwardArrow) \(to)", amountText, method])
         case .groupCreated, .groupEdited:
             return groupType(item)
         case .groupDeleted:
@@ -378,7 +378,7 @@ enum ActivityCopy {
     static func changeLine(_ change: ActivityChangeRow) -> String {
         let before = value(change.before, field: change.field)
         let after = value(change.after, field: change.field)
-        return "\(field(change.field)) \(before) → \(after)"
+        return "\(field(change.field)) \(before) \(RightToLeft.forwardArrow) \(after)"
     }
 
     // MARK: - Simplify debts (13.7)

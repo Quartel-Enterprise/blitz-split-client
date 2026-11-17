@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { LoadingRegion, SkeletonLine, SkeletonRows } from '@/components/ui/skeleton'
 import { useEndReached } from '@/hooks/useEndReached'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { t } from '@/i18n'
+import { forwardArrow, t } from '@/i18n'
 import { avatarStyle, GROUP_SHAPE } from '@/lib/avatar'
 import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { formatDayTime, formatLongDayLabel, formatTime } from '@/lib/dates'
@@ -250,7 +250,7 @@ function InlineChanges({ presenter, item }: { presenter: ActivityPresenter; item
             <span key={row.key} className="flex flex-wrap gap-x-2">
               <span className="min-w-20 text-muted-foreground">{row.label}</span>
               <span>
-                <s className="text-muted-foreground">{row.before}</s> <span aria-label={t('activity_to')}>→</span> <span className="font-medium">{row.after}</span>
+                <s className="text-muted-foreground">{row.before}</s> <span aria-label={t('activity_to')}>{forwardArrow}</span> <span className="font-medium">{row.after}</span>
               </span>
             </span>
           ))}

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDraft } from '@/hooks/useDraft'
-import { t } from '@/i18n'
+import { forwardArrow, t } from '@/i18n'
 import { categoryName, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 
@@ -34,7 +34,7 @@ export function TermDialog({ presenter, state, form, isDesktop }: { presenter: C
   const isError = !!form.error || !!form.duplicateTerm
   const example =
     typed && form.category
-      ? `${form.duplicateTerm ? t('categoryMap_exampleMove') : t('categoryMap_example')}: “${typed.charAt(0).toUpperCase()}${typed.slice(1)}” → ${categoryPath(form.category, form.categoryParent)}`
+      ? `${form.duplicateTerm ? t('categoryMap_exampleMove') : t('categoryMap_example')}: “${typed.charAt(0).toUpperCase()}${typed.slice(1)}” ${forwardArrow} ${categoryPath(form.category, form.categoryParent)}`
       : null
   const saveLabel = form.duplicateTerm && form.category ? t('categoryMap_moveTo', { name: categoryName(form.category) }) : t('categoryMap_save')
   return (

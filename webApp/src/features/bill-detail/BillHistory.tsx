@@ -109,6 +109,7 @@ function HistoryLine({
   const note = historyNote(entry, money)
   const actorId = entry.actorMemberId
   const openActor = onPerson && actorId ? () => onPerson(actorId) : null
+  const verb = historyVerb(entry)
   return (
     <li className="relative flex gap-2.5">
       {/* Why: a line joins the faces of one day, as the canvas draws it. */}
@@ -132,8 +133,8 @@ function HistoryLine({
           <span className="min-w-0 flex-1 text-sm leading-5">
             <span className="font-medium">{historyActor(entry)}</span>
             {/* Why: Arabic's history says "Ana: إنشاء الفاتورة", its phrase starting with the colon after the name. */}
-            {historyVerb(entry).startsWith(':') ? '' : wordGap}
-            <span className="text-muted-foreground">{historyVerb(entry)}</span>
+            {verb.startsWith(':') ? '' : wordGap}
+            <span className="text-muted-foreground">{verb}</span>
           </span>
           <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground tabular-nums">
             {entry.isPending && (

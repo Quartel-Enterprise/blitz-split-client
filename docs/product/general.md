@@ -89,7 +89,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     are in [responsive-layouts.md](../architecture/responsive-layouts.md#right-to-left)), and it writes numbers,
     amounts and dates with Latin digits (0–9), not Arabic-Indic ones, so the amount fields read what the number
     keyboard types (a call taken without Pierre: the Gulf and the Maghreb both read them, and one set of digits keeps
-    parsing simple). Since Arabic's verbs, adjectives and "you" say a gender the app never knows (Pierre's call, for
+    parsing simple). On the Apple apps a count inside a sentence ("٣ عناصر") follows the device's own digits setting
+    (Language & Region › Numbers), since SwiftUI finds its strings by the locale's exact identifier. Since Arabic's verbs, adjectives and "you" say a gender the app never knows (Pierre's call, for
     the user and for everyone else), Arabic prefers wording without one: verbal nouns on buttons and titles ("إضافة",
     "حفظ"), labels ("الدافع: Ana"), the passive ("تم الحفظ") and "على Ana لك" for a debt; only where none fits does it
     use the masculine as the generic, never "(ة)" or a slash. Its activity rows are "Ana: تقسيم «عشاء»", the actor and

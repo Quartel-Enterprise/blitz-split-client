@@ -53,9 +53,6 @@ class MoneyFormatter(
 
     private val plainFormats = mutableMapOf<Int, NumberFormat>()
 
-    // Why: the symbol a field shows before what is typed in it, whole in a right to left language ("US$", not "$US").
-    val symbol: String by lazy { bareSymbol.toIsolatedIf(isolates) }
-
     private val bareSymbol: String = when {
         isSats -> satsText.symbol
 
@@ -68,6 +65,9 @@ class MoneyFormatter(
 
         else -> Currency.getInstance(currency.code).getSymbol(formatLocale)
     }
+
+    // Why: the symbol a field shows before what is typed in it, whole in a right to left language ("US$", not "$US").
+    val symbol: String = bareSymbol.toIsolatedIf(isolates)
 
     // Why: "0,00", the placeholder of an empty amount field, with the separator people type.
     val zeroPlaceholder: String = currency.getTypedFractionDigits(showsSats).let { digits ->
@@ -106,7 +106,16 @@ class MoneyFormatter(
         val format = compactFormat
         // Why: compactFormat is only set from Android 11, but lint can't see that through lazy, only this check.
         if (format == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return toText(amountMinor)
-        return format.format(amountMinor.toDecimal()).toString().toIsolatedIf(isolates)
+        val text = format.format(amountMinor.toDecimal()).toString()
+        // Why: the symbol in an isolate of its own in a right to left language, as toText's ("US$", never "$US").
+        val symbolText = if (isolates) text.replaceFirst(compactSymbol, symbol) else text
+        return symbolText.toIsolatedIf(isolates)
+    }
+
+    private val compactSymbol: String by lazy {
+        android.icu.util.Currency
+            .getInstance(currency.code)
+            .getSymbol(formatLocale)
     }
 
     // Why: "120,50" with no symbol, where the currency is already on the same line ("você recebe 120 e deve 218,50").

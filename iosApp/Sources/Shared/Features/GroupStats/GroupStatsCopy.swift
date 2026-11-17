@@ -122,10 +122,13 @@ enum GroupStatsCopy {
         if currency.isCrypto || !currency.isKnown { return currency.format(minor) }
         var major = Decimal(minor)
         for _ in 0..<Int(currency.fractionDigits) { major /= 10 }
-        return RightToLeft.isolated(major.formatted(
+        let text = major.formatted(
             .currency(code: currency.code).notation(.compactName).precision(.significantDigits(1...2))
                 .locale(AppNumbers.locale),
-        ))
+        )
+        // Its symbol in an isolate of its own in a right-to-left language, as a whole amount's ("US$", never "$US")
+        guard RightToLeft.isAppLanguage, let range = text.range(of: currency.symbol) else { return text }
+        return RightToLeft.isolated(text.replacingCharacters(in: range, with: currency.fieldSymbol))
     }
 
     /// The chart's whole text for VoiceOver: "Spending by day: Oct 24 $561.00; Oct 25 nothing; …".

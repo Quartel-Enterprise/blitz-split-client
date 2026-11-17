@@ -22,6 +22,12 @@ object LegacyAppLocale {
     fun wrap(base: Context): Context = withLatinDigits(wrapLegacy(base))
 
     /*
+     * Why: the application's own, without the Latin digits' configuration context, which would freeze its resources
+     * in the language they started in: from Android 13 they follow a per-app language picked while the app runs.
+     */
+    fun wrapApplication(base: Context): Context = wrapLegacy(base)
+
+    /*
      * Why: Arabic writes its numbers, amounts and dates with Latin digits (docs/product/general.md), so the amount
      * fields read what the number keyboard types. Every "%d" of a string resource, a date and a count follow the
      * context's locale, so an Arabic one, picked or the device's, gets the "nu-latn" extension once here.

@@ -704,7 +704,7 @@ struct ActivityChangeLine: View {
             Text(verbatim: change.before)
                 .strikethrough()
                 .foregroundStyle(.secondary)
-            Text(verbatim: "→")
+            Text(verbatim: RightToLeft.forwardArrow)
                 .foregroundStyle(.secondary)
                 .accessibilityLabel(Text("to"))
             Text(verbatim: change.after)

@@ -124,6 +124,9 @@ export function isRightToLeft(tag: string): boolean {
 /** The page's direction, from the app's language: `rtl` for Arabic and Hebrew, `ltr` for the others. */
 export const direction: 'ltr' | 'rtl' = isRightToLeft(documentLanguage) ? 'rtl' : 'ltr'
 
+/** "→", the arrow that points the way a line reads: "←" in a right-to-left language, where arrows don't mirror. */
+export const forwardArrow = direction === 'rtl' ? '←' : '→'
+
 /**
  * `text` kept in one piece inside a right-to-left sentence: wrapped in FIRST STRONG ISOLATE … POP DIRECTIONAL
  * ISOLATE, so "−R$ 118,50" or a symbol's "US$" keeps its order among Arabic or Hebrew words. A left-to-right language
