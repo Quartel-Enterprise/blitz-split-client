@@ -38,8 +38,8 @@ enum ReminderCalendar {
         item.notes = notes
         item.startDate = Date(timeIntervalSince1970: TimeInterval(event.startMillis) / 1000)
         item.endDate = item.startDate.addingTimeInterval(15 * 60)
-        // Floating in the .ics, the same here: each person's own clock
-        item.timeZone = TimeZone(identifier: event.timeZoneId)
+        // No time zone: a floating event, as in the .ics and on Android, so it follows each person's own clock
+        item.timeZone = nil
         item.addAlarm(EKAlarm(relativeOffset: 0))
         if let rule = recurrenceRule(event.rrule) { item.addRecurrenceRule(rule) }
         item.calendar = store.defaultCalendarForNewEvents

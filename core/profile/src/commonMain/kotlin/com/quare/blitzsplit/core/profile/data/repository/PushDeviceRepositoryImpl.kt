@@ -2,6 +2,7 @@ package com.quare.blitzsplit.core.profile.data.repository
 
 import com.quare.blitzsplit.core.profile.data.datasource.PushDeviceRemoteDataSource
 import com.quare.blitzsplit.core.profile.data.datasource.PushSettingsLocalDataSource
+import com.quare.blitzsplit.core.profile.data.dto.RegisterPushDeviceParamsDto
 import com.quare.blitzsplit.core.profile.data.mapper.PushDeviceMapper
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.repository.PushDeviceRepository
@@ -27,7 +28,7 @@ class PushDeviceRepositoryImpl(
 ) : PushDeviceRepository {
     private val device = MutableStateFlow<PushDevice?>(null)
     private val lock = Mutex()
-    private var registered: Pair<PushDevice, String>? = null
+    private var registered: Pair<RegisterPushDeviceParamsDto, String>? = null
 
     override fun observeDevice(): Flow<PushDevice?> = device
 
@@ -52,9 +53,11 @@ class PushDeviceRepositoryImpl(
 
     override suspend fun register(userId: String): Result<Unit> = lock.withLock {
         val current = device.value ?: return@withLock Result.success(Unit)
-        if (registered == current to userId) return@withLock Result.success(Unit)
-        suspendRunCatching { remoteDataSource.register(mapper.toParams(current)) }
-            .onSuccess { registered = current to userId }
+        // Why: the params carry the device's time zone, so a zone changed while the app lived registers again.
+        val params = mapper.toParams(current)
+        if (registered == params to userId) return@withLock Result.success(Unit)
+        suspendRunCatching { remoteDataSource.register(params) }
+            .onSuccess { registered = params to userId }
     }
 
     /*

@@ -81,6 +81,12 @@
             "state" : "translated",
             "value" : "알림을 내 캘린더에 추가하세요"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "रिमाइंडर को अपने कैलेंडर में जोड़ें"
+          }
         }
       }
     },
@@ -164,6 +170,12 @@
             "state" : "translated",
             "value" : "캘린더에 추가"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कैलेंडर में जोड़ें"
+          }
         }
       }
     },
@@ -246,6 +258,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "내 캘린더에 추가"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मेरे कैलेंडर में जोड़ें"
           }
         }
       }
@@ -614,6 +632,12 @@
             "state" : "translated",
             "value" : "날짜"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "महीने का दिन"
+          }
         }
       }
     },
@@ -696,6 +720,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "매주 %@ %@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "हर %@ को %@ पर"
           }
         }
       }
@@ -780,6 +810,12 @@
             "state" : "translated",
             "value" : "매월 %lld일 %@"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "हर महीने %lld तारीख़ को %@ पर"
+          }
         }
       }
     },
@@ -862,6 +898,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "그룹 알림"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ग्रुप रिमाइंडर"
           }
         }
       }
@@ -1034,6 +1076,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "빚이 있는 멤버는 각자의 시간에 맞춰 알림을 받아요."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "जिन सदस्यों को पैसे देने हैं, उन्हें उनके अपने समय के हिसाब से नोटिफ़िकेशन मिलता है।"
           }
         }
       }
@@ -12058,6 +12106,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "매월"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "हर महीने"
           }
         }
       }
@@ -25016,6 +25070,12 @@
             "state" : "translated",
             "value" : "멤버에게 정산을 알려주기"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सदस्यों को हिसाब चुकाने की याद दिलाएं"
+          }
         }
       }
     },
@@ -25098,6 +25158,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "반복"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "दोहराव"
           }
         }
       }
@@ -25459,6 +25525,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "정산: %@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "हिसाब चुकाएं: %@"
           }
         }
       }
@@ -26375,6 +26447,12 @@
             "state" : "translated",
             "value" : "정산할 시간이에요"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "हिसाब चुकाने का समय"
+          }
         }
       }
     },
@@ -26457,6 +26535,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@에서 정산할 시간이에요."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ में हिसाब चुकाने का समय हो गया है।"
           }
         }
       }
@@ -28115,6 +28199,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "매주"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "हर हफ़्ते"
           }
         }
       }

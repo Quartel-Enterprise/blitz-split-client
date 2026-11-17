@@ -182,8 +182,9 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     after joining through a link): each platform hands a repeating event, at the next occurrence on the device's clock and
     with the schedule's recurrence (weekly on the weekday; monthly on the day, a 31st on each month's last day, a 29th
     or 30th skipping the months without it), to its own calendar. Android opens Google Calendar or the system's calendar to
-    save the event (`Intent.ACTION_INSERT`), iOS and the Mac add it through the calendar's own sheet (EventKit's
-    `EKEventEditViewController`, with no permission asked up front) and the web downloads an .ics (`ReminderCalendarEvent.toIcs`).
+    save the event (`Intent.ACTION_INSERT`), iOS and iPadOS open the system's event editor (EventKit's
+    `EKEventEditViewController`, with no permission asked up front, a floating event), the Mac opens a generated .ics in Calendar
+    (which asks before adding it) and the web downloads an .ics (`ReminderCalendarEvent.toIcs`).
     It is skippable: nothing is added unless tapped.
   - "Default split" (6.7, `Route.DefaultSplit`, `DefaultSplitViewModel` in `:feature:edit_group`) opens over
     Edit group, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), which

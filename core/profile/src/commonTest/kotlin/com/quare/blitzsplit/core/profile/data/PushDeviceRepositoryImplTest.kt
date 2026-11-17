@@ -24,6 +24,7 @@ import kotlin.test.assertTrue
 
 class PushDeviceRepositoryImplTest {
     private lateinit var remote: FakePushDeviceRemoteDataSource
+    private var zone = "Asia/Tokyo"
     private lateinit var repository: PushDeviceRepositoryImpl
 
     @Test
@@ -115,6 +116,21 @@ class PushDeviceRepositoryImplTest {
             // Then
             assertTrue(result.isSuccess)
             assertEquals(1, remote.registered.size)
+        }
+
+    @Test
+    fun `GIVEN the device registered WHEN its time zone changes and registering again THEN sends the new zone`() =
+        runTest {
+            // Given
+            prepareScenario(device = device(token = "fcm-1"))
+            repository.register(userId = "user-1")
+            zone = "Europe/Lisbon"
+
+            // When
+            repository.register(userId = "user-1")
+
+            // Then
+            assertEquals(listOf("Asia/Tokyo", "Europe/Lisbon"), remote.registered.map { it.timeZone })
         }
 
     @Test
@@ -399,7 +415,7 @@ class PushDeviceRepositoryImplTest {
         }
         repository = PushDeviceRepositoryImpl(
             remoteDataSource = remote,
-            mapper = PushDeviceMapperImpl(timeZoneId = { "Asia/Tokyo" }),
+            mapper = PushDeviceMapperImpl(timeZoneId = { zone }),
             localDataSource = FakePushSettingsLocalDataSource(),
         )
         device?.let(repository::setDevice)
