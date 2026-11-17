@@ -89,7 +89,7 @@ elsewhere runs in one job, as before. `build-logic/` and the root's Gradle scrip
 gives a new key only to the tasks it configures differently (see above). The modules that have a `commonTest` are dealt
 from their sorted list, as `js-tests` deals its own, so a new module joins a shard by itself: the first shard takes
 three of every five, and the second the other two with the compilations (`compileKotlinIosArm64`,
-`compileAppleMainKotlinMetadata`, and `compileKotlinMacosArm64` for the modules no test reaches), about three of those
+`compileAppleMainKotlinMetadata`, and `compileKotlinMacosArm64` of every module, for the ones no test reaches), about three of those
 minutes. Any other change relinks a module or two, which one job does in five minutes, so it keeps one: a second would
 only hold one more of the five macOS runners. `main` keeps one too, since no pull request waits for its run. A change to
 `apple.yml` itself also runs both shards, so a change to the split is seen working before it merges.
