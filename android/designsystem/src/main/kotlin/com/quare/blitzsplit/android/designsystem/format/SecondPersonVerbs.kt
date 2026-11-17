@@ -20,6 +20,7 @@ private const val KOREAN = "ko"
 private const val KOREAN_HONORIFIC_SUBJECT = "님이"
 private const val HINDI = "hi"
 private const val HINDI_ERGATIVE = "ने"
+private const val VIETNAMESE = "vi"
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
@@ -44,6 +45,7 @@ private val youSubjectLanguages = setOf(
     UKRAINIAN,
     KOREAN,
     HINDI,
+    VIETNAMESE,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -174,6 +176,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * "Jij" or "Sen" and conjugate the verb for it, unlike the other languages. Russian and Ukrainian say "Ты" and "Ти"
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
+ * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

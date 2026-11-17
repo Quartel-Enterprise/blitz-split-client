@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Khóa Pix mới</string>
+    <string name="payment_key_title_pix_edit">Sửa khóa Pix</string>
+    <string name="payment_key_title_bitcoin_new">Khóa Bitcoin mới</string>
+    <string name="payment_key_title_bitcoin_edit">Sửa khóa Bitcoin</string>
+    <string name="payment_key_save">Lưu</string>
+
+    <string name="payment_key_pix_intro">Người trả tiền cho bạn sẽ thấy khóa này khi thanh toán nợ. Loại khóa nào?</string>
+    <string name="payment_key_pix_question">Loại khóa nào?</string>
+    <string name="payment_key_pix_explanation">Người trả tiền cho bạn sẽ thấy khóa này khi thanh toán nợ.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Điện thoại</string>
+    <string name="payment_key_type_email">Email</string>
+    <string name="payment_key_type_random">Ngẫu nhiên</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Số di động kèm mã vùng</string>
+    <string name="payment_key_label_email">Email</string>
+    <string name="payment_key_label_random">Khóa ngẫu nhiên</string>
+
+    <string name="payment_key_bitcoin_intro">Bạn muốn nhận tiền bằng cách nào?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">nhanh, phí thấp</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">trên blockchain</string>
+    <string name="payment_key_label_lightning">Lightning Address hoặc LNURL</string>
+    <string name="payment_key_label_onchain">Địa chỉ Bitcoin</string>
+
+    <string name="payment_key_paste">Dán</string>
+
+    <string name="payment_key_hint_cpf">Định dạng 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Định dạng +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Định dạng ten@tenmien.com</string>
+    <string name="payment_key_hint_random">32 chữ cái và chữ số, như ngân hàng của bạn hiển thị</string>
+    <string name="payment_key_hint_lightning">Ví dụ ten@vi.com hoặc LNURL1…</string>
+    <string name="payment_key_hint_onchain">Địa chỉ mainnet bắt đầu bằng bc1q hoặc bc1p</string>
+
+    <string name="payment_key_valid_cpf">Định dạng 000.000.000-00 · chữ số kiểm tra khớp</string>
+    <string name="payment_key_valid_phone">Định dạng +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Định dạng ten@tenmien.com</string>
+    <string name="payment_key_valid_random">Đã nhận diện khóa ngẫu nhiên (32 ký tự)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address hợp lệ</string>
+    <string name="payment_key_valid_lnurl">LNURL hợp lệ</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF không hợp lệ: chữ số kiểm tra không khớp.</string>
+    <string name="payment_key_error_invalid_phone">Số di động chưa đủ: dùng mã vùng và 9 chữ số, bắt đầu bằng 9.</string>
+    <string name="payment_key_error_invalid_email">Email chưa đủ: thiếu tên miền, như .com hoặc .com.br.</string>
+    <string name="payment_key_error_invalid_random">Khóa ngẫu nhiên chưa đủ: khóa có 32 chữ cái và chữ số.</string>
+    <string name="payment_key_error_invalid_lightning">Đây không phải Lightning Address (ten@vi) hay LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Đây là hóa đơn Lightning (lnbc…): chỉ thanh toán một lần và sẽ hết hạn. Hãy dán Lightning Address hoặc LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Địa chỉ không hợp lệ. Hãy dùng địa chỉ mainnet bc1q hoặc bc1p.</string>
+    <string name="payment_key_error_testnet_address">Đây là địa chỉ testnet (tb1…). Ở đây chỉ dùng được Bitcoin mainnet, với địa chỉ bc1….</string>
+    <string name="payment_key_error_already_saved">Bạn đã có khóa này rồi.</string>
+
+    <string name="payment_key_switched_to_onchain">Đây là địa chỉ on-chain, nên chúng tôi đã chuyển sang On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Đây là Lightning Address, nên chúng tôi đã chuyển sang Lightning.</string>
+    <string name="payment_key_cpf_notice">Người trả tiền cho bạn sẽ thấy đầy đủ CPF của bạn. Nếu không muốn chia sẻ, hãy dùng khóa điện thoại, email hoặc ngẫu nhiên.</string>
+    <string name="payment_key_held_notice">Bạn chỉ có thể có một khóa Pix loại này, nên đây là khóa bạn đã lưu. Bạn có thể đổi nó ở đây nếu muốn.</string>
+
+    <string name="payment_key_accepted_title">Chúng tôi chấp nhận</string>
+    <string name="payment_key_accepted_lightning_address_sample">ten@vi.app</string>
+
+    <string name="payment_key_default_pix_title">Khóa Pix mặc định</string>
+    <string name="payment_key_default_bitcoin_title">Khóa Bitcoin mặc định</string>
+    <string name="payment_key_default_pix_detail">Hiện đầu tiên khi thanh toán nợ.</string>
+    <string name="payment_key_default_bitcoin_detail">Hiện đầu tiên khi ai đó trả bằng BTC.</string>
+    <string name="payment_key_default_now">Hiện tại: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Để đổi, hãy đặt một khóa khác làm mặc định.</string>
+    <string name="payment_key_default_locked_new">Khóa đầu tiên thuộc loại này là khóa mặc định.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">điện thoại</string>
+    <string name="payment_key_default_type_email">email</string>
+    <string name="payment_key_default_type_random">khóa ngẫu nhiên</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split không chuyển tiền: người trả thanh toán trong ứng dụng ngân hàng của họ. Hãy kiểm tra khóa đứng tên bạn.</string>
+    <string name="payment_key_footer_bitcoin">Khi thanh toán nợ, chúng tôi hiển thị số tiền bằng sats theo tỷ giá hiện tại. Đó chỉ là ước tính: người trả sẽ xác nhận trong ví của họ.</string>
+
+    <string name="payment_key_delete">Xóa khóa</string>
+    <string name="payment_key_delete_title">Xóa khóa này?</string>
+    <string name="payment_key_delete_body">Những người nợ bạn sẽ không còn thấy khóa này khi thanh toán nợ.</string>
+    <string name="payment_key_delete_confirm">Xóa</string>
+</resources>

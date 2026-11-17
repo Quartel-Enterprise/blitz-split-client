@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Lưu mã khôi phục của bạn</string>
+    <string name="recovery_code_body">Bạn đang dùng mà không có tài khoản. 12 từ này sẽ lấy lại dữ liệu của bạn nếu bạn đổi hoặc mất thiết bị. Hãy ghi lại theo đúng thứ tự. Sau 30 ngày không dùng, dữ liệu của bạn sẽ bị xóa và các từ này không còn tác dụng.</string>
+    <string name="recovery_code_copy">Sao chép các từ</string>
+    <string name="recovery_code_save_to_password_manager">Lưu vào trình quản lý mật khẩu</string>
+    <string name="recovery_code_connect_instead">Kết nối Google hoặc Apple thay thế</string>
+    <string name="recovery_code_connect_instead_body">Không cần mã</string>
+    <string name="recovery_code_sign_in_failed">Hiện không kết nối được. Hãy thử lại.</string>
+    <string name="recovery_code_also_in_profile">Mã cũng có trong Hồ sơ › Khôi phục.</string>
+    <string name="recovery_code_remind_later">Nhắc tôi sau</string>
+    <string name="recovery_code_saved">Tôi đã lưu</string>
+    <string name="recovery_code_download">Tải xuống</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · mã khôi phục\n\n%1$s\n\nDùng mã này ở \"Tôi đã dùng trên thiết bị khác\" để lấy lại dữ liệu của bạn.\n</string>
+</resources>

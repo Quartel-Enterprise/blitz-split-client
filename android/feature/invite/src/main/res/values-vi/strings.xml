@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Đóng</string>
+    <string name="invite_group_created">Đã tạo nhóm</string>
+    <string name="invite_title">Mời mọi người vào %s</string>
+    <string name="invite_qr_description">Mã QR của liên kết mời vào nhóm</string>
+    <string name="invite_copy">Sao chép</string>
+    <string name="invite_copied">Đã sao chép</string>
+    <string name="invite_who_picks">Ai mở liên kết sẽ chọn mình là ai trong danh sách: %s. Không cần tài khoản.</string>
+    <string name="invite_names_or">%1$s hoặc %2$s</string>
+    <string name="invite_anyone_joins">Ai mở liên kết sẽ tham gia nhóm. Không cần tài khoản.</string>
+    <string name="invite_pending_title">Liên kết đang chờ</string>
+    <string name="invite_pending_offline">Liên kết sẽ được tạo ngay khi bạn có mạng.</string>
+    <string name="invite_pending_online">Đang tạo liên kết…</string>
+    <string name="invite_failed_title">Không tạo được liên kết</string>
+    <string name="invite_failed_body">Đã xảy ra lỗi khi đồng bộ nhóm.</string>
+    <string name="invite_retry">Thử lại</string>
+    <string name="invite_share">Chia sẻ liên kết</string>
+    <string name="invite_see_who_joined">Xem ai đã tham gia</string>
+    <string name="invite_add_person">Thêm người không dùng ứng dụng</string>
+    <string name="invite_go_to_group">Đến nhóm</string>
+    <string name="invite_change_link">Đổi liên kết</string>
+    <string name="invite_change_link_title">Đổi liên kết mời?</string>
+    <string name="invite_change_link_message">Liên kết và mã QR hiện tại sẽ ngừng hoạt động, kể cả các lời mời riêng chưa dùng. Những người đã tham gia vẫn ở trong nhóm.</string>
+    <string name="invite_change_link_failed">Không đổi được liên kết. Hãy thử lại.</string>
+    <string name="invite_share_message">Cùng chia các khoản chi của %1$s trên Blitz Split nhé. Tham gia bằng liên kết này: %2$s</string>
+</resources>

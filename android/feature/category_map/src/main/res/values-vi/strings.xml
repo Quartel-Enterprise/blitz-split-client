@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Không có từ khóa</string>
+    <string name="category_map_title">Bản đồ danh mục</string>
+    <string name="category_map_search">Tìm từ khóa</string>
+    <string name="category_map_add">Thêm từ khóa</string>
+    <string name="category_map_more">Thêm tùy chọn</string>
+    <string name="category_map_restore">Khôi phục mặc định</string>
+    <string name="category_map_back">Quay lại</string>
+    <string name="category_map_intro">Khi tiêu đề khoản chi có một trong những từ này, danh mục sẽ tự được chọn. “Uber về nhà” thành Di chuyển.</string>
+    <string name="category_map_intro_offline">Bản đồ hoạt động ngoại tuyến: thay đổi có hiệu lực ngay trên thiết bị này và đến các thiết bị khác của bạn khi có mạng trở lại.</string>
+    <string name="category_map_device_only">Bản đồ của bạn chỉ ở trên thiết bị này. Để dùng trên các thiết bị khác, hãy đăng nhập bằng Google hoặc Apple trong Hồ sơ.</string>
+    <string name="category_map_open_profile">Mở Hồ sơ</string>
+    <string name="category_map_longest_wins">Khi hai từ khóa cùng khớp một tiêu đề, từ khóa dài hơn được ưu tiên.</string>
+    <string name="category_map_no_result">Không có từ khóa nào với “%1$s”</string>
+    <string name="category_map_no_result_body">Hãy thêm từ khóa này, các khoản chi có từ này trong tiêu đề sẽ có đúng danh mục.</string>
+    <string name="category_map_add_query">Thêm “%1$s”</string>
+    <string name="category_map_empty_title">Bản đồ của bạn đang trống</string>
+    <string name="category_map_empty_body">Không có từ khóa, danh mục sẽ không lấy từ tiêu đề: bạn chọn danh mục cho từng khoản chi.</string>
+    <string name="category_map_group_category"> · danh mục của %1$s</string>
+    <string name="category_map_only_main">Chỉ %1$s</string>
+    <string name="category_map_only_in_group">chỉ trong %1$s</string>
+    <string name="category_map_no_terms_yet">Chưa có từ khóa nào.</string>
+    <string name="category_map_add_in">Thêm từ khóa vào %1$s</string>
+    <string name="category_map_tip">Nhấn vào một từ khóa để đổi danh mục hoặc xóa nó. Từ khóa khớp nguyên từ, không phân biệt dấu và chữ hoa thường.</string>
+    <string name="category_map_queued">đang chờ</string>
+    <string name="category_map_term_action">%1$s, %2$s. Sửa</string>
+    <string name="category_map_new_term">Từ khóa mới</string>
+    <string name="category_map_edit_term">Sửa từ khóa</string>
+    <string name="category_map_term_label">Từ hoặc cụm từ</string>
+    <string name="category_map_term_help">Khớp nguyên từ, không phân biệt dấu và chữ hoa thường.</string>
+    <string name="category_map_term_help_app">Từ khóa của ứng dụng. Khôi phục mặc định sẽ đưa nó về như ban đầu.</string>
+    <string name="category_map_term_duplicate">“%1$s” đã chọn %2$s. Mỗi từ khóa chỉ có một danh mục.</string>
+    <string name="category_map_term_too_short">Dùng ít nhất 2 chữ cái.</string>
+    <string name="category_map_term_too_long">Dùng tối đa 30 chữ cái.</string>
+    <string name="category_map_term_invalid">Chỉ dùng chữ cái, chữ số và dấu cách.</string>
+    <string name="category_map_category">Danh mục</string>
+    <string name="category_map_category_help">Có thể là danh mục hoặc danh mục con.</string>
+    <string name="category_map_category_help_edit">Đổi ở đây sẽ chuyển từ khóa sang danh mục khác.</string>
+    <string name="category_map_category_help_move">Chuyển sẽ đưa từ khóa ra khỏi %1$s.</string>
+    <string name="category_map_example">Ví dụ</string>
+    <string name="category_map_example_move">Nếu chuyển</string>
+    <string name="category_map_remove">Xóa</string>
+    <string name="category_map_cancel">Hủy</string>
+    <string name="category_map_save">Lưu</string>
+    <string name="category_map_move_to">Chuyển sang %1$s</string>
+    <string name="category_map_removed">“%1$s” đã rời khỏi bản đồ</string>
+    <string name="category_map_undo">Hoàn tác</string>
+    <string name="category_map_restore_title">Khôi phục bản đồ mặc định?</string>
+    <string name="category_map_restore_body">60 từ khóa của ứng dụng sẽ trở lại như ban đầu, kể cả những từ khóa bạn đã xóa hoặc chuyển.</string>
+    <string name="category_map_restore_own_one">Từ khóa bạn đã tạo, “%1$s”, vẫn được giữ.</string>
+    <string name="category_map_restore_confirm">Khôi phục</string>
+    <string name="category_map_save_error">Không lưu được bản đồ. Hãy thử lại.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="other">%d từ khóa</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="other">%d danh mục con</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="other">%1$d từ khóa với “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="other">Ngoại tuyến · %d thay đổi đang chờ</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="other">%d từ khóa bạn đã tạo vẫn được giữ.</item>
+    </plurals>
+    <string name="category_map_new_category">Danh mục mới</string>
+    <string name="category_map_new_subcategory_in">Danh mục con mới trong %s</string>
+    <string name="category_map_edit_category">Sửa %s</string>
+    <string name="category_map_category_group">Nhóm</string>
+    <string name="category_map_change_color">Đổi màu của %1$s</string>
+    <string name="category_map_restore_color">Khôi phục màu</string>
+    <string name="category_map_color_done">Xong</string>
+</resources>

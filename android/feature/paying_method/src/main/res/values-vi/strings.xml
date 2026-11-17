@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Phương thức thanh toán mới</string>
+    <string name="paying_method_edit_title">Sửa phương thức thanh toán</string>
+    <string name="paying_method_type">Loại</string>
+    <string name="paying_method_name">Tên</string>
+    <string name="paying_method_name_optional">Tên (không bắt buộc)</string>
+    <string name="paying_method_color">Màu</string>
+    <string name="paying_method_default">Phương thức mặc định</string>
+    <string name="paying_method_default_hint">Các khoản chi mới bạn trả sẽ dùng sẵn phương thức này.</string>
+    <string name="paying_method_delete">Xóa phương thức thanh toán</string>
+    <string name="paying_method_delete_title">Xóa phương thức thanh toán này?</string>
+    <string name="paying_method_delete_body">Các khoản chi bạn đã gắn phương thức này sẽ không còn hiện nó.</string>
+    <string name="paying_method_delete_confirm">Xóa</string>
+    <string name="paying_method_save">Lưu</string>
+</resources>

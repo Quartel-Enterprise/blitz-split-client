@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Liên hệ hỗ trợ</string>
+    <string name="contact_support_description">Chúng tôi sẽ mở ứng dụng email của bạn với một tin nhắn soạn sẵn. Hãy mô tả chuyện đã xảy ra rồi gửi đi: mọi tin nhắn đều được người thật đọc.</string>
+    <string name="contact_support_to">Đến</string>
+    <string name="contact_support_diagnostics">Sẽ được kèm trong email</string>
+    <string name="contact_support_app_version">Phiên bản ứng dụng</string>
+    <string name="contact_support_platform">Nền tảng</string>
+    <string name="contact_support_language">Ngôn ngữ</string>
+    <string name="contact_support_account">Tài khoản</string>
+    <string name="contact_support_profile">Hồ sơ</string>
+    <string name="contact_support_language_system">Hệ thống</string>
+    <string name="contact_support_account_local">Chỉ thiết bị này</string>
+    <string name="contact_support_account_anonymous">Chưa kết nối</string>
+    <string name="contact_support_open_email">Mở email</string>
+    <string name="contact_support_copy_email">Sao chép địa chỉ email</string>
+    <string name="contact_support_notice_copied">Đã sao chép địa chỉ email.</string>
+    <string name="contact_support_notice_no_app">Không tìm thấy ứng dụng email. Địa chỉ đã được sao chép thay vào đó.</string>
+    <string name="contact_support_close">Đóng</string>
+</resources>

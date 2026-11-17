@@ -38,6 +38,7 @@ class ProfileUiStateTest {
             AppLanguage.CHINESE_SIMPLIFIED -> listOf("中文（简体）", "Chinese (Simplified)")
             AppLanguage.HEBREW -> listOf("עברית", "Hebrew")
             AppLanguage.THAI -> listOf("ไทย", "Thai")
+            AppLanguage.VIETNAMESE -> listOf("Tiếng Việt", "Vietnamese")
         }
     }
 
@@ -73,6 +74,7 @@ class ProfileUiStateTest {
         AppLanguage.CHINESE_SIMPLIFIED,
         AppLanguage.HEBREW,
         AppLanguage.THAI,
+        AppLanguage.VIETNAMESE,
     )
 
     @Test
@@ -652,6 +654,7 @@ class ProfileUiStateTest {
                 AppLanguage.CHINESE_SIMPLIFIED,
                 AppLanguage.HEBREW,
                 AppLanguage.THAI,
+                AppLanguage.VIETNAMESE,
             ),
             options,
         )
@@ -690,6 +693,7 @@ class ProfileUiStateTest {
                 AppLanguage.CHINESE_SIMPLIFIED,
                 AppLanguage.HEBREW,
                 AppLanguage.THAI,
+                AppLanguage.VIETNAMESE,
             ),
             options,
         )

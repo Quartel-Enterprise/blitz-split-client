@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew and Thai: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai and Vietnamese: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -126,7 +126,11 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     `fullStop`, `clauseBreak`). Its plurals have one form, and its numbers are 0-9, as Arabic's, never Thai's own digits. Its dates are
     written with the Gregorian year on Android and the web (`withGregorianCalendar`, the web's `ca-gregory`), since
     Thai's default is the Buddhist era (2569 for 2026), while the Apple apps follow the device's own calendar setting,
-    Buddhist on a Thai iPhone unless its owner changed it (a call taken without Pierre). The brand
+    Buddhist on a Thai iPhone unless its owner changed it (a call taken without Pierre). Vietnamese (Pierre's call, issue #448) is one variant for every
+    `vi` tag and talks to the user as "bạn" (friends splitting a bill), "Bạn" as the subject of an activity row,
+    which Android's deleted-item notice starts with as it does in Spanish (`youSubjectLanguages`); its verbs don't
+    change with the person. It calls the app Blitz Split, writes its tone marks in the modern places ("hóa đơn"), and
+    its plurals have one form. The brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
@@ -292,11 +296,16 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Thai baht (THB) follows the new shekel (Pierre's call, with Thai), and starts a new group in Thailand. It has 2
     decimals and the usual 100 million cap, so an app version from before it shows its amounts by the raw code, with
     the right decimals.
+  - The Vietnamese dong (VND) follows the baht (Pierre's call, with Vietnamese), and starts a new group in Vietnam. It
+    has no decimals, as the won (no price there shows hào), and its bills and payments cap at 100 billion, as the
+    rupiah's, not 100 million (about US$ 4,000 at 25,000 dong a dollar; this is about US$ 4 million). An app version
+    from before it reads VND as an unknown code with two decimals and shows its amounts 100 times smaller until it
+    updates, as the rupiah did.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
     bill or a payment by each coin's supply: 21 million bitcoin and 90 million ether (the most the web's numbers
-    count to the unit), every other currency keeping 100 million but the rupiah (above)
+    count to the unit), every other currency keeping 100 million but the rupiah and the dong (above)
     (`ExpenseRules.maxAmountMinorFor`, the API's `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts
     a symbol and only the decimals the amount needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8
     ("0,00000001"). Profile › Preferences' "Bitcoin in satoshis" (always shown, Settings on the Mac), kept per

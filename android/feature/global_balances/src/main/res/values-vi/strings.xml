@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Số dư</string>
+    <string name="global_balances_profile">Hồ sơ</string>
+    <string name="global_balances_offline">Ngoại tuyến · số dư trên thiết bị này</string>
+    <string name="global_balances_filter">Hiện</string>
+    <string name="global_balances_filter_all">Tất cả</string>
+    <string name="global_balances_filter_you_owe">Bạn nợ</string>
+    <string name="global_balances_filter_owes_you">Nợ bạn</string>
+    <string name="global_balances_hint">Đã bù trừ giữa các nhóm: mỗi người chỉ hiện một lần.</string>
+    <string name="global_balances_hint_empty">Đang cộng tất cả các nhóm trên thiết bị này.</string>
+    <string name="global_balances_section_you_owe">Bạn nợ · %d</string>
+    <string name="global_balances_section_owes_you">Nợ bạn · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">%d nhóm</item>
+    </plurals>
+    <string name="global_balances_guest">%s · khách</string>
+    <string name="global_balances_you_owe">bạn nợ</string>
+    <string name="global_balances_owes_you">nợ bạn</string>
+    <string name="global_balances_by_group_show">Hiện %s theo nhóm</string>
+    <string name="global_balances_by_group_hide">Ẩn %s theo nhóm</string>
+    <string name="global_balances_received">Đã nhận tiền</string>
+    <string name="global_balances_received_from">Đã nhận tiền từ %s</string>
+    <string name="global_balances_settle">Thanh toán</string>
+    <string name="global_balances_settle_with">Thanh toán với %s</string>
+    <string name="global_balances_charge">Yêu cầu trả tiền</string>
+    <string name="global_balances_charge_person">Yêu cầu %s trả tiền</string>
+    <string name="global_balances_detail_pane">Số dư với %s</string>
+    <string name="global_balances_detail_owes_you">%s nợ bạn</string>
+    <string name="global_balances_detail_you_owe">Bạn nợ %s</string>
+    <string name="global_balances_detail_guest">%s · khách không dùng ứng dụng</string>
+    <string name="global_balances_detail_note_owed">Số tiền ròng đã bù trừ các nhóm: Yêu cầu trả tiền và Đã nhận dùng %s. Ứng dụng ghi nhận một khoản thanh toán trong mỗi nhóm.</string>
+    <string name="global_balances_detail_note_settle">Số tiền ròng đã bù trừ các nhóm: Thanh toán dùng %s. Ứng dụng ghi nhận một khoản thanh toán trong mỗi nhóm.</string>
+    <string name="global_balances_detail_note_single">Chỉ có một nhóm còn nợ với %s.</string>
+    <string name="global_balances_settled_title">Đã thanh toán xong</string>
+    <string name="global_balances_settled_body">Không ai nợ bạn và bạn không nợ ai. Khi ai đó thêm khoản chi, số dư sẽ hiện ở đây.</string>
+    <string name="global_balances_settled_action">Xem các nhóm</string>
+    <string name="global_balances_nothing_to_pay_title">Bạn không nợ gì</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">Bạn đã thanh toán xong với mọi người. Bạn vẫn còn %2$s được nhận lại từ %1$d người.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Xem ai nợ bạn</string>
+    <string name="global_balances_nothing_to_receive_title">Không ai nợ bạn</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">Bạn vẫn còn nợ %2$s với %1$d người.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Xem bạn nợ ai</string>
+    <string name="global_balances_coming_soon">Sắp ra mắt</string>
+    <string name="global_balances_change_error">Không lưu được thay đổi. Hãy thử lại.</string>
+    <string name="global_balances_copied">Đã sao chép</string>
+    <string name="global_balances_charge_title">Yêu cầu %s trả tiền</string>
+    <string name="global_balances_charge_owes">Nợ bạn %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Đóng</string>
+    <string name="global_balances_charge_guest">%s là khách không dùng ứng dụng. Họ chỉ biết qua tin nhắn này, nên tin nhắn đã ghi rõ những gì có trong khoản chi.</string>
+    <string name="global_balances_charge_message">Tin nhắn</string>
+    <string name="global_balances_charge_pix">Kèm khóa Pix của tôi</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Sao chép tin nhắn</string>
+    <string name="global_balances_charge_send">Gửi</string>
+    <string name="global_balances_message">Chào %1$s! Theo Blitz Split, bạn nợ mình %2$s từ %3$s.</string>
+    <string name="global_balances_message_guest">Chào %1$s! Bạn nợ mình %2$s từ %3$s: phần của bạn trong %4$s.</string>
+    <string name="global_balances_message_guest_paid">Chào %1$s! Bạn nợ mình %2$s từ %3$s: phần của bạn trong %4$s, trừ đi %5$s bạn đã trả.</string>
+    <string name="global_balances_message_group">nhóm %s</string>
+    <string name="global_balances_message_groups">các nhóm %s</string>
+    <string name="global_balances_message_pix">Pix %1$s: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Điện thoại</string>
+    <string name="global_balances_key_email">Email</string>
+    <string name="global_balances_key_random">Khóa ngẫu nhiên</string>
+    <string name="global_balances_message_reroute">%1$s đã đơn giản hóa nợ, nên thay vì trả %2$s, bạn trả thẳng cho mình; tổng của bạn không đổi.</string>
+</resources>
