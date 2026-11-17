@@ -62,6 +62,7 @@ const nativeLanguageNames: Record<string, string> = {
   ru: 'Русский',
   uk: 'Українська',
   ko: '한국어',
+  hi: 'हिन्दी',
   ar: 'العربية',
 }
 
@@ -83,6 +84,7 @@ const languageNames: Record<string, MessageKey> = {
   ru: 'profile_languageRussian',
   uk: 'profile_languageUkrainian',
   ko: 'profile_languageKorean',
+  hi: 'profile_languageHindi',
   ar: 'profile_languageArabic',
 }
 

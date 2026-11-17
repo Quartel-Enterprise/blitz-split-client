@@ -98,7 +98,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     https://blitzsplit.com/terms in another tab (`LegalLinks`), a browser's own way (Pierre's call).
     - The language is Profile › Language's, or the device's own while it follows the system, so a device in Turkish
       reads them in Turkish though the app is in English; the site writes them in all thirteen of the app's languages
-      (blitz-split-site#29; Russian and Ukrainian in blitz-split-site#40), and a language it doesn't write them in (Korean and
+      (blitz-split-site#29; Russian and Ukrainian in blitz-split-site#40), and a language it doesn't write them in (Korean, Hindi and
       Arabic, until the site adds them) reads the English text.
     - The device keeps the last text it downloaded (`legal_document`, per page and language) and shows it at once,
       offline too, while a newer one downloads and takes its place. A device that never downloaded it draws the

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">आमंत्रण लिंक</string>
+    <string name="members_link_pending">अभी नहीं बना</string>
+    <string name="members_share">शेयर करें</string>
+    <string name="members_me">%s (आप)</string>
+    <string name="members_status_this_device">यह डिवाइस</string>
+    <string name="members_status_joined">जुड़ गए</string>
+    <string name="members_status_not_joined">अभी तक नहीं जुड़े</string>
+    <string name="members_options">%s के विकल्प</string>
+    <string name="members_rename">नाम बदलें</string>
+    <string name="members_personal_invite">%s के लिए निजी आमंत्रण</string>
+    <string name="members_personal_message">जो भी यह लिंक खोलेगा, वह सूची से चुने बिना सीधे %s के रूप में जुड़ जाएगा। यह एक बार काम करता है।</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">जो भी यह लिंक खोलेगा, वह सूची से चुने बिना सीधे %1$s के रूप में जुड़ जाएगा, और अब तक जोड़े गए %3$d खर्च में अपना %2$s का हिस्सा तुरंत देखेगा। यह एक बार काम करता है।</item>
+        <item quantity="other">जो भी यह लिंक खोलेगा, वह सूची से चुने बिना सीधे %1$s के रूप में जुड़ जाएगा, और अब तक जोड़े गए %3$d खर्चों में अपना %2$s का हिस्सा तुरंत देखेगा। यह एक बार काम करता है।</item>
+    </plurals>
+    <string name="members_personal_copy">लिंक कॉपी करें</string>
+    <string name="members_personal_copied">कॉपी हो गया</string>
+    <string name="members_personal_share">%s के साथ शेयर करें</string>
+    <string name="members_personal_share_message">Blitz Split पर %2$s के रूप में %1$s से जुड़ें: %3$s</string>
+    <string name="members_remove">ग्रुप से हटाएं</string>
+    <string name="members_remove_joined">%s पहले ही ग्रुप से जुड़ चुके हैं</string>
+    <string name="members_remove_title">%s को ग्रुप से हटाएं?</string>
+    <string name="members_remove_message">%s अभी तक नहीं जुड़े हैं। आप उन्हें बाद में फिर से जोड़ सकते हैं।</string>
+    <string name="members_remove_confirm">हटाएं</string>
+    <string name="members_release">नाम खाली करें</string>
+    <string name="members_release_title">%s का नाम खाली करें?</string>
+    <string name="members_release_message">जो %1$s के रूप में जुड़ा था, वह ग्रुप से बाहर हो जाएगा। %1$s का नाम, रंग और खर्च बने रहेंगे, और ग्रुप के लिंक से %1$s को फिर से चुना जा सकता है।</string>
+    <string name="members_release_confirm">खाली करें</string>
+    <string name="members_release_error">नाम खाली नहीं हो सका। अपना कनेक्शन जांचें और फिर से कोशिश करें।</string>
+    <string name="members_add">व्यक्ति जोड़ें</string>
+    <string name="members_invite_instead">ऐप है? लिंक से आमंत्रित करें</string>
+    <string name="members_name_label">नाम</string>
+    <string name="members_save">सहेजें</string>
+    <string name="members_cancel">रद्द करें</string>
+    <string name="members_change_error">बदलाव सहेजा नहीं जा सका। फिर से कोशिश करें।</string>
+    <string name="members_remove_open_balance">%s का बैलेंस बाकी है</string>
+    <string name="members_balance_to_get_back">%s वापस मिलने हैं</string>
+    <string name="members_balance_owes">%s बकाया</string>
+    <string name="members_balance_settled">हिसाब बराबर</string>
+</resources>

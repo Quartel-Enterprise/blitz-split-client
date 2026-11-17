@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean and Arabic: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi and Arabic: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -83,7 +83,13 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     amount or a name of a bill or group the app fills in (Pierre's call, as Turkish): a person's name takes " 님" and
     the particle goes on 님 ("Ana 님이", "Ana 님에게"), a bill or group is quoted before a noun that carries it ("‘저녁’
     지출을"), and anything else is written as a label ("결제: Ana"). The user is "나", or "내가" as the subject of a
-    verb ([activity-and-push.md](activity-and-push.md)). Arabic (Pierre's call) is one variant, Modern Standard Arabic,
+    verb ([activity-and-push.md](activity-and-push.md)). Hindi (Pierre's call, issue #448) is one variant for every `hi`
+    tag, in Devanagari, and talks to the user as "आप" (the norm in Indian apps, even among friends: करें, never करो),
+    in the plain Hindi Indian apps write, English loanwords included (ग्रुप, बैलेंस, अकाउंट); it calls the app Blitz
+    Split, ends a sentence with the danda "।" (the code too, where it finishes one: `fullStopUi`, `WordGap.fullStop`,
+    `fullStop`), and its plurals have one and other, "one" covering 0 too. Its past puts the ergative "ने" after the
+    actor, apart after a name and one word with the user's "आपने", so the activity sentences follow Korean's rule
+    with "ने" ([activity-and-push.md](activity-and-push.md)). Arabic (Pierre's call) is one variant, Modern Standard Arabic,
     for every `ar` tag (ar-SA, ar-AE, ar-EG, ar-MA…), talks to the user in the singular "أنت" (Arabic has no polite
     "you" an app would use) and calls the app Blitz Split. It reads right to left, so every UI mirrors in it (the rules
     are in [responsive-layouts.md](../architecture/responsive-layouts.md#right-to-left)), and it writes numbers,
@@ -246,6 +252,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Korea. It has no decimals, as the yen (no price there shows jeon), and the usual 100 million cap (about US$ 70,000).
     An app version from before it reads KRW as an unknown code with two decimals and shows its amounts 100 times
     smaller until it updates, as the rupiah did.
+  - The Indian rupee (INR) follows the won (Pierre's call, with Hindi), and starts a new group in India. It has 2
+    decimals and the usual 100 million cap (about US$ 1.2 million), so an app version from before it shows its
+    amounts by the raw code, with the right decimals.
   - The Saudi riyal (SAR), the UAE dirham (AED), the Egyptian pound (EGP) and the Moroccan dirham (MAD) follow the
     won (Pierre's call, with Arabic), and start a new group in Saudi Arabia, the United Arab Emirates, Egypt and
     Morocco. All four have 2 decimals and the usual 100 million cap, so an app version from before them shows their

@@ -105,6 +105,7 @@ class GroupCurrency private constructor(
         val RUB = GroupCurrency("RUB", setOf("RU"))
         val UAH = GroupCurrency("UAH", setOf("UA"))
         val KRW = GroupCurrency("KRW", setOf("KR"), fractionDigits = 0)
+        val INR = GroupCurrency("INR", setOf("IN"))
         val SAR = GroupCurrency("SAR", setOf("SA"))
         val AED = GroupCurrency("AED", setOf("AE"))
         val EGP = GroupCurrency("EGP", setOf("EG"))
@@ -149,6 +150,7 @@ class GroupCurrency private constructor(
             RUB,
             UAH,
             KRW,
+            INR,
             SAR,
             AED,
             EGP,

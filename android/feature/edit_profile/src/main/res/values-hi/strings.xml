@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">प्रोफ़ाइल बदलें</string>
+    <string name="edit_profile_save">सहेजें</string>
+    <string name="edit_profile_change_photo">फ़ोटो बदलें</string>
+    <string name="edit_profile_take_photo">फ़ोटो लें</string>
+    <string name="edit_profile_choose_photo">गैलरी से चुनें</string>
+    <string name="edit_profile_use_account_photo">%1$s अकाउंट की फ़ोटो इस्तेमाल करें</string>
+    <string name="edit_profile_remove_photo">फ़ोटो हटाएं</string>
+    <string name="edit_profile_photo_error">यह फ़ोटो इस्तेमाल नहीं हो सकी। कोई दूसरी आज़माएं।</string>
+    <string name="edit_profile_avatar_color">अवतार का रंग</string>
+    <string name="edit_profile_avatar_color_hint">फ़ोटो न होने पर दिखता है।</string>
+    <string name="edit_profile_name_label">आपका नाम</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">कम से कम %d अक्षर लिखें।</string>
+    <string name="edit_profile_name_too_long">ज़्यादा से ज़्यादा %d अक्षर इस्तेमाल करें।</string>
+    <string name="edit_profile_account_notice">नाम और फ़ोटो आपके %1$s अकाउंट से आए हैं। इन्हें यहां बदलने से ये सिर्फ़ Blitz Split में बदलते हैं, आपके %1$s अकाउंट में नहीं।</string>
+    <string name="edit_profile_footer">आपके ग्रुप और जिनके पास भी आपकी प्रोफ़ाइल का लिंक है, वे आपका नाम और फ़ोटो देखते हैं।</string>
+    <string name="profile_photo_close">बंद करें</string>
+    <string name="profile_photo_camera">कैमरा</string>
+    <string name="profile_photo_gallery">गैलरी</string>
+    <string name="profile_photo_remove">हटाएं</string>
+    <string name="profile_photo_title">प्रोफ़ाइल फ़ोटो</string>
+</resources>

@@ -1,0 +1,54 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Hindi: pick \"हिन्दी\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala hindi: escolha \"हिन्दी\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora hindi: escolhe \"हिन्दी\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla hindi: elige \"हिन्दी\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais hindi : choisis « हिन्दी » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Hindi: Wähle „हिन्दी“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla hindi: scegli \"हिन्दी\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz w hindi: wybierz „हिन्दी” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Hindi: kies \"हिन्दी\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがヒンディー語に対応しました。プロフィール › 言語で「हिन्दी」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Hintçe konuşuyor: Profil › Dil'den \"हिन्दी\"yi seç ya da cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Hindi: pilih \"हिन्दी\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на хинди: выбери «हिन्दी» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить мовою гінді: обери «हिन्दी» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 힌디어를 쓸 수 있어요. 프로필 › 언어에서 ‘हिन्दी’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप हिन्दी में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “हिन्दी” चुनें, या इसे अपने डिवाइस की भाषा पर छोड़ दें।",
+        "ar": "يتحدث التطبيق الآن الهندية: اختيار «हिन्दी» من الملف الشخصي › اللغة، أو ترك التطبيق يتبع لغة الجهاز."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the Indian rupee (INR), and a group made in India starts in it.",
+        "pt": "Os grupos agora podem dividir em rupia indiana (INR), e um grupo criado na Índia já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em rupia indiana (INR), e um grupo criado na Índia começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en rupia india (INR), y un grupo creado en India empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en roupie indienne (INR), et un groupe créé en Inde démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Indischer Rupie (INR) teilen, und eine in Indien erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in rupia indiana (INR), e un gruppo creato in India parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w rupiach indyjskich (INR), a grupa założona w Indiach startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Indiase roepie (INR), en een groep die in India wordt gemaakt, start in die valuta.",
+        "ja": "グループでインド・ルピー（INR）が使えるようになり、インドで作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık Hindistan rupisi (INR) ile bölebiliyor; Hindistan'da açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam rupee India (INR), dan grup yang dibuat di India langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в индийских рупиях (INR), а группа, созданная в Индии, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати в індійських рупіях (INR), а група, створена в Індії, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 인도 루피(INR)로 나눌 수 있고, 인도에서 만든 그룹은 루피로 시작해요.",
+        "hi": "ग्रुप अब भारतीय रुपये (INR) में बांट सकते हैं, और भारत में बना ग्रुप रुपये में ही शुरू होता है।",
+        "ar": "يمكن للمجموعات الآن التقسيم بالروبية الهندية (INR)، والمجموعة التي تُنشأ في الهند تبدأ بها."
+      }
+    }
+  ]
+}

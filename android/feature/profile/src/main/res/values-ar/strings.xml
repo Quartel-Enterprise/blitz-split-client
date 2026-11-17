@@ -74,6 +74,7 @@
     <string name="profile_language_russian">الروسية</string>
     <string name="profile_language_ukrainian">الأوكرانية</string>
     <string name="profile_language_korean">الكورية</string>
+    <string name="profile_language_hindi">الهندية</string>
     <string name="profile_language_arabic">العربية</string>
     <string name="profile_language_system_detail">لغة الجهاز</string>
     <string name="profile_notifications">الإشعارات</string>

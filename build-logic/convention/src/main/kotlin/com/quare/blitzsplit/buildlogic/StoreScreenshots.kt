@@ -27,26 +27,26 @@ private const val GROUP = "store-screenshots"
 private const val GENERATE_TASK = "testDebugUnitTest"
 private const val DUO_CLOSED = "iphoneduo"
 private const val DUO_OPEN = "iphoneduoopen"
-private val listingLocales =
-    listOf(
-        "en-US",
-        "pt-BR",
-        "pt-PT",
-        "es",
-        "es-ES",
-        "fr",
-        "de",
-        "it",
-        "pl",
-        "nl",
-        "tr",
-        "id",
-        "ru",
-        "uk",
-        "ko",
-        "ar",
-        "ja",
-    )
+private val listingLocales = listOf(
+    "en-US",
+    "pt-BR",
+    "pt-PT",
+    "es",
+    "es-ES",
+    "fr",
+    "de",
+    "it",
+    "pl",
+    "nl",
+    "tr",
+    "id",
+    "ru",
+    "uk",
+    "ko",
+    "hi",
+    "ar",
+    "ja",
+)
 private val playLocales = mapOf(
     "en-US" to listOf("en-US"),
     "pt-BR" to listOf("pt-BR"),
@@ -63,6 +63,7 @@ private val playLocales = mapOf(
     "ru" to listOf("ru-RU"),
     "uk" to listOf("uk"),
     "ko" to listOf("ko-KR"),
+    "hi" to listOf("hi-IN"),
     "ar" to listOf("ar"),
     "ja" to listOf("ja-JP"),
 )
@@ -82,6 +83,7 @@ private val appStoreLocales = mapOf(
     "ru" to listOf("ru"),
     "uk" to listOf("uk"),
     "ko" to listOf("ko"),
+    "hi" to listOf("hi"),
     "ar" to listOf("ar-SA"),
     "ja" to listOf("ja"),
 )

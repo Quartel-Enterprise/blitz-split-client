@@ -22,7 +22,7 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     group, a removed member) shows the brand's card, the same image blitzsplit.com's home page shows in a preview. A
     messenger keeps a preview it already fetched: changing the link doesn't change the previews already posted.
     A crawler says nothing of who reads the preview, so the group's currency picks its language: BRL Portuguese ("Bora
-    Rachar"), ARS, CLP, COP, MXN, PEN, UYU and PYG Spanish, JPY Japanese, TRY Turkish, IDR Indonesian, PLN Polish, RUB Russian, UAH Ukrainian, KRW Korean, SAR, AED, EGP and MAD Arabic,
+    Rachar"), ARS, CLP, COP, MXN, PEN, UYU and PYG Spanish, JPY Japanese, TRY Turkish, IDR Indonesian, PLN Polish, RUB Russian, UAH Ukrainian, KRW Korean, INR Hindi, SAR, AED, EGP and MAD Arabic,
     any other English. No currency picks French, German, Italian or Dutch, since the euro, the Swiss franc and the
     Canadian dollar are each spoken in more than one language, and a USD or EUR group of Spanish speakers gets English
     too: an accepted trade-off.
