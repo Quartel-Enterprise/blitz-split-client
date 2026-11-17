@@ -131,7 +131,25 @@ class ObserveSpokenLanguageUseCaseTest {
 
             // Then
             assertEquals(
-                listOf("en", "pt", "pt", "es", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "ar"),
+                listOf(
+                    "en",
+                    "pt",
+                    "pt",
+                    "es",
+                    "es",
+                    "fr",
+                    "de",
+                    "it",
+                    "pl",
+                    "nl",
+                    "ja",
+                    "tr",
+                    "id",
+                    "ru",
+                    "uk",
+                    "ko",
+                    "ar",
+                ),
                 spoken,
             )
         }
@@ -161,7 +179,10 @@ class ObserveSpokenLanguageUseCaseTest {
         val spoken = devices.map { spokenOn(it) }
 
         // Then
-        assertEquals(listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "ar"), spoken)
+        assertEquals(
+            listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "ar"),
+            spoken,
+        )
     }
 
     @Test

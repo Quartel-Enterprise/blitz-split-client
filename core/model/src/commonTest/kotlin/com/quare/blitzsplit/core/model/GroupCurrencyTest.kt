@@ -202,7 +202,7 @@ class GroupCurrencyTest {
     }
 
     @Test
-    fun `GIVEN Saudi Arabia, the Emirates, Egypt and Morocco WHEN picking their currencies THEN each is its own with 2 decimals`() {
+    fun `GIVEN the Arabic speaking regions WHEN picking their currencies THEN each has its own with 2 decimals`() {
         // Given
         val regions = listOf("SA", "AE", "EG", "MA")
 
