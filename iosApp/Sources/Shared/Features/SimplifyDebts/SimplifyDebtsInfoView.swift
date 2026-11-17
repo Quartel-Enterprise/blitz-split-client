@@ -31,7 +31,7 @@ struct SimplifyDebtsInfoView: View {
             Section {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(verbatim: String(
-                        localized: "Carla owes Elisa \(amount(20)), and Elisa owes you \(amount(20)).",
+                        localized: "Carla owes Elisa \(amount(20)), and Elisa owes Bruno \(amount(20)).",
                         bundle: .appLanguage,
                     ))
                         .fixedSize(horizontal: false, vertical: true)
@@ -42,7 +42,7 @@ struct SimplifyDebtsInfoView: View {
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(Text("Example: 2 payments become 1"))
                     Text(verbatim: String(
-                        localized: "Simplified, Carla pays you \(amount(20)) directly, and Elisa pays nothing.",
+                        localized: "Simplified, Carla pays Bruno \(amount(20)) directly, and Elisa pays nothing.",
                         bundle: .appLanguage,
                     ))
                         .fixedSize(horizontal: false, vertical: true)
@@ -131,7 +131,7 @@ private struct SimplifyFact: View {
     }
 }
 
-/// The example, before or simplified: Carla (a photo) top left, Elisa top right, you at the bottom, and the arrows of who pays
+/// The example, before or simplified: Carla (a photo) top left, Elisa top right, Bruno at the bottom, and the arrows of who pays
 /// whom with the amount, in the boards' 160×130 frame.
 private struct SimplifyExampleFigure: View {
     let isSimplified: Bool
@@ -139,7 +139,7 @@ private struct SimplifyExampleFigure: View {
 
     private static let carla = CGPoint(x: 30, y: 30)
     private static let elisa = CGPoint(x: 130, y: 30)
-    private static let you = CGPoint(x: 80, y: 104)
+    private static let bruno = CGPoint(x: 80, y: 104)
     private static let scale: CGFloat = 0.8
 
     var body: some View {
@@ -161,7 +161,7 @@ private struct SimplifyExampleFigure: View {
                 face("SimplifyExampleCarla", at: Self.carla)
                 face("SimplifyExampleElisa", at: Self.elisa)
                     .opacity(isSimplified ? 0.45 : 1)
-                face("SimplifyExampleYou", at: Self.you)
+                face("SimplifyExampleBruno", at: Self.bruno)
             }
             .frame(width: 160, height: 130, alignment: .topLeading)
             // The boards' 140 pt figure, so the two fit side by side in an iPhone's row

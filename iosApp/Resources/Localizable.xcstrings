@@ -158836,95 +158836,6 @@
         }
       }
     },
-    "Carla owes Elisa %@, and Elisa owes you %@." : {
-      "comment" : "How it works: the example, before",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla schuldet Elisa %1$@, und Elisa schuldet dir %2$@."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla le debe %1$@ a Elisa, y Elisa te debe %2$@ a ti."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla doit %1$@ à Elisa, et Elisa te doit %2$@."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla berutang %@ ke Elisa, dan Elisa berutang %@ ke kamu."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla deve %@ a Elisa, ed Elisa ti deve %@."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "CarlaはElisaに%@、Elisaはあなたに%@を支払う必要があります。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla 님은 Elisa 님에게 줄 돈이 %@ 있고, Elisa 님은 나에게 줄 돈이 %@ 있어요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla is Elisa %@ schuldig, en Elisa is jou %@ schuldig."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla ma do oddania Elisie %1$@, a Elisa tobie %2$@."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla deve %1$@ a Elisa, e Elisa deve %2$@ a você."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla deve %1$@ a Elisa, e Elisa deve %2$@ a ti."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Карла должна Элизе %@, а Элиза должна тебе %@."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Carla, Elisa'ya %@ borçlu, Elisa da sana %@ borçlu."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Карла винна Елізі %@, а Еліза винна тобі %@."
-          }
-        }
-      }
-    },
     "Example: 2 payments become 1" : {
       "comment" : "How it works: VoiceOver's example",
       "localizations" : {
@@ -159010,95 +158921,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Приклад: 2 платежі стають 1"
-          }
-        }
-      }
-    },
-    "Simplified, Carla pays you %@ directly, and Elisa pays nothing." : {
-      "comment" : "How it works: the example, after",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vereinfacht zahlt Carla dir %@ direkt, und Elisa zahlt nichts."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Simplificado, Carla te paga %@ directamente, y Elisa no paga nada."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Simplifié, Carla te paie %@ directement, et Elisa ne paie rien."
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Setelah disederhanakan, Carla langsung membayarmu %@, dan Elisa tidak membayar apa pun."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Con la semplificazione, Carla ti paga %@ direttamente ed Elisa non paga niente."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "シンプル化すると、Carlaがあなたに直接%@を支払い、Elisaは何も支払いません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "간소화하면 Carla 님이 나에게 바로 %@ 송금하고, Elisa 님은 아무것도 내지 않아요."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vereenvoudigd betaalt Carla jou %@ rechtstreeks, en betaalt Elisa niets."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Po uproszczeniu Carla płaci ci %@ bezpośrednio, a Elisa nie płaci nic."
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Simplificado, Carla paga %@ direto a você, e Elisa não paga nada."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Simplificado, a Carla paga-te %@ diretamente, e a Elisa não paga nada."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "После упрощения Карла платит тебе %@ напрямую, а Элиза ничего не платит."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sadeleştirince Carla sana doğrudan %@ öder, Elisa hiçbir şey ödemez."
-          }
-        },
-        "uk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Після спрощення Карла платить тобі %@ напряму, а Еліза нічого не платить."
           }
         }
       }
@@ -177002,6 +176824,196 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "«Спростити борги» недоступно, поки в групі менше 3 людей. Стане доступно, коли в групі буде щонайменше 3 людей."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificar dívidas não está disponível em grupos com menos de 3 pessoas. Fica disponível a partir do momento em que o grupo tiver, pelo menos, 3 pessoas."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificar deudas no está disponible con menos de 3 personas. Estará disponible en cuanto el grupo tenga, como mínimo, 3 personas."
+          }
+        }
+      }
+    },
+    "Carla owes Elisa %@, and Elisa owes Bruno %@." : {
+      "comment" : "How it works: the example, before",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla schuldet Elisa %1$@, und Elisa schuldet Bruno %2$@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla le debe %1$@ a Elisa, y Elisa le debe %2$@ a Bruno."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla doit %1$@ à Elisa, et Elisa doit %2$@ à Bruno."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla berutang %@ ke Elisa, dan Elisa berutang %@ ke Bruno."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla deve %@ a Elisa, ed Elisa deve %@ a Bruno."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CarlaはElisaに%@、ElisaはBrunoに%@を支払う必要があります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla 님은 Elisa 님에게 줄 돈이 %@ 있고, Elisa 님은 Bruno 님에게 줄 돈이 %@ 있어요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla is Elisa %@ schuldig, en Elisa is Bruno %@ schuldig."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla ma do oddania Elisie %1$@, a Elisa Brunowi %2$@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla deve %1$@ a Elisa, e Elisa deve %2$@ a Bruno."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla deve %1$@ a Elisa, e Elisa deve %2$@ a Bruno."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Карла должна Элизе %@, а Элиза должна Бруно %@."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carla, Elisa'ya %@ borçlu, Elisa da Bruno'ya %@ borçlu."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Карла винна Елізі %@, а Еліза винна Бруно %@."
+          }
+        }
+      }
+    },
+    "Simplified, Carla pays Bruno %@ directly, and Elisa pays nothing." : {
+      "comment" : "How it works: the example, after",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vereinfacht zahlt Carla Bruno %@ direkt, und Elisa zahlt nichts."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificado, Carla le paga %@ directamente a Bruno, y Elisa no paga nada."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplifié, Carla paie %@ directement à Bruno, et Elisa ne paie rien."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setelah disederhanakan, Carla langsung membayar Bruno %@, dan Elisa tidak membayar apa pun."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con la semplificazione, Carla paga %@ direttamente a Bruno ed Elisa non paga niente."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シンプル化すると、CarlaがBrunoに直接%@を支払い、Elisaは何も支払いません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "간소화하면 Carla 님이 Bruno 님에게 바로 %@ 송금하고, Elisa 님은 아무것도 내지 않아요."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vereenvoudigd betaalt Carla Bruno %@ rechtstreeks, en betaalt Elisa niets."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Po uproszczeniu Carla płaci Brunowi %@ bezpośrednio, a Elisa nie płaci nic."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificado, Carla paga %@ direto a Bruno, e Elisa não paga nada."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplificado, a Carla paga %@ diretamente a Bruno, e a Elisa não paga nada."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "После упрощения Карла платит Бруно %@ напрямую, а Элиза ничего не платит."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sadeleştirince Carla Bruno'ya doğrudan %@ öder, Elisa hiçbir şey ödemez."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Після спрощення Карла платить Бруно %@ напряму, а Еліза нічого не платить."
           }
         }
       }

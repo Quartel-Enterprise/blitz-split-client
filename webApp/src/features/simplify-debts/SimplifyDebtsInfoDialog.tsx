@@ -10,7 +10,7 @@ import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import carla from './faces/carla.jpg'
 import elisa from './faces/elisa.jpg'
-import you from './faces/you.jpg'
+import bruno from './faces/bruno.jpg'
 import { paymentCount } from './simplify'
 
 const facts: { icon: LucideIcon; title: MessageKey; text: MessageKey }[] = [
@@ -92,7 +92,7 @@ function InfoBody({ example, total }: { example: string; total: string }) {
 }
 
 /**
- * The boards' diagram: Carla, Elisa and you, with Carla → Elisa → you before and Carla → you once simplified (Elisa,
+ * The boards' diagram: Carla, Elisa and Bruno, with Carla → Elisa → Bruno before and Carla → Bruno once simplified (Elisa,
  * who pays nothing, dimmed). The arrows are an SVG under the faces, photos of the client's image bank (the only sample
  * images the app ships).
  */
@@ -128,7 +128,7 @@ function ExampleFigure({ isSimplified, amount }: { isSimplified: boolean; amount
         </svg>
         <img src={carla} alt="" className={cn(node, 'top-[10px] left-[12px]')} />
         <img src={elisa} alt="" className={cn(node, 'top-[10px] left-[116px]', isSimplified && 'opacity-40')} />
-        <img src={you} alt="" className={cn(node, 'top-[90px] left-[64px]')} />
+        <img src={bruno} alt="" className={cn(node, 'top-[90px] left-[64px]')} />
       </div>
       <strong className="text-center text-[13px] leading-[18px]">{paymentCount(isSimplified ? 1 : 2)}</strong>
     </figure>

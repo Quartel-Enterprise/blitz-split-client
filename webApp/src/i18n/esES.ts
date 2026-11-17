@@ -132,4 +132,5 @@ export const esES: Partial<Record<MessageKey, string>> = {
   contactSupport_description: 'Abriremos tu app de correo con un mensaje listo. Describe lo que ha pasado y envíalo: personas reales leen cada mensaje.',
   contactSupport_noticeNoApp: 'No se ha encontrado ninguna app de correo. Se ha copiado la dirección.',
   profile_rateApp: 'Valorar la app',
+  editGroup_simplifyUnavailableToast: 'Simplificar deudas no está disponible con menos de 3 personas. Estará disponible en cuanto el grupo tenga, como mínimo, 3 personas.',
 }

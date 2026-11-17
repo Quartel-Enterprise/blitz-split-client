@@ -166,12 +166,12 @@
     <string name="simplify_info_back">Back</string>
     <string name="simplify_info_intro">In a group, each bill creates debts between two people. Over time, money goes in circles. Simplifying combines those debts and suggests fewer payments.</string>
     <string name="simplify_info_example">An example</string>
-    <string name="simplify_info_example_text">Carla owes Elisa %1$s, and Elisa owes you %1$s.</string>
+    <string name="simplify_info_example_text">Carla owes Elisa %1$s, and Elisa owes Bruno %1$s.</string>
     <string name="simplify_info_before">Before</string>
     <string name="simplify_info_after">Simplified</string>
-    <string name="simplify_info_before_a11y">Before: Carla pays Elisa %1$s and Elisa pays you %1$s. 2 payments.</string>
-    <string name="simplify_info_after_a11y">Simplified: Carla pays you %1$s directly. Elisa pays nothing. 1 payment.</string>
-    <string name="simplify_info_example_result">Simplified, Carla pays you %s directly, and Elisa pays nothing.</string>
+    <string name="simplify_info_before_a11y">Before: Carla pays Elisa %1$s and Elisa pays Bruno %1$s. 2 payments.</string>
+    <string name="simplify_info_after_a11y">Simplified: Carla pays Bruno %1$s directly. Elisa pays nothing. 1 payment.</string>
+    <string name="simplify_info_example_result">Simplified, Carla pays Bruno %s directly, and Elisa pays nothing.</string>
     <string name="simplify_info_total_title">Totals don\'t change</string>
     <string name="simplify_info_total_text">Whoever owed %1$s in the group still owes %1$s. Only where the money goes changes.</string>
     <string name="simplify_info_stranger_title">You may owe someone you never split a bill with</string>

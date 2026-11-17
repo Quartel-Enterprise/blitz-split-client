@@ -158,12 +158,12 @@
     <string name="simplify_info_back">Kembali</string>
     <string name="simplify_info_intro">Di grup, setiap tagihan membuat utang antara dua orang. Lama-lama, uangnya berputar-putar. Penyederhanaan menggabungkan utang itu dan menyarankan lebih sedikit pembayaran.</string>
     <string name="simplify_info_example">Contoh</string>
-    <string name="simplify_info_example_text">Carla berutang %1$s ke Elisa, dan Elisa berutang %1$s ke kamu.</string>
+    <string name="simplify_info_example_text">Carla berutang %1$s ke Elisa, dan Elisa berutang %1$s ke Bruno.</string>
     <string name="simplify_info_before">Sebelum</string>
     <string name="simplify_info_after">Disederhanakan</string>
-    <string name="simplify_info_before_a11y">Sebelum: Carla membayar %1$s ke Elisa dan Elisa membayar %1$s ke kamu. 2 pembayaran.</string>
-    <string name="simplify_info_after_a11y">Disederhanakan: Carla membayar %1$s langsung ke kamu. Elisa tidak membayar apa pun. 1 pembayaran.</string>
-    <string name="simplify_info_example_result">Setelah disederhanakan, Carla membayar %s langsung ke kamu, dan Elisa tidak membayar apa pun.</string>
+    <string name="simplify_info_before_a11y">Sebelum: Carla membayar %1$s ke Elisa dan Elisa membayar %1$s ke Bruno. 2 pembayaran.</string>
+    <string name="simplify_info_after_a11y">Disederhanakan: Carla membayar %1$s langsung ke Bruno. Elisa tidak membayar apa pun. 1 pembayaran.</string>
+    <string name="simplify_info_example_result">Setelah disederhanakan, Carla membayar %s langsung ke Bruno, dan Elisa tidak membayar apa pun.</string>
     <string name="simplify_info_total_title">Totalnya tidak berubah</string>
     <string name="simplify_info_total_text">Yang berutang %1$s di grup tetap berutang %1$s. Hanya tujuan uangnya yang berubah.</string>
     <string name="simplify_info_stranger_title">Kamu bisa berutang ke orang yang belum pernah berbagi tagihan denganmu</string>

@@ -166,12 +166,12 @@
     <string name="simplify_info_back">Terug</string>
     <string name="simplify_info_intro">In een groep ontstaan bij elke uitgave schulden tussen twee personen. Na verloop van tijd gaat het geld rondjes. Vereenvoudigen voegt die schulden samen en stelt minder betalingen voor.</string>
     <string name="simplify_info_example">Een voorbeeld</string>
-    <string name="simplify_info_example_text">Carla is Elisa %1$s schuldig, en Elisa is jou %1$s schuldig.</string>
+    <string name="simplify_info_example_text">Carla is Elisa %1$s schuldig, en Elisa is Bruno %1$s schuldig.</string>
     <string name="simplify_info_before">Voor</string>
     <string name="simplify_info_after">Vereenvoudigd</string>
-    <string name="simplify_info_before_a11y">Voor: Carla betaalt Elisa %1$s en Elisa betaalt jou %1$s. 2 betalingen.</string>
-    <string name="simplify_info_after_a11y">Vereenvoudigd: Carla betaalt jou %1$s rechtstreeks. Elisa betaalt niets. 1 betaling.</string>
-    <string name="simplify_info_example_result">Vereenvoudigd betaalt Carla jou %s rechtstreeks, en betaalt Elisa niets.</string>
+    <string name="simplify_info_before_a11y">Voor: Carla betaalt Elisa %1$s en Elisa betaalt Bruno %1$s. 2 betalingen.</string>
+    <string name="simplify_info_after_a11y">Vereenvoudigd: Carla betaalt Bruno %1$s rechtstreeks. Elisa betaalt niets. 1 betaling.</string>
+    <string name="simplify_info_example_result">Vereenvoudigd betaalt Carla Bruno %s rechtstreeks, en betaalt Elisa niets.</string>
     <string name="simplify_info_total_title">De totalen veranderen niet</string>
     <string name="simplify_info_total_text">Wie in de groep %1$s schuldig was, is nog steeds %1$s schuldig. Alleen waar het geld naartoe gaat verandert.</string>
     <string name="simplify_info_stranger_title">Je kunt iemand iets schuldig zijn met wie je nooit een uitgave hebt verdeeld</string>

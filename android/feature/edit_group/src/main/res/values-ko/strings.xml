@@ -158,12 +158,12 @@
     <string name="simplify_info_back">뒤로</string>
     <string name="simplify_info_intro">그룹에서는 지출마다 두 사람 사이에 빚이 생겨요. 시간이 지나면 돈이 빙빙 돌게 돼요. 간소화하면 그 빚을 합쳐 더 적은 송금을 제안해요.</string>
     <string name="simplify_info_example">예시</string>
-    <string name="simplify_info_example_text">Carla 님은 Elisa 님에게 %1$s, Elisa 님은 나에게 %1$s 줘야 해요.</string>
+    <string name="simplify_info_example_text">Carla 님은 Elisa 님에게 %1$s, Elisa 님은 Bruno 님에게 %1$s 줘야 해요.</string>
     <string name="simplify_info_before">이전</string>
     <string name="simplify_info_after">간소화</string>
-    <string name="simplify_info_before_a11y">이전: Carla 님이 Elisa 님에게 %1$s, Elisa 님이 나에게 %1$s 보내요. 송금 2건.</string>
-    <string name="simplify_info_after_a11y">간소화: Carla 님이 나에게 바로 %1$s 보내요. Elisa 님은 아무것도 보내지 않아요. 송금 1건.</string>
-    <string name="simplify_info_example_result">간소화하면 Carla 님이 나에게 바로 %s 보내고, Elisa 님은 아무것도 보내지 않아요.</string>
+    <string name="simplify_info_before_a11y">이전: Carla 님이 Elisa 님에게 %1$s, Elisa 님이 Bruno 님에게 %1$s 보내요. 송금 2건.</string>
+    <string name="simplify_info_after_a11y">간소화: Carla 님이 Bruno 님에게 바로 %1$s 보내요. Elisa 님은 아무것도 보내지 않아요. 송금 1건.</string>
+    <string name="simplify_info_example_result">간소화하면 Carla 님이 Bruno 님에게 바로 %s 보내고, Elisa 님은 아무것도 보내지 않아요.</string>
     <string name="simplify_info_total_title">총액은 바뀌지 않아요</string>
     <string name="simplify_info_total_text">그룹에서 %1$s 줘야 했던 사람은 여전히 %1$s 줘야 해요. 돈이 가는 곳만 바뀌어요.</string>
     <string name="simplify_info_stranger_title">함께 지출을 나눈 적 없는 사람에게 줘야 할 수도 있어요</string>

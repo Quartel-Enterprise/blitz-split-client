@@ -38,8 +38,8 @@ private const val FADED_ALPHA = 0.4f
 private const val FACE_DIAMETER = 36f
 
 /*
- * Why: the boards' before and after of "Um exemplo" (13.2), in the same 164×132 frame: Carla, Elisa and this device's
- * user as photos from the client's image bank (a few KB each, the only sample images the app ships), the arrows of who
+ * Why: the boards' before and after of "Um exemplo" (13.2), in the same 164×132 frame: Carla, Elisa and
+ * Bruno as photos from the client's image bank (a few KB each, the only sample images the app ships), the arrows of who
  * pays whom with the amount, and Elisa faded once she pays nothing.
  */
 @Composable
@@ -102,7 +102,7 @@ internal fun SimplifyExampleImage(
             Offset(134f, 28f),
             alpha = if (isSimplified) FADED_ALPHA else 1f,
         )
-        ExampleFaceImage(R.drawable.simplify_example_you, Offset(82f, 108f), alpha = 1f)
+        ExampleFaceImage(R.drawable.simplify_example_bruno, Offset(82f, 108f), alpha = 1f)
     }
 }
 

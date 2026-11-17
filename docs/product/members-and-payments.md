@@ -58,7 +58,7 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     "let them know with Request", the payments still in the queue, 13.3d), "Turn on anyway" when it saves none; turning off
     names only what changes for you and counts the others (13.3b); "How it works" (13.2, `Route.SimplifyDebtsInfo`)
     explains it: its title "Simplify debts" sits in the top bar beside the back arrow (Android, iPhone and iPad; the
-    Mac's sheet and the web's dialog keep it in their header), and the example's Carla, Elisa and you are three photos of
+    Mac's sheet and the web's dialog keep it in their header), and the example's Carla, Elisa and Bruno (not "you": a photo says a gender, the person looking could be anyone) are three photos of
     the client's image bank (`scripts/store-screenshots/bank/faces/`, AI-generated, shrunk to 128 px and shipped in each
     app: the only sample images it carries) in circles, never initials, Elisa dimmed once she pays nothing. It syncs
     with its own Last-Write-Wins stamp (`groups.simplify_debts_at`), apart from the row's

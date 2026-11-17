@@ -173,12 +173,12 @@
     <string name="simplify_info_back">Atrás</string>
     <string name="simplify_info_intro">En un grupo, cada gasto crea deudas entre dos personas. Con el tiempo, el dinero da vueltas en círculo. Simplificar combina esas deudas y sugiere menos pagos.</string>
     <string name="simplify_info_example">Un ejemplo</string>
-    <string name="simplify_info_example_text">Carla le debe %1$s a Elisa, y Elisa te debe %1$s a ti.</string>
+    <string name="simplify_info_example_text">Carla le debe %1$s a Elisa, y Elisa le debe %1$s a Bruno.</string>
     <string name="simplify_info_before">Antes</string>
     <string name="simplify_info_after">Simplificado</string>
-    <string name="simplify_info_before_a11y">Antes: Carla le paga %1$s a Elisa y Elisa te paga %1$s a ti. 2 pagos.</string>
-    <string name="simplify_info_after_a11y">Simplificado: Carla te paga %1$s directamente. Elisa no paga nada. 1 pago.</string>
-    <string name="simplify_info_example_result">Simplificado, Carla te paga %s directamente y Elisa no paga nada.</string>
+    <string name="simplify_info_before_a11y">Antes: Carla le paga %1$s a Elisa y Elisa le paga %1$s a Bruno. 2 pagos.</string>
+    <string name="simplify_info_after_a11y">Simplificado: Carla le paga %1$s directamente a Bruno. Elisa no paga nada. 1 pago.</string>
+    <string name="simplify_info_example_result">Simplificado, Carla le paga %s directamente a Bruno y Elisa no paga nada.</string>
     <string name="simplify_info_total_title">Los totales no cambian</string>
     <string name="simplify_info_total_text">Quien debía %1$s en el grupo sigue debiendo %1$s. Solo cambia a dónde va el dinero.</string>
     <string name="simplify_info_stranger_title">Puede que le debas a alguien con quien nunca dividiste un gasto</string>

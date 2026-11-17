@@ -166,12 +166,12 @@
     <string name="simplify_info_back">Zurück</string>
     <string name="simplify_info_intro">In einer Gruppe erzeugt jede Ausgabe Schulden zwischen zwei Personen. Mit der Zeit fließt das Geld im Kreis. Vereinfachen fasst diese Schulden zusammen und schlägt weniger Zahlungen vor.</string>
     <string name="simplify_info_example">Ein Beispiel</string>
-    <string name="simplify_info_example_text">Carla schuldet Elisa %1$s und Elisa schuldet dir %1$s.</string>
+    <string name="simplify_info_example_text">Carla schuldet Elisa %1$s und Elisa schuldet Bruno %1$s.</string>
     <string name="simplify_info_before">Vorher</string>
     <string name="simplify_info_after">Vereinfacht</string>
-    <string name="simplify_info_before_a11y">Vorher: Carla zahlt Elisa %1$s und Elisa zahlt dir %1$s. 2 Zahlungen.</string>
-    <string name="simplify_info_after_a11y">Vereinfacht: Carla zahlt dir %1$s direkt. Elisa zahlt nichts. 1 Zahlung.</string>
-    <string name="simplify_info_example_result">Vereinfacht zahlt Carla dir %s direkt und Elisa zahlt nichts.</string>
+    <string name="simplify_info_before_a11y">Vorher: Carla zahlt Elisa %1$s und Elisa zahlt Bruno %1$s. 2 Zahlungen.</string>
+    <string name="simplify_info_after_a11y">Vereinfacht: Carla zahlt Bruno %1$s direkt. Elisa zahlt nichts. 1 Zahlung.</string>
+    <string name="simplify_info_example_result">Vereinfacht zahlt Carla Bruno %s direkt und Elisa zahlt nichts.</string>
     <string name="simplify_info_total_title">Die Summen ändern sich nicht</string>
     <string name="simplify_info_total_text">Wer in der Gruppe %1$s geschuldet hat, schuldet weiterhin %1$s. Es ändert sich nur, wohin das Geld geht.</string>
     <string name="simplify_info_stranger_title">Du schuldest vielleicht jemandem, mit dem du nie eine Ausgabe geteilt hast</string>

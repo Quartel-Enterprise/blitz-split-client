@@ -166,12 +166,12 @@
     <string name="simplify_info_back">Geri</string>
     <string name="simplify_info_intro">Bir grupta her harcama iki kişi arasında borç oluşturur. Zamanla para döner durur. Sadeleştirme bu borçları birleştirir ve daha az ödeme önerir.</string>
     <string name="simplify_info_example">Bir örnek</string>
-    <string name="simplify_info_example_text">Carla, Elisa\'ya %1$s borçlu; Elisa da sana %1$s borçlu.</string>
+    <string name="simplify_info_example_text">Carla, Elisa\'ya %1$s borçlu; Elisa da Bruno\'ya %1$s borçlu.</string>
     <string name="simplify_info_before">Önce</string>
     <string name="simplify_info_after">Sadeleştirilmiş</string>
-    <string name="simplify_info_before_a11y">Önce: Carla, Elisa\'ya %1$s öder ve Elisa sana %1$s öder. 2 ödeme.</string>
-    <string name="simplify_info_after_a11y">Sadeleştirilmiş: Carla sana doğrudan %1$s öder. Elisa hiçbir şey ödemez. 1 ödeme.</string>
-    <string name="simplify_info_example_result">Sadeleştirilince Carla sana doğrudan %s öder, Elisa ise hiçbir şey ödemez.</string>
+    <string name="simplify_info_before_a11y">Önce: Carla, Elisa\'ya %1$s öder ve Elisa Bruno\'ya %1$s öder. 2 ödeme.</string>
+    <string name="simplify_info_after_a11y">Sadeleştirilmiş: Carla Bruno\'ya doğrudan %1$s öder. Elisa hiçbir şey ödemez. 1 ödeme.</string>
+    <string name="simplify_info_example_result">Sadeleştirilince Carla Bruno\'ya doğrudan %s öder, Elisa ise hiçbir şey ödemez.</string>
     <string name="simplify_info_total_title">Toplamlar değişmez</string>
     <string name="simplify_info_total_text">Grupta %1$s borcu olan yine %1$s borçludur. Yalnızca paranın gittiği yer değişir.</string>
     <string name="simplify_info_stranger_title">Hiç harcama bölüşmediğin birine borçlu olabilirsin</string>

@@ -182,12 +182,12 @@
     <string name="simplify_info_back">Назад</string>
     <string name="simplify_info_intro">В группе каждый счёт создаёт долги между двумя людьми. Со временем деньги ходят по кругу. Упрощение объединяет эти долги и предлагает меньше платежей.</string>
     <string name="simplify_info_example">Пример</string>
-    <string name="simplify_info_example_text">Карла должна Элизе %1$s, а Элиза должна тебе %1$s.</string>
+    <string name="simplify_info_example_text">Карла должна Элизе %1$s, а Элиза должна Бруно %1$s.</string>
     <string name="simplify_info_before">До</string>
     <string name="simplify_info_after">После упрощения</string>
-    <string name="simplify_info_before_a11y">До: Карла платит Элизе %1$s, а Элиза платит тебе %1$s. 2 платежа.</string>
-    <string name="simplify_info_after_a11y">После упрощения: Карла платит тебе %1$s напрямую. Элиза ничего не платит. 1 платёж.</string>
-    <string name="simplify_info_example_result">После упрощения Карла платит тебе %s напрямую, а Элиза ничего не платит.</string>
+    <string name="simplify_info_before_a11y">До: Карла платит Элизе %1$s, а Элиза платит Бруно %1$s. 2 платежа.</string>
+    <string name="simplify_info_after_a11y">После упрощения: Карла платит Бруно %1$s напрямую. Элиза ничего не платит. 1 платёж.</string>
+    <string name="simplify_info_example_result">После упрощения Карла платит Бруно %s напрямую, а Элиза ничего не платит.</string>
     <string name="simplify_info_total_title">Итоги не меняются</string>
     <string name="simplify_info_total_text">Кто был должен в группе %1$s, по-прежнему должен %1$s. Меняется только то, куда идут деньги.</string>
     <string name="simplify_info_stranger_title">Ты можешь оказаться должен(-на) тому, с кем никогда не делил(а) счёт</string>
