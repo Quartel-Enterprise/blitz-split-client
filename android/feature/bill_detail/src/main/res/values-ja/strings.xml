@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="bill_detail_back">戻る</string>
+    <string name="bill_detail_group_photo_open">グループの写真を表示</string>
     <string name="bill_detail_edit">編集</string>
     <string name="bill_detail_delete">削除</string>
     <string name="bill_detail_when_today">今日、%s</string>

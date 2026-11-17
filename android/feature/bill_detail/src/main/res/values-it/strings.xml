@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="bill_detail_back">Indietro</string>
+    <string name="bill_detail_group_photo_open">Vedi foto del gruppo</string>
     <string name="bill_detail_edit">Modifica</string>
     <string name="bill_detail_delete">Elimina</string>
     <string name="bill_detail_when_today">Oggi, %s</string>

@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.groupdetail
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +34,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.TwoRowsTopAppBar
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -46,17 +44,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
-import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.GroupPhotoButton
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.rememberGroupSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.splitBillIcon
@@ -197,28 +192,15 @@ private fun GroupTitle(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        /*
-         * Why: the avatar opens the group's photo big, as the profile's avatar opens its own; the touch target keeps
-         * the 48 dp minimum around the smaller badge.
-         */
-        Box(
-            modifier = Modifier
-                .minimumInteractiveComponentSize()
-                .clip(GroupAvatarShape)
-                .clickable(
-                    onClickLabel = stringResource(R.string.group_detail_photo_open),
-                    role = Role.Button,
-                ) { onAction(GroupAction.PHOTO) },
-            contentAlignment = Alignment.Center,
-        ) {
-            GroupBadge(
-                initials = header.groupInitials,
-                color = header.groupColor,
-                photoUrl = header.groupPhotoUrl,
-                size = badgeSize,
-                modifier = shared.avatar.then(billShared.avatar),
-            )
-        }
+        GroupPhotoButton(
+            initials = header.groupInitials,
+            color = header.groupColor,
+            photoUrl = header.groupPhotoUrl,
+            size = badgeSize,
+            clickLabel = stringResource(R.string.group_detail_photo_open),
+            onClick = { onAction(GroupAction.PHOTO) },
+            badgeModifier = shared.avatar.then(billShared.avatar),
+        )
         Text(
             text = header.groupName,
             modifier = shared.name.then(billShared.name),

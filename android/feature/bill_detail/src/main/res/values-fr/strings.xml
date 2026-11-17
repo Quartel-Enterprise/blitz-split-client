@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="bill_detail_back">Retour</string>
+    <string name="bill_detail_group_photo_open">Vois la photo du groupe</string>
     <string name="bill_detail_edit">Modifier</string>
     <string name="bill_detail_delete">Supprimer</string>
     <string name="bill_detail_when_today">Aujourd’hui, %s</string>
