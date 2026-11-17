@@ -1,4 +1,5 @@
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
+import com.quare.blitzsplit.buildlogic.cacheProjectLibrariesInNativeTestLinks
 import com.quare.blitzsplit.buildlogic.configureCoverage
 import com.quare.blitzsplit.buildlogic.createNamespace
 import com.quare.blitzsplit.buildlogic.getAndroidSdkVersions
@@ -62,6 +63,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
 
             configureCoverage()
             runIosSimulatorTestsOneAtATime()
+            cacheProjectLibrariesInNativeTestLinks()
         }
     }
 }

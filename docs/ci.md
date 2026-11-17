@@ -81,6 +81,19 @@ main and the test code for the simulator before the pull request opens, and `app
 request that changes `gradle/libs.versions.toml` runs the simulator's suite too: a library publishes its code for each
 target apart, so a bump is the change the two targets can take differently.
 
+The test links share the native code of the build's own modules. Kotlin/Native compiles a library to native code once
+and keeps it in `~/.konan`, but only a library under the Gradle home: a module of this build was compiled again by the
+link of every test binary that depends on it, `core/model` some fifty times. On the macOS runners,
+`blitzsplit.native.cacheProjectLibraries=true` (the Gradle action writes it to `~/.gradle/gradle.properties`) makes
+the convention plugin pass the test links `-Xauto-cache-from` with the project's folder, so each module is compiled
+once and the links after it reuse it. It is off everywhere else: an entry is named after its module's contents, so
+every change leaves one more in `~/.konan` and nothing deletes them, which a runner that is thrown away doesn't mind.
+`apple-tests` deletes those entries before it fingerprints and saves the Kotlin/Native entry on `main`: every commit
+compiles them anew, so with them each run would save one more gigabyte. The flag is the compiler's own and
+undocumented: a Kotlin version that drops it only warns ("Flag is not supported by this version of the compiler") and
+the links compile every module again, so when a Kotlin bump makes `apple-tests` minutes slower, look for that warning
+in its log.
+
 A pull request that changes the Swift app alone skips `apple-tests`: the `changes` job, on a Linux runner, lists what
 it changes, and when every file is under `iosApp/` or `release-notes/`, or is Markdown, no input of a Gradle task of
 the Apple targets changed. The job would then hold a macOS runner for five minutes to restore its tests from the

@@ -56,6 +56,9 @@ runs:
     # Kotlin daemon only compiles the JVM code of the build here. ~/.gradle/gradle.properties wins
     # over the project's, and the Gradle run of Xcode's build phase reads it too. It replaces the
     # whole jvmargs line, so the project's other flags are repeated.
+    # blitzsplit.native.cacheProjectLibraries makes the test links share the native code of the
+    # build's own modules (see NativeTestLinks.kt of build-logic): each of some fifty test binaries
+    # compiled every module it depends on again, and those links are most of apple-tests.
     - name: Fit Gradle to the runner
       if: inputs.kotlin-native == 'true' && runner.os == 'macOS'
       shell: bash
@@ -65,6 +68,7 @@ runs:
           echo 'org.gradle.jvmargs=-Xmx4608M -Dfile.encoding=UTF-8'
           echo 'kotlin.daemon.jvmargs=-Xmx1024M'
           echo 'org.gradle.workers.max=2'
+          echo 'blitzsplit.native.cacheProjectLibraries=true'
         } >> ~/.gradle/gradle.properties
 
     # The image's default Xcode can lag behind the newest it has installed (27.1 against 27.2 on

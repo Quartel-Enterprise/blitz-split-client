@@ -238,7 +238,17 @@ jobs:
         env:
           KEY_PREFIX: ${{ steps.gradle.outputs.konan-key }}
           NEWEST_KEY: ${{ steps.newest.outputs.cache-matched-key }}
+        # The build's own modules are cached there too, by the test links (see NativeTestLinks.kt
+        # of build-logic), under the root project's name. They go before the fingerprint: every
+        # commit compiles them anew, so with them each run of main would save one more entry of a
+        # gigabyte, holding code the next commit can't use. Without the name nothing is saved.
         run: |
+          project=$(sed -nE 's/^rootProject\.name = "(.*)"$/\1/p' settings.gradle.kts)
+          if [ -z "$project" ]; then
+            echo "::warning::No rootProject.name = \"...\" line in settings.gradle.kts, so the build's own modules can't be told from the libraries in the Kotlin/Native cache: it is not saved."
+            exit 0
+          fi
+          rm -rf ~/.konan/kotlin-native-prebuilt-*/klib/cache/*/"$project"[.:]*
           if [ -n "$KEY_PREFIX" ] && ls -d ~/.konan/kotlin-native-prebuilt-*/klib/cache > /dev/null 2>&1; then
             libraries=$(find ~/.konan/kotlin-native-prebuilt-*/klib/cache -mindepth 3 -maxdepth 3 -type d |
               sort | shasum -a 256 | cut -c1-16)
