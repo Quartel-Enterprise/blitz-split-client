@@ -32,11 +32,17 @@ val LocalShowsBitcoinInSats = staticCompositionLocalOf { false }
 @Stable
 class MoneyFormatter(
     private val currency: GroupCurrency,
-    private val locale: Locale,
     private val showsSats: Boolean,
     // Why: "%1$s sats" and "sats", in the UI's language, from the composition that builds it.
     private val satsText: SatsText,
+    locale: Locale,
 ) {
+    // Why: 0-9 in every language (Arabic's own digits would not parse back in the amount fields).
+    private val formatLocale: Locale = locale.withLatinDigits()
+
+    // Why: each amount isolated from a right to left sentence around it; a left to right language's text is untouched.
+    private val isolates: Boolean = locale.isRightToLeft()
+
     // Why: bitcoin, ether and a code this version doesn't know have no platform currency: the symbol is written by hand.
     private val writesOwnSymbol: Boolean = currency.isCrypto || !currency.isKnown
 
@@ -58,16 +64,19 @@ class MoneyFormatter(
         // Why: a code this version doesn't know has no symbol: the raw code stands in its place ("XYZ 12,50").
         !currency.isKnown -> currency.code
 
-        else -> Currency.getInstance(currency.code).getSymbol(locale)
+        else -> Currency.getInstance(currency.code).getSymbol(formatLocale)
     }
 
     // Why: "0,00", the placeholder of an empty amount field, with the separator people type.
     val zeroPlaceholder: String = currency.getTypedFractionDigits(showsSats).let { digits ->
-        if (digits == 0) "0" else "0" + DecimalFormatSymbols.getInstance(locale).decimalSeparator + "0".repeat(digits)
+        val separator = DecimalFormatSymbols.getInstance(formatLocale).decimalSeparator
+        if (digits == 0) "0" else "0" + separator + "0".repeat(digits)
     }
 
-    fun toText(amountMinor: Long): String {
-        if (isSats) return satsText.amount.format(toAmountText(amountMinor))
+    fun toText(amountMinor: Long): String = toBareText(amountMinor).toIsolatedIf(isolates)
+
+    private fun toBareText(amountMinor: Long): String {
+        if (isSats) return satsText.amount.format(toBareAmountText(amountMinor))
         val digits = currency.getDisplayFractionDigits(amountMinor, showsSats)
         return formats.getOrPut(digits) { createCurrencyFormat(digits) }.format(amountMinor.toDecimal())
     }
@@ -76,7 +85,7 @@ class MoneyFormatter(
     private val compactFormat by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !currency.isCrypto && currency.isKnown) {
             NumberFormatter
-                .withLocale(locale)
+                .withLocale(formatLocale)
                 .notation(Notation.compactShort())
                 .unit(
                     android.icu.util.Currency
@@ -95,26 +104,28 @@ class MoneyFormatter(
         val format = compactFormat
         // Why: compactFormat is only set from Android 11, but lint can't see that through lazy, only this check.
         if (format == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return toText(amountMinor)
-        return format.format(amountMinor.toDecimal()).toString()
+        return format.format(amountMinor.toDecimal()).toString().toIsolatedIf(isolates)
     }
 
     // Why: "120,50" with no symbol, where the currency is already on the same line ("você recebe 120 e deve 218,50").
-    fun toAmountText(amountMinor: Long): String {
+    fun toAmountText(amountMinor: Long): String = toBareAmountText(amountMinor).toIsolatedIf(isolates)
+
+    private fun toBareAmountText(amountMinor: Long): String {
         val digits = currency.getDisplayFractionDigits(amountMinor, showsSats)
         return plainFormats.getOrPut(digits) { createPlainFormat(digits) }.format(amountMinor.toDecimal())
     }
 
-    // Why: "+R$ 600" and "−R$ 118,50", with the typographic minus of the design.
+    // Why: "+R$ 600" and "−R$ 118,50", with the typographic minus of the design, the sign inside the amount's isolate.
     fun toSignedText(amountMinor: Long): String = when {
-        amountMinor > 0 -> PLUS_SIGN + toText(amountMinor)
-        amountMinor < 0 -> MINUS_SIGN + toText(-amountMinor)
-        else -> toText(amountMinor)
-    }
+        amountMinor > 0 -> PLUS_SIGN + toBareText(amountMinor)
+        amountMinor < 0 -> MINUS_SIGN + toBareText(-amountMinor)
+        else -> toBareText(amountMinor)
+    }.toIsolatedIf(isolates)
 
     private fun Long.toDecimal(): BigDecimal = BigDecimal.valueOf(this, if (isSats) 0 else currency.fractionDigits)
 
     private fun createCurrencyFormat(fractionDigits: Int): NumberFormat =
-        NumberFormat.getCurrencyInstance(locale).apply {
+        NumberFormat.getCurrencyInstance(formatLocale).apply {
             if (writesOwnSymbol && this is DecimalFormat) {
                 decimalFormatSymbols = decimalFormatSymbols.apply {
                     currencySymbol = symbol
@@ -126,10 +137,11 @@ class MoneyFormatter(
             maximumFractionDigits = fractionDigits
         }
 
-    private fun createPlainFormat(fractionDigits: Int): NumberFormat = NumberFormat.getNumberInstance(locale).apply {
-        minimumFractionDigits = fractionDigits
-        maximumFractionDigits = fractionDigits
-    }
+    private fun createPlainFormat(fractionDigits: Int): NumberFormat =
+        NumberFormat.getNumberInstance(formatLocale).apply {
+            minimumFractionDigits = fractionDigits
+            maximumFractionDigits = fractionDigits
+        }
 
     private companion object {
         const val MINUS_SIGN = "−"
@@ -172,6 +184,13 @@ fun rememberMoneyFormatters(currencies: List<GroupCurrency>): Map<GroupCurrency,
     val showsSats = LocalShowsBitcoinInSats.current
     val satsText = rememberSatsText()
     return remember(currencies, locale, showsSats, satsText) {
-        currencies.associateWith { MoneyFormatter(it, locale, showsSats, satsText) }
+        currencies.associateWith { currency ->
+            MoneyFormatter(
+                currency = currency,
+                showsSats = showsSats,
+                satsText = satsText,
+                locale = locale,
+            )
+        }
     }
 }

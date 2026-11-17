@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.CategoryBadge
 import com.quare.blitzsplit.android.designsystem.format.categoryName
+import com.quare.blitzsplit.android.designsystem.format.forwardArrowUi
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveSheet
 import com.quare.blitzsplit.core.expenses.domain.model.Category
 import com.quare.blitzsplit.feature.categorymap.presentation.model.CategoryMapUiEvent
@@ -271,8 +272,9 @@ private fun TermExampleText(
             R.string.category_map_example
         },
     )
+    val arrow = forwardArrowUi()
     Text(
-        text = "$label: “${text.replaceFirstChar { it.uppercaseChar() }}” → ${pathOf(category, state)}",
+        text = "$label: “${text.replaceFirstChar { it.uppercaseChar() }}” $arrow ${pathOf(category, state)}",
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )

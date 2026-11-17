@@ -35,7 +35,7 @@ export function PersonGroupsList({
         const content = (
           <>
             <GroupAvatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-6 text-[10px]" />
-            <span className="flex min-w-0 flex-1 flex-col text-left">
+            <span className="flex min-w-0 flex-1 flex-col text-start">
               <span className="truncate">{group.name}</span>
               <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                 {t(group.amountMinor < 0 ? 'globalBalances_rowYouOwe' : 'globalBalances_rowOwesYou')}

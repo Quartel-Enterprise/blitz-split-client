@@ -123,7 +123,7 @@ function SplitCard({ label, total, amountMinor, caption, action, tone, isEnabled
       onClick={onClick}
       disabled={!isEnabled}
       aria-label={isEnabled && amount ? `${label} ${amount}. ${action}` : label}
-      className="flex min-w-0 flex-col gap-1 rounded-lg border bg-card px-3 py-2.5 text-left outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none md:px-4 md:py-3.5"
+      className="flex min-w-0 flex-col gap-1 rounded-lg border bg-card px-3 py-2.5 text-start outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none md:px-4 md:py-3.5"
     >
       <span className="flex items-center justify-between gap-2 text-[13px] font-medium text-muted-foreground">
         {label}
@@ -345,7 +345,7 @@ function PersonFace({
       {...guestHandlers}
       className={cn(
         'rounded-lg outline-none select-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring',
-        isRow ? 'flex min-h-14 min-w-0 items-center gap-3 px-2 py-2 text-left' : 'flex w-[72px] shrink-0 flex-col items-center gap-0.5 py-1.5 md:w-[88px]',
+        isRow ? 'flex min-h-14 min-w-0 items-center gap-3 px-2 py-2 text-start' : 'flex w-[72px] shrink-0 flex-col items-center gap-0.5 py-1.5 md:w-[88px]',
       )}
     >
       <span className="relative flex shrink-0">
@@ -355,7 +355,7 @@ function PersonFace({
           <span aria-hidden className={cn('rounded-full bg-muted', isRow ? 'size-10' : 'size-12 md:size-14')} />
         )}
         {person.isGuest && (
-          <span aria-hidden className="absolute -right-0.5 -bottom-0.5 flex size-5 items-center justify-center rounded-full border-2 border-card bg-muted text-muted-foreground">
+          <span aria-hidden className="absolute -inset-e-0.5 -bottom-0.5 flex size-5 items-center justify-center rounded-full border-2 border-card bg-muted text-muted-foreground">
             <NoAppIcon className="size-[11px]" strokeWidth={2.6} />
           </span>
         )}
@@ -486,7 +486,7 @@ export function RecentBills({ presenter, state }: SectionProps) {
           <div className="hidden overflow-x-auto lg:@min-[40rem]:block">
             <table className="w-full text-sm">
               <thead className="border-y text-xs text-muted-foreground">
-                <tr className="text-left">
+                <tr className="text-start">
                   <th scope="col" className="px-4 py-2 font-medium">
                     {t('groupDetail_columnExpense')}
                   </th>
@@ -496,13 +496,13 @@ export function RecentBills({ presenter, state }: SectionProps) {
                   <th scope="col" className="px-3 py-2 font-medium">
                     {t('home_columnWhen')}
                   </th>
-                  <th scope="col" className="px-3 py-2 text-right font-medium">
+                  <th scope="col" className="px-3 py-2 text-end font-medium">
                     {t('groupDetail_columnTotal')}
                   </th>
-                  <th scope="col" className="py-2 pl-3 text-right font-medium">
+                  <th scope="col" className="py-2 ps-3 text-end font-medium">
                     {t('home_columnShare')}
                   </th>
-                  <th scope="col" className="w-12 py-2 pr-1">
+                  <th scope="col" className="w-12 py-2 pe-1">
                     <span className="sr-only">{t('groupDetail_columnOptions')}</span>
                   </th>
                 </tr>
@@ -557,7 +557,7 @@ function HomeBillTableRow({ bill, day, menu, onOpen }: { bill: JsHomeBill; day: 
                 onOpen()
               }}
               title={bill.description}
-              className="truncate rounded-sm text-left font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+              className="truncate rounded-sm text-start font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               {bill.description}
             </button>
@@ -574,11 +574,11 @@ function HomeBillTableRow({ bill, day, menu, onOpen }: { bill: JsHomeBill; day: 
         </span>
       </td>
       <td className="px-3 py-2.5 whitespace-nowrap text-muted-foreground">{day}</td>
-      <td className="px-3 py-2.5 text-right whitespace-nowrap tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</td>
-      <td className="py-2.5 pl-3 text-right">
+      <td className="px-3 py-2.5 text-end whitespace-nowrap tabular-nums">{formatMoney(bill.totalMinor, bill.currency, bill.fractionDigits)}</td>
+      <td className="py-2.5 ps-3 text-end">
         <ShareAmount bill={bill} />
       </td>
-      <td className="py-1 pr-1" onClick={(event) => event.stopPropagation()}>
+      <td className="py-1 pe-1" onClick={(event) => event.stopPropagation()}>
         <RowMenuButton title={bill.description} options={homeBillMenuOptions(menu, bill)} open={isMenuOpen} onOpenChange={setMenuOpen} />
       </td>
     </tr>
@@ -602,7 +602,7 @@ export function HomeBillListRow({ bill, menu, onOpen, children }: { bill: JsHome
     >
       <button
         onClick={onOpen}
-        className="flex min-w-0 flex-1 items-center gap-3 py-2.5 pr-1 pl-4 text-left text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
+        className="flex min-w-0 flex-1 items-center gap-3 py-2.5 pe-1 ps-4 text-start text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
       >
         <CategoryBadge category={bill.category} className="size-9 rounded-lg" />
         <span className="flex min-w-0 flex-1 flex-col gap-0.5 overflow-hidden">
@@ -616,7 +616,7 @@ export function HomeBillListRow({ bill, menu, onOpen, children }: { bill: JsHome
           <ShareAmount bill={bill} className="text-xs" />
         </span>
       </button>
-      <span className="shrink-0 pr-1">
+      <span className="shrink-0 pe-1">
         <RowMenuButton title={bill.description} options={homeBillMenuOptions(menu, bill)} open={isMenuOpen} onOpenChange={setMenuOpen} />
       </span>
     </li>
@@ -658,7 +658,7 @@ function GroupRowButton({ group, onOpen }: { group: JsHomeGroup; onOpen: () => v
     <button
       data-group-link={row.id}
       onClick={onOpen}
-      className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
+      className="flex w-full items-center gap-3 px-4 py-3 text-start text-sm outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
     >
       <GroupAvatar data-group-avatar initials={row.initials} color={row.color} photoUrl={row.photoUrl} className="size-9 text-xs" />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">

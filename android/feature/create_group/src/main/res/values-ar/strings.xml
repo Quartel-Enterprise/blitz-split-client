@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">مجموعة جديدة</string>
+    <string name="create_group_close">إغلاق</string>
+    <string name="create_group_create">إنشاء</string>
+    <string name="create_group_change_color">تغيير لون المجموعة</string>
+    <string name="create_group_name_label">اسم المجموعة</string>
+    <string name="create_group_type_label">نوع المجموعة</string>
+    <string name="create_group_members_title">المشاركون</string>
+    <plurals name="create_group_member_count">
+        <item quantity="zero">%d شخص</item>
+        <item quantity="one">%d شخص</item>
+        <item quantity="two">%d شخصان</item>
+        <item quantity="few">%d أشخاص</item>
+        <item quantity="many">%d شخصًا</item>
+        <item quantity="other">%d شخص</item>
+    </plurals>
+    <string name="create_group_me">أنت</string>
+    <string name="create_group_remove_member">إزالة %s</string>
+    <string name="create_group_add_placeholder">الإضافة بالاسم</string>
+    <string name="create_group_add">إضافة</string>
+    <string name="create_group_no_app_notice">لا أحد يحتاج إلى التطبيق الآن. يمكن إضافة المصروفات للجميع من الآن وإرسال الرابط لاحقًا.</string>
+    <string name="create_group_currency">العملة الافتراضية</string>
+    <string name="create_group_currency_caption">تبدأ الفواتير الجديدة بهذه العملة؛ ويمكن لكل فاتورة استخدام عملة أخرى.</string>
+    <string name="create_group_save_error">تعذر حفظ المجموعة. يُرجى إعادة المحاولة.</string>
+    <string name="create_group_photo">صورة المجموعة</string>
+    <string name="create_group_take_photo">التقاط صورة</string>
+    <string name="create_group_choose_photo">اختيار صورة</string>
+    <string name="create_group_remove_photo">إزالة الصورة</string>
+    <string name="create_group_photo_error">تعذر استخدام هذه الصورة. يمكن تجربة صورة أخرى.</string>
+</resources>

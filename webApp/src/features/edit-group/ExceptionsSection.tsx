@@ -31,7 +31,7 @@ export function ExceptionsSection({ presenter, state }: { presenter: DefaultSpli
                 type="button"
                 onClick={() => presenter.openException(exception.categoryId)}
                 className={cn(
-                  'flex min-h-[60px] w-full items-center gap-3 bg-card px-4 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                  'flex min-h-[60px] w-full items-center gap-3 bg-card px-4 py-2 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
                   index === 0 ? 'rounded-t-2xl' : 'rounded-t-md',
                   index === state.exceptions.length - 1 ? 'rounded-b-2xl' : 'rounded-b-md',
                 )}
@@ -142,11 +142,12 @@ function PercentInput({ presenter, memberId, value, isError }: { presenter: Defa
   return (
     <span className="flex items-center gap-1">
       <input
+        dir="ltr"
         inputMode="numeric"
         value={text}
         aria-invalid={isError}
         onChange={(event) => setText(event.target.value)}
-        className="h-9 w-16 rounded-md border border-field-border bg-transparent px-2 text-right font-semibold tabular-nums"
+        className="h-9 w-16 rounded-md border border-field-border bg-transparent px-2 text-right rtl:text-left font-semibold tabular-nums"
       />
       <span aria-hidden>%</span>
     </span>
@@ -178,7 +179,7 @@ function CategoryChips({
             className={cn(
               'flex min-h-8 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
               isSelected || category.id === openId ? 'border-transparent bg-secondary text-secondary-foreground' : 'border-border',
-              isSelected && 'pl-2',
+              isSelected && 'ps-2',
             )}
           >
             {isSelected && <Check aria-hidden className="size-4" />}

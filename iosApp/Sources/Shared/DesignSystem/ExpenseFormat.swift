@@ -26,7 +26,7 @@ final class ClockFormat {
     /// The device's locale on the hour cycle picked: 24 hours ("14:30") or 12 with AM and PM ("2:30 PM"), in the
     /// device's own way of writing them; the device's locale as it is while it follows the system. Kept, not built
     /// again for each row a list formats.
-    private(set) var locale: Locale = .autoupdatingCurrent
+    private(set) var locale: Locale = AppNumbers.locale
 
     private init() {
         // A picked hour cycle sits on a copy of the device's locale, so a region changed while the app runs is taken
@@ -48,13 +48,15 @@ final class ClockFormat {
         locale(from: base, as: preference)
     }
 
-    /// `base` on `timeFormat`'s hour cycle, whatever was picked: Profile's examples of each option.
+    /// `base` on `timeFormat`'s hour cycle, whatever was picked: Profile's examples of each option. Latin digits in
+    /// Arabic, as every amount and date (`AppNumbers`).
     func locale(from base: Locale, as timeFormat: TimeFormatPreference) -> Locale {
         let hourCycle: Locale.HourCycle? = switch timeFormat {
         case .twentyFourHour: .zeroToTwentyThree
         case .twelveHour: .oneToTwelve
         default: nil
         }
+        let base = AppNumbers.latin(base)
         guard let hourCycle else { return base }
         var components = Locale.Components(locale: base)
         components.hourCycle = hourCycle
@@ -68,32 +70,45 @@ extension GroupCurrency {
     /// "R$ 312,50" in Portuguese, "R$312.50" in English: 31250 cents in the group's currency. Decimals that are all
     /// zero don't show ("R$ 312"), as `getDisplayFractionDigits` decides for each amount. Bitcoin and ether take
     /// "₿" and "Ξ" where the language puts a currency's symbol, with only the decimals the amount needs ("₿ 0,00125"),
-    /// and bitcoin in satoshis is whole sats ("125.000 sats").
+    /// and bitcoin in satoshis is whole sats ("125.000 sats"). Isolated in a right-to-left language (`RightToLeft`).
     func format(_ minor: Int64) -> String {
-        if showsSats { return String(localized: "\(formatPlain(minor)) sats", bundle: .appLanguage) }
-        if let cryptoSymbol {
-            return Self.cryptoFormatter(symbol: cryptoSymbol, digits: shownDigits(of: minor))
-                .string(from: decimal(of: minor) as NSDecimalNumber) ?? formatPlain(minor)
-        }
-        return decimal(of: minor).formatted(.currency(code: code).precision(.fractionLength(shownDigits(of: minor))))
+        RightToLeft.isolated(unisolated(minor))
     }
 
-    /// "+R$ 600" or "−R$ 118,50", with a true minus sign: what a bill does to a balance. Zero takes no sign.
+    /// "+R$ 600" or "−R$ 118,50", with a true minus sign: what a bill does to a balance. Zero takes no sign. The sign
+    /// and the amount are isolated together in a right-to-left language.
     func formatSigned(_ minor: Int64) -> String {
-        let amount = format(minor == .min ? .max : abs(minor))
-        if minor == 0 { return amount }
-        return minor < 0 ? "−\(amount)" : "+\(amount)"
+        let amount = unisolated(minor == .min ? .max : abs(minor))
+        if minor == 0 { return RightToLeft.isolated(amount) }
+        return RightToLeft.isolated(minor < 0 ? "−\(amount)" : "+\(amount)")
     }
 
     /// "120,50" or "120.50", with no symbol: where the currency is already on the same line ("you get 120 and owe
     /// 218.50").
     func formatPlain(_ minor: Int64) -> String {
-        decimal(of: minor).formatted(.number.precision(.fractionLength(shownDigits(of: minor))))
+        RightToLeft.isolated(unisolatedPlain(minor))
     }
 
     /// "0,00" or "0.00": the placeholder of an amount field, with the digits it types ("0" for bitcoin in sats).
     var zeroPlaceholder: String {
-        Decimal(0).formatted(.number.precision(.fractionLength(typedDigits)))
+        Decimal(0).formatted(.number.precision(.fractionLength(typedDigits)).locale(AppNumbers.locale))
+    }
+
+    private func unisolated(_ minor: Int64) -> String {
+        if showsSats { return String(localized: "\(unisolatedPlain(minor)) sats", bundle: .appLanguage) }
+        if let cryptoSymbol {
+            return Self.cryptoFormatter(symbol: cryptoSymbol, digits: shownDigits(of: minor))
+                .string(from: decimal(of: minor) as NSDecimalNumber) ?? unisolatedPlain(minor)
+        }
+        return decimal(of: minor).formatted(
+            .currency(code: code).precision(.fractionLength(shownDigits(of: minor))).locale(AppNumbers.locale),
+        )
+    }
+
+    private func unisolatedPlain(_ minor: Int64) -> String {
+        decimal(of: minor).formatted(
+            .number.precision(.fractionLength(shownDigits(of: minor))).locale(AppNumbers.locale),
+        )
     }
 
     /// The symbol in front of an amount field ("R$", "US$" or "$", as the device's language names it; "₿", "Ξ", or
@@ -103,7 +118,7 @@ extension GroupCurrency {
         if let cryptoSymbol { return cryptoSymbol }
         if let symbol = Self.symbols[code] { return symbol }
         let formatter = NumberFormatter()
-        formatter.locale = .current
+        formatter.locale = AppNumbers.locale
         formatter.numberStyle = .currency
         formatter.currencyCode = code
         let symbol = formatter.currencySymbol ?? code
@@ -141,7 +156,7 @@ extension GroupCurrency {
         let key = "\(symbol):\(digits)"
         if let formatter = cryptoFormatters[key] { return formatter }
         let formatter = NumberFormatter()
-        formatter.locale = .current
+        formatter.locale = AppNumbers.locale
         formatter.numberStyle = .currency
         formatter.currencySymbol = symbol
         formatter.minimumFractionDigits = digits
@@ -199,12 +214,12 @@ enum ExpenseFormat {
 
     /// "Oct 28" or "28 de out.".
     static func shortDate(_ millis: Int64) -> String {
-        date(of: millis).formatted(.dateTime.day().month(.abbreviated))
+        date(of: millis).formatted(.dateTime.day().month(.abbreviated).locale(AppNumbers.locale))
     }
 
     /// "Fri, Oct 24" or "sex., 24 de out.".
     private static func weekdayDate(_ millis: Int64) -> String {
-        date(of: millis).formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated))
+        date(of: millis).formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated).locale(AppNumbers.locale))
     }
 
     /// "Diego", "Diego and Elisa" or "Ana, Diego and Elisa", in the device's language.

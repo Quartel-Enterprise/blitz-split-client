@@ -93,6 +93,8 @@ struct CustomColorSheet: View {
             })
         }
         .frame(height: 180)
+        // Why: saturation and hue grow to the right in every language, as the gradients and the drag read them
+        .environment(\.layoutDirection, .leftToRight)
         .accessibilityElement()
         .accessibilityLabel(Text("Saturation and brightness"))
         .accessibilityValue(Text(verbatim: "\(Int((draft.saturation * 100).rounded()))%, \(Int((draft.value * 100).rounded()))%"))
@@ -123,6 +125,7 @@ struct CustomColorSheet: View {
             })
         }
         .frame(height: 28)
+        .environment(\.layoutDirection, .leftToRight)
         .accessibilityElement()
         .accessibilityLabel(Text("Hue"))
         .accessibilityValue(Text(verbatim: "\(Int(draft.hue.rounded()))°"))

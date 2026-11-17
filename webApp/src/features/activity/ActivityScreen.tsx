@@ -205,7 +205,7 @@ function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityP
         aria-current={isSelected || undefined}
         onClick={() => presenter.clickItem(item.id)}
         className={cn(
-          'flex w-full gap-3 px-4 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring',
+          'flex w-full gap-3 px-4 text-start outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring',
           showsChanges ? 'pt-3 pb-1.5' : 'py-3',
         )}
       >
@@ -225,7 +225,7 @@ function FeedRow({ presenter, item, isWide, isSelected }: { presenter: ActivityP
       </button>
       {/* Why: the face opens whoever did it (their profile, Perfil for you), apart from the row, which opens the item. */}
       {item.actorOpensProfile && (
-        <PersonButton isRound label={actorProfileLabel(item)} onOpen={() => presenter.openActor(item.id)} flightKey={`activity-${item.id}`} className="absolute top-3 left-4 size-8" />
+        <PersonButton isRound label={actorProfileLabel(item)} onOpen={() => presenter.openActor(item.id)} flightKey={`activity-${item.id}`} className="absolute top-3 inset-s-4 size-8" />
       )}
       {showsChanges && <InlineChanges presenter={presenter} item={item} />}
     </div>
@@ -243,7 +243,7 @@ function actorProfileLabel(item: JsActivityItem): string {
  */
 function InlineChanges({ presenter, item }: { presenter: ActivityPresenter; item: JsActivityItem }) {
   return (
-    <div className="flex flex-col gap-1 pr-4 pb-2 pl-15">
+    <div className="flex flex-col gap-1 pe-4 pb-2 ps-15">
       {item.isExpanded && (
         <div role="region" aria-label={changesRegionLabel(item)} className="flex flex-col gap-1.5 rounded-lg border bg-background p-3 text-[13px]">
           {changeRows(item).map((row) => (
@@ -259,7 +259,7 @@ function InlineChanges({ presenter, item }: { presenter: ActivityPresenter; item
           </Button>
         </div>
       )}
-      <Button variant="ghost" size="sm" aria-expanded={item.isExpanded} className="-ml-3 self-start text-muted-foreground" onClick={() => presenter.toggleChanges(item.id)}>
+      <Button variant="ghost" size="sm" aria-expanded={item.isExpanded} className="-ms-3 self-start text-muted-foreground" onClick={() => presenter.toggleChanges(item.id)}>
         {t(item.isExpanded ? 'activity_hideChanges' : 'activity_showChanges')}
         <ChevronDown aria-hidden className={cn('transition-transform', item.isExpanded && 'rotate-180')} />
       </Button>
@@ -363,7 +363,7 @@ function ActorFace({ item, className, badgeClassName }: { item: JsActivityItem; 
       <span
         aria-hidden
         style={tone.style}
-        className={cn('absolute -right-1 -bottom-1 flex items-center justify-center rounded-full border-2 border-card', tone.className, badgeClassName)}
+        className={cn('absolute -inset-e-1 -bottom-1 flex items-center justify-center rounded-full border-2 border-card', tone.className, badgeClassName)}
       >
         {kindIcon(item)}
       </span>
@@ -450,7 +450,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
             <button
               type="button"
               onClick={() => presenter.openGroup(item.id)}
-              className="self-start rounded-sm text-left text-[13px] text-muted-foreground outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring"
+              className="self-start rounded-sm text-start text-[13px] text-muted-foreground outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               {meta}
             </button>
@@ -472,7 +472,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
           <table className="w-full overflow-hidden rounded-lg border text-sm">
             <caption className="sr-only">{changesRegionLabel(item)}</caption>
             <thead>
-              <tr className="h-9 border-b bg-muted text-left text-xs text-muted-foreground">
+              <tr className="h-9 border-b bg-muted text-start text-xs text-muted-foreground">
                 <th scope="col" className="w-32 px-3 font-medium">{t(item.simplification ? 'activity_columnPerson' : 'activity_columnField')}</th>
                 <th scope="col" className="px-3 font-medium">{t('activity_columnBefore')}</th>
                 <th scope="col" className="px-3 font-medium">{t('activity_columnAfter')}</th>
@@ -481,7 +481,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
             <tbody>
               {changeRows(item).map((row) => (
                 <tr key={row.key} className="h-10 border-b last:border-b-0">
-                  <th scope="row" className="px-3 text-left font-normal text-muted-foreground">{row.label}</th>
+                  <th scope="row" className="px-3 text-start font-normal text-muted-foreground">{row.label}</th>
                   <td className="px-3 text-muted-foreground"><s>{row.before}</s></td>
                   <td className="px-3 font-medium">{row.after}</td>
                 </tr>
@@ -504,7 +504,7 @@ function ItemDetail({ presenter, item, related }: { presenter: ActivityPresenter
               key={other.id}
               type="button"
               onClick={() => presenter.clickItem(other.id)}
-              className="flex items-start gap-3 rounded-md p-2 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring"
+              className="flex items-start gap-3 rounded-md p-2 text-start outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               <Avatar initial={other.actorInitials} color={other.actorColor} photoUrl={other.actorPhotoUrl} className="size-7 text-[11px]" />
               <span className="flex min-w-0 flex-1 flex-col">

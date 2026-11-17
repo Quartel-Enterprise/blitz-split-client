@@ -1,5 +1,5 @@
 import { getKnownCurrencyCodes } from 'blitzsplit-shared'
-import { t } from '@/i18n'
+import { direction, t } from '@/i18n'
 import { uiTag } from '@/lib/currency'
 
 // Why: lists redraw every row on each keystroke, and building the Intl formatters each time is costly.
@@ -65,6 +65,15 @@ function shownDigits(minor: number, fractionDigits: number, currency?: string): 
   return digits
 }
 
+/**
+ * An amount kept in one piece inside a right-to-left sentence: wrapped in FIRST STRONG ISOLATE … POP DIRECTIONAL
+ * ISOLATE, so "−R$ 118,50" keeps its sign, symbol and digits in order among Arabic or Hebrew words. A left-to-right
+ * language gets `amount` unchanged.
+ */
+function isolated(amount: string): string {
+  return direction === 'rtl' ? `\u2068${amount}\u2069` : amount
+}
+
 /** The number an amount shows: the major unit, or whole sats for bitcoin in satoshis (its minor unit). */
 function shownNumber(minor: number, fractionDigits: number, currency?: string): number {
   return isSats(currency) ? minor : minor / 10 ** fractionDigits
@@ -76,7 +85,11 @@ function shownNumber(minor: number, fractionDigits: number, currency?: string): 
  * browser doesn't know the currency.
  */
 export function formatMoney(minor: number, currency: string, fractionDigits: number): string {
-  if (isSats(currency)) return t('money_sats', { amount: formatPlainMoney(minor, fractionDigits, currency) })
+  return isolated(moneyText(minor, currency, fractionDigits))
+}
+
+function moneyText(minor: number, currency: string, fractionDigits: number): string {
+  if (isSats(currency)) return t('money_sats', { amount: plainMoneyText(minor, fractionDigits, currency) })
   const major = shownNumber(minor, fractionDigits, currency)
   const digits = shownDigits(minor, fractionDigits, currency)
   try {
@@ -90,7 +103,7 @@ export function formatMoney(minor: number, currency: string, fractionDigits: num
       .join('')
   } catch {
     // Why: a code Intl refuses (not 3 letters, from a newer app) still takes the UI language's separators.
-    return `${currency} ${formatPlainMoney(minor, fractionDigits, currency)}`
+    return `${currency} ${plainMoneyText(minor, fractionDigits, currency)}`
   }
 }
 
@@ -107,7 +120,7 @@ export function formatCompactMoney(minor: number, currency: string, fractionDigi
       format = new Intl.NumberFormat(uiTag, { style: 'currency', currency, notation: 'compact', maximumSignificantDigits: 2 })
       formatters.set(key, format)
     }
-    return format.format(minor / 10 ** fractionDigits)
+    return isolated(format.format(minor / 10 ** fractionDigits))
   } catch {
     return formatMoney(minor, currency, fractionDigits)
   }
@@ -115,12 +128,12 @@ export function formatCompactMoney(minor: number, currency: string, fractionDigi
 
 /** A balance with its sign, "+R$ 600" or "−R$ 118,50" (a true minus sign), and no sign at zero. */
 export function formatSignedMoney(minor: number, currency: string, fractionDigits: number): string {
-  return withSign(minor, formatMoney(Math.abs(minor), currency, fractionDigits))
+  return isolated(withSign(minor, moneyText(Math.abs(minor), currency, fractionDigits)))
 }
 
 /** A balance with its sign and no symbol, "+214,90" or "−98", where the currency is the line's own. */
 export function formatSignedPlainMoney(minor: number, fractionDigits: number, currency?: string): string {
-  return withSign(minor, formatPlainMoney(Math.abs(minor), fractionDigits, currency))
+  return isolated(withSign(minor, plainMoneyText(Math.abs(minor), fractionDigits, currency)))
 }
 
 function withSign(minor: number, amount: string): string {
@@ -134,6 +147,10 @@ function withSign(minor: number, amount: string): string {
  * The currency trims a cryptocurrency's decimals and counts bitcoin in sats.
  */
 export function formatPlainMoney(minor: number, fractionDigits: number, currency?: string): string {
+  return isolated(plainMoneyText(minor, fractionDigits, currency))
+}
+
+function plainMoneyText(minor: number, fractionDigits: number, currency?: string): string {
   const digits = shownDigits(minor, fractionDigits, currency)
   const key = `plain:${digits}`
   let format = formatters.get(key)

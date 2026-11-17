@@ -145,7 +145,7 @@ function ResponsiveDialog({ title, description, onClose, body, children }: Respo
   return (
     <Drawer open onOpenChange={onOpenChange}>
       <DrawerContent>
-        <DrawerHeader className="text-left">
+        <DrawerHeader className="text-start">
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>

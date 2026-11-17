@@ -68,7 +68,7 @@ export function CategoriesCard({
                   if (event.pointerType === 'mouse') setSelected(null)
                 }}
                 className={cn(
-                  'flex min-w-0 items-center gap-2 rounded-md px-1 py-0.5 text-left outline-none transition-opacity focus-visible:ring-[3px] focus-visible:ring-ring',
+                  'flex min-w-0 items-center gap-2 rounded-md px-1 py-0.5 text-start outline-none transition-opacity focus-visible:ring-[3px] focus-visible:ring-ring',
                   selected !== null && selected !== index && 'opacity-40',
                 )}
               >
@@ -97,7 +97,7 @@ function CategoryLine({ row, money, onOpen }: { row: JsStatsCategory; money: (mi
       <button
         type="button"
         onClick={onOpen}
-        className="-m-2 flex min-w-0 flex-1 items-start gap-3 rounded-lg p-2 text-left outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
+        className="-m-2 flex min-w-0 flex-1 items-start gap-3 rounded-lg p-2 text-start outline-none hover:bg-accent/60 focus-visible:ring-[3px] focus-visible:ring-ring"
       >
         <CategoryBadge category={row.category} />
         <span className="flex min-w-0 flex-1 flex-col gap-1.5">

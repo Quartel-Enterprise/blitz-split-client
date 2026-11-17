@@ -14,8 +14,29 @@ object LegacyAppLocale {
     private const val PREFERENCES = "app_language"
     private const val KEY_TAG = "tag"
 
+    private const val ARABIC = "ar"
+    private const val NUMBERING_SYSTEM = "nu"
+    private const val LATIN_DIGITS = "latn"
+
     // Why: MainActivity's attachBaseContext, so its first frame is already in the language picked.
-    fun wrap(base: Context): Context {
+    fun wrap(base: Context): Context = withLatinDigits(wrapLegacy(base))
+
+    /*
+     * Why: Arabic writes its numbers, amounts and dates with Latin digits (docs/product/general.md), so the amount
+     * fields read what the number keyboard types. Every "%d" of a string resource, a date and a count follow the
+     * context's locale, so an Arabic one, picked or the device's, gets the "nu-latn" extension once here.
+     */
+    private fun withLatinDigits(context: Context): Context {
+        val locale = context.resources.configuration.locales[0]
+        if (locale.language != ARABIC || locale.getUnicodeLocaleType(NUMBERING_SYSTEM) != null) return context
+        val latin = Locale.Builder().setLocale(locale).setUnicodeLocaleKeyword(NUMBERING_SYSTEM, LATIN_DIGITS).build()
+        Locale.setDefault(latin)
+        val configuration = Configuration(context.resources.configuration)
+        configuration.setLocale(latin)
+        return context.createConfigurationContext(configuration)
+    }
+
+    private fun wrapLegacy(base: Context): Context {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) return base
         val locale = getStoredTag(base)?.let(Locale::forLanguageTag)
         // Why: back to System, the formats follow the device again rather than the language picked before.

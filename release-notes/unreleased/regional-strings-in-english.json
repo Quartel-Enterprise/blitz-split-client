@@ -19,7 +19,8 @@
         "id": "Memperbaiki notifikasi dan beberapa kalimat yang tampil dalam bahasa Inggris, atau sebagai kode seperti \"push.bill_deleted\", dalam bahasa Spanyol Spanyol dan Portugis Portugal.",
         "ru": "Исправлены уведомления и несколько фраз, которые в испанском для Испании и португальском для Португалии показывались на английском или в виде кода вроде «push.bill_deleted».",
         "uk": "Виправлено сповіщення та кілька фраз, які в іспанській для Іспанії та португальській для Португалії показувалися англійською або як код на кшталт «push.bill_deleted».",
-        "ko": "스페인 스페인어와 포르투갈 포르투갈어에서 알림과 일부 문장이 영어나 ‘push.bill_deleted’ 같은 코드로 표시되던 문제를 수정했어요."
+        "ko": "스페인 스페인어와 포르투갈 포르투갈어에서 알림과 일부 문장이 영어나 ‘push.bill_deleted’ 같은 코드로 표시되던 문제를 수정했어요.",
+        "ar": "تم إصلاح الإشعارات وبعض الجمل التي كانت تظهر بالإنجليزية، أو كرمز مثل «push.bill_deleted»، في إسبانية إسبانيا وبرتغالية البرتغال."
       }
     }
   ]

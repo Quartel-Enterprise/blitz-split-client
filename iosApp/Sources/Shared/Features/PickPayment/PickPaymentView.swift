@@ -187,7 +187,7 @@ private struct PairRow: View {
                 PaymentFaces(from: pair.from, to: pair.to, size: 32)
                 Text(verbatim: debt)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.tertiary)
                     .accessibilityHidden(true)

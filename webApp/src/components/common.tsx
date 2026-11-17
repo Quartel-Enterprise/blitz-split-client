@@ -176,7 +176,7 @@ export function PersonButton({
       data-profile-link={flightKey}
       onClick={onOpen}
       className={cn(
-        'cursor-pointer text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring',
+        'cursor-pointer text-start outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring',
         isRound ? 'rounded-full' : 'rounded-md',
         className,
       )}

@@ -548,7 +548,7 @@ private struct PhoneSplitBill: View {
                         Text(verbatim: state.groupName)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
-                        Image(systemName: "chevron.right")
+                        Image(systemName: "chevron.forward")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.tertiary)
                             .accessibilityHidden(true)

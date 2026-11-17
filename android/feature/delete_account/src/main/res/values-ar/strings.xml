@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">حذف الحساب</string>
+    <string name="delete_account_offline_title">لا يوجد اتصال بالإنترنت.</string>
+    <string name="delete_account_offline_body">يتطلب حذف حسابك اتصالًا بالإنترنت. يُرجى الاتصال وإعادة المحاولة.</string>
+    <string name="delete_account_heading">حذف حسابك وبياناتك؟</string>
+    <string name="delete_account_deleted_title">ما سيُحذف</string>
+    <string name="delete_account_deleted_profile">ملفك الشخصي (الاسم والصورة واللون)</string>
+    <string name="delete_account_deleted_keys">مفاتيح Pix وBitcoin الخاصة بك</string>
+    <string name="delete_account_deleted_provider">الربط بحسابك على %1$s</string>
+    <string name="delete_account_deleted_recovery_code">رمز الاسترداد الخاص بك</string>
+    <string name="delete_account_deleted_device">نسخة بياناتك على هذا الجهاز</string>
+    <string name="delete_account_kept_title">ما يبقى في مجموعاتك</string>
+    <string name="delete_account_kept_groups">المجموعات، بفواتيرها ودفعاتها، لبقية الأعضاء</string>
+    <string name="delete_account_kept_member">اسمك في كل مجموعة، كعضو بدون حساب</string>
+    <string name="delete_account_kept_comments">تعليقاتك والصور المضافة منك، باسمك</string>
+    <string name="delete_account_export">تصدير بياناتي أولًا</string>
+    <string name="delete_account_confirm">أدرك أنه لا يمكن التراجع عن ذلك</string>
+    <string name="delete_account_delete">حذف الحساب</string>
+    <string name="delete_account_cancel">إلغاء</string>
+    <string name="delete_account_failed">تعذر حذف حسابك. يُرجى إعادة المحاولة.</string>
+</resources>

@@ -88,7 +88,7 @@ export function GroupsScreen() {
         <div className="flex flex-wrap items-center gap-3 md:min-h-9">
           {/* Why: titled from the tablet up as the other tabs are; the phone's bottom bar already names the page. */}
           <h1 className="sr-only text-2xl leading-8 font-semibold tracking-tight md:not-sr-only">{t('groups_title')}</h1>
-          <div className="mr-auto flex flex-wrap items-center gap-2">
+          <div className="me-auto flex flex-wrap items-center gap-2">
             <SyncStatus state={state} presenter={presenter} />
           </div>
           {showsPage && <GroupsActions presenter={presenter} state={state} />}

@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian and Korean: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean and Arabic: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -83,7 +83,19 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     amount or a name of a bill or group the app fills in (Pierre's call, as Turkish): a person's name takes " 님" and
     the particle goes on 님 ("Ana 님이", "Ana 님에게"), a bill or group is quoted before a noun that carries it ("‘저녁’
     지출을"), and anything else is written as a label ("결제: Ana"). The user is "나", or "내가" as the subject of a
-    verb ([activity-and-push.md](activity-and-push.md)). The brand
+    verb ([activity-and-push.md](activity-and-push.md)). Arabic (Pierre's call) is one variant, Modern Standard Arabic,
+    for every `ar` tag (ar-SA, ar-AE, ar-EG, ar-MA…), talks to the user in the singular "أنت" (Arabic has no polite
+    "you" an app would use) and calls the app Blitz Split. It reads right to left, so every UI mirrors in it (the rules
+    are in [responsive-layouts.md](../architecture/responsive-layouts.md#right-to-left)), and it writes numbers,
+    amounts and dates with Latin digits (0–9), not Arabic-Indic ones, so the amount fields read what the number
+    keyboard types (a call taken without Pierre: the Gulf and the Maghreb both read them, and one set of digits keeps
+    parsing simple). Since Arabic's verbs, adjectives and "you" say a gender the app never knows (Pierre's call, for
+    the user and for everyone else), Arabic prefers wording without one: verbal nouns on buttons and titles ("إضافة",
+    "حفظ"), labels ("الدافع: Ana"), the passive ("تم الحفظ") and "على Ana لك" for a debt; only where none fits does it
+    use the masculine as the generic, never "(ة)" or a slash. Its activity rows are "Ana: تقسيم «عشاء»", the actor and
+    a verbal noun, so the user's own rows need no other verb ([activity-and-push.md](activity-and-push.md)). Its plurals
+    have six forms (zero, one, two, few: 3–10, many: 11–99, other), in every plural of the three platforms (the web
+    writes an `…Other` message as "zero|one|two|few|many|other"). The brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
@@ -233,6 +245,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Korea. It has no decimals, as the yen (no price there shows jeon), and the usual 100 million cap (about US$ 70,000).
     An app version from before it reads KRW as an unknown code with two decimals and shows its amounts 100 times
     smaller until it updates, as the rupiah did.
+  - The Saudi riyal (SAR), the UAE dirham (AED), the Egyptian pound (EGP) and the Moroccan dirham (MAD) follow the
+    won (Pierre's call, with Arabic), and start a new group in Saudi Arabia, the United Arab Emirates, Egypt and
+    Morocco. All four have 2 decimals and the usual 100 million cap, so an app version from before them shows their
+    amounts by the raw code, with the right decimals.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

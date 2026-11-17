@@ -112,7 +112,7 @@ function HistoryLine({
   return (
     <li className="relative flex gap-2.5">
       {/* Why: a line joins the faces of one day, as the canvas draws it. */}
-      {hasRail && <span aria-hidden className="absolute top-8 bottom-0.5 left-[13.5px] w-px bg-border" />}
+      {hasRail && <span aria-hidden className="absolute top-8 bottom-0.5 inset-s-[13.5px] w-px bg-border" />}
       <span className="relative size-7 shrink-0">
         <PersonButton
           isRound
@@ -123,7 +123,7 @@ function HistoryLine({
         >
           <Avatar initial={entry.actorInitials} color={entry.actorColor} photoUrl={entry.actorPhotoUrl} className="size-7 text-[11px]" />
         </PersonButton>
-        <span aria-hidden className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 border-card bg-foreground text-background [&>svg]:size-2 [&>svg]:stroke-[3.2]">
+        <span aria-hidden className="absolute -inset-e-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 border-card bg-foreground text-background [&>svg]:size-2 [&>svg]:stroke-[3.2]">
           {kindIcon(entry)}
         </span>
       </span>
@@ -131,7 +131,8 @@ function HistoryLine({
         <span className="flex items-baseline gap-2">
           <span className="min-w-0 flex-1 text-sm leading-5">
             <span className="font-medium">{historyActor(entry)}</span>
-            {wordGap}
+            {/* Why: Arabic's history says "Ana: إنشاء الفاتورة", its phrase starting with the colon after the name. */}
+            {historyVerb(entry).startsWith(':') ? '' : wordGap}
             <span className="text-muted-foreground">{historyVerb(entry)}</span>
           </span>
           <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground tabular-nums">

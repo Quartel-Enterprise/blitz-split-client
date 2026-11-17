@@ -86,7 +86,7 @@ export function PaymentKeyDialog({ route }: { route: JsRoute }) {
       variant="ghost"
       disabled={state.isSaving}
       onClick={() => presenter.delete()}
-      className={cn('text-destructive hover:text-destructive', isDesktop ? 'sm:mr-auto' : 'h-11')}
+      className={cn('text-destructive hover:text-destructive', isDesktop ? 'sm:me-auto' : 'h-11')}
     >
       <Trash2 /> {t('paymentKey_delete')}
     </Button>
@@ -113,7 +113,7 @@ export function PaymentKeyDialog({ route }: { route: JsRoute }) {
       ) : (
         <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
           <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-            <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+            <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
               <DrawerTitle>{title}</DrawerTitle>
               <DrawerDescription>{description}</DrawerDescription>
             </DrawerHeader>
@@ -272,7 +272,7 @@ function BitcoinNetworks({ presenter, state }: { presenter: PaymentKeyPresenter;
             aria-checked={isSelected}
             onClick={() => presenter.selectType(type)}
             className={cn(
-              'flex h-14 items-center gap-2.5 rounded-lg px-3 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+              'flex h-14 items-center gap-2.5 rounded-lg px-3 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
               isSelected ? 'border-2 border-primary bg-primary/10' : 'border hover:bg-accent',
             )}
           >

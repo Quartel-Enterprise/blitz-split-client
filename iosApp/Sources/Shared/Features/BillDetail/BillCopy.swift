@@ -211,7 +211,7 @@ enum BillCopy {
         let changedAt = ExpenseFormat.date(of: conflict.changedAt)
         let ago = now.timeIntervalSince(changedAt) < 60
             ? String(localized: "just now", bundle: .appLanguage)
-            : changedAt.formatted(.relative(presentation: .numeric, unitsStyle: .wide))
+            : changedAt.formatted(.relative(presentation: .numeric, unitsStyle: .wide).locale(AppNumbers.locale))
         let lead = if conflict.changerIsMe {
             String(localized: "You changed this bill on another device \(ago).", bundle: .appLanguage)
         } else if let name = conflict.changerName {

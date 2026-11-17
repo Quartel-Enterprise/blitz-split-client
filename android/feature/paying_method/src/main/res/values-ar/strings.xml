@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">طريقة دفع جديدة</string>
+    <string name="paying_method_edit_title">تعديل طريقة الدفع</string>
+    <string name="paying_method_type">النوع</string>
+    <string name="paying_method_name">الاسم</string>
+    <string name="paying_method_name_optional">الاسم (اختياري)</string>
+    <string name="paying_method_color">اللون</string>
+    <string name="paying_method_default">الطريقة الافتراضية</string>
+    <string name="paying_method_default_hint">الفواتير الجديدة المدفوعة منك تبدأ بها.</string>
+    <string name="paying_method_delete">حذف طريقة الدفع</string>
+    <string name="paying_method_delete_title">حذف طريقة الدفع هذه؟</string>
+    <string name="paying_method_delete_body">الفواتير المميّزة بها لن تعرضها بعد الآن.</string>
+    <string name="paying_method_delete_confirm">حذف</string>
+    <string name="paying_method_save">حفظ</string>
+</resources>

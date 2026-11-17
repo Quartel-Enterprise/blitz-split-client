@@ -36,7 +36,7 @@ const cardSizes: Record<string, { avatar: string; name: string; amount: string; 
  */
 export function GroupsDisplayControls({ presenter, state }: { presenter: GroupsPresenter; state: JsGroupsState }) {
   return (
-    <div className="ml-auto flex items-center gap-2 md:ml-0">
+    <div className="ms-auto flex items-center gap-2 md:ms-0">
       <ToggleGroup
         type="single"
         variant="outline"
@@ -107,7 +107,7 @@ export function GroupsGrid({ presenter, groups, gridSize, menuOf, onContextMenu 
           <span className="flex items-start gap-2">
             <GroupAvatar data-group-avatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className={sizes.avatar} />
             {group.isPending && <QueuedBadge />}
-            <span className="-mt-1.5 -mr-1.5 ml-auto">{menuOf(group)}</span>
+            <span className="-mt-1.5 -me-1.5 ms-auto">{menuOf(group)}</span>
           </span>
           <button
             data-group-name
@@ -115,7 +115,7 @@ export function GroupsGrid({ presenter, groups, gridSize, menuOf, onContextMenu 
               event.stopPropagation()
               presenter.openGroup(group.id)
             }}
-            className={cn('line-clamp-2 self-start rounded-sm text-left leading-snug font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring', sizes.name)}
+            className={cn('line-clamp-2 self-start rounded-sm text-start leading-snug font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring', sizes.name)}
           >
             {group.name}
           </button>

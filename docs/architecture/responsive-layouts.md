@@ -228,3 +228,38 @@ a card of their own.
    by idiom.
 4. Update the flow's bullet in its `docs/product/<area>.md` with what changed, and check the screen at each size on an emulator or simulator
    (the Pixel Fold and Galaxy Z Fold emulators, the iPhone Duo simulator).
+
+### Right to left
+
+Arabic reads right to left (Hebrew joins it), and every UI mirrors in it: what is at the start of a row in English is
+at its right edge. The rules, the same on the three platforms:
+
+- **Start and end, never left and right.** Compose's `start`/`end` paddings, alignments and `Arrangement`s;
+  SwiftUI's `leading`/`trailing`; Tailwind's logical classes (`ms-`/`me-`, `ps-`/`pe-`, `inset-s-`/`inset-e-`,
+  `text-start`/`text-end`, `border-s`/`border-e`, `rounded-s`/`rounded-e`). A physical side is kept only where the
+  drawing is about the picture, not the text: a centered `left-1/2`, Adjust photo's crop, the color picker's square
+  and hue bar, Simplify debts' example drawing.
+- **The page's direction comes from the language.** Android's `supportsRtl` and SwiftUI flip by themselves (Apple's
+  `appLocale` also sets the windows' `layoutDirection` when Profile › Language picks a language while the app runs).
+  The web sets `<html dir>` and `lang` from the locale (`applyDocumentLocale`, `isRightToLeft`) and wraps the app in
+  Radix's `Direction.Provider`, so menus, tabs and sliders follow it.
+- **Directional icons mirror; the others don't.** Back, chevrons, forward and back arrows, a pager's previous and
+  next, log out: Android's `Icons.AutoMirrored`, SF Symbols' `chevron.forward`/`arrow.backward` (never `…right`), and
+  the web's `index.css` rule on lucide's directional classes. A checkmark, the camera, the clock, a search glass, a
+  chart and a logo stay as they are. A "→" written in text becomes "←" (Android's `ActivityRow`/`TermSheet` do it;
+  each translation writes its own).
+- **Gestures and keys follow the reading order.** A pager's swipe and the arrow keys of Bill attachments' viewer
+  swap their meaning; a sheet slides in from the inline end.
+- **A chart over time doesn't mirror.** Statistics' time chart keeps time running left to right (Compose's
+  `LocalLayoutDirection` set to `Ltr` on the chart, SwiftUI's `layoutDirection` on the `Chart`, the web's `dir="ltr"`
+  on its SVG), while its title, legend and callout follow the page. A ring needs nothing.
+- **Amounts keep their order.** A formatted amount inside a right to left language is wrapped in the Unicode isolates
+  U+2068 … U+2069 (`MoneyFormatter`, `ExpenseFormat`, the web's `money.ts`), so "−R$ 12,50" never comes apart in a
+  sentence; left to right languages get the same text as before. Arabic writes numbers, amounts and dates with
+  Latin digits (`nu-latn`: Android's `LegacyAppLocale.wrap` for the whole context, Apple's `AppNumbers`, the web's
+  `formattingLocale`), so a field shows what it parses.
+- **An amount field types left to right.** Its digits run left to right ("12." never shows as ".12") while the field,
+  its symbol and its label sit on the right to left side (Compose's `withLeftToRightDigits`, the web's `dir="ltr"` on
+  number inputs).
+- **Look at it.** A change to a layout is checked once in Arabic too: Profile › Language, Home, a group, Split a bill,
+  Statistics and Activity.

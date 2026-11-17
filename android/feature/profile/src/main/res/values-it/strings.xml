@@ -71,6 +71,7 @@
     <string name="profile_language_russian">Russo</string>
     <string name="profile_language_ukrainian">Ucraino</string>
     <string name="profile_language_korean">Coreano</string>
+    <string name="profile_language_arabic">Arabo</string>
     <string name="profile_language_system_detail">Lingua del dispositivo</string>
     <string name="profile_notifications">Notifiche</string>
     <plurals name="profile_notifications_active">

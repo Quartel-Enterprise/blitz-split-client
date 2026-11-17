@@ -137,7 +137,7 @@ function MemberOption({ member, isSelected, isEnabled, onSelect }: { member: JsJ
       aria-checked={isSelected}
       disabled={!isEnabled}
       onClick={onSelect}
-      className="flex items-center gap-3 px-4 py-2.5 text-left first:rounded-t-xl last:rounded-b-xl hover:bg-muted/60 disabled:opacity-60"
+      className="flex items-center gap-3 px-4 py-2.5 text-start first:rounded-t-xl last:rounded-b-xl hover:bg-muted/60 disabled:opacity-60"
     >
       <Avatar initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-10 text-sm" />
       <span className="min-w-0 flex-1 truncate font-medium">{member.name}</span>
@@ -224,7 +224,7 @@ function NewMemberDialog({
     <Drawer open onOpenChange={onOpenChange} dismissible={!isJoining} repositionInputs={false}>
       <DrawerContent>
         <form className="flex flex-col" onSubmit={onSubmit}>
-          <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+          <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
             <DrawerTitle>{t('join_pickNewTitle')}</DrawerTitle>
             <DrawerDescription>{t('join_pickNewMessage')}</DrawerDescription>
           </DrawerHeader>

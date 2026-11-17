@@ -70,6 +70,7 @@
     <string name="profile_language_russian">Russisch</string>
     <string name="profile_language_ukrainian">Ukrainisch</string>
     <string name="profile_language_korean">Koreanisch</string>
+    <string name="profile_language_arabic">Arabisch</string>
     <string name="profile_language_system_detail">Sprache des Geräts</string>
     <string name="profile_notifications">Mitteilungen</string>
     <plurals name="profile_notifications_active">

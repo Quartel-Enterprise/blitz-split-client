@@ -349,7 +349,7 @@ private struct ContactsSummaryCard: View {
                 HStack {
                     Text("See balances")
                     Spacer()
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "chevron.forward")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(.tertiary)
                 }

@@ -38,7 +38,7 @@ function ProfileSetupForm({ presenter, state }: { presenter: ProfileSetupPresent
           presenter.continueClicked()
         }}
       >
-        <Button type="button" variant="ghost" size="sm" className="-ml-2 self-start" onClick={() => presenter.back()}>
+        <Button type="button" variant="ghost" size="sm" className="-ms-2 self-start" onClick={() => presenter.back()}>
           <ArrowLeft /> {t('common_back')}
         </Button>
         <div className="flex flex-col gap-1.5">
@@ -111,7 +111,7 @@ function AddPhotoButton(props: ComponentProps<typeof Button>) {
       size="icon"
       variant="secondary"
       aria-label={t('profileSetup_addPhoto')}
-      className="absolute -right-2 -bottom-2 size-9 rounded-xl border-[3px] border-card"
+      className="absolute -inset-e-2 -bottom-2 size-9 rounded-xl border-[3px] border-card"
       {...props}
     >
       <Camera className="size-4" />

@@ -34,7 +34,7 @@ export function ReleaseNotesScreen() {
         <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
           <ArrowLeft />
         </Button>
-        <h1 className="mr-auto text-lg font-semibold">{t('releaseNotes_title')}</h1>
+        <h1 className="me-auto text-lg font-semibold">{t('releaseNotes_title')}</h1>
         {/* Why: a real link, so the browser opens the tab from the click itself; the presenter only counts it. */}
         <Button variant="ghost" size="icon" asChild>
           <a href={state.allReleasesUrl} target="_blank" rel="noopener noreferrer" aria-label={t('releaseNotes_openOnGitHub')} title={t('releaseNotes_openOnGitHub')} onClick={() => presenter.allReleasesOpened()}>
@@ -91,7 +91,7 @@ function ReleaseCard({ release, onOpen }: { release: JsReleaseNotes; onOpen: () 
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ul className="flex list-disc flex-col gap-1.5 pl-5 text-sm [overflow-wrap:anywhere]">
+        <ul className="flex list-disc flex-col gap-1.5 ps-5 text-sm [overflow-wrap:anywhere]">
           {release.notes.map((note, index) => (
             <li key={index}>{note}</li>
           ))}

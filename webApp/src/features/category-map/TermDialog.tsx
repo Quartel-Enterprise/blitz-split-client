@@ -60,7 +60,7 @@ export function TermDialog({ presenter, state, form, isDesktop }: { presenter: C
                 </SelectTrigger>
                 <SelectContent>
                   {state.options.map((option) => (
-                    <SelectItem key={option.category.id} value={option.category.id} className={cn(option.category.parentId && 'pl-6')}>
+                    <SelectItem key={option.category.id} value={option.category.id} className={cn(option.category.parentId && 'ps-6')}>
                       {categoryPath(option.category, option.parent)}
                       {option.groupName && ` · ${t('categoryMap_onlyInGroup', { group: option.groupName })}`}
                     </SelectItem>
@@ -81,7 +81,7 @@ export function TermDialog({ presenter, state, form, isDesktop }: { presenter: C
               {t('categoryMap_cancel')}
             </Button>
             {form.isEditing && (
-              <Button variant="ghost" className="text-destructive hover:text-destructive sm:mr-auto" onClick={() => presenter.removeTerm()}>
+              <Button variant="ghost" className="text-destructive hover:text-destructive sm:me-auto" onClick={() => presenter.removeTerm()}>
                 {t('categoryMap_remove')}
               </Button>
             )}

@@ -31,7 +31,7 @@ struct GroupRowActions: View {
                     Text(verbatim: leaveHint)
                 }
             } icon: {
-                Image(systemName: "rectangle.portrait.and.arrow.right")
+                Image(systemName: "rectangle.portrait.and.arrow.forward")
             }
         }
         .disabled(!isOnline)

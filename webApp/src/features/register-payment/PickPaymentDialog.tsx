@@ -88,7 +88,7 @@ function PairsOfGroup({ group, showsCurrency, onPick }: { group: JsPickPaymentGr
           <li key={`${pair.fromMemberId}/${pair.toMemberId}`}>
             <button
               onClick={() => onPick(pair)}
-              className="flex min-h-14 w-full items-center gap-3 px-3 py-2 text-left text-sm outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
+              className="flex min-h-14 w-full items-center gap-3 px-3 py-2 text-start text-sm outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset"
             >
               <span aria-hidden className="flex shrink-0 items-center gap-1">
                 <PersonFace person={pair.from} className="size-8 text-xs" />

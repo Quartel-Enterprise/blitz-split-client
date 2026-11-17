@@ -33,6 +33,7 @@ class ProfileUiStateTest {
             AppLanguage.RUSSIAN -> listOf("Русский", "Russian")
             AppLanguage.UKRAINIAN -> listOf("Українська", "Ukrainian")
             AppLanguage.KOREAN -> listOf("한국어", "Korean")
+            AppLanguage.ARABIC -> listOf("العربية", "Arabic")
         }
     }
 
@@ -63,6 +64,7 @@ class ProfileUiStateTest {
         AppLanguage.RUSSIAN,
         AppLanguage.UKRAINIAN,
         AppLanguage.KOREAN,
+        AppLanguage.ARABIC,
     )
 
     @Test
@@ -637,6 +639,7 @@ class ProfileUiStateTest {
                 AppLanguage.RUSSIAN,
                 AppLanguage.UKRAINIAN,
                 AppLanguage.KOREAN,
+                AppLanguage.ARABIC,
             ),
             options,
         )
@@ -670,6 +673,7 @@ class ProfileUiStateTest {
                 AppLanguage.RUSSIAN,
                 AppLanguage.UKRAINIAN,
                 AppLanguage.KOREAN,
+                AppLanguage.ARABIC,
             ),
             options,
         )

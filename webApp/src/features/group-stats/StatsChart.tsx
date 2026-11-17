@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import type { JsGroupStatsState } from 'blitzsplit-shared'
-import { t } from '@/i18n'
+import { direction, t } from '@/i18n'
 import { formatCompactMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { StatsChartLabels } from './StatsChartLabels'
@@ -18,7 +18,8 @@ const dragSlop = 8
  * value line: dashed value lines with their short amounts in a gutter on the end side, the dashed average, a label
  * under the bars the shared code marks (none overlapping), and the whole series for screen readers. The mouse over a bar, a tap or a drag
  * on it, or the arrow keys pick it, showing its period, amount and bills in a callout over it; a tap keeps it until a
- * second one.
+ * second one. Time runs left to right in every language, so the chart keeps that direction in Arabic and Hebrew too
+ * (its value gutter on the right, its arrow keys as drawn); the words in its callout follow the page's.
  */
 export function StatsChart({ state, money }: { state: JsGroupStatsState; money: (minor: number) => string }) {
   const bars = state.bars
@@ -66,7 +67,7 @@ export function StatsChart({ state, money }: { state: JsGroupStatsState; money: 
   }
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-y-1.5">
+    <div dir="ltr" className="grid grid-cols-[minmax(0,1fr)_auto] gap-y-1.5">
       <div
         role="group"
         aria-label={chartAria(state)}
@@ -164,6 +165,7 @@ export function StatsChart({ state, money }: { state: JsGroupStatsState; money: 
         {picked && selected !== null && (
           <div
             aria-hidden
+            dir={direction}
             className="pointer-events-none absolute z-10 flex flex-col whitespace-nowrap rounded-lg border bg-popover px-2.5 py-1.5 text-popover-foreground shadow-md"
             style={{
               left: `${centerOf(selected)}%`,

@@ -71,12 +71,12 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   const actions = isLoaded && <BillActions presenter={presenter} state={state} />
   // Why: the group's rounded square beside its name, as Android and iOS draw it over the bill (beta feedback of 2026-11-15).
   const groupName = isLoaded ? (
-    <span className="mr-auto flex min-w-0 items-center gap-2">
+    <span className="me-auto flex min-w-0 items-center gap-2">
       <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-6 text-[10px]" />
       <span className="truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
     </span>
   ) : (
-    <SkeletonLine className="mr-auto w-28" />
+    <SkeletonLine className="me-auto w-28" />
   )
   const offline = isLoaded && !state.isOnline && (
     <p role="status" className={cn('rounded-lg border px-3.5 py-2.5 text-[13px] leading-[18px]', pendingSurfaceClass)}>
@@ -122,7 +122,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       <>
         <Sheet open={!isCovered} onOpenChange={onOpenChange}>
           <SheetContent side="right" showCloseButton={false} className="w-full gap-0 sm:max-w-[560px] lg:max-w-[880px]">
-            <header className="flex h-14 shrink-0 items-center gap-1 border-b pr-3 pl-6">
+            <header className="flex h-14 shrink-0 items-center gap-1 border-b pe-3 ps-6">
               {groupName}
               {actions}
               <SheetClose asChild>
@@ -163,7 +163,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
     <>
       <Drawer open={!isCovered} onOpenChange={onOpenChange} repositionInputs={false}>
         <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-          <DrawerHeader className="flex-row items-center gap-1 border-b py-2 pr-2 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+          <DrawerHeader className="flex-row items-center gap-1 border-b py-2 pe-2 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
             {groupName}
             {actions}
           </DrawerHeader>

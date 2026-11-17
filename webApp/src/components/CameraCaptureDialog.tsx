@@ -163,7 +163,7 @@ export function CameraCaptureDialog({
         </div>
       )}
       {!shot && !shownProblem && isPlaying && (
-        <div className="absolute top-3 right-3 flex gap-2">
+        <div className="absolute top-3 inset-e-3 flex gap-2">
           {cameraIds.length > 1 && (
             <Button
               type="button"

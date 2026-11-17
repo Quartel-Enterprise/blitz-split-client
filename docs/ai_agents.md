@@ -30,7 +30,7 @@ so the three platforms walk the same flow.
 
 Write code, comments, docs, commit messages and pull requests in English, even when the conversation is in
 another language. User-facing strings are the exception: each one exists in English (the fallback for every
-language but the ones translated), Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian and Korean, in each platform's own
+language but the ones translated), Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean and Arabic, in each platform's own
 place for them — `res/values/strings.xml`, `res/values-pt/strings.xml` (plus `values-pt-rPT` for the few words Portugal says differently), `res/values-es/strings.xml` (plus
 `values-es-rES` for the few words Spain says differently), `res/values-fr/strings.xml`, `res/values-de/strings.xml`,
 `res/values-it/strings.xml`, `res/values-pl/strings.xml`, `res/values-nl/strings.xml`, `res/values-ja/strings.xml`, `res/values-tr/strings.xml`, `res/values-in/strings.xml` (Android's legacy code for Indonesian), `res/values-ru/strings.xml`, `res/values-uk/strings.xml` and `res/values-ko/strings.xml` of the `:android:*` module, the English SwiftUI literals of

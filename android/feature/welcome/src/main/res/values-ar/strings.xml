@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">تقسيم الفاتورة بلا عناء</string>
+    <string name="welcome_offline_title">يعمل دون اتصال</string>
+    <string name="welcome_offline_body">يبقى كل شيء على جهازك ويُزامَن لاحقًا.</string>
+    <string name="welcome_optional_title">الحساب اختياري</string>
+    <string name="welcome_optional_body">Google أو Apple فقط لضمان عدم فقدان أي شيء عند تغيير الجهاز.</string>
+    <string name="welcome_invite_title">الدعوة عبر رابط أو رمز QR</string>
+    <string name="welcome_invite_body">ينضم الأصدقاء إلى المجموعة دون إنشاء حساب.</string>
+    <string name="welcome_no_connection_title">لا يوجد اتصال.</string>
+    <string name="welcome_no_connection_body">يتطلب تسجيل الدخول بحساب اتصالًا بالإنترنت. يمكن الاستخدام بدون حساب الآن والربط لاحقًا من الملف الشخصي.</string>
+    <string name="welcome_or">أو</string>
+    <string name="welcome_use_without_account">الاستخدام بدون حساب</string>
+    <string name="welcome_used_on_another_device">سبق لي استخدامه على جهاز آخر</string>
+    <string name="welcome_sign_in_failed">تعذر تسجيل الدخول الآن. يُرجى إعادة المحاولة.</string>
+    <string name="welcome_legal_notice">بالمتابعة، يتم قبول %1$s والإقرار بـ %2$s.</string>
+    <string name="welcome_legal_terms">شروط الخدمة</string>
+    <string name="welcome_legal_privacy">سياسة الخصوصية</string>
+    <string name="welcome_no_account_note">بدون حساب، تُحذف بياناتك بعد 30 يومًا من عدم الاستخدام. للاحتفاظ بها، يمكن ربط Google أو Apple.</string>
+    <string name="welcome_no_account_note_offline">بدون حساب، تُحذف بياناتك بعد 30 يومًا من عدم الاستخدام. للاحتفاظ بها، يمكن ربط Google أو Apple لاحقًا من الملف الشخصي.</string>
+    <string name="welcome_expired_title">تم حذف بياناتك</string>
+    <string name="welcome_expired_body">كان التطبيق مستخدمًا بدون حساب ولم يُفتح لمدة 30 يومًا، لذا تم حذف بياناتك. للاحتفاظ بها في المرة القادمة، يمكن ربط Google أو Apple.</string>
+    <string name="welcome_expired_ok">حسنًا</string>
+</resources>

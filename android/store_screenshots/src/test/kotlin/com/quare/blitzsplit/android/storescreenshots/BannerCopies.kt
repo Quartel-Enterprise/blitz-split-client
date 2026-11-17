@@ -38,6 +38,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "uk" to ("Хто за що платив — одразу видно" over "Усі витрати подорожі в одному місці, твій баланс угорі"),
         "ja" to ("誰が何を払ったか、ひと目で" over "旅の支払いをまとめて表示。あなたの残高も一番上に"),
         "ko" to ("누가 뭘 냈는지 한눈에" over "여행 지출을 한곳에, 내 잔액은 맨 위에"),
+        "ar" to ("من دفع ماذا، بنظرة واحدة" over "كل مصروفات الرحلة في مكان واحد، ورصيدك في الأعلى"),
     ),
     StoreScreen.ITEMS to mapOf(
         "en" to ("Split by what each one had" over "Tick who had each item and the service charge splits fairly"),
@@ -76,6 +77,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "uk" to ("Кожен платить за своє" over "Познач, хто що їв, і сервісний збір розділиться чесно"),
         "ja" to ("注文したものごとに割り勘" over "誰が何を頼んだかを選ぶだけ。サービス料も公平に分配"),
         "ko" to ("각자 먹은 만큼 나눠요" over "누가 뭘 먹었는지 고르면 봉사료도 공평하게"),
+        "ar" to ("كلٌّ يدفع ما طلبه" over "حدّد من طلب كل عنصر وتُقسَّم رسوم الخدمة بإنصاف"),
     ),
     StoreScreen.RECEIPT to mapOf(
         "en" to ("Snap the receipt, skip the typing" over "The items fill themselves in from a photo"),
@@ -95,6 +97,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "uk" to ("Сфотографуй чек — і все" over "Позиції заповняться самі з фото"),
         "ja" to ("レシートを撮るだけ" over "写真から品目が自動で入力されます"),
         "ko" to ("영수증은 찍기만 하세요" over "사진에서 항목이 자동으로 채워져요"),
+        "ar" to ("صوّر الإيصال بلا كتابة" over "تُملأ العناصر تلقائيًا من الصورة"),
     ),
     StoreScreen.BALANCES to mapOf(
         "en" to ("Know who owes whom" over "Settle up in a tap and record the payment"),
@@ -113,6 +116,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "uk" to ("Знай, хто кому винен" over "Розрахуйся в один дотик і запиши платіж"),
         "ja" to ("誰が誰にいくら、すぐわかる" over "ワンタップで精算して支払いを記録"),
         "ko" to ("누가 누구에게 얼마인지" over "탭 한 번으로 정산하고 송금을 기록해요"),
+        "ar" to ("اعرف من عليه لمن" over "تسوية بلمسة واحدة وتسجيل الدفعة"),
     ),
     StoreScreen.INVITE to mapOf(
         "en" to ("Invite with a link or QR code" over "Friends join the group in seconds, no sign-up needed"),
@@ -132,6 +136,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "uk" to ("Запроси за посиланням або QR-кодом" over "Друзі приєднаються за секунди, без реєстрації"),
         "ja" to ("リンクやQRコードで招待" over "友だちは登録不要、数秒でグループに参加"),
         "ko" to ("링크나 QR 코드로 초대" over "가입 없이 몇 초 만에 그룹에 참여해요"),
+        "ar" to ("دعوة برابط أو رمز QR" over "ينضم الأصدقاء إلى المجموعة في ثوانٍ، دون تسجيل"),
     ),
     StoreScreen.STATISTICS to mapOf(
         "en" to ("See where the money went" over "Spending by category and by person"),
@@ -150,6 +155,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "uk" to ("Дивись, куди пішли гроші" over "Витрати за категоріями та людьми"),
         "ja" to ("お金の行き先がわかる" over "カテゴリ別・人別の支出"),
         "ko" to ("돈이 어디로 갔는지 확인" over "카테고리별, 사람별 지출"),
+        "ar" to ("أين ذهبت الأموال" over "الإنفاق حسب الفئة وحسب الشخص"),
     ),
     StoreScreen.HOME to mapOf(
         "en" to ("Your groups, front and center" over "Pin the ones you use most and see your balance in each"),
@@ -168,6 +174,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "uk" to ("Твої групи завжди під рукою" over "Закріпи найпотрібніші й дивись баланс у кожній"),
         "ja" to ("よく使うグループをすぐ開ける" over "ピン留めして、グループごとの残高を確認"),
         "ko" to ("자주 쓰는 그룹을 바로" over "고정하고 그룹마다 내 잔액을 확인해요"),
+        "ar" to ("مجموعاتك في المقدمة" over "ثبّت الأكثر استخدامًا واطّلع على رصيدك في كل منها"),
     ),
     StoreScreen.PAYERS_AND_CURRENCIES to mapOf(
         "en" to ("Several payers, any currency" over "Split bills more than one person paid, even in crypto"),
@@ -197,6 +204,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
             ("Кілька платників, будь-яка валюта" over "Діли рахунки, сплачені кількома людьми, навіть у криптовалюті"),
         "ja" to ("複数人の支払いも、どの通貨でも" over "何人かで払った会計も分けられる。暗号資産にも対応"),
         "ko" to ("여러 명이 내도, 어떤 통화든" over "여럿이 낸 지출도 나눠요. 암호화폐도 돼요"),
+        "ar" to ("أكثر من دافع، وأي عملة" over "تقسيم فواتير دفعها أكثر من شخص، حتى بالعملات المشفرة"),
     ),
     StoreScreen.ACTIVITY to mapOf(
         "en" to ("Never miss a change" over "Every new bill and payment in your groups, as it happens"),
@@ -214,6 +222,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "uk" to ("Не пропусти жодної зміни" over "Кожна нова витрата й платіж у твоїх групах — одразу"),
         "ja" to ("変更を見逃さない" over "グループの新しい支払いや精算をすぐにお知らせ"),
         "ko" to ("변경 사항을 놓치지 마세요" over "그룹의 새 지출과 송금을 바로 알려 드려요"),
+        "ar" to ("لا يفوتك أي تغيير" over "كل فاتورة ودفعة جديدة في مجموعاتك، لحظة حدوثها"),
     ),
     StoreScreen.LIGHT_THEME to mapOf(
         "en" to ("Light or dark, it follows you" over "Works offline, with or without an account"),
@@ -231,6 +240,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "uk" to ("Світла чи темна — як тобі подобається" over "Працює офлайн, з обліковим записом або без"),
         "ja" to ("ライトもダークも、お好みで" over "オフラインでも、アカウントなしでも使えます"),
         "ko" to ("라이트도 다크도 내 마음대로" over "오프라인에서도, 계정이 없어도 돼요"),
+        "ar" to ("فاتح أو داكن، كما تحب" over "يعمل دون اتصال، بحساب أو من دونه"),
     ),
 )
 

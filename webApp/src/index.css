@@ -236,6 +236,11 @@
   }
 }
 
+/* In Arabic and Hebrew the band sweeps right to left, the way they read. */
+.skeleton:dir(rtl)::after {
+  animation-direction: reverse;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .skeleton::after {
     display: none;
@@ -431,4 +436,26 @@
   ::view-transition-new(*) {
     animation: none !important;
   }
+}
+
+/*
+ * The icons that point along the line (back, forward, a row's chevron, a payment's arrow, send, sign out, a reply) turn
+ * around in Arabic and Hebrew, by lucide's own class names so an icon passed as a value turns too. Checkmarks, media,
+ * clocks, charts, the camera, the search magnifier and logos stay as drawn, and so does an icon inside a part kept
+ * left to right (a chart), which `:dir()` reads.
+ */
+:is(
+    .lucide-chevron-left,
+    .lucide-chevron-right,
+    .lucide-chevrons-left,
+    .lucide-chevrons-right,
+    .lucide-arrow-left,
+    .lucide-arrow-right,
+    .lucide-log-out,
+    .lucide-log-in,
+    .lucide-send,
+    .lucide-send-horizontal,
+    .lucide-corner-down-right
+  ):dir(rtl) {
+  transform: scaleX(-1);
 }

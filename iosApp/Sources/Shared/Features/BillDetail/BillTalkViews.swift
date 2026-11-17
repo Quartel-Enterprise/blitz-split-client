@@ -477,7 +477,7 @@ struct BillHistoryEntryView: View {
                     .frame(width: badge, height: badge)
                     .background(Palette.pixTile, in: .circle)
                     .overlay(Circle().strokeBorder(Palette.card, lineWidth: 1.5))
-                    .offset(x: badge * 0.25, y: badge * 0.25)
+                    .trailingCornerOffset(x: badge * 0.25, y: badge * 0.25)
             }
             .accessibilityLabel(Text(verbatim: BillCopy.actor(entry)))
             .opensProfile(entry.actorMemberId.map { id in { onPerson(id) } })
@@ -498,7 +498,7 @@ private struct BillHistoryDiffLine: View {
             if let before = diff.before, let after = diff.after {
                 Text(verbatim: before)
                     .foregroundStyle(.secondary)
-                Image(systemName: "arrow.right")
+                Image(systemName: "arrow.forward")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .accessibilityLabel(Text("to", comment: "Bill history: before, to after"))

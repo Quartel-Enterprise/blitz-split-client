@@ -74,7 +74,7 @@ export function CreateGroupDialog() {
   ) : (
     <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
       <DrawerContent aria-describedby={undefined} className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           <DrawerTitle>{t('createGroup_title')}</DrawerTitle>
         </DrawerHeader>
         <div className="overflow-y-auto px-4">{form}</div>
@@ -150,7 +150,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
                 variant="secondary"
                 aria-label={t('createGroup_photo')}
                 disabled={state.isCreating}
-                className="absolute -right-1.5 -bottom-1.5 size-7 rounded-full border-2 border-background"
+                className="absolute -inset-e-1.5 -bottom-1.5 size-7 rounded-full border-2 border-background"
               >
                 <Camera className="size-3.5" />
               </Button>
@@ -263,7 +263,7 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
             <li key={suggestion.key} ref={index === state.suggestions.length - 1 ? lastSuggestionRef : undefined}>
               <button
                 type="button"
-                className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
+                className="flex w-full items-center gap-3 px-3 py-2 text-start hover:bg-accent focus-visible:bg-accent focus-visible:outline-none"
                 aria-label={`${suggestion.name}, ${t('createGroup_add')}`}
                 onClick={() => {
                   presenter.addSuggestion(suggestion.key)

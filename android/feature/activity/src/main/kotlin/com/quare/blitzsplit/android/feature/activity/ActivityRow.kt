@@ -53,6 +53,7 @@ import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlight
 import com.quare.blitzsplit.android.designsystem.component.selectableRowColorOf
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
+import com.quare.blitzsplit.android.designsystem.format.forwardArrowUi
 import com.quare.blitzsplit.android.designsystem.theme.LocalIsDarkTheme
 import com.quare.blitzsplit.android.designsystem.theme.neutralDataColorOf
 import com.quare.blitzsplit.android.designsystem.theme.pendingColor
@@ -383,7 +384,7 @@ internal fun ChangeLineRow(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-            text = "→",
+            text = forwardArrowUi(),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

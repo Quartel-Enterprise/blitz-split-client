@@ -253,7 +253,8 @@ enum ActivityCopy {
         switch day.relativeDay {
         case .today: String(localized: "Today", bundle: .appLanguage)
         case .yesterday: String(localized: "Yesterday", bundle: .appLanguage)
-        default: ExpenseFormat.date(of: day.dayStartMillis).formatted(.dateTime.weekday(.wide).day().month(.wide))
+        default: ExpenseFormat.date(of: day.dayStartMillis)
+            .formatted(.dateTime.weekday(.wide).day().month(.wide).locale(AppNumbers.locale))
         }
     }
 
@@ -332,7 +333,8 @@ enum ActivityCopy {
     static func value(_ value: ActivityChangeValue, field: ActivityField) -> String {
         let written: String? = switch field {
         case .amount: value.minor.map { minor in
-                value.currency?.format(minor.int64Value) ?? minor.int64Value.formatted()
+                value.currency?.format(minor.int64Value)
+                    ?? minor.int64Value.formatted(.number.locale(AppNumbers.locale))
             }
         case .spentAt: value.millis.map { ExpenseFormat.dayTime($0.int64Value, relativeDay: .other) }
         case .payers: names(value)
@@ -471,7 +473,7 @@ enum ActivityCopy {
     }
 
     private static func debtAmount(_ minor: Int64, currency: GroupCurrency?) -> String {
-        currency?.format(minor) ?? minor.formatted()
+        currency?.format(minor) ?? minor.formatted(.number.locale(AppNumbers.locale))
     }
 
     // MARK: - A deleted bill or group
@@ -485,7 +487,7 @@ enum ActivityCopy {
     static func deleted(_ deletion: ActivityDeletion) -> String {
         let subject = deletion.subject ?? "—"
         let date = deletion.atMillis.map {
-            ExpenseFormat.date(of: $0.int64Value).formatted(.dateTime.day().month(.wide))
+            ExpenseFormat.date(of: $0.int64Value).formatted(.dateTime.day().month(.wide).locale(AppNumbers.locale))
         }
         let who: String? = deletion.byMe ? String(localized: "You, who did it", bundle: .appLanguage, comment: "The user as the one who did something, before its verb") : deletion.byName
         let first: String = if let who, let date {
@@ -579,7 +581,7 @@ enum ActivityCopy {
 
     private static func amount(_ item: ActivityItem) -> String? {
         guard let minor = item.amountMinor?.int64Value else { return nil }
-        return item.currency?.format(minor) ?? minor.formatted()
+        return item.currency?.format(minor) ?? minor.formatted(.number.locale(AppNumbers.locale))
     }
 
     private static func groupType(_ item: ActivityItem) -> String? {

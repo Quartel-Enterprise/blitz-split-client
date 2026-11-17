@@ -520,7 +520,7 @@ private struct ActivityRow: View {
                 Spacer(minLength: 4)
                 #if os(iOS)
                 if !showsDetail {
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "chevron.forward")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(.tertiary)
                         .padding(.top, Self.faceSize / 2 - 8)
@@ -735,7 +735,7 @@ struct ActivityFace: View {
                     .frame(width: badge, height: badge)
                     .background(colors.fill, in: .circle)
                     .overlay(Circle().stroke(Palette.card, lineWidth: 2))
-                    .offset(x: 5, y: 5)
+                    .trailingCornerOffset(x: 5, y: 5)
             }
             .padding(.trailing, 4)
             .accessibilityHidden(true)

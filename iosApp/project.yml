@@ -6,7 +6,7 @@ options:
   bundleIdPrefix: com.quare
   # English is the source language and the fallback of every language but Portuguese (pt-BR, pt-PT), Spanish (es, es-ES), French (fr),
   # German (de), Italian (it), Polish (pl), Dutch (nl), Japanese (ja), Turkish (tr), Indonesian (id), Russian (ru),
-  # Ukrainian (uk) and Korean (ko)
+  # Ukrainian (uk), Korean (ko) and Arabic (ar)
   developmentLanguage: en
   createIntermediateGroups: true
   deploymentTarget:

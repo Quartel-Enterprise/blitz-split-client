@@ -277,7 +277,7 @@ private struct CreateGroupIcon: View {
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)
         .fixedSize()
-        .offset(x: 6 + CornerGlassIcon.targetPadding, y: 6 + CornerGlassIcon.targetPadding)
+        .trailingCornerOffset(x: 6 + CornerGlassIcon.targetPadding, y: 6 + CornerGlassIcon.targetPadding)
         .accessibilityLabel("Group photo")
     }
 }

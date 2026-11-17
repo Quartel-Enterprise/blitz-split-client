@@ -22,12 +22,15 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 # Every language the app is translated into, but English (the source), es-ES and pt-PT (partial)
-REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko")
+REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "ar")
 # The regional ones that hold only their own words: no key needs them, but the ones they give keep the placeholders
 PARTIAL = ("es-ES", "pt-PT")
 # The plural categories each language needs when it varies by plural, where it needs more than one and other: a
 # missing one shows English's other form, or nothing
-PLURAL_CATEGORIES = {language: {"one", "few", "many", "other"} for language in ("pl", "ru", "uk")}
+PLURAL_CATEGORIES = {
+    **{language: {"one", "few", "many", "other"} for language in ("pl", "ru", "uk")},
+    "ar": {"zero", "one", "two", "few", "many", "other"},
+}
 CATALOGS = ("Localizable.xcstrings", "InfoPlist.xcstrings")
 
 # %lld, %@, %1$@, %.2f, %% (a literal percent) and the private-use characters the activity sentences use as stand-ins
