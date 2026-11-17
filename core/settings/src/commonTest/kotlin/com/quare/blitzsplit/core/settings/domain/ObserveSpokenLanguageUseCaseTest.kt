@@ -127,6 +127,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
                 AppLanguage.HEBREW,
+                AppLanguage.THAI,
             )
 
             // When
@@ -155,6 +156,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "ar",
                     "zh",
                     "he",
+                    "th",
                 ),
                 spoken,
             )
@@ -179,55 +181,33 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in each language of the app THEN it is that language`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices =
-            listOf(
-                "en",
-                "pt",
-                "es",
-                "fr",
-                "de",
-                "it",
-                "pl",
-                "nl",
-                "ja",
-                "tr",
-                "id",
-                "ru",
-                "uk",
-                "ko",
-                "hi",
-                "ar",
-                "zh",
-                "he",
-            )
+        val devices = listOf(
+            "en",
+            "pt",
+            "es",
+            "fr",
+            "de",
+            "it",
+            "pl",
+            "nl",
+            "ja",
+            "tr",
+            "id",
+            "ru",
+            "uk",
+            "ko",
+            "hi",
+            "ar",
+            "zh",
+            "he",
+            "th",
+        )
 
         // When
         val spoken = devices.map { spokenOn(it) }
 
         // Then
-        assertEquals(
-            listOf(
-                "en",
-                "pt",
-                "es",
-                "fr",
-                "de",
-                "it",
-                "pl",
-                "nl",
-                "ja",
-                "tr",
-                "id",
-                "ru",
-                "uk",
-                "ko",
-                "hi",
-                "ar",
-                "zh",
-                "he",
-            ),
-            spoken,
-        )
+        assertEquals(devices, spoken)
     }
 
     @Test
@@ -258,6 +238,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "ar-EG",
                 "zh-CN",
                 "iw-IL",
+                "th-TH",
             )
 
             // When
@@ -288,6 +269,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "ar",
                     "zh",
                     "he",
+                    "th",
                 ),
                 spoken,
             )

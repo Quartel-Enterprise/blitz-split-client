@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">กำลังดาวน์โหลดอัปเดต…</string>
+    <string name="in_app_update_download_failed">ดาวน์โหลดอัปเดตไม่ได้ ลองอีกครั้งภายหลัง</string>
+</resources>

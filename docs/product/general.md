@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified) and Hebrew: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew and Thai: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -118,7 +118,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     labels ("שולם על ידי: Ana") and a debt without a verb ("ל-Ana מגיע ממך"); the user is named "אני" rather than
     a gendered "you", and only where nothing else fits does it use the masculine as the generic, never a slash. Its
     activity rows are "Ana: פיצול "ארוחת ערב"", the actor and an action noun, as Arabic's. Its plurals have one, two
-    and other, in every plural of the three platforms (the web writes an `…Other` message as "one|two|other"). The brand
+    and other, in every plural of the three platforms (the web writes an `…Other` message as "one|two|other"). Thai (Pierre's call, issue #448) is one variant for every
+    `th` tag, as Thai apps write it, neutral, with none of the gendered politeness particles (ครับ, ค่ะ); "คุณ" when it
+    needs a "you". It calls the app Blitz Split, writes no space between words but one between phrases and around a
+    name, an amount or a Latin word, and uses no full stop: a sentence the code finishes ends with nothing and two of
+    them are parted by the word gap's space, two clauses on the web by a space too (`fullStopUi`, `WordGap.fullStop`,
+    `fullStop`, `clauseBreak`). Its plurals have one form, and its numbers are 0-9, as Arabic's, never Thai's own digits. Its dates are
+    written with the Gregorian year on Android and the web (`withGregorianCalendar`, the web's `ca-gregory`), since
+    Thai's default is the Buddhist era (2569 for 2026), while the Apple apps follow the device's own calendar setting,
+    Buddhist on a Thai iPhone unless its owner changed it (a call taken without Pierre). The brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
@@ -281,6 +289,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Israeli new shekel (ILS) follows the Moroccan dirham (Pierre's call, with Hebrew), and starts a new group in
     Israel. It has 2 decimals and the usual 100 million cap, so an app version from before it shows its amounts by the
     raw code, with the right decimals.
+  - The Thai baht (THB) follows the new shekel (Pierre's call, with Thai), and starts a new group in Thailand. It has 2
+    decimals and the usual 100 million cap, so an app version from before it shows its amounts by the raw code, with
+    the right decimals.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

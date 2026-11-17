@@ -78,6 +78,7 @@
     <string name="profile_language_arabic">العربية</string>
     <string name="profile_language_chinese_simplified">الصينية (المبسطة)</string>
     <string name="profile_language_hebrew">العبرية</string>
+    <string name="profile_language_thai">التايلاندية</string>
     <string name="profile_language_system_detail">لغة الجهاز</string>
     <string name="profile_notifications">الإشعارات</string>
     <plurals name="profile_notifications_active">

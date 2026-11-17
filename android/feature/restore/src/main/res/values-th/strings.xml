@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">นำกลุ่มของคุณกลับมา</string>
+    <string name="restore_subtitle">เคยลงชื่อเข้าใช้ด้วยบัญชีไหม ลงชื่อเข้าใช้อีกครั้งได้เลย ถ้าไม่เคย ให้ใช้รหัสกู้คืนหรือคิวอาร์โค้ดจากอุปกรณ์เครื่องเก่า</string>
+    <string name="restore_no_connection_title">ไม่มีการเชื่อมต่อ</string>
+    <string name="restore_no_connection_body">การลงชื่อเข้าใช้ด้วยบัญชีหรือรหัสต้องใช้อินเทอร์เน็ตเพื่อดาวน์โหลดกลุ่มของคุณ สิ่งที่คุณพิมพ์ไว้จะยังอยู่</string>
+    <string name="restore_code_label">หรือใช้รหัสกู้คืน</string>
+    <string name="restore_code_hint">คำ 12 คำตามลำดับ วางทั้งหมดในช่องเดียวเพื่อกรอกทุกช่อง</string>
+    <string name="restore_scan_qr_title">สแกนคิวอาร์โค้ดจากอุปกรณ์เครื่องเก่า</string>
+    <string name="restore_scan_qr_body">ที่: โปรไฟล์ › การกู้คืน › แสดงคิวอาร์โค้ด</string>
+    <string name="restore_recover">กู้คืน</string>
+    <string name="restore_try_again">ลองอีกครั้ง</string>
+    <string name="restore_start_fresh">เริ่มใหม่บนอุปกรณ์นี้</string>
+    <string name="restore_error_invalid_code">ไม่พบรหัส ตรวจสอบคำและลำดับ แล้วลองอีกครั้ง</string>
+    <string name="restore_error_too_many_attempts">ลองหลายครั้งเกินไป รอสักครู่แล้วลองอีกครั้ง</string>
+    <string name="restore_error_sign_in_failed">ลงชื่อเข้าใช้ไม่ได้ในขณะนี้ ลองอีกครั้ง</string>
+    <string name="restore_error_unknown">เกิดข้อผิดพลาด ลองอีกครั้ง</string>
+</resources>

@@ -30,12 +30,12 @@ so the three platforms walk the same flow.
 
 Write code, comments, docs, commit messages and pull requests in English, even when the conversation is in
 another language. User-facing strings are the exception: each one exists in English (the fallback for every
-language but the ones translated), Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified) and Hebrew, in each platform's own
+language but the ones translated), Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew and Thai, in each platform's own
 place for them — `res/values/strings.xml`, `res/values-pt/strings.xml` (plus `values-pt-rPT` for the few words Portugal says differently), `res/values-es/strings.xml` (plus
 `values-es-rES` for the few words Spain says differently), `res/values-fr/strings.xml`, `res/values-de/strings.xml`,
-`res/values-it/strings.xml`, `res/values-pl/strings.xml`, `res/values-nl/strings.xml`, `res/values-ja/strings.xml`, `res/values-tr/strings.xml`, `res/values-in/strings.xml` (Android's legacy code for Indonesian), `res/values-ru/strings.xml`, `res/values-uk/strings.xml`, `res/values-ko/strings.xml`, `res/values-hi/strings.xml`, `res/values-ar/strings.xml` and `res/values-b+zh+Hans/strings.xml` and `res/values-iw/strings.xml` (Android's legacy code for Hebrew) of the `:android:*` module, the English SwiftUI literals of
-the Apple app with their pt-BR, pt-PT, es (Latin American), es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans and he translations in `Localizable.xcstrings`,
-and the `en` / `pt` / `ptPT` / `es` / `esES` / `fr` / `de` / `it` / `pl` / `nl` / `ja` / `tr` / `id` / `ru` / `uk` / `ko` / `hi` / `ar` / `zh` / `he` dictionaries of `webApp/src/i18n` on the web. The product is "Bora Rachar"
+`res/values-it/strings.xml`, `res/values-pl/strings.xml`, `res/values-nl/strings.xml`, `res/values-ja/strings.xml`, `res/values-tr/strings.xml`, `res/values-in/strings.xml` (Android's legacy code for Indonesian), `res/values-ru/strings.xml`, `res/values-uk/strings.xml`, `res/values-ko/strings.xml`, `res/values-hi/strings.xml`, `res/values-ar/strings.xml` and `res/values-b+zh+Hans/strings.xml`, `res/values-iw/strings.xml` (Android's legacy code for Hebrew) and `res/values-th/strings.xml` of the `:android:*` module, the English SwiftUI literals of
+the Apple app with their pt-BR, pt-PT, es (Latin American), es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he and th translations in `Localizable.xcstrings`,
+and the `en` / `pt` / `ptPT` / `es` / `esES` / `fr` / `de` / `it` / `pl` / `nl` / `ja` / `tr` / `id` / `ru` / `uk` / `ko` / `hi` / `ar` / `zh` / `he` / `th` dictionaries of `webApp/src/i18n` on the web. The product is "Bora Rachar"
 in Portuguese and "Blitz Split" in every other language. To add a language, follow the `add-language` skill. Never send UI copy from Kotlin: the
 shared code hands the UIs enums and booleans (`RestoreError`, `SyncBadge`, `showsOfflineNotice`) and each platform
 picks its words.

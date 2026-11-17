@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">การแจ้งเตือน</string>
+    <string name="notification_settings_denied_title">การแจ้งเตือนของ Blitz Split ถูกปิดอยู่ใน Android</string>
+    <string name="notification_settings_denied_body">เปิดในการตั้งค่าระบบเพื่อรับการแจ้งเตือนแบบพุชด้านล่าง กระดิ่งยังทำงานตามปกติ</string>
+    <string name="notification_settings_open_settings">เปิดการตั้งค่า</string>
+    <string name="notification_settings_refused_body">Android ให้คุณอนุญาตได้อีกครั้งเพื่อรับการแจ้งเตือนแบบพุชด้านล่าง กระดิ่งยังทำงานตามปกติ</string>
+    <string name="notification_settings_turn_on">เปิด</string>
+    <string name="notification_settings_blocked_in_android">ถูกบล็อกใน Android</string>
+    <string name="notification_settings_open_channel_settings_description">เปิดการตั้งค่า Android สำหรับ %1$s</string>
+    <string name="notification_settings_push_switch">การแจ้งเตือนแบบพุช</string>
+    <string name="notification_settings_push_switch_detail">เฉพาะอุปกรณ์นี้</string>
+    <string name="notification_settings_section">แจ้งเตือนฉันเกี่ยวกับ</string>
+    <string name="notification_settings_push">พุช</string>
+    <string name="notification_settings_in_app">ในแอป</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">พุช จะส่งการแจ้งเตือนมาที่อุปกรณ์นี้ ในแอป จะทำเครื่องหมายว่าใหม่ที่กระดิ่งและในกิจกรรม ถ้าปิดไว้ จะยังแสดงในกิจกรรมแต่เป็นอ่านแล้ว</string>
+    <string name="notification_settings_bills">บิล</string>
+    <string name="notification_settings_bills_detail">บิลที่คุณอยู่ซึ่งถูกสร้าง แก้ไข หรือลบ</string>
+    <string name="notification_settings_payments">การจ่ายเงินและการเคลียร์ยอด</string>
+    <string name="notification_settings_payments_detail">การจ่ายเงินถึงคุณหรือจากคุณ และหนี้ที่ลดความซับซ้อนแล้ว</string>
+    <string name="notification_settings_comments">ความคิดเห็น</string>
+    <string name="notification_settings_comments_detail">ในบิลที่คุณอยู่และเธรดที่คุณเคยเขียน</string>
+    <string name="notification_settings_people_and_groups">คนและกลุ่ม</string>
+    <string name="notification_settings_people_and_groups_detail">ใครเข้าร่วมหรือออกจากกลุ่มของคุณ และสิ่งที่เปลี่ยนแปลงในกลุ่ม</string>
+    <string name="notification_settings_payment_requests">คำขอเงิน</string>
+    <string name="notification_settings_payment_requests_detail">เมื่อมีคนขอให้คุณจ่ายเงิน</string>
+    <string name="notification_settings_balance_reminder">การเตือนยอดค้าง</string>
+    <string name="notification_settings_balance_reminder_detail">สัปดาห์ละครั้ง หากมียอดค้าง</string>
+    <string name="notification_settings_footer">การแจ้งเตือนจะมาถึงเมื่อมีอินเทอร์เน็ต หากต้องการปิดเสียงกลุ่ม ให้ใช้เมนูในกลุ่มนั้น</string>
+</resources>

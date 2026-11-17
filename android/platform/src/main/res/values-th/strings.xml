@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · รหัสกู้คืน</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">อนุญาตให้ใช้กล้องในการตั้งค่าเพื่อถ่ายรูป</string>
+    <string name="platform_camera_settings">การตั้งค่า</string>
+    <string name="platform_receipt_source_camera">ถ่ายรูป</string>
+    <string name="platform_receipt_source_gallery">เลือกจากแกลเลอรี</string>
+    <string name="platform_receipt_source_file">เลือกไฟล์</string>
+    <string name="platform_receipt_camera_title">สแกนใบเสร็จ</string>
+    <string name="platform_receipt_camera_close">ปิด</string>
+    <string name="platform_receipt_camera_flash_on">เปิดแฟลช</string>
+    <string name="platform_receipt_camera_flash_off">ปิดแฟลช</string>
+    <string name="platform_receipt_camera_hint">ให้ใบเสร็จอยู่ในกรอบทั้งใบ เราจะกรอกจำนวนเงิน วันที่ และคำอธิบายให้ คุณตรวจสอบก่อนบันทึก</string>
+    <string name="platform_receipt_camera_gallery">เลือกจากแกลเลอรี</string>
+    <string name="platform_receipt_camera_shutter">ถ่ายรูป</string>
+    <string name="platform_receipt_camera_unavailable">ใช้กล้องไม่ได้ เลือกรูปใบเสร็จจากแกลเลอรีแทน</string>
+    <string name="platform_receipt_camera_permission">อนุญาตให้ใช้กล้องเพื่อสแกนใบเสร็จ หรือเลือกรูปจากแกลเลอรี</string>
+    <string name="platform_receipt_camera_allow">อนุญาตกล้อง</string>
+    <string name="platform_receipt_camera_settings">เปิดการตั้งค่า</string>
+</resources>

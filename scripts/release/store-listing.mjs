@@ -65,6 +65,7 @@ export const PLAY_LOCALES = {
   ar: ["ar"],
   zh: ["zh-CN"],
   he: ["iw-IL"],
+  th: ["th"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -87,14 +88,15 @@ export const APP_STORE_LOCALES = {
   ar: ["ar-SA"],
   zh: ["zh-Hans"],
   he: ["he"],
+  th: ["th"],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */
 export const brandOf = (lang) => (lang === "pt" ? "Bora Rachar" : "Blitz Split");
 
 const HEADING = /^## (.+)$/;
-/** A word of a script written without spaces: kanji, hiragana or katakana. */
-const UNSPACED = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u;
+/** A word of a script written without spaces: kanji, hiragana, katakana or Thai. */
+const UNSPACED = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}]/u;
 /** What each file fastlane reads is called, by field. */
 const PLAY_FILES = { playTitle: "title.txt", playShortDescription: "short_description.txt", description: "full_description.txt" };
 const APP_STORE_FILES = {
@@ -166,8 +168,10 @@ function checkKeywords(file, listing) {
   const repeated = lower.find((keyword, index) => lower.indexOf(keyword) !== index);
   if (repeated !== undefined) fail(file, `App Store keywords lists "${repeated}" twice`);
   const shown = `${listing.appStoreName} ${listing.appStoreSubtitle}`.toLowerCase();
-  const words = shown.split(/[^\p{L}\p{N}]+/u);
-  // Why: Japanese writes no spaces between words, so a keyword in kana or kanji is looked for anywhere in the text.
+  // Why: a combining mark (a Hindi vowel sign or virama, a Thai tone) belongs to the word it sits on.
+  const words = shown.split(/[^\p{L}\p{M}\p{N}]+/u);
+  // Why: Japanese, Chinese and Thai write no spaces between words, so a keyword in their scripts is looked for anywhere
+  // in the text.
   const wasted = lower.find((keyword) => words.includes(keyword) || (UNSPACED.test(keyword) && shown.includes(keyword)));
   if (wasted !== undefined) fail(file, `App Store keywords repeats "${wasted}", which the name or the subtitle already has`);
 }

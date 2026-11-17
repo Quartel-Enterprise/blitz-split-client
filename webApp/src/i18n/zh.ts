@@ -846,6 +846,7 @@ export const zh: Record<MessageKey, string> = {
   profile_languageArabic: '阿拉伯语',
   profile_languageHebrew: '希伯来语',
   profile_languageChineseSimplified: '中文（简体）',
+  profile_languageThai: '泰语',
   profile_bitcoinInSats: '以聪为单位显示比特币',
   profile_bitcoinInSatsDetail: '以聪（sats）为单位显示和输入比特币金额（1 ₿ = 100,000,000 sats）。',
   profile_shareUsageData: '分享使用数据',

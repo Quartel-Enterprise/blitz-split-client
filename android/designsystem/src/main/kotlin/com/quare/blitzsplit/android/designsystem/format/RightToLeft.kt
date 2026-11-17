@@ -12,18 +12,37 @@ import java.util.Locale
 
 /*
  * Why: the right to left languages (Hebrew under its current code and the legacy one Java still hands out, "iw"),
- * and the ones whose own digits the app writes as 0-9 (Arabic; Persian and Urdu would join once the app speaks them).
+ * and the ones whose own digits the app writes as 0-9 (Arabic and Thai; Persian and Urdu would join once the app speaks
+ * them).
  */
 private val rightToLeftLanguages = setOf("ar", "fa", "he", "iw", "ur")
-private val latinDigitLanguages = setOf("ar")
+private val latinDigitLanguages = setOf("ar", "th")
+private const val THAI = "th"
 private const val FIRST_STRONG_ISOLATE = '\u2068'
 private const val POP_DIRECTIONAL_ISOLATE = '\u2069'
 
 fun Locale.isRightToLeft(): Boolean = language in rightToLeftLanguages
 
 /*
+ * Why: dates are written with the Gregorian year in every language, as java.time writes them, though Thai's own
+ * calendar is the Buddhist era (2569 for 2026), which ICU would pick for a Thai locale.
+ */
+fun Locale.withGregorianCalendar(): Locale {
+    if (language != THAI) return this
+    return try {
+        Locale
+            .Builder()
+            .setLocale(this)
+            .setUnicodeLocaleKeyword("ca", "gregory")
+            .build()
+    } catch (_: IllformedLocaleException) {
+        this
+    }
+}
+
+/*
  * Why: amounts, dates and counts are written with 0-9 in every language, so what a field shows is what it parses and
- * an amount reads the same as the one typed on the number keyboard. Arabic's own digits stay for its words only.
+ * an amount reads the same as the one typed on the number keyboard. Arabic's and Thai's own digits stay for its words only.
  */
 fun Locale.withLatinDigits(): Locale {
     if (language !in latinDigitLanguages) return this

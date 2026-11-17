@@ -62,8 +62,10 @@ Every translator, human or agent, reads it first; without it each one picks its 
 - The tests that list every language: `AppLanguageTest` (its tags, the chips of every entry),
   `ObserveSpokenLanguageUseCaseTest` (the picks, the devices, the regional variants) and `ProfileUiStateTest` (both
   names, every option list). `./gradlew jvmTest` fails on the `when`s until each has it.
-- A language written without spaces between words (Japanese; Chinese, Thai): add it to `unspacedLanguages`
-  (`WordSpacing.kt`), `WordGap.swift` and the web's `wordGap`, `fullStop` and `clauseBreak` in `i18n/index.ts`.
+- A language written without spaces between words or phrases (Japanese, Chinese): add it to `unspacedLanguages`
+  (`WordSpacing.kt`), `WordGap.swift` and the web's `wordGap`, `fullStop` and `clauseBreak` in `i18n/index.ts`. A
+  language that parts its phrases with a space but has no full stop or comma (Thai) keeps the word gap and changes only
+  `fullStopUi`, `WordGap.fullStop` and the web's `fullStop` and `clauseBreak`.
 - A currency that comes with the language (Pierre's call, step 1): its `GroupCurrency` (code, regions, `fractionDigits`
   when it has none, as the yen, rupiah and won) after the last one in `entries`, a `GroupCurrencyTest` for its region,
   `ExpenseRules.maxAmountMinorFor` when 100 million of it is too little (the rupiah), and its paragraph in

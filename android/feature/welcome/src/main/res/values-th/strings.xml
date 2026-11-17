@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">หารบิลง่ายๆ ไม่วุ่นวาย</string>
+    <string name="welcome_offline_title">ใช้งานแบบออฟไลน์ได้</string>
+    <string name="welcome_offline_body">ทุกอย่างอยู่ในอุปกรณ์ของคุณและซิงค์ทีหลัง</string>
+    <string name="welcome_optional_title">จะมีบัญชีหรือไม่ก็ได้</string>
+    <string name="welcome_optional_body">Google หรือ Apple มีไว้เพื่อไม่ให้ข้อมูลหายเมื่อคุณเปลี่ยนอุปกรณ์เท่านั้น</string>
+    <string name="welcome_invite_title">เชิญด้วยลิงก์หรือคิวอาร์โค้ด</string>
+    <string name="welcome_invite_body">เพื่อนเข้าร่วมกลุ่มได้โดยไม่ต้องสร้างบัญชี</string>
+    <string name="welcome_no_connection_title">ไม่มีการเชื่อมต่อ</string>
+    <string name="welcome_no_connection_body">การลงชื่อเข้าใช้ด้วยบัญชีต้องใช้อินเทอร์เน็ต ใช้งานโดยไม่มีบัญชีไปก่อน แล้วค่อยเชื่อมต่อทีหลังในโปรไฟล์</string>
+    <string name="welcome_or">หรือ</string>
+    <string name="welcome_use_without_account">ใช้งานโดยไม่มีบัญชี</string>
+    <string name="welcome_used_on_another_device">ฉันเคยใช้ในอุปกรณ์อื่น</string>
+    <string name="welcome_sign_in_failed">ลงชื่อเข้าใช้ไม่ได้ในขณะนี้ ลองอีกครั้ง</string>
+    <string name="welcome_legal_notice">เมื่อดำเนินการต่อ คุณยอมรับ %1$s และรับทราบ %2$s</string>
+    <string name="welcome_legal_terms">ข้อกำหนดการให้บริการ</string>
+    <string name="welcome_legal_privacy">นโยบายความเป็นส่วนตัว</string>
+    <string name="welcome_no_account_note">หากไม่มีบัญชี ข้อมูลของคุณจะถูกลบหลังไม่ได้ใช้งาน 30 วัน เชื่อมต่อ Google หรือ Apple เพื่อเก็บข้อมูลไว้</string>
+    <string name="welcome_no_account_note_offline">หากไม่มีบัญชี ข้อมูลของคุณจะถูกลบหลังไม่ได้ใช้งาน 30 วัน เชื่อมต่อ Google หรือ Apple ภายหลังในโปรไฟล์ เพื่อเก็บข้อมูลไว้</string>
+    <string name="welcome_expired_title">ข้อมูลของคุณถูกลบแล้ว</string>
+    <string name="welcome_expired_body">คุณใช้แอปโดยไม่มีบัญชีและไม่ได้เปิดแอปเป็นเวลา 30 วัน ข้อมูลของคุณจึงถูกลบ เชื่อมต่อ Google หรือ Apple เพื่อเก็บข้อมูลไว้ในครั้งหน้า</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

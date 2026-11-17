@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">ติดต่อฝ่ายช่วยเหลือ</string>
+    <string name="contact_support_description">เราจะเปิดแอปอีเมลของคุณพร้อมข้อความที่เตรียมไว้ให้ อธิบายสิ่งที่เกิดขึ้นแล้วส่ง ทุกข้อความมีคนจริงอ่าน</string>
+    <string name="contact_support_to">ถึง</string>
+    <string name="contact_support_diagnostics">จะแนบไปในอีเมล</string>
+    <string name="contact_support_app_version">เวอร์ชันแอป</string>
+    <string name="contact_support_platform">แพลตฟอร์ม</string>
+    <string name="contact_support_language">ภาษา</string>
+    <string name="contact_support_account">บัญชี</string>
+    <string name="contact_support_profile">โปรไฟล์</string>
+    <string name="contact_support_language_system">ตามระบบ</string>
+    <string name="contact_support_account_local">เฉพาะอุปกรณ์นี้</string>
+    <string name="contact_support_account_anonymous">ไม่ได้เชื่อมต่อ</string>
+    <string name="contact_support_open_email">เปิดอีเมล</string>
+    <string name="contact_support_copy_email">คัดลอกที่อยู่อีเมล</string>
+    <string name="contact_support_notice_copied">คัดลอกที่อยู่อีเมลแล้ว</string>
+    <string name="contact_support_notice_no_app">ไม่พบแอปอีเมล จึงคัดลอกที่อยู่ให้แทน</string>
+    <string name="contact_support_close">ปิด</string>
+</resources>

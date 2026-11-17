@@ -112,6 +112,7 @@ class GroupCurrency private constructor(
         val MAD = GroupCurrency("MAD", setOf("MA"))
         val CNY = GroupCurrency("CNY", setOf("CN"))
         val ILS = GroupCurrency("ILS", setOf("IL"))
+        val THB = GroupCurrency("THB", setOf("TH"))
 
         // Why: 8 decimals, a satoshi each, which typing or reading "Bitcoin em satoshis" shows as whole sats.
         val BTC = GroupCurrency(
@@ -159,6 +160,7 @@ class GroupCurrency private constructor(
             MAD,
             CNY,
             ILS,
+            THB,
             BTC,
             ETH,
         )

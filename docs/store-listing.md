@@ -73,7 +73,7 @@ The limits are in characters, as the stores count them. Every field but the desc
   and the web", not the name of a phone. The one exception is "Sign in with Google or Apple", the names of the two
   buttons the app shows on every platform. No competitor's name anywhere, keywords included: both stores remove
   listings for it.
-- **No number that changes by itself**, such as how many languages the app is in: nothing would update it in twenty
+- **No number that changes by itself**, such as how many languages the app is in: nothing would update it in twenty-one
   files.
 - **Free, with no ads** is true today and written in every listing ([general.md](product/general.md)): when the app
   gains something paid, the listings change in the same pull request.

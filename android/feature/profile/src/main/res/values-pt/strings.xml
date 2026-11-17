@@ -74,6 +74,7 @@
     <string name="profile_language_arabic">Árabe</string>
     <string name="profile_language_chinese_simplified">Chinês (simplificado)</string>
     <string name="profile_language_hebrew">Hebraico</string>
+    <string name="profile_language_thai">Tailandês</string>
     <string name="profile_language_system_detail">Idioma do aparelho</string>
     <string name="profile_notifications">Notificações</string>
     <plurals name="profile_notifications_active">

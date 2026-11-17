@@ -73,6 +73,7 @@
     <string name="profile_language_arabic">阿拉伯语</string>
     <string name="profile_language_hebrew">希伯来语</string>
     <string name="profile_language_chinese_simplified">中文（简体）</string>
+    <string name="profile_language_thai">泰语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

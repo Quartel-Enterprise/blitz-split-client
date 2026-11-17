@@ -75,6 +75,7 @@
     <string name="profile_language_arabic">ערבית</string>
     <string name="profile_language_chinese_simplified">סינית (פשוטה)</string>
     <string name="profile_language_hebrew">עברית</string>
+    <string name="profile_language_thai">תאילנדית</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>
     <plurals name="profile_notifications_active">

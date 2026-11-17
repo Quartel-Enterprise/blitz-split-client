@@ -66,6 +66,7 @@ const nativeLanguageNames: Record<string, string> = {
   ar: 'العربية',
   'zh-Hans': '中文（简体）',
   he: 'עברית',
+  th: 'ไทย',
 }
 
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
@@ -90,6 +91,7 @@ const languageNames: Record<string, MessageKey> = {
   ar: 'profile_languageArabic',
   'zh-Hans': 'profile_languageChineseSimplified',
   he: 'profile_languageHebrew',
+  th: 'profile_languageThai',
 }
 
 /**

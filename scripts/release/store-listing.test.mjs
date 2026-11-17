@@ -87,6 +87,10 @@ test("the keywords waste no character", () => {
   const japanese = { appStoreName: "Blitz Split：割り勘・立て替え精算", appStoreSubtitle: "グループの支払い" };
   refuses({ ...japanese, appStoreKeywords: "旅行,精算" }, /repeats "精算", which the name or the subtitle already has/);
   assert.equal(parse({ ...japanese, appStoreKeywords: "旅行,清算" }).appStoreKeywords, "旅行,清算");
+  // Neither has Thai, whose vowel and tone marks don't split a word either
+  const thai = { appStoreName: "Blitz Split: หารบิล", appStoreSubtitle: "หารค่าใช้จ่าย ใครค้างใครเท่าไร" };
+  refuses({ ...thai, appStoreKeywords: "ทริป,หารบิล" }, /repeats "หารบิล", which the name or the subtitle already has/);
+  assert.equal(parse({ ...thai, appStoreKeywords: "ทริป,เพื่อน" }).appStoreKeywords, "ทริป,เพื่อน");
 });
 
 test("every language of the listings has a file the stores take", () => {

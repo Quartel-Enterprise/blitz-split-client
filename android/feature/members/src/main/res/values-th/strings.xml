@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">ลิงก์เชิญ</string>
+    <string name="members_link_pending">ยังไม่ได้สร้าง</string>
+    <string name="members_share">แชร์</string>
+    <string name="members_me">%s (คุณ)</string>
+    <string name="members_status_this_device">อุปกรณ์นี้</string>
+    <string name="members_status_joined">เข้าร่วมแล้ว</string>
+    <string name="members_status_not_joined">ยังไม่ได้เข้าร่วม</string>
+    <string name="members_options">ตัวเลือกสำหรับ %s</string>
+    <string name="members_rename">เปลี่ยนชื่อ</string>
+    <string name="members_personal_invite">คำเชิญส่วนตัวสำหรับ %s</string>
+    <string name="members_personal_message">ใครก็ตามที่เปิดลิงก์นี้จะเข้าร่วมในชื่อ %s ทันที โดยไม่ต้องเลือกจากรายชื่อ ใช้ได้ครั้งเดียว</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="other">ใครก็ตามที่เปิดลิงก์นี้จะเข้าร่วมในชื่อ %1$s ทันที โดยไม่ต้องเลือกจากรายชื่อ และจะเห็นส่วนของตัวเอง %2$s ในบิล %3$d รายการที่เพิ่มไว้แล้ว ใช้ได้ครั้งเดียว</item>
+    </plurals>
+    <string name="members_personal_copy">คัดลอกลิงก์</string>
+    <string name="members_personal_copied">คัดลอกแล้ว</string>
+    <string name="members_personal_share">แชร์กับ %s</string>
+    <string name="members_personal_share_message">เข้าร่วม “%1$s” ในชื่อ %2$s บน Blitz Split: %3$s</string>
+    <string name="members_remove">นำออกจากกลุ่ม</string>
+    <string name="members_remove_joined">%s เข้าร่วมกลุ่มแล้ว</string>
+    <string name="members_remove_title">นำ %s ออกจากกลุ่มไหม</string>
+    <string name="members_remove_message">%s ยังไม่ได้เข้าร่วม คุณเพิ่มกลับมาได้ภายหลัง</string>
+    <string name="members_remove_confirm">นำออก</string>
+    <string name="members_release">ปล่อยชื่อ</string>
+    <string name="members_release_title">ปล่อยชื่อของ %s ไหม</string>
+    <string name="members_release_message">คนที่เข้าร่วมในชื่อ %1$s จะออกจากกลุ่ม ชื่อ สี และบิลของ %1$s ยังอยู่ และเลือก %1$s ได้อีกครั้งผ่านลิงก์ของกลุ่ม</string>
+    <string name="members_release_confirm">ปล่อย</string>
+    <string name="members_release_error">ปล่อยชื่อไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</string>
+    <string name="members_add">เพิ่มคน</string>
+    <string name="members_invite_instead">มีแอปไหม เชิญด้วยลิงก์</string>
+    <string name="members_name_label">ชื่อ</string>
+    <string name="members_save">บันทึก</string>
+    <string name="members_cancel">ยกเลิก</string>
+    <string name="members_change_error">บันทึกการเปลี่ยนแปลงไม่สำเร็จ ลองอีกครั้ง</string>
+    <string name="members_remove_open_balance">%s ยังมียอดค้างอยู่</string>
+    <string name="members_balance_to_get_back">ได้คืน %s</string>
+    <string name="members_balance_owes">ค้าง %s</string>
+    <string name="members_balance_settled">เคลียร์แล้ว</string>
+</resources>

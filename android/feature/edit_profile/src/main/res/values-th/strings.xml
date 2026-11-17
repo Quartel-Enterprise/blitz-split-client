@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">แก้ไขโปรไฟล์</string>
+    <string name="edit_profile_save">บันทึก</string>
+    <string name="edit_profile_change_photo">เปลี่ยนรูปภาพ</string>
+    <string name="edit_profile_take_photo">ถ่ายรูป</string>
+    <string name="edit_profile_choose_photo">เลือกจากแกลเลอรี</string>
+    <string name="edit_profile_use_account_photo">ใช้รูปจากบัญชี %1$s</string>
+    <string name="edit_profile_remove_photo">ลบรูปภาพ</string>
+    <string name="edit_profile_photo_error">ใช้รูปนี้ไม่ได้ ลองรูปอื่น</string>
+    <string name="edit_profile_avatar_color">สีอวตาร</string>
+    <string name="edit_profile_avatar_color_hint">แสดงเมื่อคุณไม่มีรูปภาพ</string>
+    <string name="edit_profile_name_label">ชื่อของคุณ</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">พิมพ์อย่างน้อย %d ตัวอักษร</string>
+    <string name="edit_profile_name_too_long">ใช้ได้ไม่เกิน %d ตัวอักษร</string>
+    <string name="edit_profile_account_notice">ชื่อและรูปภาพมาจากบัญชี %1$s ของคุณ การเปลี่ยนที่นี่มีผลกับ Blitz Split เท่านั้น และไม่เปลี่ยนบัญชี %1$s ของคุณ</string>
+    <string name="edit_profile_footer">กลุ่มของคุณและทุกคนที่มีลิงก์โปรไฟล์ของคุณจะเห็นชื่อและรูปภาพของคุณ</string>
+    <string name="profile_photo_close">ปิด</string>
+    <string name="profile_photo_camera">กล้อง</string>
+    <string name="profile_photo_gallery">แกลเลอรี</string>
+    <string name="profile_photo_remove">ลบ</string>
+    <string name="profile_photo_title">รูปโปรไฟล์</string>
+</resources>

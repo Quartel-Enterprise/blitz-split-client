@@ -74,6 +74,7 @@
     <string name="profile_language_arabic">Arabisch</string>
     <string name="profile_language_chinese_simplified">Chinees (vereenvoudigd)</string>
     <string name="profile_language_hebrew">Hebreeuws</string>
+    <string name="profile_language_thai">Thai</string>
     <string name="profile_language_system_detail">Taal van het apparaat</string>
     <string name="profile_notifications">Meldingen</string>
     <plurals name="profile_notifications_active">
