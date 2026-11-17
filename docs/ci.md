@@ -62,6 +62,17 @@ the same way. A change to a convention plugin of `build-logic/` doesn't: only th
 new key. To see why a task missed, run it with `-Dorg.gradle.caching.debug=true` before and after the change and
 compare the lines of its key.
 
+The Gradle configuration cache doesn't survive between runs: every job configures the build again on its first Gradle
+invocation, about 40 seconds on a runner. Every job passes `secrets.GRADLE_ENCRYPTION_KEY` to the Gradle action, and
+setup-gradle documents it as the key that encrypts the configuration cache it keeps between runs, but the secret is not
+set: tried on 2026-11-17, with setup-gradle v6 and the key set (`openssl rand -base64 16`), it kept none. The first run
+of `main` saved no configuration cache entry (the action's cache summary lists none), and a pull request job that had
+the key and restored that run's Gradle home still printed "Calculating task graph as no cached configuration is
+available". Trying again with a later version of the action only takes creating the secret: after a run of `main` with
+the key, the next run of `main` on a commit that changes no Gradle script, `build-logic/`, `gradle.properties` nor the
+version catalog (any of them invalidates the entry anyway) prints "Reusing configuration cache" on the first Gradle
+invocation of `build-and-test`'s jobs, or it doesn't.
+
 The `apple` jobs run on `xcode-27`, GitHub's macOS image with Xcode 27 (a public preview, since the app uses the iOS 27
 SDK's APIs and `macos-26` only has Xcode 26), free for a public repository. Its tests and each scheme of the app are
 three jobs side by side, four when the tests split in two (below), each compiling the Kotlin/Native code on its own,
@@ -203,16 +214,6 @@ with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub token
   update the secret.
 - The `ai-review`, `run-checks` and `merge-when-green` labels.
 - The `MERGE_WHEN_GREEN_TOKEN` secret, for `merge-when-green` (see [Merge when green](#merge-when-green)).
-- No `GRADLE_ENCRYPTION_KEY`: the secret is not set, and setting it gained nothing. Every job passes it to the Gradle
-  action, and setup-gradle documents it as the key that encrypts the configuration cache it keeps between runs. Tried
-  on 2026-11-17, with setup-gradle v6 and the key set (`openssl rand -base64 16`), it kept none: the first run
-  of `main` saved no configuration cache entry (the action's cache summary lists none), and a pull request job that
-  had the key and restored that run's Gradle home still printed "Calculating task graph as no cached configuration is
-  available". So every job configures the build again on its first Gradle invocation, about 40 seconds on a runner.
-  The jobs still pass the secret, so trying again with a later version of the action only takes creating it: after a
-  run of `main` with the key, the next run of `main` on a commit that changes no Gradle script, `build-logic/`,
-  `gradle.properties` nor the version catalog (any of them invalidates the entry anyway) prints "Reusing
-  configuration cache" on the first Gradle invocation of `build-and-test`'s jobs, or it doesn't.
 - A ruleset on `main` with **Require conversation resolution before merging**. This is what keeps a pull request
   with open review threads from merging: the checks the gate holds are skipped, not failed, and GitHub counts a
   skipped required check as passing.
@@ -401,5 +402,5 @@ repository's settings alone.
 - If it checks the app on pull requests, start it with the `review-gate` job, with the same `pull_request` types
   and `if` as the other callers, and make its other jobs need it.
 - Set up Gradle through `./.github/actions/gradle` and pass `secrets.GRADLE_ENCRYPTION_KEY`, as the other jobs do,
-  though the secret is not set today (see [Setup](#setup)).
+  though the secret is not set today (see [Speed and timeouts](#speed-and-timeouts)).
 - If it runs on pull requests, add it to the `workflow_run` list of `merge-when-green.yml` (see [Merge when green](#merge-when-green)).
