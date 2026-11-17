@@ -510,12 +510,14 @@ and the wait are on, and that the task gets cleaned up once the merge happens.
   again. Handle each event as the outcomes below say, with the loop's filter: a failed
   `review-gate` check is the hold for the review's open threads, not a failure, and a cancelled
   `merge-when-green` run was only replaced by a newer one. A review comment that arrives while the
-  label is still on is one of the opening `claude-review`'s threads: leave it for outcome 3, which
-  `merge-when-green` starts once every check has passed. Diagnose an event with `get_status` or one
-  `gh pr checks <pr>` call; don't poll the checks yourself. Once an outcome says to stop, later
-  events don't start the fixes of that blocker again: stay quiet until the user answers or
-  something new shows up. Once the pull request merges or closes, or the user says to stop, turn
-  Auto-fix off (`set_monitor` with `auto_fix: false`) before going on with outcome 0 or 1.
+  label is still on is one of the opening `claude-review`'s threads: it is outcome 3's work, which
+  `merge-when-green` starts once every check has passed. Do it then, or sooner when a failed check
+  or a conflict already has the session pushing ("Push once per round" below), never twice.
+  Diagnose an event with `get_status` or that one look; don't poll the checks yourself. Once an
+  outcome says to stop, later events don't start the fixes of that blocker again: stay quiet until
+  the user answers or something new shows up. Once the pull request merges or closes, or the user
+  says to stop, turn Auto-fix off (`set_monitor` with `auto_fix: false`) before going on with
+  outcome 0 or 1.
 
   The app turns Auto-fix on only for a pull request it is sure this session opened, and may refuse
   one it isn't (e.g. one opened from a worktree the session didn't start in). Then tell the user
@@ -569,20 +571,26 @@ what is already on `origin`, and never skip, disable or loosen a test or a check
 
 Push once per round. A push cancels the checks in flight and starts every one of them again, the
 macOS jobs included, which are the ones a pull request waits longest for. So before fixing what
-woke the session, look at everything else the pull request is waiting on, and put it all in the
-same push:
+woke the session, take one look at everything else the pull request is waiting on, and put it all
+in the same push:
 
 ```bash
-gh pr checks <pr>                                    # every failed check, not only the one reported
-gh pr view <pr> --json mergeable -q .mergeable       # CONFLICTING: main has to be merged in too
+gh pr checks "$pr"                                  # every failed check, not only the one reported
+gh pr view "$pr" --json mergeable -q .mergeable     # CONFLICTING, MERGEABLE, or UNKNOWN for now
 ```
 
-and the unresolved threads, with the query of outcome 3. A merge of `main` pushed on its own with
-the review's fixes five minutes behind it, or one push per thread, throws away the run each push
-interrupts: of 24 pull requests on 16 and 17 November 2026, a quarter got a second push within ten
-minutes of the first. Check a fix here before it goes (the workflow linted, the script run once
-with real input) for the same reason: the push that fixes the fix costs one more run. A second push
-is right when something new shows up after the first (another check failing, `main` moving again).
+- **`CONFLICTING`:** merge `main` in as outcome 3's conflict steps say (a merge commit, never a
+  rebase, the README's images), in the same push. **`UNKNOWN`** means GitHub is still working it
+  out, as it does right after `main` moves or a push: ask again after a few seconds before deciding.
+- **Unresolved threads** (outcome 3's query): fix or answer them in the same push too, then resolve
+  each one as outcome 3 says, and add the label again only if it was removed.
+- **Checks still pending:** don't wait for them. Prepare the fix, then read the checks once more
+  right before pushing: one that failed meanwhile gets its fix in the same push.
+
+Check a fix here before it goes, for the same reason: a workflow with `actionlint` (it reads
+`.github/actionlint.yaml`), a script run once with real input. The push that fixes the fix costs
+one more run. A second push is right when something new shows up after the first: another check
+failing, `main` moving again.
 
 When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
 
