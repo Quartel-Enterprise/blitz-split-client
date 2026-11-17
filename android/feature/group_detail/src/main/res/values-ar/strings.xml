@@ -114,4 +114,7 @@
     <string name="group_detail_balances_note_simplified">مع الديون المبسّطة، يقترح التطبيق أقل عدد من الدفعات. «تم الاستلام» و«تم الدفع» يسجلان دفعة تمت خارج التطبيق (Pix، نقدًا، تحويل).</string>
     <string name="group_detail_photo_open">عرض صورة المجموعة</string>
     <string name="group_export_payment_method">طريقة الدفع</string>
+    <string name="group_detail_reminder_title">حان وقت التسوية</string>
+    <string name="group_detail_reminder_settle">تسوية</string>
+    <string name="group_detail_reminder_dismiss">إغلاق</string>
 </resources>
