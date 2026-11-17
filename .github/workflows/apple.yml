@@ -26,6 +26,7 @@ on:
       - 'version.properties'
       - 'gradlew'
       - '.github/workflows/review-gate.yml'
+      - 'scripts/modules-with-tests.sh'
       - '!**/*.md'
       # The source sets no Apple target compiles.
       - '!**/src/jsMain/**'
@@ -50,6 +51,7 @@ on:
       - 'version.properties'
       - 'gradlew'
       - '.github/workflows/review-gate.yml'
+      - 'scripts/modules-with-tests.sh'
       - '!**/*.md'
       # The source sets no Apple target compiles.
       - '!**/src/jsMain/**'
@@ -131,19 +133,24 @@ jobs:
       # cheap side: a core module nothing depends on splits for nothing, which costs a runner five
       # minutes, and a change that reaches every module from elsewhere runs in one job, as before.
       # build-logic and the root's Gradle scripts are left out: a change there gives a new key only
-      # to the tasks it configures differently (docs/ci.md, "Speed and timeouts"). A change to this
-      # workflow counts too, so a change to the split is seen working before it merges.
+      # to the tasks it configures differently (docs/ci.md, "Speed and timeouts"). The source sets no
+      # Apple target compiles and Markdown don't count, as they don't to start this workflow. A change
+      # to this workflow or to the script that lists the modules counts too, so a change to the
+      # split is seen working before it merges. Two is the only split: "Pick this shard's tasks"
+      # deals three of every five modules to the first shard and refuses a third.
       - name: Look for a change outside the Swift app
         id: diff
         run: |
           kotlin=true
           shards='[1]'
-          wide='^(core|gradle)/|^gradle\.properties$|^\.github/workflows/apple\.yml$'
+          wide='^(core|gradle)/|^gradle\.properties$'
+          wide="$wide|^\.github/workflows/apple\.yml$|^scripts/modules-with-tests\.sh$"
+          not_apple='\.md$|/src/(js|jvm)(Main|Test)/|/src/androidMain/'
           if files=$(git -c core.quotePath=false diff --name-only --no-renames HEAD^1 HEAD) &&
             [ -n "$files" ]; then
             if ! grep -q -v -E '^(iosApp|release-notes)/|\.md$' <<< "$files"; then
               kotlin=false
-            elif grep -q -E "$wide" <<< "$files"; then
+            elif grep -v -E "$not_apple" <<< "$files" | grep -q -E "$wide"; then
               shards='[1, 2]'
             fi
           fi
@@ -212,12 +219,14 @@ jobs:
       # appleMain shared by the Apple targets, which only a macOS host compiles.
       #
       # One job runs them all by their task names, as before. Two split the modules that have a
-      # commonTest, dealt from the sorted list as js-tests deals its own, so a new module joins a
-      # shard by itself. The first takes three of every five; the second takes the other two and
-      # the compilations, about three minutes of the 18 when everything is compiled again, which
-      # leaves each shard about half of the work. Each one compiles the modules its own depend on,
-      # so the second also compiles every module for macOS by name: a module with no tests that no
-      # tested module depends on (`:shared` today) was compiled by the one job's macosArm64Test.
+      # commonTest, dealt from the sorted list js-tests deals its own from
+      # (scripts/modules-with-tests.sh), so a new module joins a shard by itself. The first takes
+      # three of every five; the second takes the other two and the two compilations, about three
+      # minutes of the 18 when everything is compiled again, which leaves each shard about half of
+      # the work. Each one compiles for macOS the modules its own depend on. That leaves out a
+      # module with no tests that no tested module depends on, `:shared` today, which the one job's
+      # macosArm64Test compiled: apple-app's macOS build compiles and links it, and compiling it
+      # here would compile every module it depends on, all of them, in this shard too.
       - name: Pick this shard's tasks
         id: tasks
         env:
@@ -226,11 +235,13 @@ jobs:
           SIMULATOR_TESTS: ${{ steps.targets.outputs.simulator }}
         run: |
           compilations='compileKotlinIosArm64 compileAppleMainKotlinMetadata'
-          if [ "$SHARD_TOTAL" -eq 1 ]; then
+          if [ "$SHARD_TOTAL" -gt 2 ]; then
+            echo "::error::apple-tests deals its modules to two shards, three of every five and the other two: $SHARD_TOTAL were asked for."
+            exit 1
+          elif [ "$SHARD_TOTAL" -eq 1 ]; then
             tasks="${SIMULATOR_TESTS:+$SIMULATOR_TESTS }macosArm64Test $compilations"
           else
-            modules=$(find . \( -path ./build-logic -o -path ./.claude -o -name build -o -name node_modules \) -prune \
-              -o -type d -path '*/src/commonTest' -print | sed -E 's#^\./##; s#/src/commonTest$##' | sort -u)
+            modules=$(./scripts/modules-with-tests.sh commonTest)
             tasks=$(awk -v shard="$SHARD_INDEX" -v simulator="$SIMULATOR_TESTS" '
               ((NR - 1) % 5 < 3 ? 0 : 1) == shard {
                 gsub("/", ":")
@@ -242,7 +253,7 @@ jobs:
               exit 1
             fi
             if [ "$SHARD_INDEX" -eq 1 ]; then
-              tasks="${tasks}compileKotlinMacosArm64 $compilations"
+              tasks="$tasks$compilations"
             fi
           fi
           echo "$tasks" | tr ' ' '\n'

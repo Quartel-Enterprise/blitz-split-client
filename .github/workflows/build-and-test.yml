@@ -118,16 +118,15 @@ jobs:
 
       # A module has tests on the JS target when it has commonTest or jsTest sources, so a new module
       # joins a shard on its own. The modules are dealt round-robin from the sorted list, which puts
-      # some core and some feature modules on every shard.
+      # some core and some feature modules on every shard. apple-tests deals its own from the same
+      # script.
       - name: Pick this shard's modules
         id: modules
         env:
           SHARD_INDEX: ${{ strategy.job-index }}
           SHARD_TOTAL: ${{ strategy.job-total }}
         run: |
-          modules=$(find . \( -path ./build-logic -o -path ./.claude -o -name build -o -name node_modules \) -prune \
-            -o -type d \( -path '*/src/commonTest' -o -path '*/src/jsTest' \) -print \
-            | sed -E 's#^\./##; s#/src/(commonTest|jsTest)$##' | sort -u)
+          modules=$(./scripts/modules-with-tests.sh commonTest jsTest)
           tasks=$(awk -v shard="$SHARD_INDEX" -v total="$SHARD_TOTAL" \
             '(NR - 1) % total == shard { gsub("/", ":"); printf ":%s:jsTest ", $0 }' <<< "$modules")
           if [ -z "$tasks" ]; then

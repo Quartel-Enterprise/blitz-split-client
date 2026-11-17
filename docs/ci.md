@@ -82,17 +82,20 @@ target apart, so a bump is the change the two targets can take differently.
 
 A pull request whose change reaches nearly every module splits `apple-tests` in two jobs, `apple-tests (1)` and
 `apple-tests (2)`. The `changes` job decides it from the changed paths: anything under `core/` or `gradle/` (the version
-catalog, the wrapper), or `gradle.properties`. As a rule every module then links its test binary again, 18 to 21 minutes
-in one job, twice what any other check of the pull request takes. It is a guess, on the cheap side: a core module
-nothing depends on splits for nothing, which costs one runner five minutes, and a change that reaches every module from
-elsewhere runs in one job, as before. `build-logic/` and the root's Gradle scripts are left out, since a change there
-gives a new key only to the tasks it configures differently (see above). The modules that have a `commonTest` are dealt
-from their sorted list, as `js-tests` deals its own, so a new module joins a shard by itself: the first shard takes
-three of every five, and the second the other two with the compilations (`compileKotlinIosArm64`,
-`compileAppleMainKotlinMetadata`, and `compileKotlinMacosArm64` of every module, for the ones no test reaches), about three of those
-minutes. Any other change relinks a module or two, which one job does in five minutes, so it keeps one: a second would
-only hold one more of the five macOS runners. `main` keeps one too, since no pull request waits for its run. A change to
-`apple.yml` itself also runs both shards, so a change to the split is seen working before it merges.
+catalog, the wrapper), or `gradle.properties`, the source sets no Apple target compiles and Markdown left out. As a rule
+every module then links its test binary again, 18 to 21 minutes in one job, twice what any other check of the pull
+request takes. It is a guess, on the cheap side: a core module nothing depends on splits for nothing, which costs one
+runner five minutes, and a change that reaches every module from elsewhere runs in one job, as before. `build-logic/`
+and the root's Gradle scripts are left out, since a change there gives a new key only to the tasks it configures
+differently (see above). The modules that have a `commonTest` are dealt from their sorted list, the one `js-tests` deals
+its own from (`scripts/modules-with-tests.sh`, which leaves out a folder `settings.gradle.kts` doesn't include), so a
+new module joins a shard by itself: the first shard takes three of every five, and the second the other two with
+`compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, about three of those minutes. Each shard compiles for
+macOS the modules its own depend on, which leaves `:shared` to `apple-app`'s macOS build: no test depends on it, and it
+depends on every module. Two is the only split: the shards' shares are written for two, and the job refuses a third. Any
+other change relinks a module or two, which one job does in five minutes, so it keeps one: a second would only hold one
+more of the five macOS runners. `main` keeps one too, since no pull request waits for its run. A change to `apple.yml`
+itself or to that script also runs both shards, so a change to the split is seen working before it merges.
 
 A pull request that changes the Swift app alone skips `apple-tests`: the `changes` job, on a Linux runner, lists what
 it changes, and when every file is under `iosApp/` or `release-notes/`, or is Markdown, no input of a Gradle task of
