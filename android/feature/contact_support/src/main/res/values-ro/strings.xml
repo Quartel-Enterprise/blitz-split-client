@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contactează asistența</string>
+    <string name="contact_support_description">Îți deschidem aplicația de e-mail cu un mesaj gata pregătit. Descrie ce s-a întâmplat și trimite-l: fiecare mesaj e citit de oameni reali.</string>
+    <string name="contact_support_to">Către</string>
+    <string name="contact_support_diagnostics">Va fi inclus în e-mail</string>
+    <string name="contact_support_app_version">Versiunea aplicației</string>
+    <string name="contact_support_platform">Platformă</string>
+    <string name="contact_support_language">Limbă</string>
+    <string name="contact_support_account">Cont</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Sistem</string>
+    <string name="contact_support_account_local">Doar acest dispozitiv</string>
+    <string name="contact_support_account_anonymous">Neconectat</string>
+    <string name="contact_support_open_email">Deschide e-mailul</string>
+    <string name="contact_support_copy_email">Copiază adresa de e-mail</string>
+    <string name="contact_support_notice_copied">Adresa de e-mail a fost copiată.</string>
+    <string name="contact_support_notice_no_app">Nu s-a găsit nicio aplicație de e-mail. În schimb, adresa a fost copiată.</string>
+    <string name="contact_support_close">Închide</string>
+</resources>

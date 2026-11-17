@@ -27,7 +27,10 @@
         "he": "האפליקציה מדברת עכשיו וייטנאמית: אפשר לבחור \"Tiếng Việt\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
         "th": "แอปรองรับภาษาเวียดนามแล้ว เลือก “Tiếng Việt” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
         "vi": "Ứng dụng giờ đã có tiếng Việt: chọn “Tiếng Việt” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
-        "zh-Hant": "App現已支援越南文：在「個人資料 › 語言」中選擇「Tiếng Việt」，或讓它跟隨你的裝置。"
+        "zh-Hant": "App現已支援越南文：在「個人資料 › 語言」中選擇「Tiếng Việt」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu vietnamesiska: välj ”Tiếng Việt” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví vietnamsky: vyber „Tiếng Việt“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum vietnameză: alege „Tiếng Việt” în Profil › Limbă sau las-o să urmeze dispozitivul tău."
       }
     },
     {
@@ -57,7 +60,10 @@
         "he": "קבוצות יכולות עכשיו לפצל בדונג וייטנאמי (VND), וקבוצה שנוצרת בווייטנאם מתחילה בו.",
         "th": "กลุ่มหารเป็นเงินดองเวียดนาม (VND) ได้แล้ว และกลุ่มที่สร้างในเวียดนามจะเริ่มด้วยเงินดอง",
         "vi": "Nhóm giờ có thể chia bằng đồng Việt Nam (VND), và nhóm được tạo ở Việt Nam sẽ bắt đầu với đồng tiền này.",
-        "zh-Hant": "群組現在可以使用越南盾（VND）分攤，在越南建立的群組也會從越南盾開始。"
+        "zh-Hant": "群組現在可以使用越南盾（VND）分攤，在越南建立的群組也會從越南盾開始。",
+        "sv": "Grupper kan nu dela upp i vietnamesiska dong (VND), och en grupp som skapas i Vietnam börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit ve vietnamském dongu (VND) a skupina založená ve Vietnamu začne v něm.",
+        "ro": "Grupurile pot împărți acum în dongi vietnamezi (VND), iar un grup creat în Vietnam pornește în această monedă."
       }
     }
   ]

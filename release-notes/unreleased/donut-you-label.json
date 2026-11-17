@@ -28,7 +28,10 @@
         "he": "בסטטיסטיקה, במרכז הטבעת של \"לפי אדם\" כתוב עכשיו פשוט \"אני\" כשהחלק הוא שלך, ושם ארוך מסתיים ב-\"…\" במקום לגעת בטבעת.",
         "th": "ในหน้าสถิติ ตรงกลางวงแหวน “ตามคน” จะแสดงแค่ “คุณ” เมื่อเป็นส่วนของคุณ และชื่อที่ยาวจะลงท้ายด้วย “…” แทนการชนขอบวงแหวน",
         "vi": "Trong Thống kê, giữa vòng “Theo người” giờ chỉ ghi “Bạn” khi phần đó là của bạn, và tên dài sẽ kết thúc bằng “…” thay vì chạm vào vòng.",
-        "zh-Hant": "在「統計」中，占比是你的時，「按人」圓環中間現在只顯示「你」，過長的名字會以「…」結尾，不再碰到圓環。"
+        "zh-Hant": "在「統計」中，占比是你的時，「按人」圓環中間現在只顯示「你」，過長的名字會以「…」結尾，不再碰到圓環。",
+        "sv": "I Statistik står det nu bara ”Du” mitt i ringen ”Per person” när andelen är din, och ett långt namn slutar med ”…” i stället för att nudda ringen.",
+        "cs": "Ve Statistikách teď střed prstence „Podle osoby“ ukazuje jen „Ty“, když je podíl tvůj, a dlouhé jméno končí „…“, místo aby se dotýkalo prstence.",
+        "ro": "În Statistici, mijlocul inelului „După persoană” spune acum doar „Tu” când partea e a ta, iar un nume lung se termină în „…” în loc să atingă inelul."
       }
     }
   ]

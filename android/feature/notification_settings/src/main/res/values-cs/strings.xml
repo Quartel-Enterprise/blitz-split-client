@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Oznámení</string>
+    <string name="notification_settings_denied_title">Oznámení Blitz Split jsou v Androidu vypnutá.</string>
+    <string name="notification_settings_denied_body">Zapni je v nastavení systému, aby ti chodila níže uvedená push oznámení. Zvoneček funguje dál.</string>
+    <string name="notification_settings_open_settings">Otevřít nastavení</string>
+    <string name="notification_settings_refused_body">Android ti je dovolí povolit ještě jednou, aby ti chodila níže uvedená push oznámení. Zvoneček funguje dál.</string>
+    <string name="notification_settings_turn_on">Zapnout</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Zablokováno v Androidu</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Otevřít nastavení Androidu pro %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Push oznámení</string>
+    <string name="notification_settings_push_switch_detail">Jen v tomto zařízení</string>
+    <string name="notification_settings_section">Upozorňovat mě na</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">V aplikaci</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push pošle oznámení do tohoto zařízení. V aplikaci ho označí jako nové na zvonečku a v Aktivitě; když je vypnuté, v Aktivitě se pořád zobrazí, už jako přečtené.</string>
+    <string name="notification_settings_bills">Výdaje</string>
+    <string name="notification_settings_bills_detail">Nové, upravené nebo smazané výdaje, ve kterých jsi</string>
+    <string name="notification_settings_payments">Platby a vyrovnání</string>
+    <string name="notification_settings_payments_detail">Platby tobě nebo od tebe a zjednodušené dluhy</string>
+    <string name="notification_settings_comments">Komentáře</string>
+    <string name="notification_settings_comments_detail">U výdajů, ve kterých jsi, a vláken, do kterých jsi psal(a)</string>
+    <string name="notification_settings_people_and_groups">Lidé a skupiny</string>
+    <string name="notification_settings_people_and_groups_detail">Kdo vstoupí do tvých skupin nebo je opustí a co se v nich změní</string>
+    <string name="notification_settings_payment_requests">Žádosti o platbu</string>
+    <string name="notification_settings_payment_requests_detail">Když tě někdo požádá o platbu</string>
+    <string name="notification_settings_balance_reminder">Připomínka otevřeného zůstatku</string>
+    <string name="notification_settings_balance_reminder_detail">Jednou týdně, pokud je otevřený zůstatek</string>
+    <string name="notification_settings_footer">Upozornění přicházejí, když je internet. Chceš-li skupinu ztlumit, použij nabídku uvnitř ní.</string>
+</resources>

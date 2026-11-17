@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Șterge contul</string>
+    <string name="delete_account_offline_title">Nu ai internet.</string>
+    <string name="delete_account_offline_body">Ștergerea contului are nevoie de o conexiune la internet. Conectează-te și încearcă din nou.</string>
+    <string name="delete_account_heading">Îți ștergi contul și datele?</string>
+    <string name="delete_account_deleted_title">Ce se șterge</string>
+    <string name="delete_account_deleted_profile">Profilul tău (nume, fotografie și culoare)</string>
+    <string name="delete_account_deleted_keys">Cheile tale Pix și Bitcoin</string>
+    <string name="delete_account_deleted_provider">Legătura cu contul tău %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Codul tău de recuperare</string>
+    <string name="delete_account_deleted_device">Copia datelor tale de pe acest dispozitiv</string>
+    <string name="delete_account_kept_title">Ce rămâne în grupurile tale</string>
+    <string name="delete_account_kept_groups">Grupurile, cu cheltuielile și plățile lor, pentru ceilalți membri</string>
+    <string name="delete_account_kept_member">Numele tău în fiecare grup, ca membru fără cont</string>
+    <string name="delete_account_kept_comments">Comentariile tale și fotografiile pe care le-ai adăugat, pe numele tău</string>
+    <string name="delete_account_export">Exportă mai întâi datele mele</string>
+    <string name="delete_account_confirm">Înțeleg că acțiunea nu poate fi anulată</string>
+    <string name="delete_account_delete">Șterge contul</string>
+    <string name="delete_account_cancel">Anulează</string>
+    <string name="delete_account_failed">Contul nu a putut fi șters. Încearcă din nou.</string>
+</resources>

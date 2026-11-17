@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Împarte nota, fără bătăi de cap</string>
+    <string name="welcome_offline_title">Funcționează offline</string>
+    <string name="welcome_offline_body">Totul rămâne pe dispozitivul tău și se sincronizează mai târziu.</string>
+    <string name="welcome_optional_title">Contul este opțional</string>
+    <string name="welcome_optional_body">Google sau Apple doar te ajută să nu pierzi nimic când schimbi dispozitivul.</string>
+    <string name="welcome_invite_title">Invită cu un link sau cod QR</string>
+    <string name="welcome_invite_body">Prietenii intră în grup fără să-și creeze cont.</string>
+    <string name="welcome_no_connection_title">Nu ai conexiune.</string>
+    <string name="welcome_no_connection_body">Conectarea cu un cont are nevoie de internet. Folosește aplicația fără cont acum și conectează-te mai târziu din Profil.</string>
+    <string name="welcome_or">sau</string>
+    <string name="welcome_use_without_account">Folosește fără cont</string>
+    <string name="welcome_used_on_another_device">Am folosit-o pe alt dispozitiv</string>
+    <string name="welcome_sign_in_failed">Conectarea nu a reușit acum. Încearcă din nou.</string>
+    <string name="welcome_legal_notice">Continuând, accepți %1$s și iei la cunoștință %2$s.</string>
+    <string name="welcome_legal_terms">Termenii serviciului</string>
+    <string name="welcome_legal_privacy">Politica de confidențialitate</string>
+    <string name="welcome_no_account_note">Fără cont, datele tale se șterg după 30 de zile fără utilizare. Conectează Google sau Apple ca să le păstrezi.</string>
+    <string name="welcome_no_account_note_offline">Fără cont, datele tale se șterg după 30 de zile fără utilizare. Conectează Google sau Apple mai târziu, din Profil, ca să le păstrezi.</string>
+    <string name="welcome_expired_title">Datele tale au fost șterse</string>
+    <string name="welcome_expired_body">Foloseai aplicația fără cont și nu ai deschis-o 30 de zile, așa că datele tale au fost șterse. Conectează Google sau Apple ca să le păstrezi data viitoare.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

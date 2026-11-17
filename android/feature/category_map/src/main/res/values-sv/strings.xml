@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Inga termer</string>
+    <string name="category_map_title">Kategorikarta</string>
+    <string name="category_map_search">Sök termer</string>
+    <string name="category_map_add">Lägg till term</string>
+    <string name="category_map_more">Fler alternativ</string>
+    <string name="category_map_restore">Återställ standard</string>
+    <string name="category_map_back">Tillbaka</string>
+    <string name="category_map_intro">När en utgifts titel innehåller något av de här orden får den sin kategori automatiskt. ”Uber hem” blir Transport.</string>
+    <string name="category_map_intro_offline">Kartan fungerar offline: ändringar gäller direkt på den här enheten och når dina andra när du är online igen.</string>
+    <string name="category_map_device_only">Din karta finns bara på den här enheten. Logga in med Google eller Apple i din Profil för att ta med den till dina andra enheter.</string>
+    <string name="category_map_open_profile">Öppna Profil</string>
+    <string name="category_map_longest_wins">När två termer matchar en titel vinner den längsta.</string>
+    <string name="category_map_no_result">Ingen term med ”%1$s”</string>
+    <string name="category_map_no_result_body">Lägg till den så får utgifter med det här ordet i titeln rätt kategori.</string>
+    <string name="category_map_add_query">Lägg till ”%1$s”</string>
+    <string name="category_map_empty_title">Din karta är tom</string>
+    <string name="category_map_empty_body">Utan termer kommer kategorin inte från titeln: du väljer den för varje utgift.</string>
+    <string name="category_map_group_category"> · kategori för %1$s</string>
+    <string name="category_map_only_main">Bara %1$s</string>
+    <string name="category_map_only_in_group">bara i %1$s</string>
+    <string name="category_map_no_terms_yet">Inga termer än.</string>
+    <string name="category_map_add_in">Lägg till term i %1$s</string>
+    <string name="category_map_tip">Tryck på en term för att byta dess kategori eller ta bort den. Den matchar hela ordet och ignorerar accenter och skiftläge.</string>
+    <string name="category_map_queued">i kö</string>
+    <string name="category_map_term_action">%1$s, %2$s. Redigera</string>
+    <string name="category_map_new_term">Ny term</string>
+    <string name="category_map_edit_term">Redigera term</string>
+    <string name="category_map_term_label">Ord eller fras</string>
+    <string name="category_map_term_help">Matchar hela ordet och ignorerar accenter och skiftläge.</string>
+    <string name="category_map_term_help_app">En term från appen. Återställ standard tar tillbaka den som den var från början.</string>
+    <string name="category_map_term_duplicate">”%1$s” väljer redan %2$s. Varje term har en kategori.</string>
+    <string name="category_map_term_too_short">Använd minst 2 bokstäver.</string>
+    <string name="category_map_term_too_long">Använd högst 30 bokstäver.</string>
+    <string name="category_map_term_invalid">Använd bara bokstäver, siffror och mellanslag.</string>
+    <string name="category_map_category">Kategori</string>
+    <string name="category_map_category_help">Det kan vara kategorin eller en underkategori.</string>
+    <string name="category_map_category_help_edit">Om du ändrar den här flyttas termen till en annan kategori.</string>
+    <string name="category_map_category_help_move">Flytten tar bort termen från %1$s.</string>
+    <string name="category_map_example">Exempel</string>
+    <string name="category_map_example_move">Om den flyttas</string>
+    <string name="category_map_remove">Ta bort</string>
+    <string name="category_map_cancel">Avbryt</string>
+    <string name="category_map_save">Spara</string>
+    <string name="category_map_move_to">Flytta till %1$s</string>
+    <string name="category_map_removed">”%1$s” togs bort från kartan</string>
+    <string name="category_map_undo">Ångra</string>
+    <string name="category_map_restore_title">Återställa standardkartan?</string>
+    <string name="category_map_restore_body">Appens 60 termer kommer tillbaka som de var från början, även de du tagit bort eller flyttat.</string>
+    <string name="category_map_restore_own_one">Termen du skapade, ”%1$s”, finns kvar.</string>
+    <string name="category_map_restore_confirm">Återställ</string>
+    <string name="category_map_save_error">Det gick inte att spara kartan. Försök igen.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d term</item>
+        <item quantity="other">%d termer</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d underkategori</item>
+        <item quantity="other">%d underkategorier</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d term med ”%2$s”</item>
+        <item quantity="other">%1$d termer med ”%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d ändring i kö</item>
+        <item quantity="other">Offline · %d ändringar i kö</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Den %d term du skapade finns kvar.</item>
+        <item quantity="other">De %d termer du skapade finns kvar.</item>
+    </plurals>
+    <string name="category_map_new_category">Ny kategori</string>
+    <string name="category_map_new_subcategory_in">Ny underkategori i %s</string>
+    <string name="category_map_edit_category">Redigera %s</string>
+    <string name="category_map_category_group">Grupp</string>
+    <string name="category_map_change_color">Byt färg på %1$s</string>
+    <string name="category_map_restore_color">Återställ färg</string>
+    <string name="category_map_color_done">Klar</string>
+</resources>

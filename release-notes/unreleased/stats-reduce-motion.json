@@ -29,7 +29,10 @@
         "he": "כש\"הפחתת תנועה\" מופעלת, הסטטיסטיקה של קבוצה מציגה עכשיו את הגרפים מיד, בלי שהעמודות יגדלו או שהטבעת תתמלא בסיבוב.",
         "th": "เมื่อเปิด “ลดการเคลื่อนไหว” หน้าสถิติของกลุ่มจะแสดงกราฟทันที โดยไม่มีแท่งที่ค่อยๆ ยาวขึ้นหรือวงแหวนที่กวาดเข้ามา",
         "vi": "Khi bật Giảm chuyển động, Thống kê của nhóm giờ hiện biểu đồ ngay lập tức, không có hiệu ứng cột mọc lên hay vòng quét vào.",
-        "zh-Hant": "開啟「減少動態效果」時，群組的「統計」現在會直接顯示圖表，不再有長條長出或圓環掃入的動畫。"
+        "zh-Hant": "開啟「減少動態效果」時，群組的「統計」現在會直接顯示圖表，不再有長條長出或圓環掃入的動畫。",
+        "sv": "Med Minska rörelse på visar en grupps Statistik nu sina diagram direkt, utan att staplarna växer eller ringen sveper fram.",
+        "cs": "Se zapnutým Omezit pohyb teď Statistiky skupiny ukážou grafy hned, bez rostoucích sloupců a dobíhajícího prstence.",
+        "ro": "Cu Reducere mișcare activată, Statisticile unui grup arată acum graficele imediat, fără ca barele să crească sau inelul să se rotească."
       }
     }
   ]

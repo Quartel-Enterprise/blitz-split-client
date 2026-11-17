@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · återställningskod</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Tillåt kameran i Inställningar för att ta ett foto.</string>
+    <string name="platform_camera_settings">Inställningar</string>
+    <string name="platform_receipt_source_camera">Ta foto</string>
+    <string name="platform_receipt_source_gallery">Välj från galleriet</string>
+    <string name="platform_receipt_source_file">Välj fil</string>
+    <string name="platform_receipt_camera_title">Skanna kvitto</string>
+    <string name="platform_receipt_camera_close">Stäng</string>
+    <string name="platform_receipt_camera_flash_on">Slå på blixten</string>
+    <string name="platform_receipt_camera_flash_off">Stäng av blixten</string>
+    <string name="platform_receipt_camera_hint">Få med hela kvittot i ramen. Vi fyller i belopp, datum och beskrivning; du kontrollerar innan du sparar.</string>
+    <string name="platform_receipt_camera_gallery">Välj från galleriet</string>
+    <string name="platform_receipt_camera_shutter">Ta foto</string>
+    <string name="platform_receipt_camera_unavailable">Kameran är inte tillgänglig. Välj ett foto av kvittot från galleriet.</string>
+    <string name="platform_receipt_camera_permission">Tillåt kameran för att skanna kvittot, eller välj ett foto från galleriet.</string>
+    <string name="platform_receipt_camera_allow">Tillåt kameran</string>
+    <string name="platform_receipt_camera_settings">Öppna inställningar</string>
+</resources>

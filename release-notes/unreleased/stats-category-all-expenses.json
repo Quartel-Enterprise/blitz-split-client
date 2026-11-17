@@ -25,7 +25,10 @@
         "he": "קטגוריה בסטטיסטיקה פותחת עכשיו את \"כל ההוצאות\" כשהקבוצה, הקטגוריה והתקופה כבר נבחרו, כדי לחפש גם בחשבונות האלה. ל\"כל ההוצאות\" נוסף גם מסנן \"תקופה\".",
         "th": "หมวดหมู่ในหน้าสถิติจะเปิด “บิลทั้งหมด” โดยเลือกกลุ่ม หมวดหมู่ และช่วงเวลาไว้ให้แล้ว คุณจึงค้นหาบิลเหล่านั้นได้ด้วย “บิลทั้งหมด” ยังมีตัวกรอง “ช่วงเวลา” เพิ่มมาด้วย",
         "vi": "Một danh mục trong Thống kê giờ mở Tất cả khoản chi với nhóm, danh mục và khoảng thời gian đã được chọn sẵn, để bạn cũng tìm kiếm được các khoản chi đó. Tất cả khoản chi cũng có thêm bộ lọc Khoảng thời gian.",
-        "zh-Hant": "「統計」中的類別現在會開啟已選好群組、類別和期間的「所有帳單」，讓你也能搜尋這些帳單。「所有帳單」也新增了「期間」篩選。"
+        "zh-Hant": "「統計」中的類別現在會開啟已選好群組、類別和期間的「所有帳單」，讓你也能搜尋這些帳單。「所有帳單」也新增了「期間」篩選。",
+        "sv": "En kategori i Statistik öppnar nu Alla utgifter med gruppen, kategorin och perioden redan valda, så att du kan söka bland de utgifterna också. Alla utgifter har också fått ett filter för Period.",
+        "cs": "Kategorie ve Statistikách teď otevře Všechny výdaje s už vybranou skupinou, kategorií i obdobím, takže můžeš hledat i v těchto výdajích. Všechny výdaje navíc dostaly filtr Období.",
+        "ro": "O categorie din Statistici deschide acum Toate cheltuielile cu grupul, categoria și perioada deja alese, ca să poți căuta și în acele cheltuieli. Toate cheltuielile au primit și un filtru Perioadă."
       }
     },
     {
@@ -53,7 +56,10 @@
         "he": "ב\"לפי אדם\" של הסטטיסטיקה, הקשה ליד הטבעת או במרכזה מבטלת את בחירת האדם.",
         "th": "ใน “ตามคน” ของหน้าสถิติ การแตะข้างวงแหวนหรือตรงกลางจะยกเลิกการเลือกคนที่เลือกไว้",
         "vi": "Trong Theo người của Thống kê, chạm bên cạnh vòng hoặc vào giữa vòng sẽ bỏ chọn người đang được chọn.",
-        "zh-Hant": "在「統計」的「按人」中，點一下圓環旁或圓環中間即可取消選取的人。"
+        "zh-Hant": "在「統計」的「按人」中，點一下圓環旁或圓環中間即可取消選取的人。",
+        "sv": "I Per person i Statistik släpper du den valda personen med ett tryck bredvid ringen eller mitt i den.",
+        "cs": "V Podle osoby ve Statistikách klepnutí vedle prstence nebo do jeho středu zruší výběr osoby.",
+        "ro": "În După persoană din Statistici, o atingere lângă inel sau în mijlocul lui deselectează persoana aleasă."
       }
     }
   ]

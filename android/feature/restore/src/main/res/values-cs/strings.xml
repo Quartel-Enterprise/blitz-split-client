@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Vrať si své skupiny</string>
+    <string name="restore_subtitle">Přihlašoval(a) ses dřív účtem? Stačí se přihlásit znovu. Pokud ne, použij obnovovací kód nebo QR kód ze starého zařízení.</string>
+    <string name="restore_no_connection_title">Bez připojení</string>
+    <string name="restore_no_connection_body">Přihlášení účtem nebo kódem potřebuje internet, aby se stáhly tvoje skupiny. Co jsi napsal(a), zůstane uložené.</string>
+    <string name="restore_code_label">Nebo použij obnovovací kód</string>
+    <string name="restore_code_hint">12 slov ve správném pořadí. Vlož je všechna do jednoho pole a vyplní se všechna pole.</string>
+    <string name="restore_scan_qr_title">Naskenuj QR kód ze starého zařízení</string>
+    <string name="restore_scan_qr_body">Tam: Profil › Obnovení › Zobrazit QR kód</string>
+    <string name="restore_recover">Obnovit</string>
+    <string name="restore_try_again">Zkusit znovu</string>
+    <string name="restore_start_fresh">Začít v tomto zařízení od nuly</string>
+    <string name="restore_error_invalid_code">Kód nebyl nalezen. Zkontroluj slova a jejich pořadí a zkus to znovu.</string>
+    <string name="restore_error_too_many_attempts">Příliš mnoho pokusů. Počkej pár minut a zkus to znovu.</string>
+    <string name="restore_error_sign_in_failed">Teď se nepodařilo přihlásit. Zkus to znovu.</string>
+    <string name="restore_error_unknown">Něco se pokazilo. Zkus to znovu.</string>
+</resources>

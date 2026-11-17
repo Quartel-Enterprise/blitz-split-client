@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Zavřít</string>
+    <string name="invite_group_created">Skupina vytvořena</string>
+    <string name="invite_title">Pozvi všechny do skupiny %s</string>
+    <string name="invite_qr_description">QR kód odkazu s pozvánkou do skupiny</string>
+    <string name="invite_copy">Kopírovat</string>
+    <string name="invite_copied">Zkopírováno</string>
+    <string name="invite_who_picks">Kdo otevře odkaz, vybere si ze seznamu, kdo je: %s. Účet není potřeba.</string>
+    <string name="invite_names_or">%1$s nebo %2$s</string>
+    <string name="invite_anyone_joins">Kdo otevře odkaz, připojí se ke skupině. Účet není potřeba.</string>
+    <string name="invite_pending_title">Odkaz čeká</string>
+    <string name="invite_pending_offline">Vytvoří se, jakmile budeš online.</string>
+    <string name="invite_pending_online">Vytvářím odkaz…</string>
+    <string name="invite_failed_title">Odkaz se nepodařilo vytvořit</string>
+    <string name="invite_failed_body">Při synchronizaci skupiny se něco pokazilo.</string>
+    <string name="invite_retry">Zkusit znovu</string>
+    <string name="invite_share">Sdílet odkaz</string>
+    <string name="invite_see_who_joined">Zobrazit, kdo se připojil</string>
+    <string name="invite_add_person">Přidat někoho bez aplikace</string>
+    <string name="invite_go_to_group">Přejít do skupiny</string>
+    <string name="invite_change_link">Změnit odkaz</string>
+    <string name="invite_change_link_title">Změnit odkaz s pozvánkou?</string>
+    <string name="invite_change_link_message">Současný odkaz a QR kód přestanou fungovat, včetně nepoužitých osobních pozvánek. Kdo už se připojil, zůstane ve skupině.</string>
+    <string name="invite_change_link_failed">Odkaz se nepodařilo změnit. Zkus to znovu.</string>
+    <string name="invite_share_message">Pojďme si rozdělit výdaje ve skupině %1$s v Blitz Split. Připoj se tímto odkazem: %2$s</string>
+</resources>

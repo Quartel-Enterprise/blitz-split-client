@@ -28,7 +28,10 @@
         "he": "ב\"פיצול חשבון\", \"אמצעי תשלום\" מוצג עכשיו באפור גם כשמישהו אחר שילם את החשבון: הקשה עליו מסבירה שרק מי ששילם יכול לסמן באיזה אמצעי שילם.",
         "th": "ใน “หารบิล” ปุ่ม “ช่องทางการจ่าย” จะแสดงแบบจางด้วยเมื่อคนอื่นเป็นคนจ่ายบิล การแตะจะอธิบายว่าเฉพาะคนที่จ่ายเท่านั้นที่ระบุช่องทางการจ่ายได้",
         "vi": "Trong “Chia khoản chi”, “Trả bằng” giờ cũng hiện khi người khác trả khoản chi, ở dạng mờ: chạm vào sẽ giải thích rằng chỉ người đã trả mới chọn được mình trả bằng gì.",
-        "zh-Hant": "在「分攤帳單」中，帳單由其他人付款時，「付款方式」現在也會以淡色顯示：點一下會說明只有付款的人才能標記自己用什麼付款。"
+        "zh-Hant": "在「分攤帳單」中，帳單由其他人付款時，「付款方式」現在也會以淡色顯示：點一下會說明只有付款的人才能標記自己用什麼付款。",
+        "sv": "I ”Dela upp en utgift” visas ”Betalt med” nu även när någon annan betalade utgiften, nedtonat: trycker du på det förklaras att bara de som betalade kan markera vad de betalade med.",
+        "cs": "V „Rozdělit výdaj“ se teď „Zaplaceno přes“ ukazuje ztlumeně i tehdy, když výdaj zaplatil někdo jiný: klepnutí vysvětlí, že čím platili, můžou označit jen ti, kdo platili.",
+        "ro": "În „Împarte o cheltuială”, „Plătit cu” apare acum, estompat, și când altcineva a plătit cheltuiala: dacă îl atingi, îți explică faptul că doar cei care au plătit pot marca cu ce au plătit."
       }
     }
   ]

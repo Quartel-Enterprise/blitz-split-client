@@ -1,7 +1,7 @@
 # Store listing screenshots
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
-showing a sample trip among five friends, inside a device frame with a title and description, in all 23 languages
+showing a sample trip among five friends, inside a device frame with a title and description, in all 26 languages
 of the listings. The frames come from the [store-screenshots](https://github.com/lucianosantosdev/store-screenshots)
 library, as in Bible Planner. None of the images is versioned: every run rebuilds them from source.
 
@@ -104,7 +104,7 @@ without swiping. Play holds 8 per device type and the App Store 10 per device si
 (`StoreScreen.isAppStoreOnly`), and the iPhone Duo's two displays share their ten
 ([below](#what-the-images-show)). Every shot is in the dark theme except 10, on the logo's blue dimmed to `#0E2433`.
 
-**The sample trip** (`shared/src/commonMain/.../storescreenshots/SampleTrips.kt`) is one story told in each
+**The sample trip** (`shared/src/commonMain/.../storescreenshots/SampleTrips.kt`, its words in `SampleTripCopies.kt`) is one story told in each
 language: a trip to Lisbon among five friends, its names and descriptions in that language and its amounts in that
 language's currency, at round rates and rounded the way a menu there prices them. The faces are AI-generated
 portraits of people who don't exist (`scripts/store-screenshots/faces/`), the same five in every language; the
@@ -198,7 +198,7 @@ fastlane/Fastfile                              # the screenshots and upload lane
   of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides. It goes on the iPhone Duo's
   shelf closed unless `duoScreensStagedOpen` (`StoreScreenshots.kt`) names it; a test of `store-listing.test.mjs`
   holds that list, `StoreScreen` and `screens.tsv` to the same file names.
-- **A new language:** `storeLocales` (its `playLocale` is its tag), `bannerCopies`, `SampleTrips` (copy and currency), a row of
+- **A new language:** `storeLocales` (its `playLocale` is its tag), `bannerCopies`, `SampleTripCopies` (its words), `SampleTrips` (its currency), a row of
   `scripts/store-screenshots/locales.tsv`, and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
   which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
   Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings. Spain's Spanish

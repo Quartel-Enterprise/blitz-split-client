@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Niciun termen</string>
+    <string name="category_map_title">Harta categoriilor</string>
+    <string name="category_map_search">Caută termeni</string>
+    <string name="category_map_add">Adaugă un termen</string>
+    <string name="category_map_more">Mai multe opțiuni</string>
+    <string name="category_map_restore">Restabilește harta implicită</string>
+    <string name="category_map_back">Înapoi</string>
+    <string name="category_map_intro">Când titlul unei cheltuieli conține unul dintre aceste cuvinte, categoria se pune singură. „Uber acasă” devine Transport.</string>
+    <string name="category_map_intro_offline">Harta funcționează offline: modificările se aplică imediat pe acest dispozitiv și ajung pe celelalte când revii online.</string>
+    <string name="category_map_device_only">Harta ta rămâne doar pe acest dispozitiv. Ca s-o ai și pe celelalte dispozitive, conectează-te cu Google sau Apple din Profil.</string>
+    <string name="category_map_open_profile">Deschide Profilul</string>
+    <string name="category_map_longest_wins">Când doi termeni se potrivesc cu un titlu, câștigă cel mai lung.</string>
+    <string name="category_map_no_result">Niciun termen cu „%1$s”</string>
+    <string name="category_map_no_result_body">Adaugă-l, iar cheltuielile cu acest cuvânt în titlu vor veni cu categoria potrivită.</string>
+    <string name="category_map_add_query">Adaugă „%1$s”</string>
+    <string name="category_map_empty_title">Harta ta e goală</string>
+    <string name="category_map_empty_body">Fără termeni, categoria nu vine din titlu: o alegi la fiecare cheltuială.</string>
+    <string name="category_map_group_category"> · categoria %1$s</string>
+    <string name="category_map_only_main">Doar %1$s</string>
+    <string name="category_map_only_in_group">doar în %1$s</string>
+    <string name="category_map_no_terms_yet">Niciun termen încă.</string>
+    <string name="category_map_add_in">Adaugă un termen în %1$s</string>
+    <string name="category_map_tip">Atinge un termen ca să-i schimbi categoria sau să-l elimini. Se potrivește cu cuvântul întreg, ignorând diacriticele și majusculele.</string>
+    <string name="category_map_queued">în așteptare</string>
+    <string name="category_map_term_action">%1$s, %2$s. Editează</string>
+    <string name="category_map_new_term">Termen nou</string>
+    <string name="category_map_edit_term">Editează termenul</string>
+    <string name="category_map_term_label">Cuvânt sau expresie</string>
+    <string name="category_map_term_help">Se potrivește cu cuvântul întreg, ignorând diacriticele și majusculele.</string>
+    <string name="category_map_term_help_app">Un termen al aplicației. Restabilește harta implicită îl aduce înapoi așa cum era.</string>
+    <string name="category_map_term_duplicate">„%1$s” alege deja %2$s. Fiecare termen are o singură categorie.</string>
+    <string name="category_map_term_too_short">Folosește cel puțin 2 litere.</string>
+    <string name="category_map_term_too_long">Folosește cel mult 30 de litere.</string>
+    <string name="category_map_term_invalid">Folosește doar litere, cifre și spații.</string>
+    <string name="category_map_category">Categorie</string>
+    <string name="category_map_category_help">Poate fi categoria sau o subcategorie.</string>
+    <string name="category_map_category_help_edit">Dacă o schimbi aici, termenul se mută în altă categorie.</string>
+    <string name="category_map_category_help_move">Mutarea scoate termenul din %1$s.</string>
+    <string name="category_map_example">Exemplu</string>
+    <string name="category_map_example_move">Dacă e mutat</string>
+    <string name="category_map_remove">Elimină</string>
+    <string name="category_map_cancel">Anulează</string>
+    <string name="category_map_save">Salvează</string>
+    <string name="category_map_move_to">Mută în %1$s</string>
+    <string name="category_map_removed">„%1$s” a ieșit din hartă</string>
+    <string name="category_map_undo">Anulează acțiunea</string>
+    <string name="category_map_restore_title">Restabilești harta implicită?</string>
+    <string name="category_map_restore_body">Cei 60 de termeni ai aplicației revin așa cum erau, inclusiv cei pe care i-ai eliminat sau mutat.</string>
+    <string name="category_map_restore_own_one">Termenul creat de tine, „%1$s”, rămâne.</string>
+    <string name="category_map_restore_confirm">Restabilește</string>
+    <string name="category_map_save_error">Nu am putut salva harta. Reîncearcă.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d termen</item>
+        <item quantity="few">%d termeni</item>
+        <item quantity="other">%d de termeni</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d subcategorie</item>
+        <item quantity="few">%d subcategorii</item>
+        <item quantity="other">%d de subcategorii</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d termen cu „%2$s”</item>
+        <item quantity="few">%1$d termeni cu „%2$s”</item>
+        <item quantity="other">%1$d de termeni cu „%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d modificare în așteptare</item>
+        <item quantity="few">Offline · %d modificări în așteptare</item>
+        <item quantity="other">Offline · %d de modificări în așteptare</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Termenul creat de tine (%d) rămâne.</item>
+        <item quantity="few">Cei %d termeni creați de tine rămân.</item>
+        <item quantity="other">Cei %d de termeni creați de tine rămân.</item>
+    </plurals>
+    <string name="category_map_new_category">Categorie nouă</string>
+    <string name="category_map_new_subcategory_in">Subcategorie nouă în %s</string>
+    <string name="category_map_edit_category">Editează %s</string>
+    <string name="category_map_category_group">Grup</string>
+    <string name="category_map_change_color">Schimbă culoarea pentru %1$s</string>
+    <string name="category_map_restore_color">Restabilește culoarea</string>
+    <string name="category_map_color_done">Gata</string>
+</resources>

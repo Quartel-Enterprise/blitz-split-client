@@ -1,0 +1,70 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Swedish: pick \"Svenska\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala sueco: escolha \"Svenska\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora sueco: escolhe \"Svenska\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla sueco: elige \"Svenska\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais suédois : choisis « Svenska » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Schwedisch: Wähle „Svenska“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla svedese: scegli \"Svenska\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po szwedzku: wybierz „Svenska” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Zweeds: kies \"Svenska\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがスウェーデン語に対応しました。プロフィール › 言語で「Svenska」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık İsveççe konuşuyor: Profil › Dil'den \"Svenska\"yı seç ya da cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Swedia: pilih \"Svenska\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на шведском: выбери «Svenska» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить шведською: обери «Svenska» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 스웨덴어를 쓸 수 있어요. 프로필 › 언어에서 ‘Svenska’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप स्वीडिश में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Svenska” चुनें, या इसे अपने डिवाइस की भाषा पर छोड़ दें।",
+        "ar": "أصبح التطبيق يتحدث السويدية: يمكنك اختيار «Svenska» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持瑞典语：在“个人资料 › 语言”中选择“Svenska”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו שוודית: אפשר לבחור \"Svenska\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาสวีเดนแล้ว เลือก “Svenska” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Thụy Điển: chọn “Svenska” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援瑞典文：在「個人資料 › 語言」中選擇「Svenska」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu svenska: välj ”Svenska” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví švédsky: vyber „Svenska“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum suedeză: alege „Svenska” în Profil › Limbă sau las-o să urmeze dispozitivul tău."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the Swedish krona (SEK), and a group made in Sweden starts in it.",
+        "pt": "Os grupos agora podem dividir em coroa sueca (SEK), e um grupo criado na Suécia já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em coroa sueca (SEK), e um grupo criado na Suécia começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en corona sueca (SEK), y un grupo creado en Suecia empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en couronne suédoise (SEK), et un groupe créé en Suède démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Schwedischer Krone (SEK) teilen, und eine in Schweden erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in corona svedese (SEK), e un gruppo creato in Svezia parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w koronach szwedzkich (SEK), a grupa założona w Szwecji startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Zweedse kroon (SEK), en een groep die in Zweden wordt gemaakt, start in die valuta.",
+        "ja": "グループでスウェーデン・クローナ（SEK）が使えるようになり、スウェーデンで作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık İsveç kronu (SEK) ile bölebiliyor; İsveç'te açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam krona Swedia (SEK), dan grup yang dibuat di Swedia langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в шведских кронах (SEK), а группа, созданная в Швеции, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати у шведських кронах (SEK), а група, створена у Швеції, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 스웨덴 크로나(SEK)로 나눌 수 있고, 스웨덴에서 만든 그룹은 크로나로 시작해요.",
+        "hi": "ग्रुप अब स्वीडिश क्रोना (SEK) में बांट सकते हैं, और स्वीडन में बना ग्रुप क्रोना में ही शुरू होता है।",
+        "ar": "يمكن للمجموعات الآن التقسيم بالكرونة السويدية (SEK)، والمجموعة التي تُنشأ في السويد تبدأ بها.",
+        "zh": "群组现在可以使用瑞典克朗（SEK）分摊，在瑞典创建的群组也会默认使用瑞典克朗。",
+        "he": "קבוצות יכולות עכשיו לפצל בכתר שוודי (SEK), וקבוצה שנוצרת בשוודיה מתחילה בו.",
+        "th": "กลุ่มหารเป็นเงินโครนาสวีเดน (SEK) ได้แล้ว และกลุ่มที่สร้างในสวีเดนจะเริ่มด้วยเงินโครนา",
+        "vi": "Nhóm giờ có thể chia bằng krona Thụy Điển (SEK), và nhóm được tạo ở Thụy Điển sẽ bắt đầu với đồng tiền này.",
+        "zh-Hant": "群組現在可以使用瑞典克朗（SEK）分攤，在瑞典建立的群組也會從瑞典克朗開始。",
+        "sv": "Grupper kan nu dela upp i svenska kronor (SEK), och en grupp som skapas i Sverige börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit ve švédské koruně (SEK) a skupina založená ve Švédsku začne v ní.",
+        "ro": "Grupurile pot împărți acum în coroane suedeze (SEK), iar un grup creat în Suedia pornește în această monedă."
+      }
+    }
+  ]
+}

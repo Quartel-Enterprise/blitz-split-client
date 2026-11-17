@@ -25,7 +25,10 @@
         "he": "חשבון שנפתח מ\"בית\" או מ\"כל ההוצאות\" חוזר עכשיו ישר למקום שממנו נפתח, בלי לעבור דרך הקבוצה שלו.",
         "th": "บิลที่เปิดจากหน้าแรกหรือ “บิลทั้งหมด” จะย้อนกลับไปยังที่ที่คุณเปิดโดยตรง โดยไม่ผ่านหน้ากลุ่ม",
         "vi": "Khoản chi mở từ Trang chủ hoặc Tất cả khoản chi giờ quay thẳng về nơi bạn đã mở, không đi qua nhóm của nó.",
-        "zh-Hant": "從「首頁」或「所有帳單」開啟的帳單，現在會直接回到你開啟它的地方，不再經過它的群組。"
+        "zh-Hant": "從「首頁」或「所有帳單」開啟的帳單，現在會直接回到你開啟它的地方，不再經過它的群組。",
+        "sv": "En utgift som öppnas från Hem eller Alla utgifter går nu tillbaka direkt dit du öppnade den, utan att passera dess grupp.",
+        "cs": "Výdaj otevřený z Domů nebo ze Všech výdajů se teď vrací rovnou tam, odkud jsi ho otevřel(a), bez zastávky v jeho skupině.",
+        "ro": "O cheltuială deschisă din Acasă sau din Toate cheltuielile te duce acum înapoi direct de unde ai deschis-o, fără să treacă prin grupul ei."
       }
     }
   ]

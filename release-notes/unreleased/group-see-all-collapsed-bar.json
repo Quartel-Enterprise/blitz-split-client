@@ -27,7 +27,10 @@
         "he": "ב\"הוצאות\" של קבוצה יש עכשיו \"הצגת הכול\", שפותח את \"כל ההוצאות\" כשהוא כבר מסונן לפי הקבוצה, כדי לחפש, למיין ולסנן את החשבונות שלה. ניקוי המסנן מציג את כל הקבוצות.",
         "th": "แท็บ “บิล” ของกลุ่มมี “ดูทั้งหมด” แล้ว ซึ่งจะเปิด “บิลทั้งหมด” ที่กรองตามกลุ่มนั้นไว้ให้ คุณจึงค้นหา เรียง และกรองบิลของกลุ่มได้ ล้างตัวกรองเพื่อดูทุกกลุ่ม",
         "vi": "Khoản chi của nhóm giờ có “Xem tất cả”, mở Tất cả khoản chi đã được lọc theo nhóm đó, để bạn tìm kiếm, sắp xếp và lọc các khoản chi của nhóm. Xóa bộ lọc để xem mọi nhóm.",
-        "zh-Hant": "群組的「帳單」現在有「查看全部」，會開啟已按該群組篩選的「所有帳單」，讓你搜尋、排序和篩選它的帳單。清除篩選即可查看所有群組。"
+        "zh-Hant": "群組的「帳單」現在有「查看全部」，會開啟已按該群組篩選的「所有帳單」，讓你搜尋、排序和篩選它的帳單。清除篩選即可查看所有群組。",
+        "sv": "En grupps Utgifter har nu ”Visa alla”, som öppnar Alla utgifter redan filtrerat på den gruppen, så att du kan söka, sortera och filtrera dess utgifter. Rensa filtret för att se alla grupper.",
+        "cs": "Výdaje skupiny mají teď „Zobrazit vše“, které otevře Všechny výdaje už vyfiltrované podle té skupiny, takže můžeš její výdaje hledat, řadit a filtrovat. Zruš filtr a uvidíš všechny skupiny.",
+        "ro": "Cheltuielile unui grup au acum „Vezi tot”, care deschide Toate cheltuielile deja filtrate după acel grup, ca să-i poți căuta, sorta și filtra cheltuielile. Șterge filtrul ca să vezi toate grupurile."
       }
     },
     {
@@ -57,7 +60,10 @@
         "he": "בגלילה בקבוצה, הסרגל העליון המקופל מציג רק את התמונה והשם של הקבוצה, בלי החברים והסה״כ החתוכים לידם.",
         "th": "เมื่อเลื่อนดูกลุ่ม แถบด้านบนที่ย่อลงจะแสดงแค่รูปภาพและชื่อกลุ่ม โดยไม่มีสมาชิกและยอดรวมที่ถูกตัดอยู่ข้างๆ",
         "vi": "Khi cuộn trong nhóm, thanh trên cùng thu gọn chỉ hiện ảnh và tên nhóm, không còn thành viên và tổng bị cắt bên cạnh.",
-        "zh-Hant": "捲動群組時，收合的頂端列只顯示群組照片和名稱，旁邊不再有被截斷的成員和總計。"
+        "zh-Hant": "捲動群組時，收合的頂端列只顯示群組照片和名稱，旁邊不再有被截斷的成員和總計。",
+        "sv": "När du skrollar i en grupp visar dess hopfällda övre fält bara gruppens foto och namn, utan medlemmarna och totalen avklippta bredvid.",
+        "cs": "Při posouvání skupiny ukazuje její sbalená horní lišta jen fotku a název skupiny, bez useknutých členů a celkové částky vedle nich.",
+        "ro": "Când derulezi un grup, bara de sus restrânsă arată doar fotografia și numele grupului, fără membrii și totalul tăiate alături."
       }
     }
   ]

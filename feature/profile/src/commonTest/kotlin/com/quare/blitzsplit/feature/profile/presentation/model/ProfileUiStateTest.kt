@@ -39,6 +39,9 @@ class ProfileUiStateTest {
             AppLanguage.HEBREW -> listOf("עברית", "Hebrew")
             AppLanguage.THAI -> listOf("ไทย", "Thai")
             AppLanguage.VIETNAMESE -> listOf("Tiếng Việt", "Vietnamese")
+            AppLanguage.SWEDISH -> listOf("Svenska", "Swedish")
+            AppLanguage.CZECH -> listOf("Čeština", "Czech")
+            AppLanguage.ROMANIAN -> listOf("Română", "Romanian")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -77,6 +80,9 @@ class ProfileUiStateTest {
         AppLanguage.HEBREW,
         AppLanguage.THAI,
         AppLanguage.VIETNAMESE,
+        AppLanguage.SWEDISH,
+        AppLanguage.CZECH,
+        AppLanguage.ROMANIAN,
     )
 
     @Test
@@ -658,6 +664,9 @@ class ProfileUiStateTest {
                 AppLanguage.HEBREW,
                 AppLanguage.THAI,
                 AppLanguage.VIETNAMESE,
+                AppLanguage.SWEDISH,
+                AppLanguage.CZECH,
+                AppLanguage.ROMANIAN,
             ),
             options,
         )
@@ -698,6 +707,9 @@ class ProfileUiStateTest {
                 AppLanguage.HEBREW,
                 AppLanguage.THAI,
                 AppLanguage.VIETNAMESE,
+                AppLanguage.SWEDISH,
+                AppLanguage.CZECH,
+                AppLanguage.ROMANIAN,
             ),
             options,
         )
@@ -824,7 +836,7 @@ class ProfileUiStateTest {
     }
 
     @Test
-    fun `GIVEN en typed WHEN searching the languages THEN finds English by its code and French by its name`() {
+    fun `GIVEN en typed WHEN searching the languages THEN finds English by its code and others by their names`() {
         // Given
         val profile = state(languageQuery = "en")
 
@@ -832,7 +844,7 @@ class ProfileUiStateTest {
         val options = profile.findLanguageOptions(englishNames)
 
         // Then
-        assertEquals(listOf(AppLanguage.ENGLISH, AppLanguage.FRENCH), options)
+        assertEquals(listOf(AppLanguage.ENGLISH, AppLanguage.FRENCH, AppLanguage.SWEDISH), options)
     }
 
     @Test
@@ -875,6 +887,7 @@ class ProfileUiStateTest {
                 AppLanguage.SPANISH_SPAIN,
                 AppLanguage.POLISH,
                 AppLanguage.TURKISH,
+                AppLanguage.SWEDISH,
             ),
             options,
         )

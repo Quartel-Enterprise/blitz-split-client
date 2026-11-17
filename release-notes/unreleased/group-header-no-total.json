@@ -27,7 +27,10 @@
         "he": "הכותרת של קבוצה נקייה יותר: השורה עם מספר החברים והסה״כ מתחת לשם נעלמה. התמונות מראות מי בקבוצה, והסטטיסטיקה מציגה את הסה״כ.",
         "th": "ส่วนหัวของกลุ่มดูสะอาดตาขึ้น: บรรทัดจำนวนสมาชิกและยอดรวมใต้ชื่อกลุ่มถูกนำออกแล้ว ใบหน้าบอกว่าใครอยู่ในกลุ่ม และหน้าสถิติแสดงยอดรวม",
         "vi": "Phần đầu của nhóm gọn gàng hơn: dòng ghi số thành viên và tổng dưới tên nhóm đã được bỏ. Các khuôn mặt cho thấy ai tham gia, còn Thống kê cho thấy tổng.",
-        "zh-Hant": "群組的標題區更簡潔了：名稱下方顯示成員人數和總計的那一行已移除。大頭貼顯示有誰參與，「統計」則顯示總計。"
+        "zh-Hant": "群組的標題區更簡潔了：名稱下方顯示成員人數和總計的那一行已移除。大頭貼顯示有誰參與，「統計」則顯示總計。",
+        "sv": "En grupps rubrik är renare: raden med antalet medlemmar och totalen under namnet är borta. Ansiktena visar vilka som är med, och Statistik visar totalen.",
+        "cs": "Záhlaví skupiny je čistší: řádek s počtem členů a celkovou částkou pod názvem zmizel. Obličeje ukazují, kdo je ve skupině, a Statistiky ukazují celkovou částku.",
+        "ro": "Antetul unui grup e mai curat: rândul cu numărul de membri și totalul de sub nume a dispărut. Fețele arată cine participă, iar Statistici arată totalul."
       }
     }
   ]

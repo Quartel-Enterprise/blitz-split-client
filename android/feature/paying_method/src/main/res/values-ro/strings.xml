@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Metodă de plată nouă</string>
+    <string name="paying_method_edit_title">Editează metoda de plată</string>
+    <string name="paying_method_type">Tip</string>
+    <string name="paying_method_name">Nume</string>
+    <string name="paying_method_name_optional">Nume (opțional)</string>
+    <string name="paying_method_color">Culoare</string>
+    <string name="paying_method_default">Metodă implicită</string>
+    <string name="paying_method_default_hint">Cheltuielile noi pe care le plătești încep cu ea.</string>
+    <string name="paying_method_delete">Șterge metoda de plată</string>
+    <string name="paying_method_delete_title">Ștergi această metodă de plată?</string>
+    <string name="paying_method_delete_body">Cheltuielile pe care le-ai marcat cu ea nu o vor mai afișa.</string>
+    <string name="paying_method_delete_confirm">Șterge</string>
+    <string name="paying_method_save">Salvează</string>
+</resources>

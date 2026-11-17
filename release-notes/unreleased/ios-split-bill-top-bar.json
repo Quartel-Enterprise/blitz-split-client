@@ -27,7 +27,10 @@
         "he": "\"פיצול חשבון\" נמצא עכשיו גם בראש \"יתרות\" ו\"אנשי קשר\", ובמסך הקבוצה הוא עבר לסרגל העליון במקום לצוף מעל הרשימה, ו\"הוספת אנשים\" נמצא עכשיו בתפריט ⋯. הכפתור מתחיל עם השם שלו ומתכווץ לסמל בזמן הגלילה.",
         "th": "“หารบิล” อยู่ด้านบนของยอดคงเหลือและรายชื่อติดต่อด้วยแล้ว ส่วนในหน้าจอกลุ่มได้ย้ายไปอยู่ในแถบด้านบนแทนการลอยเหนือรายการ โดย “เพิ่มคน” ย้ายไปอยู่ในเมนู ⋯ ปุ่มจะเริ่มด้วยชื่อและย่อเหลือแค่ไอคอนเมื่อคุณเลื่อน",
         "vi": "“Chia khoản chi” giờ cũng có ở trên cùng của Số dư và Danh bạ, và trên màn hình nhóm, nút này đã chuyển lên thanh trên cùng thay vì nổi trên danh sách, còn “Thêm người” giờ nằm trong menu ⋯. Nút hiện kèm tên rồi thu lại thành biểu tượng khi bạn cuộn.",
-        "zh-Hant": "「分攤帳單」現在也出現在「餘額」和「聯絡人」頂端；在群組畫面中，它移到了頂端列，不再浮在清單上方，「新增成員」則移到⋯選單中。它一開始會顯示名稱，捲動時會縮成圖示。"
+        "zh-Hant": "「分攤帳單」現在也出現在「餘額」和「聯絡人」頂端；在群組畫面中，它移到了頂端列，不再浮在清單上方，「新增成員」則移到⋯選單中。它一開始會顯示名稱，捲動時會縮成圖示。",
+        "sv": "”Dela upp en utgift” finns nu också högst upp i Saldon och Kontakter, och på gruppskärmen har den flyttat till det övre fältet i stället för att sväva över listan, med ”Lägg till personer” nu i menyn ⋯. Den börjar med sitt namn och krymper till sin ikon när du skrollar.",
+        "cs": "„Rozdělit výdaj“ je teď nahoře i v Zůstatcích a Kontaktech a na obrazovce skupiny se přesunulo do horní lišty, místo aby se vznášelo nad seznamem; „Přidat lidi“ je teď v nabídce ⋯. Začíná s názvem a při posouvání se zmenší na ikonu.",
+        "ro": "„Împarte o cheltuială” e acum și în partea de sus a Soldurilor și Contactelor, iar în ecranul grupului s-a mutat în bara de sus în loc să plutească peste listă, cu „Adaugă persoane” acum în meniul ⋯. Începe cu numele și se restrânge la pictogramă când derulezi."
       }
     },
     {
@@ -58,7 +61,10 @@
         "he": "ב\"קבוצות\", הקשה על הכרטיס \"יתרה כוללת\" פותחת את \"יתרות\".",
         "th": "ในแท็บกลุ่ม การแตะการ์ด “ยอดคงเหลือรวม” จะเปิดแท็บยอดคงเหลือ",
         "vi": "Trong Nhóm, chạm vào thẻ Số dư tổng sẽ mở Số dư.",
-        "zh-Hant": "在「群組」中，點一下「總餘額」卡片會開啟「餘額」。"
+        "zh-Hant": "在「群組」中，點一下「總餘額」卡片會開啟「餘額」。",
+        "sv": "I Grupper öppnar kortet Totalt saldo nu Saldon när du trycker på det.",
+        "cs": "Ve Skupinách klepnutí na kartu Celkový zůstatek otevře Zůstatky.",
+        "ro": "În Grupuri, atingerea cardului Sold general deschide Solduri."
       }
     },
     {
@@ -88,7 +94,10 @@
         "he": "\"הזמנת אנשים\" בקבוצה נקרא עכשיו \"הוספת אנשים\".",
         "th": "“เชิญคน” ในกลุ่มเปลี่ยนชื่อเป็น “เพิ่มคน” แล้ว",
         "vi": "“Mời mọi người” trong nhóm giờ được gọi là “Thêm người”.",
-        "zh-Hant": "群組中的「邀請成員」現在改名為「新增成員」。"
+        "zh-Hant": "群組中的「邀請成員」現在改名為「新增成員」。",
+        "sv": "”Bjud in personer” i en grupp heter nu ”Lägg till personer”.",
+        "cs": "„Pozvat lidi“ ve skupině se teď jmenuje „Přidat lidi“.",
+        "ro": "„Invită persoane” dintr-un grup se numește acum „Adaugă persoane”."
       }
     },
     {
@@ -119,7 +128,10 @@
         "he": "ב\"קבוצות\", הכפתור ליצירת קבוצה נקרא עכשיו \"+ קבוצה\" וכבר לא נשבר לשתי שורות.",
         "th": "ในแท็บกลุ่ม ปุ่มสร้างกลุ่มแสดงเป็น “+ กลุ่ม” แล้ว และไม่ตัดขึ้นสองบรรทัดอีกต่อไป",
         "vi": "Trong Nhóm, nút tạo nhóm giờ ghi “+ Nhóm” và không còn bị xuống hai dòng.",
-        "zh-Hant": "在「群組」中，建立群組的按鈕現在顯示為「+ 群組」，不會再斷成兩行。"
+        "zh-Hant": "在「群組」中，建立群組的按鈕現在顯示為「+ 群組」，不會再斷成兩行。",
+        "sv": "I Grupper heter knappen för att skapa en grupp nu ”+ Grupp” och bryts inte längre på två rader.",
+        "cs": "Ve Skupinách má tlačítko pro založení skupiny teď popisek „+ Skupina“ a už se nezalamuje na dva řádky.",
+        "ro": "În Grupuri, butonul pentru crearea unui grup arată acum „+ Grup” și nu se mai rupe pe două rânduri."
       }
     }
   ]

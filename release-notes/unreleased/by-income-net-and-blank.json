@@ -27,7 +27,10 @@
         "he": "\"לפי הכנסה\" מזכיר עכשיו להזין את ההכנסה נטו של כל אחד, אחרי מסים, ו\"חלוקת ברירת מחדל\" מציגה את האחוז של כל אחד רק אחרי שמוקלדת הכנסה.",
         "th": "“ตามรายได้” จะเตือนให้คุณกรอกรายได้สุทธิหลังหักภาษีของแต่ละคน และ “วิธีหารเริ่มต้น” จะแสดงเปอร์เซ็นต์ของแต่ละคนก็ต่อเมื่อกรอกรายได้แล้ว",
         "vi": "“Theo thu nhập” giờ nhắc bạn nhập thu nhập ròng của từng người, sau thuế, và “Cách chia mặc định” chỉ hiện phần trăm của mỗi người khi đã nhập thu nhập.",
-        "zh-Hant": "「按收入」現在會提醒你輸入每個人的稅後淨收入，而「預設分攤方式」要等輸入收入後才會顯示每個人的百分比。"
+        "zh-Hant": "「按收入」現在會提醒你輸入每個人的稅後淨收入，而「預設分攤方式」要等輸入收入後才會顯示每個人的百分比。",
+        "sv": "”Efter inkomst” påminner dig nu om att ange var och ens nettoinkomst, efter skatt, och ”Standarddelning” visar varje persons procent först när en inkomst har skrivits in.",
+        "cs": "„Podle příjmu“ ti teď připomene zadat čistý příjem každého po zdanění a „Výchozí rozdělení“ ukáže procento každého až po zadání příjmu.",
+        "ro": "„După venit” îți amintește acum să introduci venitul net al fiecăruia, după taxe, iar „Împărțire implicită” arată procentul fiecăruia doar după ce e introdus un venit."
       }
     }
   ]

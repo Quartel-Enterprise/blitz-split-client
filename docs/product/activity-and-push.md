@@ -88,7 +88,12 @@ The feed, unread state, real time and push notifications.
     बांटा"), a join or a leave being said with a transitive verb too ("ने ‘गोवा ट्रिप’ ग्रुप जॉइन किया"). Its
     deleted-item notice starts with who deleted it ("आपने …"); every other "You" is "आप". Vietnamese verbs don't change with the person
     either ("Ana đã chia…", "Bạn đã chia…"), and its deleted-item notice starts with who deleted it ("Bạn đã xóa…",
-    `youSubjectLanguages` on Android). Arabic's     verbs say both the person and a gender the app doesn't know, so an Arabic row names the actor, a colon and a
+    `youSubjectLanguages` on Android). Swedish verbs don't change with the person either ("Ana delade…", "Du
+    delade…"), its notice starting with who deleted it too. Czech says the person with an auxiliary the third person
+    lacks, so every Czech verb phrase starts with a past in "-l(a)", the app not knowing the gender, and the user's rows
+    put "jsi" before it ("Ana rozdělil(a)…", "Ty jsi rozdělil(a)…"). Romanian swaps its perfect's auxiliary as French
+    does: every Romanian verb phrase starts with "a", which the user's rows turn into "ai" ("Ana a împărțit…", "Tu ai
+    împărțit…"). Both start the deleted-item notice with who deleted it too. Arabic's     verbs say both the person and a gender the app doesn't know, so an Arabic row names the actor, a colon and a
     verbal noun instead of a verb ("Ana: تقسيم «عشاء»", "أنت: تقسيم «عشاء»"): the same words serve the user and everyone
     else, and none of the three helpers has an Arabic rule. Its deleted-item notice is passive ("تم الحذف بواسطة Ana"). Hebrew rows are built the same way ("Ana: פיצול "ארוחת ערב"", "אני: פיצול …"), the user's subject word being "אני", and its deleted-item notice agrees with the item, never with the person. The same rules say a bill's photo line to the user who attached it, in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
     "Tu l’as joint…", "Ty dodałeś(-aś) je…". A Spanish object pronoun before the verb stays ("lo adjuntó" to "lo

@@ -129,6 +129,9 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.HEBREW,
                 AppLanguage.THAI,
                 AppLanguage.VIETNAMESE,
+                AppLanguage.SWEDISH,
+                AppLanguage.CZECH,
+                AppLanguage.ROMANIAN,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -160,6 +163,9 @@ class ObserveSpokenLanguageUseCaseTest {
                     "he",
                     "th",
                     "vi",
+                    "sv",
+                    "cs",
+                    "ro",
                     "zh-Hant",
                 ),
                 spoken,
@@ -206,6 +212,9 @@ class ObserveSpokenLanguageUseCaseTest {
             "he",
             "th",
             "vi",
+            "sv",
+            "cs",
+            "ro",
             "zh-Hant",
         )
 
@@ -246,6 +255,9 @@ class ObserveSpokenLanguageUseCaseTest {
                 "iw-IL",
                 "th-TH",
                 "vi-VN",
+                "sv-FI",
+                "cs-CZ",
+                "ro-MD",
                 "zh-TW",
             )
 
@@ -279,6 +291,9 @@ class ObserveSpokenLanguageUseCaseTest {
                     "he",
                     "th",
                     "vi",
+                    "sv",
+                    "cs",
+                    "ro",
                     "zh-Hant",
                 ),
                 spoken,

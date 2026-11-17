@@ -45,6 +45,10 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("ใครจ่ายอะไร เห็นชัดทันที" over "ทุกบิลของทริปอยู่ในที่เดียว ยอดของคุณอยู่ด้านบน"),
         "vi" to ("Ai trả gì, nhìn là biết" over "Mọi khoản chi của chuyến đi ở một nơi, số dư của bạn ở trên cùng"),
         "zh-Hant" to ("誰付了什麼，一目了然" over "旅行的每筆帳單都在這裡，你的餘額置頂顯示"),
+        "sv" to ("Vem betalade vad, i en blick" over "Resans alla utgifter på ett ställe, med ditt saldo överst"),
+        "cs" to ("Kdo co zaplatil, na první pohled" over "Všechny výdaje výletu na jednom místě, tvůj zůstatek nahoře"),
+        "ro" to
+            ("Cine ce a plătit, dintr-o privire" over "Toate cheltuielile călătoriei într-un loc, cu soldul tău sus"),
     ),
     StoreScreen.ITEMS to mapOf(
         "en" to ("Split by what each one had" over "Tick who had each item and the service charge splits fairly"),
@@ -90,6 +94,13 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("หารตามที่แต่ละคนกิน" over "เลือกว่าใครกินอะไร ค่าบริการก็หารกันอย่างยุติธรรม"),
         "vi" to ("Ai ăn gì trả nấy" over "Chọn ai đã gọi món nào, phí phục vụ cũng chia công bằng"),
         "zh-Hant" to ("各點各的，各付各的" over "勾選每樣東西是誰點的，服務費也公平分攤"),
+        "sv" to ("Dela efter vad var och en åt" over "Bocka i vem som åt vad, så delas serviceavgiften rättvist"),
+        "cs" to ("Každý platí, co si dal" over "Označ, kdo si dal kterou položku, a obsluha se rozdělí férově"),
+        "ro" to
+            (
+                "Împarte după ce a luat fiecare" over
+                    "Bifează cine a luat fiecare produs, iar taxa de serviciu se împarte corect"
+            ),
     ),
     StoreScreen.RECEIPT to mapOf(
         "en" to ("Snap the receipt, skip the typing" over "The items fill themselves in from a photo"),
@@ -116,6 +127,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("ถ่ายใบเสร็จ ไม่ต้องพิมพ์" over "รายการกรอกให้เองจากรูปถ่าย"),
         "vi" to ("Chụp hóa đơn, khỏi phải gõ" over "Các món tự điền từ ảnh chụp"),
         "zh-Hant" to ("拍下收據，不用手動輸入" over "照片裡的項目自動填好"),
+        "sv" to ("Fota kvittot, slipp skriva" over "Artiklarna fylls i själva från ett foto"),
+        "cs" to ("Vyfoť účtenku, nic nepiš" over "Položky se vyplní samy z fotky"),
+        "ro" to ("Fă poză bonului, fără să tastezi" over "Produsele se completează singure dintr-o fotografie"),
     ),
     StoreScreen.BALANCES to mapOf(
         "en" to ("Know who owes whom" over "Settle up in a tap and record the payment"),
@@ -141,6 +155,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("รู้ว่าใครค้างใคร" over "เคลียร์ยอดในแตะเดียว แล้วบันทึกการจ่ายเงิน"),
         "vi" to ("Biết ngay ai nợ ai" over "Thanh toán chỉ với một chạm và ghi nhận khoản trả"),
         "zh-Hant" to ("誰欠誰，清清楚楚" over "一鍵結清，並記錄付款"),
+        "sv" to ("Se vem som är skyldig vem" over "Gör upp med ett tryck och registrera betalningen"),
+        "cs" to ("Věz, kdo komu dluží" over "Vyrovnej se jedním klepnutím a zaznamenej platbu"),
+        "ro" to ("Vezi cine cui datorează" over "Achită dintr-o atingere și înregistrează plata"),
     ),
     StoreScreen.INVITE to mapOf(
         "en" to ("Invite with a link or QR code" over "Friends join the group in seconds, no sign-up needed"),
@@ -168,6 +185,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("เชิญด้วยลิงก์หรือคิวอาร์โค้ด" over "เพื่อนเข้ากลุ่มได้ในไม่กี่วินาที ไม่ต้องสมัคร"),
         "vi" to ("Mời bằng liên kết hoặc mã QR" over "Bạn bè vào nhóm trong vài giây, không cần đăng ký"),
         "zh-Hant" to ("用連結或 QR Code 邀請" over "朋友幾秒就能加入群組，不用註冊"),
+        "sv" to ("Bjud in med länk eller QR-kod" over "Vänner går med i gruppen på sekunder, utan registrering"),
+        "cs" to ("Pozvi odkazem nebo QR kódem" over "Přátelé jsou ve skupině za pár sekund, bez registrace"),
+        "ro" to ("Invită cu un link sau un cod QR" over "Prietenii intră în grup în câteva secunde, fără înregistrare"),
     ),
     StoreScreen.STATISTICS to mapOf(
         "en" to ("See where the money went" over "Spending by category and by person"),
@@ -193,6 +213,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("ดูว่าเงินไปไหนหมด" over "ค่าใช้จ่ายตามหมวดหมู่และตามคน"),
         "vi" to ("Xem tiền đã đi đâu" over "Chi tiêu theo danh mục và theo người"),
         "zh-Hant" to ("看看錢花到哪裡去" over "依類別、依人查看支出"),
+        "sv" to ("Se vart pengarna tog vägen" over "Utgifter per kategori och per person"),
+        "cs" to ("Podívej se, kam šly peníze" over "Výdaje podle kategorií a podle lidí"),
+        "ro" to ("Vezi unde s-au dus banii" over "Cheltuieli pe categorii și pe persoane"),
     ),
     StoreScreen.HOME to mapOf(
         "en" to ("Your groups, front and center" over "Pin the ones you use most and see your balance in each"),
@@ -222,6 +245,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("กลุ่มของคุณ อยู่ตรงหน้า" over "ปักหมุดกลุ่มที่ใช้บ่อยและดูยอดของคุณในแต่ละกลุ่ม"),
         "vi" to ("Các nhóm của bạn, ngay trước mắt" over "Ghim nhóm hay dùng và xem số dư của bạn trong từng nhóm"),
         "zh-Hant" to ("常用群組，打開就在" over "釘選最常用的群組，查看你在每個群組的餘額"),
+        "sv" to ("Dina grupper, alltid nära" over "Fäst dem du använder mest och se ditt saldo i varje"),
+        "cs" to ("Tvoje skupiny vždy po ruce" over "Připni ty nejpoužívanější a měj u každé svůj zůstatek"),
+        "ro" to ("Grupurile tale, la îndemână" over "Fixează-le pe cele folosite des și vezi-ți soldul în fiecare"),
     ),
     StoreScreen.PAYERS_AND_CURRENCIES to mapOf(
         "en" to ("Several payers, any currency" over "Split bills more than one person paid, even in crypto"),
@@ -258,6 +284,10 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("จ่ายหลายคน สกุลเงินไหนก็ได้" over "หารบิลที่หลายคนช่วยกันจ่าย แม้แต่คริปโท"),
         "vi" to ("Nhiều người trả, tiền tệ nào cũng được" over "Chia cả khoản do nhiều người trả, kể cả tiền mã hóa"),
         "zh-Hant" to ("多人付款，任何幣別" over "多人付的帳單也能分攤，加密貨幣也可以"),
+        "sv" to ("Flera betalare, valfri valuta" over "Dela utgifter som flera har betalat, även i krypto"),
+        "cs" to ("Víc plátců, jakákoli měna" over "Rozděl výdaje, které platilo víc lidí, i v kryptu"),
+        "ro" to
+            ("Mai mulți plătitori, orice monedă" over "Împarte cheltuieli plătite de mai mulți, chiar și în cripto"),
     ),
     StoreScreen.ACTIVITY to mapOf(
         "en" to ("Never miss a change" over "Every new bill and payment in your groups, as it happens"),
@@ -282,6 +312,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("ไม่พลาดทุกความเปลี่ยนแปลง" over "ทุกบิลและการจ่ายเงินใหม่ในกลุ่มของคุณ แจ้งทันที"),
         "vi" to ("Không bỏ lỡ thay đổi nào" over "Mọi khoản chi và thanh toán mới trong nhóm, báo ngay lập tức"),
         "zh-Hant" to ("任何變動都不錯過" over "群組裡的每筆新帳單和付款，第一時間通知你"),
+        "sv" to ("Missa aldrig en ändring" over "Varje ny utgift och betalning i dina grupper, direkt"),
+        "cs" to ("Nic ti neuteče" over "Každý nový výdaj a platba ve skupinách, hned jak přibudou"),
+        "ro" to ("Nu rata nicio schimbare" over "Fiecare cheltuială și plată nouă din grupurile tale, pe loc"),
     ),
     StoreScreen.LIGHT_THEME to mapOf(
         "en" to ("Light or dark, it follows you" over "Works offline, with or without an account"),
@@ -306,6 +339,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "th" to ("สว่างหรือมืด ตามใจคุณ" over "ใช้ได้แม้ออฟไลน์ จะมีบัญชีหรือไม่ก็ได้"),
         "vi" to ("Sáng hay tối, tùy bạn" over "Dùng được cả khi ngoại tuyến, có hay không có tài khoản"),
         "zh-Hant" to ("淺色深色，隨你喜歡" over "離線也能用，有沒有帳號都可以"),
+        "sv" to ("Ljust eller mörkt, som du vill" over "Fungerar offline, med eller utan konto"),
+        "cs" to ("Světlý, nebo tmavý, jak chceš" over "Funguje offline, s účtem i bez něj"),
+        "ro" to ("Luminos sau întunecat, cum vrei" over "Merge offline, cu sau fără cont"),
     ),
 )
 

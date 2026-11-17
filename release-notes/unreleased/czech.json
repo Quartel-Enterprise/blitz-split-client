@@ -1,0 +1,70 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Czech: pick \"Čeština\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala tcheco: escolha \"Čeština\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora checo: escolhe \"Čeština\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla checo: elige \"Čeština\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais tchèque : choisis « Čeština » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Tschechisch: Wähle „Čeština“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla ceco: scegli \"Čeština\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po czesku: wybierz „Čeština” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Tsjechisch: kies \"Čeština\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがチェコ語に対応しました。プロフィール › 言語で「Čeština」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Çekçe konuşuyor: Profil › Dil'den \"Čeština\"yı seç ya da cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Ceko: pilih \"Čeština\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на чешском: выбери «Čeština» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить чеською: обери «Čeština» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 체코어를 쓸 수 있어요. 프로필 › 언어에서 ‘Čeština’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप चेक भाषा में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Čeština” चुनें, या इसे अपने डिवाइस की भाषा पर छोड़ दें।",
+        "ar": "أصبح التطبيق يتحدث التشيكية: يمكنك اختيار «Čeština» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持捷克语：在“个人资料 › 语言”中选择“Čeština”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו צ׳כית: אפשר לבחור \"Čeština\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาเช็กแล้ว เลือก “Čeština” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Séc: chọn “Čeština” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援捷克文：在「個人資料 › 語言」中選擇「Čeština」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu tjeckiska: välj ”Čeština” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví česky: vyber „Čeština“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum cehă: alege „Čeština” în Profil › Limbă sau las-o să urmeze dispozitivul tău."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the Czech koruna (CZK), and a group made in Czechia starts in it.",
+        "pt": "Os grupos agora podem dividir em coroa tcheca (CZK), e um grupo criado na Tchéquia já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em coroa checa (CZK), e um grupo criado na Chéquia começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en corona checa (CZK), y un grupo creado en Chequia empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en couronne tchèque (CZK), et un groupe créé en Tchéquie démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Tschechischen Kronen (CZK) teilen, und eine in Tschechien erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in corone ceche (CZK), e un gruppo creato in Cechia parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w koronach czeskich (CZK), a grupa założona w Czechach startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Tsjechische kronen (CZK), en een groep die in Tsjechië wordt gemaakt, start in die valuta.",
+        "ja": "グループでチェココルナ（CZK）が使えるようになり、チェコで作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık Çek korunası (CZK) ile bölebiliyor; Çekya'da açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam koruna Ceko (CZK), dan grup yang dibuat di Ceko langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в чешских кронах (CZK), а группа, созданная в Чехии, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати в чеських кронах (CZK), а група, створена в Чехії, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 체코 코루나(CZK)로 나눌 수 있고, 체코에서 만든 그룹은 코루나로 시작해요.",
+        "hi": "ग्रुप अब चेक कोरुना (CZK) में बांट सकते हैं, और चेकिया में बना ग्रुप कोरुना में ही शुरू होता है।",
+        "ar": "يمكن للمجموعات الآن التقسيم بالكرونة التشيكية (CZK)، والمجموعة التي تُنشأ في التشيك تبدأ بها.",
+        "zh": "群组现在可以使用捷克克朗（CZK）分摊，在捷克创建的群组也会默认使用捷克克朗。",
+        "he": "קבוצות יכולות עכשיו לפצל בקורונה צ׳כית (CZK), וקבוצה שנוצרת בצ׳כיה מתחילה בה.",
+        "th": "กลุ่มหารเป็นเงินโครูนาเช็ก (CZK) ได้แล้ว และกลุ่มที่สร้างในเช็กเกียจะเริ่มด้วยเงินโครูนา",
+        "vi": "Nhóm giờ có thể chia bằng koruna Séc (CZK), và nhóm được tạo ở Séc sẽ bắt đầu với đồng tiền này.",
+        "zh-Hant": "群組現在可以使用捷克克朗（CZK）分攤，在捷克建立的群組也會從捷克克朗開始。",
+        "sv": "Grupper kan nu dela upp i tjeckiska kronor (CZK), och en grupp som skapas i Tjeckien börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit v české koruně (CZK) a skupina založená v Česku začne v ní.",
+        "ro": "Grupurile pot împărți acum în coroane cehe (CZK), iar un grup creat în Cehia pornește în această monedă."
+      }
+    }
+  ]
+}

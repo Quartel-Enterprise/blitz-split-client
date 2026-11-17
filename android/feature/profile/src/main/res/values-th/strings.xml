@@ -76,6 +76,9 @@
     <string name="profile_language_thai">ไทย</string>
     <string name="profile_language_vietnamese">เวียดนาม</string>
     <string name="profile_language_chinese_traditional">จีน (ตัวเต็ม)</string>
+    <string name="profile_language_swedish">สวีเดน</string>
+    <string name="profile_language_czech">เช็ก</string>
+    <string name="profile_language_romanian">โรมาเนีย</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>
     <plurals name="profile_notifications_active">

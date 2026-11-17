@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Nytt betalsätt</string>
+    <string name="paying_method_edit_title">Redigera betalsätt</string>
+    <string name="paying_method_type">Typ</string>
+    <string name="paying_method_name">Namn</string>
+    <string name="paying_method_name_optional">Namn (valfritt)</string>
+    <string name="paying_method_color">Färg</string>
+    <string name="paying_method_default">Standardbetalsätt</string>
+    <string name="paying_method_default_hint">Nya utgifter som du betalar börjar med det.</string>
+    <string name="paying_method_delete">Radera betalsättet</string>
+    <string name="paying_method_delete_title">Radera det här betalsättet?</string>
+    <string name="paying_method_delete_body">Utgifter du har markerat med det visar det inte längre.</string>
+    <string name="paying_method_delete_confirm">Radera</string>
+    <string name="paying_method_save">Spara</string>
+</resources>

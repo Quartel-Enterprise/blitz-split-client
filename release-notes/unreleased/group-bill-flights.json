@@ -28,7 +28,10 @@
         "he": "בפתיחת קבוצה מ\"קבוצות\", התמונות של חברי הקבוצה עוברות עכשיו מהשורה אל מסך הקבוצה, ובחזרה ביציאה.",
         "th": "เมื่อเปิดกลุ่มจากแท็บกลุ่ม ใบหน้าของสมาชิกจะเคลื่อนจากแถวเข้าไปในหน้าจอกลุ่ม และเคลื่อนกลับเมื่อคุณออก",
         "vi": "Khi mở một nhóm từ Nhóm, khuôn mặt các thành viên giờ di chuyển từ dòng đó vào màn hình của nhóm, và quay lại khi bạn rời đi.",
-        "zh-Hant": "從「群組」開啟群組時，成員的大頭貼現在會從該列移進群組畫面，離開時再移回去。"
+        "zh-Hant": "從「群組」開啟群組時，成員的大頭貼現在會從該列移進群組畫面，離開時再移回去。",
+        "sv": "När du öppnar en grupp från Grupper färdas medlemmarnas ansikten nu från raden in i gruppens skärm, och tillbaka när du lämnar den.",
+        "cs": "Když otevřeš skupinu ze Skupin, obličeje jejích členů teď přeletí z řádku na obrazovku skupiny, a při odchodu zpátky.",
+        "ro": "Când deschizi un grup din Grupuri, fețele membrilor trec acum din rând în ecranul grupului, și înapoi când ieși."
       }
     },
     {
@@ -58,7 +61,10 @@
         "he": "בטלפון, פתיחת חשבון מעבירה עכשיו יותר ממנו: מי ששילם עובר מהשורה ב\"בית\" וב\"כל ההוצאות\", השעה מהשורה ב\"הוצאות\" של הקבוצה, ותמונת הקבוצה ושמה ממסך הקבוצה. הכול חוזר ביציאה.",
         "th": "บนโทรศัพท์ การเปิดบิลจะพาส่วนต่างๆ ของบิลไปด้วยมากขึ้น: คนจ่ายเคลื่อนจากแถวในหน้าแรกและ “บิลทั้งหมด” เวลาเคลื่อนจากแถวในแท็บ “บิล” ของกลุ่ม ส่วนรูปภาพและชื่อกลุ่มเคลื่อนจากหน้าจอกลุ่ม และทั้งหมดจะเคลื่อนกลับเมื่อคุณออก",
         "vi": "Trên điện thoại, khi mở một khoản chi, nhiều thông tin hơn giờ đi theo: người trả di chuyển từ dòng của nó ở Trang chủ và Tất cả khoản chi, thời gian từ dòng của nó trong Khoản chi của nhóm, còn ảnh và tên nhóm từ màn hình của nhóm. Chúng quay lại khi bạn rời đi.",
-        "zh-Hant": "在手機上開啟帳單時，現在會帶上更多內容：付款人會從「首頁」和「所有帳單」的列中移過來，時間來自群組「帳單」中的列，群組照片和名稱則來自群組畫面。離開時它們會再移回去。"
+        "zh-Hant": "在手機上開啟帳單時，現在會帶上更多內容：付款人會從「首頁」和「所有帳單」的列中移過來，時間來自群組「帳單」中的列，群組照片和名稱則來自群組畫面。離開時它們會再移回去。",
+        "sv": "På en telefon följer nu mer av en utgift med när du öppnar den: vem som betalade färdas från raden på Hem och i Alla utgifter, tiden från raden i gruppens Utgifter, och gruppens foto och namn från gruppens skärm. De färdas tillbaka när du lämnar.",
+        "cs": "Na telefonu teď otevření výdaje přenese víc z něj: kdo platil, přeletí z jeho řádku na Domů a ve Všech výdajích, čas z jeho řádku ve Výdajích skupiny a fotka a název skupiny z obrazovky skupiny. Při odchodu se vrátí zpátky.",
+        "ro": "Pe telefon, o cheltuială pe care o deschizi ia acum mai multe cu ea: cine a plătit trece din rândul ei din Acasă și din Toate cheltuielile, ora din rândul ei din Cheltuielile grupului, iar fotografia și numele grupului din ecranul grupului. Toate se întorc când ieși."
       }
     },
     {
@@ -89,7 +95,10 @@
         "he": "שם הקבוצה עובר עכשיו למסך הקבוצה כשהוא נפתח, ולא רק בדרך חזרה.",
         "th": "ชื่อกลุ่มจะเคลื่อนเข้าไปในหน้าจอกลุ่มขณะเปิดด้วย ไม่ใช่แค่ตอนย้อนกลับ",
         "vi": "Tên nhóm giờ di chuyển vào màn hình của nhóm khi mở, không chỉ khi quay lại.",
-        "zh-Hant": "群組名稱現在在開啟時也會移入群組畫面，不只在返回時。"
+        "zh-Hant": "群組名稱現在在開啟時也會移入群組畫面，不只在返回時。",
+        "sv": "En grupps namn färdas nu in i gruppens skärm när den öppnas, inte bara på vägen tillbaka.",
+        "cs": "Název skupiny teď přeletí na obrazovku skupiny už při otevírání, nejen cestou zpět.",
+        "ro": "Numele unui grup trece acum în ecranul grupului când acesta se deschide, nu doar la întoarcere."
       }
     }
   ]

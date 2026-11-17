@@ -25,7 +25,10 @@
         "he": "ב\"קבוצה חדשה\", \"הוספה לפי שם\" מציע עכשיו אנשים מאנשי הקשר שלך תוך כדי הקלדה, עם התמונה שלהם: הקשה על אחד מהם יוצרת את הקבוצה עם אותו אדם.",
         "th": "ใน “กลุ่มใหม่” ช่อง “เพิ่มด้วยชื่อ” จะแนะนำคนจากรายชื่อติดต่อของคุณพร้อมรูปภาพขณะพิมพ์ แตะคนใดคนหนึ่งเพื่อสร้างกลุ่มกับคนคนนั้น",
         "vi": "Trong Nhóm mới, “Thêm theo tên” giờ gợi ý người từ Danh bạ của bạn khi bạn gõ, kèm ảnh của họ: chạm vào một người để tạo nhóm với đúng người đó.",
-        "zh-Hant": "在「新增群組」中，「依名字新增」現在會在你輸入時建議「聯絡人」裡的人並顯示照片：點一下其中一位，就會和同一個人建立群組。"
+        "zh-Hant": "在「新增群組」中，「依名字新增」現在會在你輸入時建議「聯絡人」裡的人並顯示照片：點一下其中一位，就會和同一個人建立群組。",
+        "sv": "I Ny grupp föreslår ”Lägg till med namn” nu personer från dina Kontakter medan du skriver, med deras foto: tryck på en för att skapa gruppen med just den personen.",
+        "cs": "V Nové skupině teď „Přidat podle jména“ při psaní nabízí lidi z tvých Kontaktů i s fotkou: klepni na jednoho a skupina se založí právě s tímto člověkem.",
+        "ro": "În Grup nou, „Adaugă după nume” îți sugerează acum persoane din Contacte în timp ce scrii, cu fotografia lor: atinge una ca să creezi grupul cu aceeași persoană."
       }
     },
     {
@@ -54,7 +57,10 @@
         "he": "\"מי בקבוצה\" ב\"קבוצה חדשה\" מציג את תמונת הפרופיל שלך במקום האות הראשונה של השם.",
         "th": "“ใครอยู่ในกลุ่มบ้าง” ใน “กลุ่มใหม่” แสดงรูปโปรไฟล์ของคุณแทนอักษรตัวแรกของชื่อ",
         "vi": "“Ai tham gia” trong Nhóm mới hiện ảnh hồ sơ của bạn thay vì chữ cái đầu.",
-        "zh-Hant": "「新增群組」的「有誰參與」現在顯示你的大頭貼，而不是你名字的首字。"
+        "zh-Hant": "「新增群組」的「有誰參與」現在顯示你的大頭貼，而不是你名字的首字。",
+        "sv": "”Vilka är med” i Ny grupp visar ditt profilfoto i stället för din initial.",
+        "cs": "„Kdo je ve skupině“ v Nové skupině ukazuje tvou profilovou fotku místo iniciály.",
+        "ro": "„Cine participă” din Grup nou arată fotografia ta de profil în loc de inițială."
       }
     }
   ]

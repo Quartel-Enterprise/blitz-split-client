@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Solduri</string>
+    <string name="global_balances_profile">Profil</string>
+    <string name="global_balances_offline">Offline · soldurile de pe acest dispozitiv</string>
+    <string name="global_balances_filter">Afișează</string>
+    <string name="global_balances_filter_all">Toate</string>
+    <string name="global_balances_filter_you_owe">Datorezi</string>
+    <string name="global_balances_filter_owes_you">Îți datorează</string>
+    <string name="global_balances_hint">Deja compensat între grupuri: fiecare persoană apare o singură dată.</string>
+    <string name="global_balances_hint_empty">Se adună toate grupurile de pe acest dispozitiv.</string>
+    <string name="global_balances_section_you_owe">Datorezi · %d</string>
+    <string name="global_balances_section_owes_you">Îți datorează · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d grup</item>
+        <item quantity="few">%d grupuri</item>
+        <item quantity="other">%d de grupuri</item>
+    </plurals>
+    <string name="global_balances_guest">%s · invitat</string>
+    <string name="global_balances_you_owe">datorezi</string>
+    <string name="global_balances_owes_you">îți datorează</string>
+    <string name="global_balances_by_group_show">Afișează %s pe grupuri</string>
+    <string name="global_balances_by_group_hide">Ascunde %s pe grupuri</string>
+    <string name="global_balances_received">Am primit</string>
+    <string name="global_balances_received_from">Am primit de la %s</string>
+    <string name="global_balances_settle">Achită</string>
+    <string name="global_balances_settle_with">Achită cu %s</string>
+    <string name="global_balances_charge">Cere bani</string>
+    <string name="global_balances_charge_person">Cere bani de la %s</string>
+    <string name="global_balances_detail_pane">Sold cu %s</string>
+    <string name="global_balances_detail_owes_you">%s îți datorează</string>
+    <string name="global_balances_detail_you_owe">Datorezi către %s</string>
+    <string name="global_balances_detail_guest">%s · invitat fără aplicație</string>
+    <string name="global_balances_detail_note_owed">Soldul net compensează deja grupurile: Cere bani și Am primit folosesc %s. Aplicația înregistrează câte o plată în fiecare grup.</string>
+    <string name="global_balances_detail_note_settle">Soldul net compensează deja grupurile: Achită folosește %s. Aplicația înregistrează câte o plată în fiecare grup.</string>
+    <string name="global_balances_detail_note_single">Un singur grup deschis cu %s.</string>
+    <string name="global_balances_settled_title">Totul e achitat</string>
+    <string name="global_balances_settled_body">Nimeni nu-ți datorează și nu datorezi nimănui. Când cineva adaugă o cheltuială, soldul apare aici.</string>
+    <string name="global_balances_settled_action">Vezi grupurile</string>
+    <string name="global_balances_nothing_to_pay_title">Nu datorezi nimic</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Ai achitat cu toată lumea. Mai ai de primit %2$s de la %1$d persoană.</item>
+        <item quantity="few">Ai achitat cu toată lumea. Mai ai de primit %2$s de la %1$d persoane.</item>
+        <item quantity="other">Ai achitat cu toată lumea. Mai ai de primit %2$s de la %1$d de persoane.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Vezi cine îți datorează</string>
+    <string name="global_balances_nothing_to_receive_title">Nimeni nu-ți datorează</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Încă datorezi %2$s către %1$d persoană.</item>
+        <item quantity="few">Încă datorezi %2$s către %1$d persoane.</item>
+        <item quantity="other">Încă datorezi %2$s către %1$d de persoane.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Vezi cui datorezi</string>
+    <string name="global_balances_coming_soon">În curând</string>
+    <string name="global_balances_change_error">Nu am putut salva modificarea. Reîncearcă.</string>
+    <string name="global_balances_copied">Copiat</string>
+    <string name="global_balances_charge_title">Cere bani de la %s</string>
+    <string name="global_balances_charge_owes">Îți datorează %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Închide</string>
+    <string name="global_balances_charge_guest">%s e invitat fără aplicație. Află doar din acest mesaj, așa că mesajul spune deja ce a intrat în cheltuială.</string>
+    <string name="global_balances_charge_message">Mesaj</string>
+    <string name="global_balances_charge_pix">Include cheia mea Pix</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Copiază mesajul</string>
+    <string name="global_balances_charge_send">Trimite</string>
+    <string name="global_balances_message">Salut, %1$s! După calculele Blitz Split, îmi datorezi %2$s din %3$s.</string>
+    <string name="global_balances_message_guest">Salut, %1$s! Îmi datorezi %2$s din %3$s: partea ta din %4$s.</string>
+    <string name="global_balances_message_guest_paid">Salut, %1$s! Îmi datorezi %2$s din %3$s: partea ta din %4$s, minus cei %5$s pe care i-ai plătit deja.</string>
+    <string name="global_balances_message_group">grupul %s</string>
+    <string name="global_balances_message_groups">grupurile %s</string>
+    <string name="global_balances_message_pix">Pix %1$s: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefon</string>
+    <string name="global_balances_key_email">E-mail</string>
+    <string name="global_balances_key_random">Cheie aleatorie</string>
+    <string name="global_balances_message_reroute">%1$s și-a simplificat datoriile, așa că, în loc să plătești către %2$s, îmi plătești direct mie; totalul tău nu s-a schimbat.</string>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Închide</string>
+    <string name="invite_group_created">Grup creat</string>
+    <string name="invite_title">Invită pe toată lumea în %s</string>
+    <string name="invite_qr_description">Codul QR al linkului de invitație al grupului</string>
+    <string name="invite_copy">Copiază</string>
+    <string name="invite_copied">Copiat</string>
+    <string name="invite_who_picks">Cine deschide linkul alege cine este din listă: %s. Nu ai nevoie de cont.</string>
+    <string name="invite_names_or">%1$s sau %2$s</string>
+    <string name="invite_anyone_joins">Cine deschide linkul intră în grup. Nu ai nevoie de cont.</string>
+    <string name="invite_pending_title">Link în așteptare</string>
+    <string name="invite_pending_offline">Se creează imediat ce ești online.</string>
+    <string name="invite_pending_online">Se creează linkul…</string>
+    <string name="invite_failed_title">Nu am putut crea linkul</string>
+    <string name="invite_failed_body">Ceva nu a mers bine la sincronizarea grupului.</string>
+    <string name="invite_retry">Reîncearcă</string>
+    <string name="invite_share">Distribuie linkul</string>
+    <string name="invite_see_who_joined">Vezi cine a intrat</string>
+    <string name="invite_add_person">Adaugă pe cineva fără aplicație</string>
+    <string name="invite_go_to_group">Mergi la grup</string>
+    <string name="invite_change_link">Schimbă linkul</string>
+    <string name="invite_change_link_title">Schimbi linkul de invitație?</string>
+    <string name="invite_change_link_message">Linkul și codul QR actuale nu vor mai funcționa, inclusiv invitațiile personale nefolosite. Cine a intrat deja rămâne în grup.</string>
+    <string name="invite_change_link_failed">Nu am putut schimba linkul. Reîncearcă.</string>
+    <string name="invite_share_message">Hai să împărțim cheltuielile din %1$s pe Blitz Split. Intră cu acest link: %2$s</string>
+</resources>

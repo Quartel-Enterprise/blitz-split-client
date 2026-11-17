@@ -69,6 +69,9 @@ const nativeLanguageNames: Record<string, string> = {
   th: 'ไทย',
   vi: 'Tiếng Việt',
   'zh-Hant': '中文（繁體）',
+  sv: 'Svenska',
+  cs: 'Čeština',
+  ro: 'Română',
 }
 
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
@@ -96,6 +99,9 @@ const languageNames: Record<string, MessageKey> = {
   th: 'profile_languageThai',
   vi: 'profile_languageVietnamese',
   'zh-Hant': 'profile_languageChineseTraditional',
+  sv: 'profile_languageSwedish',
+  cs: 'profile_languageCzech',
+  ro: 'profile_languageRomanian',
 }
 
 /**

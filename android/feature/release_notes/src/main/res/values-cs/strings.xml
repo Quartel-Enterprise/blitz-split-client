@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Poznámky k verzi</string>
+    <string name="release_notes_show_beta">Zobrazit beta verze</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Tato verze</string>
+    <string name="release_notes_empty">Zatím žádné poznámky k verzi.</string>
+    <string name="release_notes_empty_only_betas">Zatím není žádná stabilní verze. Zapni beta verze a uvidíš, co se testuje.</string>
+    <string name="release_notes_load_failed_title">Poznámky k verzi se nepodařilo načíst</string>
+    <string name="release_notes_load_failed_body">Zkontroluj připojení k internetu a zkus to znovu.</string>
+    <string name="release_notes_retry">Zkusit znovu</string>
+    <string name="release_notes_open_on_github">Otevřít na GitHubu</string>
+</resources>

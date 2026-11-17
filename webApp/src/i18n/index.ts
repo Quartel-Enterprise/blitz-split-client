@@ -22,6 +22,9 @@ import { he } from './he'
 import { th } from './th'
 import { vi } from './vi'
 import { zhHant } from './zhHant'
+import { sv } from './sv'
+import { cs } from './cs'
+import { ro } from './ro'
 
 export type { MessageKey }
 /**
@@ -29,12 +32,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -58,13 +61,14 @@ function regionOf(subtags: readonly string[]): string | undefined {
 
 /**
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
- * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag
- * (es, es-MX, es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any
- * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th` or `vi` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY,
- * id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN…) is German, Italian, Polish, Dutch, Japanese, Turkish,
- * Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Thai or Vietnamese, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK,
- * zh-MO) is Traditional Chinese, any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is
- * Simplified Chinese, any `en` tag is English, and English when none matches.
+ * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
+ * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs` or `ro` tag (de-AT, it-CH, pl-PL,
+ * nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN, sv-FI, cs-CZ, ro-MD…)
+ * is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Thai,
+ * Vietnamese, Swedish, Czech or Romanian, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, any `en` tag is English, and English when none
+ * matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
@@ -146,6 +150,9 @@ const documentLanguages: Record<Locale, string> = {
   th: 'th',
   vi: 'vi',
   'zh-Hant': 'zh-Hant',
+  sv: 'sv',
+  cs: 'cs',
+  ro: 'ro',
 }
 
 const documentLanguage = documentLanguages[locale]
@@ -210,12 +217,17 @@ const everyFormOrder: readonly Intl.LDMLPluralRule[] | undefined = (() => {
   return (['zero', 'one', 'two', 'few', 'many', 'other'] as const).filter((category) => categories.includes(category))
 })()
 
+// Why: Czech's and Romanian's second form is the one their `other` takes ("5 skupin", "20 de grupuri"), their `many`
+// being Czech's fractions, which say the few form ("1,5 skupiny"), where Polish's is the one its `many` takes.
+const secondFormIsOther = locale === 'cs' || locale === 'ro'
+
 /**
  * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many
  * (0, 5–21…). Its message for a `…Other` key with a `{count}` holds both, "{count} grupy|{count} grup", and this picks
  * the one `count` takes (a fraction taking few's, as Polish does). Russian and Ukrainian also say 21 in the singular
  * ("21 группа"), so theirs hold three, one|few|many: "{count} группа|{count} группы|{count} групп". A fraction takes
- * few's, which is Russian's own; Ukrainian has a form of its own for it ("1,5 платежу"), which no count the app
+ * few's, which is Russian's own; Czech ("{count} skupiny|{count} skupin") and Romanian ("{count} grupuri|{count} de
+ * grupuri") hold two forms too, their second one being the one their other takes (`secondFormIsOther`); Ukrainian has a form of its own for it ("1,5 платежу"), which no count the app
  * passes needs. Arabic has a dual, so its messages hold every category it has, in CLDR's order,
  * "zero|one|two|few|many|other" (`everyFormOrder`), and so does any language whose plural has a two. Any other message
  * has one form. `count` must be the number itself, not a formatted string: one that isn't a number gets the many
@@ -230,6 +242,7 @@ function pluralFormOf(message: string, count: string | number | undefined): stri
   }
   const category = typeof count === 'number' ? pluralRules.select(count) : 'many'
   if (forms.length === 3) return forms[category === 'one' ? 0 : category === 'many' ? 2 : 1]
+  if (secondFormIsOther) return category === 'other' || typeof count !== 'number' ? forms[1] : forms[0]
   return category === 'many' ? forms[1] : forms[0]
 }
 
@@ -270,6 +283,7 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
   de: { hat: 'hast', ist: 'bist' },
   it: { ha: 'hai', 'l’ha': 'l’hai', "l'ha": "l'hai" },
   nl: { heeft: 'hebt', is: 'bent' },
+  ro: { a: 'ai' },
 }
 
 /**
@@ -281,10 +295,12 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * ones end with their simple past, which takes an "n": "böldü" becomes "böldün". Other languages keep the verb as it
  * is, Brazil's Portuguese too ("Você dividiu"), and Russian and Ukrainian, whose past says the gender but not the
  * person ("Ты разделил(а)"). Korean writes someone else as "Ana 님이" and the user as "내가", whose subject word holds its
- * own particle, so its verb phrases all start with "님이", which the user's drops: "님이 나눴어요" becomes "나눴어요".
- * Hindi does the same with its ergative "ने", the user's "आपने" holding it: "ने खर्च बांटा" becomes "खर्च बांटा".
- * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste".
- * Same rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
+ * own particle, so its verb phrases all start with "님이", which the user's drops: "님이 나눴어요" becomes "나눴어요". Hindi does
+ * the same with its ergative "ने", the user's "आपने" holding it: "ने खर्च बांटा" becomes "खर्च बांटा". Romanian swaps
+ * its perfect's auxiliary as French does ("a împărțit" becomes "ai împărțit"), and Czech puts the auxiliary "jsi"
+ * before a past in "l(a)", which the third person says without one ("rozdělil(a)" becomes "jsi rozdělil(a)").
+ * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste". Same
+ * rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
 export function verbForYou(verb: string): string {
   if (locale === 'pt-PT') return portugueseVerbForYou(verb)
@@ -297,6 +313,7 @@ export function verbForYou(verb: string): string {
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
   if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
+  if (locale === 'cs') return /^\S*l\(a\)(?= |$)/.test(verb) ? `jsi ${verb}` : verb
   if (!isSpanish) return verb
   const [first, ...rest] = verb.split(' ')
   if (first === 'se' && rest.length > 0) return ['te', verbForYou(rest[0]), ...rest.slice(1)].join(' ')

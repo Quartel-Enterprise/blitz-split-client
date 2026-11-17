@@ -27,7 +27,10 @@
         "he": "האפליקציה מדברת עכשיו הינדי: אפשר לבחור \"हिन्दी\" בפרופיל › שפה, או להשאיר אותה לפי שפת המכשיר.",
         "th": "แอปรองรับภาษาฮินดีแล้ว เลือก “हिन्दी” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
         "vi": "Ứng dụng giờ đã có tiếng Hindi: chọn “हिन्दी” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
-        "zh-Hant": "App現已支援印地文：在「個人資料 › 語言」中選擇「हिन्दी」，或讓它跟隨你的裝置。"
+        "zh-Hant": "App現已支援印地文：在「個人資料 › 語言」中選擇「हिन्दी」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu hindi: välj ”हिन्दी” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví hindsky: vyber „हिन्दी“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum hindi: alege „हिन्दी” în Profil › Limbă sau las-o să urmeze dispozitivul tău."
       }
     },
     {
@@ -57,7 +60,10 @@
         "he": "קבוצות יכולות עכשיו לחלק ברופי הודי (INR), וקבוצה שנוצרת בהודו מתחילה בו.",
         "th": "กลุ่มหารเป็นรูปีอินเดีย (INR) ได้แล้ว และกลุ่มที่สร้างในอินเดียจะเริ่มด้วยสกุลเงินนี้",
         "vi": "Nhóm giờ có thể chia bằng rupee Ấn Độ (INR), và nhóm được tạo ở Ấn Độ sẽ bắt đầu với đồng tiền này.",
-        "zh-Hant": "群組現在可以使用印度盧比（INR）分攤，在印度建立的群組也會從盧比開始。"
+        "zh-Hant": "群組現在可以使用印度盧比（INR）分攤，在印度建立的群組也會從盧比開始。",
+        "sv": "Grupper kan nu dela upp i indiska rupier (INR), och en grupp som skapas i Indien börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit v indické rupii (INR) a skupina založená v Indii začne v ní.",
+        "ro": "Grupurile pot împărți acum în rupii indiene (INR), iar un grup creat în India pornește în această monedă."
       }
     }
   ]

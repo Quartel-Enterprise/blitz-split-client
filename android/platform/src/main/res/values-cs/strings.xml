@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · obnovovací kód</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Pro focení povol fotoaparát v Nastavení.</string>
+    <string name="platform_camera_settings">Nastavení</string>
+    <string name="platform_receipt_source_camera">Vyfotit</string>
+    <string name="platform_receipt_source_gallery">Vybrat z galerie</string>
+    <string name="platform_receipt_source_file">Vybrat soubor</string>
+    <string name="platform_receipt_camera_title">Naskenovat účtenku</string>
+    <string name="platform_receipt_camera_close">Zavřít</string>
+    <string name="platform_receipt_camera_flash_on">Zapnout blesk</string>
+    <string name="platform_receipt_camera_flash_off">Vypnout blesk</string>
+    <string name="platform_receipt_camera_hint">Dej do rámečku celou účtenku. Vyplníme částku, datum a popis; před uložením to zkontroluješ.</string>
+    <string name="platform_receipt_camera_gallery">Vybrat z galerie</string>
+    <string name="platform_receipt_camera_shutter">Vyfotit</string>
+    <string name="platform_receipt_camera_unavailable">Fotoaparát není dostupný. Vyber fotku účtenky z galerie.</string>
+    <string name="platform_receipt_camera_permission">Povol fotoaparát pro skenování účtenky, nebo vyber fotku z galerie.</string>
+    <string name="platform_receipt_camera_allow">Povolit fotoaparát</string>
+    <string name="platform_receipt_camera_settings">Otevřít nastavení</string>
+</resources>

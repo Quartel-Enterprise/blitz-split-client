@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Dela upp notan, helt enkelt</string>
+    <string name="welcome_offline_title">Fungerar offline</string>
+    <string name="welcome_offline_body">Allt stannar på din enhet och synkroniseras senare.</string>
+    <string name="welcome_optional_title">Konto är valfritt</string>
+    <string name="welcome_optional_body">Google eller Apple ser bara till att du inte förlorar något när du byter enhet.</string>
+    <string name="welcome_invite_title">Bjud in med länk eller QR-kod</string>
+    <string name="welcome_invite_body">Vänner går med i gruppen utan att skapa ett konto.</string>
+    <string name="welcome_no_connection_title">Ingen anslutning.</string>
+    <string name="welcome_no_connection_body">Att logga in med ett konto kräver internet. Använd appen utan konto nu och anslut senare i Profil.</string>
+    <string name="welcome_or">eller</string>
+    <string name="welcome_use_without_account">Använd utan konto</string>
+    <string name="welcome_used_on_another_device">Jag har använt den på en annan enhet</string>
+    <string name="welcome_sign_in_failed">Det gick inte att logga in just nu. Försök igen.</string>
+    <string name="welcome_legal_notice">Genom att fortsätta godkänner du %1$s och bekräftar att du har tagit del av %2$s.</string>
+    <string name="welcome_legal_terms">användarvillkoren</string>
+    <string name="welcome_legal_privacy">integritetspolicyn</string>
+    <string name="welcome_no_account_note">Utan konto raderas dina data efter 30 dagar utan användning. Anslut Google eller Apple för att behålla dem.</string>
+    <string name="welcome_no_account_note_offline">Utan konto raderas dina data efter 30 dagar utan användning. Anslut Google eller Apple senare, i Profil, för att behålla dem.</string>
+    <string name="welcome_expired_title">Dina data har raderats</string>
+    <string name="welcome_expired_body">Du använde appen utan konto och öppnade den inte på 30 dagar, så dina data raderades. Anslut Google eller Apple för att behålla dem nästa gång.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

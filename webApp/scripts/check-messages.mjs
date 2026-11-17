@@ -5,8 +5,8 @@
 // types can't see: the placeholders and the empty values. A regional file (esES.ts, a language and a region) holds only
 // the words that region says differently, so it may lack keys, but never has an extra one.
 //
-// A language with two plurals where English has one (Polish's few and many) writes them as "few|many" in an `…Other`
-// message with a {count}; one whose singular also takes counts past 1 (Russian's and Ukrainian's 21) writes three,
+// A language with two plurals where English has one (Polish's few and many, Czech's few and other, Romanian's few and
+// other) writes them as "few|many" (or "few|other") in an `…Other` message with a {count}; one whose singular also takes counts past 1 (Russian's and Ukrainian's 21) writes three,
 // "one|few|many". A language with a dual (Arabic) writes every category it has, in CLDR's order:
 // "zero|one|two|few|many|other". `t()` picks one. A "|" anywhere else, in another language, or another number of forms, would print
 // on screen or never be picked.
@@ -25,13 +25,10 @@ const languages = readdirSync(fileURLToPath(directory))
   .filter((file) => file.endsWith('.ts') && !['index.ts', 'en.ts'].includes(file))
   .map((file) => file.slice(0, -'.ts'.length))
 
-// Why: "few|many" only means something where the plural has both (Polish); anywhere else t() would show one form for
-// every count.
+// Why: a second form only means something where the plural has a few (Polish, Czech, Romanian); anywhere else t()
+// would show one form for every count.
 const categoriesOf = (language) => new Intl.PluralRules(language.slice(0, 2)).resolvedOptions().pluralCategories
-const hasFewAndMany = (language) => {
-  const categories = categoriesOf(language)
-  return categories.includes('few') && categories.includes('many')
-}
+const hasFew = (language) => categoriesOf(language).includes('few')
 // Why: a language with a dual holds every category it has, in this order (Arabic's six).
 const everyForm = (language) => {
   const categories = categoriesOf(language)
@@ -62,8 +59,8 @@ for (const language of languages) {
       fail(language, key, 'is empty')
     } else if (messages[key].includes('|')) {
       const forms = messages[key].split('|')
-      if (!hasFewAndMany(language) && !everyForm(language)) {
-        fail(language, key, 'has a "|", which only a language with few and many plurals (Polish, Russian, Ukrainian) may hold')
+      if (!hasFew(language) && !everyForm(language)) {
+        fail(language, key, 'has a "|", which only a language with a few plural (Polish, Russian, Ukrainian, Czech, Romanian) may hold')
         continue
       }
       // Why: a …WordOther message is the word beside a count drawn apart ("7 payments" with a big 7), whose caller

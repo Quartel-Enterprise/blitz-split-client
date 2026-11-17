@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Ny Pix-nyckel</string>
+    <string name="payment_key_title_pix_edit">Redigera Pix-nyckel</string>
+    <string name="payment_key_title_bitcoin_new">Ny Bitcoin-nyckel</string>
+    <string name="payment_key_title_bitcoin_edit">Redigera Bitcoin-nyckel</string>
+    <string name="payment_key_save">Spara</string>
+
+    <string name="payment_key_pix_intro">Den som betalar dig ser den här nyckeln när ni gör upp. Vilken typ av nyckel?</string>
+    <string name="payment_key_pix_question">Vilken typ av nyckel?</string>
+    <string name="payment_key_pix_explanation">Den som betalar dig ser den här nyckeln när ni gör upp.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefon</string>
+    <string name="payment_key_type_email">E-post</string>
+    <string name="payment_key_type_random">Slumpmässig</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mobilnummer med riktnummer</string>
+    <string name="payment_key_label_email">E-post</string>
+    <string name="payment_key_label_random">Slumpmässig nyckel</string>
+
+    <string name="payment_key_bitcoin_intro">Hur vill du ta emot?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">snabbt, låg avgift</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">på blockkedjan</string>
+    <string name="payment_key_label_lightning">Lightning Address eller LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin-adress</string>
+
+    <string name="payment_key_paste">Klistra in</string>
+
+    <string name="payment_key_hint_cpf">Format 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Format namn@doman.se</string>
+    <string name="payment_key_hint_random">32 bokstäver och siffror, så som din bank visar den</string>
+    <string name="payment_key_hint_lightning">Som namn@plånbok.com eller LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainnet-adress som börjar med bc1q eller bc1p</string>
+
+    <string name="payment_key_valid_cpf">Format 000.000.000-00 · kontrollsiffrorna stämmer</string>
+    <string name="payment_key_valid_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Format namn@doman.se</string>
+    <string name="payment_key_valid_random">Slumpmässig nyckel godkänd (32 tecken)</string>
+    <string name="payment_key_valid_lightning_address">Giltig Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Giltig LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Ogiltigt CPF: kontrollsiffrorna stämmer inte.</string>
+    <string name="payment_key_error_invalid_phone">Ofullständigt mobilnummer: ange riktnumret och 9 siffror som börjar med 9.</string>
+    <string name="payment_key_error_invalid_email">Ofullständig e-postadress: domänen saknas, som .com eller .com.br.</string>
+    <string name="payment_key_error_invalid_random">Ofullständig slumpmässig nyckel: den har 32 bokstäver och siffror.</string>
+    <string name="payment_key_error_invalid_lightning">Det här är ingen Lightning Address (namn@plånbok) eller LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Det här är en Lightning-faktura (lnbc…): den betalar en gång och går ut. Klistra in en Lightning Address eller en LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Ogiltig adress. Använd en mainnet-adress som börjar med bc1q eller bc1p.</string>
+    <string name="payment_key_error_testnet_address">Det här är en testnet-adress (tb1…). Bara Bitcoin mainnet fungerar här, med bc1…-adresser.</string>
+    <string name="payment_key_error_already_saved">Du har redan den här nyckeln.</string>
+
+    <string name="payment_key_switched_to_onchain">Det här är en on-chain-adress, så vi bytte till On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Det här är en Lightning Address, så vi bytte till Lightning.</string>
+    <string name="payment_key_cpf_notice">Den som betalar dig ser hela ditt CPF. Om du helst inte vill dela det kan du använda en telefon-, e-post- eller slumpmässig nyckel.</string>
+    <string name="payment_key_held_notice">Du kan bara ha en Pix-nyckel av den här typen, så det här är den du har sparat. Ändra den här om du vill.</string>
+
+    <string name="payment_key_accepted_title">Vi godkänner</string>
+    <string name="payment_key_accepted_lightning_address_sample">namn@plånbok.app</string>
+
+    <string name="payment_key_default_pix_title">Standard-Pix-nyckel</string>
+    <string name="payment_key_default_bitcoin_title">Standard-Bitcoin-nyckel</string>
+    <string name="payment_key_default_pix_detail">Visas först när ni gör upp.</string>
+    <string name="payment_key_default_bitcoin_detail">Visas först när någon betalar i BTC.</string>
+    <string name="payment_key_default_now">Nu: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Gör en annan nyckel till standard för att ändra.</string>
+    <string name="payment_key_default_locked_new">Din första nyckel av den här typen är standard.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefon</string>
+    <string name="payment_key_default_type_email">e-post</string>
+    <string name="payment_key_default_type_random">slumpmässig nyckel</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split flyttar inga pengar: den som betalar gör det i sin bankapp. Kontrollera att nyckeln står i ditt namn.</string>
+    <string name="payment_key_footer_bitcoin">När ni gör upp visar vi beloppet i sats till aktuell kurs. Det är bara en uppskattning: den som betalar bekräftar det i sin plånbok.</string>
+
+    <string name="payment_key_delete">Radera nyckeln</string>
+    <string name="payment_key_delete_title">Radera den här nyckeln?</string>
+    <string name="payment_key_delete_body">De som är skyldiga dig ser den inte längre när ni gör upp.</string>
+    <string name="payment_key_delete_confirm">Radera</string>
+</resources>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Cheie Pix nouă</string>
+    <string name="payment_key_title_pix_edit">Editează cheia Pix</string>
+    <string name="payment_key_title_bitcoin_new">Cheie Bitcoin nouă</string>
+    <string name="payment_key_title_bitcoin_edit">Editează cheia Bitcoin</string>
+    <string name="payment_key_save">Salvează</string>
+
+    <string name="payment_key_pix_intro">Cine îți plătește vede această cheie când achită. Ce tip de cheie?</string>
+    <string name="payment_key_pix_question">Ce tip de cheie?</string>
+    <string name="payment_key_pix_explanation">Cine îți plătește vede această cheie când achită.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefon</string>
+    <string name="payment_key_type_email">E-mail</string>
+    <string name="payment_key_type_random">Aleatorie</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Număr de mobil cu prefix</string>
+    <string name="payment_key_label_email">E-mail</string>
+    <string name="payment_key_label_random">Cheie aleatorie</string>
+
+    <string name="payment_key_bitcoin_intro">Cum vrei să primești?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">rapid, comision mic</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">pe blockchain</string>
+    <string name="payment_key_label_lightning">Lightning Address sau LNURL</string>
+    <string name="payment_key_label_onchain">Adresă Bitcoin</string>
+
+    <string name="payment_key_paste">Lipește</string>
+
+    <string name="payment_key_hint_cpf">Format 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Format nume@domeniu.com</string>
+    <string name="payment_key_hint_random">32 de litere și cifre, cum le afișează banca ta</string>
+    <string name="payment_key_hint_lightning">De exemplu nume@portofel.com sau LNURL1…</string>
+    <string name="payment_key_hint_onchain">Adresă mainnet care începe cu bc1q sau bc1p</string>
+
+    <string name="payment_key_valid_cpf">Format 000.000.000-00 · cifrele de control se potrivesc</string>
+    <string name="payment_key_valid_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Format nume@domeniu.com</string>
+    <string name="payment_key_valid_random">Cheie aleatorie recunoscută (32 de caractere)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address validă</string>
+    <string name="payment_key_valid_lnurl">LNURL valid</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF invalid: cifrele de control nu se potrivesc.</string>
+    <string name="payment_key_error_invalid_phone">Număr de mobil incomplet: folosește prefixul și 9 cifre, începând cu 9.</string>
+    <string name="payment_key_error_invalid_email">E-mail incomplet: lipsește domeniul, de exemplu .com sau .com.br.</string>
+    <string name="payment_key_error_invalid_random">Cheie aleatorie incompletă: are 32 de litere și cifre.</string>
+    <string name="payment_key_error_invalid_lightning">Aceasta nu e o Lightning Address (nume@portofel) și nici un LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Aceasta e o factură Lightning (lnbc…): se plătește o singură dată și expiră. Lipește o Lightning Address sau un LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Adresă invalidă. Folosește o adresă mainnet bc1q sau bc1p.</string>
+    <string name="payment_key_error_testnet_address">Aceasta e o adresă testnet (tb1…). Aici funcționează doar Bitcoin mainnet, cu adrese bc1….</string>
+    <string name="payment_key_error_already_saved">Ai deja această cheie.</string>
+
+    <string name="payment_key_switched_to_onchain">Aceasta e o adresă on-chain, așa că am trecut la On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Aceasta e o Lightning Address, așa că am trecut la Lightning.</string>
+    <string name="payment_key_cpf_notice">Cine îți plătește vede tot CPF-ul tău. Dacă preferi să nu-l distribui, folosește o cheie de telefon, e-mail sau aleatorie.</string>
+    <string name="payment_key_held_notice">Poți avea o singură cheie Pix de acest tip, așa că aceasta e cea pe care ai salvat-o. Schimb-o aici dacă vrei.</string>
+
+    <string name="payment_key_accepted_title">Acceptăm</string>
+    <string name="payment_key_accepted_lightning_address_sample">nume@portofel.app</string>
+
+    <string name="payment_key_default_pix_title">Cheie Pix implicită</string>
+    <string name="payment_key_default_bitcoin_title">Cheie Bitcoin implicită</string>
+    <string name="payment_key_default_pix_detail">Apare prima când se achită.</string>
+    <string name="payment_key_default_bitcoin_detail">Apare prima când cineva plătește în BTC.</string>
+    <string name="payment_key_default_now">Acum: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Ca s-o schimbi, setează altă cheie ca implicită.</string>
+    <string name="payment_key_default_locked_new">Prima ta cheie de acest tip este cea implicită.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefon</string>
+    <string name="payment_key_default_type_email">e-mail</string>
+    <string name="payment_key_default_type_random">cheie aleatorie</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split nu mută bani: plătitorul plătește din aplicația băncii sale. Verifică dacă cheia e pe numele tău.</string>
+    <string name="payment_key_footer_bitcoin">La achitare, afișăm suma în sats la cursul actual. Este doar o estimare: plătitorul o confirmă în portofelul său.</string>
+
+    <string name="payment_key_delete">Șterge cheia</string>
+    <string name="payment_key_delete_title">Ștergi această cheie?</string>
+    <string name="payment_key_delete_body">Cei care îți datorează nu o vor mai vedea când achită.</string>
+    <string name="payment_key_delete_confirm">Șterge</string>
+</resources>

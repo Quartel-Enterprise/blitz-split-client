@@ -27,7 +27,10 @@
         "he": "כשהטלפון או הטאבלט במצב לרוחב, מה שנמצא לצד הרשימה ב\"אנשי קשר\" וב\"יתרות\" מתחיל עכשיו בראש המסך, עם תמונת הפרופיל שלך מעל הרשימה.",
         "th": "เมื่อวางโทรศัพท์หรือแท็บเล็ตแนวนอน ส่วนที่อยู่ข้างรายการในรายชื่อติดต่อและยอดคงเหลือจะเริ่มที่ด้านบนของหน้าจอ โดยมีรูปโปรไฟล์ของคุณอยู่เหนือรายการ",
         "vi": "Khi đặt điện thoại hoặc máy tính bảng nằm ngang, phần bên cạnh danh sách trong Danh bạ và Số dư giờ bắt đầu từ đầu màn hình, với ảnh hồ sơ của bạn ở trên danh sách.",
-        "zh-Hant": "手機或平板橫放時，「聯絡人」和「餘額」中清單旁的內容現在從畫面頂端開始，你的大頭貼則位於清單上方。"
+        "zh-Hant": "手機或平板橫放時，「聯絡人」和「餘額」中清單旁的內容現在從畫面頂端開始，你的大頭貼則位於清單上方。",
+        "sv": "Med telefonen eller en surfplatta liggande börjar det som står bredvid listan i Kontakter och Saldon nu högst upp på skärmen, med ditt profilfoto ovanför listan.",
+        "cs": "S telefonem nebo tabletem na šířku teď to, co je vedle seznamu v Kontaktech a Zůstatcích, začíná nahoře na obrazovce a tvoje profilová fotka je nad seznamem.",
+        "ro": "Cu telefonul sau o tabletă în poziție orizontală, ce stă lângă listă în Contacte și Solduri începe acum din partea de sus a ecranului, cu fotografia ta de profil deasupra listei."
       }
     },
     {
@@ -58,7 +61,10 @@
         "he": "קל יותר לראות את המסגרת של הכפתור \"הוספת אדם\" ב\"חברים\" של קבוצה.",
         "th": "ขอบของปุ่ม “เพิ่มคน” ในแท็บสมาชิกของกลุ่มมองเห็นได้ง่ายขึ้น",
         "vi": "Viền của nút “Thêm người” trong Thành viên của nhóm giờ dễ nhìn hơn.",
-        "zh-Hant": "群組「成員」中「新增成員」按鈕的邊框更容易看清楚了。"
+        "zh-Hant": "群組「成員」中「新增成員」按鈕的邊框更容易看清楚了。",
+        "sv": "Kanten på knappen ”Lägg till person” i en grupps Medlemmar syns tydligare.",
+        "cs": "Okraj tlačítka „Přidat osobu“ v Členech skupiny je lépe vidět.",
+        "ro": "Marginea butonului „Adaugă persoană” din Membrii unui grup se vede mai ușor."
       }
     },
     {
@@ -89,7 +95,10 @@
         "he": "תוקנו התאריכים בבוחר התאריכים של הסטטיסטיקה, שנשברו לאות או שתיים בכל שורה; תאריך הסיום עובר עכשיו מתחת לתאריך ההתחלה כששניהם לא נכנסים.",
         "th": "แก้ไขปัญหาวันที่ในตัวเลือกวันที่ของหน้าสถิติที่ขึ้นบรรทัดใหม่ทีละหนึ่งหรือสองตัวอักษร ตอนนี้วันสิ้นสุดจะอยู่ใต้วันเริ่มต้นเมื่อวางคู่กันไม่พอ",
         "vi": "Đã sửa lỗi ngày trong bộ chọn ngày của Thống kê bị ngắt một hai chữ mỗi dòng; giờ ngày kết thúc nằm dưới ngày bắt đầu khi cả hai không vừa.",
-        "zh-Hant": "修正「統計」日期選擇器中的日期每行只顯示一兩個字的問題；兩個日期放不下時，結束日期會移到開始日期下方。"
+        "zh-Hant": "修正「統計」日期選擇器中的日期每行只顯示一兩個字的問題；兩個日期放不下時，結束日期會移到開始日期下方。",
+        "sv": "Åtgärdat att datumen i datumväljaren i Statistik bröts en bokstav eller två per rad; slutdatumet hamnar nu under startdatumet när båda inte får plats.",
+        "cs": "Data ve výběru období ve Statistikách se už nelámou po jednom či dvou písmenech na řádek; když se obě nevejdou, koncové datum se přesune pod počáteční.",
+        "ro": "Am reparat datele din selectorul de date al Statisticilor, care se rupeau câte o literă sau două pe rând; data de sfârșit trece acum sub data de început când nu încap amândouă."
       }
     }
   ]

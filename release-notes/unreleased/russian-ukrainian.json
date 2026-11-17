@@ -27,7 +27,10 @@
         "he": "האפליקציה מדברת עכשיו רוסית ואוקראינית: אפשר לבחור \"Русский\" או \"Українська\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
         "th": "แอปรองรับภาษารัสเซียและยูเครนแล้ว เลือก “Русский” หรือ “Українська” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
         "vi": "Ứng dụng giờ đã có tiếng Nga và tiếng Ukraina: chọn “Русский” hoặc “Українська” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
-        "zh-Hant": "App現已支援俄文和烏克蘭文：在「個人資料 › 語言」中選擇「Русский」或「Українська」，或讓它跟隨你的裝置。"
+        "zh-Hant": "App現已支援俄文和烏克蘭文：在「個人資料 › 語言」中選擇「Русский」或「Українська」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu ryska och ukrainska: välj ”Русский” eller ”Українська” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví rusky a ukrajinsky: vyber „Русский“ nebo „Українська“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum rusă și ucraineană: alege „Русский” sau „Українська” în Profil › Limbă sau las-o să urmeze dispozitivul tău."
       }
     },
     {
@@ -57,7 +60,10 @@
         "he": "קבוצות יכולות עכשיו לפצל ברובל רוסי (RUB) ובהריבניה אוקראינית (UAH), וקבוצה שנוצרת ברוסיה או באוקראינה מתחילה במטבע שלה.",
         "th": "กลุ่มหารเป็นรูเบิลรัสเซีย (RUB) และฮริฟเนียยูเครน (UAH) ได้แล้ว และกลุ่มที่สร้างในรัสเซียหรือยูเครนจะเริ่มด้วยสกุลเงินของประเทศนั้น",
         "vi": "Nhóm giờ có thể chia bằng rúp Nga (RUB) và hryvnia Ukraina (UAH), và nhóm được tạo ở Nga hoặc Ukraina sẽ bắt đầu với tiền tệ của nước đó.",
-        "zh-Hant": "群組現在可以使用俄羅斯盧布（RUB）和烏克蘭格里夫納（UAH）分攤，在俄羅斯或烏克蘭建立的群組會以當地貨幣開始。"
+        "zh-Hant": "群組現在可以使用俄羅斯盧布（RUB）和烏克蘭格里夫納（UAH）分攤，在俄羅斯或烏克蘭建立的群組會以當地貨幣開始。",
+        "sv": "Grupper kan nu dela upp i ryska rubel (RUB) och ukrainska hryvnia (UAH), och en grupp som skapas i Ryssland eller Ukraina börjar i landets valuta.",
+        "cs": "Skupiny teď můžou dělit v ruském rublu (RUB) a ukrajinské hřivně (UAH) a skupina založená v Rusku nebo na Ukrajině začne v její měně.",
+        "ro": "Grupurile pot împărți acum în ruble rusești (RUB) și hrivne ucrainene (UAH), iar un grup creat în Rusia sau în Ucraina pornește în moneda țării."
       }
     }
   ]

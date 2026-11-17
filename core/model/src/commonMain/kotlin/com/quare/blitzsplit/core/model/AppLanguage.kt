@@ -31,6 +31,9 @@ enum class AppLanguage(
     HEBREW("he"),
     THAI("th"),
     VIETNAMESE("vi"),
+    SWEDISH("sv"),
+    CZECH("cs"),
+    ROMANIAN("ro"),
     ;
 
     /*

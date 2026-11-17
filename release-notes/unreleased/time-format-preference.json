@@ -27,7 +27,10 @@
         "he": "בפרופיל יש העדפה חדשה, \"פורמט שעה\": לפי המערכת, או תמיד להציג שעות בפורמט 24 שעות (14:30) או 12 שעות עם AM ו-PM (2:30 PM), בחשבונות, ב\"פעילות\", בתגובות ובבוררי השעה.",
         "th": "โปรไฟล์มีการตั้งค่าใหม่ “รูปแบบเวลา” แล้ว: ตามระบบ หรือแสดงเวลาแบบ 24 ชั่วโมง (14:30) หรือ 12 ชั่วโมงพร้อม AM และ PM (2:30 PM) เสมอ ในบิล กิจกรรม ความคิดเห็น และตัวเลือกเวลา",
         "vi": "Hồ sơ có tùy chọn mới “Định dạng giờ”: theo hệ thống, hoặc luôn hiện giờ theo dạng 24 giờ (14:30) hoặc 12 giờ với AM và PM (2:30 PM), trong khoản chi, Hoạt động, bình luận và bộ chọn giờ.",
-        "zh-Hant": "「個人資料」新增「時間格式」偏好設定：跟隨系統，或在帳單、「動態」、留言和時間選擇器中一律以24小時制（14:30）或含AM和PM的12小時制（2:30 PM）顯示時間。"
+        "zh-Hant": "「個人資料」新增「時間格式」偏好設定：跟隨系統，或在帳單、「動態」、留言和時間選擇器中一律以24小時制（14:30）或含AM和PM的12小時制（2:30 PM）顯示時間。",
+        "sv": "Profil har en ny inställning, ”Tidsformat”: följ systemet, eller visa alltid tider i 24-timmarsformat (14:30) eller 12-timmarsformat med AM och PM (2:30 PM), i utgifter, Aktivitet, kommentarer och tidsväljarna.",
+        "cs": "Profil má novou předvolbu „Formát času“: řiď se systémem, nebo vždy ukazuj čas ve 24hodinovém formátu (14:30) či 12hodinovém s AM a PM (2:30 PM), ve výdajích, Aktivitě, komentářích i ve výběru času.",
+        "ro": "Profilul are o preferință nouă, „Formatul orei”: urmează sistemul sau arată mereu orele în format de 24 de ore (14:30) ori de 12 ore cu AM și PM (2:30 PM), în cheltuieli, Activitate, comentarii și selectoarele de oră."
       }
     }
   ]

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Upravit profil</string>
+    <string name="edit_profile_save">Uložit</string>
+    <string name="edit_profile_change_photo">Změnit fotku</string>
+    <string name="edit_profile_take_photo">Vyfotit</string>
+    <string name="edit_profile_choose_photo">Vybrat z galerie</string>
+    <string name="edit_profile_use_account_photo">Použít fotku z účtu %1$s</string>
+    <string name="edit_profile_remove_photo">Odebrat fotku</string>
+    <string name="edit_profile_photo_error">Tuto fotku nešlo použít. Zkus jinou.</string>
+    <string name="edit_profile_avatar_color">Barva avatara</string>
+    <string name="edit_profile_avatar_color_hint">Zobrazí se, když nemáš fotku.</string>
+    <string name="edit_profile_name_label">Tvé jméno</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Napiš aspoň %d písmena.</string>
+    <string name="edit_profile_name_too_long">Použij nejvýše %d znaků.</string>
+    <string name="edit_profile_account_notice">Jméno a fotka pocházejí z tvého účtu %1$s. Když je tu změníš, platí to jen pro Blitz Split a tvůj účet %1$s se nezmění.</string>
+    <string name="edit_profile_footer">Tvé jméno a fotku vidí tvé skupiny a každý, kdo má odkaz na tvůj profil.</string>
+    <string name="profile_photo_close">Zavřít</string>
+    <string name="profile_photo_camera">Fotoaparát</string>
+    <string name="profile_photo_gallery">Galerie</string>
+    <string name="profile_photo_remove">Odebrat</string>
+    <string name="profile_photo_title">Profilová fotka</string>
+</resources>

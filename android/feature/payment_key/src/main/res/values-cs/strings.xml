@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Nový klíč Pix</string>
+    <string name="payment_key_title_pix_edit">Upravit klíč Pix</string>
+    <string name="payment_key_title_bitcoin_new">Nový klíč Bitcoin</string>
+    <string name="payment_key_title_bitcoin_edit">Upravit klíč Bitcoin</string>
+    <string name="payment_key_save">Uložit</string>
+
+    <string name="payment_key_pix_intro">Kdo ti platí, uvidí tento klíč při vyrovnání. Jaký typ klíče?</string>
+    <string name="payment_key_pix_question">Jaký typ klíče?</string>
+    <string name="payment_key_pix_explanation">Kdo ti platí, uvidí tento klíč při vyrovnání.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefon</string>
+    <string name="payment_key_type_email">E-mail</string>
+    <string name="payment_key_type_random">Náhodný</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Číslo mobilu s předvolbou oblasti</string>
+    <string name="payment_key_label_email">E-mail</string>
+    <string name="payment_key_label_random">Náhodný klíč</string>
+
+    <string name="payment_key_bitcoin_intro">Jak chceš přijímat platby?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">rychle, nízký poplatek</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">na blockchainu</string>
+    <string name="payment_key_label_lightning">Lightning Address nebo LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoinová adresa</string>
+
+    <string name="payment_key_paste">Vložit</string>
+
+    <string name="payment_key_hint_cpf">Formát 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Formát +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Formát jmeno@domena.cz</string>
+    <string name="payment_key_hint_random">32 písmen a číslic, jak ho ukazuje tvoje banka</string>
+    <string name="payment_key_hint_lightning">Třeba jmeno@penezenka.com nebo LNURL1…</string>
+    <string name="payment_key_hint_onchain">Adresa v mainnetu začínající bc1q nebo bc1p</string>
+
+    <string name="payment_key_valid_cpf">Formát 000.000.000-00 · kontrolní číslice sedí</string>
+    <string name="payment_key_valid_phone">Formát +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Formát jmeno@domena.cz</string>
+    <string name="payment_key_valid_random">Náhodný klíč rozpoznán (32 znaků)</string>
+    <string name="payment_key_valid_lightning_address">Platná Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Platná LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Neplatné CPF: kontrolní číslice nesedí.</string>
+    <string name="payment_key_error_invalid_phone">Neúplné číslo mobilu: použij předvolbu oblasti a 9 číslic začínajících 9.</string>
+    <string name="payment_key_error_invalid_email">Neúplný e-mail: chybí doména, třeba .com nebo .com.br.</string>
+    <string name="payment_key_error_invalid_random">Neúplný náhodný klíč: má 32 písmen a číslic.</string>
+    <string name="payment_key_error_invalid_lightning">Tohle není Lightning Address (jmeno@penezenka) ani LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Tohle je faktura Lightning (lnbc…): platí se jednou a vyprší. Vlož Lightning Address nebo LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Neplatná adresa. Použij adresu bc1q nebo bc1p v mainnetu.</string>
+    <string name="payment_key_error_testnet_address">Tohle je adresa testnetu (tb1…). Tady funguje jen Bitcoin mainnet s adresami bc1….</string>
+    <string name="payment_key_error_already_saved">Tento klíč už máš.</string>
+
+    <string name="payment_key_switched_to_onchain">Tohle je adresa on-chain, takže jsme přepnuli na On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Tohle je Lightning Address, takže jsme přepnuli na Lightning.</string>
+    <string name="payment_key_cpf_notice">Kdo ti platí, uvidí celé tvoje CPF. Pokud ho nechceš sdílet, použij telefon, e-mail nebo náhodný klíč.</string>
+    <string name="payment_key_held_notice">Klíč Pix tohoto typu můžeš mít jen jeden, takže tohle je ten, který máš uložený. Pokud chceš, změň ho tady.</string>
+
+    <string name="payment_key_accepted_title">Přijímáme</string>
+    <string name="payment_key_accepted_lightning_address_sample">jmeno@penezenka.app</string>
+
+    <string name="payment_key_default_pix_title">Výchozí klíč Pix</string>
+    <string name="payment_key_default_bitcoin_title">Výchozí klíč Bitcoin</string>
+    <string name="payment_key_default_pix_detail">Při vyrovnání se zobrazí jako první.</string>
+    <string name="payment_key_default_bitcoin_detail">Zobrazí se jako první, když ti někdo platí v BTC.</string>
+    <string name="payment_key_default_now">Teď: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Chceš-li ho změnit, nastav jako výchozí jiný klíč.</string>
+    <string name="payment_key_default_locked_new">Tvůj první klíč tohoto druhu je výchozí.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefon</string>
+    <string name="payment_key_default_type_email">e-mail</string>
+    <string name="payment_key_default_type_random">náhodný klíč</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split nepřevádí peníze: plátce platí ve své bankovní aplikaci. Zkontroluj, že je klíč na tvoje jméno.</string>
+    <string name="payment_key_footer_bitcoin">Při vyrovnání ukážeme částku v sats podle aktuálního kurzu. Je to jen odhad: plátce ji potvrdí ve své peněžence.</string>
+
+    <string name="payment_key_delete">Smazat klíč</string>
+    <string name="payment_key_delete_title">Smazat tento klíč?</string>
+    <string name="payment_key_delete_body">Lidé, kteří ti dluží, ho už při vyrovnání neuvidí.</string>
+    <string name="payment_key_delete_confirm">Smazat</string>
+</resources>

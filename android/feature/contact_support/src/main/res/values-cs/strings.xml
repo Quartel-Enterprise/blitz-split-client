@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Kontaktovat podporu</string>
+    <string name="contact_support_description">Otevřeme tvou e-mailovou aplikaci s připravenou zprávou. Popiš, co se stalo, a odešli ji: každou zprávu čtou skuteční lidé.</string>
+    <string name="contact_support_to">Komu</string>
+    <string name="contact_support_diagnostics">Bude přiloženo k e-mailu</string>
+    <string name="contact_support_app_version">Verze aplikace</string>
+    <string name="contact_support_platform">Platforma</string>
+    <string name="contact_support_language">Jazyk</string>
+    <string name="contact_support_account">Účet</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Systém</string>
+    <string name="contact_support_account_local">Jen toto zařízení</string>
+    <string name="contact_support_account_anonymous">Nepropojeno</string>
+    <string name="contact_support_open_email">Otevřít e-mail</string>
+    <string name="contact_support_copy_email">Kopírovat e-mailovou adresu</string>
+    <string name="contact_support_notice_copied">E-mailová adresa zkopírována.</string>
+    <string name="contact_support_notice_no_app">Nenašla se žádná e-mailová aplikace. Adresa se místo toho zkopírovala.</string>
+    <string name="contact_support_close">Zavřít</string>
+</resources>

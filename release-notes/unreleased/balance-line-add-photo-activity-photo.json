@@ -27,7 +27,10 @@
         "he": "ב\"פעילות\", כל שורה מציגה עכשיו את תמונת הקבוצה ליד השם שלה, כשיש לקבוצה תמונה.",
         "th": "ในแท็บกิจกรรม แต่ละบรรทัดจะแสดงรูปภาพของกลุ่มข้างชื่อกลุ่ม เมื่อกลุ่มมีรูปภาพ",
         "vi": "Trong Hoạt động, mỗi dòng giờ hiện ảnh của nhóm bên cạnh tên nhóm, nếu nhóm có ảnh.",
-        "zh-Hant": "在「動態」中，群組有照片時，每一行現在都會在名稱旁顯示群組照片。"
+        "zh-Hant": "在「動態」中，群組有照片時，每一行現在都會在名稱旁顯示群組照片。",
+        "sv": "I Aktivitet visar varje rad nu gruppens foto bredvid namnet, när gruppen har ett.",
+        "cs": "V Aktivitě teď každý řádek ukazuje fotku skupiny vedle jejího názvu, pokud skupina nějakou má.",
+        "ro": "În Activitate, fiecare rând arată acum fotografia grupului lângă numele lui, când grupul are una."
       }
     },
     {
@@ -57,7 +60,10 @@
         "he": "היתרה שלך בקבוצה כבר לא חוזרת על הסכום בשורה שנייה כשרק מגיע לך או כשרק יש לך חוב.",
         "th": "“ยอดคงเหลือของคุณในกลุ่มนี้” ไม่แสดงจำนวนเงินซ้ำในบรรทัดที่สองอีกต่อไป เมื่อคุณมีแค่ยอดที่จะได้คืนหรือแค่ยอดที่ต้องจ่าย",
         "vi": "Số dư của bạn trong nhóm này không còn lặp lại số tiền ở dòng thứ hai khi bạn chỉ được nhận lại hoặc chỉ phải trả.",
-        "zh-Hant": "當你只需收回或只需付款時，你在這個群組的餘額不會再於第二行重複金額。"
+        "zh-Hant": "當你只需收回或只需付款時，你在這個群組的餘額不會再於第二行重複金額。",
+        "sv": "Ditt saldo i den här gruppen upprepar inte längre beloppet på en andra rad när du bara får tillbaka eller bara är skyldig.",
+        "cs": "Tvůj zůstatek v této skupině už neopakuje částku na druhém řádku, když jen dostaneš zpět nebo jen dlužíš.",
+        "ro": "Soldul tău în acest grup nu mai repetă suma pe un al doilea rând când doar ai de primit sau doar ai de plătit."
       }
     },
     {
@@ -88,7 +94,10 @@
         "he": "האות הראשונה של \"הוספת תמונה\" מתחת לקבצים המצורפים של חשבון כבר לא נחתכת.",
         "th": "ตัวอักษรตัวแรกของ “เพิ่มรูปภาพ” ใต้ไฟล์แนบของบิลไม่ถูกตัดอีกต่อไป",
         "vi": "Chữ cái đầu của “Thêm ảnh” dưới phần tệp đính kèm của khoản chi không còn bị cắt nữa.",
-        "zh-Hant": "帳單附件下方「新增照片」的第一個字不會再被截掉。"
+        "zh-Hant": "帳單附件下方「新增照片」的第一個字不會再被截掉。",
+        "sv": "Första bokstaven i ”Lägg till foto” under en utgifts bilagor klipps inte längre av.",
+        "cs": "První písmeno „Přidat fotku“ pod přílohami výdaje už není useknuté.",
+        "ro": "Prima literă din „Adaugă fotografie”, sub atașamentele unei cheltuieli, nu mai e tăiată."
       }
     }
   ]

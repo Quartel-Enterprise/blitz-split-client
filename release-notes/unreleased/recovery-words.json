@@ -27,7 +27,10 @@
         "he": "בלי חשבון משתמש, קוד השחזור שלך הוא עכשיו 12 מילים ממוספרות, קלות יותר לרישום, והשחזור מקבל אותן מילה אחת בכל שדה, עם הצעה לכל מילה תוך כדי הקלדה. קודים שנשמרו לפני הגרסה הזו כבר לא עובדים: יש לשמור את הקוד החדש, או לחבר Google או Apple.",
         "th": "หากไม่มีบัญชี รหัสกู้คืนของคุณจะเป็นคำ 12 คำที่มีหมายเลขกำกับ จดได้ง่ายขึ้น และการกู้คืนจะรับทีละคำในแต่ละช่อง พร้อมแนะนำคำขณะพิมพ์ รหัสที่บันทึกไว้ก่อนเวอร์ชันนี้จะใช้ไม่ได้อีก: บันทึกรหัสใหม่ หรือเชื่อมต่อ Google หรือ Apple",
         "vi": "Khi không có tài khoản, mã khôi phục của bạn giờ là 12 từ được đánh số, dễ ghi lại hơn, và khi khôi phục bạn nhập mỗi từ vào một ô, kèm gợi ý từng từ khi gõ. Mã đã lưu trước phiên bản này không còn dùng được: hãy lưu mã mới, hoặc liên kết Google hay Apple.",
-        "zh-Hant": "沒有帳號時，你的復原碼現在是12個編號的詞，更容易抄寫；還原時每個欄位輸入一個詞，並會在你輸入時建議每個詞。此版本之前儲存的復原碼將無法使用：請儲存新的復原碼，或連結Google或Apple。"
+        "zh-Hant": "沒有帳號時，你的復原碼現在是12個編號的詞，更容易抄寫；還原時每個欄位輸入一個詞，並會在你輸入時建議每個詞。此版本之前儲存的復原碼將無法使用：請儲存新的復原碼，或連結Google或Apple。",
+        "sv": "Utan konto är din återställningskod nu 12 numrerade ord, lättare att skriva ner, och vid återställning skriver du ett ord per fält, med förslag på varje ord medan du skriver. Koder som sparats före den här versionen fungerar inte längre: spara den nya, eller koppla Google eller Apple.",
+        "cs": "Bez účtu je tvůj obnovovací kód teď 12 očíslovaných slov, která se snáz zapisují, a obnova je bere po jednom slově do každého pole a při psaní každé slovo napovídá. Kódy uložené před touto verzí už nefungují: ulož si nový, nebo propoj Google či Apple.",
+        "ro": "Fără cont, codul tău de recuperare e acum format din 12 cuvinte numerotate, mai ușor de notat, iar la restaurare le introduci câte un cuvânt pe câmp, cu sugestii pentru fiecare cuvânt în timp ce scrii. Codurile salvate înainte de această versiune nu mai funcționează: salvează-l pe cel nou sau conectează Google ori Apple."
       }
     }
   ]

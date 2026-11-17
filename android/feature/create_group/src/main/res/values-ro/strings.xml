@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Grup nou</string>
+    <string name="create_group_close">Închide</string>
+    <string name="create_group_create">Creează</string>
+    <string name="create_group_change_color">Schimbă culoarea grupului</string>
+    <string name="create_group_name_label">Numele grupului</string>
+    <string name="create_group_type_label">Tipul grupului</string>
+    <string name="create_group_members_title">Cine participă</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d persoană</item>
+        <item quantity="few">%d persoane</item>
+        <item quantity="other">%d de persoane</item>
+    </plurals>
+    <string name="create_group_me">tu</string>
+    <string name="create_group_remove_member">Elimină pe %s</string>
+    <string name="create_group_add_placeholder">Adaugă după nume</string>
+    <string name="create_group_add">Adaugă</string>
+    <string name="create_group_no_app_notice">Nimeni nu are nevoie de aplicație acum. Poți deja adăuga cheltuieli pentru toți și trimite linkul mai târziu.</string>
+    <string name="create_group_currency">Moneda implicită</string>
+    <string name="create_group_currency_caption">Cheltuielile noi încep în această monedă; fiecare cheltuială poate folosi alta.</string>
+    <string name="create_group_save_error">Grupul nu a putut fi salvat. Încearcă din nou.</string>
+    <string name="create_group_photo">Fotografia grupului</string>
+    <string name="create_group_take_photo">Fă o fotografie</string>
+    <string name="create_group_choose_photo">Alege o fotografie</string>
+    <string name="create_group_remove_photo">Elimină fotografia</string>
+    <string name="create_group_photo_error">Fotografia nu a putut fi folosită. Încearcă alta.</string>
+</resources>

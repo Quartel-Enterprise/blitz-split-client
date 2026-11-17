@@ -72,7 +72,7 @@ Every translator, human or agent, reads it first; without it each one picks its 
   `general.md` next to the ruble's, saying what an older app version shows (a currency with no decimals shows 100
   times smaller there). The UIs name it and write its symbol from the platform, so nothing else changes in them.
 - The store screenshots ([docs/store-listing-screenshots.md](../../../docs/store-listing-screenshots.md)): the
-  language's sample trip in `SampleTrips.kt` (`copies`, `currencies`, and a round rate in `priceOf` for a new
+  language's sample trip in `SampleTripCopies.kt` and `SampleTrips.kt` (`currencies`, and a round rate in `priceOf` for a new
   currency), its banners in `BannerCopies.kt` (one per `StoreScreen`), its `StoreLocale`, its listing locales in
   build-logic's `StoreScreenshots.kt` (`listingLocales`, `playLocales`, `appStoreLocales`, the stores' own codes) and
   `scripts/store-screenshots/locales.tsv`, and the count in the `Fastfile`'s description and the docs that say "in all
