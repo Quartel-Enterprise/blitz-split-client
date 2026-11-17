@@ -74,6 +74,7 @@
     <string name="profile_language_chinese_simplified">จีน (ตัวย่อ)</string>
     <string name="profile_language_hebrew">ฮีบรู</string>
     <string name="profile_language_thai">ไทย</string>
+    <string name="profile_language_vietnamese">เวียดนาม</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>
     <plurals name="profile_notifications_active">

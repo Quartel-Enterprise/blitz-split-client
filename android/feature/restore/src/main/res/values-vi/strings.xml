@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Lấy lại các nhóm của bạn</string>
+    <string name="restore_subtitle">Trước đây đã đăng nhập bằng tài khoản? Chỉ cần đăng nhập lại. Nếu chưa, hãy dùng mã khôi phục hoặc mã QR từ thiết bị cũ.</string>
+    <string name="restore_no_connection_title">Không có kết nối</string>
+    <string name="restore_no_connection_body">Đăng nhập bằng tài khoản hoặc mã cần internet để tải các nhóm của bạn. Những gì bạn đã nhập vẫn được giữ.</string>
+    <string name="restore_code_label">Hoặc dùng mã khôi phục</string>
+    <string name="restore_code_hint">12 từ theo đúng thứ tự. Dán tất cả vào một ô để điền mọi ô.</string>
+    <string name="restore_scan_qr_title">Quét mã QR từ thiết bị cũ của bạn</string>
+    <string name="restore_scan_qr_body">Ở đó: Hồ sơ › Khôi phục › Hiện mã QR</string>
+    <string name="restore_recover">Khôi phục</string>
+    <string name="restore_try_again">Thử lại</string>
+    <string name="restore_start_fresh">Bắt đầu mới trên thiết bị này</string>
+    <string name="restore_error_invalid_code">Không tìm thấy mã. Hãy kiểm tra các từ và thứ tự của chúng, rồi thử lại.</string>
+    <string name="restore_error_too_many_attempts">Quá nhiều lần thử. Hãy đợi vài phút rồi thử lại.</string>
+    <string name="restore_error_sign_in_failed">Hiện không đăng nhập được. Hãy thử lại.</string>
+    <string name="restore_error_unknown">Đã xảy ra lỗi. Hãy thử lại.</string>
+</resources>

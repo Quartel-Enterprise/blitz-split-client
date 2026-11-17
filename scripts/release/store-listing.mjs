@@ -66,6 +66,7 @@ export const PLAY_LOCALES = {
   zh: ["zh-CN"],
   he: ["iw-IL"],
   th: ["th"],
+  vi: ["vi"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -89,6 +90,7 @@ export const APP_STORE_LOCALES = {
   zh: ["zh-Hans"],
   he: ["he"],
   th: ["th"],
+  vi: ["vi"],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */

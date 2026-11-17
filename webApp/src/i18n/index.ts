@@ -20,6 +20,7 @@ import { ar } from './ar'
 import { zh } from './zh'
 import { he } from './he'
 import { th } from './th'
+import { vi } from './vi'
 
 export type { MessageKey }
 /**
@@ -27,12 +28,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -58,9 +59,9 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag
  * (es, es-MX, es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any
- * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar` or `th` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY,
- * id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH…) is German, Italian, Polish, Dutch, Japanese, Turkish,
- * Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic or Thai, any `zh` tag but a Traditional one (zh-CN, zh-Hans, zh-SG…) is
+ * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th` or `vi` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY,
+ * id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN…) is German, Italian, Polish, Dutch, Japanese, Turkish,
+ * Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Thai or Vietnamese, any `zh` tag but a Traditional one (zh-CN, zh-Hans, zh-SG…) is
  * Simplified Chinese, any `en` tag is English, and English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
@@ -142,6 +143,7 @@ const documentLanguages: Record<Locale, string> = {
   zh: 'zh-Hans',
   he: 'he',
   th: 'th',
+  vi: 'vi',
 }
 
 const documentLanguage = documentLanguages[locale]

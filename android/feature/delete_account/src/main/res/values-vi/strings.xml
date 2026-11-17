@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Xóa tài khoản</string>
+    <string name="delete_account_offline_title">Không có internet.</string>
+    <string name="delete_account_offline_body">Cần có kết nối internet để xóa tài khoản. Hãy kết nối và thử lại.</string>
+    <string name="delete_account_heading">Xóa tài khoản và dữ liệu của bạn?</string>
+    <string name="delete_account_deleted_title">Những gì sẽ bị xóa</string>
+    <string name="delete_account_deleted_profile">Hồ sơ của bạn (tên, ảnh và màu)</string>
+    <string name="delete_account_deleted_keys">Các khóa Pix và Bitcoin của bạn</string>
+    <string name="delete_account_deleted_provider">Liên kết với tài khoản %1$s của bạn</string>
+    <string name="delete_account_deleted_recovery_code">Mã khôi phục của bạn</string>
+    <string name="delete_account_deleted_device">Bản sao dữ liệu của bạn trên thiết bị này</string>
+    <string name="delete_account_kept_title">Những gì vẫn ở lại trong các nhóm của bạn</string>
+    <string name="delete_account_kept_groups">Các nhóm, cùng khoản chi và khoản thanh toán của nhóm, cho các thành viên khác</string>
+    <string name="delete_account_kept_member">Tên của bạn trong mỗi nhóm, dưới dạng thành viên không có tài khoản</string>
+    <string name="delete_account_kept_comments">Các bình luận và ảnh bạn đã thêm, dưới tên của bạn</string>
+    <string name="delete_account_export">Xuất dữ liệu của tôi trước</string>
+    <string name="delete_account_confirm">Tôi hiểu rằng không thể hoàn tác</string>
+    <string name="delete_account_delete">Xóa tài khoản</string>
+    <string name="delete_account_cancel">Hủy</string>
+    <string name="delete_account_failed">Không thể xóa tài khoản của bạn. Hãy thử lại.</string>
+</resources>

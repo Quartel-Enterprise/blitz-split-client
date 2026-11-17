@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Thông báo</string>
+    <string name="notification_settings_denied_title">Thông báo của Blitz Split đang bị tắt trên Android.</string>
+    <string name="notification_settings_denied_body">Hãy bật trong cài đặt hệ thống để nhận các thông báo đẩy bên dưới. Chuông vẫn hoạt động.</string>
+    <string name="notification_settings_open_settings">Mở cài đặt</string>
+    <string name="notification_settings_refused_body">Android cho phép bạn cấp quyền thêm một lần nữa để nhận các thông báo đẩy bên dưới. Chuông vẫn hoạt động.</string>
+    <string name="notification_settings_turn_on">Bật</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Đã chặn trong Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Mở cài đặt Android cho %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Thông báo đẩy</string>
+    <string name="notification_settings_push_switch_detail">Chỉ trên thiết bị này</string>
+    <string name="notification_settings_section">Thông báo cho tôi về</string>
+    <string name="notification_settings_push">Đẩy</string>
+    <string name="notification_settings_in_app">Trong ứng dụng</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Đẩy gửi thông báo đến thiết bị này. Trong ứng dụng đánh dấu mới trên chuông và trong Hoạt động; khi tắt, mục vẫn hiện trong Hoạt động, ở dạng đã đọc.</string>
+    <string name="notification_settings_bills">Khoản chi</string>
+    <string name="notification_settings_bills_detail">Khoản chi mới, đã sửa hoặc đã xóa có bạn tham gia</string>
+    <string name="notification_settings_payments">Thanh toán và trả nợ</string>
+    <string name="notification_settings_payments_detail">Khoản thanh toán đến hoặc từ bạn, và nợ đã đơn giản hóa</string>
+    <string name="notification_settings_comments">Bình luận</string>
+    <string name="notification_settings_comments_detail">Trong các khoản chi có bạn và các chuỗi bạn đã viết</string>
+    <string name="notification_settings_people_and_groups">Người và nhóm</string>
+    <string name="notification_settings_people_and_groups_detail">Ai tham gia hoặc rời nhóm của bạn, và những gì thay đổi trong nhóm</string>
+    <string name="notification_settings_payment_requests">Yêu cầu trả tiền</string>
+    <string name="notification_settings_payment_requests_detail">Khi ai đó yêu cầu bạn trả tiền</string>
+    <string name="notification_settings_balance_reminder">Nhắc số dư chưa thanh toán</string>
+    <string name="notification_settings_balance_reminder_detail">Mỗi tuần một lần, nếu còn số dư chưa thanh toán</string>
+    <string name="notification_settings_footer">Thông báo đến khi có internet. Để tắt tiếng một nhóm, dùng menu bên trong nhóm đó.</string>
+</resources>

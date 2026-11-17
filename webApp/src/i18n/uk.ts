@@ -851,6 +851,7 @@ export const uk: Record<MessageKey, string> = {
   profile_languageChineseSimplified: 'Китайська (спрощена)',
   profile_languageHebrew: 'Іврит',
   profile_languageThai: 'Тайська',
+  profile_languageVietnamese: "В'єтнамська",
   profile_bitcoinInSats: 'Bitcoin у сатоші',
   profile_bitcoinInSatsDetail: 'Показує й вводить суми в біткоїнах у сатах (1 ₿ = 100 000 000 сатів).',
   profile_shareUsageData: 'Ділитися даними про використання',

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Ghi chú phát hành</string>
+    <string name="release_notes_show_beta">Hiện các phiên bản beta</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Phiên bản này</string>
+    <string name="release_notes_empty">Chưa có ghi chú phát hành.</string>
+    <string name="release_notes_empty_only_betas">Chưa có phiên bản ổn định. Bật phiên bản beta để xem những gì đang được thử nghiệm.</string>
+    <string name="release_notes_load_failed_title">Không tải được ghi chú phát hành</string>
+    <string name="release_notes_load_failed_body">Hãy kiểm tra kết nối và thử lại.</string>
+    <string name="release_notes_retry">Thử lại</string>
+    <string name="release_notes_open_on_github">Mở trên GitHub</string>
+</resources>

@@ -300,6 +300,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Vietnamese tag WHEN reading it THEN is Vietnamese`() {
+        // Given
+        val tags = listOf("vi", "vi-VN", "vi_VN", "VI-vn")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.VIETNAMESE }, languages)
+    }
+
+    @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN follows the device`() {
         // Given
         val tags = listOf("zh-TW", "zh-Hant", "zh-Hant-TW", "zh_HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
@@ -392,6 +404,7 @@ class AppLanguageTest {
                 "ZH",
                 "HE",
                 "TH",
+                "VI",
             ),
             codes,
         )

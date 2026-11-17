@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Sửa hồ sơ</string>
+    <string name="edit_profile_save">Lưu</string>
+    <string name="edit_profile_change_photo">Đổi ảnh</string>
+    <string name="edit_profile_take_photo">Chụp ảnh</string>
+    <string name="edit_profile_choose_photo">Chọn từ thư viện</string>
+    <string name="edit_profile_use_account_photo">Dùng ảnh tài khoản %1$s</string>
+    <string name="edit_profile_remove_photo">Xóa ảnh</string>
+    <string name="edit_profile_photo_error">Không thể dùng ảnh này. Hãy thử ảnh khác.</string>
+    <string name="edit_profile_avatar_color">Màu ảnh đại diện</string>
+    <string name="edit_profile_avatar_color_hint">Hiện khi bạn không có ảnh.</string>
+    <string name="edit_profile_name_label">Tên của bạn</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Nhập ít nhất %d chữ cái.</string>
+    <string name="edit_profile_name_too_long">Dùng tối đa %d ký tự.</string>
+    <string name="edit_profile_account_notice">Tên và ảnh được lấy từ tài khoản %1$s của bạn. Thay đổi ở đây chỉ áp dụng cho Blitz Split và không thay đổi tài khoản %1$s của bạn.</string>
+    <string name="edit_profile_footer">Các nhóm của bạn và bất kỳ ai có liên kết hồ sơ của bạn đều thấy tên và ảnh của bạn.</string>
+    <string name="profile_photo_close">Đóng</string>
+    <string name="profile_photo_camera">Camera</string>
+    <string name="profile_photo_gallery">Thư viện</string>
+    <string name="profile_photo_remove">Xóa</string>
+    <string name="profile_photo_title">Ảnh hồ sơ</string>
+</resources>

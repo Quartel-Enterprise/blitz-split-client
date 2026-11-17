@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · mã khôi phục</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Hãy cho phép camera trong Cài đặt để chụp ảnh.</string>
+    <string name="platform_camera_settings">Cài đặt</string>
+    <string name="platform_receipt_source_camera">Chụp ảnh</string>
+    <string name="platform_receipt_source_gallery">Chọn từ thư viện</string>
+    <string name="platform_receipt_source_file">Chọn tệp</string>
+    <string name="platform_receipt_camera_title">Quét hóa đơn</string>
+    <string name="platform_receipt_camera_close">Đóng</string>
+    <string name="platform_receipt_camera_flash_on">Bật đèn flash</string>
+    <string name="platform_receipt_camera_flash_off">Tắt đèn flash</string>
+    <string name="platform_receipt_camera_hint">Đặt trọn hóa đơn trong khung. Chúng tôi sẽ điền số tiền, ngày và mô tả; bạn kiểm tra trước khi lưu.</string>
+    <string name="platform_receipt_camera_gallery">Chọn từ thư viện</string>
+    <string name="platform_receipt_camera_shutter">Chụp ảnh</string>
+    <string name="platform_receipt_camera_unavailable">Camera không khả dụng. Hãy chọn ảnh hóa đơn từ thư viện.</string>
+    <string name="platform_receipt_camera_permission">Hãy cho phép camera để quét hóa đơn, hoặc chọn ảnh từ thư viện.</string>
+    <string name="platform_receipt_camera_allow">Cho phép camera</string>
+    <string name="platform_receipt_camera_settings">Mở cài đặt</string>
+</resources>

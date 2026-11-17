@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Chia tiền, không rắc rối</string>
+    <string name="welcome_offline_title">Dùng được khi ngoại tuyến</string>
+    <string name="welcome_offline_body">Mọi thứ được lưu trên thiết bị của bạn và đồng bộ sau.</string>
+    <string name="welcome_optional_title">Tài khoản là không bắt buộc</string>
+    <string name="welcome_optional_body">Google hoặc Apple chỉ giúp bạn không mất gì khi đổi thiết bị.</string>
+    <string name="welcome_invite_title">Mời bằng liên kết hoặc mã QR</string>
+    <string name="welcome_invite_body">Bạn bè tham gia nhóm mà không cần tạo tài khoản.</string>
+    <string name="welcome_no_connection_title">Không có kết nối.</string>
+    <string name="welcome_no_connection_body">Đăng nhập bằng tài khoản cần có internet. Hãy dùng không cần tài khoản ngay bây giờ và kết nối sau trong Hồ sơ.</string>
+    <string name="welcome_or">hoặc</string>
+    <string name="welcome_use_without_account">Dùng không cần tài khoản</string>
+    <string name="welcome_used_on_another_device">Tôi đã dùng trên thiết bị khác</string>
+    <string name="welcome_sign_in_failed">Hiện không thể đăng nhập. Hãy thử lại.</string>
+    <string name="welcome_legal_notice">Khi tiếp tục, bạn chấp nhận %1$s và xác nhận đã đọc %2$s.</string>
+    <string name="welcome_legal_terms">Điều khoản dịch vụ</string>
+    <string name="welcome_legal_privacy">Chính sách quyền riêng tư</string>
+    <string name="welcome_no_account_note">Không có tài khoản, dữ liệu của bạn sẽ bị xóa sau 30 ngày không dùng. Hãy kết nối Google hoặc Apple để giữ dữ liệu.</string>
+    <string name="welcome_no_account_note_offline">Không có tài khoản, dữ liệu của bạn sẽ bị xóa sau 30 ngày không dùng. Hãy kết nối Google hoặc Apple sau, trong Hồ sơ, để giữ dữ liệu.</string>
+    <string name="welcome_expired_title">Dữ liệu của bạn đã bị xóa</string>
+    <string name="welcome_expired_body">Bạn đã dùng ứng dụng mà không có tài khoản và không mở ứng dụng trong 30 ngày, nên dữ liệu của bạn đã bị xóa. Hãy kết nối Google hoặc Apple để giữ dữ liệu lần sau.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

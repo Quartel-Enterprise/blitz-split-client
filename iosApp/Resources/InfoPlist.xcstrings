@@ -119,6 +119,12 @@
             "value" : "Blitz Split"
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -240,6 +246,12 @@
           }
         },
         "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "vi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -371,6 +383,12 @@
             "value" : "Щоб сканувати QR-код запрошення або зі старого пристрою, а також робити фото профілю й фото рахунків."
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Để quét mã QR của lời mời hoặc từ thiết bị cũ, và để chụp ảnh hồ sơ cũng như ảnh khoản chi."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -497,6 +515,12 @@
             "value" : "Щоб запрошувати людей з твоїх контактів за посиланням на групу. Їхні номери залишаються на цьому пристрої."
           }
         },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Để mời người trong danh bạ bằng liên kết của nhóm. Số điện thoại của họ chỉ nằm trên thiết bị này."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -621,6 +645,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Щоб зберігати фото рахунків у твою фототеку."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Để lưu ảnh khoản chi vào thư viện của bạn."
           }
         },
         "zh-Hans" : {
