@@ -205,12 +205,14 @@ with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub token
 - The `MERGE_WHEN_GREEN_TOKEN` secret, for `merge-when-green` (see [Merge when green](#merge-when-green)).
 - No `GRADLE_ENCRYPTION_KEY`: the secret is not set, and setting it gained nothing. Every job passes it to the Gradle
   action, and setup-gradle documents it as the key that encrypts the configuration cache it keeps between runs. Tried
-  on 17 November 2026, with setup-gradle v6 and the key set (`openssl rand -base64 16`), it kept none: the first run
+  on 2026-11-17, with setup-gradle v6 and the key set (`openssl rand -base64 16`), it kept none: the first run
   of `main` saved no configuration cache entry (the action's cache summary lists none), and a pull request job that
   had the key and restored that run's Gradle home still printed "Calculating task graph as no cached configuration is
-  available". So every Gradle invocation configures the build again, about 40 seconds on a runner. The jobs still
-  pass the secret, so trying again with a later version of the action only takes creating it: the second run then
-  prints "Reusing configuration cache" on its first Gradle invocation, or it doesn't.
+  available". So every job configures the build again on its first Gradle invocation, about 40 seconds on a runner.
+  The jobs still pass the secret, so trying again with a later version of the action only takes creating it: after a
+  run of `main` with the key, the next run of `main` on a commit that changes no Gradle script, `build-logic/`,
+  `gradle.properties` nor the version catalog (any of them invalidates the entry anyway) prints "Reusing
+  configuration cache" on the first Gradle invocation of `build-and-test`'s jobs, or it doesn't.
 - A ruleset on `main` with **Require conversation resolution before merging**. This is what keeps a pull request
   with open review threads from merging: the checks the gate holds are skipped, not failed, and GitHub counts a
   skipped required check as passing.
