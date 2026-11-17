@@ -56,6 +56,8 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     iPad's room or in the Mac's inspector) closes while the profile shows and opens again on back, Record payment starting over
     there (the whole debt, Pix, now, "Pay Ana" again); Android keeps it as it was, and the web keeps Bill and
     Record payment mounted under the profile, whose back says "Back" (the tab's name only right above a tab).
+    On Android the back gesture over that profile returns to Record payment's sheet like the top bar's arrow does (it
+    used to cancel, since the sheet opened a window mid-gesture; beta feedback of 2026-11-16, "Did Larissa pay you?").
   - The face tapped flies into the profile's photo and back into it on back (beta feedback of 2026-11-15, "when
     possible"), Profile's (from a home tab's avatar, "You" in a bill) as a contact's, following the group's
     transition rules: only the face tapped in the last second (a bill shows its payer twice; a search hit, a link or a
