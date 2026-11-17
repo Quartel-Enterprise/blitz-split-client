@@ -91,14 +91,14 @@ function ItemsBody({ presenter, state, items, money, signed }: { presenter: Spli
                 type="button"
                 role="row"
                 onClick={() => presenter.openItem(row.id)}
-                className={cn('flex min-h-12 items-center gap-3 px-3 py-1.5 text-left hover:bg-accent/40', row.isLoose && 'bg-destructive/10')}
+                className={cn('flex min-h-12 items-center gap-3 px-3 py-1.5 text-start hover:bg-accent/40', row.isLoose && 'bg-destructive/10')}
               >
                 <span role="cell" className="flex min-w-0 flex-1 flex-col">
                   <span className="truncate font-medium">{row.name}</span>
                   <span className={cn('truncate text-xs', row.isLoose ? 'text-destructive' : 'text-muted-foreground')}>{itemRowSubtitle(row, money)}</span>
                 </span>
                 <AvatarStack {...stackOf(Array.from(row.consumers), 'compact')} />
-                <span role="cell" className="w-24 shrink-0 text-right font-mono text-[13px] tabular-nums">
+                <span role="cell" className="w-24 shrink-0 text-end font-mono text-[13px] tabular-nums">
                   {money(row.totalMinor)}
                 </span>
               </button>
@@ -153,12 +153,12 @@ function ItemsBody({ presenter, state, items, money, signed }: { presenter: Spli
 
 function FeeRow({ title, subtitle, amount, onClick }: { title: string; subtitle: string; amount: string; onClick: () => void }) {
   return (
-    <button type="button" role="row" onClick={onClick} className="flex min-h-12 items-center gap-3 bg-muted/40 px-3 py-1.5 text-left hover:bg-accent/40">
+    <button type="button" role="row" onClick={onClick} className="flex min-h-12 items-center gap-3 bg-muted/40 px-3 py-1.5 text-start hover:bg-accent/40">
       <span role="cell" className="flex min-w-0 flex-1 flex-col">
         <span className="truncate font-medium">{title}</span>
         <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
       </span>
-      <span role="cell" className="w-24 shrink-0 text-right font-mono text-[13px] tabular-nums">
+      <span role="cell" className="w-24 shrink-0 text-end font-mono text-[13px] tabular-nums">
         {amount}
       </span>
     </button>
@@ -177,7 +177,7 @@ export function itemPane(presenter: SplitItemsPresenter, state: JsSplitBillState
     footer: (
       <>
         {editor.itemId != null && (
-          <Button key="item-delete" variant="ghost" className="text-destructive sm:mr-auto" onClick={() => presenter.deleteItem(editor.itemId ?? '')}>
+          <Button key="item-delete" variant="ghost" className="text-destructive sm:me-auto" onClick={() => presenter.deleteItem(editor.itemId ?? '')}>
             {t('item_delete')}
           </Button>
         )}
@@ -217,18 +217,19 @@ function ItemBody({ presenter, state, editor, money }: { presenter: SplitItemsPr
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="item-quantity">{t('item_quantity')}</Label>
-          <Input id="item-quantity" inputMode="numeric" value={quantity} autoComplete="off" onChange={(event) => setQuantity(event.target.value)} className="text-right tabular-nums" />
+          <Input id="item-quantity" dir="ltr" inputMode="numeric" value={quantity} autoComplete="off" onChange={(event) => setQuantity(event.target.value)} className="text-right rtl:text-left tabular-nums" />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="item-price">{t('item_price')}</Label>
           <Input
             id="item-price"
+            dir="ltr"
             inputMode="numeric"
             value={price}
             placeholder={amountPlaceholder(state.fractionDigits, state.currency)}
             autoComplete="off"
             onChange={(event) => setPrice(event.target.value)}
-            className="text-right tabular-nums"
+            className="text-right rtl:text-left tabular-nums"
           />
         </div>
       </div>
@@ -345,6 +346,7 @@ function PersonField({ presenter, editor, line, state }: { presenter: SplitItems
         </span>
       )}
       <input
+        dir="ltr"
         inputMode="numeric"
         autoComplete="off"
         value={value}
@@ -352,7 +354,7 @@ function PersonField({ presenter, editor, line, state }: { presenter: SplitItems
         aria-label={label}
         aria-invalid={line.isError}
         onChange={(event) => setValue(event.target.value)}
-        className="w-full min-w-0 bg-transparent text-right font-mono text-base tabular-nums outline-none md:text-[13px] placeholder:text-muted-foreground"
+        className="w-full min-w-0 bg-transparent text-right rtl:text-left font-mono text-base tabular-nums outline-none md:text-[13px] placeholder:text-muted-foreground"
       />
       {editor.mode === 'percent' && (
         <span aria-hidden className="text-xs text-muted-foreground">
@@ -395,6 +397,7 @@ function FeeBody({ presenter, state, editor }: { presenter: SplitItemsPresenter;
         {!isService && <span className="text-sm text-muted-foreground">{currencySymbol(state.currency)}</span>}
         <Input
           id="items-fee"
+          dir="ltr"
           inputMode="numeric"
           value={value}
           placeholder={isService ? '0' : amountPlaceholder(state.fractionDigits, state.currency)}
@@ -403,7 +406,7 @@ function FeeBody({ presenter, state, editor }: { presenter: SplitItemsPresenter;
           autoComplete="off"
           autoFocus
           onChange={(event) => setValue(event.target.value)}
-          className="text-right tabular-nums"
+          className="text-right rtl:text-left tabular-nums"
         />
         {isService && <span className="text-sm text-muted-foreground">%</span>}
       </div>

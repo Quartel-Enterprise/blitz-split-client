@@ -520,7 +520,7 @@ private struct ActivityRow: View {
                 Spacer(minLength: 4)
                 #if os(iOS)
                 if !showsDetail {
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "chevron.forward")
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(.tertiary)
                         .padding(.top, Self.faceSize / 2 - 8)
@@ -704,7 +704,7 @@ struct ActivityChangeLine: View {
             Text(verbatim: change.before)
                 .strikethrough()
                 .foregroundStyle(.secondary)
-            Text(verbatim: "→")
+            Text(verbatim: RightToLeft.forwardArrow)
                 .foregroundStyle(.secondary)
                 .accessibilityLabel(Text("to"))
             Text(verbatim: change.after)

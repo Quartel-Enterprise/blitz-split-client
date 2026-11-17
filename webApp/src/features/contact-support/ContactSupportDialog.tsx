@@ -111,7 +111,7 @@ function ContactSupportContent({ presenter, state }: { presenter: ContactSupport
             {rows.map(([label, value]) => (
               <div key={label} className="flex items-baseline justify-between gap-4">
                 <dt className="shrink-0 text-muted-foreground">{t(label)}</dt>
-                <dd className="min-w-0 text-right break-all">{value}</dd>
+                <dd className="min-w-0 text-end break-all">{value}</dd>
               </div>
             ))}
           </dl>

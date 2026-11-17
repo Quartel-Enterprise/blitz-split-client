@@ -812,7 +812,7 @@ private struct HistoryRow: View {
         if let bill = item as? ContactHistoryItemBill {
             CategoryBadge(category: bill.category, size: 32)
         } else {
-            Image(systemName: "arrow.right")
+            Image(systemName: "arrow.forward")
                 .font(.subheadline)
                 .foregroundStyle(Palette.accent)
                 .frame(width: 32, height: 32)

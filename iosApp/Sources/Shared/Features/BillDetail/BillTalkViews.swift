@@ -498,7 +498,7 @@ private struct BillHistoryDiffLine: View {
             if let before = diff.before, let after = diff.after {
                 Text(verbatim: before)
                     .foregroundStyle(.secondary)
-                Image(systemName: "arrow.right")
+                Image(systemName: "arrow.forward")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .accessibilityLabel(Text("to", comment: "Bill history: before, to after"))

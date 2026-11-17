@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.android.feature.splitbill
 
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -12,6 +13,7 @@ import com.quare.blitzsplit.android.designsystem.component.ConfirmDialog
 import com.quare.blitzsplit.android.designsystem.component.FoldAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.rememberNumberField
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.withLeftToRightDigits
 import com.quare.blitzsplit.android.designsystem.layout.rememberDialogPlacement
 import com.quare.blitzsplit.feature.splitbill.presentation.model.FeeEditor
 import com.quare.blitzsplit.feature.splitbill.presentation.model.ItemDeletion
@@ -56,6 +58,7 @@ internal fun FeeDialog(
                 value = feeField.value,
                 onValueChange = feeField.onValueChange,
                 label = { Text(stringResource(fieldLabel)) },
+                textStyle = LocalTextStyle.current.withLeftToRightDigits(),
                 prefix = if (isService) null else ({ Text(money.symbol + " ") }),
                 suffix = if (isService) ({ Text("%") }) else null,
                 placeholder = { Text(if (isService) "0" else money.zeroPlaceholder) },

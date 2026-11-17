@@ -40,7 +40,7 @@ export function LoadingDialog({
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className={cn('max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[520px]', className)}>
-        <DialogHeader className="pr-8">
+        <DialogHeader className="pe-8">
           <DialogTitle className={cn(!title && 'sr-only')}>{heading}</DialogTitle>
           <DialogDescription className="sr-only">{heading}</DialogDescription>
         </DialogHeader>
@@ -50,7 +50,7 @@ export function LoadingDialog({
   ) : (
     <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
       <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           <DrawerTitle className={cn(!title && 'sr-only')}>{heading}</DrawerTitle>
           <DrawerDescription className="sr-only">{heading}</DrawerDescription>
         </DrawerHeader>

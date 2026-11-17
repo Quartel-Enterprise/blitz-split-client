@@ -207,7 +207,7 @@ private struct GroupScreenBars: ViewModifier {
             Button(exportTitle, systemImage: "square.and.arrow.down", action: actions.export)
             Divider()
             Button(action: actions.leaveGroup) {
-                menuLabel(leaveGroupTitle, systemImage: "rectangle.portrait.and.arrow.right")
+                menuLabel(leaveGroupTitle, systemImage: "rectangle.portrait.and.arrow.forward")
             }
             .disabled(!isOnline)
             Button(role: .destructive, action: actions.deleteGroup) {

@@ -7,7 +7,8 @@
 //
 // A language with two plurals where English has one (Polish's few and many) writes them as "few|many" in an `…Other`
 // message with a {count}; one whose singular also takes counts past 1 (Russian's and Ukrainian's 21) writes three,
-// "one|few|many". `t()` picks one. A "|" anywhere else, in another language, or another number of forms, would print
+// "one|few|many". A language with a dual (Arabic) writes every category it has, in CLDR's order:
+// "zero|one|two|few|many|other". `t()` picks one. A "|" anywhere else, in another language, or another number of forms, would print
 // on screen or never be picked.
 //
 // Runs on the TypeScript sources through Node's own type stripping, with no build:  node scripts/check-messages.mjs
@@ -26,9 +27,16 @@ const languages = readdirSync(fileURLToPath(directory))
 
 // Why: "few|many" only means something where the plural has both (Polish); anywhere else t() would show one form for
 // every count.
+const categoriesOf = (language) => new Intl.PluralRules(language.slice(0, 2)).resolvedOptions().pluralCategories
 const hasFewAndMany = (language) => {
-  const categories = new Intl.PluralRules(language.slice(0, 2)).resolvedOptions().pluralCategories
+  const categories = categoriesOf(language)
   return categories.includes('few') && categories.includes('many')
+}
+// Why: a language with a dual holds every category it has, in this order (Arabic's six).
+const everyForm = (language) => {
+  const categories = categoriesOf(language)
+  if (!categories.includes('two')) return undefined
+  return ['zero', 'one', 'two', 'few', 'many', 'other'].filter((category) => categories.includes(category))
 }
 
 // Why: Russian's and Ukrainian's 21 takes the singular, which an …Other message must then hold too: one|few|many.
@@ -54,7 +62,7 @@ for (const language of languages) {
       fail(language, key, 'is empty')
     } else if (messages[key].includes('|')) {
       const forms = messages[key].split('|')
-      if (!hasFewAndMany(language)) {
+      if (!hasFewAndMany(language) && !everyForm(language)) {
         fail(language, key, 'has a "|", which only a language with few and many plurals (Polish, Russian, Ukrainian) may hold')
         continue
       }
@@ -64,9 +72,11 @@ for (const language of languages) {
         fail(language, key, 'has a "|", which only an …Other message with a {count}, or a …WordOther one, may hold')
         continue
       }
-      const formCount = pluralFormCount(language)
+      const every = everyForm(language)
+      const formCount = every ? every.length : pluralFormCount(language)
       if (forms.length !== formCount || forms.some((form) => form.trim() === '')) {
-        fail(language, key, formCount === 3 ? 'must hold exactly three plural forms, "one|few|many"' : 'must hold exactly two plural forms, "few|many"')
+        const expected = every ? `"${every.join('|')}"` : formCount === 3 ? '"one|few|many"' : '"few|many"'
+        fail(language, key, `must hold exactly ${formCount} plural forms, ${expected}`)
         continue
       }
       for (const form of forms) {

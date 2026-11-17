@@ -843,6 +843,7 @@ export const tr: Record<MessageKey, string> = {
   profile_languageUkrainian: 'Ukraynaca',
   profile_languageKorean: 'Korece',
   profile_languageHindi: 'Hintçe',
+  profile_languageArabic: 'Arapça',
   profile_bitcoinInSats: 'Satoshi cinsinden bitcoin',
   profile_bitcoinInSatsDetail: 'Bitcoin tutarlarını sats olarak gösterir ve girer (1 ₿ = 100.000.000 sats).',
   profile_shareUsageData: "Kullanım verilerini paylaş",

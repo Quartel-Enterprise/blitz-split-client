@@ -427,7 +427,7 @@ struct SummaryButton: View {
                 }
                 Spacer(minLength: 4)
                 if isEnabled {
-                    Image(systemName: "chevron.right")
+                    Image(systemName: "chevron.forward")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                 }

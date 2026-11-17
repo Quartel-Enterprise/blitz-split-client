@@ -42,8 +42,10 @@ class DateTimeTextFormatter(
 
     private fun zonedOf(epochMillis: Long): ZonedDateTime = Instant.ofEpochMilli(epochMillis).atZone(zone)
 
-    private fun formatterOf(skeleton: String): DateTimeFormatter =
-        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(locale, skeleton), locale)
+    // Why: 0-9 in every language, as the amounts (MoneyFormatter); java.time's own digits are already 0-9.
+    private fun formatterOf(skeleton: String): DateTimeFormatter = locale.withLatinDigits().let { latin ->
+        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(latin, skeleton), latin)
+    }
 
     private companion object {
         const val WEEKDAY_DATE_SKELETON = "EEEMMMd"

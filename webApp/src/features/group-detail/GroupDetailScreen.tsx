@@ -177,7 +177,7 @@ function JoinedNotice({ presenter, name, showsProtectAccess, showsCalendarOffer 
         </Button>
       </section>
       {showsProtectAccess && (
-        <button type="button" onClick={() => presenter.protectAccess()} className="flex items-center gap-3 rounded-xl border bg-card p-4 text-left hover:bg-muted/60">
+        <button type="button" onClick={() => presenter.protectAccess()} className="flex items-center gap-3 rounded-xl border bg-card p-4 text-start hover:bg-muted/60">
           <ShieldCheck className="size-5 shrink-0 text-primary" />
           <span className="flex-1">
             <span className="block font-semibold">{t('groupDetail_protectTitle')}</span>

@@ -70,7 +70,7 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
                     size="icon"
                     variant="secondary"
                     aria-label={t('editProfile_changePhoto')}
-                    className="absolute -right-1 -bottom-1 size-9 rounded-xl border-[3px] border-card"
+                    className="absolute -inset-e-1 -bottom-1 size-9 rounded-xl border-[3px] border-card"
                   >
                     <Pencil />
                   </Button>
@@ -140,9 +140,9 @@ function EditProfileForm({ presenter, state, isPending }: { presenter: EditProfi
           )}
         </CardContent>
         <CardFooter className="flex flex-wrap items-center gap-2">
-          <span className="mr-auto text-xs text-muted-foreground">{t('editProfile_footer')}</span>
+          <span className="me-auto text-xs text-muted-foreground">{t('editProfile_footer')}</span>
           {state.hasChanges && (
-            <div className="ml-auto flex gap-2">
+            <div className="ms-auto flex gap-2">
               <Button type="button" variant="outline" onClick={() => presenter.discard()}>
                 {t('common_cancel')}
               </Button>

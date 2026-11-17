@@ -31,11 +31,11 @@ export function RestoreScreen() {
   return (
     <main className="flex min-h-dvh items-center justify-center bg-muted/40 p-4 sm:p-8">
       <div className="page-enter flex w-full max-w-4xl flex-col gap-4">
-        <Button variant="ghost" size="sm" className="-ml-2 self-start" onClick={() => presenter.back()}>
+        <Button variant="ghost" size="sm" className="-ms-2 self-start" onClick={() => presenter.back()}>
           <ArrowLeft /> {t('common_back')}
         </Button>
         <div className="grid overflow-hidden rounded-xl border bg-card shadow-sm md:grid-cols-2">
-          <section className="flex flex-col gap-6 p-6 sm:p-8 md:border-r">
+          <section className="flex flex-col gap-6 p-6 sm:p-8 md:border-e">
             <div className="flex flex-col gap-1.5">
               <h1 className="text-2xl font-semibold tracking-tight">{t('restore_title')}</h1>
               <p className="text-sm text-muted-foreground">{t('restore_subtitle')}</p>
@@ -100,7 +100,7 @@ export function RestoreScreen() {
             <button
               type="button"
               onClick={() => presenter.scanQr()}
-              className="flex items-center gap-3 rounded-lg border p-3 text-left text-sm outline-none transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
+              className="flex items-center gap-3 rounded-lg border p-3 text-start text-sm outline-none transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               <span className="flex size-9 items-center justify-center rounded-md bg-muted">
                 <QrCode className="size-5" />
@@ -163,7 +163,7 @@ function WordInput({ index, word, hasError, inputRef, isLast, onFocus, onNext, o
   const [text, setText] = useDraft(word.text, onChange)
   return (
     <div className="relative">
-      <span className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-xs text-muted-foreground tabular-nums">
+      <span className="pointer-events-none absolute top-1/2 inset-s-2.5 -translate-y-1/2 text-xs text-muted-foreground tabular-nums">
         {index + 1}
       </span>
       <Input
@@ -177,7 +177,7 @@ function WordInput({ index, word, hasError, inputRef, isLast, onFocus, onNext, o
         aria-label={t('restore_wordLabel', { number: index + 1 })}
         aria-invalid={hasError || word.isDeadEnd}
         aria-describedby="recovery-code-help"
-        className="h-10 pl-8 font-mono"
+        className="h-10 ps-8 font-mono"
         enterKeyHint={isLast ? 'go' : 'next'}
         onFocus={onFocus}
         onKeyDown={(event) => {

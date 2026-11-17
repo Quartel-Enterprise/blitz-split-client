@@ -264,6 +264,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Arabic tag of any country WHEN reading it THEN is the one Arabic`() {
+        // Given
+        val tags = listOf("ar", "ar-SA", "ar_AE", "AR-eg", "ar-MA", "ar-Arab-EG", "ar-001")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.ARABIC }, languages)
+    }
+
+    @Test
     fun `GIVEN a Portuguese tag of Portugal in other spellings WHEN reading it THEN is the Portuguese of Portugal`() {
         // Given
         val tags = listOf("pt-PT-x-private", "PT-PT", "pt-pt", "pt_pt_x_private", "pt-Latn-pt-u-fw-mon")
@@ -328,6 +340,7 @@ class AppLanguageTest {
                 "UA",
                 "KO",
                 "HI",
+                "AR",
             ),
             codes,
         )

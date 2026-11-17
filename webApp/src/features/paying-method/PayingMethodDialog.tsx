@@ -54,7 +54,7 @@ export function PayingMethodDialog({ route }: { route: JsRoute }) {
                   variant="ghost"
                   disabled={state.isSaving}
                   onClick={() => presenter.delete()}
-                  className={cn('text-destructive hover:text-destructive', isDesktop ? 'sm:mr-auto' : 'h-11')}
+                  className={cn('text-destructive hover:text-destructive', isDesktop ? 'sm:me-auto' : 'h-11')}
                 >
                   <Trash2 /> {t('payingMethod_delete')}
                 </Button>
@@ -109,7 +109,7 @@ function PayingMethodForm({ presenter, state }: { presenter: PayingMethodPresent
                 aria-checked={isSelected}
                 onClick={() => presenter.selectType(type)}
                 className={cn(
-                  'flex h-9 items-center gap-2 rounded-full border pr-3 pl-1.5 text-[13px] outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
+                  'flex h-9 items-center gap-2 rounded-full border pe-3 ps-1.5 text-[13px] outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
                   isSelected ? 'border-primary bg-primary/10 font-medium' : 'hover:bg-accent',
                 )}
               >

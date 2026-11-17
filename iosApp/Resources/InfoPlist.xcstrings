@@ -5,6 +5,12 @@
       "comment" : "The name under the app icon: Bora Rachar only in Brazil's Portuguese",
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -107,6 +113,12 @@
       "comment" : "The app name in menus and the About window",
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -209,6 +221,12 @@
       "comment" : "Why the app asks for the camera: scanning an invite's or the recovery QR code, and taking the profile photo and a bill's photos",
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لمسح رمز QR الخاص بدعوة أو من جهازك القديم، ولالتقاط صورة ملفك الشخصي وصور الفواتير."
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -311,6 +329,12 @@
       "comment" : "Why the app asks for the contacts: inviting someone from them with a group's link",
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لدعوة أشخاص من جهات اتصالك برابط مجموعة. تبقى أرقامهم على هذا الجهاز."
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -413,6 +437,12 @@
       "comment" : "Why the app asks to add to Photos: saving a bill's photo from its viewer (Download, then Save Image)",
       "extractionState" : "manual",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لحفظ صور الفاتورة في مكتبتك."
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",

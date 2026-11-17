@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">استعادة مجموعاتك</string>
+    <string name="restore_subtitle">هل سبق تسجيل الدخول بحساب؟ يكفي تسجيل الدخول مرة أخرى. وإلا، يمكن استخدام رمز الاسترداد أو رمز QR من جهازك القديم.</string>
+    <string name="restore_no_connection_title">لا يوجد اتصال</string>
+    <string name="restore_no_connection_body">يتطلب تسجيل الدخول بحساب أو برمز اتصالًا بالإنترنت لتنزيل مجموعاتك. ما تمت كتابته محفوظ.</string>
+    <string name="restore_code_label">أو استخدام رمز الاسترداد</string>
+    <string name="restore_code_hint">الكلمات الـ 12 بالترتيب. لصقها كلها في حقل واحد يملأ جميع الحقول.</string>
+    <string name="restore_scan_qr_title">مسح رمز QR من جهازك القديم</string>
+    <string name="restore_scan_qr_body">هناك: الملف الشخصي › الاسترداد › عرض رمز QR</string>
+    <string name="restore_recover">استرداد</string>
+    <string name="restore_try_again">إعادة المحاولة</string>
+    <string name="restore_start_fresh">البدء من جديد على هذا الجهاز</string>
+    <string name="restore_error_invalid_code">الرمز غير موجود. يُرجى التحقق من الكلمات وترتيبها، ثم إعادة المحاولة.</string>
+    <string name="restore_error_too_many_attempts">محاولات كثيرة جدًا. يُرجى الانتظار بضع دقائق ثم إعادة المحاولة.</string>
+    <string name="restore_error_sign_in_failed">تعذر تسجيل الدخول الآن. يُرجى إعادة المحاولة.</string>
+    <string name="restore_error_unknown">حدث خطأ ما. يُرجى إعادة المحاولة.</string>
+</resources>

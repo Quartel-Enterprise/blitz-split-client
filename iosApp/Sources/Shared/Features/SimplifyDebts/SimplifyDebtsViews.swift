@@ -195,7 +195,7 @@ struct SimplifyDebtsConfirmationView: View {
             }
             HStack(spacing: 14) {
                 count(change.paymentsBefore, isAfter: false)
-                Image(systemName: "arrow.right")
+                Image(systemName: "arrow.forward")
                     .font(.title3.weight(.semibold))
                     .foregroundStyle(Palette.accent)
                 count(change.paymentsAfter, isAfter: confirmation.isTurningOn && !change.isAlreadyMinimal)

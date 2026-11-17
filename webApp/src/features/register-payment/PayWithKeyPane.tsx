@@ -80,7 +80,7 @@ export function ReceiverKeysList({
       <h3 className="text-sm text-muted-foreground">{title}</h3>
       <ul className="divide-y rounded-xl border">
         {keys.map((key) => (
-          <li key={key.id} className="flex items-center gap-2 py-2 pr-1 pl-4">
+          <li key={key.id} className="flex items-center gap-2 py-2 pe-1 ps-4">
             <div className="min-w-0 flex-1">
               <p className="text-xs text-muted-foreground">{typeLabel(key)}</p>
               <p className="font-medium break-all">{key.text}</p>

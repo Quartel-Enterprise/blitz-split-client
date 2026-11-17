@@ -261,7 +261,7 @@ function GroupBodySkeleton() {
       <span className="-mt-1 flex">
         {/* Why: three, between the two faces of the smallest group and the five the header holds (Pierre's call). */}
         {[0, 1, 2].map((index) => (
-          <SkeletonCircle key={index} className={cn('size-7 border-2 border-background', index > 0 && '-ml-1.5')} />
+          <SkeletonCircle key={index} className={cn('size-7 border-2 border-background', index > 0 && '-ms-1.5')} />
         ))}
       </span>
       <Skeleton className="h-[72px] w-full rounded-xl" />
@@ -276,7 +276,7 @@ function GroupBodySkeleton() {
  * grupos") and Exportar dados do grupo, which work offline, then Sair and Apagar, which need the internet (6.1j).
  */
 function GroupMenu({ isOnline, isPinned, events, isOutlined = false }: { isOnline: boolean; isPinned: boolean; events: GroupPageEvents; isOutlined?: boolean }) {
-  const needsInternet = !isOnline && <span className="ml-auto text-xs text-muted-foreground">{t('groupExit_needsInternet')}</span>
+  const needsInternet = !isOnline && <span className="ms-auto text-xs text-muted-foreground">{t('groupExit_needsInternet')}</span>
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

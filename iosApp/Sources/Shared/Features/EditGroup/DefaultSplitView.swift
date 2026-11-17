@@ -296,10 +296,12 @@ private struct DefaultSplitPersonRow: View {
     private var subtitle: String {
         let state = model.state
         let share = Double(row.basisPoints) / 10000
+        let wholePercent = share.formatted(.percent.precision(.fractionLength(0)).locale(AppNumbers.locale))
+        let percent = share.formatted(.percent.precision(.fractionLength(1)).locale(AppNumbers.locale))
         let text: String = switch mode {
         case .shares:
             String(
-                localized: "\(share.formatted(.percent.precision(.fractionLength(0)))) of each bill",
+                localized: "\(wholePercent) of each bill",
                 bundle: .appLanguage,
             )
         case .percent:
@@ -317,7 +319,7 @@ private struct DefaultSplitPersonRow: View {
         default:
             row.weight > 0
                 ? String(
-                    localized: "1 of \(Int(state.includedCount)) · \(share.formatted(.percent.precision(.fractionLength(1))))",
+                    localized: "1 of \(Int(state.includedCount)) · \(percent)",
                     bundle: .appLanguage,
                 )
                 : String(localized: "Out of the split by default", bundle: .appLanguage)
@@ -353,7 +355,7 @@ private struct DefaultSplitPersonRow: View {
             }
         case .income:
             HStack(spacing: 4) {
-                Text(verbatim: model.state.currency.symbol)
+                Text(verbatim: model.state.currency.fieldSymbol)
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
                 numberField(model.income(of: person.id), prompt: model.state.currency.zeroPlaceholder, width: 110) {

@@ -95,14 +95,14 @@ function CategoryPicker({ presenter, state, isWide }: { presenter: SplitCategori
           <Label htmlFor={searchId} className="sr-only">
             {t('splitBill_categorySearch')}
           </Label>
-          <Search aria-hidden className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Search aria-hidden className="pointer-events-none absolute top-1/2 inset-s-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             id={searchId}
             role="searchbox"
             autoComplete="off"
             value={query}
             placeholder={t('splitBill_categorySearch')}
-            className="rounded-full pr-10 pl-9"
+            className="rounded-full pe-10 ps-9"
             onChange={(event) => setQuery(event.target.value)}
           />
           {query && (
@@ -110,7 +110,7 @@ function CategoryPicker({ presenter, state, isWide }: { presenter: SplitCategori
               variant="ghost"
               size="icon"
               aria-label={t('splitBill_categoryClearSearch')}
-              className="absolute top-1/2 right-1 size-8 -translate-y-1/2"
+              className="absolute top-1/2 inset-e-1 size-8 -translate-y-1/2"
               onClick={() => setQuery('')}
             >
               <X aria-hidden />
@@ -213,7 +213,7 @@ function Chip({
       onClick={onClick}
       className={cn(
         'flex min-h-8 items-center gap-1.5 rounded-lg border px-3 py-1 text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring',
-        isSelected ? 'border-transparent bg-secondary pl-2 text-secondary-foreground' : 'border-border',
+        isSelected ? 'border-transparent bg-secondary ps-2 text-secondary-foreground' : 'border-border',
       )}
     >
       {isSelected && <Check aria-hidden className="size-4" />}
@@ -263,12 +263,12 @@ function BranchItem({
         isOpen && !showsInline && 'bg-secondary',
       )}
     >
-      <div className="flex items-center gap-1 pr-2">
+      <div className="flex items-center gap-1 pe-2">
         <button
           type="button"
           aria-expanded={category.isOther ? undefined : isOpen}
           onClick={() => presenter.toggleMain(category.id)}
-          className="flex min-h-[60px] min-w-0 flex-1 items-center gap-3 px-3 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+          className="flex min-h-[60px] min-w-0 flex-1 items-center gap-3 px-3 py-2 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         >
           <CategoryBadge category={category} />
           <span className="min-w-0 flex-1">
@@ -332,7 +332,7 @@ function SubcategoryChips({
       <button
         type="button"
         onClick={() => presenter.create(branch.category.id, '')}
-        className="flex min-h-8 items-center gap-1.5 rounded-lg border border-dashed border-muted-foreground px-3 pl-2 text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+        className="flex min-h-8 items-center gap-1.5 rounded-lg border border-dashed border-muted-foreground px-3 ps-2 text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
       >
         <Plus aria-hidden className="size-4" />
         {t('splitBill_categoryNewIn', { name: mainName })}
@@ -373,7 +373,7 @@ function SearchResults({ presenter, state, query }: { presenter: SplitCategories
                 role="option"
                 aria-selected={categories.category.id === category.id}
                 onClick={() => presenter.pick(category.id)}
-                className="flex min-h-[60px] flex-1 items-center gap-3 px-3 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+                className="flex min-h-[60px] flex-1 items-center gap-3 px-3 py-2 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
               >
                 <CategoryBadge category={category} />
                 <span className="min-w-0">
@@ -398,7 +398,7 @@ function CategoryMapCard({ presenter, state }: { presenter: SplitCategoriesPrese
   const match = state.categories.matches[0]
   const mapCategory = state.categories.mapCategory
   return (
-    <button type="button" onClick={() => presenter.openMap()} className="flex items-center gap-3 rounded-lg border bg-card p-3 text-left hover:bg-accent">
+    <button type="button" onClick={() => presenter.openMap()} className="flex items-center gap-3 rounded-lg border bg-card p-3 text-start hover:bg-accent">
       <Tag aria-hidden className="size-5 shrink-0 text-primary" />
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="text-sm font-medium">{t('splitBill_categoryMap')}</span>

@@ -14,6 +14,8 @@ struct StatsChart: View {
     let state: GroupStatsUiState
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// The app's direction, given back to the callout inside the chart, which itself always runs left to right.
+    @Environment(\.layoutDirection) private var layoutDirection
     @State private var selected: Int?
     @State private var isHovering = false
     /// 0 to 1 as the series comes in: the bars grow from the base and the line draws in from the leading side.
@@ -147,6 +149,7 @@ struct StatsChart: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .glassEffect(.regular, in: .rect(cornerRadius: 12))
+        .environment(\.layoutDirection, layoutDirection)
     }
 
     /// The value lines with their short amounts on the trailing side, the labels the shared code marks under the bars,
@@ -214,6 +217,9 @@ struct StatsChart: View {
                 }
             }
             .frame(height: 150)
+            // Why: time runs left to right in every language, so a right-to-left app keeps the chart unmirrored (the
+            // pick, the arrow keys and the line drawing in follow it)
+            .environment(\.layoutDirection, .leftToRight)
             // The arrow keys of the Mac move the pick; on iPhone and iPad focus would only get in the way of taps
             .focusable(Self.takesKeys)
             .focusEffectDisabled()

@@ -375,6 +375,7 @@ function ValueField({ presenter, row, prefix, suffix, placeholder, isInvalid, la
         </span>
       )}
       <input
+        dir="ltr"
         inputMode="numeric"
         autoComplete="off"
         value={value}
@@ -382,7 +383,7 @@ function ValueField({ presenter, row, prefix, suffix, placeholder, isInvalid, la
         aria-label={label}
         aria-invalid={isInvalid}
         onChange={(event) => setValue(event.target.value)}
-        className="w-full min-w-0 bg-transparent text-right font-mono text-base tabular-nums outline-none md:text-[13px] placeholder:text-muted-foreground"
+        className="w-full min-w-0 bg-transparent text-right rtl:text-left font-mono text-base tabular-nums outline-none md:text-[13px] placeholder:text-muted-foreground"
       />
       {suffix && (
         <span aria-hidden className="text-xs text-muted-foreground">

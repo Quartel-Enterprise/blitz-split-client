@@ -37,7 +37,7 @@ export function SimplifyDebtsInfoDialog({ route }: { route: JsRoute }) {
   return isDesktop ? (
     <Dialog open onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[560px]">
-        <DialogHeader className="pr-8 text-left">
+        <DialogHeader className="pe-8 text-start">
           <DialogTitle>{t('simplify_title')}</DialogTitle>
           <DialogDescription>{t('simplifyInfo_intro')}</DialogDescription>
         </DialogHeader>
@@ -47,7 +47,7 @@ export function SimplifyDebtsInfoDialog({ route }: { route: JsRoute }) {
   ) : (
     <Drawer open onOpenChange={onOpenChange}>
       <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           <DrawerTitle>{t('simplify_title')}</DrawerTitle>
           <DrawerDescription>{t('simplifyInfo_intro')}</DrawerDescription>
         </DrawerHeader>

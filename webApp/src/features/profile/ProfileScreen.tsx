@@ -63,6 +63,7 @@ const nativeLanguageNames: Record<string, string> = {
   uk: 'Українська',
   ko: '한국어',
   hi: 'हिन्दी',
+  ar: 'العربية',
 }
 
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
@@ -84,6 +85,7 @@ const languageNames: Record<string, MessageKey> = {
   uk: 'profile_languageUkrainian',
   ko: 'profile_languageKorean',
   hi: 'profile_languageHindi',
+  ar: 'profile_languageArabic',
 }
 
 /**
@@ -140,13 +142,13 @@ export function ProfileScreen() {
           <Button variant="ghost" size="icon" aria-label={t('common_back')} onClick={() => presenter.back()}>
             <ArrowLeft />
           </Button>
-          <h1 className="mr-auto text-lg font-semibold">{t('profile_title')}</h1>
+          <h1 className="me-auto text-lg font-semibold">{t('profile_title')}</h1>
           {share}
         </header>
         <main className={cn(pageContentClass, 'gap-4')}>
           {/* Why: the sidebar's selected footer already says where this is; the heading says what it is for. */}
           <div className="hidden items-start gap-3 md:flex">
-            <div className="mr-auto flex flex-col gap-1">
+            <div className="me-auto flex flex-col gap-1">
               <h1 className="text-2xl leading-[30px] font-semibold tracking-tight">{t('profile_title')}</h1>
               <p className="text-sm text-muted-foreground">{t('profile_subtitle')}</p>
             </div>
@@ -388,10 +390,10 @@ function PayingMethodsCard({ presenter, state, className }: CardProps) {
   )
 }
 
-const itemRowClassName = 'flex min-h-14 items-center gap-3 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring'
+const itemRowClassName = 'flex min-h-14 items-center gap-3 py-2 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring'
 
 const addKeyClassName =
-  'flex min-h-12 items-center gap-3 text-left text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
+  'flex min-h-12 items-center gap-3 text-start text-sm font-medium text-primary outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50'
 
 // Why: "bc1p5d7r…sxg3297 · Taproot", since on-chain and Lightning keys come in two formats each.
 function keyRowValue(key: JsPaymentKeyItem): string {
@@ -450,7 +452,7 @@ function AccountCard({ presenter, state, className }: CardProps) {
           </div>
         )}
         {state.showsRecoveryCodeRow && (
-          <button onClick={() => presenter.recoveryCode()} className="flex items-center gap-3 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
+          <button onClick={() => presenter.recoveryCode()} className="flex items-center gap-3 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
             <KeyRound className="size-4 shrink-0 text-muted-foreground" />
             <Row title={t('profile_recoveryCode')} detail={t('profile_recoveryCodeDetail')} />
           </button>
@@ -664,7 +666,7 @@ function AboutCard({ presenter, state, className }: { presenter: ProfilePresente
         {/* What each version changed on the web, a page over the profile */}
         <button
           onClick={() => presenter.releaseNotes()}
-          className="flex min-h-12 items-center gap-3 py-2 text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+          className="flex min-h-12 items-center gap-3 py-2 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         >
           <span className="min-w-0 flex-1 text-sm font-medium">{t('releaseNotes_title')}</span>
           <ChevronRight className="size-4 shrink-0 text-muted-foreground" />

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">رابط الدعوة</string>
+    <string name="members_link_pending">لم يُنشأ بعد</string>
+    <string name="members_share">مشاركة</string>
+    <string name="members_me">%s (أنت)</string>
+    <string name="members_status_this_device">هذا الجهاز</string>
+    <string name="members_status_joined">تم الانضمام</string>
+    <string name="members_status_not_joined">لم يتم الانضمام بعد</string>
+    <string name="members_options">خيارات %s</string>
+    <string name="members_rename">إعادة التسمية</string>
+    <string name="members_personal_invite">دعوة شخصية لـ %s</string>
+    <string name="members_personal_message">من يفتح هذا الرابط ينضم مباشرة باسم %s، دون الاختيار من القائمة. يعمل مرة واحدة.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="zero">من يفتح هذا الرابط ينضم مباشرة باسم %1$s، دون الاختيار من القائمة، وتظهر له حصة %2$s في %3$d فاتورة مضافة حتى الآن. يعمل مرة واحدة.</item>
+        <item quantity="one">من يفتح هذا الرابط ينضم مباشرة باسم %1$s، دون الاختيار من القائمة، وتظهر له حصة %2$s في الفاتورة المضافة حتى الآن. يعمل مرة واحدة.</item>
+        <item quantity="two">من يفتح هذا الرابط ينضم مباشرة باسم %1$s، دون الاختيار من القائمة، وتظهر له حصة %2$s في %3$d فاتورتين مضافتين حتى الآن. يعمل مرة واحدة.</item>
+        <item quantity="few">من يفتح هذا الرابط ينضم مباشرة باسم %1$s، دون الاختيار من القائمة، وتظهر له حصة %2$s في %3$d فواتير مضافة حتى الآن. يعمل مرة واحدة.</item>
+        <item quantity="many">من يفتح هذا الرابط ينضم مباشرة باسم %1$s، دون الاختيار من القائمة، وتظهر له حصة %2$s في %3$d فاتورة مضافة حتى الآن. يعمل مرة واحدة.</item>
+        <item quantity="other">من يفتح هذا الرابط ينضم مباشرة باسم %1$s، دون الاختيار من القائمة، وتظهر له حصة %2$s في %3$d فاتورة مضافة حتى الآن. يعمل مرة واحدة.</item>
+    </plurals>
+    <string name="members_personal_copy">نسخ الرابط</string>
+    <string name="members_personal_copied">تم النسخ</string>
+    <string name="members_personal_share">مشاركة مع %s</string>
+    <string name="members_personal_share_message">الانضمام إلى %1$s باسم %2$s على Blitz Split: %3$s</string>
+    <string name="members_remove">إزالة من المجموعة</string>
+    <string name="members_remove_joined">%s: تم الانضمام إلى المجموعة بالفعل</string>
+    <string name="members_remove_title">إزالة %s من المجموعة؟</string>
+    <string name="members_remove_message">%s: لم يتم الانضمام بعد. يمكن إضافة هذا الاسم مرة أخرى لاحقًا.</string>
+    <string name="members_remove_confirm">إزالة</string>
+    <string name="members_release">تحرير الاسم</string>
+    <string name="members_release_title">تحرير اسم %s؟</string>
+    <string name="members_release_message">من انضم باسم %1$s يغادر المجموعة. يبقى اسم %1$s ولونه وفواتيره، ويمكن اختيار %1$s مرة أخرى عبر رابط المجموعة.</string>
+    <string name="members_release_confirm">تحرير</string>
+    <string name="members_release_error">تعذر تحرير الاسم. يُرجى التحقق من الاتصال وإعادة المحاولة.</string>
+    <string name="members_add">إضافة شخص</string>
+    <string name="members_invite_instead">هل لديه التطبيق؟ الدعوة عبر الرابط</string>
+    <string name="members_name_label">الاسم</string>
+    <string name="members_save">حفظ</string>
+    <string name="members_cancel">إلغاء</string>
+    <string name="members_change_error">تعذر حفظ التغيير. يُرجى إعادة المحاولة.</string>
+    <string name="members_remove_open_balance">%s: يوجد رصيد مفتوح</string>
+    <string name="members_balance_to_get_back">%s للاسترداد</string>
+    <string name="members_balance_owes">عليه %s</string>
+    <string name="members_balance_settled">تمت التسوية</string>
+</resources>

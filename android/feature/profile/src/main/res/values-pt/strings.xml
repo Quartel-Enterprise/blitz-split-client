@@ -71,6 +71,7 @@
     <string name="profile_language_ukrainian">Ucraniano</string>
     <string name="profile_language_korean">Coreano</string>
     <string name="profile_language_hindi">Híndi</string>
+    <string name="profile_language_arabic">Árabe</string>
     <string name="profile_language_system_detail">Idioma do aparelho</string>
     <string name="profile_notifications">Notificações</string>
     <plurals name="profile_notifications_active">
