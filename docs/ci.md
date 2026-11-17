@@ -6,7 +6,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
 | `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi` (with `compileCommonMainKotlinMetadata` and the store screenshots' `compileDebugUnitTestKotlin` in the same job), `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
-| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `macosArm64Test`, `compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, and `iosSimulatorArm64Test` too on `main` and on a pull request that changes the version catalog, all skipped on a pull request that changes the Swift app alone; both schemes of the Apple app, each in a job of its own, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
+| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `macosArm64Test`, `compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, and `iosSimulatorArm64Test` too on `main` and on a pull request that changes the version catalog, in two jobs on a pull request whose change reaches nearly every module, all skipped on a pull request that changes the Swift app alone; both schemes of the Apple app, each in a job of its own, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
@@ -63,14 +63,13 @@ new key. To see why a task missed, run it with `-Dorg.gradle.caching.debug=true`
 compare the lines of its key.
 
 The `apple` jobs run on `xcode-27`, GitHub's macOS image with Xcode 27 (a public preview, since the app uses the iOS 27
-SDK's APIs and `macos-26` only has Xcode 26), free for a public repository. Its tests and each scheme of the app
-are three jobs side by side, each compiling the Kotlin/Native code on its own, since three runners finish sooner than
-one: with both schemes in one job, `apple-app` took 14 to 16 minutes whatever the change, and was the last check of
-nearly every pull request to end.
-The Gradle action fits them to the runner: it selects the image's newest Xcode, as the Mac the app is developed on
-runs, and it shrinks the Gradle and Kotlin daemons to its 7 GB of memory. Only
-`main` saves their caches, and only `apple-tests` saves the Kotlin/Native toolchain and the Gradle home, so the jobs
-don't store the same entries twice.
+SDK's APIs and `macos-26` only has Xcode 26), free for a public repository. Its tests and each scheme of the app are
+three jobs side by side, four when the tests split in two (below), each compiling the Kotlin/Native code on its own,
+since three runners finish sooner than one: with both schemes in one job, `apple-app` took 14 to 16 minutes whatever the
+change, and was the last check of nearly every pull request to end. The Gradle action fits them to the runner: it
+selects the image's newest Xcode, as the Mac the app is developed on runs, and it shrinks the Gradle and Kotlin daemons
+to its 7 GB of memory. Only `main` saves their caches, and only `apple-tests` saves the Kotlin/Native toolchain and the
+Gradle home, so the jobs don't store the same entries twice.
 
 `apple-tests` is the slowest check of a pull request. Each module with tests links a test binary of its own for each
 target, and a change to a core module links all of them: those links are half of the job. So a pull request runs every
@@ -80,6 +79,23 @@ one: the suite is the same `commonTest`, the actuals it reaches are `appleMain`'
 main and the test code for the simulator before the pull request opens, and `apple-app` links `Shared` for it. A pull
 request that changes `gradle/libs.versions.toml` runs the simulator's suite too: a library publishes its code for each
 target apart, so a bump is the change the two targets can take differently.
+
+A pull request whose change reaches nearly every module splits `apple-tests` in two jobs, `apple-tests (1)` and
+`apple-tests (2)`. The `changes` job decides it from the changed paths: anything under `core/` or `gradle/` (the version
+catalog, the wrapper), or `gradle.properties`, the source sets no Apple target compiles and Markdown left out. As a rule
+every module then links its test binary again, 18 to 21 minutes in one job, twice what any other check of the pull
+request takes. It is a guess, on the cheap side: a core module nothing depends on splits for nothing, which costs one
+runner five minutes, and a change that reaches every module from elsewhere runs in one job, as before. `build-logic/`
+and the root's Gradle scripts are left out, since a change there gives a new key only to the tasks it configures
+differently (see above). The modules that have a `commonTest` are dealt from their sorted list, the one `js-tests` deals
+its own from (`scripts/modules-with-tests.sh`, which leaves out a folder `settings.gradle.kts` doesn't include), so a
+new module joins a shard by itself: the first shard takes three of every five, and the second the other two with
+`compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, about three of those minutes. Each shard compiles for
+macOS the modules its own depend on, which leaves `:shared` to `apple-app`'s macOS build: no test depends on it, and it
+depends on every module. Two is the only split: the shards' shares are written for two, and the job refuses a third. Any
+other change relinks a module or two, which one job does in five minutes, so it keeps one: a second would only hold one
+more of the five macOS runners. `main` keeps one too, since no pull request waits for its run. A change to `apple.yml`
+itself or to that script also runs both shards, so a change to the split is seen working before it merges.
 
 A pull request that changes the Swift app alone skips `apple-tests`: the `changes` job, on a Linux runner, lists what
 it changes, and when every file is under `iosApp/` or `release-notes/`, or is Markdown, no input of a Gradle task of
