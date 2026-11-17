@@ -160,7 +160,7 @@ private struct AvatarSection: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Add photo")
-                .trailingCornerOffset(x: 6, y: 6)
+                .offset(x: 6, y: 6)
             }
             .onChange(of: pickedPhoto) { _, item in
                 guard let item else { return }

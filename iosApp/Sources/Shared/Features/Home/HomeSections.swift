@@ -214,7 +214,7 @@ private struct PersonAvatar: View {
                         .foregroundStyle(.secondary)
                         .frame(width: 20, height: 20)
                         .background(Palette.card, in: .circle)
-                        .trailingCornerOffset(x: 2, y: 2)
+                        .offset(x: 2, y: 2)
                 }
             }
     }

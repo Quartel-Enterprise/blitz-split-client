@@ -32,22 +32,3 @@ enum AppNumbers {
         return Locale(components: components)
     }
 }
-
-extension View {
-    /// Shifts a badge or a corner button placed on an overlay's trailing corner by `x` toward that corner (mirrored
-    /// in right to left, where the corner is on the left) and `y` down.
-    func trailingCornerOffset(x: CGFloat, y: CGFloat) -> some View {
-        modifier(TrailingCornerOffset(x: x, y: y))
-    }
-}
-
-private struct TrailingCornerOffset: ViewModifier {
-    let x: CGFloat
-    let y: CGFloat
-
-    @Environment(\.layoutDirection) private var layoutDirection
-
-    func body(content: Content) -> some View {
-        content.offset(x: layoutDirection == .rightToLeft ? -x : x, y: y)
-    }
-}

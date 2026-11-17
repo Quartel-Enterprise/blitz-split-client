@@ -238,7 +238,8 @@ at its right edge. The rules, the same on the three platforms:
   SwiftUI's `leading`/`trailing`; Tailwind's logical classes (`ms-`/`me-`, `ps-`/`pe-`, `inset-s-`/`inset-e-`,
   `text-start`/`text-end`, `border-s`/`border-e`, `rounded-s`/`rounded-e`). A physical side is kept only where the
   drawing is about the picture, not the text: a centered `left-1/2`, Adjust photo's crop, the color picker's square
-  and hue bar, Simplify debts' example drawing.
+  and hue bar, Simplify debts' example drawing. Compose's `offset(x)` and SwiftUI's `.offset(x:)` already flip in right
+  to left, so a corner badge's offset stays as it is.
 - **The page's direction comes from the language.** Android's `supportsRtl` and SwiftUI flip by themselves (Apple's
   `appLocale` also sets the windows' `layoutDirection` when Profile › Language picks a language while the app runs).
   The web sets `<html dir>` and `lang` from the locale (`applyDocumentLocale`, `isRightToLeft`) and wraps the app in

@@ -278,7 +278,7 @@ private struct PhotoEditor: View {
                 .menuStyle(.borderlessButton)
                 .menuIndicator(.hidden)
                 .fixedSize()
-                .trailingCornerOffset(x: 4 + CornerGlassIcon.targetPadding, y: 4 + CornerGlassIcon.targetPadding)
+                .offset(x: 4 + CornerGlassIcon.targetPadding, y: 4 + CornerGlassIcon.targetPadding)
                 .accessibilityLabel("Edit photo")
             }
             if state.showsPhotoError {

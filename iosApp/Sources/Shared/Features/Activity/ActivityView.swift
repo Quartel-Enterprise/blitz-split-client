@@ -735,7 +735,7 @@ struct ActivityFace: View {
                     .frame(width: badge, height: badge)
                     .background(colors.fill, in: .circle)
                     .overlay(Circle().stroke(Palette.card, lineWidth: 2))
-                    .trailingCornerOffset(x: 5, y: 5)
+                    .offset(x: 5, y: 5)
             }
             .padding(.trailing, 4)
             .accessibilityHidden(true)

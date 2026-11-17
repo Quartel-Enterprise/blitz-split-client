@@ -419,7 +419,7 @@ struct ActivityBellButton: View {
                             .frame(minWidth: 16, minHeight: 16)
                             .background(Palette.accent, in: .capsule)
                             .fixedSize()
-                            .trailingCornerOffset(x: 8, y: -6)
+                            .offset(x: 8, y: -6)
                     }
                 }
         }
