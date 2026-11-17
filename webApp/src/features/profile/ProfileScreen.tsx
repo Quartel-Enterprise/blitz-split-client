@@ -65,6 +65,7 @@ const nativeLanguageNames: Record<string, string> = {
   hi: 'हिन्दी',
   ar: 'العربية',
   'zh-Hans': '中文（简体）',
+  he: 'עברית',
   th: 'ไทย',
 }
 
@@ -89,6 +90,7 @@ const languageNames: Record<string, MessageKey> = {
   hi: 'profile_languageHindi',
   ar: 'profile_languageArabic',
   'zh-Hans': 'profile_languageChineseSimplified',
+  he: 'profile_languageHebrew',
   th: 'profile_languageThai',
 }
 

@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified) and Thai: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew and Thai: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -110,7 +110,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     picks it but a Traditional one (`zh-Hant`, `zh-TW`, `zh-HK`, `zh-MO`), which reads English, as Android and Apple
     have no Traditional resources, until Traditional Chinese, Taiwan's `zh-Hant`, comes as its own row of the picker
     (Pierre's call: two rows, as Portugal's and Spain's): the bare `zh` names it where a language is asked by code (the web's dictionary,
-    the release notes, the legal pages, the store listing), as `pt` names Brazil's. Thai (Pierre's call, issue #448) is one variant for every
+    the release notes, the legal pages, the store listing), as `pt` names Brazil's. Hebrew (Pierre's call) is one variant for every
+    `he` tag and Android's and Java's legacy `iw` (Android's strings live in `values-iw`), calls the app Blitz Split
+    and reads right to left as Arabic does, with the same mirrored layouts and Latin digits, which Hebrew writes
+    anyway. Hebrew's verbs, adjectives and "you" (אתה/את) say a gender too, so Hebrew follows the same rule (Pierre's
+    call): action nouns on buttons and titles ("שמירה", "ביטול"), the infinitive in instructions ("אפשר לבחור"),
+    labels ("שולם על ידי: Ana") and a debt without a verb ("ל-Ana מגיע ממך"); the user is named "אני" rather than
+    a gendered "you", and only where nothing else fits does it use the masculine as the generic, never a slash. Its
+    activity rows are "Ana: פיצול "ארוחת ערב"", the actor and an action noun, as Arabic's. Its plurals have one, two
+    and other, in every plural of the three platforms (the web writes an `…Other` message as "one|two|other"). Thai (Pierre's call, issue #448) is one variant for every
     `th` tag, as Thai apps write it, neutral, with none of the gendered politeness particles (ครับ, ค่ะ); "คุณ" when it
     needs a "you". It calls the app Blitz Split, writes no space between words but one between phrases and around a
     name, an amount or a Latin word, and uses no full stop: a sentence the code finishes ends with nothing and two of
@@ -278,7 +286,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Chinese yuan (CNY) follows the Moroccan dirham (Pierre's call, with Simplified Chinese), and starts a new group in
     mainland China. It has 2 decimals and the usual 100 million cap, so an app version from before it shows its
     amounts by the raw code, with the right decimals.
-  - The Thai baht (THB) follows the yuan (Pierre's call, with Thai), and starts a new group in Thailand. It has 2
+  - The Israeli new shekel (ILS) follows the Moroccan dirham (Pierre's call, with Hebrew), and starts a new group in
+    Israel. It has 2 decimals and the usual 100 million cap, so an app version from before it shows its amounts by the
+    raw code, with the right decimals.
+  - The Thai baht (THB) follows the new shekel (Pierre's call, with Thai), and starts a new group in Thailand. It has 2
     decimals and the usual 100 million cap, so an app version from before it shows its amounts by the raw code, with
     the right decimals.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,

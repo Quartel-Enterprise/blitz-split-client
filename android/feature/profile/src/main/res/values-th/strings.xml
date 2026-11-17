@@ -72,6 +72,7 @@
     <string name="profile_language_hindi">ฮินดี</string>
     <string name="profile_language_arabic">อาหรับ</string>
     <string name="profile_language_chinese_simplified">จีน (ตัวย่อ)</string>
+    <string name="profile_language_hebrew">ฮีบรู</string>
     <string name="profile_language_thai">ไทย</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>

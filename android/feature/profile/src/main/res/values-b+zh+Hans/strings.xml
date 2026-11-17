@@ -71,6 +71,7 @@
     <string name="profile_language_korean">韩语</string>
     <string name="profile_language_hindi">印地语</string>
     <string name="profile_language_arabic">阿拉伯语</string>
+    <string name="profile_language_hebrew">希伯来语</string>
     <string name="profile_language_chinese_simplified">中文（简体）</string>
     <string name="profile_language_thai">泰语</string>
     <string name="profile_language_system_detail">设备语言</string>

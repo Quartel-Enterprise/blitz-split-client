@@ -241,6 +241,18 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Israel WHEN picking its currency THEN it is the new shekel with 2 decimals`() {
+        // Given
+        val region = "IL"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.ILS to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN Thailand WHEN picking its currency THEN it is the baht with its 2 decimals`() {
         // Given
         val region = "TH"

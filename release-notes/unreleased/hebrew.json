@@ -1,0 +1,60 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Hebrew, laid out to read right to left: pick \"עברית\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala hebraico, com as telas da direita para a esquerda: escolha \"עברית\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora hebraico, com os ecrãs da direita para a esquerda: escolhe \"עברית\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla hebreo, con las pantallas de derecha a izquierda: elige \"עברית\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais hébreu, avec des écrans qui se lisent de droite à gauche : choisis « עברית » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Hebräisch, von rechts nach links gelesen: Wähle „עברית“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla ebraico, con le schermate da destra a sinistra: scegli \"עברית\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po hebrajsku, z ekranami czytanymi od prawej do lewej: wybierz „עברית” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Hebreeuws, van rechts naar links: kies \"עברית\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがヘブライ語に対応し、画面が右から左に表示されます。プロフィール › 言語で「עברית」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık sağdan sola okunan ekranlarıyla İbranice konuşuyor: Profil › Dil'den \"עברית\"i seç ya da cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Ibrani, dengan layar dari kanan ke kiri: pilih \"עברית\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на иврите, с экранами справа налево: выбери «עברית» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить івритом, з екранами справа наліво: обери «עברית» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 히브리어를 쓸 수 있고, 화면이 오른쪽에서 왼쪽으로 읽혀요. 프로필 › 언어에서 ‘עברית’를 고르거나 기기 언어를 따르게 하세요.",
+        "ar": "أصبح التطبيق يتحدث العبرية، بواجهة تُقرأ من اليمين إلى اليسار: يمكنك اختيار «עברית» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "he": "האפליקציה מדברת עכשיו עברית, בתצוגה מימין לשמאל: אפשר לבחור \"עברית\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาฮีบรูแล้ว พร้อมการจัดวางจากขวาไปซ้าย เลือก “עברית” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "hi": "ऐप अब हिब्रू में भी है, दाएं से बाएं पढ़ने वाले लेआउट के साथ: प्रोफ़ाइल › भाषा में \"עברית\" चुनें, या इसे अपने डिवाइस की भाषा पर रहने दें।",
+        "zh": "应用现已支持希伯来语，界面从右往左排列：在 个人资料 › 语言 中选择\"עברית\"，或让它跟随设备语言。"
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the Israeli new shekel (ILS), and a group made in Israel starts in it.",
+        "pt": "Os grupos agora podem dividir em novo shekel israelense (ILS), e um grupo criado em Israel já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em novo shekel israelita (ILS), e um grupo criado em Israel começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en nuevo séquel israelí (ILS), y un grupo creado en Israel empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en nouveau shekel israélien (ILS), et un groupe créé en Israël démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Neuem Israelischem Schekel (ILS) teilen, und eine in Israel erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in nuovo siclo israeliano (ILS), e un gruppo creato in Israele parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w nowych szeklach izraelskich (ILS), a grupa założona w Izraelu startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Israëlische nieuwe sjekel (ILS), en een groep die in Israël wordt gemaakt, start in die valuta.",
+        "ja": "グループでイスラエル・新シェケル（ILS）が使えるようになり、イスラエルで作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık İsrail yeni şekeli (ILS) ile bölebiliyor; İsrail'de açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam shekel baru Israel (ILS), dan grup yang dibuat di Israel langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в новых израильских шекелях (ILS), а группа, созданная в Израиле, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати в нових ізраїльських шекелях (ILS), а група, створена в Ізраїлі, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 이스라엘 신 셰켈(ILS)로 나눌 수 있고, 이스라엘에서 만든 그룹은 셰켈로 시작해요.",
+        "ar": "يمكن للمجموعات الآن التقسيم بالشيكل الإسرائيلي الجديد (ILS)، والمجموعة التي تُنشأ في إسرائيل تبدأ بهذه العملة.",
+        "he": "קבוצות יכולות עכשיו לפצל בשקל חדש (ILS), וקבוצה שנוצרת בישראל מתחילה בו.",
+        "th": "กลุ่มหารเป็นเงินเชเกลใหม่อิสราเอล (ILS) ได้แล้ว และกลุ่มที่สร้างในอิสราเอลจะเริ่มด้วยสกุลเงินนี้",
+        "hi": "ग्रुप अब इज़राइली न्यू शेकेल (ILS) में बांटे जा सकते हैं, और इज़राइल में बना ग्रुप उसी से शुरू होता है।",
+        "zh": "群组现在可以用以色列新谢克尔（ILS）分账，在以色列创建的群组默认使用它。"
+      }
+    }
+  ]
+}

@@ -844,6 +844,7 @@ export const zh: Record<MessageKey, string> = {
   profile_languageKorean: '韩语',
   profile_languageHindi: '印地语',
   profile_languageArabic: '阿拉伯语',
+  profile_languageHebrew: '希伯来语',
   profile_languageChineseSimplified: '中文（简体）',
   profile_languageThai: '泰语',
   profile_bitcoinInSats: '以聪为单位显示比特币',

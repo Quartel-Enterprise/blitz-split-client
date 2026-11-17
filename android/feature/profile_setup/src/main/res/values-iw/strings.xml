@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">איך החברים קוראים לך?</string>
+    <string name="profile_setup_subtitle">הקבוצות שלך וכל מי שיש לו את קישור הפרופיל שלך רואים את השם שלך.</string>
+    <string name="profile_setup_avatar_color">צבע האווטאר</string>
+    <string name="profile_setup_add_photo">הוספת תמונה</string>
+    <string name="profile_setup_photo_error">לא ניתן היה להשתמש בתמונה הזו. כדאי לנסות תמונה אחרת.</string>
+    <string name="profile_setup_name_label">השם שלך</string>
+    <string name="profile_setup_name_placeholder">ישראל ישראלי</string>
+    <string name="profile_setup_name_too_short">יש להקליד לפחות %d אותיות.</string>
+    <string name="profile_setup_name_too_long">עד %d תווים.</string>
+    <string name="profile_setup_name_hint">אפשר לשנות אותו אחר כך בפרופיל.</string>
+    <string name="profile_setup_saved_locally">נשמר כרגע רק במכשיר הזה.</string>
+    <string name="profile_setup_continue">המשך</string>
+</resources>

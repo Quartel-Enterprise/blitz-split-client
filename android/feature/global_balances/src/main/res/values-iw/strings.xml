@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">יתרות</string>
+    <string name="global_balances_profile">פרופיל</string>
+    <string name="global_balances_offline">אופליין · היתרות של המכשיר הזה</string>
+    <string name="global_balances_filter">הצגה</string>
+    <string name="global_balances_filter_all">הכול</string>
+    <string name="global_balances_filter_you_owe">מגיע ממך</string>
+    <string name="global_balances_filter_owes_you">מגיע לך</string>
+    <string name="global_balances_hint">כבר מקוזז בין הקבוצות: כל אדם מופיע פעם אחת.</string>
+    <string name="global_balances_hint_empty">מחשבים את כל הקבוצות במכשיר הזה.</string>
+    <string name="global_balances_section_you_owe">חובות שלך · %d</string>
+    <string name="global_balances_section_owes_you">מגיע לך · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d קבוצה</item>
+        <item quantity="two">%d קבוצות</item>
+        <item quantity="other">%d קבוצות</item>
+    </plurals>
+    <string name="global_balances_guest">%s · אורח</string>
+    <string name="global_balances_you_owe">מגיע ממך</string>
+    <string name="global_balances_owes_you">מגיע לך</string>
+    <string name="global_balances_by_group_show">הצגת %s לפי קבוצה</string>
+    <string name="global_balances_by_group_hide">הסתרת %s לפי קבוצה</string>
+    <string name="global_balances_received">התקבל</string>
+    <string name="global_balances_received_from">התקבל מ-%s</string>
+    <string name="global_balances_settle">סגירת חשבון</string>
+    <string name="global_balances_settle_with">סגירת חשבון עם %s</string>
+    <string name="global_balances_charge">בקשת תשלום</string>
+    <string name="global_balances_charge_person">בקשת תשלום מ-%s</string>
+    <string name="global_balances_detail_pane">יתרה עם %s</string>
+    <string name="global_balances_detail_owes_you">מגיע לך מ-%s</string>
+    <string name="global_balances_detail_you_owe">ל-%s מגיע ממך</string>
+    <string name="global_balances_detail_guest">%s · אורח בלי האפליקציה</string>
+    <string name="global_balances_detail_note_owed">הסכום נטו כבר מקזז בין הקבוצות: \"בקשת תשלום\" ו\"התקבל\" משתמשים ב-%s. האפליקציה רושמת תשלום בכל קבוצה.</string>
+    <string name="global_balances_detail_note_settle">הסכום נטו כבר מקזז בין הקבוצות: \"סגירת חשבון\" משתמשת ב-%s. האפליקציה רושמת תשלום בכל קבוצה.</string>
+    <string name="global_balances_detail_note_single">רק קבוצה אחת פתוחה עם %s.</string>
+    <string name="global_balances_settled_title">הכול סגור</string>
+    <string name="global_balances_settled_body">לאף אחד אין חוב אליך ואין לך חובות. כשמישהו יוסיף חשבון, היתרה תופיע כאן.</string>
+    <string name="global_balances_settled_action">הצגת הקבוצות</string>
+    <string name="global_balances_nothing_to_pay_title">אין לך חובות</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">החשבונות שלך סגורים עם כולם. עדיין מגיע לך %2$s מ-%1$d אדם.</item>
+        <item quantity="two">החשבונות שלך סגורים עם כולם. עדיין מגיע לך %2$s מ-%1$d אנשים.</item>
+        <item quantity="other">החשבונות שלך סגורים עם כולם. עדיין מגיע לך %2$s מ-%1$d אנשים.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">הצגת מה שמגיע לך</string>
+    <string name="global_balances_nothing_to_receive_title">לא מגיע לך מאף אחד</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">עדיין יש לך חוב של %2$s ל-%1$d אדם.</item>
+        <item quantity="two">עדיין יש לך חוב של %2$s ל-%1$d אנשים.</item>
+        <item quantity="other">עדיין יש לך חוב של %2$s ל-%1$d אנשים.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">הצגת החובות שלך</string>
+    <string name="global_balances_coming_soon">בקרוב</string>
+    <string name="global_balances_change_error">לא ניתן היה לשמור את השינוי. כדאי לנסות שוב.</string>
+    <string name="global_balances_copied">הועתק</string>
+    <string name="global_balances_charge_title">בקשת תשלום מ-%s</string>
+    <string name="global_balances_charge_owes">מגיע לך %1$s · %2$s</string>
+    <string name="global_balances_charge_close">סגירה</string>
+    <string name="global_balances_charge_guest">%s: אורח בלי האפליקציה. ההודעה הזו היא הדרך היחידה לדעת על החוב, ולכן היא כבר מפרטת מה נכלל בחשבון.</string>
+    <string name="global_balances_charge_message">הודעה</string>
+    <string name="global_balances_charge_pix">הוספת מפתח ה-Pix שלי</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">העתקת ההודעה</string>
+    <string name="global_balances_charge_send">שליחה</string>
+    <string name="global_balances_message">היי %1$s! לפי החישוב של Blitz Split, מגיע לי ממך %2$s מ%3$s.</string>
+    <string name="global_balances_message_guest">היי %1$s! מגיע לי ממך %2$s מ%3$s: החלק שלך ב-%4$s.</string>
+    <string name="global_balances_message_guest_paid">היי %1$s! מגיע לי ממך %2$s מ%3$s: החלק שלך ב-%4$s, פחות %5$s שכבר שילמת.</string>
+    <string name="global_balances_message_group">הקבוצה %s</string>
+    <string name="global_balances_message_groups">הקבוצות %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">טלפון</string>
+    <string name="global_balances_key_email">אימייל</string>
+    <string name="global_balances_key_random">מפתח אקראי</string>
+    <string name="global_balances_message_reroute">בקבוצה %1$s היה פישוט חובות, אז במקום לשלם ל-%2$s, התשלום הוא ישירות אליי; הסכום הכולל שלך לא השתנה.</string>
+</resources>

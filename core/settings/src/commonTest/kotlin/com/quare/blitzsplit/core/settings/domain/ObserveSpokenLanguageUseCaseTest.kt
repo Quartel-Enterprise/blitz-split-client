@@ -126,6 +126,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
+                AppLanguage.HEBREW,
                 AppLanguage.THAI,
             )
 
@@ -154,6 +155,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "hi",
                     "ar",
                     "zh",
+                    "he",
                     "th",
                 ),
                 spoken,
@@ -197,6 +199,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "hi",
             "ar",
             "zh",
+            "he",
             "th",
         )
 
@@ -234,6 +237,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "hi-IN",
                 "ar-EG",
                 "zh-CN",
+                "iw-IL",
                 "th-TH",
             )
 
@@ -264,6 +268,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "hi",
                     "ar",
                     "zh",
+                    "he",
                     "th",
                 ),
                 spoken,

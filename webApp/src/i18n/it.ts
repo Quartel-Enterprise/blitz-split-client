@@ -845,6 +845,7 @@ export const it: Record<MessageKey, string> = {
   profile_languageHindi: 'Hindi',
   profile_languageArabic: 'Arabo',
   profile_languageChineseSimplified: 'Cinese (semplificato)',
+  profile_languageHebrew: 'Ebraico',
   profile_languageThai: 'Tailandese',
   profile_bitcoinInSats: 'Bitcoin in satoshi',
   profile_bitcoinInSatsDetail: 'Mostra e fa inserire gli importi in bitcoin in sats (1 ₿ = 100.000.000 sats).',

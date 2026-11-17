@@ -19,6 +19,9 @@ import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
 
+// Why: one per locale, as every currency's formatter of a list asks for the same mark.
+private val signMarks = java.util.concurrent.ConcurrentHashMap<Locale, String>()
+
 // Why: Preferências' "Bitcoin em satoshis", which every bitcoin amount drawn follows, provided at the app's root.
 val LocalShowsBitcoinInSats = staticCompositionLocalOf { false }
 
@@ -142,12 +145,17 @@ class MoneyFormatter(
 
     /*
      * Why: the sign goes before the amount, but right before its digits in a right to left language, whose pattern
-     * starts with a right to left mark ("‏141.66 R$") that would part a sign put first from the number it signs.
+     * starts with a right to left mark ("‏141.66 R$") that would part a sign put first from the number it signs. It
+     * takes the mark the language's own negative number puts before its minus, so it sits where that language writes
+     * it: Hebrew and Arabic (on Latin digits) both put a left to right mark there, the sign left of the digits.
      */
     private fun String.withSign(sign: String): String {
         val digit = indexOfFirst(Char::isDigit)
-        return if (!isolates || digit < 0) sign + this else substring(0, digit) + sign + substring(digit)
+        if (!isolates || digit < 0) return sign + this
+        return substring(0, digit) + signMark + sign + substring(digit)
     }
+
+    private val signMark: String by lazy { signMarkOf(formatLocale) }
 
     private fun Long.toDecimal(): BigDecimal = BigDecimal.valueOf(this, if (isSats) 0 else currency.fractionDigits)
 
@@ -223,4 +231,12 @@ fun rememberMoneyFormatters(currencies: List<GroupCurrency>): Map<GroupCurrency,
             )
         }
     }
+}
+
+// Why: ICU's, since java.text drops the bidi mark of the pattern.
+private fun signMarkOf(locale: Locale): String = signMarks.getOrPut(locale) {
+    android.icu.text.NumberFormat
+        .getNumberInstance(locale)
+        .format(-1)
+        .takeWhile { it != '-' && it != '−' && !it.isDigit() }
 }

@@ -88,7 +88,7 @@ The feed, unread state, real time and push notifications.
     बांटा"), a join or a leave being said with a transitive verb too ("ने ‘गोवा ट्रिप’ ग्रुप जॉइन किया"). Its
     deleted-item notice starts with who deleted it ("आपने …"); every other "You" is "आप". Arabic's     verbs say both the person and a gender the app doesn't know, so an Arabic row names the actor, a colon and a
     verbal noun instead of a verb ("Ana: تقسيم «عشاء»", "أنت: تقسيم «عشاء»"): the same words serve the user and everyone
-    else, and none of the three helpers has an Arabic rule. Its deleted-item notice is passive ("تم الحذف بواسطة Ana"). The same rules say a bill's photo line to the user who attached it, in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
+    else, and none of the three helpers has an Arabic rule. Its deleted-item notice is passive ("تم الحذف بواسطة Ana"). Hebrew rows are built the same way ("Ana: פיצול "ארוחת ערב"", "אני: פיצול …"), the user's subject word being "אני", and its deleted-item notice agrees with the item, never with the person. The same rules say a bill's photo line to the user who attached it, in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
     "Tu l’as joint…", "Ty dodałeś(-aś) je…". A Spanish object pronoun before the verb stays ("lo adjuntó" to "lo
     adjuntaste"), and French's and Italian's elided auxiliaries change as the bare ones do ("l’a" to "l’as", "l’ha" to
     "l’hai"). A line written without a verb after the name stays as it is (German's "Du · heute um 21:10 angehängt",

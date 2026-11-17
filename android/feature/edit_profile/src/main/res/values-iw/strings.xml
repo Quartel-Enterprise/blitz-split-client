@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">עריכת הפרופיל</string>
+    <string name="edit_profile_save">שמירה</string>
+    <string name="edit_profile_change_photo">שינוי התמונה</string>
+    <string name="edit_profile_take_photo">צילום תמונה</string>
+    <string name="edit_profile_choose_photo">בחירה מהגלריה</string>
+    <string name="edit_profile_use_account_photo">שימוש בתמונה מחשבון ה-%1$s</string>
+    <string name="edit_profile_remove_photo">הסרת התמונה</string>
+    <string name="edit_profile_photo_error">לא ניתן היה להשתמש בתמונה הזו. כדאי לנסות תמונה אחרת.</string>
+    <string name="edit_profile_avatar_color">צבע האווטאר</string>
+    <string name="edit_profile_avatar_color_hint">מוצג כשאין תמונה.</string>
+    <string name="edit_profile_name_label">השם שלך</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">יש להקליד לפחות %d אותיות.</string>
+    <string name="edit_profile_name_too_long">עד %d תווים.</string>
+    <string name="edit_profile_account_notice">השם והתמונה הגיעו מחשבון ה-%1$s שלך. שינוי שלהם כאן חל רק על Blitz Split ולא משנה את חשבון ה-%1$s שלך.</string>
+    <string name="edit_profile_footer">הקבוצות שלך וכל מי שיש לו את קישור הפרופיל שלך רואים את השם והתמונה שלך.</string>
+    <string name="profile_photo_close">סגירה</string>
+    <string name="profile_photo_camera">מצלמה</string>
+    <string name="profile_photo_gallery">גלריה</string>
+    <string name="profile_photo_remove">הסרה</string>
+    <string name="profile_photo_title">תמונת פרופיל</string>
+</resources>
