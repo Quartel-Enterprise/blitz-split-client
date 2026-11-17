@@ -27,7 +27,7 @@
     <string name="group_detail_export_member">משתתף</string>
     <string name="group_detail_export_balance">יתרה</string>
     <plurals name="group_detail_member_count">
-        <item quantity="one">משתתף %d</item>
+        <item quantity="one">%d משתתף</item>
         <item quantity="two">%d משתתפים</item>
         <item quantity="other">%d משתתפים</item>
     </plurals>
@@ -36,12 +36,12 @@
         <item quantity="two">%d עדיין לא בקבוצה</item>
         <item quantity="other">%d עדיין לא בקבוצה</item>
     </plurals>
-    <string name="group_detail_see_members">צפייה במשתתפים</string>
+    <string name="group_detail_see_members">הצגת המשתתפים</string>
     <string name="group_detail_tabs">אזורי הקבוצה</string>
     <string name="group_detail_tab_expenses">הוצאות</string>
     <string name="group_detail_tab_balances">יתרות</string>
     <string name="group_detail_tab_members">משתתפים</string>
-    <string name="group_detail_see_all_bills">הכול</string>
+    <string name="group_detail_see_all_bills">הצגת הכול</string>
     <string name="group_detail_today">היום</string>
     <string name="group_detail_yesterday">אתמול</string>
     <string name="group_detail_queued">בתור</string>
@@ -50,7 +50,7 @@
     <string name="group_detail_split_bill">פיצול חשבון</string>
     <string name="group_detail_change_error">לא ניתן היה לשמור את השינוי. כדאי לנסות שוב.</string>
     <string name="group_detail_bill_deleted">החשבון הזה נמחק</string>
-    <string name="group_detail_payment_paid_you">%s: תשלום אליך</string>
+    <string name="group_detail_payment_paid_you">%s: תשלום לך</string>
     <string name="group_detail_payment_you_paid">אני: תשלום ל-%s</string>
     <string name="group_detail_payment_paid">%1$s: תשלום ל-%2$s</string>
     <string name="group_detail_payment_meta">תשלום</string>
@@ -71,9 +71,9 @@
     <string name="group_detail_balances_got_paid">קיבלתי תשלום</string>
     <string name="group_detail_balances_already_paid">כבר שילמתי</string>
     <string name="group_detail_balances_note">החובות של כל זוג כבר מקוזזים: אם ל-Ana מגיע ממך ולך מגיע ממנה, מופיע רק ההפרש. \"קיבלתי תשלום\" ו\"כבר שילמתי\" רושמים תשלום שנעשה מחוץ לאפליקציה (Pix, מזומן, העברה).</string>
-    <string name="group_detail_balances_empty_title">אף אחד עדיין לא חייב כלום</string>
+    <string name="group_detail_balances_empty_title">עדיין אין חובות</string>
     <string name="group_detail_balances_empty_message">היתרות יופיעו אחרי שתתווסף ההוצאה הראשונה.</string>
-    <string name="group_detail_balances_settled_title">כולם סגרו חשבון</string>
+    <string name="group_detail_balances_settled_title">כל החשבונות נסגרו</string>
     <string name="group_detail_balances_settled_message">אף אחד לא חייב כלום בקבוצה הזו. אם הטיול נגמר, אפשר למחוק את הקבוצה לכולם.</string>
     <string name="group_detail_category_path">%1$s › %2$s</string>
     <string name="group_detail_teach_offer">החשבון נשמר ב-%1$s, ולא ב-%2$s שהמפה הציעה. ללמד את המפה?</string>
@@ -86,7 +86,7 @@
     <string name="group_detail_teach_footer">חשבונות שכבר נשמרו לא משתנים. אפשר לבטל את זה במפת הקטגוריות.</string>
     <string name="group_detail_teach_cancel">ביטול</string>
     <string name="group_detail_teach_error">לא ניתן היה ללמד את המפה. כדאי לנסות שוב.</string>
-    <string name="group_detail_joined_title">הצטרפות בתור %s</string>
+    <string name="group_detail_joined_title">ההצטרפות בוצעה בתור %s</string>
     <string name="group_detail_joined_message">כל מה שנוסף עבורך מופיע כאן.</string>
     <string name="group_detail_joined_dismiss">סגירה</string>
     <string name="group_detail_protect_title">הגנה על הגישה שלך</string>
@@ -100,7 +100,7 @@
     <string name="group_detail_simplified_how">איך זה עובד</string>
     <string name="group_detail_simplified_pair">זוג חדש מהפישוט</string>
     <string name="group_detail_balances_note_simplified">עם חובות מפושטים, האפליקציה מציעה את המספר הקטן ביותר של תשלומים. \"קיבלתי תשלום\" ו\"כבר שילמתי\" רושמים תשלום שנעשה מחוץ לאפליקציה (Pix, מזומן, העברה).</string>
-    <string name="group_detail_photo_open">צפייה בתמונת הקבוצה</string>
+    <string name="group_detail_photo_open">הצגת תמונת הקבוצה</string>
     <string name="group_export_payment_method">אמצעי תשלום</string>
     <string name="group_detail_reminder_title">הגיע הזמן לסגור חשבון</string>
     <string name="group_detail_reminder_settle">סגירת חשבון</string>

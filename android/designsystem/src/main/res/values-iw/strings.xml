@@ -16,15 +16,15 @@
     <string name="designsystem_group_type_home">בית</string>
     <string name="designsystem_group_type_event">אירוע</string>
     <string name="designsystem_group_type_other">אחר</string>
-    <string name="designsystem_default_split_equal">שווה</string>
+    <string name="designsystem_default_split_equal">שווה בשווה</string>
     <string name="designsystem_default_split_shares">חלקים</string>
     <string name="designsystem_default_split_percent">אחוזים</string>
     <string name="designsystem_default_split_income">לפי הכנסה</string>
     <string name="designsystem_currency_value">%1$s (%2$s)</string>
-    <string name="designsystem_currency_bitcoin">ביטקוין</string>
+    <string name="designsystem_currency_bitcoin">Bitcoin</string>
     <string name="designsystem_currency_ether">אתריום</string>
-    <string name="designsystem_money_sats">%1$s סאטס</string>
-    <string name="designsystem_money_sats_symbol">סאטס</string>
+    <string name="designsystem_money_sats">%1$s sats</string>
+    <string name="designsystem_money_sats_symbol">sats</string>
     <string name="designsystem_currency_crypto_section">מטבעות קריפטו</string>
     <string name="designsystem_avatar_color_blue">כחול</string>
     <string name="designsystem_avatar_color_peach">אפרסק</string>
@@ -53,12 +53,12 @@
     <string name="designsystem_balance_settled">%s · הכול סגור</string>
     <string name="designsystem_balance_get_and_owe">מגיע לך %1$s ומגיע ממך %2$s</string>
     <string name="designsystem_balance_everyone_settled">אין כאן חובות פתוחים.</string>
-    <string name="designsystem_balance_others_settling">לאחרים עדיין יש חובות לסגור.</string>
+    <string name="designsystem_balance_others_settling">יש עוד חובות פתוחים בין אחרים.</string>
     <string name="designsystem_balance_settle">סגירת חשבון</string>
     <string name="designsystem_payment_recorded_from">התשלום של %s נרשם.</string>
     <string name="designsystem_payment_recorded_to">התשלום ל-%s נרשם.</string>
     <string name="designsystem_payment_recorded">התשלום נרשם.</string>
-    <string name="designsystem_payment_undo">ביטול</string>
+    <string name="designsystem_payment_undo">ביטול הפעולה</string>
     <string name="designsystem_paid_by_one">שולם על ידי: %s</string>
     <string name="designsystem_paid_by_several">שולם על ידי: %s</string>
     <plurals name="designsystem_payers_count">
@@ -68,13 +68,13 @@
     </plurals>
     <string name="designsystem_group_exit_not_now">לא עכשיו</string>
     <string name="designsystem_group_exit_see_balances">הצגת היתרות</string>
-    <string name="designsystem_group_exit_leave_blocked_title">יש לסגור את החשבון לפני היציאה</string>
+    <string name="designsystem_group_exit_leave_blocked_title">יש לסגור חשבון לפני היציאה</string>
     <string name="designsystem_group_exit_leave_blocked_message">עדיין יש לך יתרה פתוחה ב-\"%s\". יציאה עכשיו תשאיר אותה פתוחה עבור האחרים.</string>
     <string name="designsystem_group_exit_leave_title">לצאת מ-\"%s\"?</string>
     <plurals name="designsystem_group_exit_leave_message">
-        <item quantity="one">היתרה שלך מאופסת. הקבוצה תוסר מהמכשיר הזה, וההוצאות שלך יישארו עם השם שלך עבור החבר הנוסף בקבוצה. כדי לחזור, מישהו יצטרך להזמין אותך שוב.</item>
-        <item quantity="two">היתרה שלך מאופסת. הקבוצה תוסר מהמכשיר הזה, וההוצאות שלך יישארו עם השם שלך עבור %d חברי הקבוצה האחרים. כדי לחזור, מישהו יצטרך להזמין אותך שוב.</item>
-        <item quantity="other">היתרה שלך מאופסת. הקבוצה תוסר מהמכשיר הזה, וההוצאות שלך יישארו עם השם שלך עבור %d חברי הקבוצה האחרים. כדי לחזור, מישהו יצטרך להזמין אותך שוב.</item>
+        <item quantity="one">היתרה שלך מאופסת. הקבוצה תוסר מהמכשיר הזה, וההוצאות שלך יישארו עם השם שלך עבור המשתתף הנוסף. כדי לחזור, מישהו יצטרך להזמין אותך שוב.</item>
+        <item quantity="two">היתרה שלך מאופסת. הקבוצה תוסר מהמכשיר הזה, וההוצאות שלך יישארו עם השם שלך עבור %d המשתתפים האחרים. כדי לחזור, מישהו יצטרך להזמין אותך שוב.</item>
+        <item quantity="other">היתרה שלך מאופסת. הקבוצה תוסר מהמכשיר הזה, וההוצאות שלך יישארו עם השם שלך עבור %d המשתתפים האחרים. כדי לחזור, מישהו יצטרך להזמין אותך שוב.</item>
     </plurals>
     <string name="designsystem_group_exit_leave_message_alone">היתרה שלך מאופסת. אף אחד אחר לא הצטרף לקבוצה, ולכן היא תימחק לצמיתות.</string>
     <string name="designsystem_group_exit_leave_confirm">יציאה</string>
@@ -94,9 +94,9 @@
         <item quantity="other">%d ההוצאות שלה</item>
     </plurals>
     <plurals name="designsystem_group_exit_delete_members">
-        <item quantity="one">%d חבר בקבוצה</item>
-        <item quantity="two">כל %d חברי הקבוצה</item>
-        <item quantity="other">כל %d חברי הקבוצה</item>
+        <item quantity="one">%d משתתף</item>
+        <item quantity="two">כל %d המשתתפים</item>
+        <item quantity="other">כל %d המשתתפים</item>
     </plurals>
     <string name="designsystem_group_exit_delete_confirm">מחיקה לכולם</string>
     <string name="designsystem_group_exit_deleted_title">הקבוצה נמחקה</string>
@@ -108,7 +108,7 @@
     <string name="designsystem_debt_you_owe">ל-%s מגיע ממך</string>
     <string name="designsystem_debt_owes_you">מגיע לך מ-%s</string>
     <string name="designsystem_debt_owes">ל-%2$s מגיע מ-%1$s</string>
-    <string name="designsystem_former_member">חבר לשעבר</string>
+    <string name="designsystem_former_member">משתתף לשעבר</string>
     <string name="designsystem_you">אני</string>
     <string name="designsystem_you_paid">שולם על ידי: אני</string>
     <string name="designsystem_tab_home">בית</string>
@@ -152,7 +152,7 @@
     <string name="designsystem_category_home_cleaning">ניקיון</string>
     <string name="designsystem_category_transport">תחבורה</string>
     <string name="designsystem_category_transport_fuel">דלק</string>
-    <string name="designsystem_category_transport_ride">מוניות ונסיעות</string>
+    <string name="designsystem_category_transport_ride">מוניות</string>
     <string name="designsystem_category_transport_parking">חניה</string>
     <string name="designsystem_category_transport_toll">אגרות כביש</string>
     <string name="designsystem_category_transport_transit">אוטובוס ורכבת</string>
@@ -229,8 +229,8 @@
     </plurals>
     <plurals name="designsystem_category_edit_note">
         <item quantity="one">שינוי השם או המיקום חל על כל חברי %1$s ועל %2$d חשבון שכבר משתמש ב-%3$s.</item>
-        <item quantity="two">שינוי השם או המיקום חל על כל חברי %1$s ועל %2$d החשבונות שכבר משתמשים ב-%3$s.</item>
-        <item quantity="other">שינוי השם או המיקום חל על כל חברי %1$s ועל %2$d החשבונות שכבר משתמשים ב-%3$s.</item>
+        <item quantity="two">שינוי השם או המיקום חל על כל הקבוצה %1$s ועל %2$d החשבונות שכבר משתמשים ב-%3$s.</item>
+        <item quantity="other">שינוי השם או המיקום חל על כל הקבוצה %1$s ועל %2$d החשבונות שכבר משתמשים ב-%3$s.</item>
     </plurals>
     <plurals name="designsystem_category_used_in">
         <item quantity="one">בשימוש ב-%d חשבון</item>
@@ -306,7 +306,7 @@
     <string name="designsystem_paying_method_cash">מזומן</string>
     <string name="designsystem_paying_method_pix">Pix</string>
     <string name="designsystem_paying_method_bank_transfer">העברה בנקאית</string>
-    <string name="designsystem_paying_method_bitcoin">ביטקוין</string>
+    <string name="designsystem_paying_method_bitcoin">Bitcoin</string>
     <string name="designsystem_paying_method_other">אחר</string>
     <string name="designsystem_paid_with">אמצעי תשלום</string>
     <string name="designsystem_paid_with_none">ללא</string>

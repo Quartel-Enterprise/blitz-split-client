@@ -4,7 +4,7 @@
     <string name="activity_back">חזרה</string>
     <string name="activity_you">אני</string>
     <string name="activity_person_you">אני</string>
-    <string name="activity_former_member">חבר לשעבר</string>
+    <string name="activity_former_member">משתתף לשעבר</string>
     <string name="activity_today">היום</string>
     <string name="activity_yesterday">אתמול</string>
     <string name="activity_pending">בהמתנה לשליחה</string>
@@ -40,7 +40,7 @@
     <string name="activity_open_bill">פתיחת החשבון</string>
     <string name="activity_open_payment">הצגת התשלום</string>
     <string name="activity_open_group">פתיחת הקבוצה</string>
-    <string name="activity_open_members">הצגת החברים</string>
+    <string name="activity_open_members">הצגת המשתתפים</string>
     <string name="activity_open_balances">הצגת היתרות</string>
     <string name="activity_bill_deleted">החשבון נמחק</string>
     <string name="activity_group_deleted">הקבוצה נמחקה</string>
@@ -86,7 +86,7 @@
     <string name="activity_field_amount">סכום</string>
     <string name="activity_field_description">תיאור</string>
     <string name="activity_field_spent_at">מתי</string>
-    <string name="activity_field_payers">מי שילם</string>
+    <string name="activity_field_payers">שולם על ידי</string>
     <string name="activity_field_split">חלוקה</string>
     <string name="activity_field_name">שם</string>
     <string name="activity_field_type">סוג</string>
@@ -103,7 +103,7 @@
     <string name="activity_photo_previous">התמונה הקודמת</string>
     <string name="activity_photo_new">תמונה חדשה</string>
     <string name="activity_photo_none">בלי תמונה</string>
-    <string name="activity_split_equal">שווה</string>
+    <string name="activity_split_equal">שווה בשווה</string>
     <string name="activity_split_amount">סכומים</string>
     <string name="activity_split_percent">אחוזים</string>
     <string name="activity_split_shares">חלקים</string>

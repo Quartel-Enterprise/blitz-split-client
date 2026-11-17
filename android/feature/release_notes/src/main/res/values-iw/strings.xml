@@ -6,7 +6,7 @@
     <string name="release_notes_installed_badge">הגרסה הזו</string>
     <string name="release_notes_empty">עדיין אין עדכונים להצגה.</string>
     <string name="release_notes_empty_only_betas">עדיין אין גרסה יציבה. אפשר להפעיל גרסאות בטא כדי לראות מה נבדק כרגע.</string>
-    <string name="release_notes_load_failed_title">לא ניתן היה לטעון את העדכונים</string>
+    <string name="release_notes_load_failed_title">לא ניתן היה לטעון את \"מה חדש\"</string>
     <string name="release_notes_load_failed_body">כדאי לבדוק את החיבור ולנסות שוב.</string>
     <string name="release_notes_retry">ניסיון חוזר</string>
     <string name="release_notes_open_on_github">פתיחה ב-GitHub</string>

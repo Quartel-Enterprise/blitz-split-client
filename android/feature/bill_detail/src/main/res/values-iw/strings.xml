@@ -7,8 +7,8 @@
     <string name="bill_detail_when_today">היום, %s</string>
     <string name="bill_detail_when_yesterday">אתמול, %s</string>
     <string name="bill_detail_when_other">%1$s, %2$s</string>
-    <string name="bill_detail_you_paid">שילמתי</string>
-    <string name="bill_detail_someone_paid">שולם על ידי %s</string>
+    <string name="bill_detail_you_paid">שולם על ידי: אני</string>
+    <string name="bill_detail_someone_paid">שולם על ידי: %s</string>
     <string name="bill_detail_former_member_paid">שולם על ידי משתתף לשעבר</string>
     <string name="bill_detail_pending">בתור · הסנכרון יתבצע כשהחיבור לאינטרנט יחזור</string>
     <string name="bill_detail_unknown_currency">החשבון הזה משתמש במטבע שגרסת האפליקציה הזו לא מכירה. כדי לערוך אותו, יש לעדכן את האפליקציה.</string>
@@ -21,7 +21,7 @@
     <string name="bill_detail_history_you">אני</string>
     <string name="bill_detail_former_member">משתתף לשעבר</string>
     <string name="bill_detail_paid">תשלום: %s</string>
-    <string name="bill_detail_not_joined">עדיין לא בקבוצה</string>
+    <string name="bill_detail_not_joined">עוד לא בקבוצה</string>
     <string name="bill_detail_not_in">לא בחשבון הזה</string>
     <string name="bill_detail_no_share">—</string>
     <string name="bill_detail_offline">אין אינטרנט. תגובות ותמונות ממתינות בתור ויישלחו כשהחיבור יחזור.</string>
@@ -85,8 +85,8 @@
     <string name="bill_detail_history_link_anyone">: פתיחת הקישור לכל אחד</string>
     <string name="bill_detail_history_link_members">: הגבלת הקישור למשתתפי החשבון בלבד</string>
     <string name="bill_detail_history_link_off">: כיבוי הקישור</string>
-    <string name="bill_detail_undo">ביטול פעולה</string>
-    <string name="bill_detail_undo_error">לא ניתן היה לבטל. כדאי לנסות שוב.</string>
+    <string name="bill_detail_undo">ביטול הפעולה</string>
+    <string name="bill_detail_undo_error">לא ניתן היה לבטל את הפעולה. כדאי לנסות שוב.</string>
     <string name="bill_detail_field_amount">סכום</string>
     <string name="bill_detail_field_description">תיאור</string>
     <string name="bill_detail_field_spent_at">תאריך</string>

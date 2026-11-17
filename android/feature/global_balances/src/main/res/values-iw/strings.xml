@@ -5,7 +5,7 @@
     <string name="global_balances_offline">אופליין · היתרות של המכשיר הזה</string>
     <string name="global_balances_filter">הצגה</string>
     <string name="global_balances_filter_all">הכול</string>
-    <string name="global_balances_filter_you_owe">חובות שלך</string>
+    <string name="global_balances_filter_you_owe">מגיע ממך</string>
     <string name="global_balances_filter_owes_you">מגיע לך</string>
     <string name="global_balances_hint">כבר מקוזז בין הקבוצות: כל אדם מופיע פעם אחת.</string>
     <string name="global_balances_hint_empty">מחשבים את כל הקבוצות במכשיר הזה.</string>
@@ -17,7 +17,7 @@
         <item quantity="other">%d קבוצות</item>
     </plurals>
     <string name="global_balances_guest">%s · אורח</string>
-    <string name="global_balances_you_owe">חוב שלך</string>
+    <string name="global_balances_you_owe">מגיע ממך</string>
     <string name="global_balances_owes_you">מגיע לך</string>
     <string name="global_balances_by_group_show">הצגת %s לפי קבוצה</string>
     <string name="global_balances_by_group_hide">הסתרת %s לפי קבוצה</string>
@@ -43,14 +43,14 @@
         <item quantity="two">החשבונות שלך סגורים עם כולם. עדיין מגיע לך %2$s מ-%1$d אנשים.</item>
         <item quantity="other">החשבונות שלך סגורים עם כולם. עדיין מגיע לך %2$s מ-%1$d אנשים.</item>
     </plurals>
-    <string name="global_balances_nothing_to_pay_action">הצגת מי שחייב לך</string>
-    <string name="global_balances_nothing_to_receive_title">לאף אחד אין חוב אליך</string>
+    <string name="global_balances_nothing_to_pay_action">הצגת מה שמגיע לך</string>
+    <string name="global_balances_nothing_to_receive_title">לא מגיע לך מאף אחד</string>
     <plurals name="global_balances_nothing_to_receive_body">
         <item quantity="one">עדיין יש לך חוב של %2$s ל-%1$d אדם.</item>
         <item quantity="two">עדיין יש לך חוב של %2$s ל-%1$d אנשים.</item>
         <item quantity="other">עדיין יש לך חוב של %2$s ל-%1$d אנשים.</item>
     </plurals>
-    <string name="global_balances_nothing_to_receive_action">הצגת למי יש לך חוב</string>
+    <string name="global_balances_nothing_to_receive_action">הצגת החובות שלך</string>
     <string name="global_balances_coming_soon">בקרוב</string>
     <string name="global_balances_change_error">לא ניתן היה לשמור את השינוי. כדאי לנסות שוב.</string>
     <string name="global_balances_copied">הועתק</string>
@@ -68,7 +68,7 @@
     <string name="global_balances_message_guest_paid">היי %1$s! מגיע לי ממך %2$s מ%3$s: החלק שלך ב-%4$s, פחות %5$s שכבר שילמת.</string>
     <string name="global_balances_message_group">הקבוצה %s</string>
     <string name="global_balances_message_groups">הקבוצות %s</string>
-    <string name="global_balances_message_pix">Pix %1$s: %2$s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
     <string name="global_balances_key_cpf">CPF</string>
     <string name="global_balances_key_phone">טלפון</string>
     <string name="global_balances_key_email">אימייל</string>

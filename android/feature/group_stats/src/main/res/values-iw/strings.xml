@@ -23,7 +23,7 @@
     <string name="group_stats_consumption">צריכה</string>
     <string name="group_stats_paid">תשלום</string>
     <string name="group_stats_you">%s (אני)</string>
-    <string name="group_stats_note_consumption">צריכה היא החלק של כל אחד בהוצאות, לפי האופן שבו כל חשבון חולק.</string>
+    <string name="group_stats_note_consumption">\"צריכה\" היא החלק של כל אחד בהוצאות, לפי האופן שבו כל חשבון חולק.</string>
     <string name="group_stats_note_paid">מה שכל אחד שילם באותו רגע. ההפרש בין התשלום לבין הצריכה הופך ליתרה, ביתרות.</string>
     <string name="group_stats_over_time">לאורך זמן</string>
     <string name="group_stats_chart_type">סוג תרשים</string>
@@ -51,10 +51,10 @@
     <string name="group_stats_aria_year">הוצאות לפי שנה: %s</string>
     <string name="group_stats_aria_nothing">כלום</string>
     <string name="group_stats_note_day">יום זמין לתקופות של עד 3 חודשים.</string>
-    <string name="group_stats_note_week_month_year">שבוע, חודש ושנה מופיעים בתקופות ארוכות משבוע.</string>
-    <string name="group_stats_note_month_year">חודש ושנה מופיעים בתקופות ארוכות מחודש.</string>
-    <string name="group_stats_note_week">שבוע מופיע בתקופות ארוכות משבוע.</string>
-    <string name="group_stats_note_year">שנה מופיעה בתקופות ארוכות משנה.</string>
+    <string name="group_stats_note_week_month_year">\"שבוע\", \"חודש\" ו\"שנה\" מופיעים בתקופות ארוכות משבוע.</string>
+    <string name="group_stats_note_month_year">\"חודש\" ו\"שנה\" מופיעים בתקופות ארוכות מחודש.</string>
+    <string name="group_stats_note_week">\"שבוע\" מופיע בתקופות ארוכות משבוע.</string>
+    <string name="group_stats_note_year">\"שנה\" מופיעה בתקופות ארוכות משנה.</string>
     <string name="group_stats_note_year_switches_all">כדי להשוות בין שנים, יש לבחור \"שנה\": התקופה תהפוך ל\"כל הזמן\".</string>
     <string name="group_stats_note_year_switches_trip">כדי להשוות בין שנים, יש לבחור \"שנה\": התקופה תהפוך ל\"כל הטיול\".</string>
     <string name="group_stats_biggest">ההוצאה הגדולה ביותר</string>
@@ -93,6 +93,6 @@
     </plurals>
     <string name="group_stats_settling_same_day">באותו יום, בממוצע</string>
     <string name="group_stats_settling_open">%s עדיין פתוח</string>
-    <string name="group_stats_settling_note">כמה זמן לוקח לכל אחד, בממוצע, לסגור את החלק שלו בחשבונות של התקופה. מה שעדיין פתוח נספר עד היום.</string>
+    <string name="group_stats_settling_note">כמה זמן נדרש בממוצע לסגירת החלק של כל אחד בחשבונות התקופה. מה שעדיין פתוח נספר עד היום.</string>
     <string name="group_stats_category_open">הצגת ההוצאות</string>
 </resources>

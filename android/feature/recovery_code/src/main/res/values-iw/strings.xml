@@ -4,8 +4,8 @@
     <string name="recovery_code_body">השימוש כרגע הוא בלי חשבון משתמש. 12 המילים האלה מחזירות את הנתונים שלך אם המכשיר מוחלף או אובד. כדאי לרשום אותן לפי הסדר. אחרי 30 יום ללא שימוש, הנתונים שלך נמחקים והמילים מפסיקות לעבוד.</string>
     <string name="recovery_code_copy">העתקת המילים</string>
     <string name="recovery_code_save_to_password_manager">שמירה במנהל הסיסמאות</string>
-    <string name="recovery_code_connect_instead">חיבור Google או Apple במקום</string>
-    <string name="recovery_code_connect_instead_body">בלי צורך בקוד</string>
+    <string name="recovery_code_connect_instead">חיבור Google או Apple במקום זאת</string>
+    <string name="recovery_code_connect_instead_body">אין צורך בקוד</string>
     <string name="recovery_code_sign_in_failed">לא ניתן היה להתחבר כרגע. כדאי לנסות שוב.</string>
     <string name="recovery_code_also_in_profile">הקוד נמצא גם בפרופיל › קוד שחזור.</string>
     <string name="recovery_code_remind_later">תזכורת מאוחר יותר</string>

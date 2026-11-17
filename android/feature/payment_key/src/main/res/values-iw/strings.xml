@@ -45,9 +45,9 @@
     <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
 
     <string name="payment_key_error_invalid_cpf">CPF לא תקין: ספרות הביקורת לא תואמות.</string>
-    <string name="payment_key_error_invalid_phone">מספר נייד חסר: יש להזין קידומת ו-9 ספרות, שמתחילות ב-9.</string>
-    <string name="payment_key_error_invalid_email">אימייל חסר: חסר הדומיין, כמו .com או .com.br.</string>
-    <string name="payment_key_error_invalid_random">מפתח אקראי חסר: יש בו 32 אותיות ומספרים.</string>
+    <string name="payment_key_error_invalid_phone">מספר נייד חלקי: יש להזין קידומת ו-9 ספרות, שמתחילות ב-9.</string>
+    <string name="payment_key_error_invalid_email">אימייל חלקי: חסר הדומיין, כמו .com או .com.br.</string>
+    <string name="payment_key_error_invalid_random">מפתח אקראי חלקי: יש בו 32 אותיות ומספרים.</string>
     <string name="payment_key_error_invalid_lightning">זו לא Lightning Address (name@wallet) וגם לא LNURL.</string>
     <string name="payment_key_error_lightning_invoice">זו חשבונית Lightning (lnbc…): היא משולמת פעם אחת ופג תוקפה. יש להדביק Lightning Address או LNURL.</string>
     <string name="payment_key_error_invalid_onchain">כתובת לא תקינה. יש להשתמש בכתובת mainnet מסוג bc1q או bc1p.</string>
@@ -56,7 +56,7 @@
 
     <string name="payment_key_switched_to_onchain">זו כתובת on-chain, אז עברנו ל-On-chain.</string>
     <string name="payment_key_switched_to_lightning">זו Lightning Address, אז עברנו ל-Lightning.</string>
-    <string name="payment_key_cpf_notice">מי שמשלם לך רואה את ה-CPF המלא שלך. כדי לא לשתף אותו, אפשר להשתמש במפתח טלפון, אימייל או אקראי.</string>
+    <string name="payment_key_cpf_notice">ה-CPF המלא שלך מוצג כשמשלמים לך. כדי לא לשתף אותו, אפשר להשתמש במפתח טלפון, אימייל או אקראי.</string>
     <string name="payment_key_held_notice">אפשר להחזיק רק מפתח Pix אחד מהסוג הזה, ולכן זה המפתח שנשמר. אפשר לשנות אותו כאן.</string>
 
     <string name="payment_key_accepted_title">אנחנו מקבלים</string>
@@ -64,8 +64,8 @@
 
     <string name="payment_key_default_pix_title">מפתח Pix ברירת מחדל</string>
     <string name="payment_key_default_bitcoin_title">מפתח Bitcoin ברירת מחדל</string>
-    <string name="payment_key_default_pix_detail">מוצג ראשון בסגירת החשבון.</string>
-    <string name="payment_key_default_bitcoin_detail">מוצג ראשון כשמישהו משלם ב-BTC.</string>
+    <string name="payment_key_default_pix_detail">מוצג ראשון בסגירת חשבון.</string>
+    <string name="payment_key_default_bitcoin_detail">מוצג ראשון כשמשלמים ב-BTC.</string>
     <string name="payment_key_default_now">כרגע: %1$s.</string>
     <string name="payment_key_default_locked_editing">כדי לשנות את זה, יש להגדיר מפתח אחר כברירת המחדל.</string>
     <string name="payment_key_default_locked_new">המפתח הראשון שלך מהסוג הזה הוא ברירת המחדל.</string>

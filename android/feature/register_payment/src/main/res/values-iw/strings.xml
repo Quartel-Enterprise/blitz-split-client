@@ -41,7 +41,7 @@
     <string name="register_payment_pay_method_bitcoin">Bitcoin</string>
     <string name="register_payment_pay_default_key">מפתח ברירת המחדל של %s</string>
     <string name="register_payment_pay_copy_key">העתקת המפתח</string>
-    <string name="register_payment_pay_pix_code">Pix העתקה והדבקה</string>
+    <string name="register_payment_pay_pix_code">קוד Pix להעתקה והדבקה</string>
     <string name="register_payment_pay_pix_code_amount">הסכום %s כבר כלול בו.</string>
     <string name="register_payment_pay_copy_code">העתקת הקוד</string>
     <string name="register_payment_pay_other_keys">מפתחות נוספים של %s</string>

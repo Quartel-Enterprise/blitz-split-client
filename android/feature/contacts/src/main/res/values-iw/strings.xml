@@ -78,8 +78,8 @@
         <item quantity="other">שולם על ידי %d אנשים</item>
     </plurals>
     <string name="contacts_history_meta">%1$s · %2$s · %3$s</string>
-    <string name="contacts_history_payment_from">תשלום מ-%s אליך</string>
-    <string name="contacts_history_payment_to">תשלום שלך ל-%s</string>
+    <string name="contacts_history_payment_from">%s: תשלום לך</string>
+    <string name="contacts_history_payment_to">אני: תשלום ל-%s</string>
     <string name="contacts_history_received">התקבל</string>
     <string name="contacts_history_paid">שולם</string>
     <string name="contacts_menu_merge">מיזוג עם חשבון משתמש</string>
@@ -92,9 +92,9 @@
     <string name="contacts_hide_confirm">הסתרה</string>
     <string name="contacts_add_title">הוספת %s לקבוצה</string>
     <plurals name="contacts_add_members">
-        <item quantity="one">%d חבר</item>
-        <item quantity="two">%d חברים</item>
-        <item quantity="other">%d חברים</item>
+        <item quantity="one">%d משתתף</item>
+        <item quantity="two">%d משתתפים</item>
+        <item quantity="other">%d משתתפים</item>
     </plurals>
     <string name="contacts_add_already_in">כבר בקבוצה</string>
     <string name="contacts_add_note">ההצטרפות של %s מיידית, בלי חלק בחשבונות הישנים, והקבוצה תופיע מיד ברשימת הקבוצות.</string>
@@ -138,11 +138,11 @@
     <string name="contacts_invite_group_label">הקבוצה של ההזמנה</string>
     <string name="contacts_invite_new_group">קבוצה חדשה</string>
     <string name="contacts_invite_who_named">%s: בחירת שם מהרשימה או הצטרפות כמשתתף חדש.</string>
-    <string name="contacts_invite_who_anyone">מי שפותח את הקישור בוחר שם מרשימת הקבוצה או מצטרף כמשתתף חדש.</string>
+    <string name="contacts_invite_who_anyone">פתיחת הקישור מאפשרת לבחור שם מרשימת הקבוצה או להצטרף כמשתתף חדש.</string>
     <string name="contacts_invite_who_personal">%s: הצטרפות מיידית, עם השם האישי.</string>
     <string name="contacts_invite_offline">אופליין · הקישור כבר קיים, אפשר להעתיק ולשתף אותו.</string>
     <string name="contacts_invite_pending">הקישור יגיע כשהקבוצה תסונכרן.</string>
-    <string name="contacts_invite_no_groups">קודם צריך ליצור קבוצה: הזמנה היא תמיד לקבוצה.</string>
+    <string name="contacts_invite_no_groups">קודם יש ליצור קבוצה: הזמנה היא תמיד לקבוצה.</string>
     <string name="contacts_invite_qr">קוד QR של קישור ההזמנה</string>
     <string name="contacts_invite_share_message">בואו נפצל את החשבונות של %1$s ב-Blitz Split. אפשר להצטרף עם הקישור הזה: %2$s</string>
     <string name="contacts_invite_share_message_named">%1$s, בואו נפצל את החשבונות של %2$s ב-Blitz Split. אפשר להצטרף עם הקישור הזה: %3$s</string>

@@ -17,7 +17,7 @@
     <string name="groups_only_you">רק אני</string>
     <string name="groups_no_expenses">אין הוצאות</string>
     <plurals name="groups_member_count">
-        <item quantity="one">משתתף %d</item>
+        <item quantity="one">%d משתתף</item>
         <item quantity="two">%d משתתפים</item>
         <item quantity="other">%d משתתפים</item>
     </plurals>
@@ -26,7 +26,7 @@
     <string name="groups_delete_has_balance">הקבוצה \"%s\" לא נמחקה: עדיין יש בה יתרות פתוחות.</string>
     <string name="groups_delete_failed">לא ניתן היה למחוק את \"%s\". כדאי לבדוק את החיבור ולנסות שוב.</string>
     <plurals name="groups_sync_offline_queued">
-        <item quantity="one">אופליין · שינוי %d בתור</item>
+        <item quantity="one">אופליין · %d שינוי בתור</item>
         <item quantity="two">אופליין · %d שינויים בתור</item>
         <item quantity="other">אופליין · %d שינויים בתור</item>
     </plurals>
@@ -60,18 +60,18 @@
     <string name="groups_meta_queued">בתור</string>
     <string name="groups_meta_queued_bill">בתור · %s</string>
     <string name="groups_meta_mixed">מגיע לך %1$s ומגיע ממך %2$s</string>
-    <string name="groups_meta_others_settling">אחרים עדיין סוגרים חשבון</string>
+    <string name="groups_meta_others_settling">יש עוד חובות פתוחים בין אחרים</string>
     <string name="groups_meta_invite">הזמנת משתתפים</string>
-    <string name="groups_meta_everyone_settled">%1$s · כולם סגרו חשבון ב-%2$s</string>
+    <string name="groups_meta_everyone_settled">%1$s · כל החובות נסגרו ב-%2$s</string>
     <string name="groups_activity_today">היום</string>
     <string name="groups_activity_yesterday">אתמול</string>
     <plurals name="groups_activity_days">
-        <item quantity="one">יום %d</item>
+        <item quantity="one">%d יום</item>
         <item quantity="two">%d ימים</item>
         <item quantity="other">%d ימים</item>
     </plurals>
     <plurals name="groups_activity_weeks">
-        <item quantity="one">שבוע %d</item>
+        <item quantity="one">%d שבוע</item>
         <item quantity="two">%d שבועות</item>
         <item quantity="other">%d שבועות</item>
     </plurals>
@@ -80,9 +80,9 @@
     <string name="groups_action_invite">הוספת משתתפים</string>
     <string name="groups_action_invite_hint">קישור לקבוצה או קוד QR</string>
     <string name="groups_action_leave">יציאה מהקבוצה</string>
-    <string name="groups_action_leave_hint">קודם יש להסדיר %s</string>
+    <string name="groups_action_leave_hint">קודם יש לסגור %s</string>
     <string name="groups_action_delete">מחיקת הקבוצה</string>
-    <string name="groups_action_delete_hint">רק אחרי שכולם סגרו חשבון</string>
+    <string name="groups_action_delete_hint">רק אחרי שכל החובות נסגרו</string>
     <string name="groups_actions_offline">יציאה ומחיקה דורשות אינטרנט, כדי לבדוק קודם את היתרות של כולם.</string>
     <string name="groups_display_list_description">תצוגה: רשימה</string>
     <string name="groups_display_grid_description">תצוגה: רשת</string>
@@ -96,7 +96,7 @@
     <string name="groups_search_back">חזרה</string>
     <string name="groups_search_placeholder">חיפוש קבוצות, אנשים והוצאות</string>
     <string name="groups_search_clear">ניקוי החיפוש</string>
-    <string name="groups_search_scopes">חיפוש ב</string>
+    <string name="groups_search_scopes">חיפוש בתוך</string>
     <string name="groups_search_scope_all">הכול</string>
     <string name="groups_search_scope_groups">קבוצות</string>
     <string name="groups_search_scope_people">אנשים</string>
@@ -110,7 +110,7 @@
     <string name="groups_search_hint">החיפוש עובר על הקבוצות, האנשים וההוצאות שבמכשיר הזה, כולל קבוצות סגורות, גם בלי אינטרנט.</string>
     <string name="groups_search_suggestion">אולי הכוונה ל-\"%s\"?</string>
     <plurals name="groups_search_contact_meta">
-        <item quantity="one">איש קשר · קבוצה %d</item>
+        <item quantity="one">איש קשר · %d קבוצה</item>
         <item quantity="two">איש קשר · %d קבוצות</item>
         <item quantity="other">איש קשר · %d קבוצות</item>
     </plurals>
@@ -138,7 +138,7 @@
     <string name="groups_home_title">בית</string>
     <string name="groups_home_people_title">יתרות עם אנשים</string>
     <string name="groups_home_people_title_count">יתרות עם אנשים · %d</string>
-    <string name="groups_home_see_balances">צפייה ביתרות</string>
+    <string name="groups_home_see_balances">הצגת היתרות</string>
     <string name="groups_home_person_owes_you">מגיע לך</string>
     <string name="groups_home_person_you_owe">מגיע ממך</string>
     <string name="groups_home_person_owes_you_description">מגיע לך מ-%1$s %2$s. רישום תשלום</string>
@@ -173,11 +173,11 @@
     <string name="groups_home_notifications_not_now">לא עכשיו</string>
     <string name="groups_home_notifications_on">ההתראות פועלות</string>
     <string name="groups_home_groups_title">הקבוצות שלי</string>
-    <string name="groups_home_see_all_groups">הכול</string>
+    <string name="groups_home_see_all_groups">הצגת הכול</string>
     <string name="groups_home_group_description">%1$s: %2$s %3$s</string>
     <string name="groups_home_pinned_group_description">%1$s, מוצמדת: %2$s %3$s</string>
     <string name="groups_home_bills_title">הוצאות אחרונות</string>
-    <string name="groups_home_see_all_bills">הכול</string>
+    <string name="groups_home_see_all_bills">הצגת הכול</string>
     <string name="groups_home_today">היום</string>
     <string name="groups_home_yesterday">אתמול</string>
     <string name="groups_home_first_use_body">אפשר ליצור קבוצה כדי לפצל את החשבון הראשון, או להצטרף לקבוצה דרך הקישור או קוד ה-QR שמישהו שלח. הכול נשמר במכשיר הזה, גם בלי אינטרנט.</string>
@@ -197,8 +197,8 @@
     <string name="groups_all_expenses_share_pay">מגיע ממך</string>
     <string name="groups_all_expenses_payer">שולם על ידי</string>
     <string name="groups_all_expenses_payer_all">כל אחד</string>
-    <string name="groups_all_expenses_payer_you">שילמתי</string>
-    <string name="groups_all_expenses_payer_others">שילמו אחרים</string>
+    <string name="groups_all_expenses_payer_you">שולם על ידי: אני</string>
+    <string name="groups_all_expenses_payer_others">שולם על ידי אחרים</string>
     <string name="groups_all_expenses_sort_newest">החדשות קודם</string>
     <string name="groups_all_expenses_sort_oldest">הישנות קודם</string>
     <string name="groups_all_expenses_sort_largest">הגדולות קודם</string>

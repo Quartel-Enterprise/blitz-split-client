@@ -19,11 +19,11 @@
     <string name="profile_recovery_code_detail">צפייה ושמירה · לשחזור במכשיר אחר</string>
     <string name="profile_sync">סנכרון</string>
     <plurals name="profile_sync_waiting">
-        <item quantity="one">שינוי %d בתור</item>
+        <item quantity="one">%d שינוי בתור</item>
         <item quantity="two">%d שינויים בתור</item>
         <item quantity="other">%d שינויים בתור</item>
     </plurals>
-    <string name="profile_sync_waiting_empty">ממתין לסנכרון</string>
+    <string name="profile_sync_waiting_empty">בהמתנה לסנכרון</string>
     <string name="profile_sync_syncing">סנכרון…</string>
     <string name="profile_sync_failed">אין תשובה מהשרת</string>
     <string name="profile_sync_retry">ניסיון חוזר</string>
@@ -48,13 +48,13 @@
     <string name="profile_appearance">מראה</string>
     <string name="profile_language">שפה</string>
     <string name="profile_time_format">תבנית שעה</string>
-    <string name="profile_time_format_system">מערכת</string>
+    <string name="profile_time_format_system">לפי המערכת</string>
     <string name="profile_time_format_24_hour">24 שעות</string>
     <string name="profile_time_format_12_hour">12 שעות</string>
     <string name="profile_language_search">חיפוש שפות</string>
     <string name="profile_language_search_clear">ניקוי החיפוש</string>
     <string name="profile_language_no_results">אין שפה שמתאימה ל-\"%1$s\"</string>
-    <string name="profile_language_system">מערכת</string>
+    <string name="profile_language_system">לפי המערכת</string>
     <string name="profile_language_english">אנגלית</string>
     <string name="profile_language_portuguese">פורטוגזית (ברזיל)</string>
     <string name="profile_language_portuguese_portugal">פורטוגזית (פורטוגל)</string>
@@ -81,7 +81,7 @@
         <item quantity="two">%d פעילות</item>
         <item quantity="other">%d פעילות</item>
     </plurals>
-    <string name="profile_theme_system">מערכת</string>
+    <string name="profile_theme_system">לפי המערכת</string>
     <string name="profile_theme_light">בהיר</string>
     <string name="profile_theme_dark">כהה</string>
     <string name="profile_dynamic_colors">צבעים דינמיים</string>
@@ -110,14 +110,14 @@
     <string name="profile_sign_out_title">להתנתק?</string>
     <string name="profile_sign_out_body">הכול מסונכרן עם חשבון המשתמש %1$s שלך. בהתנתקות, העותק שבמכשיר הזה נמחק. הקבוצות יחזרו בהתחברות הבאה.</string>
     <plurals name="profile_sign_out_pending_title">
-        <item quantity="one">שינוי %d עדיין לא הועלה</item>
+        <item quantity="one">%d שינוי עדיין לא הועלה</item>
         <item quantity="two">%d שינויים עדיין לא הועלו</item>
         <item quantity="other">%d שינויים עדיין לא הועלו</item>
     </plurals>
     <string name="profile_sign_out_pending_body_offline">אין חיבור לאינטרנט. הנתונים נשארים במכשיר הזה עד שהסנכרון יסתיים. אחרי שהכול יועלה, תתבצע התנתקות והעותק המקומי יימחק.</string>
     <string name="profile_sign_out_pending_body">הנתונים נשארים במכשיר הזה עד שהסנכרון יסתיים. אחרי שהכול יועלה, תתבצע התנתקות והעותק המקומי יימחק.</string>
     <string name="profile_sign_out_when_synced">התנתקות אחרי הסנכרון</string>
-    <string name="profile_sign_out_now">התנתקות עכשיו ואיבוד השינויים</string>
+    <string name="profile_sign_out_now">התנתקות עכשיו ואובדן השינויים</string>
     <string name="profile_sign_out_failed">לא ניתן היה להתנתק. כדאי לנסות שוב.</string>
     <string name="profile_erase_title">למחוק את הפרופיל מהמכשיר הזה?</string>
     <string name="profile_erase_body">לחשבון המשתמש שלך אין התחברות עם Google או Apple. בהתנתקות, העותק שבמכשיר הזה נמחק. כדי לחזור, צריך את קוד השחזור. אחרי 30 יום בלי שימוש, חשבון המשתמש נמחק והקוד מפסיק לעבוד.</string>
@@ -127,7 +127,7 @@
     <string name="profile_erase_connect_instead">חיבור Google או Apple במקום זאת</string>
     <string name="profile_erase_confirm">מחיקה והתנתקות</string>
     <plurals name="profile_erase_pending_warning">
-        <item quantity="one">שינוי %d עדיין לא הועלה ויאבד.</item>
+        <item quantity="one">%d שינוי עדיין לא הועלה ויאבד.</item>
         <item quantity="two">%d שינויים עדיין לא הועלו ויאבדו.</item>
         <item quantity="other">%d שינויים עדיין לא הועלו ויאבדו.</item>
     </plurals>
@@ -135,12 +135,12 @@
     <string name="profile_export">ייצוא הנתונים שלי</string>
     <string name="profile_export_detail">קובץ JSON עם הפרופיל והמפתחות שלך</string>
     <string name="profile_delete_account">מחיקת חשבון המשתמש והנתונים</string>
-    <string name="profile_delete_account_detail">מוחק את חשבון המשתמש שלך ב-Blitz Split. אי אפשר לבטל את הפעולה.</string>
+    <string name="profile_delete_account_detail">חשבון המשתמש שלך ב-Blitz Split יימחק. אי אפשר לבטל את הפעולה.</string>
     <string name="profile_bitcoin_in_sats">ביטקוין בסאטושי</string>
     <string name="profile_bitcoin_in_sats_detail">הצגה והזנה של סכומי ביטקוין ב-sats (1 ₿ = 100,000,000 sats).</string>
     <string name="profile_category_map">מפת קטגוריות</string>
     <string name="profile_category_map_detail">המילים שקובעות את הקטגוריה של חשבון</string>
-    <string name="profile_photo_open">צפייה בתמונה</string>
+    <string name="profile_photo_open">הצגת התמונה</string>
     <string name="profile_share">שיתוף הפרופיל</string>
     <string name="profile_share_message">הנה הפרופיל שלי ב-Blitz Split: %1$s</string>
     <string name="profile_link_copied">הקישור הועתק</string>

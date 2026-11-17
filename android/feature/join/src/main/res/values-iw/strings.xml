@@ -39,11 +39,11 @@
     <string name="join_pick_title">מי אני בקבוצה?</string>
     <string name="join_pick_subtitle">אפשר לבחור את השם שלך. יוצגו ההוצאות שכבר נוספו עבור השם הזה.</string>
     <string name="join_pick_taken_title">%s: הצטרפות ממכשיר אחר, ממש עכשיו</string>
-    <string name="join_pick_taken_message">אם ההצטרפות הייתה שלך, אפשר לבקש מ-%s לשחרר את השם בחברי הקבוצה.</string>
+    <string name="join_pick_taken_message">אם ההצטרפות הייתה שלך, אפשר לבקש מ-%s לשחרר את השם ב\"משתתפים\".</string>
     <string name="join_pick_taken_message_no_creator">אם ההצטרפות הייתה שלך, כדאי לפנות למי ששלח את ההזמנה.</string>
     <string name="join_pick_not_joined">עוד לא בקבוצה</string>
     <string name="join_pick_joined">כבר בקבוצה</string>
-    <string name="join_pick_status_joined">בקבוצה</string>
+    <string name="join_pick_status_joined">כבר בקבוצה</string>
     <string name="join_pick_not_in_list">אני לא ברשימה</string>
     <string name="join_pick_join_as">הצטרפות בתור %s</string>
     <string name="join_pick_choose">בחירת שם</string>

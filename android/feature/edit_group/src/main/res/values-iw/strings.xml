@@ -9,14 +9,14 @@
     <string name="edit_group_choose_photo">בחירת תמונה</string>
     <string name="edit_group_take_photo">צילום תמונה</string>
     <string name="edit_group_use_icon">שימוש בסמל הזה</string>
-    <string name="edit_group_photo_error">לא ניתן היה להשתמש בתמונה הזו. אפשר לנסות תמונה אחרת.</string>
+    <string name="edit_group_photo_error">לא ניתן היה להשתמש בתמונה הזו. כדאי לנסות תמונה אחרת.</string>
     <string name="edit_group_name_label">שם הקבוצה</string>
     <string name="edit_group_name_help">כל חברי הקבוצה יראו את השם החדש.</string>
     <string name="edit_group_name_error">יש לתת לקבוצה שם, עד 40 תווים.</string>
     <string name="edit_group_name_count">%1$d/%2$d</string>
     <string name="edit_group_type_label">סוג</string>
     <string name="edit_group_currency">מטבע ברירת מחדל</string>
-    <string name="edit_group_currency_caption">חשבונות חדשים מתחילים במטבע הזה; בכל חשבון אפשר להשתמש במטבע אחר.</string>
+    <string name="edit_group_currency_caption">חשבונות חדשים מתחילים במטבע הזה; כל חשבון יכול להשתמש במטבע אחר.</string>
     <string name="edit_group_note">השם, הסמל, הסוג ופישוט החובות פתוחים לשינוי לכל מי שבקבוצה. בפעילות רואים מי שינה.</string>
     <string name="edit_group_offline_note">אין אינטרנט: השינוי נשמר עכשיו במכשיר הזה ויגיע לאחרים כשהחיבור יחזור. תמונה חדשה תעלה יחד איתו.</string>
     <string name="edit_group_save_error">לא ניתן היה לשמור את הקבוצה. כדאי לנסות שוב.</string>
@@ -83,8 +83,8 @@
     <string name="default_split_exception_shares">חלקים, %s</string>
     <string name="default_split_exception_percent">אחוזים, %s</string>
     <string name="default_split_exception_example">בחשבון של %1$s ב-%2$s: %3$s</string>
-    <string name="default_split_exception_pick">יש לבחור קטגוריה לחריג.</string>
-    <string name="default_split_exception_taken">ל-%s כבר יש חריג.</string>
+    <string name="default_split_exception_pick">יש לבחור קטגוריה לחריגה.</string>
+    <string name="default_split_exception_taken">ל-%s כבר יש חריגה.</string>
     <string name="default_split_exception_save">שמירת החריג</string>
     <string name="default_split_exception_remove">הסרת החריג</string>
     <string name="default_split_exception_percent_error">הסכום הוא %1$d%%. חסרים %2$d%%.</string>
@@ -127,7 +127,7 @@
         <item quantity="other">תשלומים</item>
     </plurals>
     <plurals name="simplify_payments">
-        <item quantity="one">תשלום %d</item>
+        <item quantity="one">%d תשלום</item>
         <item quantity="two">%d תשלומים</item>
         <item quantity="other">%d תשלומים</item>
     </plurals>
@@ -139,10 +139,10 @@
     <string name="simplify_change_guest">%s · אורח</string>
     <string name="simplify_change_amount_to">%1$s ל-%2$s</string>
     <string name="simplify_change_amount_to_you">%s אליך</string>
-    <string name="simplify_change_stops_paying">בלי תשלום ל-%s.</string>
-    <string name="simplify_change_stops_paying_me">בלי תשלום ל-%s.</string>
-    <string name="simplify_change_pays">תשלום ל-%s.</string>
-    <string name="simplify_change_pays_me">תשלום ל-%s.</string>
+    <string name="simplify_change_stops_paying">בלי תשלום: %s.</string>
+    <string name="simplify_change_stops_paying_me">בלי תשלום: %s.</string>
+    <string name="simplify_change_pays">תשלום: %s.</string>
+    <string name="simplify_change_pays_me">תשלום: %s.</string>
     <string name="simplify_change_stops_receiving">בלי קבלת כסף מ-%s.</string>
     <string name="simplify_change_stops_receiving_me">בלי קבלת כסף מ-%s.</string>
     <string name="simplify_change_receives">קבלת כסף מ-%s.</string>
@@ -150,9 +150,9 @@
     <string name="simplify_change_guest_note">בלי האפליקציה: אפשר לעדכן דרך \"בקשת תשלום\".</string>
     <string name="simplify_you_lowercase">אני</string>
     <string name="simplify_queued_one">יש לך תשלום אחד בתור: %s. הפישוט מביא אותו בחשבון; אם הוא ישתנה, התשלומים המוצעים יתעדכנו מעצמם.</string>
-    <string name="simplify_queued_paid_you">%1$s: תשלום %2$s אליך</string>
+    <string name="simplify_queued_paid_you">%1$s: תשלום של %2$s לך</string>
     <string name="simplify_queued_you_paid">אני: תשלום %1$s ל-%2$s</string>
-    <string name="simplify_queued_paid">%1$s: תשלום %2$s ל-%3$s</string>
+    <string name="simplify_queued_paid">%1$s: תשלום של %2$s ל-%3$s</string>
     <plurals name="simplify_queued_several">
         <item quantity="one">יש לך תשלום %d בתור. הפישוט מביא אותו בחשבון; אם הוא ישתנה, התשלומים המוצעים יתעדכנו מעצמם.</item>
         <item quantity="two">יש לך %d תשלומים בתור. הפישוט מביא אותם בחשבון; אם הם ישתנו, התשלומים המוצעים יתעדכנו מעצמם.</item>
@@ -181,8 +181,8 @@
     <string name="simplify_info_after_a11y">אחרי הפישוט: תשלום ישיר מ-Carla ל-Bruno של %1$s. ל-Elisa אין תשלום. תשלום אחד.</string>
     <string name="simplify_info_example_result">אחרי הפישוט, תשלום ישיר מ-Carla ל-Bruno של %s, ול-Elisa אין תשלום.</string>
     <string name="simplify_info_total_title">הסכומים הכוללים לא משתנים</string>
-    <string name="simplify_info_total_text">מי שהיה חייב %1$s בקבוצה עדיין חייב %1$s. רק היעד של הכסף משתנה.</string>
-    <string name="simplify_info_stranger_title">ייתכן חוב למישהו שאף פעם לא פיצלת איתו חשבון</string>
+    <string name="simplify_info_total_text">חוב של %1$s בקבוצה נשאר חוב של %1$s. רק היעד של הכסף משתנה.</string>
+    <string name="simplify_info_stranger_title">ייתכן חוב למישהו שמעולם לא פוצל איתו חשבון</string>
     <string name="simplify_info_stranger_text">ביתרות של הקבוצה, התווית \"חובות מפושטים\" מסמנת מתי זה קורה.</string>
     <string name="simplify_info_anyone_title">ההפעלה והכיבוי פתוחים לכולם</string>
     <string name="simplify_info_anyone_text">בעריכת הקבוצה. בפעילות רואים מי שינה, ותישלח התראה למי שמעכשיו משלם למישהו אחר או מקבל ממישהו אחר.</string>

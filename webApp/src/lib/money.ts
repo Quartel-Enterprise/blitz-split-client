@@ -137,7 +137,8 @@ function withSign(minor: number, amount: string): string {
   const sign = minor > 0 ? '+' : '−'
   // Why: right before the digits in a right-to-left language, whose pattern starts with a right-to-left mark
   // ("‏141.66 R$") that would part a sign put first from the number it signs, after the mark the language's own
-  // negative number puts before its minus: Arabic's letter mark, Hebrew's left-to-right mark.
+  // negative number puts before its minus: a left-to-right mark in Hebrew and in Arabic on Latin digits, so the sign
+  // sits left of the digits.
   const digit = direction === 'rtl' ? amount.search(/\d/) : -1
   return digit < 0 ? `${sign}${amount}` : `${amount.slice(0, digit)}${signMark()}${sign}${amount.slice(digit)}`
 }

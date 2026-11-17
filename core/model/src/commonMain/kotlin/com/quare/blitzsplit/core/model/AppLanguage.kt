@@ -57,9 +57,9 @@ enum class AppLanguage(
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
          * Ukrainian, Korean, Hindi, Arabic, Hebrew or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH,
-         * pl-PL, nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, he-IL or the legacy iw-IL, en-GB), SYSTEM for none or any other. Portuguese is two
-         * entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every
-         * other tag (es, es-MX, es-419…) the neutral Latin-American one.
+         * pl-PL, nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, he-IL or the legacy iw-IL, en-GB), SYSTEM
+         * for none or any other. Portuguese is two entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's.
+         * Spanish too: es-ES is Spain's, every other tag (es, es-MX, es-419…) the neutral Latin-American one.
          */
         fun fromTag(tag: String?): AppLanguage {
             val variants = variantsOf(languageOf(tag))

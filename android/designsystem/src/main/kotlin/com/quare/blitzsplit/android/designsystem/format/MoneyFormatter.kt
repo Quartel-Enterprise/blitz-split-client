@@ -144,7 +144,7 @@ class MoneyFormatter(
      * Why: the sign goes before the amount, but right before its digits in a right to left language, whose pattern
      * starts with a right to left mark ("‏141.66 R$") that would part a sign put first from the number it signs. It
      * takes the mark the language's own negative number puts before its minus, so it sits where that language writes
-     * it: Arabic's letter mark on the reading side, Hebrew's left to right mark on the left of the digits.
+     * it: Hebrew and Arabic (on Latin digits) both put a left to right mark there, the sign left of the digits.
      */
     private fun String.withSign(sign: String): String {
         val digit = indexOfFirst(Char::isDigit)

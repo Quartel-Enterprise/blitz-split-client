@@ -22,9 +22,9 @@
     <string name="notification_settings_comments">תגובות</string>
     <string name="notification_settings_comments_detail">על חשבונות שכוללים אותך ועל שרשורים שכתבת בהם</string>
     <string name="notification_settings_people_and_groups">אנשים וקבוצות</string>
-    <string name="notification_settings_people_and_groups_detail">מי מצטרף לקבוצות שלך או עוזב אותן, ומה משתנה בהן</string>
+    <string name="notification_settings_people_and_groups_detail">הצטרפויות ויציאות בקבוצות שלך, ושינויים בהן</string>
     <string name="notification_settings_payment_requests">בקשות תשלום</string>
-    <string name="notification_settings_payment_requests_detail">כשמישהו מבקש ממך לשלם</string>
+    <string name="notification_settings_payment_requests_detail">כשמבקשים ממך לשלם</string>
     <string name="notification_settings_balance_reminder">תזכורת על יתרה פתוחה</string>
     <string name="notification_settings_balance_reminder_detail">פעם בשבוע, אם יש יתרה פתוחה</string>
     <string name="notification_settings_footer">ההתראות מגיעות כשיש אינטרנט. כדי להשתיק קבוצה, אפשר להשתמש בתפריט שבתוכה.</string>
