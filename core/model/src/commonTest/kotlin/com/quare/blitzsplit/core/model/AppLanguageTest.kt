@@ -276,7 +276,7 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN any Hebrew tag WHEN reading it THEN is Hebrew, the legacy iw too`() {
+    fun `GIVEN any Hebrew tag WHEN reading it THEN is Hebrew with the legacy iw too`() {
         // Given
         val tags = listOf("he", "he-IL", "he_IL", "HE-il", "iw", "iw-IL", "iw_IL")
 
