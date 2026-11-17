@@ -292,7 +292,7 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | `SENTRY_AUTH_TOKEN` | Optional: a Sentry organization token, which uploads the web app's source maps ([crash-reporting.md](crash-reporting.md#the-web)). Without it the web deploys the same, and its crash reports show the minified stack |
 | `MERGE_WHEN_GREEN_TOKEN` | Already there, for the pull request merges: `finalize` merges the merge-back with it |
 | `SITE_RELEASE_NOTES_TOKEN` | A fine-grained personal access token restricted to `Quartel-Enterprise/blitz-split-site`, with Contents and Pull requests set to Read and write: `site-release-notes` pushes the notes and merges their pull request with it. The organization caps a token at 366 days, so it has to be made again each year (the one made on 2026-11-14 expires on 2027-11-15); with it expired or missing the job fails naming the secret, the release itself is untouched, and a re-run of the job sends the notes |
-| `GRADLE_ENCRYPTION_KEY` | Optional, and not set today: the builds pass it to the Gradle action, which then keeps the configuration cache between runs ([ci.md](ci.md)) |
+| `GRADLE_ENCRYPTION_KEY` | Not set: the builds pass it to the Gradle action, which kept no configuration cache between runs when it was tried ([ci.md](ci.md#speed-and-timeouts)) |
 
 | Variable (public values) | What it is |
 | --- | --- |
