@@ -510,12 +510,14 @@ and the wait are on, and that the task gets cleaned up once the merge happens.
   again. Handle each event as the outcomes below say, with the loop's filter: a failed
   `review-gate` check is the hold for the review's open threads, not a failure, and a cancelled
   `merge-when-green` run was only replaced by a newer one. A review comment that arrives while the
-  label is still on is one of the opening `claude-review`'s threads: leave it for outcome 3, which
-  `merge-when-green` starts once every check has passed. Diagnose an event with `get_status` or one
-  `gh pr checks <pr>` call; don't poll the checks yourself. Once an outcome says to stop, later
-  events don't start the fixes of that blocker again: stay quiet until the user answers or
-  something new shows up. Once the pull request merges or closes, or the user says to stop, turn
-  Auto-fix off (`set_monitor` with `auto_fix: false`) before going on with outcome 0 or 1.
+  label is still on is one of the opening `claude-review`'s threads: it is outcome 3's work, which
+  `merge-when-green` starts once every check has passed. Do it then, or sooner when a failed check
+  or a conflict already has the session pushing ("Push once per round" below), never twice.
+  Diagnose an event with `get_status` or that one look; don't poll the checks yourself. Once an
+  outcome says to stop, later events don't start the fixes of that blocker again: stay quiet until
+  the user answers or something new shows up. Once the pull request merges or closes, or the user
+  says to stop, turn Auto-fix off (`set_monitor` with `auto_fix: false`) before going on with
+  outcome 0 or 1.
 
   The app turns Auto-fix on only for a pull request it is sure this session opened, and may refuse
   one it isn't (e.g. one opened from a worktree the session didn't start in). Then tell the user
@@ -566,6 +568,30 @@ again if a Kotlin file changed and the step 8 checks of the areas the fix touche
 `update-readme-screenshots` again if the fix changes what the README's image shows (step 8's last
 part), commit it with step 9's message rules, push (step 10), and wait again as above. Never amend, rebase or force push
 what is already on `origin`, and never skip, disable or loosen a test or a check to get it green.
+
+Push once per round. A push cancels the checks in flight and starts every one of them again, the
+macOS jobs included, which are the ones a pull request waits longest for. So before fixing what
+woke the session, take one look at everything else the pull request is waiting on, and put it all
+in the same push:
+
+```bash
+gh pr checks "$pr"                                  # every failed check, not only the one reported
+gh pr view "$pr" --json mergeable -q .mergeable     # CONFLICTING, MERGEABLE, or UNKNOWN for now
+```
+
+- **`CONFLICTING`:** merge `main` in as outcome 3's conflict steps say (a merge commit, never a
+  rebase, the README's images), in the same push. **`UNKNOWN`** means GitHub is still working it
+  out, as it does right after `main` moves or a push: ask again after a few seconds before deciding.
+- **Unresolved threads** (outcome 3's query): fix or answer them in the same push too, then resolve
+  each one as outcome 3 says, and add the label again only if it was removed.
+- **Checks still pending:** don't wait for them. Prepare the fix, then read the checks once more
+  right before pushing: one that failed meanwhile gets its fix in the same push.
+
+Check a fix here before it goes, for the same reason: a workflow with `actionlint` (it reads
+`.github/actionlint.yaml`), a script run once with real input. The push that fixes the fix costs
+one more run. A second push is right when something new shows up after the first: another check
+failing, `main` moving again.
+
 When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
 
 - **0, merged:** run the `finish-task` skill right away, as after a direct merge below.
@@ -604,9 +630,9 @@ When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
     ```
 
     For each one, without asking, fix it as above (checking it against the code first, as in step
-    7) or reply with why the code stays as it is, then resolve it on GitHub and add the label
-    again. Show the user what was fixed and what was answered, then wait again as above, even when
-    no fix was pushed.
+    7) or reply with why the code stays as it is. Fix them all before pushing, in one push, then
+    resolve each one on GitHub and add the label again. Show the user what was fixed and what was
+    answered, then wait again as above, even when no fix was pushed.
   - **A conflict with `main`**: merge `origin/main` into the branch (a merge commit, never a
     rebase), resolve the conflicts keeping what both sides meant, then push as above and add the
     label again. The README's two images can't be merged: when they conflict, take `main`'s copies
