@@ -100,6 +100,9 @@ merge's run started at once from the same cache and recompiled what the others w
 merges they took half of the macOS runners' time, and the pull requests' jobs waited up to 36 minutes for a runner.
 A run of `main` therefore stands for the pushes it replaced in the queue too, whose changes its own push doesn't
 list, so on `main` the `changes` job is skipped and `apple-tests` always runs, a push to the Swift app alone included.
+A commit of `main` whose `apple` run shows as cancelled was replaced in the queue: the next run that completed is the
+one that checked it. A run of `main` run again by hand stays out of that queue, in a group of its own, or it would
+take the place of the newest push waiting there.
 
 On `main`, a failed `apple-tests` leaves no Gradle home in the cache: the `drop-failed-cache` job deletes the entry
 the run saved. setup-gradle saves the home when the job ends, whatever its result, and every later run restores the
@@ -122,7 +125,8 @@ A test that fails on the simulator alone therefore shows up after the merge, as 
 `report-failure` job then opens the issue "The apple checks failed on main", assigned to whoever merged the commit
 that ran, or comments on it while it is open; it does the same when `apple-app` fails or a job times out there. The
 commit the issue names is the one the run checked out, and what broke may be any push since the last `apple` run of
-`main` that completed, since a run also stands for the pushes it replaced in the queue. Fix it in a pull request of
+`main` that completed, since a run also stands for the pushes it replaced in the queue: the issue links those
+commits. Fix it in a pull request of
 its own, checked on the Mac, since that pull request's `apple-tests` runs macOS only:
 `./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test`. Close the issue once `main` is green.
 
