@@ -72,7 +72,6 @@ data class GroupDetailUiState(
     val showsJoinCalendarOffer: Boolean
         get() = joinedAs != null && reminder != null
 
-
     // Why: the card over the pairs, only while there is any to explain.
     val showsSimplificationCard: Boolean
         get() = simplification != null && (myDebts.isNotEmpty() || otherDebts.isNotEmpty())

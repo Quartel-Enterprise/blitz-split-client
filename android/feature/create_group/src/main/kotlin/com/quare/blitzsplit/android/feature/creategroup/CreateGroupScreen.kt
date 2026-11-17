@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -13,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropDialog
 import com.quare.blitzsplit.android.designsystem.component.PhotoCropFrame
+import com.quare.blitzsplit.android.designsystem.component.rememberReminderCalendarLauncher
 import com.quare.blitzsplit.android.platform.rememberPhotoPickers
+import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiAction
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -33,6 +36,14 @@ fun CreateGroupScreen(
         onPhotoPicked = { bytes -> viewModel.onEvent(CreateGroupUiEvent.OnPhotoPicked(bytes)) },
         onPhotoUnreadable = { viewModel.onEvent(CreateGroupUiEvent.OnPhotoUnreadable) },
     )
+    val addToCalendar = rememberReminderCalendarLauncher()
+    LaunchedEffect(viewModel) {
+        viewModel.uiAction.collect { action ->
+            when (action) {
+                is CreateGroupUiAction.AddReminderToCalendar -> addToCalendar(action.event)
+            }
+        }
+    }
     Box {
         CreateGroupContent(
             state = state,

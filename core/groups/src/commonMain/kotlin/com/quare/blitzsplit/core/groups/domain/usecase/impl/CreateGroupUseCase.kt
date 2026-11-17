@@ -71,6 +71,7 @@ class CreateGroupUseCase(
                     simplifyDebtsChangedBy = null,
                     simplifyDebtsConflictBy = null,
                     reminder = reminder,
+                    reminderDismissedAt = 0L,
                 ),
                 createdAt = createdAt,
             ).map { id }

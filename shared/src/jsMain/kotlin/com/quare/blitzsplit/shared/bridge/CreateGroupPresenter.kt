@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
+import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiAction
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import kotlinx.coroutines.flow.map
@@ -58,6 +59,10 @@ class JsCreateGroupState(
     val showsCreateError: Boolean,
     val canAddMember: Boolean,
     val canCreate: Boolean,
+    // Why: "Group reminder" and "Add to my calendar" (off while the reminder is).
+    val reminder: JsReminder,
+    val addsReminderToCalendar: Boolean,
+    val canAddReminderToCalendar: Boolean,
 )
 
 class CreateGroupPresenter {
@@ -110,6 +115,9 @@ class CreateGroupPresenter {
                 showsCreateError = state.showsCreateError,
                 canAddMember = state.canAddMember,
                 canCreate = state.canCreate,
+                reminder = jsReminderOf(state.reminder),
+                addsReminderToCalendar = state.addsReminderToCalendar,
+                canAddReminderToCalendar = state.canAddReminderToCalendar,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -155,6 +163,39 @@ class CreateGroupPresenter {
         // Why: a picker never creates a currency this version doesn't know, unlike the chips of the group screens.
         val currency = GroupCurrency.fromCodeOrNull(code) ?: return
         viewModel.onEvent(CreateGroupUiEvent.OnCurrencySelected(currency))
+    }
+
+    fun setReminderEnabled(isEnabled: Boolean) {
+        viewModel.onEvent(CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled))
+    }
+
+    fun selectReminderKind(code: String) {
+        val kind = reminderKindOf(code) ?: return
+        viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(kind))
+    }
+
+    fun selectReminderDay(day: Int) {
+        viewModel.onEvent(CreateGroupUiEvent.OnReminderDaySelected(day))
+    }
+
+    fun selectReminderTime(minute: Int) {
+        viewModel.onEvent(CreateGroupUiEvent.OnReminderTimeSelected(minute))
+    }
+
+    fun setAddToCalendar(isEnabled: Boolean) {
+        viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled))
+    }
+
+    // Why: the group was created with "Add to my calendar" on; the page downloads the .ics.
+    fun observeCalendarEvents(onEvent: (JsReminderCalendarEvent) -> Unit): JsWatch {
+        val events = viewModel.uiAction.map { action ->
+            when (action) {
+                is CreateGroupUiAction.AddReminderToCalendar ->
+                    JsReminderCalendarEvent(action.event.groupName, action.event)
+            }
+        }
+        val watch = FlowWatcher(events).observe(onEvent)
+        return JsWatch(watch::cancel)
     }
 
     fun changeDraft(draft: String) {

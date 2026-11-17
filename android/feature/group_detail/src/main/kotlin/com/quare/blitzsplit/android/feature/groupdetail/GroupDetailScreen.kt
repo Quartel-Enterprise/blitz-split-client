@@ -15,6 +15,7 @@ import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
 import com.quare.blitzsplit.android.designsystem.component.GroupExitAlertDialog
 import com.quare.blitzsplit.android.designsystem.component.RecordedPaymentNoticeEffect
 import com.quare.blitzsplit.android.designsystem.component.SimplifyConflictNoticeEffect
+import com.quare.blitzsplit.android.designsystem.component.rememberReminderCalendarLauncher
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
 import com.quare.blitzsplit.android.platform.rememberFileSaver
 import com.quare.blitzsplit.core.model.GroupTab
@@ -51,6 +52,7 @@ fun GroupDetailScreen(
     val billDeleteError = stringResource(DesignR.string.designsystem_delete_bill_error)
     val exportError = stringResource(R.string.group_detail_export_error)
     val saveFile = rememberFileSaver()
+    val addToCalendar = rememberReminderCalendarLauncher()
     val scope = rememberCoroutineScope()
     val showSnackbar = { message: String -> scope.showReplacingSnackbar(snackbarHostState, message) }
     LaunchedEffect(viewModel) {
@@ -71,6 +73,8 @@ fun GroupDetailScreen(
                 )
 
                 GroupDetailUiAction.ShowExportError -> showSnackbar(exportError)
+
+                is GroupDetailUiAction.AddReminderToCalendar -> addToCalendar(action.event)
             }
         }
     }

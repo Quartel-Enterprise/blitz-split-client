@@ -60,7 +60,6 @@ data class EditGroupUiState(
     val canAddReminderToCalendar: Boolean
         get() = isLoaded && reminder.isEnabled
 
-
     // Why: off and unavailable with fewer than 3 people, though a group already on can still turn it off.
     val canChangeSimplifyDebts: Boolean
         get() = isLoaded && !isChangingSimplifyDebts && (simplifiesDebts || memberCount >= MIN_PEOPLE_TO_SIMPLIFY)

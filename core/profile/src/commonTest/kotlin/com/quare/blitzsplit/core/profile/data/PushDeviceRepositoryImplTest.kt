@@ -95,6 +95,7 @@ class PushDeviceRepositoryImplTest {
                     apnsEnvironment = null,
                     webP256dh = null,
                     webAuth = null,
+                    timeZone = "Asia/Tokyo",
                 ),
             ),
             remote.registered,
@@ -398,7 +399,7 @@ class PushDeviceRepositoryImplTest {
         }
         repository = PushDeviceRepositoryImpl(
             remoteDataSource = remote,
-            mapper = PushDeviceMapperImpl(),
+            mapper = PushDeviceMapperImpl(timeZoneId = { "Asia/Tokyo" }),
             localDataSource = FakePushSettingsLocalDataSource(),
         )
         device?.let(repository::setDevice)

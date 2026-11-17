@@ -13,7 +13,9 @@ import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.BuildReminderCalendarEventUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupIncomesUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
@@ -443,6 +445,8 @@ class EditGroupDiscardTest {
         isSimplifyDebtsPending = false,
         simplifyDebtsChangedBy = null,
         simplifyDebtsConflictBy = null,
+        reminder = GroupReminder.Default,
+        reminderDismissedAt = 0L,
     )
 
     // Why: three people, so "Simplificar dívidas" can be turned on.
@@ -516,6 +520,7 @@ class EditGroupDiscardTest {
             route = editGroup,
             navigator = navigator,
             updateGroup = UpdateGroupUseCase(groups) { 1_000L },
+            buildReminderCalendarEvent = BuildReminderCalendarEventUseCase(currentTimeMillis = { 1_000L }),
             setSimplifiesDebts = SetSimplifiesDebtsUseCase(groups, expenses, settlements) { 1_000L },
             consumeSimplifyDebtsConflict = ConsumeSimplifyDebtsConflictUseCase(groups),
             observeGroup = if (isRoomRead) ObserveGroupUseCase(groups) else ObserveGroup { roomNeverAnswers },

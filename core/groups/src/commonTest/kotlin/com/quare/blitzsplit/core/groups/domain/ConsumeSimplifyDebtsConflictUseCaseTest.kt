@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.domain
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -32,6 +33,8 @@ class ConsumeSimplifyDebtsConflictUseCaseTest {
         isSimplifyDebtsPending = false,
         simplifyDebtsChangedBy = "user-2",
         simplifyDebtsConflictBy = "user-2",
+        reminder = GroupReminder.Default,
+        reminderDismissedAt = 0L,
     )
     private val repository = FakeGroupRepository(listOf(lostSwitch))
     private val useCase = ConsumeSimplifyDebtsConflictUseCase(repository)

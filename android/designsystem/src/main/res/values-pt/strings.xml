@@ -309,4 +309,19 @@
     <string name="designsystem_range_start">Data de início</string>
     <string name="designsystem_range_end">Data de término</string>
     <string name="designsystem_range_none">Nenhuma selecionada</string>
+    <string name="designsystem_reminder_title">Lembrete do grupo</string>
+    <string name="designsystem_reminder_switch">Lembrar os participantes de acertar</string>
+    <string name="designsystem_reminder_caption">Quem deve recebe uma notificação, no próprio horário.</string>
+    <string name="designsystem_reminder_weekly">Semanal</string>
+    <string name="designsystem_reminder_monthly">Mensal</string>
+    <string name="designsystem_reminder_time">Horário</string>
+    <string name="designsystem_reminder_day_of_month">Dia do mês</string>
+    <string name="designsystem_reminder_calendar_new">Adicionar à minha agenda</string>
+    <string name="designsystem_reminder_calendar_new_caption">Adiciona um evento recorrente à sua agenda quando o grupo for criado.</string>
+    <string name="designsystem_reminder_calendar">Adicionar à agenda</string>
+    <string name="designsystem_reminder_calendar_join">Adicionar o lembrete à sua agenda</string>
+    <string name="designsystem_reminder_schedule_weekly">Toda %1$s às %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Todo mês, no dia %1$d, às %2$s</string>
+    <string name="designsystem_reminder_event_title">Acertar contas: %1$s</string>
+    <string name="designsystem_reminder_event_description">Hora de acertar as contas em %1$s.</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.groups.data.datasource
 
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
@@ -56,10 +57,7 @@ interface GroupLocalDataSource {
         photoUrl: String?,
         pendingPhoto: ByteArray?,
         currency: String,
-        reminderEnabled: Boolean,
-        reminderKind: String,
-        reminderDay: Int,
-        reminderMinute: Int,
+        reminder: GroupReminder,
         updatedAt: Long,
     )
 

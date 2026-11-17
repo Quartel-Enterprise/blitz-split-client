@@ -203,7 +203,9 @@ interface GroupDao {
     )
 
     // Why: "Dispensar" on the group's reminder banner: this device only, so the group isn't stamped nor pending.
-    @Query("UPDATE split_group SET reminderDismissedAt = :occurrenceAt WHERE id = :id AND reminderDismissedAt < :occurrenceAt")
+    @Query(
+        "UPDATE split_group SET reminderDismissedAt = :occurrenceAt WHERE id = :id AND reminderDismissedAt < :occurrenceAt",
+    )
     suspend fun dismissReminder(
         id: String,
         occurrenceAt: Long,

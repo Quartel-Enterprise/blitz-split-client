@@ -18,6 +18,7 @@ fun interface UpdateGroup {
         shape: GroupShape?,
         photo: ProfilePhoto?,
         currency: GroupCurrency,
+        // Why: "Lembrete de acerto"; the default keeps a caller that never edits it on Monday 10:00.
         reminder: GroupReminder,
     ): Result<Unit>
 }

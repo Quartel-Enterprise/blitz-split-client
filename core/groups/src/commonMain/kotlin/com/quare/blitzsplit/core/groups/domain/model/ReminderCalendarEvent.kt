@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.core.groups.domain.model
 
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
@@ -24,8 +23,8 @@ data class ReminderCalendarEvent(
     val startLocal: String
         get() {
             val local = Instant.fromEpochMilliseconds(startMillis).toLocalDateTime(TimeZone.of(timeZoneId))
-            return "${local.year.pad(4)}${local.month.number.pad(2)}${local.day.pad(2)}" +
-                "T${local.hour.pad(2)}${local.minute.pad(2)}00"
+            return "${local.year.toPadded(4)}${local.month.number.toPadded(2)}${local.day.toPadded(2)}" +
+                "T${local.hour.toPadded(2)}${local.minute.toPadded(2)}00"
         }
 
     // Why: RFC 5545's RRULE, which Google Calendar's insert intent and the .ics both take.
@@ -44,30 +43,35 @@ data class ReminderCalendarEvent(
         "CALSCALE:GREGORIAN",
         "BEGIN:VEVENT",
         "UID:$uid",
-        "DTSTAMP:${utcStamp()}",
+        "DTSTAMP:$utcStamp",
         "DTSTART:$startLocal",
         "DURATION:PT15M",
         "RRULE:$rrule",
-        "SUMMARY:${escape(title)}",
-        "DESCRIPTION:${escape(description)}",
+        "SUMMARY:${toEscaped(title)}",
+        "DESCRIPTION:${toEscaped(description)}",
         "END:VEVENT",
         "END:VCALENDAR",
-    ).joinToString(separator = "\r\n", postfix = "\r\n")
+    ).joinToString(
+        separator = "\r\n",
+        postfix = "\r\n",
+    )
 
     // Why: DTSTAMP is in UTC by the RFC, here the start's instant as "yyyyMMddTHHmmssZ".
-    private fun utcStamp(): String {
-        val utc = Instant.fromEpochMilliseconds(startMillis).toLocalDateTime(TimeZone.UTC)
-        return "${utc.year.pad(4)}${utc.month.number.pad(2)}${utc.day.pad(2)}T${utc.hour.pad(2)}${utc.minute.pad(2)}00Z"
-    }
+    private val utcStamp: String
+        get() {
+            val utc = Instant.fromEpochMilliseconds(startMillis).toLocalDateTime(TimeZone.UTC)
+            return "${utc.year.toPadded(4)}${utc.month.number.toPadded(2)}${utc.day.toPadded(2)}" +
+                "T${utc.hour.toPadded(2)}${utc.minute.toPadded(2)}00Z"
+        }
 
-    private fun escape(text: String): String = text
+    private fun toEscaped(text: String): String = text
         .replace("\\", "\\\\")
         .replace(";", "\\;")
         .replace(",", "\\,")
         .replace("\r\n", "\\n")
         .replace("\n", "\\n")
 
-    private fun Int.pad(length: Int): String = toString().padStart(length, '0')
+    private fun Int.toPadded(length: Int): String = toString().padStart(length, '0')
 
     companion object {
         /*
@@ -80,44 +84,13 @@ data class ReminderCalendarEvent(
             nowMillis: Long,
             timeZone: TimeZone,
         ): ReminderCalendarEvent? {
-            val start = reminder.nextOccurrenceAfter(nowMillis, timeZone) ?: return null
+            val start = reminder.findNextOccurrenceAfter(nowMillis, timeZone) ?: return null
             return ReminderCalendarEvent(
                 groupName = groupName,
                 startMillis = start,
                 recurrence = ReminderRecurrence.of(reminder),
                 timeZoneId = timeZone.id,
             )
-        }
-    }
-}
-
-// Why: the repeat rule of a schedule, apart from its time.
-data class ReminderRecurrence(
-    val rrule: String,
-) {
-    companion object {
-        private const val LAST_DAY = 31
-
-        fun of(reminder: GroupReminder): ReminderRecurrence = ReminderRecurrence(
-            when (reminder.kind) {
-                ReminderKind.WEEKLY -> "FREQ=WEEKLY;BYDAY=${weekdayCode(reminder.day)}"
-
-                ReminderKind.MONTHLY -> if (reminder.day == LAST_DAY) {
-                    "FREQ=MONTHLY;BYMONTHDAY=-1"
-                } else {
-                    "FREQ=MONTHLY;BYMONTHDAY=${reminder.day}"
-                }
-            },
-        )
-
-        private fun weekdayCode(isoDay: Int): String = when (DayOfWeek(isoDay)) {
-            DayOfWeek.MONDAY -> "MO"
-            DayOfWeek.TUESDAY -> "TU"
-            DayOfWeek.WEDNESDAY -> "WE"
-            DayOfWeek.THURSDAY -> "TH"
-            DayOfWeek.FRIDAY -> "FR"
-            DayOfWeek.SATURDAY -> "SA"
-            DayOfWeek.SUNDAY -> "SU"
         }
     }
 }

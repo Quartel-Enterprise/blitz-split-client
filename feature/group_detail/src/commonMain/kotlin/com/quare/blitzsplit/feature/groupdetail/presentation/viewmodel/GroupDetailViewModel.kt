@@ -55,7 +55,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
 
 /*
  * Why: the group's screen: its header, read once, over Despesas, Saldos and Membros, whose pick is this screen's own
@@ -417,24 +416,8 @@ class GroupDetailViewModel(
         val group = shownGroup ?: return
         val reminder = uiState.value.reminder ?: return
         val event = buildReminderCalendarEvent(group.name, reminder) ?: return
+        trackEvent("group_reminder_calendar_clicked", mapOf("source" to GROUP_DETAIL_SOURCE))
         viewModelScope.launch { uiAction.emit(GroupDetailUiAction.AddReminderToCalendar(event)) }
-    }
-
-    /*
-     * Why: only someone who owes (in any currency of the group) sees it, once the schedule's latest occurrence on their
-     * clock is after the one they dismissed; settling takes it away on its own, and a debt that comes later brings back
-     * the occurrence that already passed, as a push of the day would have.
-     */
-    private fun reminderBannerOf(
-        group: Group,
-        byCurrency: List<CurrencyBalances>,
-        meId: String?,
-        now: Long,
-        timeZone: TimeZone,
-    ): ReminderBanner? {
-        val occurrence = group.reminder.lastOccurrenceAtOrBefore(now, timeZone) ?: return null
-        val owes = meId != null && byCurrency.any { each -> each.balances.debts.any { it.fromMemberId == meId } }
-        return ReminderBanner(occurrence, group.reminder).takeIf { owes && occurrence > group.reminderDismissedAt }
     }
 
     // Why: 13.1e shows once, on whichever screen of the group is on top first.
@@ -507,7 +490,7 @@ class GroupDetailViewModel(
                     shown?.let { debtRowOf(debt, it.currency, group, meId, it.balances) }
                 },
                 hasBills = byCurrency.hasBills,
-                reminderBanner = reminderBannerOf(group, byCurrency, meId, now, timeZone),
+                reminderBanner = ReminderBanner.of(group, byCurrency, meId, now, timeZone),
                 reminder = group.reminder.takeIf { it.isEnabled },
                 simplification = balances?.let(DebtSimplificationSummary::ofOrNull),
                 isLoaded = true,

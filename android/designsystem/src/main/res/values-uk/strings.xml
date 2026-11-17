@@ -326,4 +326,19 @@
     <string name="designsystem_range_start">Дата початку</string>
     <string name="designsystem_range_end">Дата завершення</string>
     <string name="designsystem_range_none">Не вибрано</string>
+    <string name="designsystem_reminder_title">Нагадування групи</string>
+    <string name="designsystem_reminder_switch">Нагадувати учасникам про розрахунок</string>
+    <string name="designsystem_reminder_caption">Ті, хто винен, отримують сповіщення за своїм часом.</string>
+    <string name="designsystem_reminder_weekly">Щотижня</string>
+    <string name="designsystem_reminder_monthly">Щомісяця</string>
+    <string name="designsystem_reminder_time">Час</string>
+    <string name="designsystem_reminder_day_of_month">День місяця</string>
+    <string name="designsystem_reminder_calendar_new">Додати до мого календаря</string>
+    <string name="designsystem_reminder_calendar_new_caption">Додає подію, що повторюється, до календаря під час створення групи.</string>
+    <string name="designsystem_reminder_calendar">Додати до календаря</string>
+    <string name="designsystem_reminder_calendar_join">Додати нагадування до календаря</string>
+    <string name="designsystem_reminder_schedule_weekly">Щотижня: %1$s о %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Щомісяця, %1$d-го числа о %2$s</string>
+    <string name="designsystem_reminder_event_title">Розрахуватися: %1$s</string>
+    <string name="designsystem_reminder_event_description">Час розрахуватися в групі «%1$s».</string>
 </resources>

@@ -317,4 +317,19 @@
     <string name="designsystem_range_start">Date de début</string>
     <string name="designsystem_range_end">Date de fin</string>
     <string name="designsystem_range_none">Aucune sélectionnée</string>
+    <string name="designsystem_reminder_title">Rappel du groupe</string>
+    <string name="designsystem_reminder_switch">Rappeler aux membres de régler leurs comptes</string>
+    <string name="designsystem_reminder_caption">Les membres qui doivent de l’argent reçoivent une notification, à leur heure locale.</string>
+    <string name="designsystem_reminder_weekly">Chaque semaine</string>
+    <string name="designsystem_reminder_monthly">Chaque mois</string>
+    <string name="designsystem_reminder_time">Heure</string>
+    <string name="designsystem_reminder_day_of_month">Jour du mois</string>
+    <string name="designsystem_reminder_calendar_new">Ajouter à mon calendrier</string>
+    <string name="designsystem_reminder_calendar_new_caption">Ajoute un événement récurrent à votre calendrier à la création du groupe.</string>
+    <string name="designsystem_reminder_calendar">Ajouter au calendrier</string>
+    <string name="designsystem_reminder_calendar_join">Ajouter le rappel à votre calendrier</string>
+    <string name="designsystem_reminder_schedule_weekly">Chaque %1$s à %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Chaque mois, le %1$d à %2$s</string>
+    <string name="designsystem_reminder_event_title">Régler les comptes : %1$s</string>
+    <string name="designsystem_reminder_event_description">C’est le moment de régler les comptes dans %1$s.</string>
 </resources>

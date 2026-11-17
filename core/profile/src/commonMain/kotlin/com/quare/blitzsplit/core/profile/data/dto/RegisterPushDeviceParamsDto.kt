@@ -11,5 +11,5 @@ data class RegisterPushDeviceParamsDto(
     @SerialName("p_web_p256dh") val webP256dh: String?,
     @SerialName("p_web_auth") val webAuth: String?,
     // Why: the IANA name of this device's clock (the server fires each group's reminder at its time on it).
-    @SerialName("p_time_zone") val timeZone: String? = null,
+    @SerialName("p_time_zone") val timeZone: String?,
 )

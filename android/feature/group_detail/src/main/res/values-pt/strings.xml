@@ -98,4 +98,7 @@
     <string name="group_detail_balances_note_simplified">Com as dívidas simplificadas, o app sugere o menor número de pagamentos. “Recebi” e “Já pagou” anotam um pagamento feito fora do app (Pix, dinheiro, transferência).</string>
     <string name="group_detail_photo_open">Ver foto do grupo</string>
     <string name="group_export_payment_method">Forma de pagamento</string>
+    <string name="group_detail_reminder_title">Hora de acertar as contas</string>
+    <string name="group_detail_reminder_settle">Acertar</string>
+    <string name="group_detail_reminder_dismiss">Dispensar</string>
 </resources>

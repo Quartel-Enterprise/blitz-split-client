@@ -50,7 +50,7 @@ data class GroupReminder(
      * Why: the latest time this schedule fired at or before [nowMillis] on a clock in [timeZone], in epoch millis; the
      * banner's "it arrived or passed". Null while the reminder is off.
      */
-    fun lastOccurrenceAtOrBefore(
+    fun findLastOccurrenceAtOrBefore(
         nowMillis: Long,
         timeZone: TimeZone,
     ): Long? {
@@ -59,44 +59,48 @@ data class GroupReminder(
         return when (kind) {
             ReminderKind.WEEKLY -> {
                 val sinceDay = (today.dayOfWeek.isoDayNumber - day + DAYS_PER_WEEK) % DAYS_PER_WEEK
-                val thisWeek = occurrenceOn(today.minus(DatePeriod(days = sinceDay)), timeZone)
-                if (thisWeek <= nowMillis) thisWeek else occurrenceOn(
-                    today.minus(DatePeriod(days = sinceDay + DAYS_PER_WEEK)),
-                    timeZone,
-                )
+                val thisWeek = toOccurrenceOn(today.minus(DatePeriod(days = sinceDay)), timeZone)
+                if (thisWeek <= nowMillis) {
+                    thisWeek
+                } else {
+                    toOccurrenceOn(
+                        today.minus(DatePeriod(days = sinceDay + DAYS_PER_WEEK)),
+                        timeZone,
+                    )
+                }
             }
 
             ReminderKind.MONTHLY -> {
-                val thisMonth = occurrenceOn(clampedInMonth(today.year, today.month.number), timeZone)
+                val thisMonth = toOccurrenceOn(findClampedInMonth(today.year, today.month.number), timeZone)
                 if (thisMonth <= nowMillis) {
                     thisMonth
                 } else {
                     val previous = LocalDate(today.year, today.month.number, 1).minus(DatePeriod(months = 1))
-                    occurrenceOn(clampedInMonth(previous.year, previous.month.number), timeZone)
+                    toOccurrenceOn(findClampedInMonth(previous.year, previous.month.number), timeZone)
                 }
             }
         }
     }
 
     // Why: the first time after [nowMillis] this schedule fires, for the calendar's first event; null while off.
-    fun nextOccurrenceAfter(
+    fun findNextOccurrenceAfter(
         nowMillis: Long,
         timeZone: TimeZone,
     ): Long? {
-        val last = lastOccurrenceAtOrBefore(nowMillis, timeZone) ?: return null
+        val last = findLastOccurrenceAtOrBefore(nowMillis, timeZone) ?: return null
         val lastDate = Instant.fromEpochMilliseconds(last).toLocalDateTime(timeZone).date
         val nextDate = when (kind) {
             ReminderKind.WEEKLY -> lastDate.plus(DatePeriod(days = DAYS_PER_WEEK))
 
             ReminderKind.MONTHLY -> {
                 val next = LocalDate(lastDate.year, lastDate.month.number, 1).plus(DatePeriod(months = 1))
-                clampedInMonth(next.year, next.month.number)
+                findClampedInMonth(next.year, next.month.number)
             }
         }
-        return occurrenceOn(nextDate, timeZone)
+        return toOccurrenceOn(nextDate, timeZone)
     }
 
-    private fun occurrenceOn(
+    private fun toOccurrenceOn(
         date: LocalDate,
         timeZone: TimeZone,
     ): Long = date
@@ -104,7 +108,7 @@ data class GroupReminder(
         .toInstant(timeZone)
         .toEpochMilliseconds()
 
-    private fun clampedInMonth(
+    private fun findClampedInMonth(
         year: Int,
         month: Int,
     ): LocalDate {

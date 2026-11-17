@@ -1,6 +1,6 @@
 import { Camera, ChevronRight, CircleAlert, ImageIcon, Loader2 } from 'lucide-react'
-import { EditGroupPresenter, type JsEditGroupState, type JsRoute } from 'blitzsplit-shared'
-import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { EditGroupPresenter, type JsEditGroupState, type JsReminderCalendarEvent, type JsRoute } from 'blitzsplit-shared'
+import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { AvatarColorPicker, PendingDot } from '@/components/common'
 import { LoadingDialog } from '@/components/LoadingDialog'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
@@ -14,6 +14,8 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { GroupTypePicker } from '@/features/create-group/GroupTypePicker'
+import { ReminderSection } from '@/features/group-reminder/ReminderSection'
+import { downloadReminderCalendarEvent } from '@/features/group-reminder/reminder'
 import { SimplifyDebtsConfirmDialog } from '@/features/simplify-debts/SimplifyDebtsConfirmDialog'
 import { SimplifyIcon } from '@/features/simplify-debts/SimplifyIcon'
 import { useSimplifyConflictNotice, useSimplifyUnavailableNotice } from '@/features/simplify-debts/simplify'
@@ -43,6 +45,7 @@ const simplifyStatusId = 'edit-group-simplify-status'
 export function EditGroupDialog({ route, isCovered }: { route: JsRoute; isCovered: boolean }) {
   const presenter = usePresenter(() => new EditGroupPresenter(route))
   const state = useWatch(presenter, (p, onChange: (state: JsEditGroupState) => void) => p.observeState(onChange))
+  useActions(presenter, (p, onEvent: (event: JsReminderCalendarEvent) => void) => p.observeCalendarEvents(onEvent), downloadReminderCalendarEvent)
   const isDesktop = useMediaQuery('(min-width: 768px)')
   useSimplifyConflictNotice(presenter, state?.simplifyConflict)
   useSimplifyUnavailableNotice(presenter, state?.showsSimplifyUnavailableNotice)
@@ -206,6 +209,18 @@ function EditGroupForm({ presenter, state }: { presenter: EditGroupPresenter; st
         <span className="text-sm text-muted-foreground">{defaultSplitModeLabel(state.defaultSplitMode)}</span>
         <ChevronRight aria-hidden className="size-4 text-muted-foreground" />
       </button>
+
+      <ReminderSection
+        reminder={state.reminder}
+        disabled={state.isSaving}
+        actions={{
+          onEnabled: (isEnabled) => presenter.setReminderEnabled(isEnabled),
+          onKind: (kind) => presenter.selectReminderKind(kind),
+          onDay: (day) => presenter.selectReminderDay(day),
+          onTime: (minute) => presenter.selectReminderTime(minute),
+        }}
+        calendar={state.canAddReminderToCalendar ? { kind: 'button', onClick: () => presenter.addReminderToCalendar() } : undefined}
+      />
 
       <SimplifyDebtsRow presenter={presenter} state={state} />
 

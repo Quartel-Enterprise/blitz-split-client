@@ -129,6 +129,7 @@ class GroupMapperImpl : GroupMapper {
         reminderKind = group.reminder.kind.code,
         reminderDay = group.reminder.day,
         reminderMinute = group.reminder.minute,
+        reminderDismissedAt = 0L,
     )
 
     // Why: one write can't tell the members apart by the clock, so each one's millisecond keeps the order given.
@@ -249,6 +250,7 @@ class GroupMapperImpl : GroupMapper {
         reminderKind = reminderOf(dto).kind.code,
         reminderDay = reminderOf(dto).day,
         reminderMinute = reminderOf(dto).minute,
+        reminderDismissedAt = 0L,
     )
 
     override fun toEntity(

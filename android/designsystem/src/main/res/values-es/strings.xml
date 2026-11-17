@@ -317,4 +317,19 @@
     <string name="designsystem_range_start">Fecha de inicio</string>
     <string name="designsystem_range_end">Fecha de fin</string>
     <string name="designsystem_range_none">Ninguna seleccionada</string>
+    <string name="designsystem_reminder_title">Recordatorio del grupo</string>
+    <string name="designsystem_reminder_switch">Recordar a los miembros que salden cuentas</string>
+    <string name="designsystem_reminder_caption">Quienes deben reciben una notificación, según su propia hora.</string>
+    <string name="designsystem_reminder_weekly">Semanal</string>
+    <string name="designsystem_reminder_monthly">Mensual</string>
+    <string name="designsystem_reminder_time">Hora</string>
+    <string name="designsystem_reminder_day_of_month">Día del mes</string>
+    <string name="designsystem_reminder_calendar_new">Añadir a mi calendario</string>
+    <string name="designsystem_reminder_calendar_new_caption">Añade un evento recurrente a tu calendario al crear el grupo.</string>
+    <string name="designsystem_reminder_calendar">Añadir al calendario</string>
+    <string name="designsystem_reminder_calendar_join">Añade el recordatorio a tu calendario</string>
+    <string name="designsystem_reminder_schedule_weekly">Cada %1$s a las %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Cada mes, el día %1$d a las %2$s</string>
+    <string name="designsystem_reminder_event_title">Saldar cuentas: %1$s</string>
+    <string name="designsystem_reminder_event_description">Es hora de saldar cuentas en %1$s.</string>
 </resources>

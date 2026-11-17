@@ -66,6 +66,7 @@ import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.layout.rememberDeviceLayout
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.platform.PhotoPickers
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
@@ -153,6 +154,10 @@ private fun IdentityColumn(
         state = state,
         onEvent = onEvent,
     )
+    ReminderRow(
+        state = state,
+        onEvent = onEvent,
+    )
 }
 
 // Why: lying down, who takes part on the right, with what the names say under them.
@@ -225,6 +230,10 @@ private fun CreateGroupFormColumn(
         onEvent = onEvent,
     )
     CurrencyRow(
+        state = state,
+        onEvent = onEvent,
+    )
+    ReminderRow(
         state = state,
         onEvent = onEvent,
     )
@@ -575,4 +584,6 @@ private fun buildPreviewState(draft: String): CreateGroupUiState = CreateGroupUi
     showsCreateError = false,
     openedColor = AvatarColor.PEACH,
     openedCurrency = GroupCurrency.BRL,
+    reminder = GroupReminder.Default,
+    addsReminderToCalendar = false,
 )

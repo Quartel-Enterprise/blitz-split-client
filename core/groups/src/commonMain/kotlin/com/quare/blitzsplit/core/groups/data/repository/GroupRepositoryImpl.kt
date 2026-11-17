@@ -140,10 +140,7 @@ class GroupRepositoryImpl(
             photoUrl = (photo as? ProfilePhoto.Remote)?.url,
             pendingPhoto = (photo as? ProfilePhoto.Pending)?.jpeg,
             currency = currency.code,
-            reminderEnabled = reminder.isEnabled,
-            reminderKind = reminder.kind.code,
-            reminderDay = reminder.day,
-            reminderMinute = reminder.minute,
+            reminder = reminder,
             updatedAt = updatedAt,
         )
     }
@@ -171,10 +168,7 @@ class GroupRepositoryImpl(
         )
     }
 
-    /*
-     * Why: written over the stored JSON, so the keys a newer app added survive. Back to splitting equally is null,
-     * those keys included: the server only takes a default split with a mode.
-     */
+    // Why: written over the stored JSON so a newer app's keys survive; back to an equal split is null, keys included.
     override suspend fun updateDefaultSplit(
         groupId: String,
         defaultSplit: GroupDefaultSplit?,

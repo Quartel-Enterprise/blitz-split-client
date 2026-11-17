@@ -98,4 +98,7 @@
     <string name="group_detail_balances_note_simplified">Met vereenvoudigde schulden stelt de app de minste betalingen voor. “Betaald gekregen” en “Al betaald” registreren een betaling buiten de app (Pix, contant, een overschrijving).</string>
     <string name="group_detail_photo_open">Groepsfoto bekijken</string>
     <string name="group_export_payment_method">Betaalmethode</string>
+    <string name="group_detail_reminder_title">Tijd om af te rekenen</string>
+    <string name="group_detail_reminder_settle">Afrekenen</string>
+    <string name="group_detail_reminder_dismiss">Sluiten</string>
 </resources>

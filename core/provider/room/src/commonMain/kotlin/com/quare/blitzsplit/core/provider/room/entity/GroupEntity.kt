@@ -77,22 +77,22 @@ data class GroupEntity(
     val simplifyDebtsConflictBy: String?,
     // Why: "Lembrete de acerto", the group's reminder (reminder_enabled): on in every group until someone turns it off.
     @ColumnInfo(defaultValue = "1")
-    val reminderEnabled: Boolean = true,
+    val reminderEnabled: Boolean,
     // Why: "weekly" or "monthly" (reminder_kind), Monday-weekly being the default every group starts with.
     @ColumnInfo(defaultValue = "'weekly'")
-    val reminderKind: String = "weekly",
+    val reminderKind: String,
     // Why: the ISO weekday while weekly, the day of the month while monthly (reminder_day).
     @ColumnInfo(defaultValue = "1")
-    val reminderDay: Int = 1,
+    val reminderDay: Int,
     // Why: the minutes after midnight (reminder_minute), 600 being 10:00.
     @ColumnInfo(defaultValue = "600")
-    val reminderMinute: Int = 600,
+    val reminderMinute: Int,
     /*
      * Why: the occurrence (epoch millis) whose banner this device dismissed: never synced, since each member decides for
      * their own, so the banner comes back for the next occurrence. 0 until one is dismissed.
      */
     @ColumnInfo(defaultValue = "0")
-    val reminderDismissedAt: Long = 0L,
+    val reminderDismissedAt: Long,
     /*
      * Why: the server has the group: it went up once, or came down from it, whatever changed here since. A new group has
      * its invite code from the start, so the code no longer tells.
