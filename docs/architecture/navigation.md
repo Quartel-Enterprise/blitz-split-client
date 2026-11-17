@@ -122,9 +122,10 @@ gesture goes through `navigateBack()`, so the shared stack stays the source of t
 While a back gesture swipes the top screen away, Navigation 3 draws the scene under it in its animated content. For a
 sheet or a dialog (`BottomSheetSceneStrategy`, `FoldDialogSceneStrategy`) that would open a window mid-gesture, and the
 system takes it for the end of the gesture and cancels it: back over a profile opened from "Did Larissa pay you?"
-never left the profile. So `AppNavDisplay` owns the `NavigationEventState` and tells the scenes (`LocalIsBackPreview`)
-while a gesture previews one that is not the top: `OverlayOrPreviewComponent` draws the screen the sheet covers instead, and
-the sheet or the dialog opens once the gesture ends and the scene is on top.
+never left the profile. So `AppNavDisplay` owns the `SceneState` and the `NavigationEventState`, and tells the scenes
+(`LocalIsBackPreview`) when one is drawn in the animated content rather than among the scene state's overlays, during
+the gesture and while a cancelled one settles back: `OverlayOrPreviewComponent` draws the screen the sheet covers
+instead, and the sheet or the dialog opens once the scene is one of the overlays.
 
 Groups and Contacts are the one exception (`rememberAppNavEntries`, `HomeTabEntries.kt`): while one of them is
 the route right above Home, it is decorated with `rememberDecoratedNavEntries` on its own, outside the rest of the

@@ -29,7 +29,6 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
-import androidx.navigationevent.NavigationEventTransitionState
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
 import com.quare.blitzsplit.android.designsystem.component.LocalBillOpensAsDialog
 import com.quare.blitzsplit.android.designsystem.component.LocalProfileFlight
@@ -544,17 +543,14 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 val onBack = { appViewModel.navigator.navigateBack() }
                 val sceneState = rememberSceneState(
                     entries = entries,
+                    // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
                     sceneStrategies = sceneStrategies,
                     onBack = onBack,
                 )
                 val navigationEventState = rememberNavigationEventState(sceneState)
                 NavigationBackHandler(sceneState, navigationEventState, onBackCompleted = onBack)
-                val topKey = entries.last().contentKey
                 CompositionLocalProvider(
-                    LocalIsBackPreview provides { key ->
-                        navigationEventState.transitionState is NavigationEventTransitionState.InProgress &&
-                            key != topKey
-                    },
+                    LocalIsBackPreview provides { key -> sceneState.overlayScenes.none { it.key == key } },
                 ) {
                     NavDisplay(
                         sceneState = sceneState,
