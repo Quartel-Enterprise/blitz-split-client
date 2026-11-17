@@ -2361,7 +2361,7 @@ export const ar: Record<MessageKey, string> = {
   reminder_summaryMonthly: 'كل شهر في اليوم {day} في الساعة {time}',
   reminder_bannerTitle: 'حان وقت التسوية',
   reminder_bannerSettle: 'تسوية',
-  reminder_bannerDismiss: 'تجاهل',
+  reminder_bannerDismiss: 'إغلاق',
   reminder_eventTitle: 'التسوية: {group}',
   reminder_eventBody: 'حان وقت التسوية في {group}.',
   reminder_eventFileName: 'settle-up-reminder.ics',
