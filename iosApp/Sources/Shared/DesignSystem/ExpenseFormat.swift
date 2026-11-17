@@ -78,15 +78,23 @@ extension GroupCurrency {
     /// "+R$ 600" or "−R$ 118,50", with a true minus sign: what a bill does to a balance. Zero takes no sign. The sign
     /// and the amount are isolated together in a right-to-left language.
     func formatSigned(_ minor: Int64) -> String {
-        let amount = unisolated(minor == .min ? .max : abs(minor))
-        if minor == 0 { return RightToLeft.isolated(amount) }
+        RightToLeft.isolated(Self.signed(minor, unisolated(minor == .min ? .max : abs(minor))))
+    }
+
+    /// "+214,90" or "−98", with no symbol: a balance whose currency is the line's own (the Mac sidebar's net).
+    func formatSignedPlain(_ minor: Int64) -> String {
+        RightToLeft.isolated(Self.signed(minor, unisolatedPlain(minor == .min ? .max : abs(minor))))
+    }
+
+    /// `amount` with `minor`'s sign: before it, but right before its digits when the number's own pattern runs right
+    /// to left, whose right-to-left mark ("‏141.66 R$") would part a sign put first from the number it signs.
+    private static func signed(_ minor: Int64, _ amount: String) -> String {
+        if minor == 0 { return amount }
         let sign = minor < 0 ? "−" : "+"
-        // Right before the digits in a right-to-left language, whose pattern starts with a right-to-left mark
-        // ("‏141.66 R$") that would part a sign put first from the number it signs
-        guard RightToLeft.isAppLanguage, let digit = amount.firstIndex(where: \.isNumber) else {
-            return RightToLeft.isolated(sign + amount)
-        }
-        return RightToLeft.isolated(String(amount[..<digit]) + sign + String(amount[digit...]))
+        guard AppNumbers.locale.language.characterDirection == .rightToLeft,
+              let digit = amount.firstIndex(where: \.isNumber)
+        else { return sign + amount }
+        return String(amount[..<digit]) + sign + String(amount[digit...])
     }
 
     /// "120,50" or "120.50", with no symbol: where the currency is already on the same line ("you get 120 and owe

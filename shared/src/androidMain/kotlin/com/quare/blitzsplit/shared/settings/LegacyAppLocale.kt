@@ -34,7 +34,7 @@ object LegacyAppLocale {
      */
     private fun withLatinDigits(context: Context): Context {
         val locale = context.resources.configuration.locales[0]
-        if (locale.language != ARABIC || locale.getUnicodeLocaleType(NUMBERING_SYSTEM) != null) return context
+        if (locale.language != ARABIC || locale.getUnicodeLocaleType(NUMBERING_SYSTEM) == LATIN_DIGITS) return context
         val latin = Locale
             .Builder()
             .setLocale(locale)

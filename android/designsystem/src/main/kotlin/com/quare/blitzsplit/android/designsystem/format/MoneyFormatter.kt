@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.FieldPosition
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
@@ -106,16 +107,19 @@ class MoneyFormatter(
         val format = compactFormat
         // Why: compactFormat is only set from Android 11, but lint can't see that through lazy, only this check.
         if (format == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return toText(amountMinor)
-        val text = format.format(amountMinor.toDecimal()).toString()
+        val formatted = format.format(amountMinor.toDecimal())
+        val text = formatted.toString()
+        if (!isolates) return text
         // Why: the symbol in an isolate of its own in a right to left language, as toText's ("US$", never "$US").
-        val symbolText = if (isolates) text.replaceFirst(compactSymbol, symbol) else text
-        return symbolText.toIsolatedIf(isolates)
-    }
-
-    private val compactSymbol: String by lazy {
-        android.icu.util.Currency
-            .getInstance(currency.code)
-            .getSymbol(formatLocale)
+        val position = FieldPosition(android.icu.text.NumberFormat.Field.CURRENCY)
+        val symbolText = if (formatted.nextFieldPosition(position)) {
+            text.substring(0, position.beginIndex) +
+                text.substring(position.beginIndex, position.endIndex).toIsolatedIf(true) +
+                text.substring(position.endIndex)
+        } else {
+            text
+        }
+        return symbolText.toIsolatedIf(true)
     }
 
     // Why: "120,50" with no symbol, where the currency is already on the same line ("você recebe 120 e deve 218,50").

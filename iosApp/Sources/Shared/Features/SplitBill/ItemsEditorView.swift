@@ -434,6 +434,8 @@ private struct ItemsAlerts: ViewModifier {
                 TextField(text: model.feeValue, prompt: Text(verbatim: "0")) {
                     Text(verbatim: model.state.feeEditor.map { ItemsCopy.feeField($0.fee) } ?? "")
                 }
+                // Why: the digits typed run left to right in Arabic and Hebrew too
+                .environment(\.layoutDirection, .leftToRight)
                 #if os(iOS)
                 .keyboardType(.numberPad)
                 #endif

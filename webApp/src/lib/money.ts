@@ -65,7 +65,6 @@ function shownDigits(minor: number, fractionDigits: number, currency?: string): 
   return digits
 }
 
-
 /** The number an amount shows: the major unit, or whole sats for bitcoin in satoshis (its minor unit). */
 function shownNumber(minor: number, fractionDigits: number, currency?: string): number {
   return isSats(currency) ? minor : minor / 10 ** fractionDigits

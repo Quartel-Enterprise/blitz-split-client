@@ -59,7 +59,7 @@ enum BillCopy {
 
     /// "Your share": what is owed without its sign, "+R$ 249.60" to get back, or "R$ 0.00".
     static func myPartAmount(_ minor: Int64, currency: GroupCurrency) -> String {
-        if minor > 0 { return "+\(currency.format(minor))" }
+        if minor > 0 { return currency.formatSigned(minor) }
         return currency.format(minor == .min ? .max : abs(minor))
     }
 

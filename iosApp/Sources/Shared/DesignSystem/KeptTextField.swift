@@ -6,13 +6,22 @@ import SwiftUI
 struct KeptTextField<Label: View>: View {
     @Binding var text: String
     let prompt: Text?
+    /// Whether the field holds a number, whose digits run left to right in Arabic and Hebrew too.
+    let isNumber: Bool
     @ViewBuilder let label: () -> Label
 
     @State private var shown = ""
+    @Environment(\.layoutDirection) private var layoutDirection
 
-    init(text: Binding<String>, prompt: Text? = nil, @ViewBuilder label: @escaping () -> Label) {
+    init(
+        text: Binding<String>,
+        prompt: Text? = nil,
+        isNumber: Bool = true,
+        @ViewBuilder label: @escaping () -> Label,
+    ) {
         _text = text
         self.prompt = prompt
+        self.isNumber = isNumber
         self.label = label
     }
 
@@ -30,6 +39,8 @@ struct KeptTextField<Label: View>: View {
                 // Why: the ViewModel's text now, not the change's: a quick keystroke may already have moved past it
                 if text != shown { shown = text }
             }
+            // Why: in right to left a number typed so far ("12.") would read ".12"; the field keeps its own place
+            .environment(\.layoutDirection, isNumber ? .leftToRight : layoutDirection)
     }
 }
 

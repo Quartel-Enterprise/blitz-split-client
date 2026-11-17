@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.designsystem.format
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
@@ -63,6 +64,6 @@ fun TextStyle.withLeftToRightDigits(): TextStyle {
     )
 }
 
-// Why: "Bar → Restaurante" points the way the line reads, so a right to left language gets "←".
+// Why: "Bar → Restaurante" points the way the line reads, so a right to left language gets "←", by the app's language as on iOS and the web.
 @Composable
-fun forwardArrowUi(): String = if (LocalLayoutDirection.current == LayoutDirection.Rtl) "←" else "→"
+fun forwardArrowUi(): String = if (LocalLocale.current.platformLocale.isRightToLeft()) "←" else "→"

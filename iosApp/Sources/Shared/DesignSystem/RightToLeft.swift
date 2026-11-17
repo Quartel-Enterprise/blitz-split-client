@@ -1,4 +1,5 @@
 import Foundation
+import Synchronization
 import SwiftUI
 
 /// The right-to-left languages the app may draw in: the sentences mirror, and an amount inside one keeps its own order.
@@ -6,9 +7,22 @@ enum RightToLeft {
     /// The language codes written right to left (Arabic, Hebrew).
     static let languageCodes: Set<String> = ["ar", "he"]
 
-    /// Whether the app's language (Profile › Language, or the device's) is written right to left.
-    static var isAppLanguage: Bool {
-        Bundle.appLanguageCode.map(languageCodes.contains) ?? false
+    /// Whether the app's language (Profile › Language, or the device's) is written right to left. Read once per
+    /// language (`refresh`), since every amount of a list asks.
+    nonisolated static var isAppLanguage: Bool {
+        cached.withLock { cached in
+            if let cached { return cached }
+            let isRightToLeft = Bundle.appLanguageCode.map(languageCodes.contains) ?? false
+            cached = isRightToLeft
+            return isRightToLeft
+        }
+    }
+
+    private nonisolated static let cached = Mutex<Bool?>(nil)
+
+    /// Called by `AppLocale.apply` once the app's language changes.
+    nonisolated static func refresh() {
+        cached.withLock { $0 = nil }
     }
 
     /// "→", the arrow that points the way a line reads: "←" in a right-to-left language, where arrows don't mirror.

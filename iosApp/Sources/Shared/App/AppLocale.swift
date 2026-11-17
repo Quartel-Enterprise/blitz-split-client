@@ -27,6 +27,7 @@ enum AppLocale {
             .url(forResource: identifier(of: language), withExtension: "lproj")
             .flatMap(Bundle.init(url:))
         strings.withLock { $0 = bundle }
+        RightToLeft.refresh()
     }
 
     /// The language's own tag ("pt-BR", "es-ES"), as the shared code writes it to AppleLanguages.

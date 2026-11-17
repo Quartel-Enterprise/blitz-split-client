@@ -16,7 +16,7 @@ import { GroupAvatar } from '@/features/create-group/GroupAvatar'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { formatDayTime } from '@/lib/dates'
-import { formatMoney, formatNames } from '@/lib/money'
+import { formatMoney, formatNames, formatSignedMoney } from '@/lib/money'
 import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
@@ -55,6 +55,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   const isLoaded = state.isLoaded
 
   const money: Money = (minor) => formatMoney(minor, state.currency, state.fractionDigits)
+  const signedMoney: Money = (minor) => formatSignedMoney(minor, state.currency, state.fractionDigits)
   const onOpenChange = (open: boolean) => {
     if (!open) presenter.back()
   }
@@ -120,6 +121,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
       <BillBody
         state={state}
         money={money}
+        signedMoney={signedMoney}
         attachments={attachments}
         onPerson={openPerson}
         title={<SheetTitle className={titleClass}>{state.description}</SheetTitle>}
@@ -181,6 +183,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
               <BillBody
                 state={state}
                 money={money}
+                signedMoney={signedMoney}
                 attachments={attachments}
                 onPerson={openPerson}
                 title={<DrawerTitle className={titleClass}>{state.description}</DrawerTitle>}
@@ -279,6 +282,7 @@ export type BillBodyState = Pick<JsBillDetailState, 'category' | 'categoryParent
 export function BillBody({
   state,
   money,
+  signedMoney = (minor) => `+${money(minor)}`,
   attachments,
   title,
   description,
@@ -286,6 +290,8 @@ export function BillBody({
 }: {
   state: BillBodyState
   money: Money
+  // Why: "+R$ 249,60" with the sign where the language puts it ("Sua parte"); a bill's link page has no such line.
+  signedMoney?: Money
   attachments: ReactNode
   title: ReactNode
   description: ReactNode
@@ -330,7 +336,7 @@ export function BillBody({
             </span>
           )}
         </div>
-        {state.showsMyPart && state.myBalanceMinor != null && <MyPart balance={state.myBalanceMinor} note={state.myPartNote} money={money} />}
+        {state.showsMyPart && state.myBalanceMinor != null && <MyPart balance={state.myBalanceMinor} note={state.myPartNote} money={money} signedMoney={signedMoney} />}
       </div>
 
       {attachments}
@@ -371,8 +377,8 @@ function paidText(payers: JsBillPayer[]): string {
 }
 
 /** "Sua parte": what the bill does to your balance, and with whom it settles. */
-function MyPart({ balance, note, money }: { balance: number; note: JsMyPartNote | null | undefined; money: Money }) {
-  const amount = balance > 0 ? `+${money(balance)}` : money(Math.abs(balance))
+function MyPart({ balance, note, money, signedMoney }: { balance: number; note: JsMyPartNote | null | undefined; money: Money; signedMoney: Money }) {
+  const amount = balance > 0 ? signedMoney(balance) : money(Math.abs(balance))
   const word = balance < 0 ? t('billDetail_myPartOwe') : balance > 0 ? t('billDetail_myPartGetBack') : t('billDetail_myPartSettled')
   const tone = balanceTone(balance)
   const noteText = note ? myPartNoteText(note, money) : null
