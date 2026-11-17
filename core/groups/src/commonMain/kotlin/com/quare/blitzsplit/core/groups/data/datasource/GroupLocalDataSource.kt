@@ -56,7 +56,17 @@ interface GroupLocalDataSource {
         photoUrl: String?,
         pendingPhoto: ByteArray?,
         currency: String,
+        reminderEnabled: Boolean,
+        reminderKind: String,
+        reminderDay: Int,
+        reminderMinute: Int,
         updatedAt: Long,
+    )
+
+    // Why: "Dispensar" on the reminder banner, this device only.
+    suspend fun dismissReminder(
+        id: String,
+        occurrenceAt: Long,
     )
 
     // Why: "Divisão padrão" alone; the incomes of "By income" are GroupIncomeLocalDataSource's.

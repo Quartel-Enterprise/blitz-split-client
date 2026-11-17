@@ -13,6 +13,7 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.InviteCodeTakenException
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.model.MemberAccountRefusedException
@@ -127,6 +128,7 @@ class GroupRepositoryImpl(
         shape: GroupShape?,
         photo: ProfilePhoto?,
         currency: GroupCurrency,
+        reminder: GroupReminder,
         updatedAt: Long,
     ): Result<Unit> = suspendRunCatching {
         local.updateGroup(
@@ -138,7 +140,21 @@ class GroupRepositoryImpl(
             photoUrl = (photo as? ProfilePhoto.Remote)?.url,
             pendingPhoto = (photo as? ProfilePhoto.Pending)?.jpeg,
             currency = currency.code,
+            reminderEnabled = reminder.isEnabled,
+            reminderKind = reminder.kind.code,
+            reminderDay = reminder.day,
+            reminderMinute = reminder.minute,
             updatedAt = updatedAt,
+        )
+    }
+
+    override suspend fun dismissReminder(
+        groupId: String,
+        occurrenceAt: Long,
+    ): Result<Unit> = suspendRunCatching {
+        local.dismissReminder(
+            id = groupId,
+            occurrenceAt = occurrenceAt,
         )
     }
 

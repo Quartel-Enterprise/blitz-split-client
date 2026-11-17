@@ -12,6 +12,7 @@ import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsPair
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -80,6 +81,13 @@ class GroupMapperImpl : GroupMapper {
                 isSimplifyDebtsPending = group.simplifyDebtsPending,
                 simplifyDebtsChangedBy = group.simplifyDebtsBy,
                 simplifyDebtsConflictBy = group.simplifyDebtsConflictBy,
+                reminder = GroupReminder.of(
+                    isEnabled = group.reminderEnabled,
+                    kindCode = group.reminderKind,
+                    day = group.reminderDay,
+                    minute = group.reminderMinute,
+                ),
+                reminderDismissedAt = group.reminderDismissedAt,
             )
         }
     }
@@ -117,6 +125,10 @@ class GroupMapperImpl : GroupMapper {
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
         isOnServer = false,
+        reminderEnabled = group.reminder.isEnabled,
+        reminderKind = group.reminder.kind.code,
+        reminderDay = group.reminder.day,
+        reminderMinute = group.reminder.minute,
     )
 
     // Why: one write can't tell the members apart by the clock, so each one's millisecond keeps the order given.
@@ -182,6 +194,10 @@ class GroupMapperImpl : GroupMapper {
         simplifyDebtsAt = entity.simplifyDebtsAt,
         simplifyDebtsBy = null,
         simplifyDebtsChange = objectOrNull(entity.simplifyDebtsChange.takeIf { entity.simplifyDebtsPending }),
+        reminderEnabled = entity.reminderEnabled,
+        reminderKind = entity.reminderKind,
+        reminderDay = entity.reminderDay,
+        reminderMinute = entity.reminderMinute,
     )
 
     /*
@@ -228,6 +244,11 @@ class GroupMapperImpl : GroupMapper {
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
         isOnServer = true,
+        // Why: a server without the columns, or a value out of their ranges, reads as the default schedule.
+        reminderEnabled = reminderOf(dto).isEnabled,
+        reminderKind = reminderOf(dto).kind.code,
+        reminderDay = reminderOf(dto).day,
+        reminderMinute = reminderOf(dto).minute,
     )
 
     override fun toEntity(
@@ -245,6 +266,13 @@ class GroupMapperImpl : GroupMapper {
         pendingSync = false,
         isRemoved = false,
         inviteCode = dto.inviteCode,
+    )
+
+    private fun reminderOf(dto: GroupDto): GroupReminder = GroupReminder.of(
+        isEnabled = dto.reminderEnabled,
+        kindCode = dto.reminderKind,
+        day = dto.reminderDay,
+        minute = dto.reminderMinute,
     )
 
     // Why: a profile with neither a photo nor a link's code is no row, so its face keeps the initials.

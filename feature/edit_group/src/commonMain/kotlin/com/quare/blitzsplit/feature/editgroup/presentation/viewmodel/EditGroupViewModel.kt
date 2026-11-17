@@ -11,8 +11,10 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveExpenses
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveSettlements
 import com.quare.blitzsplit.core.expenses.domain.usecase.SetSimplifiesDebts
 import com.quare.blitzsplit.core.groups.domain.model.Group
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
 import com.quare.blitzsplit.core.groups.domain.model.Initials
+import com.quare.blitzsplit.core.groups.domain.usecase.BuildReminderCalendarEvent
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
@@ -32,10 +34,13 @@ import com.quare.blitzsplit.core.profile.domain.usecase.PrepareProfilePhoto
 import com.quare.blitzsplit.core.profile.photo.ProfilePhotoPicker
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.CurrencySimplification
+import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiAction
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiEvent
 import com.quare.blitzsplit.feature.editgroup.presentation.model.EditGroupUiState
 import com.quare.blitzsplit.feature.editgroup.presentation.model.GroupIconEditor
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
@@ -49,6 +54,7 @@ class EditGroupViewModel(
     private val route: Route.EditGroup,
     private val navigator: Navigator,
     private val updateGroup: UpdateGroup,
+    private val buildReminderCalendarEvent: BuildReminderCalendarEvent,
     private val setSimplifiesDebts: SetSimplifiesDebts,
     private val consumeSimplifyDebtsConflict: ConsumeSimplifyDebtsConflict,
     observeGroup: ObserveGroup,
@@ -86,10 +92,15 @@ class EditGroupViewModel(
                 isChangingSimplifyDebts = false,
                 simplifyConflict = null,
                 showsSimplifyUnavailableNotice = false,
+                reminder = GroupReminder.Default,
             ),
         )
 
+    val uiAction: SharedFlow<EditGroupUiAction>
+        field = MutableSharedFlow<EditGroupUiAction>()
+
     val stateWatcher: FlowWatcher<EditGroupUiState> = FlowWatcher(uiState)
+    val actionWatcher: FlowWatcher<EditGroupUiAction> = FlowWatcher(uiAction)
 
     // Why: the group went while another screen covered this one, which then leaves as soon as it is on top again.
     private var isGroupGone = false
@@ -192,6 +203,24 @@ class EditGroupViewModel(
 
             EditGroupUiEvent.OnDefaultSplitClicked -> openDefaultSplit()
 
+            is EditGroupUiEvent.OnReminderEnabledChanged -> updateForm {
+                it.copy(reminder = it.reminder.copy(isEnabled = event.isEnabled))
+            }
+
+            is EditGroupUiEvent.OnReminderKindSelected -> updateForm {
+                it.copy(reminder = it.reminder.withKind(event.kind))
+            }
+
+            is EditGroupUiEvent.OnReminderDaySelected -> updateForm {
+                it.copy(reminder = it.reminder.withDay(event.day))
+            }
+
+            is EditGroupUiEvent.OnReminderTimeSelected -> updateForm {
+                it.copy(reminder = it.reminder.withMinute(event.minute))
+            }
+
+            EditGroupUiEvent.OnAddReminderToCalendarClicked -> addReminderToCalendar()
+
             EditGroupUiEvent.OnSaveClicked -> save()
 
             EditGroupUiEvent.OnSimplifyDebtsClicked -> openSimplifyConfirmation()
@@ -225,6 +254,7 @@ class EditGroupViewModel(
                     photo = group.photo,
                     type = group.type,
                     currency = group.currency,
+                    reminder = group.reminder,
                     isLoaded = true,
                 )
             }
@@ -452,6 +482,7 @@ class EditGroupViewModel(
         } else {
             latest.currency
         }
+        val reminder = if (state.reminder != original.reminder) state.reminder else latest.reminder
         viewModelScope.launch {
             updateGroup(
                 groupId = route.groupId,
@@ -462,6 +493,7 @@ class EditGroupViewModel(
                 shape = null,
                 photo = photo,
                 currency = currency,
+                reminder = reminder,
             ).onSuccess {
                 // Why: the form may not be on top to leave, so it stops saving and starts from what it just saved.
                 this@EditGroupViewModel.original = latest.copy(
@@ -470,6 +502,7 @@ class EditGroupViewModel(
                     color = color,
                     photo = photo,
                     currency = currency,
+                    reminder = reminder,
                 )
                 updateForm { it.copy(isSaving = false) }
                 // Why: saved, so leaving asks nothing; said now, since the state's own report reaches the stack later.
@@ -500,8 +533,17 @@ class EditGroupViewModel(
                 type != group.type ||
                 color != group.color ||
                 photo != group.photo ||
-                currency != group.currency
+                currency != group.currency ||
+                reminder != group.reminder
         )
+
+    private fun addReminderToCalendar() {
+        val state = uiState.value
+        if (!state.canAddReminderToCalendar) return
+        val event = buildReminderCalendarEvent(state.name.trim(), state.reminder) ?: return
+        trackEvent("group_reminder_calendar_clicked", mapOf("source" to "edit_group"))
+        viewModelScope.launch { uiAction.emit(EditGroupUiAction.AddReminderToCalendar(event)) }
+    }
 
     // Why: the group is gone, so there is nothing left to save and nothing to ask about.
     private fun leaveGroupGone() {

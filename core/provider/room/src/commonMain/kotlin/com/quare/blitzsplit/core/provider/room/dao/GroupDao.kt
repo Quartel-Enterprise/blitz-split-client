@@ -85,6 +85,10 @@ interface GroupDao {
             defaultSplit = entity.defaultSplit,
             shape = entity.shape,
             photoUrl = entity.photoUrl,
+            reminderEnabled = entity.reminderEnabled,
+            reminderKind = entity.reminderKind,
+            reminderDay = entity.reminderDay,
+            reminderMinute = entity.reminderMinute,
             createdBy = entity.createdBy,
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
@@ -178,6 +182,8 @@ interface GroupDao {
     @Query(
         "UPDATE split_group SET name = :name, type = :type, color = :color, shape = COALESCE(:shape, shape), " +
             "photoUrl = :photoUrl, pendingPhoto = :pendingPhoto, currency = :currency, " +
+            "reminderEnabled = :reminderEnabled, reminderKind = :reminderKind, reminderDay = :reminderDay, " +
+            "reminderMinute = :reminderMinute, " +
             "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
     )
     suspend fun updateGroup(
@@ -189,7 +195,18 @@ interface GroupDao {
         photoUrl: String?,
         pendingPhoto: ByteArray?,
         currency: String,
+        reminderEnabled: Boolean,
+        reminderKind: String,
+        reminderDay: Int,
+        reminderMinute: Int,
         updatedAt: Long,
+    )
+
+    // Why: "Dispensar" on the group's reminder banner: this device only, so the group isn't stamped nor pending.
+    @Query("UPDATE split_group SET reminderDismissedAt = :occurrenceAt WHERE id = :id AND reminderDismissedAt < :occurrenceAt")
+    suspend fun dismissReminder(
+        id: String,
+        occurrenceAt: Long,
     )
 
     /*
@@ -411,6 +428,8 @@ interface GroupDao {
     @Query(
         "UPDATE split_group SET name = :name, type = :type, color = :color, currency = :currency, " +
             "defaultSplit = :defaultSplit, shape = :shape, photoUrl = :photoUrl, pendingPhoto = NULL, " +
+            "reminderEnabled = :reminderEnabled, reminderKind = :reminderKind, reminderDay = :reminderDay, " +
+            "reminderMinute = :reminderMinute, " +
             "createdBy = :createdBy, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
             "WHERE id = :id AND ownerUserId = :ownerUserId AND updatedAt < :remoteUpdatedAt",
     )
@@ -423,6 +442,10 @@ interface GroupDao {
         defaultSplit: String?,
         shape: String?,
         photoUrl: String?,
+        reminderEnabled: Boolean,
+        reminderKind: String,
+        reminderDay: Int,
+        reminderMinute: Int,
         createdBy: String?,
         addedAt: Long,
         remoteUpdatedAt: Long,

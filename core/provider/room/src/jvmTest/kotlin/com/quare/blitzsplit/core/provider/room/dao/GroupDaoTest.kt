@@ -655,6 +655,10 @@ class GroupDaoTest {
             photoUrl = null,
             pendingPhoto = null,
             currency = "USD",
+            reminderEnabled = true,
+            reminderKind = "weekly",
+            reminderDay = 1,
+            reminderMinute = 600,
             updatedAt = 6L,
         )
 
@@ -694,7 +698,11 @@ class GroupDaoTest {
                 photoUrl = null,
                 pendingPhoto = null,
                 currency = "BRL",
-                updatedAt = 6L,
+                reminderEnabled = true,
+            reminderKind = "weekly",
+            reminderDay = 1,
+            reminderMinute = 600,
+            updatedAt = 6L,
             )
 
             // Then
@@ -723,6 +731,10 @@ class GroupDaoTest {
             photoUrl = null,
             pendingPhoto = null,
             currency = "BRL",
+            reminderEnabled = true,
+            reminderKind = "weekly",
+            reminderDay = 1,
+            reminderMinute = 600,
             updatedAt = 6L,
         )
 

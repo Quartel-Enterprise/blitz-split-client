@@ -161,7 +161,30 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     with an iPad's room, a smaller 56 pt avatar, its pencil on the corner, on an iPhone lying down) and a dialog on the web; on Android
     full screen on a phone (lying down a 240 dp column with the avatar, the fields beside it) and a 560 dp dialog
     anywhere wider, off the hinge as every dialog (`rememberDialogPlacement()`: a book's right half). Its last row,
-    under "Default currency", is "Default split" with the group's way ("Equal", "Shares"…).
+    under "Default currency", is "Default split" with the group's way ("Equal", "Shares"…), followed by "Group reminder".
+  - <a id="group-reminder"></a>"Group reminder" (feedback of 2026-11-16, Pierre's call; New group has the same section): the group's
+    schedule for the weekly "Open balance reminder" push. It starts as every Monday at 10:00. A switch turns it off
+    (no push, no banner); "Weekly" takes a weekday and a time, "Monthly" a day of the month (1 to 31) and a time. It is a
+    field of the group like its name and currency (`GroupReminder`, the server's `groups.reminder_enabled`,
+    `reminder_kind`, `reminder_day`, `reminder_minute`; Last-Write-Wins with the group, saved only when this person
+    changed it, any member may edit, offline too), shown as a "Group reminder" section under "Default split": on
+    Android and iOS a switch, two chips or a segmented control for Weekly and Monthly, the day (weekday chips, or a day-of-month
+    picker) and the time (the system's time picker), on the web and the Mac the same controls in the form. The time is
+    read on each member's own clock: someone abroad is reminded at 12:00 where they are. A month without the day
+    uses its last one (day 31 fires on April 30, day 30 on February 28 or 29), as the server does.
+    Who gets it: the server sends the push only to members who owe in the group. The group shows a banner on top of
+    Expenses, Balances and Members, only to someone who owes in it, once the schedule's latest time has arrived or passed
+    ("Time to settle up in this group" with the schedule, "Settle up" and "Dismiss"); dismissing hides it on this device
+    only until the next occurrence, and paying everything away takes it too (`GroupDetailUiState.reminderBanner`,
+    `Group.reminderDismissedAt`, never synced). The banner never shows with the reminder off or to someone who owes
+    nothing; a debt that appears after the time passed shows the latest occurrence's banner once.
+    "Add to calendar" (under the section in Edit group, in New group as "Add to my calendar" and beside "You joined as…"
+    after joining through a link): each platform hands a repeating event, at the next occurrence on the device's clock and
+    with the schedule's recurrence (weekly on the weekday; monthly on the day, a 31st on each month's last day, a 29th
+    or 30th skipping the months without it), to its own calendar. Android opens Google Calendar or the system's calendar to
+    save the event (`Intent.ACTION_INSERT`), iOS and the Mac add it through the calendar's own sheet (EventKit's
+    `EKEventEditViewController`, with no permission asked up front) and the web downloads an .ics (`ReminderCalendarEvent.toIcs`).
+    It is skippable: nothing is added unless tapped.
   - "Default split" (6.7, `Route.DefaultSplit`, `DefaultSplitViewModel` in `:feature:edit_group`) opens over
     Edit group, which keeps what was typed: pushed inside its sheet on iOS and macOS (`AppModel.sheetPath`), which
     grows from the form sheet to a bill's with an iPad's room (820×640 lying down, 620×860 upright) and shrinks back

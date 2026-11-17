@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
 import com.quare.blitzsplit.core.expenses.domain.model.GroupExitState
 import com.quare.blitzsplit.core.expenses.domain.model.PaymentNotice
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflictNotice
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.model.GroupTab
 import com.quare.blitzsplit.core.model.HomeTab
 
@@ -62,7 +63,16 @@ data class GroupDetailUiState(
     val simplifyConflict: SimplifyDebtsConflictNotice?,
     // Why: "Export group data" asks which file to make: CSV, Excel, JSON or text.
     val showsExportFormats: Boolean,
+    // Why: "Time to settle up" (the group's reminder arrived or passed) for a debtor, until dismissed; null otherwise.
+    val reminderBanner: ReminderBanner?,
+    // Why: the group's reminder while it is on, which "Add to calendar" on the joined notice offers; null while off.
+    val reminder: GroupReminder?,
 ) {
+    // Why: right after joining, "Add to calendar" for the group's reminder next to the notice, skippable with its X.
+    val showsJoinCalendarOffer: Boolean
+        get() = joinedAs != null && reminder != null
+
+
     // Why: the card over the pairs, only while there is any to explain.
     val showsSimplificationCard: Boolean
         get() = simplification != null && (myDebts.isNotEmpty() || otherDebts.isNotEmpty())

@@ -7,6 +7,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":core:model"))
+            api(libs.kotlinx.datetime)
             implementation(project(":core:utils"))
             implementation(project(":core:profile"))
             implementation(project(":core:provider:room"))

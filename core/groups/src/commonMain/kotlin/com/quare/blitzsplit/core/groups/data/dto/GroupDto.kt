@@ -37,4 +37,9 @@ data class GroupDto(
     @SerialName("simplify_debts_by") val simplifyDebtsBy: String?,
     // Why: the pairs the change moved, sent with a change not up yet and null otherwise.
     @SerialName("simplify_debts_change") val simplifyDebtsChange: JsonObject?,
+    // Why: "Lembrete de acerto"; null from a server that doesn't have the columns yet, which reads as Monday 10:00.
+    @SerialName("reminder_enabled") val reminderEnabled: Boolean? = null,
+    @SerialName("reminder_kind") val reminderKind: String? = null,
+    @SerialName("reminder_day") val reminderDay: Int? = null,
+    @SerialName("reminder_minute") val reminderMinute: Int? = null,
 )

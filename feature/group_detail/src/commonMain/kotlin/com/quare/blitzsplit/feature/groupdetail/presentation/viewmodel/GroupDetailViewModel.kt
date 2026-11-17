@@ -23,7 +23,9 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveCategoryTree
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveDeletedBillNotice
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.PayerOrder
+import com.quare.blitzsplit.core.groups.domain.usecase.BuildReminderCalendarEvent
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
+import com.quare.blitzsplit.core.groups.domain.usecase.DismissGroupReminder
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
 import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -41,6 +43,7 @@ import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUi
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiEvent
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.GroupDetailUiState
 import com.quare.blitzsplit.feature.groupdetail.presentation.model.PaymentRow
+import com.quare.blitzsplit.feature.groupdetail.presentation.model.ReminderBanner
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +55,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 
 /*
  * Why: the group's screen: its header, read once, over Despesas, Saldos and Membros, whose pick is this screen's own
@@ -64,6 +68,8 @@ class GroupDetailViewModel(
     private val currentTimeZone: CurrentTimeZone,
     private val consumeDeletedBillNotice: ConsumeDeletedBillNotice,
     private val consumeSimplifyDebtsConflict: ConsumeSimplifyDebtsConflict,
+    private val dismissGroupReminder: DismissGroupReminder,
+    private val buildReminderCalendarEvent: BuildReminderCalendarEvent,
     billMenuUseCases: BillMenuUseCases,
     observeDeletedBillNotice: ObserveDeletedBillNotice,
     observeAddPersonRequest: ObserveAddPersonRequest,
@@ -102,6 +108,8 @@ class GroupDetailViewModel(
                 simplification = null,
                 simplifyConflict = null,
                 showsExportFormats = false,
+                reminderBanner = null,
+                reminder = null,
             ),
         )
 
@@ -386,12 +394,47 @@ class GroupDetailViewModel(
 
             GroupDetailUiEvent.OnSimplifyConflictDismissed -> uiState.update { it.copy(simplifyConflict = null) }
 
+            GroupDetailUiEvent.OnReminderBannerDismissed -> dismissReminderBanner()
+
+            GroupDetailUiEvent.OnAddReminderToCalendarClicked -> addReminderToCalendar()
+
             // Why: Atividade lists both changes.
             GroupDetailUiEvent.OnSimplifyConflictActivityClicked -> {
                 uiState.update { it.copy(simplifyConflict = null) }
                 screen.openActivity()
             }
         }
+    }
+
+    // Why: hidden at once, then remembered on this device; the next occurrence's banner comes back by itself.
+    private fun dismissReminderBanner() {
+        val banner = uiState.value.reminderBanner ?: return
+        uiState.update { it.copy(reminderBanner = null) }
+        viewModelScope.launch { dismissGroupReminder(route.groupId, banner.occurrenceAt) }
+    }
+
+    private fun addReminderToCalendar() {
+        val group = shownGroup ?: return
+        val reminder = uiState.value.reminder ?: return
+        val event = buildReminderCalendarEvent(group.name, reminder) ?: return
+        viewModelScope.launch { uiAction.emit(GroupDetailUiAction.AddReminderToCalendar(event)) }
+    }
+
+    /*
+     * Why: only someone who owes (in any currency of the group) sees it, once the schedule's latest occurrence on their
+     * clock is after the one they dismissed; settling takes it away on its own, and a debt that comes later brings back
+     * the occurrence that already passed, as a push of the day would have.
+     */
+    private fun reminderBannerOf(
+        group: Group,
+        byCurrency: List<CurrencyBalances>,
+        meId: String?,
+        now: Long,
+        timeZone: TimeZone,
+    ): ReminderBanner? {
+        val occurrence = group.reminder.lastOccurrenceAtOrBefore(now, timeZone) ?: return null
+        val owes = meId != null && byCurrency.any { each -> each.balances.debts.any { it.fromMemberId == meId } }
+        return ReminderBanner(occurrence, group.reminder).takeIf { owes && occurrence > group.reminderDismissedAt }
     }
 
     // Why: 13.1e shows once, on whichever screen of the group is on top first.
@@ -464,6 +507,8 @@ class GroupDetailViewModel(
                     shown?.let { debtRowOf(debt, it.currency, group, meId, it.balances) }
                 },
                 hasBills = byCurrency.hasBills,
+                reminderBanner = reminderBannerOf(group, byCurrency, meId, now, timeZone),
+                reminder = group.reminder.takeIf { it.isEnabled },
                 simplification = balances?.let(DebtSimplificationSummary::ofOrNull),
                 isLoaded = true,
             )

@@ -53,6 +53,8 @@ import com.quare.blitzsplit.core.groups.domain.usecase.RequestAddPerson
 import com.quare.blitzsplit.core.groups.domain.usecase.SaveSplitAsDefault
 import com.quare.blitzsplit.core.groups.domain.usecase.SetGroupPinned
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateDefaultSplit
+import com.quare.blitzsplit.core.groups.domain.usecase.BuildReminderCalendarEvent
+import com.quare.blitzsplit.core.groups.domain.usecase.DismissGroupReminder
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroupPhoto
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
@@ -79,6 +81,8 @@ import com.quare.blitzsplit.core.groups.domain.usecase.impl.SaveSplitAsDefaultUs
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.SetGroupPinnedUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateDefaultSplitUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupPhotoUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.BuildReminderCalendarEventUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.DismissGroupReminderUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -110,6 +114,8 @@ val groupModule = module {
     factoryOf(::ObserveAddPersonRequestUseCase).bind<ObserveAddPersonRequest>()
     factoryOf(::ConsumeAddPersonRequestUseCase).bind<ConsumeAddPersonRequest>()
     factoryOf(::UpdateGroupUseCase).bind<UpdateGroup>()
+    factoryOf(::DismissGroupReminderUseCase).bind<DismissGroupReminder>()
+    factory<BuildReminderCalendarEvent> { BuildReminderCalendarEventUseCase(get()) }
     factoryOf(::UpdateGroupPhotoUseCase).bind<UpdateGroupPhoto>()
     factoryOf(::UpdateDefaultSplitUseCase).bind<UpdateDefaultSplit>()
     factoryOf(::SaveSplitAsDefaultUseCase).bind<SaveSplitAsDefault>()

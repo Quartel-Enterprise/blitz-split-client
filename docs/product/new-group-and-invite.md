@@ -64,4 +64,11 @@ Creating a group and inviting people.
     group's too, offers "Add someone without the app": someone who won't install it goes in by name, as in "New
     group", so it opens the group's Members with "Add person" already open (`RequestAddPerson`, which the group's
     Members on top takes once).
+  - "Group reminder" (feedback of 2026-11-16, Pierre's call), after "Default currency": the group keeps the
+    weekly "Open balance reminder" of Monday at 10:00 unless the creator changes it. A switch turns it off; "Weekly"
+    picks the weekday and the time, "Monthly" a day of the month (1 to 31) and the time ("every 25th at 12:00"), each
+    read on every member's own clock. Under it, "Add to my calendar" (off, offered while the reminder is on): creating
+    the group then hands a repeating event to the device's calendar before Invite opens (see
+    [members-and-payments.md](members-and-payments.md#group-reminder)). `CreateGroupUiState.reminder` and
+    `addsReminderToCalendar` count as unsaved input once they differ from the default.
   - Closing New group with unsaved input asks "Discard changes?" first, on every way out ([general.md](general.md)).

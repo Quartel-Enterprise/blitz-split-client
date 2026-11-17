@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.creategroup.presentation.model
 
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.MemberNameRules
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -33,6 +34,10 @@ data class CreateGroupUiState(
     // Why: the color and the currency the form opened with, what "unsaved input" is compared against.
     val openedColor: AvatarColor,
     val openedCurrency: GroupCurrency,
+    // Why: "Group reminder", the schedule the group starts with (Monday 10:00 unless changed), or off.
+    val reminder: GroupReminder,
+    // Why: "Add to my calendar", on: creating the group also hands the reminder to the device's calendar.
+    val addsReminderToCalendar: Boolean,
 ) {
     /*
      * Why: closing the form asks "Discard changes?" only when something differs from how it opened: a name, a photo,
@@ -47,7 +52,13 @@ data class CreateGroupUiState(
             members.any { !it.isMe } ||
             type != GroupType.default ||
             color != openedColor ||
-            currency != openedCurrency
+            currency != openedCurrency ||
+            reminder != GroupReminder.Default ||
+            addsReminderToCalendar
+
+    // Why: the calendar's switch is offered only while there is a schedule to add.
+    val canAddReminderToCalendar: Boolean
+        get() = reminder.isEnabled
 
     val types: List<GroupType>
         get() = GroupType.entries

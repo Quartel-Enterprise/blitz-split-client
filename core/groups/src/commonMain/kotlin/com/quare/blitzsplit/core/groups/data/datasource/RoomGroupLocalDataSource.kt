@@ -71,6 +71,10 @@ class RoomGroupLocalDataSource(
         photoUrl: String?,
         pendingPhoto: ByteArray?,
         currency: String,
+        reminderEnabled: Boolean,
+        reminderKind: String,
+        reminderDay: Int,
+        reminderMinute: Int,
         updatedAt: Long,
     ) {
         dao.updateGroup(
@@ -82,7 +86,21 @@ class RoomGroupLocalDataSource(
             photoUrl = photoUrl,
             pendingPhoto = pendingPhoto,
             currency = currency,
+            reminderEnabled = reminderEnabled,
+            reminderKind = reminderKind,
+            reminderDay = reminderDay,
+            reminderMinute = reminderMinute,
             updatedAt = updatedAt,
+        )
+    }
+
+    override suspend fun dismissReminder(
+        id: String,
+        occurrenceAt: Long,
+    ) {
+        dao.dismissReminder(
+            id = id,
+            occurrenceAt = occurrenceAt,
         )
     }
 
