@@ -7,7 +7,7 @@
     <string name="recovery_code_connect_instead">ربط Google أو Apple بدلًا من ذلك</string>
     <string name="recovery_code_connect_instead_body">لا حاجة إلى رمز</string>
     <string name="recovery_code_sign_in_failed">تعذر الربط الآن. يُرجى إعادة المحاولة.</string>
-    <string name="recovery_code_also_in_profile">موجود أيضًا في الملف الشخصي ‹ الاسترداد.</string>
+    <string name="recovery_code_also_in_profile">موجود أيضًا في الملف الشخصي › الاسترداد.</string>
     <string name="recovery_code_remind_later">التذكير لاحقًا</string>
     <string name="recovery_code_saved">تم الحفظ</string>
     <string name="recovery_code_download">تنزيل</string>

@@ -248,7 +248,8 @@ at its right edge. The rules, the same on the three platforms:
   next, log out: Android's `Icons.AutoMirrored`, SF Symbols' `chevron.forward`/`arrow.backward` (never `…right`), and
   the web's `index.css` rule on lucide's directional classes. A checkmark, the camera, the clock, a search glass, a
   chart and a logo stay as they are. A "→" written in text becomes "←" (Android's `ActivityRow`/`TermSheet` do it;
-  each translation writes its own).
+  each translation writes its own), since arrows don't mirror; a menu path's "›" stays "›" in every translation, since
+  it is a mirrored character that right to left text already draws as "‹" ("Profile › Language").
 - **Gestures and keys follow the reading order.** A pager's swipe and the arrow keys of Bill attachments' viewer
   swap their meaning; a sheet slides in from the inline end.
 - **A chart over time doesn't mirror.** Statistics' time chart keeps time running left to right (Compose's

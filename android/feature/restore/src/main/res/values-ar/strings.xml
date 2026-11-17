@@ -7,7 +7,7 @@
     <string name="restore_code_label">أو استخدام رمز الاسترداد</string>
     <string name="restore_code_hint">الكلمات الـ 12 بالترتيب. لصقها كلها في حقل واحد يملأ جميع الحقول.</string>
     <string name="restore_scan_qr_title">مسح رمز QR من جهازك القديم</string>
-    <string name="restore_scan_qr_body">هناك: الملف الشخصي ‹ الاسترداد ‹ عرض رمز QR</string>
+    <string name="restore_scan_qr_body">هناك: الملف الشخصي › الاسترداد › عرض رمز QR</string>
     <string name="restore_recover">استرداد</string>
     <string name="restore_try_again">إعادة المحاولة</string>
     <string name="restore_start_fresh">البدء من جديد على هذا الجهاز</string>

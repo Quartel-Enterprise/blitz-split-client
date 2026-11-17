@@ -84,7 +84,7 @@
     <string name="group_detail_balances_empty_message">تظهر الأرصدة عند إضافة أول مصروف.</string>
     <string name="group_detail_balances_settled_title">تمت تسوية حسابات الجميع</string>
     <string name="group_detail_balances_settled_message">لا ديون على أحد في هذه المجموعة. إذا انتهت الرحلة، يمكنك حذف المجموعة للجميع.</string>
-    <string name="group_detail_category_path">%1$s ‹ %2$s</string>
+    <string name="group_detail_category_path">%1$s › %2$s</string>
     <string name="group_detail_teach_offer">تم حفظ الفاتورة في %1$s، وليس في %2$s التي اقترحتها الخريطة. تعليم الخريطة؟</string>
     <string name="group_detail_teach_offer_no_map">تم حفظ الفاتورة في %1$s. تعليم الخريطة؟</string>
     <string name="group_detail_teach">تعليم</string>

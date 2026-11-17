@@ -217,7 +217,7 @@
     <string name="designsystem_category_icon_music">موسيقى</string>
     <string name="designsystem_category_icon_gym">أثقال</string>
     <string name="designsystem_category_icon_dots">أخرى</string>
-    <string name="designsystem_category_path">%1$s ‹ %2$s</string>
+    <string name="designsystem_category_path">%1$s › %2$s</string>
     <plurals name="designsystem_activity_unread">
         <item quantity="zero">غير مقروء: %d</item>
         <item quantity="one">غير مقروء: %d</item>

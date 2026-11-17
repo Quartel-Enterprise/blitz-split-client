@@ -198,7 +198,7 @@
     <string name="split_bill_default_without">بدون %s</string>
     <string name="split_bill_default_shares_two">%1$d إلى %2$d</string>
     <string name="split_bill_default_percent">%d%%</string>
-    <string name="split_bill_hint_default">الافتراضي موجود في تعديل المجموعة ‹ التقسيم الافتراضي. الفواتير المضافة سابقًا لا تتغير.</string>
+    <string name="split_bill_hint_default">الافتراضي موجود في تعديل المجموعة › التقسيم الافتراضي. الفواتير المضافة سابقًا لا تتغير.</string>
     <string name="split_bill_mode_items">العناصر</string>
     <plurals name="split_bill_mode_items_among">
         <item quantity="zero">حسب العناصر بين %d</item>
