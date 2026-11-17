@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">קבוצה חדשה</string>
+    <string name="create_group_close">סגירה</string>
+    <string name="create_group_create">יצירה</string>
+    <string name="create_group_change_color">שינוי צבע הקבוצה</string>
+    <string name="create_group_name_label">שם הקבוצה</string>
+    <string name="create_group_type_label">סוג הקבוצה</string>
+    <string name="create_group_members_title">מי בקבוצה</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d אדם</item>
+        <item quantity="two">%d אנשים</item>
+        <item quantity="other">%d אנשים</item>
+    </plurals>
+    <string name="create_group_me">אני</string>
+    <string name="create_group_remove_member">הסרת %s</string>
+    <string name="create_group_add_placeholder">הוספה לפי שם</string>
+    <string name="create_group_add">הוספה</string>
+    <string name="create_group_no_app_notice">אף אחד לא צריך את האפליקציה כרגע. כבר אפשר להוסיף הוצאות לכולם ולשלוח את הקישור אחר כך.</string>
+    <string name="create_group_currency">מטבע ברירת מחדל</string>
+    <string name="create_group_currency_caption">חשבונות חדשים מתחילים במטבע הזה; כל חשבון יכול להשתמש במטבע אחר.</string>
+    <string name="create_group_save_error">לא ניתן היה לשמור את הקבוצה. כדאי לנסות שוב.</string>
+    <string name="create_group_photo">תמונת הקבוצה</string>
+    <string name="create_group_take_photo">צילום תמונה</string>
+    <string name="create_group_choose_photo">בחירת תמונה</string>
+    <string name="create_group_remove_photo">הסרת התמונה</string>
+    <string name="create_group_photo_error">לא ניתן היה להשתמש בתמונה הזו. כדאי לנסות תמונה אחרת.</string>
+</resources>

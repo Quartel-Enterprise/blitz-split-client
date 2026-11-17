@@ -26,6 +26,7 @@ enum class AppLanguage(
     KOREAN("ko"),
     HINDI("hi"),
     ARABIC("ar"),
+    HEBREW("he"),
     ;
 
     /*
@@ -46,14 +47,17 @@ enum class AppLanguage(
         // Why: Android still names Indonesian by its legacy code "in" (values-in), so a tag read from it may carry it.
         private const val LEGACY_INDONESIAN = "in"
 
+        // Why: Android also names Hebrew by its legacy code "iw" (values-iw), and Java's Locale still hands it out.
+        private const val LEGACY_HEBREW = "iw"
+
         private const val LATIN_AMERICA = "419"
 
         private const val UKRAINE = "UA"
 
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
-         * Ukrainian, Korean, Hindi, Arabic or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL,
-         * nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, en-GB), SYSTEM for none or any other. Portuguese is two
+         * Ukrainian, Korean, Hindi, Arabic, Hebrew or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH,
+         * pl-PL, nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, he-IL or the legacy iw-IL, en-GB), SYSTEM for none or any other. Portuguese is two
          * entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every
          * other tag (es, es-MX, es-419…) the neutral Latin-American one.
          */
@@ -88,6 +92,12 @@ enum class AppLanguage(
             ?.substringBefore('-')
             ?.substringBefore('_')
             ?.lowercase()
-            ?.let { if (it == LEGACY_INDONESIAN) INDONESIAN.tag else it }
+            ?.let {
+                when (it) {
+                    LEGACY_INDONESIAN -> INDONESIAN.tag
+                    LEGACY_HEBREW -> HEBREW.tag
+                    else -> it
+                }
+            }
     }
 }

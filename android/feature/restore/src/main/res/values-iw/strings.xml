@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">החזרת הקבוצות שלך</string>
+    <string name="restore_subtitle">הייתה בעבר התחברות עם חשבון משתמש? פשוט מתחברים שוב. אם לא, אפשר להשתמש בקוד השחזור או בקוד ה-QR מהמכשיר הקודם.</string>
+    <string name="restore_no_connection_title">אין חיבור</string>
+    <string name="restore_no_connection_body">התחברות עם חשבון משתמש או עם קוד דורשת אינטרנט כדי להוריד את הקבוצות שלך. מה שהוקלד נשמר.</string>
+    <string name="restore_code_label">או שימוש בקוד השחזור</string>
+    <string name="restore_code_hint">12 המילים לפי הסדר. הדבקה של כולן בשדה אחד ממלאת את כל השדות.</string>
+    <string name="restore_scan_qr_title">סריקת קוד ה-QR מהמכשיר הקודם</string>
+    <string name="restore_scan_qr_body">שם: פרופיל › קוד שחזור › הצגת קוד QR</string>
+    <string name="restore_recover">שחזור</string>
+    <string name="restore_try_again">ניסיון חוזר</string>
+    <string name="restore_start_fresh">התחלה מחדש במכשיר הזה</string>
+    <string name="restore_error_invalid_code">הקוד לא נמצא. כדאי לבדוק את המילים ואת הסדר שלהן, ולנסות שוב.</string>
+    <string name="restore_error_too_many_attempts">יותר מדי ניסיונות. כדאי לחכות כמה דקות ולנסות שוב.</string>
+    <string name="restore_error_sign_in_failed">לא ניתן היה להתחבר כרגע. כדאי לנסות שוב.</string>
+    <string name="restore_error_unknown">משהו השתבש. כדאי לנסות שוב.</string>
+</resources>

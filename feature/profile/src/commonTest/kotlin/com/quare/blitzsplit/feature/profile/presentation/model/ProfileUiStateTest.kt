@@ -35,6 +35,7 @@ class ProfileUiStateTest {
             AppLanguage.KOREAN -> listOf("한국어", "Korean")
             AppLanguage.HINDI -> listOf("हिन्दी", "Hindi")
             AppLanguage.ARABIC -> listOf("العربية", "Arabic")
+            AppLanguage.HEBREW -> listOf("עברית", "Hebrew")
         }
     }
 
@@ -67,6 +68,7 @@ class ProfileUiStateTest {
         AppLanguage.KOREAN,
         AppLanguage.HINDI,
         AppLanguage.ARABIC,
+        AppLanguage.HEBREW,
     )
 
     @Test
@@ -643,6 +645,7 @@ class ProfileUiStateTest {
                 AppLanguage.KOREAN,
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
+                AppLanguage.HEBREW,
             ),
             options,
         )
@@ -678,6 +681,7 @@ class ProfileUiStateTest {
                 AppLanguage.KOREAN,
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
+                AppLanguage.HEBREW,
             ),
             options,
         )

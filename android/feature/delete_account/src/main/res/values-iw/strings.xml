@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">מחיקת חשבון המשתמש</string>
+    <string name="delete_account_offline_title">אין אינטרנט.</string>
+    <string name="delete_account_offline_body">מחיקת חשבון המשתמש דורשת חיבור לאינטרנט. כדאי להתחבר ולנסות שוב.</string>
+    <string name="delete_account_heading">למחוק את חשבון המשתמש ואת הנתונים שלך?</string>
+    <string name="delete_account_deleted_title">מה נמחק</string>
+    <string name="delete_account_deleted_profile">הפרופיל שלך (שם, תמונה וצבע)</string>
+    <string name="delete_account_deleted_keys">מפתחות ה-Pix וה-Bitcoin שלך</string>
+    <string name="delete_account_deleted_provider">הקישור לחשבון ה-%1$s שלך</string>
+    <string name="delete_account_deleted_recovery_code">קוד השחזור שלך</string>
+    <string name="delete_account_deleted_device">עותק הנתונים שלך במכשיר הזה</string>
+    <string name="delete_account_kept_title">מה נשאר בקבוצות שלך</string>
+    <string name="delete_account_kept_groups">הקבוצות, עם החשבונות והתשלומים שלהן, עבור שאר המשתתפים</string>
+    <string name="delete_account_kept_member">השם שלך בכל קבוצה, בלי חשבון משתמש מקושר</string>
+    <string name="delete_account_kept_comments">התגובות שלך והתמונות שהוספת, תחת השם שלך</string>
+    <string name="delete_account_export">ייצוא הנתונים שלי קודם</string>
+    <string name="delete_account_confirm">ברור לי שאי אפשר לבטל את זה</string>
+    <string name="delete_account_delete">מחיקת חשבון המשתמש</string>
+    <string name="delete_account_cancel">ביטול</string>
+    <string name="delete_account_failed">לא ניתן היה למחוק את חשבון המשתמש. כדאי לנסות שוב.</string>
+</resources>

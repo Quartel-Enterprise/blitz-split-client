@@ -110,6 +110,11 @@ internal val storeLocales = listOf(
         playLocale = "ar",
     ),
     StoreLocale(
+        tag = "he",
+        language = "he",
+        playLocale = "iw-IL",
+    ),
+    StoreLocale(
         tag = "ja",
         language = "ja",
         playLocale = "ja",

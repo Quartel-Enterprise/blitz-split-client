@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">מפתח Pix חדש</string>
+    <string name="payment_key_title_pix_edit">עריכת מפתח Pix</string>
+    <string name="payment_key_title_bitcoin_new">מפתח Bitcoin חדש</string>
+    <string name="payment_key_title_bitcoin_edit">עריכת מפתח Bitcoin</string>
+    <string name="payment_key_save">שמירה</string>
+
+    <string name="payment_key_pix_intro">מי שמשלם לך רואה את המפתח הזה בסגירת החשבון. איזה סוג מפתח?</string>
+    <string name="payment_key_pix_question">איזה סוג מפתח?</string>
+    <string name="payment_key_pix_explanation">מי שמשלם לך רואה את המפתח הזה בסגירת החשבון.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">טלפון</string>
+    <string name="payment_key_type_email">אימייל</string>
+    <string name="payment_key_type_random">אקראי</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">מספר נייד עם קידומת</string>
+    <string name="payment_key_label_email">אימייל</string>
+    <string name="payment_key_label_random">מפתח אקראי</string>
+
+    <string name="payment_key_bitcoin_intro">איך לקבל את התשלום?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">מהיר, עמלה נמוכה</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">על הבלוקצ׳יין</string>
+    <string name="payment_key_label_lightning">Lightning Address או LNURL</string>
+    <string name="payment_key_label_onchain">כתובת Bitcoin</string>
+
+    <string name="payment_key_paste">הדבקה</string>
+
+    <string name="payment_key_hint_cpf">פורמט 000.000.000-00</string>
+    <string name="payment_key_hint_phone">פורמט +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">פורמט name@domain.com</string>
+    <string name="payment_key_hint_random">32 אותיות ומספרים, כפי שהבנק מציג אותו</string>
+    <string name="payment_key_hint_lightning">למשל name@wallet.com או LNURL1…</string>
+    <string name="payment_key_hint_onchain">כתובת mainnet שמתחילה ב-bc1q או ב-bc1p</string>
+
+    <string name="payment_key_valid_cpf">פורמט 000.000.000-00 · ספרות הביקורת תואמות</string>
+    <string name="payment_key_valid_phone">פורמט +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">פורמט name@domain.com</string>
+    <string name="payment_key_valid_random">מפתח אקראי זוהה (32 תווים)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address תקינה</string>
+    <string name="payment_key_valid_lnurl">LNURL תקין</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF לא תקין: ספרות הביקורת לא תואמות.</string>
+    <string name="payment_key_error_invalid_phone">מספר נייד חסר: יש להזין קידומת ו-9 ספרות, שמתחילות ב-9.</string>
+    <string name="payment_key_error_invalid_email">אימייל חסר: חסר הדומיין, כמו .com או .com.br.</string>
+    <string name="payment_key_error_invalid_random">מפתח אקראי חסר: יש בו 32 אותיות ומספרים.</string>
+    <string name="payment_key_error_invalid_lightning">זו לא Lightning Address (name@wallet) וגם לא LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">זו חשבונית Lightning (lnbc…): היא משולמת פעם אחת ופג תוקפה. יש להדביק Lightning Address או LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">כתובת לא תקינה. יש להשתמש בכתובת mainnet מסוג bc1q או bc1p.</string>
+    <string name="payment_key_error_testnet_address">זו כתובת testnet (tb1…). כאן עובד רק Bitcoin mainnet, עם כתובות bc1…</string>
+    <string name="payment_key_error_already_saved">המפתח הזה כבר קיים אצלך.</string>
+
+    <string name="payment_key_switched_to_onchain">זו כתובת on-chain, אז עברנו ל-On-chain.</string>
+    <string name="payment_key_switched_to_lightning">זו Lightning Address, אז עברנו ל-Lightning.</string>
+    <string name="payment_key_cpf_notice">מי שמשלם לך רואה את ה-CPF המלא שלך. כדי לא לשתף אותו, אפשר להשתמש במפתח טלפון, אימייל או אקראי.</string>
+    <string name="payment_key_held_notice">אפשר להחזיק רק מפתח Pix אחד מהסוג הזה, ולכן זה המפתח שנשמר. אפשר לשנות אותו כאן.</string>
+
+    <string name="payment_key_accepted_title">אנחנו מקבלים</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">מפתח Pix ברירת מחדל</string>
+    <string name="payment_key_default_bitcoin_title">מפתח Bitcoin ברירת מחדל</string>
+    <string name="payment_key_default_pix_detail">מוצג ראשון בסגירת החשבון.</string>
+    <string name="payment_key_default_bitcoin_detail">מוצג ראשון כשמישהו משלם ב-BTC.</string>
+    <string name="payment_key_default_now">כרגע: %1$s.</string>
+    <string name="payment_key_default_locked_editing">כדי לשנות את זה, יש להגדיר מפתח אחר כברירת המחדל.</string>
+    <string name="payment_key_default_locked_new">המפתח הראשון שלך מהסוג הזה הוא ברירת המחדל.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">טלפון</string>
+    <string name="payment_key_default_type_email">אימייל</string>
+    <string name="payment_key_default_type_random">מפתח אקראי</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split לא מעביר כסף: התשלום נעשה באפליקציית הבנק. כדאי לוודא שהמפתח רשום על שמך.</string>
+    <string name="payment_key_footer_bitcoin">בסגירת החשבון נציג את הסכום ב-sats לפי השער הנוכחי. זו רק הערכה: הסכום מאושר בארנק של המשלם.</string>
+
+    <string name="payment_key_delete">מחיקת המפתח</string>
+    <string name="payment_key_delete_title">למחוק את המפתח הזה?</string>
+    <string name="payment_key_delete_body">מי שחייב לך כסף כבר לא יראה אותו בסגירת החשבון.</string>
+    <string name="payment_key_delete_confirm">מחיקה</string>
+</resources>

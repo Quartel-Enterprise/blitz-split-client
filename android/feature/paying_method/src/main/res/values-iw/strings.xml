@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">אמצעי תשלום חדש</string>
+    <string name="paying_method_edit_title">עריכת אמצעי התשלום</string>
+    <string name="paying_method_type">סוג</string>
+    <string name="paying_method_name">שם</string>
+    <string name="paying_method_name_optional">שם (לא חובה)</string>
+    <string name="paying_method_color">צבע</string>
+    <string name="paying_method_default">אמצעי ברירת מחדל</string>
+    <string name="paying_method_default_hint">חשבונות חדשים שמשולמים על ידך מתחילים איתו.</string>
+    <string name="paying_method_delete">מחיקת אמצעי התשלום</string>
+    <string name="paying_method_delete_title">למחוק את אמצעי התשלום הזה?</string>
+    <string name="paying_method_delete_body">חשבונות שסומנו בו כבר לא יציגו אותו.</string>
+    <string name="paying_method_delete_confirm">מחיקה</string>
+    <string name="paying_method_save">שמירה</string>
+</resources>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">אין מונחים</string>
+    <string name="category_map_title">מפת קטגוריות</string>
+    <string name="category_map_search">חיפוש מונחים</string>
+    <string name="category_map_add">הוספת מונח</string>
+    <string name="category_map_more">אפשרויות נוספות</string>
+    <string name="category_map_restore">שחזור ברירת המחדל</string>
+    <string name="category_map_back">חזרה</string>
+    <string name="category_map_intro">כשבכותרת של חשבון יש אחת מהמילים האלה, הקטגוריה שלו נקבעת לבד. \"Uber הביתה\" נכנס לתחבורה.</string>
+    <string name="category_map_intro_offline">המפה עובדת אופליין: שינויים חלים מיד במכשיר הזה ומגיעים למכשירים האחרים שלך כשהחיבור חוזר.</string>
+    <string name="category_map_device_only">המפה שלך נשמרת רק במכשיר הזה. כדי להעביר אותה למכשירים האחרים שלך, אפשר להתחבר עם Google או Apple בפרופיל.</string>
+    <string name="category_map_open_profile">פתיחת הפרופיל</string>
+    <string name="category_map_longest_wins">כששני מונחים מתאימים לכותרת, הארוך מביניהם קובע.</string>
+    <string name="category_map_no_result">אין מונח עם \"%1$s\"</string>
+    <string name="category_map_no_result_body">אפשר להוסיף אותו, וחשבונות עם המילה הזו בכותרת יגיעו עם הקטגוריה הנכונה.</string>
+    <string name="category_map_add_query">הוספת \"%1$s\"</string>
+    <string name="category_map_empty_title">המפה שלך ריקה</string>
+    <string name="category_map_empty_body">בלי מונחים, הקטגוריה לא נקבעת לפי הכותרת: בוחרים אותה בכל חשבון.</string>
+    <string name="category_map_group_category"> · הקטגוריה של %1$s</string>
+    <string name="category_map_only_main">רק %1$s</string>
+    <string name="category_map_only_in_group">רק ב-%1$s</string>
+    <string name="category_map_no_terms_yet">עדיין אין מונחים.</string>
+    <string name="category_map_add_in">הוספת מונח ב-%1$s</string>
+    <string name="category_map_tip">אפשר להקיש על מונח כדי לשנות את הקטגוריה שלו או להסיר אותו. ההתאמה היא למילה שלמה, בלי תלות בסימנים דיאקריטיים או בגודל האותיות.</string>
+    <string name="category_map_queued">בהמתנה</string>
+    <string name="category_map_term_action">%1$s, %2$s. עריכה</string>
+    <string name="category_map_new_term">מונח חדש</string>
+    <string name="category_map_edit_term">עריכת מונח</string>
+    <string name="category_map_term_label">מילה או ביטוי</string>
+    <string name="category_map_term_help">התאמה למילה שלמה, בלי תלות בסימנים דיאקריטיים או בגודל האותיות.</string>
+    <string name="category_map_term_help_app">מונח של האפליקציה. שחזור ברירת המחדל מחזיר אותו כמו שהיה.</string>
+    <string name="category_map_term_duplicate">\"%1$s\" כבר משויך ל-%2$s. לכל מונח יש קטגוריה אחת.</string>
+    <string name="category_map_term_too_short">לפחות 2 אותיות.</string>
+    <string name="category_map_term_too_long">לכל היותר 30 אותיות.</string>
+    <string name="category_map_term_invalid">רק אותיות, ספרות ורווחים.</string>
+    <string name="category_map_category">קטגוריה</string>
+    <string name="category_map_category_help">זו יכולה להיות קטגוריה או תת-קטגוריה.</string>
+    <string name="category_map_category_help_edit">שינוי כאן מעביר את המונח לקטגוריה אחרת.</string>
+    <string name="category_map_category_help_move">ההעברה מוציאה את המונח מ-%1$s.</string>
+    <string name="category_map_example">דוגמה</string>
+    <string name="category_map_example_move">אחרי ההעברה</string>
+    <string name="category_map_remove">הסרה</string>
+    <string name="category_map_cancel">ביטול</string>
+    <string name="category_map_save">שמירה</string>
+    <string name="category_map_move_to">העברה ל-%1$s</string>
+    <string name="category_map_removed">\"%1$s\" הוסר מהמפה</string>
+    <string name="category_map_undo">ביטול הפעולה</string>
+    <string name="category_map_restore_title">לשחזר את מפת ברירת המחדל?</string>
+    <string name="category_map_restore_body">60 המונחים של האפליקציה חוזרים כמו שהיו, כולל אלה שהוסרו או הועברו.</string>
+    <string name="category_map_restore_own_one">המונח שיצרת, \"%1$s\", נשאר.</string>
+    <string name="category_map_restore_confirm">שחזור</string>
+    <string name="category_map_save_error">לא ניתן היה לשמור את המפה. כדאי לנסות שוב.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d מונח</item>
+        <item quantity="two">%d מונחים</item>
+        <item quantity="other">%d מונחים</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d תת-קטגוריה</item>
+        <item quantity="two">%d תת-קטגוריות</item>
+        <item quantity="other">%d תת-קטגוריות</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d מונח עם \"%2$s\"</item>
+        <item quantity="two">%1$d מונחים עם \"%2$s\"</item>
+        <item quantity="other">%1$d מונחים עם \"%2$s\"</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">אופליין · %d שינוי בהמתנה</item>
+        <item quantity="two">אופליין · %d שינויים בהמתנה</item>
+        <item quantity="other">אופליין · %d שינויים בהמתנה</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d המונחים שיצרת נשארים.</item>
+        <item quantity="two">%d המונחים שיצרת נשארים.</item>
+        <item quantity="other">%d המונחים שיצרת נשארים.</item>
+    </plurals>
+    <string name="category_map_new_category">קטגוריה חדשה</string>
+    <string name="category_map_new_subcategory_in">תת-קטגוריה חדשה ב-%s</string>
+    <string name="category_map_edit_category">עריכת %s</string>
+    <string name="category_map_category_group">קבוצה</string>
+    <string name="category_map_change_color">שינוי הצבע של %1$s</string>
+    <string name="category_map_restore_color">שחזור הצבע</string>
+    <string name="category_map_color_done">סיום</string>
+</resources>

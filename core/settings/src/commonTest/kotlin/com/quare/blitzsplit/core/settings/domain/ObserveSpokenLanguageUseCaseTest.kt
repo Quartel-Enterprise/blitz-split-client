@@ -125,6 +125,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.KOREAN,
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
+                AppLanguage.HEBREW,
             )
 
             // When
@@ -151,6 +152,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "ko",
                     "hi",
                     "ar",
+                    "he",
                 ),
                 spoken,
             )
@@ -176,14 +178,32 @@ class ObserveSpokenLanguageUseCaseTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
         val devices =
-            listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar")
+            listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "he")
 
         // When
         val spoken = devices.map { spokenOn(it) }
 
         // Then
         assertEquals(
-            listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar"),
+            listOf(
+                "en",
+                "pt",
+                "es",
+                "fr",
+                "de",
+                "it",
+                "pl",
+                "nl",
+                "ja",
+                "tr",
+                "id",
+                "ru",
+                "uk",
+                "ko",
+                "hi",
+                "ar",
+                "he",
+            ),
             spoken,
         )
     }
@@ -214,6 +234,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "ko-KR",
                 "hi-IN",
                 "ar-EG",
+                "iw-IL",
             )
 
             // When
@@ -242,6 +263,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "ko",
                     "hi",
                     "ar",
+                    "he",
                 ),
                 spoken,
             )
