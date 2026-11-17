@@ -11,7 +11,8 @@ class GroupCurrency private constructor(
     private val regions: Set<String>,
     /*
      * Why: the digits of the minor unit, as ISO 4217 has them, so an amount is stored as a whole number of it. The
-     * rupiah is the exception: ISO gives it 2, but no price or receipt in Indonesia shows sen, so it has none.
+     * rupiah and the New Taiwan dollar are the exceptions: ISO gives each 2, but no price or receipt in Indonesia or
+     * Taiwan shows cents, so they have none.
      */
     val fractionDigits: Int = 2,
     // Why: "Criptomoedas" in the picker, and shown with only the decimals an amount needs.

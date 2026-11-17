@@ -1,7 +1,7 @@
 import type { MessageKey } from './en'
 
 /**
- * Simplified Chinese (mainland China) for every `zh` browser language but the Traditional ones (zh-Hant, zh-TW, zh-HK, zh-MO), which read English until the app has them, talking to the user as
+ * Simplified Chinese (mainland China) for every `zh` browser language but the Traditional ones (zh-Hant, zh-TW, zh-HK, zh-MO), which read `zhHant`, talking to the user as
  * "你". Typed by the English keys, so a key missing here, or one English doesn't have, fails the type check. Chinese
  * writes no space between words nor around a name or a number the code fills in, and its plurals have one form.
  */

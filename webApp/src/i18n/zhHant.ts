@@ -846,7 +846,7 @@ export const zhHant: Record<MessageKey, string> = {
   profile_languageHindi: '印地文',
   profile_languageArabic: '阿拉伯文',
   profile_languageHebrew: '希伯來文',
-  profile_languageChineseSimplified: '簡體中文',
+  profile_languageChineseSimplified: '中文（簡體）',
   profile_languageThai: '泰文',
   profile_languageVietnamese: '越南文',
   profile_languageChineseTraditional: '中文（繁體）',

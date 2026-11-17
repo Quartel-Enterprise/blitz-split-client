@@ -15,10 +15,13 @@ class GetLegalLanguageUseCase(
 
     override suspend fun invoke(): String {
         val tag = observeAppLanguage().first().tag ?: deviceLanguage()
-        // Why: a Traditional Chinese tag reads Taiwan's pages, "zh-Hant", the bare "zh" being Simplified's.
+        /*
+         * Why: an app language reads its own pages (Traditional Chinese's "zh-Hant", the bare "zh" being Simplified's),
+         * any other its bare code.
+         */
         val language = AppLanguage
             .fromTag(tag)
-            .takeIf { it == AppLanguage.CHINESE_TRADITIONAL }
+            .takeIf { it != AppLanguage.SYSTEM }
             ?.spokenCode
             ?: AppLanguage.languageOf(tag)
         return language?.takeIf { languagePattern.matches(it) } ?: DEFAULT_LANGUAGE

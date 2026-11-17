@@ -16,7 +16,8 @@ private val unspacedLanguages = setOf(
  * Why: a sentence the code joins from pieces ("Ana" + "changed the category", two sentences of a detail) puts a space
  * between them, but Japanese and Chinese write them with none ("Anaがカテゴリを変更しました") and end a sentence with
  * "。", not ".". Hindi ends it with its danda, "।", and Thai with nothing, the space between two being its stop. Read
- * through `AppLanguage`, so both Chinese, whichever tag the device names them by. Same rule
+ * through `AppLanguage`, so both Chinese are unspaced whichever tag the device names them by (zh-TW, zh-Hant-HK,
+ * zh-CN…). Same rule
  * as the web's `wordGap` and `fullStop`.
  */
 @Composable
