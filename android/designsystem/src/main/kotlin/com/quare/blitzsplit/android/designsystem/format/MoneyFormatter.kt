@@ -53,8 +53,10 @@ class MoneyFormatter(
 
     private val plainFormats = mutableMapOf<Int, NumberFormat>()
 
-    // Why: the symbol a field shows before what is typed in it.
-    val symbol: String = when {
+    // Why: the symbol a field shows before what is typed in it, whole in a right to left language ("US$", not "$US").
+    val symbol: String by lazy { bareSymbol.toIsolatedIf(isolates) }
+
+    private val bareSymbol: String = when {
         isSats -> satsText.symbol
 
         currency == GroupCurrency.BTC -> BITCOIN_SYMBOL
@@ -117,10 +119,19 @@ class MoneyFormatter(
 
     // Why: "+R$ 600" and "−R$ 118,50", with the typographic minus of the design, the sign inside the amount's isolate.
     fun toSignedText(amountMinor: Long): String = when {
-        amountMinor > 0 -> PLUS_SIGN + toBareText(amountMinor)
-        amountMinor < 0 -> MINUS_SIGN + toBareText(-amountMinor)
+        amountMinor > 0 -> toBareText(amountMinor).withSign(PLUS_SIGN)
+        amountMinor < 0 -> toBareText(-amountMinor).withSign(MINUS_SIGN)
         else -> toBareText(amountMinor)
     }.toIsolatedIf(isolates)
+
+    /*
+     * Why: the sign goes before the amount, but right before its digits in a right to left language, whose pattern
+     * starts with a right to left mark ("‏141.66 R$") that would part a sign put first from the number it signs.
+     */
+    private fun String.withSign(sign: String): String {
+        val digit = indexOfFirst(Char::isDigit)
+        return if (!isolates || digit < 0) sign + this else substring(0, digit) + sign + substring(digit)
+    }
 
     private fun Long.toDecimal(): BigDecimal = BigDecimal.valueOf(this, if (isSats) 0 else currency.fractionDigits)
 
@@ -133,7 +144,7 @@ class MoneyFormatter(
              */
             if ((writesOwnSymbol || isolates) && this is DecimalFormat) {
                 decimalFormatSymbols = decimalFormatSymbols.apply {
-                    currencySymbol = symbol.toIsolatedIf(isolates)
+                    currencySymbol = symbol
                 }
             }
             minimumFractionDigits = fractionDigits

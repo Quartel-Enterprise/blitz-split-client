@@ -45,7 +45,7 @@ struct AmountField: View {
                 }
                 .pickerStyle(.inline)
             } label: {
-                Text(verbatim: currency.symbol)
+                Text(verbatim: currency.fieldSymbol)
                     .foregroundStyle(.secondary)
                     .contentShape(.rect)
             }
@@ -57,7 +57,7 @@ struct AmountField: View {
             .accessibilityLabel(Text("Currency"))
             .accessibilityValue(Text(verbatim: currency.code))
         } else {
-            Text(verbatim: currency.symbol)
+            Text(verbatim: currency.fieldSymbol)
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
         }

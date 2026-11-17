@@ -355,7 +355,7 @@ private struct DefaultSplitPersonRow: View {
             }
         case .income:
             HStack(spacing: 4) {
-                Text(verbatim: model.state.currency.symbol)
+                Text(verbatim: model.state.currency.fieldSymbol)
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
                 numberField(model.income(of: person.id), prompt: model.state.currency.zeroPlaceholder, width: 110) {

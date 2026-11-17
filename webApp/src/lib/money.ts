@@ -1,5 +1,5 @@
 import { getKnownCurrencyCodes } from 'blitzsplit-shared'
-import { isolated, t } from '@/i18n'
+import { direction, isolated, t } from '@/i18n'
 import { uiTag } from '@/lib/currency'
 
 // Why: lists redraw every row on each keystroke, and building the Intl formatters each time is costly.
@@ -134,9 +134,12 @@ function withIsolatedSymbol(parts: Intl.NumberFormatPart[], symbol?: string): st
 }
 
 function withSign(minor: number, amount: string): string {
-  if (minor > 0) return `+${amount}`
-  if (minor < 0) return `−${amount}`
-  return amount
+  if (minor === 0) return amount
+  const sign = minor > 0 ? '+' : '−'
+  // Why: right before the digits in a right-to-left language, whose pattern starts with a right-to-left mark
+  // ("‏141.66 R$") that would part a sign put first from the number it signs.
+  const digit = direction === 'rtl' ? amount.search(/\d/) : -1
+  return digit < 0 ? `${sign}${amount}` : `${amount.slice(0, digit)}${sign}${amount.slice(digit)}`
 }
 
 /**

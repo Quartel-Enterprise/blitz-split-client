@@ -1091,7 +1091,7 @@ private struct PayerAmountField: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Text(verbatim: currency.symbol)
+            Text(verbatim: currency.fieldSymbol)
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
             // "How much Pierre paid" reads better to VoiceOver than "How much You paid"

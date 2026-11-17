@@ -370,7 +370,7 @@ private struct ItemPersonRowView: View {
         switch editor.mode {
         case .amount:
             HStack(spacing: 4) {
-                Text(verbatim: editor.currency.symbol)
+                Text(verbatim: editor.currency.fieldSymbol)
                     .foregroundStyle(.secondary)
                     .accessibilityHidden(true)
                 field(prompt: editor.currency.zeroPlaceholder, width: 96, label: Text("Amount of \(person.name)"))
@@ -680,7 +680,7 @@ struct PhoneItemEditor: View {
             HStack {
                 Text("Price of each")
                 Spacer()
-                Text(verbatim: editor.currency.symbol)
+                Text(verbatim: editor.currency.fieldSymbol)
                     .foregroundStyle(.secondary)
                 KeptTextField(text: model.itemPrice, prompt: Text(verbatim: editor.currency.zeroPlaceholder)) {
                     Text("Price of each")

@@ -80,7 +80,13 @@ extension GroupCurrency {
     func formatSigned(_ minor: Int64) -> String {
         let amount = unisolated(minor == .min ? .max : abs(minor))
         if minor == 0 { return RightToLeft.isolated(amount) }
-        return RightToLeft.isolated(minor < 0 ? "−\(amount)" : "+\(amount)")
+        let sign = minor < 0 ? "−" : "+"
+        // Right before the digits in a right-to-left language, whose pattern starts with a right-to-left mark
+        // ("‏141.66 R$") that would part a sign put first from the number it signs
+        guard RightToLeft.isAppLanguage, let digit = amount.firstIndex(where: \.isNumber) else {
+            return RightToLeft.isolated(sign + amount)
+        }
+        return RightToLeft.isolated(String(amount[..<digit]) + sign + String(amount[digit...]))
     }
 
     /// "120,50" or "120.50", with no symbol: where the currency is already on the same line ("you get 120 and owe
@@ -111,6 +117,11 @@ extension GroupCurrency {
         decimal(of: minor).formatted(
             .number.precision(.fractionLength(shownDigits(of: minor))).locale(AppNumbers.locale),
         )
+    }
+
+    /// `symbol` whole in a right-to-left language, as an amount field shows it: "US$", never "$US".
+    var fieldSymbol: String {
+        RightToLeft.isolated(symbol)
     }
 
     /// The symbol in front of an amount field ("R$", "US$" or "$", as the device's language names it; "₿", "Ξ", or
