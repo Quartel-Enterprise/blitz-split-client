@@ -15,7 +15,6 @@ import com.quare.blitzsplit.core.model.GroupCurrency
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.text.FieldPosition
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
@@ -111,13 +110,17 @@ class MoneyFormatter(
         val text = formatted.toString()
         if (!isolates) return text
         // Why: the symbol in an isolate of its own in a right to left language, as toText's ("US$", never "$US").
-        val position = FieldPosition(android.icu.text.NumberFormat.Field.CURRENCY)
-        val symbolText = if (formatted.nextFieldPosition(position)) {
-            text.substring(0, position.beginIndex) +
-                text.substring(position.beginIndex, position.endIndex).toIsolatedIf(true) +
-                text.substring(position.endIndex)
-        } else {
+        val characters = formatted.toCharacterIterator()
+        val currencyField = android.icu.text.NumberFormat.Field.CURRENCY
+        val start = (characters.beginIndex until characters.endIndex).firstOrNull { index ->
+            characters.setIndex(index)
+            characters.getAttribute(currencyField) != null
+        }
+        val symbolText = if (start == null) {
             text
+        } else {
+            val end = characters.getRunLimit(currencyField)
+            text.substring(0, start) + text.substring(start, end).toIsolatedIf(true) + text.substring(end)
         }
         return symbolText.toIsolatedIf(true)
     }

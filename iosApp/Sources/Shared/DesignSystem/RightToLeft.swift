@@ -5,7 +5,7 @@ import SwiftUI
 /// The right-to-left languages the app may draw in: the sentences mirror, and an amount inside one keeps its own order.
 enum RightToLeft {
     /// The language codes written right to left (Arabic, Hebrew).
-    static let languageCodes: Set<String> = ["ar", "he"]
+    nonisolated static let languageCodes: Set<String> = ["ar", "he"]
 
     /// Whether the app's language (Profile › Language, or the device's) is written right to left. Read once per
     /// language (`refresh`), since every amount of a list asks.
