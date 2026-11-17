@@ -6,7 +6,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
 | `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi` (with `compileCommonMainKotlinMetadata` and the store screenshots' `compileDebugUnitTestKotlin` in the same job), `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
-| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `macosArm64Test`, `compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, and `iosSimulatorArm64Test` too on `main` and on a pull request that changes the version catalog, all skipped when the change is to the Swift app alone; both schemes of the Apple app, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
+| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `macosArm64Test`, `compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, and `iosSimulatorArm64Test` too on `main` and on a pull request that changes the version catalog, all skipped on a pull request that changes the Swift app alone; both schemes of the Apple app, each in a job of its own, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
@@ -63,11 +63,13 @@ new key. To see why a task missed, run it with `-Dorg.gradle.caching.debug=true`
 compare the lines of its key.
 
 The `apple` jobs run on `xcode-27`, GitHub's macOS image with Xcode 27 (a public preview, since the app uses the iOS 27
-SDK's APIs and `macos-26` only has Xcode 26), free for a public repository. Its tests and its app build are
-two jobs side by side, each compiling the Kotlin/Native code on its own, since two runners finish sooner than one.
+SDK's APIs and `macos-26` only has Xcode 26), free for a public repository. Its tests and each scheme of the app
+are three jobs side by side, each compiling the Kotlin/Native code on its own, since three runners finish sooner than
+one: with both schemes in one job, `apple-app` took 14 to 16 minutes whatever the change, and was the last check of
+nearly every pull request to end.
 The Gradle action fits them to the runner: it selects the image's newest Xcode, as the Mac the app is developed on
 runs, and it shrinks the Gradle and Kotlin daemons to its 7 GB of memory. Only
-`main` saves their caches, and only `apple-tests` saves the Kotlin/Native toolchain and the Gradle home, so the two jobs
+`main` saves their caches, and only `apple-tests` saves the Kotlin/Native toolchain and the Gradle home, so the jobs
 don't store the same entries twice.
 
 `apple-tests` is the slowest check of a pull request. Each module with tests links a test binary of its own for each
@@ -79,15 +81,25 @@ main and the test code for the simulator before the pull request opens, and `app
 request that changes `gradle/libs.versions.toml` runs the simulator's suite too: a library publishes its code for each
 target apart, so a bump is the change the two targets can take differently.
 
-A change to the Swift app alone skips `apple-tests`: the `changes` job, on a Linux runner, lists what the pull request
-changes, or what the push to `main` brought, and when every file is under `iosApp/` or `release-notes/`, or is
-Markdown, no input of a Gradle task of the Apple targets changed. The job would then hold a macOS runner for five
-minutes to restore its tests from the cache, and those runners are the ones a pull request waits for, up to ten minutes
-when several run. A moved file counts under both of its paths, and a diff that fails (a forced push, whose previous
-commit can't be fetched) counts as a change to the Kotlin code. A skipped check counts as passed for
-`merge-when-green`. `apple-app` always runs, and its Gradle time has a floor the cache can't lower: Kotlin/Native
-caches the link of a test binary but not the link of a framework, so each scheme links `Shared` again, two to three
-minutes each, with every module's compilation restored.
+A pull request that changes the Swift app alone skips `apple-tests`: the `changes` job, on a Linux runner, lists what
+it changes, and when every file is under `iosApp/` or `release-notes/`, or is Markdown, no input of a Gradle task of
+the Apple targets changed. The job would then hold a macOS runner for five minutes to restore its tests from the
+cache, and those runners are the ones a pull request waits for. A moved file counts under both of its paths, and a
+diff that fails counts as a change to the Kotlin code. A skipped check counts as passed for `merge-when-green`.
+`apple-app` always runs, and its Gradle time has a floor the cache can't lower: Kotlin/Native caches the link of a
+test binary but not the link of a framework, so each scheme links `Shared` again, close to four minutes of Gradle
+each, with every module's compilation restored.
+
+Only five macOS jobs run at once, for the whole organization, and a pull request's jobs wait for a runner while all
+five are taken. So the `apple` runs of `main` share one concurrency group that never cancels a run once it started: a
+push that arrives meanwhile waits, and a later one takes its place in the queue. A burst of merges then runs the first
+commit and the newest, one after the other, each starting from the Gradle cache the one before saved, and that run
+holds two of the five runners at most: no pull request waits for it, so there the two schemes of `apple-app` take
+turns on one runner (`max-parallel`). With a group per commit, as `build-and-test` has on its Linux runners, every
+merge's run started at once from the same cache and recompiled what the others were compiling: over a day of twenty
+merges they took half of the macOS runners' time, and the pull requests' jobs waited up to 36 minutes for a runner.
+A run of `main` therefore stands for the pushes it replaced in the queue too, whose changes its own push doesn't
+list, so on `main` the `changes` job is skipped and `apple-tests` always runs, a push to the Swift app alone included.
 
 On `main`, a failed `apple-tests` leaves no Gradle home in the cache: the `drop-failed-cache` job deletes the entry
 the run saved. setup-gradle saves the home when the job ends, whatever its result, and every later run restores the
@@ -106,10 +118,12 @@ hours. A run the step's timeout kills saves no Kotlin/Native entry, since it may
 The job's own `timeout-minutes` of 100 only stops what hangs around the tests, with room for the caches restored
 before the longest run and saved after it.
 
-A test that fails on the simulator alone therefore shows up after the merge, as a failed `apple` run on the `main`
-commit. The `report-failure` job then opens the issue "The apple checks failed on main", assigned to whoever merged,
-or comments on it while it is open; it does the same when `apple-app` fails or a job times out there. Fix it in a pull
-request of its own, checked on the Mac, since that pull request's `apple-tests` runs macOS only:
+A test that fails on the simulator alone therefore shows up after the merge, as a failed `apple` run on `main`. The
+`report-failure` job then opens the issue "The apple checks failed on main", assigned to whoever merged the commit
+that ran, or comments on it while it is open; it does the same when `apple-app` fails or a job times out there. The
+commit the issue names is the one the run checked out, and what broke may be any push since the last `apple` run of
+`main` that completed, since a run also stands for the pushes it replaced in the queue. Fix it in a pull request of
+its own, checked on the Mac, since that pull request's `apple-tests` runs macOS only:
 `./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test`. Close the issue once `main` is green.
 
 The simulator's suites run one module at a time, while Gradle still links their test binaries side by side: the
@@ -354,7 +368,8 @@ repository's settings alone.
 - Give every job a `timeout-minutes` (see [Speed and timeouts](#speed-and-timeouts)).
 - Use per-commit `concurrency` groups on `main` if it writes a Gradle cache, per-ref otherwise: a cancelled run saves
   no cache. `codeql` is per commit too: a commit of `main` without its analysis would hand its alerts to the pull
-  requests based on it.
+  requests based on it. On the macOS runners, use `apple`'s group instead: one for every push to `main`, which doesn't
+  cancel in progress (see [Speed and timeouts](#speed-and-timeouts)).
 - If it checks the app on pull requests, start it with the `review-gate` job, with the same `pull_request` types
   and `if` as the other callers, and make its other jobs need it.
 - Set up Gradle through `./.github/actions/gradle` and pass `secrets.GRADLE_ENCRYPTION_KEY`.

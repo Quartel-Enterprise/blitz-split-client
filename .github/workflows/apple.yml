@@ -61,11 +61,16 @@ on:
 permissions:
   contents: read
 
-# A new push to a pull request cancels the run of the previous one. On main every commit has a group
-# of its own and always finishes: a cancelled run saves no Gradle cache.
+# A new push to a pull request cancels the run of the previous one. main's pushes share one group
+# that never cancels a run once it started, since a cancelled run saves no Gradle cache: a push that
+# arrives meanwhile waits, and a later one takes its place in the queue. A burst of merges then runs
+# the first and the newest, one after the other, each starting from the cache the one before saved.
+# With a group per commit they all ran side by side, every one recompiling what the others did, and
+# took half of the macOS runners' time: only five of those jobs run at once in the whole
+# organization, and the pull requests' waited for a runner behind them, up to 36 minutes.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # Waits for the opening review on the commit a pull request opened with, or was marked ready for
@@ -82,23 +87,25 @@ jobs:
       pull-requests: read
 
   # Says whether the change reaches the Kotlin code, on a Linux runner, which starts at once: a macOS
-  # runner is waited for, up to ten minutes when several pull requests run. A change to the Swift
-  # app alone (iosApp, with its Markdown docs and its release notes fragment) leaves every input of
-  # apple-tests as main built it, so the job would take a macOS runner for five minutes to restore
-  # its tests from the cache. apple-app still builds both schemes. Anything else, a diff that fails
-  # or no changed file at all counts as a change to the Kotlin code. It doesn't wait for the review
-  # gate, since it checks nothing: the answer is ready when the gate lets apple-tests ask for its
-  # runner.
+  # runner is waited for, up to ten minutes when several pull requests run. A pull request that
+  # changes the Swift app alone (iosApp, with its Markdown docs and its release notes fragment)
+  # leaves every input of apple-tests as main built it, so the job would take a macOS runner for
+  # five minutes to restore its tests from the cache. apple-app still builds both schemes. Anything
+  # else, a diff that fails or no changed file at all counts as a change to the Kotlin code. So
+  # does every push to main, where this job is skipped and apple-tests reads no answer: that run
+  # also stands for the pushes it replaced in the queue (see `concurrency` above), which its own
+  # diff wouldn't list. It doesn't wait for the review gate, since it checks nothing: the answer is
+  # ready when the gate lets apple-tests ask for its runner.
   changes:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       kotlin: ${{ steps.diff.outputs.kotlin }}
     steps:
-      # Two commits: on a pull request, GitHub's merge of it with main and main itself, its first
-      # parent; on main, the pushed commit and the one before it. Without their files: the diff
-      # below compares names, which the commits' trees hold, so no file's content is downloaded and
-      # only this workflow is written to disk.
+      # Two commits: GitHub's merge of the pull request with main and main itself, its first parent.
+      # Without their files: the diff below compares names, which the commits' trees hold, so no
+      # file's content is downloaded and only this workflow is written to disk.
       - name: Checkout code
         uses: actions/checkout@v7
         with:
@@ -108,29 +115,23 @@ jobs:
           sparse-checkout-cone-mode: false
 
       # The paths that are no input of a Gradle task of the Apple targets; Markdown is already left
-      # out of the paths that start this workflow. On main the change is the whole push, from the
-      # commit main was at, fetched here: a push of several commits (a rebase merge) isn't judged by
-      # its last one. A commit that can't be fetched (a forced push) fails the diff, and the tests
-      # run. --no-renames lists both paths of a moved file, so one moved out of a Kotlin module still
-      # counts, and without core.quotePath a name with an accent would come quoted and match nothing.
+      # out of the paths that start this workflow. --no-renames lists both paths of a moved file, so
+      # one moved out of a Kotlin module still counts, and without core.quotePath a name with an
+      # accent would come quoted and match nothing.
       - name: Look for a change outside the Swift app
         id: diff
-        env:
-          BASE: ${{ github.event_name == 'push' && github.event.before || 'HEAD^1' }}
         run: |
-          if [ "$GITHUB_EVENT_NAME" = push ]; then
-            git fetch --quiet --no-tags --depth=1 origin "$BASE" || true
-          fi
           kotlin=true
-          if files=$(git -c core.quotePath=false diff --name-only --no-renames "$BASE" HEAD) &&
+          if files=$(git -c core.quotePath=false diff --name-only --no-renames HEAD^1 HEAD) &&
             [ -n "$files" ] && ! grep -q -v -E '^(iosApp|release-notes)/|\.md$' <<< "$files"; then
             kotlin=false
           fi
           echo "kotlin=$kotlin" >> "$GITHUB_OUTPUT"
 
-  # The tests and the app build run side by side: each compiles the Kotlin/Native code on its own,
-  # and two runners finish sooner than one doing both. apple-tests runs unless `changes` said the
-  # Kotlin code is untouched: when that job fails, its output is empty and the tests run.
+  # The tests and the app's two builds run side by side: each compiles the Kotlin/Native code on its
+  # own, and three runners finish sooner than one doing it all. apple-tests runs unless `changes`
+  # said the Kotlin code is untouched: when that job fails or is skipped (on main), its output is
+  # empty and the tests run.
   apple-tests:
     needs: [review-gate, changes]
     if: >-
@@ -250,14 +251,30 @@ jobs:
           path: ~/.konan
           key: ${{ steps.konan.outputs.key }}
 
+  # One job per scheme, side by side. Each scheme's build phase builds the Shared framework with
+  # Gradle first, which links it again for its target (close to four minutes, even with two modules
+  # to compile and the rest from the cache), then compiles the Swift app. In one job the two builds
+  # ran one after the other, 14 to 16 minutes that were the last check of nearly every pull request
+  # to end.
   apple-app:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
     # Xcode 26 only.
     runs-on: xcode-27
-    # A hung simulator or build would otherwise hold one of the few macOS runners for six hours.
-    timeout-minutes: 60
+    # A hung build would otherwise hold one of the few macOS runners for six hours.
+    timeout-minutes: 40
+    strategy:
+      # One scheme's failure doesn't hide the other's.
+      fail-fast: false
+      # No pull request waits for main's run, so there the schemes take turns on one runner and
+      # leave another to the pull requests: with apple-tests, this workflow's run of main holds two
+      # of the five macOS runners at most.
+      max-parallel: ${{ github.event_name == 'push' && 1 || 2 }}
+      # The jobs are apple-app (iOS) and apple-app (macOS). Only the platform is in the matrix: a
+      # name written from it would show unexpanded on a job the review gate skips.
+      matrix:
+        platform: [iOS, macOS]
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -278,37 +295,38 @@ jobs:
       - name: Generate the Xcode project
         run: ./iosApp/generate-project.sh
 
-      # The Swift packages (Firebase and its dependencies) only change with project.yml. As with the
-      # other caches, only main saves them.
+      # The Swift packages (Firebase and its dependencies) only change with project.yml, and both
+      # schemes resolve the same ones. As with the other caches, only main saves them, and only the
+      # iOS job, which runs first there: one save is enough, and it stays one if the two jobs ever
+      # run side by side on main.
       - name: Cache the Swift packages
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && matrix.platform == 'iOS'
         uses: actions/cache@v6
         with:
           path: iosApp/build/SourcePackages
           key: spm-${{ runner.os }}-${{ hashFiles('iosApp/project.yml') }}
 
       - name: Restore the Swift packages
-        if: github.ref != 'refs/heads/main'
+        if: github.ref != 'refs/heads/main' || matrix.platform != 'iOS'
         uses: actions/cache/restore@v6
         with:
           path: iosApp/build/SourcePackages
           key: spm-${{ runner.os }}-${{ hashFiles('iosApp/project.yml') }}
 
-      # Each scheme's build phase builds the Shared framework with Gradle first. The iOS build targets
-      # the Apple silicon simulator only, since Shared has no x86_64 simulator slice. The macOS build
-      # skips signing: Sign in with Apple and the associated domains need a provisioning profile.
-      - name: Build the iOS app
-        run: >-
-          xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS
-          -destination 'generic/platform=iOS Simulator' ARCHS=arm64
-          -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages
-          CODE_SIGNING_ALLOWED=NO build -quiet
-
-      - name: Build the macOS app
-        run: >-
-          xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS
-          -destination 'platform=macOS' -derivedDataPath iosApp/build/DerivedData
-          -clonedSourcePackagesDirPath iosApp/build/SourcePackages CODE_SIGNING_ALLOWED=NO build -quiet
+      # The iOS build targets the Apple silicon simulator only, since Shared has no x86_64 simulator
+      # slice. Signing is skipped: Sign in with Apple and the associated domains need a provisioning
+      # profile, on the macOS app even to sign ad hoc.
+      - name: Build the app
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          case "$PLATFORM" in
+            iOS) target=(-destination 'generic/platform=iOS Simulator' ARCHS=arm64) ;;
+            macOS) target=(-destination 'platform=macOS') ;;
+          esac
+          xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme "BoraRachar-$PLATFORM" "${target[@]}" \
+            -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages \
+            CODE_SIGNING_ALLOWED=NO build -quiet
 
   # On main, a failed apple-tests leaves no Gradle home in the cache. setup-gradle saves the home when
   # the job ends, whatever its result, under a key that ends with the commit, and every later run
@@ -359,7 +377,10 @@ jobs:
   # main has no pull request to show a failure on, and a test that fails on the iOS simulator alone
   # first fails there, after the merge, since pull requests run the suite on macOS only. So a job
   # that failed or timed out on main opens an issue, assigned to whoever merged, or comments on the
-  # one still open. A run someone cancelled reports nothing.
+  # one still open. The commit it names is the one this run checked out: what broke may be any push
+  # since the last run of main that completed, the ones this run replaced in the queue included (see
+  # `concurrency` above). A run someone cancelled reports nothing, and neither does one replaced in
+  # the queue.
   report-failure:
     needs: [apple-tests, apple-app]
     if: >-
