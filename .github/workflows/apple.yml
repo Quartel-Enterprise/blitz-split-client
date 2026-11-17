@@ -106,6 +106,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       kotlin: ${{ steps.diff.outputs.kotlin }}
+      shards: ${{ steps.diff.outputs.shards }}
     steps:
       # Two commits: GitHub's merge of the pull request with main and main itself, its first parent.
       # Without their files: the diff below compares names, which the commits' trees hold, so no
@@ -122,25 +123,49 @@ jobs:
       # out of the paths that start this workflow. --no-renames lists both paths of a moved file, so
       # one moved out of a Kotlin module still counts, and without core.quotePath a name with an
       # accent would come quoted and match nothing.
+      #
+      # `shards` is the matrix of apple-tests. A change under core/, to gradle/ (the version catalog,
+      # the wrapper) or to gradle.properties reaches nearly every module as a rule, and each one then
+      # links its test binary again: 18 to 21 minutes in one job, the last check of such a pull
+      # request to end by far. Two jobs share those links. It is a guess from the paths, on the
+      # cheap side: a core module nothing depends on splits for nothing, which costs a runner five
+      # minutes, and a change that reaches every module from elsewhere runs in one job, as before.
+      # build-logic and the root's Gradle scripts are left out: a change there gives a new key only
+      # to the tasks it configures differently (docs/ci.md, "Speed and timeouts"). A change to this
+      # workflow counts too, so a change to the split is seen working before it merges.
       - name: Look for a change outside the Swift app
         id: diff
         run: |
           kotlin=true
+          shards='[1]'
+          wide='^(core|gradle)/|^gradle\.properties$|^\.github/workflows/apple\.yml$'
           if files=$(git -c core.quotePath=false diff --name-only --no-renames HEAD^1 HEAD) &&
-            [ -n "$files" ] && ! grep -q -v -E '^(iosApp|release-notes)/|\.md$' <<< "$files"; then
-            kotlin=false
+            [ -n "$files" ]; then
+            if ! grep -q -v -E '^(iosApp|release-notes)/|\.md$' <<< "$files"; then
+              kotlin=false
+            elif grep -q -E "$wide" <<< "$files"; then
+              shards='[1, 2]'
+            fi
           fi
           echo "kotlin=$kotlin" >> "$GITHUB_OUTPUT"
+          echo "shards=$shards" >> "$GITHUB_OUTPUT"
 
   # The tests and the app's two builds run side by side: each compiles the Kotlin/Native code on its
   # own, and three runners finish sooner than one doing it all. apple-tests runs unless `changes`
   # said the Kotlin code is untouched: when that job fails or is skipped (on main), its output is
-  # empty and the tests run.
+  # empty and the tests run, in one job. `changes` asks for two on a pull request whose change
+  # reaches nearly every module (see its `shards`); main never does, since no pull request waits
+  # for its run and a second job there would be one more runner the pull requests don't get.
   apple-tests:
     needs: [review-gate, changes]
     if: >-
       ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
       needs.changes.outputs.kotlin != 'false' }}
+    strategy:
+      # One shard's failure doesn't hide the other modules' results.
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.changes.outputs.shards || '[1]') }}
     # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
     # Xcode 26 only.
     runs-on: xcode-27
@@ -185,18 +210,57 @@ jobs:
       # exercise them are the other modules', so every module's suite runs. compileKotlinIosArm64
       # compiles the device target, which no other check builds, and compileAppleMainKotlinMetadata the
       # appleMain shared by the Apple targets, which only a macOS host compiles.
-      # Recompiling everything took 22 minutes on macOS alone and up to 48 with the simulator too.
-      # "finished" says Gradle ended on its own, with failed tests or without: a run this step's
-      # timeout killed may have left a library half compiled in ~/.konan, which main must not save.
+      #
+      # One job runs them all by their task names, as before. Two split the modules that have a
+      # commonTest, dealt from the sorted list as js-tests deals its own, so a new module joins a
+      # shard by itself. The first takes three of every five; the second takes the other two and
+      # the compilations, about three minutes of the 18 when everything is compiled again, which
+      # leaves each shard about half of the work. Each one compiles the modules its own depend on,
+      # so the second also compiles every module for macOS by name: a module with no tests that no
+      # tested module depends on (`:shared` today) was compiled by the one job's macosArm64Test.
+      - name: Pick this shard's tasks
+        id: tasks
+        env:
+          SHARD_INDEX: ${{ strategy.job-index }}
+          SHARD_TOTAL: ${{ strategy.job-total }}
+          SIMULATOR_TESTS: ${{ steps.targets.outputs.simulator }}
+        run: |
+          compilations='compileKotlinIosArm64 compileAppleMainKotlinMetadata'
+          if [ "$SHARD_TOTAL" -eq 1 ]; then
+            tasks="${SIMULATOR_TESTS:+$SIMULATOR_TESTS }macosArm64Test $compilations"
+          else
+            modules=$(find . \( -path ./build-logic -o -path ./.claude -o -name build -o -name node_modules \) -prune \
+              -o -type d -path '*/src/commonTest' -print | sed -E 's#^\./##; s#/src/commonTest$##' | sort -u)
+            tasks=$(awk -v shard="$SHARD_INDEX" -v simulator="$SIMULATOR_TESTS" '
+              ((NR - 1) % 5 < 3 ? 0 : 1) == shard {
+                gsub("/", ":")
+                printf ":%s:macosArm64Test ", $0
+                if (simulator != "") printf ":%s:%s ", $0, simulator
+              }' <<< "$modules")
+            if [ -z "$tasks" ]; then
+              echo "::error::No module with tests falls on shard $((SHARD_INDEX + 1)) of $SHARD_TOTAL."
+              exit 1
+            fi
+            if [ "$SHARD_INDEX" -eq 1 ]; then
+              tasks="${tasks}compileKotlinMacosArm64 $compilations"
+            fi
+          fi
+          echo "$tasks" | tr ' ' '\n'
+          echo "tasks=$tasks" >> "$GITHUB_OUTPUT"
+
+      # Recompiling everything took 22 minutes on macOS alone and up to 48 with the simulator too,
+      # in one job. "finished" says Gradle ended on its own, with failed tests or without: a run this
+      # step's timeout killed may have left a library half compiled in ~/.konan, which main must not
+      # save.
       - name: Run the tests
         id: tests
         timeout-minutes: ${{ steps.targets.outputs.simulator && 80 || 60 }}
         env:
-          SIMULATOR_TESTS: ${{ steps.targets.outputs.simulator }}
+          TASKS: ${{ steps.tasks.outputs.tasks }}
         run: |
           status=0
-          ./gradlew ${SIMULATOR_TESTS:+"$SIMULATOR_TESTS"} macosArm64Test compileKotlinIosArm64 \
-            compileAppleMainKotlinMetadata --continue || status=$?
+          read -ra tasks <<< "$TASKS"
+          ./gradlew "${tasks[@]}" --continue || status=$?
           echo "finished=true" >> "$GITHUB_OUTPUT"
           exit "$status"
 
@@ -204,7 +268,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: apple-test-reports
+          name: apple-test-reports-${{ matrix.shard }}
           path: '**/build/reports/tests/**'
 
       # main saves the Kotlin/Native entry the Gradle action restored, and only this job, which
