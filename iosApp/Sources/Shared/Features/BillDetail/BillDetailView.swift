@@ -277,6 +277,10 @@ struct BillDetailView: View {
     }
 
     #if os(iOS)
+    private var opensAsSheet: Bool {
+        AppRoute.billDetail(route).presentsAsSheet(isLargeWindow: windowLayout.isLarge)
+    }
+
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         // The group's rounded square beside its name over the bill, as the group's folded bar draws them (beta
@@ -285,22 +289,34 @@ struct BillDetailView: View {
             ToolbarItem(placement: .principal) {
                 // The 44 pt touch box pads the 30 pt avatar by 7 pt each side, which makes up the rest of the folded
                 // bar's 8 pt gap
-                HStack(spacing: 1) {
-                    // The avatar opens the group's photo big, as the group's folded bar; 44 pt to tap
-                    Button {
-                        model?.send(BillDetailUiEventOnGroupPhotoClicked.shared)
-                    } label: {
+                HStack(spacing: opensAsSheet ? 8 : 1) {
+                    if opensAsSheet {
+                        // An iPad's bill is a root sheet, and the photo big covers the root: left to the group's
+                        // header there, until the cover can rise from inside the sheet
                         GroupAvatar(
                             initials: state.groupInitials,
                             color: state.groupColor,
                             photoUrl: state.groupPhotoUrl,
                             size: GroupHeaderScroll.inlineAvatarSize,
                         )
-                        .frame(minWidth: 44, minHeight: 44)
-                        .contentShape(Rectangle())
+                        .accessibilityHidden(true)
+                    } else {
+                        // The avatar opens the group's photo big, as the group's folded bar; 44 pt to tap
+                        Button {
+                            model?.send(BillDetailUiEventOnGroupPhotoClicked.shared)
+                        } label: {
+                            GroupAvatar(
+                                initials: state.groupInitials,
+                                color: state.groupColor,
+                                photoUrl: state.groupPhotoUrl,
+                                size: GroupHeaderScroll.inlineAvatarSize,
+                            )
+                            .frame(minWidth: 44, minHeight: 44)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("View group photo")
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("View group photo")
                     Text(verbatim: state.groupName)
                         .font(.headline)
                         .lineLimit(1)
@@ -309,7 +325,7 @@ struct BillDetailView: View {
             }
         }
         // A form sheet on iPad has no back button: it closes
-        if AppRoute.billDetail(route).presentsAsSheet(isLargeWindow: windowLayout.isLarge) {
+        if opensAsSheet {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Close", systemImage: "xmark", role: .cancel) {
                     model?.send(BillDetailUiEventOnBackClicked.shared)

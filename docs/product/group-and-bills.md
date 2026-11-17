@@ -165,7 +165,7 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     pt) and the web sheet's header (24 px). It shows once the bill is read, never as an empty square. The square is a button too (Pierre's call, beta
     feedback of 2026-11-16, `BillDetailUiEvent.OnGroupPhotoClicked`): it opens the group's photo big, the viewer of
     the group's header (`Route.GroupPhoto`), over the bill, so back or ✕ comes back to it, with 48 dp/44 pt/44 px to
-    tap around the smaller square (the Mac's 18 pt one is a plain click target) and "View group photo" to TalkBack, VoiceOver and the web's screen readers. The bill
+    tap around the smaller square (the Mac's 18 pt one is a plain click target; the iPad's bill sheet leaves its square a plain image, since the photo covers the root under that sheet: open it from the group's header) and "View group photo" to TalkBack, VoiceOver and the web's screen readers. The bill
     is the only other screen with the group's avatar in a bar (Edit group's is the field that picks the icon;
     Statistics and the rest name the group in words). Android's flying avatar is unchanged: the badge keeps its
     shared element inside the button. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
