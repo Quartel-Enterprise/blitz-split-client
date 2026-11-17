@@ -184,8 +184,9 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * is, Brazil's Portuguese too ("Você dividiu"), and Russian and Ukrainian, whose past says the gender but not the
  * person ("Ты разделил(а)"). Korean writes someone else as "Ana 님이" and the user as "내가", whose subject word holds its
  * own particle, so its verb phrases all start with "님이", which the user's drops: "님이 나눴어요" becomes "나눴어요".
- * Hindi does the same with its ergative "ने", the user's "आपने" holding it: "ने खर्च बांटा" becomes "खर्च बांटा". Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or
- * "-iste": "dividiu" becomes "dividiste". Same rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
+ * Hindi does the same with its ergative "ने", the user's "आपने" holding it: "ने खर्च बांटा" becomes "खर्च बांटा".
+ * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste".
+ * Same rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
 export function verbForYou(verb: string): string {
   if (locale === 'pt-PT') return portugueseVerbForYou(verb)
