@@ -19,6 +19,9 @@ import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
 
+// Why: one per locale, as every currency's formatter of a list asks for the same mark.
+private val signMarks = java.util.concurrent.ConcurrentHashMap<Locale, String>()
+
 // Why: Preferências' "Bitcoin em satoshis", which every bitcoin amount drawn follows, provided at the app's root.
 val LocalShowsBitcoinInSats = staticCompositionLocalOf { false }
 
@@ -229,9 +232,6 @@ fun rememberMoneyFormatters(currencies: List<GroupCurrency>): Map<GroupCurrency,
         }
     }
 }
-
-// Why: one per locale, as every currency's formatter of a list asks for the same mark.
-private val signMarks = java.util.concurrent.ConcurrentHashMap<Locale, String>()
 
 // Why: ICU's, since java.text drops the bidi mark of the pattern.
 private fun signMarkOf(locale: Locale): String = signMarks.getOrPut(locale) {
