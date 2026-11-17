@@ -41,6 +41,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "hi" to ("किसने क्या दिया, एक नज़र में" over "ट्रिप के सारे खर्च एक जगह, आपका बैलेंस सबसे ऊपर"),
         "ar" to ("من دفع ماذا، بنظرة واحدة" over "كل مصروفات الرحلة في مكان واحد، ورصيدك في الأعلى"),
         "zh" to ("谁付了什么，一目了然" over "旅行的每笔账单都在这里，你的余额置顶显示"),
+        "he" to ("מי שילם על מה, במבט אחד" over "כל הוצאות הטיול במקום אחד, והיתרה שלך למעלה"),
     ),
     StoreScreen.ITEMS to mapOf(
         "en" to ("Split by what each one had" over "Tick who had each item and the service charge splits fairly"),
@@ -82,6 +83,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "hi" to ("जिसने जो लिया, वही चुकाए" over "चुनें कि हर आइटम किसने लिया, सर्विस चार्ज भी बराबर बंटेगा"),
         "ar" to ("كلٌّ يدفع ما طلبه" over "حدّد من طلب كل عنصر وتُقسَّم رسوم الخدمة بإنصاف"),
         "zh" to ("各自点的各自付" over "勾选每样东西是谁点的，服务费也公平分摊"),
+        "he" to ("כל אחד משלם על מה שהזמין" over "מסמנים מי לקח כל פריט ודמי השירות מתחלקים בהגינות"),
     ),
     StoreScreen.RECEIPT to mapOf(
         "en" to ("Snap the receipt, skip the typing" over "The items fill themselves in from a photo"),
@@ -104,6 +106,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "hi" to ("रसीद की फ़ोटो लें, टाइप करना भूल जाएं" over "फ़ोटो से आइटम अपने-आप भर जाते हैं"),
         "ar" to ("صوّر الإيصال بلا كتابة" over "تُملأ العناصر تلقائيًا من الصورة"),
         "zh" to ("拍下小票，不用手动输入" over "照片里的项目自动填好"),
+        "he" to ("מצלמים את הקבלה, בלי להקליד" over "הפריטים מתמלאים לבד מהתמונה"),
     ),
     StoreScreen.BALANCES to mapOf(
         "en" to ("Know who owes whom" over "Settle up in a tap and record the payment"),
@@ -125,6 +128,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "hi" to ("किसे किसको कितना देना है" over "एक टैप में हिसाब चुकाएं और भुगतान दर्ज करें"),
         "ar" to ("اعرف من عليه لمن" over "تسوية بلمسة واحدة وتسجيل الدفعة"),
         "zh" to ("谁欠谁，清清楚楚" over "一键结清，并记录付款"),
+        "he" to ("יודעים מי חייב למי" over "סוגרים חשבון בנגיעה ורושמים את התשלום"),
     ),
     StoreScreen.INVITE to mapOf(
         "en" to ("Invite with a link or QR code" over "Friends join the group in seconds, no sign-up needed"),
@@ -148,6 +152,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
             ("लिंक या QR कोड से आमंत्रित करें" over "दोस्त कुछ ही सेकंड में ग्रुप से जुड़ें, साइन अप की ज़रूरत नहीं"),
         "ar" to ("دعوة برابط أو رمز QR" over "ينضم الأصدقاء إلى المجموعة في ثوانٍ، دون تسجيل"),
         "zh" to ("用链接或二维码邀请" over "朋友几秒就能加入群组，无需注册"),
+        "he" to ("הזמנה בקישור או בקוד QR" over "חברים מצטרפים לקבוצה תוך שניות, בלי הרשמה"),
     ),
     StoreScreen.STATISTICS to mapOf(
         "en" to ("See where the money went" over "Spending by category and by person"),
@@ -169,6 +174,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "hi" to ("देखें पैसा कहां गया" over "श्रेणी और व्यक्ति के हिसाब से खर्च"),
         "ar" to ("أين ذهبت الأموال" over "الإنفاق حسب الفئة وحسب الشخص"),
         "zh" to ("看看钱花在了哪里" over "按类别、按人查看支出"),
+        "he" to ("לאן הלך הכסף" over "הוצאות לפי קטגוריה ולפי אדם"),
     ),
     StoreScreen.HOME to mapOf(
         "en" to ("Your groups, front and center" over "Pin the ones you use most and see your balance in each"),
@@ -194,6 +200,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
             ),
         "ar" to ("مجموعاتك في المقدمة" over "ثبّت الأكثر استخدامًا واطّلع على رصيدك في كل منها"),
         "zh" to ("常用群组，打开就在" over "置顶最常用的群组，查看你在每个群组的余额"),
+        "he" to ("הקבוצות שלך, במקום הראשון" over "מצמידים את השימושיות ביותר ורואים את היתרה בכל אחת"),
     ),
     StoreScreen.PAYERS_AND_CURRENCIES to mapOf(
         "en" to ("Several payers, any currency" over "Split bills more than one person paid, even in crypto"),
@@ -226,6 +233,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "hi" to ("कई भुगतानकर्ता, कोई भी मुद्रा" over "कई लोगों के चुकाए खर्च भी बांटें, क्रिप्टो में भी"),
         "ar" to ("أكثر من دافع، وأي عملة" over "تقسيم فواتير دفعها أكثر من شخص، حتى بالعملات المشفرة"),
         "zh" to ("多人付款，任意货币" over "多人付的账单也能分摊，加密货币也行"),
+        "he" to ("כמה משלמים, כל מטבע" over "מחלקים הוצאות שכמה אנשים שילמו, גם במטבעות קריפטו"),
     ),
     StoreScreen.ACTIVITY to mapOf(
         "en" to ("Never miss a change" over "Every new bill and payment in your groups, as it happens"),
@@ -246,6 +254,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "hi" to ("कोई बदलाव न छूटे" over "आपके ग्रुप का हर नया खर्च और भुगतान, उसी समय"),
         "ar" to ("لا يفوتك أي تغيير" over "كل فاتورة ودفعة جديدة في مجموعاتك، لحظة حدوثها"),
         "zh" to ("任何变动都不错过" over "群组里的每笔新账单和付款，第一时间知道"),
+        "he" to ("לא מפספסים אף שינוי" over "כל הוצאה ותשלום חדשים בקבוצות שלך, ברגע שהם קורים"),
     ),
     StoreScreen.LIGHT_THEME to mapOf(
         "en" to ("Light or dark, it follows you" over "Works offline, with or without an account"),
@@ -266,6 +275,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "hi" to ("लाइट या डार्क, जैसा आप चाहें" over "ऑफ़लाइन भी चलता है, अकाउंट के साथ या उसके बिना"),
         "ar" to ("فاتح أو داكن، كما تحب" over "يعمل دون اتصال، بحساب أو من دونه"),
         "zh" to ("浅色深色，随你喜欢" over "离线也能用，有没有账号都行"),
+        "he" to ("בהיר או כהה, כמו שנוח לך" over "עובד אופליין, עם חשבון משתמש או בלעדיו"),
     ),
 )
 

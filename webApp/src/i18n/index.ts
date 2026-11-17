@@ -18,6 +18,7 @@ import { ko } from './ko'
 import { hi } from './hi'
 import { ar } from './ar'
 import { zh } from './zh'
+import { he } from './he'
 
 export type { MessageKey }
 /**
@@ -25,12 +26,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -137,6 +138,7 @@ const documentLanguages: Record<Locale, string> = {
   hi: 'hi',
   ar: 'ar',
   zh: 'zh-Hans',
+  he: 'he',
 }
 
 const documentLanguage = documentLanguages[locale]

@@ -126,6 +126,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
+                AppLanguage.HEBREW,
             )
 
             // When
@@ -153,6 +154,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "hi",
                     "ar",
                     "zh",
+                    "he",
                 ),
                 spoken,
             )
@@ -178,7 +180,26 @@ class ObserveSpokenLanguageUseCaseTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
         val devices =
-            listOf("en", "pt", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh")
+            listOf(
+                "en",
+                "pt",
+                "es",
+                "fr",
+                "de",
+                "it",
+                "pl",
+                "nl",
+                "ja",
+                "tr",
+                "id",
+                "ru",
+                "uk",
+                "ko",
+                "hi",
+                "ar",
+                "zh",
+                "he",
+            )
 
         // When
         val spoken = devices.map { spokenOn(it) }
@@ -203,6 +224,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "hi",
                 "ar",
                 "zh",
+                "he",
             ),
             spoken,
         )
@@ -235,6 +257,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "hi-IN",
                 "ar-EG",
                 "zh-CN",
+                "iw-IL",
             )
 
             // When
@@ -264,6 +287,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "hi",
                     "ar",
                     "zh",
+                    "he",
                 ),
                 spoken,
             )

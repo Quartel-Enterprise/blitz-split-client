@@ -300,6 +300,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Hebrew tag WHEN reading it THEN is Hebrew with the legacy iw too`() {
+        // Given
+        val tags = listOf("he", "he-IL", "he_IL", "HE-il", "iw", "iw-IL", "iw_IL")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.HEBREW }, languages)
+    }
+
+    @Test
     fun `GIVEN a Portuguese tag of Portugal in other spellings WHEN reading it THEN is the Portuguese of Portugal`() {
         // Given
         val tags = listOf("pt-PT-x-private", "PT-PT", "pt-pt", "pt_pt_x_private", "pt-Latn-pt-u-fw-mon")
@@ -366,6 +378,7 @@ class AppLanguageTest {
                 "HI",
                 "AR",
                 "ZH",
+                "HE",
             ),
             codes,
         )

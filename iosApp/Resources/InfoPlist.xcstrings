@@ -35,6 +35,12 @@
             "value" : "Blitz Split"
           }
         },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -144,6 +150,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "he" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -263,6 +275,12 @@
             "value" : "Pour scanner le QR code d’une invitation ou de ton ancien appareil, et pour prendre ta photo de profil et des photos de dépenses."
           }
         },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כדי לסרוק את קוד ה-QR של הזמנה או מהמכשיר הישן, ולצלם את תמונת הפרופיל ותמונות של חשבונות."
+          }
+        },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -377,6 +395,12 @@
             "value" : "Pour inviter des personnes de tes contacts avec le lien d’un groupe. Leurs numéros restent uniquement sur cet appareil."
           }
         },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כדי להזמין אנשים מאנשי הקשר עם קישור של קבוצה. המספרים שלהם נשארים במכשיר הזה."
+          }
+        },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -489,6 +513,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour enregistrer les photos des dépenses dans ta photothèque."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "כדי לשמור תמונות של חשבונות בספרייה."
           }
         },
         "hi" : {

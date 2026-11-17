@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">מפצלים את החשבון, בלי כאב ראש</string>
+    <string name="welcome_offline_title">עובד אופליין</string>
+    <string name="welcome_offline_body">הכול נשמר במכשיר שלך ומסונכרן אחר כך.</string>
+    <string name="welcome_optional_title">חשבון משתמש הוא לא חובה</string>
+    <string name="welcome_optional_body">Google או Apple רק מבטיחים ששום דבר לא יאבד כשמחליפים מכשיר.</string>
+    <string name="welcome_invite_title">הזמנה עם קישור או קוד QR</string>
+    <string name="welcome_invite_body">חברים מצטרפים לקבוצה בלי ליצור חשבון משתמש.</string>
+    <string name="welcome_no_connection_title">אין חיבור.</string>
+    <string name="welcome_no_connection_body">התחברות עם חשבון משתמש דורשת אינטרנט. אפשר להשתמש עכשיו בלי חשבון משתמש ולהתחבר אחר כך בפרופיל.</string>
+    <string name="welcome_or">או</string>
+    <string name="welcome_use_without_account">שימוש בלי חשבון משתמש</string>
+    <string name="welcome_used_on_another_device">השתמשתי בה במכשיר אחר</string>
+    <string name="welcome_sign_in_failed">לא ניתן היה להתחבר כרגע. כדאי לנסות שוב.</string>
+    <string name="welcome_legal_notice">המשך השימוש מהווה הסכמה ל-%1$s ואישור של %2$s.</string>
+    <string name="welcome_legal_terms">תנאי השימוש</string>
+    <string name="welcome_legal_privacy">מדיניות הפרטיות</string>
+    <string name="welcome_no_account_note">בלי חשבון משתמש, הנתונים שלך נמחקים אחרי 30 יום ללא שימוש. כדי לשמור אותם, אפשר לחבר Google או Apple.</string>
+    <string name="welcome_no_account_note_offline">בלי חשבון משתמש, הנתונים שלך נמחקים אחרי 30 יום ללא שימוש. כדי לשמור אותם, אפשר לחבר Google או Apple אחר כך, בפרופיל.</string>
+    <string name="welcome_expired_title">הנתונים שלך נמחקו</string>
+    <string name="welcome_expired_body">השימוש באפליקציה היה בלי חשבון משתמש והיא לא נפתחה במשך 30 יום, ולכן הנתונים שלך נמחקו. כדי לשמור אותם בפעם הבאה, אפשר לחבר Google או Apple.</string>
+    <string name="welcome_expired_ok">אישור</string>
+</resources>

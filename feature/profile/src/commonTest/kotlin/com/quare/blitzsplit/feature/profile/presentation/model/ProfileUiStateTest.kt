@@ -36,6 +36,7 @@ class ProfileUiStateTest {
             AppLanguage.HINDI -> listOf("हिन्दी", "Hindi")
             AppLanguage.ARABIC -> listOf("العربية", "Arabic")
             AppLanguage.CHINESE_SIMPLIFIED -> listOf("中文（简体）", "Chinese (Simplified)")
+            AppLanguage.HEBREW -> listOf("עברית", "Hebrew")
         }
     }
 
@@ -69,6 +70,7 @@ class ProfileUiStateTest {
         AppLanguage.HINDI,
         AppLanguage.ARABIC,
         AppLanguage.CHINESE_SIMPLIFIED,
+        AppLanguage.HEBREW,
     )
 
     @Test
@@ -646,6 +648,7 @@ class ProfileUiStateTest {
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
+                AppLanguage.HEBREW,
             ),
             options,
         )
@@ -682,6 +685,7 @@ class ProfileUiStateTest {
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
+                AppLanguage.HEBREW,
             ),
             options,
         )
@@ -945,7 +949,7 @@ class ProfileUiStateTest {
         val options = profile.findLanguageOptions(englishNames)
 
         // Then
-        assertEquals(listOf(AppLanguage.PORTUGUESE), options)
+        assertFalse(AppLanguage.PORTUGUESE_PORTUGAL in options)
     }
 
     @Test

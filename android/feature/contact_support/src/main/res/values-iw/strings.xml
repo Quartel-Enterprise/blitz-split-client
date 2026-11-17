@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">פנייה לתמיכה</string>
+    <string name="contact_support_description">נפתח את אפליקציית האימייל שלך עם הודעה מוכנה. אפשר לתאר מה קרה ולשלוח: אנשים אמיתיים קוראים כל הודעה.</string>
+    <string name="contact_support_to">אל</string>
+    <string name="contact_support_diagnostics">ייכלל באימייל</string>
+    <string name="contact_support_app_version">גרסת האפליקציה</string>
+    <string name="contact_support_platform">פלטפורמה</string>
+    <string name="contact_support_language">שפה</string>
+    <string name="contact_support_account">חשבון משתמש</string>
+    <string name="contact_support_profile">פרופיל</string>
+    <string name="contact_support_language_system">לפי המערכת</string>
+    <string name="contact_support_account_local">המכשיר הזה בלבד</string>
+    <string name="contact_support_account_anonymous">לא מחובר</string>
+    <string name="contact_support_open_email">פתיחת האימייל</string>
+    <string name="contact_support_copy_email">העתקת כתובת האימייל</string>
+    <string name="contact_support_notice_copied">כתובת האימייל הועתקה.</string>
+    <string name="contact_support_notice_no_app">לא נמצאה אפליקציית אימייל. הכתובת הועתקה במקום.</string>
+    <string name="contact_support_close">סגירה</string>
+</resources>

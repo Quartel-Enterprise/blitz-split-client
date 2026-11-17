@@ -257,7 +257,9 @@ at its right edge. The rules, the same on the three platforms:
   on its SVG), while its title, legend and callout follow the page. A ring needs nothing.
 - **Amounts keep their order.** A formatted amount inside a right to left language is wrapped in the Unicode isolates
   U+2068 … U+2069 (`MoneyFormatter`, `ExpenseFormat`, the web's `money.ts`), so "−R$ 12,50" never comes apart in a
-  sentence; left to right languages get the same text as before. Arabic writes numbers, amounts and dates with
+  sentence, and so is its currency symbol ("US$", never "$US"); left to right languages get the same text as before.
+  A "+" or "−" the app adds goes right before the digits, after the mark the language's own negative number puts
+  before its minus, so it sits where Arabic and Hebrew write it (on the left of the digits). Arabic writes numbers, amounts and dates with
   Latin digits (`nu-latn`: Android's `LegacyAppLocale.wrap` for the whole context, Apple's `AppNumbers`, the web's
   `formattingLocale`), so a field shows what it parses.
 - **An amount field types left to right.** Its digits run left to right ("12." never shows as ".12") while the field,
