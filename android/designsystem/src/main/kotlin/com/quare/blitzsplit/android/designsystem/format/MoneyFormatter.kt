@@ -152,8 +152,9 @@ class MoneyFormatter(
         return substring(0, digit) + signMark + sign + substring(digit)
     }
 
+    // Why: ICU's, since java.text drops the bidi mark of the pattern.
     private val signMark: String by lazy {
-        NumberFormat
+        android.icu.text.NumberFormat
             .getNumberInstance(formatLocale)
             .format(-1)
             .takeWhile { it != '-' && it != '−' && !it.isDigit() }
