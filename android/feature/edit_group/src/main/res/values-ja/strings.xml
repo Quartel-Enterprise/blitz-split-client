@@ -108,6 +108,7 @@
     <string name="simplify_status_pending_on">このデバイスでオン · アップロード待ち</string>
     <string name="simplify_status_pending_off">このデバイスでオフ · アップロード待ち</string>
     <string name="simplify_status_needs_third">2人ならすでに支払いは1回です。3人目が参加すると使えるようになります。</string>
+    <string name="simplify_unavailable_snackbar">3人未満のグループでは「精算をシンプルに」は使えません。グループが3人以上になると使えるようになります。</string>
     <string name="simplify_how_it_works">仕組み</string>
     <string name="simplify_offline_note">インターネットに接続されていません。提案される支払いはこのデバイスですでに変わりました。再接続するとグループにも反映されます。</string>
     <string name="simplify_confirm_title_on">精算をシンプルにしますか？</string>
@@ -157,12 +158,12 @@
     <string name="simplify_info_back">戻る</string>
     <string name="simplify_info_intro">グループでは、支出ごとに2人の間に貸し借りが生まれます。時間がたつと、お金がぐるぐる回るようになります。シンプルにすると、その貸し借りをまとめて、より少ない支払いを提案します。</string>
     <string name="simplify_info_example">例</string>
-    <string name="simplify_info_example_text">CarlaはElisaに%1$s、Elisaはあなたに%1$sを支払う必要があります。</string>
+    <string name="simplify_info_example_text">CarlaはElisaに%1$s、ElisaはBrunoに%1$sを支払う必要があります。</string>
     <string name="simplify_info_before">変更前</string>
     <string name="simplify_info_after">シンプル</string>
-    <string name="simplify_info_before_a11y">変更前：CarlaがElisaに%1$s、Elisaがあなたに%1$sを支払います。支払いは2件。</string>
-    <string name="simplify_info_after_a11y">シンプル：Carlaがあなたに直接%1$sを支払います。Elisaは何も支払いません。支払いは1件。</string>
-    <string name="simplify_info_example_result">シンプルにすると、Carlaがあなたに直接%sを支払い、Elisaは何も支払いません。</string>
+    <string name="simplify_info_before_a11y">変更前：CarlaがElisaに%1$s、ElisaがBrunoに%1$sを支払います。支払いは2件。</string>
+    <string name="simplify_info_after_a11y">シンプル：CarlaがBrunoに直接%1$sを支払います。Elisaは何も支払いません。支払いは1件。</string>
+    <string name="simplify_info_example_result">シンプルにすると、CarlaがBrunoに直接%sを支払い、Elisaは何も支払いません。</string>
     <string name="simplify_info_total_title">合計は変わりません</string>
     <string name="simplify_info_total_text">グループで%1$sを払う必要があった人は、引き続き%1$sを払う必要があります。変わるのはお金の行き先だけです。</string>
     <string name="simplify_info_stranger_title">一緒に割り勘したことのない人に支払う場合があります</string>

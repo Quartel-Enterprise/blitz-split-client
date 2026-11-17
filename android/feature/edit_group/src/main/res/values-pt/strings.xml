@@ -112,6 +112,7 @@
     <string name="simplify_status_pending_on">Ligado neste aparelho · aguardando envio</string>
     <string name="simplify_status_pending_off">Desligado neste aparelho · aguardando envio</string>
     <string name="simplify_status_needs_third">Com 2 pessoas já é um pagamento só. Fica disponível quando entrar a terceira pessoa.</string>
+    <string name="simplify_unavailable_snackbar">Simplificar dívidas não está disponível com menos de 3 pessoas. Fica disponível assim que o grupo tiver pelo menos 3 pessoas.</string>
     <string name="simplify_how_it_works">Como funciona</string>
     <string name="simplify_offline_note">Sem internet: os pagamentos sugeridos já mudaram neste aparelho. O grupo vê quando ele reconectar.</string>
     <string name="simplify_confirm_title_on">Simplificar dívidas?</string>
@@ -165,12 +166,12 @@
     <string name="simplify_info_back">Voltar</string>
     <string name="simplify_info_intro">Num grupo, cada conta cria dívidas entre duas pessoas. Com o tempo, o dinheiro anda em círculo. Simplificar junta essas dívidas e sugere menos pagamentos.</string>
     <string name="simplify_info_example">Um exemplo</string>
-    <string name="simplify_info_example_text">Carla deve %1$s a Elisa, e Elisa deve %1$s a você.</string>
+    <string name="simplify_info_example_text">Carla deve %1$s a Elisa, e Elisa deve %1$s a Bruno.</string>
     <string name="simplify_info_before">Antes</string>
     <string name="simplify_info_after">Simplificado</string>
-    <string name="simplify_info_before_a11y">Antes: Carla paga %1$s a Elisa e Elisa paga %1$s a você. 2 pagamentos.</string>
-    <string name="simplify_info_after_a11y">Simplificado: Carla paga %1$s direto a você. Elisa não paga nada. 1 pagamento.</string>
-    <string name="simplify_info_example_result">Simplificado, Carla paga %s direto a você, e Elisa não paga nada.</string>
+    <string name="simplify_info_before_a11y">Antes: Carla paga %1$s a Elisa e Elisa paga %1$s a Bruno. 2 pagamentos.</string>
+    <string name="simplify_info_after_a11y">Simplificado: Carla paga %1$s direto a Bruno. Elisa não paga nada. 1 pagamento.</string>
+    <string name="simplify_info_example_result">Simplificado, Carla paga %s direto a Bruno, e Elisa não paga nada.</string>
     <string name="simplify_info_total_title">O total não muda</string>
     <string name="simplify_info_total_text">Quem devia %1$s no grupo continua devendo %1$s. Só muda para quem vai o dinheiro.</string>
     <string name="simplify_info_stranger_title">Você pode dever a quem não dividiu conta com você</string>

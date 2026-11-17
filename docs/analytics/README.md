@@ -323,7 +323,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_color_selected` | `color`, `source` (`edit_group`) | "Icon color" on the web and the Mac | `:feature:edit_group` |
 | `default_split_clicked` | none | Edit group's "Default split" | `:feature:edit_group` |
 | `edit_group_save_clicked` | none | Edit group's Save or the keyboard's Done; also a Done the form refuses (nothing changed) | `:feature:edit_group` |
-| `simplify_debts_clicked` | none | The switch of "Simplify debts", which asks first | `:feature:edit_group` |
+| `simplify_debts_clicked` | none | The switch of "Simplify debts" when it asks first (a tap while it is unavailable is the next event) | `:feature:edit_group` |
+| `simplify_debts_unavailable_clicked` | none | A tap on the disabled switch of a group of two, which only says why (13.1c) | `:feature:edit_group` |
 | `simplify_debts_toggled` | `is_on` | Its confirmation, which turns it on or off | `:feature:edit_group` |
 | `simplify_debts_cancelled` | none | Its confirmation closed without answering, while it was open | `:feature:edit_group` |
 | `default_split_mode_selected` | `mode` | Equal, Shares, Percentage or By income | `:feature:edit_group` |

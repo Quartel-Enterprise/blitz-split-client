@@ -85,6 +85,7 @@ class EditGroupViewModel(
                 simplifyConfirmation = null,
                 isChangingSimplifyDebts = false,
                 simplifyConflict = null,
+                showsSimplifyUnavailableNotice = false,
             ),
         )
 
@@ -203,6 +204,9 @@ class EditGroupViewModel(
 
             EditGroupUiEvent.OnSimplifyConflictDismissed -> uiState.update { it.copy(simplifyConflict = null) }
 
+            EditGroupUiEvent.OnSimplifyUnavailableNoticeDismissed ->
+                uiState.update { it.copy(showsSimplifyUnavailableNotice = false) }
+
             EditGroupUiEvent.OnSimplifyConflictActivityClicked -> openActivity()
         }
     }
@@ -284,9 +288,16 @@ class EditGroupViewModel(
 
     private fun openSimplifyConfirmation() {
         val state = uiState.value
+        // Why: the disabled switch still takes the tap, to say why it is off and when it opens (13.1c).
+        if (state.isSimplifyDebtsUnavailable) {
+            trackEvent("simplify_debts_unavailable_clicked", emptyMap())
+            uiState.update { it.copy(showsSimplifyUnavailableNotice = true) }
+            return
+        }
         val group = latest ?: return
         val raws = rawsOf(group) ?: return
         if (!state.canChangeSimplifyDebts) return
+        trackEvent("simplify_debts_clicked", emptyMap())
         uiState.update { it.copy(simplifyConfirmation = simplifyConfirmationOf(group, raws, settlements)) }
     }
 

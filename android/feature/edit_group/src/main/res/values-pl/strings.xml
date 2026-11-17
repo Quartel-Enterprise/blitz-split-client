@@ -120,6 +120,7 @@
     <string name="simplify_status_pending_on">Włączone na tym urządzeniu · czeka na wysłanie</string>
     <string name="simplify_status_pending_off">Wyłączone na tym urządzeniu · czeka na wysłanie</string>
     <string name="simplify_status_needs_third">Przy 2 osobach to już jedna płatność. Dostępne, gdy dołączy trzecia osoba.</string>
+    <string name="simplify_unavailable_snackbar">Uprość długi nie jest dostępne przy mniej niż 3 osobach. Będzie dostępne, gdy w grupie będą co najmniej 3 osoby.</string>
     <string name="simplify_how_it_works">Jak to działa</string>
     <string name="simplify_offline_note">Brak internetu: proponowane płatności już zmieniły się na tym urządzeniu. Grupa zobaczy to po ponownym połączeniu.</string>
     <string name="simplify_confirm_title_on">Uprościć długi?</string>
@@ -181,12 +182,12 @@
     <string name="simplify_info_back">Wstecz</string>
     <string name="simplify_info_intro">W grupie każdy wydatek tworzy długi między dwiema osobami. Z czasem pieniądze krążą w kółko. Upraszczanie łączy te długi i proponuje mniej płatności.</string>
     <string name="simplify_info_example">Przykład</string>
-    <string name="simplify_info_example_text">Carla jest winna Elisie %1$s, a Elisa jest winna tobie %1$s.</string>
+    <string name="simplify_info_example_text">Carla jest winna Elisie %1$s, a Elisa jest winna Brunowi %1$s.</string>
     <string name="simplify_info_before">Przed</string>
     <string name="simplify_info_after">Po uproszczeniu</string>
-    <string name="simplify_info_before_a11y">Przed: Carla płaci Elisie %1$s, a Elisa płaci tobie %1$s. 2 płatności.</string>
-    <string name="simplify_info_after_a11y">Po uproszczeniu: Carla płaci tobie %1$s bezpośrednio. Elisa nie płaci nic. 1 płatność.</string>
-    <string name="simplify_info_example_result">Po uproszczeniu Carla płaci ci %s bezpośrednio, a Elisa nie płaci nic.</string>
+    <string name="simplify_info_before_a11y">Przed: Carla płaci Elisie %1$s, a Elisa płaci Brunowi %1$s. 2 płatności.</string>
+    <string name="simplify_info_after_a11y">Po uproszczeniu: Carla płaci Brunowi %1$s bezpośrednio. Elisa nie płaci nic. 1 płatność.</string>
+    <string name="simplify_info_example_result">Po uproszczeniu Carla płaci Brunowi %s bezpośrednio, a Elisa nie płaci nic.</string>
     <string name="simplify_info_total_title">Sumy się nie zmieniają</string>
     <string name="simplify_info_total_text">Kto był winien %1$s w grupie, nadal jest winien %1$s. Zmienia się tylko to, dokąd trafiają pieniądze.</string>
     <string name="simplify_info_stranger_title">Możesz mieć dług wobec osoby, z którą nie masz wspólnego wydatku</string>

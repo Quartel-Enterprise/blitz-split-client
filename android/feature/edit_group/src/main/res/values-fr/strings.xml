@@ -116,6 +116,7 @@
     <string name="simplify_status_pending_on">Activé sur cet appareil · en attente d’envoi</string>
     <string name="simplify_status_pending_off">Désactivé sur cet appareil · en attente d’envoi</string>
     <string name="simplify_status_needs_third">À 2 personnes, c’est déjà un seul paiement. Disponible quand une troisième personne rejoint.</string>
+    <string name="simplify_unavailable_snackbar">Simplifier les dettes n’est pas disponible à moins de 3 personnes. Cela le devient dès que le groupe compte au moins 3 personnes.</string>
     <string name="simplify_how_it_works">Comment ça marche</string>
     <string name="simplify_offline_note">Pas d’internet : les paiements suggérés ont déjà changé sur cet appareil. Le groupe le verra à ta reconnexion.</string>
     <string name="simplify_confirm_title_on">Simplifier les dettes ?</string>
@@ -173,12 +174,12 @@
     <string name="simplify_info_back">Retour</string>
     <string name="simplify_info_intro">Dans un groupe, chaque dépense crée des dettes entre deux personnes. Avec le temps, l’argent tourne en rond. Simplifier regroupe ces dettes et suggère moins de paiements.</string>
     <string name="simplify_info_example">Un exemple</string>
-    <string name="simplify_info_example_text">Carla doit %1$s à Elisa, et Elisa te doit %1$s.</string>
+    <string name="simplify_info_example_text">Carla doit %1$s à Elisa, et Elisa doit %1$s à Bruno.</string>
     <string name="simplify_info_before">Avant</string>
     <string name="simplify_info_after">Simplifié</string>
-    <string name="simplify_info_before_a11y">Avant : Carla paie %1$s à Elisa et Elisa te paie %1$s. 2 paiements.</string>
-    <string name="simplify_info_after_a11y">Simplifié : Carla te paie directement %1$s. Elisa ne paie rien. 1 paiement.</string>
-    <string name="simplify_info_example_result">Simplifié, Carla te paie directement %s, et Elisa ne paie rien.</string>
+    <string name="simplify_info_before_a11y">Avant : Carla paie %1$s à Elisa et Elisa paie %1$s à Bruno. 2 paiements.</string>
+    <string name="simplify_info_after_a11y">Simplifié : Carla paie directement %1$s à Bruno. Elisa ne paie rien. 1 paiement.</string>
+    <string name="simplify_info_example_result">Simplifié, Carla paie directement %s à Bruno, et Elisa ne paie rien.</string>
     <string name="simplify_info_total_title">Les totaux ne changent pas</string>
     <string name="simplify_info_total_text">Qui devait %1$s dans le groupe doit toujours %1$s. Seule la destination de l’argent change.</string>
     <string name="simplify_info_stranger_title">Tu peux devoir de l’argent à quelqu’un avec qui tu n’as jamais partagé de dépense</string>
