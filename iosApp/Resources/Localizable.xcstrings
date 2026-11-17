@@ -4,6 +4,12 @@
     "Add the reminder to your calendar" : {
       "comment" : "After joining a group: offers the reminder as a calendar event",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إضافة التذكير إلى التقويم"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -99,6 +105,12 @@
     "Add to calendar" : {
       "comment" : "Edit group's button that adds the reminder to the calendar",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإضافة إلى التقويم"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -194,6 +206,12 @@
     "Add to my calendar" : {
       "comment" : "Switch of New group: also adds the reminder to the calendar",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإضافة إلى تقويمي"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -609,6 +627,12 @@
     "Day of the month" : {
       "comment" : "Picker of the reminder's day of the month",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يوم الشهر"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -704,6 +728,12 @@
     "Every %@ at %@" : {
       "comment" : "The group's weekly reminder: weekday, then time",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "كل يوم %1$@ في الساعة %2$@"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -799,6 +829,12 @@
     "Every month on day %lld at %@" : {
       "comment" : "The group's monthly reminder: day of the month, then time",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "كل شهر في اليوم %1$lld في الساعة %2$@"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -894,6 +930,12 @@
     "Group reminder" : {
       "comment" : "Settle-up reminder section of New group and Edit group",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تذكير المجموعة"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1090,6 +1132,12 @@
     "Members who owe get a notification, on their own clock." : {
       "comment" : "Caption under the group's reminder",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يصل إشعار إلى من عليهم مبالغ من الأعضاء، حسب توقيتهم المحلي."
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -13602,6 +13650,12 @@
     "Monthly" : {
       "comment" : "Reminder repeats every month",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شهريًا"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28341,6 +28395,12 @@
     "Remind members to settle up" : {
       "comment" : "Switch of the group's reminder",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تذكير الأعضاء بالتسوية"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28436,6 +28496,12 @@
     "Repeats" : {
       "comment" : "Accessibility label of the Weekly/Monthly control",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التكرار"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -28845,6 +28911,12 @@
     "Settle up: %@" : {
       "comment" : "Title of the calendar event of a group's reminder, with the group's name",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التسوية: %@"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -29880,6 +29952,12 @@
     "Time to settle up" : {
       "comment" : "Banner for someone who owes when the group's reminder arrives",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حان وقت التسوية"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -29975,6 +30053,12 @@
     "Time to settle up in %@." : {
       "comment" : "Notes of the calendar event of a group's reminder, with the group's name",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حان وقت التسوية في %@."
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -31849,6 +31933,12 @@
     "Weekly" : {
       "comment" : "Reminder repeats every week",
       "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أسبوعيًا"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
