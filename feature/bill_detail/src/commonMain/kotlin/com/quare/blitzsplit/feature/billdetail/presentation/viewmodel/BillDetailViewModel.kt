@@ -506,7 +506,12 @@ class BillDetailViewModel(
     private fun share() {
         if (!uiState.value.areActionsEnabled || !isOnTop()) return
         trackEvent("bill_share_clicked", emptyMap())
-        navigator.navigate(Route.ShareBill(route.groupId, route.expenseId))
+        navigator.navigate(
+            Route.ShareBill(
+                groupId = route.groupId,
+                expenseId = route.expenseId,
+            ),
+        )
     }
 
     // Why: the group's avatar in the top bar opens its photo big, as the group's own header; only while Conta is on top.

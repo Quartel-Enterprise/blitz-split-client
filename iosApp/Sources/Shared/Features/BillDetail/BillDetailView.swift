@@ -283,7 +283,9 @@ struct BillDetailView: View {
         // feedback of 2026-11-15); the navigation title stays for the back button and VoiceOver
         if let state = model?.state, state.isLoaded {
             ToolbarItem(placement: .principal) {
-                HStack(spacing: 8) {
+                // The 44 pt touch box pads the 30 pt avatar by 7 pt each side, which makes up the rest of the folded
+                // bar's 8 pt gap
+                HStack(spacing: 1) {
                     // The avatar opens the group's photo big, as the group's folded bar; 44 pt to tap
                     Button {
                         model?.send(BillDetailUiEventOnGroupPhotoClicked.shared)

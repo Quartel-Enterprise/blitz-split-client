@@ -519,12 +519,12 @@ private fun PreviewBillDetailContent(state: BillDetailUiState) {
 @Composable
 private fun BillGroupTitle(
     state: BillDetailUiState,
+    onPhotoClick: () -> Unit,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = LocalTextStyle.current,
     badgeModifier: Modifier = Modifier,
     // Why: the group's name, which flies from and back to the group's top bar.
     nameModifier: Modifier = Modifier,
-    onPhotoClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier,
