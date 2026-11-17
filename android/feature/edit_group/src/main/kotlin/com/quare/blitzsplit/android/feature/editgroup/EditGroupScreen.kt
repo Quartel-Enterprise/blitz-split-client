@@ -84,7 +84,7 @@ fun EditGroupScreen(
     }
 }
 
-// Why: a tap on the disabled "Simplificar dívidas" says it needs 3 people (13.1c); it replaces any snackbar on screen.
+// Why: a tap on the disabled "Simplificar dívidas" says it needs 3 people (13.1c); it waits behind any snackbar on screen.
 @Composable
 private fun SimplifyUnavailableNoticeEffect(
     isShowing: Boolean,
@@ -95,13 +95,15 @@ private fun SimplifyUnavailableNoticeEffect(
     val currentOnDismiss by rememberUpdatedState(onDismiss)
     LaunchedEffect(isShowing) {
         if (!isShowing) return@LaunchedEffect
-        snackbarHostState.currentSnackbarData?.dismiss()
-        // Why: also when the screen goes while the snackbar shows, or the flag would bring it back on the next visit.
+        /*
+         * Why: no dismiss of the snackbar on screen, which may be the conflict one that only shows once: this one queues.
+         * Also when the screen goes while the snackbar shows, or the flag would bring it back on the next visit.
+         */
         try {
             snackbarHostState.showSnackbar(
                 message = message,
                 withDismissAction = true,
-                duration = SnackbarDuration.Long,
+                duration = SnackbarDuration.Short,
             )
         } finally {
             currentOnDismiss()

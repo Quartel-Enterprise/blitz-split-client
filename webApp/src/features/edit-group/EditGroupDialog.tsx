@@ -245,7 +245,7 @@ function simplifyStatusText(state: JsEditGroupState): string {
  */
 function SimplifyDebtsRow({ presenter, state }: { presenter: EditGroupPresenter; state: JsEditGroupState }) {
   const isPending = state.simplifyStatus === 'pending'
-  // Why: off for want of a third person, the switch looks disabled but its box takes the click, which says why (13.1c).
+  // Why: off for want of a third person, the switch looks disabled (aria-disabled, still focusable) and a click or key on it says why (13.1c).
   const isUnavailable = state.isSimplifyDebtsUnavailable
   return (
     <section aria-labelledby={paymentsId} className="flex flex-col gap-2">
@@ -270,16 +270,15 @@ function SimplifyDebtsRow({ presenter, state }: { presenter: EditGroupPresenter;
           </Button>
         </span>
         {/* Why: controlled by the group's state; the click asks first, so it never flips by itself. */}
-        <span className={cn('mt-0.5 inline-flex', isUnavailable && 'cursor-not-allowed')} onClick={isUnavailable ? () => presenter.clickSimplifyDebts() : undefined}>
-          <Switch
-            id={simplifyId}
-            checked={state.simplifiesDebts}
-            disabled={!state.canChangeSimplifyDebts || state.isSaving}
-            aria-describedby={simplifyStatusId}
-            onCheckedChange={() => presenter.clickSimplifyDebts()}
-            className={cn(isUnavailable && 'pointer-events-none')}
-          />
-        </span>
+        <Switch
+          id={simplifyId}
+          checked={state.simplifiesDebts}
+          disabled={(!state.canChangeSimplifyDebts && !isUnavailable) || state.isSaving}
+          aria-disabled={isUnavailable || undefined}
+          aria-describedby={simplifyStatusId}
+          onCheckedChange={() => presenter.clickSimplifyDebts()}
+          className={cn('mt-0.5', isUnavailable && 'cursor-not-allowed opacity-50')}
+        />
       </div>
     </section>
   )

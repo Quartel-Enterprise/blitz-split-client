@@ -25,9 +25,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
 import com.quare.blitzsplit.android.designsystem.component.simplifyDebtsIcon
@@ -122,7 +124,7 @@ internal fun SimplifyDebtsSection(
 
 /*
  * Why: unavailable, the switch still looks disabled but takes the tap, which says why in a snackbar (13.1c); talkback
- * reads it as off and unavailable, with the reason, and a tap on it performs the same.
+ * reads it as off and disabled (the status line under the title says why), and a tap on it performs the same.
  */
 @Composable
 private fun SimplifySwitch(
@@ -139,7 +141,6 @@ private fun SimplifySwitch(
         )
         return
     }
-    val unavailableReason = stringResource(R.string.simplify_status_needs_third)
     // Why: a disabled switch drops the touch, so a box laid over it (same size) takes it and the switch only draws.
     Box(
         modifier = Modifier.minimumInteractiveComponentSize(),
@@ -154,10 +155,15 @@ private fun SimplifySwitch(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .clickable(role = Role.Switch) { onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked) }
+                .clickable(
+                    interactionSource = null,
+                    indication = null,
+                    role = Role.Switch,
+                ) { onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked) }
                 .semantics {
                     contentDescription = title
-                    stateDescription = unavailableReason
+                    toggleableState = ToggleableState.Off
+                    disabled()
                 },
         )
     }
