@@ -314,9 +314,10 @@ enum SplitBillCopy {
         )
     }
 
-    /// A fact as a sentence of the status's details: "Diego is out." takes the period the row leaves out.
+    /// A fact as a sentence of the status's details: "Diego is out." takes the full stop the row leaves out, in the
+    /// language's own form ("。", Hindi's "।") unless it already ends with one.
     private static func sentence(_ words: String) -> String {
-        words.isEmpty || words.hasSuffix(".") ? words : "\(words)."
+        words.isEmpty || [".", "。", "।"].contains(where: words.hasSuffix) ? words : words + WordGap.fullStop
     }
 
     /// "15%" as the device's language writes a percentage.

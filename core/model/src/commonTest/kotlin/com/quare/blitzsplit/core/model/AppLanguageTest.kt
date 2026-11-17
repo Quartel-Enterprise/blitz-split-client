@@ -252,6 +252,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Hindi tag WHEN reading it THEN is Hindi`() {
+        // Given
+        val tags = listOf("hi", "hi-IN", "hi_IN", "HI-in", "hi-Deva-IN")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.HINDI }, languages)
+    }
+
+    @Test
     fun `GIVEN a Portuguese tag of Portugal in other spellings WHEN reading it THEN is the Portuguese of Portugal`() {
         // Given
         val tags = listOf("pt-PT-x-private", "PT-PT", "pt-pt", "pt_pt_x_private", "pt-Latn-pt-u-fw-mon")
@@ -315,6 +327,7 @@ class AppLanguageTest {
                 "RU",
                 "UA",
                 "KO",
+                "HI",
             ),
             codes,
         )

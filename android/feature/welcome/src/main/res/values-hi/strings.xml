@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">खर्च बांटें, बिना झंझट</string>
+    <string name="welcome_offline_title">ऑफ़लाइन काम करता है</string>
+    <string name="welcome_offline_body">सब कुछ आपके डिवाइस पर रहता है और बाद में सिंक होता है।</string>
+    <string name="welcome_optional_title">अकाउंट ज़रूरी नहीं है</string>
+    <string name="welcome_optional_body">Google या Apple बस इसलिए हैं ताकि डिवाइस बदलने पर आपका कुछ न खोए।</string>
+    <string name="welcome_invite_title">लिंक या QR कोड से आमंत्रित करें</string>
+    <string name="welcome_invite_body">दोस्त बिना अकाउंट बनाए ग्रुप से जुड़ते हैं।</string>
+    <string name="welcome_no_connection_title">कनेक्शन नहीं है।</string>
+    <string name="welcome_no_connection_body">अकाउंट से साइन इन करने के लिए इंटरनेट चाहिए। अभी बिना अकाउंट के इस्तेमाल करें और बाद में प्रोफ़ाइल में कनेक्ट करें।</string>
+    <string name="welcome_or">या</string>
+    <string name="welcome_use_without_account">बिना अकाउंट के इस्तेमाल करें</string>
+    <string name="welcome_used_on_another_device">मैंने इसे दूसरे डिवाइस पर इस्तेमाल किया है</string>
+    <string name="welcome_sign_in_failed">अभी साइन इन नहीं हो सका। फिर से कोशिश करें।</string>
+    <string name="welcome_legal_notice">जारी रखकर, आप %1$s स्वीकार करते हैं और %2$s को मानते हैं।</string>
+    <string name="welcome_legal_terms">सेवा की शर्तें</string>
+    <string name="welcome_legal_privacy">निजता नीति</string>
+    <string name="welcome_no_account_note">बिना अकाउंट के, 30 दिन इस्तेमाल न होने पर आपका डेटा हटा दिया जाता है। इसे बनाए रखने के लिए Google या Apple कनेक्ट करें।</string>
+    <string name="welcome_no_account_note_offline">बिना अकाउंट के, 30 दिन इस्तेमाल न होने पर आपका डेटा हटा दिया जाता है। इसे बनाए रखने के लिए बाद में प्रोफ़ाइल में Google या Apple कनेक्ट करें।</string>
+    <string name="welcome_expired_title">आपका डेटा हटा दिया गया</string>
+    <string name="welcome_expired_body">आप बिना अकाउंट के ऐप इस्तेमाल कर रहे थे और 30 दिन तक इसे नहीं खोला, इसलिए आपका डेटा हटा दिया गया। अगली बार इसे बनाए रखने के लिए Google या Apple कनेक्ट करें।</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

@@ -69,6 +69,7 @@
     <string name="profile_language_russian">ロシア語</string>
     <string name="profile_language_ukrainian">ウクライナ語</string>
     <string name="profile_language_korean">韓国語</string>
+    <string name="profile_language_hindi">ヒンディー語</string>
     <string name="profile_language_system_detail">デバイスの言語</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

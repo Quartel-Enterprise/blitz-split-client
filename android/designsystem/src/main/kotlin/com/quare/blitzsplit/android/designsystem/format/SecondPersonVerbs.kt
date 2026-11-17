@@ -18,6 +18,8 @@ private const val RUSSIAN = "ru"
 private const val UKRAINIAN = "uk"
 private const val KOREAN = "ko"
 private const val KOREAN_HONORIFIC_SUBJECT = "님이"
+private const val HINDI = "hi"
+private const val HINDI_ERGATIVE = "ने"
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
@@ -41,6 +43,7 @@ private val youSubjectLanguages = setOf(
     RUSSIAN,
     UKRAINIAN,
     KOREAN,
+    HINDI,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -72,8 +75,10 @@ private val irregularSecondPerson = mapOf(
  * Russian and Ukrainian, whose past says the gender but not the person ("Ана разделил(а)", "Ты разделил(а)"). Korean
  * doesn't conjugate for the person either, but writes someone else as "Ana 님이" (님 always takes 이, so no particle
  * hangs on the sound of a name) and the user as "내가", the user's subject word holding its own particle: every Korean
- * verb phrase starts with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요"). Same rules as the web's
- * and the Apple app's `verbForYou`.
+ * verb phrase starts with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요"). Hindi's past puts the
+ * ergative "ने" after the actor, written apart after a name and as one word with the user's "आपने": every Hindi verb
+ * phrase starts with "ने", which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Same rules as the web's and
+ * the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -93,7 +98,9 @@ fun toSecondPerson(
 
     TURKISH -> toTurkishSecondPerson(verb)
 
-    KOREAN -> toKoreanSecondPerson(verb)
+    KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
+
+    HINDI -> dropSubjectParticle(verb, HINDI_ERGATIVE)
 
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
@@ -119,10 +126,16 @@ private fun toTurkishSecondPerson(verb: String): String {
     return clause + "n" + verb.substring(clause.length)
 }
 
-// Why: "님이 나눴어요" → "나눴어요", "님이 " → "": the user's subject word ("내가") already holds the particle.
-private fun toKoreanSecondPerson(verb: String): String {
+/*
+ * Why: "님이 나눴어요" → "나눴어요", "ने खर्च बांटा" → "खर्च बांटा", "님이 " → "": the user's subject word ("내가",
+ * "आपने") already holds the particle.
+ */
+private fun dropSubjectParticle(
+    verb: String,
+    particle: String,
+): String {
     val words = verb.split(' ')
-    return if (words.first() == KOREAN_HONORIFIC_SUBJECT) words.drop(1).joinToString(" ") else verb
+    return if (words.first() == particle) words.drop(1).joinToString(" ") else verb
 }
 
 // Why: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste"; the first word is the verb.
@@ -160,7 +173,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * Why: Spanish, Portugal's Portuguese, French, German, Italian, Polish, Dutch and Turkish say "Tú", "Tu", "Du", "Ty",
  * "Jij" or "Sen" and conjugate the verb for it, unlike the other languages. Russian and Ukrainian say "Ты" and "Ти"
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
- * Korean says "내가" rather than a "by you" that would put "님이" after "나".
+ * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

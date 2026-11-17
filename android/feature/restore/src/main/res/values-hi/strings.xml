@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">अपने ग्रुप वापस लाएं</string>
+    <string name="restore_subtitle">पहले किसी अकाउंट से साइन इन किया था? बस फिर से साइन इन करें। अगर नहीं, तो रिकवरी कोड या अपने पुराने डिवाइस का QR कोड इस्तेमाल करें।</string>
+    <string name="restore_no_connection_title">कनेक्शन नहीं है</string>
+    <string name="restore_no_connection_body">अकाउंट या कोड से साइन इन करने के लिए आपके ग्रुप डाउनलोड करने को इंटरनेट चाहिए। आपने जो टाइप किया है, वह बना रहेगा।</string>
+    <string name="restore_code_label">या रिकवरी कोड इस्तेमाल करें</string>
+    <string name="restore_code_hint">12 शब्द, क्रम से। सभी फ़ील्ड भरने के लिए सारे शब्द एक ही फ़ील्ड में पेस्ट करें।</string>
+    <string name="restore_scan_qr_title">अपने पुराने डिवाइस का QR कोड स्कैन करें</string>
+    <string name="restore_scan_qr_body">वहां: प्रोफ़ाइल › रिकवरी › QR कोड दिखाएं</string>
+    <string name="restore_recover">वापस लाएं</string>
+    <string name="restore_try_again">फिर से कोशिश करें</string>
+    <string name="restore_start_fresh">इस डिवाइस पर नए सिरे से शुरू करें</string>
+    <string name="restore_error_invalid_code">कोड नहीं मिला। शब्द और उनका क्रम जांचें, फिर से कोशिश करें।</string>
+    <string name="restore_error_too_many_attempts">बहुत ज़्यादा कोशिशें। कुछ मिनट रुकें और फिर से कोशिश करें।</string>
+    <string name="restore_error_sign_in_failed">अभी साइन इन नहीं हो सका। फिर से कोशिश करें।</string>
+    <string name="restore_error_unknown">कुछ गड़बड़ हो गई। फिर से कोशिश करें।</string>
+</resources>

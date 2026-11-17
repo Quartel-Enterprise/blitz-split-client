@@ -1,7 +1,7 @@
 # Store listing screenshots
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
-showing a sample trip among five friends, inside a device frame with a title and description, in all 16 languages
+showing a sample trip among five friends, inside a device frame with a title and description, in all 17 languages
 of the listings. The frames come from the [store-screenshots](https://github.com/lucianosantosdev/store-screenshots)
 library, as in Bible Planner. None of the images is versioned: every run rebuilds them from source.
 
