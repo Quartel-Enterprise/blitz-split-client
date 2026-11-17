@@ -439,7 +439,7 @@ class EditGroupReminderTest {
         }
 
     @Test
-    fun `GIVEN a schedule not saved WHEN tapping Add to calendar THEN hands over the schedule of the form`() =
+    fun `GIVEN a schedule not saved WHEN tapping Add to calendar THEN hands over the schedule the group has`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -452,12 +452,12 @@ class EditGroupReminderTest {
 
             // Then
             val action = assertIs<EditGroupUiAction.AddReminderToCalendar>(actions.single())
-            assertEquals("20261215T080000", action.event.startLocal)
-            assertEquals("FREQ=MONTHLY;BYMONTHDAY=15", action.event.rrule)
+            assertEquals("20261123T100000", action.event.startLocal)
+            assertEquals("FREQ=WEEKLY;BYDAY=MO", action.event.rrule)
         }
 
     @Test
-    fun `GIVEN a name typed with spaces around WHEN tapping Add to calendar THEN the event carries the trimmed name`() =
+    fun `GIVEN a name typed in the form WHEN tapping Add to calendar THEN the event carries the saved group name`() =
         runTest(testDispatcher) {
             // Given
             prepareScenario()
@@ -468,7 +468,7 @@ class EditGroupReminderTest {
 
             // Then
             val action = assertIs<EditGroupUiAction.AddReminderToCalendar>(actions.single())
-            assertEquals("Churrasco", action.event.groupName)
+            assertEquals("Viagem Floripa", action.event.groupName)
         }
 
     @Test

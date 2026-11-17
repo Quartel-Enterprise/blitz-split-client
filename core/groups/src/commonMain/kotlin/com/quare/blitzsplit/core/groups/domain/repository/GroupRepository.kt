@@ -45,7 +45,7 @@ interface GroupRepository {
         // Why: a Pending one goes up with the next sync; null takes the photo off.
         photo: ProfilePhoto?,
         currency: GroupCurrency,
-        reminder: GroupReminder = GroupReminder.Default,
+        reminder: GroupReminder,
         updatedAt: Long,
     ): Result<Unit>
 

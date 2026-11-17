@@ -3320,6 +3320,7 @@ class GroupRepositoryImplTest {
                 shape = GroupShape.COOKIE,
                 photo = null,
                 currency = GroupCurrency.USD,
+                reminder = GroupReminder.Default,
                 updatedAt = 7_000L,
             )
 
@@ -3382,6 +3383,7 @@ class GroupRepositoryImplTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
             updatedAt = 7_000L,
         )
 
@@ -3503,6 +3505,7 @@ class GroupRepositoryImplTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
             updatedAt = 7_000L,
         )
 
@@ -3558,6 +3561,7 @@ class GroupRepositoryImplTest {
                 shape = GroupShape.COOKIE,
                 photo = null,
                 currency = GroupCurrency.USD,
+                reminder = GroupReminder.Default,
                 updatedAt = 7_000L,
             )
 
@@ -3593,6 +3597,7 @@ class GroupRepositoryImplTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
             updatedAt = 7_000L,
         )
 
@@ -3614,6 +3619,7 @@ class GroupRepositoryImplTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
             updatedAt = 7_000L,
         )
 
@@ -3638,6 +3644,7 @@ class GroupRepositoryImplTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
             updatedAt = 7_000L,
         )
 
@@ -7135,6 +7142,7 @@ class GroupRepositoryImplTest {
             shape = shape,
             photo = photo,
             currency = GroupCurrency.BRL,
+            reminder = GroupReminder.Default,
             updatedAt = 7L,
         )
     }

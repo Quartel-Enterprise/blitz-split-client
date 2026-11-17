@@ -16,7 +16,13 @@ final class CreateGroupModel {
             self?.state = state
         })
         watches.add(viewModel.actionWatcher.observe { action in
-            if let add = action as? CreateGroupUiActionAddReminderToCalendar { ReminderCalendar.add(add.event) }
+            if let add = action as? CreateGroupUiActionAddReminderToCalendar {
+                // The form's sheet gives way to Invite right after this action: present over Invite, not over the sheet going away
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(800))
+                    ReminderCalendar.add(add.event)
+                }
+            }
         })
     }
 

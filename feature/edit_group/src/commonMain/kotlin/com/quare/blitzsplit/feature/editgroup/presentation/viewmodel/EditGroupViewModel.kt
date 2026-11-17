@@ -540,7 +540,9 @@ class EditGroupViewModel(
     private fun addReminderToCalendar() {
         val state = uiState.value
         if (!state.canAddReminderToCalendar) return
-        val event = buildReminderCalendarEvent(state.name.trim(), state.reminder) ?: return
+        // Why: the schedule the group has (saved), so a discarded edit never leaves a calendar series the group doesn't follow.
+        val saved = latest ?: return
+        val event = buildReminderCalendarEvent(saved.name, saved.reminder) ?: return
         trackEvent("group_reminder_calendar_clicked", mapOf("source" to "edit_group"))
         viewModelScope.launch { uiAction.emit(EditGroupUiAction.AddReminderToCalendar(event)) }
     }
