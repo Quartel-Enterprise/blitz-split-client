@@ -9,25 +9,21 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.ReminderKind
 import java.time.DayOfWeek
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.util.Locale
 
-// Why: the reminder's time of day in the person's clock (12 or 24 hours), "10:00" or "10:00 AM".
+/*
+ * Why: the reminder's time of day in the person's clock (12 or 24 hours), "10:00" or "10:00 AM", with the locale's
+ * own pattern every other time in the app uses (Korean and Japanese put the AM/PM marker first).
+ */
 @Composable
 fun rememberReminderTimeText(minute: Int): String {
-    val locale = LocalLocale.current.platformLocale
-    val is24Hour = rememberIs24HourClock()
-    return remember(minute, locale, is24Hour) { formatReminderTime(minute, locale, is24Hour) }
+    val formatter = rememberDateTimeTextFormatter()
+    return remember(minute, formatter) {
+        formatter.toTimeText(
+            LocalTime.of(minute / GroupReminder.MINUTES_PER_HOUR, minute % GroupReminder.MINUTES_PER_HOUR),
+        )
+    }
 }
-
-internal fun formatReminderTime(
-    minute: Int,
-    locale: Locale,
-    is24Hour: Boolean,
-): String = DateTimeFormatter
-    .ofPattern(if (is24Hour) "HH:mm" else "h:mm a", locale)
-    .format(LocalTime.of(minute / GroupReminder.MINUTES_PER_HOUR, minute % GroupReminder.MINUTES_PER_HOUR))
 
 // Why: the weekday's full name in the app's language, from the ISO number the server keeps (1 Monday to 7 Sunday).
 @Composable

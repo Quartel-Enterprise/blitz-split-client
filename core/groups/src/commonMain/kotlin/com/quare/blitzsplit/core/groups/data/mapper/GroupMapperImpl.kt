@@ -220,38 +220,41 @@ class GroupMapperImpl : GroupMapper {
     override fun toEntity(
         dto: GroupDto,
         ownerUserId: String,
-    ): GroupEntity = GroupEntity(
-        id = dto.id,
-        name = dto.name,
-        type = dto.type,
-        color = dto.color,
-        currency = dto.currency,
-        createdBy = dto.createdBy,
-        shape = dto.shape,
-        photoUrl = dto.photoUrl,
-        addedAt = dto.addedAt,
-        updatedAt = dto.updatedAt,
-        pendingSync = false,
-        ownerUserId = ownerUserId,
-        inviteCode = dto.inviteCode,
-        defaultSplit = dto.defaultSplit?.toString(),
-        // Why: no longer used since the incomes sync in group_member_income; applyRemoteGroup leaves it alone.
-        splitIncomes = null,
-        pendingPhoto = null,
-        simplifyDebts = dto.simplifyDebts ?: false,
-        simplifyDebtsAt = dto.simplifyDebtsAt ?: 0L,
-        simplifyDebtsBy = dto.simplifyDebtsBy,
-        simplifyDebtsChange = null,
-        simplifyDebtsPending = false,
-        simplifyDebtsConflictBy = null,
-        isOnServer = true,
+    ): GroupEntity {
         // Why: a server without the columns, or a value out of their ranges, reads as the default schedule.
-        reminderEnabled = reminderOf(dto).isEnabled,
-        reminderKind = reminderOf(dto).kind.code,
-        reminderDay = reminderOf(dto).day,
-        reminderMinute = reminderOf(dto).minute,
-        reminderDismissedAt = 0L,
-    )
+        val reminder = reminderOf(dto)
+        return GroupEntity(
+            id = dto.id,
+            name = dto.name,
+            type = dto.type,
+            color = dto.color,
+            currency = dto.currency,
+            createdBy = dto.createdBy,
+            shape = dto.shape,
+            photoUrl = dto.photoUrl,
+            addedAt = dto.addedAt,
+            updatedAt = dto.updatedAt,
+            pendingSync = false,
+            ownerUserId = ownerUserId,
+            inviteCode = dto.inviteCode,
+            defaultSplit = dto.defaultSplit?.toString(),
+            // Why: no longer used since the incomes sync in group_member_income; applyRemoteGroup leaves it alone.
+            splitIncomes = null,
+            pendingPhoto = null,
+            simplifyDebts = dto.simplifyDebts ?: false,
+            simplifyDebtsAt = dto.simplifyDebtsAt ?: 0L,
+            simplifyDebtsBy = dto.simplifyDebtsBy,
+            simplifyDebtsChange = null,
+            simplifyDebtsPending = false,
+            simplifyDebtsConflictBy = null,
+            isOnServer = true,
+            reminderEnabled = reminder.isEnabled,
+            reminderKind = reminder.kind.code,
+            reminderDay = reminder.day,
+            reminderMinute = reminder.minute,
+            reminderDismissedAt = 0L,
+        )
+    }
 
     override fun toEntity(
         dto: GroupMemberDto,

@@ -102,6 +102,32 @@ class ReminderCalendarEventTest {
     }
 
     @Test
+    fun `GIVEN a monthly 30th reminder and February next WHEN building the event THEN starts on March 30th`() {
+        // Given
+        val reminder = monthly15.copy(day = 30)
+        val afterJanuary30th = millisAt(2027, 1, 31, 12)
+
+        // When
+        val event = ReminderCalendarEvent.of("Viagem", reminder, afterJanuary30th, TimeZone.UTC)
+
+        // Then
+        assertEquals(millisAt(2027, 3, 30, 10), event?.startMillis)
+    }
+
+    @Test
+    fun `GIVEN a monthly 31st reminder and a short month next WHEN building the event THEN starts on its last day`() {
+        // Given
+        val reminder = monthly15.copy(day = 31)
+        val afterJanuary31st = millisAt(2027, 1, 31, 12)
+
+        // When
+        val event = ReminderCalendarEvent.of("Viagem", reminder, afterJanuary31st, TimeZone.UTC)
+
+        // Then
+        assertEquals(millisAt(2027, 2, 28, 10), event?.startMillis)
+    }
+
+    @Test
     fun `GIVEN a start in Tokyo WHEN writing its local time THEN has the date and time of that clock with no zone`() {
         // Given
         val event = ReminderCalendarEvent.of("Viagem", weeklyMonday, wednesday, tokyo)

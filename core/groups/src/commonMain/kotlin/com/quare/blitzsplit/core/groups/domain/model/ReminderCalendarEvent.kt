@@ -74,9 +74,13 @@ data class ReminderCalendarEvent(
     private fun Int.toPadded(length: Int): String = toString().padStart(length, '0')
 
     companion object {
+        private const val MONTHS_PER_YEAR = 12
+
         /*
          * Why: null while the reminder is off. A monthly day 31 repeats on each month's last day, as the server fires
-         * it; a 29th or 30th is on that day only, so a calendar skips the months that lack it (February).
+         * it; a 29th or 30th is on that day only, so a calendar skips the months that lack it (February), and the
+         * series starts on the first month that has it: a start on February's last day is a date the rule never
+         * makes, which calendars would add as one extra event.
          */
         fun of(
             groupName: String,
@@ -84,7 +88,10 @@ data class ReminderCalendarEvent(
             nowMillis: Long,
             timeZone: TimeZone,
         ): ReminderCalendarEvent? {
-            val start = reminder.findNextOccurrenceAfter(nowMillis, timeZone) ?: return null
+            val next = reminder.findNextOccurrenceAfter(nowMillis, timeZone) ?: return null
+            val start = generateSequence(next) { reminder.findNextOccurrenceAfter(it, timeZone) }
+                .take(MONTHS_PER_YEAR)
+                .firstOrNull { isOnRecurrenceDay(reminder, it, timeZone) } ?: next
             return ReminderCalendarEvent(
                 groupName = groupName,
                 startMillis = start,
@@ -92,5 +99,14 @@ data class ReminderCalendarEvent(
                 timeZoneId = timeZone.id,
             )
         }
+
+        // Why: a date the repeat rule makes, which only a 29th or 30th clamped to a shorter month isn't.
+        private fun isOnRecurrenceDay(
+            reminder: GroupReminder,
+            millis: Long,
+            timeZone: TimeZone,
+        ): Boolean = reminder.kind != ReminderKind.MONTHLY ||
+            reminder.day >= GroupReminder.MAX_MONTH_DAY ||
+            Instant.fromEpochMilliseconds(millis).toLocalDateTime(timeZone).day == reminder.day
     }
 }

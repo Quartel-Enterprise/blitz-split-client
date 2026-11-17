@@ -385,7 +385,8 @@ class CreateGroupViewModel(
                     ),
                 )
                 if (state.addsReminderToCalendar) {
-                    buildReminderCalendarEvent(state.name, state.reminder)?.let {
+                    // Why: titled with the name as the group was saved, trimmed and capped.
+                    buildReminderCalendarEvent(GroupNameRules.toCapped(state.name.trim()), state.reminder)?.let {
                         uiAction.emit(CreateGroupUiAction.AddReminderToCalendar(it))
                     }
                 }

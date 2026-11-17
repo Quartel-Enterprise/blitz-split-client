@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLocale
 import java.time.Instant
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -35,6 +36,9 @@ class DateTimeTextFormatter(
     fun toDateText(epochMillis: Long): String = date.format(zonedOf(epochMillis))
 
     fun toTimeText(epochMillis: Long): String = time.format(zonedOf(epochMillis))
+
+    // Why: a time of day with no date, as a group's reminder keeps it, on the same clock and pattern as the rest.
+    fun toTimeText(timeOfDay: LocalTime): String = time.format(timeOfDay)
 
     private fun zonedOf(epochMillis: Long): ZonedDateTime = Instant.ofEpochMilli(epochMillis).atZone(zone)
 

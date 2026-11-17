@@ -90,7 +90,9 @@ enum ReminderCalendar {
     }
     #else
     private static func openIcs(_ event: ReminderCalendarEvent, title: String, notes: String) {
-        let ics = event.toIcs(title: title, description: notes, uid: "reminder-\(event.startMillis)@blitzsplit.com")
+        // A fresh UID, as the web's: two groups on the same schedule share a start, and Calendar would take the second
+        // event for an update of the first
+        let ics = event.toIcs(title: title, description: notes, uid: "\(UUID().uuidString)@blitzsplit.com")
         let url = FileManager.default.temporaryDirectory.appending(path: "blitz-split-reminder.ics")
         guard (try? ics.write(to: url, atomically: true, encoding: .utf8)) != nil else { return }
         NSWorkspace.shared.open(url)
