@@ -51,7 +51,11 @@ private class CommandResult(
     val output: String,
     val errors: String,
     val hasTimedOut: Boolean,
+    val hasFailedToRun: Boolean,
 ) {
+    val hasAnswered: Boolean
+        get() = !hasTimedOut && !hasFailedToRun
+
     fun toLogEntry(): String =
         listOf("$ xcrun ${arguments.joinToString(" ")} ($status)", output.trimEnd(), errors.trimEnd())
             .filter(String::isNotEmpty)
@@ -96,7 +100,8 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
 
     @Synchronized
     fun fetchDevice(): String {
-        // A simctl that no longer answers would take its timeout from every suite left.
+        // A simctl that no longer answers would take its timeout from every suite left, and an
+        // xcrun that cannot run has nothing new to say.
         val listing = if (hasStoppedAnswering) null else run(availableDevices)
         val device = listing?.let { findDefaultIosDeviceOrNull(it.output) ?: waitForDeviceOrNull(it) }
         if (device != null) {
@@ -119,13 +124,17 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
         }
         var listing = firstListing
         val allowance = waitLeft ?: parameters.waitSeconds.get().seconds
-        if (allowance > Duration.ZERO) {
-            logger.warn("Waiting up to {} for the iOS simulator to list a device.", allowance)
+        // An xcrun that cannot run stays that way, unlike a simulator that lists no device.
+        if (allowance > Duration.ZERO && !firstListing.hasFailedToRun) {
+            logger.warn("Waiting up to {} for the iOS simulator to list a device.", toWholeSeconds(allowance))
             val start = TimeSource.Monotonic.markNow()
             try {
                 while (start.elapsedNow() < allowance) {
                     Thread.sleep(pollInterval.inWholeMilliseconds)
-                    listing = run(availableDevices)
+                    // The last polls get what is left of the allowance, not a whole timeout each.
+                    val timeLeft = allowance - start.elapsedNow()
+                    val timeout = timeLeft.coerceAtLeast(pollInterval).coerceAtMost(commandTimeout)
+                    listing = run(availableDevices, timeout)
                     val device = findDefaultIosDeviceOrNull(listing.output)
                     if (device != null) {
                         logger.warn(
@@ -144,37 +153,45 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
                 waitLeft = (allowance - start.elapsedNow()).coerceAtLeast(Duration.ZERO)
             }
         }
-        hasStoppedAnswering = listing.hasTimedOut
+        hasStoppedAnswering = !listing.hasAnswered
         return null
     }
 
     private fun toWholeSeconds(duration: Duration): Duration = duration.inWholeSeconds.seconds
 
-    // The commands that describe the state would hang like the listing that got no answer did.
+    // The commands that describe the state would hang, or fail to run, like the listing did.
     private fun buildStateReport(listing: CommandResult): String {
-        val results = if (listing.hasTimedOut) listOf(listing) else listOf(listing) + stateCommands.map(::run)
+        val results = if (listing.hasAnswered) listOf(listing) + stateCommands.map(::run) else listOf(listing)
         return results.joinToString("\n\n") { it.toLogEntry() }
     }
 
     // A simctl that hangs would otherwise hold the simulator's only slot for the rest of the build,
-    // so it gets commandTimeout. Its output goes through files, not pipes: reading the pipe of one
-    // that hangs would never return.
-    private fun run(arguments: List<String>): CommandResult {
+    // so it gets a timeout. Its output goes through files, not pipes: reading the pipe of one that
+    // hangs would never return.
+    private fun run(
+        arguments: List<String>,
+        timeout: Duration = commandTimeout,
+    ): CommandResult {
         val files = mutableListOf<File>()
+        var process: Process? = null
         try {
             val output = File.createTempFile("simctl", ".out").also(files::add)
             val errors = File.createTempFile("simctl", ".err").also(files::add)
-            val process = ProcessBuilder(listOf(XCRUN) + arguments)
+            val started = ProcessBuilder(listOf(XCRUN) + arguments)
                 .redirectOutput(output)
                 .redirectError(errors)
                 .start()
-            val hasFinished = process.waitFor(commandTimeout.inWholeSeconds, TimeUnit.SECONDS)
-            if (!hasFinished) process.destroyForcibly().waitFor()
-            val status = if (hasFinished) "exit code ${process.exitValue()}" else "no answer in $commandTimeout"
-            return CommandResult(arguments, status, output.readText(), errors.readText(), !hasFinished)
+                .also { process = it }
+            val hasFinished = started.waitFor(timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+            if (!hasFinished) started.destroyForcibly().waitFor()
+            val waited = toWholeSeconds(timeout)
+            val status = if (hasFinished) "exit code ${started.exitValue()}" else "no answer in $waited"
+            return CommandResult(arguments, status, output.readText(), errors.readText(), !hasFinished, false)
         } catch (e: IOException) {
-            return CommandResult(arguments, "could not run: $e", "", "", false)
+            return CommandResult(arguments, "could not run: $e", "", "", false, true)
         } finally {
+            // A wait interrupted by a cancelled build would leave a simctl that hangs running.
+            process?.takeIf { it.isAlive }?.destroyForcibly()
             files.forEach { it.delete() }
         }
     }
@@ -186,8 +203,8 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
 
 /**
  * Runs one module's simulator suite at a time, each iOS one on the device [IosSimulator] hands it.
- * A task disabled on this host (the simulator's, off a Mac) never asks for one, and a suite of
- * another simulator (watchOS, tvOS) keeps the device the Kotlin plugin picks for it.
+ * A task disabled on this host (the simulator's, off a Mac) never reads its device, and a suite of
+ * another simulator (watchOS, tvOS) keeps the one the Kotlin plugin picks for it.
  */
 internal fun Project.configureIosSimulatorTests() {
     val simulator = gradle.sharedServices.registerIfAbsent("iosSimulator", IosSimulator::class) {
@@ -199,7 +216,9 @@ internal fun Project.configureIosSimulatorTests() {
     }
     tasks.withType<KotlinNativeSimulatorTest>().configureEach {
         usesService(simulator)
-        if (isEnabled && targetName?.startsWith("ios") == true) {
+        // By the task's name, which it has from the start: the Kotlin plugin sets its target name
+        // and disables it off a Mac in its own configuration, which may run after this one.
+        if (name.startsWith("ios")) {
             device.set(simulator.map { it.fetchDevice() })
         }
     }

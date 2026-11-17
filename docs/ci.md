@@ -171,11 +171,13 @@ happened on `main` twelve minutes after a run's first suite: the suites of 27 mo
 them failed without running a test, with nothing in the log to say why the devices were gone. So when the simulator
 lists no device, the service logs its state (every device with the reason it is unavailable, the runtimes, and the
 disk images they are mounted from), and on CI, where `CI` is `true`, the suite waits for a device to be listed again:
-up to ten minutes for the whole build, so a simulator that never comes back holds the job once, not once per module. A
-`simctl` that hangs counts as no device: each call gets a minute, and once the wait is over the suites left fail
-without asking it again. Off CI the suite fails at once, with the same state in the log, since a Mac with no iOS
-runtime installed has nothing to wait for. When `apple-tests` fails with "The iOS simulator has no available device",
-look for "The iOS simulator lists no available device" in its log: what follows says what was missing.
+up to about ten minutes for the whole build, so a simulator that never comes back holds the job once, not once per
+module: each suite left asks `simctl` once more and fails without waiting. A `simctl` that hangs counts as no device:
+each call gets a minute, and when it still hangs once the wait is over, the suites left fail without asking it again.
+An `xcrun` that cannot run at all is not waited for. Off CI the suite fails at once, with the same state in the log,
+since a Mac with no iOS runtime installed has nothing to wait for. When `apple-tests` fails with "The iOS simulator
+has no available device", look for "The iOS simulator lists no available device" in its log: what follows says what
+was missing.
 
 The Kotlin/Native entry (`~/.konan`) holds the toolchain and the native code each library is compiled to on its first
 link. Every Kotlin/Native job restores the newest entry of its Kotlin version, and `apple-tests` saves it on `main`
