@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">ยอดคงเหลือ</string>
+    <string name="global_balances_profile">โปรไฟล์</string>
+    <string name="global_balances_offline">ออฟไลน์ · ยอดคงเหลือบนอุปกรณ์นี้</string>
+    <string name="global_balances_filter">แสดง</string>
+    <string name="global_balances_filter_all">ทั้งหมด</string>
+    <string name="global_balances_filter_you_owe">คุณค้าง</string>
+    <string name="global_balances_filter_owes_you">ค้างคุณ</string>
+    <string name="global_balances_hint">หักลบข้ามกลุ่มแล้ว แต่ละคนจะแสดงครั้งเดียว</string>
+    <string name="global_balances_hint_empty">รวมยอดจากทุกกลุ่มบนอุปกรณ์นี้</string>
+    <string name="global_balances_section_you_owe">คุณค้าง · %d</string>
+    <string name="global_balances_section_owes_you">ค้างคุณ · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">%d กลุ่ม</item>
+    </plurals>
+    <string name="global_balances_guest">%s · แขก</string>
+    <string name="global_balances_you_owe">คุณค้าง</string>
+    <string name="global_balances_owes_you">ค้างคุณ</string>
+    <string name="global_balances_by_group_show">แสดง %s แยกตามกลุ่ม</string>
+    <string name="global_balances_by_group_hide">ซ่อน %s แยกตามกลุ่ม</string>
+    <string name="global_balances_received">ได้รับแล้ว</string>
+    <string name="global_balances_received_from">ได้รับจาก %s แล้ว</string>
+    <string name="global_balances_settle">เคลียร์ยอด</string>
+    <string name="global_balances_settle_with">เคลียร์ยอดกับ %s</string>
+    <string name="global_balances_charge">ขอเงิน</string>
+    <string name="global_balances_charge_person">ขอเงินจาก %s</string>
+    <string name="global_balances_detail_pane">ยอดคงเหลือกับ %s</string>
+    <string name="global_balances_detail_owes_you">%s ค้างคุณ</string>
+    <string name="global_balances_detail_you_owe">คุณค้าง %s</string>
+    <string name="global_balances_detail_guest">%s · แขกที่ไม่มีแอป</string>
+    <string name="global_balances_detail_note_owed">ยอดสุทธิหักลบระหว่างกลุ่มแล้ว ขอเงินและได้รับแล้วจะใช้ %s แอปจะบันทึกการจ่ายเงินแยกในแต่ละกลุ่ม</string>
+    <string name="global_balances_detail_note_settle">ยอดสุทธิหักลบระหว่างกลุ่มแล้ว เคลียร์ยอดจะใช้ %s แอปจะบันทึกการจ่ายเงินแยกในแต่ละกลุ่ม</string>
+    <string name="global_balances_detail_note_single">มีกลุ่มที่ยังค้างกับ %s เพียงกลุ่มเดียว</string>
+    <string name="global_balances_settled_title">เคลียร์หมดแล้ว</string>
+    <string name="global_balances_settled_body">ไม่มีใครค้างคุณ และคุณก็ไม่ได้ค้างใคร เมื่อมีคนเพิ่มบิล ยอดคงเหลือจะแสดงที่นี่</string>
+    <string name="global_balances_settled_action">ดูกลุ่ม</string>
+    <string name="global_balances_nothing_to_pay_title">คุณไม่ได้ค้างใคร</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">คุณเคลียร์ยอดกับทุกคนแล้ว คุณยังมี %2$s ที่จะได้คืนจาก %1$d คน</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">ดูว่าใครค้างคุณ</string>
+    <string name="global_balances_nothing_to_receive_title">ไม่มีใครค้างคุณ</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">คุณยังค้าง %2$s กับ %1$d คน</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">ดูว่าคุณค้างใคร</string>
+    <string name="global_balances_coming_soon">เร็วๆ นี้</string>
+    <string name="global_balances_change_error">บันทึกการเปลี่ยนแปลงไม่สำเร็จ ลองอีกครั้ง</string>
+    <string name="global_balances_copied">คัดลอกแล้ว</string>
+    <string name="global_balances_charge_title">ขอเงินจาก %s</string>
+    <string name="global_balances_charge_owes">ค้างคุณ %1$s · %2$s</string>
+    <string name="global_balances_charge_close">ปิด</string>
+    <string name="global_balances_charge_guest">%s เป็นแขกที่ไม่มีแอป จะรู้เรื่องนี้จากข้อความนี้เท่านั้น ข้อความจึงบอกไว้แล้วว่ามีอะไรอยู่ในบิล</string>
+    <string name="global_balances_charge_message">ข้อความ</string>
+    <string name="global_balances_charge_pix">แนบคีย์ Pix ของฉัน</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">คัดลอกข้อความ</string>
+    <string name="global_balances_charge_send">ส่ง</string>
+    <string name="global_balances_message">สวัสดี %1$s! ตามการคำนวณของ Blitz Split คุณค้างฉัน %2$s จาก %3$s</string>
+    <string name="global_balances_message_guest">สวัสดี %1$s! คุณค้างฉัน %2$s จาก %3$s ซึ่งเป็นส่วนของคุณใน %4$s</string>
+    <string name="global_balances_message_guest_paid">สวัสดี %1$s! คุณค้างฉัน %2$s จาก %3$s ซึ่งเป็นส่วนของคุณใน %4$s หักด้วย %5$s ที่คุณจ่ายแล้ว</string>
+    <string name="global_balances_message_group">กลุ่ม “%s”</string>
+    <string name="global_balances_message_groups">กลุ่ม %s</string>
+    <string name="global_balances_message_pix">Pix %1$s: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">โทรศัพท์</string>
+    <string name="global_balances_key_email">อีเมล</string>
+    <string name="global_balances_key_random">คีย์สุ่ม</string>
+    <string name="global_balances_message_reroute">%1$s ลดความซับซ้อนของหนี้แล้ว คุณจึงจ่ายให้ฉันโดยตรงแทนการจ่ายให้ %2$s ยอดรวมของคุณไม่เปลี่ยน</string>
+</resources>

@@ -95,6 +95,12 @@
             "value" : "Blitz Split"
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -204,6 +210,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "th" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -323,6 +335,12 @@
             "value" : "Чтобы сканировать QR-код приглашения или со старого устройства, а также фотографировать себя для профиля и снимать счета."
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เพื่อสแกนคิวอาร์โค้ดของคำเชิญหรือจากอุปกรณ์เครื่องเก่า และเพื่อถ่ายรูปโปรไฟล์และรูปภาพของบิล"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -437,6 +455,12 @@
             "value" : "Чтобы приглашать людей из контактов по ссылке группы. Их номера остаются на этом устройстве."
           }
         },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เพื่อเชิญคนจากรายชื่อติดต่อของคุณด้วยลิงก์ของกลุ่ม เบอร์โทรของพวกเขาจะอยู่แค่ในอุปกรณ์นี้"
+          }
+        },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -549,6 +573,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Чтобы сохранять фото счетов в твою медиатеку."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เพื่อบันทึกรูปภาพของบิลลงในคลังรูปภาพของคุณ"
           }
         },
         "tr" : {

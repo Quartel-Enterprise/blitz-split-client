@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">คีย์ Pix ใหม่</string>
+    <string name="payment_key_title_pix_edit">แก้ไขคีย์ Pix</string>
+    <string name="payment_key_title_bitcoin_new">คีย์ Bitcoin ใหม่</string>
+    <string name="payment_key_title_bitcoin_edit">แก้ไขคีย์ Bitcoin</string>
+    <string name="payment_key_save">บันทึก</string>
+
+    <string name="payment_key_pix_intro">คนที่จ่ายเงินให้คุณจะเห็นคีย์นี้ตอนเคลียร์ยอด คีย์ประเภทไหน</string>
+    <string name="payment_key_pix_question">คีย์ประเภทไหน</string>
+    <string name="payment_key_pix_explanation">คนที่จ่ายเงินให้คุณจะเห็นคีย์นี้ตอนเคลียร์ยอด</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">โทรศัพท์</string>
+    <string name="payment_key_type_email">อีเมล</string>
+    <string name="payment_key_type_random">สุ่ม</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">เบอร์มือถือพร้อมรหัสพื้นที่</string>
+    <string name="payment_key_label_email">อีเมล</string>
+    <string name="payment_key_label_random">คีย์สุ่ม</string>
+
+    <string name="payment_key_bitcoin_intro">คุณต้องการรับเงินแบบไหน</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">เร็ว ค่าธรรมเนียมต่ำ</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">บนบล็อกเชน</string>
+    <string name="payment_key_label_lightning">Lightning Address หรือ LNURL</string>
+    <string name="payment_key_label_onchain">ที่อยู่ Bitcoin</string>
+
+    <string name="payment_key_paste">วาง</string>
+
+    <string name="payment_key_hint_cpf">รูปแบบ 000.000.000-00</string>
+    <string name="payment_key_hint_phone">รูปแบบ +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">รูปแบบ name@domain.com</string>
+    <string name="payment_key_hint_random">ตัวอักษรและตัวเลข 32 ตัว ตามที่ธนาคารของคุณแสดง</string>
+    <string name="payment_key_hint_lightning">เช่น name@wallet.com หรือ LNURL1…</string>
+    <string name="payment_key_hint_onchain">ที่อยู่ mainnet ที่ขึ้นต้นด้วย bc1q หรือ bc1p</string>
+
+    <string name="payment_key_valid_cpf">รูปแบบ 000.000.000-00 · เลขตรวจสอบถูกต้อง</string>
+    <string name="payment_key_valid_phone">รูปแบบ +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">รูปแบบ name@domain.com</string>
+    <string name="payment_key_valid_random">รู้จักคีย์สุ่มแล้ว (32 ตัวอักษร)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address ถูกต้อง</string>
+    <string name="payment_key_valid_lnurl">LNURL ถูกต้อง</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF ไม่ถูกต้อง: เลขตรวจสอบไม่ตรงกัน</string>
+    <string name="payment_key_error_invalid_phone">เบอร์มือถือไม่ครบ: ใส่รหัสพื้นที่และตัวเลข 9 หลักที่ขึ้นต้นด้วย 9</string>
+    <string name="payment_key_error_invalid_email">อีเมลไม่ครบ: ขาดโดเมน เช่น .com หรือ .com.br</string>
+    <string name="payment_key_error_invalid_random">คีย์สุ่มไม่ครบ: ต้องมีตัวอักษรและตัวเลข 32 ตัว</string>
+    <string name="payment_key_error_invalid_lightning">นี่ไม่ใช่ Lightning Address (name@wallet) หรือ LNURL</string>
+    <string name="payment_key_error_lightning_invoice">นี่คือใบแจ้งหนี้ Lightning (lnbc…): จ่ายได้ครั้งเดียวและหมดอายุ โปรดวาง Lightning Address หรือ LNURL</string>
+    <string name="payment_key_error_invalid_onchain">ที่อยู่ไม่ถูกต้อง ใช้ที่อยู่ mainnet แบบ bc1q หรือ bc1p</string>
+    <string name="payment_key_error_testnet_address">นี่คือที่อยู่ testnet (tb1…) ที่นี่ใช้ได้เฉพาะ Bitcoin mainnet ที่มีที่อยู่ bc1…</string>
+    <string name="payment_key_error_already_saved">คุณมีคีย์นี้อยู่แล้ว</string>
+
+    <string name="payment_key_switched_to_onchain">นี่คือที่อยู่ on-chain จึงเปลี่ยนเป็น On-chain ให้แล้ว</string>
+    <string name="payment_key_switched_to_lightning">นี่คือ Lightning Address จึงเปลี่ยนเป็น Lightning ให้แล้ว</string>
+    <string name="payment_key_cpf_notice">คนที่จ่ายเงินให้คุณจะเห็น CPF ของคุณทั้งหมด หากไม่ต้องการแชร์ ให้ใช้คีย์โทรศัพท์ อีเมล หรือคีย์สุ่ม</string>
+    <string name="payment_key_held_notice">คุณมีคีย์ Pix ประเภทนี้ได้เพียงคีย์เดียว นี่คือคีย์ที่คุณบันทึกไว้ เปลี่ยนได้ที่นี่หากต้องการ</string>
+
+    <string name="payment_key_accepted_title">ที่เรารองรับ</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">คีย์ Pix เริ่มต้น</string>
+    <string name="payment_key_default_bitcoin_title">คีย์ Bitcoin เริ่มต้น</string>
+    <string name="payment_key_default_pix_detail">แสดงเป็นอันดับแรกตอนเคลียร์ยอด</string>
+    <string name="payment_key_default_bitcoin_detail">แสดงเป็นอันดับแรกเมื่อมีคนจ่ายเป็น BTC</string>
+    <string name="payment_key_default_now">ตอนนี้: %1$s</string>
+    <string name="payment_key_default_locked_editing">หากต้องการเปลี่ยน ให้ตั้งคีย์อื่นเป็นค่าเริ่มต้น</string>
+    <string name="payment_key_default_locked_new">คีย์แรกของประเภทนี้จะเป็นค่าเริ่มต้น</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">โทรศัพท์</string>
+    <string name="payment_key_default_type_email">อีเมล</string>
+    <string name="payment_key_default_type_random">คีย์สุ่ม</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split ไม่ได้โอนเงิน คนจ่ายจะจ่ายผ่านแอปธนาคารของตัวเอง โปรดตรวจสอบว่าคีย์เป็นชื่อของคุณ</string>
+    <string name="payment_key_footer_bitcoin">ตอนเคลียร์ยอด เราจะแสดงจำนวนเงินเป็น sats ตามอัตราปัจจุบัน เป็นเพียงค่าประมาณ คนจ่ายจะยืนยันในวอลเล็ตของตัวเอง</string>
+
+    <string name="payment_key_delete">ลบคีย์</string>
+    <string name="payment_key_delete_title">ลบคีย์นี้ไหม</string>
+    <string name="payment_key_delete_body">คนที่ค้างคุณจะไม่เห็นคีย์นี้ตอนเคลียร์ยอดอีก</string>
+    <string name="payment_key_delete_confirm">ลบ</string>
+</resources>

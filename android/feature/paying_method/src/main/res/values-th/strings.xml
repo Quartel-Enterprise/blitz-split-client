@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">ช่องทางการจ่ายใหม่</string>
+    <string name="paying_method_edit_title">แก้ไขช่องทางการจ่าย</string>
+    <string name="paying_method_type">ประเภท</string>
+    <string name="paying_method_name">ชื่อ</string>
+    <string name="paying_method_name_optional">ชื่อ (ไม่บังคับ)</string>
+    <string name="paying_method_color">สี</string>
+    <string name="paying_method_default">ช่องทางเริ่มต้น</string>
+    <string name="paying_method_default_hint">บิลใหม่ที่คุณจ่ายจะใช้ช่องทางนี้ตั้งแต่แรก</string>
+    <string name="paying_method_delete">ลบช่องทางการจ่าย</string>
+    <string name="paying_method_delete_title">ลบช่องทางการจ่ายนี้ไหม</string>
+    <string name="paying_method_delete_body">บิลที่คุณระบุช่องทางนี้ไว้จะไม่แสดงช่องทางนี้อีก</string>
+    <string name="paying_method_delete_confirm">ลบ</string>
+    <string name="paying_method_save">บันทึก</string>
+</resources>

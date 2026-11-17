@@ -27,6 +27,7 @@ enum class AppLanguage(
     HINDI("hi"),
     ARABIC("ar"),
     CHINESE_SIMPLIFIED("zh-Hans"),
+    THAI("th"),
     ;
 
     /*
@@ -63,9 +64,9 @@ enum class AppLanguage(
 
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
-         * Ukrainian, Korean, Hindi, Arabic, Chinese or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH,
-         * pl-PL, nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, zh-CN, en-GB), SYSTEM for none or any
-         * other. Portuguese is two entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too:
+         * Ukrainian, Korean, Hindi, Arabic, Chinese, Thai or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT,
+         * it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, zh-CN, th-TH, en-GB), SYSTEM for
+         * none or any other. Portuguese is two entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too:
          * es-ES is Spain's, every other tag (es, es-MX, es-419…) the neutral Latin-American one. Chinese is Simplified,
          * mainland China's zh-Hans, but for a Traditional tag (zh-Hant, zh-TW, zh-HK, zh-MO), which stays SYSTEM until
          * the app has Traditional Chinese: Android and Apple show English to it, having no Hant resources.

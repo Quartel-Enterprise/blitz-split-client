@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">ไม่มีคำ</string>
+    <string name="category_map_title">แผนที่หมวดหมู่</string>
+    <string name="category_map_search">ค้นหาคำ</string>
+    <string name="category_map_add">เพิ่มคำ</string>
+    <string name="category_map_more">ตัวเลือกเพิ่มเติม</string>
+    <string name="category_map_restore">คืนค่าเริ่มต้น</string>
+    <string name="category_map_back">กลับ</string>
+    <string name="category_map_intro">เมื่อชื่อบิลมีคำใดคำหนึ่งเหล่านี้ หมวดหมู่จะถูกเลือกให้เอง “Uber กลับบ้าน” จะเป็นหมวดเดินทาง</string>
+    <string name="category_map_intro_offline">แผนที่ใช้งานได้แบบออฟไลน์ การเปลี่ยนแปลงมีผลทันทีบนอุปกรณ์นี้ และจะไปถึงอุปกรณ์อื่นของคุณเมื่อกลับมาออนไลน์</string>
+    <string name="category_map_device_only">แผนที่ของคุณอยู่บนอุปกรณ์นี้เท่านั้น หากต้องการใช้บนอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ด้วย Google หรือ Apple ในโปรไฟล์</string>
+    <string name="category_map_open_profile">เปิดโปรไฟล์</string>
+    <string name="category_map_longest_wins">เมื่อมีสองคำตรงกับชื่อบิล คำที่ยาวกว่าจะถูกใช้</string>
+    <string name="category_map_no_result">ไม่มีคำที่มี “%1$s”</string>
+    <string name="category_map_no_result_body">เพิ่มคำนี้ แล้วบิลที่มีคำนี้ในชื่อจะได้หมวดหมู่ที่ถูกต้อง</string>
+    <string name="category_map_add_query">เพิ่ม “%1$s”</string>
+    <string name="category_map_empty_title">แผนที่ของคุณว่างเปล่า</string>
+    <string name="category_map_empty_body">หากไม่มีคำ หมวดหมู่จะไม่ถูกเลือกจากชื่อ คุณต้องเลือกเองในแต่ละบิล</string>
+    <string name="category_map_group_category"> · หมวดหมู่ของ %1$s</string>
+    <string name="category_map_only_main">เฉพาะ %1$s</string>
+    <string name="category_map_only_in_group">เฉพาะใน %1$s</string>
+    <string name="category_map_no_terms_yet">ยังไม่มีคำ</string>
+    <string name="category_map_add_in">เพิ่มคำใน %1$s</string>
+    <string name="category_map_tip">แตะคำเพื่อเปลี่ยนหมวดหมู่หรือนำออก จับคู่ทั้งคำ โดยไม่สนใจวรรณยุกต์และตัวพิมพ์เล็กใหญ่</string>
+    <string name="category_map_queued">อยู่ในคิว</string>
+    <string name="category_map_term_action">%1$s, %2$s แก้ไข</string>
+    <string name="category_map_new_term">คำใหม่</string>
+    <string name="category_map_edit_term">แก้ไขคำ</string>
+    <string name="category_map_term_label">คำหรือวลี</string>
+    <string name="category_map_term_help">จับคู่ทั้งคำ โดยไม่สนใจวรรณยุกต์และตัวพิมพ์เล็กใหญ่</string>
+    <string name="category_map_term_help_app">คำของแอป คืนค่าเริ่มต้นจะนำกลับมาเหมือนเดิม</string>
+    <string name="category_map_term_duplicate">“%1$s” เลือก %2$s อยู่แล้ว แต่ละคำมีได้หมวดหมู่เดียว</string>
+    <string name="category_map_term_too_short">ใช้อย่างน้อย 2 ตัวอักษร</string>
+    <string name="category_map_term_too_long">ใช้ไม่เกิน 30 ตัวอักษร</string>
+    <string name="category_map_term_invalid">ใช้ได้เฉพาะตัวอักษร ตัวเลข และการเว้นวรรค</string>
+    <string name="category_map_category">หมวดหมู่</string>
+    <string name="category_map_category_help">เป็นหมวดหมู่หรือหมวดหมู่ย่อยก็ได้</string>
+    <string name="category_map_category_help_edit">การเปลี่ยนตรงนี้จะย้ายคำไปหมวดหมู่อื่น</string>
+    <string name="category_map_category_help_move">การย้ายจะนำคำออกจาก %1$s</string>
+    <string name="category_map_example">ตัวอย่าง</string>
+    <string name="category_map_example_move">ถ้าย้าย</string>
+    <string name="category_map_remove">นำออก</string>
+    <string name="category_map_cancel">ยกเลิก</string>
+    <string name="category_map_save">บันทึก</string>
+    <string name="category_map_move_to">ย้ายไปที่ %1$s</string>
+    <string name="category_map_removed">“%1$s” ถูกนำออกจากแผนที่แล้ว</string>
+    <string name="category_map_undo">เลิกทำ</string>
+    <string name="category_map_restore_title">คืนค่าแผนที่เริ่มต้นไหม</string>
+    <string name="category_map_restore_body">คำ 60 คำของแอปจะกลับมาเหมือนเดิม รวมถึงคำที่คุณนำออกหรือย้ายไป</string>
+    <string name="category_map_restore_own_one">คำที่คุณสร้าง “%1$s” จะยังอยู่</string>
+    <string name="category_map_restore_confirm">คืนค่า</string>
+    <string name="category_map_save_error">บันทึกแผนที่ไม่สำเร็จ ลองอีกครั้ง</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="other">%d คำ</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="other">%d หมวดหมู่ย่อย</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="other">%1$d คำที่มี “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="other">ออฟไลน์ · %d การเปลี่ยนแปลงอยู่ในคิว</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="other">คำ %d คำที่คุณสร้างจะยังอยู่</item>
+    </plurals>
+    <string name="category_map_new_category">หมวดหมู่ใหม่</string>
+    <string name="category_map_new_subcategory_in">หมวดหมู่ย่อยใหม่ใน %s</string>
+    <string name="category_map_edit_category">แก้ไข %s</string>
+    <string name="category_map_category_group">กลุ่ม</string>
+    <string name="category_map_change_color">เปลี่ยนสีของ %1$s</string>
+    <string name="category_map_restore_color">คืนค่าสี</string>
+    <string name="category_map_color_done">เสร็จสิ้น</string>
+</resources>

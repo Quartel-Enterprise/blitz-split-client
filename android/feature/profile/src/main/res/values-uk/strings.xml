@@ -75,6 +75,7 @@
     <string name="profile_language_hindi">Гінді</string>
     <string name="profile_language_arabic">Арабська</string>
     <string name="profile_language_chinese_simplified">Китайська (спрощена)</string>
+    <string name="profile_language_thai">Тайська</string>
     <string name="profile_language_system_detail">Мова пристрою</string>
     <string name="profile_notifications">Сповіщення</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">บันทึกรหัสกู้คืนของคุณ</string>
+    <string name="recovery_code_body">คุณกำลังใช้งานโดยไม่มีบัญชี คำ 12 คำนี้จะนำข้อมูลของคุณกลับมาหากคุณเปลี่ยนหรือทำอุปกรณ์หาย จดไว้ตามลำดับ หากไม่ได้ใช้งาน 30 วัน ข้อมูลของคุณจะถูกลบและคำเหล่านี้จะใช้ไม่ได้</string>
+    <string name="recovery_code_copy">คัดลอกคำ</string>
+    <string name="recovery_code_save_to_password_manager">บันทึกในตัวจัดการรหัสผ่าน</string>
+    <string name="recovery_code_connect_instead">เชื่อมต่อ Google หรือ Apple แทน</string>
+    <string name="recovery_code_connect_instead_body">ไม่ต้องใช้รหัส</string>
+    <string name="recovery_code_sign_in_failed">เชื่อมต่อไม่ได้ในขณะนี้ ลองอีกครั้ง</string>
+    <string name="recovery_code_also_in_profile">ดูได้ที่ โปรไฟล์ › การกู้คืน ด้วย</string>
+    <string name="recovery_code_remind_later">เตือนฉันภายหลัง</string>
+    <string name="recovery_code_saved">ฉันบันทึกแล้ว</string>
+    <string name="recovery_code_download">ดาวน์โหลด</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · รหัสกู้คืน\n\n%1$s\n\nใช้รหัสนี้ใน \"ฉันเคยใช้บนอุปกรณ์อื่น\" เพื่อนำข้อมูลของคุณกลับมา\n</string>
+</resources>

@@ -844,6 +844,7 @@ export const id: Record<MessageKey, string> = {
   profile_languageHindi: 'Hindi',
   profile_languageArabic: 'Bahasa Arab',
   profile_languageChineseSimplified: 'Tionghoa (Sederhana)',
+  profile_languageThai: 'Thai',
   profile_bitcoinInSats: 'Bitcoin dalam satoshi',
   profile_bitcoinInSatsDetail: 'Menampilkan dan mengetik nominal bitcoin dalam sats (1 ₿ = 100.000.000 sats).',
   profile_shareUsageData: "Bagikan data penggunaan",

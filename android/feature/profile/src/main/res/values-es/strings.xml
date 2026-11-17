@@ -74,6 +74,7 @@
     <string name="profile_language_hindi">Hindi</string>
     <string name="profile_language_arabic">Árabe</string>
     <string name="profile_language_chinese_simplified">Chino (simplificado)</string>
+    <string name="profile_language_thai">Tailandés</string>
     <string name="profile_language_system_detail">Idioma del dispositivo</string>
     <string name="profile_notifications">Notificaciones</string>
     <plurals name="profile_notifications_active">

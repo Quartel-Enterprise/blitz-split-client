@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">ลบบัญชี</string>
+    <string name="delete_account_offline_title">ไม่มีอินเทอร์เน็ต</string>
+    <string name="delete_account_offline_body">การลบบัญชีต้องเชื่อมต่ออินเทอร์เน็ต เชื่อมต่อแล้วลองอีกครั้ง</string>
+    <string name="delete_account_heading">ลบบัญชีและข้อมูลของคุณไหม</string>
+    <string name="delete_account_deleted_title">สิ่งที่จะถูกลบ</string>
+    <string name="delete_account_deleted_profile">โปรไฟล์ของคุณ (ชื่อ รูปภาพ และสี)</string>
+    <string name="delete_account_deleted_keys">คีย์ Pix และ Bitcoin ของคุณ</string>
+    <string name="delete_account_deleted_provider">การเชื่อมโยงกับบัญชี %1$s ของคุณ</string>
+    <string name="delete_account_deleted_recovery_code">รหัสกู้คืนของคุณ</string>
+    <string name="delete_account_deleted_device">สำเนาข้อมูลของคุณในอุปกรณ์นี้</string>
+    <string name="delete_account_kept_title">สิ่งที่ยังอยู่ในกลุ่มของคุณ</string>
+    <string name="delete_account_kept_groups">กลุ่ม พร้อมบิลและการจ่ายเงิน สำหรับสมาชิกคนอื่น</string>
+    <string name="delete_account_kept_member">ชื่อของคุณในแต่ละกลุ่ม ในฐานะสมาชิกที่ไม่มีบัญชี</string>
+    <string name="delete_account_kept_comments">ความคิดเห็นและรูปภาพที่คุณเพิ่ม ภายใต้ชื่อของคุณ</string>
+    <string name="delete_account_export">ส่งออกข้อมูลของฉันก่อน</string>
+    <string name="delete_account_confirm">ฉันเข้าใจว่ายกเลิกการดำเนินการนี้ไม่ได้</string>
+    <string name="delete_account_delete">ลบบัญชี</string>
+    <string name="delete_account_cancel">ยกเลิก</string>
+    <string name="delete_account_failed">ลบบัญชีไม่ได้ ลองอีกครั้ง</string>
+</resources>

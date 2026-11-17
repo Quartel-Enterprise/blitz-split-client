@@ -72,6 +72,7 @@
     <string name="profile_language_hindi">Hindi</string>
     <string name="profile_language_arabic">Bahasa Arab</string>
     <string name="profile_language_chinese_simplified">Tionghoa (Sederhana)</string>
+    <string name="profile_language_thai">Thai</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>
     <plurals name="profile_notifications_active">

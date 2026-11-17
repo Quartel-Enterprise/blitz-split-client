@@ -36,6 +36,7 @@ class ProfileUiStateTest {
             AppLanguage.HINDI -> listOf("हिन्दी", "Hindi")
             AppLanguage.ARABIC -> listOf("العربية", "Arabic")
             AppLanguage.CHINESE_SIMPLIFIED -> listOf("中文（简体）", "Chinese (Simplified)")
+            AppLanguage.THAI -> listOf("ไทย", "Thai")
         }
     }
 
@@ -69,6 +70,7 @@ class ProfileUiStateTest {
         AppLanguage.HINDI,
         AppLanguage.ARABIC,
         AppLanguage.CHINESE_SIMPLIFIED,
+        AppLanguage.THAI,
     )
 
     @Test
@@ -646,6 +648,7 @@ class ProfileUiStateTest {
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
+                AppLanguage.THAI,
             ),
             options,
         )
@@ -682,6 +685,7 @@ class ProfileUiStateTest {
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
+                AppLanguage.THAI,
             ),
             options,
         )

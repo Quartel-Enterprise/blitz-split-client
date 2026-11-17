@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">ปิด</string>
+    <string name="invite_group_created">สร้างกลุ่มแล้ว</string>
+    <string name="invite_title">เชิญทุกคนเข้าร่วม “%s”</string>
+    <string name="invite_qr_description">คิวอาร์โค้ดของลิงก์เชิญเข้ากลุ่ม</string>
+    <string name="invite_copy">คัดลอก</string>
+    <string name="invite_copied">คัดลอกแล้ว</string>
+    <string name="invite_who_picks">คนที่เปิดลิงก์จะเลือกว่าตัวเองคือใครในรายชื่อ: %s ไม่ต้องมีบัญชี</string>
+    <string name="invite_names_or">%1$s หรือ %2$s</string>
+    <string name="invite_anyone_joins">คนที่เปิดลิงก์จะเข้าร่วมกลุ่ม ไม่ต้องมีบัญชี</string>
+    <string name="invite_pending_title">ลิงก์รอดำเนินการ</string>
+    <string name="invite_pending_offline">จะสร้างทันทีที่คุณออนไลน์</string>
+    <string name="invite_pending_online">กำลังสร้างลิงก์…</string>
+    <string name="invite_failed_title">สร้างลิงก์ไม่สำเร็จ</string>
+    <string name="invite_failed_body">เกิดข้อผิดพลาดขณะซิงค์กลุ่ม</string>
+    <string name="invite_retry">ลองอีกครั้ง</string>
+    <string name="invite_share">แชร์ลิงก์</string>
+    <string name="invite_see_who_joined">ดูว่าใครเข้าร่วมแล้ว</string>
+    <string name="invite_add_person">เพิ่มคนที่ไม่มีแอป</string>
+    <string name="invite_go_to_group">ไปที่กลุ่ม</string>
+    <string name="invite_change_link">เปลี่ยนลิงก์</string>
+    <string name="invite_change_link_title">เปลี่ยนลิงก์เชิญไหม</string>
+    <string name="invite_change_link_message">ลิงก์และคิวอาร์โค้ดปัจจุบันจะใช้ไม่ได้ รวมถึงคำเชิญส่วนตัวที่ยังไม่ได้ใช้ คนที่เข้าร่วมแล้วจะยังอยู่ในกลุ่ม</string>
+    <string name="invite_change_link_failed">เปลี่ยนลิงก์ไม่สำเร็จ ลองอีกครั้ง</string>
+    <string name="invite_share_message">มาหารบิลของ “%1$s” กันบน Blitz Split เข้าร่วมด้วยลิงก์นี้: %2$s</string>
+</resources>

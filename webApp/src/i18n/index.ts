@@ -18,6 +18,7 @@ import { ko } from './ko'
 import { hi } from './hi'
 import { ar } from './ar'
 import { zh } from './zh'
+import { th } from './th'
 
 export type { MessageKey }
 /**
@@ -25,12 +26,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'th'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, th }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'th']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -56,9 +57,9 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag
  * (es, es-MX, es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any
- * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi` or `ar` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY,
- * id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG…) is German, Italian, Polish, Dutch, Japanese, Turkish,
- * Indonesian, Russian, Ukrainian, Korean, Hindi or Arabic, any `zh` tag but a Traditional one (zh-CN, zh-Hans, zh-SG…) is
+ * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar` or `th` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY,
+ * id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH…) is German, Italian, Polish, Dutch, Japanese, Turkish,
+ * Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic or Thai, any `zh` tag but a Traditional one (zh-CN, zh-Hans, zh-SG…) is
  * Simplified Chinese, any `en` tag is English, and English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
@@ -106,16 +107,17 @@ const isUnspaced = locale === 'ja' || locale === 'zh'
 export const wordGap = isUnspaced ? '' : ' '
 
 /**
- * The end of a sentence the code finishes: Japanese's and Chinese's "。", Hindi's danda "।", the others' ".". Same rule
- * as Android's `fullStopUi`.
+ * The end of a sentence the code finishes: Japanese's and Chinese's "。", Hindi's danda "।", nothing in Thai, which
+ * ends a sentence with none (the word gap's space parts two), the others' ".". Same rule as Android's `fullStopUi`.
  */
-export const fullStop = isUnspaced ? '。' : locale === 'hi' ? '।' : '.'
+export const fullStop = isUnspaced ? '。' : locale === 'hi' ? '।' : locale === 'th' ? '' : '.'
 
 /**
  * Between two clauses of one sentence the code joins ("…pays you $64, and Ana no longer owes you"): Japanese ends the
- * first sentence instead ("…払います。…なくなりました"), and Chinese takes its own comma ("…，Ana不再欠你").
+ * first sentence instead ("…払います。…なくなりました"), Chinese takes its own comma ("…，Ana不再欠你"), and Thai,
+ * which has no comma, a space.
  */
-export const clauseBreak = locale === 'ja' ? '。' : locale === 'zh' ? '，' : ', '
+export const clauseBreak = locale === 'ja' ? '。' : locale === 'zh' ? '，' : locale === 'th' ? ' ' : ', '
 
 const documentLanguages: Record<Locale, string> = {
   en: 'en',
@@ -137,6 +139,7 @@ const documentLanguages: Record<Locale, string> = {
   hi: 'hi',
   ar: 'ar',
   zh: 'zh-Hans',
+  th: 'th',
 }
 
 const documentLanguage = documentLanguages[locale]
@@ -164,19 +167,29 @@ export function isolated(text: string): string {
   return direction === 'rtl' ? `\u2068${text}\u2069` : text
 }
 
-// Why: the languages whose own digits Intl would write ("١٢٫٥٠" in Arabic), which the amount fields can't parse.
-const latinDigitLanguages: ReadonlySet<string> = new Set(['ar'])
+/**
+ * The Unicode extension a language's `Intl` formatting needs: Latin digits for Arabic, whose own ("١٢٫٥٠") the amount
+ * fields can't parse, and the Gregorian calendar for Thai, whose default is the Buddhist era (2569 for 2026), so the
+ * web writes the year Android writes.
+ */
+const formattingKeys: Readonly<Record<string, readonly [key: string, value: string]>> = {
+  ar: ['nu', 'latn'],
+  th: ['ca', 'gregory'],
+}
 
 /**
  * The tag to hand `Intl` for numbers, amounts and dates: `tag` itself, but with Latin digits (`-u-nu-latn`) for
- * Arabic, so an amount reads "12.50" as the amount fields type it. Every other language gets `tag` unchanged.
+ * Arabic, so an amount reads "12.50" as the amount fields type it, and the Gregorian calendar (`-u-ca-gregory`) for
+ * Thai. Every other language gets `tag` unchanged.
  */
 export function formattingLocale(tag: string): string {
-  if (!latinDigitLanguages.has(tag.toLowerCase().split(/[-_]/)[0])) return tag
+  const pair = formattingKeys[tag.toLowerCase().split(/[-_]/)[0]]
+  if (pair === undefined) return tag
+  const [key, value] = pair
   const [base, extension] = tag.split(/-u-/i)
-  if (extension === undefined) return `${tag}-u-nu-latn`
-  const keys = extension.replace(/(^|-)nu-[a-z0-9]{3,8}/i, '').replace(/^-/, '')
-  return `${base}-u-${keys ? `${keys}-` : ''}nu-latn`
+  if (extension === undefined) return `${tag}-u-${key}-${value}`
+  const keys = extension.replace(new RegExp(`(^|-)${key}-[a-z0-9]{3,8}`, 'i'), '').replace(/^-/, '')
+  return `${base}-u-${keys ? `${keys}-` : ''}${key}-${value}`
 }
 
 const pluralRules = new Intl.PluralRules(documentLanguage)
