@@ -317,4 +317,19 @@
     <string name="designsystem_range_start">Data di inizio</string>
     <string name="designsystem_range_end">Data di fine</string>
     <string name="designsystem_range_none">Nessuna selezionata</string>
+    <string name="designsystem_reminder_title">Promemoria del gruppo</string>
+    <string name="designsystem_reminder_switch">Ricorda ai membri di saldare i conti</string>
+    <string name="designsystem_reminder_caption">Chi deve dei soldi riceve una notifica, secondo il proprio orario.</string>
+    <string name="designsystem_reminder_weekly">Settimanale</string>
+    <string name="designsystem_reminder_monthly">Mensile</string>
+    <string name="designsystem_reminder_time">Ora</string>
+    <string name="designsystem_reminder_day_of_month">Giorno del mese</string>
+    <string name="designsystem_reminder_calendar_new">Aggiungi al mio calendario</string>
+    <string name="designsystem_reminder_calendar_new_caption">Aggiunge un evento ricorrente al tuo calendario quando il gruppo viene creato.</string>
+    <string name="designsystem_reminder_calendar">Aggiungi al calendario</string>
+    <string name="designsystem_reminder_calendar_join">Aggiungi il promemoria al tuo calendario</string>
+    <string name="designsystem_reminder_schedule_weekly">Ogni %1$s alle %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Ogni mese, il giorno %1$d alle %2$s</string>
+    <string name="designsystem_reminder_event_title">Salda i conti: %1$s</string>
+    <string name="designsystem_reminder_event_description">È ora di saldare i conti in %1$s.</string>
 </resources>

@@ -14,6 +14,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeExpenseRepository
 import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
@@ -916,6 +917,8 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
             isSimplifyDebtsPending = false,
             simplifyDebtsChangedBy = null,
             simplifyDebtsConflictBy = null,
+            reminder = GroupReminder.Default,
+            reminderDismissedAt = 0L,
         )
         groups = FakeGroupRepository(initialGroups = listOf(trip))
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)

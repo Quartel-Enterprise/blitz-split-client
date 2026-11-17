@@ -21,8 +21,10 @@ import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupDeletion
 import com.quare.blitzsplit.core.groups.domain.model.GroupExitOutcome
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.InviteCodeTakenException
 import com.quare.blitzsplit.core.groups.domain.model.MemberAccountRefusedException
+import com.quare.blitzsplit.core.groups.domain.model.ReminderKind
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsPair
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -682,6 +684,84 @@ class GroupRepositoryImplTest {
             assertEquals(listOf(false, true, false), listOf("m-1", "m-2", "m-3").map { local.member(it)?.isMe })
             assertFalse(repository.observeHasPendingChanges().first())
         }
+
+    @Test
+    fun `GIVEN a pending group with its own reminder WHEN uploading THEN pushes the four reminder fields`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                ).copy(
+                    reminderEnabled = false,
+                    reminderKind = "monthly",
+                    reminderDay = 31,
+                    reminderMinute = 1_080,
+                ),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1")
+
+        // Then
+        val pushed = remote.upsertedGroups.single().single()
+        assertEquals(false, pushed.reminderEnabled)
+        assertEquals("monthly", pushed.reminderKind)
+        assertEquals(31, pushed.reminderDay)
+        assertEquals(1_080, pushed.reminderMinute)
+    }
+
+    @Test
+    fun `GIVEN a server group with a reminder WHEN downloading THEN stores that schedule`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    createdBy = "user-2",
+                ).copy(
+                    reminderEnabled = true,
+                    reminderKind = "weekly",
+                    reminderDay = 5,
+                    reminderMinute = 1_200,
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        val stored = local.group("group-1")
+        assertEquals("weekly", stored?.reminderKind)
+        assertEquals(5, stored?.reminderDay)
+        assertEquals(1_200, stored?.reminderMinute)
+    }
+
+    @Test
+    fun `GIVEN a server group without reminder columns WHEN downloading THEN stores Monday 10 00 on`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    createdBy = "user-2",
+                ),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1")
+
+        // Then
+        val stored = local.group("group-1")
+        assertEquals(true, stored?.reminderEnabled)
+        assertEquals("weekly", stored?.reminderKind)
+        assertEquals(1, stored?.reminderDay)
+        assertEquals(600, stored?.reminderMinute)
+    }
 
     @Test
     fun `GIVEN members on the server WHEN downloading THEN only those with an account have joined`() = runTest {
@@ -3240,6 +3320,7 @@ class GroupRepositoryImplTest {
                 shape = GroupShape.COOKIE,
                 photo = null,
                 currency = GroupCurrency.USD,
+                reminder = GroupReminder.Default,
                 updatedAt = 7_000L,
             )
 
@@ -3251,6 +3332,106 @@ class GroupRepositoryImplTest {
             assertEquals("peach", stored?.color)
             assertEquals("USD", stored?.currency)
             assertEquals(7_000L, stored?.updatedAt)
+        }
+
+    @Test
+    fun `GIVEN a stored group WHEN editing it with a monthly reminder THEN stores the reminder with the edit`() =
+        runTest {
+            // Given
+            prepareScenario(storedGroups = listOf(group(id = "group-1")))
+            val reminder = GroupReminder(
+                isEnabled = false,
+                kind = ReminderKind.MONTHLY,
+                day = 31,
+                minute = 1_080,
+            )
+
+            // When
+            val result = repository.updateGroup(
+                groupId = "group-1",
+                name = "Casa da praia",
+                type = GroupType.HOME,
+                color = AvatarColor.PEACH,
+                shape = GroupShape.COOKIE,
+                photo = null,
+                currency = GroupCurrency.USD,
+                reminder = reminder,
+                updatedAt = 7_000L,
+            )
+
+            // Then
+            assertTrue(result.isSuccess)
+            val stored = local.group("group-1")
+            assertEquals(false, stored?.reminderEnabled)
+            assertEquals("monthly", stored?.reminderKind)
+            assertEquals(31, stored?.reminderDay)
+            assertEquals(1_080, stored?.reminderMinute)
+            assertTrue(stored?.pendingSync == true)
+        }
+
+    @Test
+    fun `GIVEN a stored group WHEN editing it without choosing a reminder THEN stores Monday 10 00 on`() = runTest {
+        // Given
+        prepareScenario(storedGroups = listOf(group(id = "group-1")))
+
+        // When
+        repository.updateGroup(
+            groupId = "group-1",
+            name = "Casa da praia",
+            type = GroupType.HOME,
+            color = AvatarColor.PEACH,
+            shape = GroupShape.COOKIE,
+            photo = null,
+            currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
+            updatedAt = 7_000L,
+        )
+
+        // Then
+        val stored = local.group("group-1")
+        assertEquals(true, stored?.reminderEnabled)
+        assertEquals("weekly", stored?.reminderKind)
+        assertEquals(1, stored?.reminderDay)
+        assertEquals(600, stored?.reminderMinute)
+    }
+
+    @Test
+    fun `GIVEN a stored group WHEN dismissing its reminder THEN only this device records that occurrence`() = runTest {
+        // Given
+        prepareScenario(storedGroups = listOf(group(id = "group-1"), group(id = "group-2")))
+
+        // When
+        val result = repository.dismissReminder(
+            groupId = "group-1",
+            occurrenceAt = 9_000L,
+        )
+
+        // Then
+        assertTrue(result.isSuccess)
+        assertEquals(9_000L, local.group("group-1")?.reminderDismissedAt)
+        assertEquals(0L, local.group("group-2")?.reminderDismissedAt)
+        assertFalse(local.group("group-1")?.pendingSync == true)
+        assertTrue(remote.upsertedGroups.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the device fails to write WHEN dismissing a reminder THEN returns the error instead of throwing`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1")),
+                groupWriteError = IllegalStateException("disk full"),
+            )
+
+            // When
+            val result = repository.dismissReminder(
+                groupId = "group-1",
+                occurrenceAt = 9_000L,
+            )
+
+            // Then
+            assertIs<IllegalStateException>(result.exceptionOrNull())
+            assertEquals(0L, local.group("group-1")?.reminderDismissedAt)
         }
 
     @Test
@@ -3324,6 +3505,7 @@ class GroupRepositoryImplTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
             updatedAt = 7_000L,
         )
 
@@ -3379,6 +3561,7 @@ class GroupRepositoryImplTest {
                 shape = GroupShape.COOKIE,
                 photo = null,
                 currency = GroupCurrency.USD,
+                reminder = GroupReminder.Default,
                 updatedAt = 7_000L,
             )
 
@@ -3414,6 +3597,7 @@ class GroupRepositoryImplTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
             updatedAt = 7_000L,
         )
 
@@ -3435,6 +3619,7 @@ class GroupRepositoryImplTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
             updatedAt = 7_000L,
         )
 
@@ -3459,6 +3644,7 @@ class GroupRepositoryImplTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
             updatedAt = 7_000L,
         )
 
@@ -4576,6 +4762,8 @@ class GroupRepositoryImplTest {
         isSimplifyDebtsPending = false,
         simplifyDebtsChangedBy = null,
         simplifyDebtsConflictBy = null,
+        reminder = GroupReminder.Default,
+        reminderDismissedAt = 0L,
     )
 
     @Test
@@ -4616,7 +4804,8 @@ class GroupRepositoryImplTest {
             "added_at":1,"updated_at":2,"invite_code":"abc","shape":"petal","photo_url":null,
             "default_split":{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],
             "rounding":[{"category":"food","mode":"equal"}]},
-            "simplify_debts":false,"simplify_debts_at":0,"simplify_debts_by":null,"simplify_debts_change":null}
+            "simplify_debts":false,"simplify_debts_at":0,"simplify_debts_by":null,"simplify_debts_change":null,
+            "reminder_enabled":true,"reminder_kind":"weekly","reminder_day":1,"reminder_minute":600}
             """.trimIndent(),
         )
         prepareScenario(remoteGroups = listOf(serverRow))
@@ -6953,6 +7142,7 @@ class GroupRepositoryImplTest {
             shape = shape,
             photo = photo,
             currency = GroupCurrency.BRL,
+            reminder = GroupReminder.Default,
             updatedAt = 7L,
         )
     }
@@ -6993,6 +7183,11 @@ class GroupRepositoryImplTest {
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
         isOnServer = isOnServer,
+        reminderEnabled = true,
+        reminderKind = "weekly",
+        reminderDay = 1,
+        reminderMinute = 600,
+        reminderDismissedAt = 0L,
     )
 
     private fun member(
@@ -7060,6 +7255,10 @@ class GroupRepositoryImplTest {
         simplifyDebtsAt = simplifyDebtsAt,
         simplifyDebtsBy = simplifyDebtsBy,
         simplifyDebtsChange = null,
+        reminderEnabled = null,
+        reminderKind = null,
+        reminderDay = null,
+        reminderMinute = null,
     )
 
     private fun memberDto(
@@ -7276,6 +7475,14 @@ private class FakeGroupLocalDataSource(
         }
     }
 
+    override suspend fun dismissReminder(
+        id: String,
+        occurrenceAt: Long,
+    ) {
+        groupWriteError?.let { throw it }
+        groups.value = groups.value.map { if (it.id == id) it.copy(reminderDismissedAt = occurrenceAt) else it }
+    }
+
     override suspend fun updateGroup(
         id: String,
         name: String,
@@ -7285,6 +7492,7 @@ private class FakeGroupLocalDataSource(
         photoUrl: String?,
         pendingPhoto: ByteArray?,
         currency: String,
+        reminder: GroupReminder,
         updatedAt: Long,
     ) {
         groupWriteError?.let { throw it }
@@ -7298,6 +7506,10 @@ private class FakeGroupLocalDataSource(
                     photoUrl = photoUrl,
                     pendingPhoto = pendingPhoto,
                     currency = currency,
+                    reminderEnabled = reminder.isEnabled,
+                    reminderKind = reminder.kind.code,
+                    reminderDay = reminder.day,
+                    reminderMinute = reminder.minute,
                     updatedAt = maxOf(updatedAt, it.updatedAt + 1),
                     pendingSync = true,
                 )

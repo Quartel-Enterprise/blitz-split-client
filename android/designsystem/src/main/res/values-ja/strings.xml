@@ -299,4 +299,19 @@
     <string name="designsystem_range_start">開始日</string>
     <string name="designsystem_range_end">終了日</string>
     <string name="designsystem_range_none">未選択</string>
+    <string name="designsystem_reminder_title">グループのリマインダー</string>
+    <string name="designsystem_reminder_switch">精算をメンバーに知らせる</string>
+    <string name="designsystem_reminder_caption">支払いが残っているメンバーには、それぞれの時刻で通知が届きます。</string>
+    <string name="designsystem_reminder_weekly">毎週</string>
+    <string name="designsystem_reminder_monthly">毎月</string>
+    <string name="designsystem_reminder_time">時刻</string>
+    <string name="designsystem_reminder_day_of_month">日付</string>
+    <string name="designsystem_reminder_calendar_new">マイカレンダーに追加</string>
+    <string name="designsystem_reminder_calendar_new_caption">グループの作成時に、繰り返しの予定をカレンダーに追加します。</string>
+    <string name="designsystem_reminder_calendar">カレンダーに追加</string>
+    <string name="designsystem_reminder_calendar_join">リマインダーをカレンダーに追加</string>
+    <string name="designsystem_reminder_schedule_weekly">毎週%1$s %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">毎月%1$d日 %2$s</string>
+    <string name="designsystem_reminder_event_title">精算：%1$s</string>
+    <string name="designsystem_reminder_event_description">%1$sの精算の時間です。</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.groups.data.datasource
 
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.provider.room.dao.GroupDao
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
@@ -71,6 +72,7 @@ class RoomGroupLocalDataSource(
         photoUrl: String?,
         pendingPhoto: ByteArray?,
         currency: String,
+        reminder: GroupReminder,
         updatedAt: Long,
     ) {
         dao.updateGroup(
@@ -82,7 +84,21 @@ class RoomGroupLocalDataSource(
             photoUrl = photoUrl,
             pendingPhoto = pendingPhoto,
             currency = currency,
+            reminderEnabled = reminder.isEnabled,
+            reminderKind = reminder.kind.code,
+            reminderDay = reminder.day,
+            reminderMinute = reminder.minute,
             updatedAt = updatedAt,
+        )
+    }
+
+    override suspend fun dismissReminder(
+        id: String,
+        occurrenceAt: Long,
+    ) {
+        dao.dismissReminder(
+            id = id,
+            occurrenceAt = occurrenceAt,
         )
     }
 

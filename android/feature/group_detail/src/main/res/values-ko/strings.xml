@@ -94,4 +94,7 @@
     <string name="group_detail_balances_note_simplified">정산 간소화를 켜면 앱이 가장 적은 송금 횟수를 제안해요. “받았어요”와 “이미 보냈어요”는 앱 밖에서 한 송금(Pix, 현금, 계좌 이체)을 기록해요.</string>
     <string name="group_detail_photo_open">그룹 사진 보기</string>
     <string name="group_export_payment_method">결제 수단</string>
+    <string name="group_detail_reminder_title">정산할 시간이에요</string>
+    <string name="group_detail_reminder_settle">정산하기</string>
+    <string name="group_detail_reminder_dismiss">닫기</string>
 </resources>

@@ -46,7 +46,8 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on the group's Expenses (3.3, `Route.GroupDetail` with `joinedAs`) with "You joined as
     <name>" over the bills and, while the account has no Google or Apple, "Protect your access", which opens the
-    Profile. An X on the notice dismisses it with "Protect your access" (`OnJoinedNoticeDismissed`), until the
+    Profile. While the group's reminder is on, the notice also offers "Add the reminder to your calendar" (the repeating event
+    of [members-and-payments.md](members-and-payments.md#group-reminder), skippable). An X on the notice dismisses it with "Protect your access" (`OnJoinedNoticeDismissed`), until the
     group's screen is built again (opening Profile, Statistics or another screen over it on the web, or the app
     restarting, brings it back: the route still carries the name). On the Mac, Return joins ("Join group", "Join as Bruno") and "Who are you in the group?", the invite
     sheet's next page, has "Back" (Esc) to the invite. "Invite" (3.1) and "Who are you in the group?" (3.2) are one column on a phone and upright on a tablet; lying

@@ -4,10 +4,12 @@ import androidx.lifecycle.viewModelScope
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.core.contacts.domain.usecase.ObserveContactBook
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.groups.domain.model.MemberColors
 import com.quare.blitzsplit.core.groups.domain.model.MemberNameCheck
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
+import com.quare.blitzsplit.core.groups.domain.usecase.BuildReminderCalendarEvent
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -29,9 +31,12 @@ import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.utils.DeviceRegion
 import com.quare.blitzsplit.feature.creategroup.presentation.model.ContactSuggestions
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupMember
+import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiAction
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -43,6 +48,7 @@ import kotlin.uuid.Uuid
 class CreateGroupViewModel(
     private val navigator: Navigator,
     private val createGroup: CreateGroup,
+    private val buildReminderCalendarEvent: BuildReminderCalendarEvent,
     private val checkMemberName: CheckMemberName,
     observeProfile: ObserveProfile,
     observeContactBook: ObserveContactBook,
@@ -70,10 +76,16 @@ class CreateGroupViewModel(
                 showsCreateError = false,
                 openedColor = AvatarColor.default,
                 openedCurrency = GroupCurrency.ofRegion(deviceRegion()),
+                reminder = GroupReminder.Default,
+                addsReminderToCalendar = false,
             ),
         )
 
+    val uiAction: SharedFlow<CreateGroupUiAction>
+        field = MutableSharedFlow<CreateGroupUiAction>()
+
     val stateWatcher: FlowWatcher<CreateGroupUiState> = FlowWatcher(uiState)
+    val actionWatcher: FlowWatcher<CreateGroupUiAction> = FlowWatcher(uiAction)
 
     // Why: the group's photo is the same 512x512 JPEG as a profile's, framed the same way.
     private val photoPicker = ProfilePhotoPicker(
@@ -153,6 +165,30 @@ class CreateGroupViewModel(
             is CreateGroupUiEvent.OnTypeSelected -> uiState.update { it.copy(type = event.type) }
 
             is CreateGroupUiEvent.OnCurrencySelected -> uiState.update { it.copy(currency = event.currency) }
+
+            is CreateGroupUiEvent.OnReminderEnabledChanged -> uiState.update {
+                it.copy(
+                    reminder = it.reminder.copy(isEnabled = event.isEnabled),
+                    // Why: with the reminder off there is nothing to add to a calendar.
+                    addsReminderToCalendar = it.addsReminderToCalendar && event.isEnabled,
+                )
+            }
+
+            is CreateGroupUiEvent.OnReminderKindSelected -> uiState.update {
+                it.copy(reminder = it.reminder.withKind(event.kind))
+            }
+
+            is CreateGroupUiEvent.OnReminderDaySelected -> uiState.update {
+                it.copy(reminder = it.reminder.withDay(event.day))
+            }
+
+            is CreateGroupUiEvent.OnReminderTimeSelected -> uiState.update {
+                it.copy(reminder = it.reminder.withMinute(event.minute))
+            }
+
+            is CreateGroupUiEvent.OnAddToCalendarChanged -> uiState.update {
+                it.copy(addsReminderToCalendar = event.isEnabled && it.canAddReminderToCalendar)
+            }
 
             is CreateGroupUiEvent.OnDraftChanged -> changeDraft(event.draft)
 
@@ -336,6 +372,7 @@ class CreateGroupViewModel(
                 photo = state.photo,
                 currency = state.currency,
                 members = members,
+                reminder = state.reminder,
             ).onSuccess { groupId ->
                 trackEvent(
                     "group_created",
@@ -344,8 +381,15 @@ class CreateGroupViewModel(
                         "currency" to state.currency,
                         "members" to members.size,
                         "has_photo" to (state.photo != null),
+                        "reminder" to reminderKindOf(state),
                     ),
                 )
+                if (state.addsReminderToCalendar) {
+                    // Why: titled with the name as the group was saved, trimmed and capped.
+                    buildReminderCalendarEvent(GroupNameRules.toCapped(state.name.trim()), state.reminder)?.let {
+                        uiAction.emit(CreateGroupUiAction.AddReminderToCalendar(it))
+                    }
+                }
                 openInvite(groupId)
             }.onFailure {
                 uiState.update {
@@ -357,6 +401,10 @@ class CreateGroupViewModel(
             }
         }
     }
+
+    // Why: "off", "weekly" or "monthly", for the group's analytics.
+    private fun reminderKindOf(state: CreateGroupUiState): String =
+        if (state.reminder.isEnabled) state.reminder.kind.code else "off"
 
     private fun AvatarColor.toNextColor(): AvatarColor = AvatarColor.entries[(ordinal + 1) % AvatarColor.entries.size]
 

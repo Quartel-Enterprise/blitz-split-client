@@ -98,4 +98,7 @@
     <string name="group_detail_balances_note_simplified">Borçlar sadeleştirildiğinde uygulama en az sayıda ödemeyi önerir. “Ödeme aldım” ve “Zaten ödedim” uygulama dışında yapılan bir ödemeyi (Pix, nakit, havale) kaydeder.</string>
     <string name="group_detail_photo_open">Grup fotoğrafını gör</string>
     <string name="group_export_payment_method">Ödeme yöntemi</string>
+    <string name="group_detail_reminder_title">Hesaplaşma zamanı</string>
+    <string name="group_detail_reminder_settle">Hesaplaş</string>
+    <string name="group_detail_reminder_dismiss">Kapat</string>
 </resources>

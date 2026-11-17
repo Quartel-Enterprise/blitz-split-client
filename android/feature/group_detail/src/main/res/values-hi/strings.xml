@@ -98,4 +98,7 @@
     <string name="group_detail_balances_note_simplified">कर्ज़ सरल होने पर ऐप सबसे कम भुगतान सुझाता है। “पैसे मिल गए” और “भुगतान कर दिया” ऐप के बाहर किया गया भुगतान (Pix, नकद, ट्रांसफ़र) दर्ज करते हैं।</string>
     <string name="group_detail_photo_open">ग्रुप की फ़ोटो देखें</string>
     <string name="group_export_payment_method">भुगतान का तरीका</string>
+    <string name="group_detail_reminder_title">हिसाब चुकाने का समय</string>
+    <string name="group_detail_reminder_settle">हिसाब चुकाएं</string>
+    <string name="group_detail_reminder_dismiss">खारिज करें</string>
 </resources>

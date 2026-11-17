@@ -11,6 +11,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ConsumeRecordedPayment
 import com.quare.blitzsplit.core.expenses.domain.usecase.CreateExpense
 import com.quare.blitzsplit.core.expenses.domain.usecase.HoldPickedReceipt
 import com.quare.blitzsplit.core.expenses.domain.usecase.RecordSettlement
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
@@ -154,6 +155,8 @@ internal class StoreScreenshotsSeed(
                         userId = null,
                     )
                 },
+                // Why: the store screenshots and the README's image show the group without the debtors' reminder banner.
+                reminder = GroupReminder.Default.copy(isEnabled = false),
             ).getOrThrow()
         val group = get<ObserveGroup>().invoke(groupId).filterNotNull().first()
         return SeededMembers(

@@ -298,4 +298,19 @@
     <string name="designsystem_range_start">시작 날짜</string>
     <string name="designsystem_range_end">종료 날짜</string>
     <string name="designsystem_range_none">선택 안 함</string>
+    <string name="designsystem_reminder_title">그룹 알림</string>
+    <string name="designsystem_reminder_switch">정산하도록 멤버에게 알리기</string>
+    <string name="designsystem_reminder_caption">돈을 내야 하는 멤버는 각자의 시간에 맞춰 알림을 받아요.</string>
+    <string name="designsystem_reminder_weekly">매주</string>
+    <string name="designsystem_reminder_monthly">매월</string>
+    <string name="designsystem_reminder_time">시간</string>
+    <string name="designsystem_reminder_day_of_month">날짜</string>
+    <string name="designsystem_reminder_calendar_new">내 캘린더에 추가</string>
+    <string name="designsystem_reminder_calendar_new_caption">그룹을 만들 때 반복 일정을 캘린더에 추가해요.</string>
+    <string name="designsystem_reminder_calendar">캘린더에 추가</string>
+    <string name="designsystem_reminder_calendar_join">알림을 캘린더에 추가</string>
+    <string name="designsystem_reminder_schedule_weekly">매주 %1$s %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">매월 %1$d일 %2$s</string>
+    <string name="designsystem_reminder_event_title">정산하기: %1$s</string>
+    <string name="designsystem_reminder_event_description">%1$s에서 정산할 시간이에요.</string>
 </resources>

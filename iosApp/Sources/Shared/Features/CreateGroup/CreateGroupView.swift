@@ -15,6 +15,15 @@ final class CreateGroupModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
         })
+        watches.add(viewModel.actionWatcher.observe { action in
+            if let add = action as? CreateGroupUiActionAddReminderToCalendar {
+                // The form's sheet gives way to Invite right after this action: present over Invite, not over the sheet going away
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(800))
+                    ReminderCalendar.add(add.event)
+                }
+            }
+        })
     }
 
     /// The state as the ViewModel holds it right now, before the watcher brings it to `state`: a field reads
@@ -185,6 +194,25 @@ private struct CreateGroupForm: View {
             }
         } footer: {
             Text("New bills start in this currency; each bill can use another.")
+        }
+        GroupReminderSection(
+            reminder: state.reminder,
+            isDisabled: state.isCreating,
+            onEnabled: { model.send(CreateGroupUiEventOnReminderEnabledChanged(isEnabled: $0)) },
+            onKind: { model.send(CreateGroupUiEventOnReminderKindSelected(kind: $0)) },
+            onDay: { model.send(CreateGroupUiEventOnReminderDaySelected(day: Int32($0))) },
+            onMinute: { model.send(CreateGroupUiEventOnReminderTimeSelected(minute: Int32($0))) },
+        ) {
+            if state.canAddReminderToCalendar {
+                Toggle(
+                    "Add to my calendar",
+                    isOn: Binding(
+                        get: { state.addsReminderToCalendar },
+                        set: { model.send(CreateGroupUiEventOnAddToCalendarChanged(isEnabled: $0)) },
+                    ),
+                )
+                .tint(Palette.accent)
+            }
         }
     }
 

@@ -308,4 +308,19 @@
     <string name="designsystem_range_start">Start date</string>
     <string name="designsystem_range_end">End date</string>
     <string name="designsystem_range_none">None selected</string>
+    <string name="designsystem_reminder_title">Group reminder</string>
+    <string name="designsystem_reminder_switch">Remind members to settle up</string>
+    <string name="designsystem_reminder_caption">Members who owe get a notification, on their own clock.</string>
+    <string name="designsystem_reminder_weekly">Weekly</string>
+    <string name="designsystem_reminder_monthly">Monthly</string>
+    <string name="designsystem_reminder_time">Time</string>
+    <string name="designsystem_reminder_day_of_month">Day of the month</string>
+    <string name="designsystem_reminder_calendar_new">Add to my calendar</string>
+    <string name="designsystem_reminder_calendar_new_caption">Adds a repeating event to your calendar when the group is created.</string>
+    <string name="designsystem_reminder_calendar">Add to calendar</string>
+    <string name="designsystem_reminder_calendar_join">Add the reminder to your calendar</string>
+    <string name="designsystem_reminder_schedule_weekly">Every %1$s at %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Every month on day %1$d at %2$s</string>
+    <string name="designsystem_reminder_event_title">Settle up: %1$s</string>
+    <string name="designsystem_reminder_event_description">Time to settle up in %1$s.</string>
 </resources>

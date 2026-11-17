@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.creategroup.presentation.model
 
+import com.quare.blitzsplit.core.groups.domain.model.ReminderKind
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.PhotoCropEvent
@@ -55,11 +56,61 @@ sealed interface CreateGroupUiEvent : UiEvent {
 
             is OnSuggestionClicked -> EventAnalytics.Automatic("create_group_contact_suggestion_clicked")
 
+            is OnReminderEnabledChanged -> EventAnalytics.Automatic(
+                "group_reminder_enabled_changed",
+                mapOf("enabled" to isEnabled, "source" to SOURCE),
+            )
+
+            is OnReminderKindSelected -> EventAnalytics.Automatic(
+                "group_reminder_kind_selected",
+                mapOf("kind" to kind.code, "source" to SOURCE),
+            )
+
+            is OnReminderDaySelected -> EventAnalytics.Automatic(
+                "group_reminder_day_selected",
+                mapOf("source" to SOURCE),
+            )
+
+            is OnReminderTimeSelected -> EventAnalytics.Automatic(
+                "group_reminder_time_selected",
+                mapOf("source" to SOURCE),
+            )
+
+            is OnAddToCalendarChanged -> EventAnalytics.Automatic(
+                "group_reminder_calendar_toggled",
+                mapOf("enabled" to isEnabled, "source" to SOURCE),
+            )
+
             // Why: the tap, and the group it created once saved, with what kind of group it is.
             OnCreateClicked -> EventAnalytics.Manual(setOf("create_group_create_clicked", "group_created"))
         }
 
     data object OnCloseClicked : CreateGroupUiEvent
+
+    // Why: the reminder's switch: off sends no push and shows no banner for the group.
+    data class OnReminderEnabledChanged(
+        val isEnabled: Boolean,
+    ) : CreateGroupUiEvent
+
+    // Why: "Weekly" or "Monthly", whose day goes back to the first one the kind has.
+    data class OnReminderKindSelected(
+        val kind: ReminderKind,
+    ) : CreateGroupUiEvent
+
+    // Why: the weekday (1 Monday to 7 Sunday) while weekly, the day of the month (1 to 31) while monthly.
+    data class OnReminderDaySelected(
+        val day: Int,
+    ) : CreateGroupUiEvent
+
+    // Why: the time as minutes after midnight, in the member's own clock.
+    data class OnReminderTimeSelected(
+        val minute: Int,
+    ) : CreateGroupUiEvent
+
+    // Why: "Add to my calendar" under the reminder.
+    data class OnAddToCalendarChanged(
+        val isEnabled: Boolean,
+    ) : CreateGroupUiEvent
 
     data class OnNameChanged(
         val name: String,

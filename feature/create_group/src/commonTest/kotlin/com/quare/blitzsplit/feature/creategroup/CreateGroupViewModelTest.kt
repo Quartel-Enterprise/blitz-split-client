@@ -3,7 +3,10 @@ package com.quare.blitzsplit.feature.creategroup
 import com.quare.blitzsplit.core.contacts.domain.model.Contact
 import com.quare.blitzsplit.core.contacts.domain.model.ContactBookSnapshot
 import com.quare.blitzsplit.core.contacts.domain.model.ContactNet
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
+import com.quare.blitzsplit.core.groups.domain.model.ReminderKind
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.BuildReminderCalendarEventUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
@@ -20,21 +23,26 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.profile.domain.usecase.impl.ObserveProfileUseCase
 import com.quare.blitzsplit.core.profile.testing.FakeProfileRepository
+import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiAction
 import com.quare.blitzsplit.feature.creategroup.presentation.model.CreateGroupUiEvent
 import com.quare.blitzsplit.feature.creategroup.presentation.viewmodel.CreateGroupViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.TimeZone
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -42,6 +50,8 @@ import kotlin.test.assertTrue
 class CreateGroupViewModelTest {
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val backStacksWhenTracked = mutableListOf<List<Route>>()
+    private val actions = mutableListOf<CreateGroupUiAction>()
+    private val backStacksWhenActed = mutableListOf<List<Route>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var profiles: FakeProfileRepository
     private lateinit var groups: FakeGroupRepository
@@ -1674,6 +1684,7 @@ class CreateGroupViewModelTest {
                         "currency" to GroupCurrency.EUR,
                         "members" to 2,
                         "has_photo" to false,
+                        "reminder" to "weekly",
                     ),
                 ),
                 trackedEvents,
@@ -1697,6 +1708,7 @@ class CreateGroupViewModelTest {
                 "currency" to GroupCurrency.BRL,
                 "members" to 1,
                 "has_photo" to false,
+                "reminder" to "weekly",
             ),
             trackedEvents.last(),
         )
@@ -2621,6 +2633,729 @@ class CreateGroupViewModelTest {
             )
         }
 
+    @Test
+    fun `GIVEN a form as it opens WHEN reading the state THEN the reminder is Monday weekly with the calendar off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertEquals(GroupReminder.Default, state.reminder)
+            assertEquals(ReminderKind.WEEKLY, state.reminder.kind)
+            assertEquals(1, state.reminder.day)
+            assertEquals(600, state.reminder.minute)
+            assertTrue(state.reminder.isEnabled)
+            assertFalse(state.addsReminderToCalendar)
+            assertTrue(state.canAddReminderToCalendar)
+        }
+
+    @Test
+    fun `GIVEN the reminder on WHEN turning it off THEN the reminder is off with the rest of its schedule kept`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val off = CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = false)
+
+            // When
+            viewModel.onEvent(off)
+
+            // Then
+            assertEquals(GroupReminder.Default.copy(isEnabled = false), viewModel.uiState.value.reminder)
+            assertFalse(viewModel.uiState.value.canAddReminderToCalendar)
+        }
+
+    @Test
+    fun `GIVEN add to calendar on WHEN turning the reminder off THEN add to calendar turns off too`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+            val off = CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = false)
+
+            // When
+            viewModel.onEvent(off)
+
+            // Then
+            assertFalse(viewModel.uiState.value.addsReminderToCalendar)
+        }
+
+    @Test
+    fun `GIVEN the reminder turned off with add to calendar WHEN turning it back on THEN add to calendar stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = false))
+            val on = CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = true)
+
+            // When
+            viewModel.onEvent(on)
+
+            // Then
+            assertTrue(viewModel.uiState.value.reminder.isEnabled)
+            assertFalse(viewModel.uiState.value.addsReminderToCalendar)
+        }
+
+    @Test
+    fun `GIVEN a weekly reminder on Friday WHEN picking monthly THEN the reminder is monthly on the first`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderDaySelected(day = 5))
+            val monthly = CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY)
+
+            // When
+            viewModel.onEvent(monthly)
+
+            // Then
+            assertEquals(ReminderKind.MONTHLY, viewModel.uiState.value.reminder.kind)
+            assertEquals(1, viewModel.uiState.value.reminder.day)
+        }
+
+    @Test
+    fun `GIVEN a weekly reminder on Friday WHEN picking weekly again THEN the day stays Friday`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderDaySelected(day = 5))
+            val weekly = CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.WEEKLY)
+
+            // When
+            viewModel.onEvent(weekly)
+
+            // Then
+            assertEquals(ReminderKind.WEEKLY, viewModel.uiState.value.reminder.kind)
+            assertEquals(5, viewModel.uiState.value.reminder.day)
+        }
+
+    @Test
+    fun `GIVEN a monthly reminder on the 20th WHEN picking weekly THEN the reminder is weekly on Monday`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderDaySelected(day = 20))
+            val weekly = CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.WEEKLY)
+
+            // When
+            viewModel.onEvent(weekly)
+
+            // Then
+            assertEquals(ReminderKind.WEEKLY, viewModel.uiState.value.reminder.kind)
+            assertEquals(1, viewModel.uiState.value.reminder.day)
+        }
+
+    @Test
+    fun `GIVEN a weekly reminder WHEN picking Sunday THEN the reminder is on day 7`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val sunday = CreateGroupUiEvent.OnReminderDaySelected(day = 7)
+
+        // When
+        viewModel.onEvent(sunday)
+
+        // Then
+        assertEquals(7, viewModel.uiState.value.reminder.day)
+    }
+
+    @Test
+    fun `GIVEN a weekly reminder WHEN picking a day past Sunday THEN the day is clamped to 7`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val pastSunday = CreateGroupUiEvent.OnReminderDaySelected(day = 15)
+
+            // When
+            viewModel.onEvent(pastSunday)
+
+            // Then
+            assertEquals(7, viewModel.uiState.value.reminder.day)
+        }
+
+    @Test
+    fun `GIVEN a weekly reminder WHEN picking day 0 THEN the day is clamped to 1`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val beforeMonday = CreateGroupUiEvent.OnReminderDaySelected(day = 0)
+
+        // When
+        viewModel.onEvent(beforeMonday)
+
+        // Then
+        assertEquals(1, viewModel.uiState.value.reminder.day)
+    }
+
+    @Test
+    fun `GIVEN a monthly reminder WHEN picking the 31st THEN the reminder is on day 31`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY))
+        val lastDay = CreateGroupUiEvent.OnReminderDaySelected(day = 31)
+
+        // When
+        viewModel.onEvent(lastDay)
+
+        // Then
+        assertEquals(31, viewModel.uiState.value.reminder.day)
+    }
+
+    @Test
+    fun `GIVEN a monthly reminder WHEN picking a day past the 31st THEN the day is clamped to 31`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY))
+            val pastLastDay = CreateGroupUiEvent.OnReminderDaySelected(day = 45)
+
+            // When
+            viewModel.onEvent(pastLastDay)
+
+            // Then
+            assertEquals(31, viewModel.uiState.value.reminder.day)
+        }
+
+    @Test
+    fun `GIVEN a monthly reminder WHEN picking a negative day THEN the day is clamped to 1`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY))
+            val negative = CreateGroupUiEvent.OnReminderDaySelected(day = -3)
+
+            // When
+            viewModel.onEvent(negative)
+
+            // Then
+            assertEquals(1, viewModel.uiState.value.reminder.day)
+        }
+
+    @Test
+    fun `GIVEN the reminder at 10 in the morning WHEN picking 20 30 THEN the reminder is at minute 1230`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val evening = CreateGroupUiEvent.OnReminderTimeSelected(minute = 20 * 60 + 30)
+
+            // When
+            viewModel.onEvent(evening)
+
+            // Then
+            assertEquals(1230, viewModel.uiState.value.reminder.minute)
+        }
+
+    @Test
+    fun `GIVEN the reminder at 10 in the morning WHEN picking a time past 23 59 THEN the time is clamped to 23 59`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val pastMidnight = CreateGroupUiEvent.OnReminderTimeSelected(minute = 1500)
+
+            // When
+            viewModel.onEvent(pastMidnight)
+
+            // Then
+            assertEquals(1439, viewModel.uiState.value.reminder.minute)
+        }
+
+    @Test
+    fun `GIVEN the reminder at 10 in the morning WHEN picking a negative time THEN the time is clamped to midnight`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val beforeMidnight = CreateGroupUiEvent.OnReminderTimeSelected(minute = -30)
+
+            // When
+            viewModel.onEvent(beforeMidnight)
+
+            // Then
+            assertEquals(0, viewModel.uiState.value.reminder.minute)
+        }
+
+    @Test
+    fun `GIVEN the reminder on WHEN turning add to calendar on THEN add to calendar is on`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val on = CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true)
+
+        // When
+        viewModel.onEvent(on)
+
+        // Then
+        assertTrue(viewModel.uiState.value.addsReminderToCalendar)
+    }
+
+    @Test
+    fun `GIVEN add to calendar on WHEN turning it off THEN add to calendar is off`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+        val off = CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = false)
+
+        // When
+        viewModel.onEvent(off)
+
+        // Then
+        assertFalse(viewModel.uiState.value.addsReminderToCalendar)
+    }
+
+    @Test
+    fun `GIVEN the reminder off WHEN turning add to calendar on THEN add to calendar stays off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = false))
+            val on = CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true)
+
+            // When
+            viewModel.onEvent(on)
+
+            // Then
+            assertFalse(viewModel.uiState.value.addsReminderToCalendar)
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN turning the reminder off THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val off = CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = false)
+
+        // When
+        viewModel.onEvent(off)
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN picking monthly THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val monthly = CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY)
+
+        // When
+        viewModel.onEvent(monthly)
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN picking another day THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val tuesday = CreateGroupUiEvent.OnReminderDaySelected(day = 2)
+
+        // When
+        viewModel.onEvent(tuesday)
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN picking another time THEN it holds unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val evening = CreateGroupUiEvent.OnReminderTimeSelected(minute = 1200)
+
+        // When
+        viewModel.onEvent(evening)
+
+        // Then
+        assertTrue(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN another day picked WHEN picking Monday again THEN it holds no unsaved input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderDaySelected(day = 2))
+            val monday = CreateGroupUiEvent.OnReminderDaySelected(day = 1)
+
+            // When
+            viewModel.onEvent(monday)
+
+            // Then
+            assertFalse(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN turning add to calendar on THEN it holds unsaved input`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val on = CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true)
+
+            // When
+            viewModel.onEvent(on)
+
+            // Then
+            assertTrue(viewModel.uiState.value.hasUnsavedInput)
+        }
+
+    @Test
+    fun `GIVEN add to calendar on WHEN turning it off THEN it holds no unsaved input`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+        val off = CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = false)
+
+        // When
+        viewModel.onEvent(off)
+
+        // Then
+        assertFalse(viewModel.uiState.value.hasUnsavedInput)
+    }
+
+    @Test
+    fun `GIVEN only the reminder changed WHEN closing the form THEN asks to discard and stays open`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY))
+            val close = CreateGroupUiEvent.OnCloseClicked
+
+            // When
+            viewModel.onEvent(close)
+
+            // Then
+            assertTrue(navigator.pendingDiscard.value)
+            assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN the default reminder WHEN creating THEN the group is saved with the Monday weekly one`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            assertEquals(GroupReminder.Default, groups.createdGroups.single().reminder)
+        }
+
+    @Test
+    fun `GIVEN a monthly reminder on the 15th at 20 30 WHEN creating THEN the group is saved with that reminder`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderDaySelected(day = 15))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderTimeSelected(minute = 1230))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            val expected = GroupReminder(
+                isEnabled = true,
+                kind = ReminderKind.MONTHLY,
+                day = 15,
+                minute = 1230,
+            )
+            assertEquals(expected, groups.createdGroups.single().reminder)
+        }
+
+    @Test
+    fun `GIVEN the reminder turned off WHEN creating THEN the group is saved with the reminder off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = false))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            val saved = groups.createdGroups.single()
+            assertFalse(saved.reminder.isEnabled)
+        }
+
+    @Test
+    fun `GIVEN a monthly reminder WHEN creating THEN the group created says the reminder is monthly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY))
+            val create = CreateGroupUiEvent.OnCreateClicked
+
+            // When
+            viewModel.onEvent(create)
+
+            // Then
+            val (name, params) = trackedEvents.last()
+            assertEquals("group_created", name)
+            assertEquals("monthly", params["reminder"])
+        }
+
+    @Test
+    fun `GIVEN the reminder turned off WHEN creating THEN the group created says the reminder is off`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = false))
+            val create = CreateGroupUiEvent.OnCreateClicked
+
+            // When
+            viewModel.onEvent(create)
+
+            // Then
+            val (name, params) = trackedEvents.last()
+            assertEquals("group_created", name)
+            assertEquals("off", params["reminder"])
+        }
+
+    @Test
+    fun `GIVEN the default weekly reminder WHEN creating THEN the group created says the reminder is weekly`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            val create = CreateGroupUiEvent.OnCreateClicked
+
+            // When
+            viewModel.onEvent(create)
+
+            // Then
+            val (name, params) = trackedEvents.last()
+            assertEquals("group_created", name)
+            assertEquals("weekly", params["reminder"])
+        }
+
+    @Test
+    fun `GIVEN add to calendar on and the default reminder WHEN creating THEN hands the Monday event over`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            val action = assertIs<CreateGroupUiAction.AddReminderToCalendar>(actions.single())
+            assertEquals("Viagem Floripa", action.event.groupName)
+            assertEquals("FREQ=WEEKLY;BYDAY=MO", action.event.rrule)
+            // Monday 5 January 1970 at 10:00 UTC, the first one after the clock's 1 second past the epoch
+            assertEquals(381_600_000L, action.event.startMillis)
+        }
+
+    @Test
+    fun `GIVEN add to calendar on and a monthly reminder on the 15th WHEN creating THEN hands that event over`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderDaySelected(day = 15))
+            viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            val action = assertIs<CreateGroupUiAction.AddReminderToCalendar>(actions.single())
+            assertEquals("FREQ=MONTHLY;BYMONTHDAY=15", action.event.rrule)
+            // 15 January 1970 at 10:00 UTC
+            assertEquals(1_245_600_000L, action.event.startMillis)
+        }
+
+    @Test
+    fun `GIVEN add to calendar on WHEN creating THEN the calendar is offered before the invite opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            val groupId = groups.createdGroups.single().id
+            assertEquals(listOf(listOf(Route.Groups, Route.CreateGroup)), backStacksWhenActed)
+            assertEquals(listOf(Route.Groups, Route.Invite(groupId, isNewGroup = true)), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN add to calendar off WHEN creating THEN offers nothing to the calendar`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+
+        // When
+        viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+        // Then
+        assertTrue(actions.isEmpty())
+        assertEquals(1, groups.createdGroups.size)
+    }
+
+    @Test
+    fun `GIVEN add to calendar on then the reminder off WHEN creating THEN offers nothing to the calendar`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+            viewModel.onEvent(CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = false))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+        }
+
+    @Test
+    fun `GIVEN add to calendar on and the device fails to save WHEN creating THEN offers nothing and the form stays`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            groups.createError = IllegalStateException("disk full")
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            assertTrue(actions.isEmpty())
+            assertTrue(viewModel.uiState.value.showsCreateError)
+            assertTrue(viewModel.uiState.value.addsReminderToCalendar)
+            assertEquals(listOf(Route.Groups, Route.CreateGroup), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN add to calendar on and a save that failed WHEN creating again THEN offers the calendar once`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            groups.createError = IllegalStateException("disk full")
+            viewModel.onEvent(CreateGroupUiEvent.OnNameChanged("Viagem Floripa"))
+            viewModel.onEvent(CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true))
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+            groups.createError = null
+
+            // When
+            viewModel.onEvent(CreateGroupUiEvent.OnCreateClicked)
+
+            // Then
+            assertEquals(1, actions.size)
+            assertEquals(1, groups.createdGroups.size)
+        }
+
+    @Test
+    fun `GIVEN the reminder on WHEN turning it off THEN sends the reminder enabled event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val off = CreateGroupUiEvent.OnReminderEnabledChanged(isEnabled = false)
+
+        // When
+        viewModel.onEvent(off)
+
+        // Then
+        assertEquals(
+            listOf(
+                "group_reminder_enabled_changed" to mapOf<String, Any>(
+                    "enabled" to false,
+                    "source" to "create_group",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN picking monthly THEN sends the reminder kind event`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val monthly = CreateGroupUiEvent.OnReminderKindSelected(ReminderKind.MONTHLY)
+
+        // When
+        viewModel.onEvent(monthly)
+
+        // Then
+        assertEquals(
+            listOf(
+                "group_reminder_kind_selected" to mapOf<String, Any>(
+                    "kind" to "monthly",
+                    "source" to "create_group",
+                ),
+            ),
+            trackedEvents,
+        )
+    }
+
+    @Test
+    fun `GIVEN the screen open WHEN picking a day THEN sends the reminder day event with no day`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val tuesday = CreateGroupUiEvent.OnReminderDaySelected(day = 2)
+
+            // When
+            viewModel.onEvent(tuesday)
+
+            // Then
+            assertEquals(
+                listOf("group_reminder_day_selected" to mapOf<String, Any>("source" to "create_group")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN picking a time THEN sends the reminder time event with no time`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val evening = CreateGroupUiEvent.OnReminderTimeSelected(minute = 1200)
+
+            // When
+            viewModel.onEvent(evening)
+
+            // Then
+            assertEquals(
+                listOf("group_reminder_time_selected" to mapOf<String, Any>("source" to "create_group")),
+                trackedEvents,
+            )
+        }
+
+    @Test
+    fun `GIVEN the screen open WHEN turning add to calendar on THEN sends the calendar toggled event`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val on = CreateGroupUiEvent.OnAddToCalendarChanged(isEnabled = true)
+
+            // When
+            viewModel.onEvent(on)
+
+            // Then
+            assertEquals(
+                listOf(
+                    "group_reminder_calendar_toggled" to mapOf<String, Any>(
+                        "enabled" to true,
+                        "source" to "create_group",
+                    ),
+                ),
+                trackedEvents,
+            )
+        }
+
     private val anaPaula = contact(
         key = "user:u-ana",
         name = "Ana Paula",
@@ -2692,7 +3427,7 @@ class CreateGroupViewModelTest {
         .first { it.name == name }
         .id
 
-    private fun prepareScenario(
+    private fun TestScope.prepareScenario(
         profile: UserProfile? = pierre,
         region: String? = "BR",
         isLoadHeld: Boolean = false,
@@ -2716,6 +3451,10 @@ class CreateGroupViewModelTest {
                 currentTimeMillis = { 1_000L },
                 randomCode = { length -> "AbCd1234".take(length) },
             ),
+            buildReminderCalendarEvent = BuildReminderCalendarEventUseCase(
+                currentTimeMillis = { 1_000L },
+                timeZone = { TimeZone.UTC },
+            ),
             checkMemberName = CheckMemberNameUseCase(),
             observeProfile = ObserveProfileUseCase(profiles),
             observeContactBook = { contactBook },
@@ -2737,5 +3476,11 @@ class CreateGroupViewModelTest {
                 prepareError?.let { Result.failure(it) } ?: Result.success(ProfilePhoto.Pending(photo.jpeg))
             },
         )
+        backgroundScope.launch {
+            viewModel.uiAction.collect {
+                actions += it
+                backStacksWhenActed += navigator.backStack.value
+            }
+        }
     }
 }

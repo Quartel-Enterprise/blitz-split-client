@@ -1,6 +1,6 @@
 import { Camera, CircleAlert, ImageIcon, Loader2, Plus, Trash2, X } from 'lucide-react'
-import { CreateGroupPresenter, type JsCreateGroupState } from 'blitzsplit-shared'
-import { usePresenter, useWatch } from '@/bridge/usePresenter'
+import { CreateGroupPresenter, type JsCreateGroupState, type JsReminderCalendarEvent } from 'blitzsplit-shared'
+import { useActions, usePresenter, useWatch } from '@/bridge/usePresenter'
 import { Avatar } from '@/components/common'
 import { PhotoCropDialog } from '@/components/PhotoCropDialog'
 import { PhotoPickerInputs, usePhotoPicker } from '@/components/PhotoPicker'
@@ -18,6 +18,8 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t } from '@/i18n'
 import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
+import { ReminderSection } from '@/features/group-reminder/ReminderSection'
+import { downloadReminderCalendarEvent } from '@/features/group-reminder/reminder'
 import { useEffect, useRef } from 'react'
 
 const formId = 'create-group-form'
@@ -31,6 +33,7 @@ const currencyId = 'create-group-currency'
 export function CreateGroupDialog() {
   const presenter = usePresenter(() => new CreateGroupPresenter())
   const state = useWatch(presenter, (p, onChange: (state: JsCreateGroupState) => void) => p.observeState(onChange))
+  useActions(presenter, (p, onEvent: (event: JsReminderCalendarEvent) => void) => p.observeCalendarEvents(onEvent), downloadReminderCalendarEvent)
   const isDesktop = useMediaQuery('(min-width: 768px)')
   if (!presenter || !state) return null
 
@@ -193,6 +196,18 @@ function CreateGroupForm({ presenter, state }: { presenter: CreateGroupPresenter
           </span>
         </div>
       </div>
+
+      <ReminderSection
+        reminder={state.reminder}
+        disabled={state.isCreating}
+        actions={{
+          onEnabled: (isEnabled) => presenter.setReminderEnabled(isEnabled),
+          onKind: (kind) => presenter.selectReminderKind(kind),
+          onDay: (day) => presenter.selectReminderDay(day),
+          onTime: (minute) => presenter.selectReminderTime(minute),
+        }}
+        calendar={state.canAddReminderToCalendar ? { kind: 'switch', isOn: state.addsReminderToCalendar, onChange: (isOn) => presenter.setAddToCalendar(isOn) } : undefined}
+      />
 
       <section className="flex flex-col gap-2" aria-labelledby="create-group-members">
         <div className="flex items-baseline justify-between text-sm">

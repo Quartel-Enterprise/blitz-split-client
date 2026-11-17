@@ -94,4 +94,7 @@
     <string name="group_detail_balances_note_simplified">Dengan utang yang disederhanakan, aplikasi menyarankan pembayaran paling sedikit. “Sudah menerima” dan “Sudah bayar” mencatat pembayaran yang dilakukan di luar aplikasi (Pix, tunai, transfer).</string>
     <string name="group_detail_photo_open">Lihat foto grup</string>
     <string name="group_export_payment_method">Metode pembayaran</string>
+    <string name="group_detail_reminder_title">Saatnya melunasi</string>
+    <string name="group_detail_reminder_settle">Lunasi</string>
+    <string name="group_detail_reminder_dismiss">Tutup</string>
 </resources>

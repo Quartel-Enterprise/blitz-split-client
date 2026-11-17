@@ -159,8 +159,10 @@ The feed, unread state, real time and push notifications.
     deleted while you are its payer or in its split (before the change too); Comments for a comment on a bill you're in
     or a thread you wrote in; Payments and settle-ups for a payment recorded or undone that you paid or received, and
     "Simplify debts" changing whom you pay or who pays you; Payment requests for a request sent to you; People and
-    groups for being added to a group and someone joining yours; Open balance reminder for, every Monday at 10:00 in
-    Brasília, "You have an open balance in Apt 302" (or "in 3 groups") while you owe or are owed. The other kinds of
+    groups for being added to a group and someone joining yours; Open balance reminder for, at each group's reminder
+    schedule (Monday 10:00 unless the group changed it in Edit group's "Group reminder", on each device's own clock, which
+    every app sends as `time_zone` when it registers the device), "You have an open balance in Apt 302" (or "in 3 groups") only
+    while you owe in it; the group's banner for debtors is in [members-and-payments.md](members-and-payments.md#group-reminder). The other kinds of
     People and groups only reach the bell. No amount in
     them, but for "Simplify debts" (in [members-and-payments.md](members-and-payments.md)), whose `debts_simplified_*` and `debts_unsimplified_*` (under
     Payments and settle-ups) name the new pair's amount, which the server writes out (Pierre's call). The server picks who and sends (`push_devices`, the `push` edge function, after each `activity_events`

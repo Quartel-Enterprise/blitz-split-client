@@ -308,4 +308,19 @@
     <string name="designsystem_range_start">Begindatum</string>
     <string name="designsystem_range_end">Einddatum</string>
     <string name="designsystem_range_none">Niets geselecteerd</string>
+    <string name="designsystem_reminder_title">Groepsherinnering</string>
+    <string name="designsystem_reminder_switch">Leden eraan herinneren af te rekenen</string>
+    <string name="designsystem_reminder_caption">Wie nog moet betalen krijgt een melding, op de eigen tijd.</string>
+    <string name="designsystem_reminder_weekly">Wekelijks</string>
+    <string name="designsystem_reminder_monthly">Maandelijks</string>
+    <string name="designsystem_reminder_time">Tijd</string>
+    <string name="designsystem_reminder_day_of_month">Dag van de maand</string>
+    <string name="designsystem_reminder_calendar_new">Toevoegen aan mijn agenda</string>
+    <string name="designsystem_reminder_calendar_new_caption">Voegt een terugkerend item toe aan je agenda zodra de groep is gemaakt.</string>
+    <string name="designsystem_reminder_calendar">Toevoegen aan agenda</string>
+    <string name="designsystem_reminder_calendar_join">De herinnering aan je agenda toevoegen</string>
+    <string name="designsystem_reminder_schedule_weekly">Elke %1$s om %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Elke maand op de %1$d om %2$s</string>
+    <string name="designsystem_reminder_event_title">Afrekenen: %1$s</string>
+    <string name="designsystem_reminder_event_description">Tijd om af te rekenen in %1$s.</string>
 </resources>

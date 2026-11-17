@@ -101,4 +101,7 @@
     <string name="group_detail_balances_note_simplified">With simplified debts, the app suggests the fewest payments. “Got paid” and “Already paid” record a payment made outside the app (Pix, cash, a transfer).</string>
     <string name="group_detail_photo_open">View group photo</string>
     <string name="group_export_payment_method">Payment method</string>
+    <string name="group_detail_reminder_title">Time to settle up</string>
+    <string name="group_detail_reminder_settle">Settle up</string>
+    <string name="group_detail_reminder_dismiss">Dismiss</string>
 </resources>

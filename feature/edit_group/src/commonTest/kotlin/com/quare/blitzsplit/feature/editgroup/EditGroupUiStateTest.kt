@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.editgroup
 
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -505,6 +506,7 @@ class EditGroupUiStateTest {
         isSimplifyDebtsPending: Boolean = false,
         memberCount: Int = 0,
         isChangingSimplifyDebts: Boolean = false,
+        reminder: GroupReminder = GroupReminder.Default,
     ): EditGroupUiState = EditGroupUiState(
         name = name,
         initials = "VF",
@@ -530,5 +532,6 @@ class EditGroupUiStateTest {
         isChangingSimplifyDebts = isChangingSimplifyDebts,
         simplifyConflict = null,
         showsSimplifyUnavailableNotice = false,
+        reminder = reminder,
     )
 }

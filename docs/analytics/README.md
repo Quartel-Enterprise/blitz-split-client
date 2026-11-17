@@ -236,11 +236,18 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `photo_removed` | `source` (`create_group`, `edit_profile`, `profile_photo`, `group_photo`) | "Remove photo" | `:feature:create_group`, `:feature:edit_profile`, `:feature:edit_group` |
 | `group_type_selected` | `type`, `source` (`create_group`, `edit_group`) | A group type picked | `:feature:create_group`, `:feature:edit_group` |
 | `group_currency_selected` | `currency`, `source` (`create_group`, `edit_group`) | A default currency picked, in New group or Edit group (with bills or not) | `:feature:create_group`, `:feature:edit_group` |
+| `group_reminder_enabled_changed` | `enabled`, `source` (`create_group`, `edit_group`) | The "Group reminder" switch changed in New group or Edit group | `:feature:create_group`, `:feature:edit_group` |
+| `group_reminder_kind_selected` | `kind` (`weekly`, `monthly`), `source` (`create_group`, `edit_group`) | "Weekly" or "Monthly" picked for the group's reminder | `:feature:create_group`, `:feature:edit_group` |
+| `group_reminder_day_selected` | `source` (`create_group`, `edit_group`) | The reminder's weekday or day of the month picked | `:feature:create_group`, `:feature:edit_group` |
+| `group_reminder_time_selected` | `source` (`create_group`, `edit_group`) | The reminder's time picked | `:feature:create_group`, `:feature:edit_group` |
+| `group_reminder_calendar_toggled` | `enabled`, `source` (`create_group`) | New group's "Add to my calendar" switch | `:feature:create_group` |
+| `group_reminder_calendar_clicked` | `source` (`edit_group`, `group_detail`) | "Add to calendar" in Edit group or beside "You joined as…", only once the repeating event was built (reminder on) | `:feature:edit_group`, `:feature:group_detail` |
+| `group_reminder_banner_dismissed` | none | "Dismiss" on the debtors' reminder banner at the top of the group | `:feature:group_detail` |
 | `create_group_add_member_clicked` | none | New group's "Add" (or the keyboard's Done) | `:feature:create_group` |
 | `create_group_remove_member_clicked` | none | A person taken off the new group | `:feature:create_group` |
 | `create_group_contact_suggestion_clicked` | none | A contact picked from the suggestions under New group's "Add by name" | `:feature:create_group` |
 | `create_group_create_clicked` | none | New group's Create, also when the form can't create yet | `:feature:create_group` |
-| `group_created` | `type`, `currency`, `members` (how many: you, those added and a valid name still typed in the field), `has_photo` | A new group saved | `:feature:create_group` |
+| `group_created` | `type`, `currency`, `members` (how many: you, those added and a valid name still typed in the field), `has_photo`, `reminder` (`weekly`, `monthly` or `off`) | A new group saved | `:feature:create_group` |
 | `update_accepted` | `source` (`startup`, `manual`) | "Open in the App Store" on "Update available" (iOS, macOS) | `in_app_update` |
 | `update_dismissed` | `source` (`startup`, `manual`) | "Not now" or Esc on "Update available" (iOS, macOS) | `in_app_update` |
 | `profile_avatar_clicked` | `source` (`home`, `groups`, `sidebar`, `global_balances`, `contacts`) | The avatar that opens Profile | `:feature:groups`, `:feature:global_balances`, `:feature:contacts` |

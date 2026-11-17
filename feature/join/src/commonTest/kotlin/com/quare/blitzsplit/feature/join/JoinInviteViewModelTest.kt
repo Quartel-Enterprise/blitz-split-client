@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.join
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.Invite
 import com.quare.blitzsplit.core.groups.domain.model.InviteMember
 import com.quare.blitzsplit.core.groups.domain.model.InviteTarget
@@ -1825,6 +1826,8 @@ class JoinInviteViewModelTest {
         isSimplifyDebtsPending = false,
         simplifyDebtsChangedBy = null,
         simplifyDebtsConflictBy = null,
+        reminder = GroupReminder.Default,
+        reminderDismissedAt = 0L,
     )
 
     // Why: the reader opened from the home, which skips no invite.

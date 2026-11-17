@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.groups.domain.usecase.impl
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.InviteLink
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
@@ -33,6 +34,7 @@ class CreateGroupUseCase(
         photo: ProfilePhoto.Pending?,
         currency: GroupCurrency,
         members: List<NewGroupMember>,
+        reminder: GroupReminder,
     ): Result<String> {
         val id = Uuid.random().toString()
         val createdAt = currentTimeMillis()
@@ -68,6 +70,8 @@ class CreateGroupUseCase(
                     isSimplifyDebtsPending = false,
                     simplifyDebtsChangedBy = null,
                     simplifyDebtsConflictBy = null,
+                    reminder = reminder,
+                    reminderDismissedAt = 0L,
                 ),
                 createdAt = createdAt,
             ).map { id }

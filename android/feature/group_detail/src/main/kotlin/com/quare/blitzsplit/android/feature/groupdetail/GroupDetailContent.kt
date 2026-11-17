@@ -80,8 +80,40 @@ fun GroupDetailContent(
                 listContent = membersTab,
                 splitBillButton = splitBillButtonOf(state, onAction),
             )
-        },
+        }.withReminderBanner(state, onEvent),
         modifier = modifier,
+    )
+}
+
+/*
+ * Why: the debtors' "Hora de acertar" sits on top of whichever tab is picked, so it is never missed and never moves
+ * between them.
+ */
+private fun GroupTabBody.withReminderBanner(
+    state: GroupDetailUiState,
+    onEvent: (GroupDetailUiEvent) -> Unit,
+): GroupTabBody {
+    val banner = state.reminderBanner ?: return this
+    return GroupTabBody(
+        listContent = {
+            item(
+                key = "reminder",
+                contentType = "reminder",
+            ) {
+                ReminderBannerCard(
+                    banner = banner,
+                    onSettleClick = { onEvent(GroupDetailUiEvent.OnSettleClicked) },
+                    onDismissClick = { onEvent(GroupDetailUiEvent.OnReminderBannerDismissed) },
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 16.dp,
+                    ),
+                )
+            }
+            listContent(this)
+        },
+        splitBillButton = splitBillButton,
     )
 }
 
@@ -102,6 +134,8 @@ private fun expensesTabOf(
                     JoinedBanner(
                         name = name,
                         showsProtectAccess = state.showsProtectAccess,
+                        showsCalendarOffer = state.showsJoinCalendarOffer,
+                        onAddToCalendarClick = { onEvent(GroupDetailUiEvent.OnAddReminderToCalendarClicked) },
                         onProtectAccessClick = { onEvent(GroupDetailUiEvent.OnProtectAccessClicked) },
                         onDismissClick = { onEvent(GroupDetailUiEvent.OnJoinedNoticeDismissed) },
                         modifier = Modifier.padding(
