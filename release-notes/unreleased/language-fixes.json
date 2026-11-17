@@ -20,7 +20,8 @@
         "id": "Profil › Bahasa kini menampilkan bahasa Spanyol dalam dua pilihan, \"Español (Latinoamérica)\" dan \"Español (España)\", jadi kamu memilih yang kamu pakai di mana pun perangkatmu berada.",
         "ru": "В разделе «Профиль › Язык» испанский теперь есть в двух вариантах — «Español (Latinoamérica)» и «Español (España)», — чтобы можно было выбрать свой, где бы ни находилось твоё устройство.",
         "uk": "У розділі «Профіль › Мова» іспанська тепер є у двох варіантах — «Español (Latinoamérica)» і «Español (España)», — щоб можна було обрати свою, де б не був твій пристрій.",
-        "ko": "프로필 › 언어에 스페인어가 ‘Español (Latinoamérica)’, ‘Español (España)’ 두 가지로 표시되어, 기기가 어느 지역에 있든 내가 쓰는 쪽을 고를 수 있어요."
+        "ko": "프로필 › 언어에 스페인어가 ‘Español (Latinoamérica)’, ‘Español (España)’ 두 가지로 표시되어, 기기가 어느 지역에 있든 내가 쓰는 쪽을 고를 수 있어요.",
+        "hi": "प्रोफ़ाइल › भाषा में अब स्पेनिश दो बार है, “Español (Latinoamérica)” और “Español (España)”, ताकि आपका डिवाइस कहीं का भी हो, आप वही चुनें जो आप बोलते हैं।"
       }
     },
     {
@@ -44,7 +45,8 @@
         "id": "Dalam bahasa Portugis Brasil, Aktivitas dan riwayat tagihan menampilkan \"Você criaste\" dan sejenisnya alih-alih \"Você criou\".",
         "ru": "В бразильском португальском раздел «Активность» и история счёта показывали «Você criaste» и подобное вместо «Você criou».",
         "uk": "У бразильській португальській розділ «Активність» та історія рахунку показували «Você criaste» тощо замість «Você criou».",
-        "ko": "브라질 포르투갈어에서 활동과 지출 기록에 ‘Você criou’ 대신 ‘Você criaste’ 같은 문구가 표시되던 문제를 수정했어요."
+        "ko": "브라질 포르투갈어에서 활동과 지출 기록에 ‘Você criou’ 대신 ‘Você criaste’ 같은 문구가 표시되던 문제를 수정했어요.",
+        "hi": "ब्राज़ील की पुर्तगाली में, गतिविधि और खर्च के इतिहास में “Você criou” की जगह “Você criaste” जैसे वाक्य लिखे आते थे।"
       }
     }
   ]

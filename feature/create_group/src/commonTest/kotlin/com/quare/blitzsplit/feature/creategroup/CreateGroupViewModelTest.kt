@@ -249,7 +249,7 @@ class CreateGroupViewModelTest {
     fun `GIVEN a region with no listed currency WHEN the screen opens THEN the group splits in dollars`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(region = "IN")
+            prepareScenario(region = "NG")
 
             // When
             val currency = viewModel.uiState.value.currency

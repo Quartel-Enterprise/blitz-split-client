@@ -202,6 +202,18 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN India WHEN picking its currency THEN it is the rupee with its 2 decimals`() {
+        // Given
+        val region = "IN"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.INR to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN the rupiah WHEN picking the digits to type THEN it types none though ISO gives it 2`() {
         // Given
         val currency = GroupCurrency.IDR

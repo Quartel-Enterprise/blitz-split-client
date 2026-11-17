@@ -29,6 +29,12 @@
             "value" : "Blitz Split"
           }
         },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
@@ -120,6 +126,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -221,6 +233,12 @@
             "value" : "Pour scanner le QR code d’une invitation ou de ton ancien appareil, et pour prendre ta photo de profil et des photos de dépenses."
           }
         },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "किसी आमंत्रण का या आपके पुराने डिवाइस का QR कोड स्कैन करने, और आपकी प्रोफ़ाइल फ़ोटो और खर्चों की फ़ोटो लेने के लिए।"
+          }
+        },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
@@ -317,6 +335,12 @@
             "value" : "Pour inviter des personnes de tes contacts avec le lien d’un groupe. Leurs numéros restent uniquement sur cet appareil."
           }
         },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ग्रुप के लिंक से आपके संपर्कों में से लोगों को आमंत्रित करने के लिए। उनके नंबर इसी डिवाइस पर रहते हैं।"
+          }
+        },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
@@ -411,6 +435,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour enregistrer les photos des dépenses dans ta photothèque."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "किसी खर्च की फ़ोटो आपकी लाइब्रेरी में सहेजने के लिए।"
           }
         },
         "id" : {

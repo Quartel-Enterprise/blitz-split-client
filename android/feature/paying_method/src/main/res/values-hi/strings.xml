@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">भुगतान का नया तरीका</string>
+    <string name="paying_method_edit_title">भुगतान का तरीका बदलें</string>
+    <string name="paying_method_type">प्रकार</string>
+    <string name="paying_method_name">नाम</string>
+    <string name="paying_method_name_optional">नाम (वैकल्पिक)</string>
+    <string name="paying_method_color">रंग</string>
+    <string name="paying_method_default">डिफ़ॉल्ट तरीका</string>
+    <string name="paying_method_default_hint">आपके भुगतान वाले नए खर्च इसी से शुरू होंगे।</string>
+    <string name="paying_method_delete">भुगतान का तरीका हटाएं</string>
+    <string name="paying_method_delete_title">भुगतान का यह तरीका हटाएं?</string>
+    <string name="paying_method_delete_body">जिन खर्चों पर आपने इसे लगाया था, उन पर यह अब नहीं दिखेगा।</string>
+    <string name="paying_method_delete_confirm">हटाएं</string>
+    <string name="paying_method_save">सहेजें</string>
+</resources>
