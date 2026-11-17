@@ -1,6 +1,5 @@
 package com.quare.blitzsplit.android.feature.billdetail
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
@@ -26,16 +25,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -45,8 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.BillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
-import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
-import com.quare.blitzsplit.android.designsystem.component.GroupBadge
+import com.quare.blitzsplit.android.designsystem.component.GroupPhotoButton
 import com.quare.blitzsplit.android.designsystem.component.PaidWithCard
 import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
@@ -533,29 +528,15 @@ private fun BillGroupTitle(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (state.isLoaded) {
-            /*
-             * Why: the avatar opens the group's photo big, as the group's own top bar; the touch target keeps the
-             * 48 dp minimum around the smaller badge.
-             */
-            Box(
-                modifier = Modifier
-                    .minimumInteractiveComponentSize()
-                    .clip(GroupAvatarShape)
-                    .clickable(
-                        onClickLabel = stringResource(R.string.bill_detail_group_photo_open),
-                        role = Role.Button,
-                        onClick = onPhotoClick,
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                GroupBadge(
-                    initials = state.groupInitials,
-                    color = state.groupColor,
-                    photoUrl = state.groupPhotoUrl,
-                    size = groupBadgeSize,
-                    modifier = badgeModifier,
-                )
-            }
+            GroupPhotoButton(
+                initials = state.groupInitials,
+                color = state.groupColor,
+                photoUrl = state.groupPhotoUrl,
+                size = groupBadgeSize,
+                clickLabel = stringResource(R.string.bill_detail_group_photo_open),
+                onClick = onPhotoClick,
+                badgeModifier = badgeModifier,
+            )
         }
         Text(
             text = state.groupName,

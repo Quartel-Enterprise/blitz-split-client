@@ -3877,6 +3877,20 @@ class BillDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN the bill is being deleted WHEN tapping the group avatar THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN the bill is open WHEN tapping the group avatar THEN sends the bill group photo clicked`() =
         runTest(testDispatcher) {
             // Given
