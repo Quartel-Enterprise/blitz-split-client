@@ -162,7 +162,13 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     rounded square before the name (its photo, or its initials on its color, beta feedback of 2026-11-15,
     `BillDetailUiState.groupInitials`, `groupColor`, `groupPhotoUrl`): Android's top bar (32 dp) and dialog header, the
     iOS and iPadOS bar's title (30 pt, as the group's folded bar), the Mac inspector's line under the bill's name (18
-    pt) and the web sheet's header (24 px). It shows once the bill is read, never as an empty square. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
+    pt) and the web sheet's header (24 px). It shows once the bill is read, never as an empty square. The square is a button too (Pierre's call, beta
+    feedback of 2026-11-16, `BillDetailUiEvent.OnGroupPhotoClicked`): it opens the group's photo big, the viewer of
+    the group's header (`Route.GroupPhoto`), over the bill, so back or ✕ comes back to it, with 48 dp/44 pt/44 px to
+    tap around the smaller square and "View group photo" to TalkBack, VoiceOver and the web's screen readers. The bill
+    is the only other screen with the group's avatar in a bar (Edit group's is the field that picks the icon;
+    Statistics and the rest name the group in words). Android's flying avatar is unchanged: the badge keeps its
+    shared element inside the button. A phone opens it full screen; Android tablets open it as a dialog (a book's right half, a tabletop's
     half above its hinge), the iPad as a sheet (820×640 lying down, 620×860 upright, `billSheetSizing`), the Mac as the
     main window's inspector (720 pt, 330 pt in a window under 1180 pt, the bill beside its split from 600 pt, ✕ and Esc
     closing it, another bill or whatever the group opens taking its place; the 330 pt one puts Share, Edit, Delete and

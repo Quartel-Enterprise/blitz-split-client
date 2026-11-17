@@ -284,13 +284,21 @@ struct BillDetailView: View {
         if let state = model?.state, state.isLoaded {
             ToolbarItem(placement: .principal) {
                 HStack(spacing: 8) {
-                    GroupAvatar(
-                        initials: state.groupInitials,
-                        color: state.groupColor,
-                        photoUrl: state.groupPhotoUrl,
-                        size: GroupHeaderScroll.inlineAvatarSize,
-                    )
-                    .accessibilityHidden(true)
+                    // The avatar opens the group's photo big, as the group's folded bar; 44 pt to tap
+                    Button {
+                        model?.send(BillDetailUiEventOnGroupPhotoClicked.shared)
+                    } label: {
+                        GroupAvatar(
+                            initials: state.groupInitials,
+                            color: state.groupColor,
+                            photoUrl: state.groupPhotoUrl,
+                            size: GroupHeaderScroll.inlineAvatarSize,
+                        )
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("View group photo")
                     Text(verbatim: state.groupName)
                         .font(.headline)
                         .lineLimit(1)
@@ -664,6 +672,7 @@ private struct MacBillDetail: View {
                 photoUrl: state.groupPhotoUrl,
                 size: 18,
             ),
+            onGroupPhoto: { model.send(BillDetailUiEventOnGroupPhotoClicked.shared) },
         )
     }
 

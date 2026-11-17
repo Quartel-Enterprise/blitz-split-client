@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="bill_detail_back">Kembali</string>
+    <string name="bill_detail_group_photo_open">Lihat foto grup</string>
     <string name="bill_detail_edit">Edit</string>
     <string name="bill_detail_delete">Hapus</string>
     <string name="bill_detail_when_today">Hari ini, %s</string>

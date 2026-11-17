@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.android.feature.billdetail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
@@ -25,13 +26,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
@@ -41,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.BillSharedModifiers
 import com.quare.blitzsplit.android.designsystem.component.DialogCard
+import com.quare.blitzsplit.android.designsystem.component.GroupAvatarShape
 import com.quare.blitzsplit.android.designsystem.component.GroupBadge
 import com.quare.blitzsplit.android.designsystem.component.PaidWithCard
 import com.quare.blitzsplit.android.designsystem.component.rememberBillSharedModifiers
@@ -167,6 +172,7 @@ fun BillDetailContent(
                             state = state,
                             badgeModifier = shared.group,
                             nameModifier = shared.groupName,
+                            onPhotoClick = { onEvent(BillDetailUiEvent.OnGroupPhotoClicked) },
                         )
                     },
                     navigationIcon = {
@@ -297,6 +303,7 @@ private fun DialogHeader(
                 .weight(1f)
                 .semantics { heading() },
             textStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+            onPhotoClick = { onEvent(BillDetailUiEvent.OnGroupPhotoClicked) },
         )
         BillTopBarAction(
             state = state,
@@ -517,6 +524,7 @@ private fun BillGroupTitle(
     badgeModifier: Modifier = Modifier,
     // Why: the group's name, which flies from and back to the group's top bar.
     nameModifier: Modifier = Modifier,
+    onPhotoClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier,
@@ -524,13 +532,29 @@ private fun BillGroupTitle(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (state.isLoaded) {
-            GroupBadge(
-                initials = state.groupInitials,
-                color = state.groupColor,
-                photoUrl = state.groupPhotoUrl,
-                size = groupBadgeSize,
-                modifier = badgeModifier,
-            )
+            /*
+             * Why: the avatar opens the group's photo big, as the group's own top bar; the touch target keeps the
+             * 48 dp minimum around the smaller badge.
+             */
+            Box(
+                modifier = Modifier
+                    .minimumInteractiveComponentSize()
+                    .clip(GroupAvatarShape)
+                    .clickable(
+                        onClickLabel = stringResource(R.string.bill_detail_group_photo_open),
+                        role = Role.Button,
+                        onClick = onPhotoClick,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                GroupBadge(
+                    initials = state.groupInitials,
+                    color = state.groupColor,
+                    photoUrl = state.groupPhotoUrl,
+                    size = groupBadgeSize,
+                    modifier = badgeModifier,
+                )
+            }
         }
         Text(
             text = state.groupName,

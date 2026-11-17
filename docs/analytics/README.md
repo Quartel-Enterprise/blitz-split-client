@@ -472,6 +472,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_edit_clicked` | `source` (`group_detail`, `home`, `all_expenses`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" (Expenses, Home, All expenses) once Edit bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
 | `bill_duplicate_clicked` | `source` (`group_detail`, `home`, `all_expenses`) | A bill's ⋮ "Duplicate" (Expenses, Home, All expenses), once Split a bill opened filled in with the bill | `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
 | `bill_share_clicked` | `source` (`group_detail`, `home`, `all_expenses`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" (Expenses, Home, All expenses) once Share bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
+| `bill_group_photo_clicked` | none | The group's avatar in Bill's top bar, which opens the group's photo big | `:feature:bill_detail` |
 | `bill_undo_clicked` | none | "Undo" on History's latest edit, when it undoes | `:feature:bill_detail` |
 | `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
 | `bill_attachment_removed` | none | "Remove photo" in the viewer, on a photo it can remove | `:feature:bill_detail` |

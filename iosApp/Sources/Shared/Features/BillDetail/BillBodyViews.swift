@@ -285,6 +285,8 @@ struct MacBillTitles: View {
     let isNarrow: Bool
     /// The group's rounded square before its name (beta feedback of 2026-11-15); none on a bill's link page.
     var groupAvatar: GroupAvatar?
+    /// Opens the group's photo big; none on a bill's link page.
+    var onGroupPhoto: (() -> Void)?
 
     var body: some View {
         let day = ExpenseFormat.dayTime(bill.spentAt, relativeDay: bill.spentDay)
@@ -299,8 +301,14 @@ struct MacBillTitles: View {
                 .accessibilityAddTraits(.isHeader)
             HStack(spacing: 6) {
                 if groupName != nil, let groupAvatar {
-                    groupAvatar
-                        .accessibilityHidden(true)
+                    if let onGroupPhoto {
+                        Button(action: onGroupPhoto) { groupAvatar }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("View group photo")
+                    } else {
+                        groupAvatar
+                            .accessibilityHidden(true)
+                    }
                 }
                 Text(verbatim: groupName.map { "\($0) · \(day)" } ?? day)
                     .foregroundStyle(.secondary)
