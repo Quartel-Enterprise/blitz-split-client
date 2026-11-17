@@ -66,7 +66,9 @@ enum SecondPerson {
         case "tr": return turkishVerbForYou(verb)
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
-        case "cs": return verb.split(separator: " ").first?.hasSuffix("l(a)") == true ? "jsi " + verb : verb
+        case "cs":
+            // Why: the past may be followed by a comma or a colon ("změnil(a), kdo platil").
+            return verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil ? "jsi " + verb : verb
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }

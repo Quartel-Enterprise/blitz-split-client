@@ -6,10 +6,10 @@
 // the words that region says differently, so it may lack keys, but never has an extra one.
 //
 // A language with two plurals where English has one (Polish's few and many, Czech's few and other, Romanian's few and
-// other) writes them as "few|many" (or "few|other") in an `…Other` message with a {count}; one whose singular also takes counts past 1 (Russian's and Ukrainian's 21) writes three,
-// "one|few|many". A language with a dual (Arabic) writes every category it has, in CLDR's order:
-// "zero|one|two|few|many|other". `t()` picks one. A "|" anywhere else, in another language, or another number of forms, would print
-// on screen or never be picked.
+// other) writes them as "few|many" (or "few|other") in an `…Other` message with a {count}; one whose singular also
+// takes counts past 1 (Russian's and Ukrainian's 21) writes three, "one|few|many". A language with a dual (Arabic)
+// writes every category it has, in CLDR's order: "zero|one|two|few|many|other". `t()` picks one. A "|" anywhere else,
+// in another language, or another number of forms, would print on screen or never be picked.
 //
 // Runs on the TypeScript sources through Node's own type stripping, with no build:  node scripts/check-messages.mjs
 import { readdirSync } from 'node:fs'
@@ -72,7 +72,9 @@ for (const language of languages) {
       const every = everyForm(language)
       const formCount = every ? every.length : pluralFormCount(language)
       if (forms.length !== formCount || forms.some((form) => form.trim() === '')) {
-        const expected = every ? `"${every.join('|')}"` : formCount === 3 ? '"one|few|many"' : '"few|many"'
+        // Why: Polish's second form is its many; Czech's and Romanian's is their other.
+        const twoForms = language === 'pl' ? '"few|many"' : '"few|other"'
+        const expected = every ? `"${every.join('|')}"` : formCount === 3 ? '"one|few|many"' : twoForms
         fail(language, key, `must hold exactly ${formCount} plural forms, ${expected}`)
         continue
       }

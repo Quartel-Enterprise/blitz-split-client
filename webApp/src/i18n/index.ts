@@ -222,16 +222,16 @@ const everyFormOrder: readonly Intl.LDMLPluralRule[] | undefined = (() => {
 const secondFormIsOther = locale === 'cs' || locale === 'ro'
 
 /**
- * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many
- * (0, 5–21…). Its message for a `…Other` key with a `{count}` holds both, "{count} grupy|{count} grup", and this picks
- * the one `count` takes (a fraction taking few's, as Polish does). Russian and Ukrainian also say 21 in the singular
- * ("21 группа"), so theirs hold three, one|few|many: "{count} группа|{count} группы|{count} групп". A fraction takes
- * few's, which is Russian's own; Czech ("{count} skupiny|{count} skupin") and Romanian ("{count} grupuri|{count} de
- * grupuri") hold two forms too, their second one being the one their other takes (`secondFormIsOther`); Ukrainian has a form of its own for it ("1,5 платежу"), which no count the app
- * passes needs. Arabic has a dual, so its messages hold every category it has, in CLDR's order,
- * "zero|one|two|few|many|other" (`everyFormOrder`), and so does any language whose plural has a two. Any other message
- * has one form. `count` must be the number itself, not a formatted string: one that isn't a number gets the many
- * form, the one most counts take (other, in a language that holds every form).
+ * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many (0,
+ * 5–21…). Its message for a `…Other` key with a `{count}` holds both, "{count} grupy|{count} grup", and this picks the
+ * one `count` takes (a fraction taking few's, as Polish does). Russian and Ukrainian also say 21 in the singular ("21
+ * группа"), so theirs hold three, one|few|many: "{count} группа|{count} группы|{count} групп". A fraction takes few's,
+ * which is Russian's own; Ukrainian has a form of its own for it ("1,5 платежу"), which no count the app passes needs.
+ * Czech ("{count} skupiny|{count} skupin") and Romanian ("{count} grupuri|{count} de grupuri") hold two forms too,
+ * their second one being the one their other takes (`secondFormIsOther`). Arabic has a dual, so its messages hold every
+ * category it has, in CLDR's order, "zero|one|two|few|many|other" (`everyFormOrder`), and so does any language whose
+ * plural has a two. Any other message has one form. `count` must be the number itself, not a formatted string: one that
+ * isn't a number gets the many form, the one most counts take (other, in a language that holds every form).
  */
 function pluralFormOf(message: string, count: string | number | undefined): string {
   if (!message.includes('|')) return message
@@ -313,7 +313,7 @@ export function verbForYou(verb: string): string {
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
   if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
-  if (locale === 'cs') return /^\S*l\(a\)(?= |$)/.test(verb) ? `jsi ${verb}` : verb
+  if (locale === 'cs') return /^\S*l\(a\)(?=[\s,:]|$)/.test(verb) ? `jsi ${verb}` : verb
   if (!isSpanish) return verb
   const [first, ...rest] = verb.split(' ')
   if (first === 'se' && rest.length > 0) return ['te', verbForYou(rest[0]), ...rest.slice(1)].join(' ')

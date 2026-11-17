@@ -24,7 +24,7 @@ private const val VIETNAMESE = "vi"
 private const val SWEDISH = "sv"
 private const val CZECH = "cs"
 private const val CZECH_SECOND_PERSON_AUXILIARY = "jsi"
-private const val CZECH_PAST_SUFFIX = "l(a)"
+private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
 private const val ROMANIAN = "ro"
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
@@ -115,7 +115,7 @@ fun toSecondPerson(
 
     HINDI -> dropSubjectParticle(verb, HINDI_ERGATIVE)
 
-    CZECH -> if (verb.substringBefore(' ').endsWith(CZECH_PAST_SUFFIX)) "$CZECH_SECOND_PERSON_AUXILIARY $verb" else verb
+    CZECH -> if (czechPast.containsMatchIn(verb)) "$CZECH_SECOND_PERSON_AUXILIARY $verb" else verb
 
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }

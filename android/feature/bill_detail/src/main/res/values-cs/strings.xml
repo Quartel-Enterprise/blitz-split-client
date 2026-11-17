@@ -127,9 +127,9 @@
     <string name="bill_detail_viewer_photo_title">Fotka %1$d z %2$d</string>
     <string name="bill_detail_viewer_download">Stáhnout</string>
     <string name="bill_detail_viewer_remove">Odebrat fotku</string>
-    <string name="bill_detail_viewer_added_today">%1$s ji přiložil(a) dnes v %2$s</string>
-    <string name="bill_detail_viewer_added_yesterday">%1$s ji přiložil(a) včera v %2$s</string>
-    <string name="bill_detail_viewer_added_other">%1$s ji přiložil(a) %2$s v %3$s</string>
+    <string name="bill_detail_viewer_added_today">%1$s přiložil(a) dnes v %2$s</string>
+    <string name="bill_detail_viewer_added_yesterday">%1$s přiložil(a) včera v %2$s</string>
+    <string name="bill_detail_viewer_added_other">%1$s přiložil(a) %2$s v %3$s</string>
     <string name="bill_detail_viewer_read_today">%1$s načetl(a) účtenku dnes v %2$s</string>
     <string name="bill_detail_viewer_read_yesterday">%1$s načetl(a) účtenku včera v %2$s</string>
     <string name="bill_detail_viewer_read_other">%1$s načetl(a) účtenku %2$s v %3$s</string>
