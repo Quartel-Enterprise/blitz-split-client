@@ -4,10 +4,16 @@
     "Add the reminder to your calendar" : {
       "comment" : "After joining a group: offers the reminder as a calendar event",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adicione o lembrete à sua agenda"
+            "value" : "إضافة التذكير إلى التقويم"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge die Erinnerung deinem Kalender hinzu"
           }
         },
         "es" : {
@@ -22,40 +28,10 @@
             "value" : "Ajoutez le rappel à votre calendrier"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Füge die Erinnerung deinem Kalender hinzu"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aggiungi il promemoria al tuo calendario"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dodaj przypomnienie do swojego kalendarza"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Voeg de herinnering toe aan je agenda"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "リマインダーをカレンダーに追加"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hatırlatıcıyı takvimine ekle"
+            "value" : "रिमाइंडर को अपने कैलेंडर में जोड़ें"
           }
         },
         "id" : {
@@ -64,16 +40,16 @@
             "value" : "Tambahkan pengingat ke kalendermu"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавьте напоминание в свой календарь"
+            "value" : "Aggiungi il promemoria al tuo calendario"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Додайте нагадування до свого календаря"
+            "value" : "リマインダーをカレンダーに追加"
           }
         },
         "ko" : {
@@ -82,10 +58,40 @@
             "value" : "알림을 내 캘린더에 추가하세요"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "रिमाइंडर को अपने कैलेंडर में जोड़ें"
+            "value" : "Voeg de herinnering toe aan je agenda"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj przypomnienie do swojego kalendarza"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicione o lembrete à sua agenda"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавьте напоминание в свой календарь"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hatırlatıcıyı takvimine ekle"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додайте нагадування до свого календаря"
           }
         }
       }
@@ -93,10 +99,16 @@
     "Add to calendar" : {
       "comment" : "Edit group's button that adds the reminder to the calendar",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adicionar à agenda"
+            "value" : "الإضافة إلى التقويم"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Kalender hinzufügen"
           }
         },
         "es" : {
@@ -111,40 +123,10 @@
             "value" : "Ajouter au calendrier"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zum Kalender hinzufügen"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aggiungi al calendario"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dodaj do kalendarza"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toevoegen aan agenda"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "カレンダーに追加"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Takvime ekle"
+            "value" : "कैलेंडर में जोड़ें"
           }
         },
         "id" : {
@@ -153,16 +135,16 @@
             "value" : "Tambahkan ke kalender"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавить в календарь"
+            "value" : "Aggiungi al calendario"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Додати до календаря"
+            "value" : "カレンダーに追加"
           }
         },
         "ko" : {
@@ -171,10 +153,40 @@
             "value" : "캘린더에 추가"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "कैलेंडर में जोड़ें"
+            "value" : "Toevoegen aan agenda"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj do kalendarza"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar à agenda"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить в календарь"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Takvime ekle"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додати до календаря"
           }
         }
       }
@@ -182,10 +194,16 @@
     "Add to my calendar" : {
       "comment" : "Switch of New group: also adds the reminder to the calendar",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adicionar à minha agenda"
+            "value" : "الإضافة إلى تقويمي"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu meinem Kalender hinzufügen"
           }
         },
         "es" : {
@@ -200,40 +218,10 @@
             "value" : "Ajouter à mon calendrier"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zu meinem Kalender hinzufügen"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aggiungi al mio calendario"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dodaj do mojego kalendarza"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toevoegen aan mijn agenda"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自分のカレンダーに追加"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Takvimime ekle"
+            "value" : "मेरे कैलेंडर में जोड़ें"
           }
         },
         "id" : {
@@ -242,16 +230,16 @@
             "value" : "Tambahkan ke kalender saya"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавить в мой календарь"
+            "value" : "Aggiungi al mio calendario"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Додати до мого календаря"
+            "value" : "自分のカレンダーに追加"
           }
         },
         "ko" : {
@@ -260,10 +248,40 @@
             "value" : "내 캘린더에 추가"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मेरे कैलेंडर में जोड़ें"
+            "value" : "Toevoegen aan mijn agenda"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj do mojego kalendarza"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar à minha agenda"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить в мой календарь"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Takvimime ekle"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додати до мого календаря"
           }
         }
       }
@@ -573,10 +591,16 @@
     "Day of the month" : {
       "comment" : "Picker of the reminder's day of the month",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dia do mês"
+            "value" : "يوم الشهر"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag des Monats"
           }
         },
         "es" : {
@@ -591,40 +615,10 @@
             "value" : "Jour du mois"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tag des Monats"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Giorno del mese"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dzień miesiąca"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dag van de maand"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "日付"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ayın günü"
+            "value" : "महीने का दिन"
           }
         },
         "id" : {
@@ -633,16 +627,16 @@
             "value" : "Tanggal"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "День месяца"
+            "value" : "Giorno del mese"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "День місяця"
+            "value" : "日付"
           }
         },
         "ko" : {
@@ -651,10 +645,40 @@
             "value" : "날짜"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "महीने का दिन"
+            "value" : "Dag van de maand"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dzień miesiąca"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dia do mês"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "День месяца"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayın günü"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "День місяця"
           }
         }
       }
@@ -662,10 +686,16 @@
     "Every %@ at %@" : {
       "comment" : "The group's weekly reminder: weekday, then time",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toda %@ às %@"
+            "value" : "كل يوم %1$@ في الساعة %2$@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden %@ um %@"
           }
         },
         "es" : {
@@ -680,40 +710,10 @@
             "value" : "Chaque %@ à %@"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeden %@ um %@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ogni %@ alle %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Co tydzień: %@, %@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elke %@ om %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "毎週%@ %@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Her %@ saat %@"
+            "value" : "हर %@ को %@ पर"
           }
         },
         "id" : {
@@ -722,16 +722,16 @@
             "value" : "Setiap %@ pukul %@"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Каждый день недели: %@, %@"
+            "value" : "Ogni %@ alle %@"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Щотижня: %@, %@"
+            "value" : "毎週%@ %@"
           }
         },
         "ko" : {
@@ -740,10 +740,40 @@
             "value" : "매주 %@ %@"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "हर %@ को %@ पर"
+            "value" : "Elke %@ om %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Co tydzień: %@, %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toda %@ às %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каждый день недели: %@, %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her %@ saat %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щотижня: %@, %@"
           }
         }
       }
@@ -751,10 +781,16 @@
     "Every month on day %lld at %@" : {
       "comment" : "The group's monthly reminder: day of the month, then time",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Todo mês, no dia %lld às %@"
+            "value" : "كل شهر في اليوم %1$lld في الساعة %2$@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden Monat am %lld. um %@"
           }
         },
         "es" : {
@@ -769,40 +805,10 @@
             "value" : "Chaque mois le %lld à %@"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeden Monat am %lld. um %@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ogni mese il giorno %lld alle %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Co miesiąc, %lld. dnia o %@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elke maand op dag %lld om %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "毎月%lld日 %@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Her ay %lld. günü saat %@"
+            "value" : "हर महीने %lld तारीख़ को %@ पर"
           }
         },
         "id" : {
@@ -811,16 +817,16 @@
             "value" : "Setiap bulan tanggal %lld pukul %@"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Каждый месяц, %lld-го числа в %@"
+            "value" : "Ogni mese il giorno %lld alle %@"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Щомісяця %lld-го числа о %@"
+            "value" : "毎月%lld日 %@"
           }
         },
         "ko" : {
@@ -829,10 +835,40 @@
             "value" : "매월 %lld일 %@"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "हर महीने %lld तारीख़ को %@ पर"
+            "value" : "Elke maand op dag %lld om %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Co miesiąc, %lld. dnia o %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo mês, no dia %lld às %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каждый месяц, %lld-го числа в %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Her ay %lld. günü saat %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щомісяця %lld-го числа о %@"
           }
         }
       }
@@ -840,10 +876,16 @@
     "Group reminder" : {
       "comment" : "Settle-up reminder section of New group and Edit group",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lembrete do grupo"
+            "value" : "تذكير المجموعة"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gruppenerinnerung"
           }
         },
         "es" : {
@@ -858,40 +900,10 @@
             "value" : "Rappel du groupe"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gruppenerinnerung"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Promemoria del gruppo"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Przypomnienie grupy"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Groepsherinnering"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "グループのリマインダー"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Grup hatırlatıcısı"
+            "value" : "ग्रुप रिमाइंडर"
           }
         },
         "id" : {
@@ -900,16 +912,16 @@
             "value" : "Pengingat grup"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Напоминание группы"
+            "value" : "Promemoria del gruppo"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Нагадування групи"
+            "value" : "グループのリマインダー"
           }
         },
         "ko" : {
@@ -918,10 +930,40 @@
             "value" : "그룹 알림"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ग्रुप रिमाइंडर"
+            "value" : "Groepsherinnering"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przypomnienie grupy"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lembrete do grupo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напоминание группы"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grup hatırlatıcısı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нагадування групи"
           }
         }
       }
@@ -1024,10 +1066,16 @@
     "Members who owe get a notification, on their own clock." : {
       "comment" : "Caption under the group's reminder",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Quem deve recebe uma notificação, no horário do próprio aparelho."
+            "value" : "يصل إشعار إلى من عليهم مبالغ من الأعضاء، حسب توقيتهم المحلي."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitglieder mit offenen Schulden erhalten eine Benachrichtigung, nach ihrer eigenen Uhr."
           }
         },
         "es" : {
@@ -1042,40 +1090,10 @@
             "value" : "Les membres qui doivent reçoivent une notification, à leur propre heure."
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mitglieder mit offenen Schulden erhalten eine Benachrichtigung, nach ihrer eigenen Uhr."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chi deve riceve una notifica, secondo il proprio orario."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Członkowie, którzy są winni, dostają powiadomienie według własnego zegara."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leden die iets verschuldigd zijn krijgen een melding, op hun eigen tijd."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "支払いが残っているメンバーには、それぞれの時刻で通知が届きます。"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Borcu olan üyeler, kendi saatlerine göre bildirim alır."
+            "value" : "जिन सदस्यों को पैसे देने हैं, उन्हें उनके अपने समय के हिसाब से नोटिफ़िकेशन मिलता है।"
           }
         },
         "id" : {
@@ -1084,16 +1102,16 @@
             "value" : "Anggota yang berutang menerima notifikasi sesuai jam mereka sendiri."
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Участники с долгом получают уведомление по своим часам."
+            "value" : "Chi deve riceve una notifica, secondo il proprio orario."
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Учасники з боргом отримують сповіщення за власним часом."
+            "value" : "支払いが残っているメンバーには、それぞれの時刻で通知が届きます。"
           }
         },
         "ko" : {
@@ -1102,10 +1120,40 @@
             "value" : "빚이 있는 멤버는 각자의 시간에 맞춰 알림을 받아요."
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "जिन सदस्यों को पैसे देने हैं, उन्हें उनके अपने समय के हिसाब से नोटिफ़िकेशन मिलता है।"
+            "value" : "Leden die iets verschuldigd zijn krijgen een melding, op hun eigen tijd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Członkowie, którzy są winni, dostają powiadomienie według własnego zegara."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quem deve recebe uma notificação, no horário do próprio aparelho."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Участники с долгом получают уведомление по своим часам."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borcu olan üyeler, kendi saatlerine göre bildirim alır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Учасники з боргом отримують сповіщення за власним часом."
           }
         }
       }
@@ -12810,10 +12858,16 @@
     "Monthly" : {
       "comment" : "Reminder repeats every month",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mensal"
+            "value" : "شهريًا"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monatlich"
           }
         },
         "es" : {
@@ -12828,40 +12882,10 @@
             "value" : "Mensuel"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monatlich"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mensile"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Co miesiąc"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maandelijks"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "毎月"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aylık"
+            "value" : "हर महीने"
           }
         },
         "id" : {
@@ -12870,16 +12894,16 @@
             "value" : "Bulanan"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ежемесячно"
+            "value" : "Mensile"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Щомісяця"
+            "value" : "毎月"
           }
         },
         "ko" : {
@@ -12888,10 +12912,40 @@
             "value" : "매월"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "हर महीने"
+            "value" : "Maandelijks"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Co miesiąc"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensal"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ежемесячно"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aylık"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щомісяця"
           }
         }
       }
@@ -26685,10 +26739,16 @@
     "Remind members to settle up" : {
       "comment" : "Switch of the group's reminder",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lembrar os membros de acertar as contas"
+            "value" : "تذكير الأعضاء بالتسوية"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitglieder ans Begleichen erinnern"
           }
         },
         "es" : {
@@ -26703,40 +26763,10 @@
             "value" : "Rappeler aux membres de régler leurs comptes"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mitglieder ans Begleichen erinnern"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ricorda ai membri di saldare i conti"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Przypominaj członkom o rozliczeniu"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leden eraan herinneren af te rekenen"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "メンバーに精算をリマインドする"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Üyelere hesaplaşmayı hatırlat"
+            "value" : "सदस्यों को हिसाब चुकाने की याद दिलाएं"
           }
         },
         "id" : {
@@ -26745,16 +26775,16 @@
             "value" : "Ingatkan anggota untuk melunasi"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Напоминать участникам рассчитаться"
+            "value" : "Ricorda ai membri di saldare i conti"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Нагадувати учасникам розрахуватися"
+            "value" : "メンバーに精算をリマインドする"
           }
         },
         "ko" : {
@@ -26763,10 +26793,40 @@
             "value" : "멤버에게 정산을 알려주기"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "सदस्यों को हिसाब चुकाने की याद दिलाएं"
+            "value" : "Leden eraan herinneren af te rekenen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przypominaj członkom o rozliczeniu"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lembrar os membros de acertar as contas"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напоминать участникам рассчитаться"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üyelere hesaplaşmayı hatırlat"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нагадувати учасникам розрахуватися"
           }
         }
       }
@@ -26774,10 +26834,16 @@
     "Repeats" : {
       "comment" : "Accessibility label of the Weekly/Monthly control",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Repete"
+            "value" : "التكرار"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederholt"
           }
         },
         "es" : {
@@ -26792,40 +26858,10 @@
             "value" : "Répétition"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wiederholt"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ripete"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Powtarza się"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Herhaalt"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "繰り返し"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tekrarlar"
+            "value" : "दोहराव"
           }
         },
         "id" : {
@@ -26834,16 +26870,16 @@
             "value" : "Berulang"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Повтор"
+            "value" : "Ripete"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Повтор"
+            "value" : "繰り返し"
           }
         },
         "ko" : {
@@ -26852,10 +26888,40 @@
             "value" : "반복"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "दोहराव"
+            "value" : "Herhaalt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Powtarza się"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repete"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повтор"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tekrarlar"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повтор"
           }
         }
       }
@@ -27159,10 +27225,16 @@
     "Settle up: %@" : {
       "comment" : "Title of the calendar event of a group's reminder, with the group's name",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Acertar as contas: %@"
+            "value" : "التسوية: %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrechnen: %@"
           }
         },
         "es" : {
@@ -27177,40 +27249,10 @@
             "value" : "Régler les comptes : %@"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrechnen: %@"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Saldare i conti: %@"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rozliczenie: %@"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afrekenen: %@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "精算：%@"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hesaplaş: %@"
+            "value" : "हिसाब चुकाएं: %@"
           }
         },
         "id" : {
@@ -27219,16 +27261,16 @@
             "value" : "Lunasi: %@"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Рассчитаться: %@"
+            "value" : "Saldare i conti: %@"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Розрахуватися: %@"
+            "value" : "精算：%@"
           }
         },
         "ko" : {
@@ -27237,10 +27279,40 @@
             "value" : "정산: %@"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "हिसाब चुकाएं: %@"
+            "value" : "Afrekenen: %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozliczenie: %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acertar as contas: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рассчитаться: %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesaplaş: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Розрахуватися: %@"
           }
         }
       }
@@ -28134,10 +28206,16 @@
     "Time to settle up" : {
       "comment" : "Banner for someone who owes when the group's reminder arrives",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hora de acertar as contas"
+            "value" : "حان وقت التسوية"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeit, abzurechnen"
           }
         },
         "es" : {
@@ -28152,40 +28230,10 @@
             "value" : "C’est l’heure de régler les comptes"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeit, abzurechnen"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "È ora di saldare i conti"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Czas się rozliczyć"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tijd om af te rekenen"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "精算の時間です"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hesaplaşma zamanı"
+            "value" : "हिसाब चुकाने का समय"
           }
         },
         "id" : {
@@ -28194,16 +28242,16 @@
             "value" : "Saatnya melunasi"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Пора рассчитаться"
+            "value" : "È ora di saldare i conti"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Час розрахуватися"
+            "value" : "精算の時間です"
           }
         },
         "ko" : {
@@ -28212,10 +28260,40 @@
             "value" : "정산할 시간이에요"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "हिसाब चुकाने का समय"
+            "value" : "Tijd om af te rekenen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czas się rozliczyć"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hora de acertar as contas"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пора рассчитаться"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hesaplaşma zamanı"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час розрахуватися"
           }
         }
       }
@@ -28223,10 +28301,16 @@
     "Time to settle up in %@." : {
       "comment" : "Notes of the calendar event of a group's reminder, with the group's name",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hora de acertar as contas em %@."
+            "value" : "حان وقت التسوية في %@."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeit, in %@ abzurechnen."
           }
         },
         "es" : {
@@ -28241,40 +28325,10 @@
             "value" : "C’est l’heure de régler les comptes dans %@."
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeit, in %@ abzurechnen."
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "È ora di saldare i conti in %@."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Czas się rozliczyć w grupie %@."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tijd om af te rekenen in %@."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@の精算の時間です。"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ içinde hesaplaşma zamanı."
+            "value" : "%@ में हिसाब चुकाने का समय हो गया है।"
           }
         },
         "id" : {
@@ -28283,16 +28337,16 @@
             "value" : "Saatnya melunasi di %@."
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Пора рассчитаться в группе %@."
+            "value" : "È ora di saldare i conti in %@."
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Час розрахуватися в групі %@."
+            "value" : "%@の精算の時間です。"
           }
         },
         "ko" : {
@@ -28301,10 +28355,40 @@
             "value" : "%@에서 정산할 시간이에요."
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ में हिसाब चुकाने का समय हो गया है।"
+            "value" : "Tijd om af te rekenen in %@."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Czas się rozliczyć w grupie %@."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hora de acertar as contas em %@."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пора рассчитаться в группе %@."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ içinde hesaplaşma zamanı."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Час розрахуватися в групі %@."
           }
         }
       }
@@ -29989,10 +30073,16 @@
     "Weekly" : {
       "comment" : "Reminder repeats every week",
       "localizations" : {
-        "pt-BR" : {
+        "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Semanal"
+            "value" : "أسبوعيًا"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wöchentlich"
           }
         },
         "es" : {
@@ -30007,40 +30097,10 @@
             "value" : "Hebdomadaire"
           }
         },
-        "de" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wöchentlich"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Settimanale"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Co tydzień"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wekelijks"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "毎週"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Haftalık"
+            "value" : "हर हफ़्ते"
           }
         },
         "id" : {
@@ -30049,16 +30109,16 @@
             "value" : "Mingguan"
           }
         },
-        "ru" : {
+        "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Еженедельно"
+            "value" : "Settimanale"
           }
         },
-        "uk" : {
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Щотижня"
+            "value" : "毎週"
           }
         },
         "ko" : {
@@ -30067,10 +30127,40 @@
             "value" : "매주"
           }
         },
-        "hi" : {
+        "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "हर हफ़्ते"
+            "value" : "Wekelijks"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Co tydzień"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semanal"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Еженедельно"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haftalık"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Щотижня"
           }
         }
       }
