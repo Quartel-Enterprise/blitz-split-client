@@ -18,8 +18,8 @@ class GroupReminderTest {
     )
     private val monthly30 = monthly15.copy(day = 30)
     private val monthly31 = monthly15.copy(day = 31)
-    private val saoPaulo = TimeZone.of("America/Sao_Paulo")
-    private val tokyo = TimeZone.of("Asia/Tokyo")
+    private val saoPaulo = TimeZone.of("UTC-03:00")
+    private val tokyo = TimeZone.of("UTC+09:00")
 
     @Test
     fun `GIVEN a new group WHEN reading the default reminder THEN it is on weekly on Monday at 10 00`() {

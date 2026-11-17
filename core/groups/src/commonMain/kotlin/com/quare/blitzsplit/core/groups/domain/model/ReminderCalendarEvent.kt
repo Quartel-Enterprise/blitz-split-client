@@ -16,17 +16,9 @@ data class ReminderCalendarEvent(
     // Why: the first occurrence from now, in epoch millis, which the calendar starts the series on.
     val startMillis: Long,
     val recurrence: ReminderRecurrence,
-    // Why: the zone the start is read in to write its date and time: the device's.
-    val timeZoneId: String,
-) {
     // Why: the event's start as the calendar's local "yyyyMMddTHHmmss", with no zone so it follows the person's clock.
-    val startLocal: String
-        get() {
-            val local = Instant.fromEpochMilliseconds(startMillis).toLocalDateTime(TimeZone.of(timeZoneId))
-            return "${local.year.toPadded(4)}${local.month.number.toPadded(2)}${local.day.toPadded(2)}" +
-                "T${local.hour.toPadded(2)}${local.minute.toPadded(2)}00"
-        }
-
+    val startLocal: String,
+) {
     // Why: RFC 5545's RRULE, which Google Calendar's insert intent and the .ics both take.
     val rrule: String
         get() = recurrence.rrule
@@ -71,9 +63,19 @@ data class ReminderCalendarEvent(
         .replace("\r\n", "\\n")
         .replace("\n", "\\n")
 
-    private fun Int.toPadded(length: Int): String = toString().padStart(length, '0')
-
     companion object {
+        // Why: read with the zone object itself, never by its id: the JS target has no zone database to look an id up.
+        private fun startLocalOf(
+            startMillis: Long,
+            timeZone: TimeZone,
+        ): String {
+            val local = Instant.fromEpochMilliseconds(startMillis).toLocalDateTime(timeZone)
+            return "${local.year.toPadded(4)}${local.month.number.toPadded(2)}${local.day.toPadded(2)}" +
+                "T${local.hour.toPadded(2)}${local.minute.toPadded(2)}00"
+        }
+
+        private fun Int.toPadded(length: Int): String = toString().padStart(length, '0')
+
         private const val MONTHS_PER_YEAR = 12
 
         /*
@@ -96,7 +98,7 @@ data class ReminderCalendarEvent(
                 groupName = groupName,
                 startMillis = start,
                 recurrence = ReminderRecurrence.of(reminder),
-                timeZoneId = timeZone.id,
+                startLocal = startLocalOf(start, timeZone),
             )
         }
 

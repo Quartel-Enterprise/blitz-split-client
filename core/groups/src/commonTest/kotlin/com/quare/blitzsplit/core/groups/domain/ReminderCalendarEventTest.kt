@@ -20,7 +20,7 @@ class ReminderCalendarEventTest {
         minute = 600,
     )
     private val wednesday = millisAt(2026, 11, 18, 12)
-    private val tokyo = TimeZone.of("Asia/Tokyo")
+    private val tokyo = TimeZone.of("UTC+09:00")
 
     @Test
     fun `GIVEN a reminder turned off WHEN building the calendar event THEN there is none`() {
@@ -47,7 +47,6 @@ class ReminderCalendarEventTest {
         assertEquals(groupName, event.groupName)
         assertEquals(millisAt(2026, 11, 23, 10), event.startMillis)
         assertEquals("FREQ=WEEKLY;BYDAY=MO", event.rrule)
-        assertEquals("UTC", event.timeZoneId)
     }
 
     @Test
