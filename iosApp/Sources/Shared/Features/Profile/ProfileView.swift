@@ -642,6 +642,9 @@ private struct LanguageName: View {
         )
         case .arabic: String(
             localized: "Arabic",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
         case .chineseSimplified: String(
             localized: "Chinese (Simplified)",
             bundle: .appLanguage,
