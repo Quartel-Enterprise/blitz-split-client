@@ -26,7 +26,8 @@
         "zh": "手机横放时以及在平板上，群组的“分摊账单”现在位于顶部栏，不再悬浮在账单上方。",
         "he": "כשהטלפון במצב לרוחב, ובטאבלטים, \"פיצול חשבון\" של קבוצה נמצא עכשיו בסרגל העליון במקום לצוף מעל החשבונות.",
         "th": "เมื่อวางโทรศัพท์แนวนอนและบนแท็บเล็ต ปุ่ม “หารบิล” ของกลุ่มจะอยู่ในแถบด้านบนแทนการลอยอยู่เหนือรายการบิล",
-        "vi": "Khi đặt điện thoại nằm ngang và trên máy tính bảng, nút “Chia khoản chi” của nhóm giờ nằm trên thanh trên cùng thay vì nổi trên danh sách khoản chi."
+        "vi": "Khi đặt điện thoại nằm ngang và trên máy tính bảng, nút “Chia khoản chi” của nhóm giờ nằm trên thanh trên cùng thay vì nổi trên danh sách khoản chi.",
+        "zh-Hant": "手機橫放時以及在平板上，群組的「分攤帳單」現在位於頂端列，不再浮在帳單上方。"
       }
     },
     {
@@ -55,7 +56,8 @@
         "zh": "开启动态取色后，你欠的金额会保持橙色，不再变成红色，免得和你应收金额的绿色混在一起。",
         "he": "כשהאפשרות \"צבעים דינמיים\" מופעלת, החוב שלך נשאר כתום ולא הופך לאדום, כך שהוא אף פעם לא נראה כמו הירוק של מה שמגיע לך.",
         "th": "เมื่อเปิดสีไดนามิก ยอดที่คุณค้างจะยังเป็นสีส้มแทนที่จะกลายเป็นสีแดง จึงไม่มีวันดูคล้ายสีเขียวของยอดที่คุณจะได้คืน",
-        "vi": "Khi bật Màu động, số tiền bạn nợ vẫn giữ màu cam thay vì chuyển sang đỏ, nên không bao giờ trông giống màu xanh lá của số tiền bạn được nhận lại."
+        "vi": "Khi bật Màu động, số tiền bạn nợ vẫn giữ màu cam thay vì chuyển sang đỏ, nên không bao giờ trông giống màu xanh lá của số tiền bạn được nhận lại.",
+        "zh-Hant": "開啟「動態取色」時，你欠的金額會維持橘色而不會變紅，因此不會和你可收回金額的綠色混淆。"
       }
     }
   ]

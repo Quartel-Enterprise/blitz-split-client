@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">版本資訊</string>
+    <string name="release_notes_show_beta">顯示測試版</string>
+    <string name="release_notes_beta_badge">測試版%1$d</string>
+    <string name="release_notes_installed_badge">目前版本</string>
+    <string name="release_notes_empty">還沒有版本資訊。</string>
+    <string name="release_notes_empty_only_betas">還沒有正式版。開啟測試版即可查看正在測試的內容。</string>
+    <string name="release_notes_load_failed_title">無法載入版本資訊</string>
+    <string name="release_notes_load_failed_body">請檢查網路連線後重試。</string>
+    <string name="release_notes_retry">重試</string>
+    <string name="release_notes_open_on_github">在GitHub上開啟</string>
+</resources>

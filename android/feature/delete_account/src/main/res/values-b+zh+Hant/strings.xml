@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">刪除帳號</string>
+    <string name="delete_account_offline_title">沒有網路。</string>
+    <string name="delete_account_offline_body">刪除帳號需要網路連線。請連上網路後重試。</string>
+    <string name="delete_account_heading">刪除你的帳號和資料？</string>
+    <string name="delete_account_deleted_title">將被刪除的內容</string>
+    <string name="delete_account_deleted_profile">你的個人資料（名字、照片和顏色）</string>
+    <string name="delete_account_deleted_keys">你的Pix和比特幣金鑰</string>
+    <string name="delete_account_deleted_provider">與你的%1$s帳號的連結</string>
+    <string name="delete_account_deleted_recovery_code">你的復原碼</string>
+    <string name="delete_account_deleted_device">此裝置上的資料副本</string>
+    <string name="delete_account_kept_title">群組中保留的內容</string>
+    <string name="delete_account_kept_groups">群組及其中的帳單和付款，供其他成員使用</string>
+    <string name="delete_account_kept_member">你在每個群組中的名字，作為無帳號成員保留</string>
+    <string name="delete_account_kept_comments">你的留言和你新增的照片，仍以你的名字顯示</string>
+    <string name="delete_account_export">先匯出我的資料</string>
+    <string name="delete_account_confirm">我了解此操作無法復原</string>
+    <string name="delete_account_delete">刪除帳號</string>
+    <string name="delete_account_cancel">取消</string>
+    <string name="delete_account_failed">無法刪除你的帳號，請重試。</string>
+</resources>

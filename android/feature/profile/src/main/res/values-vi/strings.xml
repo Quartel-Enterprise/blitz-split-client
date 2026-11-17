@@ -75,6 +75,7 @@
     <string name="profile_language_hebrew">Tiếng Do Thái</string>
     <string name="profile_language_thai">Tiếng Thái</string>
     <string name="profile_language_vietnamese">Tiếng Việt</string>
+    <string name="profile_language_chinese_traditional">Tiếng Trung (Phồn thể)</string>
     <string name="profile_language_system_detail">Ngôn ngữ của thiết bị</string>
     <string name="profile_notifications">Thông báo</string>
     <plurals name="profile_notifications_active">

@@ -852,6 +852,7 @@ export const ru: Record<MessageKey, string> = {
   profile_languageHebrew: 'Иврит',
   profile_languageThai: 'Тайский',
   profile_languageVietnamese: 'Вьетнамский',
+  profile_languageChineseTraditional: 'Китайский (традиционный)',
   profile_bitcoinInSats: 'Bitcoin в сатоши',
   profile_bitcoinInSatsDetail: 'Показывает и вводит суммы в биткоинах в сатах (1 ₿ = 100 000 000 сат).',
   profile_shareUsageData: 'Отправлять данные об использовании',

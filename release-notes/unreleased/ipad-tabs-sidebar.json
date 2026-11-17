@@ -26,7 +26,8 @@
         "zh": "在iPad上，标签页会在侧边栏中打开；当标签页位于顶部栏时（例如iPad竖放），“分摊账单”会一直显示在那里，其他按钮则移到下方的一行。",
         "he": "ב-iPad, הכרטיסיות נפתחות בסרגל הצד, וכשהן בסרגל העליון, כמו כשה-iPad במצב לאורך, \"פיצול חשבון\" נשאר גלוי שם והכפתורים האחרים עוברים לשורה ממש מתחת.",
         "th": "บน iPad แท็บจะเปิดในแถบด้านข้าง และเมื่อแท็บอยู่ในแถบด้านบน เช่น เมื่อตั้ง iPad แนวตั้ง “หารบิล” จะยังมองเห็นได้ตรงนั้น ส่วนปุ่มอื่นๆ ย้ายไปอยู่ในแถวด้านล่าง",
-        "vi": "Trên iPad, các tab mở trong thanh bên, và khi chúng nằm trên thanh trên cùng, như khi iPad dựng đứng, “Chia khoản chi” vẫn hiện ở đó, còn các nút khác chuyển xuống một hàng ngay bên dưới."
+        "vi": "Trên iPad, các tab mở trong thanh bên, và khi chúng nằm trên thanh trên cùng, như khi iPad dựng đứng, “Chia khoản chi” vẫn hiện ở đó, còn các nút khác chuyển xuống một hàng ngay bên dưới.",
+        "zh-Hant": "在iPad上，分頁會在側邊欄中開啟；當分頁位於頂端列時（例如iPad直放），「分攤帳單」會留在那裡隨時可見，其他按鈕則移到正下方的一列。"
       }
     }
   ]

@@ -18,7 +18,7 @@ class ObserveSpokenLanguageUseCase(
             val spoken = picked.takeIf { it != AppLanguage.SYSTEM }
                 ?: deviceLanguages().map(AppLanguage::fromTag).firstOrNull { it != AppLanguage.SYSTEM }
                 ?: AppLanguage.SYSTEM
-            AppLanguage.languageOf(spoken.tag) ?: DEFAULT_LANGUAGE
+            spoken.spokenCode ?: DEFAULT_LANGUAGE
         }.distinctUntilChanged()
 
     private companion object {

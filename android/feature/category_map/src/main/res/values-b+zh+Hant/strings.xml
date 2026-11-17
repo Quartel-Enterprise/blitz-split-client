@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">沒有關鍵字</string>
+    <string name="category_map_title">類別對照表</string>
+    <string name="category_map_search">搜尋關鍵字</string>
+    <string name="category_map_add">新增關鍵字</string>
+    <string name="category_map_more">更多選項</string>
+    <string name="category_map_restore">還原預設</string>
+    <string name="category_map_back">返回</string>
+    <string name="category_map_intro">帳單標題包含以下某個詞時，會自動歸入對應類別。「Uber回家」會歸入「交通」。</string>
+    <string name="category_map_intro_offline">類別對照表可離線使用：更改會立即在此裝置上生效，連線後同步到你的其他裝置。</string>
+    <string name="category_map_device_only">你的類別對照表只儲存在此裝置上。要同步到其他裝置，請在個人資料中用Google或Apple登入。</string>
+    <string name="category_map_open_profile">開啟個人資料</string>
+    <string name="category_map_longest_wins">當兩個關鍵字都符合同一標題時，以較長的為準。</string>
+    <string name="category_map_no_result">沒有包含「%1$s」的關鍵字</string>
+    <string name="category_map_no_result_body">新增後，標題中含有這個詞的帳單會自動歸入正確的類別。</string>
+    <string name="category_map_add_query">新增「%1$s」</string>
+    <string name="category_map_empty_title">你的對照表是空的</string>
+    <string name="category_map_empty_body">沒有關鍵字時，類別不會根據標題自動選擇：你需要在每筆帳單中手動選擇。</string>
+    <string name="category_map_group_category"> · %1$s的類別</string>
+    <string name="category_map_only_main">僅%1$s</string>
+    <string name="category_map_only_in_group">僅在%1$s中</string>
+    <string name="category_map_no_terms_yet">還沒有關鍵字。</string>
+    <string name="category_map_add_in">在%1$s中新增關鍵字</string>
+    <string name="category_map_tip">點一下關鍵字可更改其類別或將其移除。以完整詞語比對，不區分重音和大小寫。</string>
+    <string name="category_map_queued">排隊中</string>
+    <string name="category_map_term_action">%1$s，%2$s。編輯</string>
+    <string name="category_map_new_term">新關鍵字</string>
+    <string name="category_map_edit_term">編輯關鍵字</string>
+    <string name="category_map_term_label">詞語或片語</string>
+    <string name="category_map_term_help">以完整詞語比對，不區分重音和大小寫。</string>
+    <string name="category_map_term_help_app">App內建的關鍵字。「還原預設」會將其還原為初始狀態。</string>
+    <string name="category_map_term_duplicate">「%1$s」已對應%2$s。每個關鍵字只能對應一個類別。</string>
+    <string name="category_map_term_too_short">至少輸入2個字元。</string>
+    <string name="category_map_term_too_long">最多輸入30個字元。</string>
+    <string name="category_map_term_invalid">只能使用字母、數字和空格。</string>
+    <string name="category_map_category">類別</string>
+    <string name="category_map_category_help">可以是類別或子類別。</string>
+    <string name="category_map_category_help_edit">在這裡更改會把關鍵字移到另一個類別。</string>
+    <string name="category_map_category_help_move">移動後，該關鍵字將離開%1$s。</string>
+    <string name="category_map_example">範例</string>
+    <string name="category_map_example_move">移動後</string>
+    <string name="category_map_remove">移除</string>
+    <string name="category_map_cancel">取消</string>
+    <string name="category_map_save">儲存</string>
+    <string name="category_map_move_to">移到%1$s</string>
+    <string name="category_map_removed">「%1$s」已從對照表中移除</string>
+    <string name="category_map_undo">復原</string>
+    <string name="category_map_restore_title">要還原預設對照表嗎？</string>
+    <string name="category_map_restore_body">App內建的60個關鍵字會還原為初始狀態，包括你移除或移動過的。</string>
+    <string name="category_map_restore_own_one">你建立的關鍵字「%1$s」會保留。</string>
+    <string name="category_map_restore_confirm">還原</string>
+    <string name="category_map_save_error">無法儲存對照表，請重試。</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="other">%d個關鍵字</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="other">%d個子類別</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="other">%1$d個包含「%2$s」的關鍵字</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="other">離線 · %d項更改排隊中</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="other">你建立的%d個關鍵字會保留。</item>
+    </plurals>
+    <string name="category_map_new_category">新增類別</string>
+    <string name="category_map_new_subcategory_in">在%s中新增子類別</string>
+    <string name="category_map_edit_category">編輯%s</string>
+    <string name="category_map_category_group">群組</string>
+    <string name="category_map_change_color">更改%1$s的顏色</string>
+    <string name="category_map_restore_color">還原顏色</string>
+    <string name="category_map_color_done">完成</string>
+</resources>

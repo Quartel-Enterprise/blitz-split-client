@@ -39,6 +39,7 @@ class ProfileUiStateTest {
             AppLanguage.HEBREW -> listOf("עברית", "Hebrew")
             AppLanguage.THAI -> listOf("ไทย", "Thai")
             AppLanguage.VIETNAMESE -> listOf("Tiếng Việt", "Vietnamese")
+            AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
 
@@ -72,6 +73,7 @@ class ProfileUiStateTest {
         AppLanguage.HINDI,
         AppLanguage.ARABIC,
         AppLanguage.CHINESE_SIMPLIFIED,
+        AppLanguage.CHINESE_TRADITIONAL,
         AppLanguage.HEBREW,
         AppLanguage.THAI,
         AppLanguage.VIETNAMESE,
@@ -652,6 +654,7 @@ class ProfileUiStateTest {
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
+                AppLanguage.CHINESE_TRADITIONAL,
                 AppLanguage.HEBREW,
                 AppLanguage.THAI,
                 AppLanguage.VIETNAMESE,
@@ -691,6 +694,7 @@ class ProfileUiStateTest {
                 AppLanguage.HINDI,
                 AppLanguage.ARABIC,
                 AppLanguage.CHINESE_SIMPLIFIED,
+                AppLanguage.CHINESE_TRADITIONAL,
                 AppLanguage.HEBREW,
                 AppLanguage.THAI,
                 AppLanguage.VIETNAMESE,

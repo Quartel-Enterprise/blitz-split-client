@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">找回你的群組</string>
+    <string name="restore_subtitle">之前用帳號登入過？再登入一次就行。如果沒有，請使用復原碼或舊裝置上的QR Code。</string>
+    <string name="restore_no_connection_title">無網路連線</string>
+    <string name="restore_no_connection_body">用帳號或復原碼登入需要網路才能下載你的群組。你輸入的內容會保留。</string>
+    <string name="restore_code_label">或使用復原碼</string>
+    <string name="restore_code_hint">按順序輸入12個詞。把它們全部貼上到一個欄位中即可填滿所有欄位。</string>
+    <string name="restore_scan_qr_title">掃描舊裝置上的QR Code</string>
+    <string name="restore_scan_qr_body">位置：個人資料 › 復原 › 顯示QR Code</string>
+    <string name="restore_recover">復原</string>
+    <string name="restore_try_again">重試</string>
+    <string name="restore_start_fresh">在此裝置上重新開始</string>
+    <string name="restore_error_invalid_code">找不到這個復原碼。請檢查詞語及其順序，然後重試。</string>
+    <string name="restore_error_too_many_attempts">嘗試次數過多。請等幾分鐘後重試。</string>
+    <string name="restore_error_sign_in_failed">暫時無法登入，請重試。</string>
+    <string name="restore_error_unknown">出了點問題。請重試。</string>
+</resources>

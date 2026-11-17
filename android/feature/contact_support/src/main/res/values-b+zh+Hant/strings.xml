@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">聯絡客服</string>
+    <string name="contact_support_description">我們會開啟你的郵件App，並準備好一封郵件。描述一下發生了什麼然後傳送：每封郵件都由真人閱讀。</string>
+    <string name="contact_support_to">收件人</string>
+    <string name="contact_support_diagnostics">以下資訊將包含在郵件中</string>
+    <string name="contact_support_app_version">App版本</string>
+    <string name="contact_support_platform">平台</string>
+    <string name="contact_support_language">語言</string>
+    <string name="contact_support_account">帳號</string>
+    <string name="contact_support_profile">個人資料</string>
+    <string name="contact_support_language_system">跟隨系統</string>
+    <string name="contact_support_account_local">僅限此裝置</string>
+    <string name="contact_support_account_anonymous">未連結</string>
+    <string name="contact_support_open_email">開啟郵件</string>
+    <string name="contact_support_copy_email">複製電子郵件地址</string>
+    <string name="contact_support_notice_copied">電子郵件地址已複製。</string>
+    <string name="contact_support_notice_no_app">未找到郵件App。已改為複製電子郵件地址。</string>
+    <string name="contact_support_close">關閉</string>
+</resources>

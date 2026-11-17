@@ -130,6 +130,12 @@
             "state" : "translated",
             "value" : "Blitz Split"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
         }
       }
     },
@@ -258,6 +264,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -394,6 +406,12 @@
             "state" : "translated",
             "value" : "用于扫描邀请或旧设备上的二维码，以及拍摄个人资料照片和账单照片。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於掃描邀請或舊裝置上的QR Code，以及拍攝個人資料照片和帳單照片。"
+          }
         }
       }
     },
@@ -526,6 +544,12 @@
             "state" : "translated",
             "value" : "用于通过群组链接邀请联系人。他们的号码只保存在这台设备上。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於透過群組連結邀請聯絡人。他們的號碼只儲存在這台裝置上。"
+          }
         }
       }
     },
@@ -657,6 +681,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "用于将账单照片保存到你的照片图库。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用於將帳單照片儲存到你的照片圖庫。"
           }
         }
       }

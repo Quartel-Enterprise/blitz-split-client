@@ -78,6 +78,7 @@
     <string name="profile_language_hebrew">Іврит</string>
     <string name="profile_language_thai">Тайська</string>
     <string name="profile_language_vietnamese">В\'єтнамська</string>
+    <string name="profile_language_chinese_traditional">Китайська (традиційна)</string>
     <string name="profile_language_system_detail">Мова пристрою</string>
     <string name="profile_notifications">Сповіщення</string>
     <plurals name="profile_notifications_active">

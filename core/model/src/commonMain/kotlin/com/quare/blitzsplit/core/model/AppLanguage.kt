@@ -27,6 +27,7 @@ enum class AppLanguage(
     HINDI("hi"),
     ARABIC("ar"),
     CHINESE_SIMPLIFIED("zh-Hans"),
+    CHINESE_TRADITIONAL("zh-Hant"),
     HEBREW("he"),
     THAI("th"),
     VIETNAMESE("vi"),
@@ -36,15 +37,26 @@ enum class AppLanguage(
      * Why: what the language picker's chip shows ("EN", "FR"): the language's code, but a language written for more
      * than one region shows each one's region, so its chips differ: "BR" and "PT", "419" (Latin America's UN code,
      * as in es-419, its tag having no region) and "ES". Ukrainian shows Ukraine's "UA", since its code's "UK" reads as
-     * the United Kingdom.
+     * the United Kingdom. Chinese, whose two entries differ by script, shows the region each is written for, "CN" for
+     * Simplified and "TW" for Traditional.
      */
     val chipCode: String?
         get() = when {
             this == SPANISH -> LATIN_AMERICA
             this == UKRAINIAN -> UKRAINE
+            this == CHINESE_SIMPLIFIED -> MAINLAND_CHINA
+            this == CHINESE_TRADITIONAL -> TAIWAN
             variantsOf(languageOf(tag)).size > 1 -> regionOf(tag)
             else -> languageOf(tag)?.uppercase()
         }
+
+    /*
+     * Why: the code the app asks blitzsplit.com and its link previews by (release notes, legal pages, "?lang="): the
+     * language's own ("pt", "es", "zh"), but Traditional Chinese's whole tag, "zh-Hant", since the bare "zh" is
+     * Simplified's, as "pt" is Brazil's; null for SYSTEM.
+     */
+    val spokenCode: String?
+        get() = if (this == CHINESE_TRADITIONAL) tag else languageOf(tag)
 
     companion object {
         // Why: Android still names Indonesian by its legacy code "in" (values-in), so a tag read from it may carry it.
@@ -58,6 +70,8 @@ enum class AppLanguage(
         private const val UKRAINE = "UA"
 
         private const val CHINESE = "zh"
+
+        private const val MAINLAND_CHINA = "CN"
 
         private const val TRADITIONAL_SCRIPT = "HANT"
 
@@ -73,12 +87,12 @@ enum class AppLanguage(
          * es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, zh-CN, he-IL
          * or the legacy iw-IL, th-TH, vi-VN, en-GB), SYSTEM for none or any other. Portuguese is two entries: pt-PT is
          * Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every other tag (es, es-MX,
-         * es-419…) the neutral Latin-American one. Chinese is Simplified, mainland China's zh-Hans, but for a
-         * Traditional tag (zh-Hant, zh-TW, zh-HK, zh-MO), which stays SYSTEM until the app has Traditional Chinese:
-         * Android and Apple show English to it, having no Hant resources.
+         * es-419…) the neutral Latin-American one. Chinese is two entries too: a
+         * Traditional tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Taiwan's Traditional Chinese, zh-Hant, every other one (zh,
+         * zh-CN, zh-Hans, zh-SG…) mainland China's Simplified, zh-Hans.
          */
         fun fromTag(tag: String?): AppLanguage {
-            if (isTraditionalChinese(tag)) return SYSTEM
+            if (isTraditionalChinese(tag)) return CHINESE_TRADITIONAL
             val variants = variantsOf(languageOf(tag))
             val region = regionOf(tag)
             return variants.firstOrNull { region != null && regionOf(it.tag) == region }

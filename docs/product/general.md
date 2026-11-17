@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai and Vietnamese: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese and Chinese (Traditional): the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -107,10 +107,12 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Blitz Split, writes no space between words nor around a name or number the code fills in (but between two
     values side by side, a name and an amount, which would run together: "Ana又欠Bruno ¥10"), ends a sentence with
     "。" (the code too, as Japanese: `wordGapUi`, `WordGap`, `wordGap`), and its plurals have one form. Every `zh` tag
-    picks it but a Traditional one (`zh-Hant`, `zh-TW`, `zh-HK`, `zh-MO`), which reads English, as Android and Apple
-    have no Traditional resources, until Traditional Chinese, Taiwan's `zh-Hant`, comes as its own row of the picker
-    (Pierre's call: two rows, as Portugal's and Spain's): the bare `zh` names it where a language is asked by code (the web's dictionary,
-    the release notes, the legal pages, the store listing), as `pt` names Brazil's. Hebrew (Pierre's call) is one variant for every
+    picks it but a Traditional one (`zh-Hant`, `zh-TW`, `zh-HK`, `zh-MO`, its script first when the tag has one), which
+    picks Traditional Chinese, Taiwan's `zh-Hant`, its own row of the picker (Pierre's call: two rows, as Portugal's and
+    Spain's, the chips "CN" and "TW"), in Taiwan's words and its 「」 quotes, the same rules otherwise (你, no spaces,
+    "。"): the bare `zh` names Simplified where a language is asked by code (the web's dictionary,
+    the release notes, the legal pages, the store listing), as `pt` names Brazil's, and `zh-Hant` names Traditional (`AppLanguage.spokenCode`, so the release notes, the legal
+    pages and the shared links' "?lang=" ask blitzsplit.com for it). Hebrew (Pierre's call) is one variant for every
     `he` tag and Android's and Java's legacy `iw` (Android's strings live in `values-iw`), calls the app Blitz Split
     and reads right to left as Arabic does, with the same mirrored layouts and Latin digits, which Hebrew writes
     anyway. Hebrew's verbs, adjectives and "you" (אתה/את) say a gender too, so Hebrew follows the same rule (Pierre's
@@ -301,6 +303,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     rupiah's, not 100 million (about US$ 4,000 at 25,000 dong a dollar; this is about US$ 4 million). An app version
     from before it reads VND as an unknown code with two decimals and shows its amounts 100 times smaller until it
     updates, as the rupiah did.
+  - The New Taiwan dollar (TWD) follows the đồng (Pierre's call, with Traditional Chinese), and starts a new group in
+    Taiwan. It is typed without decimals, as the rupiah: ISO gives it 2, but no price in Taiwan shows cents (a call taken
+    without Pierre); its cap is the usual 100 million (about US$ 3 million). An app version from before it reads TWD as
+    an unknown code with two decimals and shows its amounts 100 times smaller until it updates, as the rupiah did.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

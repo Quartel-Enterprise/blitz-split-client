@@ -49,7 +49,8 @@ each platform.
       many plurals, as Polish), in Korean in `res/values-ko/strings.xml` (no particle glued to a placeholder), in Hindi in
       `res/values-hi/strings.xml`, in Simplified Chinese in `res/values-b+zh+Hans/strings.xml`, and in Arabic in `res/values-ar/strings.xml` (all six plurals: zero, one, two, few,
       many, other), in Hebrew in `res/values-iw/strings.xml` (one, two and other), in Thai in
-      `res/values-th/strings.xml`, and in Vietnamese in `res/values-vi/strings.xml`
+      `res/values-th/strings.xml`, in Vietnamese in `res/values-vi/strings.xml`, and in Traditional Chinese in
+      `res/values-b+zh+Hant/strings.xml`
 - [ ] Any resource of a `values-pt-rPT` or `values-es-rES` (a string, a bool) also in `values-pt` or `values-es`:
       Android 7 and later fall back to a child of the language when its bare folder lacks a resource, so a pt-BR
       device read Portugal's `designsystem_portugal_portuguese` and wrote "Você criaste a conta"

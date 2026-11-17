@@ -41,6 +41,36 @@ class GetLegalLanguageUseCaseTest {
     }
 
     @Test
+    fun `GIVEN System on a Taiwanese device WHEN asking the language THEN it is zh-Hant`() = runTest {
+        // Given
+        prepareScenario(
+            picked = AppLanguage.SYSTEM,
+            device = "zh-TW",
+        )
+
+        // When
+        val language = getLegalLanguage()
+
+        // Then
+        assertEquals("zh-Hant", language)
+    }
+
+    @Test
+    fun `GIVEN Simplified Chinese picked in Profile WHEN asking the language THEN it is zh`() = runTest {
+        // Given
+        prepareScenario(
+            picked = AppLanguage.CHINESE_SIMPLIFIED,
+            device = "zh-TW",
+        )
+
+        // When
+        val language = getLegalLanguage()
+
+        // Then
+        assertEquals("zh", language)
+    }
+
+    @Test
     fun `GIVEN Japanese picked in Profile and no device language WHEN asking the language THEN it is ja`() = runTest {
         // Given
         prepareScenario(

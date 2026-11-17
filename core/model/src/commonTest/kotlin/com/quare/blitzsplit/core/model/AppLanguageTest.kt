@@ -312,15 +312,32 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN a Traditional Chinese tag WHEN reading it THEN follows the device`() {
+    fun `GIVEN a Traditional Chinese tag WHEN reading it THEN is Traditional Chinese`() {
         // Given
-        val tags = listOf("zh-TW", "zh-Hant", "zh-Hant-TW", "zh_HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
+        val tags = listOf("zh-Hant", "zh-TW", "zh_TW", "zh-Hant-TW", "zh-HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)
 
         // Then
-        assertEquals(List(tags.size) { AppLanguage.SYSTEM }, languages)
+        assertEquals(List(tags.size) { AppLanguage.CHINESE_TRADITIONAL }, languages)
+    }
+
+    @Test
+    fun `GIVEN a language WHEN reading its spoken code THEN is its bare language but the Traditional tag`() {
+        // Given
+        val languages = listOf(
+            AppLanguage.PORTUGUESE_PORTUGAL,
+            AppLanguage.CHINESE_SIMPLIFIED,
+            AppLanguage.CHINESE_TRADITIONAL,
+            AppLanguage.SYSTEM,
+        )
+
+        // When
+        val codes = languages.map { it.spokenCode }
+
+        // Then
+        assertEquals(listOf("pt", "zh", "zh-Hant", null), codes)
     }
 
     @Test
@@ -401,7 +418,8 @@ class AppLanguageTest {
                 "KO",
                 "HI",
                 "AR",
-                "ZH",
+                "CN",
+                "TW",
                 "HE",
                 "TH",
                 "VI",

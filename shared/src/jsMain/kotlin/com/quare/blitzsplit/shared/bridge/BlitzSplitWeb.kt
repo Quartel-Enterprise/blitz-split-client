@@ -82,7 +82,7 @@ internal fun webModuleOf(
      * Why: the language the pages speak, which src/i18n picks from the pick or the first of the browser's languages
      * the app has, not navigator.language alone; a pick reloads the page, so it never changes while it runs.
      */
-    val spokenLanguage = AppLanguage.languageOf(languageTag) ?: "en"
+    val spokenLanguage = AppLanguage.fromTag(languageTag).spokenCode ?: "en"
     return module {
         single<Worker> { sqliteWorker }
         single { DeviceDecimalSeparator { decimalSeparator } }

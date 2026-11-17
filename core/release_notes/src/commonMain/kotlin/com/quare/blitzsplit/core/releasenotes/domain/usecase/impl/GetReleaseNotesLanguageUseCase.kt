@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.first
 class GetReleaseNotesLanguageUseCase(
     private val observeSpokenLanguage: ObserveSpokenLanguage,
 ) : GetReleaseNotesLanguage {
-    // Why: it goes into the file's address, so nothing but a language's own letters.
-    private val languagePattern = Regex("[a-z]{2,3}")
+    // Why: it goes into the file's address, so nothing but a language's own letters, or Traditional Chinese's "zh-Hant".
+    private val languagePattern = Regex("[a-z]{2,3}(-Hant)?")
 
     override suspend fun invoke(): String =
         observeSpokenLanguage().first().takeIf { languagePattern.matches(it) } ?: DEFAULT_LANGUAGE

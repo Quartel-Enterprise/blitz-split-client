@@ -26,7 +26,8 @@
         "zh": "未关联Google或Apple的账号现在会在30天未使用后被删除。欢迎页面和“个人资料”会说明这一点，关联Google或Apple即可保留你的数据。",
         "he": "חשבון משתמש בלי Google או Apple נמחק עכשיו אחרי 30 יום בלי שימוש. מסך הפתיחה והפרופיל מציינים זאת, וחיבור Google או Apple שומר על הנתונים שלך.",
         "th": "บัญชีที่ไม่ได้เชื่อมต่อ Google หรือ Apple จะถูกลบหลังจากไม่ได้ใช้งาน 30 วัน หน้าต้อนรับและโปรไฟล์จะแจ้งเรื่องนี้ และการเชื่อมต่อ Google หรือ Apple จะเก็บข้อมูลของคุณไว้",
-        "vi": "Tài khoản không liên kết Google hay Apple giờ sẽ bị xóa sau 30 ngày không dùng. Màn hình chào mừng và Hồ sơ có ghi rõ điều này, và liên kết Google hoặc Apple sẽ giữ lại dữ liệu của bạn."
+        "vi": "Tài khoản không liên kết Google hay Apple giờ sẽ bị xóa sau 30 ngày không dùng. Màn hình chào mừng và Hồ sơ có ghi rõ điều này, và liên kết Google hoặc Apple sẽ giữ lại dữ liệu của bạn.",
+        "zh-Hant": "沒有連結Google或Apple的帳號，現在30天未使用就會被刪除。歡迎畫面和「個人資料」都會說明這點，連結Google或Apple即可保留你的資料。"
       }
     }
   ]

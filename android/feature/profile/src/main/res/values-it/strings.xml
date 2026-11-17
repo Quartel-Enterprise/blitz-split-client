@@ -77,6 +77,7 @@
     <string name="profile_language_hebrew">Ebraico</string>
     <string name="profile_language_thai">Tailandese</string>
     <string name="profile_language_vietnamese">Vietnamita</string>
+    <string name="profile_language_chinese_traditional">Cinese (tradizionale)</string>
     <string name="profile_language_system_detail">Lingua del dispositivo</string>
     <string name="profile_notifications">Notifiche</string>
     <plurals name="profile_notifications_active">

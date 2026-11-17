@@ -23,6 +23,18 @@ class GetReleaseNotesLanguageUseCaseTest {
     }
 
     @Test
+    fun `GIVEN the app is speaking Traditional Chinese WHEN asking the language THEN it is zh-Hant`() = runTest {
+        // Given
+        prepareScenario(spoken = "zh-Hant")
+
+        // When
+        val language = getReleaseNotesLanguage()
+
+        // Then
+        assertEquals("zh-Hant", language)
+    }
+
+    @Test
     fun `GIVEN the app is speaking English WHEN asking the language THEN it is en`() = runTest {
         // Given
         prepareScenario(spoken = "en")

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">儲存你的復原碼</string>
+    <string name="recovery_code_body">你正在無帳號使用。如果換了或丟了裝置，這12個詞可以找回你的資料。請按順序記下來。30天未使用後，你的資料將被刪除，這些詞也會失效。</string>
+    <string name="recovery_code_copy">複製詞語</string>
+    <string name="recovery_code_save_to_password_manager">儲存到密碼管理工具</string>
+    <string name="recovery_code_connect_instead">改為連結Google或Apple</string>
+    <string name="recovery_code_connect_instead_body">無需復原碼</string>
+    <string name="recovery_code_sign_in_failed">暫時無法連結，請重試。</string>
+    <string name="recovery_code_also_in_profile">也可以在「個人資料 › 復原」中找到。</string>
+    <string name="recovery_code_remind_later">稍後提醒我</string>
+    <string name="recovery_code_saved">我已儲存</string>
+    <string name="recovery_code_download">下載</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · 復原碼\n\n%1$s\n\n在「我在其他裝置上用過」中使用它即可找回你的資料。\n</string>
+</resources>

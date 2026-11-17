@@ -79,6 +79,7 @@
     <string name="profile_language_hebrew">Hebrew</string>
     <string name="profile_language_thai">Thai</string>
     <string name="profile_language_vietnamese">Vietnamese</string>
+    <string name="profile_language_chinese_traditional">Chinese (Traditional)</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English</string>
@@ -103,6 +104,7 @@
     <string name="profile_language_native_hebrew" translatable="false">עברית</string>
     <string name="profile_language_native_thai" translatable="false">ไทย</string>
     <string name="profile_language_native_vietnamese" translatable="false">Tiếng Việt</string>
+    <string name="profile_language_native_chinese_traditional" translatable="false">中文（繁體）</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>

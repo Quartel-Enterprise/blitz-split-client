@@ -552,6 +552,7 @@ private struct LanguageName: View {
         case .hebrew: "עברית"
         case .thai: "ไทย"
         case .vietnamese: "Tiếng Việt"
+        case .chineseTraditional: "中文（繁體）"
         default: nil
         }
     }
@@ -665,6 +666,11 @@ private struct LanguageName: View {
         )
         case .vietnamese: String(
             localized: "Vietnamese",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .chineseTraditional: String(
+            localized: "Chinese (Traditional)",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )

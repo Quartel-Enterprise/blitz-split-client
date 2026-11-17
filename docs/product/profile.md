@@ -227,7 +227,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     Spain (Pierre's call, November 2026: it used to be the one "Spanish" row, Spain's on a device whose region was
     Spain), so "Español (Latinoamérica)" is the neutral `es` and "Español (España)" Spain's `es-ES` wherever the device
     is. Portugal's chip reads "PT" and Brazil's "BR", Spain's "ES" and Latin America's "419" (its UN code, as in es-419;
-    Ukrainian's is Ukraine's "UA", since "UK" reads as the United Kingdom; every other chip is its language's code), and a search for "pt" or "es" finds both of the language. Each own name is marked with its language, so a screen
+    Ukrainian's is Ukraine's "UA", since "UK" reads as the United Kingdom; Simplified Chinese's is "CN" and Traditional's "TW", the region each is written for; every other chip is its language's code), and a search for "pt" or "es" finds both of the language. Each own name is marked with its language, so a screen
     reader reads "日本語" as Japanese and the font draws it as Japan's. Kept per device and
     never synced, still there after a sign out, and kept by each platform's own per-app language
     (`AppLanguage`, `AppLanguageLocalDataSource`), so the system applies it before the first frame: Android 13 and later's

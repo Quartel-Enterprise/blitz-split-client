@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">通知</string>
+    <string name="notification_settings_denied_title">Blitz Split的通知已在Android中關閉。</string>
+    <string name="notification_settings_denied_body">在系統設定中開啟通知，才能收到下方的推播。鈴鐺照常運作。</string>
+    <string name="notification_settings_open_settings">開啟設定</string>
+    <string name="notification_settings_refused_body">Android允許你再授權一次，以接收下方的推播。鈴鐺照常運作。</string>
+    <string name="notification_settings_turn_on">開啟</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">已在Android中封鎖</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">開啟%1$s的Android設定</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">推播通知</string>
+    <string name="notification_settings_push_switch_detail">僅限此裝置</string>
+    <string name="notification_settings_section">通知我以下內容</string>
+    <string name="notification_settings_push">推播</string>
+    <string name="notification_settings_in_app">App內</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s，%2$s</string>
+    <string name="notification_settings_legend">「推播」會向此裝置傳送通知。「App內」會在鈴鐺和動態中標記為新訊息；關閉後，它仍會顯示在動態中，但已標為已讀。</string>
+    <string name="notification_settings_bills">帳單</string>
+    <string name="notification_settings_bills_detail">與你相關的帳單被新增、編輯或刪除</string>
+    <string name="notification_settings_payments">付款和結清</string>
+    <string name="notification_settings_payments_detail">你收到或付出的款項，以及簡化後的債務</string>
+    <string name="notification_settings_comments">留言</string>
+    <string name="notification_settings_comments_detail">與你相關的帳單和你參與過的討論</string>
+    <string name="notification_settings_people_and_groups">成員和群組</string>
+    <string name="notification_settings_people_and_groups_detail">誰加入或退出了你的群組，以及群組中的變化</string>
+    <string name="notification_settings_payment_requests">付款請求</string>
+    <string name="notification_settings_payment_requests_detail">有人請求你付款時</string>
+    <string name="notification_settings_balance_reminder">未結清餘額提醒</string>
+    <string name="notification_settings_balance_reminder_detail">每週一次，如有未結清的餘額</string>
+    <string name="notification_settings_footer">有網路時才會收到通知。要將某個群組設為免打擾，請使用群組內的選單。</string>
+</resources>
