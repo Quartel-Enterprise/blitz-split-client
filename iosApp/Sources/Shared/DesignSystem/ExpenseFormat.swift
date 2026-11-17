@@ -87,14 +87,20 @@ extension GroupCurrency {
     }
 
     /// `amount` with `minor`'s sign: before it, but right before its digits when the number's own pattern runs right
-    /// to left, whose right-to-left mark ("‏141.66 R$") would part a sign put first from the number it signs.
+    /// to left, whose right-to-left mark ("‏141.66 R$") would part a sign put first from the number it signs, after the
+    /// mark the language's own negative number puts before its minus (Arabic's letter mark, Hebrew's left-to-right one).
     private static func signed(_ minor: Int64, _ amount: String) -> String {
         if minor == 0 { return amount }
         let sign = minor < 0 ? "−" : "+"
         guard AppNumbers.locale.language.characterDirection == .rightToLeft,
               let digit = amount.firstIndex(where: \.isNumber)
         else { return sign + amount }
-        return String(amount[..<digit]) + sign + String(amount[digit...])
+        return String(amount[..<digit]) + signMark + sign + String(amount[digit...])
+    }
+
+    private static var signMark: String {
+        let negative = (-1).formatted(.number.locale(AppNumbers.locale))
+        return String(negative.prefix { !$0.isNumber && $0 != "-" && $0 != "−" })
     }
 
     /// "120,50" or "120.50", with no symbol: where the currency is already on the same line ("you get 120 and owe

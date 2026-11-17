@@ -142,11 +142,21 @@ class MoneyFormatter(
 
     /*
      * Why: the sign goes before the amount, but right before its digits in a right to left language, whose pattern
-     * starts with a right to left mark ("‏141.66 R$") that would part a sign put first from the number it signs.
+     * starts with a right to left mark ("‏141.66 R$") that would part a sign put first from the number it signs. It
+     * takes the mark the language's own negative number puts before its minus, so it sits where that language writes
+     * it: Arabic's letter mark on the reading side, Hebrew's left to right mark on the left of the digits.
      */
     private fun String.withSign(sign: String): String {
         val digit = indexOfFirst(Char::isDigit)
-        return if (!isolates || digit < 0) sign + this else substring(0, digit) + sign + substring(digit)
+        if (!isolates || digit < 0) return sign + this
+        return substring(0, digit) + signMark + sign + substring(digit)
+    }
+
+    private val signMark: String by lazy {
+        NumberFormat
+            .getNumberInstance(formatLocale)
+            .format(-1)
+            .takeWhile { it != '-' && it != '−' && !it.isDigit() }
     }
 
     private fun Long.toDecimal(): BigDecimal = BigDecimal.valueOf(this, if (isSats) 0 else currency.fractionDigits)
