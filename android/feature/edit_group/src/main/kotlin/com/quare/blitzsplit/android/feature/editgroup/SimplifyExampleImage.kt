@@ -63,12 +63,7 @@ internal fun SimplifyExampleImage(
                 height = VIEW_HEIGHT.dp,
             ).semantics { contentDescription = description },
     ) {
-        Canvas(
-            modifier = Modifier.size(
-                width = VIEW_WIDTH.dp,
-                height = VIEW_HEIGHT.dp,
-            ),
-        ) {
+        Canvas(modifier = Modifier.matchParentSize()) {
             val draw = ExampleDrawing(
                 scope = this,
                 scale = size.width / VIEW_WIDTH,

@@ -68,6 +68,7 @@ export function useSimplifyUnavailableNotice(presenter: { dismissSimplifyUnavail
   useEffect(() => {
     if (!presenter || !isShowing) return
     presenter.dismissSimplifyUnavailableNotice()
-    toast(t('editGroup_simplifyUnavailableToast'), { duration: 5000 })
+    // Why: one id, so clicking again replaces the toast showing instead of stacking a copy.
+    toast(t('editGroup_simplifyUnavailableToast'), { id: 'simplify-unavailable', duration: 5000 })
   }, [presenter, isShowing])
 }

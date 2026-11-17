@@ -131,7 +131,7 @@ private struct SimplifyFact: View {
     }
 }
 
-/// The example, before or simplified: Carla (a photo) top left, Elisa top right, you at the bottom, and the arrows of who pays
+/// The example, before or simplified: Carla top left, Elisa top right, you at the bottom (each a photo), and the arrows of who pays
 /// whom with the amount, in the boards' 160×130 frame.
 private struct SimplifyExampleFigure: View {
     let isSimplified: Bool
