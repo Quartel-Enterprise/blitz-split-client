@@ -60,7 +60,7 @@
     <string name="default_split_more">O podíl více</string>
     <string name="default_split_sum_left">Součet je %1$d %%. Chybí %2$d %%.</string>
     <string name="default_split_sum_over">Součet je %1$d %%. O %2$d %% víc.</string>
-    <string name="default_split_sum_help">Uprav procenta tak, aby dávala dohromady 100 %, a pak ulož.</string>
+    <string name="default_split_sum_help">Uprav procenta tak, aby dávala dohromady 100 %. Pak ulož.</string>
     <string name="default_split_example_equal">U výdaje %1$s: %2$s na každého</string>
     <string name="default_split_example">U výdaje %s:</string>
     <string name="default_split_example_equal_help">Kdo se výdaje neúčastní, při rozdělování z něj vypadne.</string>

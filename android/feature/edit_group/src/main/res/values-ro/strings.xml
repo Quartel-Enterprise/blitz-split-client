@@ -59,7 +59,7 @@
     <string name="default_split_more">O parte în plus</string>
     <string name="default_split_sum_left">Suma este %1$d%%. Lipsesc %2$d%%.</string>
     <string name="default_split_sum_over">Suma este %1$d%%. Sunt %2$d%% în plus.</string>
-    <string name="default_split_sum_help">Ajustează procentele până ajung la 100% ca să salvezi.</string>
+    <string name="default_split_sum_help">Ajustează procentele până ajung la 100% în total, ca să salvezi.</string>
     <string name="default_split_example_equal">La o cheltuială de %1$s: %2$s fiecare</string>
     <string name="default_split_example">La o cheltuială de %s:</string>
     <string name="default_split_example_equal_help">Cine nu ia parte la o cheltuială iese din ea la împărțire.</string>
