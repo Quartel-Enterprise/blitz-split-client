@@ -76,6 +76,7 @@
     <string name="profile_language_hebrew">İbranice</string>
     <string name="profile_language_thai">Tayca</string>
     <string name="profile_language_vietnamese">Vietnamca</string>
+    <string name="profile_language_chinese_traditional">Çince (Geleneksel)</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirimler</string>
     <plurals name="profile_notifications_active">

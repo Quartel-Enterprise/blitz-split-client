@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · 復原碼</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">請在「設定」中允許使用相機以拍照。</string>
+    <string name="platform_camera_settings">設定</string>
+    <string name="platform_receipt_source_camera">拍照</string>
+    <string name="platform_receipt_source_gallery">從相簿選擇</string>
+    <string name="platform_receipt_source_file">選擇檔案</string>
+    <string name="platform_receipt_camera_title">掃描收據</string>
+    <string name="platform_receipt_camera_close">關閉</string>
+    <string name="platform_receipt_camera_flash_on">開啟閃光燈</string>
+    <string name="platform_receipt_camera_flash_off">關閉閃光燈</string>
+    <string name="platform_receipt_camera_hint">讓整張收據都在取景框內。我們會填入金額、日期和描述，你在儲存前確認即可。</string>
+    <string name="platform_receipt_camera_gallery">從相簿選擇</string>
+    <string name="platform_receipt_camera_shutter">拍照</string>
+    <string name="platform_receipt_camera_unavailable">相機不可用。請從相簿中選擇一張收據照片。</string>
+    <string name="platform_receipt_camera_permission">允許使用相機來掃描收據，或從相簿中選擇照片。</string>
+    <string name="platform_receipt_camera_allow">允許使用相機</string>
+    <string name="platform_receipt_camera_settings">開啟設定</string>
+</resources>

@@ -26,7 +26,8 @@
         "zh": "应用现已支持越南语：在“个人资料 › 语言”中选择“Tiếng Việt”，或让它跟随你的设备。",
         "he": "האפליקציה מדברת עכשיו וייטנאמית: אפשר לבחור \"Tiếng Việt\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
         "th": "แอปรองรับภาษาเวียดนามแล้ว เลือก “Tiếng Việt” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
-        "vi": "Ứng dụng giờ đã có tiếng Việt: chọn “Tiếng Việt” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị."
+        "vi": "Ứng dụng giờ đã có tiếng Việt: chọn “Tiếng Việt” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援越南文：在「個人資料 › 語言」中選擇「Tiếng Việt」，或讓它跟隨你的裝置。"
       }
     },
     {
@@ -55,7 +56,8 @@
         "zh": "群组现在可以使用越南盾（VND）分摊，在越南创建的群组也会默认使用越南盾。",
         "he": "קבוצות יכולות עכשיו לפצל בדונג וייטנאמי (VND), וקבוצה שנוצרת בווייטנאם מתחילה בו.",
         "th": "กลุ่มหารเป็นเงินดองเวียดนาม (VND) ได้แล้ว และกลุ่มที่สร้างในเวียดนามจะเริ่มด้วยเงินดอง",
-        "vi": "Nhóm giờ có thể chia bằng đồng Việt Nam (VND), và nhóm được tạo ở Việt Nam sẽ bắt đầu với đồng tiền này."
+        "vi": "Nhóm giờ có thể chia bằng đồng Việt Nam (VND), và nhóm được tạo ở Việt Nam sẽ bắt đầu với đồng tiền này.",
+        "zh-Hant": "群組現在可以使用越南盾（VND）分攤，在越南建立的群組也會從越南盾開始。"
       }
     }
   ]

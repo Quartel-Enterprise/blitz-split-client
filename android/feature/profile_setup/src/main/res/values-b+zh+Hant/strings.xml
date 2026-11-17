@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">朋友們怎麼稱呼你？</string>
+    <string name="profile_setup_subtitle">你的群組和擁有你個人資料連結的人都能看到你的名字。</string>
+    <string name="profile_setup_avatar_color">大頭貼顏色</string>
+    <string name="profile_setup_add_photo">新增照片</string>
+    <string name="profile_setup_photo_error">無法使用這張照片，請換一張試試。</string>
+    <string name="profile_setup_name_label">你的名字</string>
+    <string name="profile_setup_name_placeholder">王小明</string>
+    <string name="profile_setup_name_too_short">請至少輸入%d個字。</string>
+    <string name="profile_setup_name_too_long">最多%d個字元。</string>
+    <string name="profile_setup_name_hint">之後可以在個人資料中修改。</string>
+    <string name="profile_setup_saved_locally">目前僅儲存在此裝置上。</string>
+    <string name="profile_setup_continue">繼續</string>
+</resources>

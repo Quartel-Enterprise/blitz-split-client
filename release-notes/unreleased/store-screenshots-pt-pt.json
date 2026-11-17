@@ -25,7 +25,8 @@
         "zh": "修复了葡萄牙的葡萄牙语中“首页”人员一栏的问题：名字下方曾显示“te deve”，而不是“deve-te”。",
         "he": "תוקנה שורת האנשים ב\"בית\" בפורטוגזית של פורטוגל, שהציגה \"te deve\" מתחת לשם במקום \"deve-te\".",
         "th": "แก้ไขแถวรายชื่อคนในหน้าแรกสำหรับภาษาโปรตุเกสแบบโปรตุเกส ที่แสดง “te deve” ใต้ชื่อแทนที่จะเป็น “deve-te”",
-        "vi": "Đã sửa hàng người ở Trang chủ trong tiếng Bồ Đào Nha (Bồ Đào Nha), vốn ghi “te deve” dưới tên thay vì “deve-te”."
+        "vi": "Đã sửa hàng người ở Trang chủ trong tiếng Bồ Đào Nha (Bồ Đào Nha), vốn ghi “te deve” dưới tên thay vì “deve-te”.",
+        "zh-Hant": "修正葡萄牙的葡萄牙文中，「首頁」的人員列在名字下方顯示「te deve」而不是「deve-te」的問題。"
       }
     }
   ]

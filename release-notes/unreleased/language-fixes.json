@@ -26,7 +26,8 @@
         "zh": "“个人资料 › 语言”现在列出两种西班牙语：“Español (Latinoamérica)”和“Español (España)”，无论你的设备在哪里，都能选择你说的那一种。",
         "he": "פרופיל › שפה מציג עכשיו ספרדית פעמיים, \"Español (Latinoamérica)\" ו-\"Español (España)\", כדי לבחור את הספרדית המדוברת בלי קשר למיקום המכשיר.",
         "th": "โปรไฟล์ › ภาษา แสดงภาษาสเปนสองแบบแล้ว คือ “Español (Latinoamérica)” และ “Español (España)” คุณจึงเลือกแบบที่คุณพูดได้ ไม่ว่าอุปกรณ์จะอยู่ที่ไหน",
-        "vi": "Hồ sơ › Ngôn ngữ giờ liệt kê tiếng Tây Ban Nha hai lần, “Español (Latinoamérica)” và “Español (España)”, để bạn chọn đúng biến thể mình nói dù thiết bị ở đâu."
+        "vi": "Hồ sơ › Ngôn ngữ giờ liệt kê tiếng Tây Ban Nha hai lần, “Español (Latinoamérica)” và “Español (España)”, để bạn chọn đúng biến thể mình nói dù thiết bị ở đâu.",
+        "zh-Hant": "「個人資料 › 語言」現在列出兩種西班牙文：「Español (Latinoamérica)」和「Español (España)」，不論你的裝置在哪裡，都能選擇你說的那一種。"
       }
     },
     {
@@ -56,7 +57,8 @@
         "zh": "在巴西葡萄牙语中，“动态”和账单历史记录曾显示“Você criaste”之类的说法，而不是“Você criou”。",
         "he": "בפורטוגזית של ברזיל, \"פעילות\" וההיסטוריה של חשבון הציגו \"Você criaste\" וכדומה במקום \"Você criou\".",
         "th": "ในภาษาโปรตุเกสแบบบราซิล แท็บกิจกรรมและประวัติของบิลเคยแสดง “Você criaste” และประโยคคล้ายกัน แทนที่จะเป็น “Você criou”",
-        "vi": "Trong tiếng Bồ Đào Nha (Brazil), Hoạt động và lịch sử khoản chi từng ghi “Você criaste” và những câu tương tự thay vì “Você criou”."
+        "vi": "Trong tiếng Bồ Đào Nha (Brazil), Hoạt động và lịch sử khoản chi từng ghi “Você criaste” và những câu tương tự thay vì “Você criou”.",
+        "zh-Hant": "巴西葡萄牙文的「動態」和帳單記錄原本會寫成「Você criaste」之類，而不是「Você criou」，現已修正。"
       }
     }
   ]

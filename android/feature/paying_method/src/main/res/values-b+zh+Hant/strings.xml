@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">新增付款方式</string>
+    <string name="paying_method_edit_title">編輯付款方式</string>
+    <string name="paying_method_type">類型</string>
+    <string name="paying_method_name">名稱</string>
+    <string name="paying_method_name_optional">名稱（選填）</string>
+    <string name="paying_method_color">顏色</string>
+    <string name="paying_method_default">預設方式</string>
+    <string name="paying_method_default_hint">你支付的新帳單會預設使用它。</string>
+    <string name="paying_method_delete">刪除付款方式</string>
+    <string name="paying_method_delete_title">刪除這個付款方式？</string>
+    <string name="paying_method_delete_body">你用它標記過的帳單將不再顯示它。</string>
+    <string name="paying_method_delete_confirm">刪除</string>
+    <string name="paying_method_save">儲存</string>
+</resources>

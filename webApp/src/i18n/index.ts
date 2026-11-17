@@ -21,16 +21,17 @@ import { zh } from './zh'
 import { he } from './he'
 import { th } from './th'
 import { vi } from './vi'
+import { zhHant } from './zhHant'
 
 export type { MessageKey }
 /**
  * `es` is the neutral Latin-American Spanish; `es-ES` is Spain's, which overrides only the words it says differently.
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
- * `zh` is Simplified Chinese, mainland China's.
+ * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant }
 
 // Why: the languages with one variant for every tag of theirs.
 const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi']
@@ -61,7 +62,8 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * (es, es-MX, es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any
  * `de`, `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th` or `vi` tag (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY,
  * id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN…) is German, Italian, Polish, Dutch, Japanese, Turkish,
- * Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Thai or Vietnamese, any `zh` tag but a Traditional one (zh-CN, zh-Hans, zh-SG…) is
+ * Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Thai or Vietnamese, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK,
+ * zh-MO) is Traditional Chinese, any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is
  * Simplified Chinese, any `en` tag is English, and English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
@@ -69,8 +71,7 @@ export function pickLocale(languages: readonly string[]): Locale {
     const [subtag, ...rest] = tag.toLowerCase().split(/[-_]/)
     // Why: "in" is Indonesian's legacy code, which older Android WebViews still send; AppLanguage.fromTag maps it too.
     const language = subtag === 'in' ? 'id' : subtag
-    // Why: no Traditional Chinese yet, so a Traditional tag is skipped, as AppLanguage.fromTag does.
-    if (language === 'zh' && isTraditionalChinese(rest)) continue
+    if (language === 'zh' && isTraditionalChinese(rest)) return 'zh-Hant'
     if (bareLocales.includes(language as Locale)) return language as Locale
     if (language === 'pt') return regionOf(rest) === 'pt' ? 'pt-PT' : 'pt'
     if (language === 'es') return regionOf(rest) === 'es' ? 'es-ES' : 'es'
@@ -99,7 +100,7 @@ export const locale: Locale = pickLocale([storedLanguage(), ...browserLanguages(
 export const isSpanish = locale === 'es' || locale === 'es-ES'
 
 // Why: Japanese and Chinese write no space between words, nor between two sentences.
-const isUnspaced = locale === 'ja' || locale === 'zh'
+const isUnspaced = locale === 'ja' || locale === 'zh' || locale === 'zh-Hant'
 
 /**
  * What goes between the pieces of a sentence the code joins ("Ana" and "changed the category", two sentences of a
@@ -119,7 +120,7 @@ export const fullStop = isUnspaced ? '。' : locale === 'hi' ? '।' : locale ==
  * first sentence instead ("…払います。…なくなりました"), Chinese takes its own comma ("…，Ana不再欠你"), and Thai,
  * which has no comma, a space.
  */
-export const clauseBreak = locale === 'ja' ? '。' : locale === 'zh' ? '，' : locale === 'th' ? ' ' : ', '
+export const clauseBreak = locale === 'ja' ? '。' : isUnspaced ? '，' : locale === 'th' ? ' ' : ', '
 
 const documentLanguages: Record<Locale, string> = {
   en: 'en',
@@ -144,6 +145,7 @@ const documentLanguages: Record<Locale, string> = {
   he: 'he',
   th: 'th',
   vi: 'vi',
+  'zh-Hant': 'zh-Hant',
 }
 
 const documentLanguage = documentLanguages[locale]

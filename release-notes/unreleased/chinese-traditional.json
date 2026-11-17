@@ -1,0 +1,64 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Traditional Chinese: pick \"中文（繁體）\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala chinês tradicional: escolha \"中文（繁體）\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora chinês tradicional: escolhe \"中文（繁體）\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla chino tradicional: elige \"中文（繁體）\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais chinois traditionnel : choisis « 中文（繁體） » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt traditionelles Chinesisch: Wähle „中文（繁體）“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla cinese tradizionale: scegli \"中文（繁體）\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po chińsku tradycyjnym: wybierz „中文（繁體）” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Traditioneel Chinees: kies \"中文（繁體）\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリが繁体字中国語に対応しました。プロフィール › 言語で「中文（繁體）」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Geleneksel Çince konuşuyor: Profil › Dil'den \"中文（繁體）\"i seç ya da cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Tionghoa Tradisional: pilih \"中文（繁體）\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на традиционном китайском: выбери «中文（繁體）» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить традиційною китайською: обери «中文（繁體）» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 중국어 번체를 쓸 수 있어요. 프로필 › 언어에서 ‘中文（繁體）’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप पारंपरिक चीनी में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “中文（繁體）” चुनें, या इसे अपने डिवाइस की भाषा पर छोड़ दें।",
+        "ar": "أصبح التطبيق يتحدث الصينية التقليدية: يمكنك اختيار «中文（繁體）» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持繁体中文：在“个人资料 › 语言”中选择“中文（繁體）”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו סינית מסורתית: אפשר לבחור \"中文（繁體）\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาจีนตัวเต็มแล้ว เลือก “中文（繁體）” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Trung phồn thể: chọn “中文（繁體）” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援繁體中文：在「個人資料 › 語言」中選擇「中文（繁體）」，或讓它跟隨你的裝置。"
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the New Taiwan dollar (TWD), and a group made in Taiwan starts in it.",
+        "pt": "Os grupos agora podem dividir em novo dólar taiwanês (TWD), e um grupo criado em Taiwan já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em novo dólar taiwanês (TWD), e um grupo criado em Taiwan começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en nuevo dólar taiwanés (TWD), y un grupo creado en Taiwán empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en nouveau dollar de Taïwan (TWD), et un groupe créé à Taïwan démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Neuem Taiwan-Dollar (TWD) teilen, und eine in Taiwan erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in nuovo dollaro taiwanese (TWD), e un gruppo creato a Taiwan parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w nowych dolarach tajwańskich (TWD), a grupa założona na Tajwanie startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Nieuwe Taiwanese dollar (TWD), en een groep die in Taiwan wordt gemaakt, start in die valuta.",
+        "ja": "グループで新台湾ドル（TWD）が使えるようになり、台湾で作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık Yeni Tayvan doları (TWD) ile bölebiliyor; Tayvan'da açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam dolar Taiwan baru (TWD), dan grup yang dibuat di Taiwan langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в новых тайваньских долларах (TWD), а группа, созданная на Тайване, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати в нових тайванських доларах (TWD), а група, створена на Тайвані, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 신대만 달러(TWD)로 나눌 수 있고, 대만에서 만든 그룹은 신대만 달러로 시작해요.",
+        "hi": "ग्रुप अब न्यू ताइवान डॉलर (TWD) में बांट सकते हैं, और ताइवान में बना ग्रुप इसी में शुरू होता है।",
+        "ar": "يمكن للمجموعات الآن التقسيم بالدولار التايواني الجديد (TWD)، والمجموعة التي تُنشأ في تايوان تبدأ به.",
+        "zh": "群组现在可以使用新台币（TWD）分摊，在台湾创建的群组也会默认使用新台币。",
+        "he": "קבוצות יכולות עכשיו לפצל בדולר טייוואני חדש (TWD), וקבוצה שנוצרת בטייוואן מתחילה בו.",
+        "th": "กลุ่มหารเป็นดอลลาร์ไต้หวันใหม่ (TWD) ได้แล้ว และกลุ่มที่สร้างในไต้หวันจะเริ่มด้วยสกุลเงินนี้",
+        "vi": "Nhóm giờ có thể chia bằng Tân Đài tệ (TWD), và nhóm được tạo ở Đài Loan sẽ bắt đầu với đồng tiền này.",
+        "zh-Hant": "群組現在可以使用新台幣（TWD）分攤，在台灣建立的群組也會從新台幣開始。"
+      }
+    }
+  ]
+}

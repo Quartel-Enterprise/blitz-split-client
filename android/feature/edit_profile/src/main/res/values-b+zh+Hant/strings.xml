@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">編輯個人資料</string>
+    <string name="edit_profile_save">儲存</string>
+    <string name="edit_profile_change_photo">更換照片</string>
+    <string name="edit_profile_take_photo">拍照</string>
+    <string name="edit_profile_choose_photo">從相簿選擇</string>
+    <string name="edit_profile_use_account_photo">使用%1$s帳號照片</string>
+    <string name="edit_profile_remove_photo">移除照片</string>
+    <string name="edit_profile_photo_error">無法使用這張照片，請換一張試試。</string>
+    <string name="edit_profile_avatar_color">大頭貼顏色</string>
+    <string name="edit_profile_avatar_color_hint">沒有照片時顯示。</string>
+    <string name="edit_profile_name_label">你的名字</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">請至少輸入%d個字。</string>
+    <string name="edit_profile_name_too_long">最多%d個字元。</string>
+    <string name="edit_profile_account_notice">名字和照片來自你的%1$s帳號。在這裡修改只對Blitz Split生效，不會更改你的%1$s帳號。</string>
+    <string name="edit_profile_footer">你的群組成員以及擁有你個人資料連結的人都能看到你的名字和照片。</string>
+    <string name="profile_photo_close">關閉</string>
+    <string name="profile_photo_camera">相機</string>
+    <string name="profile_photo_gallery">相簿</string>
+    <string name="profile_photo_remove">移除</string>
+    <string name="profile_photo_title">大頭貼</string>
+</resources>

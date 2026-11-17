@@ -1,7 +1,7 @@
 import type { MessageKey } from './en'
 
 /**
- * Simplified Chinese (mainland China) for every `zh` browser language but the Traditional ones (zh-Hant, zh-TW, zh-HK, zh-MO), which read English until the app has them, talking to the user as
+ * Simplified Chinese (mainland China) for every `zh` browser language but the Traditional ones (zh-Hant, zh-TW, zh-HK, zh-MO), which read `zhHant`, talking to the user as
  * "你". Typed by the English keys, so a key missing here, or one English doesn't have, fails the type check. Chinese
  * writes no space between words nor around a name or a number the code fills in, and its plurals have one form.
  */
@@ -848,6 +848,7 @@ export const zh: Record<MessageKey, string> = {
   profile_languageChineseSimplified: '中文（简体）',
   profile_languageThai: '泰语',
   profile_languageVietnamese: '越南语',
+  profile_languageChineseTraditional: '中文（繁体）',
   profile_bitcoinInSats: '以聪为单位显示比特币',
   profile_bitcoinInSatsDetail: '以聪（sats）为单位显示和输入比特币金额（1 ₿ = 100,000,000 sats）。',
   profile_shareUsageData: '分享使用数据',

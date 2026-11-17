@@ -27,7 +27,8 @@
         "zh": "在“更新说明”中，点按某个版本即可在GitHub上打开它的发布页面，点按GitHub按钮可查看所有版本。",
         "he": "ב\"מה חדש\", הקשה על גרסה פותחת את דף הגרסה ב-GitHub, והכפתור GitHub מציג את כל הגרסאות.",
         "th": "ใน “บันทึกประจำรุ่น” แตะเวอร์ชันเพื่อเปิดรุ่นนั้นบน GitHub หรือแตะปุ่ม GitHub เพื่อดูทุกรุ่น",
-        "vi": "Trong Ghi chú phát hành, chạm vào một phiên bản để mở bản phát hành của nó trên GitHub, hoặc nút GitHub để xem mọi bản phát hành."
+        "vi": "Trong Ghi chú phát hành, chạm vào một phiên bản để mở bản phát hành của nó trên GitHub, hoặc nút GitHub để xem mọi bản phát hành.",
+        "zh-Hant": "在「版本資訊」中，點一下版本即可在GitHub上開啟它的發布頁面，或點一下GitHub按鈕查看所有版本。"
       }
     },
     {
@@ -57,7 +58,8 @@
         "zh": "“动态取色”现在会说明应用采用Android的系统颜色，这些颜色来自你的壁纸或你在Android设置中选择的调色板。",
         "he": "\"צבעים דינמיים\" מסביר עכשיו שהאפליקציה לוקחת את צבעי המערכת של Android, שמגיעים מהטפט או מהפלטה שנבחרה בהגדרות של Android.",
         "th": "“สีไดนามิก” อธิบายแล้วว่าแอปใช้สีระบบของ Android ซึ่งมาจากวอลเปเปอร์หรือชุดสีที่คุณเลือกในการตั้งค่าของ Android",
-        "vi": "Màu động giờ giải thích rằng ứng dụng lấy màu hệ thống của Android, vốn đến từ hình nền hoặc bảng màu bạn đã chọn trong cài đặt của Android."
+        "vi": "Màu động giờ giải thích rằng ứng dụng lấy màu hệ thống của Android, vốn đến từ hình nền hoặc bảng màu bạn đã chọn trong cài đặt của Android.",
+        "zh-Hant": "「動態取色」現在會說明App採用Android的系統顏色，這些顏色來自你的桌布或你在Android設定中選擇的色調。"
       }
     }
   ]

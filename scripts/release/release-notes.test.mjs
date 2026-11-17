@@ -294,6 +294,18 @@ describe("the commands", () => {
     assert.equal(readFileSync(join(out, "stores/app-store-ios/fr.txt"), "utf8"), "• By hand (fr)");
   });
 
+  test("a version written by hand in a site without a script's language tells it in English, not in its language's other script", () => {
+    const older = siteWith(LANGS.filter((lang) => lang !== "zh-Hant"));
+    const out = join(older, "out-script");
+    for (const lang of LANGS.filter((each) => each !== "zh-Hant")) {
+      mkdirSync(join(older, "release-notes", lang), { recursive: true });
+      writeFileSync(join(older, "release-notes", lang, "3.0.2.json"), JSON.stringify({ date: "2026-12-01", notes: [{ text: `By hand (${lang})`, platforms: ["all"] }] }));
+    }
+    run("collect", "3.0.2", "--site", older, "--out", out);
+    assert.equal(readFileSync(join(out, "stores/app-store-ios/zh-Hant.txt"), "utf8"), "• By hand (en)");
+    rmSync(older, { recursive: true, force: true });
+  });
+
   test("a site that doesn't have a language yet gets the others, and nothing in that one", () => {
     const older = siteWith(LANGS.filter((lang) => lang !== "pt-PT"));
     run("collect", "3.0.1-beta_2", "--date", "2026-12-03", "--site", older);

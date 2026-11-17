@@ -26,7 +26,7 @@ import { fileURLToPath } from "node:url";
  * The languages of the notes, English first: the ones blitz-split-site's release notes have. Portugal's Portuguese,
  * pt-PT, is one of its own there, written in full, not the few words over Brazil's that the apps keep for it.
  */
-export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh", "he", "th", "vi"];
+export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh", "he", "th", "vi", "zh-Hant"];
 /** The platforms a note names, in the order it lists them; "all" stands alone, for every one of them. */
 export const PLATFORMS = ["android", "ios", "mac", "web"];
 /** What a note is, in the order a version lists its notes. Only "fixed" leaves the version a patch. */
@@ -69,6 +69,7 @@ const NOTHING_TO_SAY = {
   he: "תיקוני באגים ושיפורי ביצועים.",
   th: "แก้ไขข้อบกพร่องและปรับปรุงประสิทธิภาพ",
   vi: "Sửa lỗi và cải thiện hiệu năng.",
+  "zh-Hant": "修正錯誤並提升效能。",
 };
 
 export class NotesError extends Error {}
@@ -313,8 +314,14 @@ function siteLangs(site) {
   return langs;
 }
 
-/** The language a missing one is read as: a region's (pt-PT) as its language's (pt), any other as English. */
-const fallbackOf = (lang) => (lang.includes("-") ? lang.slice(0, lang.indexOf("-")) : "en");
+/**
+ * The language a missing one is read as: a region's (pt-PT) as its language's (pt), any other as English, a script's
+ * (zh-Hant) too, since its language's (zh) is written in another script.
+ */
+const fallbackOf = (lang) => {
+  const [language, subtag] = lang.split("-");
+  return subtag !== undefined && subtag.length !== 4 ? language : "en";
+};
 
 /** A version blitz-split-site already has, written by hand or by an earlier run, as notes; null without it. */
 function readSiteVersion(site, version) {

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">輕鬆分攤帳單</string>
+    <string name="welcome_offline_title">離線也能用</string>
+    <string name="welcome_offline_body">所有內容都儲存在你的裝置上，稍後再同步。</string>
+    <string name="welcome_optional_title">帳號非必要</string>
+    <string name="welcome_optional_body">Google或Apple帳號只是為了讓你換裝置時不遺失任何資料。</string>
+    <string name="welcome_invite_title">透過連結或QR Code邀請</string>
+    <string name="welcome_invite_body">朋友無需建立帳號即可加入群組。</string>
+    <string name="welcome_no_connection_title">無網路連線。</string>
+    <string name="welcome_no_connection_body">使用帳號登入需要網路。現在可以先無帳號使用，稍後在個人資料中連結帳號。</string>
+    <string name="welcome_or">或</string>
+    <string name="welcome_use_without_account">無帳號使用</string>
+    <string name="welcome_used_on_another_device">我在其他裝置上用過</string>
+    <string name="welcome_sign_in_failed">暫時無法登入，請重試。</string>
+    <string name="welcome_legal_notice">繼續即表示你接受%1$s並已知悉%2$s。</string>
+    <string name="welcome_legal_terms">服務條款</string>
+    <string name="welcome_legal_privacy">隱私權政策</string>
+    <string name="welcome_no_account_note">沒有帳號時，你的資料會在30天未使用後被刪除。連結Google或Apple帳號即可保留資料。</string>
+    <string name="welcome_no_account_note_offline">沒有帳號時，你的資料會在30天未使用後被刪除。稍後可在個人資料中連結Google或Apple帳號以保留資料。</string>
+    <string name="welcome_expired_title">你的資料已被刪除</string>
+    <string name="welcome_expired_body">你之前在無帳號狀態下使用App，並且30天沒有開啟，因此你的資料已被刪除。連結Google或Apple帳號，下次就能保留資料。</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

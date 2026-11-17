@@ -10,12 +10,21 @@ class GetLegalLanguageUseCase(
     private val observeAppLanguage: ObserveAppLanguage,
     private val deviceLanguage: DeviceLanguage,
 ) : GetLegalLanguage {
-    // Why: it goes into the file's address, so nothing but a language's own letters.
-    private val languagePattern = Regex("[a-z]{2,3}")
+    // Why: it goes into the file's address, so nothing but a language's own letters, or Traditional Chinese's "zh-Hant".
+    private val languagePattern = Regex("[a-z]{2,3}(-Hant)?")
 
     override suspend fun invoke(): String {
         val tag = observeAppLanguage().first().tag ?: deviceLanguage()
-        return AppLanguage.languageOf(tag)?.takeIf { languagePattern.matches(it) } ?: DEFAULT_LANGUAGE
+        /*
+         * Why: an app language reads its own pages (Traditional Chinese's "zh-Hant", the bare "zh" being Simplified's),
+         * any other its bare code.
+         */
+        val language = AppLanguage
+            .fromTag(tag)
+            .takeIf { it != AppLanguage.SYSTEM }
+            ?.spokenCode
+            ?: AppLanguage.languageOf(tag)
+        return language?.takeIf { languagePattern.matches(it) } ?: DEFAULT_LANGUAGE
     }
 
     private companion object {

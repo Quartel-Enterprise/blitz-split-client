@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">關閉</string>
+    <string name="invite_group_created">群組已建立</string>
+    <string name="invite_title">邀請大家加入「%s」</string>
+    <string name="invite_qr_description">群組邀請連結的QR Code</string>
+    <string name="invite_copy">複製</string>
+    <string name="invite_copied">已複製</string>
+    <string name="invite_who_picks">開啟連結的人從清單中選擇自己是誰：%s。無需帳號。</string>
+    <string name="invite_names_or">%1$s或%2$s</string>
+    <string name="invite_anyone_joins">開啟連結的人即可加入群組。無需帳號。</string>
+    <string name="invite_pending_title">連結待建立</string>
+    <string name="invite_pending_offline">連線後會立即建立。</string>
+    <string name="invite_pending_online">正在產生連結…</string>
+    <string name="invite_failed_title">無法建立連結</string>
+    <string name="invite_failed_body">同步群組時出了點問題。</string>
+    <string name="invite_retry">重試</string>
+    <string name="invite_share">分享連結</string>
+    <string name="invite_see_who_joined">查看誰已加入</string>
+    <string name="invite_add_person">新增沒有App的人</string>
+    <string name="invite_go_to_group">前往群組</string>
+    <string name="invite_change_link">更換連結</string>
+    <string name="invite_change_link_title">更換邀請連結？</string>
+    <string name="invite_change_link_message">目前的連結和QR Code將失效，包括尚未使用的專屬邀請。已加入的人會留在群組中。</string>
+    <string name="invite_change_link_failed">無法更換連結，請重試。</string>
+    <string name="invite_share_message">一起用Blitz Split分攤「%1$s」的帳單吧。透過這個連結加入：%2$s</string>
+</resources>
