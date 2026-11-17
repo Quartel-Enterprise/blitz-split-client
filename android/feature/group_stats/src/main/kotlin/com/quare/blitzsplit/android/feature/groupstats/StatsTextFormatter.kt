@@ -1,13 +1,15 @@
 package com.quare.blitzsplit.android.feature.groupstats
 
-import android.content.Context
+import android.icu.text.DateIntervalFormat
+import android.icu.util.DateInterval
+import android.icu.util.TimeZone
+import android.icu.util.ULocale
 import android.text.format.DateFormat
-import android.text.format.DateUtils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
+import com.quare.blitzsplit.android.designsystem.format.withGregorianCalendar
 import com.quare.blitzsplit.android.designsystem.format.withLatinDigits
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
@@ -25,12 +27,12 @@ import kotlin.time.Duration.Companion.hours
  */
 @Stable
 internal class StatsTextFormatter(
-    private val context: Context,
     private val locale: Locale,
     private val zone: ZoneId,
 ) {
-    // Why: DateUtils reads an end at midnight as the day before, so a range ends at noon of its last day.
+    // Why: an end at midnight reads as the day before, so a range ends at noon of its last day.
     private val endOfDayShift = 12.hours.inWholeMilliseconds
+    private val intervalLocale = ULocale.forLocale(locale.withLatinDigits().withGregorianCalendar())
     private val dayOfMonth = formatterOf("d")
     private val shortMonth = formatterOf("LLL")
     private val longMonth = formatterOf("LLLL")
@@ -44,16 +46,8 @@ internal class StatsTextFormatter(
         endMillis: Long,
     ): String = when (style) {
         StatsRangeStyle.MONTH -> longMonthYear.format(zonedOf(startMillis))
-
         StatsRangeStyle.DAYS -> toDaysText(startMillis, endMillis)
-
-        StatsRangeStyle.MONTHS -> DateUtils.formatDateRange(
-            context,
-            startMillis,
-            endMillis + endOfDayShift,
-            DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_NO_MONTH_DAY or DateUtils.FORMAT_ABBREV_MONTH or
-                DateUtils.FORMAT_SHOW_YEAR,
-        )
+        StatsRangeStyle.MONTHS -> rangeOf(startMillis, endMillis, MONTHS_SKELETON)
     }
 
     // Why: the month a period of one month names in "Nenhuma despesa em setembro".
@@ -89,12 +83,7 @@ internal class StatsTextFormatter(
         StatsGrain.YEAR -> year.format(zonedOf(bar.startMillis))
     }
 
-    private fun toWeekText(bar: StatsBar): String = DateUtils.formatDateRange(
-        context,
-        bar.startMillis,
-        bar.endMillis + endOfDayShift,
-        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH or DateUtils.FORMAT_NO_YEAR,
-    )
+    private fun toWeekText(bar: StatsBar): String = rangeOf(bar.startMillis, bar.endMillis, DAYS_SKELETON)
 
     private fun toDaysText(
         startMillis: Long,
@@ -102,30 +91,43 @@ internal class StatsTextFormatter(
     ): String {
         val thisYear = ZonedDateTime.now(zone).year
         val isThisYear = zonedOf(startMillis).year == thisYear && zonedOf(endMillis).year == thisYear
-        val yearFlag = if (isThisYear) DateUtils.FORMAT_NO_YEAR else DateUtils.FORMAT_SHOW_YEAR
-        return DateUtils.formatDateRange(
-            context,
-            startMillis,
-            endMillis + endOfDayShift,
-            DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH or yearFlag,
-        )
+        return rangeOf(startMillis, endMillis, if (isThisYear) DAYS_SKELETON else DAYS_YEAR_SKELETON)
+    }
+
+    /*
+     * Why: what DateUtils.formatDateRange writes ("24–29 de out."), through ICU's interval format itself, so it is
+     * written on the Gregorian calendar and 0-9 as the rest of the screen, Thai's own being the Buddhist era.
+     */
+    private fun rangeOf(
+        startMillis: Long,
+        endMillis: Long,
+        skeleton: String,
+    ): String {
+        val format = DateIntervalFormat.getInstance(skeleton, intervalLocale)
+        format.timeZone = TimeZone.getTimeZone(zone.id)
+        return format.format(DateInterval(startMillis, endMillis + endOfDayShift))
     }
 
     private fun zonedOf(epochMillis: Long): ZonedDateTime = Instant.ofEpochMilli(epochMillis).atZone(zone)
 
     // Why: 0-9 in every language, as the amounts (MoneyFormatter); java.time's own digits are already 0-9.
-    private fun formatterOf(skeleton: String): DateTimeFormatter = locale.withLatinDigits().let { latin ->
-        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(latin, skeleton), latin)
+    private fun formatterOf(skeleton: String): DateTimeFormatter =
+        locale.withLatinDigits().withGregorianCalendar().let { latin ->
+            DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(latin, skeleton), latin)
+        }
+
+    private companion object {
+        const val MONTHS_SKELETON = "yMMM"
+        const val DAYS_SKELETON = "MMMd"
+        const val DAYS_YEAR_SKELETON = "yMMMd"
     }
 }
 
 @Composable
 internal fun rememberStatsTextFormatter(): StatsTextFormatter {
-    val context = LocalContext.current
     val locale = LocalLocale.current.platformLocale
-    return remember(context, locale) {
+    return remember(locale) {
         StatsTextFormatter(
-            context = context,
             locale = locale,
             zone = ZoneId.systemDefault(),
         )

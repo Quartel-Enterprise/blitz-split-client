@@ -168,28 +168,30 @@ export function isolated(text: string): string {
 }
 
 /**
- * The Unicode extension a language's `Intl` formatting needs: Latin digits for Arabic, whose own ("١٢٫٥٠") the amount
- * fields can't parse, and the Gregorian calendar for Thai, whose default is the Buddhist era (2569 for 2026), so the
- * web writes the year Android writes.
+ * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic and Thai, whose own
+ * ("١٢٫٥٠", "๑๒.๕๐") the amount fields can't parse, and the Gregorian calendar for Thai, whose default is the
+ * Buddhist era (2569 for 2026), so the web writes the year Android writes.
  */
-const formattingKeys: Readonly<Record<string, readonly [key: string, value: string]>> = {
-  ar: ['nu', 'latn'],
-  th: ['ca', 'gregory'],
+const formattingKeys: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  ar: { nu: 'latn' },
+  th: { nu: 'latn', ca: 'gregory' },
 }
 
 /**
  * The tag to hand `Intl` for numbers, amounts and dates: `tag` itself, but with Latin digits (`-u-nu-latn`) for
- * Arabic, so an amount reads "12.50" as the amount fields type it, and the Gregorian calendar (`-u-ca-gregory`) for
- * Thai. Every other language gets `tag` unchanged.
+ * Arabic and Thai, so an amount reads "12.50" as the amount fields type it, and the Gregorian calendar
+ * (`-u-ca-gregory`) for Thai. Every other language gets `tag` unchanged.
  */
 export function formattingLocale(tag: string): string {
-  const pair = formattingKeys[tag.toLowerCase().split(/[-_]/)[0]]
-  if (pair === undefined) return tag
-  const [key, value] = pair
+  const wanted = formattingKeys[tag.toLowerCase().split(/[-_]/)[0]]
+  if (wanted === undefined) return tag
   const [base, extension] = tag.split(/-u-/i)
-  if (extension === undefined) return `${tag}-u-${key}-${value}`
-  const keys = extension.replace(new RegExp(`(^|-)${key}-[a-z0-9]{3,8}`, 'i'), '').replace(/^-/, '')
-  return `${base}-u-${keys ? `${keys}-` : ''}${key}-${value}`
+  const kept = Object.keys(wanted).reduce(
+    (keys, key) => keys.replace(new RegExp(`(^|-)${key}-[a-z0-9]{3,8}`, 'i'), ''),
+    extension ?? '',
+  ).replace(/^-/, '')
+  const added = Object.entries(wanted).map(([key, value]) => `${key}-${value}`).join('-')
+  return `${base}-u-${kept ? `${kept}-` : ''}${added}`
 }
 
 const pluralRules = new Intl.PluralRules(documentLanguage)

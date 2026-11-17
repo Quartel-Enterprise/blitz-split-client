@@ -115,10 +115,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     needs a "you". It calls the app Blitz Split, writes no space between words but one between phrases and around a
     name, an amount or a Latin word, and uses no full stop: a sentence the code finishes ends with nothing and two of
     them are parted by the word gap's space, two clauses on the web by a space too (`fullStopUi`, `WordGap.fullStop`,
-    `fullStop`, `clauseBreak`). Its plurals have one form, and its dates are written with the Gregorian year on Android and the web
-    (the web asks `Intl` for `ca-gregory`, since Thai's default is the Buddhist era, 2569 for 2026), while the Apple apps
-    follow the device's own calendar setting, Buddhist on a Thai iPhone unless its owner changed it (a call taken
-    without Pierre). The brand
+    `fullStop`, `clauseBreak`). Its plurals have one form, and its numbers are 0-9, as Arabic's, never Thai's own digits. Its dates are
+    written with the Gregorian year on Android and the web (`withGregorianCalendar`, the web's `ca-gregory`), since
+    Thai's default is the Buddhist era (2569 for 2026), while the Apple apps follow the device's own calendar setting,
+    Buddhist on a Thai iPhone unless its owner changed it (a call taken without Pierre). The brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number

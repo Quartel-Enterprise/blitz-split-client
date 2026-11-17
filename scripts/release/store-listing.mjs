@@ -166,7 +166,8 @@ function checkKeywords(file, listing) {
   const repeated = lower.find((keyword, index) => lower.indexOf(keyword) !== index);
   if (repeated !== undefined) fail(file, `App Store keywords lists "${repeated}" twice`);
   const shown = `${listing.appStoreName} ${listing.appStoreSubtitle}`.toLowerCase();
-  const words = shown.split(/[^\p{L}\p{N}]+/u);
+  // Why: a combining mark (a Hindi vowel sign or virama, a Thai tone) belongs to the word it sits on.
+  const words = shown.split(/[^\p{L}\p{M}\p{N}]+/u);
   // Why: Japanese, Chinese and Thai write no spaces between words, so a keyword in their scripts is looked for anywhere
   // in the text.
   const wasted = lower.find((keyword) => words.includes(keyword) || (UNSPACED.test(keyword) && shown.includes(keyword)));
