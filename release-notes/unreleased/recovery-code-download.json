@@ -29,7 +29,10 @@
         "he": "עכשיו אפשר להוריד את 12 המילים של קוד השחזור כקובץ טקסט.",
         "th": "ตอนนี้คุณดาวน์โหลดคำ 12 คำของรหัสกู้คืนเป็นไฟล์ข้อความได้แล้ว",
         "vi": "Giờ bạn có thể tải 12 từ của mã khôi phục xuống dưới dạng tệp văn bản.",
-        "zh-Hant": "你現在可以把復原碼的12個詞下載成文字檔。"
+        "zh-Hant": "你現在可以把復原碼的12個詞下載成文字檔。",
+        "sv": "Du kan nu ladda ned de 12 orden i din återställningskod som en textfil.",
+        "cs": "Těch 12 slov obnovovacího kódu si teď můžeš stáhnout jako textový soubor.",
+        "ro": "Acum poți descărca cele 12 cuvinte ale codului de recuperare ca fișier text."
       }
     },
     {
@@ -59,7 +62,10 @@
         "he": "\"שמירת קוד השחזור\" מציין עכשיו שהקוד מחזיר את הנתונים שלך, ושאחרי 30 יום בלי שימוש הנתונים נמחקים.",
         "th": "“บันทึกรหัสกู้คืนของคุณ” บอกแล้วว่ารหัสนี้ใช้กู้ข้อมูลของคุณคืน และหากไม่ได้ใช้งาน 30 วัน ข้อมูลจะถูกลบ",
         "vi": "“Lưu mã khôi phục của bạn” giờ nói rõ mã này giúp lấy lại dữ liệu của bạn, và nếu không dùng trong 30 ngày thì dữ liệu sẽ bị xóa.",
-        "zh-Hant": "「儲存你的復原碼」現在會說明它能找回你的資料，而且30天未使用資料就會被刪除。"
+        "zh-Hant": "「儲存你的復原碼」現在會說明它能找回你的資料，而且30天未使用資料就會被刪除。",
+        "sv": "Spara din återställningskod säger nu att den tar tillbaka dina data, och att dina data raderas efter 30 dagar utan användning.",
+        "cs": "„Ulož si obnovovací kód“ teď říká, že ti vrátí tvoje data a že po 30 dnech bez používání se data smažou.",
+        "ro": "Salvează codul de recuperare spune acum că îți aduce înapoi datele și că, după 30 de zile fără utilizare, datele sunt șterse."
       }
     }
   ]

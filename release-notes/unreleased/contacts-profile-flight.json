@@ -28,7 +28,10 @@
         "he": "פתיחת איש קשר מ\"אנשי קשר\" או מ\"יתרות\" מעבירה עכשיו את השם והיתרה לפרופיל יחד עם התמונה, ובחזרה כשחוזרים.",
         "th": "เมื่อเปิดใครสักคนจากรายชื่อติดต่อหรือยอดคงเหลือ ชื่อและยอดคงเหลือของเขาจะเคลื่อนเข้าไปในโปรไฟล์พร้อมกับรูปภาพ และเคลื่อนกลับเมื่อคุณย้อนกลับ",
         "vi": "Khi mở một người từ Danh bạ hoặc Số dư, tên và số dư của họ giờ cùng ảnh chuyển vào hồ sơ của họ, và chuyển ngược lại khi bạn quay về.",
-        "zh-Hant": "從「聯絡人」或「餘額」開啟某人時，對方的名字和餘額現在會連同照片一起帶進個人資料，返回時也會一起回來。"
+        "zh-Hant": "從「聯絡人」或「餘額」開啟某人時，對方的名字和餘額現在會連同照片一起帶進個人資料，返回時也會一起回來。",
+        "sv": "När du öppnar någon från Kontakter eller Saldon följer nu namnet och saldot med in i profilen tillsammans med fotot, och tillbaka igen när du går tillbaka.",
+        "cs": "Když otevřeš někoho z Kontaktů nebo Zůstatků, do jeho profilu se teď spolu s fotkou přenese i jméno a zůstatek, a při návratu zase zpátky.",
+        "ro": "Când deschizi pe cineva din Contacte sau Solduri, numele și soldul lui trec acum în profilul său împreună cu fotografia, și înapoi când te întorci."
       }
     }
   ]

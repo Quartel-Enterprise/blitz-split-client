@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Recuperează-ți grupurile</string>
+    <string name="restore_subtitle">Te-ai conectat înainte cu un cont? Conectează-te din nou. Dacă nu, folosește codul de recuperare sau codul QR de pe vechiul dispozitiv.</string>
+    <string name="restore_no_connection_title">Fără conexiune</string>
+    <string name="restore_no_connection_body">Conectarea cu un cont sau cu un cod are nevoie de internet ca să-ți descarce grupurile. Ce ai scris rămâne salvat.</string>
+    <string name="restore_code_label">Sau folosește codul de recuperare</string>
+    <string name="restore_code_hint">Cele 12 cuvinte în ordine. Lipește-le pe toate într-un câmp ca să completezi toate câmpurile.</string>
+    <string name="restore_scan_qr_title">Scanează codul QR de pe vechiul dispozitiv</string>
+    <string name="restore_scan_qr_body">Acolo: Profil › Recuperare › Afișează codul QR</string>
+    <string name="restore_recover">Recuperează</string>
+    <string name="restore_try_again">Reîncearcă</string>
+    <string name="restore_start_fresh">Începe de la zero pe acest dispozitiv</string>
+    <string name="restore_error_invalid_code">Codul nu a fost găsit. Verifică cuvintele și ordinea lor, apoi reîncearcă.</string>
+    <string name="restore_error_too_many_attempts">Prea multe încercări. Așteaptă câteva minute și reîncearcă.</string>
+    <string name="restore_error_sign_in_failed">Nu te-ai putut conecta acum. Reîncearcă.</string>
+    <string name="restore_error_unknown">Ceva nu a mers bine. Reîncearcă.</string>
+</resources>

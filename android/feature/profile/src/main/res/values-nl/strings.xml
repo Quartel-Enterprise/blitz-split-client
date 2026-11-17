@@ -77,6 +77,9 @@
     <string name="profile_language_thai">Thai</string>
     <string name="profile_language_vietnamese">Vietnamees</string>
     <string name="profile_language_chinese_traditional">Chinees (traditioneel)</string>
+    <string name="profile_language_swedish">Zweeds</string>
+    <string name="profile_language_czech">Tsjechisch</string>
+    <string name="profile_language_romanian">Roemeens</string>
     <string name="profile_language_system_detail">Taal van het apparaat</string>
     <string name="profile_notifications">Meldingen</string>
     <plurals name="profile_notifications_active">

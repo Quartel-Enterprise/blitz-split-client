@@ -28,7 +28,10 @@
         "he": "\"מה חדש\" מציג עכשיו את הגרסה שהותקנה זה עתה, במקום לחכות עד יום שלם עד שההערות שלה מגיעות.",
         "th": "“บันทึกประจำรุ่น” แสดงเวอร์ชันที่คุณเพิ่งติดตั้งทันที แทนที่จะรอนานถึงหนึ่งวันกว่าจะแสดงบันทึกของเวอร์ชันนั้น",
         "vi": "Ghi chú phát hành giờ hiện ngay phiên bản bạn vừa cài, thay vì chờ đến một ngày mới có ghi chú của nó.",
-        "zh-Hant": "「版本資訊」現在會顯示你剛安裝的版本，不必再等上一天才看到它的內容。"
+        "zh-Hant": "「版本資訊」現在會顯示你剛安裝的版本，不必再等上一天才看到它的內容。",
+        "sv": "Versionsinformation visar nu versionen du nyss installerade, i stället för att vänta upp till ett dygn på att hämta informationen om den.",
+        "cs": "Poznámky k verzi teď ukazují verzi, kterou sis právě nainstaloval(a), místo aby na její poznámky čekaly až den.",
+        "ro": "Notele de versiune arată acum versiunea pe care tocmai ai instalat-o, în loc să aștepte până la o zi ca să-i aducă notele."
       }
     }
   ]

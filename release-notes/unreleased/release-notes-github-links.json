@@ -28,7 +28,10 @@
         "he": "ב\"מה חדש\", הקשה על גרסה פותחת את דף הגרסה ב-GitHub, והכפתור GitHub מציג את כל הגרסאות.",
         "th": "ใน “บันทึกประจำรุ่น” แตะเวอร์ชันเพื่อเปิดรุ่นนั้นบน GitHub หรือแตะปุ่ม GitHub เพื่อดูทุกรุ่น",
         "vi": "Trong Ghi chú phát hành, chạm vào một phiên bản để mở bản phát hành của nó trên GitHub, hoặc nút GitHub để xem mọi bản phát hành.",
-        "zh-Hant": "在「版本資訊」中，點一下版本即可在GitHub上開啟它的發布頁面，或點一下GitHub按鈕查看所有版本。"
+        "zh-Hant": "在「版本資訊」中，點一下版本即可在GitHub上開啟它的發布頁面，或點一下GitHub按鈕查看所有版本。",
+        "sv": "I Versionsinformation trycker du på en version för att öppna dess utgåva på GitHub, eller på GitHub-knappen för att se alla utgåvor.",
+        "cs": "V Poznámkách k verzi klepni na verzi a otevře se její vydání na GitHubu, nebo na tlačítko GitHub a uvidíš všechna vydání.",
+        "ro": "În Note de versiune, atinge o versiune ca să-i deschizi lansarea pe GitHub, sau butonul GitHub ca să vezi toate lansările."
       }
     },
     {
@@ -59,7 +62,10 @@
         "he": "\"צבעים דינמיים\" מסביר עכשיו שהאפליקציה לוקחת את צבעי המערכת של Android, שמגיעים מהטפט או מהפלטה שנבחרה בהגדרות של Android.",
         "th": "“สีไดนามิก” อธิบายแล้วว่าแอปใช้สีระบบของ Android ซึ่งมาจากวอลเปเปอร์หรือชุดสีที่คุณเลือกในการตั้งค่าของ Android",
         "vi": "Màu động giờ giải thích rằng ứng dụng lấy màu hệ thống của Android, vốn đến từ hình nền hoặc bảng màu bạn đã chọn trong cài đặt của Android.",
-        "zh-Hant": "「動態取色」現在會說明App採用Android的系統顏色，這些顏色來自你的桌布或你在Android設定中選擇的色調。"
+        "zh-Hant": "「動態取色」現在會說明App採用Android的系統顏色，這些顏色來自你的桌布或你在Android設定中選擇的色調。",
+        "sv": "Dynamiska färger förklarar nu att appen använder Android-systemets färger, som kommer från din bakgrundsbild eller från paletten du valde i Androids inställningar.",
+        "cs": "Dynamické barvy teď vysvětlují, že aplikace bere systémové barvy Androidu, které pocházejí z tapety nebo z palety vybrané v nastavení Androidu.",
+        "ro": "Culori dinamice explică acum că aplicația preia culorile de sistem ale Android, care vin din imaginea de fundal sau din paleta aleasă de tine în setările Android."
       }
     }
   ]

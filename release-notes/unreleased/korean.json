@@ -27,7 +27,10 @@
         "he": "האפליקציה מדברת עכשיו קוריאנית: אפשר לבחור \"한국어\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
         "th": "แอปรองรับภาษาเกาหลีแล้ว เลือก “한국어” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
         "vi": "Ứng dụng giờ đã có tiếng Hàn: chọn “한국어” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
-        "zh-Hant": "App現已支援韓文：在「個人資料 › 語言」中選擇「한국어」，或讓它跟隨你的裝置。"
+        "zh-Hant": "App現已支援韓文：在「個人資料 › 語言」中選擇「한국어」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu koreanska: välj ”한국어” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví korejsky: vyber „한국어“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum coreeană: alege „한국어” în Profil › Limbă sau las-o să urmeze dispozitivul tău."
       }
     },
     {
@@ -57,7 +60,10 @@
         "he": "קבוצות יכולות עכשיו לפצל בוון דרום קוריאני (KRW), וקבוצה שנוצרת בדרום קוריאה מתחילה בו.",
         "th": "กลุ่มหารเป็นวอนเกาหลีใต้ (KRW) ได้แล้ว และกลุ่มที่สร้างในเกาหลีใต้จะเริ่มด้วยสกุลเงินนี้",
         "vi": "Nhóm giờ có thể chia bằng won Hàn Quốc (KRW), và nhóm được tạo ở Hàn Quốc sẽ bắt đầu với đồng tiền này.",
-        "zh-Hant": "群組現在可以使用韓元（KRW）分攤，在南韓建立的群組也會從韓元開始。"
+        "zh-Hant": "群組現在可以使用韓元（KRW）分攤，在南韓建立的群組也會從韓元開始。",
+        "sv": "Grupper kan nu dela upp i sydkoreanska won (KRW), och en grupp som skapas i Sydkorea börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit v jihokorejském wonu (KRW) a skupina založená v Jižní Koreji začne v něm.",
+        "ro": "Grupurile pot împărți acum în woni sud-coreeni (KRW), iar un grup creat în Coreea de Sud pornește în această monedă."
       }
     }
   ]

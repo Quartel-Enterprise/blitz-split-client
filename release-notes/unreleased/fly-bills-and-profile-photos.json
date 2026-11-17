@@ -25,7 +25,10 @@
         "he": "הסרגל העליון של חשבון מציג עכשיו את תמונת הקבוצה, או את ראשי התיבות שלה, ליד שם הקבוצה.",
         "th": "แถบด้านบนของบิลจะแสดงรูปภาพของกลุ่มหรืออักษรย่อไว้ข้างชื่อกลุ่ม",
         "vi": "Thanh trên cùng của khoản chi giờ hiện ảnh của nhóm, hoặc chữ cái đầu, bên cạnh tên nhóm.",
-        "zh-Hant": "帳單的頂端列現在會在群組名稱旁顯示群組照片，或名稱的首字。"
+        "zh-Hant": "帳單的頂端列現在會在群組名稱旁顯示群組照片，或名稱的首字。",
+        "sv": "En utgifts övre fält visar nu gruppens foto, eller dess initialer, bredvid gruppens namn.",
+        "cs": "Horní lišta výdaje teď vedle názvu skupiny ukazuje její fotku nebo iniciály.",
+        "ro": "Bara de sus a unei cheltuieli arată acum fotografia grupului, sau inițialele lui, lângă numele grupului."
       }
     },
     {
@@ -53,7 +56,10 @@
         "he": "הקשה על התמונה של אדם מעבירה אותה עכשיו לפרופיל, ובחזרה כשחוזרים.",
         "th": "เมื่อแตะรูปภาพของใครสักคน รูปจะเคลื่อนเข้าไปในโปรไฟล์ของเขา และเคลื่อนกลับเมื่อคุณย้อนกลับ",
         "vi": "Chạm vào ảnh của ai đó giờ sẽ đưa ảnh vào hồ sơ của họ, và đưa ngược lại khi bạn quay về.",
-        "zh-Hant": "點一下某人的照片，照片現在會一起移進對方的個人資料，返回時也會移回來。"
+        "zh-Hant": "點一下某人的照片，照片現在會一起移進對方的個人資料，返回時也會移回來。",
+        "sv": "När du trycker på någons foto följer det nu med in i profilen, och tillbaka igen när du går tillbaka.",
+        "cs": "Klepnutí na něčí fotku ji teď přenese do jeho profilu, a při návratu zase zpátky.",
+        "ro": "Când atingi fotografia cuiva, ea trece acum în profilul său, și înapoi când te întorci."
       }
     },
     {
@@ -81,7 +87,10 @@
         "he": "חשבון שנפתח מ\"הוצאות\" של קבוצה נכנס עכשיו למקומו כמו כשנפתח מ\"בית\", ותמונת הקבוצה בחשבונות של \"בית\" עפה לסרגל העליון של החשבון.",
         "th": "บิลที่เปิดจากแท็บ “บิล” ของกลุ่มจะเคลื่อนเข้าที่แบบเดียวกับเมื่อเปิดจากหน้าแรก และรูปภาพของกลุ่มบนบิลในหน้าแรกจะลอยเข้าไปยังแถบด้านบนของบิล",
         "vi": "Khoản chi mở từ Khoản chi của nhóm giờ chuyển vào vị trí giống như khi mở từ Trang chủ, và ảnh nhóm trên các khoản chi ở Trang chủ bay vào thanh trên cùng của khoản chi.",
-        "zh-Hant": "從群組「帳單」開啟的帳單，現在會像從「首頁」開啟時一樣移入定位，「首頁」帳單上的群組照片也會飛進帳單的頂端列。"
+        "zh-Hant": "從群組「帳單」開啟的帳單，現在會像從「首頁」開啟時一樣移入定位，「首頁」帳單上的群組照片也會飛進帳單的頂端列。",
+        "sv": "En utgift som öppnas från en grupps Utgifter glider nu på plats som när den öppnas från Hem, och gruppens foto på Hems utgifter flyger in i utgiftens övre fält.",
+        "cs": "Výdaj otevřený z Výdajů skupiny se teď přesune na místo stejně jako z Domů a fotka skupiny u výdajů na Domů přeletí do horní lišty výdaje.",
+        "ro": "O cheltuială deschisă din Cheltuielile unui grup se mută acum la locul ei ca atunci când o deschizi din Acasă, iar fotografia grupului de pe cheltuielile din Acasă zboară în bara de sus a cheltuielii."
       }
     }
   ]

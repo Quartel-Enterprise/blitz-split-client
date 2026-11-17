@@ -553,6 +553,9 @@ private struct LanguageName: View {
         case .thai: "ไทย"
         case .vietnamese: "Tiếng Việt"
         case .chineseTraditional: "中文（繁體）"
+        case .swedish: "Svenska"
+        case .czech: "Čeština"
+        case .romanian: "Română"
         default: nil
         }
     }
@@ -671,6 +674,21 @@ private struct LanguageName: View {
         )
         case .chineseTraditional: String(
             localized: "Chinese (Traditional)",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .swedish: String(
+            localized: "Swedish",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .czech: String(
+            localized: "Czech",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .romanian: String(
+            localized: "Romanian",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )

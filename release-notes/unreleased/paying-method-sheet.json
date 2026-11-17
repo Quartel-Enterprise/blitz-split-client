@@ -26,7 +26,10 @@
         "he": "ב\"פיצול חשבון\", \"אמצעי תשלום\" הוא עכשיו כפתור קטן מתחת ל\"חלוקה\", ואם עדיין אין לך אמצעי תשלום, \"הוספת אמצעי תשלום\" יוצר אחד ממש שם ובוחר אותו לחשבון. גם לכרטיסי דביט יש עכשיו סמל משלהם.",
         "th": "ใน “หารบิล” “ช่องทางการจ่าย” เป็นปุ่มเล็กๆ ใต้ “หาร” แล้ว และถ้าคุณยังไม่มีช่องทางการจ่าย “เพิ่มช่องทางการจ่าย” จะสร้างขึ้นตรงนั้นและเลือกให้บิลนี้เลย บัตรเดบิตก็มีไอคอนของตัวเองแล้วด้วย",
         "vi": "Trong “Chia khoản chi”, “Trả bằng” giờ là một nút nhỏ dưới Cách chia, và nếu bạn chưa có phương thức thanh toán nào, “Thêm phương thức thanh toán” sẽ tạo ngay tại đó và chọn nó cho khoản chi. Thẻ ghi nợ giờ cũng có biểu tượng riêng.",
-        "zh-Hant": "在「分攤帳單」中，「付款方式」現在是「分攤」下方的小按鈕；如果你還沒有付款方式，「新增付款方式」會直接在那裡建立一個並套用到這筆帳單。金融卡現在也有自己的圖示了。"
+        "zh-Hant": "在「分攤帳單」中，「付款方式」現在是「分攤」下方的小按鈕；如果你還沒有付款方式，「新增付款方式」會直接在那裡建立一個並套用到這筆帳單。金融卡現在也有自己的圖示了。",
+        "sv": "I ”Dela upp en utgift” är ”Betalt med” nu en liten knapp under Fördelning, och har du inget betalsätt än skapar ”Lägg till ett betalsätt” ett direkt där och väljer det för utgiften. Betalkort har nu också en egen ikon.",
+        "cs": "V „Rozdělit výdaj“ je teď „Zaplaceno přes“ malé tlačítko pod rozdělením, a pokud ještě nemáš žádný způsob platby, „Přidat způsob platby“ ho rovnou vytvoří a vybere pro výdaj. Debetní karty mají teď i vlastní ikonu.",
+        "ro": "În „Împarte o cheltuială”, „Plătit cu” e acum un buton mic sub Împărțire, iar dacă nu ai încă nicio metodă de plată, „Adaugă o metodă de plată” creează una chiar acolo și o alege pentru cheltuială. Cardurile de debit au acum și pictograma lor."
       }
     },
     {
@@ -55,7 +58,10 @@
         "he": "הוספה או עריכה של אמצעי תשלום בפרופיל נפתחות עכשיו מעליו, במקום במסך נפרד.",
         "th": "การเพิ่มหรือแก้ไขช่องทางการจ่ายในโปรไฟล์จะเปิดซ้อนบนหน้านั้น แทนการเปิดในหน้าจอแยก",
         "vi": "Thêm hoặc sửa phương thức thanh toán trong Hồ sơ giờ mở ngay trên đó thay vì trên một màn hình riêng.",
-        "zh-Hant": "在「個人資料」中新增或編輯付款方式時，現在會在上方開啟，而不是另開一個畫面。"
+        "zh-Hant": "在「個人資料」中新增或編輯付款方式時，現在會在上方開啟，而不是另開一個畫面。",
+        "sv": "När du lägger till eller redigerar ett betalsätt i Profil öppnas det nu ovanpå profilen i stället för på en egen skärm.",
+        "cs": "Přidání nebo úprava způsobu platby v Profilu se teď otevře nad ním, ne na samostatné obrazovce.",
+        "ro": "Adăugarea sau editarea unei metode de plată din Profil se deschide acum deasupra lui, nu pe un ecran separat."
       }
     }
   ]

@@ -289,6 +289,42 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Sweden WHEN picking its currency THEN it is the Swedish krona`() {
+        // Given
+        val region = "SE"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.SEK to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Czechia WHEN picking its currency THEN it is the Czech koruna`() {
+        // Given
+        val region = "CZ"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.CZK to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Romania WHEN picking its currency THEN it is the Romanian leu`() {
+        // Given
+        val region = "RO"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.RON to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN the rupiah WHEN picking the digits to type THEN it types none though ISO gives it 2`() {
         // Given
         val currency = GroupCurrency.IDR

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Cum îți spun prietenii?</string>
+    <string name="profile_setup_subtitle">Grupurile tale și oricine are linkul profilului tău îți văd numele.</string>
+    <string name="profile_setup_avatar_color">Culoarea avatarului</string>
+    <string name="profile_setup_add_photo">Adaugă o fotografie</string>
+    <string name="profile_setup_photo_error">Nu am putut folosi această fotografie. Încearcă alta.</string>
+    <string name="profile_setup_name_label">Numele tău</string>
+    <string name="profile_setup_name_placeholder">Ion Popescu</string>
+    <string name="profile_setup_name_too_short">Scrie cel puțin %d litere.</string>
+    <string name="profile_setup_name_too_long">Folosește cel mult %d caractere.</string>
+    <string name="profile_setup_name_hint">Îl poți schimba mai târziu din Profil.</string>
+    <string name="profile_setup_saved_locally">Deocamdată salvat doar pe acest dispozitiv.</string>
+    <string name="profile_setup_continue">Continuă</string>
+</resources>

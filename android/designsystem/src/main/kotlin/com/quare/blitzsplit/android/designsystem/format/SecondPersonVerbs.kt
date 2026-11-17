@@ -21,6 +21,11 @@ private const val KOREAN_HONORIFIC_SUBJECT = "님이"
 private const val HINDI = "hi"
 private const val HINDI_ERGATIVE = "ने"
 private const val VIETNAMESE = "vi"
+private const val SWEDISH = "sv"
+private const val CZECH = "cs"
+private const val CZECH_SECOND_PERSON_AUXILIARY = "jsi"
+private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
+private const val ROMANIAN = "ro"
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
@@ -30,6 +35,7 @@ private val secondPersonAuxiliaries = mapOf(
     GERMAN to mapOf("hat" to "hast", "ist" to "bist"),
     ITALIAN to mapOf("ha" to "hai", "l’ha" to "l’hai", "l'ha" to "l'hai"),
     DUTCH to mapOf("heeft" to "hebt", "is" to "bent"),
+    ROMANIAN to mapOf("a" to "ai"),
 )
 private val turkishPast = Regex("[dt][ıiuü]$")
 private val youSubjectLanguages = setOf(
@@ -46,6 +52,9 @@ private val youSubjectLanguages = setOf(
     KOREAN,
     HINDI,
     VIETNAMESE,
+    SWEDISH,
+    CZECH,
+    ROMANIAN,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -68,19 +77,21 @@ private val irregularSecondPerson = mapOf(
 /*
  * Why: "Ana dividió", but "Tú dividiste": Spanish conjugates the verb for the person, and one message serves them all.
  * "dividió" becomes "dividiste", "se unió a" "te uniste a" and "lo adjuntó" "lo adjuntaste". French does the same with
- * its auxiliary, every verb phrase being a passé composé that starts with "a" or "l’a": "Ana a divisé", "Tu as divisé". German, Italian and Dutch too,
- * with their perfect's auxiliary: "Ana hat geteilt", "Du hast geteilt"; "Ana ha diviso", "Tu hai diviso"; "Ana heeft
- * verdeeld", "Jij hebt verdeeld". Polish's past says the gender, which the app doesn't know, so its verb phrases start
- * with a past in "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü",
- * "Sen böldün". Portugal's Portuguese (pt-PT, "tu") ends the verb's preterite in "-aste", "-este" or "-iste": "Ana
- * dividiu", "Tu dividiste". Any other language keeps the verb as it is, Brazil's Portuguese too ("Você dividiu"), and
- * Russian and Ukrainian, whose past says the gender but not the person ("Ана разделил(а)", "Ты разделил(а)"). Korean
- * doesn't conjugate for the person either, but writes someone else as "Ana 님이" (님 always takes 이, so no particle
- * hangs on the sound of a name) and the user as "내가", the user's subject word holding its own particle: every Korean
- * verb phrase starts with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요"). Hindi's past puts the
- * ergative "ने" after the actor, written apart after a name and as one word with the user's "आपने": every Hindi verb
- * phrase starts with "ने", which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Same rules as the web's and
- * the Apple app's `verbForYou`.
+ * its auxiliary, every verb phrase being a passé composé that starts with "a" or "l’a": "Ana a divisé", "Tu as divisé".
+ * German, Italian and Dutch too, with their perfect's auxiliary: "Ana hat geteilt", "Du hast geteilt"; "Ana ha diviso",
+ * "Tu hai diviso"; "Ana heeft verdeeld", "Jij hebt verdeeld"; Romanian's "a" too: "Ana a împărțit", "Tu ai împărțit".
+ * Czech says the person with an auxiliary before its past, which the third person has none of: "Ana rozdělil(a)", "Ty
+ * jsi rozdělil(a)". Polish's past says the gender, which the app doesn't know, so its verb phrases start with a past in
+ * "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü", "Sen böldün".
+ * Portugal's Portuguese (pt-PT, "tu") ends the verb's preterite in "-aste", "-este" or "-iste": "Ana dividiu", "Tu
+ * dividiste". Any other language keeps the verb as it is, Brazil's Portuguese too ("Você dividiu"), and Russian and
+ * Ukrainian, whose past says the gender but not the person ("Ана разделил(а)", "Ты разделил(а)"). Korean doesn't
+ * conjugate for the person either, but writes someone else as "Ana 님이" (님 always takes 이, so no particle hangs on the
+ * sound of a name) and the user as "내가", the user's subject word holding its own particle: every Korean verb phrase
+ * starts with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요"). Hindi's past puts the ergative "ने" after the
+ * actor, written apart after a name and as one word with the user's "आपने": every Hindi verb phrase starts with "ने",
+ * which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Same rules as the web's and the Apple app's
+ * `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -103,6 +114,8 @@ fun toSecondPerson(
     KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
 
     HINDI -> dropSubjectParticle(verb, HINDI_ERGATIVE)
+
+    CZECH -> if (czechPast.containsMatchIn(verb)) "$CZECH_SECOND_PERSON_AUXILIARY $verb" else verb
 
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
@@ -176,7 +189,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * "Jij" or "Sen" and conjugate the verb for it, unlike the other languages. Russian and Ukrainian say "Ты" and "Ти"
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
- * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person.
+ * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
+ * Swedish "Du raderade…" likewise. Czech says "Ty jsi smazal(a)…" and Romanian "Tu ai șters…", with their verb rule.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

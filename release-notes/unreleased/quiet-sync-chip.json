@@ -28,7 +28,10 @@
         "he": "\"סנכרון…\" כבר לא מופיע שוב ושוב ב\"בית\" וב\"קבוצות\" בחזרה לאפליקציה: הסנכרון רץ בשקט ברגע שהקבוצות מוצגות על המסך.",
         "th": "“กำลังซิงค์…” ไม่ขึ้นค้างในหน้าแรกและแท็บกลุ่มอีกต่อไปเมื่อคุณกลับมาที่แอป การซิงค์จะทำงานเงียบๆ เมื่อกลุ่มของคุณแสดงบนหน้าจอแล้ว",
         "vi": "“Đang đồng bộ…” không còn liên tục hiện ở Trang chủ và Nhóm khi bạn quay lại ứng dụng: việc đồng bộ diễn ra lặng lẽ khi các nhóm của bạn đã hiện trên màn hình.",
-        "zh-Hant": "回到App時，「首頁」和「群組」不會再一直出現「正在同步…」：群組顯示在畫面上後，同步會在背景悄悄進行。"
+        "zh-Hant": "回到App時，「首頁」和「群組」不會再一直出現「正在同步…」：群組顯示在畫面上後，同步會在背景悄悄進行。",
+        "sv": "”Synkroniserar…” dyker inte längre upp hela tiden på Hem och Grupper när du kommer tillbaka till appen: synkroniseringen sker tyst när dina grupper väl syns på skärmen.",
+        "cs": "„Synchronizuji…“ se už neukazuje pořád na Domů a ve Skupinách, když se do aplikace vrátíš: synchronizace probíhá potichu, jakmile jsou tvoje skupiny na obrazovce.",
+        "ro": "„Se sincronizează…” nu mai tot apare în Acasă și Grupuri când revii în aplicație: sincronizările rulează discret după ce grupurile tale sunt pe ecran."
       }
     }
   ]

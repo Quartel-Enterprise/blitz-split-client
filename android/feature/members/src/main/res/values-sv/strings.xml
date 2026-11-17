@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Inbjudningslänk</string>
+    <string name="members_link_pending">Inte skapad än</string>
+    <string name="members_share">Dela</string>
+    <string name="members_me">%s (du)</string>
+    <string name="members_status_this_device">Den här enheten</string>
+    <string name="members_status_joined">Har gått med</string>
+    <string name="members_status_not_joined">Har inte gått med än</string>
+    <string name="members_options">Alternativ för %s</string>
+    <string name="members_rename">Byt namn</string>
+    <string name="members_personal_invite">Personlig inbjudan för %s</string>
+    <string name="members_personal_message">Den som öppnar den här länken går direkt med som %s utan att välja i listan. Den fungerar en gång.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Den som öppnar den här länken går direkt med som %1$s utan att välja i listan och ser redan sin andel på %2$s i utgiften som lagts till hittills. Den fungerar en gång.</item>
+        <item quantity="other">Den som öppnar den här länken går direkt med som %1$s utan att välja i listan och ser redan sin andel på %2$s i de %3$d utgifter som lagts till hittills. Den fungerar en gång.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopiera länken</string>
+    <string name="members_personal_copied">Kopierat</string>
+    <string name="members_personal_share">Dela med %s</string>
+    <string name="members_personal_share_message">Gå med i %1$s som %2$s på Blitz Split: %3$s</string>
+    <string name="members_remove">Ta bort från gruppen</string>
+    <string name="members_remove_joined">%s har redan gått med i gruppen</string>
+    <string name="members_remove_title">Ta bort %s från gruppen?</string>
+    <string name="members_remove_message">%s har inte gått med än. Du kan lägga till hen igen senare.</string>
+    <string name="members_remove_confirm">Ta bort</string>
+    <string name="members_release">Frigör namnet</string>
+    <string name="members_release_title">Frigöra namnet %s?</string>
+    <string name="members_release_message">Den som gick med som %1$s lämnar gruppen. Namnet, färgen och utgifterna för %1$s finns kvar, och %1$s kan väljas igen via gruppens länk.</string>
+    <string name="members_release_confirm">Frigör</string>
+    <string name="members_release_error">Det gick inte att frigöra namnet. Kontrollera anslutningen och försök igen.</string>
+    <string name="members_add">Lägg till person</string>
+    <string name="members_invite_instead">Har appen? Bjud in med länken</string>
+    <string name="members_name_label">Namn</string>
+    <string name="members_save">Spara</string>
+    <string name="members_cancel">Avbryt</string>
+    <string name="members_change_error">Det gick inte att spara ändringen. Försök igen.</string>
+    <string name="members_remove_open_balance">%s har ett öppet saldo</string>
+    <string name="members_balance_to_get_back">%s att få tillbaka</string>
+    <string name="members_balance_owes">är skyldig %s</string>
+    <string name="members_balance_settled">Uppgjort</string>
+</resources>

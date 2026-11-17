@@ -62,13 +62,13 @@ class AppLanguageTest {
     @Test
     fun `GIVEN tags of languages the app has or lacks WHEN reading their language THEN it is the lower case code`() {
         // Given
-        val tags = listOf("pt-BR", "PT_br", "zh-Hans-CN", "in-ID", "sv", null)
+        val tags = listOf("pt-BR", "PT_br", "zh-Hans-CN", "in-ID", "fi", null)
 
         // When
         val languages = tags.map(AppLanguage::languageOf)
 
         // Then
-        assertEquals(listOf("pt", "pt", "zh", "id", "sv", null), languages)
+        assertEquals(listOf("pt", "pt", "zh", "id", "fi", null), languages)
     }
 
     @Test
@@ -86,7 +86,7 @@ class AppLanguageTest {
     @Test
     fun `GIVEN no tag or a language the app does not have WHEN reading it THEN follows the device`() {
         // Given
-        val tags = listOf(null, "", "sv", "sv-SE")
+        val tags = listOf(null, "", "fi", "fi-FI")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)
@@ -312,6 +312,42 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Swedish tag WHEN reading it THEN is Swedish`() {
+        // Given
+        val tags = listOf("sv", "sv-SE", "sv_FI", "SV-se")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.SWEDISH }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Czech tag WHEN reading it THEN is Czech`() {
+        // Given
+        val tags = listOf("cs", "cs-CZ", "cs_CZ", "CS-cz")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.CZECH }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Romanian tag WHEN reading it THEN is Romanian`() {
+        // Given
+        val tags = listOf("ro", "ro-RO", "ro_MD", "RO-ro")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.ROMANIAN }, languages)
+    }
+
+    @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN is Traditional Chinese`() {
         // Given
         val tags = listOf("zh-Hant", "zh-TW", "zh_TW", "zh-Hant-TW", "zh-HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
@@ -423,6 +459,9 @@ class AppLanguageTest {
                 "HE",
                 "TH",
                 "VI",
+                "SV",
+                "CS",
+                "RO",
             ),
             codes,
         )

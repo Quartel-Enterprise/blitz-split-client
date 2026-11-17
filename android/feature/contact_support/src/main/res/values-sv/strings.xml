@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Kontakta support</string>
+    <string name="contact_support_description">Vi öppnar din e-postapp med ett färdigt meddelande. Beskriv vad som hände och skicka det: riktiga människor läser varje meddelande.</string>
+    <string name="contact_support_to">Till</string>
+    <string name="contact_support_diagnostics">Följer med i e-postmeddelandet</string>
+    <string name="contact_support_app_version">Appversion</string>
+    <string name="contact_support_platform">Plattform</string>
+    <string name="contact_support_language">Språk</string>
+    <string name="contact_support_account">Konto</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">System</string>
+    <string name="contact_support_account_local">Bara den här enheten</string>
+    <string name="contact_support_account_anonymous">Inte anslutet</string>
+    <string name="contact_support_open_email">Öppna e-post</string>
+    <string name="contact_support_copy_email">Kopiera e-postadressen</string>
+    <string name="contact_support_notice_copied">E-postadressen har kopierats.</string>
+    <string name="contact_support_notice_no_app">Ingen e-postapp hittades. Adressen kopierades i stället.</string>
+    <string name="contact_support_close">Stäng</string>
+</resources>

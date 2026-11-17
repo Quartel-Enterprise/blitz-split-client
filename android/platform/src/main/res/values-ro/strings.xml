@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · cod de recuperare</string>
+    <string name="platform_export_file_name">blitz-split-date-%1$s.json</string>
+    <string name="platform_camera_denied">Permite accesul la cameră din Setări ca să faci o fotografie.</string>
+    <string name="platform_camera_settings">Setări</string>
+    <string name="platform_receipt_source_camera">Fă o fotografie</string>
+    <string name="platform_receipt_source_gallery">Alege din galerie</string>
+    <string name="platform_receipt_source_file">Alege un fișier</string>
+    <string name="platform_receipt_camera_title">Scanează bonul</string>
+    <string name="platform_receipt_camera_close">Închide</string>
+    <string name="platform_receipt_camera_flash_on">Pornește blițul</string>
+    <string name="platform_receipt_camera_flash_off">Oprește blițul</string>
+    <string name="platform_receipt_camera_hint">Încadrează tot bonul. Completăm noi suma, data și descrierea; tu verifici înainte de salvare.</string>
+    <string name="platform_receipt_camera_gallery">Alege din galerie</string>
+    <string name="platform_receipt_camera_shutter">Fă o fotografie</string>
+    <string name="platform_receipt_camera_unavailable">Camera nu este disponibilă. Alege din galerie o fotografie a bonului.</string>
+    <string name="platform_receipt_camera_permission">Permite accesul la cameră ca să scanezi bonul sau alege o fotografie din galerie.</string>
+    <string name="platform_receipt_camera_allow">Permite camera</string>
+    <string name="platform_receipt_camera_settings">Deschide setările</string>
+</resources>

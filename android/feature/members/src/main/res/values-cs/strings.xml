@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Odkaz s pozvánkou</string>
+    <string name="members_link_pending">Ještě nevytvořen</string>
+    <string name="members_share">Sdílet</string>
+    <string name="members_me">%s (ty)</string>
+    <string name="members_status_this_device">Toto zařízení</string>
+    <string name="members_status_joined">Připojen(a)</string>
+    <string name="members_status_not_joined">Ještě nepřipojen(a)</string>
+    <string name="members_options">Možnosti pro %s</string>
+    <string name="members_rename">Přejmenovat</string>
+    <string name="members_personal_invite">Osobní pozvánka pro %s</string>
+    <string name="members_personal_message">Kdo otevře tento odkaz, připojí se rovnou jako %s, bez vybírání ze seznamu. Funguje jednou.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Kdo otevře tento odkaz, připojí se rovnou jako %1$s, bez vybírání ze seznamu, a hned uvidí svůj podíl %2$s v %3$d dosud přidaném výdaji. Funguje jednou.</item>
+        <item quantity="few">Kdo otevře tento odkaz, připojí se rovnou jako %1$s, bez vybírání ze seznamu, a hned uvidí svůj podíl %2$s ve %3$d dosud přidaných výdajích. Funguje jednou.</item>
+        <item quantity="many">Kdo otevře tento odkaz, připojí se rovnou jako %1$s, bez vybírání ze seznamu, a hned uvidí svůj podíl %2$s v %3$d dosud přidaných výdajích. Funguje jednou.</item>
+        <item quantity="other">Kdo otevře tento odkaz, připojí se rovnou jako %1$s, bez vybírání ze seznamu, a hned uvidí svůj podíl %2$s v %3$d dosud přidaných výdajích. Funguje jednou.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopírovat odkaz</string>
+    <string name="members_personal_copied">Zkopírováno</string>
+    <string name="members_personal_share">Sdílet s: %s</string>
+    <string name="members_personal_share_message">Připoj se ke skupině %1$s jako %2$s v Blitz Split: %3$s</string>
+    <string name="members_remove">Odebrat ze skupiny</string>
+    <string name="members_remove_joined">%s už se ke skupině připojil(a)</string>
+    <string name="members_remove_title">Odebrat %s ze skupiny?</string>
+    <string name="members_remove_message">%s se ještě nepřipojil(a). Později ho/ji můžeš přidat znovu.</string>
+    <string name="members_remove_confirm">Odebrat</string>
+    <string name="members_release">Uvolnit jméno</string>
+    <string name="members_release_title">Uvolnit jméno %s?</string>
+    <string name="members_release_message">Kdo se připojil jako %1$s, opustí skupinu. Jméno, barva a výdaje osoby %1$s zůstanou a %1$s půjde znovu vybrat přes odkaz skupiny.</string>
+    <string name="members_release_confirm">Uvolnit</string>
+    <string name="members_release_error">Jméno se nepodařilo uvolnit. Zkontroluj připojení k internetu a zkus to znovu.</string>
+    <string name="members_add">Přidat osobu</string>
+    <string name="members_invite_instead">Má aplikaci? Pozvi ho/ji odkazem</string>
+    <string name="members_name_label">Jméno</string>
+    <string name="members_save">Uložit</string>
+    <string name="members_cancel">Zrušit</string>
+    <string name="members_change_error">Změnu se nepodařilo uložit. Zkus to znovu.</string>
+    <string name="members_remove_open_balance">%s má otevřený zůstatek</string>
+    <string name="members_balance_to_get_back">dostane zpět %s</string>
+    <string name="members_balance_owes">dluží %s</string>
+    <string name="members_balance_settled">Vyrovnáno</string>
+</resources>

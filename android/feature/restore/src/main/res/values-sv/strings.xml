@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Få tillbaka dina grupper</string>
+    <string name="restore_subtitle">Har du loggat in med ett konto tidigare? Logga bara in igen. Annars kan du använda återställningskoden eller QR-koden från din gamla enhet.</string>
+    <string name="restore_no_connection_title">Ingen anslutning</string>
+    <string name="restore_no_connection_body">För att logga in med ett konto eller en kod behövs internet så att dina grupper kan laddas ned. Det du har skrivit sparas.</string>
+    <string name="restore_code_label">Eller använd återställningskoden</string>
+    <string name="restore_code_hint">De 12 orden i ordning. Klistra in alla i ett fält för att fylla i alla fält.</string>
+    <string name="restore_scan_qr_title">Skanna QR-koden från din gamla enhet</string>
+    <string name="restore_scan_qr_body">Där: Profil › Återställning › Visa QR-kod</string>
+    <string name="restore_recover">Återställ</string>
+    <string name="restore_try_again">Försök igen</string>
+    <string name="restore_start_fresh">Börja om på den här enheten</string>
+    <string name="restore_error_invalid_code">Koden hittades inte. Kontrollera orden och deras ordning och försök sedan igen.</string>
+    <string name="restore_error_too_many_attempts">För många försök. Vänta några minuter och försök igen.</string>
+    <string name="restore_error_sign_in_failed">Det gick inte att logga in just nu. Försök igen.</string>
+    <string name="restore_error_unknown">Något gick fel. Försök igen.</string>
+</resources>

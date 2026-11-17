@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Rozděl výdaje bez starostí</string>
+    <string name="welcome_offline_title">Funguje offline</string>
+    <string name="welcome_offline_body">Vše zůstává ve tvém zařízení a synchronizuje se později.</string>
+    <string name="welcome_optional_title">Účet je volitelný</string>
+    <string name="welcome_optional_body">Google nebo Apple jen zajistí, že o nic nepřijdeš, když změníš zařízení.</string>
+    <string name="welcome_invite_title">Pozvi odkazem nebo QR kódem</string>
+    <string name="welcome_invite_body">Přátelé se ke skupině připojí bez zakládání účtu.</string>
+    <string name="welcome_no_connection_title">Žádné připojení.</string>
+    <string name="welcome_no_connection_body">Přihlášení k účtu vyžaduje internet. Teď aplikaci používej bez účtu a připoj ho později v Profilu.</string>
+    <string name="welcome_or">nebo</string>
+    <string name="welcome_use_without_account">Používat bez účtu</string>
+    <string name="welcome_used_on_another_device">Už jsem ji používal(a) v jiném zařízení</string>
+    <string name="welcome_sign_in_failed">Teď se nepodařilo přihlásit. Zkus to znovu.</string>
+    <string name="welcome_legal_notice">Pokračováním přijímáš %1$s a bereš na vědomí %2$s.</string>
+    <string name="welcome_legal_terms">Podmínky služby</string>
+    <string name="welcome_legal_privacy">Zásady ochrany osobních údajů</string>
+    <string name="welcome_no_account_note">Bez účtu se tvá data smažou po 30 dnech nepoužívání. Připoj Google nebo Apple, abys je zachoval(a).</string>
+    <string name="welcome_no_account_note_offline">Bez účtu se tvá data smažou po 30 dnech nepoužívání. Abys je zachoval(a), připoj později v Profilu Google nebo Apple.</string>
+    <string name="welcome_expired_title">Tvá data byla smazána</string>
+    <string name="welcome_expired_body">Používal(a) jsi aplikaci bez účtu a 30 dní jsi ji neotevřel(a), takže tvá data byla smazána. Příště připoj Google nebo Apple, abys je zachoval(a).</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

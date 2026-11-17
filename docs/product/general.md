@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese and Chinese (Traditional): the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech and Romanian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -132,7 +132,13 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     `vi` tag and talks to the user as "bạn" (friends splitting a bill), "Bạn" as the subject of an activity row,
     which Android's deleted-item notice starts with as it does in Spanish (`youSubjectLanguages`); its verbs don't
     change with the person. It calls the app Blitz Split, writes its tone marks in the modern places ("hóa đơn"), and
-    its plurals have one form. The brand
+    its plurals have one form. Swedish, Czech and Romanian (Pierre's calls, issue #448) are each one variant for every
+    tag of theirs and talk to the user in the informal singular: "du", "ty" and "tu". Swedish verbs don't change with
+    the person ("Ana delade…", "Du delade…"). Czech past forms say a gender the app doesn't know, so they are written
+    "-l(a)" ("rozdělil(a)"), as Polish's "ł(a)", and its plurals have one, few, many and other. Romanian writes ș and ț
+    with a comma below, and its plurals have one, few and other, the other taking "de" ("20 de grupuri"). All three
+    call the app Blitz Split and start Android's deleted-item notice with who deleted it (`youSubjectLanguages`). The
+    brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
@@ -307,6 +313,11 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Taiwan. It is typed without decimals, as the rupiah: ISO gives it 2, but no price in Taiwan shows cents (a call taken
     without Pierre); its cap is the usual 100 million (about US$ 3 million). An app version from before it reads TWD as
     an unknown code with two decimals and shows its amounts 100 times smaller until it updates, as the rupiah did.
+  - The Swedish krona (SEK), the Czech koruna (CZK) and the Romanian leu (RON) follow the New Taiwan dollar, in that
+    order (Pierre's calls, with Swedish, Czech and Romanian), and start a new group in Sweden, Czechia and Romania. Each
+    has 2 decimals, as ISO gives it (the koruna too, though Czech cash has no haléře: card payments and prices still
+    show them, a call taken without Pierre), and the usual 100 million cap, so an app version from before them shows
+    their amounts by the raw code, with the right decimals.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

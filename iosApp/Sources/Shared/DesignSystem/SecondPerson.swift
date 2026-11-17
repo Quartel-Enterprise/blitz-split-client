@@ -8,9 +8,11 @@ import SwiftUI
 /// dividiste"). Other languages are left as they are, Brazil's Portuguese too ("Você dividiu"), and Russian and
 /// Ukrainian, whose past says the gender but not the person ("Ты разделил(а)"). Korean writes someone else as "Ana 님이"
 /// (님 always takes 이, so no particle hangs on the sound of a name) and the user as "내가", whose subject word holds its
-/// own particle, so its verb phrases all start with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요").
-/// Hindi's past puts the ergative "ने" after the actor, apart after a name and one word with the user's "आपने", so its
-/// verb phrases all start with "ने", which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा").
+/// own particle, so its verb phrases all start with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요"). Hindi's
+/// past puts the ergative "ने" after the actor, apart after a name and one word with the user's "आपने", so its verb
+/// phrases all start with "ने", which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Romanian swaps its
+/// perfect's auxiliary as French does ("Ana a împărțit", "Tu ai împărțit"), and Czech adds one before the past ("Ana
+/// rozdělil(a)", "Ty jsi rozdělil(a)").
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -42,12 +44,15 @@ enum SecondPerson {
         "de": ["hat": "hast", "ist": "bist"],
         "it": ["ha": "hai", "l’ha": "l’hai", "l'ha": "l'hai"],
         "nl": ["heeft": "hebt", "is": "bent"],
+        "ro": ["a": "ai"],
     ]
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
-    /// French, German, Italian and Dutch: every verb phrase is a perfect that starts with its auxiliary, so "a divisé" →
-    /// "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten", "ha diviso" → "hai diviso",
-    /// "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden".
+    /// French, German, Italian, Dutch and Romanian: every verb phrase is a perfect that starts with its auxiliary, so
+    /// "a divisé" → "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten", "ha diviso" →
+    /// "hai diviso", "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden", "a împărțit" → "ai
+    /// împărțit". Czech: the second person's past takes the auxiliary "jsi" the third person has none of, so
+    /// "rozdělil(a)" → "jsi rozdělil(a)"; a phrase that doesn't start with that past stays as it is.
     /// Portugal's Portuguese: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste".
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
     /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
@@ -61,6 +66,9 @@ enum SecondPerson {
         case "tr": return turkishVerbForYou(verb)
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
+        case "cs":
+            // Why: the past may be followed by a comma or a colon ("změnil(a), kdo platil").
+            return verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil ? "jsi " + verb : verb
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }

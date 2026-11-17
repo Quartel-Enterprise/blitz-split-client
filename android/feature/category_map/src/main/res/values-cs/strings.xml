@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Žádné výrazy</string>
+    <string name="category_map_title">Mapa kategorií</string>
+    <string name="category_map_search">Hledat výrazy</string>
+    <string name="category_map_add">Přidat výraz</string>
+    <string name="category_map_more">Další možnosti</string>
+    <string name="category_map_restore">Obnovit výchozí</string>
+    <string name="category_map_back">Zpět</string>
+    <string name="category_map_intro">Když název výdaje obsahuje některé z těchto slov, kategorie se doplní sama. Z „Uber domů“ se stane Doprava.</string>
+    <string name="category_map_intro_offline">Mapa funguje offline: změny platí hned v tomto zařízení a do ostatních se dostanou, až budeš znovu online.</string>
+    <string name="category_map_device_only">Tvoje mapa zůstává jen v tomto zařízení. Chceš-li ji mít i v dalších zařízeních, přihlas se přes Google nebo Apple v Profilu.</string>
+    <string name="category_map_open_profile">Otevřít profil</string>
+    <string name="category_map_longest_wins">Když na název sedí dva výrazy, vyhraje ten delší.</string>
+    <string name="category_map_no_result">Žádný výraz s „%1$s“</string>
+    <string name="category_map_no_result_body">Přidej ho a výdaje s tímto slovem v názvu dostanou správnou kategorii.</string>
+    <string name="category_map_add_query">Přidat „%1$s“</string>
+    <string name="category_map_empty_title">Tvoje mapa je prázdná</string>
+    <string name="category_map_empty_body">Bez výrazů se kategorie z názvu neurčí: vybereš ji u každého výdaje.</string>
+    <string name="category_map_group_category"> · kategorie skupiny %1$s</string>
+    <string name="category_map_only_main">Jen %1$s</string>
+    <string name="category_map_only_in_group">jen v %1$s</string>
+    <string name="category_map_no_terms_yet">Zatím žádné výrazy.</string>
+    <string name="category_map_add_in">Přidat výraz do %1$s</string>
+    <string name="category_map_tip">Klepnutím na výraz změníš jeho kategorii nebo ho odebereš. Shoduje se celé slovo, bez ohledu na diakritiku a velikost písmen.</string>
+    <string name="category_map_queued">ve frontě</string>
+    <string name="category_map_term_action">%1$s, %2$s. Upravit</string>
+    <string name="category_map_new_term">Nový výraz</string>
+    <string name="category_map_edit_term">Upravit výraz</string>
+    <string name="category_map_term_label">Slovo nebo fráze</string>
+    <string name="category_map_term_help">Shoduje se celé slovo, bez ohledu na diakritiku a velikost písmen.</string>
+    <string name="category_map_term_help_app">Výraz aplikace. Obnovit výchozí ho vrátí do původní podoby.</string>
+    <string name="category_map_term_duplicate">„%1$s“ už vybírá %2$s. Každý výraz má jednu kategorii.</string>
+    <string name="category_map_term_too_short">Použij aspoň 2 písmena.</string>
+    <string name="category_map_term_too_long">Použij nejvýš 30 písmen.</string>
+    <string name="category_map_term_invalid">Použij jen písmena, číslice a mezery.</string>
+    <string name="category_map_category">Kategorie</string>
+    <string name="category_map_category_help">Může to být kategorie nebo podkategorie.</string>
+    <string name="category_map_category_help_edit">Změnou tady přesuneš výraz do jiné kategorie.</string>
+    <string name="category_map_category_help_move">Přesunutím výraz odejde z %1$s.</string>
+    <string name="category_map_example">Příklad</string>
+    <string name="category_map_example_move">Po přesunu</string>
+    <string name="category_map_remove">Odebrat</string>
+    <string name="category_map_cancel">Zrušit</string>
+    <string name="category_map_save">Uložit</string>
+    <string name="category_map_move_to">Přesunout do %1$s</string>
+    <string name="category_map_removed">„%1$s“ zmizel z mapy</string>
+    <string name="category_map_undo">Vrátit zpět</string>
+    <string name="category_map_restore_title">Obnovit výchozí mapu?</string>
+    <string name="category_map_restore_body">Vrátí se 60 výrazů aplikace v původní podobě, včetně těch, které jsi odebral(a) nebo přesunul(a).</string>
+    <string name="category_map_restore_own_one">Výraz, který jsi vytvořil(a), „%1$s“, zůstane.</string>
+    <string name="category_map_restore_confirm">Obnovit</string>
+    <string name="category_map_save_error">Mapu se nepodařilo uložit. Zkus to znovu.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d výraz</item>
+        <item quantity="few">%d výrazy</item>
+        <item quantity="many">%d výrazů</item>
+        <item quantity="other">%d výrazů</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d podkategorie</item>
+        <item quantity="few">%d podkategorie</item>
+        <item quantity="many">%d podkategorií</item>
+        <item quantity="other">%d podkategorií</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d výraz s „%2$s“</item>
+        <item quantity="few">%1$d výrazy s „%2$s“</item>
+        <item quantity="many">%1$d výrazů s „%2$s“</item>
+        <item quantity="other">%1$d výrazů s „%2$s“</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d změna ve frontě</item>
+        <item quantity="few">Offline · %d změny ve frontě</item>
+        <item quantity="many">Offline · %d změn ve frontě</item>
+        <item quantity="other">Offline · %d změn ve frontě</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d výraz, který jsi vytvořil(a), zůstane.</item>
+        <item quantity="few">%d výrazy, které jsi vytvořil(a), zůstanou.</item>
+        <item quantity="many">%d výrazů, které jsi vytvořil(a), zůstane.</item>
+        <item quantity="other">%d výrazů, které jsi vytvořil(a), zůstane.</item>
+    </plurals>
+    <string name="category_map_new_category">Nová kategorie</string>
+    <string name="category_map_new_subcategory_in">Nová podkategorie v %s</string>
+    <string name="category_map_edit_category">Upravit %s</string>
+    <string name="category_map_category_group">Skupina</string>
+    <string name="category_map_change_color">Změnit barvu: %1$s</string>
+    <string name="category_map_restore_color">Obnovit barvu</string>
+    <string name="category_map_color_done">Hotovo</string>
+</resources>

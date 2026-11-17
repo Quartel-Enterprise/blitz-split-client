@@ -27,7 +27,10 @@
         "he": "האפליקציה מדברת עכשיו ערבית, בתצוגה מימין לשמאל: אפשר לבחור \"العربية\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
         "th": "แอปรองรับภาษาอาหรับแล้ว พร้อมเลย์เอาต์ที่อ่านจากขวาไปซ้าย เลือก “العربية” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
         "vi": "Ứng dụng giờ đã có tiếng Ả Rập, với bố cục đọc từ phải sang trái: chọn “العربية” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
-        "zh-Hant": "App現已支援阿拉伯文，並採由右至左的版面：在「個人資料 › 語言」中選擇「العربية」，或讓它跟隨你的裝置。"
+        "zh-Hant": "App現已支援阿拉伯文，並採由右至左的版面：在「個人資料 › 語言」中選擇「العربية」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu arabiska, med en layout som läses från höger till vänster: välj ”العربية” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví arabsky, s rozvržením zprava doleva: vyber „العربية“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum arabă, așezată de la dreapta la stânga: alege „العربية” în Profil › Limbă sau las-o să urmeze dispozitivul tău."
       }
     },
     {
@@ -57,7 +60,10 @@
         "he": "קבוצות יכולות עכשיו לפצל בריאל סעודי (SAR), בדירהם של איחוד האמירויות (AED), בלירה מצרית (EGP) ובדירהם מרוקאי (MAD), וקבוצה שנוצרת באחת מהמדינות האלה מתחילה במטבע שלה.",
         "th": "กลุ่มหารเป็นริยัลซาอุดีอาระเบีย (SAR) ดิรฮัมสหรัฐอาหรับเอมิเรตส์ (AED) ปอนด์อียิปต์ (EGP) และดิรฮัมโมร็อกโก (MAD) ได้แล้ว และกลุ่มที่สร้างในประเทศเหล่านั้นจะเริ่มด้วยสกุลเงินของประเทศนั้น",
         "vi": "Nhóm giờ có thể chia bằng riyal Ả Rập Xê Út (SAR), dirham UAE (AED), bảng Ai Cập (EGP) và dirham Ma-rốc (MAD), và nhóm được tạo ở một trong các nước đó sẽ bắt đầu với tiền tệ của nước đó.",
-        "zh-Hant": "群組現在可以使用沙烏地里亞爾（SAR）、阿聯酋迪拉姆（AED）、埃及鎊（EGP）和摩洛哥迪拉姆（MAD）分攤，在這些國家建立的群組會以當地貨幣開始。"
+        "zh-Hant": "群組現在可以使用沙烏地里亞爾（SAR）、阿聯酋迪拉姆（AED）、埃及鎊（EGP）和摩洛哥迪拉姆（MAD）分攤，在這些國家建立的群組會以當地貨幣開始。",
+        "sv": "Grupper kan nu dela upp i saudiska riyal (SAR), emiratiska dirham (AED), egyptiska pund (EGP) och marockanska dirham (MAD), och en grupp som skapas i något av de länderna börjar i landets valuta.",
+        "cs": "Skupiny teď můžou dělit v saúdském riyalu (SAR), dirhamu SAE (AED), egyptské libře (EGP) a marockém dirhamu (MAD) a skupina založená v jedné z těchto zemí začne v její měně.",
+        "ro": "Grupurile pot împărți acum în riyali saudiți (SAR), dirhami emiratezi (AED), lire egiptene (EGP) și dirhami marocani (MAD), iar un grup creat într-una dintre aceste țări pornește în moneda ei."
       }
     }
   ]

@@ -11,6 +11,12 @@
             "value" : "Blitz Split"
           }
         },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -95,7 +101,19 @@
             "value" : "Blitz Split"
           }
         },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -149,6 +167,12 @@
             "value" : "Blitz Split"
           }
         },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -233,7 +257,19 @@
             "value" : "Blitz Split"
           }
         },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -285,6 +321,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لمسح رمز QR الخاص بدعوة أو من جهازك القديم، ولالتقاط صورة ملفك الشخصي وصور الفواتير."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ke skenování QR kódu pozvánky nebo ze starého zařízení a k pořízení profilové fotky a fotek výdajů."
           }
         },
         "de" : {
@@ -371,10 +413,22 @@
             "value" : "Para ler o código QR de um convite ou do teu aparelho antigo, e tirar a fotografia do teu perfil e as fotografias das contas."
           }
         },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pentru a scana codul QR al unei invitații sau de pe dispozitivul vechi și pentru a face fotografia de profil și fotografii ale cheltuielilor."
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Чтобы сканировать QR-код приглашения или со старого устройства, а также фотографировать себя для профиля и снимать счета."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "För att skanna QR-koden i en inbjudan eller från din gamla enhet, och för att ta ditt profilfoto och foton av utgifter."
           }
         },
         "th" : {
@@ -423,6 +477,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لدعوة أشخاص من جهات اتصالك برابط مجموعة. تبقى أرقامهم على هذا الجهاز."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "K pozvání lidí z tvých kontaktů odkazem na skupinu. Jejich čísla zůstanou v tomto zařízení."
           }
         },
         "de" : {
@@ -509,10 +569,22 @@
             "value" : "Para convidar pessoas dos teus contactos com o link de um grupo. Os números ficam só neste aparelho."
           }
         },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pentru a invita persoane din contactele tale cu linkul unui grup. Numerele lor rămân pe acest dispozitiv."
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Чтобы приглашать людей из контактов по ссылке группы. Их номера остаются на этом устройстве."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "För att bjuda in personer från dina kontakter med en grupps länk. Deras nummer stannar på den här enheten."
           }
         },
         "th" : {
@@ -561,6 +633,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لحفظ صور الفاتورة في مكتبتك."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "K uložení fotek výdajů do tvé knihovny."
           }
         },
         "de" : {
@@ -647,10 +725,22 @@
             "value" : "Para guardar as fotografias das contas na tua galeria."
           }
         },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pentru a salva fotografiile unei cheltuieli în biblioteca ta."
+          }
+        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Чтобы сохранять фото счетов в твою медиатеку."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "För att spara en utgifts foton i ditt bildbibliotek."
           }
         },
         "th" : {

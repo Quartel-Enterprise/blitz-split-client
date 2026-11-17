@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Radera konto</string>
+    <string name="delete_account_offline_title">Inget internet.</string>
+    <string name="delete_account_offline_body">Att radera kontot kräver en internetanslutning. Anslut och försök igen.</string>
+    <string name="delete_account_heading">Radera ditt konto och dina data?</string>
+    <string name="delete_account_deleted_title">Det här raderas</string>
+    <string name="delete_account_deleted_profile">Din profil (namn, foto och färg)</string>
+    <string name="delete_account_deleted_keys">Dina Pix- och Bitcoin-nycklar</string>
+    <string name="delete_account_deleted_provider">Kopplingen till ditt %1$s-konto</string>
+    <string name="delete_account_deleted_recovery_code">Din återställningskod</string>
+    <string name="delete_account_deleted_device">Kopian av dina data på den här enheten</string>
+    <string name="delete_account_kept_title">Det här stannar i dina grupper</string>
+    <string name="delete_account_kept_groups">Grupperna, med sina utgifter och betalningar, för de andra medlemmarna</string>
+    <string name="delete_account_kept_member">Ditt namn i varje grupp, som medlem utan konto</string>
+    <string name="delete_account_kept_comments">Dina kommentarer och de foton du har lagt till, under ditt namn</string>
+    <string name="delete_account_export">Exportera mina data först</string>
+    <string name="delete_account_confirm">Jag förstår att detta inte kan ångras</string>
+    <string name="delete_account_delete">Radera konto</string>
+    <string name="delete_account_cancel">Avbryt</string>
+    <string name="delete_account_failed">Det gick inte att radera ditt konto. Försök igen.</string>
+</resources>

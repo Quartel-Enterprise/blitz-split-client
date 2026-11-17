@@ -28,7 +28,10 @@
         "he": "תוקנה מחוות החזרה שלא יצאה מפרופיל של אדם שנפתח מחלון תשלום; עכשיו היא חוזרת לחלון.",
         "th": "แก้ไขปัญหาท่าทางย้อนกลับที่ไม่ออกจากโปรไฟล์ของคนที่เปิดจากชีตการจ่ายเงิน ตอนนี้จะกลับไปที่ชีตแล้ว",
         "vi": "Đã sửa lỗi cử chỉ quay lại không thoát khỏi hồ sơ của một người được mở từ bảng thanh toán; giờ nó quay về bảng đó.",
-        "zh-Hant": "修正從付款面板開啟某人的個人資料後，返回手勢無法離開的問題；現在會回到面板。"
+        "zh-Hant": "修正從付款面板開啟某人的個人資料後，返回手勢無法離開的問題；現在會回到面板。",
+        "sv": "Åtgärdat att bakåtgesten inte lämnade en persons profil som öppnats från en betalningspanel; nu går den tillbaka till panelen.",
+        "cs": "Opravili jsme gesto zpět, které neopouštělo profil člověka otevřený z panelu platby; teď se vrátí zpátky na panel.",
+        "ro": "Am reparat gestul de înapoi, care nu ieșea din profilul unei persoane deschis din fereastra unei plăți; acum te duce înapoi la fereastră."
       }
     }
   ]

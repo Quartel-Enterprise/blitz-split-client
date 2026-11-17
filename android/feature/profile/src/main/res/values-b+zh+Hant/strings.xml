@@ -76,6 +76,9 @@
     <string name="profile_language_thai">泰文</string>
     <string name="profile_language_vietnamese">越南文</string>
     <string name="profile_language_chinese_traditional">中文（繁體）</string>
+    <string name="profile_language_swedish">瑞典文</string>
+    <string name="profile_language_czech">捷克文</string>
+    <string name="profile_language_romanian">羅馬尼亞文</string>
     <string name="profile_language_system_detail">裝置語言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

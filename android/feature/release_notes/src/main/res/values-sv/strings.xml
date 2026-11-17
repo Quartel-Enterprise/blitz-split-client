@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Versionsinformation</string>
+    <string name="release_notes_show_beta">Visa betaversioner</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Den här versionen</string>
+    <string name="release_notes_empty">Ingen versionsinformation än.</string>
+    <string name="release_notes_empty_only_betas">Det finns ingen stabil version än. Slå på betaversioner för att se vad som testas.</string>
+    <string name="release_notes_load_failed_title">Det gick inte att läsa in versionsinformationen</string>
+    <string name="release_notes_load_failed_body">Kontrollera anslutningen och försök igen.</string>
+    <string name="release_notes_retry">Försök igen</string>
+    <string name="release_notes_open_on_github">Öppna på GitHub</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Ulož si obnovovací kód</string>
+    <string name="recovery_code_body">Používáš aplikaci bez účtu. Těchto 12 slov ti vrátí data, když změníš nebo ztratíš zařízení. Zapiš si je ve správném pořadí. Po 30 dnech bez používání se tvoje data smažou a slova přestanou fungovat.</string>
+    <string name="recovery_code_copy">Kopírovat slova</string>
+    <string name="recovery_code_save_to_password_manager">Uložit do správce hesel</string>
+    <string name="recovery_code_connect_instead">Raději propojit Google nebo Apple</string>
+    <string name="recovery_code_connect_instead_body">Kód není potřeba</string>
+    <string name="recovery_code_sign_in_failed">Teď se nepodařilo propojit. Zkus to znovu.</string>
+    <string name="recovery_code_also_in_profile">Najdeš ho i v Profil › Obnovení.</string>
+    <string name="recovery_code_remind_later">Připomenout později</string>
+    <string name="recovery_code_saved">Mám ho uložený</string>
+    <string name="recovery_code_download">Stáhnout</string>
+    <string name="recovery_code_file_name">blitz-split-obnovovaci-kod.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · obnovovací kód\n\n%1$s\n\nPoužij ho v „Už jsem ho použil(a) v jiném zařízení“, abys získal(a) svá data zpět.\n</string>
+</resources>

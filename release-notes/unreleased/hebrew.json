@@ -26,6 +26,9 @@
         "th": "แอปรองรับภาษาฮีบรูแล้ว พร้อมการจัดวางจากขวาไปซ้าย เลือก “עברית” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
         "vi": "Ứng dụng giờ đã có tiếng Do Thái, với bố cục đọc từ phải sang trái: chọn “עברית” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
         "zh-Hant": "App現已支援希伯來文，並採由右至左的版面：在「個人資料 › 語言」中選擇「עברית」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu hebreiska, med en layout som läses från höger till vänster: välj ”עברית” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví hebrejsky, s rozvržením zprava doleva: vyber „עברית“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum ebraică, așezată de la dreapta la stânga: alege „עברית” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
         "hi": "ऐप अब हिब्रू में भी है, दाएं से बाएं पढ़ने वाले लेआउट के साथ: प्रोफ़ाइल › भाषा में \"עברית\" चुनें, या इसे अपने डिवाइस की भाषा पर रहने दें।",
         "zh": "应用现已支持希伯来语，界面从右往左排列：在 个人资料 › 语言 中选择\"עברית\"，或让它跟随设备语言。"
       }
@@ -56,6 +59,9 @@
         "th": "กลุ่มหารเป็นเงินเชเกลใหม่อิสราเอล (ILS) ได้แล้ว และกลุ่มที่สร้างในอิสราเอลจะเริ่มด้วยสกุลเงินนี้",
         "vi": "Nhóm giờ có thể chia bằng shekel mới của Israel (ILS), và nhóm được tạo ở Israel sẽ bắt đầu với đồng tiền này.",
         "zh-Hant": "群組現在可以使用以色列新謝克爾（ILS）分攤，在以色列建立的群組也會從新謝克爾開始。",
+        "sv": "Grupper kan nu dela upp i nya israeliska shekel (ILS), och en grupp som skapas i Israel börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit v novém izraelském šekelu (ILS) a skupina založená v Izraeli začne v něm.",
+        "ro": "Grupurile pot împărți acum în shekeli noi israelieni (ILS), iar un grup creat în Israel pornește în această monedă.",
         "hi": "ग्रुप अब इज़राइली न्यू शेकेल (ILS) में बांटे जा सकते हैं, और इज़राइल में बना ग्रुप उसी से शुरू होता है।",
         "zh": "群组现在可以用以色列新谢克尔（ILS）分账，在以色列创建的群组默认使用它。"
       }

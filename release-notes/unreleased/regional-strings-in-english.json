@@ -26,7 +26,10 @@
         "he": "תוקנו התראות וכמה משפטים שהופיעו באנגלית, או כקוד כמו \"push.bill_deleted\", בספרדית של ספרד ובפורטוגזית של פורטוגל.",
         "th": "แก้ไขการแจ้งเตือนและบางประโยคที่แสดงเป็นภาษาอังกฤษ หรือเป็นโค้ดอย่าง “push.bill_deleted” ในภาษาสเปนแบบสเปนและภาษาโปรตุเกสแบบโปรตุเกส",
         "vi": "Đã sửa thông báo và vài câu hiện bằng tiếng Anh, hoặc dưới dạng mã như “push.bill_deleted”, trong tiếng Tây Ban Nha (Tây Ban Nha) và tiếng Bồ Đào Nha (Bồ Đào Nha).",
-        "zh-Hant": "修正西班牙的西班牙文和葡萄牙的葡萄牙文中，通知和部分句子以英文或「push.bill_deleted」這類代碼顯示的問題。"
+        "zh-Hant": "修正西班牙的西班牙文和葡萄牙的葡萄牙文中，通知和部分句子以英文或「push.bill_deleted」這類代碼顯示的問題。",
+        "sv": "Åtgärdat aviseringar och några meningar som visades på engelska, eller som en kod som ”push.bill_deleted”, på spanska för Spanien och portugisiska för Portugal.",
+        "cs": "Oznámení a několik vět, které se ve španělštině ze Španělska a v portugalštině z Portugalska ukazovaly anglicky nebo jako kód typu „push.bill_deleted“, jsou opravené.",
+        "ro": "Am reparat notificările și câteva propoziții care apăreau în engleză, sau ca un cod precum „push.bill_deleted”, în spaniola din Spania și în portugheza din Portugalia."
       }
     }
   ]

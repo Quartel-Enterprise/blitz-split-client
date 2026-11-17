@@ -27,7 +27,10 @@
         "he": "כשהטלפון במצב לרוחב, ובטאבלטים, \"פיצול חשבון\" של קבוצה נמצא עכשיו בסרגל העליון במקום לצוף מעל החשבונות.",
         "th": "เมื่อวางโทรศัพท์แนวนอนและบนแท็บเล็ต ปุ่ม “หารบิล” ของกลุ่มจะอยู่ในแถบด้านบนแทนการลอยอยู่เหนือรายการบิล",
         "vi": "Khi đặt điện thoại nằm ngang và trên máy tính bảng, nút “Chia khoản chi” của nhóm giờ nằm trên thanh trên cùng thay vì nổi trên danh sách khoản chi.",
-        "zh-Hant": "手機橫放時以及在平板上，群組的「分攤帳單」現在位於頂端列，不再浮在帳單上方。"
+        "zh-Hant": "手機橫放時以及在平板上，群組的「分攤帳單」現在位於頂端列，不再浮在帳單上方。",
+        "sv": "Med telefonen liggande, och på surfplattor, sitter gruppens ”Dela upp en utgift” nu i det övre fältet i stället för att sväva över utgifterna.",
+        "cs": "S telefonem na šířku a na tabletech je teď „Rozdělit výdaj“ skupiny v horní liště, místo aby se vznášelo nad výdaji.",
+        "ro": "Cu telefonul în poziție orizontală, și pe tablete, „Împarte o cheltuială” dintr-un grup stă acum în bara de sus, în loc să plutească peste cheltuieli."
       }
     },
     {
@@ -57,7 +60,10 @@
         "he": "כשהאפשרות \"צבעים דינמיים\" מופעלת, החוב שלך נשאר כתום ולא הופך לאדום, כך שהוא אף פעם לא נראה כמו הירוק של מה שמגיע לך.",
         "th": "เมื่อเปิดสีไดนามิก ยอดที่คุณค้างจะยังเป็นสีส้มแทนที่จะกลายเป็นสีแดง จึงไม่มีวันดูคล้ายสีเขียวของยอดที่คุณจะได้คืน",
         "vi": "Khi bật Màu động, số tiền bạn nợ vẫn giữ màu cam thay vì chuyển sang đỏ, nên không bao giờ trông giống màu xanh lá của số tiền bạn được nhận lại.",
-        "zh-Hant": "開啟「動態取色」時，你欠的金額會維持橘色而不會變紅，因此不會和你可收回金額的綠色混淆。"
+        "zh-Hant": "開啟「動態取色」時，你欠的金額會維持橘色而不會變紅，因此不會和你可收回金額的綠色混淆。",
+        "sv": "Med Dynamiska färger på förblir det du är skyldig orange i stället för att bli rött, så att det aldrig ser ut som det gröna för det du får tillbaka.",
+        "cs": "Se zapnutými dynamickými barvami zůstává to, co dlužíš, oranžové a nezčervená, takže si to nikdy nespleteš se zelenou toho, co dostaneš zpět.",
+        "ro": "Cu Culori dinamice activate, ce datorezi rămâne portocaliu în loc să devină roșu, ca să nu semene niciodată cu verdele a ceea ce ai de primit."
       }
     }
   ]

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Ny grupp</string>
+    <string name="create_group_close">Stäng</string>
+    <string name="create_group_create">Skapa</string>
+    <string name="create_group_change_color">Byt gruppens färg</string>
+    <string name="create_group_name_label">Gruppnamn</string>
+    <string name="create_group_type_label">Grupptyp</string>
+    <string name="create_group_members_title">Vilka som är med</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d personer</item>
+    </plurals>
+    <string name="create_group_me">du</string>
+    <string name="create_group_remove_member">Ta bort %s</string>
+    <string name="create_group_add_placeholder">Lägg till med namn</string>
+    <string name="create_group_add">Lägg till</string>
+    <string name="create_group_no_app_notice">Ingen behöver appen just nu. Du kan redan lägga till utgifter för alla och skicka länken senare.</string>
+    <string name="create_group_currency">Standardvaluta</string>
+    <string name="create_group_currency_caption">Nya utgifter börjar i den här valutan; varje utgift kan använda en annan.</string>
+    <string name="create_group_save_error">Det gick inte att spara gruppen. Försök igen.</string>
+    <string name="create_group_photo">Gruppfoto</string>
+    <string name="create_group_take_photo">Ta foto</string>
+    <string name="create_group_choose_photo">Välj foto</string>
+    <string name="create_group_remove_photo">Ta bort foto</string>
+    <string name="create_group_photo_error">Det gick inte att använda fotot. Prova ett annat.</string>
+</resources>

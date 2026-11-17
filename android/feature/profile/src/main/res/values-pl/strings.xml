@@ -79,6 +79,9 @@
     <string name="profile_language_thai">Tajski</string>
     <string name="profile_language_vietnamese">Wietnamski</string>
     <string name="profile_language_chinese_traditional">Chiński (tradycyjny)</string>
+    <string name="profile_language_swedish">Szwedzki</string>
+    <string name="profile_language_czech">Czeski</string>
+    <string name="profile_language_romanian">Rumuński</string>
     <string name="profile_language_system_detail">Język urządzenia</string>
     <string name="profile_notifications">Powiadomienia</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Editează profilul</string>
+    <string name="edit_profile_save">Salvează</string>
+    <string name="edit_profile_change_photo">Schimbă fotografia</string>
+    <string name="edit_profile_take_photo">Fă o fotografie</string>
+    <string name="edit_profile_choose_photo">Alege din galerie</string>
+    <string name="edit_profile_use_account_photo">Folosește fotografia contului %1$s</string>
+    <string name="edit_profile_remove_photo">Elimină fotografia</string>
+    <string name="edit_profile_photo_error">Fotografia nu a putut fi folosită. Încearcă alta.</string>
+    <string name="edit_profile_avatar_color">Culoarea avatarului</string>
+    <string name="edit_profile_avatar_color_hint">Apare când nu ai fotografie.</string>
+    <string name="edit_profile_name_label">Numele tău</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Scrie cel puțin %d litere.</string>
+    <string name="edit_profile_name_too_long">Folosește cel mult %d caractere.</string>
+    <string name="edit_profile_account_notice">Numele și fotografia au venit din contul tău %1$s. Dacă le schimbi aici, se aplică doar în Blitz Split și nu modifică contul tău %1$s.</string>
+    <string name="edit_profile_footer">Grupurile tale și oricine are linkul profilului tău îți văd numele și fotografia.</string>
+    <string name="profile_photo_close">Închide</string>
+    <string name="profile_photo_camera">Cameră</string>
+    <string name="profile_photo_gallery">Galerie</string>
+    <string name="profile_photo_remove">Elimină</string>
+    <string name="profile_photo_title">Fotografia de profil</string>
+</resources>

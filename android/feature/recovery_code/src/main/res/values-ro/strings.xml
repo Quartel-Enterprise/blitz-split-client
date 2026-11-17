@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Salvează-ți codul de recuperare</string>
+    <string name="recovery_code_body">Folosești aplicația fără cont. Aceste 12 cuvinte îți recuperează datele dacă schimbi sau pierzi dispozitivul. Notează-le în ordine. După 30 de zile fără utilizare, datele tale sunt șterse și cuvintele nu mai funcționează.</string>
+    <string name="recovery_code_copy">Copiază cuvintele</string>
+    <string name="recovery_code_save_to_password_manager">Salvează în managerul de parole</string>
+    <string name="recovery_code_connect_instead">Conectează Google sau Apple în schimb</string>
+    <string name="recovery_code_connect_instead_body">Nu ai nevoie de cod</string>
+    <string name="recovery_code_sign_in_failed">Nu te-ai putut conecta acum. Reîncearcă.</string>
+    <string name="recovery_code_also_in_profile">Îl găsești și în Profil › Recuperare.</string>
+    <string name="recovery_code_remind_later">Amintește-mi mai târziu</string>
+    <string name="recovery_code_saved">L-am salvat</string>
+    <string name="recovery_code_download">Descarcă</string>
+    <string name="recovery_code_file_name">blitz-split-cod-de-recuperare.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · cod de recuperare\n\n%1$s\n\nFolosește-l la „Am folosit-o pe alt dispozitiv” ca să-ți recuperezi datele.\n</string>
+</resources>

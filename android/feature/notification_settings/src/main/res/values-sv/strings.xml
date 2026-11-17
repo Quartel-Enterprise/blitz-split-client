@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Aviseringar</string>
+    <string name="notification_settings_denied_title">Aviseringar från Blitz Split är avstängda i Android.</string>
+    <string name="notification_settings_denied_body">Slå på dem i systeminställningarna för att få pushaviseringarna nedan. Klockan fortsätter att fungera.</string>
+    <string name="notification_settings_open_settings">Öppna inställningar</string>
+    <string name="notification_settings_refused_body">Android låter dig tillåta dem en gång till för att få pushaviseringarna nedan. Klockan fortsätter att fungera.</string>
+    <string name="notification_settings_turn_on">Slå på</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Blockerad i Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Öppna Android-inställningar för %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Pushaviseringar</string>
+    <string name="notification_settings_push_switch_detail">Bara på den här enheten</string>
+    <string name="notification_settings_section">Meddela mig om</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">I appen</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push skickar en avisering till den här enheten. I appen markerar den som ny på klockan och i Aktivitet; avstängt visas den ändå i Aktivitet, redan läst.</string>
+    <string name="notification_settings_bills">Utgifter</string>
+    <string name="notification_settings_bills_detail">Nya, redigerade eller raderade utgifter du är med i</string>
+    <string name="notification_settings_payments">Betalningar och uppgörelser</string>
+    <string name="notification_settings_payments_detail">Betalningar till eller från dig, och förenklade skulder</string>
+    <string name="notification_settings_comments">Kommentarer</string>
+    <string name="notification_settings_comments_detail">På utgifter du är med i och trådar du har skrivit i</string>
+    <string name="notification_settings_people_and_groups">Personer och grupper</string>
+    <string name="notification_settings_people_and_groups_detail">Vem som går med i eller lämnar dina grupper, och vad som ändras i dem</string>
+    <string name="notification_settings_payment_requests">Betalningsförfrågningar</string>
+    <string name="notification_settings_payment_requests_detail">När någon ber dig att betala</string>
+    <string name="notification_settings_balance_reminder">Påminnelse om öppet saldo</string>
+    <string name="notification_settings_balance_reminder_detail">En gång i veckan, om det finns ett öppet saldo</string>
+    <string name="notification_settings_footer">Aviseringar kommer när det finns internet. Använd menyn i en grupp för att tysta den.</string>
+</resources>

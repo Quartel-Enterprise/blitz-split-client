@@ -27,7 +27,10 @@
         "he": "חשבון משתמש בלי Google או Apple נמחק עכשיו אחרי 30 יום בלי שימוש. מסך הפתיחה והפרופיל מציינים זאת, וחיבור Google או Apple שומר על הנתונים שלך.",
         "th": "บัญชีที่ไม่ได้เชื่อมต่อ Google หรือ Apple จะถูกลบหลังจากไม่ได้ใช้งาน 30 วัน หน้าต้อนรับและโปรไฟล์จะแจ้งเรื่องนี้ และการเชื่อมต่อ Google หรือ Apple จะเก็บข้อมูลของคุณไว้",
         "vi": "Tài khoản không liên kết Google hay Apple giờ sẽ bị xóa sau 30 ngày không dùng. Màn hình chào mừng và Hồ sơ có ghi rõ điều này, và liên kết Google hoặc Apple sẽ giữ lại dữ liệu của bạn.",
-        "zh-Hant": "沒有連結Google或Apple的帳號，現在30天未使用就會被刪除。歡迎畫面和「個人資料」都會說明這點，連結Google或Apple即可保留你的資料。"
+        "zh-Hant": "沒有連結Google或Apple的帳號，現在30天未使用就會被刪除。歡迎畫面和「個人資料」都會說明這點，連結Google或Apple即可保留你的資料。",
+        "sv": "Ett konto utan Google eller Apple raderas nu efter 30 dagar utan användning. Välkomstskärmen och Profil säger det, och om du kopplar Google eller Apple behåller du dina data.",
+        "cs": "Účet bez Googlu nebo Applu se teď smaže po 30 dnech bez používání. Uvítací obrazovka a Profil to říkají a propojení Googlu nebo Applu tvoje data zachová.",
+        "ro": "Un cont fără Google sau Apple e șters acum după 30 de zile fără utilizare. Ecranul de bun venit și Profilul spun asta, iar dacă conectezi Google sau Apple îți păstrezi datele."
       }
     }
   ]

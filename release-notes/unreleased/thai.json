@@ -27,7 +27,10 @@
         "he": "האפליקציה מדברת עכשיו תאילנדית: אפשר לבחור \"ไทย\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
         "th": "แอปรองรับภาษาไทยแล้ว เลือก “ไทย” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
         "vi": "Ứng dụng giờ đã có tiếng Thái: chọn “ไทย” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
-        "zh-Hant": "App現已支援泰文：在「個人資料 › 語言」中選擇「ไทย」，或讓它跟隨你的裝置。"
+        "zh-Hant": "App現已支援泰文：在「個人資料 › 語言」中選擇「ไทย」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu thailändska: välj ”ไทย” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví thajsky: vyber „ไทย“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum thailandeză: alege „ไทย” în Profil › Limbă sau las-o să urmeze dispozitivul tău."
       }
     },
     {
@@ -57,7 +60,10 @@
         "he": "קבוצות יכולות עכשיו לפצל בבאט תאילנדי (THB), וקבוצה שנוצרת בתאילנד מתחילה בו.",
         "th": "กลุ่มหารเป็นเงินบาท (THB) ได้แล้ว และกลุ่มที่สร้างในประเทศไทยจะเริ่มด้วยเงินบาท",
         "vi": "Nhóm giờ có thể chia bằng baht Thái (THB), và nhóm được tạo ở Thái Lan sẽ bắt đầu với đồng tiền này.",
-        "zh-Hant": "群組現在可以使用泰銖（THB）分攤，在泰國建立的群組也會從泰銖開始。"
+        "zh-Hant": "群組現在可以使用泰銖（THB）分攤，在泰國建立的群組也會從泰銖開始。",
+        "sv": "Grupper kan nu dela upp i thailändska baht (THB), och en grupp som skapas i Thailand börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit v thajském bahtu (THB) a skupina založená v Thajsku začne v něm.",
+        "ro": "Grupurile pot împărți acum în bahți thailandezi (THB), iar un grup creat în Thailanda pornește în această monedă."
       }
     }
   ]
