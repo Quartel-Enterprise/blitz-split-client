@@ -228,6 +228,17 @@ with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub token
   count against that Claude subscription. When it expires the review fails on authentication: create a new one and
   update the secret.
 - The `ai-review`, `run-checks` and `merge-when-green` labels.
+- The `MERGE_WHEN_GREEN_TOKEN` secret, for `merge-when-green` (see [Merge when green](#merge-when-green)).
+- A ruleset on `main` with **Require conversation resolution before merging**. This is what keeps a pull request
+  with open review threads from merging: the checks the gate holds are skipped, not failed, and GitHub counts a
+  skipped required check as passing.
+
+No check is required in that ruleset. Every check workflow is path filtered, so a required one would leave a pull
+request it doesn't run on (docs only, `iosApp` only) waiting forever, and the gate's own `wait for review` job is
+skipped on every push but the opening one, which also counts as passing. Without required checks, `create-pr`
+adds the `merge-when-green` label, which merges only once every check of the head commit is green, and waits with
+`gh pr checks` itself only when the label can't merge (no `MERGE_WHEN_GREEN_TOKEN`) or when asked to merge right
+away.
 
 ### Which key each job uses
 
@@ -240,10 +251,10 @@ with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub token
 The plan's monthly API credit (Max US$100, Ultra US$200, see the
 [help center](https://support.claude.com/en/articles/17154008-monthly-api-credits-for-max-ultra-and-team-plans))
 can't pay for the review, even with an API key of the linked Console organization. The help center counts "runs started
-by the Claude Code GitHub Action" as Claude Code usage, which the credit doesn't cover, even with `-p`; and the review
-action runs Claude through `anthropics/claude-code-action`, which tags every run it starts with
-`CLAUDE_CODE_ENTRYPOINT=claude-code-github-action` (`base-action/src/parse-sdk-options.ts`). Passing the action's
-`anthropic-api-key` instead of `oauth-token` would only bill the reviews per token, outside the credit. Only
+by the Claude Code GitHub Action" as Claude Code usage, which the credit doesn't cover, even when the action runs
+Claude with `-p`; and the review action runs Claude through `anthropics/claude-code-action`, which tags every run it
+starts with `CLAUDE_CODE_ENTRYPOINT=claude-code-github-action` (`base-action/src/parse-sdk-options.ts`). Passing the
+action's `anthropic-api-key` instead of `oauth-token` would only bill the reviews per token, outside the credit. Only
 `claude -p` or the Agent SDK run in a plain step, with that organization's key, draws from the credit, which would mean
 replacing `claude-code-action` in Quartel-Enterprise/claude-review, and with it the Claude App's token the review
 pushes and posts with.
@@ -253,17 +264,6 @@ usage here (183 reviews, US$1.92 each on average), and US$421 together with blit
 than either plan's credit. So the reviews stay on the plan. If one ever moves to a key, it gets a workspace of its own
 in the linked organization with a spend limit, auto-reload stays off, and a run that finds the credit spent fails
 with an error that names it, never falling back to a card.
-- The `MERGE_WHEN_GREEN_TOKEN` secret, for `merge-when-green` (see [Merge when green](#merge-when-green)).
-- A ruleset on `main` with **Require conversation resolution before merging**. This is what keeps a pull request
-  with open review threads from merging: the checks the gate holds are skipped, not failed, and GitHub counts a
-  skipped required check as passing.
-
-No check is required in that ruleset. Every check workflow is path filtered, so a required one would leave a pull
-request it doesn't run on (docs only, `iosApp` only) waiting forever, and the gate's own `wait for review` job is
-skipped on every push but the opening one, which also counts as passing. Without required checks, `create-pr`
-adds the `merge-when-green` label, which merges only once every check of the head commit is green, and waits with
-`gh pr checks` itself only when the label can't merge (no `MERGE_WHEN_GREEN_TOKEN`) or when asked to merge right
-away.
 
 ## The review gate
 
