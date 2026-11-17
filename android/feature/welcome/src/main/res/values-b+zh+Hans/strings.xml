@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">轻松分摊账单</string>
+    <string name="welcome_offline_title">离线也能用</string>
+    <string name="welcome_offline_body">所有内容都保存在你的设备上，稍后再同步。</string>
+    <string name="welcome_optional_title">账号可选</string>
+    <string name="welcome_optional_body">Google或Apple账号只是为了让你换设备时不丢失任何数据。</string>
+    <string name="welcome_invite_title">通过链接或二维码邀请</string>
+    <string name="welcome_invite_body">朋友无需创建账号即可加入群组。</string>
+    <string name="welcome_no_connection_title">无网络连接。</string>
+    <string name="welcome_no_connection_body">使用账号登录需要联网。现在可以先无账号使用，稍后在个人资料中关联账号。</string>
+    <string name="welcome_or">或</string>
+    <string name="welcome_use_without_account">无账号使用</string>
+    <string name="welcome_used_on_another_device">我在其他设备上用过</string>
+    <string name="welcome_sign_in_failed">暂时无法登录，请重试。</string>
+    <string name="welcome_legal_notice">继续即表示你接受%1$s并已知悉%2$s。</string>
+    <string name="welcome_legal_terms">服务条款</string>
+    <string name="welcome_legal_privacy">隐私政策</string>
+    <string name="welcome_no_account_note">没有账号时，你的数据会在30天未使用后被删除。关联Google或Apple账号即可保留数据。</string>
+    <string name="welcome_no_account_note_offline">没有账号时，你的数据会在30天未使用后被删除。稍后可在个人资料中关联Google或Apple账号以保留数据。</string>
+    <string name="welcome_expired_title">你的数据已被删除</string>
+    <string name="welcome_expired_body">你之前在无账号状态下使用应用，并且30天没有打开，因此你的数据已被删除。关联Google或Apple账号，下次就能保留数据。</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

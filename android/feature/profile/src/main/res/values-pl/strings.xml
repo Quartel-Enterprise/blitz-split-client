@@ -74,6 +74,7 @@
     <string name="profile_language_korean">Koreański</string>
     <string name="profile_language_hindi">Hindi</string>
     <string name="profile_language_arabic">Arabski</string>
+    <string name="profile_language_chinese_simplified">Chiński (uproszczony)</string>
     <string name="profile_language_hebrew">Hebrajski</string>
     <string name="profile_language_system_detail">Język urządzenia</string>
     <string name="profile_notifications">Powiadomienia</string>

@@ -71,6 +71,7 @@
     <string name="profile_language_korean">Bahasa Korea</string>
     <string name="profile_language_hindi">Hindi</string>
     <string name="profile_language_arabic">Bahasa Arab</string>
+    <string name="profile_language_chinese_simplified">Tionghoa (Sederhana)</string>
     <string name="profile_language_hebrew">Bahasa Ibrani</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>

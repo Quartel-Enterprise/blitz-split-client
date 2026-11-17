@@ -229,6 +229,18 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN mainland China WHEN picking its currency THEN it is the yuan with its 2 decimals`() {
+        // Given
+        val region = "CN"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.CNY to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN Israel WHEN picking its currency THEN it is the new shekel with 2 decimals`() {
         // Given
         val region = "IL"

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · 恢复码</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">请在“设置”中允许使用相机以拍照。</string>
+    <string name="platform_camera_settings">设置</string>
+    <string name="platform_receipt_source_camera">拍照</string>
+    <string name="platform_receipt_source_gallery">从相册选择</string>
+    <string name="platform_receipt_source_file">选择文件</string>
+    <string name="platform_receipt_camera_title">扫描小票</string>
+    <string name="platform_receipt_camera_close">关闭</string>
+    <string name="platform_receipt_camera_flash_on">打开闪光灯</string>
+    <string name="platform_receipt_camera_flash_off">关闭闪光灯</string>
+    <string name="platform_receipt_camera_hint">让整张小票都在取景框内。我们会填入金额、日期和描述，你在保存前确认即可。</string>
+    <string name="platform_receipt_camera_gallery">从相册选择</string>
+    <string name="platform_receipt_camera_shutter">拍照</string>
+    <string name="platform_receipt_camera_unavailable">相机不可用。请从相册中选择一张小票照片。</string>
+    <string name="platform_receipt_camera_permission">允许使用相机来扫描小票，或从相册中选择照片。</string>
+    <string name="platform_receipt_camera_allow">允许使用相机</string>
+    <string name="platform_receipt_camera_settings">打开设置</string>
+</resources>

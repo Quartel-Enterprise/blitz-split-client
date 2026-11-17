@@ -63,6 +63,7 @@ export const PLAY_LOCALES = {
   ko: ["ko-KR"],
   hi: ["hi-IN"],
   ar: ["ar"],
+  zh: ["zh-CN"],
   he: ["iw-IL"],
 };
 export const APP_STORE_LOCALES = {
@@ -84,6 +85,7 @@ export const APP_STORE_LOCALES = {
   ko: ["ko"],
   hi: ["hi"],
   ar: ["ar-SA"],
+  zh: ["zh-Hans"],
   he: ["he"],
 };
 

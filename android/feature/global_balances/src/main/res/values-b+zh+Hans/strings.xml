@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">余额</string>
+    <string name="global_balances_profile">个人资料</string>
+    <string name="global_balances_offline">离线 · 此设备上的余额</string>
+    <string name="global_balances_filter">显示</string>
+    <string name="global_balances_filter_all">全部</string>
+    <string name="global_balances_filter_you_owe">你欠</string>
+    <string name="global_balances_filter_owes_you">欠你</string>
+    <string name="global_balances_hint">已跨群组相互抵消：每个人只显示一次。</string>
+    <string name="global_balances_hint_empty">正在汇总此设备上的所有群组。</string>
+    <string name="global_balances_section_you_owe">你欠 · %d</string>
+    <string name="global_balances_section_owes_you">欠你 · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">%d个群组</item>
+    </plurals>
+    <string name="global_balances_guest">%s · 访客</string>
+    <string name="global_balances_you_owe">你欠</string>
+    <string name="global_balances_owes_you">欠你</string>
+    <string name="global_balances_by_group_show">按群组显示%s</string>
+    <string name="global_balances_by_group_hide">隐藏%s的群组明细</string>
+    <string name="global_balances_received">已收款</string>
+    <string name="global_balances_received_from">已收到%s的付款</string>
+    <string name="global_balances_settle">去结清</string>
+    <string name="global_balances_settle_with">与%s结清</string>
+    <string name="global_balances_charge">请求付款</string>
+    <string name="global_balances_charge_person">向%s请求付款</string>
+    <string name="global_balances_detail_pane">与%s的余额</string>
+    <string name="global_balances_detail_owes_you">%s欠你</string>
+    <string name="global_balances_detail_you_owe">你欠%s</string>
+    <string name="global_balances_detail_guest">%s · 没有应用的访客</string>
+    <string name="global_balances_detail_note_owed">净额已跨群组抵消：“请求付款”和“已收款”使用%s。应用会在每个群组中各记录一笔付款。</string>
+    <string name="global_balances_detail_note_settle">净额已跨群组抵消：“去结清”使用%s。应用会在每个群组中各记录一笔付款。</string>
+    <string name="global_balances_detail_note_single">与%s只有一个未结清的群组。</string>
+    <string name="global_balances_settled_title">全部已结清</string>
+    <string name="global_balances_settled_body">没有人欠你，你也不欠任何人。有人添加账单后，余额会显示在这里。</string>
+    <string name="global_balances_settled_action">查看群组</string>
+    <string name="global_balances_nothing_to_pay_title">你不欠任何人</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">你和所有人都结清了。你还有%2$s要从%1$d个人那里收回。</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">查看谁欠你</string>
+    <string name="global_balances_nothing_to_receive_title">没有人欠你</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">你还欠%1$d个人%2$s。</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">查看你欠谁</string>
+    <string name="global_balances_coming_soon">即将推出</string>
+    <string name="global_balances_change_error">无法保存更改，请重试。</string>
+    <string name="global_balances_copied">已复制</string>
+    <string name="global_balances_charge_title">向%s请求付款</string>
+    <string name="global_balances_charge_owes">欠你%1$s · %2$s</string>
+    <string name="global_balances_charge_close">关闭</string>
+    <string name="global_balances_charge_guest">%s是未安装应用的访客，只能通过这条消息得知情况，所以消息里已经写明了账单包含的内容。</string>
+    <string name="global_balances_charge_message">消息</string>
+    <string name="global_balances_charge_pix">附上我的Pix密钥</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">复制消息</string>
+    <string name="global_balances_charge_send">发送</string>
+    <string name="global_balances_message">嗨，%1$s！按Blitz Split的计算，你在%3$s中欠我%2$s。</string>
+    <string name="global_balances_message_guest">嗨，%1$s！你在%3$s中欠我%2$s：这是你在%4$s中的份额。</string>
+    <string name="global_balances_message_guest_paid">嗨，%1$s！你在%3$s中欠我%2$s：这是你在%4$s中的份额，已扣除你付过的%5$s。</string>
+    <string name="global_balances_message_group">群组“%s”</string>
+    <string name="global_balances_message_groups">群组%s</string>
+    <string name="global_balances_message_pix">%1$s Pix：%2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">手机号</string>
+    <string name="global_balances_key_email">邮箱</string>
+    <string name="global_balances_key_random">随机密钥</string>
+    <string name="global_balances_message_reroute">“%1$s”简化了债务，所以你不用付给%2$s，而是直接付给我；你的总额没有变。</string>
+</resources>

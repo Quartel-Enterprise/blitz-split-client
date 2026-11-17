@@ -290,6 +290,20 @@ object SampleTrips {
             court = "حجز الملعب",
             items = listOf("بيتزا مارغريتا", "بوراتا", "ريزوتو بالفطر", "تيراميسو", "بروسيكو", "إسبريسو"),
         ),
+        "zh" to SampleTripCopy(
+            groupName = "里斯本之旅",
+            people = listOf("子轩", "晓雨", "浩然", "欣怡", "梓涵"),
+            dinner = "意式小馆晚餐",
+            apartment = "阿尔法玛民宿",
+            groceries = "超市采购",
+            carRental = "租车",
+            boatTour = "游船观光",
+            taxi = "机场打车",
+            roommates = "合租公寓",
+            soccer = "周五踢球",
+            court = "场地费",
+            items = listOf("玛格丽特披萨", "布拉塔奶酪", "蘑菇烩饭", "提拉米苏", "普罗塞克", "意式浓缩"),
+        ),
         "he" to SampleTripCopy(
             groupName = "טיול לליסבון",
             people = listOf("נועה", "איתי", "מאיה", "יונתן", "שירה"),
@@ -324,6 +338,7 @@ object SampleTrips {
         "ko" to GroupCurrency.KRW,
         "hi" to GroupCurrency.INR,
         "ar" to GroupCurrency.SAR,
+        "zh" to GroupCurrency.CNY,
         "he" to GroupCurrency.ILS,
     )
 
@@ -507,6 +522,7 @@ object SampleTrips {
             GroupCurrency.KRW -> 1_400.0 to 1_000L
             GroupCurrency.INR -> 85.0 to 1_000L
             GroupCurrency.SAR -> 3.75 to 100L
+            GroupCurrency.CNY -> 7.0 to 100L
             GroupCurrency.ILS -> 3.7 to 100L
             else -> 1.0 to 50L
         }

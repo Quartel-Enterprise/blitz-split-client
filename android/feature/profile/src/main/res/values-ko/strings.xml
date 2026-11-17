@@ -71,6 +71,7 @@
     <string name="profile_language_korean">한국어</string>
     <string name="profile_language_hindi">힌디어</string>
     <string name="profile_language_arabic">아랍어</string>
+    <string name="profile_language_chinese_simplified">중국어(간체)</string>
     <string name="profile_language_hebrew">히브리어</string>
     <string name="profile_language_system_detail">기기 언어</string>
     <string name="profile_notifications">알림</string>

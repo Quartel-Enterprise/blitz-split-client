@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic and Hebrew: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified) and Hebrew: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -102,7 +102,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     use the masculine as the generic, never "(ة)" or a slash. Its activity rows are "Ana: تقسيم «عشاء»", the actor and
     a verbal noun, so the user's own rows need no other verb ([activity-and-push.md](activity-and-push.md)). Its plurals
     have six forms (zero, one, two, few: 3–10, many: 11–99, other), in every plural of the three platforms (the web
-    writes an `…Other` message as "zero|one|two|few|many|other"). Hebrew (Pierre's call) is one variant for every
+    writes an `…Other` message as "zero|one|two|few|many|other"). Simplified Chinese (Pierre's call, issue #448) is
+    mainland China's, `zh-Hans`, and talks to the user as "你", never "您" (friends splitting a bill); it calls the app
+    Blitz Split, writes no space between words nor around a name or number the code fills in (but between two
+    values side by side, a name and an amount, which would run together: "Ana又欠Bruno ¥10"), ends a sentence with
+    "。" (the code too, as Japanese: `wordGapUi`, `WordGap`, `wordGap`), and its plurals have one form. Every `zh` tag
+    picks it but a Traditional one (`zh-Hant`, `zh-TW`, `zh-HK`, `zh-MO`), which reads English, as Android and Apple
+    have no Traditional resources, until Traditional Chinese, Taiwan's `zh-Hant`, comes as its own row of the picker
+    (Pierre's call: two rows, as Portugal's and Spain's): the bare `zh` names it where a language is asked by code (the web's dictionary,
+    the release notes, the legal pages, the store listing), as `pt` names Brazil's. Hebrew (Pierre's call) is one variant for every
     `he` tag and Android's and Java's legacy `iw` (Android's strings live in `values-iw`), calls the app Blitz Split
     and reads right to left as Arabic does, with the same mirrored layouts and Latin digits, which Hebrew writes
     anyway. Hebrew's verbs, adjectives and "you" (אתה/את) say a gender too, so Hebrew follows the same rule (Pierre's
@@ -266,6 +274,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Saudi riyal (SAR), the UAE dirham (AED), the Egyptian pound (EGP) and the Moroccan dirham (MAD) follow the
     won (Pierre's call, with Arabic), and start a new group in Saudi Arabia, the United Arab Emirates, Egypt and
     Morocco. All four have 2 decimals and the usual 100 million cap, so an app version from before them shows their
+    amounts by the raw code, with the right decimals.
+  - The Chinese yuan (CNY) follows the Moroccan dirham (Pierre's call, with Simplified Chinese), and starts a new group in
+    mainland China. It has 2 decimals and the usual 100 million cap, so an app version from before it shows its
     amounts by the raw code, with the right decimals.
   - The Israeli new shekel (ILS) follows the Moroccan dirham (Pierre's call, with Hebrew), and starts a new group in
     Israel. It has 2 decimals and the usual 100 million cap, so an app version from before it shows its amounts by the

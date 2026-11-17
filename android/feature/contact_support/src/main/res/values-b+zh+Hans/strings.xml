@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">联系客服</string>
+    <string name="contact_support_description">我们会打开你的邮件应用，并准备好一封邮件。描述一下发生了什么然后发送：每封邮件都由真人阅读。</string>
+    <string name="contact_support_to">收件人</string>
+    <string name="contact_support_diagnostics">以下信息将包含在邮件中</string>
+    <string name="contact_support_app_version">应用版本</string>
+    <string name="contact_support_platform">平台</string>
+    <string name="contact_support_language">语言</string>
+    <string name="contact_support_account">账号</string>
+    <string name="contact_support_profile">个人资料</string>
+    <string name="contact_support_language_system">跟随系统</string>
+    <string name="contact_support_account_local">仅限此设备</string>
+    <string name="contact_support_account_anonymous">未关联</string>
+    <string name="contact_support_open_email">打开邮件</string>
+    <string name="contact_support_copy_email">复制邮箱地址</string>
+    <string name="contact_support_notice_copied">邮箱地址已复制。</string>
+    <string name="contact_support_notice_no_app">未找到邮件应用。已改为复制邮箱地址。</string>
+    <string name="contact_support_close">关闭</string>
+</resources>

@@ -1,0 +1,58 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Simplified Chinese: pick \"中文（简体）\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala chinês simplificado: escolha \"中文（简体）\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora chinês simplificado: escolhe \"中文（简体）\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla chino simplificado: elige \"中文（简体）\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais chinois simplifié : choisis « 中文（简体） » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt vereinfachtes Chinesisch: Wähle „中文（简体）“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla cinese semplificato: scegli \"中文（简体）\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po chińsku uproszczonym: wybierz „中文（简体）” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Vereenvoudigd Chinees: kies \"中文（简体）\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリが簡体字中国語に対応しました。プロフィール › 言語で「中文（简体）」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Basitleştirilmiş Çince konuşuyor: Profil › Dil'den \"中文（简体）\"i seç ya da cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Tionghoa Sederhana: pilih \"中文（简体）\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на упрощённом китайском: выбери «中文（简体）» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить спрощеною китайською: обери «中文（简体）» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 중국어 간체를 쓸 수 있어요. 프로필 › 언어에서 ‘中文（简体）’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप सरलीकृत चीनी में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “中文（简体）” चुनें, या इसे अपने डिवाइस की भाषा पर छोड़ दें।",
+        "ar": "أصبح التطبيق يتحدث الصينية المبسطة: يمكنك اختيار «中文（简体）» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持简体中文：在“个人资料 › 语言”中选择“中文（简体）”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו סינית פשוטה: אפשר לבחור \"中文（简体）\" בפרופיל › שפה, או להשאיר אותה לפי שפת המכשיר."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the Chinese yuan (CNY), and a group made in mainland China starts in it.",
+        "pt": "Os grupos agora podem dividir em yuan chinês (CNY), e um grupo criado na China continental já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em yuan chinês (CNY), e um grupo criado na China continental começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en yuan chino (CNY), y un grupo creado en China continental empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en yuan chinois (CNY), et un groupe créé en Chine continentale démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Chinesischem Yuan (CNY) teilen, und eine in Festlandchina erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in yuan cinese (CNY), e un gruppo creato nella Cina continentale parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w juanach chińskich (CNY), a grupa założona w Chinach kontynentalnych startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Chinese yuan (CNY), en een groep die op het Chinese vasteland wordt gemaakt, start in die valuta.",
+        "ja": "グループで人民元（CNY）が使えるようになり、中国本土で作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık Çin yuanı (CNY) ile bölebiliyor; Çin anakarasında açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam yuan Tiongkok (CNY), dan grup yang dibuat di Tiongkok daratan langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в китайских юанях (CNY), а группа, созданная в материковом Китае, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати в китайських юанях (CNY), а група, створена в материковому Китаї, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 중국 위안(CNY)으로 나눌 수 있고, 중국 본토에서 만든 그룹은 위안으로 시작해요.",
+        "hi": "ग्रुप अब चीनी युआन (CNY) में बांट सकते हैं, और मुख्य भूमि चीन में बना ग्रुप युआन में ही शुरू होता है।",
+        "ar": "يمكن للمجموعات الآن التقسيم باليوان الصيني (CNY)، والمجموعة التي تُنشأ في البر الرئيسي الصيني تبدأ به.",
+        "zh": "群组现在可以使用人民币（CNY）分摊，在中国大陆创建的群组也会默认使用人民币。",
+        "he": "קבוצות יכולות עכשיו לחלק ביואן סיני (CNY), וקבוצה שנוצרת בסין היבשתית מתחילה בו."
+      }
+    }
+  ]
+}

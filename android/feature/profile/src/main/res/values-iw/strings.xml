@@ -73,6 +73,7 @@
     <string name="profile_language_korean">קוריאנית</string>
     <string name="profile_language_hindi">הינדי</string>
     <string name="profile_language_arabic">ערבית</string>
+    <string name="profile_language_chinese_simplified">סינית (פשוטה)</string>
     <string name="profile_language_hebrew">עברית</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>

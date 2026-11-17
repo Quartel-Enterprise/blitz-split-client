@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">新建群组</string>
+    <string name="create_group_close">关闭</string>
+    <string name="create_group_create">创建</string>
+    <string name="create_group_change_color">更改群组颜色</string>
+    <string name="create_group_name_label">群组名称</string>
+    <string name="create_group_type_label">群组类型</string>
+    <string name="create_group_members_title">有谁参与</string>
+    <plurals name="create_group_member_count">
+        <item quantity="other">%d人</item>
+    </plurals>
+    <string name="create_group_me">你</string>
+    <string name="create_group_remove_member">移除%s</string>
+    <string name="create_group_add_placeholder">按名字添加</string>
+    <string name="create_group_add">添加</string>
+    <string name="create_group_no_app_notice">现在谁都不需要安装应用。你已经可以为所有人添加账单，稍后再发送链接。</string>
+    <string name="create_group_currency">默认货币</string>
+    <string name="create_group_currency_caption">新账单默认使用此货币；每笔账单都可以改用其他货币。</string>
+    <string name="create_group_save_error">无法保存群组，请重试。</string>
+    <string name="create_group_photo">群组照片</string>
+    <string name="create_group_take_photo">拍照</string>
+    <string name="create_group_choose_photo">选择照片</string>
+    <string name="create_group_remove_photo">移除照片</string>
+    <string name="create_group_photo_error">无法使用这张照片，请换一张试试。</string>
+</resources>
