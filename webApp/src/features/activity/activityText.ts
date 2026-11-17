@@ -1,7 +1,7 @@
 import type { JsActivityChange, JsActivityDebtChange, JsActivityDeletion, JsActivityItem, JsActivitySimplification, JsActivityValue } from 'blitzsplit-shared'
 import { nameOrFormer, paymentMethodLabel } from '@/features/balances/BalanceCard'
 import { groupTypeLabel } from '@/features/create-group/GroupTypePicker'
-import { clauseBreak, fullStop, locale, t, verbForYou, wordGap, type Locale, type MessageKey } from '@/i18n'
+import { clauseBreak, forwardArrow, fullStop, locale, t, verbForYou, wordGap, type Locale, type MessageKey } from '@/i18n'
 import { avatarColorLabel } from '@/lib/avatar'
 import { categoryName } from '@/lib/categories'
 import { uiTag } from '@/lib/currency'
@@ -208,7 +208,7 @@ export function fieldLabel(field: string): string {
 function changesSummary(item: JsActivityItem): string | null {
   const first: JsActivityChange | undefined = item.changes[0]
   if (!first) return null
-  const line = `${fieldLabel(first.field)} ${valueText(first.field, first.before)} → ${valueText(first.field, first.after)}`
+  const line = `${fieldLabel(first.field)} ${valueText(first.field, first.before)} ${forwardArrow} ${valueText(first.field, first.after)}`
   const more = item.moreChangesCount
   if (more === 0) return line
   return `${line} · ${t(more === 1 ? 'activity_moreChangesOne' : 'activity_moreChangesOther', { count: more })}`
@@ -294,7 +294,7 @@ export function detailLine(item: JsActivityItem): string {
       return t('activity_detailBillDeleted', { amount })
     case 'payment_recorded':
     case 'payment_undone': {
-      const people = `${personName(item.fromName, item.fromIsMe)} → ${personName(item.toName, item.toIsMe)}`
+      const people = `${personName(item.fromName, item.fromIsMe)} ${forwardArrow} ${personName(item.toName, item.toIsMe)}`
       return [people, amount, item.code ? paymentMethodLabel(item.code) : ''].filter(Boolean).join(' · ')
     }
     case 'group_created':

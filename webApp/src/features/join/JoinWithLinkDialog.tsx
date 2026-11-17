@@ -70,7 +70,7 @@ export function JoinWithLinkDialog({ route }: { route: JsRoute }) {
   ) : (
     <Drawer open onOpenChange={onOpenChange} repositionInputs={false}>
       <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           <DrawerTitle>{t('join_linkTitle')}</DrawerTitle>
           <DrawerDescription className="sr-only">{t('join_linkHint')}</DrawerDescription>
         </DrawerHeader>
@@ -152,7 +152,7 @@ function CameraPane({ presenter, state, isDesktop }: { presenter: JoinWithLinkPr
               aria-pressed={state.isTorchOn}
               aria-label={t(state.isTorchOn ? 'join_linkTorchOff' : 'join_linkTorchOn')}
               onClick={() => presenter.toggleTorch()}
-              className="absolute top-3 right-3 rounded-full bg-black/45 text-white hover:bg-black/60"
+              className="absolute top-3 inset-e-3 rounded-full bg-black/45 text-white hover:bg-black/60"
             >
               {state.isTorchOn ? <FlashlightOff /> : <Flashlight />}
             </Button>

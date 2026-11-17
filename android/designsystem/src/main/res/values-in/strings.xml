@@ -299,4 +299,19 @@
     <string name="designsystem_range_start">Tanggal mulai</string>
     <string name="designsystem_range_end">Tanggal selesai</string>
     <string name="designsystem_range_none">Tidak ada yang dipilih</string>
+    <string name="designsystem_reminder_title">Pengingat grup</string>
+    <string name="designsystem_reminder_switch">Ingatkan anggota untuk melunasi</string>
+    <string name="designsystem_reminder_caption">Anggota yang berutang mendapat notifikasi, sesuai jam masing-masing.</string>
+    <string name="designsystem_reminder_weekly">Mingguan</string>
+    <string name="designsystem_reminder_monthly">Bulanan</string>
+    <string name="designsystem_reminder_time">Waktu</string>
+    <string name="designsystem_reminder_day_of_month">Tanggal dalam bulan</string>
+    <string name="designsystem_reminder_calendar_new">Tambahkan ke kalender saya</string>
+    <string name="designsystem_reminder_calendar_new_caption">Menambahkan acara berulang ke kalender Anda saat grup dibuat.</string>
+    <string name="designsystem_reminder_calendar">Tambahkan ke kalender</string>
+    <string name="designsystem_reminder_calendar_join">Tambahkan pengingat ke kalender Anda</string>
+    <string name="designsystem_reminder_schedule_weekly">Setiap %1$s pukul %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Setiap bulan pada tanggal %1$d pukul %2$s</string>
+    <string name="designsystem_reminder_event_title">Lunasi: %1$s</string>
+    <string name="designsystem_reminder_event_description">Saatnya melunasi di %1$s.</string>
 </resources>

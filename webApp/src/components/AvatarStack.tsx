@@ -9,10 +9,10 @@ export type StackMarks = { 'data-group-faces'?: string }
 export type StackFace = { initials: string; color: string; photoUrl?: string | null }
 
 const sizes = {
-  xs: { face: 'size-5 text-[9px]', extra: 'h-5 min-w-5 px-1 text-[9px]', overlap: '-ml-1.5' },
-  sm: { face: 'size-6 text-[10px]', extra: 'h-6 min-w-6 px-1 text-[10px]', overlap: '-ml-2' },
-  md: { face: 'size-7 text-[11px]', extra: 'h-7 min-w-7 px-1.5 text-[11px]', overlap: '-ml-2' },
-  lg: { face: 'size-9 text-xs', extra: 'h-9 min-w-9 px-1.5 text-xs', overlap: '-ml-2.5' },
+  xs: { face: 'size-5 text-[9px]', extra: 'h-5 min-w-5 px-1 text-[9px]', overlap: '-ms-1.5' },
+  sm: { face: 'size-6 text-[10px]', extra: 'h-6 min-w-6 px-1 text-[10px]', overlap: '-ms-2' },
+  md: { face: 'size-7 text-[11px]', extra: 'h-7 min-w-7 px-1.5 text-[11px]', overlap: '-ms-2' },
+  lg: { face: 'size-9 text-xs', extra: 'h-9 min-w-9 px-1.5 text-xs', overlap: '-ms-2.5' },
 }
 
 /** The shared FaceStack's two sizes, as the bridge reads them. */

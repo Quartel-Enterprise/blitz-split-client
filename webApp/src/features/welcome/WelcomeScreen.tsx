@@ -34,9 +34,9 @@ export function WelcomeScreen() {
       </AlertDialog>
       <div className="page-enter grid w-full max-w-4xl overflow-hidden rounded-xl border bg-card shadow-sm md:grid-cols-2">
         <aside className="relative overflow-hidden bg-brand-panel p-6 text-brand-panel-foreground sm:p-10">
-          <div aria-hidden className="pointer-events-none absolute -top-9 -right-9 size-50 opacity-90">
-            <div className="absolute top-12 left-5 size-28 rounded-[50%_50%_50%_50%/60%_60%_40%_40%] bg-white/15" />
-            <div className="absolute top-4 left-25 size-22 rotate-14 rounded-[26px] bg-brand-shape" />
+          <div aria-hidden className="pointer-events-none absolute -top-9 -inset-e-9 size-50 opacity-90">
+            <div className="absolute top-12 inset-s-5 size-28 rounded-[50%_50%_50%_50%/60%_60%_40%_40%] bg-white/15" />
+            <div className="absolute top-4 inset-s-25 size-22 rotate-14 rounded-[26px] bg-brand-shape" />
           </div>
           <ul className="relative flex flex-col gap-5 pt-16 text-sm md:pt-40">
             <Benefit icon={<CloudOff className="size-5" />} title={t('welcome_offlineTitle')} body={t('welcome_offlineBody')} />

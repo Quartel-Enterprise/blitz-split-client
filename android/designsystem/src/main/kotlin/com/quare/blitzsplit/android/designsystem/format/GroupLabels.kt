@@ -45,5 +45,10 @@ fun groupCurrencyLabel(
             platform.getDisplayName(locale).replaceFirstChar { it.titlecase(locale) } to platform.getSymbol(locale)
         }
     }
-    return stringResource(R.string.designsystem_currency_value, label.first, label.second)
+    // Why: Arabic's "US$" would come apart ("$US") in a right to left label without an isolate of its own.
+    return stringResource(
+        R.string.designsystem_currency_value,
+        label.first,
+        label.second.toIsolatedIf(locale.isRightToLeft()),
+    )
 }

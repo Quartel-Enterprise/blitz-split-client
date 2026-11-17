@@ -4,6 +4,7 @@ import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflictNoti
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflicts
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
@@ -107,6 +108,8 @@ class SimplifyDebtsConflictsTest {
         isSimplifyDebtsPending = false,
         simplifyDebtsChangedBy = conflictBy,
         simplifyDebtsConflictBy = conflictBy,
+        reminder = GroupReminder.Default,
+        reminderDismissedAt = 0L,
     )
 
     private fun member(

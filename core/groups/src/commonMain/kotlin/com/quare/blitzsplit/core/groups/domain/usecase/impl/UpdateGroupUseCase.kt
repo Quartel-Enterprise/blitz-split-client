@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.groups.domain.usecase.impl
 
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -22,6 +23,7 @@ class UpdateGroupUseCase(
         shape: GroupShape?,
         photo: ProfilePhoto?,
         currency: GroupCurrency,
+        reminder: GroupReminder,
     ): Result<Unit> = repository.updateGroup(
         groupId = groupId,
         name = GroupNameRules.toCapped(name.trim()),
@@ -30,6 +32,7 @@ class UpdateGroupUseCase(
         shape = shape,
         photo = photo,
         currency = currency,
+        reminder = reminder,
         updatedAt = currentTimeMillis(),
     )
 }

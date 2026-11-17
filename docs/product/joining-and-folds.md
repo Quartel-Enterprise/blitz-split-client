@@ -22,10 +22,11 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     group, a removed member) shows the brand's card, the same image blitzsplit.com's home page shows in a preview. A
     messenger keeps a preview it already fetched: changing the link doesn't change the previews already posted.
     A crawler says nothing of who reads the preview, so the group's currency picks its language: BRL Portuguese ("Bora
-    Rachar"), ARS, CLP, COP, MXN, PEN, UYU and PYG Spanish, JPY Japanese, TRY Turkish, IDR Indonesian, PLN Polish, RUB Russian, UAH Ukrainian, KRW Korean, INR Hindi,
+    Rachar"), ARS, CLP, COP, MXN, PEN, UYU and PYG Spanish, JPY Japanese, TRY Turkish, IDR Indonesian, PLN Polish, RUB Russian, UAH Ukrainian, KRW Korean, INR Hindi, SAR and EGP Arabic,
     any other English. No currency picks French, German, Italian or Dutch, since the euro, the Swiss franc and the
     Canadian dollar are each spoken in more than one language, and a USD or EUR group of Spanish speakers gets English
-    too: an accepted trade-off.
+    too: an accepted trade-off. The UAE dirham and the Moroccan dirham pick none either, English and French being as
+    common there as Arabic.
   - Every other link the apps share has a preview of its own too, from the same Worker and edge function. A bill's
     link (`/c/<code>`, "Share bill") that "Anyone with the link" opens reads "<bill> · <amount>" with who paid, among
     how many it is split and the group, and an image of the category's icon, the bill's name, its amount and "<payer>
@@ -46,7 +47,8 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
   - A group's invite link is `https://blitzsplit.com/g/<code>` (borarachar.com will redirect to blitzsplit.com).
     Joining through it lands on the group's Expenses (3.3, `Route.GroupDetail` with `joinedAs`) with "You joined as
     <name>" over the bills and, while the account has no Google or Apple, "Protect your access", which opens the
-    Profile. An X on the notice dismisses it with "Protect your access" (`OnJoinedNoticeDismissed`), until the
+    Profile. While the group's reminder is on, the notice also offers "Add the reminder to your calendar" (the repeating event
+    of [members-and-payments.md](members-and-payments.md#group-reminder), skippable). An X on the notice dismisses it with "Protect your access" (`OnJoinedNoticeDismissed`), until the
     group's screen is built again (opening Profile, Statistics or another screen over it on the web, or the app
     restarting, brings it back: the route still carries the name). On the Mac, Return joins ("Join group", "Join as Bruno") and "Who are you in the group?", the invite
     sheet's next page, has "Back" (Esc) to the invite. "Invite" (3.1) and "Who are you in the group?" (3.2) are one column on a phone and upright on a tablet; lying

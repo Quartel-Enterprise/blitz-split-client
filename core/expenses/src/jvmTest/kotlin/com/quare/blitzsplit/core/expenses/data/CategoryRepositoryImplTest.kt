@@ -390,6 +390,11 @@ class CategoryRepositoryImplTest {
                     simplifyDebtsPending = false,
                     simplifyDebtsConflictBy = null,
                     isOnServer = true,
+                    reminderEnabled = true,
+                    reminderKind = "weekly",
+                    reminderDay = 1,
+                    reminderMinute = 600,
+                    reminderDismissedAt = 0L,
                 ),
             )
         }

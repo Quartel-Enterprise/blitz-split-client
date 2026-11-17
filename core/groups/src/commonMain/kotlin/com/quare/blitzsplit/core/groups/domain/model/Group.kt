@@ -45,4 +45,8 @@ data class Group(
     val simplifyDebtsChangedBy: String?,
     // Why: someone changed it after this device did, which lost (13.1e); null once a screen said so.
     val simplifyDebtsConflictBy: String?,
+    // Why: "Lembrete de acerto", the schedule every member's push and the debtors' banner follow; Monday 10:00 until changed.
+    val reminder: GroupReminder,
+    // Why: the occurrence whose banner this device dismissed (epoch millis), 0 until one is: "Dispensar" is per device.
+    val reminderDismissedAt: Long,
 )

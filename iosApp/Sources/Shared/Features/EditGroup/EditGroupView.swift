@@ -16,6 +16,9 @@ final class EditGroupModel {
         watches.add(viewModel.stateWatcher.observe { [weak self] state in
             self?.state = state
         })
+        watches.add(viewModel.actionWatcher.observe { action in
+            if let add = action as? EditGroupUiActionAddReminderToCalendar { ReminderCalendar.add(add.event) }
+        })
     }
 
     /// The state as the ViewModel holds it right now, before the watcher brings it to `state`: the name field reads
@@ -306,6 +309,22 @@ private struct EditGroupForm: View {
                     Text(
                         "No internet: the change holds on this \(DeviceName.current) now and reaches the others once it reconnects. A new photo goes up with it.",
                     )
+                }
+            }
+        }
+        GroupReminderSection(
+            reminder: state.reminder,
+            isDisabled: state.isSaving,
+            onEnabled: { model.send(EditGroupUiEventOnReminderEnabledChanged(isEnabled: $0)) },
+            onKind: { model.send(EditGroupUiEventOnReminderKindSelected(kind: $0)) },
+            onDay: { model.send(EditGroupUiEventOnReminderDaySelected(day: Int32($0))) },
+            onMinute: { model.send(EditGroupUiEventOnReminderTimeSelected(minute: Int32($0))) },
+        ) {
+            if state.canAddReminderToCalendar {
+                Button {
+                    model.send(EditGroupUiEventOnAddReminderToCalendarClicked.shared)
+                } label: {
+                    Label("Add to calendar", systemImage: "calendar.badge.plus")
                 }
             }
         }

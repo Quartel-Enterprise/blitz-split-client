@@ -6,7 +6,7 @@ import { PhotoPickerInputs, PhotoSourceMenu, usePhotoPicker } from '@/components
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { LoadingRegion, Skeleton } from '@/components/ui/skeleton'
-import { sayToActor, t, wordGap } from '@/i18n'
+import { direction, sayToActor, t, wordGap } from '@/i18n'
 import { formatShortDate, formatTime } from '@/lib/dates'
 import { downloadBlob } from '@/lib/download'
 import { cn } from '@/lib/utils'
@@ -199,7 +199,7 @@ function AttachmentTile({ attachment, src, onClick }: { attachment: JsBillAttach
         <span
           aria-hidden
           className={cn(
-            'absolute bottom-1 left-1 flex h-[18px] items-center gap-1 rounded px-1.5 text-[11px] font-medium',
+            'absolute bottom-1 inset-s-1 flex h-[18px] items-center gap-1 rounded px-1.5 text-[11px] font-medium',
             attachment.isPending ? pendingSurfaceClass : 'bg-foreground text-card',
           )}
         >
@@ -266,8 +266,10 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: A
   const previous = index != null ? attachments[index - 1] : undefined
   const next = index != null ? attachments[index + 1] : undefined
   const pages = attachments.length
+  // Why: the previous one sits where reading starts, on the left, or on the right in Arabic and Hebrew.
+  const [startKey, endKey] = direction === 'rtl' ? ['ArrowRight', 'ArrowLeft'] : ['ArrowLeft', 'ArrowRight']
   const onKeyDown = (event: KeyboardEvent) => {
-    const target = event.key === 'ArrowLeft' ? previous : event.key === 'ArrowRight' ? next : undefined
+    const target = event.key === startKey ? previous : event.key === endKey ? next : undefined
     if (!target) return
     event.preventDefault()
     presenter.showAttachment(target.id)
@@ -285,7 +287,7 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: A
         {attachment && (
           <>
             <header className="flex h-14 shrink-0 items-center gap-1 px-2 sm:px-4">
-              <DialogTitle className="mr-auto truncate pl-2 text-base font-medium">
+              <DialogTitle className="me-auto truncate ps-2 text-base font-medium">
                 {attachment.photoNumber != null ? t('billDetail_viewerPhotoTitle', { number: attachment.photoNumber, count: state.photoCount ?? pages }) : t('billDetail_receipt')}
               </DialogTitle>
               <Button
@@ -337,8 +339,8 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: A
               )}
               {pages > 1 && (
                 <>
-                  <PageButton side="left" target={previous} onShow={(id) => presenter.showAttachment(id)} />
-                  <PageButton side="right" target={next} onShow={(id) => presenter.showAttachment(id)} />
+                  <PageButton side="start" target={previous} onShow={(id) => presenter.showAttachment(id)} />
+                  <PageButton side="end" target={next} onShow={(id) => presenter.showAttachment(id)} />
                 </>
               )}
             </div>
@@ -359,18 +361,18 @@ export function AttachmentViewer({ presenter, state, localUrls }: { presenter: A
   )
 }
 
-/** The arrow on either side of the image, disabled at the first and the last page. */
-function PageButton({ side, target, onShow }: { side: 'left' | 'right'; target: JsBillAttachment | undefined; onShow: (id: string) => void }) {
+/** The arrow on either side of the image (the previous one on the start), disabled at the first and the last page. */
+function PageButton({ side, target, onShow }: { side: 'start' | 'end'; target: JsBillAttachment | undefined; onShow: (id: string) => void }) {
   return (
     <Button
       variant="ghost"
       size="icon"
-      aria-label={t(side === 'left' ? 'billDetail_previousAttachment' : 'billDetail_nextAttachment')}
+      aria-label={t(side === 'start' ? 'billDetail_previousAttachment' : 'billDetail_nextAttachment')}
       disabled={!target}
       onClick={() => target && onShow(target.id)}
-      className={cn('absolute top-1/2 -translate-y-1/2 rounded-full bg-black/40', lightButton, side === 'left' ? 'left-2 sm:left-4' : 'right-2 sm:right-4')}
+      className={cn('absolute top-1/2 -translate-y-1/2 rounded-full bg-black/40', lightButton, side === 'start' ? 'inset-s-2 sm:inset-s-4' : 'inset-e-2 sm:inset-e-4')}
     >
-      {side === 'left' ? <ChevronLeft /> : <ChevronRight />}
+      {side === 'start' ? <ChevronLeft /> : <ChevronRight />}
     </Button>
   )
 }

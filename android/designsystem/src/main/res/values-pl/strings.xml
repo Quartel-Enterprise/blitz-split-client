@@ -326,4 +326,19 @@
     <string name="designsystem_range_start">Data rozpoczęcia</string>
     <string name="designsystem_range_end">Data zakończenia</string>
     <string name="designsystem_range_none">Nie wybrano</string>
+    <string name="designsystem_reminder_title">Przypomnienie grupy</string>
+    <string name="designsystem_reminder_switch">Przypominaj członkom o rozliczeniu</string>
+    <string name="designsystem_reminder_caption">Osoby, które są winne pieniądze, dostają powiadomienie o swojej godzinie.</string>
+    <string name="designsystem_reminder_weekly">Co tydzień</string>
+    <string name="designsystem_reminder_monthly">Co miesiąc</string>
+    <string name="designsystem_reminder_time">Godzina</string>
+    <string name="designsystem_reminder_day_of_month">Dzień miesiąca</string>
+    <string name="designsystem_reminder_calendar_new">Dodaj do mojego kalendarza</string>
+    <string name="designsystem_reminder_calendar_new_caption">Dodaje cykliczne wydarzenie do kalendarza po utworzeniu grupy.</string>
+    <string name="designsystem_reminder_calendar">Dodaj do kalendarza</string>
+    <string name="designsystem_reminder_calendar_join">Dodaj przypomnienie do kalendarza</string>
+    <string name="designsystem_reminder_schedule_weekly">Co tydzień: %1$s o %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Co miesiąc, %1$d. dnia o %2$s</string>
+    <string name="designsystem_reminder_event_title">Rozlicz się: %1$s</string>
+    <string name="designsystem_reminder_event_description">Czas się rozliczyć w grupie %1$s.</string>
 </resources>

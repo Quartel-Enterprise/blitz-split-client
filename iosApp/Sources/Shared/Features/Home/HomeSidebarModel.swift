@@ -91,10 +91,7 @@ struct SidebarOpenGroups: View {
 
     /// "+214.90", "−98.00" or "0.00": the sidebar's narrow column leaves out the group's currency symbol.
     private static func net(_ group: GroupRow) -> String {
-        let amount = group.currency.formatPlain(abs(group.netMinor))
-        if group.netMinor > 0 { return "+\(amount)" }
-        if group.netMinor < 0 { return "−\(amount)" }
-        return amount
+        group.currency.formatSignedPlain(group.netMinor)
     }
 }
 #endif

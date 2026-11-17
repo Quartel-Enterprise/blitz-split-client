@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">إغلاق</string>
+    <string name="invite_group_created">تم إنشاء المجموعة</string>
+    <string name="invite_title">دعوة الجميع إلى %s</string>
+    <string name="invite_qr_description">رمز QR لرابط دعوة المجموعة</string>
+    <string name="invite_copy">نسخ</string>
+    <string name="invite_copied">تم النسخ</string>
+    <string name="invite_who_picks">من يفتح الرابط يختار اسمه من القائمة: %s. لا حاجة إلى حساب.</string>
+    <string name="invite_names_or">%1$s أو %2$s</string>
+    <string name="invite_anyone_joins">من يفتح الرابط ينضم إلى المجموعة. لا حاجة إلى حساب.</string>
+    <string name="invite_pending_title">الرابط قيد الانتظار</string>
+    <string name="invite_pending_offline">يُنشأ فور الاتصال بالإنترنت.</string>
+    <string name="invite_pending_online">جارٍ إنشاء الرابط…</string>
+    <string name="invite_failed_title">تعذر إنشاء الرابط</string>
+    <string name="invite_failed_body">حدث خطأ أثناء مزامنة المجموعة.</string>
+    <string name="invite_retry">إعادة المحاولة</string>
+    <string name="invite_share">مشاركة الرابط</string>
+    <string name="invite_see_who_joined">عرض من انضم</string>
+    <string name="invite_add_person">إضافة شخص بدون التطبيق</string>
+    <string name="invite_go_to_group">الذهاب إلى المجموعة</string>
+    <string name="invite_change_link">تغيير الرابط</string>
+    <string name="invite_change_link_title">تغيير رابط الدعوة؟</string>
+    <string name="invite_change_link_message">يتوقف الرابط الحالي ورمز QR عن العمل، بما في ذلك الدعوات الشخصية غير المستخدمة. من انضم بالفعل يبقى في المجموعة.</string>
+    <string name="invite_change_link_failed">تعذر تغيير الرابط. يُرجى إعادة المحاولة.</string>
+    <string name="invite_share_message">لنقسّم فواتير %1$s على Blitz Split. الانضمام عبر هذا الرابط: %2$s</string>
+</resources>

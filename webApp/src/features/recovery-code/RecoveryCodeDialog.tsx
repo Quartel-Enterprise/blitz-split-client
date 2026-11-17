@@ -62,7 +62,7 @@ export function RecoveryCodeDialog() {
   return (
     <Drawer open onOpenChange={onOpenChange}>
       <DrawerContent>
-        <DrawerHeader className="text-left">
+        <DrawerHeader className="text-start">
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
@@ -105,7 +105,7 @@ function Option({ icon, title, subtitle, disabled, onClick }: { icon: ReactNode;
     <button
       disabled={disabled}
       onClick={onClick}
-      className="flex min-h-11 items-center gap-2.5 rounded-lg border px-3 py-2 text-left text-sm font-medium outline-none transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+      className="flex min-h-11 items-center gap-2.5 rounded-lg border px-3 py-2 text-start text-sm font-medium outline-none transition-colors hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
     >
       {icon}
       <span className="flex flex-col gap-0.5">

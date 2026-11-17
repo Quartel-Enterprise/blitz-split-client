@@ -655,6 +655,10 @@ class GroupDaoTest {
             photoUrl = null,
             pendingPhoto = null,
             currency = "USD",
+            reminderEnabled = true,
+            reminderKind = "weekly",
+            reminderDay = 1,
+            reminderMinute = 600,
             updatedAt = 6L,
         )
 
@@ -694,6 +698,10 @@ class GroupDaoTest {
                 photoUrl = null,
                 pendingPhoto = null,
                 currency = "BRL",
+                reminderEnabled = true,
+                reminderKind = "weekly",
+                reminderDay = 1,
+                reminderMinute = 600,
                 updatedAt = 6L,
             )
 
@@ -723,6 +731,10 @@ class GroupDaoTest {
             photoUrl = null,
             pendingPhoto = null,
             currency = "BRL",
+            reminderEnabled = true,
+            reminderKind = "weekly",
+            reminderDay = 1,
+            reminderMinute = 600,
             updatedAt = 6L,
         )
 
@@ -1196,6 +1208,97 @@ class GroupDaoTest {
             )
         }
 
+    @Test
+    fun `GIVEN a synced group WHEN dismissing a reminder THEN only the dismissal moves and the group stays synced`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 5L))
+
+            // When
+            dao.dismissReminder("group-1", occurrenceAt = 900L)
+
+            // Then
+            val group = dao.observeGroups().first().single()
+            assertEquals(900L, group.reminderDismissedAt)
+            assertEquals(5L, group.updatedAt)
+            assertFalse(group.pendingSync)
+        }
+
+    @Test
+    fun `GIVEN a later occurrence dismissed WHEN dismissing an earlier one THEN the later dismissal stays`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L).copy(reminderDismissedAt = 900L))
+
+        // When
+        dao.dismissReminder("group-1", occurrenceAt = 400L)
+
+        // Then
+        assertEquals(
+            900L,
+            dao
+                .observeGroups()
+                .first()
+                .single()
+                .reminderDismissedAt,
+        )
+    }
+
+    @Test
+    fun `GIVEN a newer server group WHEN applying it THEN its reminder replaces the local one and dismissal stays`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 5L).copy(reminderDismissedAt = 900L))
+
+            // When
+            dao.applyRemoteGroup(
+                entity(updatedAt = 9L).copy(
+                    reminderEnabled = false,
+                    reminderKind = "monthly",
+                    reminderDay = 25,
+                    reminderMinute = 720,
+                ),
+            )
+
+            // Then
+            val group = dao.observeGroups().first().single()
+            assertFalse(group.reminderEnabled)
+            assertEquals("monthly", group.reminderKind)
+            assertEquals(25, group.reminderDay)
+            assertEquals(720, group.reminderMinute)
+            assertEquals(900L, group.reminderDismissedAt)
+        }
+
+    @Test
+    fun `GIVEN a reminder edited here and not up yet WHEN an older group comes from the server THEN the edit stays`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 5L))
+            dao.updateGroup(
+                id = "group-1",
+                name = "Viagem Floripa",
+                type = "trip",
+                color = "blue",
+                shape = null,
+                photoUrl = null,
+                pendingPhoto = null,
+                currency = "BRL",
+                reminderEnabled = true,
+                reminderKind = "monthly",
+                reminderDay = 25,
+                reminderMinute = 720,
+                updatedAt = 20L,
+            )
+
+            // When
+            dao.applyRemoteGroup(entity(updatedAt = 10L))
+
+            // Then
+            val group = dao.observeGroups().first().single()
+            assertEquals("monthly", group.reminderKind)
+            assertEquals(25, group.reminderDay)
+            assertTrue(group.pendingSync)
+        }
+
     private fun entity(
         id: String = "group-1",
         name: String = "Viagem Floripa",
@@ -1228,6 +1331,11 @@ class GroupDaoTest {
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
         isOnServer = isOnServer,
+        reminderEnabled = true,
+        reminderKind = "weekly",
+        reminderDay = 1,
+        reminderMinute = 600,
+        reminderDismissedAt = 0L,
     )
 
     private fun member(

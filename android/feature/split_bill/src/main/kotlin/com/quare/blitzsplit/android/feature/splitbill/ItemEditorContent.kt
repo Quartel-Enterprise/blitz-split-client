@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
@@ -36,6 +37,7 @@ import com.quare.blitzsplit.android.designsystem.component.freeTextKeyboardOptio
 import com.quare.blitzsplit.android.designsystem.component.rememberNumberField
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.rememberMoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.withLeftToRightDigits
 import com.quare.blitzsplit.android.designsystem.layout.ColumnsFormLayout
 import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.FormChrome
@@ -119,6 +121,7 @@ internal fun ItemEditorContent(
                     onValueChange = priceField.onValueChange,
                     modifier = Modifier.weight(1f),
                     label = { Text(stringResource(R.string.split_bill_item_price)) },
+                    textStyle = LocalTextStyle.current.withLeftToRightDigits(),
                     prefix = { Text(money.symbol + " ") },
                     placeholder = { Text(money.zeroPlaceholder) },
                     singleLine = true,

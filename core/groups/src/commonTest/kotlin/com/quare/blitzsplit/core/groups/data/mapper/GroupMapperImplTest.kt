@@ -7,6 +7,8 @@ import com.quare.blitzsplit.core.groups.domain.model.CategorySplit
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
+import com.quare.blitzsplit.core.groups.domain.model.ReminderKind
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsChange
 import com.quare.blitzsplit.core.groups.domain.model.SimplifyDebtsPair
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -446,6 +448,11 @@ class GroupMapperImplTest {
                 simplifyDebtsPending = false,
                 simplifyDebtsConflictBy = null,
                 isOnServer = false,
+                reminderEnabled = true,
+                reminderKind = "weekly",
+                reminderDay = 1,
+                reminderMinute = 600,
+                reminderDismissedAt = 0L,
             ),
             entity,
         )
@@ -628,6 +635,10 @@ class GroupMapperImplTest {
                 simplifyDebtsAt = 0L,
                 simplifyDebtsBy = null,
                 simplifyDebtsChange = null,
+                reminderEnabled = true,
+                reminderKind = "weekly",
+                reminderDay = 1,
+                reminderMinute = 600,
             ),
             dto,
         )
@@ -701,6 +712,11 @@ class GroupMapperImplTest {
                 simplifyDebtsPending = false,
                 simplifyDebtsConflictBy = null,
                 isOnServer = true,
+                reminderEnabled = true,
+                reminderKind = "weekly",
+                reminderDay = 1,
+                reminderMinute = 600,
+                reminderDismissedAt = 0L,
             ),
             entity,
         )
@@ -1434,6 +1450,8 @@ class GroupMapperImplTest {
         isSimplifyDebtsPending = false,
         simplifyDebtsChangedBy = null,
         simplifyDebtsConflictBy = null,
+        reminder = GroupReminder.Default,
+        reminderDismissedAt = 0L,
     )
 
     @Test
@@ -2265,6 +2283,201 @@ class GroupMapperImplTest {
         assertEquals(Json.parseToJsonElement("""{"before":[],"after":[]}"""), Json.parseToJsonElement(encoded))
     }
 
+    @Test
+    fun `GIVEN a stored reminder and a dismissed banner WHEN mapping to the domain THEN carries both`() {
+        // Given
+        val entity = groupEntity(id = "group-1").copy(
+            reminderEnabled = false,
+            reminderKind = "monthly",
+            reminderDay = 31,
+            reminderMinute = 725,
+            reminderDismissedAt = 4_000L,
+        )
+
+        // When
+        val group = toDomain(listOf(entity))
+
+        // Then
+        assertEquals(
+            GroupReminder(
+                isEnabled = false,
+                kind = ReminderKind.MONTHLY,
+                day = 31,
+                minute = 725,
+            ),
+            group.reminder,
+        )
+        assertEquals(4_000L, group.reminderDismissedAt)
+    }
+
+    @Test
+    fun `GIVEN a group stored before reminders WHEN mapping to the domain THEN reads Monday 10 00 and no dismissal`() {
+        // Given
+        val entity = groupEntity(id = "group-1")
+
+        // When
+        val group = toDomain(listOf(entity))
+
+        // Then
+        assertEquals(GroupReminder.Default, group.reminder)
+        assertEquals(0L, group.reminderDismissedAt)
+    }
+
+    @Test
+    fun `GIVEN a stored reminder out of range WHEN mapping to the domain THEN clamps it instead of throwing`() {
+        // Given
+        val entity = groupEntity(id = "group-1").copy(
+            reminderKind = "yearly",
+            reminderDay = 99,
+            reminderMinute = 5_000,
+        )
+
+        // When
+        val group = toDomain(listOf(entity))
+
+        // Then
+        assertEquals(
+            GroupReminder(
+                isEnabled = true,
+                kind = ReminderKind.WEEKLY,
+                day = 7,
+                minute = 1_439,
+            ),
+            group.reminder,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new group with a monthly reminder WHEN mapping it to an entity THEN stores its four fields`() {
+        // Given
+        val group = newGroup.copy(
+            reminder = GroupReminder(
+                isEnabled = false,
+                kind = ReminderKind.MONTHLY,
+                day = 15,
+                minute = 90,
+            ),
+        )
+
+        // When
+        val entity = mapper.toEntity(
+            group = group,
+            createdAt = 1_000L,
+            ownerUserId = null,
+        )
+
+        // Then
+        assertFalse(entity.reminderEnabled)
+        assertEquals("monthly", entity.reminderKind)
+        assertEquals(15, entity.reminderDay)
+        assertEquals(90, entity.reminderMinute)
+    }
+
+    @Test
+    fun `GIVEN a new group with the default reminder WHEN mapping it to an entity THEN stores Monday 10 00 on`() {
+        // Given
+        val group = newGroup
+
+        // When
+        val entity = mapper.toEntity(
+            group = group,
+            createdAt = 1_000L,
+            ownerUserId = null,
+        )
+
+        // Then
+        assertTrue(entity.reminderEnabled)
+        assertEquals("weekly", entity.reminderKind)
+        assertEquals(1, entity.reminderDay)
+        assertEquals(600, entity.reminderMinute)
+    }
+
+    @Test
+    fun `GIVEN a server row with a reminder WHEN mapping it to an entity THEN keeps its four fields`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-2",
+        ).copy(
+            reminderEnabled = false,
+            reminderKind = "monthly",
+            reminderDay = 30,
+            reminderMinute = 1_080,
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertFalse(entity.reminderEnabled)
+        assertEquals("monthly", entity.reminderKind)
+        assertEquals(30, entity.reminderDay)
+        assertEquals(1_080, entity.reminderMinute)
+    }
+
+    @Test
+    fun `GIVEN a server row without the reminder columns WHEN mapping it to an entity THEN reads Monday 10 00 on`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-2",
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertTrue(entity.reminderEnabled)
+        assertEquals("weekly", entity.reminderKind)
+        assertEquals(1, entity.reminderDay)
+        assertEquals(600, entity.reminderMinute)
+    }
+
+    @Test
+    fun `GIVEN a server row out of range WHEN mapping it to an entity THEN clamps it without throwing`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-2",
+        ).copy(
+            reminderKind = "daily",
+            reminderDay = 50,
+            reminderMinute = -10,
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertEquals("weekly", entity.reminderKind)
+        assertEquals(7, entity.reminderDay)
+        assertEquals(0, entity.reminderMinute)
+    }
+
+    @Test
+    fun `GIVEN a stored reminder WHEN mapping the group to a DTO THEN sends its four fields`() {
+        // Given
+        val entity = groupEntity(id = "group-1").copy(
+            reminderEnabled = false,
+            reminderKind = "monthly",
+            reminderDay = 12,
+            reminderMinute = 840,
+        )
+
+        // When
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
+
+        // Then
+        assertEquals(false, dto.reminderEnabled)
+        assertEquals("monthly", dto.reminderKind)
+        assertEquals(12, dto.reminderDay)
+        assertEquals(840, dto.reminderMinute)
+    }
+
     private val simplificationJson =
         """{"before":[{"from":"m-2","to":"m-1","amount":3000},{"from":"m-3","to":"m-2","amount":3000}],""" +
             """"after":[{"from":"m-3","to":"m-1","amount":3000}]}"""
@@ -2296,6 +2509,10 @@ class GroupMapperImplTest {
         simplifyDebtsAt = null,
         simplifyDebtsBy = null,
         simplifyDebtsChange = null,
+        reminderEnabled = null,
+        reminderKind = null,
+        reminderDay = null,
+        reminderMinute = null,
     )
 
     private fun photo(
@@ -2346,6 +2563,11 @@ class GroupMapperImplTest {
         simplifyDebtsPending = false,
         simplifyDebtsConflictBy = null,
         isOnServer = isOnServer,
+        reminderEnabled = true,
+        reminderKind = "weekly",
+        reminderDay = 1,
+        reminderMinute = 600,
+        reminderDismissedAt = 0L,
     )
 
     private fun memberEntity(
@@ -2394,6 +2616,10 @@ class GroupMapperImplTest {
         simplifyDebtsAt = null,
         simplifyDebtsBy = null,
         simplifyDebtsChange = null,
+        reminderEnabled = null,
+        reminderKind = null,
+        reminderDay = null,
+        reminderMinute = null,
     )
 
     private fun memberDto(

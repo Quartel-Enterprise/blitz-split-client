@@ -66,13 +66,13 @@ export function MembersTab({ presenter, state }: { presenter: MembersPresenter; 
       {/* Why: copy and "Compartilhar" (whoever has the app joins through the link) as icons beside the link, and
           "Adicionar pessoa" (someone without the app, by name) before them; the group's main button stays "Rachar
           conta" on every tab. A phone puts "Adicionar pessoa" under the link, at the card's end. */}
-      <section className="@container rounded-xl border bg-card p-2 pl-4">
+      <section className="@container rounded-xl border bg-card p-2 ps-4">
         <div className="flex flex-wrap items-center gap-x-1 gap-y-2">
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold">{t('members_linkTitle')}</p>
             <p className="truncate font-mono text-xs text-muted-foreground">{state.displayLink ?? t('members_linkPending')}</p>
           </div>
-          <div className="order-last flex w-full justify-end @md:order-none @md:mr-1 @md:w-auto">
+          <div className="order-last flex w-full justify-end @md:order-none @md:me-1 @md:w-auto">
             {/* Why: the outline's --input edge reads at 1.3:1 on the card; primary keeps it at 3:1 or more in both themes
                 (dark: too, to beat the outline variant's dark:border-input). */}
             <Button variant="outline" className="border-primary dark:border-primary" onClick={() => presenter.add()}>
@@ -142,7 +142,7 @@ function MemberBalanceText({ balance, money }: { balance: JsMemberBalance; money
 /** A member: the row opens their profile (Perfil for this browser's user), the ⋮ their menu. */
 function MemberRow({ presenter, member, money }: { presenter: MembersPresenter; member: JsMembersMember; money: (minor: number) => string }) {
   return (
-    <li className="flex items-center gap-1 py-1 pr-2 pl-2">
+    <li className="flex items-center gap-1 py-1 pe-2 ps-2">
       <PersonButton onOpen={() => presenter.openMember(member.id)} flightKey={`member-${member.id}`} className="flex min-w-0 flex-1 items-center gap-3 px-2 py-1.5">
       <Avatar initial={member.initials} color={member.color} photoUrl={member.photoUrl} className="size-10 text-sm" />
       {/* Why: the balance wraps under the status once it and the whole name don't fit side by side, so the name and the status keep their width. */}
@@ -238,7 +238,7 @@ function PersonalInviteDialog({
           count: invite.billCount,
         })
   const heading = (
-    <div className="flex items-center gap-3 text-left">
+    <div className="flex items-center gap-3 text-start">
       <Avatar initial={invite.memberInitials} color={invite.memberColor} className="size-10 shrink-0 text-sm" />
       <div className="min-w-0">
         {isDesktop ? <DialogTitle className="truncate">{title}</DialogTitle> : <DrawerTitle className="truncate">{title}</DrawerTitle>}
@@ -287,7 +287,7 @@ function PersonalInviteDialog({
   ) : (
     <Drawer open onOpenChange={onOpenChange}>
       <DrawerContent>
-        <DrawerHeader className="gap-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="gap-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           {heading}
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>

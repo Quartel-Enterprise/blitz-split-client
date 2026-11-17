@@ -86,7 +86,9 @@ The feed, unread state, real time and push notifications.
     Hindi follows the same rule with its ergative "ने": someone else is "Ana ने", the user "आपने" (one word), so
     every Hindi verb phrase starts with "ने", which the user's rows drop ("Ana ने ‘डिनर’ खर्च बांटा", "आपने ‘डिनर’ खर्च
     बांटा"), a join or a leave being said with a transitive verb too ("ने ‘गोवा ट्रिप’ ग्रुप जॉइन किया"). Its
-    deleted-item notice starts with who deleted it ("आपने …"); every other "You" is "आप". The same rules say a bill's photo line to the user who attached it, in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
+    deleted-item notice starts with who deleted it ("आपने …"); every other "You" is "आप". Arabic's     verbs say both the person and a gender the app doesn't know, so an Arabic row names the actor, a colon and a
+    verbal noun instead of a verb ("Ana: تقسيم «عشاء»", "أنت: تقسيم «عشاء»"): the same words serve the user and everyone
+    else, and none of the three helpers has an Arabic rule. Its deleted-item notice is passive ("تم الحذف بواسطة Ana"). The same rules say a bill's photo line to the user who attached it, in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
     "Tu l’as joint…", "Ty dodałeś(-aś) je…". A Spanish object pronoun before the verb stays ("lo adjuntó" to "lo
     adjuntaste"), and French's and Italian's elided auxiliaries change as the bare ones do ("l’a" to "l’as", "l’ha" to
     "l’hai"). A line written without a verb after the name stays as it is (German's "Du · heute um 21:10 angehängt",
@@ -159,8 +161,10 @@ The feed, unread state, real time and push notifications.
     deleted while you are its payer or in its split (before the change too); Comments for a comment on a bill you're in
     or a thread you wrote in; Payments and settle-ups for a payment recorded or undone that you paid or received, and
     "Simplify debts" changing whom you pay or who pays you; Payment requests for a request sent to you; People and
-    groups for being added to a group and someone joining yours; Open balance reminder for, every Monday at 10:00 in
-    Brasília, "You have an open balance in Apt 302" (or "in 3 groups") while you owe or are owed. The other kinds of
+    groups for being added to a group and someone joining yours; Open balance reminder for, at each group's reminder
+    schedule (Monday 10:00 unless the group changed it in Edit group's "Group reminder", on each device's own clock, which
+    every app sends as `time_zone` when it registers the device), "You have an open balance in Apt 302" (or "in 3 groups") only
+    while you owe in it; the group's banner for debtors is in [members-and-payments.md](members-and-payments.md#group-reminder). The other kinds of
     People and groups only reach the bell. No amount in
     them, but for "Simplify debts" (in [members-and-payments.md](members-and-payments.md)), whose `debts_simplified_*` and `debts_unsimplified_*` (under
     Payments and settle-ups) name the new pair's amount, which the server writes out (Pierre's call). The server picks who and sends (`push_devices`, the `push` edge function, after each `activity_events`

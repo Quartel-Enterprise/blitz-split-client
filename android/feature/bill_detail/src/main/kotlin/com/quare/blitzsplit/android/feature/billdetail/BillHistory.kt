@@ -228,7 +228,8 @@ private fun EntryHeadlineRow(
         personNameOf(entry.actorName, entry.actorIsMe)
     }
     val what = verbForActorOf(historyVerbOf(entry), entry.actorIsMe)
-    val gap = wordGapUi()
+    // Why: Arabic's history says "Ana: إنشاء الفاتورة", its phrase starting with the colon that follows the name.
+    val gap = if (what.startsWith(':')) "" else wordGapUi()
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top,

@@ -2,6 +2,8 @@ package com.quare.blitzsplit.core.groups.domain
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
+import com.quare.blitzsplit.core.groups.domain.model.ReminderKind
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.UpdateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -34,6 +36,7 @@ class UpdateGroupUseCaseTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -56,6 +59,7 @@ class UpdateGroupUseCaseTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.EUR,
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -80,6 +84,7 @@ class UpdateGroupUseCaseTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.BRL,
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -106,6 +111,7 @@ class UpdateGroupUseCaseTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.BRL,
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -133,6 +139,7 @@ class UpdateGroupUseCaseTest {
                 shape = GroupShape.COOKIE,
                 photo = null,
                 currency = GroupCurrency.BRL,
+                reminder = GroupReminder.Default,
             )
 
             // Then
@@ -158,6 +165,7 @@ class UpdateGroupUseCaseTest {
             shape = GroupShape.COOKIE,
             photo = null,
             currency = GroupCurrency.USD,
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -185,6 +193,7 @@ class UpdateGroupUseCaseTest {
             shape = GroupShape.CIRCLE,
             photo = photo,
             currency = GroupCurrency.BRL,
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -208,6 +217,7 @@ class UpdateGroupUseCaseTest {
             shape = GroupShape.SQUARE,
             photo = photo,
             currency = GroupCurrency.BRL,
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -233,6 +243,7 @@ class UpdateGroupUseCaseTest {
             shape = GroupShape.SQUARE,
             photo = null,
             currency = GroupCurrency.BRL,
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -240,6 +251,38 @@ class UpdateGroupUseCaseTest {
             repository.groups.value
                 .single()
                 .photo,
+        )
+    }
+
+    @Test
+    fun `GIVEN a new reminder WHEN editing the group THEN writes it with the edit`() = runTest {
+        // Given
+        prepareScenario()
+        val reminder = GroupReminder(
+            isEnabled = false,
+            kind = ReminderKind.MONTHLY,
+            day = 15,
+            minute = 90,
+        )
+
+        // When
+        useCase(
+            groupId = "group-1",
+            name = "Viagem Floripa",
+            type = GroupType.TRIP,
+            color = AvatarColor.PEACH,
+            shape = GroupShape.SQUARE,
+            photo = null,
+            currency = GroupCurrency.BRL,
+            reminder = reminder,
+        )
+
+        // Then
+        assertEquals(
+            reminder,
+            repository.groups.value
+                .single()
+                .reminder,
         )
     }
 
@@ -272,6 +315,8 @@ class UpdateGroupUseCaseTest {
         isSimplifyDebtsPending = false,
         simplifyDebtsChangedBy = null,
         simplifyDebtsConflictBy = null,
+        reminder = GroupReminder.Default,
+        reminderDismissedAt = 0L,
     )
 
     private fun prepareScenario(

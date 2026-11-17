@@ -49,14 +49,14 @@ export function AppInviteCard({
   return (
     <section
       aria-labelledby="home-app-invite-title"
-      className="relative flex flex-wrap items-center gap-4 rounded-lg border bg-card py-4 pr-13 pl-4 max-md:hidden lg:gap-5"
+      className="relative flex flex-wrap items-center gap-4 rounded-lg border bg-card py-4 pe-13 ps-4 max-md:hidden lg:gap-5"
     >
       <Button
         variant="ghost"
         size="icon-sm"
         aria-label={t('appInvite_dismiss')}
         title={t('appInvite_dismiss')}
-        className="absolute top-2 right-2 text-muted-foreground"
+        className="absolute top-2 inset-e-2 text-muted-foreground"
         onClick={() => presenter.dismissAppInvite()}
       >
         <X />
@@ -220,7 +220,7 @@ function showsSmartAppBanner(stores: string): boolean {
 export function AppBanner({ invite, onOpen, onDismiss }: { invite: JsAppInvite; onOpen: () => void; onDismiss: () => void }) {
   if (showsSmartAppBanner(invite.stores)) return null
   return (
-    <aside aria-label={t('appBanner_title')} className="flex min-h-16 flex-wrap items-center gap-2 rounded-lg border bg-muted py-2 pr-3 pl-1 md:hidden">
+    <aside aria-label={t('appBanner_title')} className="flex min-h-16 flex-wrap items-center gap-2 rounded-lg border bg-muted py-2 pe-3 ps-1 md:hidden">
       <Button variant="ghost" size="icon" aria-label={t('appInvite_dismiss')} className="shrink-0 text-muted-foreground" onClick={onDismiss}>
         <X />
       </Button>
@@ -232,7 +232,7 @@ export function AppBanner({ invite, onOpen, onDismiss }: { invite: JsAppInvite; 
         <strong className="text-sm font-semibold">{t('appBanner_title')}</strong>
         <span className="text-xs text-muted-foreground">{t('appBanner_body')}</span>
       </span>
-      <Button asChild size="sm" className="ml-auto shrink-0">
+      <Button asChild size="sm" className="ms-auto shrink-0">
         <a href={invite.link} onClick={onOpen}>
           {t('appBanner_open')}
         </a>
@@ -269,7 +269,7 @@ export function ProfileAppRow({
   return (
     <section
       aria-labelledby="profile-app-title"
-      className={cn('relative flex flex-wrap items-center gap-3.5 rounded-xl border bg-card p-5', isActive && 'pr-13', className)}
+      className={cn('relative flex flex-wrap items-center gap-3.5 rounded-xl border bg-card p-5', isActive && 'pe-13', className)}
     >
       {isActive && (
         <Button
@@ -277,7 +277,7 @@ export function ProfileAppRow({
           size="icon-sm"
           aria-label={t('appInvite_dismiss')}
           title={t('appInvite_dismiss')}
-          className="absolute top-2 right-2 text-muted-foreground"
+          className="absolute top-2 inset-e-2 text-muted-foreground"
           onClick={onDismiss}
         >
           <X />

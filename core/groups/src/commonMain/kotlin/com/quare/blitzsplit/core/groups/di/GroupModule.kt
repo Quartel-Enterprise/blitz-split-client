@@ -31,11 +31,13 @@ import com.quare.blitzsplit.core.groups.domain.repository.GroupPinRepository
 import com.quare.blitzsplit.core.groups.domain.repository.GroupRepository
 import com.quare.blitzsplit.core.groups.domain.repository.InviteRepository
 import com.quare.blitzsplit.core.groups.domain.usecase.AddMember
+import com.quare.blitzsplit.core.groups.domain.usecase.BuildReminderCalendarEvent
 import com.quare.blitzsplit.core.groups.domain.usecase.CheckMemberName
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeAddPersonRequest
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeGroupDeletion
 import com.quare.blitzsplit.core.groups.domain.usecase.ConsumeSimplifyDebtsConflict
 import com.quare.blitzsplit.core.groups.domain.usecase.CreateGroup
+import com.quare.blitzsplit.core.groups.domain.usecase.DismissGroupReminder
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.GetInvite
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveAddPersonRequest
@@ -56,11 +58,13 @@ import com.quare.blitzsplit.core.groups.domain.usecase.UpdateDefaultSplit
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.UpdateGroupPhoto
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.BuildReminderCalendarEventUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeAddPersonRequestUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeGroupDeletionUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ConsumeSimplifyDebtsConflictUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
+import com.quare.blitzsplit.core.groups.domain.usecase.impl.DismissGroupReminderUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.EncodeQrCodeUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.GetInviteUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.ObserveAddPersonRequestUseCase
@@ -110,6 +114,8 @@ val groupModule = module {
     factoryOf(::ObserveAddPersonRequestUseCase).bind<ObserveAddPersonRequest>()
     factoryOf(::ConsumeAddPersonRequestUseCase).bind<ConsumeAddPersonRequest>()
     factoryOf(::UpdateGroupUseCase).bind<UpdateGroup>()
+    factoryOf(::DismissGroupReminderUseCase).bind<DismissGroupReminder>()
+    factory<BuildReminderCalendarEvent> { BuildReminderCalendarEventUseCase(get()) }
     factoryOf(::UpdateGroupPhotoUseCase).bind<UpdateGroupPhoto>()
     factoryOf(::UpdateDefaultSplitUseCase).bind<UpdateDefaultSplit>()
     factoryOf(::SaveSplitAsDefaultUseCase).bind<SaveSplitAsDefault>()

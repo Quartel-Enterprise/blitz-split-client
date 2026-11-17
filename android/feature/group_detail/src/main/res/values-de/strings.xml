@@ -98,4 +98,7 @@
     <string name="group_detail_balances_note_simplified">Mit vereinfachten Schulden schlägt die App die wenigsten Zahlungen vor. „Erhalten“ und „Schon bezahlt“ erfassen eine Zahlung außerhalb der App (Pix, bar, eine Überweisung).</string>
     <string name="group_detail_photo_open">Gruppenfoto ansehen</string>
     <string name="group_export_payment_method">Zahlungsmethode</string>
+    <string name="group_detail_reminder_title">Zeit zum Abrechnen</string>
+    <string name="group_detail_reminder_settle">Ausgleichen</string>
+    <string name="group_detail_reminder_dismiss">Schließen</string>
 </resources>

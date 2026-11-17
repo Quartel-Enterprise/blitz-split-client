@@ -11,6 +11,7 @@ struct BillAttachmentViewer: View {
     #if os(macOS)
     @State private var exportsFile = false
     @FocusState private var isFocused: Bool
+    @Environment(\.layoutDirection) private var layoutDirection
     #endif
 
     var body: some View {
@@ -34,8 +35,9 @@ struct BillAttachmentViewer: View {
         .focusEffectDisabled()
         .focused($isFocused)
         .onAppear { isFocused = true }
-        .onKeyPress(.leftArrow) { move(by: -1) }
-        .onKeyPress(.rightArrow) { move(by: 1) }
+        // Why: the next photo sits on the left in right to left, as its arrow does
+        .onKeyPress(.leftArrow) { move(by: layoutDirection == .rightToLeft ? 1 : -1) }
+        .onKeyPress(.rightArrow) { move(by: layoutDirection == .rightToLeft ? -1 : 1) }
         #endif
     }
 
@@ -113,9 +115,9 @@ struct BillAttachmentViewer: View {
                 .id(attachment.id)
                 .overlay {
                     HStack {
-                        arrow(by: -1, systemImage: "chevron.left")
+                        arrow(by: -1, systemImage: "chevron.backward")
                         Spacer()
-                        arrow(by: 1, systemImage: "chevron.right")
+                        arrow(by: 1, systemImage: "chevron.forward")
                     }
                     .padding(.horizontal, 12)
                 }

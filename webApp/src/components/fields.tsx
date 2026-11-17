@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 /** A button that looks like a field: "Quem pagou", "Quando". */
 export const controlClass =
-  'flex h-9 w-full items-center gap-2 rounded-md border border-field-border bg-card px-3 text-left text-sm outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30'
+  'flex h-9 w-full items-center gap-2 rounded-md border border-field-border bg-card px-3 text-start text-sm outline-none hover:bg-accent/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 dark:bg-input/30'
 
 /**
  * A large amount field with the currency's symbol before it ("R$ 312,00"), the number keyboard on phones. The
@@ -64,6 +64,7 @@ export function AmountInput({
       )}
       <input
         id={id}
+        dir="ltr"
         inputMode="numeric"
         autoComplete="off"
         autoFocus={autoFocus}
@@ -72,7 +73,7 @@ export function AmountInput({
         aria-invalid={isInvalid}
         aria-describedby={describedBy}
         onChange={(event) => onChange(event.target.value)}
-        className="min-w-0 flex-1 bg-transparent text-[28px] font-semibold tabular-nums outline-none placeholder:text-muted-foreground"
+        className="min-w-0 flex-1 bg-transparent text-[28px] font-semibold tabular-nums outline-none placeholder:text-muted-foreground rtl:text-right"
       />
     </div>
   )

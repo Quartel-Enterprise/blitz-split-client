@@ -308,4 +308,19 @@
     <string name="designsystem_range_start">Başlangıç tarihi</string>
     <string name="designsystem_range_end">Bitiş tarihi</string>
     <string name="designsystem_range_none">Seçilmedi</string>
+    <string name="designsystem_reminder_title">Grup hatırlatıcısı</string>
+    <string name="designsystem_reminder_switch">Üyelere hesaplaşmayı hatırlat</string>
+    <string name="designsystem_reminder_caption">Borcu olanlar kendi saatlerine göre bildirim alır.</string>
+    <string name="designsystem_reminder_weekly">Haftalık</string>
+    <string name="designsystem_reminder_monthly">Aylık</string>
+    <string name="designsystem_reminder_time">Saat</string>
+    <string name="designsystem_reminder_day_of_month">Ayın günü</string>
+    <string name="designsystem_reminder_calendar_new">Takvimime ekle</string>
+    <string name="designsystem_reminder_calendar_new_caption">Grup oluşturulduğunda takviminize yinelenen bir etkinlik ekler.</string>
+    <string name="designsystem_reminder_calendar">Takvime ekle</string>
+    <string name="designsystem_reminder_calendar_join">Hatırlatıcıyı takviminize ekleyin</string>
+    <string name="designsystem_reminder_schedule_weekly">Her %1$s saat %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Her ay %1$d. günü saat %2$s</string>
+    <string name="designsystem_reminder_event_title">Hesaplaş: %1$s</string>
+    <string name="designsystem_reminder_event_description">%1$s grubunda hesaplaşma zamanı.</string>
 </resources>

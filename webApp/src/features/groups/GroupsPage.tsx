@@ -254,7 +254,7 @@ function SummaryCard({ label, action, amounts, caption, tone, isEnabled, onClick
       disabled={!isEnabled}
       aria-label={`${label} ${amounts.join(', ')}. ${action}`}
       className={cn(
-        'flex min-w-0 flex-col gap-1 rounded-xl border bg-card px-4 py-3.5 text-left outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none sm:px-5 sm:py-4',
+        'flex min-w-0 flex-col gap-1 rounded-xl border bg-card px-4 py-3.5 text-start outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none sm:px-5 sm:py-4',
         className,
       )}
     >
@@ -291,7 +291,7 @@ function StatusTab({ isSelected, count, onSelect, children }: { isSelected: bool
 function GroupsFilter({ presenter, query }: { presenter: GroupsPresenter; query: string }) {
   const [draft, setDraft] = useDraft(query, (next) => presenter.filter(next))
   return (
-    <label className="ml-auto hidden h-9 w-60 items-center gap-1.5 rounded-md border border-field-border px-2.5 text-muted-foreground focus-within:ring-[3px] focus-within:ring-ring md:flex">
+    <label className="ms-auto hidden h-9 w-60 items-center gap-1.5 rounded-md border border-field-border px-2.5 text-muted-foreground focus-within:ring-[3px] focus-within:ring-ring md:flex">
       <ListFilter aria-hidden className="size-3.5 shrink-0" />
       <input
         value={draft}
@@ -317,16 +317,16 @@ function GroupsTable({ presenter, groups, menuOf, onContextMenu }: GroupRowsProp
       <table className="w-full table-fixed text-sm">
         <thead className="border-b text-[13px] font-medium text-muted-foreground">
           <tr className="h-10">
-            <th scope="col" className="px-3 text-left font-medium">
+            <th scope="col" className="px-3 text-start font-medium">
               {t('groups_columnGroup')}
             </th>
-            <th scope="col" className="w-[130px] px-3 text-left font-medium lg:w-[150px]">
+            <th scope="col" className="w-[130px] px-3 text-start font-medium lg:w-[150px]">
               {t('groups_columnMembers')}
             </th>
-            <th scope="col" className="hidden px-3 text-left font-medium lg:table-cell">
+            <th scope="col" className="hidden px-3 text-start font-medium lg:table-cell">
               {t('groups_columnActivity')}
             </th>
-            <th scope="col" className="w-[130px] px-3 text-right font-medium lg:w-[150px]">
+            <th scope="col" className="w-[130px] px-3 text-end font-medium lg:w-[150px]">
               {t('groups_columnBalance')}
             </th>
             <th scope="col" className="w-12">
@@ -355,7 +355,7 @@ function GroupsTable({ presenter, groups, menuOf, onContextMenu }: GroupRowsProp
                       event.stopPropagation()
                       presenter.openGroup(group.id)
                     }}
-                    className="truncate rounded-sm text-left font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+                    className="truncate rounded-sm text-start font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
                   >
                     {group.name}
                   </button>
@@ -370,10 +370,10 @@ function GroupsTable({ presenter, groups, menuOf, onContextMenu }: GroupRowsProp
                 </span>
               </td>
               <td className="hidden truncate px-3 text-[13px] text-muted-foreground lg:table-cell">{lastActivityText(group)}</td>
-              <td className="px-3 text-right">
+              <td className="px-3 text-end">
                 <GroupBalance group={group} />
               </td>
-              <td className="pr-2 text-right">{menuOf(group)}</td>
+              <td className="pe-2 text-end">{menuOf(group)}</td>
             </tr>
           ))}
         </tbody>
@@ -387,11 +387,11 @@ function GroupsCardList({ presenter, groups, menuOf }: GroupRowsProps) {
   return (
     <ul className="flex flex-col divide-y rounded-xl border bg-card md:hidden">
       {groups.map((group) => (
-        <li key={group.id} className="flex items-center pr-1">
+        <li key={group.id} className="flex items-center pe-1">
           <button
             data-group-link={group.id}
             onClick={() => presenter.openGroup(group.id)}
-            className="flex min-h-[60px] min-w-0 flex-1 items-center gap-3 px-3 py-2.5 text-left outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
+            className="flex min-h-[60px] min-w-0 flex-1 items-center gap-3 px-3 py-2.5 text-start outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
           >
             <GroupAvatar data-group-avatar initials={group.initials} color={group.color} photoUrl={group.photoUrl} className="size-8 text-xs" />
             <span className="flex min-w-0 flex-1 flex-col">

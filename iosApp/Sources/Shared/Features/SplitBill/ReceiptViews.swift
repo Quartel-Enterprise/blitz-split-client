@@ -127,7 +127,7 @@ struct ReceiptReadChips: View {
                 Button(action: onItemsTapped) {
                     HStack(spacing: 2) {
                         Text("\(Int(receipt.itemCount)) items")
-                        Image(systemName: "chevron.right")
+                        Image(systemName: "chevron.forward")
                             .font(.caption2.weight(.semibold))
                             .accessibilityHidden(true)
                     }

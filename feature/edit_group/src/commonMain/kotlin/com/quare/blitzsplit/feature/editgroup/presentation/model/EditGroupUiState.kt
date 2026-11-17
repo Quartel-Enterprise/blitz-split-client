@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.editgroup.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.SimplifyDebtsConflictNotice
 import com.quare.blitzsplit.core.groups.domain.model.GroupNameRules
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -52,7 +53,13 @@ data class EditGroupUiState(
     val simplifyConflict: SimplifyDebtsConflictNotice?,
     // Why: a tap on the disabled switch of a group of two says it opens with the third person, until it is dismissed.
     val showsSimplifyUnavailableNotice: Boolean,
+    // Why: "Group reminder" as the form has it, Monday 10:00 or whatever the group was set to; saved with Salvar.
+    val reminder: GroupReminder,
 ) {
+    // Why: "Add to calendar" is offered only while there is a schedule to add.
+    val canAddReminderToCalendar: Boolean
+        get() = isLoaded && reminder.isEnabled
+
     // Why: off and unavailable with fewer than 3 people, though a group already on can still turn it off.
     val canChangeSimplifyDebts: Boolean
         get() = isLoaded && !isChangingSimplifyDebts && (simplifiesDebts || memberCount >= MIN_PEOPLE_TO_SIMPLIFY)

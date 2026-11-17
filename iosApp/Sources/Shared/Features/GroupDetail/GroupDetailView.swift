@@ -39,6 +39,7 @@ final class GroupDetailModel {
             case is GroupDetailUiActionShowBillDeleteError: self?.billDeleteErrorCount += 1
             case let export as GroupDetailUiActionSaveExport: self?.presentExport(export.file)
             case is GroupDetailUiActionShowExportError: self?.exportErrorCount += 1
+            case let add as GroupDetailUiActionAddReminderToCalendar: ReminderCalendar.add(add.event)
             default: break
             }
         })
@@ -326,6 +327,16 @@ struct GroupDetailView: View {
             onActivity: { model?.send(GroupDetailUiEventOnSimplifyConflictActivityClicked.shared) },
             onDismiss: { model?.send(GroupDetailUiEventOnSimplifyConflictDismissed.shared) },
         )
+        .safeAreaInset(edge: .top, spacing: 0) {
+            // "Time to settle up", on whichever of the group's tabs is in front, for someone who owes
+            if let banner = model?.state.reminderBanner {
+                ReminderBannerView(
+                    banner: banner,
+                    onSettle: { model?.send(GroupDetailUiEventOnSettleClicked.shared) },
+                    onDismiss: { model?.send(GroupDetailUiEventOnReminderBannerDismissed.shared) },
+                )
+            }
+        }
         .safeAreaInset(edge: .bottom) {
             // "Teach the map?" belongs to Expenses, the tab the bill landed on
             if let model, model.tab == .expenses, let teach = model.state.teach, !teach.isPickingWord {
@@ -390,7 +401,9 @@ struct GroupDetailView: View {
 private struct JoinedNotice: View {
     let name: String
     let showsProtectAccess: Bool
+    let showsCalendarOffer: Bool
     let onProtectAccess: () -> Void
+    let onAddToCalendar: () -> Void
     let onDismiss: () -> Void
 
     var body: some View {
@@ -418,6 +431,26 @@ private struct JoinedNotice: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Dismiss")
+        }
+        if showsCalendarOffer {
+            Button(action: onAddToCalendar) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Add the reminder to your calendar")
+                            .font(.headline)
+                        Text("Members who owe get a notification, on their own clock.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "calendar.badge.plus")
+                        .foregroundStyle(Palette.accent)
+                }
+                .foregroundStyle(.primary)
+            }
+            #if os(macOS)
+            .buttonStyle(.plain)
+            #endif
         }
         if showsProtectAccess {
             Button(action: onProtectAccess) {
@@ -584,7 +617,9 @@ private struct PhoneExpenseSections: View {
                 JoinedNotice(
                     name: joinedAs,
                     showsProtectAccess: state.showsProtectAccess,
+                    showsCalendarOffer: state.showsJoinCalendarOffer,
                     onProtectAccess: { model.send(GroupDetailUiEventOnProtectAccessClicked.shared) },
+                    onAddToCalendar: { model.send(GroupDetailUiEventOnAddReminderToCalendarClicked.shared) },
                     onDismiss: { model.send(GroupDetailUiEventOnJoinedNoticeDismissed.shared) }
                 )
             }
@@ -755,7 +790,9 @@ private struct MacGroupExpenses: View {
                     JoinedNotice(
                         name: joinedAs,
                         showsProtectAccess: state.showsProtectAccess,
+                    showsCalendarOffer: state.showsJoinCalendarOffer,
                         onProtectAccess: { model.send(GroupDetailUiEventOnProtectAccessClicked.shared) },
+                    onAddToCalendar: { model.send(GroupDetailUiEventOnAddReminderToCalendarClicked.shared) },
                         onDismiss: { model.send(GroupDetailUiEventOnJoinedNoticeDismissed.shared) }
                     )
                 }

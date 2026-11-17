@@ -8,6 +8,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
+import com.quare.blitzsplit.android.designsystem.format.withLatinDigits
 import com.quare.blitzsplit.core.model.StatsGrain
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsBar
 import com.quare.blitzsplit.feature.groupstats.presentation.model.StatsRangeStyle
@@ -112,8 +113,10 @@ internal class StatsTextFormatter(
 
     private fun zonedOf(epochMillis: Long): ZonedDateTime = Instant.ofEpochMilli(epochMillis).atZone(zone)
 
-    private fun formatterOf(skeleton: String): DateTimeFormatter =
-        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(locale, skeleton), locale)
+    // Why: 0-9 in every language, as the amounts (MoneyFormatter); java.time's own digits are already 0-9.
+    private fun formatterOf(skeleton: String): DateTimeFormatter = locale.withLatinDigits().let { latin ->
+        DateTimeFormatter.ofPattern(DateFormat.getBestDateTimePattern(latin, skeleton), latin)
+    }
 }
 
 @Composable

@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.rememberNumberField
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
+import com.quare.blitzsplit.android.designsystem.format.withLatinDigits
+import com.quare.blitzsplit.android.designsystem.format.withLeftToRightDigits
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitPerson
 import com.quare.blitzsplit.feature.editgroup.presentation.model.DefaultSplitRow
@@ -279,10 +281,11 @@ internal fun NumberField(
         isError = isError,
         prefix = prefix?.let { { Text(it) } },
         suffix = suffix?.let { { Text(it) } },
-        textStyle = MaterialTheme.typography.bodyLarge.copy(
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.End,
-        ),
+        textStyle = MaterialTheme.typography.bodyLarge
+            .copy(
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.End,
+            ).withLeftToRightDigits(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
         ),
@@ -302,7 +305,7 @@ private fun personSubtitleOf(
             stringResource(
                 R.string.default_split_row_equal,
                 state.includedCount,
-                String.format(LocalLocale.current.platformLocale, "%.1f", percent),
+                String.format(LocalLocale.current.platformLocale.withLatinDigits(), "%.1f", percent),
             )
         } else {
             stringResource(R.string.default_split_row_out)

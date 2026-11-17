@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +44,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -52,6 +54,7 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
@@ -92,6 +95,34 @@ internal fun StatsChartImage(
     labelOf: (StatsBar) -> String,
     nameOf: (StatsBar) -> String,
     height: Dp,
+    modifier: Modifier = Modifier,
+) {
+    val textDirection = LocalLayoutDirection.current
+    // Why: time runs left to right in every language, so the plot, its end gutter and the labels never mirror.
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        LeftToRightChartImage(
+            state = state,
+            money = money,
+            description = description,
+            labelOf = labelOf,
+            nameOf = nameOf,
+            height = height,
+            textDirection = textDirection,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+private fun LeftToRightChartImage(
+    state: GroupStatsUiState,
+    money: MoneyFormatter,
+    description: String,
+    labelOf: (StatsBar) -> String,
+    nameOf: (StatsBar) -> String,
+    height: Dp,
+    // Why: the language's own direction, which the callout's text keeps.
+    textDirection: LayoutDirection,
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -292,6 +323,7 @@ internal fun StatsChartImage(
                     anchorFraction = bar.amountMinor / top,
                     gutterWidth = gutterWidth,
                     plotTop = labelHalf,
+                    textDirection = textDirection,
                 )
             }
         }
@@ -409,6 +441,7 @@ private fun StatsChartCalloutBubble(
     anchorFraction: Float,
     gutterWidth: Dp,
     plotTop: Dp,
+    textDirection: LayoutDirection,
 ) {
     val countText = if (count == 0) {
         stringResource(R.string.group_stats_callout_none)
@@ -421,31 +454,33 @@ private fun StatsChartCalloutBubble(
             // Why: no Surface, which would take the pointer and make a hovering mouse leave the chart under it.
             val shape = RoundedCornerShape(10.dp)
             val textColor = MaterialTheme.colorScheme.inverseOnSurface
-            Column(
-                modifier = Modifier
-                    .shadow(2.dp, shape)
-                    .background(MaterialTheme.colorScheme.inverseSurface, shape)
-                    .padding(
-                        horizontal = 10.dp,
-                        vertical = 6.dp,
-                    ),
-            ) {
-                Text(
-                    name,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = textColor,
-                )
-                Text(
-                    amount,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = textColor,
-                )
-                Text(
-                    countText,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = textColor,
-                )
+            CompositionLocalProvider(LocalLayoutDirection provides textDirection) {
+                Column(
+                    modifier = Modifier
+                        .shadow(2.dp, shape)
+                        .background(MaterialTheme.colorScheme.inverseSurface, shape)
+                        .padding(
+                            horizontal = 10.dp,
+                            vertical = 6.dp,
+                        ),
+                ) {
+                    Text(
+                        name,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = textColor,
+                    )
+                    Text(
+                        amount,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = textColor,
+                    )
+                    Text(
+                        countText,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = textColor,
+                    )
+                }
             }
         },
     ) { measurables, constraints ->

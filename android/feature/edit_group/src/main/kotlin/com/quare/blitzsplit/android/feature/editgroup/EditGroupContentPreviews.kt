@@ -5,6 +5,7 @@ import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
 import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.core.expenses.domain.model.DebtSimplificationSummary
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
@@ -301,4 +302,5 @@ private fun buildPreviewState(
     isChangingSimplifyDebts = false,
     simplifyConflict = null,
     showsSimplifyUnavailableNotice = false,
+    reminder = GroupReminder.Default,
 )

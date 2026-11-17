@@ -53,17 +53,17 @@ enum GroupStatsCopy {
         // An interval needs its end after its start: noon of the last day
         let last = ExpenseFormat.date(of: end).addingTimeInterval(12 * 60 * 60)
         if style == .month {
-            return first.formatted(.dateTime.month(.wide).year())
+            return first.formatted(.dateTime.month(.wide).year().locale(AppNumbers.locale))
         }
         if style == .days {
             let calendar = Calendar.current
             let thisYear = calendar.component(.year, from: .now)
             if calendar.component(.year, from: first) == thisYear, calendar.component(.year, from: last) == thisYear {
-                return (first..<last).formatted(.interval.day().month(.abbreviated))
+                return (first..<last).formatted(.interval.day().month(.abbreviated).locale(AppNumbers.locale))
             }
-            return (first..<last).formatted(.interval.day().month(.abbreviated).year())
+            return (first..<last).formatted(.interval.day().month(.abbreviated).year().locale(AppNumbers.locale))
         }
-        return (first..<last).formatted(.interval.month(.abbreviated).year())
+        return (first..<last).formatted(.interval.month(.abbreviated).year().locale(AppNumbers.locale))
     }
 
     /// The label of a bar under the chart: the day ("today"), the week's first day ("Oct 19"), the month or the year.
@@ -71,30 +71,32 @@ enum GroupStatsCopy {
     static func barLabel(_ bar: StatsBar, grain: StatsGrain, isSparse: Bool) -> String {
         let date = ExpenseFormat.date(of: bar.startMillis)
         if grain == .day {
-            return bar.isToday ? String(localized: "today", bundle: .appLanguage) : date.formatted(.dateTime.day())
+            return bar.isToday
+                ? String(localized: "today", bundle: .appLanguage)
+                : date.formatted(.dateTime.day().locale(AppNumbers.locale))
         }
         if grain == .week {
             return isSparse
-                ? date.formatted(.dateTime.month(.abbreviated))
-                : date.formatted(.dateTime.day().month(.abbreviated))
+                ? date.formatted(.dateTime.month(.abbreviated).locale(AppNumbers.locale))
+                : date.formatted(.dateTime.day().month(.abbreviated).locale(AppNumbers.locale))
         }
-        if grain == .month { return date.formatted(.dateTime.month(.abbreviated)) }
-        return date.formatted(.dateTime.year())
+        if grain == .month { return date.formatted(.dateTime.month(.abbreviated).locale(AppNumbers.locale)) }
+        return date.formatted(.dateTime.year().locale(AppNumbers.locale))
     }
 
     /// What a bar names in a sentence: "Oct 28", "Oct 26 – Nov 1", "July" or "2025".
     static func barName(_ bar: StatsBar, grain: StatsGrain) -> String {
         let date = ExpenseFormat.date(of: bar.startMillis)
-        if grain == .day { return date.formatted(.dateTime.day().month(.abbreviated)) }
+        if grain == .day { return date.formatted(.dateTime.day().month(.abbreviated).locale(AppNumbers.locale)) }
         if grain == .week { return week(bar) }
-        if grain == .month { return date.formatted(.dateTime.month(.wide)) }
-        return date.formatted(.dateTime.year())
+        if grain == .month { return date.formatted(.dateTime.month(.wide).locale(AppNumbers.locale)) }
+        return date.formatted(.dateTime.year().locale(AppNumbers.locale))
     }
 
     private static func week(_ bar: StatsBar) -> String {
         let first = ExpenseFormat.date(of: bar.startMillis)
         let last = ExpenseFormat.date(of: bar.endMillis).addingTimeInterval(12 * 60 * 60)
-        return (first..<last).formatted(.interval.day().month(.abbreviated))
+        return (first..<last).formatted(.interval.day().month(.abbreviated).locale(AppNumbers.locale))
     }
 
     /// "Most expensive day: Oct 28,", before the amount.
@@ -120,7 +122,13 @@ enum GroupStatsCopy {
         if currency.isCrypto || !currency.isKnown { return currency.format(minor) }
         var major = Decimal(minor)
         for _ in 0..<Int(currency.fractionDigits) { major /= 10 }
-        return major.formatted(.currency(code: currency.code).notation(.compactName).precision(.significantDigits(1...2)))
+        let text = major.formatted(
+            .currency(code: currency.code).notation(.compactName).precision(.significantDigits(1...2))
+                .locale(AppNumbers.locale),
+        )
+        // Its symbol in an isolate of its own in a right-to-left language, as a whole amount's ("US$", never "$US")
+        guard RightToLeft.isAppLanguage, let range = text.range(of: currency.symbol) else { return text }
+        return RightToLeft.isolated(text.replacingCharacters(in: range, with: currency.fieldSymbol))
     }
 
     /// The chart's whole text for VoiceOver: "Spending by day: Oct 24 $561.00; Oct 25 nothing; …".
@@ -174,10 +182,12 @@ enum GroupStatsCopy {
     static func periodEmptyTitle(_ state: GroupStatsUiState) -> String {
         let date = ExpenseFormat.date(of: state.periodStartMillis)
         if state.period == .thisMonth || state.period == .lastMonth {
-            return String(localized: "No expenses in \(date.formatted(.dateTime.month(.wide)))", bundle: .appLanguage)
+            let month = date.formatted(.dateTime.month(.wide).locale(AppNumbers.locale))
+            return String(localized: "No expenses in \(month)", bundle: .appLanguage)
         }
         if state.period == .thisYear {
-            return String(localized: "No expenses in \(date.formatted(.dateTime.year()))", bundle: .appLanguage)
+            let year = date.formatted(.dateTime.year().locale(AppNumbers.locale))
+            return String(localized: "No expenses in \(year)", bundle: .appLanguage)
         }
         return String(localized: "No expenses in that period", bundle: .appLanguage)
     }

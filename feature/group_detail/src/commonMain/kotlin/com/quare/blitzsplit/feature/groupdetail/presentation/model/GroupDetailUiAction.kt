@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.groupdetail.presentation.model
 
 import com.quare.blitzsplit.core.expenses.export.GroupExportFile
+import com.quare.blitzsplit.core.groups.domain.model.ReminderCalendarEvent
 
 sealed interface GroupDetailUiAction {
     // Why: "Export group data" made its file, which the UI hands to the system to save or share.
@@ -19,6 +20,11 @@ sealed interface GroupDetailUiAction {
 
     // Why: a bill deleted from its ⋮ on the list couldn't be, which is rare enough to just say so; it is still there.
     data object ShowBillDeleteError : GroupDetailUiAction
+
+    // Why: "Add to calendar" after joining: the UI hands the repeating event to the device's calendar.
+    class AddReminderToCalendar(
+        val event: ReminderCalendarEvent,
+    ) : GroupDetailUiAction
 
     // Why: the word couldn't go into the map; the bill is saved anyway.
     data object ShowTeachError : GroupDetailUiAction

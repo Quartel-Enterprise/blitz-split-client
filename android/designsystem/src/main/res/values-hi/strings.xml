@@ -308,4 +308,19 @@
     <string name="designsystem_range_start">शुरू की तारीख</string>
     <string name="designsystem_range_end">आखिरी तारीख</string>
     <string name="designsystem_range_none">कुछ नहीं चुना गया</string>
+    <string name="designsystem_reminder_title">ग्रुप रिमाइंडर</string>
+    <string name="designsystem_reminder_switch">सदस्यों को हिसाब चुकाने की याद दिलाएं</string>
+    <string name="designsystem_reminder_caption">जिन सदस्यों को पैसे देने हैं, उन्हें उनके अपने समय के हिसाब से नोटिफ़िकेशन मिलता है।</string>
+    <string name="designsystem_reminder_weekly">हर हफ़्ते</string>
+    <string name="designsystem_reminder_monthly">हर महीने</string>
+    <string name="designsystem_reminder_time">समय</string>
+    <string name="designsystem_reminder_day_of_month">महीने का दिन</string>
+    <string name="designsystem_reminder_calendar_new">मेरे कैलेंडर में जोड़ें</string>
+    <string name="designsystem_reminder_calendar_new_caption">ग्रुप बनने पर आपके कैलेंडर में दोहराने वाला इवेंट जुड़ जाता है।</string>
+    <string name="designsystem_reminder_calendar">कैलेंडर में जोड़ें</string>
+    <string name="designsystem_reminder_calendar_join">रिमाइंडर को अपने कैलेंडर में जोड़ें</string>
+    <string name="designsystem_reminder_schedule_weekly">हर %1$s को %2$s पर</string>
+    <string name="designsystem_reminder_schedule_monthly">हर महीने %1$d तारीख़ को %2$s पर</string>
+    <string name="designsystem_reminder_event_title">हिसाब चुकाएं: %1$s</string>
+    <string name="designsystem_reminder_event_description">%1$s में हिसाब चुकाने का समय हो गया है।</string>
 </resources>

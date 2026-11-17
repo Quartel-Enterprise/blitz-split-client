@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">الإشعارات</string>
+    <string name="notification_settings_denied_title">إشعارات Blitz Split متوقفة على Android.</string>
+    <string name="notification_settings_denied_body">يمكن تشغيلها من إعدادات النظام لتلقي الإشعارات الفورية أدناه. يواصل الجرس العمل.</string>
+    <string name="notification_settings_open_settings">فتح الإعدادات</string>
+    <string name="notification_settings_refused_body">يتيح Android السماح بها مرة أخرى لتلقي الإشعارات الفورية أدناه. يواصل الجرس العمل.</string>
+    <string name="notification_settings_turn_on">تشغيل</string>
+    <string name="notification_settings_blocked_in_android">محظور في Android</string>
+    <string name="notification_settings_open_channel_settings_description">فتح إعدادات Android لـ %1$s</string>
+    <string name="notification_settings_push_switch">الإشعارات الفورية</string>
+    <string name="notification_settings_push_switch_detail">على هذا الجهاز فقط</string>
+    <string name="notification_settings_section">إشعاري بشأن</string>
+    <string name="notification_settings_push">فوري</string>
+    <string name="notification_settings_in_app">داخل التطبيق</string>
+    <string name="notification_settings_toggle_description">%1$s، %2$s</string>
+    <string name="notification_settings_legend">«فوري» يرسل إشعارًا إلى هذا الجهاز. «داخل التطبيق» يميّزه كجديد على الجرس وفي «النشاط»؛ وعند إيقافه، يظل ظاهرًا في «النشاط» كمقروء.</string>
+    <string name="notification_settings_bills">الفواتير</string>
+    <string name="notification_settings_bills_detail">الفواتير الجديدة أو المعدّلة أو المحذوفة التي تشملك</string>
+    <string name="notification_settings_payments">الدفعات والتسويات</string>
+    <string name="notification_settings_payments_detail">الدفعات منك أو إليك، والديون المبسّطة</string>
+    <string name="notification_settings_comments">التعليقات</string>
+    <string name="notification_settings_comments_detail">على الفواتير التي تشملك والمحادثات التي شاركت فيها</string>
+    <string name="notification_settings_people_and_groups">الأشخاص والمجموعات</string>
+    <string name="notification_settings_people_and_groups_detail">من ينضم إلى مجموعاتك أو يغادرها، وما يتغير فيها</string>
+    <string name="notification_settings_payment_requests">طلبات الدفع</string>
+    <string name="notification_settings_payment_requests_detail">عندما يطلب منك شخص ما الدفع</string>
+    <string name="notification_settings_balance_reminder">تذكير بالرصيد المفتوح</string>
+    <string name="notification_settings_balance_reminder_detail">مرة في الأسبوع، إذا وُجد رصيد مفتوح</string>
+    <string name="notification_settings_footer">تصل الإشعارات عند توفر الإنترنت. لكتم مجموعة، يمكن استخدام القائمة داخلها.</string>
+</resources>

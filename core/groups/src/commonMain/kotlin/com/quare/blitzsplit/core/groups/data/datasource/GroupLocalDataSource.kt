@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.core.groups.data.datasource
 
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.provider.room.entity.GroupEntity
 import com.quare.blitzsplit.core.provider.room.entity.GroupMemberEntity
 import com.quare.blitzsplit.core.provider.room.entity.MemberPhotoEntity
@@ -56,7 +57,14 @@ interface GroupLocalDataSource {
         photoUrl: String?,
         pendingPhoto: ByteArray?,
         currency: String,
+        reminder: GroupReminder,
         updatedAt: Long,
+    )
+
+    // Why: "Dispensar" on the reminder banner, this device only.
+    suspend fun dismissReminder(
+        id: String,
+        occurrenceAt: Long,
     )
 
     // Why: "Divisão padrão" alone; the incomes of "By income" are GroupIncomeLocalDataSource's.

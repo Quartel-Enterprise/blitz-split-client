@@ -38,10 +38,10 @@ export function DayRowsTable({ label, children }: { label: string; children: Rea
           <span role="columnheader" className="px-4">
             {t('groupDetail_columnExpense')}
           </span>
-          <span role="columnheader" className="px-4 text-right">
+          <span role="columnheader" className="px-4 text-end">
             {t('groupDetail_columnTotal')}
           </span>
-          <span role="columnheader" className="px-4 text-right">
+          <span role="columnheader" className="px-4 text-end">
             {t('groupDetail_columnBalance')}
           </span>
           <span role="columnheader" className="sr-only">
@@ -71,10 +71,10 @@ export function DayRowGroup({
 }) {
   return (
     <div role="rowgroup" className="border-b [contain-intrinsic-size:auto_300px] [content-visibility:auto] last:border-b-0">
-      <div role="row" className={cn('flex h-8 items-center border-b bg-sidebar px-4 text-xs font-medium text-muted-foreground', action && 'pr-1.5')}>
+      <div role="row" className={cn('flex h-8 items-center border-b bg-sidebar px-4 text-xs font-medium text-muted-foreground', action && 'pe-1.5')}>
         <span role="rowheader">{formatDayLabel(dayStartMillis, relativeDay)}</span>
         {action && (
-          <span role="cell" className="ml-auto">
+          <span role="cell" className="ms-auto">
             <button
               type="button"
               onClick={action.onClick}
@@ -165,14 +165,14 @@ export function DayRow({
           </span>
         </span>
       </span>
-      <span role="cell" className="hidden px-4 text-right tabular-nums md:block">
+      <span role="cell" className="hidden px-4 text-end tabular-nums md:block">
         {amount}
       </span>
-      <span role="cell" className="pl-4 text-right md:px-4">
+      <span role="cell" className="ps-4 text-end md:px-4">
         {trailing}
       </span>
       {/* Why: the ⋮ is its own control: its clicks and keys never reach the line, which opens the bill. */}
-      <span role="cell" className="flex justify-center pr-1" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
+      <span role="cell" className="flex justify-center pe-1" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
         {hasMenu && <RowMenuButton title={title} options={options} open={isMenuOpen} onOpenChange={setMenuOpen} />}
       </span>
     </div>

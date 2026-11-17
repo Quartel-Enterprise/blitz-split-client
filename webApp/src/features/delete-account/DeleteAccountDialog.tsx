@@ -67,7 +67,7 @@ export function DeleteAccountDialog() {
   return (
     <Drawer open onOpenChange={onOpenChange}>
       <DrawerContent aria-describedby={undefined} className="data-[vaul-drawer-direction=bottom]:max-h-[92dvh]">
-        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
+        <DrawerHeader className="group-data-[vaul-drawer-direction=bottom]/drawer-content:text-start">
           <DrawerTitle>{title}</DrawerTitle>
         </DrawerHeader>
         <div className="overflow-y-auto px-4">{content}</div>

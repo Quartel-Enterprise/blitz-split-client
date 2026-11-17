@@ -545,6 +545,8 @@ class GroupDetailUiStateTest {
         simplification = null,
         simplifyConflict = null,
         showsExportFormats = false,
+        reminderBanner = null,
+        reminder = null,
     )
 
     private val day = ExpenseDay(

@@ -23,7 +23,7 @@ export function simplifyChangePane(
   return {
     leading: (
       <div className="mb-2 flex flex-col gap-4">
-        <div role="status" className="flex gap-3 rounded-lg border border-primary/20 bg-primary/10 p-3 text-left text-sm">
+        <div role="status" className="flex gap-3 rounded-lg border border-primary/20 bg-primary/10 p-3 text-start text-sm">
           <SimplifyIcon className="mt-0.5 size-5 text-primary" />
           <span className="flex flex-col gap-1">
             <strong className="font-semibold">{t(change.simplifiesDebts ? 'simplifyChange_bannerOn' : 'simplifyChange_bannerOff', params)}</strong>

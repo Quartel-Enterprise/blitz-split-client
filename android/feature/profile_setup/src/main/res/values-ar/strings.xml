@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">بماذا يناديك أصدقاؤك؟</string>
+    <string name="profile_setup_subtitle">يرى اسمك أعضاء مجموعاتك وكل من لديه رابط ملفك الشخصي.</string>
+    <string name="profile_setup_avatar_color">لون الصورة الرمزية</string>
+    <string name="profile_setup_add_photo">إضافة صورة</string>
+    <string name="profile_setup_photo_error">تعذر استخدام هذه الصورة. يمكن تجربة صورة أخرى.</string>
+    <string name="profile_setup_name_label">اسمك</string>
+    <string name="profile_setup_name_placeholder">فلان الفلاني</string>
+    <string name="profile_setup_name_too_short">الحد الأدنى من الأحرف: %d.</string>
+    <string name="profile_setup_name_too_long">الحد الأقصى من الأحرف: %d.</string>
+    <string name="profile_setup_name_hint">يمكن تغييره لاحقًا من الملف الشخصي.</string>
+    <string name="profile_setup_saved_locally">محفوظ على هذا الجهاز فقط حاليًا.</string>
+    <string name="profile_setup_continue">متابعة</string>
+</resources>

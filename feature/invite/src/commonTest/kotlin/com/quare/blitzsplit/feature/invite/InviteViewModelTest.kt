@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.invite
 
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.usecase.EncodeQrCode
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.RequestAddPerson
@@ -1270,6 +1271,8 @@ class InviteViewModelTest {
         isSimplifyDebtsPending = false,
         simplifyDebtsChangedBy = null,
         simplifyDebtsConflictBy = null,
+        reminder = GroupReminder.Default,
+        reminderDismissedAt = 0L,
     )
 
     // Why: a QR code that differs per text, so a case can tell which link was encoded.

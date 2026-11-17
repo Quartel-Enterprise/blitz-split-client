@@ -59,7 +59,7 @@ enum BillCopy {
 
     /// "Your share": what is owed without its sign, "+R$ 249.60" to get back, or "R$ 0.00".
     static func myPartAmount(_ minor: Int64, currency: GroupCurrency) -> String {
-        if minor > 0 { return "+\(currency.format(minor))" }
+        if minor > 0 { return currency.formatSigned(minor) }
         return currency.format(minor == .min ? .max : abs(minor))
     }
 
@@ -211,7 +211,7 @@ enum BillCopy {
         let changedAt = ExpenseFormat.date(of: conflict.changedAt)
         let ago = now.timeIntervalSince(changedAt) < 60
             ? String(localized: "just now", bundle: .appLanguage)
-            : changedAt.formatted(.relative(presentation: .numeric, unitsStyle: .wide))
+            : changedAt.formatted(.relative(presentation: .numeric, unitsStyle: .wide).locale(AppNumbers.locale))
         let lead = if conflict.changerIsMe {
             String(localized: "You changed this bill on another device \(ago).", bundle: .appLanguage)
         } else if let name = conflict.changerName {

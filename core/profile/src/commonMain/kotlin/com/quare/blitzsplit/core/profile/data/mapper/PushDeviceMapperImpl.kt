@@ -4,8 +4,11 @@ import com.quare.blitzsplit.core.profile.data.dto.RegisterPushDeviceParamsDto
 import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
+import kotlinx.datetime.TimeZone
 
-class PushDeviceMapperImpl : PushDeviceMapper {
+class PushDeviceMapperImpl(
+    private val timeZoneId: () -> String = { TimeZone.currentSystemDefault().id },
+) : PushDeviceMapper {
     override fun toParams(device: PushDevice): RegisterPushDeviceParamsDto = RegisterPushDeviceParamsDto(
         token = device.token,
         platform = when (device.platform) {
@@ -21,5 +24,6 @@ class PushDeviceMapperImpl : PushDeviceMapper {
         },
         webP256dh = device.webP256dh,
         webAuth = device.webAuth,
+        timeZone = timeZoneId(),
     )
 }

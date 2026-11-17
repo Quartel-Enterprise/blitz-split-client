@@ -95,7 +95,7 @@ export function ContactProfileView({
     // Why: where the row's name and balance land as the profile opens (data-profile-piece, lib/groupTransition).
     <section aria-label={t('contactProfile_pane', { name })} data-profile-page className="@container flex min-w-0 flex-col gap-5">
       {onBack && (
-        <Button variant="ghost" size="sm" onClick={onBack} className="-mb-1 -ml-2 self-start">
+        <Button variant="ghost" size="sm" onClick={onBack} className="-mb-1 -ms-2 self-start">
           <ChevronLeft />
           {backLabel ?? t('contacts_title')}
         </Button>
@@ -200,7 +200,7 @@ export function ContactProfileView({
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">{t('contactProfile_history', { name })}</h3>
             {state.hasMoreHistory && (
-              <Button variant="ghost" size="sm" onClick={() => presenter.seeAllHistory()} className="-mr-2 h-7">
+              <Button variant="ghost" size="sm" onClick={() => presenter.seeAllHistory()} className="-me-2 h-7">
                 {t('contactProfile_seeAll')}
               </Button>
             )}
@@ -372,7 +372,7 @@ function GroupsInCommon({ presenter, contact, isNetOfSeveralGroups }: { presente
         <div aria-hidden className={cn('hidden h-10 items-center border-b px-4 text-[13px] font-medium text-muted-foreground', columns)}>
           <span>{t('globalBalances_detailGroup')}</span>
           <span>{t('globalBalances_detailStatus')}</span>
-          <span className="text-right">{t('globalBalances_detailAmount')}</span>
+          <span className="text-end">{t('globalBalances_detailAmount')}</span>
         </div>
         <ul>
           {contact.groups.map((group) => (
@@ -381,7 +381,7 @@ function GroupsInCommon({ presenter, contact, isNetOfSeveralGroups }: { presente
                 type="button"
                 onClick={() => presenter.openGroup(group.groupId)}
                 className={cn(
-                  'flex min-h-13 w-full items-center gap-3 px-3.5 py-2 text-left text-sm outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring @md:h-12 @md:min-h-0 @md:px-4 @md:py-0',
+                  'flex min-h-13 w-full items-center gap-3 px-3.5 py-2 text-start text-sm outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-inset focus-visible:ring-ring @md:h-12 @md:min-h-0 @md:px-4 @md:py-0',
                   columns,
                 )}
               >
@@ -393,7 +393,7 @@ function GroupsInCommon({ presenter, contact, isNetOfSeveralGroups }: { presente
                   </span>
                 </span>
                 <span className="hidden text-muted-foreground @md:block">{netWord(group.amountMinor)}</span>
-                <span className={cn('text-right font-semibold whitespace-nowrap tabular-nums', balanceTone(group.amountMinor))}>
+                <span className={cn('text-end font-semibold whitespace-nowrap tabular-nums', balanceTone(group.amountMinor))}>
                   {formatSignedMoney(group.amountMinor, group.currency, group.fractionDigits)}
                 </span>
               </button>
@@ -403,7 +403,7 @@ function GroupsInCommon({ presenter, contact, isNetOfSeveralGroups }: { presente
         <div className={cn('flex h-11 items-center justify-between gap-3 bg-muted px-3.5 text-sm font-semibold @md:px-4', columns)}>
           <span>{t(isNetOfSeveralGroups ? 'globalBalances_net' : 'globalBalances_total')}</span>
           <span className="hidden font-medium text-muted-foreground @md:block">{netWord(contact.netMinor)}</span>
-          <span className={cn('text-right whitespace-nowrap tabular-nums', balanceTone(contact.netMinor))}>
+          <span className={cn('text-end whitespace-nowrap tabular-nums', balanceTone(contact.netMinor))}>
             {formatSignedMoney(contact.netMinor, contact.currency, contact.fractionDigits)}
           </span>
         </div>

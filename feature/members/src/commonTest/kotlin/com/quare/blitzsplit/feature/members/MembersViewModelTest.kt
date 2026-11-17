@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.expenses.testing.FakeSettlementRepository
 import com.quare.blitzsplit.core.groups.data.repository.InMemoryAddPersonRequestRepository
 import com.quare.blitzsplit.core.groups.domain.model.Group
 import com.quare.blitzsplit.core.groups.domain.model.GroupMember
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.AddMemberUseCase
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CheckMemberNameUseCase
@@ -4203,6 +4204,8 @@ class MembersViewModelTest {
         isSimplifyDebtsPending = false,
         simplifyDebtsChangedBy = null,
         simplifyDebtsConflictBy = null,
+        reminder = GroupReminder.Default,
+        reminderDismissedAt = 0L,
     )
 
     private val pierreWithCode = pierre.copy(inviteCode = "p1Er2e")

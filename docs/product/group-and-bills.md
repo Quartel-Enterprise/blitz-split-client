@@ -22,6 +22,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     it on them ("6 members"), while the group's total spent lives in Statistics. On an Android phone upright that bar folds to its one line on a scroll down
     and opens again on a scroll up, from anywhere in the list; wider, it opens only back at the top. On iPhone the
     bars stay put (see [the bars on scroll](home-and-shell.md)).
+  - "Time to settle up" (the group's reminder, [members-and-payments.md](members-and-payments.md#group-reminder)): a banner on
+    top of Expenses, Balances and Members, drawn only to someone who owes in the group once its reminder's time has
+    arrived or passed, with "Settle up" (the balance card's button) and "Dismiss" (until the next occurrence, this device only).
   - "See all" at the end of Expenses' first day heading ("Today … See all", drawn as Home's "See all" beside "Latest
     expenses"; on the Mac, whose table's day headings take no button, at the right over the table) opens "All
     expenses" with the group already picked in its Group filter (Pierre's call, beta feedback of 2026-11-16;

@@ -115,6 +115,8 @@ internal fun SampleTrip.groupDetailState(tab: GroupTab): GroupDetailUiState {
         simplification = null,
         simplifyConflict = null,
         showsExportFormats = false,
+        reminderBanner = null,
+        reminder = null,
     )
 }
 

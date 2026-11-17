@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.editgroup.presentation.model
 
+import com.quare.blitzsplit.core.groups.domain.model.ReminderKind
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
@@ -54,6 +55,29 @@ sealed interface EditGroupUiEvent : UiEvent {
             is OnCurrencySelected -> EventAnalytics.Manual("group_currency_selected")
 
             OnDefaultSplitClicked -> EventAnalytics.Automatic("default_split_clicked")
+
+            is OnReminderEnabledChanged -> EventAnalytics.Automatic(
+                "group_reminder_enabled_changed",
+                mapOf("enabled" to isEnabled, "source" to "edit_group"),
+            )
+
+            is OnReminderKindSelected -> EventAnalytics.Automatic(
+                "group_reminder_kind_selected",
+                mapOf("kind" to kind.code, "source" to "edit_group"),
+            )
+
+            is OnReminderDaySelected -> EventAnalytics.Automatic(
+                "group_reminder_day_selected",
+                mapOf("source" to "edit_group"),
+            )
+
+            is OnReminderTimeSelected -> EventAnalytics.Automatic(
+                "group_reminder_time_selected",
+                mapOf("source" to "edit_group"),
+            )
+
+            // Why: only when the group's reminder is on and the event could be built.
+            OnAddReminderToCalendarClicked -> EventAnalytics.Manual("group_reminder_calendar_clicked")
 
             OnSaveClicked -> EventAnalytics.Automatic("edit_group_save_clicked")
 
@@ -135,6 +159,29 @@ sealed interface EditGroupUiEvent : UiEvent {
 
     // Why: "Divisão padrão" opens over the form, which keeps what was typed.
     data object OnDefaultSplitClicked : EditGroupUiEvent
+
+    // Why: the reminder's switch: off sends no push and shows no banner for the group.
+    data class OnReminderEnabledChanged(
+        val isEnabled: Boolean,
+    ) : EditGroupUiEvent
+
+    // Why: "Weekly" or "Monthly", whose day goes back to the first one the kind has.
+    data class OnReminderKindSelected(
+        val kind: ReminderKind,
+    ) : EditGroupUiEvent
+
+    // Why: the weekday (1 Monday to 7 Sunday) while weekly, the day of the month (1 to 31) while monthly.
+    data class OnReminderDaySelected(
+        val day: Int,
+    ) : EditGroupUiEvent
+
+    // Why: the time as minutes after midnight, in the member's own clock.
+    data class OnReminderTimeSelected(
+        val minute: Int,
+    ) : EditGroupUiEvent
+
+    // Why: "Add to calendar" under the reminder: hands the repeating event to the device's calendar.
+    data object OnAddReminderToCalendarClicked : EditGroupUiEvent
 
     data object OnSaveClicked : EditGroupUiEvent
 

@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean and Hindi: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi and Arabic: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -89,7 +89,20 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Split, ends a sentence with the danda "।" (the code too, where it finishes one: `fullStopUi`, `WordGap.fullStop`,
     `fullStop`), and its plurals have one and other, "one" covering 0 too. Its past puts the ergative "ने" after the
     actor, apart after a name and one word with the user's "आपने", so the activity sentences follow Korean's rule
-    with "ने" ([activity-and-push.md](activity-and-push.md)). The brand
+    with "ने" ([activity-and-push.md](activity-and-push.md)). Arabic (Pierre's call) is one variant, Modern Standard Arabic,
+    for every `ar` tag (ar-SA, ar-AE, ar-EG, ar-MA…), talks to the user in the singular "أنت" (Arabic has no polite
+    "you" an app would use) and calls the app Blitz Split. It reads right to left, so every UI mirrors in it (the rules
+    are in [responsive-layouts.md](../architecture/responsive-layouts.md#right-to-left)), and it writes numbers,
+    amounts and dates with Latin digits (0–9), not Arabic-Indic ones, so the amount fields read what the number
+    keyboard types (a call taken without Pierre: the Gulf and the Maghreb both read them, and one set of digits keeps
+    parsing simple). On the Apple apps a count inside a sentence ("٣ عناصر") follows the device's own digits setting
+    (Language & Region › Numbers), since SwiftUI finds its strings by the locale's exact identifier. Since Arabic's verbs, adjectives and "you" say a gender the app never knows (Pierre's call, for
+    the user and for everyone else), Arabic prefers wording without one: verbal nouns on buttons and titles ("إضافة",
+    "حفظ"), labels ("الدافع: Ana"), the passive ("تم الحفظ") and "على Ana لك" for a debt; only where none fits does it
+    use the masculine as the generic, never "(ة)" or a slash. Its activity rows are "Ana: تقسيم «عشاء»", the actor and
+    a verbal noun, so the user's own rows need no other verb ([activity-and-push.md](activity-and-push.md)). Its plurals
+    have six forms (zero, one, two, few: 3–10, many: 11–99, other), in every plural of the three platforms (the web
+    writes an `…Other` message as "zero|one|two|few|many|other"). The brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
@@ -241,6 +254,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     smaller until it updates, as the rupiah did.
   - The Indian rupee (INR) follows the won (Pierre's call, with Hindi), and starts a new group in India. It has 2
     decimals and the usual 100 million cap (about US$ 1.2 million), so an app version from before it shows its
+    amounts by the raw code, with the right decimals.
+  - The Saudi riyal (SAR), the UAE dirham (AED), the Egyptian pound (EGP) and the Moroccan dirham (MAD) follow the
+    won (Pierre's call, with Arabic), and start a new group in Saudi Arabia, the United Arab Emirates, Egypt and
+    Morocco. All four have 2 decimals and the usual 100 million cap, so an app version from before them shows their
     amounts by the raw code, with the right decimals.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.

@@ -276,6 +276,20 @@ object SampleTrips {
             court = "कोर्ट का किराया",
             items = listOf("मार्गेरिटा पिज़्ज़ा", "बुराटा", "मशरूम रिसोट्टो", "तिरामिसु", "प्रोसेको", "एस्प्रेसो"),
         ),
+        "ar" to SampleTripCopy(
+            groupName = "رحلة لشبونة",
+            people = listOf("ليلى", "عمر", "نور", "يوسف", "سارة"),
+            dinner = "عشاء في التراتوريا",
+            apartment = "شقة في ألفاما",
+            groceries = "مشتريات السوبرماركت",
+            carRental = "استئجار سيارة",
+            boatTour = "جولة بالقارب",
+            taxi = "تاكسي المطار",
+            roommates = "السكن المشترك",
+            soccer = "كرة القدم يوم الجمعة",
+            court = "حجز الملعب",
+            items = listOf("بيتزا مارغريتا", "بوراتا", "ريزوتو بالفطر", "تيراميسو", "بروسيكو", "إسبريسو"),
+        ),
     )
     private val currencies = mapOf(
         "en" to GroupCurrency.USD,
@@ -295,6 +309,7 @@ object SampleTrips {
         "ja" to GroupCurrency.JPY,
         "ko" to GroupCurrency.KRW,
         "hi" to GroupCurrency.INR,
+        "ar" to GroupCurrency.SAR,
     )
 
     fun avatarColorOf(person: Int): AvatarColor = avatarColors[person % avatarColors.size]
@@ -476,6 +491,7 @@ object SampleTrips {
             GroupCurrency.JPY -> 150.0 to 10L
             GroupCurrency.KRW -> 1_400.0 to 1_000L
             GroupCurrency.INR -> 85.0 to 1_000L
+            GroupCurrency.SAR -> 3.75 to 100L
             else -> 1.0 to 50L
         }
         val minor = usdCents / CENTS_PER_DOLLAR * rate * currency.minorPerMajor

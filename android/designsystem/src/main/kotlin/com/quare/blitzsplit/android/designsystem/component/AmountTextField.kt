@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.quare.blitzsplit.android.designsystem.format.withLeftToRightDigits
 
 /*
  * Why: the large amount of Rachar conta and Registrar pagamento, the currency's symbol before it, the number
@@ -51,7 +52,9 @@ fun AmountTextField(
         onValueChange = amountField.onValueChange,
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
-        textStyle = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+        textStyle = MaterialTheme.typography.displaySmall
+            .copy(fontWeight = FontWeight.Bold)
+            .withLeftToRightDigits(),
         label = { Text(label) },
         interactionSource = interactionSource,
         prefix = {

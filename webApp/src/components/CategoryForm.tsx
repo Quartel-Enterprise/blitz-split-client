@@ -48,7 +48,7 @@ export function categoryFormPane(actions: CategoryFormActions, form: JsCategoryF
     footer: (
       <>
         {form.isEditing && (
-          <Button key="category-delete" variant="ghost" className="text-destructive sm:mr-auto" disabled={!form.canDelete} onClick={() => actions.askToDelete()}>
+          <Button key="category-delete" variant="ghost" className="text-destructive sm:me-auto" disabled={!form.canDelete} onClick={() => actions.askToDelete()}>
             {t('splitBill_categoryDelete')}
           </Button>
         )}

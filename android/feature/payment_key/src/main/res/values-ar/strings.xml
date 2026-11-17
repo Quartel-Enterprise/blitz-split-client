@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">مفتاح Pix جديد</string>
+    <string name="payment_key_title_pix_edit">تعديل مفتاح Pix</string>
+    <string name="payment_key_title_bitcoin_new">مفتاح Bitcoin جديد</string>
+    <string name="payment_key_title_bitcoin_edit">تعديل مفتاح Bitcoin</string>
+    <string name="payment_key_save">حفظ</string>
+
+    <string name="payment_key_pix_intro">يظهر هذا المفتاح لمن يدفع لك عند التسوية. ما نوع المفتاح؟</string>
+    <string name="payment_key_pix_question">ما نوع المفتاح؟</string>
+    <string name="payment_key_pix_explanation">يظهر هذا المفتاح لمن يدفع لك عند التسوية.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">الهاتف</string>
+    <string name="payment_key_type_email">البريد الإلكتروني</string>
+    <string name="payment_key_type_random">عشوائي</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">رقم الجوال مع رمز المنطقة</string>
+    <string name="payment_key_label_email">البريد الإلكتروني</string>
+    <string name="payment_key_label_random">مفتاح عشوائي</string>
+
+    <string name="payment_key_bitcoin_intro">ما طريقة الاستلام المفضلة؟</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">سريع، برسوم منخفضة</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">على سلسلة الكتل</string>
+    <string name="payment_key_label_lightning">Lightning Address أو LNURL</string>
+    <string name="payment_key_label_onchain">عنوان Bitcoin</string>
+
+    <string name="payment_key_paste">لصق</string>
+
+    <string name="payment_key_hint_cpf">الصيغة 000.000.000-00</string>
+    <string name="payment_key_hint_phone">الصيغة +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">الصيغة name@domain.com</string>
+    <string name="payment_key_hint_random">32 حرفًا ورقمًا، كما يعرضه البنك</string>
+    <string name="payment_key_hint_lightning">مثل name@wallet.com أو LNURL1…</string>
+    <string name="payment_key_hint_onchain">عنوان على الشبكة الرئيسية يبدأ بـ bc1q أو bc1p</string>
+
+    <string name="payment_key_valid_cpf">الصيغة 000.000.000-00 · أرقام التحقق مطابقة</string>
+    <string name="payment_key_valid_phone">الصيغة +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">الصيغة name@domain.com</string>
+    <string name="payment_key_valid_random">تم التعرف على المفتاح العشوائي (32 حرفًا)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address صالح</string>
+    <string name="payment_key_valid_lnurl">LNURL صالح</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · الشبكة الرئيسية</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · الشبكة الرئيسية</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF غير صالح: أرقام التحقق غير مطابقة.</string>
+    <string name="payment_key_error_invalid_phone">رقم الجوال غير مكتمل: يلزم رمز المنطقة و9 أرقام تبدأ بـ 9.</string>
+    <string name="payment_key_error_invalid_email">البريد الإلكتروني غير مكتمل: النطاق ناقص، مثل .com أو .com.br.</string>
+    <string name="payment_key_error_invalid_random">المفتاح العشوائي غير مكتمل: يتكون من 32 حرفًا ورقمًا.</string>
+    <string name="payment_key_error_invalid_lightning">هذا ليس Lightning Address (name@wallet) ولا LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">هذه فاتورة Lightning (lnbc…): تُدفع مرة واحدة وتنتهي صلاحيتها. يمكن لصق Lightning Address أو LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">عنوان غير صالح. يلزم عنوان bc1q أو bc1p على الشبكة الرئيسية.</string>
+    <string name="payment_key_error_testnet_address">هذا عنوان على شبكة الاختبار (tb1…). تعمل هنا شبكة Bitcoin الرئيسية فقط، بعناوين bc1….</string>
+    <string name="payment_key_error_already_saved">هذا المفتاح محفوظ لديك بالفعل.</string>
+
+    <string name="payment_key_switched_to_onchain">هذا عنوان On-chain، لذا تم التبديل إلى On-chain.</string>
+    <string name="payment_key_switched_to_lightning">هذا Lightning Address، لذا تم التبديل إلى Lightning.</string>
+    <string name="payment_key_cpf_notice">يرى من يدفع لك رقم CPF كاملًا. لتجنب مشاركته، يمكن استخدام مفتاح الهاتف أو البريد الإلكتروني أو مفتاح عشوائي.</string>
+    <string name="payment_key_held_notice">يمكن أن يكون لديك مفتاح Pix واحد فقط من هذا النوع، وهذا هو المفتاح المحفوظ. يمكن تغييره هنا عند الحاجة.</string>
+
+    <string name="payment_key_accepted_title">المقبول لدينا</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">مفتاح Pix الافتراضي</string>
+    <string name="payment_key_default_bitcoin_title">مفتاح Bitcoin الافتراضي</string>
+    <string name="payment_key_default_pix_detail">يظهر أولًا عند التسوية.</string>
+    <string name="payment_key_default_bitcoin_detail">يظهر أولًا عند الدفع بـ BTC.</string>
+    <string name="payment_key_default_now">الحالي: %1$s.</string>
+    <string name="payment_key_default_locked_editing">لتغييره، يجب جعل مفتاح آخر هو الافتراضي.</string>
+    <string name="payment_key_default_locked_new">أول مفتاح لديك من هذا النوع هو الافتراضي.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">الهاتف</string>
+    <string name="payment_key_default_type_email">البريد الإلكتروني</string>
+    <string name="payment_key_default_type_random">المفتاح العشوائي</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">On-chain</string>
+
+    <string name="payment_key_footer_pix">لا ينقل Blitz Split الأموال: يتم الدفع من تطبيق البنك لدى الدافع. يجب التأكد من أن المفتاح باسمك.</string>
+    <string name="payment_key_footer_bitcoin">عند التسوية، نعرض المبلغ بوحدة sats حسب السعر الحالي. إنه تقدير فقط: يؤكده الدافع في محفظته.</string>
+
+    <string name="payment_key_delete">حذف المفتاح</string>
+    <string name="payment_key_delete_title">حذف هذا المفتاح؟</string>
+    <string name="payment_key_delete_body">لن يظهر بعد الآن لمن عليهم لك عند التسوية.</string>
+    <string name="payment_key_delete_confirm">حذف</string>
+</resources>

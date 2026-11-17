@@ -1,6 +1,8 @@
 package com.quare.blitzsplit.core.groups.domain
 
+import com.quare.blitzsplit.core.groups.domain.model.GroupReminder
 import com.quare.blitzsplit.core.groups.domain.model.NewGroupMember
+import com.quare.blitzsplit.core.groups.domain.model.ReminderKind
 import com.quare.blitzsplit.core.groups.domain.usecase.impl.CreateGroupUseCase
 import com.quare.blitzsplit.core.groups.testing.FakeGroupRepository
 import com.quare.blitzsplit.core.model.AvatarColor
@@ -36,6 +38,7 @@ class CreateGroupUseCaseTest {
                 photo = null,
                 currency = GroupCurrency.BRL,
                 members = listOf(me),
+                reminder = GroupReminder.Default,
             )
 
             // Then
@@ -269,6 +272,7 @@ class CreateGroupUseCaseTest {
                 photo = null,
                 currency = GroupCurrency.BRL,
                 members = listOf(me, ana),
+                reminder = GroupReminder.Default,
             )
 
             // Then
@@ -316,6 +320,7 @@ class CreateGroupUseCaseTest {
             photo = null,
             currency = GroupCurrency.BRL,
             members = listOf(me),
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -339,6 +344,7 @@ class CreateGroupUseCaseTest {
             photo = photo,
             currency = GroupCurrency.BRL,
             members = listOf(me),
+            reminder = GroupReminder.Default,
         )
 
         // Then
@@ -361,9 +367,45 @@ class CreateGroupUseCaseTest {
         assertNull(created.simplifyDebtsConflictBy)
     }
 
+    @Test
+    fun `GIVEN a monthly reminder chosen WHEN creating the group THEN the new group carries it`() = runTest {
+        // Given
+        prepareScenario()
+        val reminder = GroupReminder(
+            isEnabled = true,
+            kind = ReminderKind.MONTHLY,
+            day = 31,
+            minute = 1_080,
+        )
+
+        // When
+        createGroup(reminder = reminder)
+
+        // Then
+        assertEquals(reminder, repository.createdGroups.single().reminder)
+    }
+
+    @Test
+    fun `GIVEN the reminder turned off WHEN creating the group THEN the new group has it off`() = runTest {
+        // Given
+        prepareScenario()
+        val reminder = GroupReminder.Default.copy(isEnabled = false)
+
+        // When
+        createGroup(reminder = reminder)
+
+        // Then
+        assertFalse(
+            repository.createdGroups
+                .single()
+                .reminder.isEnabled,
+        )
+    }
+
     private suspend fun createGroup(
         name: String = "Viagem Floripa",
         members: List<NewGroupMember> = listOf(me),
+        reminder: GroupReminder = GroupReminder.Default,
     ): String = useCase(
         name = name,
         type = GroupType.TRIP,
@@ -372,6 +414,7 @@ class CreateGroupUseCaseTest {
         photo = null,
         currency = GroupCurrency.BRL,
         members = members,
+        reminder = reminder,
     ).getOrThrow()
 
     private val me = NewGroupMember(

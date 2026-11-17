@@ -149,14 +149,14 @@ export function AllExpensesFilterBar({ presenter, state }: { presenter: AllExpen
   return (
     <div className="flex flex-col gap-2.5">
       <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute top-1/2 inset-s-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={t('allExpenses_search')}
           aria-label={t('allExpenses_search')}
-          className="pl-9"
+          className="ps-9"
         />
       </div>
       <div className="flex flex-wrap items-center gap-2">
@@ -225,7 +225,7 @@ function CheckedItem({ label, leading, isChecked, keepsOpen, onSelect }: { label
     >
       {leading}
       <span className="flex-1 truncate">{label}</span>
-      {isChecked && <Check className="ml-auto" />}
+      {isChecked && <Check className="ms-auto" />}
     </DropdownMenuItem>
   )
 }

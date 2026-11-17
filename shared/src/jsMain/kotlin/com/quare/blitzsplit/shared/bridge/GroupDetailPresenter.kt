@@ -147,6 +147,9 @@ class JsGroupDetailState(
     val simplifyConflict: JsSimplifyConflict?,
     // Why: "Export group data"'s formats, open while true.
     val showsExportFormats: Boolean,
+    // Why: "Time to settle up" for a debtor, null otherwise; and "Add to calendar" beside "You joined as…".
+    val reminderBanner: JsReminderBanner?,
+    val showsJoinCalendarOffer: Boolean,
 )
 
 /*
@@ -238,6 +241,8 @@ class GroupDetailPresenter(
                 showsSimplificationCard = state.showsSimplificationCard,
                 simplifyConflict = state.simplifyConflict?.let(::toJsSimplifyConflict),
                 showsExportFormats = state.showsExportFormats,
+                reminderBanner = state.reminderBanner?.let(::jsReminderBannerOf),
+                showsJoinCalendarOffer = state.showsJoinCalendarOffer,
             )
         }
         val watch = FlowWatcher(states).observe(onChange)
@@ -257,6 +262,7 @@ class GroupDetailPresenter(
                 GroupDetailUiAction.ShowBillDeleteError -> "bill-delete-error"
                 GroupDetailUiAction.ShowExportError -> "export-error"
                 is GroupDetailUiAction.SaveExport -> null
+                is GroupDetailUiAction.AddReminderToCalendar -> null
             }
         }
         val watch = FlowWatcher(actions).observe(onAction)
@@ -270,6 +276,23 @@ class GroupDetailPresenter(
         }
         val watch = FlowWatcher(files).observe(onExport)
         return JsWatch(watch::cancel)
+    }
+
+    // Why: the .ics of "Add to calendar" after joining, which the page downloads.
+    fun observeCalendarEvents(onEvent: (JsReminderCalendarEvent) -> Unit): JsWatch {
+        val events = viewModel.uiAction.filterIsInstance<GroupDetailUiAction.AddReminderToCalendar>().map { action ->
+            JsReminderCalendarEvent(action.event.groupName, action.event)
+        }
+        val watch = FlowWatcher(events).observe(onEvent)
+        return JsWatch(watch::cancel)
+    }
+
+    fun dismissReminderBanner() {
+        viewModel.onEvent(GroupDetailUiEvent.OnReminderBannerDismissed)
+    }
+
+    fun addReminderToCalendar() {
+        viewModel.onEvent(GroupDetailUiEvent.OnAddReminderToCalendarClicked)
     }
 
     fun back() {

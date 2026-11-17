@@ -81,7 +81,7 @@ export function CategoryTeachDialog({ presenter, teach }: { presenter: GroupDeta
                     role="radio"
                     aria-checked={isSelected}
                     onClick={() => presenter.pickTeachWord(word.key)}
-                    className="flex items-center gap-3 p-3 text-left hover:bg-accent"
+                    className="flex items-center gap-3 p-3 text-start hover:bg-accent"
                   >
                     <span aria-hidden className={cn('flex size-4 shrink-0 items-center justify-center rounded-full border-2', isSelected ? 'border-primary' : 'border-muted-foreground')}>
                       {isSelected && <span className="size-2 rounded-full bg-primary" />}

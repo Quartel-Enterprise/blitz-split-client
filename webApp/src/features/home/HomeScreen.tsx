@@ -80,7 +80,7 @@ export function HomeScreen() {
         {state.showsAppBanner && state.appInvite && <AppBanner invite={state.appInvite} onOpen={() => presenter.trackAppBannerOpen()} onDismiss={() => presenter.dismissAppBanner()} />}
         <div className="flex min-h-9 flex-col items-stretch gap-3 md:flex-row md:items-center">
           {/* Why: the sync status beside the title from the tablet up, in the phone's top bar below, never above the page. */}
-          <div className="flex min-w-0 items-center gap-3 md:mr-auto">
+          <div className="flex min-w-0 items-center gap-3 md:me-auto">
             {/* Why: the phone's bottom bar already names the page; the heading stays for screen readers. */}
             <h1 className="sr-only text-2xl leading-8 font-semibold tracking-tight md:not-sr-only">{t('home_title')}</h1>
             {hasSyncStatus && (
@@ -314,7 +314,7 @@ function NotificationCard({ presenter, isBlocked }: { presenter: HomePresenter; 
 /** A card of Início that asks for something: its icon, title and text, and its answers at the end. */
 function HomeActionCard({ id, icon: Icon, title, body, children }: { id: string; icon: LucideIcon; title: string; body: string; children: ReactNode }) {
   return (
-    <section role="note" aria-labelledby={id} className="flex flex-wrap items-center gap-3 rounded-lg border bg-card py-3 pr-3 pl-4">
+    <section role="note" aria-labelledby={id} className="flex flex-wrap items-center gap-3 rounded-lg border bg-card py-3 pe-3 ps-4">
       <Icon aria-hidden className="size-[18px] shrink-0 text-primary" />
       <span className="flex min-w-[200px] flex-1 flex-col gap-0.5">
         <strong id={id} className="text-sm font-semibold">
@@ -322,7 +322,7 @@ function HomeActionCard({ id, icon: Icon, title, body, children }: { id: string;
         </strong>
         <span className="text-[13px] text-muted-foreground">{body}</span>
       </span>
-      <span className="ml-auto flex items-center gap-2">{children}</span>
+      <span className="ms-auto flex items-center gap-2">{children}</span>
     </section>
   )
 }

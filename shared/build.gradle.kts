@@ -13,6 +13,7 @@ private val exportedToApple = listOf(
     ":core:presentation",
     ":core:navigation",
     ":core:expenses",
+    ":core:groups",
     ":core:activity",
     ":core:contacts",
     ":core:legal",
