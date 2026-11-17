@@ -121,6 +121,8 @@ class JsEditGroupState(
     // Why: "Ligado · 5 pagamentos em vez de 7"; null while it is off.
     val simplifications: Array<JsCurrencySimplification>,
     val canChangeSimplifyDebts: Boolean,
+    // Why: off for want of a third person (13.1c); the switch looks disabled but a click on it says why.
+    val isSimplifyDebtsUnavailable: Boolean,
     // Why: "Sem internet: os pagamentos sugeridos já mudaram…" in place of the note (13.1d).
     val showsSimplifyOfflineNotice: Boolean,
     val simplifyConfirmation: JsSimplifyConfirmation?,
@@ -186,6 +188,7 @@ class EditGroupPresenter(
                         )
                     }.toTypedArray(),
                 canChangeSimplifyDebts = state.canChangeSimplifyDebts,
+                isSimplifyDebtsUnavailable = state.isSimplifyDebtsUnavailable,
                 showsSimplifyOfflineNotice = state.showsSimplifyOfflineNotice,
                 simplifyConfirmation = state.simplifyConfirmation?.let(::toJsSimplifyConfirmation),
                 isChangingSimplifyDebts = state.isChangingSimplifyDebts,

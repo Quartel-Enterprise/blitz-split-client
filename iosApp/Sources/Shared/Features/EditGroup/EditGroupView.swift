@@ -366,7 +366,7 @@ private struct EditGroupPaymentsSection: View {
 
     /// Off for want of a third person: the switch stays disabled, and a tap on it says why.
     private var isUnavailable: Bool {
-        !state.canChangeSimplifyDebts && !state.isChangingSimplifyDebts && state.isLoaded
+        state.isSimplifyDebtsUnavailable
     }
 
     var body: some View {

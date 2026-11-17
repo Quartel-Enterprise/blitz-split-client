@@ -246,7 +246,7 @@ function simplifyStatusText(state: JsEditGroupState): string {
 function SimplifyDebtsRow({ presenter, state }: { presenter: EditGroupPresenter; state: JsEditGroupState }) {
   const isPending = state.simplifyStatus === 'pending'
   // Why: off for want of a third person, the switch looks disabled but its box takes the click, which says why (13.1c).
-  const isUnavailable = !state.canChangeSimplifyDebts && !state.isChangingSimplifyDebts && !state.isSaving
+  const isUnavailable = state.isSimplifyDebtsUnavailable
   return (
     <section aria-labelledby={paymentsId} className="flex flex-col gap-2">
       <h3 id={paymentsId} className="text-sm font-medium">

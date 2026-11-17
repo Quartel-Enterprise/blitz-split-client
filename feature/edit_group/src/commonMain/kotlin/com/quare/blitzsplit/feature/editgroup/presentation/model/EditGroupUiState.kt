@@ -57,6 +57,10 @@ data class EditGroupUiState(
     val canChangeSimplifyDebts: Boolean
         get() = isLoaded && !isChangingSimplifyDebts && (simplifiesDebts || memberCount >= MIN_PEOPLE_TO_SIMPLIFY)
 
+    // Why: off for want of a third person (13.1c); the switch looks disabled but a tap on it says why.
+    val isSimplifyDebtsUnavailable: Boolean
+        get() = isLoaded && !isChangingSimplifyDebts && !simplifiesDebts && memberCount < MIN_PEOPLE_TO_SIMPLIFY
+
     val simplifyStatus: SimplifyDebtsStatus
         get() = when {
             isSimplifyDebtsPending -> SimplifyDebtsStatus.PENDING

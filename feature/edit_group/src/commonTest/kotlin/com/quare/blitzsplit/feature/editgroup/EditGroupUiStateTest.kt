@@ -406,6 +406,48 @@ class EditGroupUiStateTest {
     }
 
     @Test
+    fun `GIVEN the switch off with 2 people WHEN reading the switch THEN it is unavailable`() {
+        // Given
+        val state = state(memberCount = 2)
+
+        // When
+        val isUnavailable = state.isSimplifyDebtsUnavailable
+
+        // Then
+        assertTrue(isUnavailable)
+    }
+
+    @Test
+    fun `GIVEN the switch on with 2 people WHEN reading the switch THEN it is not unavailable`() {
+        // Given
+        val state = state(
+            simplifiesDebts = true,
+            memberCount = 2,
+        )
+
+        // When
+        val isUnavailable = state.isSimplifyDebtsUnavailable
+
+        // Then
+        assertFalse(isUnavailable)
+    }
+
+    @Test
+    fun `GIVEN a form not loaded yet WHEN reading the switch THEN it is not unavailable`() {
+        // Given
+        val state = state(
+            isLoaded = false,
+            memberCount = 2,
+        )
+
+        // When
+        val isUnavailable = state.isSimplifyDebtsUnavailable
+
+        // Then
+        assertFalse(isUnavailable)
+    }
+
+    @Test
     fun `GIVEN no internet and a pending switch WHEN reading its note THEN shows the offline notice`() {
         // Given
         val state = state(

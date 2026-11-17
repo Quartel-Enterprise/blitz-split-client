@@ -289,7 +289,7 @@ class EditGroupViewModel(
     private fun openSimplifyConfirmation() {
         val state = uiState.value
         // Why: the disabled switch still takes the tap, to say why it is off and when it opens (13.1c).
-        if (state.isLoaded && !state.simplifiesDebts && state.memberCount < EditGroupUiState.MIN_PEOPLE_TO_SIMPLIFY) {
+        if (state.isSimplifyDebtsUnavailable) {
             uiState.update { it.copy(showsSimplifyUnavailableNotice = true) }
             return
         }

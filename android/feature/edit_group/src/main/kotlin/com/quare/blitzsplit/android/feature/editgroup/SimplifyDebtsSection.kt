@@ -130,8 +130,7 @@ private fun SimplifySwitch(
     title: String,
     onEvent: (EditGroupUiEvent) -> Unit,
 ) {
-    val unavailable = !state.canChangeSimplifyDebts && !state.isChangingSimplifyDebts && state.isLoaded
-    if (!unavailable) {
+    if (!state.isSimplifyDebtsUnavailable) {
         Switch(
             checked = state.simplifiesDebts,
             onCheckedChange = { onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked) },
