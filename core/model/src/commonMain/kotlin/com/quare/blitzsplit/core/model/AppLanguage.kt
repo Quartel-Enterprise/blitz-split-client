@@ -25,6 +25,7 @@ enum class AppLanguage(
     UKRAINIAN("uk"),
     KOREAN("ko"),
     HINDI("hi"),
+    CHINESE_SIMPLIFIED("zh-Hans"),
     ;
 
     /*
@@ -49,20 +50,41 @@ enum class AppLanguage(
 
         private const val UKRAINE = "UA"
 
+        private const val CHINESE = "zh"
+
+        private const val TRADITIONAL_SCRIPT = "HANT"
+
+        private const val TAIWAN = "TW"
+
+        private const val HONG_KONG = "HK"
+
+        private const val MACAU = "MO"
+
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
-         * Ukrainian, Korean, Hindi or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
-         * ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, en-GB), SYSTEM for none or any other. Portuguese is two
-         * entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every
-         * other tag (es, es-MX, es-419…) the neutral Latin-American one.
+         * Ukrainian, Korean, Hindi, Chinese or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL,
+         * nl-BE, ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, zh-CN, en-GB), SYSTEM for none or any other.
+         * Portuguese is two entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is
+         * Spain's, every other tag (es, es-MX, es-419…) the neutral Latin-American one. Chinese is Simplified, mainland
+         * China's zh-Hans, but for a Traditional tag (zh-Hant, zh-TW, zh-HK, zh-MO), which stays SYSTEM until the app
+         * has Traditional Chinese: Android and Apple show English to it, having no Hant resources.
          */
         fun fromTag(tag: String?): AppLanguage {
+            if (isTraditionalChinese(tag)) return SYSTEM
             val variants = variantsOf(languageOf(tag))
             val region = regionOf(tag)
             return variants.firstOrNull { region != null && regionOf(it.tag) == region }
                 ?: variants.firstOrNull()
                 ?: SYSTEM
         }
+
+        // Why: Traditional Chinese's script, or a region that writes it (Taiwan, Hong Kong, Macau).
+        private fun isTraditionalChinese(tag: String?): Boolean = languageOf(tag) == CHINESE &&
+            tag
+                .orEmpty()
+                .split('-', '_')
+                .drop(1)
+                .any { subtag -> subtag.uppercase() in listOf(TRADITIONAL_SCRIPT, TAIWAN, HONG_KONG, MACAU) }
 
         // Why: the entries of a language, the one for every other tag first (pt-BR before pt-PT, es before es-ES).
         private fun variantsOf(language: String?): List<AppLanguage> = if (language == null) {

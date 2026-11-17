@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">没有关键词</string>
+    <string name="category_map_title">类别映射</string>
+    <string name="category_map_search">搜索关键词</string>
+    <string name="category_map_add">添加关键词</string>
+    <string name="category_map_more">更多选项</string>
+    <string name="category_map_restore">恢复默认</string>
+    <string name="category_map_back">返回</string>
+    <string name="category_map_intro">账单标题包含以下某个词时，会自动归入对应类别。“Uber回家”会归入“交通”。</string>
+    <string name="category_map_intro_offline">类别映射可离线使用：更改会立即在此设备上生效，联网后同步到你的其他设备。</string>
+    <string name="category_map_device_only">你的类别映射只保存在此设备上。要同步到其他设备，请在个人资料中用Google或Apple登录。</string>
+    <string name="category_map_open_profile">打开个人资料</string>
+    <string name="category_map_longest_wins">当两个关键词都匹配同一标题时，以较长的为准。</string>
+    <string name="category_map_no_result">没有包含“%1$s”的关键词</string>
+    <string name="category_map_no_result_body">添加后，标题中含有这个词的账单会自动归入正确的类别。</string>
+    <string name="category_map_add_query">添加“%1$s”</string>
+    <string name="category_map_empty_title">你的映射是空的</string>
+    <string name="category_map_empty_body">没有关键词时，类别不会根据标题自动选择：你需要在每笔账单中手动选择。</string>
+    <string name="category_map_group_category"> · %1$s的类别</string>
+    <string name="category_map_only_main">仅%1$s</string>
+    <string name="category_map_only_in_group">仅在%1$s中</string>
+    <string name="category_map_no_terms_yet">还没有关键词。</string>
+    <string name="category_map_add_in">在%1$s中添加关键词</string>
+    <string name="category_map_tip">点按关键词可更改其类别或将其移除。按完整词语匹配，不区分重音和大小写。</string>
+    <string name="category_map_queued">排队中</string>
+    <string name="category_map_term_action">%1$s，%2$s。编辑</string>
+    <string name="category_map_new_term">新关键词</string>
+    <string name="category_map_edit_term">编辑关键词</string>
+    <string name="category_map_term_label">词语或短语</string>
+    <string name="category_map_term_help">按完整词语匹配，不区分重音和大小写。</string>
+    <string name="category_map_term_help_app">应用自带的关键词。“恢复默认”会将其还原为初始状态。</string>
+    <string name="category_map_term_duplicate">“%1$s”已对应%2$s。每个关键词只能对应一个类别。</string>
+    <string name="category_map_term_too_short">至少输入2个字符。</string>
+    <string name="category_map_term_too_long">最多输入30个字符。</string>
+    <string name="category_map_term_invalid">只能使用字母、数字和空格。</string>
+    <string name="category_map_category">类别</string>
+    <string name="category_map_category_help">可以是类别或子类别。</string>
+    <string name="category_map_category_help_edit">在这里更改会把关键词移到另一个类别。</string>
+    <string name="category_map_category_help_move">移动后，该关键词将离开%1$s。</string>
+    <string name="category_map_example">示例</string>
+    <string name="category_map_example_move">移动后</string>
+    <string name="category_map_remove">移除</string>
+    <string name="category_map_cancel">取消</string>
+    <string name="category_map_save">保存</string>
+    <string name="category_map_move_to">移到%1$s</string>
+    <string name="category_map_removed">“%1$s”已从映射中移除</string>
+    <string name="category_map_undo">撤销</string>
+    <string name="category_map_restore_title">恢复默认映射？</string>
+    <string name="category_map_restore_body">应用自带的60个关键词会恢复为初始状态，包括你移除或移动过的。</string>
+    <string name="category_map_restore_own_one">你创建的关键词“%1$s”会保留。</string>
+    <string name="category_map_restore_confirm">恢复</string>
+    <string name="category_map_save_error">无法保存映射，请重试。</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="other">%d个关键词</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="other">%d个子类别</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="other">%1$d个包含“%2$s”的关键词</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="other">离线 · %d项更改排队中</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="other">你创建的%d个关键词会保留。</item>
+    </plurals>
+    <string name="category_map_new_category">新建类别</string>
+    <string name="category_map_new_subcategory_in">在%s中新建子类别</string>
+    <string name="category_map_edit_category">编辑%s</string>
+    <string name="category_map_category_group">群组</string>
+    <string name="category_map_change_color">更改%1$s的颜色</string>
+    <string name="category_map_restore_color">恢复颜色</string>
+    <string name="category_map_color_done">完成</string>
+</resources>

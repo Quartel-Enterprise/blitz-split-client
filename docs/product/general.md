@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean and Hindi: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi and Chinese (Simplified): the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -89,7 +89,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Split, ends a sentence with the danda "।" (the code too, where it finishes one: `fullStopUi`, `WordGap.fullStop`,
     `fullStop`), and its plurals have one and other, "one" covering 0 too. Its past puts the ergative "ने" after the
     actor, apart after a name and one word with the user's "आपने", so the activity sentences follow Korean's rule
-    with "ने" ([activity-and-push.md](activity-and-push.md)). The brand
+    with "ने" ([activity-and-push.md](activity-and-push.md)). Simplified Chinese (Pierre's call, issue #448) is
+    mainland China's, `zh-Hans`, and talks to the user as "你", never "您" (friends splitting a bill); it calls the app
+    Blitz Split, writes no space between words nor around a name or number the code fills in, ends a sentence with
+    "。" (the code too, as Japanese: `wordGapUi`, `WordGap`, `wordGap`), and its plurals have one form. Every `zh` tag
+    picks it but a Traditional one (`zh-Hant`, `zh-TW`, `zh-HK`, `zh-MO`), which reads English, as Android and Apple
+    have no Traditional resources, until Traditional Chinese, Taiwan's `zh-Hant`, comes as its own row of the picker
+    (Pierre's call: two rows, as Portugal's and Spain's): the bare `zh` names it where a language is asked by code (the web's dictionary,
+    the release notes, the legal pages, the store listing), as `pt` names Brazil's. The brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
     cover, Record payment, By income's incomes) types as a cash machine does (Pierre's call): the number
@@ -241,6 +248,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     smaller until it updates, as the rupiah did.
   - The Indian rupee (INR) follows the won (Pierre's call, with Hindi), and starts a new group in India. It has 2
     decimals and the usual 100 million cap (about US$ 1.2 million), so an app version from before it shows its
+    amounts by the raw code, with the right decimals.
+  - The Chinese yuan (CNY) follows the rupee (Pierre's call, with Simplified Chinese), and starts a new group in
+    mainland China. It has 2 decimals and the usual 100 million cap, so an app version from before it shows its
     amounts by the raw code, with the right decimals.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.

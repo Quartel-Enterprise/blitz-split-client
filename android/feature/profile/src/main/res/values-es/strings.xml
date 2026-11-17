@@ -72,6 +72,7 @@
     <string name="profile_language_ukrainian">Ucraniano</string>
     <string name="profile_language_korean">Coreano</string>
     <string name="profile_language_hindi">Hindi</string>
+    <string name="profile_language_chinese_simplified">Chino (simplificado)</string>
     <string name="profile_language_system_detail">Idioma del dispositivo</string>
     <string name="profile_notifications">Notificaciones</string>
     <plurals name="profile_notifications_active">

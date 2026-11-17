@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">新建Pix密钥</string>
+    <string name="payment_key_title_pix_edit">编辑Pix密钥</string>
+    <string name="payment_key_title_bitcoin_new">新建比特币密钥</string>
+    <string name="payment_key_title_bitcoin_edit">编辑比特币密钥</string>
+    <string name="payment_key_save">保存</string>
+
+    <string name="payment_key_pix_intro">向你付款的人在结清时会看到这个密钥。选择哪种类型的密钥？</string>
+    <string name="payment_key_pix_question">选择哪种类型的密钥？</string>
+    <string name="payment_key_pix_explanation">向你付款的人在结清时会看到这个密钥。</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">手机号</string>
+    <string name="payment_key_type_email">邮箱</string>
+    <string name="payment_key_type_random">随机</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">带区号的手机号</string>
+    <string name="payment_key_label_email">邮箱</string>
+    <string name="payment_key_label_random">随机密钥</string>
+
+    <string name="payment_key_bitcoin_intro">你想怎么收款？</string>
+    <string name="payment_key_network_lightning">闪电网络</string>
+    <string name="payment_key_network_lightning_detail">快速，手续费低</string>
+    <string name="payment_key_network_onchain">链上</string>
+    <string name="payment_key_network_onchain_detail">在区块链上</string>
+    <string name="payment_key_label_lightning">Lightning Address或LNURL</string>
+    <string name="payment_key_label_onchain">比特币地址</string>
+
+    <string name="payment_key_paste">粘贴</string>
+
+    <string name="payment_key_hint_cpf">格式：000.000.000-00</string>
+    <string name="payment_key_hint_phone">格式：+55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">格式：name@domain.com</string>
+    <string name="payment_key_hint_random">32位字母和数字，与银行显示的一致</string>
+    <string name="payment_key_hint_lightning">例如name@wallet.com或LNURL1…</string>
+    <string name="payment_key_hint_onchain">以bc1q或bc1p开头的主网地址</string>
+
+    <string name="payment_key_valid_cpf">格式：000.000.000-00 · 校验位正确</string>
+    <string name="payment_key_valid_phone">格式：+55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">格式：name@domain.com</string>
+    <string name="payment_key_valid_random">已识别随机密钥（32个字符）</string>
+    <string name="payment_key_valid_lightning_address">有效的Lightning Address</string>
+    <string name="payment_key_valid_lnurl">有效的LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit（bc1q）· 主网</string>
+    <string name="payment_key_valid_taproot">Taproot（bc1p）· 主网</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF无效：校验位不匹配。</string>
+    <string name="payment_key_error_invalid_phone">手机号不完整：请填写区号和以9开头的9位号码。</string>
+    <string name="payment_key_error_invalid_email">邮箱不完整：缺少域名，例如.com或.com.br。</string>
+    <string name="payment_key_error_invalid_random">随机密钥不完整：应为32位字母和数字。</string>
+    <string name="payment_key_error_invalid_lightning">这不是Lightning Address（name@wallet）或LNURL。</string>
+    <string name="payment_key_error_lightning_invoice">这是一张Lightning发票（lnbc…）：只能支付一次且会过期。请粘贴Lightning Address或LNURL。</string>
+    <string name="payment_key_error_invalid_onchain">地址无效。请使用以bc1q或bc1p开头的主网地址。</string>
+    <string name="payment_key_error_testnet_address">这是测试网地址（tb1…）。这里只支持比特币主网的bc1…地址。</string>
+    <string name="payment_key_error_already_saved">你已经有这个密钥了。</string>
+
+    <string name="payment_key_switched_to_onchain">这是一个链上地址，所以已切换到“链上”。</string>
+    <string name="payment_key_switched_to_lightning">这是一个Lightning Address，所以已切换到“Lightning”。</string>
+    <string name="payment_key_cpf_notice">向你付款的人会看到你完整的CPF。如果不想公开，请使用手机号、邮箱或随机密钥。</string>
+    <string name="payment_key_held_notice">这种类型的Pix密钥你只能有一个，所以这里显示的是你已保存的那个。如果需要，可以在这里修改。</string>
+
+    <string name="payment_key_accepted_title">支持的格式</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">默认Pix密钥</string>
+    <string name="payment_key_default_bitcoin_title">默认比特币密钥</string>
+    <string name="payment_key_default_pix_detail">结清时优先显示。</string>
+    <string name="payment_key_default_bitcoin_detail">有人用BTC付款时优先显示。</string>
+    <string name="payment_key_default_now">当前：%1$s。</string>
+    <string name="payment_key_default_locked_editing">要更改，请将另一个密钥设为默认。</string>
+    <string name="payment_key_default_locked_new">这类密钥中的第一个会成为默认密钥。</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">手机号</string>
+    <string name="payment_key_default_type_email">邮箱</string>
+    <string name="payment_key_default_type_random">随机密钥</string>
+    <string name="payment_key_default_type_lightning">闪电网络</string>
+    <string name="payment_key_default_type_onchain">链上</string>
+
+    <string name="payment_key_footer_pix">Blitz Split不经手资金：付款人在自己的银行应用中付款。请确认密钥登记在你的名下。</string>
+    <string name="payment_key_footer_bitcoin">结清时，我们会按当前汇率以sats显示金额。这只是估算：付款人会在自己的钱包中确认。</string>
+
+    <string name="payment_key_delete">删除密钥</string>
+    <string name="payment_key_delete_title">删除这个密钥？</string>
+    <string name="payment_key_delete_body">欠你钱的人在结清时将不再看到它。</string>
+    <string name="payment_key_delete_confirm">删除</string>
+</resources>

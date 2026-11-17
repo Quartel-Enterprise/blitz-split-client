@@ -264,6 +264,30 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Chinese tag WHEN reading it THEN is Simplified Chinese`() {
+        // Given
+        val tags = listOf("zh", "zh-Hans", "zh-CN", "zh_CN", "ZH-hans-cn", "zh-SG")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.CHINESE_SIMPLIFIED }, languages)
+    }
+
+    @Test
+    fun `GIVEN a Traditional Chinese tag WHEN reading it THEN follows the device`() {
+        // Given
+        val tags = listOf("zh-TW", "zh-Hant", "zh-Hant-TW", "zh_HK", "zh-MO", "ZH-hant")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.SYSTEM }, languages)
+    }
+
+    @Test
     fun `GIVEN a Portuguese tag of Portugal in other spellings WHEN reading it THEN is the Portuguese of Portugal`() {
         // Given
         val tags = listOf("pt-PT-x-private", "PT-PT", "pt-pt", "pt_pt_x_private", "pt-Latn-pt-u-fw-mon")
@@ -328,6 +352,7 @@ class AppLanguageTest {
                 "UA",
                 "KO",
                 "HI",
+                "ZH",
             ),
             codes,
         )

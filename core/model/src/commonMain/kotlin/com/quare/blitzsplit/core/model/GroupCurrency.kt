@@ -106,6 +106,7 @@ class GroupCurrency private constructor(
         val UAH = GroupCurrency("UAH", setOf("UA"))
         val KRW = GroupCurrency("KRW", setOf("KR"), fractionDigits = 0)
         val INR = GroupCurrency("INR", setOf("IN"))
+        val CNY = GroupCurrency("CNY", setOf("CN"))
 
         // Why: 8 decimals, a satoshi each, which typing or reading "Bitcoin em satoshis" shows as whole sats.
         val BTC = GroupCurrency(
@@ -147,6 +148,7 @@ class GroupCurrency private constructor(
             UAH,
             KRW,
             INR,
+            CNY,
             BTC,
             ETH,
         )

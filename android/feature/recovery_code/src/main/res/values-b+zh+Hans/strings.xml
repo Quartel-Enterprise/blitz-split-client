@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">保存你的恢复码</string>
+    <string name="recovery_code_body">你正在无账号使用。如果换了或丢了设备，这12个词可以找回你的数据。请按顺序记下来。30天未使用后，你的数据将被删除，这些词也会失效。</string>
+    <string name="recovery_code_copy">复制词语</string>
+    <string name="recovery_code_save_to_password_manager">保存到密码管理器</string>
+    <string name="recovery_code_connect_instead">改为关联Google或Apple</string>
+    <string name="recovery_code_connect_instead_body">无需恢复码</string>
+    <string name="recovery_code_sign_in_failed">暂时无法关联，请重试。</string>
+    <string name="recovery_code_also_in_profile">也可以在个人资料 › 恢复中找到。</string>
+    <string name="recovery_code_remind_later">稍后提醒我</string>
+    <string name="recovery_code_saved">我已保存</string>
+    <string name="recovery_code_download">下载</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · 恢复码\n\n%1$s\n\n在“我在其他设备上用过”中使用它即可找回你的数据。\n</string>
+</resources>

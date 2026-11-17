@@ -34,6 +34,7 @@ class ProfileUiStateTest {
             AppLanguage.UKRAINIAN -> listOf("Українська", "Ukrainian")
             AppLanguage.KOREAN -> listOf("한국어", "Korean")
             AppLanguage.HINDI -> listOf("हिन्दी", "Hindi")
+            AppLanguage.CHINESE_SIMPLIFIED -> listOf("中文（简体）", "Chinese (Simplified)")
         }
     }
 
@@ -65,6 +66,7 @@ class ProfileUiStateTest {
         AppLanguage.UKRAINIAN,
         AppLanguage.KOREAN,
         AppLanguage.HINDI,
+        AppLanguage.CHINESE_SIMPLIFIED,
     )
 
     @Test
@@ -640,6 +642,7 @@ class ProfileUiStateTest {
                 AppLanguage.UKRAINIAN,
                 AppLanguage.KOREAN,
                 AppLanguage.HINDI,
+                AppLanguage.CHINESE_SIMPLIFIED,
             ),
             options,
         )
@@ -674,6 +677,7 @@ class ProfileUiStateTest {
                 AppLanguage.UKRAINIAN,
                 AppLanguage.KOREAN,
                 AppLanguage.HINDI,
+                AppLanguage.CHINESE_SIMPLIFIED,
             ),
             options,
         )

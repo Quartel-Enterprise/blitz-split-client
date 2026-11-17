@@ -5,12 +5,13 @@ import androidx.compose.ui.platform.LocalLocale
 
 private const val JAPANESE = "ja"
 private const val HINDI = "hi"
-private val unspacedLanguages = setOf(JAPANESE)
+private const val CHINESE = "zh"
+private val unspacedLanguages = setOf(JAPANESE, CHINESE)
 
 /*
  * Why: a sentence the code joins from pieces ("Ana" + "changed the category", two sentences of a detail) puts a space
- * between them, but Japanese writes them with none ("Anaがカテゴリを変更しました") and ends a sentence with "。", not
- * ".". Hindi ends it with its danda, "।". Same rule as the web's `wordGap` and `fullStop`.
+ * between them, but Japanese and Chinese write them with none ("Anaがカテゴリを変更しました") and end a sentence with
+ * "。", not ".". Hindi ends it with its danda, "।". Same rule as the web's `wordGap` and `fullStop`.
  */
 @Composable
 fun wordGapUi(): String = if (isUnspacedUi()) "" else " "

@@ -63,6 +63,7 @@ const nativeLanguageNames: Record<string, string> = {
   uk: 'Українська',
   ko: '한국어',
   hi: 'हिन्दी',
+  'zh-Hans': '中文（简体）',
 }
 
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
@@ -84,6 +85,7 @@ const languageNames: Record<string, MessageKey> = {
   uk: 'profile_languageUkrainian',
   ko: 'profile_languageKorean',
   hi: 'profile_languageHindi',
+  'zh-Hans': 'profile_languageChineseSimplified',
 }
 
 /**
