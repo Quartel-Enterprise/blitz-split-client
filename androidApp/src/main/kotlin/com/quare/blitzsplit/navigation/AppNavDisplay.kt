@@ -22,10 +22,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.NavigationBackHandler
+import androidx.navigation3.scene.rememberNavigationEventState
+import androidx.navigation3.scene.rememberSceneState
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.defaultPopTransitionSpec
 import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.navigation3.ui.defaultTransitionSpec
+import androidx.navigationevent.NavigationEventTransitionState
 import com.quare.blitzsplit.android.designsystem.component.HomeBarsLayout
 import com.quare.blitzsplit.android.designsystem.component.LocalBillOpensAsDialog
 import com.quare.blitzsplit.android.designsystem.component.LocalProfileFlight
@@ -537,15 +541,29 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
                 LocalProfileFlight provides profileFlight,
                 LocalBillOpensAsDialog provides opensBillOverGroup,
             ) {
-                NavDisplay(
+                val onBack = { appViewModel.navigator.navigateBack() }
+                val sceneState = rememberSceneState(
                     entries = entries,
                     // Why: a dialog or a sheet over the group keeps the list and detail drawn under it.
                     sceneStrategies = sceneStrategies,
-                    transitionSpec = transitionSpec,
-                    popTransitionSpec = popTransitionSpec,
-                    predictivePopTransitionSpec = predictivePopTransitionSpec,
-                    onBack = { appViewModel.navigator.navigateBack() },
+                    onBack = onBack,
                 )
+                val navigationEventState = rememberNavigationEventState(sceneState)
+                NavigationBackHandler(sceneState, navigationEventState, onBackCompleted = onBack)
+                CompositionLocalProvider(
+                    LocalIsBackPreview provides { key ->
+                        navigationEventState.transitionState is NavigationEventTransitionState.InProgress &&
+                            sceneState.overlayScenes.none { it.key == key }
+                    },
+                ) {
+                    NavDisplay(
+                        sceneState = sceneState,
+                        navigationEventState = navigationEventState,
+                        transitionSpec = transitionSpec,
+                        popTransitionSpec = popTransitionSpec,
+                        predictivePopTransitionSpec = predictivePopTransitionSpec,
+                    )
+                }
             }
         }
     }

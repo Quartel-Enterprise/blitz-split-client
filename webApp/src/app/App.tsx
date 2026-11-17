@@ -205,7 +205,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
   const isContactSupport = top.name === 'contact-support'
   // Why: the profile's photo big, over the profile, whose avatar opened it.
   const isProfilePhoto = top.name === 'profile-photo'
-  // Why: the group's photo big, over the group, whose avatar opened it.
+  // Why: the group's photo big, over the group or the bill, whose avatar opened it.
   const isGroupPhoto = top.name === 'group-photo'
   const isCreateGroup = top.name === 'create-group'
   const isInvite = top.name === 'invite'
@@ -277,7 +277,7 @@ function StackLayers({ backStack, offset = 0 }: { backStack: JsRoute[]; offset?:
         )}
       </PageKeyContext.Provider>
       {panelBill && (
-        <BillDetailSheet key={`bill:${panelBill.groupId}/${panelBill.expenseId}`} route={panelBill} isCovered={panelBill !== top && !isShareBill} />
+        <BillDetailSheet key={`bill:${panelBill.groupId}/${panelBill.expenseId}`} route={panelBill} isCovered={panelBill !== top && !isShareBill && !isGroupPhoto} />
       )}
       {isShareBill && <ShareBillDialog key={`${top.groupId}/${top.expenseId}`} route={top} />}
       {isPaymentKey && <PaymentKeyDialog key={`${top.paymentMethod}:${top.paymentKeyId}`} route={top} />}

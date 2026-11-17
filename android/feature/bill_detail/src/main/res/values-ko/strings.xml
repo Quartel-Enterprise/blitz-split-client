@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="bill_detail_back">뒤로</string>
+    <string name="bill_detail_group_photo_open">그룹 사진 보기</string>
     <string name="bill_detail_edit">수정</string>
     <string name="bill_detail_delete">삭제</string>
     <string name="bill_detail_when_today">오늘, %s</string>

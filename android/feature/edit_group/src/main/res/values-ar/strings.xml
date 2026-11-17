@@ -128,6 +128,7 @@
     <string name="simplify_status_pending_on">مفعّل على هذا الجهاز · بانتظار الرفع</string>
     <string name="simplify_status_pending_off">متوقف على هذا الجهاز · بانتظار الرفع</string>
     <string name="simplify_status_needs_third">مع شخصين تكون دفعة واحدة أصلًا. يتوفر عند انضمام شخص ثالث.</string>
+    <string name="simplify_unavailable_snackbar">تبسيط الديون غير متاح مع أقل من 3 أشخاص. يصبح متاحًا عندما تضم المجموعة 3 أشخاص على الأقل.</string>
     <string name="simplify_how_it_works">طريقة العمل</string>
     <string name="simplify_offline_note">لا يوجد اتصال بالإنترنت: تغيّرت الدفعات المقترحة على هذا الجهاز بالفعل. تراها المجموعة عند عودة الاتصال.</string>
     <string name="simplify_confirm_title_on">تبسيط الديون؟</string>
@@ -197,12 +198,12 @@
     <string name="simplify_info_back">رجوع</string>
     <string name="simplify_info_intro">في المجموعة، تُنشئ كل فاتورة ديونًا بين شخصين. ومع الوقت، يدور المال في حلقات. يجمع التبسيط هذه الديون ويقترح دفعات أقل.</string>
     <string name="simplify_info_example">مثال</string>
-    <string name="simplify_info_example_text">على Carla لـ Elisa %1$s، وعلى Elisa لك %1$s.</string>
+    <string name="simplify_info_example_text">على Carla لـ Elisa %1$s، وعلى Elisa لـ Bruno %1$s.</string>
     <string name="simplify_info_before">قبل</string>
     <string name="simplify_info_after">بعد التبسيط</string>
-    <string name="simplify_info_before_a11y">قبل: تدفع Carla لـ Elisa %1$s وتدفع Elisa لك %1$s. دفعتان.</string>
-    <string name="simplify_info_after_a11y">بعد التبسيط: تدفع Carla لك %1$s مباشرة. لا تدفع Elisa شيئًا. دفعة واحدة.</string>
-    <string name="simplify_info_example_result">بعد التبسيط، تدفع Carla لك %s مباشرة، ولا تدفع Elisa شيئًا.</string>
+    <string name="simplify_info_before_a11y">قبل: دفعة من Carla إلى Elisa بقيمة %1$s ودفعة من Elisa إلى Bruno بقيمة %1$s. دفعتان.</string>
+    <string name="simplify_info_after_a11y">بعد التبسيط: دفعة مباشرة من Carla إلى Bruno بقيمة %1$s. لا شيء على Elisa. دفعة واحدة.</string>
+    <string name="simplify_info_example_result">بعد التبسيط، دفعة مباشرة من Carla إلى Bruno بقيمة %s، ولا شيء على Elisa.</string>
     <string name="simplify_info_total_title">الإجماليات لا تتغير</string>
     <string name="simplify_info_total_text">من كان عليه %1$s في المجموعة يبقى عليه %1$s. يتغير فقط مسار المال.</string>
     <string name="simplify_info_stranger_title">قد يكون عليك دين لشخص لم تقسّم معه أي فاتورة</string>

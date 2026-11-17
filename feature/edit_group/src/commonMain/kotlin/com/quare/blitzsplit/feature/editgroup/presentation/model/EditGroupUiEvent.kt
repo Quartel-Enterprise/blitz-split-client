@@ -57,7 +57,10 @@ sealed interface EditGroupUiEvent : UiEvent {
 
             OnSaveClicked -> EventAnalytics.Automatic("edit_group_save_clicked")
 
-            OnSimplifyDebtsClicked -> EventAnalytics.Automatic("simplify_debts_clicked")
+            // Why: a tap that asks the question, or one on the unavailable switch, which only says why.
+            OnSimplifyDebtsClicked -> EventAnalytics.Manual(
+                setOf("simplify_debts_clicked", "simplify_debts_unavailable_clicked"),
+            )
 
             /*
              * Why: the change it applied, or only an answer to a question still open, since Apple's alert also closes
@@ -74,6 +77,8 @@ sealed interface EditGroupUiEvent : UiEvent {
 
             OnSimplifyConflictDismissed -> EventAnalytics.NotTracked
 
+            OnSimplifyUnavailableNoticeDismissed -> EventAnalytics.NotTracked
+
             OnSimplifyConflictActivityClicked -> EventAnalytics.Automatic(
                 "simplify_conflict_activity_clicked",
                 mapOf("source" to SOURCE),
@@ -81,6 +86,9 @@ sealed interface EditGroupUiEvent : UiEvent {
         }
 
     data object OnCloseClicked : EditGroupUiEvent
+
+    // Why: the snackbar "needs a third person" (13.1c) went, by itself or by a swipe.
+    data object OnSimplifyUnavailableNoticeDismissed : EditGroupUiEvent
 
     data class OnNameChanged(
         val name: String,

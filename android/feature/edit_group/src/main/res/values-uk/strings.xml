@@ -120,6 +120,7 @@
     <string name="simplify_status_pending_on">Увімкнено на цьому пристрої · чекає на завантаження</string>
     <string name="simplify_status_pending_off">Вимкнено на цьому пристрої · чекає на завантаження</string>
     <string name="simplify_status_needs_third">Для 2 людей це вже один платіж. Стане доступним, коли приєднається третя людина.</string>
+    <string name="simplify_unavailable_snackbar">«Спростити борги» недоступно, поки в групі менше 3 людей. Стане доступно, коли в групі буде щонайменше 3 людей.</string>
     <string name="simplify_how_it_works">Як це працює</string>
     <string name="simplify_offline_note">Немає інтернету: запропоновані платежі вже змінилися на цьому пристрої. Група побачить це, щойно з\'явиться з\'єднання.</string>
     <string name="simplify_confirm_title_on">Спростити борги?</string>
@@ -181,12 +182,12 @@
     <string name="simplify_info_back">Назад</string>
     <string name="simplify_info_intro">У групі кожен рахунок створює борги між двома людьми. З часом гроші ходять по колу. Спрощення об\'єднує ці борги й пропонує менше платежів.</string>
     <string name="simplify_info_example">Приклад</string>
-    <string name="simplify_info_example_text">Карла винна Елізі %1$s, а Еліза винна тобі %1$s.</string>
+    <string name="simplify_info_example_text">Карла винна Елізі %1$s, а Еліза винна Бруно %1$s.</string>
     <string name="simplify_info_before">До</string>
     <string name="simplify_info_after">Спрощено</string>
-    <string name="simplify_info_before_a11y">До: Карла платить Елізі %1$s, а Еліза платить тобі %1$s. 2 платежі.</string>
-    <string name="simplify_info_after_a11y">Спрощено: Карла платить тобі %1$s напряму. Еліза не платить нічого. 1 платіж.</string>
-    <string name="simplify_info_example_result">Після спрощення Карла платить тобі %s напряму, а Еліза не платить нічого.</string>
+    <string name="simplify_info_before_a11y">До: Карла платить Елізі %1$s, а Еліза платить Бруно %1$s. 2 платежі.</string>
+    <string name="simplify_info_after_a11y">Спрощено: Карла платить Бруно %1$s напряму. Еліза не платить нічого. 1 платіж.</string>
+    <string name="simplify_info_example_result">Після спрощення Карла платить Бруно %s напряму, а Еліза не платить нічого.</string>
     <string name="simplify_info_total_title">Загальні суми не змінюються</string>
     <string name="simplify_info_total_text">Хто був винен у групі %1$s, і далі винен %1$s. Змінюється лише те, куди йдуть гроші.</string>
     <string name="simplify_info_stranger_title">Ти можеш бути винен(-на) тому, з ким ніколи не ділив(-ла) рахунок</string>

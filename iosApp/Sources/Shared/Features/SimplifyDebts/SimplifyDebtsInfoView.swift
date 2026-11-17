@@ -31,7 +31,7 @@ struct SimplifyDebtsInfoView: View {
             Section {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(verbatim: String(
-                        localized: "Carla owes Elisa \(amount(20)), and Elisa owes you \(amount(20)).",
+                        localized: "Carla owes Elisa \(amount(20)), and Elisa owes Bruno \(amount(20)).",
                         bundle: .appLanguage,
                     ))
                         .fixedSize(horizontal: false, vertical: true)
@@ -42,7 +42,7 @@ struct SimplifyDebtsInfoView: View {
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(Text("Example: 2 payments become 1"))
                     Text(verbatim: String(
-                        localized: "Simplified, Carla pays you \(amount(20)) directly, and Elisa pays nothing.",
+                        localized: "Simplified, Carla pays Bruno \(amount(20)) directly, and Elisa pays nothing.",
                         bundle: .appLanguage,
                     ))
                         .fixedSize(horizontal: false, vertical: true)
@@ -91,7 +91,7 @@ struct SimplifyDebtsInfoView: View {
         .formStyle(.grouped)
         .navigationTitle("Simplify debts")
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
         #else
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -131,15 +131,15 @@ private struct SimplifyFact: View {
     }
 }
 
-/// The example, before or simplified: Carla top left, Elisa top right, you at the bottom, and the arrows of who pays
-/// whom with the amount, in the boards' 160×130 frame.
+/// The example, before or simplified: Carla top left, Elisa top right, Bruno at the bottom (each a photo), and the arrows
+/// of who pays whom with the amount, in the boards' 160×130 frame.
 private struct SimplifyExampleFigure: View {
     let isSimplified: Bool
     let amount: String
 
     private static let carla = CGPoint(x: 30, y: 30)
     private static let elisa = CGPoint(x: 130, y: 30)
-    private static let you = CGPoint(x: 80, y: 104)
+    private static let bruno = CGPoint(x: 80, y: 104)
     private static let scale: CGFloat = 0.8
 
     var body: some View {
@@ -158,10 +158,10 @@ private struct SimplifyExampleFigure: View {
                     arrow(from: CGPoint(x: 122, y: 46), to: CGPoint(x: 92, y: 90))
                     label(at: CGPoint(x: 132, y: 76))
                 }
-                face("C", color: .lilac, at: Self.carla)
-                face("E", color: .sand, at: Self.elisa)
+                face("SimplifyExampleCarla", at: Self.carla)
+                face("SimplifyExampleElisa", at: Self.elisa)
                     .opacity(isSimplified ? 0.45 : 1)
-                face(nil, color: .blue, at: Self.you)
+                face("SimplifyExampleBruno", at: Self.bruno)
             }
             .frame(width: 160, height: 130, alignment: .topLeading)
             // The boards' 140 pt figure, so the two fit side by side in an iPhone's row
@@ -182,20 +182,15 @@ private struct SimplifyExampleFigure: View {
         isSimplified ? "Simplified · 1 payment" : "Before · 2 payments"
     }
 
-    private func face(_ initial: String?, color: AvatarColor, at point: CGPoint) -> some View {
-        Group {
-            if let initial {
-                Text(verbatim: initial)
-                    .font(.system(size: 12, weight: .bold))
-            } else {
-                Image(systemName: "person.fill")
-                    .font(.system(size: 13, weight: .bold))
-            }
-        }
-        .foregroundStyle(color.content)
-        .frame(width: 32, height: 32)
-        .background(color.container, in: .circle)
-        .position(point)
+    /// A face is a photo of the client's image bank cropped to a circle, where the boards put the person.
+    private func face(_ image: String, at point: CGPoint) -> some View {
+        Image(image)
+            .resizable()
+            .scaledToFill()
+            .frame(width: 32, height: 32)
+            .clipShape(.circle)
+            .position(point)
+            .accessibilityHidden(true)
     }
 
     private func label(at point: CGPoint) -> some View {

@@ -58,12 +58,13 @@
         <item quantity="one">Mais %d pessoa muda. Toda a gente vê na Atividade, e quem muda recebe um aviso.</item>
         <item quantity="other">Mais %d pessoas mudam. Toda a gente vê na Atividade, e quem muda recebe um aviso.</item>
     </plurals>
-    <string name="simplify_info_example_text">Carla deve %1$s a Elisa, e Elisa deve %1$s a ti.</string>
-    <string name="simplify_info_before_a11y">Antes: Carla paga %1$s a Elisa e Elisa paga %1$s a ti. 2 pagamentos.</string>
-    <string name="simplify_info_after_a11y">Simplificado: Carla paga %1$s diretamente a ti. Elisa não paga nada. 1 pagamento.</string>
-    <string name="simplify_info_example_result">Simplificado, Carla paga %s diretamente a ti, e Elisa não paga nada.</string>
+    <string name="simplify_info_example_text">Carla deve %1$s a Elisa, e Elisa deve %1$s a Bruno.</string>
+    <string name="simplify_info_before_a11y">Antes: Carla paga %1$s a Elisa e Elisa paga %1$s a Bruno. 2 pagamentos.</string>
+    <string name="simplify_info_after_a11y">Simplificado: Carla paga %1$s diretamente a Bruno. Elisa não paga nada. 1 pagamento.</string>
+    <string name="simplify_info_example_result">Simplificado, Carla paga %s diretamente a Bruno, e Elisa não paga nada.</string>
     <string name="simplify_info_stranger_title">Podes dever a quem não dividiu contas contigo</string>
     <string name="simplify_info_undo_text">Os pagamentos voltam a ser entre quem dividiu cada conta. Nenhuma despesa nem pagamento registado muda.</string>
     <string name="group_photo_camera">Câmara</string>
     <string name="simplify_info_total_text">Quem devia %1$s no grupo continua a dever %1$s. Só muda a quem vai o dinheiro.</string>
+    <string name="simplify_unavailable_snackbar">Simplificar dívidas não está disponível em grupos com menos de 3 pessoas. Fica disponível a partir do momento em que o grupo tiver, pelo menos, 3 pessoas.</string>
 </resources>

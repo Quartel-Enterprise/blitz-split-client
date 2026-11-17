@@ -59,3 +59,18 @@ export function useSimplifyConflictNotice(presenter: SimplifyConflictEvents | nu
     }
   }, [presenter, text])
 }
+
+/**
+ * 13.1c: a click on the disabled "Simplificar dívidas" of a group of two says it opens with the third person. The toast
+ * shows once per click, so the ViewModel is told at once and the flag is ready for the next one.
+ */
+export function useSimplifyUnavailableNotice(presenter: { dismissSimplifyUnavailableNotice(): void } | null, isShowing: boolean | undefined) {
+  useEffect(() => {
+    if (!presenter || !isShowing) return
+    presenter.dismissSimplifyUnavailableNotice()
+    // Why: one id, so clicking again replaces the toast showing instead of stacking a copy.
+    toast(t('editGroup_simplifyUnavailableToast'), { id: 'simplify-unavailable', duration: 4000 })
+  }, [presenter, isShowing])
+  // Why: closing Edit group takes its toast along, as the conflict's does.
+  useEffect(() => () => void toast.dismiss('simplify-unavailable'), [])
+}

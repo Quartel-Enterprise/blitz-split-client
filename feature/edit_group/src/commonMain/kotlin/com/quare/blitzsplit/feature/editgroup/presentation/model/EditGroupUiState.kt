@@ -50,10 +50,16 @@ data class EditGroupUiState(
     val isChangingSimplifyDebts: Boolean,
     // Why: "Ana desligou depois de você" (13.1e), until it is dismissed.
     val simplifyConflict: SimplifyDebtsConflictNotice?,
+    // Why: a tap on the disabled switch of a group of two says it opens with the third person, until it is dismissed.
+    val showsSimplifyUnavailableNotice: Boolean,
 ) {
     // Why: off and unavailable with fewer than 3 people, though a group already on can still turn it off.
     val canChangeSimplifyDebts: Boolean
         get() = isLoaded && !isChangingSimplifyDebts && (simplifiesDebts || memberCount >= MIN_PEOPLE_TO_SIMPLIFY)
+
+    // Why: off for want of a third person (13.1c); the switch looks disabled but a tap on it says why.
+    val isSimplifyDebtsUnavailable: Boolean
+        get() = isLoaded && !isChangingSimplifyDebts && !simplifiesDebts && memberCount < MIN_PEOPLE_TO_SIMPLIFY
 
     val simplifyStatus: SimplifyDebtsStatus
         get() = when {

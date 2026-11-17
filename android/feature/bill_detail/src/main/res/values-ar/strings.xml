@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="bill_detail_back">رجوع</string>
+    <string name="bill_detail_group_photo_open">عرض صورة المجموعة</string>
     <string name="bill_detail_edit">تعديل</string>
     <string name="bill_detail_delete">حذف</string>
     <string name="bill_detail_when_today">اليوم، %s</string>

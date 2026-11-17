@@ -1906,6 +1906,48 @@ class EditGroupViewModelTest {
         }
 
     @Test
+    fun `GIVEN a group of two not simplifying WHEN tapping the switch THEN says it needs a third person`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedExpenses = listOf(dinner))
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.showsSimplifyUnavailableNotice)
+        }
+
+    @Test
+    fun `GIVEN the unavailable notice is up WHEN it is dismissed THEN it goes`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedExpenses = listOf(dinner))
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+        // When
+        viewModel.onEvent(EditGroupUiEvent.OnSimplifyUnavailableNoticeDismissed)
+
+        // Then
+        assertFalse(viewModel.uiState.value.showsSimplifyUnavailableNotice)
+    }
+
+    @Test
+    fun `GIVEN a group of two simplifying WHEN tapping the switch THEN no unavailable notice shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroup = trip.copy(simplifiesDebts = true),
+                storedExpenses = listOf(dinner),
+            )
+
+            // When
+            viewModel.onEvent(EditGroupUiEvent.OnSimplifyDebtsClicked)
+
+            // Then
+            assertFalse(viewModel.uiState.value.showsSimplifyUnavailableNotice)
+        }
+
+    @Test
     fun `GIVEN a group of two simplifying WHEN tapping the switch THEN asks to turn it off`() =
         runTest(testDispatcher) {
             // Given

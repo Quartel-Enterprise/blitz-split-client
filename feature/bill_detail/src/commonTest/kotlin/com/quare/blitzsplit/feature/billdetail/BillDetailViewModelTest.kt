@@ -1364,6 +1364,48 @@ class BillDetailViewModelTest {
         }
 
     @Test
+    fun `GIVEN the bill is open WHEN tapping the group avatar THEN opens the group photo over the bill`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
+
+            // Then
+            assertEquals(
+                listOf(Route.Groups, groupRoute, route, Route.GroupPhoto(GROUP_ID)),
+                navigator.backStack.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping the group avatar THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN a native back already closed the bill WHEN tapping the group avatar THEN nothing opens`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            navigator.navigateBack()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
+
+            // Then
+            assertEquals(listOf(Route.Groups, groupRoute), navigator.backStack.value)
+        }
+
+    @Test
     fun `GIVEN Compartilhar conta already open WHEN tapping Compartilhar again THEN it opens once`() =
         runTest(testDispatcher) {
             // Given
@@ -3829,6 +3871,45 @@ class BillDetailViewModelTest {
 
         // When
         viewModel.onEvent(BillDetailUiEvent.OnEditClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN the bill is being deleted WHEN tapping the group avatar THEN nothing opens`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(deleteGate = CompletableDeferred())
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteClicked)
+        viewModel.onEvent(BillDetailUiEvent.OnDeleteConfirmed)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, groupRoute, route), navigator.backStack.value)
+    }
+
+    @Test
+    fun `GIVEN the bill is open WHEN tapping the group avatar THEN sends the bill group photo clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
+
+            // Then
+            assertEquals(listOf("bill_group_photo_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping the group avatar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
 
         // Then
         assertTrue(trackedEvents.isEmpty())

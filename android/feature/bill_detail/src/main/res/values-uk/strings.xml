@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="bill_detail_back">Назад</string>
+    <string name="bill_detail_group_photo_open">Переглянути фото групи</string>
     <string name="bill_detail_edit">Редагувати</string>
     <string name="bill_detail_delete">Видалити</string>
     <string name="bill_detail_when_today">Сьогодні, %s</string>

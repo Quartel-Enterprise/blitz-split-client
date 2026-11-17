@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="bill_detail_back">Voltar</string>
+    <string name="bill_detail_group_photo_open">Ver foto do grupo</string>
     <string name="bill_detail_edit">Editar</string>
     <string name="bill_detail_delete">Apagar</string>
     <string name="bill_detail_when_today">Hoje, %s</string>

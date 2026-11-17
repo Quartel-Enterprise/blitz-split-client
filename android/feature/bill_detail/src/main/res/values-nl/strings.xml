@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="bill_detail_back">Terug</string>
+    <string name="bill_detail_group_photo_open">Groepsfoto bekijken</string>
     <string name="bill_detail_edit">Bewerken</string>
     <string name="bill_detail_delete">Verwijderen</string>
     <string name="bill_detail_when_today">Vandaag, %s</string>

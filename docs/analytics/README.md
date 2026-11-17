@@ -323,7 +323,8 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `group_color_selected` | `color`, `source` (`edit_group`) | "Icon color" on the web and the Mac | `:feature:edit_group` |
 | `default_split_clicked` | none | Edit group's "Default split" | `:feature:edit_group` |
 | `edit_group_save_clicked` | none | Edit group's Save or the keyboard's Done; also a Done the form refuses (nothing changed) | `:feature:edit_group` |
-| `simplify_debts_clicked` | none | The switch of "Simplify debts", which asks first | `:feature:edit_group` |
+| `simplify_debts_clicked` | none | The switch of "Simplify debts" when it asks first (a tap while it is unavailable is the next event) | `:feature:edit_group` |
+| `simplify_debts_unavailable_clicked` | none | A tap on the disabled switch of a group of two, which only says why (13.1c) | `:feature:edit_group` |
 | `simplify_debts_toggled` | `is_on` | Its confirmation, which turns it on or off | `:feature:edit_group` |
 | `simplify_debts_cancelled` | none | Its confirmation closed without answering, while it was open | `:feature:edit_group` |
 | `default_split_mode_selected` | `mode` | Equal, Shares, Percentage or By income | `:feature:edit_group` |
@@ -472,6 +473,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `bill_edit_clicked` | `source` (`group_detail`, `home`, `all_expenses`; none from Bill) | Bill's "Edit bill", while it can edit, or a bill's ⋮ "Edit" (Expenses, Home, All expenses) once Edit bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
 | `bill_duplicate_clicked` | `source` (`group_detail`, `home`, `all_expenses`) | A bill's ⋮ "Duplicate" (Expenses, Home, All expenses), once Split a bill opened filled in with the bill | `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
 | `bill_share_clicked` | `source` (`group_detail`, `home`, `all_expenses`; none from Bill) | Bill's Share, which opens "Share bill", or a bill's ⋮ "Share" (Expenses, Home, All expenses) once Share bill opened | `:feature:bill_detail`, `:feature:group_detail`, `:feature:groups`, `:feature:group_stats` |
+| `bill_group_photo_clicked` | none | The group's avatar in Bill's top bar, which opens the group's photo big | `:feature:bill_detail` |
 | `bill_undo_clicked` | none | "Undo" on History's latest edit, when it undoes | `:feature:bill_detail` |
 | `bill_attachment_clicked` | `source` (`bill_detail`, `shared_bill`) | An attachment's tile, which opens the viewer on it | `:feature:bill_detail` |
 | `bill_attachment_removed` | none | "Remove photo" in the viewer, on a photo it can remove | `:feature:bill_detail` |

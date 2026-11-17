@@ -72,7 +72,15 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   // Why: the group's rounded square beside its name, as Android and iOS draw it over the bill (beta feedback of 2026-11-15).
   const groupName = isLoaded ? (
     <span className="me-auto flex min-w-0 items-center gap-2">
-      <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-6 text-[10px]" />
+      {/* Why: the avatar opens the group's photo big, as the group's header; the padding keeps a 44 px touch target. */}
+      <button
+        type="button"
+        aria-label={t('groupPhoto_open')}
+        onClick={() => presenter.groupPhoto()}
+        className="-m-2.5 block shrink-0 rounded-xl p-2.5 outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
+      >
+        <GroupAvatar initials={state.groupInitials} color={state.groupColor} photoUrl={state.groupPhotoUrl} className="size-6 text-[10px]" />
+      </button>
       <span className="truncate text-sm font-medium text-muted-foreground">{state.groupName}</span>
     </span>
   ) : (
