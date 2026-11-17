@@ -555,7 +555,7 @@ object SampleTrips {
             GroupCurrency.CNY -> 7.0 to 100L
             GroupCurrency.ILS -> 3.7 to 100L
             GroupCurrency.THB -> 35.0 to 100L
-            GroupCurrency.VND -> 25_000.0 to 1000L
+            GroupCurrency.VND -> 25_000.0 to 1_000L
             else -> 1.0 to 50L
         }
         val minor = usdCents / CENTS_PER_DOLLAR * rate * currency.minorPerMajor

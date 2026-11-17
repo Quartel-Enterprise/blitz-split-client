@@ -6,8 +6,9 @@ package com.quare.blitzsplit.android.storescreenshots
  * by its own (es-ES), since "es" is Latin America's. [playLocale] is what Robolectric draws the Play screens in: the
  * resources' language and the region the amounts, dates and hours are written in, the tag itself for every set but
  * Latin America's Spanish, Chinese, drawn in zh-CN for mainland China's yuan, Hebrew, drawn in iw-IL, the legacy
- * code Android's values-iw answers to, and Thai, drawn in th-TH for the baht. The stores' own codes (es-419,
- * es-MX…) come from the tags in the staging tasks of build-logic's StoreScreenshots.kt.
+ * code Android's values-iw answers to, Thai, drawn in th-TH for the baht, and Vietnamese, drawn in vi-VN for the
+ * đồng. The stores' own codes (es-419, es-MX…) come from the tags in the staging tasks of build-logic's
+ * StoreScreenshots.kt.
  */
 internal data class StoreLocale(
     val tag: String,

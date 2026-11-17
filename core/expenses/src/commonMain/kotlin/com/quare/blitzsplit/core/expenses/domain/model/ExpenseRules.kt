@@ -12,8 +12,10 @@ object ExpenseRules {
     // Why: 100 million rupiah is only about US$ 6,000, less than a week's villa in Bali; this is about US$ 6 million.
     private const val MAX_RUPIAH = 100_000_000_000L
 
-    // Why: 100 million dong is only about US$ 4,000, a month's rent in Hanoi for a few friends; this is about
-    // US$ 4 million.
+    /*
+     * Why: 100 million dong is only about US$ 4,000, a month's rent in Hanoi for a few friends; this is about
+     * US$ 4 million.
+     */
     private const val MAX_DONG = 100_000_000_000L
 
     // Why: never more bitcoin than will ever exist.
