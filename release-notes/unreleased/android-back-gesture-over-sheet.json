@@ -2,6 +2,7 @@
   "notes": [
     {
       "kind": "fixed",
+      "betaOnly": true,
       "platforms": [
         "android"
       ],
