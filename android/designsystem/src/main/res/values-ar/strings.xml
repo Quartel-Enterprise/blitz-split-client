@@ -354,7 +354,7 @@
     <string name="designsystem_reminder_calendar_new_caption">تُضاف مناسبة متكررة إلى تقويمك عند إنشاء المجموعة.</string>
     <string name="designsystem_reminder_calendar">الإضافة إلى التقويم</string>
     <string name="designsystem_reminder_calendar_join">إضافة التذكير إلى التقويم</string>
-    <string name="designsystem_reminder_schedule_weekly">كل %1$s في الساعة %2$s</string>
+    <string name="designsystem_reminder_schedule_weekly">كل يوم %1$s في الساعة %2$s</string>
     <string name="designsystem_reminder_schedule_monthly">كل شهر في اليوم %1$d في الساعة %2$s</string>
     <string name="designsystem_reminder_event_title">التسوية: %1$s</string>
     <string name="designsystem_reminder_event_description">حان وقت التسوية في %1$s.</string>

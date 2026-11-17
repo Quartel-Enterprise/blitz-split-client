@@ -689,7 +689,7 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "كل %1$@ في الساعة %2$@"
+            "value" : "كل يوم %1$@ في الساعة %2$@"
           }
         },
         "de" : {
