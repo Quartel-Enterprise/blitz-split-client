@@ -152,13 +152,7 @@ class MoneyFormatter(
         return substring(0, digit) + signMark + sign + substring(digit)
     }
 
-    // Why: ICU's, since java.text drops the bidi mark of the pattern.
-    private val signMark: String by lazy {
-        android.icu.text.NumberFormat
-            .getNumberInstance(formatLocale)
-            .format(-1)
-            .takeWhile { it != '-' && it != '−' && !it.isDigit() }
-    }
+    private val signMark: String by lazy { signMarkOf(formatLocale) }
 
     private fun Long.toDecimal(): BigDecimal = BigDecimal.valueOf(this, if (isSats) 0 else currency.fractionDigits)
 
@@ -234,4 +228,15 @@ fun rememberMoneyFormatters(currencies: List<GroupCurrency>): Map<GroupCurrency,
             )
         }
     }
+}
+
+// Why: one per locale, as every currency's formatter of a list asks for the same mark.
+private val signMarks = java.util.concurrent.ConcurrentHashMap<Locale, String>()
+
+// Why: ICU's, since java.text drops the bidi mark of the pattern.
+private fun signMarkOf(locale: Locale): String = signMarks.getOrPut(locale) {
+    android.icu.text.NumberFormat
+        .getNumberInstance(locale)
+        .format(-1)
+        .takeWhile { it != '-' && it != '−' && !it.isDigit() }
 }

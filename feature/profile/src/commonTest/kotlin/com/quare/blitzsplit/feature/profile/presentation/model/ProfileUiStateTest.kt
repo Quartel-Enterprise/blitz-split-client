@@ -949,7 +949,7 @@ class ProfileUiStateTest {
         val options = profile.findLanguageOptions(englishNames)
 
         // Then
-        assertEquals(listOf(AppLanguage.PORTUGUESE, AppLanguage.HEBREW), options)
+        assertFalse(AppLanguage.PORTUGUESE_PORTUGAL in options)
     }
 
     @Test

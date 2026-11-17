@@ -42,7 +42,8 @@
 
     <string name="contacts_profile_back">חזרה לאנשי הקשר</string>
     <string name="contacts_profile_share">שיתוף הפרופיל</string>
-    <string name="contacts_profile_photo_open">הצגת התמונה</string>    <string name="contacts_profile_more">אפשרויות נוספות</string>
+    <string name="contacts_profile_photo_open">הצגת התמונה</string>
+    <string name="contacts_profile_more">אפשרויות נוספות</string>
     <string name="contacts_profile_meta_user">ב-Blitz Split · %s</string>
     <string name="contacts_profile_meta_guest">אורח · עדיין בלי האפליקציה</string>
     <string name="contacts_profile_offline">אופליין · הפעולות שלך ממתינות בתור</string>
