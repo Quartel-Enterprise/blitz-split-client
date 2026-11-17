@@ -56,7 +56,7 @@ sealed interface BillDetailUiEvent : UiEvent {
 
             OnShareClicked -> EventAnalytics.Manual("bill_share_clicked")
 
-            OnGroupPhotoClicked -> EventAnalytics.Automatic("bill_group_photo_clicked")
+            OnGroupPhotoClicked -> EventAnalytics.Manual("bill_group_photo_clicked")
 
             OnDeleteClicked -> EventAnalytics.Manual("bill_delete_clicked")
 

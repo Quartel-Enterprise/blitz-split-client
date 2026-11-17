@@ -528,7 +528,8 @@ private fun BillGroupTitle(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        // Why: the 48 dp touch box already pads the badge by 8 dp each side, which makes up the rest of the 12 dp gap.
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (state.isLoaded) {

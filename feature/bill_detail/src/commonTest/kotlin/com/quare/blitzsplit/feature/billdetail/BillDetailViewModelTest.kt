@@ -3877,6 +3877,31 @@ class BillDetailViewModelTest {
     }
 
     @Test
+    fun `GIVEN the bill is open WHEN tapping the group avatar THEN sends the bill group photo clicked`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
+
+            // Then
+            assertEquals(listOf("bill_group_photo_clicked" to emptyMap<String, Any>()), trackedEvents)
+        }
+
+    @Test
+    fun `GIVEN Room not read yet WHEN tapping the group avatar THEN sends nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(isRoomRead = false)
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnGroupPhotoClicked)
+
+        // Then
+        assertTrue(trackedEvents.isEmpty())
+    }
+
+    @Test
     fun `GIVEN the bill is open WHEN tapping Compartilhar THEN sends the bill share clicked`() =
         runTest(testDispatcher) {
             // Given
