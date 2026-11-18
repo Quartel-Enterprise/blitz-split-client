@@ -16,7 +16,7 @@
 # the iPhone Duo, on the runtime that has it, twice: closed, as it boots, its outer display (1398x2034), and open, its
 # inner display lying down (2853x2007, which XCTest hands as 2852x2006). Only Device Hub can open it (open_duo below).
 # The simulators are made once, named "Store screenshots <slot>", and their status bar shows Apple's 9:41.
-# STORE_SCREENSHOTS_SIMULATOR names another one to use or make, for a run of one slot beside another run of this
+# STORE_SCREENSHOTS_SIMULATOR names another one to use or make, for a run of one device beside another run of this
 # script (a task's own simulator: two runs can't share one).
 #
 # Progress. Each language is a run of the UI test of its own (capture_language below), so the log says which one is
@@ -28,8 +28,9 @@
 # ends.
 #
 # A language that fails. It is tried once more, since a launch that hangs or a runner that dies is rarely the
-# language's fault. Failing again, what it was to capture is deleted, so no language is ever left with some of its
-# screens for the frame to take, and the script goes on with the other languages and slots: one bad language doesn't
+# language's fault. Failing again, what it was to capture is deleted: its folder, so the frame sees a slot short of a
+# language, or, in a run narrowed to some screens, those screens alone, which the frame then stops at by name
+# rather than draw an earlier run's. The script goes on with the other languages and slots: one bad language doesn't
 # hide whether the others work, and their captures stay to look at or to frame once that language is taken again
 # (STORE_SCREENSHOTS_SLOTS and STORE_SCREENSHOTS_LOCALES, which keep the others' PNGs). A third failed language ends
 # the slot, though: by then it is the slot that fails, and a failure that hangs for minutes, twice per language,
@@ -51,6 +52,7 @@ SLOTS="${STORE_SCREENSHOTS_SLOTS:-iphone63 iphone67 ipad13 iphoneduo iphoneduoop
 ATTEMPTS=2
 # How many failed languages end a slot.
 FAILED_LANGUAGES=3
+APP_ID="com.quare.blitzsplit"
 DEVICE_HUB="com.apple.dt.Devices"
 # How long the Duo may take to open, by the script's press or by a person's, counted once the script's own attempt at
 # the press is over (which waits up to a minute for Device Hub's window and half a minute for its Open button).
@@ -229,6 +231,7 @@ run_ui_test() {
     "TEST_RUNNER_STORE_SCREENSHOTS_LOCALES=$tag"
     "TEST_RUNNER_STORE_SCREENSHOTS_SCREENS=$STORE_SCREENSHOTS_SCREENS"
     "TEST_RUNNER_STORE_SCREENSHOTS_DEVICE_IS_SET_UP=$device_is_set_up"
+    "TEST_RUNNER_STORE_SCREENSHOTS_CALLER_RESTORES_LANGUAGE=1"
     xcodebuild test-without-building
     -xctestrun "$xctestrun"
     -destination "id=$udid"
@@ -359,6 +362,17 @@ capture_slot() {
 check_table locales 4
 check_table screens 3
 check_table assets 2
+# The app's own language comes back once a slot's captures end, whatever they stopped on: one launch without the seed
+# (StoreScreenshotsRun), here, where the test's own would be one more launch per language. Nothing to restore, and
+# nothing launched, on a simulator the app never reached.
+restore_app_language() {
+  local udid="$1"
+  if xcrun simctl launch "$udid" "$APP_ID" -StoreScreenshotsRestore YES > /dev/null 2>&1; then
+    sleep 2
+    xcrun simctl terminate "$udid" "$APP_ID" > /dev/null 2>&1 || true
+  fi
+}
+
 chosen="$(picked locales 1 "$STORE_SCREENSHOTS_LOCALES")"
 # Split on purpose: one tag or file name per line, none with a space.
 # shellcheck disable=SC2206
@@ -366,6 +380,16 @@ locales=($chosen)
 chosen="$(picked screens 2 "$STORE_SCREENSHOTS_SCREENS")"
 # shellcheck disable=SC2206
 screen_files=($chosen)
+
+# One name is one simulator, and Device Hub picks the Duo to open by its name: a simulator named by hand serves the
+# slots of one device (the Duo's two share theirs).
+if [ -n "$STORE_SCREENSHOTS_SIMULATOR" ]; then
+  devices="$(for slot in $SLOTS; do device_type "$slot"; done | sort -u | wc -l)"
+  if [ "$devices" -gt 1 ]; then
+    echo "STORE_SCREENSHOTS_SIMULATOR names one simulator: pass the slots of one device in STORE_SCREENSHOTS_SLOTS" >&2
+    exit 2
+  fi
+fi
 
 "$ROOT/iosApp/generate-project.sh"
 
@@ -410,6 +434,7 @@ for slot in $SLOTS; do
   else
     failed="$failed, $slot ($failed_languages)"
   fi
+  restore_app_language "$udid"
   xcrun simctl shutdown "$udid" || true
 done
 

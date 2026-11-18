@@ -738,17 +738,18 @@ jobs:
 
       # Also when the simulator's capture failed on a language, with the languages it did capture: the frame takes
       # none of a slot that misses one, but they are there to download, so a person who captures the missing language
-      # on a Mac has the others. The failed language's folder isn't among them. Not when nothing was captured (the
-      # build failed, the Duo didn't open), nor after a failed Mac capture, which stops in the middle of a language,
-      # nor in a job that was cancelled or ran out of time. A job run again replaces what its failed run uploaded.
+      # on a Mac has the others. The failed language's folder isn't among them, and a capture that failed with
+      # nothing captured (the build failed, the Duo didn't open) uploads nothing, without a second error. Not after a
+      # failed Mac capture, which stops in the middle of a language, nor in a job that was cancelled or ran out of
+      # time. A job run again replaces what its failed run uploaded.
       - name: Upload the captures as a build artifact
-        if: ${{ !cancelled() && (success() || (steps.simulator.outcome == 'failure' && hashFiles('build/outputs/apple-screenshot-captures/**/*.png') != '')) }}
+        if: ${{ !cancelled() && (success() || steps.simulator.outcome == 'failure') }}
         uses: actions/upload-artifact@v7
         with:
           name: apple-captures-${{ matrix.slot }}
           path: build/outputs/apple-screenshot-captures/
           retention-days: 7
-          if-no-files-found: error
+          if-no-files-found: ${{ steps.simulator.outcome == 'failure' && 'ignore' || 'error' }}
           overwrite: true
 
   # Robolectric puts each capture into its device's frame, with the banner (any machine does it). The Gradle task

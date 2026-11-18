@@ -333,8 +333,9 @@ job is over).
 **A language that fails is tried once more**, since a launch that hangs or a test runner that dies is rarely the
 language's fault. When it fails again:
 
-- What it was to capture is deleted: its folder, or, in a run narrowed to some screens, those screens. A language is
-  never left with some of its screens.
+- What it was to capture is deleted: its folder, so the frame sees a slot short of a language. In a run narrowed
+  to some screens, only those screens are, since the others are an earlier run's: the frame then stops at the
+  missing file, by name, rather than draw the earlier run's capture of it.
 - The script goes on with the other languages and the other slots, so one bad language doesn't hide whether the
   rest work. A slot's third failed language ends the slot instead: by then it is the slot that fails, and a failure
   that hangs for minutes, twice per language, would use up a release job's time.
@@ -367,13 +368,16 @@ them all, measured on an iPhone 17 Pro's simulator in November 2026 with three l
 one run, 333 s in three. The runs read the built tests' `.xctestrun` file; through the project and its scheme, each
 one loads the project and resolves the Swift packages again, and the same three took 362 s. What the test does once
 per simulator, the iPad's switch to full-screen apps (eleven seconds in Settings), only the runs before a slot's
-first captured language do (`STORE_SCREENSHOTS_DEVICE_IS_SET_UP`). A language takes a little under two minutes on this project's Mac and about
+first captured language do (`STORE_SCREENSHOTS_DEVICE_IS_SET_UP`), and the launch that gives the app its own
+language back is the script's, once per slot. A run that hangs fails after ten minutes
+(`-default-test-execution-time-allowance`) and counts as a failed try. A language takes a little under two minutes on this project's Mac and about
 three on a release's runner, where a slot's 26 took 88 and 95 minutes in the release of November 2026, build
 included: the run per language adds about two minutes to that, far from the job's limit of 150.
 
-**Two runs can't share a simulator.** A slot's simulator is "Store screenshots <slot>", made once. A run of one slot
-beside another run of the script (a task of its own, in a worktree) passes `STORE_SCREENSHOTS_SIMULATOR=<name>` to
-use, or make, a simulator of that name instead.
+**Two runs can't share a simulator.** A slot's simulator is "Store screenshots <slot>", made once. A run beside
+another run of the script (a task of its own, in a worktree) passes `STORE_SCREENSHOTS_SIMULATOR=<name>` to use, or
+make, a simulator of that name instead, for the slots of one device: the script refuses the name with slots of
+several.
 
 ## How the Mac capture works
 

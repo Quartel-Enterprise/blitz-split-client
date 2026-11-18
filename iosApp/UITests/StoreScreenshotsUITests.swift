@@ -59,8 +59,10 @@ final class StoreScreenshotsUITests: XCTestCase {
         // before a slot's first captured language switch it: 26 visits to Settings would be 25 more chances to fail.
         let isDeviceSetUp = !(environment["STORE_SCREENSHOTS_DEVICE_IS_SET_UP"] ?? "").isEmpty
         if slot.hasPrefix("ipad"), !isDeviceSetUp { useFullScreenApps() }
-        // The app's own language comes back once the captures end, whatever they stopped on.
-        defer { restoreAppLanguage() }
+        // The app's own language comes back once the captures end, whatever they stopped on: by this test's last
+        // launch, or by capture-ios.sh once per slot, where this would be one more launch per language.
+        let callerRestoresLanguage = !(environment["STORE_SCREENSHOTS_CALLER_RESTORES_LANGUAGE"] ?? "").isEmpty
+        defer { if !callerRestoresLanguage { restoreAppLanguage() } }
         for locale in locales where onlyLocales?.contains(locale.tag) ?? true {
             let directory = output.appendingPathComponent(slot).appendingPathComponent(locale.tag)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
