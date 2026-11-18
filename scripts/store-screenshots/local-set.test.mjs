@@ -373,6 +373,11 @@ describe("sending a set", () => {
       assert.equal(status, 1, name);
       assert.match(stderr, /--name is letters, digits/);
     }
+    for (const name of ["3.0..1", "3.0.", "3.0.lock"]) {
+      const { status, stderr } = send(["--name", name, "--platform", "mac", "--dry-run"]);
+      assert.equal(status, 1, name);
+      assert.match(stderr, /--name couldn't be a tag/);
+    }
   });
 
   test("says in the command only what differs from the workflow's defaults", () => {

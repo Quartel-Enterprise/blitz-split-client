@@ -359,6 +359,8 @@ export function dispatchCommand(name, { platforms, allowMissingDevices }) {
 async function send(options) {
   const name = options.name ?? defaultName();
   if (!SET_NAME.test(name)) throw new SetError(`--name is letters, digits, dots, dashes and underscores, 60 at most: ${name}`);
+  // What git takes in a tag on top of SET_NAME's letters: no "..", and no "." or ".lock" at the end.
+  if (/\.\.|\.$|\.lock$/.test(name)) throw new SetError(`--name couldn't be a tag: no "..", and no "." or ".lock" at the end: ${name}`);
   const tag = tagOf(name);
   const reports = checkSet(options);
   console.log(describe(reports).join("\n"));
@@ -372,14 +374,11 @@ async function send(options) {
     if (/release not found/i.test(stderr ?? "")) return null;
     throw new SetError(`Could not ask GitHub whether ${tag} is taken: ${(stderr ?? "").trim() || "gh failed"}`);
   };
-  if (!options.dryRun) {
-    const existing = findRelease();
-    if (existing) {
-      // Never a published release: only a draft is a set, and only a set is this script's to delete.
-      if (!existing.isDraft) throw new SetError(`${tag} is a published release, not a set: pick another --name`);
-      if (!options.replace) throw new SetError(`A set named ${name} is already there (the draft release ${tag}): pass --replace to send this one in its place, or another --name`);
-      gh(["release", "delete", tag, "--yes"]);
-    }
+  const existing = options.dryRun ? null : findRelease();
+  if (existing) {
+    // Never a published release: only a draft is a set, and only a set is this script's to delete.
+    if (!existing.isDraft) throw new SetError(`${tag} is a published release, not a set: pick another --name`);
+    if (!options.replace) throw new SetError(`A set named ${name} is already there (the draft release ${tag}): pass --replace to send this one in its place, or another --name`);
   }
   const out = mkdtempSync(join(tmpdir(), "store-screenshots-set-"));
   try {
@@ -406,13 +405,25 @@ async function send(options) {
         .filter((line) => !line.includes("hidden file"))
         .map((line) => line.replace(/, from .*$/, "")),
     ].join("\n");
+    // The set it replaces goes only once this one is packed: a pack that failed leaves it where it was.
+    if (existing) gh(["release", "delete", tag, "--yes"]);
     console.log(`Uploading the set as the draft release ${tag}…`);
     try {
       gh(["release", "create", tag, "--draft", "--title", `App Store screenshots: ${name}`, "--notes", notes, ...archives, join(out, CHECKSUMS)]);
     } catch (error) {
       // A draft left with half its assets would be taken for a set. Nothing is there when the create itself failed.
-      if (findRelease()?.isDraft) gh(["release", "delete", tag, "--yes"]);
-      throw new SetError(`The upload failed (gh says why above), and nothing of it was left on GitHub. Exit ${error.status}.`);
+      // A clean-up that fails too must not hide the upload's failure, nor say that nothing was left.
+      let isClean = true;
+      try {
+        if (findRelease()?.isDraft) gh(["release", "delete", tag, "--yes"]);
+      } catch {
+        isClean = false;
+      }
+      throw new SetError(
+        isClean
+          ? `The upload failed (gh says why above), and nothing of it was left on GitHub. Exit ${error.status}.`
+          : `The upload failed (gh says why above), and the draft release ${tag} may be left half sent: remove it with gh release delete ${tag} --yes. Exit ${error.status}.`,
+      );
     }
   } finally {
     rmSync(out, { recursive: true, force: true });
