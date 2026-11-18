@@ -1189,7 +1189,6 @@ export const ar: Record<MessageKey, string> = {
   globalBalances_owesYou: 'لك',
   globalBalances_allSub: 'بعد المقاصة بين المجموعات',
   globalBalances_allSubEmpty: 'جارٍ جمع المجموعات',
-  globalBalances_allSubSettled: 'لا شيء مفتوح',
   globalBalances_nobody: 'لا أحد',
   globalBalances_onePerson: 'شخص واحد',
   globalBalances_people: 'الأشخاص: {count}',

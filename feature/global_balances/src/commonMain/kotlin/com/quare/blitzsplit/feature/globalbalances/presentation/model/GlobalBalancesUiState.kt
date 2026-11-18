@@ -76,6 +76,15 @@ data class GlobalBalancesUiState(
         }
     }
 
+    /*
+     * Why: "Tudo", "Você deve" and "Te devem" with their totals (and the caption under them) say nothing once nobody has
+     * an open balance, whether there is no group yet or every group is settled up: a row of zeros, in a currency per
+     * group. The "Tudo acertado" state stands alone then; the filter and totals show while loading (their shimmer) and
+     * whenever someone has an open balance, even when the filter lists no one.
+     */
+    val showsSummary: Boolean
+        get() = emptyState != BalancesEmptyState.SETTLED
+
     // Why: "1 pessoa" under Você deve and "4 pessoas" under Te devem, each person once over every currency; 0 while loading.
     val toPayPeopleCount: Int by lazy { peopleCountOf(owesYou = false) }
 

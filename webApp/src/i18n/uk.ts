@@ -1191,7 +1191,6 @@ export const uk: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Тобі винні',
   globalBalances_allSub: 'уже взаємозараховано між групами',
   globalBalances_allSubEmpty: 'підсумовуємо групи',
-  globalBalances_allSubSettled: 'нічого відкритого',
   globalBalances_nobody: 'ніхто',
   globalBalances_onePerson: '1 людина',
   globalBalances_people: 'Людей: {count}',

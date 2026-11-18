@@ -1,0 +1,37 @@
+{
+  "notes": [
+    {
+      "kind": "fixed",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The Balances tab no longer shows a row of zeros when nobody owes anything: it just says All settled.",
+        "pt": "A aba Saldos não mostra mais uma fileira de zeros quando ninguém deve nada: agora só diz Tudo acertado.",
+        "pt-PT": "O separador Saldos já não mostra uma fila de zeros quando ninguém deve nada: agora só diz Tudo acertado.",
+        "es": "La pestaña Saldos ya no muestra una fila de ceros cuando nadie debe nada: ahora solo dice Todo saldado.",
+        "fr": "L'onglet Soldes n'affiche plus une rangée de zéros quand personne ne doit rien : il indique simplement Tout est réglé.",
+        "de": "Der Tab Salden zeigt keine Reihe aus Nullen mehr, wenn niemand etwas schuldet: Er sagt jetzt nur noch Alles ausgeglichen.",
+        "it": "La scheda Saldi non mostra più una fila di zeri quando nessuno deve nulla: ora dice solo Tutto in pari.",
+        "pl": "Karta Salda nie pokazuje już rzędu zer, gdy nikt nic nie jest winien: teraz mówi tylko Wszystko rozliczone.",
+        "nl": "Het tabblad Saldi toont geen rij nullen meer als niemand iets verschuldigd is: het zegt nu alleen Alles verrekend.",
+        "ja": "誰も何も借りていないとき、残高タブにゼロの並びが表示されなくなり、「すべて精算済み」だけが表示されます。",
+        "tr": "Kimse bir şey borçlu değilken Bakiyeler sekmesi artık bir sıra sıfır göstermiyor: yalnızca Tüm hesaplar kapandı yazıyor.",
+        "id": "Tab Saldo tidak lagi menampilkan deretan angka nol saat tidak ada yang berutang: sekarang hanya tertulis Semua sudah lunas.",
+        "ru": "Вкладка «Балансы» больше не показывает ряд нулей, когда никто ничего не должен: теперь там просто написано «Всё оплачено».",
+        "uk": "Вкладка «Баланси» більше не показує ряд нулів, коли ніхто нічого не винен: тепер там просто написано «Усе сплачено».",
+        "ko": "아무도 빚이 없을 때 잔액 탭이 더 이상 0이 늘어선 줄을 보여주지 않고 '모두 정산 완료'만 표시합니다.",
+        "hi": "जब किसी पर कुछ बकाया नहीं होता, तो बैलेंस टैब अब शून्यों की कतार नहीं दिखाता: वह सिर्फ़ \"सबका हिसाब बराबर\" बताता है।",
+        "ar": "لم يعد تبويب الأرصدة يعرض صفًّا من الأصفار عندما لا يدين أحد بشيء: صار يكتفي بعبارة «تمت التسوية بالكامل».",
+        "zh": "当没有人欠款时，“余额”标签页不再显示一排零，只显示“全部已结清”。",
+        "he": "כשאף אחד לא חייב כלום, לשונית היתרות כבר לא מציגה שורת אפסים: היא רק אומרת \"הכול סגור\".",
+        "th": "เมื่อไม่มีใครค้างจ่าย แท็บยอดคงเหลือจะไม่แสดงแถวเลขศูนย์อีกต่อไป แต่จะแสดงเพียง \"เคลียร์หมดแล้ว\"",
+        "vi": "Khi không ai nợ gì, tab Số dư không còn hiện một hàng số 0 nữa mà chỉ ghi Đã thanh toán xong.",
+        "zh-Hant": "當沒有人欠款時，「餘額」分頁不再顯示一排零，只顯示「全部已結清」。",
+        "sv": "Fliken Saldon visar inte längre en rad med nollor när ingen är skyldig något: den säger nu bara Allt är uppgjort.",
+        "cs": "Karta Zůstatky už neukazuje řadu nul, když nikdo nic nedluží: místo toho jen říká Vše vyrovnáno.",
+        "ro": "Fila Solduri nu mai afișează un rând de zerouri când nimeni nu datorează nimic: acum spune doar Totul e achitat."
+      }
+    }
+  ]
+}

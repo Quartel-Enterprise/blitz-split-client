@@ -76,7 +76,7 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
       onBrand={() => presenter.openBrand()}
       search={search}
     >
-      <main className={cn(pageContentClass, 'gap-5', !isWide && 'max-w-3xl')}>
+      <main className={cn(pageContentClass, 'gap-5', (!isWide || !state.showsSummary) && 'max-w-3xl')}>
         <h1 className="sr-only text-2xl font-semibold tracking-tight md:not-sr-only">{t('globalBalances_title')}</h1>
         {state.showsOfflineNotice && (
           <span className="inline-flex items-center gap-1.5 self-start rounded-md border px-2 py-1 text-xs text-muted-foreground">
@@ -87,8 +87,8 @@ export function GlobalBalancesScreen({ route }: { route: JsRoute }) {
         {!state.isLoaded && <BalancesSkeleton isWide={isWide} isWaitingForInternet={state.isWaitingForInternet} />}
         {state.isLoaded && (
           <>
-            <FilterCards presenter={presenter} state={state} />
-            {isWide ? (
+            {state.showsSummary && <FilterCards presenter={presenter} state={state} />}
+            {isWide && state.showsSummary ? (
               <BalancesListDetail presenter={presenter} state={state} />
             ) : state.emptyState ? (
               <EmptyBalances presenter={presenter} emptyState={state.emptyState} total={state.emptyStateTotal ?? undefined} count={state.emptyStatePeopleCount} />
@@ -211,7 +211,6 @@ function subText(filter: string, state: JsGlobalBalancesState): string {
   const toReceive = state.toReceivePeopleCount
   if (filter === 'you-owe') return peopleText(toPay)
   if (filter === 'owes-you') return peopleText(toReceive)
-  if (toPay + toReceive === 0) return t('globalBalances_allSubSettled')
   return t(state.emptyState ? 'globalBalances_allSubEmpty' : 'globalBalances_allSub')
 }
 

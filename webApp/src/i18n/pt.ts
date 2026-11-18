@@ -1186,7 +1186,6 @@ export const pt: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Te devem',
   globalBalances_allSub: 'já compensado entre os grupos',
   globalBalances_allSubEmpty: 'somando os grupos',
-  globalBalances_allSubSettled: 'nada em aberto',
   globalBalances_nobody: 'ninguém',
   globalBalances_onePerson: '1 pessoa',
   globalBalances_people: '{count} pessoas',

@@ -1188,7 +1188,6 @@ export const hi: Record<MessageKey, string> = {
   globalBalances_owesYou: 'आपको लेने हैं',
   globalBalances_allSub: 'सभी ग्रुप का हिसाब पहले से मिलाया गया',
   globalBalances_allSubEmpty: 'ग्रुपों का जोड़ लगाया जा रहा है',
-  globalBalances_allSubSettled: 'कुछ बाकी नहीं',
   globalBalances_nobody: 'कोई नहीं',
   globalBalances_onePerson: '1 व्यक्ति',
   globalBalances_people: '{count} लोग',

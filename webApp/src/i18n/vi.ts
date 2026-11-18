@@ -1186,7 +1186,6 @@ export const vi: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Nợ bạn',
   globalBalances_allSub: 'đã bù trừ giữa các nhóm',
   globalBalances_allSubEmpty: 'đang cộng các nhóm',
-  globalBalances_allSubSettled: 'không còn khoản nào',
   globalBalances_nobody: 'không ai',
   globalBalances_onePerson: '1 người',
   globalBalances_people: '{count} người',

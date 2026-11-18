@@ -1187,7 +1187,6 @@ export const tr: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Alacakların',
   globalBalances_allSub: 'gruplar arasında zaten mahsup edildi',
   globalBalances_allSubEmpty: 'gruplar toplanıyor',
-  globalBalances_allSubSettled: 'açık bir şey yok',
   globalBalances_nobody: 'kimse',
   globalBalances_onePerson: '1 kişi',
   globalBalances_people: '{count} kişi',

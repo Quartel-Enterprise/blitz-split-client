@@ -1186,7 +1186,6 @@ export const he: Record<MessageKey, string> = {
   globalBalances_owesYou: 'מגיע לך',
   globalBalances_allSub: 'כבר מקוזז בין הקבוצות',
   globalBalances_allSubEmpty: 'סכימת הקבוצות',
-  globalBalances_allSubSettled: 'אין שום דבר פתוח',
   globalBalances_nobody: 'אף אחד',
   globalBalances_onePerson: 'אדם אחד',
   globalBalances_people: '{count} אנשים',
