@@ -154,15 +154,23 @@ test("the copyright line carries the current year unless it is told another", ()
 // become "zh-rHant") or more parts is one Robolectric refuses, which fails every frame of that device.
 const GENERATORS = "android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots";
 test("the generators draw every image in a locale Robolectric takes", () => {
-  const locales = readFileSync(`${GENERATORS}/StoreLocale.kt`, "utf8");
-  const constants = Object.fromEntries([...locales.matchAll(/const val (\w+) = "([^"]+)"/g)].map(([, name, value]) => [name, value]));
-  const drawnIn = [...locales.matchAll(/playLocale = ("([^"]+)"|\w+),/g)].map(([, raw, literal]) => literal ?? constants[raw]);
-  assert.equal(drawnIn.length, LISTING_LANGS.length);
-  for (const locale of drawnIn) assert.match(locale ?? "", /^[a-z]{2,3}(-[A-Z]{2})?$/, `playLocale ${locale}`);
-  // An Apple slot is no exception: its listing tag may carry a script (zh-Hant), which is not such a locale.
-  const drawn = readFileSync(`${GENERATORS}/StoreScreenshots.kt`, "utf8").match(/val drawnIn = (.+)/);
-  assert.ok(drawn, "no drawnIn in StoreScreenshots.kt");
-  assert.equal(drawn[1].trim(), "locale.playLocale");
+  const source = readFileSync(`${GENERATORS}/StoreLocale.kt`, "utf8");
+  const constants = Object.fromEntries([...source.matchAll(/const val (\w+) = "([^"]+)"/g)].map(([, name, value]) => [name, value]));
+  const sets = [...source.matchAll(/tag = "([^"]+)",\s*language = "[^"]+",\s*drawnLocale = ("([^"]+)"|\w+),/g)].map(
+    ([, tag, raw, literal]) => ({ tag, drawn: literal ?? constants[raw] }),
+  );
+  assert.equal(sets.length, LISTING_LANGS.length);
+  const tags = sets.map(({ tag }) => tag);
+  for (const { tag, drawn } of sets) {
+    assert.match(drawn ?? "", /^[a-z]{2,3}(-[A-Z]{2})?$/, `the locale ${tag} is drawn in`);
+    // The library writes into a folder named after the locale it drew in, which is then moved to the set's tag:
+    // one named as another set's tag would mix the two sets (moveToListingFolder refuses it, but only in a release).
+    if (drawn !== tag) assert.ok(!tags.includes(drawn), `${tag} is drawn in ${drawn}, another set's folder`);
+  }
+  // An Apple slot is no exception: its listing tag may carry a script (zh-Hant), so what the library is handed is
+  // always the set's drawnLocale, never its tag. Read off the call itself: running it takes the captures.
+  const handed = [...readFileSync(`${GENERATORS}/StoreScreenshots.kt`, "utf8").matchAll(/locales = listOf\(([^)]*)\)/g)].map(([, locale]) => locale.trim());
+  assert.deepEqual(handed, ["locale.drawnLocale"]);
 });
 
 // The screenshots are staged from maps of their own, in Kotlin (build-logic's StoreScreenshots.kt). A store attaches a

@@ -91,9 +91,8 @@ internal abstract class StoreScreenshots(
             // An Apple slot only frames a capture, which got its language and region on the simulator, but Robolectric
             // still draws the banner over it, in a locale it has to take as a resource qualifier: the listing's tag
             // isn't always one (zh-Hant becomes zh-rHant, which it refuses, failing every frame of the device).
-            val drawnIn = locale.playLocale
             screenshot(
-                locales = listOf(drawnIn),
+                locales = listOf(locale.drawnLocale),
                 title = copy.title,
                 description = copy.description,
                 backgroundColor = Color(BANNER_BACKGROUND),
@@ -114,7 +113,7 @@ internal abstract class StoreScreenshots(
                 }
             }
             moveToListingFolder(
-                drawnIn = drawnIn,
+                drawnIn = locale.drawnLocale,
                 tag = locale.tag,
             )
         }
