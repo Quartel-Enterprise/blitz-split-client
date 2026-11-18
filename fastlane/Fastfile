@@ -326,16 +326,25 @@ def upload_play_screenshots(metadata_path, locales, validates_only, quota_is_no_
   require "supply"
 
   json_key = ENV.fetch("PLAY_STORE_JSON_KEY_PATH")
-  # Only the shelves supply uploads: a locale with images anywhere else has nothing to compare, and nothing to send
+  # Only the shelves supply uploads, and the files it uploads from them (the ones play_locales_to_send compares): a
+  # locale with images anywhere else has nothing to compare, and nothing to send
   shelves = "{#{Supply::SCREENSHOT_TYPES.join(',')}}"
-  ensure_screenshots_staged(File.join(metadata_path, "*", Supply::IMAGES_FOLDER_NAME, shelves, "*.png"))
-  staged = Dir.glob("*/#{Supply::IMAGES_FOLDER_NAME}/#{shelves}/*.png", base: metadata_path).map { |image| image.split("/").first }.uniq.sort
+  images = "*.#{Supply::IMAGE_FILE_EXTENSIONS}"
+  ensure_screenshots_staged(File.join(metadata_path, "*", Supply::IMAGES_FOLDER_NAME, shelves, images))
+  staged = Dir.glob("*/#{Supply::IMAGES_FOLDER_NAME}/#{shelves}/#{images}", base: metadata_path).map { |image| image.split("/").first }.uniq.sort
   missing = locales - staged
   UI.user_error!("No staged screenshots for #{missing.join(', ')} under #{metadata_path}") if missing.any?
   asked = locales.empty? ? staged : locales
 
-  changed = retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
-    play_locales_to_send(metadata_path, asked, json_key)
+  changed = begin
+    retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
+      play_locales_to_send(metadata_path, asked, json_key)
+    end
+  rescue => e
+    # Opening the edit that reads may be refused for the quota as well: then nothing of the group went either
+    raise unless e.message.include?(PLAY_SAVE_QUOTA_MESSAGE)
+
+    return play_save_quota_reached(asked, [], quota_is_no_failure)
   end
   unchanged = asked - changed
   UI.message("Google Play already holds the staged images of #{unchanged.join(', ')}: left out of the upload") if unchanged.any?
