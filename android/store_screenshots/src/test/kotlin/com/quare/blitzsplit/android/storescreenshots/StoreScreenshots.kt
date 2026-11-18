@@ -88,10 +88,11 @@ internal abstract class StoreScreenshots(
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
         storeLocales.forEach { locale ->
             val copy = bannerCopyOf(screen, locale.language)
-            // An Apple slot only frames a capture, which got its language and region on the simulator.
-            val drawnIn = if (appleSlot == null) locale.playLocale else locale.tag
+            // An Apple slot only frames a capture, which got its language and region on the simulator, but Robolectric
+            // still draws the banner over it, in a locale it has to take as a resource qualifier: the listing's tag
+            // isn't always one (zh-Hant becomes zh-rHant, which it refuses, failing every frame of the device).
             screenshot(
-                locales = listOf(drawnIn),
+                locales = listOf(locale.drawnLocale),
                 title = copy.title,
                 description = copy.description,
                 backgroundColor = Color(BANNER_BACKGROUND),
@@ -112,7 +113,7 @@ internal abstract class StoreScreenshots(
                 }
             }
             moveToListingFolder(
-                drawnIn = drawnIn,
+                drawnIn = locale.drawnLocale,
                 tag = locale.tag,
             )
         }

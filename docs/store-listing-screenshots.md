@@ -214,20 +214,24 @@ fastlane/Fastfile                              # the screenshots and upload lane
   of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides. It goes on the iPhone Duo's
   shelf closed unless `duoScreensStagedOpen` (`StoreScreenshots.kt`) names it; a test of `store-listing.test.mjs`
   holds that list, `StoreScreen` and `screens.tsv` to the same file names.
-- **A new language:** `storeLocales` (its `playLocale` is its tag), `bannerCopies`, `SampleTripCopies` (its words), `SampleTrips` (its currency), a row of
+- **A new language:** `storeLocales` (its `drawnLocale` is its tag, unless the tag carries a script or needs a region
+  to write amounts and dates in: [the rules](#the-locale-every-image-is-drawn-in)), `bannerCopies`, `SampleTripCopies` (its words), `SampleTrips` (its currency), a row of
   `scripts/store-screenshots/locales.tsv`, and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
   which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
   Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings. Spain's Spanish
   goes by `es-ES` the same way, since `es` is Latin America's: its own banners and trip ("ha pagado", "coche",
   "ticket"), over the app's `es-ES` strings.
 
-## The region Play's screens are drawn in
+## The locale every image is drawn in
 
-Robolectric draws each Play set in its `StoreLocale.playLocale` (`StoreLocale.kt`): the language the resources are
-read in and the region the amounts, dates and hours are written in. It is the set's own tag for every set but Latin
-America's Spanish, whose tag, `es`, has no region: a bare `es` writes the symbol after the amount, as Spain does
+Robolectric draws every image in its set's `StoreLocale.drawnLocale` (`StoreLocale.kt`), the Play screens and the
+banner over an Apple capture alike: the language the resources are read in and the region the amounts, dates and
+hours are written in. It is the set's own tag for most sets. Chinese (`zh-CN`), Traditional Chinese (`zh-TW`, since
+its tag, `zh-Hant`, carries a script), Hebrew (`iw-IL`), Thai (`th-TH`), Vietnamese (`vi-VN`), Swedish (`sv-SE`)
+and Czech (`cs-CZ`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
+tag, `es`, has no region: a bare `es` writes the symbol after the amount, as Spain does
 ("84,08 €", "120 US$"), while the same listing's App Store set, captured in Equatorial Guinea's region, writes
-"€84,08" and "US$120". So that set is drawn in **`es-GQ`** (`LATIN_AMERICAN_PLAY_LOCALE`), **the region of the `es`
+"€84,08" and "US$120". So that set is drawn in **`es-GQ`** (`LATIN_AMERICAN_DRAWN_LOCALE`), **the region of the `es`
 line of `scripts/store-screenshots/locales.tsv`**, which is Pierre's choice. Nothing reads that line for Play: if it
 moves to another region, move this constant by hand, generate both sets and compare them, since Android's data and
 Apple's don't always agree on a region (in the United States', Apple writes the euro as "€" and Android as "EUR").
@@ -246,7 +250,11 @@ Apple's don't always agree on a region (in the United States', Apple writes the 
   changes it: the bare `es` wrote "1.145,80 €", and Spain's set has the same difference ("1.145,80 €" on Play,
   "1145,80 €" on the App Store), as have Polish and Portugal's Portuguese. Whether the Android app should follow the
   rule is a choice about the app, not about its screenshots.
-- **No `-u-` extension in a `playLocale`.** The library turns the tag into a resource qualifier (`es-rGQ`), which
+- **A `drawnLocale` is a language with at most a region** (`zh-TW`, never `zh-Hant`). Robolectric draws every image
+  in it, the banner over an Apple capture too, and gets it as a resource qualifier: a script or a third part makes
+  one it refuses, and every frame of that device fails (the first release's frames did, on `zh-Hant`, while the
+  Apple slots were still drawn in the listing's tag). A test of `store-listing.test.mjs` holds both.
+- **No `-u-` extension in a `drawnLocale`.** The library turns the tag into a resource qualifier (`es-rGQ`), which
   has no room for one.
 
 ## How the iOS capture works
@@ -272,8 +280,8 @@ The trade-off: Equatorial Guinea's separators are Spain's, a decimal comma and n
 the boat tour's dollars are "US$120" where the United States' wrote "$120", and a compact amount from 1000 up puts
 the symbol after ("1 mil €"). The trip's Statistics stays under it: its most expensive day is €678, so the chart's
 value lines stop at "€750". Changing the region is that one line of `locales.tsv` for the App Store's set, and
-`LATIN_AMERICAN_PLAY_LOCALE` for Play's, which nothing changes by itself
-([the region Play's screens are drawn in](#the-region-plays-screens-are-drawn-in)).
+`LATIN_AMERICAN_DRAWN_LOCALE` for Play's and the frames' banners, which nothing changes by itself
+([the locale every image is drawn in](#the-locale-every-image-is-drawn-in)).
 
 The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
 sandbox can't read the repository. The app writes them to a temporary folder of its own. In a **debug**

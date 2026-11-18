@@ -149,6 +149,30 @@ test("the copyright line carries the current year unless it is told another", ()
   assert.equal(appStoreCopyright(2027), "2027 Quartel Enterprise • PI Software LTDA");
 });
 
+// Robolectric draws every image, the Play screens and the banner over an Apple capture alike, in a locale it gets as
+// an Android resource qualifier: the library turns "zh-TW" into "zh-rTW", and a tag with a script ("zh-Hant" would
+// become "zh-rHant") or more parts is one Robolectric refuses, which fails every frame of that device.
+const GENERATORS = "android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots";
+test("the generators draw every image in a locale Robolectric takes", () => {
+  const source = readFileSync(`${GENERATORS}/StoreLocale.kt`, "utf8");
+  const constants = Object.fromEntries([...source.matchAll(/const val (\w+) = "([^"]+)"/g)].map(([, name, value]) => [name, value]));
+  const sets = [...source.matchAll(/tag = "([^"]+)",\s*language = "[^"]+",\s*drawnLocale = ("([^"]+)"|\w+),/g)].map(
+    ([, tag, raw, literal]) => ({ tag, drawn: literal ?? constants[raw] }),
+  );
+  assert.equal(sets.length, LISTING_LANGS.length);
+  const tags = sets.map(({ tag }) => tag);
+  for (const { tag, drawn } of sets) {
+    assert.match(drawn ?? "", /^[a-z]{2,3}(-[A-Z]{2})?$/, `the locale ${tag} is drawn in`);
+    // The library writes into a folder named after the locale it drew in, which is then moved to the set's tag:
+    // one named as another set's tag would mix the two sets (moveToListingFolder refuses it, but only in a release).
+    if (drawn !== tag) assert.ok(!tags.includes(drawn), `${tag} is drawn in ${drawn}, another set's folder`);
+  }
+  // An Apple slot is no exception: its listing tag may carry a script (zh-Hant), so what the library is handed is
+  // always the set's drawnLocale, never its tag. Read off the call itself: running it takes the captures.
+  const handed = [...readFileSync(`${GENERATORS}/StoreScreenshots.kt`, "utf8").matchAll(/locales = listOf\(([^)]*)\)/g)].map(([, locale]) => locale.trim());
+  assert.deepEqual(handed, ["locale.drawnLocale"]);
+});
+
 // The screenshots are staged from maps of their own, in Kotlin (build-logic's StoreScreenshots.kt). A store attaches a
 // locale's screenshots to the listing of that same locale, so the two must send each language to the same codes.
 const SCREENSHOTS_KT = "build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt";
@@ -170,8 +194,7 @@ test("the screenshots go to the store locales the listing text goes to", () => {
 // The iPhone Duo's shelf takes each screen once, open for the ones StoreScreenshots.kt names by file name. A name no
 // screen has (a screen renamed, a typo) would send that screen up closed with nothing failing. Staging matches the
 // names the frames are written under, StoreScreen's, which are the ones the captures are written under, screens.tsv's.
-const STORE_SCREEN_KT =
-  "android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt";
+const STORE_SCREEN_KT = `${GENERATORS}/StoreScreen.kt`;
 const SCREENS_TSV = "scripts/store-screenshots/screens.tsv";
 
 test("the screens the iPhone Duo's shelf takes open are screens the captures and the frames write", () => {
