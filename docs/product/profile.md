@@ -58,7 +58,10 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     which account it is, with no "Connected" and no "Google"/"Apple" title (Pierre's call, testers' feedback,
     November 2026). An ⓘ button next to the email explains that only the person sees it, in each platform's way
     (Android's dialog, a popover on Apple platforms and the web, `ProfileDialog.EMAIL_INFO`); without an email the
-    row falls back to the provider's name and has no ⓘ. Without Google or Apple the row keeps "No account" and its
+    row falls back to the provider's name and has no ⓘ. An account with both Google and Apple identities (the same
+    email linked to one user) shows the logo of the provider it signed in with last, never the one that was linked
+    first (`SignedInProvider`: the identity with the latest `last_sign_in_at`; Pierre's call to confirm, November
+    2026). Without Google or Apple the row keeps "No account" and its
     line, under an anonymous-person icon (a person with a slash): "Deleted after 30 days without use" once the
     account is on the server (`hasAnonymousId`), since the
     server deletes it then ([general.md](general.md)), and "Saved only on this device for now" before the first sync ("Data in this browser" on the web). On Android its "Connect" button drops under the
