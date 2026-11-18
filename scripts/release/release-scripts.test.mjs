@@ -416,8 +416,8 @@ describe("the stable release's script", () => {
 
 describe("dispatching a release", () => {
   // A stand-in for gh that answers the run lists the script reads: GH_UPLOADING runs of app-store-screenshots.yml in
-  // progress, no release waiting, and a new run once the workflow was dispatched. `sleep` is one too, so the wait
-  // for that run takes no time.
+  // progress ("unreadable" fails that read), no release waiting, and a new run once the workflow was dispatched.
+  // `sleep` is one too, so the wait for that run takes no time.
   const dispatch = (workflow, env = {}) => {
     const bin = join(root, "dispatch-bin");
     mkdirSync(bin, { recursive: true });
@@ -425,7 +425,7 @@ describe("dispatching a release", () => {
       "#!/usr/bin/env bash",
       `echo "$*" >> "${join(root, "gh.log")}"`,
       'case "$*" in',
-      '  *app-store-screenshots.yml*"--status ${GH_UPLOADING_STATUS:-in_progress}"*) echo "${GH_UPLOADING:-0}" ;;',
+      '  *app-store-screenshots.yml*"--status ${GH_UPLOADING_STATUS:-in_progress}"*) [ "${GH_UPLOADING:-0}" != unreadable ] || exit 1; echo "${GH_UPLOADING:-0}" ;;',
       '  *"--status "*) echo 0 ;;',
       `  "workflow run"*) touch "${join(root, "dispatched")}" ;;`,
       `  *"--json databaseId"*) if [ -f "${join(root, "dispatched")}" ]; then echo 2; else echo 1; fi ;;`,
@@ -461,6 +461,13 @@ describe("dispatching a release", () => {
     const { status, stderr } = dispatch("release-production.yml", { GH_UPLOADING: "1", GH_UPLOADING_STATUS: "waiting" });
     assert.equal(status, 1);
     assert.match(stderr, /app-store-screenshots\.yml has a run waiting/);
+    assert.deepEqual(dispatched(), []);
+  });
+
+  test("refuses it when GitHub can't say whether one is", () => {
+    const { status, stderr } = dispatch("release-production.yml", { GH_UPLOADING: "unreadable" });
+    assert.equal(status, 1);
+    assert.match(stderr, /Could not see whether App Store screenshots are going up/);
     assert.deepEqual(dispatched(), []);
   });
 

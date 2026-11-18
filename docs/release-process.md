@@ -341,9 +341,11 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to A
   which keeps its screenshots, and `ios-submit` and `macos-submit` find them there. A version waiting for review
   takes no screenshot, so a set can't follow its release.
 - **Not at the same time.** The workflow refuses to start while a release, beta or stable, is in progress or
-  waiting, and `release-production.sh` refuses to dispatch while a run of the workflow is: a release that submitted
-  in the middle of an upload would leave the locales still to go without theirs. The Actions tab's "Run workflow"
-  doesn't check, so look before dispatching from there.
+  waiting, and each of its locales' jobs checks again, a job run again later too. `release-production.sh` refuses
+  to dispatch while a run of the workflow is going, or when GitHub can't say: a release that submitted in the
+  middle of an upload would leave the locales still to go without theirs. The Actions tab's "Run workflow" doesn't
+  check before it dispatches a release, so look before dispatching from there: the locales still to go would then
+  stop, and the version be submitted without theirs.
 - **Who and where** are a release's: an administrator of the repository, on `main`, with the jobs that reach App
   Store Connect in the `Production` environment and each one checking who started it
   ([Who releases](#who-releases)). The App Store Connect key never leaves GitHub.

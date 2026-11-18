@@ -44,6 +44,10 @@ on:
         description: "A locale or a tidy-up that fails is listed as failed and the run is not: the caller goes on"
         type: boolean
         default: false
+      refuse_during_release:
+        description: "Each locale's job stops while a release is running. The caller's job then grants actions: read"
+        type: boolean
+        default: false
     secrets:
       APP_STORE_CONNECT_API_KEY_ID:
         required: true
@@ -52,8 +56,9 @@ on:
       APP_STORE_CONNECT_API_KEY_P8:
         required: true
 
-permissions:
-  contents: read
+# No permissions of its own: the jobs take the calling job's, which is contents: read for a release, and that with
+# actions: read for the caller that asks for refuse_during_release. Naming more here than a caller grants would
+# refuse the caller's whole run.
 
 jobs:
   send:
@@ -80,6 +85,16 @@ jobs:
         uses: ./.github/actions/release-admin
         with:
           token: ${{ github.token }}
+
+      # For a set sent outside a release: its first job refuses the run while a release is going, and this is the
+      # same check for a locale's job run again later, which starts without that first job. A release submits the
+      # version, and deliver deleting a locale's shelves under it would leave the locale with none.
+      - name: Check that no release is running
+        if: ${{ inputs.refuse_during_release }}
+        uses: ./.github/actions/no-release-running
+        with:
+          token: ${{ github.token }}
+          sends: the screenshots
 
       # The whole of it: the lane picks this job's locale out.
       - name: Download the framed screenshots

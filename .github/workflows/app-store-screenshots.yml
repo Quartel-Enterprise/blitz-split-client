@@ -17,14 +17,15 @@ name: app-store-screenshots
 #      apart on App Store Connect, so they go side by side.
 #   3. `finish` says in the run's summary which locales landed, and removes the draft release once they all did. A
 #      locale that failed keeps it, and is sent again with its job's own re-run button; so does a version the set
-#      holds and the run left out.
+#      holds and the run left out, which is still to send.
 #
 # The screenshots only, on the version that is open for editing: no build, no text, no submission for review. A
 # stable release dispatched afterwards with `screenshots` off submits the version with them
 # (docs/release-process.md#screenshots-made-on-a-mac).
 #
 # Not while a release is running: it writes on the same App Store version, and submits it. The `check` job refuses
-# the run then, and scripts/release/dispatch-release.sh refuses a stable release while a run of this is going.
+# the run then, each locale's job checks again (one run again later starts without `check`), and
+# scripts/release/dispatch-release.sh refuses a stable release while a run of this is going.
 #
 # Repository secrets: the three APP_STORE_CONNECT_API_* ones, the releases' own (docs/release-process.md#secrets).
 on:
@@ -275,9 +276,14 @@ jobs:
     name: iPhone and iPad
     needs: check
     if: ${{ inputs.ios }}
+    permissions:
+      contents: read
+      # Each locale's job looks for a release running, as `check` did: a job run again starts without `check`.
+      actions: read
     uses: ./.github/workflows/app-store-screenshots-upload.yml
     with:
       platform: ios
+      refuse_during_release: true
       locales: ${{ needs.check.outputs.ios_locales }}
       artifact: app-store-screenshots-ios
       app_version: ${{ inputs.app_version }}
@@ -290,9 +296,14 @@ jobs:
     name: Mac
     needs: check
     if: ${{ inputs.macos }}
+    permissions:
+      contents: read
+      # Each locale's job looks for a release running, as `check` did: a job run again starts without `check`.
+      actions: read
     uses: ./.github/workflows/app-store-screenshots-upload.yml
     with:
       platform: mac
+      refuse_during_release: true
       locales: ${{ needs.check.outputs.mac_locales }}
       artifact: app-store-screenshots-mac
       app_version: ${{ inputs.app_version }}
@@ -353,8 +364,10 @@ jobs:
           if [ "$MACOS" = true ]; then options+=(--mac-job "Mac" --mac-locales "$MAC_LOCALES" --mac-shelves "$MAC_SHELVES"); fi
           node scripts/store-screenshots/local-set.mjs report "${options[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
 
-      # Only a draft, as when it was fetched. Gone already when a run of this job removed it and was run again. Kept
-      # when it holds the other version's screenshots too and this run left that version out: they are still to send.
+      # Only a draft, as when it was fetched. Gone already when a run of this job removed it and was run again. A set
+      # that holds both versions' screenshots and went up one version per run loses, each time, the archive that
+      # landed, and is removed with the last one. A release that can't be read is not one that is gone: the step
+      # fails then, and is run again.
       - name: Remove the set
         if: ${{ steps.report.outputs.landed == 'true' }}
         env:
@@ -362,21 +375,32 @@ jobs:
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
         run: |
-          if ! release="$(gh release view "$SET_TAG" --json isDraft,assets 2> /dev/null)"; then
-            echo "The draft release $SET_TAG is already gone." | tee -a "$GITHUB_STEP_SUMMARY"
+          errors="$RUNNER_TEMP/release-view-errors.txt"
+          if ! release="$(gh release view "$SET_TAG" --json isDraft,assets 2> "$errors")"; then
+            if ! grep -qi "release not found" "$errors"; then
+              cat "$errors"
+              echo "::error::Could not read the draft release $SET_TAG, so nothing says whether it is still there. Run this job again."
+              exit 1
+            fi
+            echo "The draft release \`$SET_TAG\` is already gone." >> "$GITHUB_STEP_SUMMARY"
           elif [ "$(jq -r .isDraft <<< "$release")" != true ]; then
             echo "::error::$SET_TAG is a published release, not a set: left alone."
             exit 1
           else
-            holds() { jq -e --arg name "$1" 'any(.assets[]; .name == $name)' <<< "$release" > /dev/null; }
-            unsent=""
-            if [ "$IOS" != true ] && holds ios.tar; then unsent="the iPhone's and the iPad's (dispatch again with macos off)"; fi
-            if [ "$MACOS" != true ] && holds mac.tar; then unsent="the Mac's (dispatch again with ios off)"; fi
-            if [ -n "$unsent" ]; then
-              echo "Every locale landed. **The set was kept**, as the draft release \`$SET_TAG\`: it also holds $unsent, which this run left out. To drop it instead: \`gh release delete $SET_TAG --yes\`." >> "$GITHUB_STEP_SUMMARY"
-            else
+            sent=()
+            if [ "$IOS" = true ]; then sent+=(ios.tar); fi
+            if [ "$MACOS" = true ]; then sent+=(mac.tar); fi
+            unsent="$(jq -r '[.assets[].name | select(endswith(".tar"))] - $ARGS.positional | join(" and ")' --args "${sent[@]}" <<< "$release")"
+            if [ -z "$unsent" ]; then
               gh release delete "$SET_TAG" --yes
               echo "Every locale landed, so the set was removed: the draft release \`$SET_TAG\` is deleted." >> "$GITHUB_STEP_SUMMARY"
+            else
+              for archive in "${sent[@]}"; do
+                if jq -e --arg name "$archive" 'any(.assets[]; .name == $name)' <<< "$release" > /dev/null; then
+                  gh release delete-asset "$SET_TAG" "$archive" --yes
+                fi
+              done
+              echo "Every locale landed, and what went up was removed from the set. **The draft release \`$SET_TAG\` was kept**: it still holds $unsent, the version this run left out. Dispatch again for that one alone, or drop it with \`gh release delete $SET_TAG --yes\`." >> "$GITHUB_STEP_SUMMARY"
             fi
           fi
           {

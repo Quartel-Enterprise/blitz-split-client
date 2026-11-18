@@ -156,11 +156,14 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
    by side, then "tidy up", which removes the copies deliver leaves behind and sorts every shelf. About an hour and
    a half for the iPhone's 26 locales is a guess from Google Play's two minutes a locale: no run has timed the App
    Store's yet. The last job, "Report and remove the set", writes in the run's summary which locales landed and what
-   each took, and **deletes the draft release once every locale did**.
+   each took, and **deletes the draft release once every locale did**. A set that holds both versions' screenshots
+   and goes up one version per run (`-f ios=false`, then `-f macos=false`) loses, each time, the archive that
+   landed, and is deleted with the last one.
 5. **A locale that failed** fails the run, and the set is kept, which the summary says. Run that locale's job again
    with the job's own re-run button: it finds the set in the run's artifacts (kept seven days), and the tidy-up and
    the report run again after it. deliver deletes a locale's screenshots before it uploads the new ones, so a
-   locale whose job failed halfway may be left with none until then.
+   locale whose job failed halfway may be left with none until then. A job run again starts without the run's
+   first job, so each locale's job looks for a release running by itself, and stops while one is.
 6. **Then the release.** The workflow writes screenshots on the editable version and submits nothing. A stable
    release dispatched afterwards **with `screenshots` off** renames that version to its own number, keeping the
    screenshots, and submits it ([release-process.md](release-process.md#screenshots-made-on-a-mac)). Not before the
