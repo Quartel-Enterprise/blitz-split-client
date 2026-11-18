@@ -26,7 +26,14 @@ internal fun AppleScreenshotImage(
         }
         val file = File(directory, "${slot.directoryName}/$locale/$fileName.png")
         check(file.isFile) { "No iOS capture at $file: run scripts/store-screenshots/capture-ios.sh first" }
-        BitmapFactory.decodeFile(file.path).asImageBitmap()
+        val bitmap = checkNotNull(BitmapFactory.decodeFile(file.path)) {
+            "The capture at $file is no PNG the frame can read: capture it again"
+        }
+        check((bitmap.width > bitmap.height) == slot.isWide) {
+            "The capture at $file is ${bitmap.width}x${bitmap.height}, which the frame of ${slot.directoryName} " +
+                "would draw stretched: capture the slot again with scripts/store-screenshots/capture-ios.sh"
+        }
+        bitmap.asImageBitmap()
     }
     Image(
         bitmap = capture,
