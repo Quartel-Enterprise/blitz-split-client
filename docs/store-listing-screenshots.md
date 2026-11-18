@@ -25,9 +25,11 @@ fastlane upload_screenshots locale:es-419            # upload what is staged, on
 fastlane upload_screenshots platform:mac             # upload the Mac's alone
 ```
 
-A stable release runs the same steps in CI, in jobs of `release-production`: the capture on one runner per slot, the
-frames, and the upload to each store ([release-process.md](release-process.md#screenshots-with-a-release)). Run the
-lane by hand between releases, or when a release's screenshot jobs failed.
+A stable release dispatched with `screenshots` on runs the same steps in CI, in jobs of `release-production`: the
+capture on one runner per slot, the frames, and the upload to each store, one job per locale
+([release-process.md](release-process.md#screenshots-with-a-release)). The input is off unless asked for, so a
+release after a new language or a changed screen has to pass `screenshots=true`. Run the lane by hand between
+releases, or when a release's screenshot jobs failed.
 
 The lane runs, each step under `scripts/heavy-check.sh`:
 
@@ -166,8 +168,9 @@ Not checked yet, since no Duo screenshot has gone to App Store Connect: that it 
 upright and lying down side by side. Apple's page lists the four sizes under the one device and fastlane's change
 says its upload was tried, but the API's own `ScreenshotDisplayType` didn't list `APP_IPHONE_DUO` in version 4.6 of
 its specification (its newer asset library does, as the display class `IPHONE_DUO`). Should App Store Connect refuse
-a size, deliver fails after the other devices' screenshots are up; the lane still sorts the shelves that landed, then
-fails, the job is listed as failed and the release goes on
+a size, deliver fails after the other devices' screenshots are up; the shelves that landed are still sorted (by the
+lane when it uploads every locale, by the release's tidy-up job after its one upload job per locale), the upload is
+listed as failed and the release goes on
 ([release-process.md](release-process.md#screenshots-with-a-release)).
 
 **The iPad runs in full-screen apps.** iPadOS 26 opens apps in windows by default, which would leave the app short

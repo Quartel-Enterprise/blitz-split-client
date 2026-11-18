@@ -13,6 +13,7 @@
 #   ./scripts/release/release-production.sh                                                    # every platform, to everyone
 #   ./scripts/release/release-production.sh track=internal submit_for_review=false web=false   # reaches no user
 #   ./scripts/release/release-production.sh version=3.1.0 rollout=20                           # a staged rollout of 3.1.0
+#   ./scripts/release/release-production.sh screenshots=true                                   # and the listings' screenshots made again
 set -euo pipefail
 
 inputs=()
@@ -28,6 +29,7 @@ echo "Bora Rachar: stable release"
 echo "==========================="
 if [ "$#" -eq 0 ]; then
   echo "No input: the run publishes to everyone on Google Play and the web, and submits for App Store review. Nothing waits for an approval."
+  echo "The listings' screenshots stay as they are: pass screenshots=true to make them again (a new language, a screen that changed)."
 fi
 
 # Refuses while another release waits, dispatches on main and prints the run's link. The array may be empty,
