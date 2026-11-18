@@ -26,7 +26,8 @@ data class GlobalBalancesUiState(
     val people: Loadable<List<PersonRow>>,
     /*
      * Why: "Tudo", "Você deve" and "Te devem", one per currency of the groups, the currency with the most groups
-     * first; once loaded never empty, so a device with nothing open still says R$ 0,00. Loading as people is.
+     * first; once loaded never empty (the empty states need a currency), though the totals are not drawn at all while
+     * nobody has an open balance (see showsSummary). Loading as people is.
      */
     val totals: Loadable<List<PeopleTotal>>,
     // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer while the copy waits offline.
@@ -75,6 +76,15 @@ data class GlobalBalancesUiState(
             else -> BalancesEmptyState.NOTHING_TO_RECEIVE
         }
     }
+
+    /*
+     * Why: "Tudo", "Você deve" and "Te devem" with their totals (and the caption under them) say nothing once nobody has
+     * an open balance, whether there is no group yet or every group is settled up: a row of zeros, in a currency per
+     * group. The "Tudo acertado" state stands alone then; the filter and totals show while loading (their shimmer) and
+     * whenever someone has an open balance, even when the filter lists no one.
+     */
+    val showsSummary: Boolean
+        get() = emptyState != BalancesEmptyState.SETTLED
 
     // Why: "1 pessoa" under Você deve and "4 pessoas" under Te devem, each person once over every currency; 0 while loading.
     val toPayPeopleCount: Int by lazy { peopleCountOf(owesYou = false) }

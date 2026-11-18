@@ -1187,7 +1187,6 @@ export const ko: Record<MessageKey, string> = {
   globalBalances_owesYou: '받을 돈',
   globalBalances_allSub: '그룹 간 상계 반영',
   globalBalances_allSubEmpty: '그룹 합산 중',
-  globalBalances_allSubSettled: '미정산 없음',
   globalBalances_nobody: '아무도 없음',
   globalBalances_onePerson: '1명',
   globalBalances_people: '{count}명',

@@ -1186,7 +1186,6 @@ export const id: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Berutang ke kamu',
   globalBalances_allSub: 'sudah diimbangkan antar grup',
   globalBalances_allSubEmpty: 'menjumlahkan grup',
-  globalBalances_allSubSettled: 'tidak ada yang terbuka',
   globalBalances_nobody: 'tidak ada',
   globalBalances_onePerson: '1 orang',
   globalBalances_people: '{count} orang',

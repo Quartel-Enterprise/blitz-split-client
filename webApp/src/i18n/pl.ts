@@ -1190,7 +1190,6 @@ export const pl: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Do odzyskania',
   globalBalances_allSub: 'już wyrównane między grupami',
   globalBalances_allSubEmpty: 'sumowanie grup',
-  globalBalances_allSubSettled: 'nic otwartego',
   globalBalances_nobody: 'nikt',
   globalBalances_onePerson: '1 osoba',
   globalBalances_people: 'Osoby: {count}',

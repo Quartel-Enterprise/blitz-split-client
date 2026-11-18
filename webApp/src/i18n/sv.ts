@@ -1187,7 +1187,6 @@ export const sv: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Skyldiga dig',
   globalBalances_allSub: 'redan kvittat mellan grupperna',
   globalBalances_allSubEmpty: 'summerar grupperna',
-  globalBalances_allSubSettled: 'inget öppet',
   globalBalances_nobody: 'ingen',
   globalBalances_onePerson: '1 person',
   globalBalances_people: '{count} personer',

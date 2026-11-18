@@ -87,6 +87,8 @@ class JsGlobalBalancesState(
     // Why: how many people that amount is from or to.
     val emptyStatePeopleCount: Int,
     val showsOfflineNotice: Boolean,
+    // Why: false once nobody has an open balance: the filter cards leave, "Tudo acertado" stands alone.
+    val showsSummary: Boolean,
     // Why: false while the people and totals load (Room, or the account's copy not whole yet): the shimmer.
     val isLoaded: Boolean,
     // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer.
@@ -129,6 +131,7 @@ class GlobalBalancesPresenter(
                 emptyStateTotal = state.emptyStateTotal?.let(::toJsPeopleTotal),
                 emptyStatePeopleCount = state.emptyStatePeopleCount,
                 showsOfflineNotice = state.showsOfflineNotice,
+                showsSummary = state.showsSummary,
                 isLoaded = state.isLoaded,
                 isWaitingForInternet = state.isWaitingForInternet,
                 recordedPayment = state.recordedPayment?.let(::toJsPaymentNotice),

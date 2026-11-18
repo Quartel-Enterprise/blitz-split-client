@@ -3,6 +3,7 @@ package com.quare.blitzsplit.android.feature.globalbalances
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.quare.blitzsplit.android.designsystem.component.EmptyStateColumn
@@ -16,6 +17,7 @@ internal fun EmptyBalancesSection(
     emptyState: BalancesEmptyState,
     total: PeopleTotal,
     onAction: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val money = rememberMoneyFormatter(total.currency)
     val (title, body, action) = when (emptyState) {
@@ -53,5 +55,6 @@ internal fun EmptyBalancesSection(
         body = body,
         action = action,
         onAction = onAction,
+        modifier = modifier,
     )
 }

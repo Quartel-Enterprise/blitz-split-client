@@ -1188,7 +1188,6 @@ export const de: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Schulden dir',
   globalBalances_allSub: 'schon über alle Gruppen verrechnet',
   globalBalances_allSubEmpty: 'Gruppen werden zusammengerechnet',
-  globalBalances_allSubSettled: 'nichts offen',
   globalBalances_nobody: 'niemand',
   globalBalances_onePerson: '1 Person',
   globalBalances_people: '{count} Personen',

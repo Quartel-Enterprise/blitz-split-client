@@ -610,6 +610,83 @@ class GlobalBalancesViewModelTest {
     }
 
     @Test
+    fun `GIVEN no group at all WHEN Saldos opens THEN leaves the summary out and says all settled`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                storedGroups = emptyList(),
+                bills = emptyList(),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.showsSummary)
+            assertEquals(BalancesEmptyState.SETTLED, state.emptyState)
+        }
+
+    @Test
+    fun `GIVEN groups with nothing owed WHEN Saldos opens THEN leaves the summary out too`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(bills = emptyList())
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsSummary)
+        assertEquals(BalancesEmptyState.SETTLED, state.emptyState)
+    }
+
+    @Test
+    fun `GIVEN people across groups WHEN Saldos opens THEN shows the summary`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsSummary)
+    }
+
+    @Test
+    fun `GIVEN nothing to pay WHEN filtering Voce deve THEN keeps the summary to switch the filter back`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(bills = listOf(owes(FLORIPA, ANA_FLORIPA, ME_FLORIPA, 16_230L)))
+
+            // When
+            viewModel.onEvent(GlobalBalancesUiEvent.OnFilterChanged(BalancesFilter.YOU_OWE))
+
+            // Then
+            assertEquals(BalancesEmptyState.NOTHING_TO_PAY, viewModel.uiState.value.emptyState)
+            assertTrue(viewModel.uiState.value.showsSummary)
+        }
+
+    @Test
+    fun `GIVEN the account copy not whole yet WHEN Saldos opens THEN shows the summary as its shimmer`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                bills = emptyList(),
+                downloading = FirstDownloadProgress(
+                    arrivedGroupCount = 1,
+                    groupCount = 3,
+                    isWaitingForInternet = false,
+                ),
+            )
+
+            // When
+            val state = viewModel.uiState.value
+
+            // Then
+            assertFalse(state.isLoaded)
+            assertTrue(state.showsSummary)
+        }
+
+    @Test
     fun `GIVEN the account copy not whole yet WHEN Saldos opens THEN shimmers instead of saying all settled`() =
         runTest(testDispatcher) {
             // Given

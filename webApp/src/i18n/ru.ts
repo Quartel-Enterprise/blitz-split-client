@@ -1191,7 +1191,6 @@ export const ru: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Тебе должны',
   globalBalances_allSub: 'уже с учётом взаимных долгов между группами',
   globalBalances_allSubEmpty: 'суммируем группы',
-  globalBalances_allSubSettled: 'ничего не открыто',
   globalBalances_nobody: 'никто',
   globalBalances_onePerson: '1 человек',
   globalBalances_people: 'Людей: {count}',

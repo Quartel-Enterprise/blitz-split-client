@@ -102,10 +102,14 @@ struct GlobalBalancesView: View {
     var body: some View {
         Group {
             if let model, model.state.isLoaded {
+                // With nobody owing anything the summary, the side column and the inspector have nothing to say
+                let hasSummary = model.state.showsSummary
+                // An open iPhone Duo keeps the empty state after the fold, in the inspector
+                let showsPersonColumn = showsDetail && (hasSummary || fold != nil)
                 // One list whatever the fold, so opening the iPhone Duo keeps its scroll
                 HStack(alignment: .top, spacing: 0) {
                     #if os(iOS)
-                    if usesSideColumn {
+                    if usesSideColumn && hasSummary {
                         BalancesSideColumn(model: model)
                             .frame(width: BalancesSideColumn.width)
                             .padding(.trailing, BalancesSideColumn.spacing)
@@ -113,12 +117,12 @@ struct GlobalBalancesView: View {
                     #endif
                     GlobalBalancesList(
                         model: model,
-                        showsDetail: showsDetail,
-                        showsSummary: !usesSideColumn,
+                        showsDetail: showsPersonColumn,
+                        showsSummary: !(usesSideColumn && hasSummary),
                         isSplitBillExpanded: splitBillExpansion,
                     )
-                    .frame(width: showsDetail ? fold?.minX : nil)
-                    if showsDetail {
+                    .frame(width: showsPersonColumn ? fold?.minX : nil)
+                    if showsPersonColumn {
                         // An iPhone Duo open: the people before the fold, the person picked after it
                         ListDetailSeparator(fold: fold)
                         PersonInspector(model: model)
@@ -160,7 +164,7 @@ struct GlobalBalancesView: View {
             #if os(iOS)
             TabTitle(title: String(localized: "Balances", bundle: .appLanguage))
             #else
-            if let model {
+            if let model, model.state.showsSummary {
                 ToolbarItem(placement: .principal) {
                     FilterPicker(model: model)
                 }
@@ -356,13 +360,15 @@ private struct GlobalBalancesList: View {
     @ViewBuilder
     private var sections: some View {
         #if os(iOS)
-        if showsSummary {
+        if showsSummary && (state.showsSummary || state.showsOfflineNotice) {
             Section {
                 VStack(alignment: .leading, spacing: 12) {
                     if state.showsOfflineNotice {
                         OfflineNotice()
                     }
-                    BalancesSummary(model: model, amountSize: 36)
+                    if state.showsSummary {
+                        BalancesSummary(model: model, amountSize: 36)
+                    }
                 }
                 .padding(.vertical, 4)
             }
@@ -847,7 +853,7 @@ enum GlobalBalancesCopy {
 
     /// "Overall balance +R$ 186,40 · already offset across groups", under the Mac's title.
     static func macSubtitle(_ state: GlobalBalancesUiState) -> String {
-        guard let total = state.primaryTotal.loaded(as: PeopleTotal.self) else { return "" }
+        guard state.showsSummary, let total = state.primaryTotal.loaded(as: PeopleTotal.self) else { return "" }
         let net = total.currency.formatSigned(total.netMinor)
         return state.emptyState == nil
             ? String(localized: "Overall balance \(net) · already offset across groups", bundle: .appLanguage)
