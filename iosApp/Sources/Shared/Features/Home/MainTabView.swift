@@ -13,10 +13,11 @@ enum MainTab: Hashable {
     case search
 }
 
-/// iPhone: the floating Liquid Glass tab bar. iPad and Mac: the glass sidebar (sidebarAdaptable, open by default), on the Mac with the
-/// open groups under the tabs. Home is the root of the shared back stack and every other tab the entry right above it,
-/// so the first entry of `path` says which tab is in front: Groups, Balances, Contacts, or else Home, whose own stack
-/// is then the whole path (Activity, which its bell pushes, included).
+/// iPhone: the floating Liquid Glass tab bar. Mac: the glass sidebar (sidebarAdaptable), with the open groups under the
+/// tabs. iPad: the same sidebar, open by default only where iPadOS docks it beside the content (lying down,
+/// `padSidebarWhereItDocks`), else the tabs in the top bar. Home is the root of the shared back stack and every other
+/// tab the entry right above it, so the first entry of `path` says which tab is in front: Groups, Balances, Contacts,
+/// or else Home, whose own stack is then the whole path (Activity, which its bell pushes, included).
 struct MainTabView: View {
     /// The shared back stack above Home: Groups, Balances or Contacts with what they opened, or what Home opened (a
     /// group, the profile, Activity, an invite opened from its link).
@@ -107,11 +108,10 @@ struct MainTabView: View {
         }
         .tabViewStyle(.sidebarAdaptable)
         #if os(iOS)
-        // An iPad opens with its tabs in the sidebar, not in the top bar's middle, where they left the trailing items
-        // room for one button and iOS hid "Split a bill" in its own overflow (Pierre's call, beta feedback of
-        // 2026-11-15). Its toggle still turns them into the top bar. An iPhone keeps its floating tab bar, an iPhone Duo
-        // open its vertical bar: the idiom, not the window, since a Duo open has an iPad's room.
-        .defaultAdaptableTabBarPlacement(UIDevice.current.userInterfaceIdiom == .pad ? .sidebar : .automatic)
+        // An iPad opens with its tabs in the sidebar wherever iPadOS docks it beside the content, lying down (Pierre's
+        // call, beta feedback of 2026-11-15), and in the top bar anywhere else. An iPhone keeps its floating tab bar,
+        // an iPhone Duo open its vertical bar.
+        .padSidebarWhereItDocks()
         .searchTabApart()
         // Apple's guideline, kept as iOS does it (`phoneMinimizesTabBar` says why it never opens on a scroll up).
         // iPhone only (an iPad's top bar or sidebar never minimizes). The app has no bottom accessory to move.
@@ -411,6 +411,24 @@ struct MainTabView: View {
 private extension View {
     func searchTabApart() -> some View {
         modifier(SearchTabApart())
+    }
+
+    func padSidebarWhereItDocks() -> some View {
+        modifier(PadSidebarPlacement())
+    }
+}
+
+/// The sidebar is an iPad's default only in a window where iPadOS docks it (`docksTabSidebar`). Anywhere else a
+/// sidebar by default opened over the content at launch, dimming it and hiding its leading third until the person
+/// closed it (the App Store screenshots of 3.0.0, upright), so there the tabs open in the top bar and the sidebar's
+/// button opens it on demand. The default follows the window: rotating to lying down docks the sidebar, rotating back
+/// puts the tabs in the top bar, as iPadOS itself collapses a docked sidebar. Once the person opens or closes it with
+/// its button, iPadOS keeps that choice over this default until the app is launched again.
+private struct PadSidebarPlacement: ViewModifier {
+    @Environment(\.windowLayout) private var window
+
+    func body(content: Content) -> some View {
+        content.defaultAdaptableTabBarPlacement(docksTabSidebar(window) ? .sidebar : .automatic)
     }
 }
 

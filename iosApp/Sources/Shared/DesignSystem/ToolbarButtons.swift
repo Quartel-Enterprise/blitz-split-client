@@ -245,16 +245,34 @@ private struct PhoneBarMinimization: ViewModifier {
     }
 }
 
+/// Whether iPadOS keeps an iPad's sidebar docked beside the content in this window, rather than over it: a window
+/// lying down (wider than tall) and over 1024 pt wide. The system tells no view which of the two it picked, so the
+/// window's size stands for it, as measured on iPadOS 27.2 by resizing a window (Windowed Apps): 1027×788 pt docks it
+/// and 1024×788 doesn't; an iPad Pro 13" upright (1032×1376) doesn't, while its window docks it at 1032×1007 and stops
+/// at 1032×1050. So an iPad lying down docks it, a current iPad mini included (1133 pt), all but the ones 1024 pt
+/// wide (the iPad mini 5), and none upright. The two limits sit between those measured sizes, the ones a rule of the
+/// system's would most likely have; a window the system doesn't dock the sidebar in although this says so would open
+/// with the sidebar over its content.
+///
+/// The idiom check is on purpose, as `PhoneBarMinimization`'s: the sidebar is the iPad's, and an iPhone Duo open
+/// keeps its tabs in the system's vertical bar.
+func docksTabSidebar(_ window: ScreenLayout) -> Bool {
+    UIDevice.current.userInterfaceIdiom == .pad
+        && window.size.width > 1024
+        && window.size.width > window.size.height
+}
+
 /// An iPad window under 1150 pt wide with a regular width (an iPad upright, the 13" one included, an iPad mini lying
-/// down, Stage Manager's narrower windows): its tabs
-/// sit in the top bar's middle whenever the sidebar is closed (it can't stay beside the content there), which leaves the
-/// bar's trailing side room for one item. "Split a bill" keeps it; the tab's other buttons go to a row atop the content
+/// down, Stage Manager's narrower windows): whenever its tabs sit in the top bar's middle, they leave the bar's
+/// trailing side room for one item. "Split a bill" keeps it; the tab's other buttons go to a row atop the content
 /// (`tabButtonsRow`), so iOS never hides any in its own "⋯" (Pierre's call, beta feedback of 2026-11-15). A compact
 /// window has its tab bar at the bottom, as an iPhone. A tab's list column beside a detail (`inListColumn`: Groups'
 /// beside a group, Contacts' beside a person) is crowded at any window width: its own bar, under the tabs, has room
 /// for "Split a bill" alone too. An 11" iPad lying down (1194 pt) has room for all of them beside its tabs. SwiftUI
-/// tells no view whether the sidebar is open, so the window's width stands for where the tabs are: with the sidebar
-/// open in such a window, the row still holds the buttons, which costs it nothing but a line.
+/// tells no view whether the sidebar is open, so the window's width stands for where the tabs are. This width is the
+/// top bar's, not the one the sidebar docks at (`docksTabSidebar`): in a window lying down between the two (an iPad
+/// mini, 1133 pt) the sidebar is docked by default and the row still holds the buttons, which costs it nothing but a
+/// line and is what the bar needs once the person closes the sidebar.
 ///
 /// The idiom check is on purpose, as `PhoneBarMinimization`'s: an iPhone Duo open has an iPad's room but its tabs stay
 /// in the system's vertical bar, never in the top bar's middle.

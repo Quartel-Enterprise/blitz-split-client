@@ -127,8 +127,8 @@ pushed full screen with an iPad's room). Until that first measure the root draws
 stack that already ends in a key or a bill never shows pushed and then jumps into a sheet. The idiom checks left
 are `DeviceName`, the word the copy says ("iPhone", "iPad"), since an iPhone Duo is an iPhone whatever its size, and
 the bars, which iOS draws by idiom: minimizing them on scroll is the iPhone's (`PhoneBarMinimization`), and the
-sidebar by default and the crowded top bar's rule are the iPad's (`MainTabView`, `isTabBarCrowded`), since an iPhone
-Duo open keeps its tabs in the system's vertical bar.
+sidebar by default where iPadOS docks it and the crowded top bar's rule are the iPad's (`docksTabSidebar`,
+`isTabBarCrowded`), since an iPhone Duo open keeps its tabs in the system's vertical bar.
 
 The pieces in `iosApp/Sources/Shared/DesignSystem`:
 
