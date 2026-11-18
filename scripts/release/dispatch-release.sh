@@ -35,21 +35,19 @@ done
 
 # A stable release submits the App Store versions, and a version waiting for review takes no screenshot. Dispatched
 # while a set made on a Mac is still going up, one locale per job (app-store-screenshots.yml), it would leave the
-# locales still to go without theirs. That workflow refuses to start during a release; this is the other way round,
-# which the Actions tab's "Run workflow" doesn't check either. A beta submits nothing, so it goes on.
+# locales still to go without theirs. The release's own first job refuses the run then; this says so before anything
+# is dispatched. A beta submits nothing, so it goes on.
 if [ "$workflow" = release-production.yml ]; then
-  # Every status of a run that isn't over: between two of its jobs it reads as waiting, on the environment's rule.
-  for status in in_progress queued waiting pending requested; do
-    # A list that can't be read is not an empty one: dispatching then would be a guess.
-    if ! uploading="$(gh run list --workflow=app-store-screenshots.yml --repo "$REPO" --status "$status" --json databaseId --jq length)"; then
-      echo "Could not see whether App Store screenshots are going up (app-store-screenshots.yml). Run this again." >&2
-      exit 1
-    fi
-    if [ "${uploading:-0}" -gt 0 ]; then
-      echo "App Store screenshots are still going up (app-store-screenshots.yml has a run $status), and the release would submit the versions before the last locale landed. Wait for that run to end, then run this again." >&2
-      exit 1
-    fi
-  done
+  # Every run that isn't over, whatever it is waiting for. A list that can't be read is not an empty one:
+  # dispatching then would be a guess.
+  if ! uploading="$(gh run list --workflow=app-store-screenshots.yml --repo "$REPO" --limit 30 --json status --jq '[.[] | select(.status != "completed")] | length')"; then
+    echo "Could not see whether App Store screenshots are going up (app-store-screenshots.yml). Run this again." >&2
+    exit 1
+  fi
+  if [ "${uploading:-0}" -gt 0 ]; then
+    echo "App Store screenshots are still going up (a run of app-store-screenshots.yml isn't over), and the release would submit the versions before the last locale landed. Wait for that run to end, then run this again." >&2
+    exit 1
+  fi
 fi
 
 before="$(gh run list --workflow="$workflow" --repo "$REPO" --limit 1 --json databaseId --jq '.[0].databaseId // 0')"

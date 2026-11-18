@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   PLATFORMS,
+  REPOSITORY,
   SET_NAME,
   SHELF_LABELS,
   SetError,
@@ -271,7 +272,12 @@ describe("sending a set", () => {
     chmodSync(join(root, "bin/gh"), 0o755);
     return spawnSync("node", [SCRIPT, "send", root, ...args], { encoding: "utf8", env: { ...process.env, PATH: `${join(root, "bin")}:${process.env.PATH}`, GITHUB_OUTPUT: "", ...env } });
   };
-  const ghCalls = () => (existsSync(join(root, "gh.log")) ? readFileSync(join(root, "gh.log"), "utf8").trim().split("\n") : []);
+  // Each call names the repository, whatever the checkout's remotes are, and is read here without it.
+  const ghCalls = () => {
+    const calls = existsSync(join(root, "gh.log")) ? readFileSync(join(root, "gh.log"), "utf8").trim().split("\n") : [];
+    for (const call of calls) assert.match(call, new RegExp(`^release \\w+ --repo ${REPOSITORY} `));
+    return calls.map((call) => call.replace(` --repo ${REPOSITORY}`, ""));
+  };
 
   test("packs only the set's images, under their locale", () => {
     const folder = stage("mac");
@@ -306,7 +312,7 @@ describe("sending a set", () => {
     // The release's text says what the set holds, and nothing of the Mac it came from.
     assert.match(create, /iPhone and iPad: 26 locale\(s\), 1300 image\(s\), 0 MB {3}each locale: /);
     assert.ok(!create.split(" --notes ")[1].split(" /")[0].includes(root));
-    assert.match(stdout, /\n {2}gh workflow run app-store-screenshots\.yml -f set=3\.0\.0\n/);
+    assert.match(stdout, /\n {2}gh workflow run app-store-screenshots\.yml --repo Quartel-Enterprise\/blitz-split-client -f set=3\.0\.0\n/);
   });
 
   test("sends one platform alone, and says so to the workflow", () => {
@@ -314,7 +320,7 @@ describe("sending a set", () => {
     const { status, stdout } = send(["--name", "mac-only", "--platform", "mac"]);
     assert.equal(status, 0);
     assert.doesNotMatch(ghCalls()[1], /ios\.tar/);
-    assert.match(stdout, /gh workflow run app-store-screenshots\.yml -f set=mac-only -f ios=false\n/);
+    assert.match(stdout, /gh workflow run app-store-screenshots\.yml --repo Quartel-Enterprise\/blitz-split-client -f set=mac-only -f ios=false\n/);
   });
 
   test("refuses a set that doesn't pass the check, before anything is packed or sent", () => {
@@ -381,8 +387,8 @@ describe("sending a set", () => {
   });
 
   test("says in the command only what differs from the workflow's defaults", () => {
-    assert.equal(dispatchCommand("a", { platforms: ["ios", "mac"] }), "gh workflow run app-store-screenshots.yml -f set=a");
-    assert.equal(dispatchCommand("a", { platforms: ["ios"], allowMissingDevices: true }), "gh workflow run app-store-screenshots.yml -f set=a -f macos=false -f allow_missing_devices=true");
+    assert.equal(dispatchCommand("a", { platforms: ["ios", "mac"] }), "gh workflow run app-store-screenshots.yml --repo Quartel-Enterprise/blitz-split-client -f set=a");
+    assert.equal(dispatchCommand("a", { platforms: ["ios"], allowMissingDevices: true }), "gh workflow run app-store-screenshots.yml --repo Quartel-Enterprise/blitz-split-client -f set=a -f macos=false -f allow_missing_devices=true");
   });
 });
 

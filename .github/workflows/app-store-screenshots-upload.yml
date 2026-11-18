@@ -15,6 +15,10 @@ name: app-store-screenshots-upload
 # `tidy up` runs after the last locale, failed ones included: it removes the copies deliver leaves behind and sorts
 # every shelf in file-name order.
 #
+# A locale's job run again with its own re-run button runs alone, with the jobs after it: the tidy-up and whatever
+# the caller runs next. The other locales' jobs are carried over as they ended, not sent again (tried in November
+# 2026 on a matrix of a called workflow, as this one is).
+#
 # Nothing here submits a version, and nothing waits for an approval: the jobs name the `Production` environment,
 # whose branch policy only lets main deploy, and each starts by checking that an administrator started the run.
 on:
@@ -45,7 +49,7 @@ on:
         type: boolean
         default: false
       refuse_during_release:
-        description: "Each locale's job stops while a release is running. The caller's job then grants actions: read"
+        description: "Every job stops while a release is running. The caller's job then grants actions: read"
         type: boolean
         default: false
     secrets:
@@ -91,10 +95,10 @@ jobs:
       # version, and deliver deleting a locale's shelves under it would leave the locale with none.
       - name: Check that no release is running
         if: ${{ inputs.refuse_during_release }}
-        uses: ./.github/actions/no-release-running
+        uses: ./.github/actions/no-run-going
         with:
           token: ${{ github.token }}
-          sends: the screenshots
+          then: send the screenshots once the release is over
 
       # The whole of it: the lane picks this job's locale out.
       - name: Download the framed screenshots
@@ -136,6 +140,15 @@ jobs:
         uses: ./.github/actions/release-admin
         with:
           token: ${{ github.token }}
+
+      # The same check as each locale's job: a tidy-up run again later, during a release, would sort the shelves of
+      # the version the release is submitting.
+      - name: Check that no release is running
+        if: ${{ inputs.refuse_during_release }}
+        uses: ./.github/actions/no-run-going
+        with:
+          token: ${{ github.token }}
+          then: tidy the shelves up once the release is over
 
       - name: Remove the duplicate screenshots and sort every shelf
         uses: ./.github/actions/app-store-lane

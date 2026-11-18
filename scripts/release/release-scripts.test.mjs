@@ -415,8 +415,8 @@ describe("the stable release's script", () => {
 });
 
 describe("dispatching a release", () => {
-  // A stand-in for gh that answers the run lists the script reads: GH_UPLOADING runs of app-store-screenshots.yml in
-  // progress ("unreadable" fails that read), no release waiting, and a new run once the workflow was dispatched.
+  // A stand-in for gh that answers the run lists the script reads: GH_UPLOADING runs of app-store-screenshots.yml that
+  // aren't over ("unreadable" fails that read), no release waiting, and a new run once the workflow was dispatched.
   // `sleep` is one too, so the wait for that run takes no time.
   const dispatch = (workflow, env = {}) => {
     const bin = join(root, "dispatch-bin");
@@ -425,7 +425,7 @@ describe("dispatching a release", () => {
       "#!/usr/bin/env bash",
       `echo "$*" >> "${join(root, "gh.log")}"`,
       'case "$*" in',
-      '  *app-store-screenshots.yml*"--status ${GH_UPLOADING_STATUS:-in_progress}"*) [ "${GH_UPLOADING:-0}" != unreadable ] || exit 1; echo "${GH_UPLOADING:-0}" ;;',
+      '  *app-store-screenshots.yml*) [ "${GH_UPLOADING:-0}" != unreadable ] || exit 1; echo "${GH_UPLOADING:-0}" ;;',
       '  *"--status "*) echo 0 ;;',
       `  "workflow run"*) touch "${join(root, "dispatched")}" ;;`,
       `  *"--json databaseId"*) if [ -f "${join(root, "dispatched")}" ]; then echo 2; else echo 1; fi ;;`,
@@ -452,15 +452,7 @@ describe("dispatching a release", () => {
   test("refuses a stable release while App Store screenshots are still going up", () => {
     const { status, stderr } = dispatch("release-production.yml", { GH_UPLOADING: "1" });
     assert.equal(status, 1);
-    assert.match(stderr, /App Store screenshots are still going up \(app-store-screenshots\.yml has a run in_progress\)/);
-    assert.deepEqual(dispatched(), []);
-  });
-
-  // Between two of its jobs the run reads as waiting, on the Production environment's rule.
-  test("refuses it too while that run waits between two jobs", () => {
-    const { status, stderr } = dispatch("release-production.yml", { GH_UPLOADING: "1", GH_UPLOADING_STATUS: "waiting" });
-    assert.equal(status, 1);
-    assert.match(stderr, /app-store-screenshots\.yml has a run waiting/);
+    assert.match(stderr, /App Store screenshots are still going up \(a run of app-store-screenshots\.yml isn't over\)/);
     assert.deepEqual(dispatched(), []);
   });
 

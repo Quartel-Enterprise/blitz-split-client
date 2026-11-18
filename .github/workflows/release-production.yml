@@ -136,7 +136,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
-      # To read the environment's deployment branch policy.
+      # To read the environment's deployment branch policy, and whether App Store screenshots are going up.
       actions: read
     outputs:
       version: ${{ steps.resolve.outputs.version }}
@@ -228,6 +228,18 @@ jobs:
             echo "::error::The $RELEASE_ENVIRONMENT environment has to let the branch main deploy, and nothing else: its deployment policy allows '$(paste -sd, - <<< "$allowed")'. See docs/release-process.md#who-releases."
             exit 1
           fi
+
+      # A run that submits sends the App Store versions to review, and a version waiting for review takes no
+      # screenshot: started while a set made on a Mac is still going up, one locale per job
+      # (app-store-screenshots.yml), it would leave the locales still to go without theirs. That workflow refuses to
+      # start during a release; this is the other way round.
+      - name: Check that no App Store screenshots are going up
+        if: ${{ inputs.submit_for_review && (inputs.ios || inputs.macos) }}
+        uses: ./.github/actions/no-run-going
+        with:
+          token: ${{ github.token }}
+          workflows: app-store-screenshots.yml
+          then: dispatch the release once every locale of that run is up
 
       # The version and the notes both come from scripts/release/release-notes.mjs, plain Node.
       - name: Set up Node

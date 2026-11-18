@@ -30,6 +30,11 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, "../..");
 
 export const WORKFLOW = "app-store-screenshots.yml";
+/**
+ * Where the set goes and the workflow runs, named in every gh call as scripts/release/dispatch-release.sh does: gh
+ * would otherwise pick the repository off the checkout's remotes, a fork's when `origin` is one.
+ */
+export const REPOSITORY = "Quartel-Enterprise/blitz-split-client";
 /** The tag of the draft release a set travels as. A draft has no tag in the repository until it is published. */
 export const TAG_PREFIX = "store-screenshots-";
 export const tagOf = (name) => `${TAG_PREFIX}${name}`;
@@ -353,7 +358,7 @@ export function dispatchCommand(name, { platforms, allowMissingDevices }) {
   if (!platforms.includes("ios")) fields.push("ios=false");
   if (!platforms.includes("mac")) fields.push("macos=false");
   if (allowMissingDevices) fields.push("allow_missing_devices=true");
-  return `gh workflow run ${WORKFLOW} ${fields.map((field) => `-f ${field}`).join(" ")}`;
+  return `gh workflow run ${WORKFLOW} --repo ${REPOSITORY} ${fields.map((field) => `-f ${field}`).join(" ")}`;
 }
 
 async function send(options) {
@@ -365,11 +370,13 @@ async function send(options) {
   const reports = checkSet(options);
   console.log(describe(reports).join("\n"));
 
-  const gh = (args) => execFileSync("gh", args, { cwd: REPO_ROOT, stdio: ["ignore", "inherit", "inherit"] });
+  // `gh release <verb> --repo <repository> …`
+  const onRepository = ([command, verb, ...rest]) => [command, verb, "--repo", REPOSITORY, ...rest];
+  const gh = (args) => execFileSync("gh", onRepository(args), { stdio: ["ignore", "inherit", "inherit"] });
   // The release of the set's tag, or null when there is none. Any other failure stops the run: a release that
   // couldn't be read is not one that isn't there, and the set would go up beside it or be deleted in its place.
   const findRelease = () => {
-    const { status, stdout, stderr } = spawnSync("gh", ["release", "view", tag, "--json", "isDraft"], { cwd: REPO_ROOT, encoding: "utf8" });
+    const { status, stdout, stderr } = spawnSync("gh", onRepository(["release", "view", tag, "--json", "isDraft"]), { encoding: "utf8" });
     if (status === 0) return JSON.parse(stdout);
     if (/release not found/i.test(stderr ?? "")) return null;
     throw new SetError(`Could not ask GitHub whether ${tag} is taken: ${(stderr ?? "").trim() || "gh failed"}`);
@@ -422,7 +429,7 @@ async function send(options) {
       throw new SetError(
         isClean
           ? `The upload failed (gh says why above), and nothing of it was left on GitHub. Exit ${error.status}.`
-          : `The upload failed (gh says why above), and the draft release ${tag} may be left half sent: remove it with gh release delete ${tag} --yes. Exit ${error.status}.`,
+          : `The upload failed (gh says why above), and the draft release ${tag} may be left half sent: remove it with gh release delete ${tag} --repo ${REPOSITORY} --yes. Exit ${error.status}.`,
       );
     }
   } finally {
@@ -439,7 +446,7 @@ async function send(options) {
       `  ${dispatchCommand(name, options)}`,
       "",
       "Add -f app_version=X.Y.Z to name the version to write on. The run removes the draft once every locale landed.",
-      `To take the set back without uploading it: gh release delete ${tag} --yes`,
+      `To take the set back without uploading it: gh release delete ${tag} --repo ${REPOSITORY} --yes`,
     ].join("\n"),
   );
 }

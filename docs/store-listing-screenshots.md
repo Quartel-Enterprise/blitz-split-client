@@ -161,14 +161,18 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
    landed, and is deleted with the last one.
 5. **A locale that failed** fails the run, and the set is kept, which the summary says. Run that locale's job again
    with the job's own re-run button: it finds the set in the run's artifacts (kept seven days), and the tidy-up and
-   the report run again after it. deliver deletes a locale's screenshots before it uploads the new ones, so a
-   locale whose job failed halfway may be left with none until then. A job run again starts without the run's
-   first job, so each locale's job looks for a release running by itself, and stops while one is.
+   the report run again after it. **The other locales are not sent again**: GitHub carries their jobs over as they
+   ended (tried in November 2026 on a matrix inside a called workflow, which is what these jobs are). deliver
+   deletes a locale's screenshots before it uploads the new ones, so a locale whose job failed halfway may be left
+   with none until then. A job run again starts without the run's first job, so each upload job looks for a
+   release running by itself, and stops while one is.
 6. **Then the release.** The workflow writes screenshots on the editable version and submits nothing. A stable
    release dispatched afterwards **with `screenshots` off** renames that version to its own number, keeping the
    screenshots, and submits it ([release-process.md](release-process.md#screenshots-made-on-a-mac)). Not before the
-   run is over: a version waiting for review takes no screenshot, so `release-production.sh` refuses to dispatch
-   while the upload is going, and the workflow refuses to start while a release is.
+   run is over: a version waiting for review takes no screenshot, so a release that submits refuses to start while
+   the upload is going, and the workflow refuses to start while a release is. One set at a time, too: a second
+   run dispatched while one is going is refused, not queued, since GitHub would cancel a queued one without a word
+   when a third arrived.
 
 **Why a draft release.** The set has to get from the Mac to a runner, and it is some 600 MB of images that are not
 versioned. A branch would leave them in the repository's history for good, and an artifact can only be made by a

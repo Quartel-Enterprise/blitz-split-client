@@ -24,8 +24,8 @@ name: app-store-screenshots
 # (docs/release-process.md#screenshots-made-on-a-mac).
 #
 # Not while a release is running: it writes on the same App Store version, and submits it. The `check` job refuses
-# the run then, each locale's job checks again (one run again later starts without `check`), and
-# scripts/release/dispatch-release.sh refuses a stable release while a run of this is going.
+# the run then, each upload job checks again (one run again later starts without `check`), and a stable release
+# that submits refuses to start while a run of this is going (the `plan` job of release-production.yml).
 #
 # Repository secrets: the three APP_STORE_CONNECT_API_* ones, the releases' own (docs/release-process.md#secrets).
 on:
@@ -55,10 +55,9 @@ on:
 permissions:
   contents: read
 
-# One at a time: two runs would replace the same shelves over each other.
-concurrency:
-  group: app-store-screenshots
-  cancel-in-progress: false
+# One at a time, and no concurrency group for it: GitHub keeps one run waiting per group and cancels it without a
+# word when another arrives. `check` refuses the run instead while another run of this workflow is going, as it
+# does during a release. Two dispatched in the same instant refuse each other.
 
 # Named, so every step runs with pipefail: a `gh` that fails at the head of a pipe must stop the step.
 defaults:
@@ -79,7 +78,7 @@ jobs:
     permissions:
       # A draft release shows only to a token that can write the repository's contents.
       contents: write
-      # To see whether a release is running.
+      # To see whether a release, or another run of this workflow, is going.
       actions: read
     outputs:
       ios_locales: ${{ steps.staged.outputs.ios_locales }}
@@ -134,12 +133,14 @@ jobs:
           fi
 
       # A release writes on the same App Store version, and submits it: a version waiting for review takes no
-      # screenshot, so the locales still to go would be left without theirs.
-      - name: Check that no release is running
-        uses: ./.github/actions/no-release-running
+      # screenshot, so the locales still to go would be left without theirs. Another run of this workflow would
+      # replace the same shelves over this one.
+      - name: Check that no release and no other set is going
+        uses: ./.github/actions/no-run-going
         with:
           token: ${{ github.token }}
-          sends: the screenshots
+          workflows: release-beta.yml release-production.yml app-store-screenshots.yml
+          then: send the screenshots once that run is over
 
       - name: Set up Node
         uses: actions/setup-node@v7
@@ -278,7 +279,7 @@ jobs:
     if: ${{ inputs.ios }}
     permissions:
       contents: read
-      # Each locale's job looks for a release running, as `check` did: a job run again starts without `check`.
+      # Each upload job looks for a release running, as `check` did: a job run again starts without `check`.
       actions: read
     uses: ./.github/workflows/app-store-screenshots-upload.yml
     with:
@@ -298,7 +299,7 @@ jobs:
     if: ${{ inputs.macos }}
     permissions:
       contents: read
-      # Each locale's job looks for a release running, as `check` did: a job run again starts without `check`.
+      # Each upload job looks for a release running, as `check` did: a job run again starts without `check`.
       actions: read
     uses: ./.github/workflows/app-store-screenshots-upload.yml
     with:

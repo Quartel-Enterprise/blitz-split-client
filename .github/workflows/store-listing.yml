@@ -117,10 +117,10 @@ jobs:
       # the one still open. The releases share a concurrency group this workflow can't join, since a listing run
       # waiting in it would cancel a release waiting too, so a release in progress or waiting stops the run here.
       - name: Check that no release is running
-        uses: ./.github/actions/no-release-running
+        uses: ./.github/actions/no-run-going
         with:
           token: ${{ github.token }}
-          sends: the listing
+          then: send the listing once the release is over
 
       - name: Set up Node
         uses: actions/setup-node@v7
