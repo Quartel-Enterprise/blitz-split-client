@@ -1,0 +1,33 @@
+name: 'Check that no release is running'
+description: >-
+  Fails while a release, beta or stable, is in progress or waiting. For the workflows that write on what a release
+  writes on, through the same Play account or on the same App Store version: store-listing.yml and
+  app-store-screenshots.yml. The releases share a concurrency group those can't join, since a run of theirs waiting in
+  it would cancel a release waiting too, so a release in progress or waiting stops the run here instead.
+
+inputs:
+  token:
+    description: 'A token that can read the repository''s workflow runs, the GITHUB_TOKEN of a job with actions: read'
+    required: true
+  sends:
+    description: 'What the calling workflow sends, for the error: "the listing", "the screenshots"'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Check that no release is running
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        SENDS: ${{ inputs.sends }}
+      run: |
+        for workflow in release-beta.yml release-production.yml; do
+          for status in in_progress queued waiting pending requested; do
+            runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?status=$status&per_page=1" --jq .total_count)"
+            if [ "$runs" != 0 ]; then
+              echo "::error::$workflow has a run that is $status: send $SENDS once the release is over."
+              exit 1
+            fi
+          done
+        done

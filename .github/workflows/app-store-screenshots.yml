@@ -1,0 +1,375 @@
+name: app-store-screenshots
+
+# Sends App Store screenshots that were captured and framed on a Mac to App Store Connect, where only GitHub has the
+# key (docs/store-listing-screenshots.md#sending-a-set-made-on-a-mac). By hand only, by an administrator of the
+# repository, on main.
+#
+# The set travels as the assets of a draft GitHub release, which `node scripts/store-screenshots/local-set.mjs send`
+# makes on the Mac: it checks the set, packs it and prints the command to run here.
+#
+#   gh workflow run app-store-screenshots.yml -f set=3.0.0                    # both versions, the editable ones
+#   gh workflow run app-store-screenshots.yml -f set=3.0.0 -f ios=false       # the Mac's alone
+#
+#   1. `check` fetches the set, checks it again as the Mac did (a set that would empty a shelf is refused) and hands
+#      it to the jobs after it as artifacts of the run.
+#   2. `ios` and `macos` upload it one locale per job, one after the other, then tidy the shelves up: the jobs a
+#      release runs for the screenshots it frames itself (app-store-screenshots-upload.yml). The two versions are
+#      apart on App Store Connect, so they go side by side.
+#   3. `finish` says in the run's summary which locales landed, and removes the draft release once they all did. A
+#      locale that failed keeps it, and is sent again with its job's own re-run button.
+#
+# The screenshots only, on the version that is open for editing: no build, no text, no submission for review. A
+# stable release dispatched afterwards with `screenshots` off submits the version with them
+# (docs/release-process.md#screenshots-made-on-a-mac).
+#
+# Not while a release is running: it writes on the same App Store version, and submits it. The `check` job refuses
+# the run then, and scripts/release/dispatch-release.sh refuses a stable release while a run of this is going.
+#
+# Repository secrets: the three APP_STORE_CONNECT_API_* ones, the releases' own (docs/release-process.md#secrets).
+on:
+  workflow_dispatch:
+    inputs:
+      set:
+        description: "The set's name, as `local-set.mjs send` printed it"
+        type: string
+        required: true
+      ios:
+        description: "App Store, iPhone and iPad"
+        type: boolean
+        default: true
+      macos:
+        description: "App Store, Mac"
+        type: boolean
+        default: true
+      app_version:
+        description: "The version to write on, X.Y.Z, created when it is missing. Blank writes on the editable one"
+        type: string
+        default: ""
+      allow_missing_devices:
+        description: "The set leaves a device out on purpose: its shelf is emptied in every locale"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# One at a time: two runs would replace the same shelves over each other.
+concurrency:
+  group: app-store-screenshots
+  cancel-in-progress: false
+
+# Named, so every step runs with pipefail: a `gh` that fails at the head of a pipe must stop the step.
+defaults:
+  run:
+    shell: bash
+
+env:
+  # The draft release the set travels as, the tag local-set.mjs gives it (TAG_PREFIX). A draft has no tag in the
+  # repository until it is published, which nothing here does.
+  SET_TAG: store-screenshots-${{ inputs.set }}
+
+jobs:
+  # No environment here: this job reaches no store and reads no secret, and its own step checks the branch.
+  check:
+    name: Fetch and check the set
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      # A draft release shows only to a token that can write the repository's contents.
+      contents: write
+      # To see whether a release is running.
+      actions: read
+    outputs:
+      ios_locales: ${{ steps.staged.outputs.ios_locales }}
+      mac_locales: ${{ steps.staged.outputs.mac_locales }}
+      ios_shelves: ${{ steps.set.outputs.ios_shelves }}
+      mac_shelves: ${{ steps.set.outputs.mac_shelves }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      # The jobs that reach the store name the Production environment, whose branch rule keeps a copy of this
+      # workflow on another branch from reaching it. GitHub makes a missing environment with no rule, so the ref is
+      # checked here too.
+      - name: Check where the run comes from
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          if [ "$REF" != refs/heads/main ]; then
+            echo "::error::Screenshots are sent from main, and this run was dispatched on $REF. See docs/store-listing-screenshots.md."
+            exit 1
+          fi
+
+      - name: Check who sends
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      # A run that would end green having sent nothing stops here instead.
+      - name: Check the inputs
+        env:
+          SET: ${{ inputs.set }}
+          IOS: ${{ inputs.ios }}
+          MACOS: ${{ inputs.macos }}
+          APP_VERSION: ${{ inputs.app_version }}
+        run: |
+          if [ "$IOS" != true ] && [ "$MACOS" != true ]; then
+            echo "::error::No platform is selected."
+            exit 1
+          fi
+          # The name becomes the tag of the release that is read and then deleted: nothing but a set's name goes
+          # through (SET_NAME of scripts/store-screenshots/local-set.mjs).
+          if [[ ! "$SET" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,59}$ ]]; then
+            echo "::error::set is the name local-set.mjs printed: letters, digits, dots, dashes and underscores."
+            exit 1
+          fi
+          # It reaches a lane's environment, so nothing but a version goes through.
+          if [[ -n "$APP_VERSION" && ! "$APP_VERSION" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+            echo "::error::app_version is a version as the App Store writes it, X.Y.Z, or blank."
+            exit 1
+          fi
+
+      # A release writes on the same App Store version, and submits it: a version waiting for review takes no
+      # screenshot, so the locales still to go would be left without theirs.
+      - name: Check that no release is running
+        uses: ./.github/actions/no-release-running
+        with:
+          token: ${{ github.token }}
+          sends: the screenshots
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # Only a draft is a set: a published release of that tag is somebody's, and is left alone. Each archive is one
+      # version's staged folder, a folder per locale, with its checksum beside it.
+      - name: Fetch the set
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SET: ${{ inputs.set }}
+          IOS: ${{ inputs.ios }}
+          MACOS: ${{ inputs.macos }}
+        run: |
+          if ! release="$(gh release view "$SET_TAG" --json isDraft,assets)"; then
+            echo "::error::No set named $SET: no draft release $SET_TAG. Send it from the Mac first, with node scripts/store-screenshots/local-set.mjs send."
+            exit 1
+          fi
+          if [ "$(jq -r .isDraft <<< "$release")" != true ]; then
+            echo "::error::$SET_TAG is a published release, not a set."
+            exit 1
+          fi
+          set_dir="$RUNNER_TEMP/set"
+          mkdir -p "$set_dir"
+          fetch() {
+            local archive="$1" folder="$2" input="$3"
+            if ! jq -e --arg name "$archive" 'any(.assets[]; .name == $name)' <<< "$release" > /dev/null; then
+              echo "::error::The set $SET has no $archive: it was sent without that platform. Dispatch with $input off."
+              exit 1
+            fi
+            gh release download "$SET_TAG" --dir "$set_dir" --pattern "$archive"
+            if ! grep -F "  $archive" "$set_dir/SHA256SUMS" > "$set_dir/$archive.sha256"; then
+              echo "::error::The set's SHA256SUMS doesn't list $archive."
+              exit 1
+            fi
+            (cd "$set_dir" && sha256sum --check "$archive.sha256")
+            mkdir -p "$folder"
+            tar -xf "$set_dir/$archive" -C "$folder"
+          }
+          gh release download "$SET_TAG" --dir "$set_dir" --pattern SHA256SUMS
+          if [ "$IOS" = true ]; then fetch ios.tar fastlane/screenshots ios; fi
+          if [ "$MACOS" = true ]; then fetch mac.tar fastlane/screenshots-mac macos; fi
+
+      # The Mac checked it before sending, and this is what decides: a locale of the listing missing, a device with a
+      # screen missing, an image of another size, a file that isn't a PNG. deliver replaces every screenshot of a
+      # locale with what it is handed, so a set without one of a version's devices would empty that shelf: refused,
+      # unless allow_missing_devices says it is meant.
+      - name: Check the set
+        id: set
+        env:
+          SET: ${{ inputs.set }}
+          IOS: ${{ inputs.ios }}
+          MACOS: ${{ inputs.macos }}
+          ALLOW_MISSING_DEVICES: ${{ inputs.allow_missing_devices }}
+          APP_VERSION: ${{ inputs.app_version }}
+        run: |
+          options=()
+          if [ "$IOS" = true ]; then options+=(--ios fastlane/screenshots); fi
+          if [ "$MACOS" = true ]; then options+=(--mac fastlane/screenshots-mac); fi
+          if [ "$ALLOW_MISSING_DEVICES" = true ]; then options+=(--allow-missing-devices); fi
+          said="$RUNNER_TEMP/check.txt"
+          if ! node scripts/store-screenshots/local-set.mjs check "${options[@]}" > "$said" 2>&1; then
+            cat "$said"
+            {
+              echo "## The set \`$SET\` was refused"
+              echo
+              echo '```'
+              cat "$said"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::The set $SET was refused: the run's summary says what is wrong with it. Nothing was sent."
+            exit 1
+          fi
+          cat "$said"
+          version="the editable version"
+          if [ -n "$APP_VERSION" ]; then version="version $APP_VERSION"; fi
+          {
+            echo "## The set \`$SET\`"
+            echo
+            echo "Going on $version of each platform, one locale per job:"
+            echo
+            echo '```'
+            cat "$said"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # The upload jobs' matrices, read off what the set holds, as a release's are read off what it framed. Read
+      # into variables first, so a script that fails stops the step.
+      - name: List the set's locales
+        id: staged
+        run: |
+          ios_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots)"
+          mac_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots-mac)"
+          {
+            echo "ios_locales=$ios_locales"
+            echo "mac_locales=$mac_locales"
+          } >> "$GITHUB_OUTPUT"
+
+      # Under a release's own names, for the jobs both run. Not compressed: a PNG already is.
+      - name: Hand the iPhone and iPad screenshots to the upload jobs
+        if: ${{ inputs.ios }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-store-screenshots-ios
+          path: fastlane/screenshots/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+
+      - name: Hand the Mac screenshots to the upload jobs
+        if: ${{ inputs.macos }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-store-screenshots-mac
+          path: fastlane/screenshots-mac/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: true
+
+  # The names of these two are read by `finish`, off the run's jobs: "<name> / send <locale>".
+  ios:
+    name: iPhone and iPad
+    needs: check
+    if: ${{ inputs.ios }}
+    uses: ./.github/workflows/app-store-screenshots-upload.yml
+    with:
+      platform: ios
+      locales: ${{ needs.check.outputs.ios_locales }}
+      artifact: app-store-screenshots-ios
+      app_version: ${{ inputs.app_version }}
+    secrets:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  macos:
+    name: Mac
+    needs: check
+    if: ${{ inputs.macos }}
+    uses: ./.github/workflows/app-store-screenshots-upload.yml
+    with:
+      platform: mac
+      locales: ${{ needs.check.outputs.mac_locales }}
+      artifact: app-store-screenshots-mac
+      app_version: ${{ inputs.app_version }}
+    secrets:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  # After the last locale of both, failed ones included. It reaches no store: it reads the run's own jobs and
+  # deletes the draft release.
+  finish:
+    name: Report and remove the set
+    needs: [check, ios, macos]
+    if: ${{ !cancelled() && needs.check.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      # To delete the draft release.
+      contents: write
+      # To read which of the run's jobs passed.
+      actions: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Check who sends
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # A locale landed when its upload job passed, the latest try of it: a job run again counts as it ended then.
+      - name: Say which locales landed
+        id: report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SET: ${{ inputs.set }}
+          IOS: ${{ inputs.ios }}
+          MACOS: ${{ inputs.macos }}
+          APP_VERSION: ${{ inputs.app_version }}
+          IOS_LOCALES: ${{ needs.check.outputs.ios_locales }}
+          MAC_LOCALES: ${{ needs.check.outputs.mac_locales }}
+          IOS_SHELVES: ${{ needs.check.outputs.ios_shelves }}
+          MAC_SHELVES: ${{ needs.check.outputs.mac_shelves }}
+        run: |
+          jobs="$RUNNER_TEMP/jobs.json"
+          gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?filter=latest&per_page=100" \
+            --jq '.jobs[] | {name, conclusion}' | jq -s . > "$jobs"
+          options=(--jobs "$jobs" --set "$SET")
+          if [ -n "$APP_VERSION" ]; then options+=(--version "$APP_VERSION"); fi
+          if [ "$IOS" = true ]; then options+=(--ios-job "iPhone and iPad" --ios-locales "$IOS_LOCALES" --ios-shelves "$IOS_SHELVES"); fi
+          if [ "$MACOS" = true ]; then options+=(--mac-job "Mac" --mac-locales "$MAC_LOCALES" --mac-shelves "$MAC_SHELVES"); fi
+          node scripts/store-screenshots/local-set.mjs report "${options[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      # Only a draft, as when it was fetched. Gone already when a run of this job removed it and was run again.
+      - name: Remove the set
+        if: ${{ steps.report.outputs.landed == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SET: ${{ inputs.set }}
+        run: |
+          if ! draft="$(gh release view "$SET_TAG" --json isDraft --jq .isDraft 2> /dev/null)"; then
+            echo "The draft release $SET_TAG is already gone." | tee -a "$GITHUB_STEP_SUMMARY"
+          elif [ "$draft" != true ]; then
+            echo "::error::$SET_TAG is a published release, not a set: left alone."
+            exit 1
+          else
+            gh release delete "$SET_TAG" --yes
+            echo "Every locale landed, so the set was removed: the draft release \`$SET_TAG\` is deleted." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          {
+            echo
+            echo "**Next:** look at the shelves in App Store Connect, then dispatch the stable release with \`screenshots\` off: it submits these versions with the screenshots they now have (docs/release-process.md#screenshots-made-on-a-mac)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the set
+        if: ${{ steps.report.outputs.landed != 'true' }}
+        env:
+          SET: ${{ inputs.set }}
+        run: |
+          {
+            echo "**The set was kept**, as the draft release \`$SET_TAG\`: a locale didn't land. Run its job again with the job's own re-run button; this job then runs again too, and removes the set once every locale is up. To drop it instead: \`gh release delete $SET_TAG --yes\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::warning title=The set was kept::A locale didn't land, so the draft release $SET_TAG is still there. The run's summary names the locale."

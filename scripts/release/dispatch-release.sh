@@ -33,6 +33,21 @@ for each in "${GROUP_WORKFLOWS[@]}"; do
   fi
 done
 
+# A stable release submits the App Store versions, and a version waiting for review takes no screenshot. Dispatched
+# while a set made on a Mac is still going up, one locale per job (app-store-screenshots.yml), it would leave the
+# locales still to go without theirs. That workflow refuses to start during a release; this is the other way round,
+# which the Actions tab's "Run workflow" doesn't check either. A beta submits nothing, so it goes on.
+if [ "$workflow" = release-production.yml ]; then
+  for status in in_progress queued; do
+    # gh fails on a workflow main doesn't have, which then has no run.
+    uploading="$(gh run list --workflow=app-store-screenshots.yml --repo "$REPO" --status "$status" --json databaseId --jq length 2> /dev/null || echo 0)"
+    if [ "${uploading:-0}" -gt 0 ]; then
+      echo "App Store screenshots are still going up (app-store-screenshots.yml has a run $status), and the release would submit the versions before the last locale landed. Wait for that run to end, then run this again." >&2
+      exit 1
+    fi
+  done
+fi
+
 before="$(gh run list --workflow="$workflow" --repo "$REPO" --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
 
 # The workflows always build main, so the workflow file is read from main too: a script run from another
