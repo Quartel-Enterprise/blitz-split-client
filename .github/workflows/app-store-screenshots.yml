@@ -10,14 +10,21 @@ name: app-store-screenshots
 #   gh workflow run app-store-screenshots.yml -f set=3.0.0                    # both versions, the editable ones
 #   gh workflow run app-store-screenshots.yml -f set=3.0.0 -f ios=false       # the Mac's alone
 #
+# To repair shelves without sending a whole set again (docs/store-listing-screenshots.md#repairing-shelves):
+#
+#   gh workflow run app-store-screenshots.yml -f tidy_only=true               # sort and check, nothing is sent
+#   gh workflow run app-store-screenshots.yml -f set=3.0.0 -f locales="en-US de-DE"   # those locales alone
+#
 #   1. `check` fetches the set, checks it again as the Mac did (a set that would empty a shelf is refused) and hands
 #      it to the jobs after it as artifacts of the run.
 #   2. `ios` and `macos` upload it one locale per job, one after the other, then tidy the shelves up: the jobs a
 #      release runs for the screenshots it frames itself (app-store-screenshots-upload.yml). The two versions are
 #      apart on App Store Connect, so they go side by side.
-#   3. `finish` says in the run's summary which locales landed, and removes the draft release once they all did. A
-#      locale that failed keeps it, and is sent again with its job's own re-run button; so does a version the set
-#      holds and the run left out, which is still to send.
+#   3. `finish` says in the run's summary which locales landed and whether the tidy-up left the shelves as staged,
+#      and removes the draft release once both are so. A locale that failed keeps it, and is sent again with its
+#      job's own re-run button; a shelf that isn't as staged keeps it, for its locale to be sent again from; so
+#      does a version the set holds and the run left out, which is still to send, and a run that sent chosen
+#      locales alone, which can't tell whether the others are up.
 #
 # The screenshots only, on the version that is open for editing: no build, no text, no submission for review. A
 # stable release dispatched afterwards with `screenshots` off submits the version with them
@@ -32,9 +39,9 @@ on:
   workflow_dispatch:
     inputs:
       set:
-        description: "The set's name, as `local-set.mjs send` printed it"
+        description: "The set's name, as `local-set.mjs send` printed it. Blank with tidy_only"
         type: string
-        required: true
+        default: ""
       ios:
         description: "App Store, iPhone and iPad"
         type: boolean
@@ -49,6 +56,14 @@ on:
         default: ""
       allow_missing_devices:
         description: "The set leaves a device out on purpose: its shelf is emptied in every locale"
+        type: boolean
+        default: false
+      locales:
+        description: "Send these locales of the set alone, App Store codes with a space between (en-US de-DE). Blank sends every one"
+        type: string
+        default: ""
+      tidy_only:
+        description: "Send nothing and fetch no set: only tidy the shelves up and check that each holds every screen"
         type: boolean
         default: false
 
@@ -115,10 +130,21 @@ jobs:
           IOS: ${{ inputs.ios }}
           MACOS: ${{ inputs.macos }}
           APP_VERSION: ${{ inputs.app_version }}
+          LOCALES: ${{ inputs.locales }}
+          TIDY_ONLY: ${{ inputs.tidy_only }}
         run: |
           if [ "$IOS" != true ] && [ "$MACOS" != true ]; then
             echo "::error::No platform is selected."
             exit 1
+          fi
+          # The tidy-up works on the version that is open for editing, and sends nothing: an input that names
+          # something to send, or a version to write on, was meant for another run.
+          if [ "$TIDY_ONLY" = true ]; then
+            if [ -n "$SET$LOCALES$APP_VERSION" ]; then
+              echo "::error::tidy_only sends nothing: leave set, locales and app_version blank."
+              exit 1
+            fi
+            exit 0
           fi
           # The name becomes the tag of the release that is read and then deleted: nothing but a set's name goes
           # through (SET_NAME of scripts/store-screenshots/local-set.mjs).
@@ -143,6 +169,7 @@ jobs:
           then: send the screenshots once that run is over
 
       - name: Set up Node
+        if: ${{ !inputs.tidy_only }}
         uses: actions/setup-node@v7
         with:
           node-version: '24'
@@ -150,6 +177,7 @@ jobs:
       # Only a draft is a set: a published release of that tag is somebody's, and is left alone. Each archive is one
       # version's staged folder, a folder per locale, with its checksum beside it.
       - name: Fetch the set
+        if: ${{ !inputs.tidy_only }}
         env:
           GH_TOKEN: ${{ github.token }}
           SET: ${{ inputs.set }}
@@ -199,6 +227,7 @@ jobs:
       # locale with what it is handed, so a set without one of a version's devices would empty that shelf: refused,
       # unless allow_missing_devices says it is meant.
       - name: Check the set
+        if: ${{ !inputs.tidy_only }}
         id: set
         env:
           SET: ${{ inputs.set }}
@@ -238,12 +267,21 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       # The upload jobs' matrices, read off what the set holds, as a release's are read off what it framed. Read
-      # into variables first, so a script that fails stops the step.
+      # into variables first, so a script that fails stops the step. With `locales`, only those of each version's:
+      # a locale the set lacks stops the run here, before anything is sent.
       - name: List the set's locales
+        if: ${{ !inputs.tidy_only }}
         id: staged
+        env:
+          LOCALES: ${{ inputs.locales }}
         run: |
           ios_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots)"
           mac_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots-mac)"
+          if [ -n "$LOCALES" ]; then
+            if [ -n "$ios_locales" ]; then ios_locales="$(node scripts/store-screenshots/local-set.mjs locales --staged "$ios_locales" --only "$LOCALES")"; fi
+            if [ -n "$mac_locales" ]; then mac_locales="$(node scripts/store-screenshots/local-set.mjs locales --staged "$mac_locales" --only "$LOCALES")"; fi
+            echo "Only **$LOCALES** of the set go up: the other locales' shelves are left as they are." >> "$GITHUB_STEP_SUMMARY"
+          fi
           {
             echo "ios_locales=$ios_locales"
             echo "mac_locales=$mac_locales"
@@ -251,7 +289,7 @@ jobs:
 
       # Under a release's own names, for the jobs both run. Not compressed: a PNG already is.
       - name: Hand the iPhone and iPad screenshots to the upload jobs
-        if: ${{ inputs.ios }}
+        if: ${{ inputs.ios && !inputs.tidy_only }}
         uses: actions/upload-artifact@v7
         with:
           name: app-store-screenshots-ios
@@ -262,7 +300,7 @@ jobs:
           overwrite: true
 
       - name: Hand the Mac screenshots to the upload jobs
-        if: ${{ inputs.macos }}
+        if: ${{ inputs.macos && !inputs.tidy_only }}
         uses: actions/upload-artifact@v7
         with:
           name: app-store-screenshots-mac
@@ -285,7 +323,10 @@ jobs:
     with:
       platform: ios
       refuse_during_release: true
-      locales: ${{ needs.check.outputs.ios_locales }}
+      # No locale's job with tidy_only. Its list is never read then, and still names one entry: an empty matrix
+      # fails a job that runs, and nobody tried whether it fails one that is skipped.
+      tidy_only: ${{ inputs.tidy_only }}
+      locales: ${{ inputs.tidy_only && '["none"]' || needs.check.outputs.ios_locales }}
       artifact: app-store-screenshots-ios
       app_version: ${{ inputs.app_version }}
     secrets:
@@ -305,7 +346,10 @@ jobs:
     with:
       platform: mac
       refuse_during_release: true
-      locales: ${{ needs.check.outputs.mac_locales }}
+      # No locale's job with tidy_only. Its list is never read then, and still names one entry: an empty matrix
+      # fails a job that runs, and nobody tried whether it fails one that is skipped.
+      tidy_only: ${{ inputs.tidy_only }}
+      locales: ${{ inputs.tidy_only && '["none"]' || needs.check.outputs.mac_locales }}
       artifact: app-store-screenshots-mac
       app_version: ${{ inputs.app_version }}
     secrets:
@@ -314,7 +358,7 @@ jobs:
       APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   # After the last locale of both, failed ones included. It reaches no store: it reads the run's own jobs and
-  # deletes the draft release.
+  # deletes the draft release. A run that sent chosen locales alone, or none, removes nothing.
   finish:
     name: Report and remove the set
     needs: [check, ios, macos]
@@ -355,11 +399,22 @@ jobs:
           MAC_LOCALES: ${{ needs.check.outputs.mac_locales }}
           IOS_SHELVES: ${{ needs.check.outputs.ios_shelves }}
           MAC_SHELVES: ${{ needs.check.outputs.mac_shelves }}
+          LOCALES: ${{ inputs.locales }}
+          TIDY_ONLY: ${{ inputs.tidy_only }}
         run: |
           jobs="$RUNNER_TEMP/jobs.json"
           gh api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?filter=latest&per_page=100" \
             --jq '.jobs[] | {name, conclusion}' | jq -s . > "$jobs"
-          options=(--jobs "$jobs" --set "$SET")
+          options=(--jobs "$jobs")
+          if [ "$TIDY_ONLY" = true ]; then
+            # No locale was sent: the report is the tidy-up's alone.
+            options+=(--tidy-only)
+            IOS_LOCALES='[]'
+            MAC_LOCALES='[]'
+          else
+            options+=(--set "$SET")
+          fi
+          if [ -n "$LOCALES" ]; then options+=(--only "$LOCALES"); fi
           if [ -n "$APP_VERSION" ]; then options+=(--version "$APP_VERSION"); fi
           if [ "$IOS" = true ]; then options+=(--ios-job "iPhone and iPad" --ios-locales "$IOS_LOCALES" --ios-shelves "$IOS_SHELVES"); fi
           if [ "$MACOS" = true ]; then options+=(--mac-job "Mac" --mac-locales "$MAC_LOCALES" --mac-shelves "$MAC_SHELVES"); fi
@@ -368,9 +423,10 @@ jobs:
       # Only a draft, as when it was fetched. Gone already when a run of this job removed it and was run again. A set
       # that holds both versions' screenshots and went up one version per run loses, each time, the archive that
       # landed, and is removed with the last one. A release that can't be read is not one that is gone: the step
-      # fails then, and is run again.
+      # fails then, and is run again. Not while the tidy-up says a shelf isn't as staged: the set is what the
+      # locale of that shelf is sent again from.
       - name: Remove the set
-        if: ${{ steps.report.outputs.landed == 'true' }}
+        if: ${{ steps.report.outputs.landed == 'true' && steps.report.outputs.tidied == 'true' && inputs.locales == '' && !inputs.tidy_only }}
         env:
           GH_TOKEN: ${{ github.token }}
           IOS: ${{ inputs.ios }}
@@ -409,10 +465,36 @@ jobs:
             echo "**Next:** look at the shelves in App Store Connect, then dispatch the stable release with \`screenshots\` off: it submits these versions with the screenshots they now have (docs/release-process.md#screenshots-made-on-a-mac)."
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # Whenever it wasn't removed: a locale didn't land, a shelf isn't as staged, or the run sent chosen locales
+      # alone, which say nothing of the others. The last is what was asked, so it is no warning.
       - name: Keep the set
-        if: ${{ steps.report.outputs.landed != 'true' }}
+        if: ${{ !inputs.tidy_only && (steps.report.outputs.landed != 'true' || steps.report.outputs.tidied != 'true' || inputs.locales != '') }}
+        env:
+          LANDED: ${{ steps.report.outputs.landed }}
+          TIDIED: ${{ steps.report.outputs.tidied }}
+          LOCALES: ${{ inputs.locales }}
+          SET: ${{ inputs.set }}
+          IOS: ${{ inputs.ios }}
+          MACOS: ${{ inputs.macos }}
+          APP_VERSION: ${{ inputs.app_version }}
         run: |
-          {
-            echo "**The set was kept**, as the draft release \`$SET_TAG\`: a locale didn't land. Run its job again with the job's own re-run button; this job then runs again too, and removes the set once every locale is up. To drop it instead: \`gh release delete $SET_TAG --yes\`."
-          } >> "$GITHUB_STEP_SUMMARY"
-          echo "::warning title=The set was kept::A locale didn't land, so the draft release $SET_TAG is still there. The run's summary names the locale."
+          drop="\`gh release delete $SET_TAG --repo $GITHUB_REPOSITORY --yes\`"
+          # The repair's commands, for the versions this run wrote on: a set sent one version per run has lost the
+          # other's archive, and a version this run named is the one to write on again.
+          versions=""
+          if [ "$IOS" != true ]; then versions+=" -f ios=false"; fi
+          if [ "$MACOS" != true ]; then versions+=" -f macos=false"; fi
+          again="gh workflow run app-store-screenshots.yml --repo $GITHUB_REPOSITORY -f set=$SET$versions"
+          if [ -n "$APP_VERSION" ]; then again+=" -f app_version=$APP_VERSION"; fi
+          tidy="gh workflow run app-store-screenshots.yml --repo $GITHUB_REPOSITORY -f tidy_only=true$versions"
+          if [ "$LANDED" != true ]; then
+            removal="and removes the set once every locale is up and the shelves are as staged"
+            if [ -n "$LOCALES" ]; then removal="and keeps the set, as a run of chosen locales does"; fi
+            echo "**The set was kept**, as the draft release \`$SET_TAG\`: a locale didn't land. Run its job again with the job's own re-run button; this job then runs again too, $removal. To drop it instead: $drop." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning title=The set was kept::A locale didn't land, so the draft release $SET_TAG is still there. The run's summary names the locale."
+          elif [ "$TIDIED" != true ]; then
+            echo "**The set was kept**, as the draft release \`$SET_TAG\`: every locale's job passed, and a shelf isn't as staged. The tidy-up job's summary names it. Send that shelf's locale again from this set, \`$again -f locales=\"<locale> <locale>\"\`, or, for a shelf that is only out of order, tidy up again with \`$tidy\` (docs/store-listing-screenshots.md#repairing-shelves). Don't delete one of a file's two entries by hand: both go. Once the shelves are right, drop the set: $drop." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning title=The set was kept::A shelf isn't as staged, so the draft release $SET_TAG is still there to send its locale again from. The tidy-up job's summary names the shelf."
+          else
+            echo "**The set was kept**, as the draft release \`$SET_TAG\`: this run sent chosen locales alone, and doesn't know whether the others are up. Once the shelves are right, drop it: $drop." >> "$GITHUB_STEP_SUMMARY"
+          fi

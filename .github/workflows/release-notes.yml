@@ -4,9 +4,10 @@ name: release-notes
 # platform the site doesn't know, Markdown in a note), or when a store listing of store-listing/ has something a
 # store would refuse or cut (docs/store-listing.md), and runs the tests of the scripts the releases run: the ones
 # that read the fragments and the listings, the ones that resolve a release's version and merge it back, the one
-# that checks and sends a set of App Store screenshots made on a Mac, and the ones that hold together the workflows
-# Google Play's screenshots go up through and decide how its locales are grouped and what its daily save quota
-# stops (the lane's own tests need fastlane and are skipped on this runner). See
+# that checks and sends a set of App Store screenshots made on a Mac, the one that decides what the tidy-up of the
+# App Store's shelves removes and sorts, and the ones that hold together the workflows Google Play's screenshots go
+# up through and decide how its locales are grouped and what its daily save quota stops (the lane's own tests need
+# fastlane and are skipped on this runner). See
 # docs/release-notes.md. Locally: node scripts/release/release-notes.mjs check and
 # node scripts/release/store-listing.mjs check.
 on:
@@ -32,14 +33,18 @@ on:
       - 'scripts/store-screenshots/local-set.test.mjs'
       - '.github/workflows/app-store-screenshots.yml'
       - '.github/workflows/app-store-screenshots-upload.yml'
+      # What the tidy-up of the App Store's shelves removes and sorts, its tests, and the lane a test holds it to
+      - 'scripts/store-screenshots/shelves.mjs'
+      - 'scripts/store-screenshots/shelves.test.mjs'
+      - 'fastlane/Fastfile'
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
       - '.github/workflows/play-store-screenshots.yml'
       - '.github/workflows/play-store-screenshots-upload.yml'
       - '.github/actions/play-screenshots-draw/**'
-      # The action that runs their lane and the lane itself, which a test holds to the upload jobs
+      # The action that runs their lane, which a test holds to the upload jobs with the lane itself
+      # (fastlane/Fastfile, listed above)
       - '.github/actions/play-store-lane/**'
-      - 'fastlane/Fastfile'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreLocale.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreenshots.kt'
@@ -61,14 +66,18 @@ on:
       - 'scripts/store-screenshots/local-set.test.mjs'
       - '.github/workflows/app-store-screenshots.yml'
       - '.github/workflows/app-store-screenshots-upload.yml'
+      # What the tidy-up of the App Store's shelves removes and sorts, its tests, and the lane a test holds it to
+      - 'scripts/store-screenshots/shelves.mjs'
+      - 'scripts/store-screenshots/shelves.test.mjs'
+      - 'fastlane/Fastfile'
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
       - '.github/workflows/play-store-screenshots.yml'
       - '.github/workflows/play-store-screenshots-upload.yml'
       - '.github/actions/play-screenshots-draw/**'
-      # The action that runs their lane and the lane itself, which a test holds to the upload jobs
+      # The action that runs their lane, which a test holds to the upload jobs with the lane itself
+      # (fastlane/Fastfile, listed above)
       - '.github/actions/play-store-lane/**'
-      - 'fastlane/Fastfile'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreLocale.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreenshots.kt'
@@ -124,3 +133,4 @@ jobs:
           node --test scripts/release/play-screenshot-groups.test.mjs scripts/release/play-screenshots-lane.test.mjs
           scripts/release/release-notes.test.mjs scripts/release/release-scripts.test.mjs
           scripts/release/store-listing.test.mjs scripts/store-screenshots/local-set.test.mjs
+          scripts/store-screenshots/shelves.test.mjs

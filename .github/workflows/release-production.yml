@@ -822,8 +822,9 @@ jobs:
           if-no-files-found: error
 
   # One job per locale, as in Bible Planner's releases, so a locale App Store Connect refused is the only one sent
-  # again, with the images that were already framed, then the tidy-up, which removes the copies deliver leaves behind
-  # and sorts every shelf: the jobs of app-store-screenshots-upload.yml, which app-store-screenshots.yml calls too,
+  # again, with the images that were already framed, then the tidy-up, which sorts every shelf and fails on one
+  # that doesn't hold every screen once, without removing anything and without stopping the release
+  # (best_effort): the jobs of app-store-screenshots-upload.yml, which app-store-screenshots.yml calls too,
   # for a set made on a Mac. Shown as "iOS, App Store screenshots / send <locale>" and "… / tidy up". The Mac's go
   # on a version of their own, so its jobs run next to the iPhone's. They go on the release's version, created if
   # app-store-versions didn't.
