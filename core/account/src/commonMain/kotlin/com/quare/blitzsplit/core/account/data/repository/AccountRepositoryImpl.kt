@@ -71,7 +71,14 @@ class AccountRepositoryImpl(
 
     override suspend fun mirrorSession() {
         remote.observeSessionUser().collect { user ->
-            local.update { account -> account.toMirrorOf(user) }
+            // Why: the session of a browser callback is the one signed in with the trip's provider; a refresh isn't.
+            val isBrowserReturn = !returningSignIn.value.isSettled
+            local.update { account ->
+                val tripProvider = account.browserSignInProvider
+                    ?.takeIf { isBrowserReturn }
+                    ?.let(AccountProvider::fromCodeOrNull)
+                account.toMirrorOf(user, signedInWith = tripProvider)
+            }
             returningSignIn.value = ReturningSignIn(
                 provider = null,
                 isSettled = true,
@@ -134,7 +141,7 @@ class AccountRepositoryImpl(
             )
         }
         remote.getCurrentUserOrNull()?.let { user ->
-            local.update { account -> account.toMirrorOf(user) }
+            local.update { account -> account.toMirrorOf(user, signedInWith = provider) }
             val givenName = fullName?.takeIf(String::isNotBlank)
             if (user.displayName == null && givenName != null) keepNameGivenOnce(givenName)
         }
@@ -447,10 +454,14 @@ class AccountRepositoryImpl(
      * so no sync can sign out the new user in between. A switch to another user replaces the device's copy with
      * theirs, which only a sync completes, so it awaits one in that same write.
      */
-    private fun AccountEntity.toMirrorOf(user: SessionUser?): AccountEntity = when {
+    private fun AccountEntity.toMirrorOf(
+        user: SessionUser?,
+        signedInWith: AccountProvider? = null,
+    ): AccountEntity = when {
         user == null -> copy(
             userId = null,
             provider = null,
+            signedInProvider = null,
             pendingLinkProvider = null,
             email = null,
             signOutWhenSynced = false,
@@ -461,7 +472,8 @@ class AccountRepositoryImpl(
 
         user.socialProvider != null -> copy(
             userId = user.userId,
-            provider = user.socialProvider.code,
+            provider = (findDeviceProvider(user, signedInWith) ?: user.socialProvider).code,
+            signedInProvider = findDeviceProvider(user, signedInWith)?.code,
             // Why: a code from before Google or Apple may be replaced on another device; a new one comes if it goes.
             recoveryCode = null,
             recoveryCodePrompt = RecoveryCodePrompt.SAVED.code,
@@ -475,6 +487,7 @@ class AccountRepositoryImpl(
         else -> copy(
             userId = user.userId,
             provider = null,
+            signedInProvider = null,
             /*
              * Why: Google or Apple gone from the same user means an older install unlinked it and showed the new
              * code; issuing one here would replace it, so this device offers none.
@@ -491,6 +504,20 @@ class AccountRepositoryImpl(
             inactivityExpiry = null,
         )
     }
+
+    /*
+     * Why: the provider this device signed in with: the one it just signed in with, else the one it kept for this
+     * same user, as long as the user still holds that identity. The server's own last sign in can't tell it, since
+     * a sign in on another device or a link stamps an identity too.
+     */
+    private fun AccountEntity.findDeviceProvider(
+        user: SessionUser,
+        signedInWith: AccountProvider?,
+    ): AccountProvider? = signedInWith?.takeIf { it in user.linkedProviders }
+        ?: signedInProvider
+            ?.takeIf { userId == user.userId }
+            ?.let(AccountProvider::fromCodeOrNull)
+            ?.takeIf { it in user.linkedProviders }
 
     /*
      * Why: the server refuses the session of an account it deleted for inactivity, as it does one lost for any other

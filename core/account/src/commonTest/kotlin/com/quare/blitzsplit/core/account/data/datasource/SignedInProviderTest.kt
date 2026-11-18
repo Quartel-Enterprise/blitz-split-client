@@ -14,7 +14,7 @@ class SignedInProviderTest {
         val identities = listOf<List<Identity>?>(null, emptyList())
 
         // When
-        val providers = identities.map(SignedInProvider::of)
+        val providers = identities.map(::firstRanked)
 
         // Then
         assertEquals(listOf<AccountProvider?>(null, null), providers)
@@ -26,7 +26,7 @@ class SignedInProviderTest {
         val identities = listOf(google(lastSignInAt = "2026-11-10T10:00:00Z"))
 
         // When
-        val provider = SignedInProvider.of(identities)
+        val provider = firstRanked(identities)
 
         // Then
         assertEquals(AccountProvider.GOOGLE, provider)
@@ -38,7 +38,7 @@ class SignedInProviderTest {
         val identities = listOf(apple(lastSignInAt = "2026-11-10T10:00:00Z"))
 
         // When
-        val provider = SignedInProvider.of(identities)
+        val provider = firstRanked(identities)
 
         // Then
         assertEquals(AccountProvider.APPLE, provider)
@@ -53,7 +53,7 @@ class SignedInProviderTest {
         )
 
         // When
-        val provider = SignedInProvider.of(identities)
+        val provider = firstRanked(identities)
 
         // Then
         assertEquals(AccountProvider.GOOGLE, provider)
@@ -68,7 +68,7 @@ class SignedInProviderTest {
         )
 
         // When
-        val provider = SignedInProvider.of(identities)
+        val provider = firstRanked(identities)
 
         // Then
         assertEquals(AccountProvider.APPLE, provider)
@@ -81,7 +81,7 @@ class SignedInProviderTest {
         val apple = apple(lastSignInAt = "2026-11-18T09:30:00.123455Z")
 
         // When
-        val providers = listOf(listOf(google, apple), listOf(apple, google)).map(SignedInProvider::of)
+        val providers = listOf(listOf(google, apple), listOf(apple, google)).map(::firstRanked)
 
         // Then
         assertEquals(listOf(AccountProvider.GOOGLE, AccountProvider.GOOGLE), providers)
@@ -99,7 +99,7 @@ class SignedInProviderTest {
         )
 
         // When
-        val provider = SignedInProvider.of(identities)
+        val provider = firstRanked(identities)
 
         // Then
         assertEquals(AccountProvider.APPLE, provider)
@@ -116,7 +116,7 @@ class SignedInProviderTest {
         )
 
         // When
-        val provider = SignedInProvider.of(identities)
+        val provider = firstRanked(identities)
 
         // Then
         assertNull(provider)
@@ -132,7 +132,7 @@ class SignedInProviderTest {
         )
 
         // When
-        val provider = SignedInProvider.of(identities)
+        val provider = firstRanked(identities)
 
         // Then
         assertEquals(AccountProvider.APPLE, provider)
@@ -144,11 +144,14 @@ class SignedInProviderTest {
         val identities = listOf(google(lastSignInAt = null), apple(lastSignInAt = null))
 
         // When
-        val provider = SignedInProvider.of(identities)
+        val provider = firstRanked(identities)
 
         // Then
         assertEquals(AccountProvider.GOOGLE, provider)
     }
+
+    private fun firstRanked(identities: List<Identity>?): AccountProvider? =
+        SignedInProvider.toRankedProviders(identities).firstOrNull()
 
     private fun google(lastSignInAt: String?): Identity = identity(
         provider = "google",
@@ -170,4 +173,23 @@ class SignedInProviderTest {
         provider = provider,
         userId = "user-1",
     )
+
+    @Test
+    fun `GIVEN both identities WHEN ranking THEN lists the latest sign in first and keeps the other after it`() {
+        // Given
+        val identities = listOf(
+            google(lastSignInAt = "2026-11-01T10:00:00Z"),
+            apple(lastSignInAt = "2026-11-18T09:30:00Z"),
+            identity(
+                provider = "email",
+                lastSignInAt = "2026-11-20T09:30:00Z",
+            ),
+        )
+
+        // When
+        val ranked = SignedInProvider.toRankedProviders(identities)
+
+        // Then
+        assertEquals(listOf(AccountProvider.APPLE, AccountProvider.GOOGLE), ranked)
+    }
 }

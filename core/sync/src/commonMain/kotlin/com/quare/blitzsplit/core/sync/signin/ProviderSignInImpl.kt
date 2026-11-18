@@ -12,7 +12,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
@@ -98,7 +98,8 @@ class ProviderSignInImpl(
         isShown: () -> Boolean,
         onStep: (SignInStep) -> Unit,
     ): Flow<Unit> = observeAccountStatus()
-        .distinctUntilChanged()
+        // Why: a connected user whose shown provider changes (the device's pick follows the identities) is no new session.
+        .distinctUntilChangedBy { status -> if (status is AccountStatus.Connected) status.userId else status }
         .filterIsInstance<AccountStatus.Connected>()
         .filter { status -> !isSigningInDirectly && status != directlyCompletedStatus && isShown() }
         .map { status ->

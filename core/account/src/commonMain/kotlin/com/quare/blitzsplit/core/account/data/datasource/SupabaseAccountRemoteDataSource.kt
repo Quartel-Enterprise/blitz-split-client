@@ -224,13 +224,17 @@ class SupabaseAccountRemoteDataSource(
         auth.clearSession()
     }
 
-    private fun toSessionUser(user: UserInfo): SessionUser = SessionUser(
-        userId = user.id,
-        socialProvider = SignedInProvider.of(user.identities),
-        displayName = user.userMetadata.findString(FULL_NAME_KEY, "name"),
-        photoUrl = user.userMetadata.findString("avatar_url", "picture"),
-        email = user.email?.takeIf(String::isNotBlank),
-    )
+    private fun toSessionUser(user: UserInfo): SessionUser {
+        val linkedProviders = SignedInProvider.toRankedProviders(user.identities)
+        return SessionUser(
+            userId = user.id,
+            socialProvider = linkedProviders.firstOrNull(),
+            displayName = user.userMetadata.findString(FULL_NAME_KEY, "name"),
+            photoUrl = user.userMetadata.findString("avatar_url", "picture"),
+            email = user.email?.takeIf(String::isNotBlank),
+            linkedProviders = linkedProviders,
+        )
+    }
 
     private fun JsonObject?.findString(vararg keys: String): String? = keys.firstNotNullOfOrNull { key ->
         this

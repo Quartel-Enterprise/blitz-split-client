@@ -1201,6 +1201,7 @@ class ProfilePhotoViewModelTest {
         displayName = "Pierre Vieira",
         photoUrl = GOOGLE_PHOTO_URL,
         email = null,
+        linkedProviders = listOf(AccountProvider.GOOGLE),
     )
     private val pierre = UserProfile("Pierre", AvatarColor.SAND, ProfilePhoto.Remote(UPLOADED_PHOTO_URL))
     private val pierreWithoutPhoto = pierre.copy(photo = null)

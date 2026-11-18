@@ -58,7 +58,16 @@ class ProfileSetupViewModelTest {
     @Test
     fun `GIVEN a Google session WHEN the screen opens THEN prefills its name and photo`() = runTest(testDispatcher) {
         // Given
-        prepareScenario(sessionUser = SessionUser("u", AccountProvider.GOOGLE, "Pierre Vieira", "https://photo", null))
+        prepareScenario(
+            sessionUser = SessionUser(
+                "u",
+                AccountProvider.GOOGLE,
+                "Pierre Vieira",
+                "https://photo",
+                null,
+                listOf(AccountProvider.GOOGLE),
+            ),
+        )
 
         // When
         val state = viewModel.uiState.value
@@ -132,7 +141,16 @@ class ProfileSetupViewModelTest {
         runTest(testDispatcher) {
             // Given
             val longName = "Pierre Vieira de Souza Albuquerque Cavalcanti"
-            prepareScenario(sessionUser = SessionUser("u", AccountProvider.GOOGLE, longName, null, null))
+            prepareScenario(
+                sessionUser = SessionUser(
+                    "u",
+                    AccountProvider.GOOGLE,
+                    longName,
+                    null,
+                    null,
+                    listOf(AccountProvider.GOOGLE),
+                ),
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -147,7 +165,9 @@ class ProfileSetupViewModelTest {
     fun `GIVEN a one letter Google name WHEN the screen opens THEN prefills it with the too short error`() =
         runTest(testDispatcher) {
             // Given
-            prepareScenario(sessionUser = SessionUser("u", AccountProvider.GOOGLE, "P", null, null))
+            prepareScenario(
+                sessionUser = SessionUser("u", AccountProvider.GOOGLE, "P", null, null, listOf(AccountProvider.GOOGLE)),
+            )
 
             // When
             val state = viewModel.uiState.value
@@ -306,6 +326,7 @@ class ProfileSetupViewModelTest {
                 displayName = null,
                 photoUrl = null,
                 email = null,
+                linkedProviders = emptyList(),
             ),
         )
 
@@ -830,8 +851,17 @@ class ProfileSetupViewModelTest {
     private val photoPickedEvent = "photo_picked" to mapOf<String, Any>("source" to SOURCE)
     private val continueClickedEvent = "profile_setup_continue_clicked" to emptyMap<String, Any>()
 
-    private val googleUser = SessionUser("u", AccountProvider.GOOGLE, "Pierre Vieira", GOOGLE_PHOTO_URL, null)
-    private val appleUser = SessionUser("u", AccountProvider.APPLE, "Pierre Vieira", APPLE_PHOTO_URL, null)
+    private val googleUser =
+        SessionUser(
+            "u",
+            AccountProvider.GOOGLE,
+            "Pierre Vieira",
+            GOOGLE_PHOTO_URL,
+            null,
+            listOf(AccountProvider.GOOGLE),
+        )
+    private val appleUser =
+        SessionUser("u", AccountProvider.APPLE, "Pierre Vieira", APPLE_PHOTO_URL, null, listOf(AccountProvider.APPLE))
     private val photoSource = byteArrayOf(1, 2, 3)
     private val otherPhotoSource = byteArrayOf(4, 5, 6)
     private val notAnImage = "not an image".encodeToByteArray()

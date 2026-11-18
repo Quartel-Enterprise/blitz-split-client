@@ -45,4 +45,11 @@ data class AccountEntity(
     // Why: the account the server deleted for inactivity, from the refused session until Welcome's notice is read.
     @ColumnInfo(defaultValue = "NULL")
     val inactivityExpiry: String?,
+    /*
+     * Why: the provider this device signed in with, since the server only says which identities the user holds, and
+     * the one it stamped last may be a sign in on another device or a link. Null on an install that predates it,
+     * which then goes by the identities' last sign in.
+     */
+    @ColumnInfo(defaultValue = "NULL")
+    val signedInProvider: String?,
 )

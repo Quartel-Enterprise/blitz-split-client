@@ -28,6 +28,7 @@ class RoomAccountLocalDataSource(
         awaitsFullSync = false,
         lostAnonymousUserId = null,
         inactivityExpiry = null,
+        signedInProvider = null,
     )
 
     override fun observe(): Flow<AccountEntity> = dao.observe().map { it ?: emptyAccount }
