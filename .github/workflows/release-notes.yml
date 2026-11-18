@@ -4,8 +4,9 @@ name: release-notes
 # platform the site doesn't know, Markdown in a note), or when a store listing of store-listing/ has something a
 # store would refuse or cut (docs/store-listing.md), and runs the tests of the scripts the releases run: the ones
 # that read the fragments and the listings, the ones that resolve a release's version and merge it back, the one
-# that checks and sends a set of App Store screenshots made on a Mac, and the one that holds together the workflows
-# Google Play's screenshots go up through. See
+# that checks and sends a set of App Store screenshots made on a Mac, the one that decides what the tidy-up of the
+# App Store's shelves removes and sorts, and the one that holds together the workflows Google Play's screenshots go
+# up through. See
 # docs/release-notes.md. Locally: node scripts/release/release-notes.mjs check and
 # node scripts/release/store-listing.mjs check.
 on:
@@ -31,6 +32,10 @@ on:
       - 'scripts/store-screenshots/local-set.test.mjs'
       - '.github/workflows/app-store-screenshots.yml'
       - '.github/workflows/app-store-screenshots-upload.yml'
+      # What the tidy-up of the App Store's shelves removes and sorts, its tests, and the lane a test holds it to
+      - 'scripts/store-screenshots/shelves.mjs'
+      - 'scripts/store-screenshots/shelves.test.mjs'
+      - 'fastlane/Fastfile'
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
       - '.github/workflows/play-store-screenshots.yml'
@@ -57,6 +62,10 @@ on:
       - 'scripts/store-screenshots/local-set.test.mjs'
       - '.github/workflows/app-store-screenshots.yml'
       - '.github/workflows/app-store-screenshots-upload.yml'
+      # What the tidy-up of the App Store's shelves removes and sorts, its tests, and the lane a test holds it to
+      - 'scripts/store-screenshots/shelves.mjs'
+      - 'scripts/store-screenshots/shelves.test.mjs'
+      - 'fastlane/Fastfile'
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
       - '.github/workflows/play-store-screenshots.yml'
@@ -116,3 +125,4 @@ jobs:
         run: >-
           node --test scripts/release/release-notes.test.mjs scripts/release/release-scripts.test.mjs
           scripts/release/store-listing.test.mjs scripts/store-screenshots/local-set.test.mjs
+          scripts/store-screenshots/shelves.test.mjs

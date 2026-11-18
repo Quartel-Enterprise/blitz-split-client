@@ -12,8 +12,11 @@ name: app-store-screenshots-upload
 # iPhone's. deliver deletes a locale's screenshots before it uploads the new ones, so a job that failed halfway can
 # leave that locale with none: the App Store then shows the primary language's there.
 #
-# `tidy up` runs after the last locale, failed ones included: it removes the copies deliver leaves behind and sorts
-# every shelf in file-name order.
+# `tidy up` runs after the last locale, failed ones included: it removes the copies an upload leaves behind, sorts
+# every shelf in file-name order, and then checks that each holds every screen once. It reads each shelf in full,
+# so a shelf of 11 is tidied, and fails naming the locale, the shelf and the file when a shelf is short of one:
+# that locale is then sent again (docs/store-listing-screenshots.md#repairing-shelves). With `tidy_only` it is the
+# only job: nothing is sent, and no artifact is read.
 #
 # A locale's job run again with its own re-run button runs alone, with the jobs after it: the tidy-up and whatever
 # the caller runs next. The other locales' jobs are carried over as they ended, not sent again (tried in November
@@ -52,6 +55,10 @@ on:
         description: "Every job stops while a release is running. The caller's job then grants actions: read"
         type: boolean
         default: false
+      tidy_only:
+        description: "Send nothing: only tidy the shelves up and check them. `locales` and `artifact` are not read then"
+        type: boolean
+        default: false
     secrets:
       APP_STORE_CONNECT_API_KEY_ID:
         required: true
@@ -67,6 +74,8 @@ on:
 jobs:
   send:
     name: send ${{ matrix.locale }}
+    # Skipped for a tidy-up alone, whatever `locales` holds.
+    if: ${{ !inputs.tidy_only }}
     runs-on: ubuntu-latest
     environment: Production
     # Per locale: the chain has no cap of its own, and what comes after it waits behind it. The Mac's is one shelf
@@ -150,7 +159,14 @@ jobs:
           token: ${{ github.token }}
           then: tidy the shelves up once the release is over
 
-      - name: Remove the duplicate screenshots and sort every shelf
+      # The lane asks scripts/store-screenshots/shelves.mjs what to remove and how to sort, and whether each shelf
+      # is as staged afterwards.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Remove the duplicate screenshots, sort every shelf and check them
         uses: ./.github/actions/app-store-lane
         with:
           lane: finish_app_store_screenshots platform:${{ inputs.platform == 'mac' && 'osx' || 'ios' }}

@@ -222,7 +222,9 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   screenshots are copied into it long before anything looks at them), `apple-screenshots-capture` runs the UI tests on one simulator per slot
   and, for the Mac, photographs the app's window on the runner's own screen, `apple-screenshots-frame` frames the
   captures, and `ios-screenshots` and `macos-screenshots` upload them, one "send \<locale\>" job each, then
-  "tidy up", which removes the copies deliver leaves behind and sorts every shelf (the jobs of
+  "tidy up", which removes the copies an upload leaves behind, sorts every shelf and fails, naming it, on a shelf
+  that doesn't hold every screen once
+  ([Repairing shelves](store-listing-screenshots.md#repairing-shelves)), without stopping the release (the jobs of
   [`app-store-screenshots-upload.yml`](../.github/workflows/app-store-screenshots-upload.yml), which a set made on
   a Mac goes up through too). The slots are the
   iPhone's and the iPad's, plus the iPhone Duo's and the Mac's when the run asks for them
@@ -363,7 +365,19 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to A
   the iPhone's version always gets the iPhone's, the iPad's and the iPhone Duo's together, and a set that leaves a
   device out is refused unless `allow_missing_devices` says it is meant.
 - **A locale that failed** fails the run and keeps the set: run that locale's job again with its own re-run button,
-  while the version is still editable. Dispatch the release once the run's summary says every locale landed.
+  while the version is still editable. Dispatch the release once the run's summary says every locale landed **and
+  the shelves are as staged**.
+- **A shelf that isn't as staged** fails the "tidy up" job, though every locale's job passed: an upload can leave a
+  file twice on a shelf, or without its image. The summary names the locale, the shelf and the file, and two inputs
+  repair it without sending the whole set again
+  ([Repairing shelves](store-listing-screenshots.md#repairing-shelves)):
+
+  ```bash
+  gh workflow run app-store-screenshots.yml -f tidy_only=true                        # a copy left, a shelf out of order
+  gh workflow run app-store-screenshots.yml -f set=3.0.1 -f locales="en-US de-DE"    # a file missing: those locales again
+  ```
+
+  The second needs the set, which the run keeps while a shelf isn't as staged.
 
 ### Google Play's screenshots alone
 

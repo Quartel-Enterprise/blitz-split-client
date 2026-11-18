@@ -9,8 +9,11 @@
 //                                                      [--allow-missing-devices] [--replace] [--dry-run]
 //       Checks the set, packs it and uploads it as the assets of a draft GitHub release, then prints the command that
 //       dispatches the workflow. --dry-run checks and packs, and sends nothing.
+//   node scripts/store-screenshots/local-set.mjs locales --staged <json> --only "<locale> <locale>"
+//       The workflow's matrix when it sends chosen locales alone: those of the set's, or a failure naming one the
+//       set lacks.
 //   node scripts/store-screenshots/local-set.mjs report --jobs <file> --set <name> …
-//       The workflow's last step: which locales landed, from the run's jobs.
+//       The workflow's last step: which locales landed and whether the shelves were left tidy, from the run's jobs.
 //
 // <folder> holds the two staged folders, by either pair of names: `screenshots` and `screenshots-mac` (a checkout's
 // fastlane/, the default) or `fastlane-screenshots` and `fastlane-screenshots-mac`. --ios and --mac name each one
@@ -93,6 +96,14 @@ export const listingScreens = () =>
     .filter((row) => row && !row.startsWith("#"))
     .map((row) => row.split("\t")[1]);
 
+/** The screen and the device a staged image is named after, `<screen>_<device>.png`; null for any other name. */
+export function stagedImage(fileName, screens) {
+  if (!fileName.endsWith(".png")) return null;
+  // Longest first, so a screen whose name starts another's is never taken for it.
+  const screen = [...screens].sort((one, other) => other.length - one.length).find((candidate) => fileName.startsWith(`${candidate}_`));
+  return screen ? { screen, device: fileName.slice(screen.length + 1, -".png".length) } : null;
+}
+
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
 // The chunk every PNG ends with: its length, its name and its checksum, which never change.
@@ -148,8 +159,6 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
   const { label, devices } = PLATFORMS[platform];
   const expectedLocales = listingLocales();
   const screens = listingScreens();
-  // Longest first, so a screen whose name starts another's is never taken for it.
-  const screensByLength = [...screens].sort((one, other) => other.length - one.length);
   const problems = new Problems();
   const shelves = [...new Set(Object.values(devices).map((device) => device.shelf))];
   const report = { platform, folder, locales: [], files: [], bytes: 0, ignored: [], shelves: {}, missingShelves: [] };
@@ -188,8 +197,7 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
         problems.add(`${name} is not a PNG`, locale);
         continue;
       }
-      const screen = screensByLength.find((candidate) => name.startsWith(`${candidate}_`));
-      const device = screen && name.slice(screen.length + 1, -".png".length);
+      const { screen, device } = stagedImage(name, screens) ?? {};
       if (!screen || !Object.hasOwn(devices, device)) {
         problems.add(`${name} is not <screen>_<device>.png: no screen of screens.tsv with a device of ${Object.keys(devices).join(", ")}`, locale);
         continue;
@@ -451,31 +459,63 @@ async function send(options) {
   );
 }
 
+// --- locales, the workflow's matrix for chosen locales -----------------------------------------------------------------
+
+/**
+ * The locales of `staged` (a version's, as the set holds them) that `only` names, with spaces or commas between: the
+ * upload jobs of a run that repairs some locales' shelves without sending the others again. In the set's order. A
+ * locale the set lacks is refused, since a job for it would have nothing to send.
+ */
+export function chosenLocales(staged, only) {
+  const wanted = only.split(/[\s,]+/).filter(Boolean);
+  if (wanted.length === 0) throw new SetError("--only names no locale");
+  const unknown = wanted.filter((locale) => !staged.includes(locale));
+  if (unknown.length > 0) throw new SetError(`Not ${unknown.length === 1 ? "a locale" : "locales"} of the set: ${unknown.join(", ")}. It holds ${staged.join(", ")}`);
+  return staged.filter((locale) => wanted.includes(locale));
+}
+
 // --- report, the workflow's last step ---------------------------------------------------------------------------------
 
 /**
  * Which locales landed, from the run's jobs (the REST API's list, latest attempt of each): a locale landed when its
  * upload job, `<caller> / send <locale>` (app-store-screenshots-upload.yml), succeeded. Answers the summary's
- * Markdown and whether every locale of every platform did.
+ * Markdown, whether every locale of every platform did (`landedAll`) and whether every platform's tidy-up passed
+ * (`tidiedAll`).
+ *
+ * The tidy-up job reads every shelf once the locales are up, and fails on one that isn't as staged, so its result
+ * is said apart: a locale whose job passed may still have a shelf short of a file, and the set that locale is sent
+ * again from is only removed once both are true. `only` is what a run that sent chosen locales was asked for, and
+ * `tidyOnly` a run that sent none.
  */
-export function landingReport({ jobs, set, version, platforms }) {
-  const lines = [`## App Store screenshots: the set \`${set}\``, "", `Written on ${version ? `version ${version}` : "the editable version"} of each platform. Nothing was submitted for review.`, ""];
+export function landingReport({ jobs, set, version, platforms, only, tidyOnly = false }) {
+  const where = `${version ? `version ${version}` : "the editable version"} of each platform`;
+  const lines = tidyOnly
+    ? ["## App Store screenshots: the shelves' tidy-up", "", `Nothing was sent: the shelves of ${where} were tidied up and checked.`, ""]
+    : [`## App Store screenshots: the set \`${set}\``, "", `Written on ${where}. Nothing was submitted for review.`, ""];
+  if (only && !tidyOnly) lines.push(`Only the locales asked for were sent (${only}): the others' shelves are as they were.`, "");
   let landedAll = true;
+  let tidiedAll = true;
   for (const { label, caller, locales, shelves } of platforms) {
     const conclusionOf = (locale) => jobs.find((job) => job.name === `${caller} / send ${locale}`)?.conclusion ?? "not run";
     const failed = locales.filter((locale) => conclusionOf(locale) !== "success");
     const tidy = jobs.find((job) => job.name === `${caller} / tidy up`)?.conclusion ?? "not run";
     landedAll &&= failed.length === 0;
-    lines.push(`### ${label}`, "", `- **${locales.length - failed.length} of ${locales.length} locales landed**, each with: ${shelves}.`);
+    tidiedAll &&= tidy === "success";
+    lines.push(`### ${label}`, "");
+    if (!tidyOnly) lines.push(`- **${locales.length - failed.length} of ${locales.length} locales landed**, each with: ${shelves}.`);
     if (failed.length > 0) {
       lines.push(`- **Not landed:** ${failed.map((locale) => `${locale} (${conclusionOf(locale)})`).join(", ")}. Run each one's job again with its own re-run button: the set is still there.`);
     }
-    if (tidy !== "success") {
-      lines.push(`- **The shelves were not tidied up** (${tidy}): duplicates may be left and a shelf out of order. Run the "${caller} / tidy up" job again.`);
+    if (tidy === "success") {
+      lines.push("- **The shelves are as staged**: each holds every screen once, in file-name order.");
+    } else {
+      lines.push(
+        `- **The shelves are not as staged** (the tidy-up: ${tidy}). The "${caller} / tidy up" job's summary names each shelf and what is wrong with it. A shelf short of a file gets it when its locale is sent again (\`-f locales=…\`, from the set); a copy left or a shelf out of order, when the tidy-up runs again (\`-f tidy_only=true\`).`,
+      );
     }
     lines.push("");
   }
-  return { landedAll, markdown: lines.join("\n") };
+  return { landedAll, tidiedAll, markdown: lines.join("\n") };
 }
 
 function report(options) {
@@ -488,9 +528,9 @@ function report(options) {
       locales: JSON.parse(options[`${platform}Locales`]),
       shelves: options[`${platform}Shelves`],
     }));
-  const { landedAll, markdown } = landingReport({ jobs, set: options.set, version: options.version, platforms });
+  const { landedAll, tidiedAll, markdown } = landingReport({ jobs, set: options.set, version: options.version, platforms, only: options.only, tidyOnly: options.tidyOnly });
   console.log(markdown);
-  if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `landed=${landedAll}\n`);
+  if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `landed=${landedAll}\ntidied=${tidiedAll}\n`);
 }
 
 // --- The commands ----------------------------------------------------------------------------------------------------
@@ -499,11 +539,12 @@ const USAGE = `Usage:
   local-set.mjs check [<folder>] [--platform ios|mac] [--ios <folder>] [--mac <folder>] [--allow-missing-devices]
   local-set.mjs send  [<folder>] [--name <name>] [--platform ios|mac] [--ios <folder>] [--mac <folder>]
                       [--allow-missing-devices] [--replace] [--dry-run]
-  local-set.mjs report --jobs <file> --set <name> [--version <X.Y.Z>]
+  local-set.mjs locales --staged <json> --only "<locale> <locale>"
+  local-set.mjs report --jobs <file> (--set <name> | --tidy-only) [--version <X.Y.Z>] [--only "<locale> <locale>"]
                       [--ios-job <name> --ios-locales <json> --ios-shelves <text>]
                       [--mac-job <name> --mac-locales <json> --mac-shelves <text>]`;
 
-const FLAGS = { "--allow-missing-devices": "allowMissingDevices", "--replace": "replace", "--dry-run": "dryRun" };
+const FLAGS = { "--allow-missing-devices": "allowMissingDevices", "--replace": "replace", "--dry-run": "dryRun", "--tidy-only": "tidyOnly" };
 const VALUES = {
   "--platform": "platform",
   "--ios": "ios",
@@ -512,6 +553,8 @@ const VALUES = {
   "--jobs": "jobs",
   "--set": "set",
   "--version": "version",
+  "--staged": "staged",
+  "--only": "only",
   "--ios-job": "iosJob",
   "--ios-locales": "iosLocales",
   "--ios-shelves": "iosShelves",
@@ -546,7 +589,8 @@ async function main([command, ...rest]) {
   const options = parseArguments(rest);
   if (command === "check") check(options);
   else if (command === "send") await send(options);
-  else if (command === "report" && options.jobs && options.set) report(options);
+  else if (command === "locales" && options.staged && options.only !== undefined) console.log(JSON.stringify(chosenLocales(JSON.parse(options.staged), options.only)));
+  else if (command === "report" && options.jobs && (options.set || options.tidyOnly)) report(options);
   else throw new SetError(USAGE);
 }
 

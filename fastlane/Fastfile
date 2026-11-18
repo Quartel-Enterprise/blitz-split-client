@@ -141,6 +141,8 @@ PLAY_SERVER_ERROR_WAIT_SECONDS = 30
 SCREENSHOT_REORDER_REFUSED_MESSAGE = "Can't Add/Remove Relationship when reorder Set".freeze
 SCREENSHOT_REORDER_ATTEMPTS = 3
 SCREENSHOT_REORDER_WAIT_SECONDS = 10
+# The most App Store Connect lists per page of a shelf's screenshots, which is far more than a shelf holds:
+APP_STORE_SHELF_PAGE_SIZE = 200
 
 desc "Generate the store listing screenshots of both stores in all 26 languages, then upload them"
 desc "Options: skip_upload:true only generates (store_listings/ and the fastlane folders); platform:android or"
@@ -210,7 +212,8 @@ def upload_store_screenshots(repo_root, platforms, options)
   end
 end
 
-desc "Remove the duplicate screenshots deliver can leave on the editable App Store version and sort every shelf"
+desc "Remove the duplicate screenshots deliver can leave on the editable App Store version, sort every shelf and"
+desc "check that each holds every screen once: a shelf short of a file fails the lane, which names it."
 desc "Options: platform (ios|osx; both when left out). The release runs it after the last locale's upload, since an"
 desc "upload of one locale leaves the shelves as deliver left them."
 lane :finish_app_store_screenshots do |options|
@@ -427,10 +430,16 @@ rescue => e
   true
 end
 
-# Removes the later copy of any screenshot uploaded twice (deliver re-uploads one whose checksum App Store Connect has
-# not published yet) and puts every shelf of the editable version in file-name order, the shelf order.
+# Leaves every shelf of the editable version as it was staged: one copy of each file, in file-name order, the shelf
+# order. A shelf is one locale's screenshots for one device size. Spaceship creates a screenshot's record and then
+# uploads its image, and a create it sends again after a gateway error leaves a second record of the same file, so a
+# shelf can hold 11 or more, which deliver's own sort then can't order (docs/store-listing-screenshots.md#things-that-bite).
+#
+# What to remove and how to sort is decided by scripts/store-screenshots/shelves.mjs, which has the tests: the copy
+# kept is the first whose image is there, never the first by position, which may be the record that got no image.
+# Every shelf is then read again and checked: a shelf short of a screen, or holding a file that never finished
+# uploading, is an error that names the locale, the shelf and the file. Only sending the locale again fixes those.
 def tidy_app_store_screenshots(platform)
-  require "naturally"
   require "spaceship"
 
   app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
@@ -441,28 +450,106 @@ def tidy_app_store_screenshots(platform)
     return
   end
 
-  refused = []
-  version.get_app_store_version_localizations.each do |localization|
-    localization.get_app_screenshot_sets.each do |set|
-      shelf = "#{localization.locale}/#{set.screenshot_display_type}"
-      begin
-        strays = set.app_screenshots.group_by(&:file_name).flat_map { |_, copies| copies.drop(1) }
-        strays.each(&:delete!)
-        remaining = set.app_screenshots - strays
-        sorted_ids = Naturally.sort(remaining, by: :file_name).map(&:id)
-        next if remaining.map(&:id) == sorted_ids
-
-        attempts = strays.empty? ? 1 : SCREENSHOT_REORDER_ATTEMPTS
-        retrying_on(SCREENSHOT_REORDER_REFUSED_MESSAGE, attempts: attempts, wait_seconds: SCREENSHOT_REORDER_WAIT_SECONDS) do
-          set.reorder_screenshots(app_screenshot_ids: sorted_ids)
-        end
-      rescue => e
-        UI.error("Could not tidy #{shelf} up: #{e.message.lines.first.strip}")
-        refused << shelf
-      end
-    end
+  localizations = version.get_app_store_version_localizations
+  locales = localizations.map(&:locale)
+  sets = localizations.flat_map do |localization|
+    localization.get_app_screenshot_sets.map { |set| [localization.locale, set] }
   end
-  UI.user_error!("App Store Connect refused to tidy #{refused.join(', ')} up") if refused.any?
+  # The 10 at most that came with the shelf are held against the full read, which must start with them, in their
+  # order: that is the order deliver sorted and the store shows, and a read that differs is not one to sort by
+  shelves = sets.map { |locale, set| read_app_store_shelf(locale, set, came_with_it: (set.app_screenshots || []).map(&:id)) }
+  UI.message("Read #{shelves.size} shelves, #{shelves.sum { |shelf| shelf[:screenshots].size }} screenshots")
+  shelves.reject { |shelf| shelf[:isWhole] }.each do |shelf|
+    UI.important("#{shelf[:locale]}/#{shelf[:shelf]} could not be read whole, or gave two different answers: left as it is")
+  end
+
+  said, planned = app_store_shelves("plan", { locales: locales, shelves: shelves })
+  UI.user_error!("shelves.mjs could not plan the tidy-up: #{said}") unless planned
+  # The last line: fastlane hands over what the script wrote to both of its outputs, a warning of Node's included
+  todo_of = JSON.parse(said.lines.last).fetch("shelves").to_h { |todo| [todo.fetch("id"), todo] }
+  shelves.each do |shelf|
+    tidy_app_store_shelf(shelf, todo_of.fetch(shelf[:id]))
+  rescue => e
+    # Not the end of the lane: the other shelves are tidied, and the check below names this one
+    UI.error("Could not tidy #{shelf[:locale]}/#{shelf[:shelf]} up: #{e.message.lines.first.to_s.strip}")
+  end
+
+  # Read again, so what is checked is what App Store Connect holds now, not what the lane meant to leave
+  said, as_staged = app_store_shelves("check", { locales: locales, shelves: sets.map { |locale, set| read_app_store_shelf(locale, set) } })
+  if as_staged
+    UI.success("#{platform}: #{said}")
+    return
+  end
+  # In the log whoever catches the error, since a caller may print only its first line
+  UI.error(said)
+  UI.user_error!("The #{platform} shelves are not as staged: #{said.lines.first.to_s.strip.delete_suffix(':')}, listed above")
+end
+
+# One shelf, as scripts/store-screenshots/shelves.mjs takes it: every screenshot it holds, in shelf order, and
+# whether that is known to be all of them.
+#
+# Not `set.app_screenshots`: that is the relationship App Store Connect includes with the shelf, 10 at most, whatever
+# the shelf holds. A shelf of 11 read through it showed 10 distinct files, so no copy was found, and the order sent
+# for those 10 was refused every time, since it left one out (run 44324532909, November 2026). Read here through
+# the shelf's own two lists, paged: the relationship, which is the order and what a reorder replaces, and the
+# screenshots, for each one's file name and state.
+def read_app_store_shelf(locale, set, came_with_it: [])
+  shelf = { id: set.id, locale: locale, shelf: set.screenshot_display_type }
+  client = Spaceship::ConnectAPI.tunes_request_client
+  pages = lambda do |path|
+    first = client.get("v1/appScreenshotSets/#{set.id}/#{path}", { limit: APP_STORE_SHELF_PAGE_SIZE })
+    first.nil? ? [] : first.all_pages
+  end
+  linkage = pages.call("relationships/appScreenshots")
+  ids = linkage.flat_map { |page| page.body.fetch("data").map { |each| each.fetch("id") } }
+  attributes_of = pages.call("appScreenshots").flat_map { |page| page.body.fetch("data") }.to_h { |each| [each.fetch("id"), each.fetch("attributes")] }
+  total = linkage.first&.body&.dig("meta", "paging", "total")
+  whole = ids.uniq.size == ids.size && ids.sort == attributes_of.keys.sort && (total.nil? || total == ids.size) && ids.first(came_with_it.size) == came_with_it
+  screenshots = ids.select { |id| attributes_of.key?(id) }.map do |id|
+    { id: id, fileName: attributes_of[id]["fileName"], state: attributes_of[id].dig("assetDeliveryState", "state") }
+  end
+  shelf.merge(isWhole: whole, screenshots: screenshots)
+rescue => e
+  # One shelf that can't be read doesn't stop the others' tidy-up: it is left as it is, and reported as not whole
+  UI.error("Could not read #{locale}/#{set.screenshot_display_type}: #{e.message.lines.first.to_s.strip}")
+  shelf.merge(isWhole: false, screenshots: [])
+end
+
+# Removes what the plan names from a shelf and puts the rest in the plan's order, which names every screenshot the
+# shelf then holds: App Store Connect refuses an order that adds or leaves out one.
+def tidy_app_store_shelf(shelf, todo)
+  order = todo.fetch("order")
+  # Not read whole: nothing is touched, and the check after the tidy-up says so
+  return if order.nil?
+
+  remove = todo.fetch("remove")
+  remove.each { |id| Spaceship::ConnectAPI.delete_app_screenshot(app_screenshot_id: id) }
+  current = shelf[:screenshots].map { |screenshot| screenshot[:id] } - remove
+  return if current == order
+
+  UI.message("Sorting #{shelf[:locale]}/#{shelf[:shelf]}, #{remove.size} removed")
+  # A screenshot just removed may still count as the shelf's for a moment, and the order is refused meanwhile
+  retrying_on(SCREENSHOT_REORDER_REFUSED_MESSAGE, attempts: SCREENSHOT_REORDER_ATTEMPTS, wait_seconds: SCREENSHOT_REORDER_WAIT_SECONDS) do
+    Spaceship::ConnectAPI.patch_app_screenshot_set_screenshots(app_screenshot_set_id: shelf[:id], app_screenshot_ids: order)
+  end
+end
+
+# Runs a command of scripts/store-screenshots/shelves.mjs on what was read of the version: its locales and their
+# shelves. Answers what the script said and whether it passed.
+def app_store_shelves(command, read)
+  require "json"
+  require "tempfile"
+
+  repo_root = File.expand_path("..", __dir__)
+  Tempfile.create(["app-store-shelves-", ".json"]) do |file|
+    file.write(JSON.generate(read))
+    file.flush
+    passed = true
+    said = Dir.chdir(repo_root) do
+      sh("node", "scripts/store-screenshots/shelves.mjs", command, file.path, log: false, error_callback: ->(_) { passed = false })
+    end
+    [said.to_s.strip, passed]
+  end
 end
 
 # The stable releases (docs/release-process.md#releasing-a-stable-version): the bundle to a Google Play track and the
