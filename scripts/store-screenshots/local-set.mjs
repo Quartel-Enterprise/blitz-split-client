@@ -379,7 +379,10 @@ async function send(options) {
       "App Store screenshots captured and framed on a Mac, on their way to App Store Connect (docs/store-listing-screenshots.md#sending-a-set-made-on-a-mac).",
       "A draft on purpose: only people who can push to the repository see it, and it has no tag. The `app-store-screenshots` workflow removes it once every locale landed.",
       "",
-      ...describe(reports).map((line) => line.replace(/, from .*$/, "")),
+      // Without this Mac's paths: where the set was, and its hidden files.
+      ...describe(reports)
+        .filter((line) => !line.includes("hidden file"))
+        .map((line) => line.replace(/, from .*$/, "")),
     ].join("\n");
     console.log(`Uploading the set as the draft release ${tag}…`);
     try {

@@ -150,7 +150,9 @@ is built:
   `admin` or can't be read. So **Re-run failed jobs**, which runs jobs again without `plan`, is an admin's too, and
   someone else's re-run stops before it builds anything. The [`store-listing`](../.github/workflows/store-listing.yml)
   workflow, which sends the listing text to the stores, starts each of its jobs with the same check
-  ([store-listing.md](store-listing.md)).
+  ([store-listing.md](store-listing.md)), and so does
+  [`app-store-screenshots`](../.github/workflows/app-store-screenshots.yml), which sends screenshots made on a Mac
+  ([Screenshots made on a Mac](#screenshots-made-on-a-mac)).
 - **On `main`**: a run dispatched on another branch would take that branch's copy of the workflow, and fails.
 - **The `Production` environment only lets `main` deploy.** The jobs that reach a store or app.blitzsplit.com (the
   uploads, the submissions, the creation of the App Store version, the screenshots' uploads, the web) name the
@@ -191,6 +193,10 @@ read them ([Secrets](#secrets)).
 
 ### Screenshots with a release
 
+**For the App Store, leave it off today and send the screenshots from a Mac first**
+([Screenshots made on a Mac](#screenshots-made-on-a-mac)): what the runners captured in the one release that tried
+was not fit for a listing.
+
 `screenshots` is off unless the release asks for it (Pierre's call): making them again takes a Mac runner per
 App Store slot for up to two and a half hours, and most releases change nothing the listings show. Turn it on when
 the images would come out different: **a language the listings gained**, a screen of
@@ -210,8 +216,10 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   `app-store-versions` creates the version (as it does in every run that submits, so the previous version's
   screenshots are copied into it long before anything looks at them), `apple-screenshots-capture` runs the UI tests on one simulator per slot
   and, for the Mac, photographs the app's window on the runner's own screen, `apple-screenshots-frame` frames the
-  captures, `ios-screenshots` and `macos-screenshots` upload them, and `ios-screenshots-finish` and
-  `macos-screenshots-finish` remove the copies deliver leaves behind and sort every shelf. The slots are the
+  captures, and `ios-screenshots` and `macos-screenshots` upload them, one "send \<locale\>" job each, then
+  "tidy up", which removes the copies deliver leaves behind and sorts every shelf (the jobs of
+  [`app-store-screenshots-upload.yml`](../.github/workflows/app-store-screenshots-upload.yml), which a set made on
+  a Mac goes up through too). The slots are the
   iPhone's and the iPad's, plus the iPhone Duo's and the Mac's when the run asks for them
   ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)).
 
@@ -280,18 +288,13 @@ that started only to stop would hold one.
   all of a locale's screenshots before it uploads, so a locale that had the Duo's loses them, as it does when both
   of the Duo's captures fail. No release has uploaded them yet, and App Store Connect only requires the Duo's shelf
   from April 2027 ([store-listing-screenshots.md](store-listing-screenshots.md#what-the-images-show)).
-- **Without the Mac**, nothing of the Mac's is uploaded or tidied up (`macos-screenshots` and
-  `macos-screenshots-finish` skip), so the Mac's listing keeps what it has. **Today that is nothing**: the Mac app
-  was never released, its listing has no screenshots, and `macos-submit` refuses to submit a version whose primary
-  language has none. Leaving the Mac out doesn't make the Mac submittable, it only stops a capture known to fail
-  from taking a runner. Until that capture works there, the Mac's images have to be made on a Mac with a Retina
-  display and uploaded from it, while the Mac's version is still editable:
-  `fastlane screenshots platform:ios skip_upload:true`, which captures and frames them, then
-  `fastlane upload_screenshots platform:mac`, which sends the Mac's alone
-  ([store-listing-screenshots.md](store-listing-screenshots.md)). Not `fastlane screenshots platform:ios` on its
-  own: it uploads the iPhone's and the iPad's first, which replaces every locale's shelves on a version that is
-  still editable and fails on one already waiting for review, before the Mac's are reached. Then run `macos-submit`
-  again.
+- **Without the Mac**, nothing of the Mac's is uploaded or tidied up (`macos-screenshots` skips), so the Mac's
+  listing keeps what it has. **That was nothing until a set was sent from a Mac**: the Mac app was never released,
+  and `macos-submit` refuses to submit a version whose primary language has no screenshots. Leaving the Mac out
+  doesn't make the Mac submittable, it only stops a capture known to fail from taking a runner. Until that capture
+  works there, the Mac's images are made on a Mac with a Retina display and sent through GitHub while the Mac's
+  version is still editable ([Screenshots made on a Mac](#screenshots-made-on-a-mac)), before the release that
+  submits it, or before `macos-submit` is run again.
 
 What is known of the three captures behind the markers, from the first release that ran them on GitHub's runners
 (3.0.0, run 44222898644, 18 November 2026), where each of the three failed:
@@ -316,6 +319,40 @@ What is known of the three captures behind the markers, from the first release t
 With `screenshots_iphone_duo` on, the Duo's shelf on the App Store holds ten screenshots for both displays, so five
 screens go up open and five closed; when one of the two captures fails, the other fills the shelf, and when both do
 the listing goes without the Duo.
+
+### Screenshots made on a Mac
+
+The App Store's screenshots reach it from a Mac, through the
+[`app-store-screenshots`](../.github/workflows/app-store-screenshots.yml) workflow, **before** the release that
+submits the version ([Sending a set made on a Mac](store-listing-screenshots.md#sending-a-set-made-on-a-mac) has
+every step and what the check refuses). Until a release's own captures can be trusted, that is the only way: in
+3.0.0's run the iPhone's and the iPad's were photographed before their content loaded, the Mac's runner has no
+Retina display and the iPhone Duo's captures failed, and a release uploads what it captured without anyone looking.
+
+```bash
+fastlane screenshots platform:ios skip_upload:true                # capture and frame on the Mac, then look at them
+node scripts/store-screenshots/local-set.mjs send --name 3.0.1     # check, pack, send to GitHub as a draft release
+gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to App Store Connect, one locale per job
+./scripts/release/release-production.sh                           # once that run is over: screenshots stay off
+```
+
+- **The order matters.** The workflow writes on the App Store version that is open for editing, whatever its
+  number, and submits nothing. The release then renames that version to its own number (`app-store-versions`),
+  which keeps its screenshots, and `ios-submit` and `macos-submit` find them there. A version waiting for review
+  takes no screenshot, so a set can't follow its release.
+- **Not at the same time.** The workflow refuses to start while a release, beta or stable, is in progress or
+  waiting, and `release-production.sh` refuses to dispatch while a run of the workflow is: a release that submitted
+  in the middle of an upload would leave the locales still to go without theirs. The Actions tab's "Run workflow"
+  doesn't check, so look before dispatching from there.
+- **Who and where** are a release's: an administrator of the repository, on `main`, with the jobs that reach App
+  Store Connect in the `Production` environment and each one checking who started it
+  ([Who releases](#who-releases)). The App Store Connect key never leaves GitHub.
+- **One version alone**: `--platform mac` when sending and `-f ios=false` when dispatching, for the Mac's (or
+  `--platform ios` and `-f macos=false`). deliver replaces every screenshot of a locale with what it is handed, so
+  the iPhone's version always gets the iPhone's, the iPad's and the iPhone Duo's together, and a set that leaves a
+  device out is refused unless `allow_missing_devices` says it is meant.
+- **A locale that failed** fails the run and keeps the set: run that locale's job again with its own re-run button,
+  while the version is still editable. Dispatch the release once the run's summary says every locale landed.
 
 ### Re-runs and what a run leaves
 

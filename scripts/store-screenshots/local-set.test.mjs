@@ -279,7 +279,7 @@ describe("sending a set", () => {
   });
 
   test("uploads the archives and their checksums as a draft release, and prints how to dispatch the workflow", () => {
-    stage("ios");
+    writeFileSync(join(stage("ios"), ".DS_Store"), "");
     stage("mac");
     const { status, stdout } = send(["--name", "3.0.0"]);
     assert.equal(status, 0);
@@ -287,6 +287,9 @@ describe("sending a set", () => {
     assert.equal(view, "release view store-screenshots-3.0.0 --json isDraft");
     assert.match(create, /^release create store-screenshots-3\.0\.0 --draft --title App Store screenshots: 3\.0\.0 --notes /);
     assert.match(create, /\/ios\.tar \S+\/mac\.tar \S+\/SHA256SUMS$/);
+    // The release's text says what the set holds, and nothing of the Mac it came from.
+    assert.match(create, /iPhone and iPad: 26 locale\(s\), 1300 image\(s\), 0 MB {3}each locale: /);
+    assert.ok(!create.split(" --notes ")[1].split(" /")[0].includes(root));
     assert.match(stdout, /\n {2}gh workflow run app-store-screenshots\.yml -f set=3\.0\.0\n/);
   });
 
