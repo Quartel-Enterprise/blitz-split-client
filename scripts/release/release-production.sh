@@ -13,21 +13,30 @@
 #   ./scripts/release/release-production.sh                                                    # every platform, to everyone
 #   ./scripts/release/release-production.sh track=internal submit_for_review=false web=false   # reaches no user
 #   ./scripts/release/release-production.sh version=3.1.0 rollout=20                           # a staged rollout of 3.1.0
+#   ./scripts/release/release-production.sh screenshots=true                                   # and the listings' screenshots made again
 set -euo pipefail
 
 inputs=()
+screenshots_named=false
 for input in "$@"; do
   if [[ ! "$input" =~ ^[a-z_]+=.*$ ]]; then
     echo "Error: '$input' is not an input: write input=value (e.g. track=internal)" >&2
     exit 1
   fi
   inputs+=(-f "$input")
+  if [[ "$input" == screenshots=* ]]; then
+    screenshots_named=true
+  fi
 done
 
 echo "Bora Rachar: stable release"
 echo "==========================="
 if [ "$#" -eq 0 ]; then
   echo "No input: the run publishes to everyone on Google Play and the web, and submits for App Store review. Nothing waits for an approval."
+fi
+# Whatever else was passed: off is the default, and Google Play says nothing about a language left without its own.
+if [ "$screenshots_named" = false ]; then
+  echo "The listings' screenshots stay as they are: pass screenshots=true to make them again (a new language, a screen that changed)."
 fi
 
 # Refuses while another release waits, dispatches on main and prints the run's link. The array may be empty,

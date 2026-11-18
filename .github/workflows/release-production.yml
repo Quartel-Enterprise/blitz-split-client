@@ -19,9 +19,11 @@ name: release-production
 #          goes out by itself once approved.
 #        - Web: Cloudflare Pages, the project of CLOUDFLARE_PAGES_PROJECT, which app.blitzsplit.com serves. The
 #          beta's build and deploy, at the stable version (the composite action web-deploy).
-#        - The listings' screenshots (`screenshots`) are made again and uploaded: Google Play's after the bundle
-#          reached production, the App Store's before the submission, since a version in review can't take them.
-#          Best effort: none of these jobs holds the release back.
+#        - With `screenshots`, the listings' screenshots are made again and uploaded, one job per language so that
+#          a language a store refused is the only one sent again: Google Play's after the bundle reached
+#          production, the App Store's before the submission, since a version in review can't take them. Best
+#          effort: none of these jobs holds the release back. Off unless asked for: a release that changes no
+#          screen and adds no language leaves the listings' images as they are.
 #   3. `finalize` runs when a store took a build or the web was deployed. When the run released (the production
 #      track, a submission for review, or the web) it tags X.Y.Z and publishes the GitHub release, then merges the
 #      versionCode, the versionName and the removal of the fragments the version told back into main. A run that
@@ -87,9 +89,9 @@ on:
         type: boolean
         default: false
       screenshots:
-        description: "Make the store listings' screenshots again and upload them"
+        description: "Make the store listings' screenshots again and upload them (a new language, a screen that changed)"
         type: boolean
-        default: true
+        default: false
 
 # Least privilege by default: only finalize writes.
 permissions:
@@ -477,15 +479,18 @@ jobs:
           service-account-json: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
 
   # Google Play shows a listing's screenshots to everyone the moment they change, whatever track the bundle went to:
-  # only a release to the production track brings its screenshots. A job of its own, which finalize doesn't wait
-  # for, so a listing that failed to update never reads as a bundle that didn't land.
-  android-screenshots:
-    name: Android, store listing screenshots
-    needs: [plan, android-upload]
-    if: ${{ inputs.screenshots && inputs.track == 'production' }}
+  # only a release to the production track brings its screenshots. Jobs of their own, which finalize doesn't wait
+  # for, so a listing that failed to update never reads as a bundle that didn't land. Drawing them needs nothing from
+  # the bundle, so it runs next to the build, and hands the images over as an artifact: a build or an upload that
+  # fails leaves them drawn for nothing, which costs less than a listing that waits for them after every bundle.
+  android-screenshots-render:
+    name: Android, draw the store listing screenshots
+    needs: plan
+    if: ${{ inputs.screenshots && inputs.android && inputs.track == 'production' }}
     runs-on: ubuntu-latest
-    environment: Production
     timeout-minutes: 60
+    outputs:
+      locales: ${{ steps.locales.outputs.locales }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -508,11 +513,65 @@ jobs:
       - name: Make the screenshots
         run: ./gradlew stagePlayStoreScreenshots
 
-      # Only the images whose content changed are sent, so a release with the same screens uploads nothing.
+      # The upload jobs' matrix, read off what was staged: the list of languages lives in the generators alone. Read
+      # into a variable first, so a script that fails stops the step: inside the echo it would read as nothing staged.
+      - name: List the staged locales
+        id: locales
+        run: |
+          locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/metadata/android)"
+          echo "locales=$locales" >> "$GITHUB_OUTPUT"
+
+      # Rooted at the locales' folders, so it lands back where it was staged.
+      - name: Upload the screenshots as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: play-store-screenshots
+          path: fastlane/metadata/android/*/images/
+          retention-days: 7
+          if-no-files-found: error
+
+  # One job per locale, as in Bible Planner's releases: supply sends a locale's screenshots through a Play edit of its
+  # own and commits it at the end, so a locale Google Play refused costs that locale alone, and that locale's own
+  # re-run button sends only it again, without drawing anything a second time ("Re-run failed jobs" would also run the
+  # App Store jobs that failed with continue-on-error). One after the other, since Play keeps a single edit open per
+  # app: two uploads at once would drop each other's. Only after the bundle reached the track.
+  android-screenshots:
+    name: Android, send the ${{ matrix.locale }} screenshots to Google Play
+    needs: [plan, android-upload, android-screenshots-render]
+    if: ${{ needs.android-screenshots-render.outputs.locales != '' }}
+    runs-on: ubuntu-latest
+    environment: Production
+    # Per locale: the chain has no cap of its own, and the next release waits behind it (the `release` group).
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        locale: ${{ fromJSON(needs.android-screenshots-render.outputs.locales) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      # The whole of it: the lane picks this job's locale out.
+      - name: Download the screenshots
+        uses: actions/download-artifact@v8
+        with:
+          name: play-store-screenshots
+          path: fastlane/metadata/android
+
+      # Only the images whose content changed are sent, so a locale with the same screens uploads nothing.
       - name: Send the screenshots to Google Play
         uses: ./.github/actions/play-store-lane
         with:
-          lane: upload_screenshots platform:android
+          lane: upload_screenshots platform:android locale:${{ matrix.locale }}
           service-account-json: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
 
   # ---------------------------------------------------------------------------------------------
@@ -526,11 +585,14 @@ jobs:
 
   # Creating a version makes App Store Connect copy the previous version's screenshots into it, and deliver deleting
   # a shelf in the middle of that copy leaves strays it then can't sort. Created here, the copy is long over by the
-  # time the captures are framed. Should this fail, the first upload creates the version, as it always could.
+  # time the captures are framed. In every run that submits, with `screenshots` off too: the submit lane refuses a
+  # version whose primary language has no screenshots, and one it had to create itself, a moment before it looks,
+  # could still be waiting for that copy. Should this fail, the first upload or the submit lane creates the version,
+  # as they always could.
   app-store-versions:
     name: App Store, create the version
     needs: plan
-    if: ${{ inputs.screenshots && inputs.submit_for_review && (inputs.ios || inputs.macos) }}
+    if: ${{ inputs.submit_for_review && (inputs.ios || inputs.macos) }}
     runs-on: ubuntu-latest
     environment: Production
     timeout-minutes: 15
@@ -643,8 +705,8 @@ jobs:
     timeout-minutes: 60
     continue-on-error: true
     outputs:
-      ios: ${{ steps.staged.outputs.ios }}
-      mac: ${{ steps.staged.outputs.mac }}
+      ios_locales: ${{ steps.staged.outputs.ios_locales }}
+      mac_locales: ${{ steps.staged.outputs.mac_locales }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -674,14 +736,16 @@ jobs:
       - name: Frame the screenshots
         run: ./gradlew stageAppStoreScreenshots
 
-      # Set last, so only a job that framed them says so.
-      - name: Say what was staged
+      # The upload jobs' matrices, read off what was staged: empty for a store with nothing to send. Set last, so only
+      # a job that framed them says so. Read into variables first, so a script that fails stops the step.
+      - name: List the staged locales
         id: staged
         run: |
-          staged() { [ -n "$(find "$1" -name '*.png' -print -quit 2> /dev/null)" ] && echo true || echo false; }
+          ios_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots)"
+          mac_locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/screenshots-mac)"
           {
-            echo "ios=$(staged fastlane/screenshots)"
-            echo "mac=$(staged fastlane/screenshots-mac)"
+            echo "ios_locales=$ios_locales"
+            echo "mac_locales=$mac_locales"
           } >> "$GITHUB_OUTPUT"
 
       - name: Upload the iPhone and iPad screenshots as a build artifact
@@ -693,7 +757,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload the Mac screenshots as a build artifact
-        if: ${{ steps.staged.outputs.mac == 'true' }}
+        if: ${{ steps.staged.outputs.mac_locales != '' }}
         uses: actions/upload-artifact@v7
         with:
           name: app-store-screenshots-mac
@@ -701,14 +765,31 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
+  # One job per locale, as in Bible Planner's releases, so a locale App Store Connect refused is the only one sent
+  # again, with the images that were already framed. One after the other: deliver deletes a locale's screenshots and
+  # recreates its sets, which is what the "Screenshot Set Already Exists!" race is about, and two uploads at once on
+  # one version would make it worse. The Mac's go on a version of their own, so its jobs run next to the iPhone's.
+  # deliver deletes a locale's screenshots before it uploads the new ones, so a job that failed halfway can leave
+  # that locale with none: the App Store then shows the primary language's there, and the submission says which.
+  #
+  # The -finish job runs after the last locale, failed ones included: it removes the copies deliver leaves behind and
+  # sorts every shelf in file-name order. Re-running a failed locale's job runs it and the submit job again, which
+  # only helps while the version can still be edited: the submission doesn't wait for a failed locale
+  # (docs/release-process.md#screenshots-with-a-release).
   ios-screenshots:
-    name: iOS, send the screenshots to the App Store
+    name: iOS, send the ${{ matrix.locale }} screenshots to the App Store
     needs: [plan, app-store-versions, apple-screenshots-frame]
-    if: ${{ !cancelled() && inputs.ios && needs.apple-screenshots-frame.outputs.ios == 'true' }}
+    if: ${{ !cancelled() && inputs.ios && needs.apple-screenshots-frame.outputs.ios_locales != '' }}
     runs-on: ubuntu-latest
     environment: Production
-    timeout-minutes: 90
+    # Per locale: the chain has no cap of its own, and the submission and the next release wait behind it.
+    timeout-minutes: 20
     continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        locale: ${{ fromJSON(needs.apple-screenshots-frame.outputs.ios_locales) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -721,30 +802,30 @@ jobs:
         with:
           token: ${{ github.token }}
 
+      # The whole of it: the lane picks this job's locale out.
       - name: Download the framed screenshots
         uses: actions/download-artifact@v8
         with:
           name: app-store-screenshots-ios
           path: fastlane/screenshots
 
-      # Listing images only, of every locale, then the tidy-up of the shelves. They go on the release's version,
-      # created if app-store-versions didn't.
+      # Listing images only, of this locale. They go on the release's version, created if app-store-versions didn't.
       - name: Send the screenshots to App Store Connect
         uses: ./.github/actions/app-store-lane
         with:
-          lane: upload_screenshots platform:ios skip_mac:true
+          lane: upload_screenshots platform:ios skip_mac:true locale:${{ matrix.locale }}
           app-version: ${{ needs.plan.outputs.version }}
           key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
-  macos-screenshots:
-    name: macOS, send the screenshots to the App Store
-    needs: [plan, app-store-versions, apple-screenshots-frame]
-    if: ${{ !cancelled() && inputs.macos && needs.apple-screenshots-frame.outputs.mac == 'true' }}
+  ios-screenshots-finish:
+    name: iOS, tidy the App Store screenshots up
+    needs: [plan, apple-screenshots-frame, ios-screenshots]
+    if: ${{ !cancelled() && inputs.ios && needs.apple-screenshots-frame.outputs.ios_locales != '' }}
     runs-on: ubuntu-latest
     environment: Production
-    timeout-minutes: 60
+    timeout-minutes: 30
     continue-on-error: true
     steps:
       - name: Checkout code
@@ -758,17 +839,81 @@ jobs:
         with:
           token: ${{ github.token }}
 
+      - name: Remove the duplicate screenshots and sort every shelf
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: finish_app_store_screenshots platform:ios
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  macos-screenshots:
+    name: macOS, send the ${{ matrix.locale }} screenshots to the App Store
+    needs: [plan, app-store-versions, apple-screenshots-frame]
+    if: ${{ !cancelled() && inputs.macos && needs.apple-screenshots-frame.outputs.mac_locales != '' }}
+    runs-on: ubuntu-latest
+    environment: Production
+    # Per locale, as the iPhone's: one shelf of ten images each.
+    timeout-minutes: 15
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        locale: ${{ fromJSON(needs.apple-screenshots-frame.outputs.mac_locales) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      # The whole of it: the lane picks this job's locale out.
       - name: Download the framed screenshots
         uses: actions/download-artifact@v8
         with:
           name: app-store-screenshots-mac
           path: fastlane/screenshots-mac
 
+      # Listing images only, of this locale. They go on the release's version, created if app-store-versions didn't.
       - name: Send the screenshots to App Store Connect
         uses: ./.github/actions/app-store-lane
         with:
-          lane: upload_screenshots platform:mac
+          lane: upload_screenshots platform:mac locale:${{ matrix.locale }}
           app-version: ${{ needs.plan.outputs.version }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  macos-screenshots-finish:
+    name: macOS, tidy the App Store screenshots up
+    needs: [plan, apple-screenshots-frame, macos-screenshots]
+    if: ${{ !cancelled() && inputs.macos && needs.apple-screenshots-frame.outputs.mac_locales != '' }}
+    runs-on: ubuntu-latest
+    environment: Production
+    timeout-minutes: 30
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      - name: Remove the duplicate screenshots and sort every shelf
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: finish_app_store_screenshots platform:osx
           key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
@@ -906,11 +1051,12 @@ jobs:
   # Waits for App Store Connect to process the build, writes the version's "What's new" in each language the
   # listing has, and sends it for review. It needs the screenshots' job only to come after it: !cancelled() lets it
   # run when that one failed or never ran, and the binary having landed is the one thing it requires. The lane
-  # refuses to submit a version with a locale left without screenshots, and a re-run of this job after the
-  # submission landed finds it and does nothing.
+  # refuses to submit a version whose primary language has no screenshots and names, in a warning on the run's page,
+  # the other locales with none of their own (a language added since the screenshots were last made). A re-run of
+  # this job after the submission landed finds it and does nothing.
   ios-submit:
     name: iOS, submit for App Store review
-    needs: [plan, ios-upload, ios-screenshots]
+    needs: [plan, ios-upload, ios-screenshots-finish]
     if: ${{ !cancelled() && inputs.submit_for_review && needs.ios-upload.result == 'success' }}
     runs-on: ubuntu-latest
     environment: Production
@@ -1024,7 +1170,7 @@ jobs:
   # As ios-submit, on the Mac app's own version (platform osx).
   macos-submit:
     name: macOS, submit for App Store review
-    needs: [plan, macos-upload, macos-screenshots]
+    needs: [plan, macos-upload, macos-screenshots-finish]
     if: ${{ !cancelled() && inputs.submit_for_review && needs.macos-upload.result == 'success' }}
     runs-on: ubuntu-latest
     environment: Production

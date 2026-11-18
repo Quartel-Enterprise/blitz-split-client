@@ -76,7 +76,10 @@ Every translator, human or agent, reads it first; without it each one picks its 
   currency), its banners in `BannerCopies.kt` (one per `StoreScreen`), its `StoreLocale`, its listing locales in
   build-logic's `StoreScreenshots.kt` (`listingLocales`, `playLocales`, `appStoreLocales`, the stores' own codes) and
   `scripts/store-screenshots/locales.tsv`, and the count in the `Fastfile`'s description and the docs that say "in all
-  N languages".
+  N languages". The stores only get the new language's screenshots from a stable release dispatched with
+  `screenshots=true`, which is off by default
+  ([release-process.md](../../../docs/release-process.md#screenshots-with-a-release)): say so when you hand the
+  task back. Until then its listing shows the default language's.
 
 ## 4. The activity sentences
 

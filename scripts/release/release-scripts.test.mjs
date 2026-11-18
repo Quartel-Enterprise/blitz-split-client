@@ -1,4 +1,5 @@
-// The tests of the release workflows' shell scripts, suggest-version.sh and merge-back.sh:
+// The tests of the release workflows' shell scripts, suggest-version.sh, merge-back.sh and
+// staged-screenshot-locales.sh:
 // node --test scripts/release/release-scripts.test.mjs
 //
 // Each runs a copy of the scripts inside a repository made for the test, with a remote of its own, since they read
@@ -209,5 +210,34 @@ describe("the merge-back", () => {
     writeFileSync(join(repo, "left-behind.txt"), "");
     assert.match(mergeBack(["3.0.0", "84", "3.0.0", "3.0.0"]), /nothing to merge back/);
     assert.deepEqual(ghCalls(), []);
+  });
+});
+
+describe("the locales the screenshots' upload jobs are made of", () => {
+  const SCRIPT = join(HERE, "staged-screenshot-locales.sh");
+  const staged = (folder) => execFileSync(SCRIPT, [join(root, folder)], { encoding: "utf8" });
+  const stage = (...paths) => {
+    for (const path of paths) {
+      mkdirSync(dirname(join(root, path)), { recursive: true });
+      writeFileSync(join(root, path), "");
+    }
+  };
+
+  test("are the folders that hold an image, in Google Play's layout and in the App Store's", () => {
+    stage("play/pt-BR/images/phoneScreenshots/01.png", "play/pt-BR/images/sevenInchScreenshots/01.png", "play/en-US/images/phoneScreenshots/01.png");
+    stage("app-store/zh-Hant/01_iphone67.png", "app-store/ko/01_iphone67.png", "app-store/ko/02_iphone67.png");
+    assert.equal(staged("play"), '["en-US","pt-BR"]\n');
+    assert.equal(staged("app-store"), '["ko","zh-Hant"]\n');
+  });
+
+  test("leave out a locale with no image, and a file that is in no locale's folder", () => {
+    stage("play/de-DE/title.txt", "play/en-US/images/phoneScreenshots/01.png", "play/stray.png");
+    assert.equal(staged("play"), '["en-US"]\n');
+  });
+
+  test("are no answer at all, which skips the jobs, when nothing is staged or the folder is missing", () => {
+    stage("play/de-DE/title.txt");
+    assert.equal(staged("play"), "");
+    assert.equal(staged("missing"), "");
   });
 });

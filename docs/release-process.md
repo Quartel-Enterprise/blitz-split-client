@@ -78,6 +78,7 @@ take the next `versionCode` from the same place.
 ./scripts/release/release-production.sh                                                    # every platform, to everyone
 ./scripts/release/release-production.sh track=internal submit_for_review=false web=false   # reaches no user
 ./scripts/release/release-production.sh version=3.1.0 rollout=20                           # a staged rollout of 3.1.0
+./scripts/release/release-production.sh screenshots=true                                   # and the listings' screenshots made again
 ```
 
 The script takes the workflow's inputs as `input=value`, dispatches it on `main` and prints the link to the run. It
@@ -93,7 +94,7 @@ dispatched behind a waiting one cancels it without a word.
 | `rollout` | `100` | On the production track, the percentage of the users who get the release: under 100 is a staged rollout |
 | `submit_for_review` | on | Sends the iOS and macOS builds to App Store review. Off, they stop at TestFlight |
 | `phased_release` | off | Releases an approved update over seven days, to the people with automatic updates. Off, everyone gets it at once |
-| `screenshots` | on | Makes the store listings' screenshots again and uploads them, with a release |
+| `screenshots` | off | Makes the store listings' screenshots again and uploads them, with a release ([Screenshots with a release](#screenshots-with-a-release)) |
 
 **A run with nothing changed publishes to everyone, and nothing waits for an approval** (Pierre's calls, as in
 Bible Planner): the production track at 100%, a submission for review that goes out by itself once Apple approves
@@ -185,15 +186,44 @@ read them ([Secrets](#secrets)).
 
 ### Screenshots with a release
 
+`screenshots` is off unless the release asks for it (Pierre's call): making them again takes a Mac runner per
+App Store slot for up to two and a half hours, and most releases change nothing the listings show. Turn it on when
+the images would come out different: **a language the listings gained**, a screen of
+[the ten](store-listing-screenshots.md#what-the-images-show) that changed, a new device size. Left off, the stores
+keep what they have: a new App Store version starts with the previous one's screenshots, and a locale with none of
+its own shows the primary language's on the App Store and the default language's on Play. `ios-submit` and
+`macos-submit` name those locales in a warning on the run's page, so a language added since the last screenshots
+doesn't go unnoticed. Google Play has no such warning: a run of Android alone says nothing.
+
 With `screenshots` on, a run that releases makes the listings' screenshots again
 ([store-listing-screenshots.md](store-listing-screenshots.md)), as Bible Planner's releases do:
 
-- **Google Play**, after the bundle reached the production track: `android-screenshots` draws them and uploads the
-  ones that changed. Play shows a listing's screenshots to everyone at once, so a testing track brings none.
+- **Google Play**, after the bundle reached the production track: `android-screenshots-render` draws them next to
+  the build, and `android-screenshots` uploads the ones that changed. Play shows a listing's screenshots to everyone
+  at once, so a testing track brings none.
 - **App Store**, before the submission, since a version in review can't take them, and only in a run that submits:
-  `app-store-versions` creates the version, `apple-screenshots-capture` runs the UI tests on one simulator per slot
-  and, for the Mac, photographs the app's window on the runner's own screen, `apple-screenshots-frame` frames the captures, and `ios-screenshots`
-  and `macos-screenshots` upload them.
+  `app-store-versions` creates the version (as it does in every run that submits, so the previous version's
+  screenshots are copied into it long before anything looks at them), `apple-screenshots-capture` runs the UI tests on one simulator per slot
+  and, for the Mac, photographs the app's window on the runner's own screen, `apple-screenshots-frame` frames the
+  captures, `ios-screenshots` and `macos-screenshots` upload them, and `ios-screenshots-finish` and
+  `macos-screenshots-finish` remove the copies deliver leaves behind and sort every shelf.
+
+**The uploads are one job per locale**, one after the other, on each store (Bible Planner's releases lost a whole
+upload to one image Google Play answered with a server error): a locale a store refused is the only one that
+failed, and the others are up. Each job sets fastlane up to send one locale, which adds up over a store's 26 (not
+timed yet: no release has run them): the submission waits for the App Store's, and the next release or beta for them
+all, since they share the `release` group.
+
+- **On Google Play**, that locale's job sends it again with the images the run already drew, at any time: the
+  listing takes them whenever. Run it with **the job's own re-run button**, not **Re-run failed jobs**, which also
+  runs every App Store job that failed without failing the run (a capture on a Mac runner, the uploads of a version
+  already in review) and the jobs after them.
+- **On the App Store**, deliver deletes a locale's screenshots before it uploads the new ones, so a locale whose job
+  failed halfway may be left with none: the submission goes on right after the uploads, and its warning names the
+  locale. A version waiting for review takes no screenshots, so that job can only be run again, with its own re-run
+  button too, once the submission is removed in App Store Connect. The jobs that come after it run again with it:
+  the tidy-up, the submit job, `finalize` and `site-release-notes`, the last two finding their work done. Or leave
+  the locale for the next release with `screenshots` on.
 
 None of the App Store's jobs holds the release back: one that fails is listed as failed, the run is not, and the
 submission goes on with the screenshots the version already has. Three captures may fail on a runner, and none had
