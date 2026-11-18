@@ -214,13 +214,16 @@ failed, and the others are up. Each job sets fastlane up to send one locale, whi
 timed yet: no release has run them): the submission waits for the App Store's, and the next release or beta for them
 all, since they share the `release` group.
 
-- **On Google Play**, **Re-run failed jobs** sends that locale again with the images the run already drew: the
-  listing takes them at any time.
+- **On Google Play**, that locale's job sends it again with the images the run already drew, at any time: the
+  listing takes them whenever. Run it with **the job's own re-run button**, not **Re-run failed jobs**, which also
+  runs every App Store job that failed without failing the run (a capture on a Mac runner, the uploads of a version
+  already in review) and the jobs after them.
 - **On the App Store**, deliver deletes a locale's screenshots before it uploads the new ones, so a locale whose job
   failed halfway may be left with none: the submission goes on right after the uploads, and its warning names the
-  locale. A version waiting for review takes no screenshots, so that job can only be run again (with its own re-run
-  button, since the run didn't fail) once the submission is removed in App Store Connect; the tidy-up and the submit
-  job run again after it. Or leave the locale for the next release with `screenshots` on.
+  locale. A version waiting for review takes no screenshots, so that job can only be run again, with its own re-run
+  button too, once the submission is removed in App Store Connect. The jobs that come after it run again with it:
+  the tidy-up, the submit job, `finalize` and `site-release-notes`, the last two finding their work done. Or leave
+  the locale for the next release with `screenshots` on.
 
 None of the App Store's jobs holds the release back: one that fails is listed as failed, the run is not, and the
 submission goes on with the screenshots the version already has. Three captures may fail on a runner, and none had

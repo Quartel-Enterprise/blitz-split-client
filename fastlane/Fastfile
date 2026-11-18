@@ -631,12 +631,15 @@ lane :app_store_submit do |options|
 end
 
 # An annotation on the run's page. Nothing outside GitHub Actions, where the line would only be noise. A workflow
-# command reads a colon or a comma in the title as its own, and takes the message up to the end of the line.
+# command reads a colon or a comma in the title as its own, and takes the message up to the end of the line. Written
+# to the standard output itself: a Fastfile's `puts` is fastlane's, which starts the line with the time, and the
+# runner only reads a command that starts its line.
 def github_warning(title, message)
   return unless ENV["GITHUB_ACTIONS"] == "true"
 
-  escaped_title = title.gsub("%", "%25").gsub(":", "%3A").gsub(",", "%2C")
-  puts("::warning title=#{escaped_title}::#{message.gsub("%", "%25").gsub("\n", "%0A")}")
+  escaped = ->(text) { text.gsub("%", "%25").gsub("\r", "%0D").gsub("\n", "%0A") }
+  $stdout.puts("::warning title=#{escaped.call(title).gsub(":", "%3A").gsub(",", "%2C")}::#{escaped.call(message)}")
+  $stdout.flush
 end
 
 def app_store_platform(options)

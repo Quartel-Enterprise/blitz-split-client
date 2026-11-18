@@ -481,7 +481,8 @@ jobs:
   # Google Play shows a listing's screenshots to everyone the moment they change, whatever track the bundle went to:
   # only a release to the production track brings its screenshots. Jobs of their own, which finalize doesn't wait
   # for, so a listing that failed to update never reads as a bundle that didn't land. Drawing them needs nothing from
-  # the bundle, so it runs next to the build, and hands the images over as an artifact.
+  # the bundle, so it runs next to the build, and hands the images over as an artifact: a build or an upload that
+  # fails leaves them drawn for nothing, which costs less than a listing that waits for them after every bundle.
   android-screenshots-render:
     name: Android, draw the store listing screenshots
     needs: plan
@@ -530,9 +531,10 @@ jobs:
           if-no-files-found: error
 
   # One job per locale, as in Bible Planner's releases: supply sends a locale's screenshots through a Play edit of its
-  # own and commits it at the end, so a locale Google Play refused costs that locale alone, and "Re-run failed jobs"
-  # sends only it again, without drawing anything a second time. One after the other, since Play keeps a single edit
-  # open per app: two uploads at once would drop each other's. Only after the bundle reached the track.
+  # own and commits it at the end, so a locale Google Play refused costs that locale alone, and that locale's own
+  # re-run button sends only it again, without drawing anything a second time ("Re-run failed jobs" would also run the
+  # App Store jobs that failed with continue-on-error). One after the other, since Play keeps a single edit open per
+  # app: two uploads at once would drop each other's. Only after the bundle reached the track.
   android-screenshots:
     name: Android, send the ${{ matrix.locale }} screenshots to Google Play
     needs: [plan, android-upload, android-screenshots-render]
