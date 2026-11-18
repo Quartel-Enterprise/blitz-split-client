@@ -3,7 +3,8 @@ name: release-notes
 # Fails when a fragment of release-notes/unreleased/ has something a release couldn't publish (a language missing, a
 # platform the site doesn't know, Markdown in a note), or when a store listing of store-listing/ has something a
 # store would refuse or cut (docs/store-listing.md), and runs the tests of the scripts the releases run: the ones
-# that read the fragments and the listings, and the ones that resolve a release's version and merge it back. See
+# that read the fragments and the listings, the ones that resolve a release's version and merge it back, and the one
+# that checks and sends a set of App Store screenshots made on a Mac. See
 # docs/release-notes.md. Locally: node scripts/release/release-notes.mjs check and
 # node scripts/release/store-listing.mjs check.
 on:
@@ -24,6 +25,11 @@ on:
       # the generators draw in, which a third holds to what Robolectric takes
       - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
       - 'scripts/store-screenshots/screens.tsv'
+      # The check of a set of App Store screenshots made on a Mac, its tests, and the workflows the tests hold it to
+      - 'scripts/store-screenshots/local-set.mjs'
+      - 'scripts/store-screenshots/local-set.test.mjs'
+      - '.github/workflows/app-store-screenshots.yml'
+      - '.github/workflows/app-store-screenshots-upload.yml'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreLocale.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreenshots.kt'
@@ -40,6 +46,11 @@ on:
       # the generators draw in, which a third holds to what Robolectric takes
       - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
       - 'scripts/store-screenshots/screens.tsv'
+      # The check of a set of App Store screenshots made on a Mac, its tests, and the workflows the tests hold it to
+      - 'scripts/store-screenshots/local-set.mjs'
+      - 'scripts/store-screenshots/local-set.test.mjs'
+      - '.github/workflows/app-store-screenshots.yml'
+      - '.github/workflows/app-store-screenshots-upload.yml'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreLocale.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreenshots.kt'
@@ -93,4 +104,4 @@ jobs:
       - name: Test the scripts
         run: >-
           node --test scripts/release/release-notes.test.mjs scripts/release/release-scripts.test.mjs
-          scripts/release/store-listing.test.mjs
+          scripts/release/store-listing.test.mjs scripts/store-screenshots/local-set.test.mjs

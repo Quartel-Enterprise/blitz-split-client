@@ -1,0 +1,40 @@
+name: 'Check that no run of some workflows is going'
+description: >-
+  Fails while one of the workflows named has a run that isn't over, this run aside: in progress, waiting or queued.
+  For the workflows that write on what another one writes on, through the same Play account or on the same App
+  Store version: store-listing.yml and app-store-screenshots.yml against the releases, and release-production.yml
+  against app-store-screenshots.yml. The releases share a concurrency group the others can't join, since a run of
+  theirs waiting in it would cancel a release waiting too, so a run that is going stops the new one here instead.
+
+inputs:
+  token:
+    description: 'A token that can read the repository''s workflow runs, the GITHUB_TOKEN of a job with actions: read'
+    required: true
+  workflows:
+    description: 'The workflows whose runs stop this one, by file name, with a space between them'
+    required: false
+    default: 'release-beta.yml release-production.yml'
+  then:
+    description: 'What to do instead, for the error: "send the listing once the release is over"'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # Every run that isn't completed, whatever it is waiting for, among a workflow's latest: one that isn't over is
+    # never that far down the list. A list that can't be read fails the step, since it is not an empty one.
+    - name: Check that no run is going
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        WORKFLOWS: ${{ inputs.workflows }}
+        THEN: ${{ inputs.then }}
+      run: |
+        for workflow in $WORKFLOWS; do
+          going="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$workflow/runs?per_page=30" \
+            | jq -r --arg self "$GITHUB_RUN_ID" '[.workflow_runs[] | select(.status != "completed" and (.id | tostring) != $self)][0].status // empty')"
+          if [ -n "$going" ]; then
+            echo "::error::$workflow has a run that is $going: $THEN."
+            exit 1
+          fi
+        done

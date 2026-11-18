@@ -1,5 +1,6 @@
 // The tests of the release workflows' shell scripts, suggest-version.sh, merge-back.sh,
-// staged-screenshot-locales.sh, app-store-capture-slots.sh, app-store-screenshots-plan.sh and release-production.sh:
+// staged-screenshot-locales.sh, app-store-capture-slots.sh, app-store-screenshots-plan.sh, release-production.sh and
+// dispatch-release.sh:
 // node --test scripts/release/release-scripts.test.mjs
 //
 // Each runs a copy of the scripts inside a repository made for the test, with a remote of its own, since they read
@@ -410,5 +411,60 @@ describe("the stable release's script", () => {
 
   test("refuses what isn't input=value", () => {
     assert.throws(() => release("screenshots"), /'screenshots' is not an input/);
+  });
+});
+
+describe("dispatching a release", () => {
+  // A stand-in for gh that answers the run lists the script reads: GH_UPLOADING runs of app-store-screenshots.yml that
+  // aren't over ("unreadable" fails that read), no release waiting, and a new run once the workflow was dispatched.
+  // `sleep` is one too, so the wait for that run takes no time.
+  const dispatch = (workflow, env = {}) => {
+    const bin = join(root, "dispatch-bin");
+    mkdirSync(bin, { recursive: true });
+    const stub = [
+      "#!/usr/bin/env bash",
+      `echo "$*" >> "${join(root, "gh.log")}"`,
+      'case "$*" in',
+      '  *app-store-screenshots.yml*) [ "${GH_UPLOADING:-0}" != unreadable ] || exit 1; echo "${GH_UPLOADING:-0}" ;;',
+      '  *"--status "*) echo 0 ;;',
+      `  "workflow run"*) touch "${join(root, "dispatched")}" ;;`,
+      `  *"--json databaseId"*) if [ -f "${join(root, "dispatched")}" ]; then echo 2; else echo 1; fi ;;`,
+      '  *"--json url"*) echo https://github.com/example/runs/2 ;;',
+      "esac",
+      "",
+    ].join("\n");
+    writeFileSync(join(bin, "gh"), stub);
+    writeFileSync(join(bin, "sleep"), "#!/usr/bin/env bash\n");
+    chmodSync(join(bin, "gh"), 0o755);
+    chmodSync(join(bin, "sleep"), 0o755);
+    return spawnSync(join(HERE, "dispatch-release.sh"), [workflow, "-f", "web=false"], { encoding: "utf8", env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, ...env } });
+  };
+  const dispatched = () => ghCalls().filter((call) => call.startsWith("workflow run"));
+
+  test("dispatches on main and prints the run", () => {
+    const { status, stdout } = dispatch("release-production.yml");
+    assert.equal(status, 0);
+    assert.deepEqual(dispatched(), ["workflow run release-production.yml --repo Quartel-Enterprise/blitz-split-client --ref main -f web=false"]);
+    assert.match(stdout, /Run: https:\/\/github\.com\/example\/runs\/2/);
+  });
+
+  // The release submits the App Store versions, which then take no screenshot.
+  test("refuses a stable release while App Store screenshots are still going up", () => {
+    const { status, stderr } = dispatch("release-production.yml", { GH_UPLOADING: "1" });
+    assert.equal(status, 1);
+    assert.match(stderr, /App Store screenshots are still going up \(a run of app-store-screenshots\.yml isn't over\)/);
+    assert.deepEqual(dispatched(), []);
+  });
+
+  test("refuses it when GitHub can't say whether one is", () => {
+    const { status, stderr } = dispatch("release-production.yml", { GH_UPLOADING: "unreadable" });
+    assert.equal(status, 1);
+    assert.match(stderr, /Could not see whether App Store screenshots are going up/);
+    assert.deepEqual(dispatched(), []);
+  });
+
+  test("lets a beta go while they are, since it submits nothing", () => {
+    assert.equal(dispatch("release-beta.yml", { GH_UPLOADING: "1" }).status, 0);
+    assert.deepEqual(dispatched(), ["workflow run release-beta.yml --repo Quartel-Enterprise/blitz-split-client --ref main -f web=false"]);
   });
 });

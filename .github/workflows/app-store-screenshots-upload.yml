@@ -1,0 +1,159 @@
+name: app-store-screenshots-upload
+
+# Sends one App Store version's framed screenshots to App Store Connect, then tidies its shelves up. Called by
+# release-production.yml, with the images its own run framed, and by app-store-screenshots.yml, with a set made on a
+# Mac: both hand it an artifact of their run that holds the staged folder, fastlane/screenshots (iPhone and iPad) or
+# fastlane/screenshots-mac (docs/store-listing-screenshots.md).
+#
+# One job per locale, as in Bible Planner's releases, so a locale App Store Connect refused is the only one sent
+# again, with the images that were already framed. One after the other: deliver deletes a locale's screenshots and
+# recreates its sets, which is what the "Screenshot Set Already Exists!" race is about, and two uploads at once on
+# one version would make it worse. The Mac's go on a version of their own, so a caller runs its call next to the
+# iPhone's. deliver deletes a locale's screenshots before it uploads the new ones, so a job that failed halfway can
+# leave that locale with none: the App Store then shows the primary language's there.
+#
+# `tidy up` runs after the last locale, failed ones included: it removes the copies deliver leaves behind and sorts
+# every shelf in file-name order.
+#
+# A locale's job run again with its own re-run button runs alone, with the jobs after it: the tidy-up and whatever
+# the caller runs next. The other locales' jobs are carried over as they ended, not sent again (tried in November
+# 2026 on a matrix of a called workflow, as this one is).
+#
+# Nothing here submits a version, and nothing waits for an approval: the jobs name the `Production` environment,
+# whose branch policy only lets main deploy, and each starts by checking that an administrator started the run.
+on:
+  workflow_call:
+    inputs:
+      platform:
+        description: "The App Store version the screenshots go on: ios (iPhone and iPad) or mac"
+        type: string
+        required: true
+      locales:
+        description: "The locales to send, one job each, as a JSON array of App Store codes: what the artifact holds"
+        type: string
+        required: true
+      artifact:
+        description: "The artifact of this run that holds the staged folder, one folder per locale"
+        type: string
+        required: true
+      ref:
+        description: "The commit whose lanes run. Blank is the run's own"
+        type: string
+        default: ""
+      app_version:
+        description: "The App Store version to write on, X.Y.Z, created when it is missing. Blank writes on the editable one"
+        type: string
+        default: ""
+      best_effort:
+        description: "A locale or a tidy-up that fails is listed as failed and the run is not: the caller goes on"
+        type: boolean
+        default: false
+      refuse_during_release:
+        description: "Every job stops while a release is running. The caller's job then grants actions: read"
+        type: boolean
+        default: false
+    secrets:
+      APP_STORE_CONNECT_API_KEY_ID:
+        required: true
+      APP_STORE_CONNECT_API_ISSUER_ID:
+        required: true
+      APP_STORE_CONNECT_API_KEY_P8:
+        required: true
+
+# No permissions of its own: the jobs take the calling job's, which is contents: read for a release, and that with
+# actions: read for the caller that asks for refuse_during_release. Naming more here than a caller grants would
+# refuse the caller's whole run.
+
+jobs:
+  send:
+    name: send ${{ matrix.locale }}
+    runs-on: ubuntu-latest
+    environment: Production
+    # Per locale: the chain has no cap of its own, and what comes after it waits behind it. The Mac's is one shelf
+    # of ten images.
+    timeout-minutes: ${{ inputs.platform == 'mac' && 15 || 20 }}
+    continue-on-error: ${{ inputs.best_effort }}
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        locale: ${{ fromJSON(inputs.locales) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      # For a set sent outside a release: its first job refuses the run while a release is going, and this is the
+      # same check for a locale's job run again later, which starts without that first job. A release submits the
+      # version, and deliver deleting a locale's shelves under it would leave the locale with none.
+      - name: Check that no release is running
+        if: ${{ inputs.refuse_during_release }}
+        uses: ./.github/actions/no-run-going
+        with:
+          token: ${{ github.token }}
+          then: send the screenshots once the release is over
+
+      # The whole of it: the lane picks this job's locale out.
+      - name: Download the framed screenshots
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ inputs.artifact }}
+          path: ${{ inputs.platform == 'mac' && 'fastlane/screenshots-mac' || 'fastlane/screenshots' }}
+
+      # Listing images only, of this locale. skip_mac keeps the iPhone's lane from sending the Mac's as well, which
+      # are another call's.
+      - name: Send the screenshots to App Store Connect
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: >-
+            upload_screenshots
+            ${{ inputs.platform == 'mac' && 'platform:mac' || 'platform:ios skip_mac:true' }}
+            locale:${{ matrix.locale }}
+          app-version: ${{ inputs.app_version }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+
+  tidy:
+    name: tidy up
+    needs: send
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    environment: Production
+    timeout-minutes: 30
+    continue-on-error: ${{ inputs.best_effort }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      # The same check as each locale's job: a tidy-up run again later, during a release, would sort the shelves of
+      # the version the release is submitting.
+      - name: Check that no release is running
+        if: ${{ inputs.refuse_during_release }}
+        uses: ./.github/actions/no-run-going
+        with:
+          token: ${{ github.token }}
+          then: tidy the shelves up once the release is over
+
+      - name: Remove the duplicate screenshots and sort every shelf
+        uses: ./.github/actions/app-store-lane
+        with:
+          lane: finish_app_store_screenshots platform:${{ inputs.platform == 'mac' && 'osx' || 'ios' }}
+          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}

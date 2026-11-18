@@ -33,6 +33,23 @@ for each in "${GROUP_WORKFLOWS[@]}"; do
   fi
 done
 
+# A stable release submits the App Store versions, and a version waiting for review takes no screenshot. Dispatched
+# while a set made on a Mac is still going up, one locale per job (app-store-screenshots.yml), it would leave the
+# locales still to go without theirs. The release's own first job refuses the run then; this says so before anything
+# is dispatched. A beta submits nothing, so it goes on.
+if [ "$workflow" = release-production.yml ]; then
+  # Every run that isn't over, whatever it is waiting for. A list that can't be read is not an empty one:
+  # dispatching then would be a guess.
+  if ! uploading="$(gh run list --workflow=app-store-screenshots.yml --repo "$REPO" --limit 30 --json status --jq '[.[] | select(.status != "completed")] | length')"; then
+    echo "Could not see whether App Store screenshots are going up (app-store-screenshots.yml). Run this again." >&2
+    exit 1
+  fi
+  if [ "${uploading:-0}" -gt 0 ]; then
+    echo "App Store screenshots are still going up (a run of app-store-screenshots.yml isn't over), and the release would submit the versions before the last locale landed. Wait for that run to end, then run this again." >&2
+    exit 1
+  fi
+fi
+
 before="$(gh run list --workflow="$workflow" --repo "$REPO" --limit 1 --json databaseId --jq '.[0].databaseId // 0')"
 
 # The workflows always build main, so the workflow file is read from main too: a script run from another

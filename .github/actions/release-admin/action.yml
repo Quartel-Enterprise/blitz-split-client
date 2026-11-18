@@ -1,8 +1,9 @@
 name: 'Check that an admin releases or sends a listing'
 description: >-
   Fails unless whoever started this attempt of the run is an administrator of the repository. Nothing waits for an
-  approval in release-production.yml nor in store-listing.yml, so every one of their jobs starts with this: "Re-run
-  failed jobs" runs jobs again without the first one. The calling job checks out the repository first.
+  approval in release-production.yml, store-listing.yml nor app-store-screenshots.yml, so every one of their jobs
+  starts with this: "Re-run failed jobs" runs jobs again without the first one. The calling job checks out the
+  repository first.
 
 inputs:
   token:

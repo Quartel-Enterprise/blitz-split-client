@@ -35,6 +35,9 @@ three failed on the runners in the first release that ran them, and only in a ru
 ([release-process.md](release-process.md#the-devices-the-app-stores-captures-run-on)). Run the lane by hand between
 releases, when a release's screenshot jobs failed, and for the devices a release leaves out.
 
+**For the App Store, the runners' captures can't be trusted today**, so its screenshots are made on a Mac, looked
+at, and sent through GitHub: [Sending a set made on a Mac](#sending-a-set-made-on-a-mac).
+
 The lane runs, each step under `scripts/heavy-check.sh`:
 
 1. `scripts/store-screenshots/capture-ios.sh`: builds the `BoraRachar-iOS-StoreScreenshots` UI tests once and runs
@@ -91,6 +94,101 @@ The rules the upload follows:
   locale, `tidy_app_store_screenshots` removes the duplicates deliver can leave and sorts each shelf by file name.
   `fastlane finish_app_store_screenshots` runs that tidy-up on its own.
 - Both lanes refuse to upload from an empty folder, which would wipe the listing.
+
+The App Store Connect key lives in the repository's secrets alone, so `fastlane upload_screenshots` reaches the
+App Store only from a workflow: a release's own jobs, for the images that run framed, and `app-store-screenshots`,
+for a set made on a Mac.
+
+## Sending a set made on a Mac
+
+**Until a release's captures can be trusted, this is how screenshots reach the App Store.** The first release that
+made them on GitHub's runners (3.0.0, run 44222898644, 18 November 2026) had nothing to upload that anyone would
+want on the listing: iPhone and iPad screens photographed before their content loaded, grey placeholders and black
+screens, the Mac refused for a display that isn't Retina, and both of the iPhone Duo's captures failing. A release
+doesn't look at its captures before they go up. So the set is captured and framed on a Mac, where a person looks at
+it, and travels to App Store Connect through GitHub, where the key is:
+
+```bash
+fastlane screenshots platform:ios skip_upload:true            # 1. capture and frame, then look at store_listings/
+node scripts/store-screenshots/local-set.mjs check            # 2. is the set whole?
+node scripts/store-screenshots/local-set.mjs send --name 3.0.1   # 3. pack it and send it to GitHub
+gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to App Store Connect
+```
+
+1. **Capture and frame** as [above](#one-command), with `skip_upload:true`: the Mac's capture takes the screen for
+   half an hour, and the open iPhone Duo needs someone to press Open in Device Hub. The framed images are in
+   `fastlane/screenshots/` (iPhone, iPad and iPhone Duo) and `fastlane/screenshots-mac/`, and in `store_listings/`
+   to look at. **Look at them**: a screen still loading is framed like any other
+   ([Things that bite](#things-that-bite)).
+2. **Check the set.** `local-set.mjs check` reads the two folders of the checkout, or of a folder passed to it,
+   where they may also be named `fastlane-screenshots` and `fastlane-screenshots-mac` (a set kept apart, as
+   3.0.0's was: `node scripts/store-screenshots/local-set.mjs check ~/StudioProjects/blitz-split/store-screenshots-3.0.0`).
+   It refuses, saying each thing that is wrong and in which locales:
+
+   | It refuses | Why |
+   | --- | --- |
+   | A locale the App Store listing has and the set lacks, or a folder that is no locale of it | deliver uploads the locales it is handed, and App Store Connect attaches screenshots to a listing's locale |
+   | A device without one of the ten screens in a locale, or the same screen twice on the iPhone Duo's shelf | A shelf shows the ten screens of `screens.tsv`, once each; the Duo's takes each from one display, open or closed |
+   | An image whose size isn't its device's (the table of [What the images show](#what-the-images-show)) | deliver files an image on a shelf by its size, and the iPad's are framed lying down: an upright one is an old one |
+   | A file that isn't a PNG, by its name or by its bytes, or that isn't `<screen>_<device>.png` | Nothing else belongs in a staged folder. Hidden files, the Finder's `.DS_Store`, are left out and not refused |
+   | **A device the whole set leaves out** | deliver replaces every screenshot of a locale with what it is handed, so the shelf of a device left out is emptied. `--allow-missing-devices` says it is meant, as for a set without the iPhone Duo |
+
+   `--platform ios` or `--platform mac` checks, and sends, one version's folder alone.
+3. **Send it.** `local-set.mjs send` checks the set again, packs each version's folder into an archive, and uploads
+   them with their checksums as the assets of a **draft GitHub release**, `store-screenshots-<name>`. `--name` is
+   the set's name, the date and hour when left out; `--replace` sends over a set of the same name; **`--dry-run`
+   checks and packs and sends nothing**. It ends by printing the command of the next step, with the inputs the set
+   needs. It needs the GitHub CLI, signed in as someone who can push to the repository.
+4. **Dispatch `app-store-screenshots`**, an administrator, on `main`, once no release is running:
+
+   | Input | Default | |
+   | --- | --- | --- |
+   | `set` | | The name `send` printed |
+   | `ios`, `macos` | on | The iPhone's and iPad's version, the Mac's version: each is a version of its own on App Store Connect |
+   | `app_version` | blank | The version to write on, X.Y.Z, created when it is missing. Blank writes on the one open for editing, whatever its number: a release renames it later and keeps its screenshots |
+   | `allow_missing_devices` | off | The set leaves a device out on purpose |
+
+   The run fetches the set and **checks it again**, which is what decides: a set that doesn't pass is refused before
+   anything is sent, and the run's summary says why. It then uploads it with the jobs a release runs for its own
+   screenshots ([`app-store-screenshots-upload.yml`](../.github/workflows/app-store-screenshots-upload.yml)), the
+   matrix read off the set as a release's is read off what it framed: "iPhone and iPad / send \<locale\>" and
+   "Mac / send \<locale\>", **one locale per job, one after the other** on each version and the two versions side
+   by side, then "tidy up", which removes the copies deliver leaves behind and sorts every shelf. About an hour and
+   a half for the iPhone's 26 locales is a guess from Google Play's two minutes a locale: no run has timed the App
+   Store's yet. The last job, "Report and remove the set", writes in the run's summary which locales landed and what
+   each took, and **deletes the draft release once every locale did**. A set that holds both versions' screenshots
+   and goes up one version per run (`-f ios=false`, then `-f macos=false`) loses, each time, the archive that
+   landed, and is deleted with the last one.
+5. **A locale that failed** fails the run, and the set is kept, which the summary says. Run that locale's job again
+   with the job's own re-run button: it finds the set in the run's artifacts (kept seven days), and the tidy-up and
+   the report run again after it. **The other locales are not sent again**: GitHub carries their jobs over as they
+   ended (tried in November 2026 on a matrix inside a called workflow, which is what these jobs are). deliver
+   deletes a locale's screenshots before it uploads the new ones, so a locale whose job failed halfway may be left
+   with none until then. A job run again starts without the run's first job, so each upload job looks for a
+   release running by itself, and stops while one is.
+6. **Then the release.** The workflow writes screenshots on the editable version and submits nothing. A stable
+   release dispatched afterwards **with `screenshots` off** renames that version to its own number, keeping the
+   screenshots, and submits it ([release-process.md](release-process.md#screenshots-made-on-a-mac)). Not before the
+   run is over: a version waiting for review takes no screenshot, so a release that submits refuses to start while
+   the upload is going, and the workflow refuses to start while a release is. One set at a time, too: a second
+   run dispatched while one is going is refused, not queued, since GitHub would cancel a queued one without a word
+   when a third arrived.
+
+**Why a draft release.** The set has to get from the Mac to a runner, and it is some 600 MB of images that are not
+versioned. A branch would leave them in the repository's history for good, and an artifact can only be made by a
+run. A release's asset takes a file under 2 GiB, with no limit on the release's size and at no cost, and
+`gh` uploads it. A **draft** shows only to people who can push to the repository (the API and the download address
+answer 404 to anyone else, checked in November 2026), has **no tag** in the repository until it is published, which
+nothing does, and notifies nobody. A workflow's own token reads it only with `contents: write`, which the job
+that fetches the set and the one that removes it have, and no other. Only a draft is taken for a set: the workflow
+and `--replace` leave a published release alone, whatever its tag. From the fetch on, the set is two artifacts of
+the run, under the names a release gives its own, and those, as every artifact of a public repository, can be
+downloaded by anyone signed in to GitHub for the seven days they last.
+
+**What no run has shown yet**, since nothing was uploaded this way before the first set (3.0.0's, November 2026):
+that App Store Connect takes the uploads as the lanes send them, that it files the iPhone Duo's two sizes on one
+shelf ([above](#what-the-images-show)), and that it takes the iPad's sizes lying down. The first run says, per
+locale; the check, the transport and the matrix were tried on that set without reaching the store.
 
 ## What the images show
 
@@ -243,10 +341,15 @@ scripts/store-screenshots/*.tsv                # the languages, screens and phot
 scripts/store-screenshots/tables.sh            # how both capture scripts read and narrow those tables
 build-logic/.../StoreScreenshots.kt            # the collect and stage tasks, the stores' locale codes
 fastlane/Fastfile                              # the screenshots and upload lanes
+scripts/store-screenshots/local-set.mjs        # the check of a set made on a Mac, its devices' sizes, and its way to GitHub
+.github/workflows/app-store-screenshots*.yml   # the upload of such a set, and the jobs a release shares with it
 ```
 
 - **Banner copy:** `BannerCopies.kt`, per screen and language. The frame wraps the description to two lines, so keep it
   short.
+- **A new device size:** its frame, its entry in `appleDevices` (`StoreScreenshots.kt`), and its size and shelf in
+  `PLATFORMS` of `local-set.mjs`, which a test holds to that list: a set with a device the check doesn't know is
+  refused.
 - **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
   `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on Apple's) and a row
   of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides. It goes on the iPhone Duo's
@@ -438,8 +541,8 @@ and the script stopped at that first capture: "The Mac capture is 1440 px wide a
 isn't Retina". So a release captures the Mac only when it passes `screenshots_mac=true`
 ([release-process.md](release-process.md#the-devices-the-app-stores-captures-run-on)), and until that capture works
 on a runner the Mac's listing gets its screenshots from a Mac with a Retina display: `fastlane screenshots
-platform:ios skip_upload:true`, then `fastlane upload_screenshots platform:mac`, which sends the Mac's alone and
-leaves the iPhone's and the iPad's listing as it is.
+platform:ios skip_upload:true`, then [the set is sent through GitHub](#sending-a-set-made-on-a-mac), with
+`--platform mac` and `-f ios=false` to send the Mac's alone and leave the iPhone's and the iPad's listing as it is.
 
 ## The README's image
 

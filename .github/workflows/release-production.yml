@@ -136,7 +136,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
-      # To read the environment's deployment branch policy.
+      # To read the environment's deployment branch policy, and whether App Store screenshots are going up.
       actions: read
     outputs:
       version: ${{ steps.resolve.outputs.version }}
@@ -228,6 +228,18 @@ jobs:
             echo "::error::The $RELEASE_ENVIRONMENT environment has to let the branch main deploy, and nothing else: its deployment policy allows '$(paste -sd, - <<< "$allowed")'. See docs/release-process.md#who-releases."
             exit 1
           fi
+
+      # A run that submits sends the App Store versions to review, and a version waiting for review takes no
+      # screenshot: started while a set made on a Mac is still going up, one locale per job
+      # (app-store-screenshots.yml), it would leave the locales still to go without theirs. That workflow refuses to
+      # start during a release; this is the other way round.
+      - name: Check that no App Store screenshots are going up
+        if: ${{ inputs.submit_for_review && (inputs.ios || inputs.macos) }}
+        uses: ./.github/actions/no-run-going
+        with:
+          token: ${{ github.token }}
+          workflows: app-store-screenshots.yml
+          then: dispatch the release once every locale of that run is up
 
       # The version and the notes both come from scripts/release/release-notes.mjs, plain Node.
       - name: Set up Node
@@ -825,157 +837,51 @@ jobs:
           if-no-files-found: error
 
   # One job per locale, as in Bible Planner's releases, so a locale App Store Connect refused is the only one sent
-  # again, with the images that were already framed. One after the other: deliver deletes a locale's screenshots and
-  # recreates its sets, which is what the "Screenshot Set Already Exists!" race is about, and two uploads at once on
-  # one version would make it worse. The Mac's go on a version of their own, so its jobs run next to the iPhone's.
+  # again, with the images that were already framed, then the tidy-up, which removes the copies deliver leaves behind
+  # and sorts every shelf: the jobs of app-store-screenshots-upload.yml, which app-store-screenshots.yml calls too,
+  # for a set made on a Mac. Shown as "iOS, App Store screenshots / send <locale>" and "… / tidy up". The Mac's go
+  # on a version of their own, so its jobs run next to the iPhone's. They go on the release's version, created if
+  # app-store-versions didn't.
   # deliver deletes a locale's screenshots before it uploads the new ones, so a job that failed halfway can leave
   # that locale with none: the App Store then shows the primary language's there, and the submission says which.
   #
-  # The -finish job runs after the last locale, failed ones included: it removes the copies deliver leaves behind and
-  # sorts every shelf in file-name order. Re-running a failed locale's job runs it and the submit job again, which
-  # only helps while the version can still be edited: the submission doesn't wait for a failed locale
+  # best_effort is the continue-on-error of every job of the call, which a job that calls a workflow can't carry
+  # itself. Re-running a failed locale's job runs it, the tidy-up and the submit job again, which only helps while
+  # the version can still be edited: the submission doesn't wait for a failed locale
   # (docs/release-process.md#screenshots-with-a-release).
   ios-screenshots:
-    name: iOS, send the ${{ matrix.locale }} screenshots to the App Store
+    name: iOS, App Store screenshots
     needs: [plan, app-store-versions, apple-screenshots-frame]
     if: ${{ !cancelled() && inputs.ios && needs.apple-screenshots-frame.outputs.ios_locales != '' }}
-    runs-on: ubuntu-latest
-    environment: Production
-    # Per locale: the chain has no cap of its own, and the submission and the next release wait behind it.
-    timeout-minutes: 20
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        locale: ${{ fromJSON(needs.apple-screenshots-frame.outputs.ios_locales) }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ needs.plan.outputs.sha }}
-          fetch-depth: 1
-
-      - name: Check who releases
-        uses: ./.github/actions/release-admin
-        with:
-          token: ${{ github.token }}
-
-      # The whole of it: the lane picks this job's locale out.
-      - name: Download the framed screenshots
-        uses: actions/download-artifact@v8
-        with:
-          name: app-store-screenshots-ios
-          path: fastlane/screenshots
-
-      # Listing images only, of this locale. They go on the release's version, created if app-store-versions didn't.
-      - name: Send the screenshots to App Store Connect
-        uses: ./.github/actions/app-store-lane
-        with:
-          lane: upload_screenshots platform:ios skip_mac:true locale:${{ matrix.locale }}
-          app-version: ${{ needs.plan.outputs.version }}
-          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-
-  ios-screenshots-finish:
-    name: iOS, tidy the App Store screenshots up
-    needs: [plan, apple-screenshots-frame, ios-screenshots]
-    if: ${{ !cancelled() && inputs.ios && needs.apple-screenshots-frame.outputs.ios_locales != '' }}
-    runs-on: ubuntu-latest
-    environment: Production
-    timeout-minutes: 30
-    continue-on-error: true
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ needs.plan.outputs.sha }}
-          fetch-depth: 1
-
-      - name: Check who releases
-        uses: ./.github/actions/release-admin
-        with:
-          token: ${{ github.token }}
-
-      - name: Remove the duplicate screenshots and sort every shelf
-        uses: ./.github/actions/app-store-lane
-        with:
-          lane: finish_app_store_screenshots platform:ios
-          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+    uses: ./.github/workflows/app-store-screenshots-upload.yml
+    with:
+      platform: ios
+      locales: ${{ needs.apple-screenshots-frame.outputs.ios_locales }}
+      artifact: app-store-screenshots-ios
+      ref: ${{ needs.plan.outputs.sha }}
+      app_version: ${{ needs.plan.outputs.version }}
+      best_effort: true
+    secrets:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   macos-screenshots:
-    name: macOS, send the ${{ matrix.locale }} screenshots to the App Store
+    name: macOS, App Store screenshots
     needs: [plan, app-store-versions, apple-screenshots-frame]
     if: ${{ !cancelled() && inputs.macos && needs.apple-screenshots-frame.outputs.mac_locales != '' }}
-    runs-on: ubuntu-latest
-    environment: Production
-    # Per locale, as the iPhone's: one shelf of ten images each.
-    timeout-minutes: 15
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        locale: ${{ fromJSON(needs.apple-screenshots-frame.outputs.mac_locales) }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ needs.plan.outputs.sha }}
-          fetch-depth: 1
-
-      - name: Check who releases
-        uses: ./.github/actions/release-admin
-        with:
-          token: ${{ github.token }}
-
-      # The whole of it: the lane picks this job's locale out.
-      - name: Download the framed screenshots
-        uses: actions/download-artifact@v8
-        with:
-          name: app-store-screenshots-mac
-          path: fastlane/screenshots-mac
-
-      # Listing images only, of this locale. They go on the release's version, created if app-store-versions didn't.
-      - name: Send the screenshots to App Store Connect
-        uses: ./.github/actions/app-store-lane
-        with:
-          lane: upload_screenshots platform:mac locale:${{ matrix.locale }}
-          app-version: ${{ needs.plan.outputs.version }}
-          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
-
-  macos-screenshots-finish:
-    name: macOS, tidy the App Store screenshots up
-    needs: [plan, apple-screenshots-frame, macos-screenshots]
-    if: ${{ !cancelled() && inputs.macos && needs.apple-screenshots-frame.outputs.mac_locales != '' }}
-    runs-on: ubuntu-latest
-    environment: Production
-    timeout-minutes: 30
-    continue-on-error: true
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ needs.plan.outputs.sha }}
-          fetch-depth: 1
-
-      - name: Check who releases
-        uses: ./.github/actions/release-admin
-        with:
-          token: ${{ github.token }}
-
-      - name: Remove the duplicate screenshots and sort every shelf
-        uses: ./.github/actions/app-store-lane
-        with:
-          lane: finish_app_store_screenshots platform:osx
-          key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          key-p8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+    uses: ./.github/workflows/app-store-screenshots-upload.yml
+    with:
+      platform: mac
+      locales: ${{ needs.apple-screenshots-frame.outputs.mac_locales }}
+      artifact: app-store-screenshots-mac
+      ref: ${{ needs.plan.outputs.sha }}
+      app_version: ${{ needs.plan.outputs.version }}
+      best_effort: true
+    secrets:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
 
   # ---------------------------------------------------------------------------------------------
   # Web
@@ -1115,7 +1021,7 @@ jobs:
   # this job after the submission landed finds it and does nothing.
   ios-submit:
     name: iOS, submit for App Store review
-    needs: [plan, ios-upload, ios-screenshots-finish]
+    needs: [plan, ios-upload, ios-screenshots]
     if: ${{ !cancelled() && inputs.submit_for_review && needs.ios-upload.result == 'success' }}
     runs-on: ubuntu-latest
     environment: Production
@@ -1235,7 +1141,7 @@ jobs:
   # As ios-submit, on the Mac app's own version (platform osx).
   macos-submit:
     name: macOS, submit for App Store review
-    needs: [plan, macos-upload, macos-screenshots-finish]
+    needs: [plan, macos-upload, macos-screenshots]
     if: ${{ !cancelled() && inputs.submit_for_review && needs.macos-upload.result == 'success' }}
     runs-on: ubuntu-latest
     environment: Production
