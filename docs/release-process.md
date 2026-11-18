@@ -79,6 +79,8 @@ take the next `versionCode` from the same place.
 ./scripts/release/release-production.sh track=internal submit_for_review=false web=false   # reaches no user
 ./scripts/release/release-production.sh version=3.1.0 rollout=20                           # a staged rollout of 3.1.0
 ./scripts/release/release-production.sh screenshots=true                                   # and the listings' screenshots made again
+./scripts/release/release-production.sh screenshots=true screenshots_iphone_duo=true       # the iPhone Duo's too, closed and open
+./scripts/release/release-production.sh screenshots=true screenshots_mac=true              # the Mac's too
 ```
 
 The script takes the workflow's inputs as `input=value`, dispatches it on `main` and prints the link to the run. It
@@ -94,7 +96,9 @@ dispatched behind a waiting one cancels it without a word.
 | `rollout` | `100` | On the production track, the percentage of the users who get the release: under 100 is a staged rollout |
 | `submit_for_review` | on | Sends the iOS and macOS builds to App Store review. Off, they stop at TestFlight |
 | `phased_release` | off | Releases an approved update over seven days, to the people with automatic updates. Off, everyone gets it at once |
-| `screenshots` | off | Makes the store listings' screenshots again and uploads them, with a release ([Screenshots with a release](#screenshots-with-a-release)) |
+| `screenshots` | off | Makes the store listings' screenshots again and uploads them, with a release ([Screenshots with a release](#screenshots-with-a-release)). The App Store's are captured on the iPhone and the iPad |
+| `screenshots_iphone_duo` | off | With `screenshots`, captures the iPhone Duo too, closed and open. Its captures fail on the runners today ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)) |
+| `screenshots_mac` | off | With `screenshots`, captures the Mac too. Its capture fails on the runners today, and the Mac's listing has no screenshots yet, so the Mac can't be submitted until they are uploaded from a Mac |
 
 **A run with nothing changed publishes to everyone, and nothing waits for an approval** (Pierre's calls, as in
 Bible Planner): the production track at 100%, a submission for review that goes out by itself once Apple approves
@@ -207,12 +211,15 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   screenshots are copied into it long before anything looks at them), `apple-screenshots-capture` runs the UI tests on one simulator per slot
   and, for the Mac, photographs the app's window on the runner's own screen, `apple-screenshots-frame` frames the
   captures, `ios-screenshots` and `macos-screenshots` upload them, and `ios-screenshots-finish` and
-  `macos-screenshots-finish` remove the copies deliver leaves behind and sort every shelf.
+  `macos-screenshots-finish` remove the copies deliver leaves behind and sort every shelf. The slots are the
+  iPhone's and the iPad's, plus the iPhone Duo's and the Mac's when the run asks for them
+  ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)).
 
 **The uploads are one job per locale**, one after the other, on each store (Bible Planner's releases lost a whole
 upload to one image Google Play answered with a server error): a locale a store refused is the only one that
-failed, and the others are up. Each job sets fastlane up to send one locale, which adds up over a store's 26 (not
-timed yet: no release has run them): the submission waits for the App Store's, and the next release or beta for them
+failed, and the others are up. Each job sets fastlane up to send one locale, which adds up over a store's 26 (about
+two minutes a locale on Google Play in the first release that ran them, 3.0.0; the App Store's are not timed yet):
+the submission waits for the App Store's, and the next release or beta for them
 all, since they share the `release` group.
 
 - **On Google Play**, that locale's job sends it again with the images the run already drew, at any time: the
@@ -227,19 +234,73 @@ all, since they share the `release` group.
   the locale for the next release with `screenshots` on.
 
 None of the App Store's jobs holds the release back: one that fails is listed as failed, the run is not, and the
-submission goes on with the screenshots the version already has. Three captures may fail on a runner, and none had
-run in CI when this was written:
+submission goes on with the screenshots the version already has.
 
-- **The iPhone Duo's two**, closed and open, each on a runner of its own. Both need the Duo's simulator runtime, which
-  the `xcode-27` image has (iOS 27.1 and 27.2). The open one also needs the script to press Open in Device Hub
-  through accessibility, which the image allows on paper and nobody has seen work
-  ([store-listing-screenshots.md](store-listing-screenshots.md#what-the-images-show)). The Duo's shelf on the App
-  Store holds ten screenshots for both displays, so five screens go up open and five closed; when one of the two
-  captures fails, the other fills the shelf, and when both do the listing goes without the Duo.
-- **The Mac's.** The runner has no signing account, so the Mac app is built signed to run locally and without its
-  entitlements, and the job refuses captures from a display that isn't Retina, which would reach the listing
-  blurred. The Mac's listing then keeps its screenshots: `fastlane screenshots platform:ios` on a Mac replaces them,
-  on a version that is still editable.
+#### The devices the App Store's captures run on
+
+With `screenshots` on, the App Store's captures run on the iPhone and the iPad. The iPhone Duo and the Mac are each
+behind a marker of their own, off unless the release asks for it (Pierre's call, November 2026: their captures
+don't work on the runners yet, so a release leaves them out until they do):
+
+| Marker | Default | Slots it captures |
+| --- | --- | --- |
+| none: always, with `screenshots` | | `iphone63`, `iphone67`, `ipad13` |
+| `screenshots_iphone_duo` | off | `iphoneduo` and `iphoneduoopen`, the Duo closed and open, together |
+| `screenshots_mac` | off | `mac` |
+
+`plan` lists the run's slots ([`app-store-capture-slots.sh`](../scripts/release/app-store-capture-slots.sh)) and
+says them in the run summary
+([`app-store-screenshots-plan.sh`](../scripts/release/app-store-screenshots-plan.sh)), and
+`apple-screenshots-capture` is one job per slot of that list: a device left out starts no Mac runner, where a job
+that started only to stop would hold one.
+
+- **The iPhone's two sizes and the iPad's have no marker.** The frames of every device, the Mac's too, can't be
+  drawn without them (`stageAppStoreScreenshots` fails), so a run without one of them would frame and upload
+  nothing.
+- **A marker does nothing without `screenshots`**, which stays the switch for all of it: `plan` warns about a run
+  that turns one on with `screenshots` off, and so does `release-production.sh`.
+- **A device is captured only in a run that can upload its images.** The Duo's go up with the iPhone's and the
+  iPad's, so its marker needs `ios` on; the Mac's needs `macos` on; and both need a run that submits, as every
+  App Store screenshot does. `plan` warns about a marker that is on and adds no capture. A run of the Mac alone
+  still captures the iPhone and the iPad, for the frames, when `screenshots_mac` is on; without it, it captures
+  nothing of the App Store's, and the summary says so.
+- **Without the iPhone Duo**, the iPhone's and the iPad's shelves are the only ones a locale gets: deliver deletes
+  all of a locale's screenshots before it uploads, so a locale that had the Duo's loses them, as it does when both
+  of the Duo's captures fail. No release has uploaded them yet, and App Store Connect only requires the Duo's shelf
+  from April 2027 ([store-listing-screenshots.md](store-listing-screenshots.md#what-the-images-show)).
+- **Without the Mac**, nothing of the Mac's is uploaded or tidied up (`macos-screenshots` and
+  `macos-screenshots-finish` skip), so the Mac's listing keeps what it has. **Today that is nothing**: the Mac app
+  was never released, its listing has no screenshots, and `macos-submit` refuses to submit a version whose primary
+  language has none. Leaving the Mac out doesn't make the Mac submittable, it only stops a capture known to fail
+  from taking a runner. Until that capture works there, the Mac's images have to be made on a Mac with a Retina
+  display and uploaded from it, while the Mac's version is still editable:
+  `fastlane screenshots platform:ios skip_upload:true`, which captures and frames them, then
+  `fastlane upload_screenshots platform:mac`, which sends the Mac's alone
+  ([store-listing-screenshots.md](store-listing-screenshots.md)). Not `fastlane screenshots platform:ios` on its
+  own: it uploads the iPhone's and the iPad's first, which replaces every locale's shelves on a version that is
+  still editable and fails on one already waiting for review, before the Mac's are reached. Then run `macos-submit`
+  again.
+
+What is known of the three captures behind the markers, from the first release that ran them on GitHub's runners
+(3.0.0, run 44222898644, 18 November 2026), where each of the three failed:
+
+- **The iPhone Duo open (`iphoneduoopen`)**: "Couldn't press Open in Device Hub (is this terminal allowed in
+  Accessibility?)". The Duo's simulator runtime is there (the `xcode-27` image has iOS 27.1 and 27.2) and the
+  simulator booted, but the script's press on Open, through accessibility, didn't land, and nobody is at a runner to
+  press it: the slot gave up half a minute later, having captured nothing
+  ([store-listing-screenshots.md](store-listing-screenshots.md#what-the-images-show)).
+- **The iPhone Duo closed (`iphoneduo`)**: the UI test failed about nine minutes in
+  (`StoreScreenshotsUITests.testCaptureStoreScreenshots()`, "TEST EXECUTE FAILED"), after nineteen launches of the
+  app some thirteen seconds apart and then four minutes with none. The cause is not known: `xcodebuild` runs quiet
+  and the job keeps no result bundle, so the log names neither the screen, the language nor the failure.
+- **The Mac (`mac`)**: "The Mac capture is 1440 px wide and the frame takes 2880: its display isn't Retina". The
+  runner has no signing account, so the Mac app is built signed to run locally and without its entitlements, and
+  that part worked: the app launched and its window was photographed. The runner's display is not Retina, and the
+  script refuses a capture that would reach the listing blurred.
+
+With `screenshots_iphone_duo` on, the Duo's shelf on the App Store holds ten screenshots for both displays, so five
+screens go up open and five closed; when one of the two captures fails, the other fills the shelf, and when both do
+the listing goes without the Duo.
 
 ### Re-runs and what a run leaves
 

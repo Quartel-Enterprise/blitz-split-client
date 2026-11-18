@@ -79,7 +79,9 @@ Every translator, human or agent, reads it first; without it each one picks its 
   N languages". The stores only get the new language's screenshots from a stable release dispatched with
   `screenshots=true`, which is off by default
   ([release-process.md](../../../docs/release-process.md#screenshots-with-a-release)): say so when you hand the
-  task back. Until then its listing shows the default language's.
+  task back. Until then its listing shows the default language's. That input alone captures the iPhone and the
+  iPad on the App Store: the iPhone Duo's and the Mac's are made only with `screenshots_iphone_duo=true` and
+  `screenshots_mac=true`, whose captures fail on the runners today, or by hand on a Mac.
 
 ## 4. The activity sentences
 
