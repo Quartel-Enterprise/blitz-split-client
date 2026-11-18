@@ -2,6 +2,7 @@ package com.quare.blitzsplit.android.storescreenshots
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrip
@@ -37,24 +38,14 @@ internal abstract class StoreScreenshots(
             showStatusBar = appleSlot == null,
             statusBarClock = "9:41",
             mockupFrame = mockupFrame,
-            title = bannerFontSizes?.let { sizes ->
-                { text ->
-                    BannerText(
-                        text = text,
-                        fontSize = sizes.title,
-                        isTitle = true,
-                    )
-                }
-            },
-            description = bannerFontSizes?.let { sizes ->
-                { text ->
-                    BannerText(
-                        text = text,
-                        fontSize = sizes.description,
-                        isTitle = false,
-                    )
-                }
-            },
+            title = bannerSlotOf(
+                fontSize = bannerFontSizes?.title,
+                isTitle = true,
+            ),
+            description = bannerSlotOf(
+                fontSize = bannerFontSizes?.description,
+                isTitle = false,
+            ),
         ),
     ) {
     @Test
@@ -161,6 +152,21 @@ internal abstract class StoreScreenshots(
             overwrite = true,
         )
         check(drawn.deleteRecursively()) { "Couldn't delete $drawn after moving it to $tag" }
+    }
+}
+
+// A line of the banner at a size of the slot's own, or null to leave the library's: the title's and the description's
+// slots of ScreenshotStyle differ in nothing else.
+private fun bannerSlotOf(
+    fontSize: TextUnit?,
+    isTitle: Boolean,
+): (@Composable (String) -> Unit)? = fontSize?.let { size ->
+    { text ->
+        BannerText(
+            text = text,
+            fontSize = size,
+            isTitle = isTitle,
+        )
     }
 }
 
