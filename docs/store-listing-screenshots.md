@@ -198,8 +198,8 @@ administrator, on `main`, while no release and no other run of the workflow is g
 
 | The summary says | Repair |
 | --- | --- |
-| `<file> is listed 2 times`, `<file> is missing`, `<file> never finished uploading`, `holds no screenshot`, `is not there`, `has no shelf` | **Send that locale again**: `gh workflow run app-store-screenshots.yml -f set=<name> -f locales="en-US de-DE"`, with `-f ios=false` or `-f macos=false` for one version. deliver deletes every shelf of a locale it is handed and uploads it afresh, and the tidy-up then checks every locale again |
-| `is not in file-name order`, `could not be read whole` | **Tidy up again**: `gh workflow run app-store-screenshots.yml -f tidy_only=true`, which fetches no set and sends nothing. The "tidy up" job's own re-run button does the same within a run that is still on the page. Also the way to check the shelves after a repair made by hand |
+| `<file> is listed 2 times`, `<file> is missing`, `<file> never finished uploading`, `holds no screenshot`, `is not there`, `has no shelf`, `no locale of the version holds a screenshot` | **Send that locale again**: `gh workflow run app-store-screenshots.yml -f set=<name> -f locales="en-US de-DE"`, with `-f ios=false` or `-f macos=false` for one version. deliver deletes every shelf of a locale it is handed and uploads it afresh, and the tidy-up then checks every locale again |
+| `is not in file-name order`, `could not be read whole`, `<file> is still being processed` | **Tidy up again**: `gh workflow run app-store-screenshots.yml -f tidy_only=true`, which fetches no set and sends nothing. The "tidy up" job's own re-run button does the same within a run that is still on the page. Also the way to check the shelves after a repair made by hand |
 
 - **Never delete one of a file's two entries**, by hand or in a script. A file listed twice was, each time it was
   looked at, **one screenshot under two ids**: the same file name and checksum, and `DELETE appScreenshots/<id>` on
@@ -211,7 +211,8 @@ administrator, on `main`, while no release and no other run of the workflow is g
   (`local-set.mjs send --name <name>`, half a minute for 600 MB), then dispatch with `locales`. A locale the set
   lacks stops the run before anything is sent. The run checks the whole set as any other, uploads the named
   locales' jobs alone, and **keeps the set**: it can't tell whether the other locales are up, so its summary ends
-  with the command that drops the draft release.
+  with the command that drops the draft release. The summary of a run that kept its set for a shelf prints both
+  commands with that run's own `ios`, `macos` and `app_version`.
 - **`tidy_only` takes no other input** than `ios` and `macos`: with `set`, `locales` or `app_version` it is
   refused, since it works on the version that is open for editing and sends nothing.
 - **A locale sent again can come back with another file listed twice**: three of the first set's 156 shelves did.

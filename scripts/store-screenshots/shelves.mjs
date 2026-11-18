@@ -28,6 +28,8 @@ import { listingScreens, stagedImage } from "./local-set.mjs";
 
 /** The state of a screenshot whose image App Store Connect has: anything else is still on its way, or never came. */
 export const COMPLETE = "COMPLETE";
+/** The state of one whose image went up and is still being processed: it becomes COMPLETE by itself. */
+export const PROCESSING = "UPLOAD_COMPLETE";
 
 // File-name order, the shelf order: 02 before 10, as deliver sorts (the Naturally gem).
 const byFileName = new Intl.Collator("en", { numeric: true });
@@ -61,6 +63,8 @@ export function tidyShelf({ isWhole, screenshots }, screens = listingScreens()) 
       // the words say what was read and not which of the two it is. Either way no entry is safe to delete alone.
       const isOneImage = entries[0].checksum && entries.every((entry) => entry.checksum === entries[0].checksum);
       problems.push(`${fileName} is listed ${entries.length} times, ${isOneImage ? `under ${entries.length} ids with one checksum` : `in the states ${states.join(", ")}`}`);
+    } else if (entries[0].state === PROCESSING) {
+      problems.push(`${fileName} is still being processed (${PROCESSING}): run the tidy-up again in a few minutes`);
     } else if (entries[0].state !== COMPLETE) {
       problems.push(`${fileName} never finished uploading (${states.join(", ")})`);
     }
@@ -100,9 +104,12 @@ export function plan({ shelves }, screens = listingScreens()) {
  * Every shelf's problems, one line each, `<locale> / <shelf>: <what is wrong>`, then the shelves that aren't there:
  * deliver deletes a locale's shelves before it uploads the new ones, so an upload that failed leaves a locale
  * without one, or without any, which no shelf's own problems would say. Every locale of the version holds the
- * shelves the others do; a device the set leaves out is on no locale's, and is not missed.
+ * shelves the others do; a device the set leaves out is on no locale's, and is not missed. A version with no shelf
+ * at all is not as staged either.
  */
 export function check({ locales = [], shelves }, screens = listingScreens()) {
+  // Never what a tidy-up is run on: after an upload it means every locale's failed once its shelves were deleted.
+  if (shelves.length === 0) return ["no locale of the version holds a screenshot"];
   const problems = shelves.flatMap((shelf) => shelfProblems(shelf, screens).map((problem) => `${shelf.locale} / ${shelf.shelf}: ${problem}`));
   const kinds = [...new Set(shelves.map((shelf) => shelf.shelf))].sort();
   for (const locale of new Set([...locales, ...shelves.map((shelf) => shelf.locale)])) {
@@ -130,14 +137,14 @@ function main([command, file]) {
   const problems = check(read);
   const locales = new Set(read.shelves.map((shelf) => shelf.locale)).size;
   if (problems.length === 0) {
-    console.log(read.shelves.length === 0 ? "No locale of the version holds a screenshot: nothing to check." : `${read.shelves.length} shelves of ${locales} locale(s) hold each screen once, in file-name order.`);
+    console.log(`${read.shelves.length} shelves of ${locales} locale(s) hold each screen once, in file-name order.`);
     return;
   }
   const lines = problems.map((problem) => `- ${problem}`);
   console.log([`${problems.length} thing(s) wrong on the shelves:`, ...lines].join("\n"));
   // On the run's page, where someone reads it, and not only in the lane's log.
   if (process.env.GITHUB_STEP_SUMMARY) {
-    const how = "A shelf that isn't there, lacks a file, lists one twice or holds one that never finished uploading is put right by sending its locale again; a shelf that is only out of order, or wasn't read whole, by running the tidy-up again. Don't delete one of a file's two entries by hand: they may be one screenshot under two ids, and both go (docs/store-listing-screenshots.md#repairing-shelves).";
+    const how = "A shelf that isn't there, lacks a file, lists one twice or holds one that never finished uploading is put right by sending its locale again; a shelf that is only out of order, wasn't read whole or holds a file still being processed, by running the tidy-up again. Don't delete one of a file's two entries by hand: they may be one screenshot under two ids, and both go (docs/store-listing-screenshots.md#repairing-shelves).";
     appendFileSync(process.env.GITHUB_STEP_SUMMARY, ["### Shelves that are not as staged", "", ...lines, "", how, ""].join("\n"));
   }
   process.exit(1);

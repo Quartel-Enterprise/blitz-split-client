@@ -127,6 +127,13 @@ describe("what sorting doesn't fix", () => {
     assert.deepEqual(tidyShelf(shelf).problems, ["03_receipt_mac.png never finished uploading (FAILED)"]);
   });
 
+  // The last locale's images may still be on their way when the tidy-up starts: waiting is enough, not a resend.
+  test("tells a file still being processed from one that never finished", () => {
+    const processing = shot(fileOf("03_receipt", "mac"), { state: "UPLOAD_COMPLETE", checksum: null });
+    const shelf = shelfOf([...uploaded("mac").filter(({ fileName }) => fileName !== processing.fileName), processing], { shelf: "APP_DESKTOP" });
+    assert.deepEqual(tidyShelf(shelf).problems, ["03_receipt_mac.png is still being processed (UPLOAD_COMPLETE): run the tidy-up again in a few minutes"]);
+  });
+
   test("names both displays' files for a screen the iPhone Duo's shelf lacks, and a screen it has from both", () => {
     const open = ["01_group", "04_balances", "06_statistics", "07_home", "09_activity"];
     const staged = SCREENS.map((screen) => shot(fileOf(screen, open.includes(screen) ? "iphone_duo_open" : "iphone_duo")));
@@ -164,9 +171,13 @@ describe("the check after the tidy-up", () => {
       "ja / APP_IPAD_PRO_3GEN_11: is not there, and other locales have it",
       "ko: has no shelf, where other locales have APP_IPAD_PRO_3GEN_11, APP_IPHONE_67",
     ]);
-    // A device every locale goes without was left out of the set, and a version with no screenshot has none to miss.
+    // A device every locale goes without was left out of the set.
     assert.deepEqual(check({ locales: ["en-US", "ja"], shelves: [shelves[0], shelves[2]] }), []);
-    assert.deepEqual(check({ locales: ["en-US", "ja"], shelves: [] }), []);
+  });
+
+  // What is left when every locale's upload failed once deliver had deleted its shelves: not "as staged".
+  test("fails on a version with no shelf at all", () => {
+    assert.deepEqual(check({ locales: ["en-US", "ja"], shelves: [] }), ["no locale of the version holds a screenshot"]);
   });
 
   test("plans by the shelf's id, for the lane to find each one", () => {
@@ -217,6 +228,12 @@ describe("the script, as the lane runs it", () => {
 
   test("says how it is called when it is called wrong", () => {
     assert.equal(run("sort", []).status, 1);
+  });
+
+  test("fails the check of a version with no shelf", () => {
+    const { status, stdout } = run("check", []);
+    assert.equal(status, 1);
+    assert.match(stdout, /^1 thing\(s\) wrong on the shelves:\n- no locale of the version holds a screenshot\n$/);
   });
 
   // The lane reads each shelf in full and asks the script, by these words: a shelf read through the relationship

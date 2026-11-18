@@ -99,8 +99,8 @@ export const listingScreens = () =>
 /** The screen and the device a staged image is named after, `<screen>_<device>.png`; null for any other name. */
 export function stagedImage(fileName, screens) {
   if (!fileName.endsWith(".png")) return null;
-  // Longest first, so a screen whose name starts another's is never taken for it.
-  const screen = [...screens].sort((one, other) => other.length - one.length).find((candidate) => fileName.startsWith(`${candidate}_`));
+  // The longest that fits, so a screen whose name starts another's is never taken for it.
+  const [screen] = screens.filter((candidate) => fileName.startsWith(`${candidate}_`)).sort((one, other) => other.length - one.length);
   return screen ? { screen, device: fileName.slice(screen.length + 1, -".png".length) } : null;
 }
 
