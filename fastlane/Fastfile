@@ -212,8 +212,8 @@ def upload_store_screenshots(repo_root, platforms, options)
   end
 end
 
-desc "Remove the duplicate screenshots deliver can leave on the editable App Store version, sort every shelf and"
-desc "check that each holds every screen once: a shelf short of a file fails the lane, which names it."
+desc "Sort every shelf of the editable App Store version by file name and check that each holds every screen once:"
+desc "a shelf short of a file, or listing one twice, fails the lane, which names it. Nothing is removed."
 desc "Options: platform (ios|osx; both when left out). The release runs it after the last locale's upload, since an"
 desc "upload of one locale leaves the shelves as deliver left them."
 lane :finish_app_store_screenshots do |options|
@@ -325,8 +325,8 @@ end
 
 # deliver deletes a locale's screenshots and recreates its sets; a set recreated before App Store Connect finished
 # deleting it is refused with "Screenshot Set Already Exists!", and waiting and running deliver again recovers. A shelf
-# it can't reorder (a copy of the previous version's screenshot still there) doesn't fail an upload that landed: the
-# tidy-up after the last locale removes the copy and sorts it. An upload that fails on one shelf (a size App Store
+# it can't reorder (one that lists a screenshot twice: deliver reads 10 of its 11) doesn't fail an upload that
+# landed: the tidy-up after the last locale sorts it, and names it. An upload that fails on one shelf (a size App Store
 # Connect refuses, as the iPhone Duo's inner display might) has put the other shelves up by then, unsorted, since
 # deliver sorts last: the tidy-up runs for them too, and the upload's failure is the one reported.
 def upload_app_store_screenshots(screenshots_path, locale, platform)
@@ -430,15 +430,19 @@ rescue => e
   true
 end
 
-# Leaves every shelf of the editable version as it was staged: one copy of each file, in file-name order, the shelf
-# order. A shelf is one locale's screenshots for one device size. Spaceship creates a screenshot's record and then
-# uploads its image, and a create it sends again after a gateway error leaves a second record of the same file, so a
-# shelf can hold 11 or more, which deliver's own sort then can't order (docs/store-listing-screenshots.md#things-that-bite).
+# Sorts every shelf of the editable version by file name, the shelf order, then checks that each is as it was
+# staged. A shelf is one locale's screenshots for one device size.
 #
-# What to remove and how to sort is decided by scripts/store-screenshots/shelves.mjs, which has the tests: the copy
-# kept is the first whose image is there, never the first by position, which may be the record that got no image.
-# Every shelf is then read again and checked: a shelf short of a screen, or holding a file that never finished
-# uploading, is an error that names the locale, the shelf and the file. Only sending the locale again fixes those.
+# It removes nothing. An upload can leave a shelf listing one screenshot twice, under two ids with the same file name
+# and checksum, so a shelf of ten lists 11. Deleting one of the two ids deletes both: the lane used to remove "the
+# later copy" of a file name, and the first set's tidy-up took `08_payers_and_currencies_iphone_6_7.png` off a shelf
+# that way (run 44324532909, November 2026; seen in App Store Connect). Such a shelf can still be sorted, with an
+# order that names all 11, and is then reported: sending its locale again is what leaves it with ten
+# (docs/store-listing-screenshots.md#repairing-shelves).
+#
+# How to sort and what to report is decided by scripts/store-screenshots/shelves.mjs, which has the tests. Every
+# shelf is read again after the sorting and checked: a shelf short of a screen, listing a file twice, or holding one
+# that never finished uploading is an error that names the locale, the shelf and the file.
 def tidy_app_store_screenshots(platform)
   require "spaceship"
 
@@ -470,8 +474,8 @@ def tidy_app_store_screenshots(platform)
   shelves.each do |shelf|
     tidy_app_store_shelf(shelf, todo_of.fetch(shelf[:id]))
   rescue => e
-    # Not the end of the lane: the other shelves are tidied, and the check below names this one
-    UI.error("Could not tidy #{shelf[:locale]}/#{shelf[:shelf]} up: #{e.message.lines.first.to_s.strip}")
+    # Not the end of the lane: the other shelves are sorted, and the check below names this one
+    UI.error("Could not sort #{shelf[:locale]}/#{shelf[:shelf]}: #{e.message.lines.first.to_s.strip}")
   end
 
   # Read again, so what is checked is what App Store Connect holds now, not what the lane meant to leave
@@ -489,10 +493,10 @@ end
 # whether that is known to be all of them.
 #
 # Not `set.app_screenshots`: that is the relationship App Store Connect includes with the shelf, 10 at most, whatever
-# the shelf holds. A shelf of 11 read through it showed 10 distinct files, so no copy was found, and the order sent
-# for those 10 was refused every time, since it left one out (run 44324532909, November 2026). Read here through
-# the shelf's own two lists, paged: the relationship, which is the order and what a reorder replaces, and the
-# screenshots, for each one's file name and state.
+# the shelf lists. A shelf listing 11 read through it showed 10 distinct files, and the order sent for those 10 was
+# refused every time, since it left one out (run 44324532909, November 2026). Read here through the shelf's own two
+# lists, paged: the relationship, which is the order and what a reorder replaces, and the screenshots, for each
+# one's file name, state and checksum.
 def read_app_store_shelf(locale, set, came_with_it: [])
   shelf = { id: set.id, locale: locale, shelf: set.screenshot_display_type }
   client = Spaceship::ConnectAPI.tunes_request_client
@@ -506,7 +510,12 @@ def read_app_store_shelf(locale, set, came_with_it: [])
   total = linkage.first&.body&.dig("meta", "paging", "total")
   whole = ids.uniq.size == ids.size && ids.sort == attributes_of.keys.sort && (total.nil? || total == ids.size) && ids.first(came_with_it.size) == came_with_it
   screenshots = ids.select { |id| attributes_of.key?(id) }.map do |id|
-    { id: id, fileName: attributes_of[id]["fileName"], state: attributes_of[id].dig("assetDeliveryState", "state") }
+    {
+      id: id,
+      fileName: attributes_of[id]["fileName"],
+      state: attributes_of[id].dig("assetDeliveryState", "state"),
+      checksum: attributes_of[id]["sourceFileChecksum"],
+    }
   end
   shelf.merge(isWhole: whole, screenshots: screenshots)
 rescue => e
@@ -515,20 +524,15 @@ rescue => e
   shelf.merge(isWhole: false, screenshots: [])
 end
 
-# Removes what the plan names from a shelf and puts the rest in the plan's order, which names every screenshot the
-# shelf then holds: App Store Connect refuses an order that adds or leaves out one.
+# Puts a shelf in the plan's order, which names every screenshot the shelf lists: App Store Connect refuses an order
+# that adds or leaves out one.
 def tidy_app_store_shelf(shelf, todo)
   order = todo.fetch("order")
   # Not read whole: nothing is touched, and the check after the tidy-up says so
-  return if order.nil?
+  return if order.nil? || order == shelf[:screenshots].map { |screenshot| screenshot[:id] }
 
-  remove = todo.fetch("remove")
-  remove.each { |id| Spaceship::ConnectAPI.delete_app_screenshot(app_screenshot_id: id) }
-  current = shelf[:screenshots].map { |screenshot| screenshot[:id] } - remove
-  return if current == order
-
-  UI.message("Sorting #{shelf[:locale]}/#{shelf[:shelf]}, #{remove.size} removed")
-  # A screenshot just removed may still count as the shelf's for a moment, and the order is refused meanwhile
+  UI.message("Sorting #{shelf[:locale]}/#{shelf[:shelf]}, #{order.size} screenshots")
+  # A shelf an upload just wrote on may still be settling, and its order is refused meanwhile
   retrying_on(SCREENSHOT_REORDER_REFUSED_MESSAGE, attempts: SCREENSHOT_REORDER_ATTEMPTS, wait_seconds: SCREENSHOT_REORDER_WAIT_SECONDS) do
     Spaceship::ConnectAPI.patch_app_screenshot_set_screenshots(app_screenshot_set_id: shelf[:id], app_screenshot_ids: order)
   end

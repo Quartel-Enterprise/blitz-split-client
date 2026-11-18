@@ -12,7 +12,7 @@ name: app-store-screenshots
 #
 # To repair shelves without sending a whole set again (docs/store-listing-screenshots.md#repairing-shelves):
 #
-#   gh workflow run app-store-screenshots.yml -f tidy_only=true               # tidy up and check, nothing is sent
+#   gh workflow run app-store-screenshots.yml -f tidy_only=true               # sort and check, nothing is sent
 #   gh workflow run app-store-screenshots.yml -f set=3.0.0 -f locales="en-US de-DE"   # those locales alone
 #
 #   1. `check` fetches the set, checks it again as the Mac did (a set that would empty a shelf is refused) and hands
@@ -482,7 +482,7 @@ jobs:
             echo "**The set was kept**, as the draft release \`$SET_TAG\`: a locale didn't land. Run its job again with the job's own re-run button; this job then runs again too, $removal. To drop it instead: $drop." >> "$GITHUB_STEP_SUMMARY"
             echo "::warning title=The set was kept::A locale didn't land, so the draft release $SET_TAG is still there. The run's summary names the locale."
           elif [ "$TIDIED" != true ]; then
-            echo "**The set was kept**, as the draft release \`$SET_TAG\`: every locale's job passed, and a shelf isn't as staged. The tidy-up job's summary names it. Send that shelf's locale again from this set, \`gh workflow run app-store-screenshots.yml --repo $GITHUB_REPOSITORY -f set=$SET -f locales=\"<locale> <locale>\"\`, or, for a copy left or a shelf out of order, tidy up again with \`-f tidy_only=true\` and no other input (docs/store-listing-screenshots.md#repairing-shelves). Once the shelves are right, drop the set: $drop." >> "$GITHUB_STEP_SUMMARY"
+            echo "**The set was kept**, as the draft release \`$SET_TAG\`: every locale's job passed, and a shelf isn't as staged. The tidy-up job's summary names it. Send that shelf's locale again from this set, \`gh workflow run app-store-screenshots.yml --repo $GITHUB_REPOSITORY -f set=$SET -f locales=\"<locale> <locale>\"\`, or, for a shelf that is only out of order, tidy up again with \`-f tidy_only=true\` and no other input (docs/store-listing-screenshots.md#repairing-shelves). Don't delete one of a file's two entries by hand: both go. Once the shelves are right, drop the set: $drop." >> "$GITHUB_STEP_SUMMARY"
             echo "::warning title=The set was kept::A shelf isn't as staged, so the draft release $SET_TAG is still there to send its locale again from. The tidy-up job's summary names the shelf."
           else
             echo "**The set was kept**, as the draft release \`$SET_TAG\`: this run sent chosen locales alone, and doesn't know whether the others are up. Once the shelves are right, drop it: $drop." >> "$GITHUB_STEP_SUMMARY"

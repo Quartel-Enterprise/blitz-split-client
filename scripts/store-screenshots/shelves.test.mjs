@@ -1,8 +1,8 @@
-// The tests of shelves.mjs, what the tidy-up of the App Store's shelves removes, sorts and reports:
+// The tests of shelves.mjs, how the tidy-up of the App Store's shelves sorts and what it reports:
 // node --test scripts/store-screenshots/shelves.test.mjs
 //
-// A shelf is written as the lane reads it: its screenshots in shelf order, each with its file name and the state
-// App Store Connect gives it.
+// A shelf is written as the lane reads it: its screenshots in shelf order, each with its file name, the state App
+// Store Connect gives it and its checksum.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -20,7 +20,10 @@ const SCRIPT = join(HERE, "shelves.mjs");
 const SCREENS = listingScreens();
 
 let nextId = 0;
-const shot = (fileName, state = "COMPLETE") => ({ id: `s${++nextId}`, fileName, state });
+/** A screenshot as App Store Connect lists it. An image has one checksum, whatever the ids it is listed under. */
+const shot = (fileName, { state = "COMPLETE", checksum = `md5-of-${fileName}` } = {}) => ({ id: `s${++nextId}`, fileName, state, checksum });
+/** The same screenshot listed once more, under another id: what an upload can leave on a shelf. */
+const again = (screenshot) => ({ ...screenshot, id: `s${++nextId}` });
 const fileOf = (screen, device) => `${screen}_${device}.png`;
 /** A device's ten screens in the order their uploads landed, which is not the file names'. */
 const uploaded = (device, screens = SCREENS) => {
@@ -29,62 +32,67 @@ const uploaded = (device, screens = SCREENS) => {
 };
 const shelfOf = (screenshots, { locale = "en-US", shelf = "APP_IPHONE_67", isWhole = true } = {}) => ({ id: `${locale}-${shelf}`, locale, shelf, isWhole, screenshots });
 const namesOf = (shelf, ids) => ids.map((id) => shelf.screenshots.find((screenshot) => screenshot.id === id).fileName);
-/** The shelf once the lane did what the plan says. */
-const tidied = (shelf) => {
+/** The shelf once the lane gave it the plan's order. */
+const sorted = (shelf) => {
   const { order } = tidyShelf(shelf);
   return { ...shelf, screenshots: order.map((id) => shelf.screenshots.find((screenshot) => screenshot.id === id)) };
 };
 const inOrder = (device) => SCREENS.map((screen) => fileOf(screen, device));
 
-describe("what the tidy-up does with a shelf", () => {
-  // Mac de-DE and the iPad 11" en-US of run 44324532909: the include showed the first 10, all distinct.
-  test("removes the copy in the 11th place of a shelf of 11 and sorts the 10 left", () => {
-    const copy = shot(fileOf("02_split_by_items", "mac"));
-    const shelf = shelfOf([...uploaded("mac"), copy], { locale: "de-DE", shelf: "APP_DESKTOP" });
-    const { remove, order, problems } = tidyShelf(shelf);
-    assert.deepEqual(remove, [copy.id]);
-    assert.deepEqual(namesOf(shelf, order), inOrder("mac"));
-    assert.deepEqual(problems, []);
-    assert.deepEqual(shelfProblems(tidied(shelf)), []);
+describe("how the tidy-up sorts a shelf", () => {
+  // Mac de-DE and the iPad 11" en-US of run 44324532909: 11 entries, two of them one screenshot under two ids.
+  // An order of the 10 distinct ids was refused, and one of all 11 was taken.
+  test("orders every entry of a shelf that lists a screenshot twice, the two side by side", () => {
+    const shots = uploaded("mac");
+    const listedTwice = shots.find(({ fileName }) => fileName === fileOf("02_split_by_items", "mac"));
+    const shelf = shelfOf([...shots, again(listedTwice)], { locale: "de-DE", shelf: "APP_DESKTOP" });
+    const { order } = tidyShelf(shelf);
+    assert.equal(order.length, 11);
+    assert.deepEqual([...order].sort(), shelf.screenshots.map(({ id }) => id).sort());
+    const names = namesOf(shelf, order);
+    assert.deepEqual(names.slice(0, 3), [fileOf("01_group", "mac"), fileOf("02_split_by_items", "mac"), fileOf("02_split_by_items", "mac")]);
+    assert.deepEqual([...new Set(names)], inOrder("mac"));
+    // The entry that stood first stays first of the two.
+    assert.equal(order[1], listedTwice.id);
   });
 
-  // The iPhone 6.7" en-US of that run, which lost 08: the record a retried create left without an image came
-  // first, and keeping the first copy by position removed the one that had the image.
-  test("keeps the copy whose image is there, wherever it stands, and removes the one that got none", () => {
-    const empty = shot(fileOf("08_payers_and_currencies", "iphone_6_7"), "AWAITING_UPLOAD");
-    const real = shot(fileOf("08_payers_and_currencies", "iphone_6_7"));
-    const others = uploaded("iphone_6_7", SCREENS.filter((screen) => screen !== "08_payers_and_currencies"));
-    const shelf = shelfOf([...others.slice(0, 8), empty, real, others[8]]);
-    const { remove, order, problems } = tidyShelf(shelf);
-    assert.deepEqual(remove, [empty.id]);
-    assert.ok(order.includes(real.id));
-    assert.deepEqual(namesOf(shelf, order), inOrder("iphone_6_7"));
-    assert.deepEqual(problems, []);
+  // Deleting one id of such a pair deleted both: that is how the iPhone 6.7" en-US shelf lost 08 in that run.
+  test("never names a screenshot to remove", () => {
+    const shots = uploaded("iphone_6_7");
+    const shelf = shelfOf([...shots, again(shots[4]), shot(fileOf("01_group", "iphone_6_7"), { state: "AWAITING_UPLOAD", checksum: null })]);
+    assert.deepEqual(Object.keys(tidyShelf(shelf)).sort(), ["order", "problems"]);
+    const [todo] = plan({ shelves: [shelf] }).shelves;
+    assert.deepEqual(Object.keys(todo).sort(), ["id", "locale", "order", "shelf"]);
+    assert.equal(todo.order.length, shelf.screenshots.length);
   });
 
-  test("keeps the first of several copies that all have their image", () => {
-    const [first, second, third] = [1, 2, 3].map(() => shot(fileOf("01_group", "mac")));
-    const shelf = shelfOf([first, ...uploaded("mac").filter(({ fileName }) => fileName !== first.fileName), second, third], { shelf: "APP_DESKTOP" });
-    assert.deepEqual(tidyShelf(shelf).remove, [second.id, third.id]);
-    assert.equal(tidyShelf(shelf).order[0], first.id);
-  });
-
-  test("removes nothing from a shelf that wasn't read whole, gives it no order, and says so", () => {
-    const shelf = shelfOf([...uploaded("mac"), shot(fileOf("02_split_by_items", "mac"))], { shelf: "APP_DESKTOP", isWhole: false });
-    const { remove, order, problems } = tidyShelf(shelf);
-    assert.deepEqual(remove, []);
+  test("gives no order to a shelf that wasn't read whole, and says so", () => {
+    const shelf = shelfOf(uploaded("mac"), { shelf: "APP_DESKTOP", isWhole: false });
+    const { order, problems } = tidyShelf(shelf);
     assert.equal(order, null);
-    assert.equal(problems.length, 1);
-    assert.match(problems[0], /^could not be read whole, so nothing was removed or sorted/);
+    assert.deepEqual(problems, ["could not be read whole, so it was not sorted: run the tidy-up again"]);
   });
 
-  test("leaves a shelf that is already tidy as it is", () => {
+  test("gives no order to a shelf with a screenshot that has no file name", () => {
+    const nameless = [{ id: "a", state: "COMPLETE" }, { id: "b", state: "COMPLETE" }];
+    const { order, problems } = tidyShelf(shelfOf([...uploaded("mac"), ...nameless], { shelf: "APP_DESKTOP" }));
+    assert.equal(order, null);
+    assert.deepEqual(problems, ["holds a screenshot with no file name, so it was not sorted"]);
+  });
+
+  test("leaves a shelf that is already as staged as it is", () => {
     const shelf = shelfOf(SCREENS.map((screen) => shot(fileOf(screen, "ipad_11"))), { shelf: "APP_IPAD_PRO_3GEN_11" });
-    const { remove, order, problems } = tidyShelf(shelf);
-    assert.deepEqual(remove, []);
+    const { order, problems } = tidyShelf(shelf);
     assert.deepEqual(order, shelf.screenshots.map(({ id }) => id));
     assert.deepEqual(problems, []);
     assert.deepEqual(shelfProblems(shelf), []);
+  });
+
+  test("sorts ten uploaded out of order, which is then as staged", () => {
+    const shelf = shelfOf(uploaded("iphone_6_7"));
+    assert.deepEqual(namesOf(shelf, tidyShelf(shelf).order), inOrder("iphone_6_7"));
+    assert.match(shelfProblems(shelf)[0], /^is not in file-name order: 04_balances_iphone_6_7\.png, /);
+    assert.deepEqual(shelfProblems(sorted(shelf)), []);
   });
 
   test("sorts as deliver does, 2 before 10, whatever the digits' count", () => {
@@ -93,24 +101,30 @@ describe("what the tidy-up does with a shelf", () => {
   });
 });
 
-describe("what no tidy-up fixes", () => {
-  test("names the file a shelf is short of, and still sorts what is there", () => {
-    const shelf = shelfOf(uploaded("iphone_6_7", SCREENS.filter((screen) => screen !== "08_payers_and_currencies")));
-    const { remove, order, problems } = tidyShelf(shelf);
-    assert.deepEqual(remove, []);
-    assert.equal(order.length, 9);
-    assert.deepEqual(problems, ["08_payers_and_currencies_iphone_6_7.png is missing"]);
-    // Sorted, the shelf is still short of it: the check after the tidy-up fails on it.
-    assert.deepEqual(check({ shelves: [tidied(shelf)] }), ["en-US / APP_IPHONE_67: 08_payers_and_currencies_iphone_6_7.png is missing"]);
+describe("what sorting doesn't fix", () => {
+  test("names a file a shelf lists twice, and how: one image under two ids, or two records", () => {
+    const shots = uploaded("mac");
+    const oneImage = shelfOf([...shots, again(shots[0])], { shelf: "APP_DESKTOP" });
+    assert.deepEqual(tidyShelf(oneImage).problems, ["04_balances_mac.png is listed 2 times, under 2 ids with one checksum"]);
+    // Sorted, it still lists it twice: the check after the tidy-up fails on it.
+    assert.deepEqual(check({ shelves: [sorted(oneImage)] }), ["en-US / APP_DESKTOP: 04_balances_mac.png is listed 2 times, under 2 ids with one checksum"]);
+
+    const twoRecords = shelfOf([...shots, shot(shots[0].fileName, { state: "AWAITING_UPLOAD", checksum: null })], { shelf: "APP_DESKTOP" });
+    assert.deepEqual(tidyShelf(twoRecords).problems, ["04_balances_mac.png is listed 2 times, in the states COMPLETE, AWAITING_UPLOAD"]);
   });
 
-  test("names a file none of whose copies finished uploading, and removes none of them", () => {
-    const stuck = [shot(fileOf("03_receipt", "mac"), "AWAITING_UPLOAD"), shot(fileOf("03_receipt", "mac"), "FAILED")];
-    const shelf = shelfOf([...uploaded("mac").filter(({ fileName }) => fileName !== stuck[0].fileName), ...stuck], { shelf: "APP_DESKTOP" });
-    const { remove, order, problems } = tidyShelf(shelf);
-    assert.deepEqual(remove, []);
-    assert.equal(order.length, 11);
-    assert.deepEqual(problems, ["03_receipt_mac.png never finished uploading (AWAITING_UPLOAD, FAILED)"]);
+  test("names the file a shelf is short of, and still sorts what is there", () => {
+    const shelf = shelfOf(uploaded("iphone_6_7", SCREENS.filter((screen) => screen !== "08_payers_and_currencies")));
+    const { order, problems } = tidyShelf(shelf);
+    assert.equal(order.length, 9);
+    assert.deepEqual(problems, ["08_payers_and_currencies_iphone_6_7.png is missing"]);
+    assert.deepEqual(check({ shelves: [sorted(shelf)] }), ["en-US / APP_IPHONE_67: 08_payers_and_currencies_iphone_6_7.png is missing"]);
+  });
+
+  test("names a file that never finished uploading", () => {
+    const stuck = shot(fileOf("03_receipt", "mac"), { state: "FAILED", checksum: null });
+    const shelf = shelfOf([...uploaded("mac").filter(({ fileName }) => fileName !== stuck.fileName), stuck], { shelf: "APP_DESKTOP" });
+    assert.deepEqual(tidyShelf(shelf).problems, ["03_receipt_mac.png never finished uploading (FAILED)"]);
   });
 
   test("names both displays' files for a screen the iPhone Duo's shelf lacks, and a screen it has from both", () => {
@@ -130,13 +144,14 @@ describe("what no tidy-up fixes", () => {
 });
 
 describe("the check after the tidy-up", () => {
-  test("fails on a copy that is still there and on a shelf out of order, naming the locale and the shelf", () => {
-    const withCopy = shelfOf([...SCREENS.map((screen) => shot(fileOf(screen, "mac"))), shot(fileOf("02_split_by_items", "mac"))], { locale: "de-DE", shelf: "APP_DESKTOP" });
+  test("fails on a file listed twice and on a shelf out of order, naming the locale and the shelf", () => {
+    const shots = SCREENS.map((screen) => shot(fileOf(screen, "mac")));
+    const listedTwice = shelfOf([...shots.slice(0, 2), again(shots[1]), ...shots.slice(2)], { locale: "de-DE", shelf: "APP_DESKTOP" });
     const unsorted = shelfOf(uploaded("mac"), { shelf: "APP_DESKTOP" });
-    const tidy = shelfOf(SCREENS.map((screen) => shot(fileOf(screen, "mac"))), { locale: "ja", shelf: "APP_DESKTOP" });
-    const problems = check({ locales: ["de-DE", "en-US", "ja"], shelves: [withCopy, unsorted, tidy] });
+    const asStaged = shelfOf(SCREENS.map((screen) => shot(fileOf(screen, "mac"))), { locale: "ja", shelf: "APP_DESKTOP" });
+    const problems = check({ locales: ["de-DE", "en-US", "ja"], shelves: [listedTwice, unsorted, asStaged] });
     assert.equal(problems.length, 2);
-    assert.equal(problems[0], "de-DE / APP_DESKTOP: 02_split_by_items_mac.png is there 2 times");
+    assert.equal(problems[0], "de-DE / APP_DESKTOP: 02_split_by_items_mac.png is listed 2 times, under 2 ids with one checksum");
     assert.match(problems[1], /^en-US \/ APP_DESKTOP: is not in file-name order: 04_balances_mac\.png, /);
   });
 
@@ -154,19 +169,10 @@ describe("the check after the tidy-up", () => {
     assert.deepEqual(check({ locales: ["en-US", "ja"], shelves: [] }), []);
   });
 
-  test("removes and sorts nothing on a shelf with a screenshot that has no file name", () => {
-    const nameless = [{ id: "a", state: "COMPLETE" }, { id: "b", state: "COMPLETE" }];
-    const { remove, order, problems } = tidyShelf(shelfOf([...uploaded("mac"), ...nameless], { shelf: "APP_DESKTOP" }));
-    assert.deepEqual(remove, []);
-    assert.equal(order, null);
-    assert.deepEqual(problems, ["holds a screenshot with no file name, so nothing was removed or sorted"]);
-  });
-
   test("plans by the shelf's id, for the lane to find each one", () => {
-    const shelf = shelfOf([...uploaded("mac"), shot(fileOf("02_split_by_items", "mac"))], { locale: "de-DE", shelf: "APP_DESKTOP" });
+    const shelf = shelfOf(uploaded("mac"), { locale: "de-DE", shelf: "APP_DESKTOP" });
     const [todo] = plan({ shelves: [shelf] }).shelves;
     assert.deepEqual({ id: todo.id, locale: todo.locale, shelf: todo.shelf }, { id: "de-DE-APP_DESKTOP", locale: "de-DE", shelf: "APP_DESKTOP" });
-    assert.equal(todo.remove.length, 1);
     assert.equal(todo.order.length, 10);
   });
 });
@@ -187,24 +193,26 @@ describe("the script, as the lane runs it", () => {
   };
 
   test("prints the plan as JSON", () => {
-    const copy = shot(fileOf("02_split_by_items", "mac"));
-    const { status, stdout } = run("plan", [shelfOf([...uploaded("mac"), copy], { shelf: "APP_DESKTOP" })]);
+    const shelf = shelfOf(uploaded("mac"), { shelf: "APP_DESKTOP" });
+    const { status, stdout } = run("plan", [shelf]);
     assert.equal(status, 0);
-    assert.deepEqual(JSON.parse(stdout).shelves[0].remove, [copy.id]);
+    assert.deepEqual(JSON.parse(stdout).shelves[0].order, tidyShelf(shelf).order);
   });
 
   test("passes shelves that are as staged, and fails on one that isn't, on the run's page too", () => {
-    const tidy = shelfOf(SCREENS.map((screen) => shot(fileOf(screen, "iphone_6_7"))));
-    const passed = run("check", [tidy]);
+    const asStaged = shelfOf(SCREENS.map((screen) => shot(fileOf(screen, "iphone_6_7"))));
+    const passed = run("check", [asStaged]);
     assert.equal(passed.status, 0);
     assert.match(passed.stdout, /^1 shelves of 1 locale\(s\) hold each screen once, in file-name order\.\n$/);
     assert.equal(passed.summary, "");
 
-    const short = shelfOf(tidy.screenshots.filter(({ fileName }) => !fileName.startsWith("08_")));
-    const failed = run("check", [tidy, short]);
+    const short = shelfOf(asStaged.screenshots.filter(({ fileName }) => !fileName.startsWith("08_")));
+    const failed = run("check", [asStaged, short]);
     assert.equal(failed.status, 1);
     assert.match(failed.stdout, /^1 thing\(s\) wrong on the shelves:\n- en-US \/ APP_IPHONE_67: 08_payers_and_currencies_iphone_6_7\.png is missing\n$/);
     assert.match(failed.summary, /^### Shelves that are not as staged\n\n- en-US \/ APP_IPHONE_67: 08_payers_and_currencies_iphone_6_7\.png is missing\n/);
+    // Whoever reads the summary is about to repair a shelf: told here what removes a file.
+    assert.match(failed.summary, /Don't delete one of a file's two entries by hand/);
   });
 
   test("says how it is called when it is called wrong", () => {
@@ -212,14 +220,15 @@ describe("the script, as the lane runs it", () => {
   });
 
   // The lane reads each shelf in full and asks the script, by these words: a shelf read through the relationship
-  // App Store Connect includes with it is 10 screenshots at most, whatever it holds.
-  test("is what the lane asks, about shelves it read in full", () => {
+  // App Store Connect includes with it is 10 screenshots at most, whatever it lists. And it deletes no screenshot:
+  // one of a doubled entry's two ids takes the other with it.
+  test("is what the lane asks, about shelves it read in full, and the lane deletes nothing", () => {
     const fastfile = readFileSync(join(REPO_ROOT, "fastlane/Fastfile"), "utf8");
     const lane = fastfile.slice(fastfile.indexOf("def tidy_app_store_screenshots"), fastfile.indexOf("# The stable releases"));
     assert.ok(lane.includes('"scripts/store-screenshots/shelves.mjs"'));
     assert.ok(lane.includes('app_store_shelves("plan", ') && lane.includes('app_store_shelves("check", '));
     assert.ok(lane.includes('pages.call("relationships/appScreenshots")') && lane.includes('pages.call("appScreenshots")'));
-    for (const key of ["locales:", "shelves:", "id:", "locale:", "shelf:", "isWhole:", "screenshots:", "fileName:", "state:"]) assert.ok(lane.includes(key), key);
-    assert.doesNotMatch(lane, /app_screenshots\.group_by|reorder_screenshots/);
+    for (const key of ["locales:", "shelves:", "id:", "locale:", "shelf:", "isWhole:", "screenshots:", "fileName:", "state:", "checksum:"]) assert.ok(lane.includes(key), key);
+    assert.doesNotMatch(lane, /app_screenshots\.group_by|reorder_screenshots|delete_app_screenshot|\.delete!/);
   });
 });

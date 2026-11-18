@@ -510,7 +510,7 @@ export function landingReport({ jobs, set, version, platforms, only, tidyOnly = 
       lines.push("- **The shelves are as staged**: each holds every screen once, in file-name order.");
     } else {
       lines.push(
-        `- **The shelves are not as staged** (the tidy-up: ${tidy}). The "${caller} / tidy up" job's summary names each shelf and what is wrong with it. A shelf short of a file gets it when its locale is sent again (\`-f locales=…\`, from the set); a copy left or a shelf out of order, when the tidy-up runs again (\`-f tidy_only=true\`).`,
+        `- **The shelves are not as staged** (the tidy-up: ${tidy}). The "${caller} / tidy up" job's summary names each shelf and what is wrong with it. A shelf that lists a file twice, or is short of one, is put right by sending its locale again (\`-f locales=…\`, from the set); a shelf that is only out of order, by running the tidy-up again (\`-f tidy_only=true\`). Don't delete one of a file's two entries by hand: both go.`,
       );
     }
     lines.push("");

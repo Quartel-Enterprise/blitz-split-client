@@ -222,8 +222,7 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   screenshots are copied into it long before anything looks at them), `apple-screenshots-capture` runs the UI tests on one simulator per slot
   and, for the Mac, photographs the app's window on the runner's own screen, `apple-screenshots-frame` frames the
   captures, and `ios-screenshots` and `macos-screenshots` upload them, one "send \<locale\>" job each, then
-  "tidy up", which removes the copies an upload leaves behind, sorts every shelf and fails, naming it, on a shelf
-  that doesn't hold every screen once
+  "tidy up", which sorts every shelf and fails, naming it, on a shelf that doesn't hold every screen once
   ([Repairing shelves](store-listing-screenshots.md#repairing-shelves)), without stopping the release (the jobs of
   [`app-store-screenshots-upload.yml`](../.github/workflows/app-store-screenshots-upload.yml), which a set made on
   a Mac goes up through too). The slots are the
@@ -368,16 +367,17 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to A
   while the version is still editable. Dispatch the release once the run's summary says every locale landed **and
   the shelves are as staged**.
 - **A shelf that isn't as staged** fails the "tidy up" job, though every locale's job passed: an upload can leave a
-  file twice on a shelf, or without its image. The summary names the locale, the shelf and the file, and two inputs
-  repair it without sending the whole set again
+  shelf listing a screenshot twice, or short of a file. The summary names the locale, the shelf and the file, and
+  two inputs repair it without sending the whole set again
   ([Repairing shelves](store-listing-screenshots.md#repairing-shelves)):
 
   ```bash
-  gh workflow run app-store-screenshots.yml -f tidy_only=true                        # a copy left, a shelf out of order
-  gh workflow run app-store-screenshots.yml -f set=3.0.1 -f locales="en-US de-DE"    # a file missing: those locales again
+  gh workflow run app-store-screenshots.yml -f set=3.0.1 -f locales="en-US de-DE"    # a file listed twice or missing: those locales again
+  gh workflow run app-store-screenshots.yml -f tidy_only=true                        # a shelf out of order, or to check after a repair by hand
   ```
 
-  The second needs the set, which the run keeps while a shelf isn't as staged.
+  The first needs the set, which the run keeps while a shelf isn't as staged. **Never delete one of a file's two
+  entries in App Store Connect**: they are one screenshot under two ids, and both go.
 
 ### Google Play's screenshots alone
 
