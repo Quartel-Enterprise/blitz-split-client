@@ -425,7 +425,7 @@ describe("dispatching a release", () => {
       "#!/usr/bin/env bash",
       `echo "$*" >> "${join(root, "gh.log")}"`,
       'case "$*" in',
-      '  *app-store-screenshots.yml*"--status in_progress"*) echo "${GH_UPLOADING:-0}" ;;',
+      '  *app-store-screenshots.yml*"--status ${GH_UPLOADING_STATUS:-in_progress}"*) echo "${GH_UPLOADING:-0}" ;;',
       '  *"--status "*) echo 0 ;;',
       `  "workflow run"*) touch "${join(root, "dispatched")}" ;;`,
       `  *"--json databaseId"*) if [ -f "${join(root, "dispatched")}" ]; then echo 2; else echo 1; fi ;;`,
@@ -453,6 +453,14 @@ describe("dispatching a release", () => {
     const { status, stderr } = dispatch("release-production.yml", { GH_UPLOADING: "1" });
     assert.equal(status, 1);
     assert.match(stderr, /App Store screenshots are still going up \(app-store-screenshots\.yml has a run in_progress\)/);
+    assert.deepEqual(dispatched(), []);
+  });
+
+  // Between two of its jobs the run reads as waiting, on the Production environment's rule.
+  test("refuses it too while that run waits between two jobs", () => {
+    const { status, stderr } = dispatch("release-production.yml", { GH_UPLOADING: "1", GH_UPLOADING_STATUS: "waiting" });
+    assert.equal(status, 1);
+    assert.match(stderr, /app-store-screenshots\.yml has a run waiting/);
     assert.deepEqual(dispatched(), []);
   });
 

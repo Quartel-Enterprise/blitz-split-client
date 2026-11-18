@@ -18,9 +18,9 @@
 //
 // Plain Node, no dependencies. `send` runs `tar` and the GitHub CLI.
 
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { appendFileSync, closeSync, createReadStream, existsSync, lstatSync, mkdtempSync, openSync, readFileSync, readSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { appendFileSync, closeSync, createReadStream, existsSync, fstatSync, lstatSync, mkdtempSync, openSync, readFileSync, readSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -90,17 +90,26 @@ export const listingScreens = () =>
 
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
-/** A PNG's width and height, read off its header, or null for a file that isn't one. */
-export function pngSize(file) {
+// The chunk every PNG ends with: its length, its name and its checksum, which never change.
+const PNG_END = Buffer.from([0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82]);
+
+/**
+ * A PNG's width and height, read off its header, and whether the file ends as a PNG does: one cut short by a copy
+ * or a framing run that was interrupted has the header and not the end. Null for a file that isn't a PNG.
+ */
+export function readPng(file) {
   const header = Buffer.alloc(24);
+  const end = Buffer.alloc(PNG_END.length);
   const descriptor = openSync(file, "r");
   try {
+    const { size } = fstatSync(descriptor);
     if (readSync(descriptor, header, 0, 24, 0) < 24) return null;
+    readSync(descriptor, end, 0, end.length, Math.max(0, size - end.length));
   } finally {
     closeSync(descriptor);
   }
   if (!header.subarray(0, 8).equals(PNG_SIGNATURE) || header.toString("latin1", 12, 16) !== "IHDR") return null;
-  return [header.readUInt32BE(16), header.readUInt32BE(20)];
+  return { width: header.readUInt32BE(16), height: header.readUInt32BE(20), isWhole: end.equals(PNG_END) };
 }
 
 // Problems are gathered by what is wrong, with the locales it is wrong in, so one mistake made in every locale
@@ -134,6 +143,8 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
   const { label, devices } = PLATFORMS[platform];
   const expectedLocales = listingLocales();
   const screens = listingScreens();
+  // Longest first, so a screen whose name starts another's is never taken for it.
+  const screensByLength = [...screens].sort((one, other) => other.length - one.length);
   const problems = new Problems();
   const shelves = [...new Set(Object.values(devices).map((device) => device.shelf))];
   const report = { platform, folder, locales: [], files: [], bytes: 0, ignored: [], shelves: {}, missingShelves: [] };
@@ -172,20 +183,24 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
         problems.add(`${name} is not a PNG`, locale);
         continue;
       }
-      const screen = screens.find((candidate) => name.startsWith(`${candidate}_`));
+      const screen = screensByLength.find((candidate) => name.startsWith(`${candidate}_`));
       const device = screen && name.slice(screen.length + 1, -".png".length);
       if (!screen || !Object.hasOwn(devices, device)) {
         problems.add(`${name} is not <screen>_<device>.png: no screen of screens.tsv with a device of ${Object.keys(devices).join(", ")}`, locale);
         continue;
       }
-      const size = pngSize(file);
+      const image = readPng(file);
       const [width, height] = devices[device].size;
-      if (!size) {
+      if (!image) {
         problems.add(`${name} is named as a PNG and isn't one`, locale);
         continue;
       }
-      if (size[0] !== width || size[1] !== height) {
-        problems.add(`${name} is ${size[0]}x${size[1]} and ${device} takes ${width}x${height}`, locale);
+      if (image.width !== width || image.height !== height) {
+        problems.add(`${name} is ${image.width}x${image.height} and ${device} takes ${width}x${height}`, locale);
+        continue;
+      }
+      if (!image.isWhole) {
+        problems.add(`${name} is cut short: it starts as a PNG and doesn't end as one`, locale);
         continue;
       }
       const ofLocale = held[devices[device].shelf];
@@ -227,10 +242,13 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
         if (ofDevices.length > 1) problems.add(`${screen} is on the ${SHELF_LABELS[shelf]} shelf ${ofDevices.length} times (${ofDevices.join(", ")}): each screen goes up once`, locale);
       }
     }
-    // What a locale gets, read off the first one: a set that passes has every screen on every shelf of every locale.
-    const [first] = ofLocale.values();
+    // What a locale gets: how many screens from each of the shelf's devices. A set that passes has every screen on
+    // every shelf of every locale, but the iPhone Duo's may come from one display in a locale and from both in
+    // another (a display that wasn't captured gives its screens to the other one), which is said and not counted.
     const ofShelf = Object.keys(devices).filter((device) => devices[device].shelf === shelf);
-    report.shelves[shelf] = Object.fromEntries(ofShelf.map((device) => [device, [...first.values()].filter((ofDevices) => ofDevices.includes(device)).length]));
+    const splits = [...ofLocale.values()].map((ofScreen) => ofShelf.map((device) => [...ofScreen.values()].filter((ofDevices) => ofDevices.includes(device)).length));
+    const isSameEverywhere = splits.every((split) => split.join() === splits[0].join());
+    report.shelves[shelf] = isSameEverywhere ? Object.fromEntries(ofShelf.map((device, index) => [device, splits[0][index]])) : { total: Math.max(...splits.map((split) => split.reduce((sum, count) => sum + count, 0))) };
   }
   return { ...report, problems: problems.lines(report.locales.length) };
 }
@@ -239,6 +257,7 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
 export function describeShelves(report) {
   return Object.entries(report.shelves)
     .map(([shelf, counts]) => {
+      if (counts.total !== undefined) return `${SHELF_LABELS[shelf]} ${counts.total} (open or closed, by locale)`;
       if (shelf !== "iphone_duo") return `${SHELF_LABELS[shelf]} ${counts[shelf] ?? 0}`;
       const open = counts.iphone_duo_open ?? 0;
       const closed = counts.iphone_duo ?? 0;
@@ -344,14 +363,17 @@ async function send(options) {
   const reports = checkSet(options);
   console.log(describe(reports).join("\n"));
 
-  const gh = (args, stdio = "inherit") => execFileSync("gh", args, { cwd: REPO_ROOT, encoding: "utf8", stdio: ["ignore", stdio, stdio === "pipe" ? "pipe" : "inherit"] });
+  const gh = (args) => execFileSync("gh", args, { cwd: REPO_ROOT, stdio: ["ignore", "inherit", "inherit"] });
+  // The release of the set's tag, or null when there is none. Any other failure stops the run: a release that
+  // couldn't be read is not one that isn't there, and the set would go up beside it or be deleted in its place.
+  const findRelease = () => {
+    const { status, stdout, stderr } = spawnSync("gh", ["release", "view", tag, "--json", "isDraft"], { cwd: REPO_ROOT, encoding: "utf8" });
+    if (status === 0) return JSON.parse(stdout);
+    if (/release not found/i.test(stderr ?? "")) return null;
+    throw new SetError(`Could not ask GitHub whether ${tag} is taken: ${(stderr ?? "").trim() || "gh failed"}`);
+  };
   if (!options.dryRun) {
-    let existing = null;
-    try {
-      existing = JSON.parse(gh(["release", "view", tag, "--json", "isDraft"], "pipe"));
-    } catch {
-      // No release of that tag, which is what a new set needs.
-    }
+    const existing = findRelease();
     if (existing) {
       // Never a published release: only a draft is a set, and only a set is this script's to delete.
       if (!existing.isDraft) throw new SetError(`${tag} is a published release, not a set: pick another --name`);
@@ -388,12 +410,8 @@ async function send(options) {
     try {
       gh(["release", "create", tag, "--draft", "--title", `App Store screenshots: ${name}`, "--notes", notes, ...archives, join(out, CHECKSUMS)]);
     } catch (error) {
-      // A draft left with half its assets would be taken for a set.
-      try {
-        gh(["release", "delete", tag, "--yes"], "pipe");
-      } catch {
-        // Nothing was created.
-      }
+      // A draft left with half its assets would be taken for a set. Nothing is there when the create itself failed.
+      if (findRelease()?.isDraft) gh(["release", "delete", tag, "--yes"]);
       throw new SetError(`The upload failed (gh says why above), and nothing of it was left on GitHub. Exit ${error.status}.`);
     }
   } finally {

@@ -38,7 +38,8 @@ done
 # locales still to go without theirs. That workflow refuses to start during a release; this is the other way round,
 # which the Actions tab's "Run workflow" doesn't check either. A beta submits nothing, so it goes on.
 if [ "$workflow" = release-production.yml ]; then
-  for status in in_progress queued; do
+  # Every status of a run that isn't over: between two of its jobs it reads as waiting, on the environment's rule.
+  for status in in_progress queued waiting pending requested; do
     # gh fails on a workflow main doesn't have, which then has no run.
     uploading="$(gh run list --workflow=app-store-screenshots.yml --repo "$REPO" --status "$status" --json databaseId --jq length 2> /dev/null || echo 0)"
     if [ "${uploading:-0}" -gt 0 ]; then

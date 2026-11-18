@@ -16,7 +16,8 @@ name: app-store-screenshots
 #      release runs for the screenshots it frames itself (app-store-screenshots-upload.yml). The two versions are
 #      apart on App Store Connect, so they go side by side.
 #   3. `finish` says in the run's summary which locales landed, and removes the draft release once they all did. A
-#      locale that failed keeps it, and is sent again with its job's own re-run button.
+#      locale that failed keeps it, and is sent again with its job's own re-run button; so does a version the set
+#      holds and the run left out.
 #
 # The screenshots only, on the version that is open for editing: no build, no text, no submission for review. A
 # stable release dispatched afterwards with `screenshots` off submits the version with them
@@ -175,6 +176,15 @@ jobs:
               exit 1
             fi
             (cd "$set_dir" && sha256sum --check "$archive.sha256")
+            # Nothing but images in a locale's folder is written on the runner, which is all local-set.mjs packs:
+            # no link, no folder of its own, no path that leaves the staged folder.
+            odd="$(tar -tvf "$set_dir/$archive" | grep -v '^-' || true)"
+            misplaced="$(tar -tf "$set_dir/$archive" | grep -vE '^[A-Za-z]+(-[A-Za-z]+)*/[A-Za-z0-9_]+\.png$' || true)"
+            if [ -n "$odd" ] || [ -n "$misplaced" ]; then
+              printf '%s\n' "$odd" "$misplaced"
+              echo "::error::$archive holds something that isn't <locale>/<image>.png, so local-set.mjs didn't pack it. Nothing was extracted."
+              exit 1
+            fi
             mkdir -p "$folder"
             tar -xf "$set_dir/$archive" -C "$folder"
           }
@@ -343,21 +353,31 @@ jobs:
           if [ "$MACOS" = true ]; then options+=(--mac-job "Mac" --mac-locales "$MAC_LOCALES" --mac-shelves "$MAC_SHELVES"); fi
           node scripts/store-screenshots/local-set.mjs report "${options[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
 
-      # Only a draft, as when it was fetched. Gone already when a run of this job removed it and was run again.
+      # Only a draft, as when it was fetched. Gone already when a run of this job removed it and was run again. Kept
+      # when it holds the other version's screenshots too and this run left that version out: they are still to send.
       - name: Remove the set
         if: ${{ steps.report.outputs.landed == 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
-          SET: ${{ inputs.set }}
+          IOS: ${{ inputs.ios }}
+          MACOS: ${{ inputs.macos }}
         run: |
-          if ! draft="$(gh release view "$SET_TAG" --json isDraft --jq .isDraft 2> /dev/null)"; then
+          if ! release="$(gh release view "$SET_TAG" --json isDraft,assets 2> /dev/null)"; then
             echo "The draft release $SET_TAG is already gone." | tee -a "$GITHUB_STEP_SUMMARY"
-          elif [ "$draft" != true ]; then
+          elif [ "$(jq -r .isDraft <<< "$release")" != true ]; then
             echo "::error::$SET_TAG is a published release, not a set: left alone."
             exit 1
           else
-            gh release delete "$SET_TAG" --yes
-            echo "Every locale landed, so the set was removed: the draft release \`$SET_TAG\` is deleted." >> "$GITHUB_STEP_SUMMARY"
+            holds() { jq -e --arg name "$1" 'any(.assets[]; .name == $name)' <<< "$release" > /dev/null; }
+            unsent=""
+            if [ "$IOS" != true ] && holds ios.tar; then unsent="the iPhone's and the iPad's (dispatch again with macos off)"; fi
+            if [ "$MACOS" != true ] && holds mac.tar; then unsent="the Mac's (dispatch again with ios off)"; fi
+            if [ -n "$unsent" ]; then
+              echo "Every locale landed. **The set was kept**, as the draft release \`$SET_TAG\`: it also holds $unsent, which this run left out. To drop it instead: \`gh release delete $SET_TAG --yes\`." >> "$GITHUB_STEP_SUMMARY"
+            else
+              gh release delete "$SET_TAG" --yes
+              echo "Every locale landed, so the set was removed: the draft release \`$SET_TAG\` is deleted." >> "$GITHUB_STEP_SUMMARY"
+            fi
           fi
           {
             echo
@@ -366,8 +386,6 @@ jobs:
 
       - name: Keep the set
         if: ${{ steps.report.outputs.landed != 'true' }}
-        env:
-          SET: ${{ inputs.set }}
         run: |
           {
             echo "**The set was kept**, as the draft release \`$SET_TAG\`: a locale didn't land. Run its job again with the job's own re-run button; this job then runs again too, and removes the set once every locale is up. To drop it instead: \`gh release delete $SET_TAG --yes\`."

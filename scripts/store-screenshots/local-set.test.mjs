@@ -1,8 +1,8 @@
 // The tests of local-set.mjs, the App Store screenshots made on a Mac and sent through GitHub:
 // node --test scripts/store-screenshots/local-set.test.mjs
 //
-// Each builds a set in a folder made for the test, of images that are a PNG's header and nothing more, since the
-// check reads only that. The GitHub CLI is a stand-in that writes down what it was asked.
+// Each builds a set in a folder made for the test, of images that are a PNG's header and its end, since the check
+// reads only those. The GitHub CLI is a stand-in that writes down what it was asked.
 
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
@@ -26,7 +26,7 @@ import {
   listingScreens,
   pack,
   parseArguments,
-  pngSize,
+  readPng,
   resolveFolders,
 } from "./local-set.mjs";
 
@@ -44,15 +44,15 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(root, { recursive: true, force: true }));
 
-/** A PNG's signature and the start of its header, which is all the check reads. */
-const png = ([width, height]) => {
+/** A PNG's signature, the start of its header and its last chunk, which is all the check reads. */
+const png = ([width, height], { isWhole = true } = {}) => {
   const bytes = Buffer.alloc(33);
   Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(bytes);
   bytes.writeUInt32BE(13, 8);
   bytes.write("IHDR", 12, "latin1");
   bytes.writeUInt32BE(width, 16);
   bytes.writeUInt32BE(height, 20);
-  return bytes;
+  return isWhole ? Buffer.concat([bytes, Buffer.from([0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82])]) : bytes;
 };
 const write = (folder, locale, name, content) => {
   mkdirSync(join(folder, locale), { recursive: true });
@@ -129,6 +129,12 @@ describe("the check of a set", () => {
     ]);
   });
 
+  test("refuses a PNG that was cut short", () => {
+    const folder = stage("mac");
+    write(folder, "it", "07_home_mac.png", png([2880, 1800], { isWhole: false }));
+    assert.deepEqual(problemsOf("mac", folder), ["07_home_mac.png is cut short: it starts as a PNG and doesn't end as one (it)", "Mac has 9 of 10 screens, without 07_home (it)"]);
+  });
+
   test("refuses an image no screen and device name", () => {
     const folder = stage("mac");
     write(folder, "it", "11_settings_mac.png", png([2880, 1800]));
@@ -174,6 +180,13 @@ describe("the check of a set", () => {
     const report = checkPlatform("ios", closed);
     assert.deepEqual(report.problems, []);
     assert.match(describeShelves(report), /iPhone Duo 10 \(0 open, 10 closed\)$/);
+
+    // One locale's open capture failed, so its ten are closed, and the others' are split: both are whole shelves.
+    const mixed = stage("ios", { name: "mixed", keep: ({ locale, device }) => !(locale === "ja" && device === "iphone_duo_open") });
+    for (const screen of OPEN) write(mixed, "ja", `${screen}_iphone_duo.png`, png([1398, 2034]));
+    const uneven = checkPlatform("ios", mixed);
+    assert.deepEqual(uneven.problems, []);
+    assert.match(describeShelves(uneven), /iPhone Duo 10 \(open or closed, by locale\)$/);
 
     const both = stage("ios", { name: "both" });
     write(both, "en-US", "01_group_iphone_duo.png", png([1398, 2034]));
@@ -235,22 +248,25 @@ describe("the set's folders and options", () => {
     }
   });
 
-  test("reads a PNG's size off its header", () => {
+  test("reads a PNG's size off its header, and whether it ends as one", () => {
     const file = join(root, "image.png");
     writeFileSync(file, png([2853, 2007]));
-    assert.deepEqual(pngSize(file), [2853, 2007]);
+    assert.deepEqual(readPng(file), { width: 2853, height: 2007, isWhole: true });
+    writeFileSync(file, png([2853, 2007], { isWhole: false }));
+    assert.equal(readPng(file).isWhole, false);
     writeFileSync(file, "short");
-    assert.equal(pngSize(file), null);
+    assert.equal(readPng(file), null);
   });
 });
 
 describe("sending a set", () => {
-  // A stand-in for gh: writes down each call, on one line, and answers `release view` with GH_VIEW, or fails when there is none.
+  // A stand-in for gh: writes down each call, on one line, and answers `release view` with GH_VIEW, or as gh does when there
+  // is no such release.
   const send = (args, env = {}) => {
     mkdirSync(join(root, "bin"), { recursive: true });
     writeFileSync(
       join(root, "bin/gh"),
-      `#!/usr/bin/env bash\ncall="$*"\necho "\${call//$'\\n'/ }" >> "${join(root, "gh.log")}"\nif [ "$1 $2" = "release view" ]; then [ -n "\${GH_VIEW:-}" ] || exit 1; echo "$GH_VIEW"; fi\nif [ "$1 $2" = "release create" ] && [ -n "\${GH_CREATE_FAILS:-}" ]; then exit 1; fi\n`,
+      `#!/usr/bin/env bash\ncall="$*"\necho "\${call//$'\\n'/ }" >> "${join(root, "gh.log")}"\nif [ "$1 $2" = "release view" ]; then [ -n "\${GH_VIEW:-}" ] || { echo "\${GH_VIEW_ERROR:-release not found}" >&2; exit 1; }; echo "$GH_VIEW"; fi\nif [ "$1 $2" = "release create" ] && [ -n "\${GH_CREATE_FAILS:-}" ]; then exit 1; fi\n`,
     );
     chmodSync(join(root, "bin/gh"), 0o755);
     return spawnSync("node", [SCRIPT, "send", root, ...args], { encoding: "utf8", env: { ...process.env, PATH: `${join(root, "bin")}:${process.env.PATH}`, GITHUB_OUTPUT: "", ...env } });
@@ -331,12 +347,23 @@ describe("sending a set", () => {
     assert.deepEqual(ghCalls(), ["release view store-screenshots-3.0.0 --json isDraft"]);
   });
 
-  test("leaves no half-uploaded draft behind an upload that failed", () => {
+  test("stops when GitHub can't say whether the name is taken, and sends nothing", () => {
+    stage("mac");
+    const { status, stderr } = send(["--name", "3.0.0", "--platform", "mac", "--replace"], { GH_VIEW_ERROR: "HTTP 502: Bad Gateway" });
+    assert.equal(status, 1);
+    assert.match(stderr, /Could not ask GitHub whether store-screenshots-3\.0\.0 is taken: HTTP 502/);
+    assert.deepEqual(ghCalls(), ["release view store-screenshots-3.0.0 --json isDraft"]);
+  });
+
+  test("leaves nothing behind an upload that failed before a draft was made", () => {
     stage("mac");
     const { status, stderr } = send(["--name", "3.0.0", "--platform", "mac"], { GH_CREATE_FAILS: "1" });
     assert.equal(status, 1);
     assert.match(stderr, /The upload failed/);
-    assert.equal(ghCalls().at(-1), "release delete store-screenshots-3.0.0 --yes");
+    assert.deepEqual(
+      ghCalls().map((call) => call.split(" ").slice(0, 2).join(" ")),
+      ["release view", "release create", "release view"],
+    );
   });
 
   test("refuses a name that couldn't be a tag", () => {
