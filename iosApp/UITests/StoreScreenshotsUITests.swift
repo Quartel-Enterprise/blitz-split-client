@@ -89,7 +89,7 @@ final class StoreScreenshotsUITests: XCTestCase {
         // capture-ios.sh runs this test once per language. The setting stays on the simulator, so only the runs
         // before a slot's first captured language switch it: 26 visits to Settings would be 25 more chances to fail.
         let isDeviceSetUp = !(environment["STORE_SCREENSHOTS_DEVICE_IS_SET_UP"] ?? "").isEmpty
-        if slot.hasPrefix("ipad"), !isDeviceSetUp { useFullScreenApps() }
+        if hold == .lyingDown, !isDeviceSetUp { useFullScreenApps() }
         // The app's own language comes back once the captures end, whatever they stopped on: by this test's last
         // launch, or by capture-ios.sh once per slot, where this would be one more launch per language.
         let callerRestoresLanguage = !(environment["STORE_SCREENSHOTS_CALLER_RESTORES_LANGUAGE"] ?? "").isEmpty
