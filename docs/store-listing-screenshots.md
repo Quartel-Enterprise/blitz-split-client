@@ -28,8 +28,12 @@ fastlane upload_screenshots platform:mac             # upload the Mac's alone
 A stable release dispatched with `screenshots` on runs the same steps in CI, in jobs of `release-production`: the
 capture on one runner per slot, the frames, and the upload to each store, one job per locale
 ([release-process.md](release-process.md#screenshots-with-a-release)). The input is off unless asked for, so a
-release after a new language or a changed screen has to pass `screenshots=true`. Run the lane by hand between
-releases, or when a release's screenshot jobs failed.
+release after a new language or a changed screen has to pass `screenshots=true`. That captures the iPhone's and the
+iPad's slots (`iphone63`, `iphone67`, `ipad13`). The iPhone Duo's two (`iphoneduo`, `iphoneduoopen`) and the Mac's
+are captured only with `screenshots_iphone_duo=true` and `screenshots_mac=true`, off unless asked for, since all
+three failed on the runners in the first release that ran them, and only in a run that releases their platform
+([release-process.md](release-process.md#the-devices-the-app-stores-captures-run-on)). Run the lane by hand between
+releases, when a release's screenshot jobs failed, and for the devices a release leaves out.
 
 The lane runs, each step under `scripts/heavy-check.sh`:
 
@@ -140,9 +144,18 @@ What was checked of that, in November 2026:
 - **In a release**, the slot has a runner of its own, with nobody to press Open, so once its own attempt is over it
   waits 30 seconds more and gives up. The `xcode-27` image has what the script needs on paper: Xcode 27.2 with Device Hub inside it,
   the iPhone Duo's runtime (iOS 27.1 and 27.2), a logged-in desktop, and `osascript` and `bash` allowed in
-  Accessibility and to drive System Events (the image's `configure-tccdb-macos-27.sh`). Whether Device Hub shows its
-  window there and the press lands is only known after the first release with `screenshots` on: nothing but a
-  release runs that job.
+  Accessibility and to drive System Events (the image's `configure-tccdb-macos-27.sh`). **It didn't work there
+  either**: in the first release that ran the job (3.0.0, run 44222898644, 18 November 2026) the Duo's simulator
+  booted and the script answered "Couldn't press Open in Device Hub (is this terminal allowed in Accessibility?)",
+  then gave up with nothing captured. The log doesn't say which step of the press failed: Device Hub's window, the
+  simulator's row or the Open button.
+- **The closed Duo failed in that release too**, for a reason nobody knows yet: its UI test stopped about nine
+  minutes in, after nineteen launches of the app, and `xcodebuild` runs quiet and keeps no result bundle, so the log
+  names neither the screen nor the failure.
+
+So a release captures neither Duo slot unless it passes `screenshots_iphone_duo=true`
+([release-process.md](release-process.md#the-devices-the-app-stores-captures-run-on)): nothing but a release runs
+those jobs, so the marker is also how a fix is tried.
 
 **The Duo's two displays share one shelf.** App Store Connect has one iPhone Duo device size for both displays, outer
 (1398x2034) and inner (2853x2007), and takes ten screenshots per device size
@@ -303,6 +316,15 @@ project's Mac its own screenshot of the window failed as well ("Image creation f
 - **On a Retina display.** The frame draws the window at twice its points (2880x1800). On a display that isn't
   Retina the capture is 1440x900 and would go to the listing blurred, so the script stops at the first one, which
   is still there to look at.
+
+**GitHub's runners have no Retina display.** In the first release that ran the Mac's capture there (3.0.0, run
+44222898644, 18 November 2026), the app was built signed to run locally, launched and had its window photographed,
+and the script stopped at that first capture: "The Mac capture is 1440 px wide and the frame takes 2880: its display
+isn't Retina". So a release captures the Mac only when it passes `screenshots_mac=true`
+([release-process.md](release-process.md#the-devices-the-app-stores-captures-run-on)), and until that capture works
+on a runner the Mac's listing gets its screenshots from a Mac with a Retina display: `fastlane screenshots
+platform:ios skip_upload:true`, then `fastlane upload_screenshots platform:mac`, which sends the Mac's alone and
+leaves the iPhone's and the iPad's listing as it is.
 
 ## The README's image
 

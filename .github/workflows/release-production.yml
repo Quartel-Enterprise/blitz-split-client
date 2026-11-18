@@ -23,7 +23,9 @@ name: release-production
 #          a language a store refused is the only one sent again: Google Play's after the bundle reached
 #          production, the App Store's before the submission, since a version in review can't take them. Best
 #          effort: none of these jobs holds the release back. Off unless asked for: a release that changes no
-#          screen and adds no language leaves the listings' images as they are.
+#          screen and adds no language leaves the listings' images as they are. The App Store's are captured on the
+#          iPhone and the iPad; `screenshots_iphone_duo` and `screenshots_mac` add the iPhone Duo and the Mac, whose
+#          captures don't work on the runners yet (docs/release-process.md#screenshots-with-a-release).
 #   3. `finalize` runs when a store took a build or the web was deployed. When the run released (the production
 #      track, a submission for review, or the web) it tags X.Y.Z and publishes the GitHub release, then merges the
 #      versionCode, the versionName and the removal of the fragments the version told back into main. A run that
@@ -92,6 +94,14 @@ on:
         description: "Make the store listings' screenshots again and upload them (a new language, a screen that changed)"
         type: boolean
         default: false
+      screenshots_iphone_duo:
+        description: "With screenshots: capture the iPhone Duo too, closed and open (fails on the runners today)"
+        type: boolean
+        default: false
+      screenshots_mac:
+        description: "With screenshots: capture the Mac too (fails on the runners today)"
+        type: boolean
+        default: false
 
 # Least privilege by default: only finalize writes.
 permissions:
@@ -133,6 +143,7 @@ jobs:
       version_code: ${{ steps.resolve.outputs.version_code }}
       branch: ${{ steps.resolve.outputs.branch }}
       sha: ${{ steps.sha.outputs.sha }}
+      capture_slots: ${{ steps.slots.outputs.capture_slots }}
       has_notes: ${{ steps.notes.outputs.has_notes }}
       github_notes: ${{ steps.notes.outputs.github_notes }}
     steps:
@@ -239,6 +250,21 @@ jobs:
           RELEASES_FILE: ${{ runner.temp }}/releases.json
         run: ./scripts/release/suggest-version.sh --stable "$VERSION_INPUT"
 
+      # The matrix of apple-screenshots-capture, whose job-level `if` can't read `matrix`: a device left out of the
+      # list starts no runner, where a job that started only to stop would hold a Mac for it. Empty when the run
+      # could upload none of them (the Mac alone, without its marker), which skips the job. Read into a variable
+      # first, so a script that fails stops the step.
+      - name: List the App Store capture slots
+        id: slots
+        env:
+          IOS: ${{ inputs.ios }}
+          MACOS: ${{ inputs.macos }}
+          SCREENSHOTS_IPHONE_DUO: ${{ inputs.screenshots_iphone_duo }}
+          SCREENSHOTS_MAC: ${{ inputs.screenshots_mac }}
+        run: |
+          capture_slots="$(./scripts/release/app-store-capture-slots.sh)"
+          echo "capture_slots=$capture_slots" >> "$GITHUB_OUTPUT"
+
       - name: Say what the run publishes
         env:
           ANDROID: ${{ inputs.android }}
@@ -250,6 +276,9 @@ jobs:
           SUBMIT: ${{ inputs.submit_for_review }}
           PHASED: ${{ inputs.phased_release }}
           SCREENSHOTS: ${{ inputs.screenshots }}
+          SCREENSHOTS_IPHONE_DUO: ${{ inputs.screenshots_iphone_duo }}
+          SCREENSHOTS_MAC: ${{ inputs.screenshots_mac }}
+          CAPTURE_SLOTS: ${{ steps.slots.outputs.capture_slots }}
         run: |
           android="not in this run"
           if [ "$ANDROID" = true ]; then
@@ -282,6 +311,37 @@ jobs:
             note="The stores only get a trial (a testing track, or TestFlight), but the web app is deployed for everyone: the version gets its tag and its notes are published. For a run that reaches no user, cancel this one now, before the web job deploys, and dispatch again with \`web\` off. What a store already took stays there, and the run still records it."
             echo "::warning title=The web is released::${note//\`/}"
           fi
+          # Which devices the App Store's captures run on, read off the list apple-screenshots-capture's matrix is
+          # made of, when that job runs at all (its `if`), and which marker a device the run releases and leaves out
+          # is behind. A marker that is on and adds no slot is said at once, since nothing else would say it:
+          # without `screenshots`, in a run that doesn't submit, or for a platform the run doesn't release.
+          screenshots="left as they are"
+          captured=""
+          if [ "$SCREENSHOTS" = true ]; then
+            screenshots="made again and uploaded with a release"
+            if [ "$SUBMIT" = true ]; then captured="$CAPTURE_SLOTS"; fi
+          elif [ "$SCREENSHOTS_IPHONE_DUO" = true ] || [ "$SCREENSHOTS_MAC" = true ]; then
+            screenshots="left as they are: \`screenshots\` is off, and the devices' markers only count with it"
+          fi
+          captures() { [[ "$captured" == *"\"$1\""* ]]; }
+          if [ -n "$captured" ]; then
+            screenshots="$screenshots. The App Store's are captured on $(jq -r 'map("`" + . + "`") | join(", ")' <<< "$captured")"
+            if [ "$IOS" = true ] && ! captures iphoneduo; then
+              screenshots="$screenshots, without the iPhone Duo (\`screenshots_iphone_duo\`)"
+            fi
+            if [ "$MACOS" = true ] && ! captures mac; then
+              screenshots="$screenshots, without the Mac (\`screenshots_mac\`)"
+            fi
+          elif [ "$SCREENSHOTS" = true ] && [ "$SUBMIT" = true ] && [ "$MACOS" = true ]; then
+            # The one run that submits and could upload none of them: the Mac alone, without its marker.
+            screenshots="$screenshots. None of the App Store's is: the Mac's capture is behind \`screenshots_mac\`"
+          fi
+          if [ "$SCREENSHOTS_IPHONE_DUO" = true ] && ! captures iphoneduo; then
+            echo "::warning title=The iPhone Duo is not captured::screenshots_iphone_duo is on, but the iPhone Duo's screenshots are only made with screenshots on, in a run that submits iOS for review."
+          fi
+          if [ "$SCREENSHOTS_MAC" = true ] && ! captures mac; then
+            echo "::warning title=The Mac is not captured::screenshots_mac is on, but the Mac's screenshots are only made with screenshots on, in a run that submits macOS for review."
+          fi
           {
             echo ""
             echo "| Platform | Where it goes |"
@@ -290,7 +350,7 @@ jobs:
             echo "| iOS | $ios |"
             echo "| macOS | $macos |"
             echo "| Web | $web |"
-            echo "| Store screenshots | $([ "$SCREENSHOTS" = true ] && echo "made again and uploaded with a release" || echo "left as they are") |"
+            echo "| Store screenshots | $screenshots |"
             echo ""
             if [ -n "$note" ]; then
               echo "**$note**"
@@ -630,8 +690,14 @@ jobs:
   # One job per App Store slot, next to the builds: each builds the UI tests of a debug app seeded with the sample
   # trip and runs them on its simulator; for `mac`, a script launches the debug Mac app on the runner's own screen and
   # photographs its window (docs/store-listing-screenshots.md).
-  # Every slot is captured whichever Apple platform the run releases, since the frames need the iPhone's and the
-  # iPad's. The iPhone Duo has two, closed and open, each on a runner of its own. Both fail on a runner whose Xcode
+  # The slots are the ones `plan` listed (scripts/release/app-store-capture-slots.sh): only what the run can upload.
+  # The iPhone's two and the iPad's are among them whichever Apple platform the run releases, since the frames of
+  # every device need them. The iPhone Duo's two and the Mac's are there only with `screenshots_iphone_duo` and
+  # `screenshots_mac`, off unless asked for: all three failed on the first release that ran them (run 44222898644,
+  # November 2026), so a release leaves them out until their captures work on a runner
+  # (docs/release-process.md#the-devices-the-app-stores-captures-run-on). No slot at all, in a run of the Mac alone
+  # without its marker, skips the job, and with it the frames and the uploads.
+  # The iPhone Duo has two, closed and open, each on a runner of its own. Both fail on a runner whose Xcode
   # has no runtime for the Duo, and the open one where the script can't press Open in Device Hub: nobody is there to
   # press it, so once its own attempt is over (up to a minute and a half) it waits half a minute more and gives up,
   # and the job fails for having captured nothing. The Duo's shelf then takes its ten screens from the slot that was
@@ -641,14 +707,14 @@ jobs:
   apple-screenshots-capture:
     name: App Store, capture the ${{ matrix.slot }} screenshots
     needs: plan
-    if: ${{ inputs.screenshots && inputs.submit_for_review && (inputs.ios || inputs.macos) }}
+    if: ${{ inputs.screenshots && inputs.submit_for_review && needs.plan.outputs.capture_slots != '' }}
     runs-on: xcode-27
     timeout-minutes: 150
     continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
-        slot: [iphone63, iphone67, ipad13, iphoneduo, iphoneduoopen, mac]
+        slot: ${{ fromJSON(needs.plan.outputs.capture_slots) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -696,7 +762,9 @@ jobs:
           if-no-files-found: error
 
   # Robolectric puts each capture into its device's frame, with the banner (any machine does it). The Gradle task
-  # fails without the iPhone's and the iPad's captures; the iPhone Duo's and the Mac's are framed when they are there.
+  # fails without the iPhone's and the iPad's captures; the iPhone Duo's and the Mac's are framed when they are there,
+  # so a device the run left out, like one whose capture failed, only leaves its own images out: with no Mac capture
+  # `mac_locales` is empty, and the Mac's upload and tidy-up jobs skip.
   apple-screenshots-frame:
     name: App Store, frame the screenshots
     needs: [plan, apple-screenshots-capture]
