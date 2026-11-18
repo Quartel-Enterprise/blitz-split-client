@@ -24,6 +24,7 @@ class CompleteSignInUseCaseTest {
         displayName = "Pierre",
         photoUrl = null,
         email = null,
+        linkedProviders = listOf(AccountProvider.GOOGLE),
     )
     private val pierre = UserProfile("Pierre", AvatarColor.GREEN, null)
     private lateinit var account: FakeAccountRepository

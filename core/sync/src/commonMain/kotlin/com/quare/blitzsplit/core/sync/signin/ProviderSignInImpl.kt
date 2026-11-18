@@ -12,7 +12,7 @@ import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.sync.domain.model.SignInOutcome
 import com.quare.blitzsplit.core.sync.domain.usecase.CompleteSignIn
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
@@ -92,13 +92,14 @@ class ProviderSignInImpl(
      * Why: a browser sign in finishes when the OAuth callback comes back, after the screen's ViewModel was
      * recreated on the web (the page reloads), so a Google or Apple session seen while the screen is on top
      * completes it, with a button busy for the wait: the clicked one, or after a reload the session's, which
-     * is its first identity. An ID token sign in completes on its own.
+     * is the provider it signed in with last. An ID token sign in completes on its own.
      */
     private fun observeConnectedStatus(
         isShown: () -> Boolean,
         onStep: (SignInStep) -> Unit,
     ): Flow<Unit> = observeAccountStatus()
-        .distinctUntilChanged()
+        // Why: a connected user whose shown provider changes (the device's pick follows the identities) is no new session.
+        .distinctUntilChangedBy { status -> if (status is AccountStatus.Connected) status.userId else status }
         .filterIsInstance<AccountStatus.Connected>()
         .filter { status -> !isSigningInDirectly && status != directlyCompletedStatus && isShown() }
         .map { status ->

@@ -234,7 +234,7 @@ inline fun <T> suspendRunCatching(block: () -> T): Result<T> = ...
  * Why: a browser sign in finishes when the OAuth callback comes back, after this ViewModel was
  * recreated on the web (the page reloads), so a Google or Apple session seen while this screen
  * is on top completes it, with a button busy for the wait: the clicked one, or after a reload the
- * session's, which is its first identity. An ID token sign in completes on its own.
+ * session's, which is the provider it signed in with last. An ID token sign in completes on its own.
  */
 private fun observeBrowserSignIn() { ... }
 ```

@@ -1187,7 +1187,6 @@ export const ja: Record<MessageKey, string> = {
   globalBalances_owesYou: '受け取る',
   globalBalances_allSub: 'グループ間で相殺済み',
   globalBalances_allSubEmpty: 'グループを集計中',
-  globalBalances_allSubSettled: '未精算なし',
   globalBalances_nobody: 'なし',
   globalBalances_onePerson: '1人',
   globalBalances_people: '{count}人',

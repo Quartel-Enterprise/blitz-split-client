@@ -1188,7 +1188,6 @@ export const nl: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Zijn je schuldig',
   globalBalances_allSub: 'al verrekend over de groepen',
   globalBalances_allSubEmpty: 'groepen worden opgeteld',
-  globalBalances_allSubSettled: 'niets open',
   globalBalances_nobody: 'niemand',
   globalBalances_onePerson: '1 persoon',
   globalBalances_people: '{count} personen',

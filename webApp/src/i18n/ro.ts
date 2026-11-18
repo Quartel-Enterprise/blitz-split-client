@@ -1189,7 +1189,6 @@ export const ro: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Îți datorează',
   globalBalances_allSub: 'deja compensat între grupuri',
   globalBalances_allSubEmpty: 'se adună grupurile',
-  globalBalances_allSubSettled: 'nimic restant',
   globalBalances_nobody: 'nimeni',
   globalBalances_onePerson: '1 persoană',
   globalBalances_people: 'persoane: {count}',

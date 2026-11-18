@@ -1188,7 +1188,6 @@ export const th: Record<MessageKey, string> = {
   globalBalances_owesYou: 'ค้างคุณ',
   globalBalances_allSub: 'หักลบระหว่างกลุ่มแล้ว',
   globalBalances_allSubEmpty: 'กำลังรวมยอดจากกลุ่ม',
-  globalBalances_allSubSettled: 'ไม่มียอดค้าง',
   globalBalances_nobody: 'ไม่มีใคร',
   globalBalances_onePerson: '1 คน',
   globalBalances_people: '{count} คน',

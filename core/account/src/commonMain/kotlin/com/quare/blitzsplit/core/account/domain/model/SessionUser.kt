@@ -8,4 +8,6 @@ data class SessionUser(
     val displayName: String?,
     val photoUrl: String?,
     val email: String?,
+    // Why: every Google or Apple identity the user holds, the latest sign in first; socialProvider is the first.
+    val linkedProviders: List<AccountProvider>,
 )

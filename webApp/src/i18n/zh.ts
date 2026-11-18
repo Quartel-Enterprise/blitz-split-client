@@ -1187,7 +1187,6 @@ export const zh: Record<MessageKey, string> = {
   globalBalances_owesYou: '欠你',
   globalBalances_allSub: '已在各群组间抵消',
   globalBalances_allSubEmpty: '正在汇总各群组',
-  globalBalances_allSubSettled: '没有未结清的款项',
   globalBalances_nobody: '无人',
   globalBalances_onePerson: '1人',
   globalBalances_people: '{count}人',

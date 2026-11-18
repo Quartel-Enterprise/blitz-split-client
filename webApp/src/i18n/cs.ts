@@ -1189,7 +1189,6 @@ export const cs: Record<MessageKey, string> = {
   globalBalances_owesYou: 'Dluží ti',
   globalBalances_allSub: 'už vyrovnáno napříč skupinami',
   globalBalances_allSubEmpty: 'sčítám skupiny',
-  globalBalances_allSubSettled: 'nic otevřeného',
   globalBalances_nobody: 'nikdo',
   globalBalances_onePerson: '1 osoba',
   globalBalances_people: 'Lidé: {count}',

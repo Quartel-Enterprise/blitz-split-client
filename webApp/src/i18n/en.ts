@@ -1185,7 +1185,6 @@ export const en = {
   globalBalances_owesYou: 'Owe you',
   globalBalances_allSub: 'already offset across groups',
   globalBalances_allSubEmpty: 'adding up the groups',
-  globalBalances_allSubSettled: 'nothing open',
   globalBalances_nobody: 'nobody',
   globalBalances_onePerson: '1 person',
   globalBalances_people: '{count} people',
