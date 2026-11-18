@@ -416,7 +416,8 @@ describe("the stable release's script", () => {
 
 describe("dispatching a release", () => {
   // A stand-in for gh that answers the run lists the script reads: GH_UPLOADING runs of app-store-screenshots.yml that
-  // aren't over ("unreadable" fails that read) and GH_PLAY_UPLOADING of play-store-screenshots.yml, no release
+  // aren't over ("unreadable" fails that read) and GH_PLAY_UPLOADING of play-store-screenshots.yml ("missing" answers
+  // as GitHub does for a workflow main doesn't have), no release
   // waiting, and a new run once the workflow was dispatched. `sleep` is one too, so the wait for that run takes no
   // time. `inputs` are the workflow's, each passed as -f input=value after web=false.
   const dispatch = (workflow, env = {}, inputs = []) => {
@@ -427,7 +428,10 @@ describe("dispatching a release", () => {
       `echo "$*" >> "${join(root, "gh.log")}"`,
       'case "$*" in',
       '  *app-store-screenshots.yml*) [ "${GH_UPLOADING:-0}" != unreadable ] || exit 1; echo "${GH_UPLOADING:-0}" ;;',
-      '  *play-store-screenshots.yml*) [ "${GH_PLAY_UPLOADING:-0}" != unreadable ] || exit 1; echo "${GH_PLAY_UPLOADING:-0}" ;;',
+      '  *play-store-screenshots.yml*)',
+      '    [ "${GH_PLAY_UPLOADING:-0}" != unreadable ] || exit 1',
+      '    [ "${GH_PLAY_UPLOADING:-0}" != missing ] || { echo "HTTP 404: workflow play-store-screenshots.yml not found on the default branch" >&2; exit 1; }',
+      '    echo "${GH_PLAY_UPLOADING:-0}" ;;',
       '  *"--status "*) echo 0 ;;',
       `  "workflow run"*) touch "${join(root, "dispatched")}" ;;`,
       `  *"--json databaseId"*) if [ -f "${join(root, "dispatched")}" ]; then echo 2; else echo 1; fi ;;`,
@@ -484,7 +488,13 @@ describe("dispatching a release", () => {
     assert.deepEqual(dispatched(), []);
   });
 
-  test("lets a beta go while they are, since it submits nothing and sends nothing to Google Play", () => {
+  // As the loop over the releases does: a release can't wait for a run of a workflow that isn't there.
+  test("goes on when main doesn't have the workflow that sends Google Play's", () => {
+    assert.equal(dispatch("release-production.yml", { GH_PLAY_UPLOADING: "missing" }).status, 0);
+    assert.equal(dispatched().length, 1);
+  });
+
+  test("dispatches a beta while they are, as it always did", () => {
     assert.equal(dispatch("release-beta.yml", { GH_UPLOADING: "1", GH_PLAY_UPLOADING: "1" }).status, 0);
     assert.deepEqual(dispatched(), ["workflow run release-beta.yml --repo Quartel-Enterprise/blitz-split-client --ref main -f web=false"]);
   });
@@ -520,12 +530,17 @@ describe("the two ways Google Play's screenshots go up", () => {
 
   test("refuse to start while the other is going, and each locale's job sent alone checks again", () => {
     assert.ok(guarded(release).some((workflows) => workflows.includes("play-store-screenshots.yml")));
-    // Whatever its platforms: the upload jobs sent alone can't tell a release without Android apart.
-    assert.doesNotMatch(release, /name: Check that no Google Play screenshots are going up\n\s+if:/);
-    assert.deepEqual(guarded(alone), [["release-production.yml", "store-listing.yml", "play-store-screenshots.yml"]]);
-    assert.deepEqual(guarded(upload), [["release-production.yml", "store-listing.yml", "play-store-screenshots.yml"]]);
-    assert.match(alone, /refuse_while_play_is_written: true\n/);
-    assert.doesNotMatch(release, /refuse_while_play_is_written/);
+    // Whatever its platforms: the upload jobs sent alone can't tell a release without Android apart, nor the App
+    // Store's one that submits nothing.
+    assert.doesNotMatch(release, /name: Check that no (Google Play|App Store) screenshots are going up\n\s+if:/);
+    const everything = ["release-production.yml", "store-listing.yml", "play-store-screenshots.yml"];
+    assert.deepEqual(guarded(alone), [everything]);
+    assert.deepEqual(guarded(upload), [["${{", "inputs.refuse_while_going", "}}"]]);
+    /** The workflows a caller has each locale's job check again. */
+    const checkedAgain = (caller) => caller.match(/\n {6}refuse_while_going: (.+)\n/)?.[1].split(" ");
+    assert.deepEqual(checkedAgain(alone), everything);
+    // A release's own jobs leave the releases out: the next one waiting behind it would stop every locale.
+    assert.deepEqual(checkedAgain(release), ["store-listing.yml", "play-store-screenshots.yml"]);
   });
 
   test("send them only from a run an administrator dispatched on main", () => {

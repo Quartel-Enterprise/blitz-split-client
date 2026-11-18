@@ -89,7 +89,8 @@ The rules the upload follows:
   the listing already has: add its title and description there before uploading its images.
 - **Play** sends only the images whose SHA-256 changed (`sync_image_upload`). It tries a Play 5xx three times, 30
   seconds apart. `VALIDATE_ONLY=true`, or the lane's `validate_only:true`, checks the upload against the API
-  without publishing.
+  without publishing. The App Store has no such check, so that run leaves its screenshots out, and stops when
+  Google Play isn't among the platforms asked for.
 - **The Mac app is a version of its own** on App Store Connect: its screenshots (`fastlane/screenshots-mac/`) go up
   through a second `deliver` with `platform: osx`, and only when they were staged.
 - **App Store** screenshots only change on an editable version. "Screenshot Set Already Exists" is tried three

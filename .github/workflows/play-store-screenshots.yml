@@ -131,6 +131,6 @@ jobs:
     with:
       locales: ${{ needs.draw.outputs.locales }}
       validate_only: ${{ inputs.validate_only }}
-      refuse_while_play_is_written: true
+      refuse_while_going: release-production.yml store-listing.yml play-store-screenshots.yml
     secrets:
       PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}

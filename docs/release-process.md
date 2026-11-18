@@ -248,9 +248,9 @@ the submission waits for the App Store's, and the next release or beta for them
 all, since they share the `release` group.
 
 - **On Google Play**, that locale's job sends it again with the images the run already drew, at any time: the
-  listing takes them whenever. A release's own job doesn't look at what else is writing on Google Play, so run it
-  again once no other release, no listing and no run of `play-store-screenshots` is going, and not after a later
-  run sent newer images, which it would cover. Run it with **the job's own re-run button**, not **Re-run failed jobs**, which also
+  listing takes them whenever. The job stops while a listing or a run of `play-store-screenshots` is going, and
+  doesn't look for another release: don't run it again during one, nor after a later run sent newer images, which
+  it would cover. Run it with **the job's own re-run button**, not **Re-run failed jobs**, which also
   runs every App Store job that failed without failing the run (a capture on a Mac runner, the uploads of a version
   already in review) and the jobs after them.
 - **On the App Store**, deliver deletes a locale's screenshots before it uploads the new ones, so a locale whose job
@@ -351,7 +351,8 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to A
   go without theirs, so each side refuses the other
   ([`no-run-going`](../.github/actions/no-run-going/action.yml)). The workflow refuses to start while a release,
   beta or stable, is in progress or waiting, and each of its upload jobs checks again, a job run again later too.
-  A stable release that submits an Apple platform refuses to start while a run of the workflow isn't over: `plan`
+  A stable release refuses to start while a run of the workflow isn't over, whatever it submits, since the upload
+  jobs stop during any release: `plan`
   fails, naming it, however the release was dispatched, and `release-production.sh` says so before dispatching. A
   second set dispatched while one is going up is refused too, not queued.
 - **Who and where** are a release's: an administrator of the repository, on `main`, with the jobs that reach App

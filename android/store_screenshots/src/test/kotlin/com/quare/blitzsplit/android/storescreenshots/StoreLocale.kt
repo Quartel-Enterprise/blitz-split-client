@@ -1,8 +1,7 @@
 package com.quare.blitzsplit.android.storescreenshots
 
-import android.text.TextUtils
-import android.view.View
 import androidx.compose.ui.unit.LayoutDirection
+import com.quare.blitzsplit.android.designsystem.format.isRightToLeft
 import java.util.Locale
 
 /**
@@ -24,14 +23,12 @@ internal data class StoreLocale(
 )
 
 /**
- * The way the set's language is read: right to left for Arabic and Hebrew. Robolectric draws every locale left to
- * right unless told otherwise, so a Play screen is handed this (StoreScreenshots).
+ * The way the set's language is read: right to left for Arabic and Hebrew, by the app's own rule, the one its arrows
+ * turn by. Robolectric draws every locale left to right unless told otherwise, so a Play screen is handed this
+ * (StoreScreenshots).
  */
 internal val StoreLocale.layoutDirection: LayoutDirection
-    get() {
-        val direction = TextUtils.getLayoutDirectionFromLocale(Locale.forLanguageTag(drawnLocale))
-        return if (direction == View.LAYOUT_DIRECTION_RTL) LayoutDirection.Rtl else LayoutDirection.Ltr
-    }
+    get() = if (Locale.forLanguageTag(drawnLocale).isRightToLeft()) LayoutDirection.Rtl else LayoutDirection.Ltr
 
 /**
  * The locale Latin America's Spanish set is drawn in: Equatorial Guinea's region, the one its App Store set is

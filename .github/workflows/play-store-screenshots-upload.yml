@@ -33,17 +33,16 @@ on:
         description: "Only ask Google Play whether it would take each locale's images: the listing doesn't change"
         type: boolean
         default: false
-      refuse_while_play_is_written:
-        description: "Every job stops while a release, a listing or another run that sends these is going. The caller's job then grants actions: read"
-        type: boolean
-        default: false
+      refuse_while_going:
+        description: "The workflows whose runs stop every job here while one isn't over, by file name with a space between them. The caller's job then grants actions: read. Blank checks nothing"
+        type: string
+        default: ""
     secrets:
       PLAY_STORE_SERVICE_ACCOUNT_JSON:
         required: true
 
-# No permissions of its own: the jobs take the calling job's, which is contents: read for a release, and that with
-# actions: read for the caller that asks for refuse_while_play_is_written. Naming more here than a caller grants
-# would refuse the caller's whole run.
+# No permissions of its own: the jobs take the calling job's, contents: read with the actions: read that
+# refuse_while_going needs. Naming more here than a caller grants would refuse the caller's whole run.
 
 jobs:
   send:
@@ -70,17 +69,18 @@ jobs:
         with:
           token: ${{ github.token }}
 
-      # For screenshots sent outside a release: the run's first job refuses it while a release, a listing or
-      # another run of play-store-screenshots.yml is going, and this is the same check for a locale's job run again
-      # later, which starts without that first job (its own run is left out of the check). Each writes through a
-      # Play edit of its own, and the newer edit drops the one still open; a later run's images are also the newer
-      # ones, which a job of an earlier run sent again would cover.
+      # The caller's first job refuses its run while something else writes on Google Play, and this is the same
+      # check for a locale's job run again later, which starts without that first job (its own run is left out of
+      # the check). Each writes through a Play edit of its own, and the newer edit drops the one still open; a
+      # later run's images are also the newer ones, which a job of an earlier run sent again would cover. Sent
+      # alone, the workflows are a release, a listing and another run of play-store-screenshots.yml; a release
+      # names the last two, since the next release waits behind it.
       - name: Check that nothing else is writing on Google Play
-        if: ${{ inputs.refuse_while_play_is_written }}
+        if: ${{ inputs.refuse_while_going != '' }}
         uses: ./.github/actions/no-run-going
         with:
           token: ${{ github.token }}
-          workflows: release-production.yml store-listing.yml play-store-screenshots.yml
+          workflows: ${{ inputs.refuse_while_going }}
           then: send the screenshots once that run is over
 
       # The whole of it: the lane picks this job's locale out.

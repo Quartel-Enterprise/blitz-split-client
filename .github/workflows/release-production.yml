@@ -233,9 +233,10 @@ jobs:
       # A run that submits sends the App Store versions to review, and a version waiting for review takes no
       # screenshot: started while a set made on a Mac is still going up, one locale per job
       # (app-store-screenshots.yml), it would leave the locales still to go without theirs. That workflow refuses to
-      # start during a release; this is the other way round.
+      # start during a release; this is the other way round. Whatever the run submits or releases: that workflow's
+      # upload jobs stop while any release is going, since they can't tell one that submits nothing apart, so a
+      # release let through would fail every locale still to go.
       - name: Check that no App Store screenshots are going up
-        if: ${{ inputs.submit_for_review && (inputs.ios || inputs.macos) }}
         uses: ./.github/actions/no-run-going
         with:
           token: ${{ github.token }}
@@ -578,15 +579,23 @@ jobs:
   # play-store-screenshots-upload.yml, which play-store-screenshots.yml calls too, to send them without a release.
   # Shown as "Android, Google Play screenshots / send <locale>". A locale Google Play refused costs that locale
   # alone, and that locale's own re-run button sends only it again, without drawing anything a second time
-  # ("Re-run failed jobs" would also run the App Store jobs that failed with continue-on-error).
+  # ("Re-run failed jobs" would also run the App Store jobs that failed with continue-on-error). Run again after
+  # the release, a locale's job stops while a listing or Google Play's screenshots sent alone are going.
   android-screenshots:
     name: Android, Google Play screenshots
     needs: [plan, android-upload, android-screenshots-render]
     if: ${{ needs.android-screenshots-render.outputs.locales != '' }}
+    permissions:
+      contents: read
+      # Each upload job looks for a listing or Google Play's screenshots going up alone.
+      actions: read
     uses: ./.github/workflows/play-store-screenshots-upload.yml
     with:
       ref: ${{ needs.plan.outputs.sha }}
       locales: ${{ needs.android-screenshots-render.outputs.locales }}
+      # Neither can start while this run is going, so the check only ever stops a locale's job run again after
+      # it. Not the releases: the next one waiting behind this run would stop every locale.
+      refuse_while_going: store-listing.yml play-store-screenshots.yml
     secrets:
       PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
 

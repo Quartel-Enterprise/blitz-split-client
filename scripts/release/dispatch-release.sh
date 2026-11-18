@@ -34,13 +34,22 @@ for each in "${GROUP_WORKFLOWS[@]}"; do
 done
 
 # Fails, saying why, while a workflow that sends a store's screenshots has a run that isn't over, whatever it is
-# waiting for. A list that can't be read is not an empty one: dispatching then would be a guess.
+# waiting for. A list that can't be read is not an empty one: dispatching then would be a guess. A workflow main
+# doesn't have is the exception, as in the loop above: it has no run going, and a release can't wait for one.
 refuse_while_going() {
-  local sending="$1" what="$2" why="$3" going
-  if ! going="$(gh run list --workflow="$sending" --repo "$REPO" --limit 30 --json status --jq '[.[] | select(.status != "completed")] | length')"; then
+  local sending="$1" what="$2" why="$3" going errors
+  errors="$(mktemp)"
+  if ! going="$(gh run list --workflow="$sending" --repo "$REPO" --limit 30 --json status --jq '[.[] | select(.status != "completed")] | length' 2> "$errors")"; then
+    if grep -q "not found on the default branch" "$errors"; then
+      rm -f "$errors"
+      return 0
+    fi
+    cat "$errors" >&2
+    rm -f "$errors"
     echo "Could not see whether $what are going up ($sending). Run this again." >&2
     exit 1
   fi
+  rm -f "$errors"
   if [ "${going:-0}" -gt 0 ]; then
     echo "$what are still going up (a run of $sending isn't over), and $why. Wait for that run to end, then run this again." >&2
     exit 1
@@ -53,7 +62,9 @@ refuse_while_going() {
 # listing's screenshots does when they go alone (play-store-screenshots.yml), and the newer edit drops the one still
 # open. The release's own first job refuses the run then; this says so before anything is dispatched, whatever the
 # release's inputs: the upload jobs of both stop while any stable release is going, so one that reaches neither store
-# would still fail the locales still to go. A beta is let through, as before.
+# would still fail the locales still to go. A beta is dispatched as it always was: it reaches neither Google Play's
+# listing nor its tracks, so Google Play's upload goes on beside it, while the App Store's upload jobs do stop during
+# one (app-store-screenshots-upload.yml), which this script doesn't look at.
 if [ "$workflow" = release-production.yml ]; then
   refuse_while_going app-store-screenshots.yml "App Store screenshots" \
     "the release would submit the versions before the last locale landed"
