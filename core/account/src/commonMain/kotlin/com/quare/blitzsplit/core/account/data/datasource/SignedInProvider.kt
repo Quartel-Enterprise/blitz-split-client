@@ -16,14 +16,8 @@ internal object SignedInProvider {
         .orEmpty()
         .mapNotNull { identity ->
             AccountProvider.fromCodeOrNull(identity.provider)?.let { provider ->
-                provider to identity.lastSignInAt?.let(::parseOrNull)
+                provider to identity.lastSignInAt?.let(Instant::parseOrNull)
             }
         }.maxWithOrNull(compareBy(nullsFirst<Instant>()) { (_, signedInAt) -> signedInAt })
         ?.first
-
-    private fun parseOrNull(value: String): Instant? = try {
-        Instant.parse(value)
-    } catch (_: IllegalArgumentException) {
-        null
-    }
 }

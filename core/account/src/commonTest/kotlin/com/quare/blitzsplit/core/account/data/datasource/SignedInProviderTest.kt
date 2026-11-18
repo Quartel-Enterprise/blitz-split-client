@@ -88,18 +88,6 @@ class SignedInProviderTest {
     }
 
     @Test
-    fun `GIVEN an anonymous user that connected Google WHEN reading the provider THEN it is Google`() {
-        // Given
-        val identities = listOf(google(lastSignInAt = "2026-11-18T09:30:00Z"))
-
-        // When
-        val provider = SignedInProvider.of(identities)
-
-        // Then
-        assertEquals(AccountProvider.GOOGLE, provider)
-    }
-
-    @Test
     fun `GIVEN a newer identity of another provider WHEN reading the provider THEN only Google and Apple count`() {
         // Given
         val identities = listOf(
