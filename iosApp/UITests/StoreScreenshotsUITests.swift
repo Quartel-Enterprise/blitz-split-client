@@ -28,8 +28,37 @@ final class StoreScreenshotsUITests: XCTestCase {
     /// opens by itself in that time (BlitzSplitApple.createSplitBillViewModel), so the test taps nothing.
     private static let settle: TimeInterval = 4
 
-    /// The slot of the iPhone Duo open, which capture-ios.sh opens in Device Hub before the test runs.
-    private static let duoOpenSlot = "iphoneduoopen"
+    /// How long a launched app may take to draw its window lying down, on a device already turned that way.
+    private static let lyingDownTimeout: TimeInterval = 10
+
+    /// How a slot's device is held while it is captured, which decides the screen photographed and the image's shape.
+    private enum Hold {
+        /// Upright, the way the iPhone's slots and the closed iPhone Duo are captured.
+        case upright
+        /// The iPad's slots. An iPad opens with its tabs in the sidebar (docs/product/home-and-shell.md), which
+        /// upright iPadOS has no room to dock: it opens over the screen, covering its left third and dimming the
+        /// rest. Lying down the sidebar sits beside the content, so the capture shows the whole screen.
+        case lyingDown
+        /// The iPhone Duo open, which capture-ios.sh opens in Device Hub before the test runs: its inner display.
+        case duoOpen
+
+        init(slot: String) {
+            if slot == "iphoneduoopen" {
+                self = .duoOpen
+            } else if slot.hasPrefix("ipad") {
+                self = .lyingDown
+            } else {
+                self = .upright
+            }
+        }
+
+        /// `landscapeLeft` turns the top of the device to the left, which puts the long edge that holds an iPad
+        /// Air's front camera on top, as on a keyboard: the way the frame draws it (IPadLandscapeBezelSurface).
+        /// The screen reads the same on either side, so only the frame's bezel tells them apart.
+        var orientation: UIDeviceOrientation {
+            self == .lyingDown ? .landscapeLeft : .portrait
+        }
+    }
 
     /// The long side of the iPhone Duo's inner display, in pixels.
     private static let innerDisplayLongSide = 2853
@@ -54,11 +83,13 @@ final class StoreScreenshotsUITests: XCTestCase {
         let assets = try Self.assetsEnvironment(tables)
         let onlyLocales = Self.subset(environment["STORE_SCREENSHOTS_LOCALES"])
         let onlyScreens = Self.subset(environment["STORE_SCREENSHOTS_SCREENS"])
-        XCUIDevice.shared.orientation = .portrait
+        let hold = Hold(slot: slot)
+        // Before anything is launched, so the app opens on a device already held that way and never has to turn.
+        XCUIDevice.shared.orientation = hold.orientation
         // capture-ios.sh runs this test once per language. The setting stays on the simulator, so only the runs
         // before a slot's first captured language switch it: 26 visits to Settings would be 25 more chances to fail.
         let isDeviceSetUp = !(environment["STORE_SCREENSHOTS_DEVICE_IS_SET_UP"] ?? "").isEmpty
-        if slot.hasPrefix("ipad"), !isDeviceSetUp { useFullScreenApps() }
+        if hold == .lyingDown, !isDeviceSetUp { useFullScreenApps() }
         // The app's own language comes back once the captures end, whatever they stopped on: by this test's last
         // launch, or by capture-ios.sh once per slot, where this would be one more launch per language.
         let callerRestoresLanguage = !(environment["STORE_SCREENSHOTS_CALLER_RESTORES_LANGUAGE"] ?? "").isEmpty
@@ -67,7 +98,7 @@ final class StoreScreenshotsUITests: XCTestCase {
             let directory = output.appendingPathComponent(slot).appendingPathComponent(locale.tag)
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
             for screen in screens where onlyScreens?.contains(screen.code) ?? true {
-                let png = try capture(screen, in: locale, assets: assets, isDuoOpen: slot == Self.duoOpenSlot)
+                let png = try capture(screen, in: locale, assets: assets, hold: hold)
                 try png.write(to: directory.appendingPathComponent("\(screen.fileName).png"))
             }
         }
@@ -135,7 +166,7 @@ final class StoreScreenshotsUITests: XCTestCase {
         _ screen: ListingScreen,
         in locale: ListingLocale,
         assets: [String: String],
-        isDuoOpen: Bool
+        hold: Hold
     ) throws -> Data {
         let app = XCUIApplication()
         app.launchArguments = [
@@ -147,18 +178,53 @@ final class StoreScreenshotsUITests: XCTestCase {
         ]
         app.launchEnvironment = assets
         app.launch()
+        defer { app.terminate() }
+        if hold == .lyingDown { waitUntilLyingDown(app) }
         Thread.sleep(forTimeInterval: Self.settle)
-        let png = isDuoOpen ? Self.innerDisplayPNG() : XCUIScreen.main.screenshot().pngRepresentation
-        app.terminate()
-        return try XCTUnwrap(png, "The iPhone Duo isn't open: no screen of its inner display's size is lying down")
+        switch hold {
+        case .upright:
+            return XCUIScreen.main.screenshot().pngRepresentation
+        case .lyingDown:
+            return try XCTUnwrap(
+                Self.lyingDownPNG(of: XCUIScreen.main.screenshot().image),
+                "The iPad isn't lying down: its screen was captured upright"
+            )
+        case .duoOpen:
+            return try XCTUnwrap(
+                Self.innerDisplayPNG(),
+                "The iPhone Duo isn't open: no screen of its inner display's size is lying down"
+            )
+        }
+    }
+
+    /// Waits until the app's window is wider than tall. The device is turned before the launch, so the app lays
+    /// itself out lying down from its first frame, the sidebar docked beside the content; a window still upright
+    /// here would be captured with the sidebar over the screen, so the run fails instead, and is tried again.
+    @MainActor
+    private func waitUntilLyingDown(_ app: XCUIApplication) {
+        let window = app.windows.firstMatch
+        let deadline = Date().addingTimeInterval(Self.lyingDownTimeout)
+        while !(window.exists && window.frame.width > window.frame.height) {
+            guard Date() < deadline else {
+                XCTFail("The app's window is still upright on an iPad lying down")
+                return
+            }
+            Thread.sleep(forTimeInterval: 0.25)
+        }
+    }
+
+    /// The main screen of a device lying down, at its landscape size (2732x2048 on the 13" iPad), nil when the
+    /// capture is upright.
+    private static func lyingDownPNG(of image: UIImage) -> Data? {
+        guard image.size.width > image.size.height else { return nil }
+        return pngAsSeen(image)
     }
 
     /// The iPhone Duo's inner display, nil while the Duo isn't open. Open, the Duo draws there, on what XCTest lists
     /// as a second screen, while the main one, the outer display, is off: of the two, the larger is the one in use. A
     /// screen longer than the inner display is none of the Duo's own (the simulator has a resizable scene display
-    /// too) and is left out. XCTest hands the display lying down as upright pixels with a rotation tag, which the
-    /// frame's decoder doesn't read, so the image is drawn again the way it is seen, pixel for pixel. Closed, the
-    /// inner display is off and upright, and nothing is returned rather than a black capture for the frame to stretch.
+    /// too) and is left out. Closed, the inner display is off and upright, and nothing is returned rather than a
+    /// black capture for the frame to stretch.
     @MainActor
     private static func innerDisplayPNG() -> Data? {
         let images = XCUIScreen.screens.map { $0.screenshot().image }.filter { image in
@@ -167,6 +233,12 @@ final class StoreScreenshotsUITests: XCTestCase {
         guard let image = images.max(by: { pixels(of: $0) < pixels(of: $1) }),
               image.size.width > image.size.height
         else { return nil }
+        return pngAsSeen(image)
+    }
+
+    /// The image drawn again the way it is seen, pixel for pixel. XCTest may hand a display lying down as upright
+    /// pixels with a rotation tag, which the frame's decoder doesn't read: it would draw the capture on its side.
+    private static func pngAsSeen(_ image: UIImage) -> Data {
         let size = CGSize(
             width: (image.size.width * image.scale).rounded(),
             height: (image.size.height * image.scale).rounded()

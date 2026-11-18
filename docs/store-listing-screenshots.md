@@ -125,7 +125,7 @@ photos than the screenshots use, to pick from.
 | --- | --- | --- |
 | Phone | `phoneScreenshots`, 1242x2484 | **Dynamic Island (medium), 1206x2622, the one App Store Connect requires**, from an iPhone 17 Pro. Dynamic Island (large), 1290x2796, from an iPhone 16 Plus. Face ID (large) is only a fallback for the large size, so it isn't made |
 | Foldable | | iPhone Duo, from the Duo simulator (on the runtime that has it): closed, as it boots, its outer display at 1398x2034, and open, its inner display lying down at 2853x2007 (XCTest hands the capture as 2852x2006, which the frame draws on the display's own canvas). Optional until April 2027, when apps built with the iOS 27.1 SDK must have it |
-| Tablet | `sevenInchScreenshots`, `tenInchScreenshots` | 13" (2048x2732) from an iPad Air 13", and 11" framing the same capture on a taller canvas |
+| Tablet | `sevenInchScreenshots`, `tenInchScreenshots` | 13", lying down at 2732x2048, from an iPad Air 13", and 11" framing the same capture on that slot's own canvas, 2388x1668 ([why lying down](#the-ipad-is-captured-lying-down)) |
 | Mac | | The Mac app's window at 1440x900 points, framed on 2880x1800 (16:10) |
 
 **The Duo open needs Device Hub.** The simulator boots closed, and its hinge moves only from Device Hub: its Open
@@ -191,8 +191,42 @@ listed as failed and the release goes on
 **The iPad runs in full-screen apps.** iPadOS 26 opens apps in windows by default, which would leave the app short
 of the screen. On an iPad slot, the UI test first switches Settings › Multitasking & Gestures to full-screen apps.
 
-store-screenshots has no frame for the Duo or the Mac. They get a plain rounded bezel and a window shadow
-(`CustomBezels.kt`), with the same banner as the other shots.
+store-screenshots has no frame for the Duo or the Mac, and its iPad frame only stands upright. The Duo and the Mac
+get a plain rounded bezel and a window shadow, and the iPad lying down a bezel drawn from the library's own
+measures of an iPad Air 13" (`CustomBezels.kt`), with the same banner as the other shots.
+
+### The iPad is captured lying down
+
+An iPad opens with its tabs in the sidebar ([home-and-shell.md](product/home-and-shell.md)). Upright, iPadOS has no
+room to dock that sidebar, so it opens over the content: the release of November 2026 captured every iPad screen with
+the sidebar covering its left third and the rest dimmed. Lying down the sidebar sits beside the content and nothing
+is covered, so the iPad's slot is captured that way (Pierre's call, November 2026), and the listing shows the iPad
+at its widest: the sidebar beside a screen in two columns.
+
+- **The capture.** The UI test turns the simulator before it launches anything (`Hold` in
+  `StoreScreenshotsUITests.swift`), so the app opens lying down and never has to turn. It then waits for the app's
+  window to be wider than tall, and fails the language, which is tried again, on a window or a capture still
+  upright. The PNG is 2732x2048. Every other slot stays upright.
+- **Which side.** `landscapeLeft`: the top of the device to the left, which puts the long edge with an iPad Air's
+  front camera on top, as on a keyboard. The screen reads the same on either side; the side only decides where the
+  frame draws the camera and the buttons (the camera above the screen, the volume buttons on the top edge by the left
+  corner, the top button on the left edge).
+- **The sizes.** App Store Connect takes a 13" screenshot lying down at 2752x2064 or 2732x2048, and an 11" one at
+  2420x1668, 2388x1668, 2360x1640, 2316x1512 or 2266x1488
+  ([Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/),
+  read in November 2026). The 13" frame is 2732x2048, the capture's own size, and the 11" one 2388x1668, the size its
+  upright frame had, turned. deliver files them by those sizes, as it did the upright ones.
+- **The frame.** The banner stays on top, as on the Mac's wide canvas, and the iPad takes the height left, about four
+  fifths of the image's. A banner beside the device would make the iPad narrower and wrap its text. The title and
+  the description are larger than under the library's other custom frames (`BannerFontSizes`), and the description
+  fits in one line.
+- **The 11" slot frames the 13" capture**, as it did upright: the same iPad Air 13" on the 11" slot's canvas, which
+  is wider for its height (1.43 against 1.33), so the device is a little smaller in it. No 11" simulator is
+  captured.
+- **An upright capture doesn't fit the frame.** One left in `build/outputs/apple-screenshot-captures/ipad13/` from
+  before this (a release's `apple-captures-ipad13` artifact, a folder kept from an earlier run) would be drawn
+  stretched into the lying-down bezel, so the frame stops at it, by name (`AppleScreenshotSlot.isWide`): capture the
+  slot again, which a whole run of the script starts by deleting.
 
 ## Where to edit
 
