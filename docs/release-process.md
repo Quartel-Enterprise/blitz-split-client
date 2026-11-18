@@ -169,7 +169,8 @@ read them ([Secrets](#secrets)).
   Production). The other tracks get the release whole. The listing's text is not touched: it is
   `fastlane upload_listing`'s ([store-listing.md](store-listing.md)).
 - **App Store.** The `app_store_submit` lane waits for App Store Connect to process the build (up to 45 minutes),
-  makes `X.Y.Z` the editable version, writes its "What's new", selects the build and submits it (`deliver`). An
+  makes `X.Y.Z` the editable version, writes its "What's new" and its copyright line with the current year
+  ([store-listing.md](store-listing.md#how-it-reaches-the-stores)), selects the build and submits it (`deliver`). An
   approved version is released by itself, to everyone, or over seven days with `phased_release`. The Mac app is a
   version of its own, submitted by its own job. A locale with no screenshots of its own shows the primary
   language's, which the lane only reports; it refuses to submit when the primary language has none.

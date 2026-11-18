@@ -9,6 +9,9 @@
 //       Writes every listing in the layout fastlane uploads, a folder per store locale: <folder>/play/<locale>/ for
 //       supply and <folder>/app-store/<locale>/ for deliver, with the App Store's support, marketing and privacy
 //       policy addresses and the version's copyright line. `fastlane upload_listing` runs it.
+//   node scripts/release/store-listing.mjs copyright
+//       Prints the copyright line of an App Store version, with the current year: the release writes it on the
+//       version it submits (`fastlane app_store_submit`).
 //
 // Plain Node, no dependencies: the check and the lane run it as it is.
 
@@ -130,12 +133,14 @@ export const APP_STORE_URL_FILES = {
   "marketing_url.txt": "https://blitzsplit.com",
   "privacy_url.txt": "https://blitzsplit.com/privacy",
 };
+/** Who owns the app, as the site's footer names them (Pierre's call: the same as Bible Planner's). */
+export const COPYRIGHT_OWNER = "Quartel Enterprise • PI Software LTDA";
 /**
- * The version's copyright line, one for every locale: the line of the site's footer (Pierre's call: the same as
- * Bible Planner's), without the © the App Store adds. The year is the one the app came out in, not the current one:
- * the App Store asks for the year the rights were obtained, so it stays as it is in the years to come.
+ * The version's copyright line, one for every locale: the year and the owner, without the © the App Store adds. The
+ * year is the current one, never written down (Pierre's call, as Bible Planner's footer does): every upload of the
+ * listing and every release writes the line again, so it moves on by itself when the year turns.
  */
-export const APP_STORE_COPYRIGHT = "2026 Quartel Enterprise • PI Software LTDA";
+export const appStoreCopyright = (year = new Date().getFullYear()) => `${year} ${COPYRIGHT_OWNER}`;
 
 export class ListingError extends Error {}
 const fail = (file, message) => {
@@ -223,8 +228,8 @@ export function readListings(root = ".") {
 
 // --- What fastlane uploads -------------------------------------------------------------------------------------------
 
-/** The files of both stores, by path under the staging folder: <store>/<locale>/<file>. */
-export function stagedFiles(listings) {
+/** The files of both stores, by path under the staging folder: <store>/<locale>/<file>. `year` is the copyright's. */
+export function stagedFiles(listings, year) {
   const staged = {};
   // `same` is what every locale of a store gets whatever its language, by file name.
   const stageStore = (store, locales, files, same = {}) => {
@@ -238,7 +243,7 @@ export function stagedFiles(listings) {
   stageStore("play", PLAY_LOCALES, PLAY_FILES);
   stageStore("app-store", APP_STORE_LOCALES, APP_STORE_FILES, APP_STORE_URL_FILES);
   // Beside the locales' folders, where deliver reads what a version has once.
-  staged[join("app-store", "copyright.txt")] = APP_STORE_COPYRIGHT;
+  staged[join("app-store", "copyright.txt")] = appStoreCopyright(year);
   return staged;
 }
 
@@ -262,8 +267,10 @@ function main([command, ...rest]) {
     console.log(`${Object.keys(listings).length} listing(s) in ${LISTING_DIR}/, all within the stores' limits`);
   } else if (command === "stage" && rest.length === 2 && rest[0] === "--out" && !rest[1].startsWith("--")) {
     stage(rest[1]);
+  } else if (command === "copyright" && rest.length === 0) {
+    console.log(appStoreCopyright());
   } else {
-    console.error("Usage: store-listing.mjs check | stage --out <folder>");
+    console.error("Usage: store-listing.mjs check | stage --out <folder> | copyright");
     process.exit(2);
   }
 }

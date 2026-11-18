@@ -13,6 +13,7 @@ import {
   LISTING_LANGS,
   ListingError,
   PLAY_LOCALES,
+  appStoreCopyright,
   brandOf,
   lengthOf,
   parseListing,
@@ -129,16 +130,23 @@ test("staging writes each store's files under each of a language's locales", () 
 });
 
 test("staging gives every App Store locale its three addresses, and the version its copyright", () => {
-  const staged = stagedFiles({ es: FIELD_TEXT, en: FIELD_TEXT });
+  const staged = stagedFiles({ es: FIELD_TEXT, en: FIELD_TEXT }, 2031);
   // Written out, not read from the script's constants: a typo there must fail here, since it would reach the store.
   for (const locale of ["es-MX", "en-US"]) {
     assert.equal(staged[`app-store/${locale}/support_url.txt`], "https://blitzsplit.com/support");
     assert.equal(staged[`app-store/${locale}/marketing_url.txt`], "https://blitzsplit.com");
     assert.equal(staged[`app-store/${locale}/privacy_url.txt`], "https://blitzsplit.com/privacy");
   }
-  assert.equal(staged["app-store/copyright.txt"], "2026 Quartel Enterprise • PI Software LTDA");
+  assert.equal(staged["app-store/copyright.txt"], "2031 Quartel Enterprise • PI Software LTDA");
   // Google Play has none of them: its contact details are the developer account's.
   assert.deepEqual(Object.keys(staged).filter((path) => path.startsWith("play/") && /url|copyright/.test(path)), []);
+});
+
+test("the copyright line carries the current year unless it is told another", () => {
+  const thisYear = new Date().getFullYear();
+  assert.equal(appStoreCopyright(), `${thisYear} Quartel Enterprise • PI Software LTDA`);
+  assert.equal(stagedFiles({ en: FIELD_TEXT })["app-store/copyright.txt"], appStoreCopyright());
+  assert.equal(appStoreCopyright(2027), "2027 Quartel Enterprise • PI Software LTDA");
 });
 
 // The screenshots are staged from maps of their own, in Kotlin (build-logic's StoreScreenshots.kt). A store attaches a

@@ -107,10 +107,12 @@ staged from the script's constants:
   site's Support page: the App Store's review looks there for a way to reach the developer, which the landing
   doesn't have. The privacy policy's is https://blitzsplit.com/privacy, the page the apps open, which the site
   shows in the reader's language.
-- **The copyright line** (`APP_STORE_COPYRIGHT`, `app-store/copyright.txt`, beside the locales' folders): one per
-  version, "2026 Quartel Enterprise • PI Software LTDA", the line of the site's footer and of Bible Planner's
-  (Pierre's call), with no ©, which the App Store adds. The year stays 2026: the App Store asks for the year the
-  rights were obtained, not the current one.
+- **The copyright line** (`appStoreCopyright()`, `app-store/copyright.txt`, beside the locales' folders): one per
+  version, the current year and "Quartel Enterprise • PI Software LTDA", the owner the site's footer and Bible
+  Planner's name (Pierre's call), with no ©, which the App Store adds. The year is never written down (Pierre's
+  call): the script reads it off the clock, and since a new version starts with the line of the one before it, a
+  release writes it too (`app_store_submit` asks `store-listing.mjs copyright`). So the line moves on by itself with
+  the first upload of the listing or the first release of a new year.
 
 Google Play has none of them: its contact details are the developer account's, and its privacy policy address is
 App content's, in the Play Console.
