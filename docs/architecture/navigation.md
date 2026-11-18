@@ -157,7 +157,8 @@ var path: [AppRoute] {
 A push always starts in a ViewModel and reaches SwiftUI through the watcher. A pop can start in SwiftUI (the back
 button, the edge swipe): the `NavigationStack` already moved, so the setter only tells the shared stack how many
 entries remain with `popTo`. When the root is `.home` (Início), `RootView` swaps the stack for `MainTabView`, the
-`TabView` with `.tabViewStyle(.sidebarAdaptable)` (a tab bar on iPhone, a sidebar on iPad and Mac). Each tab draws its
+`TabView` with `.tabViewStyle(.sidebarAdaptable)` (a tab bar on iPhone, a sidebar on the Mac and on an iPad lying down,
+the top bar's tabs on an iPad upright). Each tab draws its
 slice of the path in a `SyncedNavigationStack`, which on the Mac keeps the path it shows in its own state and follows
 the bound one both ways: the Mac's `TabView` never pushed a tab's computed path in a plain `NavigationStack(path:)` (a
 group from Groups' table did nothing), although the binding already held the route. The Mac's mouse back and forward
