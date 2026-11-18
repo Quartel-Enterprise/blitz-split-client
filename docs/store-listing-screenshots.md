@@ -95,7 +95,11 @@ The rules the upload follows:
   through a second `deliver` with `platform: osx`, and only when they were staged.
 - **App Store** screenshots only change on an editable version. "Screenshot Set Already Exists" is tried three
   times, and a shelf App Store Connect won't reorder doesn't fail an upload that landed. After an upload of every
-  locale, `tidy_app_store_screenshots` removes the duplicates deliver can leave and sorts each shelf by file name.
+  locale, `tidy_app_store_screenshots` reads each shelf in full, sorts it by file name, and then **checks that
+  each shelf holds every screen once**: a shelf short of a file, or listing one twice, fails the lane, which names
+  the locale, the shelf and the file ([Repairing shelves](#repairing-shelves)). It removes no screenshot: one of a
+  doubled entry's two ids takes the other with it. How it sorts and what it reports is decided by
+  `scripts/store-screenshots/shelves.mjs`, which has the tests, so the lane needs Node.
   `fastlane finish_app_store_screenshots` runs that tidy-up on its own.
 - Both lanes refuse to upload from an empty folder, which would wipe the listing.
 
@@ -147,22 +151,24 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
 
    | Input | Default | |
    | --- | --- | --- |
-   | `set` | | The name `send` printed |
+   | `set` | | The name `send` printed. Blank with `tidy_only` |
    | `ios`, `macos` | on | The iPhone's and iPad's version, the Mac's version: each is a version of its own on App Store Connect |
    | `app_version` | blank | The version to write on, X.Y.Z, created when it is missing. Blank writes on the one open for editing, whatever its number: a release renames it later and keeps its screenshots |
    | `allow_missing_devices` | off | The set leaves a device out on purpose |
+   | `locales` | blank | Send these locales of the set alone, App Store codes with a space between (`en-US de-DE`): [Repairing shelves](#repairing-shelves) |
+   | `tidy_only` | off | Send nothing and fetch no set: only the tidy-up and its check ([Repairing shelves](#repairing-shelves)) |
 
    The run fetches the set and **checks it again**, which is what decides: a set that doesn't pass is refused before
    anything is sent, and the run's summary says why. It then uploads it with the jobs a release runs for its own
    screenshots ([`app-store-screenshots-upload.yml`](../.github/workflows/app-store-screenshots-upload.yml)), the
    matrix read off the set as a release's is read off what it framed: "iPhone and iPad / send \<locale\>" and
    "Mac / send \<locale\>", **one locale per job, one after the other** on each version and the two versions side
-   by side, then "tidy up", which removes the copies deliver leaves behind and sorts every shelf. About an hour and
-   a half for the iPhone's 26 locales is a guess from Google Play's two minutes a locale: no run has timed the App
-   Store's yet. The last job, "Report and remove the set", writes in the run's summary which locales landed and what
-   each took, and **deletes the draft release once every locale did**. A set that holds both versions' screenshots
-   and goes up one version per run (`-f ios=false`, then `-f macos=false`) loses, each time, the archive that
-   landed, and is deleted with the last one.
+   by side, then "tidy up", which sorts every shelf and checks that each holds every screen once, removing nothing. The first set (3.0.0's, run 44324532909) took 50 minutes for the iPhone's 26 locales
+   and 41 for the Mac's. The last job, "Report and remove the set", writes in the run's summary which locales
+   landed, what each took and whether the shelves were left as staged, and **deletes the draft release once every
+   locale landed and every shelf is as staged**. A set that holds both versions' screenshots and goes up one
+   version per run (`-f ios=false`, then `-f macos=false`) loses, each time, the archive that landed, and is
+   deleted with the last one.
 5. **A locale that failed** fails the run, and the set is kept, which the summary says. Run that locale's job again
    with the job's own re-run button: it finds the set in the run's artifacts (kept seven days), and the tidy-up and
    the report run again after it. **The other locales are not sent again**: GitHub carries their jobs over as they
@@ -178,6 +184,50 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
    run dispatched while one is going is refused, not queued, since GitHub would cancel a queued one without a word
    when a third arrived.
 
+### Repairing shelves
+
+Every locale's job can pass and a shelf still be wrong: an upload can leave a shelf **listing one screenshot
+twice**, or short of a file ([Things that bite](#things-that-bite)). The "tidy up" job is what looks. After the
+last locale it reads every shelf of the version in full, sorts each by file name, reads the shelves again and
+**fails when one isn't as staged**, which is each of the ten screens of `screens.tsv` once, in file-name order, on
+every shelf the other locales have. **It removes nothing.** Its job's summary names each shelf and what is wrong
+with it, as `<locale> / <shelf>: <what>`, the shelf by App Store Connect's name for the device size
+(`APP_IPHONE_67`, `APP_DESKTOP`); the run's last job says whether the shelves are as staged, and keeps the set
+while they aren't. Two inputs repair what the tidy-up names without sending the whole set again, both by an
+administrator, on `main`, while no release and no other run of the workflow is going:
+
+| The summary says | Repair |
+| --- | --- |
+| `<file> is listed 2 times`, `<file> is missing`, `<file> never finished uploading`, `holds no screenshot`, `is not there`, `has no shelf`, `no locale of the version holds a screenshot` | **Send that locale again**: `gh workflow run app-store-screenshots.yml -f set=<name> -f locales="en-US de-DE"`, with `-f ios=false` or `-f macos=false` for one version. deliver deletes every shelf of a locale it is handed and uploads it afresh, and the tidy-up then checks every locale again |
+| `is not in file-name order`, `could not be read whole`, `<file> is still being processed` | **Tidy up again**: `gh workflow run app-store-screenshots.yml -f tidy_only=true`, which fetches no set and sends nothing. The "tidy up" job's own re-run button does the same within a run that is still on the page. Also the way to check the shelves after a repair made by hand |
+
+- **Never delete one of a file's two entries**, by hand or in a script. A file listed twice was, each time it was
+  looked at, **one screenshot under two ids**: the same file name and checksum, and `DELETE appScreenshots/<id>` on
+  either id removed both, leaving the shelf with 9. The App Store Connect page shows such a shelf as "10 of 10",
+  with ten thumbnails, so nothing there says it. To repair one by hand: delete the pair, upload the file again,
+  reorder. Sending the locale again does the same for the whole locale.
+- **`locales` needs the set**, which a run keeps while a shelf isn't as staged, for this. When it is gone (the
+  draft was dropped, or the run is from before the set was kept), send it again from the Mac first
+  (`local-set.mjs send --name <name>`, half a minute for 600 MB), then dispatch with `locales`. A locale the set
+  lacks stops the run before anything is sent. The run checks the whole set as any other, uploads the named
+  locales' jobs alone, and **keeps the set**: it can't tell whether the other locales are up, so its summary ends
+  with the command that drops the draft release. The summary of a run that kept its set for a shelf prints both
+  commands with that run's own `ios`, `macos` and `app_version`.
+- **`tidy_only` takes no other input** than `ios` and `macos`: with `set`, `locales` or `app_version` it is
+  refused, since it works on the version that is open for editing and sends nothing.
+- **A locale sent again can come back with another file listed twice**: three of the first set's 156 shelves did.
+  The tidy-up of that run says so, and the locale goes again.
+
+How it reads a shelf, since this is what went wrong the first time: App Store Connect hands over **at most 10** of
+a shelf's screenshots with the shelf (the relationship included in the answer, which is what fastlane's
+`app_screenshots` holds), so the lane asks the shelf's own two lists instead, paged, 200 at a time:
+`appScreenshotSets/<id>/relationships/appScreenshots` for the order, which is also what a reorder replaces, and
+`appScreenshotSets/<id>/appScreenshots` for each screenshot's file name, state and checksum. The two must name the
+same screenshots, as many as App Store Connect counts, and start with the 10 that came with the shelf, in their
+order, or the shelf is left untouched and reported. The order it then sends names **every id the shelf lists**, a
+doubled entry's two included, side by side: App Store Connect refuses an order that leaves one out, and took one
+with all 11.
+
 **Why a draft release.** The set has to get from the Mac to a runner, and it is some 600 MB of images that are not
 versioned. A branch would leave them in the repository's history for good, and an artifact can only be made by a
 run. A release's asset takes a file under 2 GiB, with no limit on the release's size and at no cost, and
@@ -189,10 +239,15 @@ and `--replace` leave a published release alone, whatever its tag. From the fetc
 the run, under the names a release gives its own, and those, as every artifact of a public repository, can be
 downloaded by anyone signed in to GitHub for the seven days they last.
 
-**What no run has shown yet**, since nothing was uploaded this way before the first set (3.0.0's, November 2026):
-that App Store Connect takes the uploads as the lanes send them, that it files the iPhone Duo's two sizes on one
-shelf ([above](#what-the-images-show)), and that it takes the iPad's sizes lying down. The first run says, per
-locale; the check, the transport and the matrix were tried on that set without reaching the store.
+**What the first set showed** (3.0.0's, run 44324532909, 18 November 2026): all 52 locale jobs passed, deliver
+sending each locale's 50 iPhone, iPad and iPhone Duo images and the Mac's 10 without a refusal, the iPad's lying
+down and the iPhone Duo's two sizes included. Both tidy-ups then failed, twice, on shelves that listed 11
+screenshots, and took a file off a third ([Things that bite](#things-that-bite)): three shelves of 156, put right
+by hand in App Store Connect. **What no run has shown yet:** the tidy-up as it reads and sorts shelves now, and
+the `locales` and `tidy_only` inputs, which came after that run. The lane was run against a stand-in for App Store
+Connect that behaves as those shelves did (one screenshot under two ids, both gone when either is deleted, an
+order refused unless it names all 11), with a shelf short of a file, a locale with no shelf, one of 215 screenshots
+over two pages and one whose lists disagree; it has not talked to App Store Connect itself.
 
 ## Sending Google Play's alone
 
@@ -688,3 +743,23 @@ headless Chrome photograph it. Nothing to install: it drives the Chrome already 
   placeholders (the open iPhone Duo's first language, November 2026). Look at `store_listings/` after a capture, and
   take the screen again with `STORE_SCREENSHOTS_SLOTS`, `STORE_SCREENSHOTS_LOCALES` and `STORE_SCREENSHOTS_SCREENS`.
   A release's captures are not looked at before they go up.
+- **App Store Connect hands over 10 of a shelf's screenshots, however many it lists.** A shelf read with its
+  screenshots included (fastlane's `set.app_screenshots`, which deliver's own sort and the tidy-up both used) is
+  the first 10. In the first set's run (44324532909, November 2026) the Mac's `de-DE` shelf and the iPad 11"'s
+  `en-US` one listed 11: the tidy-up saw 10 distinct files and sent an order of 10 that App Store Connect refused
+  every time, as it refuses any order that leaves an entry of the shelf out ("Can't Add/Remove Relationship when
+  reorder Set"). Running it again changed nothing. The same order with all 11 ids was taken. The tidy-up now reads
+  a shelf through its own lists, in full, and orders every id it lists
+  ([Repairing shelves](#repairing-shelves)); deliver's sort still reads 10, which is why the upload carries on past
+  that refusal and leaves the sorting to the tidy-up.
+- **A shelf can list one screenshot twice, and deleting either entry deletes both.** Seen in App Store Connect
+  while those shelves were repaired by hand: the 11 entries of such a shelf had two with the same file name and
+  the same `sourceFileChecksum` under two ids, one a plain UUID and the other in the newer form every other
+  screenshot had. `DELETE appScreenshots/<id>` on one of the two answered 204 and both were gone, the shelf going
+  from 11 to 9. That is how the iPhone 6.7"'s `en-US` shelf lost `08_payers_and_currencies_iphone_6_7.png` in that
+  run: the tidy-up removed "the later copy" of a file name, and the file went with it. The App Store Connect page
+  shows such a shelf as "10 of 10". **So the tidy-up deletes nothing**: it sorts, names the file, and fails, and
+  the locale is sent again. Whether a doubled entry would be harmless at submission, or show twice on the store
+  page, nobody knows. Where the second id comes from is not known either: deliver logs each file as uploaded once,
+  and in that run each shelf that ended wrong had an upload that took 9 to 23 seconds where the others took 2,
+  which fits a request Spaceship sent again after a gateway error, and proves nothing.

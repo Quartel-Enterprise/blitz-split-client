@@ -20,6 +20,7 @@ import {
   TAG_PREFIX,
   checkPlatform,
   checkSet,
+  chosenLocales,
   describeShelves,
   dispatchCommand,
   landingReport,
@@ -392,6 +393,34 @@ describe("sending a set", () => {
   });
 });
 
+describe("the locales a run is asked to send alone", () => {
+  const staged = ["de-DE", "en-US", "ja", "pt-BR"];
+
+  test("are the set's that were named, in the set's order, with spaces or commas between", () => {
+    assert.deepEqual(chosenLocales(staged, "en-US de-DE"), ["de-DE", "en-US"]);
+    assert.deepEqual(chosenLocales(staged, " ja,en-US ,  ja "), ["en-US", "ja"]);
+  });
+
+  test("refuse a locale the set lacks, naming it, and a list that names none", () => {
+    assert.throws(
+      () => chosenLocales(staged, "en-US es-419 fr"),
+      (error) => error instanceof SetError && error.message === "Not locales of the set: es-419, fr. It holds de-DE, en-US, ja, pt-BR",
+    );
+    assert.throws(() => chosenLocales(staged, "en-us"), /Not a locale of the set: en-us\./);
+    assert.throws(() => chosenLocales(staged, " , "), SetError);
+  });
+
+  test("are printed as the matrix the workflow reads", () => {
+    const { status, stdout } = spawnSync("node", [SCRIPT, "locales", "--staged", JSON.stringify(staged), "--only", "ja en-US"], { encoding: "utf8" });
+    assert.equal(status, 0);
+    assert.equal(stdout, '["en-US","ja"]\n');
+    const refused = spawnSync("node", [SCRIPT, "locales", "--staged", JSON.stringify(staged), "--only", "fr"], { encoding: "utf8" });
+    assert.equal(refused.status, 1);
+    assert.match(refused.stderr, /^Not a locale of the set: fr\./);
+    assert.equal(refused.stdout, "");
+  });
+});
+
 describe("the workflow's report", () => {
   const job = (name, conclusion = "success") => ({ name, conclusion });
   const platforms = [
@@ -404,8 +433,8 @@ describe("the workflow's report", () => {
     const { landedAll, markdown } = landingReport({ jobs: allJobs, set: "3.0.0", platforms });
     assert.equal(landedAll, true);
     assert.match(markdown, /Written on the editable version of each platform\. Nothing was submitted for review\./);
-    assert.match(markdown, /### iPhone and iPad\n\n- \*\*2 of 2 locales landed\*\*, each with: iPhone 6\.3" 10\./);
-    assert.doesNotMatch(markdown, /Not landed|not tidied/);
+    assert.match(markdown, /### iPhone and iPad\n\n- \*\*2 of 2 locales landed\*\*, each with: iPhone 6\.3" 10\.\n- \*\*The shelves are as staged\*\*/);
+    assert.doesNotMatch(markdown, /Not landed|not as staged|Only the locales/);
   });
 
   test("names a locale whose job failed, was cancelled or never ran, on its own platform alone", () => {
@@ -417,11 +446,61 @@ describe("the workflow's report", () => {
     assert.match(markdown, /### Mac\n\n- \*\*1 of 2 locales landed\*\*.*\n- \*\*Not landed:\*\* ja \(not run\)\./);
   });
 
-  test("keeps a failed tidy-up apart from the locales, which landed", () => {
+  // The tidy-up fails on a shelf that isn't as staged, which a locale whose job passed may still have.
+  test("keeps a failed tidy-up apart from the locales, which landed, and says how each kind of shelf is repaired", () => {
     const jobs = allJobs.map((each) => (each.name === "Mac / tidy up" ? job(each.name, "failure") : each));
     const { landedAll, markdown } = landingReport({ jobs, set: "3.0.0", platforms });
     assert.equal(landedAll, true);
-    assert.match(markdown, /The shelves were not tidied up\*\* \(failure\).*Run the "Mac \/ tidy up" job again\./);
+    assert.match(markdown, /### Mac\n\n- \*\*2 of 2 locales landed\*\*.*\n- \*\*The shelves are not as staged\*\* \(the tidy-up: failure\)\. The "Mac \/ tidy up" job's summary names each shelf/);
+    assert.match(markdown, /`-f locales=…`.*`-f tidy_only=true`/);
+    assert.match(markdown, /### iPhone and iPad\n\n.*\n- \*\*The shelves are as staged\*\*/);
+  });
+
+  test("says which locales a run was asked to send alone", () => {
+    const chosen = platforms.map((platform) => ({ ...platform, locales: ["ja"] }));
+    const { landedAll, markdown } = landingReport({ jobs: allJobs, set: "3.0.0", platforms: chosen, only: "ja" });
+    assert.equal(landedAll, true);
+    assert.match(markdown, /Only the locales asked for were sent \(ja\): the others' shelves are as they were\./);
+    assert.match(markdown, /### Mac\n\n- \*\*1 of 1 locales landed\*\*/);
+  });
+
+  test("reports a tidy-up alone, which sent nothing", () => {
+    const jobs = [job("Fetch and check the set"), job("iPhone and iPad / tidy up"), job("Mac / tidy up", "failure")];
+    const none = platforms.map((platform) => ({ ...platform, locales: [], shelves: "" }));
+    const { markdown } = landingReport({ jobs, platforms: none, tidyOnly: true });
+    assert.match(markdown, /^## App Store screenshots: the shelves' tidy-up\n\nNothing was sent: the shelves of the editable version of each platform were tidied up and checked\./);
+    assert.match(markdown, /### iPhone and iPad\n\n- \*\*The shelves are as staged\*\*/);
+    assert.match(markdown, /### Mac\n\n- \*\*The shelves are not as staged\*\* \(the tidy-up: failure\)/);
+    assert.doesNotMatch(markdown, /locales landed|undefined/);
+  });
+
+  // The set a locale is sent again from goes only once nothing is left to send again.
+  test("says apart whether every locale landed and whether every tidy-up passed", () => {
+    const untidy = allJobs.map((each) => (each.name === "Mac / tidy up" ? job(each.name, "failure") : each));
+    const { landedAll, tidiedAll } = landingReport({ jobs: untidy, set: "3.0.0", platforms });
+    assert.deepEqual({ landedAll, tidiedAll }, { landedAll: true, tidiedAll: false });
+    assert.equal(landingReport({ jobs: allJobs, set: "3.0.0", platforms }).tidiedAll, true);
+    assert.equal(landingReport({ jobs: allJobs.filter(({ name }) => name !== "Mac / tidy up"), set: "3.0.0", platforms }).tidiedAll, false);
+  });
+
+  test("writes the report and its two answers as the workflow's last job asks, for a set and for a tidy-up alone", () => {
+    const jobs = join(root, "jobs.json");
+    const output = join(root, "output");
+    const report = (args) => {
+      writeFileSync(output, "");
+      const { status, stdout } = spawnSync("node", [SCRIPT, "report", "--jobs", jobs, ...args], { encoding: "utf8", env: { ...process.env, GITHUB_OUTPUT: output } });
+      return { status, stdout, output: readFileSync(output, "utf8") };
+    };
+    writeFileSync(jobs, JSON.stringify(allJobs));
+    const sent = report(["--set", "3.0.0", "--ios-job", "iPhone and iPad", "--ios-locales", '["en-US","ja"]', "--ios-shelves", 'iPhone 6.3" 10']);
+    assert.equal(sent.status, 0);
+    assert.equal(sent.output, "landed=true\ntidied=true\n");
+    // No locale and no shelf to name, as the workflow passes them for a tidy-up alone.
+    writeFileSync(jobs, JSON.stringify([job("iPhone and iPad / tidy up", "failure"), job("Mac / tidy up")]));
+    const tidied = report(["--tidy-only", "--ios-job", "iPhone and iPad", "--ios-locales", "[]", "--ios-shelves", "", "--mac-job", "Mac", "--mac-locales", "[]", "--mac-shelves", ""]);
+    assert.equal(tidied.status, 0);
+    assert.match(tidied.stdout, /^## App Store screenshots: the shelves' tidy-up\n/);
+    assert.equal(tidied.output, "landed=true\ntidied=false\n");
   });
 
   // The report reads the jobs by the names the two workflows give them, and the workflow builds the release's tag
@@ -436,5 +515,23 @@ describe("the workflow's report", () => {
     assert.ok(dispatch.includes(`SET_TAG: ${TAG_PREFIX}\${{ inputs.set }}\n`));
     assert.ok(dispatch.includes(`=~ ${SET_NAME.source} ]]`));
     for (const { archive } of Object.values(PLATFORMS)) assert.ok(dispatch.includes(`fetch ${archive} `), archive);
+  });
+
+  // A tidy-up alone runs no locale's job, and a run of chosen locales takes its matrix from the script and keeps
+  // the set: held here to the options the script takes and to the inputs the report tells people to pass.
+  test("matches how the workflows repair shelves", () => {
+    const dispatch = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8");
+    const upload = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml"), "utf8");
+    assert.match(upload, /\n {4}name: send \$\{\{ matrix\.locale \}\}\n(?: {4}#.*\n)* {4}if: \$\{\{ !inputs\.tidy_only \}\}\n/);
+    for (const input of ["locales", "tidy_only"]) assert.ok(dispatch.includes(`\n      ${input}:\n        description: `), input);
+    for (const locales of ["ios_locales", "mac_locales"]) {
+      assert.ok(dispatch.includes(`locales: \${{ inputs.tidy_only && '["none"]' || needs.check.outputs.${locales} }}\n`), locales);
+      assert.ok(dispatch.includes(`local-set.mjs locales --staged "$${locales}" --only "$LOCALES"`), locales);
+    }
+    assert.equal(dispatch.split("      tidy_only: ${{ inputs.tidy_only }}\n").length, 3);
+    assert.ok(dispatch.includes("options+=(--tidy-only)") && dispatch.includes('options+=(--only "$LOCALES")'));
+    // The set goes only when nothing is left to send again from it: both of the report's answers, by their names.
+    assert.ok(dispatch.includes("if: ${{ steps.report.outputs.landed == 'true' && steps.report.outputs.tidied == 'true' && inputs.locales == '' && !inputs.tidy_only }}\n"));
+    assert.deepEqual(parseArguments(["--tidy-only", "--only", "ja en-US", "--staged", "[]"]), { tidyOnly: true, only: "ja en-US", staged: "[]", platforms: ["ios", "mac"] });
   });
 });
