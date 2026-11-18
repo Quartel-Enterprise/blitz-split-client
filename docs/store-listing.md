@@ -109,7 +109,7 @@ staged from the script's constants:
   version, "2026 Quartel Enterprise • PI Software LTDA", the line of the site's footer and of Bible Planner's
   (Pierre's call), with no ©, which the App Store adds.
 
-Google Play has neither: its contact details are the developer account's.
+Google Play has none of them: its contact details are the developer account's.
 
 A language goes to one or more locales of each store (`PLAY_LOCALES` and `APP_STORE_LOCALES` of the script): Latin
 America's Spanish is `es-419` and `es-US` on Play and `es-MX` on the App Store, and Spain's is `es-ES` on both. They

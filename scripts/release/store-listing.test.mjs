@@ -137,7 +137,7 @@ test("staging gives every App Store locale its support and marketing addresses, 
     assert.equal(staged[`app-store/${locale}/marketing_url.txt`], APP_STORE_URL_FILES["marketing_url.txt"]);
   }
   assert.equal(staged["app-store/copyright.txt"], APP_STORE_COPYRIGHT);
-  // Google Play has neither: its contact details are the developer account's.
+  // Google Play has none of them: its contact details are the developer account's.
   assert.deepEqual(Object.keys(staged).filter((path) => path.startsWith("play/") && /url|copyright/.test(path)), []);
 });
 
