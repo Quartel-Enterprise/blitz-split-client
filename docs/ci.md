@@ -224,9 +224,9 @@ with `claude setup-token` and update `CLAUDE_CODE_OAUTH_TOKEN`; the GitHub token
 ### Setup
 
 - The [Claude GitHub App](https://github.com/apps/claude) installed on the repository.
-- The `CLAUDE_CODE_OAUTH_TOKEN` secret, created with `claude setup-token` on the maintainer's account, so the reviews
-  count against that Claude subscription. When it expires the review fails on authentication: create a new one and
-  update the secret.
+- The `CLAUDE_CODE_OAUTH_TOKEN` secret, created with `claude setup-token` on the maintainer's account (what it
+  bills is in [Which key each job uses](#which-key-each-job-uses)). When it expires the review fails on
+  authentication: create a new one and update the secret.
 - The `ai-review`, `run-checks` and `merge-when-green` labels.
 - The `MERGE_WHEN_GREEN_TOKEN` secret, for `merge-when-green` (see [Merge when green](#merge-when-green)).
 - A ruleset on `main` with **Require conversation resolution before merging**. This is what keeps a pull request
