@@ -215,6 +215,18 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   iPhone's and the iPad's, plus the iPhone Duo's and the Mac's when the run asks for them
   ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)).
 
+**The captures say which language they are on.** A slot's job captures its 26 languages one after the other, each
+a run of the UI test of its own, about an hour and a half in all. Open the job's "Capture on the simulator" step:
+every language has a "Capturing <slot>: <language> (2 of 26)" line there, folded over xcodebuild's output for it,
+and a "Captured" one once it is done, with the time it took and about how many minutes the slot still takes. When
+the job ends, its summary on the run's page has the table of the languages, each with its result and its time. A
+language that fails is tried once more; failing again, the job goes on with the others (a third failed language
+ends it) and fails at the end with an error on the run's page that names them, and the screen each stopped at is in
+its row of the table ([One language at a time](store-listing-screenshots.md#one-language-at-a-time)). The frame
+takes nothing of a slot that misses a language, but the job still uploads the languages it captured, to download.
+The Mac's job, whose script launches the app itself, prints a "Captured <language>" line after each one and names
+the language and the screen it stops at.
+
 **The uploads are one job per locale**, one after the other, on each store (Bible Planner's releases lost a whole
 upload to one image Google Play answered with a server error): a locale a store refused is the only one that
 failed, and the others are up. Each job sets fastlane up to send one locale, which adds up over a store's 26 (about

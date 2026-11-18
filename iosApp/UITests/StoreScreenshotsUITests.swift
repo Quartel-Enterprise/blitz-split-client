@@ -4,7 +4,8 @@ import XCTest
 /// Captures the App Store screenshots (docs/store-listing-screenshots.md) on the simulator it runs on: for every
 /// language, it launches the app seeded with the sample trip on each listing screen and writes the whole screen to
 /// `$STORE_SCREENSHOTS_OUTPUT/<slot>/<locale>/<file>.png`, which the Robolectric generators then frame. Run through
-/// scripts/store-screenshots/capture-ios.sh, which picks the simulator of each slot and passes these variables. The
+/// scripts/store-screenshots/capture-ios.sh, which picks the simulator of each slot, passes these variables and runs
+/// the test once per language (`STORE_SCREENSHOTS_LOCALES`), so its log says which language is being captured. The
 /// Mac's window is captured by capture-mac.sh instead, with no test: a Mac's UI test runner is sandboxed and can't
 /// write the captures out.
 final class StoreScreenshotsUITests: XCTestCase {
@@ -54,7 +55,10 @@ final class StoreScreenshotsUITests: XCTestCase {
         let onlyLocales = Self.subset(environment["STORE_SCREENSHOTS_LOCALES"])
         let onlyScreens = Self.subset(environment["STORE_SCREENSHOTS_SCREENS"])
         XCUIDevice.shared.orientation = .portrait
-        if slot.hasPrefix("ipad") { useFullScreenApps() }
+        // capture-ios.sh runs this test once per language. The setting stays on the simulator, so only the runs
+        // before a slot's first captured language switch it: 26 visits to Settings would be 25 more chances to fail.
+        let isDeviceSetUp = !(environment["STORE_SCREENSHOTS_DEVICE_IS_SET_UP"] ?? "").isEmpty
+        if slot.hasPrefix("ipad"), !isDeviceSetUp { useFullScreenApps() }
         // The app's own language comes back once the captures end, whatever they stopped on.
         defer { restoreAppLanguage() }
         for locale in locales where onlyLocales?.contains(locale.tag) ?? true {

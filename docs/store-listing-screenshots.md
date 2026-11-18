@@ -37,8 +37,10 @@ releases, when a release's screenshot jobs failed, and for the devices a release
 
 The lane runs, each step under `scripts/heavy-check.sh`:
 
-1. `scripts/store-screenshots/capture-ios.sh`: builds the `BoraRachar-iOS-StoreScreenshots` UI tests and runs them
-   on one simulator per App Store slot (the iPhone Duo's two slots, closed and open, share theirs). They write
+1. `scripts/store-screenshots/capture-ios.sh`: builds the `BoraRachar-iOS-StoreScreenshots` UI tests once and runs
+   them on one simulator per App Store slot (the iPhone Duo's two slots, closed and open, share theirs), one
+   language at a time, saying which one it is on and how long each took
+   ([One language at a time](#one-language-at-a-time)). They write
    `build/outputs/apple-screenshot-captures/<slot>/<locale>/`.
    Then `scripts/store-screenshots/capture-mac.sh` builds the Mac app and photographs its window itself, with no
    UI test ([why](#how-the-mac-capture-works)). **It takes this Mac's own screen for about half an hour**, so leave
@@ -199,10 +201,12 @@ shared/src/commonMain/.../storescreenshots/   # the sample trip, its seed and th
 shared/src/appleMain/.../storescreenshots/    # the Apple captures' Room file and photos folder
 android/store_screenshots/src/test/.../        # the Play screens' UiStates, banner copy, the frames
 iosApp/UITests/StoreScreenshotsUITests.swift   # the iOS capture
+scripts/store-screenshots/capture-ios.sh       # its simulators, the run per language and its progress
 shared/src/jsMain/.../StoreScreenshotsWeb.kt   # the web's seed, for the README's image
 scripts/readme-hero/                           # the README's image
 scripts/store-screenshots/capture-mac.sh       # the Mac capture
 scripts/store-screenshots/*.tsv                # the languages, screens and photos both captures read
+scripts/store-screenshots/tables.sh            # how both capture scripts read and narrow those tables
 build-logic/.../StoreScreenshots.kt            # the collect and stage tasks, the stores' locale codes
 fastlane/Fastfile                              # the screenshots and upload lanes
 ```
@@ -305,6 +309,66 @@ usual). That entry point:
 Each simulator's status bar is set to 9:41 with a full battery, and the frame draws no status bar over the capture.
 The capture's points must match the frame's screen (`AppleScreenshotSlot`), or the PNG is stretched. Check them
 after a library upgrade.
+
+### One language at a time
+
+`capture-ios.sh` builds the UI tests once (`xcodebuild build-for-testing`) and then, on each slot's simulator, runs
+them once per language (`xcodebuild test-without-building`, narrowed to that language by the filter a quick look
+uses), so a run of an hour says where it is:
+
+```
+Capturing iphone63 on 287748C8-4A8F-4886-9749-1AF3B8784AF9: 3 language(s), 10 screen(s) each
+Capturing iphone63: en-US (1 of 3)
+Captured iphone63: en-US in 2m 16s (1 of 3 done, about 4 min left)
+Capturing iphone63: pt-BR (2 of 3)
+Captured iphone63: pt-BR in 1m 55s (2 of 3 done, about 2 min left)
+```
+
+xcodebuild's own output for a language, with each launch of the app and the test's words for a failure, goes to
+`build/apple-screenshots/logs/<slot>/<locale>.log` (`<locale>.2.log` for a second try). On GitHub Actions it is in
+the job's log too, folded under the language's "Capturing" line, and the job's summary on the run's page gets a
+table of the languages, each with its result and its time, a row as each one ends (GitHub shows a summary once the
+job is over).
+
+**A language that fails is tried once more**, since a launch that hangs or a test runner that dies is rarely the
+language's fault. When it fails again:
+
+- What it was to capture is deleted: its folder, or, in a run narrowed to some screens, those screens. A language is
+  never left with some of its screens.
+- The script goes on with the other languages and the other slots, so one bad language doesn't hide whether the
+  rest work. A slot's third failed language ends the slot instead: by then it is the slot that fails, and a failure
+  that hangs for minutes, twice per language, would use up a release job's time.
+- The script fails at the end, naming every slot and language that failed (an error on the run's page on GitHub
+  Actions). The log has the screen each try stopped at and the test's message, and the summary's table the same
+  screen.
+
+What the frame does with such a slot: `stageAppStoreScreenshots` frames a slot only with every language. Without
+one of the iPhone's or the iPad's it stops, naming the slot and the language ("No iOS captures of iphone67 (ar)"),
+so nothing is staged and no listing gets a shelf short of a screen. A Duo's or the Mac's slot that misses a language
+isn't framed, with a warning: the Mac's listing then gets no screenshots, and the Duo's shelf takes that display's
+screens from the other one. The languages that did work are still in `build/outputs/`, so on a Mac only the failed
+one is taken again, then everything is framed:
+
+```bash
+STORE_SCREENSHOTS_SLOTS=iphone67 STORE_SCREENSHOTS_LOCALES=ar ./scripts/store-screenshots/capture-ios.sh
+fastlane screenshots platform:ios skip_capture:true skip_upload:true
+```
+
+After a release whose capture job failed on a language, that job still uploads the languages it captured, as the
+artifact `apple-captures-<slot>`: download each slot's into `build/outputs/apple-screenshot-captures/` first.
+
+**What it costs.** Launching xcodebuild once per language takes three seconds more per language than one run for
+them all, measured on an iPhone 17 Pro's simulator in November 2026 with three languages of ten screens: 327 s in
+one run, 333 s in three. The runs read the built tests' `.xctestrun` file; through the project and its scheme, each
+one loads the project and resolves the Swift packages again, and the same three took 362 s. What the test does once
+per simulator, the iPad's switch to full-screen apps, only the runs before a slot's first captured language do
+(`STORE_SCREENSHOTS_DEVICE_IS_SET_UP`). A language takes a little under two minutes on this project's Mac and about
+three on a release's runner, where a slot's 26 took 88 and 95 minutes in the release of November 2026, build
+included: the run per language adds about two minutes to that, far from the job's limit of 150.
+
+**Two runs can't share a simulator.** A slot's simulator is "Store screenshots <slot>", made once. A run of one slot
+beside another run of the script (a task of its own, in a worktree) passes `STORE_SCREENSHOTS_SIMULATOR=<name>` to
+use, or make, a simulator of that name instead.
 
 ## How the Mac capture works
 

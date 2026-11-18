@@ -18,6 +18,8 @@ set -eo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TABLES="$ROOT/scripts/store-screenshots"
+# shellcheck source=scripts/store-screenshots/tables.sh
+. "$TABLES/tables.sh"
 OUTPUT="${STORE_SCREENSHOTS_OUTPUT:-$ROOT/build/outputs/apple-screenshot-captures}"
 DERIVED_DATA="$ROOT/build/apple-screenshots/DerivedData-mac"
 APP="$DERIVED_DATA/Build/Products/Debug/BoraRachar.app"
@@ -28,10 +30,6 @@ APP_OUTPUT="$DERIVED_DATA/store-screenshots-app-output.txt"
 # How long the app may take to open its window, and how long a screen takes to seed, open and settle after that.
 WINDOW_TIMEOUT=30
 SETTLE=4
-
-# The rows of a table of scripts/store-screenshots, without its # comment lines and its empty ones, as the iOS test
-# reads them.
-rows() { grep -v -e '^#' -e '^[[:space:]]*$' "$TABLES/$1.tsv"; }
 
 # Stops on a row that hasn't the table's number of tab-separated fields (spaces typed for a tab), naming it: read as
 # it is, it would launch the app on the wrong screen and write the capture under an empty name.
@@ -61,6 +59,9 @@ quit_app() {
 check_table locales 4
 check_table screens 3
 check_table assets 2
+# Stops on a locale or a screen asked for that no row has, which the loops below would pass over.
+picked locales 1 "$STORE_SCREENSHOTS_LOCALES" > /dev/null
+picked screens 1 "$STORE_SCREENSHOTS_SCREENS" > /dev/null
 
 "$ROOT/iosApp/generate-project.sh"
 
