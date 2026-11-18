@@ -7,7 +7,8 @@
 //       a commit).
 //   node scripts/release/store-listing.mjs stage --out <folder>
 //       Writes every listing in the layout fastlane uploads, a folder per store locale: <folder>/play/<locale>/ for
-//       supply and <folder>/app-store/<locale>/ for deliver. `fastlane upload_listing` runs it.
+//       supply and <folder>/app-store/<locale>/ for deliver, with the App Store's support and marketing addresses
+//       and the version's copyright line. `fastlane upload_listing` runs it.
 //
 // Plain Node, no dependencies: the check and the lane run it as it is.
 
@@ -117,6 +118,22 @@ const APP_STORE_FILES = {
   description: "description.txt",
 };
 
+/**
+ * What every App Store locale gets beside its text, the same in every language: the address of "App Support" and of
+ * the developer's site on the app's page. Each locale holds its own, and one the upload created starts with none,
+ * though the App Store asks for a support address in each before a review. The review looks for a way to reach the
+ * developer at the support address, which the site's Support page has and its landing doesn't.
+ */
+export const APP_STORE_URL_FILES = {
+  "support_url.txt": "https://blitzsplit.com/support",
+  "marketing_url.txt": "https://blitzsplit.com",
+};
+/**
+ * The version's copyright line, one for every locale: the line of the site's footer (Pierre's call: the same as
+ * Bible Planner's), without the © the App Store adds.
+ */
+export const APP_STORE_COPYRIGHT = "2026 Quartel Enterprise • PI Software LTDA";
+
 export class ListingError extends Error {}
 const fail = (file, message) => {
   throw new ListingError(`${file}: ${message}`);
@@ -206,15 +223,19 @@ export function readListings(root = ".") {
 /** The files of both stores, by path under the staging folder: <store>/<locale>/<file>. */
 export function stagedFiles(listings) {
   const staged = {};
-  const stageStore = (store, locales, files) => {
+  // `same` is what every locale of a store gets whatever its language, by file name.
+  const stageStore = (store, locales, files, same = {}) => {
     for (const [lang, listing] of Object.entries(listings)) {
       for (const locale of locales[lang]) {
         for (const [key, name] of Object.entries(files)) staged[join(store, locale, name)] = listing[key];
+        for (const [name, text] of Object.entries(same)) staged[join(store, locale, name)] = text;
       }
     }
   };
   stageStore("play", PLAY_LOCALES, PLAY_FILES);
-  stageStore("app-store", APP_STORE_LOCALES, APP_STORE_FILES);
+  stageStore("app-store", APP_STORE_LOCALES, APP_STORE_FILES, APP_STORE_URL_FILES);
+  // Beside the locales' folders, where deliver reads what a version has once.
+  staged[join("app-store", "copyright.txt")] = APP_STORE_COPYRIGHT;
   return staged;
 }
 

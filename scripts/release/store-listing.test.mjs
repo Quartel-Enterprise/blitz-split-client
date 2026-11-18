@@ -8,7 +8,9 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { LANGS } from "./release-notes.mjs";
 import {
+  APP_STORE_COPYRIGHT,
   APP_STORE_LOCALES,
+  APP_STORE_URL_FILES,
   FIELDS,
   LISTING_LANGS,
   ListingError,
@@ -123,8 +125,25 @@ test("staging writes each store's files under each of a language's locales", () 
   assert.equal(staged["app-store/en-US/promotional_text.txt"], FIELD_TEXT.appStorePromotionalText);
   assert.equal(staged["play/en-US/keywords.txt"], undefined);
   assert.equal(staged["play/es-ES/title.txt"], undefined);
-  // Play: 3 files for Latin America's 2 locales and 1 English; App Store: 5 files for 1 locale of each
-  assert.equal(Object.keys(staged).length, 3 * 3 + 5 * 2);
+  // Play: 3 files for Latin America's 2 locales and 1 English; App Store: 5 files of text and the 2 addresses for 1
+  // locale of each, and the copyright line once
+  assert.equal(Object.keys(staged).length, 3 * 3 + (5 + 2) * 2 + 1);
+});
+
+test("staging gives every App Store locale its support and marketing addresses, and the version its copyright", () => {
+  const staged = stagedFiles({ es: FIELD_TEXT, en: FIELD_TEXT });
+  for (const locale of ["es-MX", "en-US"]) {
+    assert.equal(staged[`app-store/${locale}/support_url.txt`], APP_STORE_URL_FILES["support_url.txt"]);
+    assert.equal(staged[`app-store/${locale}/marketing_url.txt`], APP_STORE_URL_FILES["marketing_url.txt"]);
+  }
+  assert.equal(staged["app-store/copyright.txt"], APP_STORE_COPYRIGHT);
+  // Google Play has neither: its contact details are the developer account's.
+  assert.deepEqual(Object.keys(staged).filter((path) => path.startsWith("play/") && /url|copyright/.test(path)), []);
+});
+
+test("the App Store's addresses are https ones and the copyright starts with a year", () => {
+  for (const url of Object.values(APP_STORE_URL_FILES)) assert.match(url, /^https:\/\/[a-z0-9.-]+(\/\S*)?$/);
+  assert.match(APP_STORE_COPYRIGHT, /^\d{4} \S/);
 });
 
 // The screenshots are staged from maps of their own, in Kotlin (build-logic's StoreScreenshots.kt). A store attaches a
