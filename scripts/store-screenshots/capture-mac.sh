@@ -31,17 +31,6 @@ APP_OUTPUT="$DERIVED_DATA/store-screenshots-app-output.txt"
 WINDOW_TIMEOUT=30
 SETTLE=4
 
-# Stops on a row that hasn't the table's number of tab-separated fields (spaces typed for a tab), naming it: read as
-# it is, it would launch the app on the wrong screen and write the capture under an empty name.
-check_table() {
-  local bad
-  bad="$(rows "$1" | awk -F'\t' -v fields="$2" 'NF != fields { print; exit }')"
-  if [ -n "$bad" ]; then
-    echo "$1.tsv: \"$bad\" has not $2 fields" >&2
-    exit 1
-  fi
-}
-
 # Whether a comma-separated list (empty: everything) has the item.
 wanted() { [ -z "$1" ] || [[ ",$1," == *",$2,"* ]]; }
 

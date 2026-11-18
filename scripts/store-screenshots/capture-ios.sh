@@ -219,6 +219,8 @@ failure() {
 # project and its scheme took eighteen (an iPhone 17 Pro's simulator, November 2026).
 run_ui_test() {
   local slot="$1" udid="$2" tag="$3" log="$4"
+  # A language takes two to three minutes: a test that hangs fails after ten and is tried again, instead of holding
+  # the release job until its time is out, which uploads none of the languages already captured.
   local run=(
     env
     "TEST_RUNNER_STORE_SCREENSHOTS_OUTPUT=$OUTPUT"
@@ -231,6 +233,8 @@ run_ui_test() {
     -xctestrun "$xctestrun"
     -destination "id=$udid"
     -derivedDataPath "$DERIVED_DATA"
+    -test-timeouts-enabled YES
+    -default-test-execution-time-allowance 600
   )
   if [ "$GITHUB_ACTIONS" = true ]; then
     "${run[@]}" 2>&1 | tee "$log"
@@ -262,7 +266,7 @@ forget_captures() {
 # summary's table. Returns 1 for a language that failed every time, with nothing of it left behind.
 capture_language() {
   local slot="$1" udid="$2" tag="$3" position="$4" total="$5"
-  local directory="$OUTPUT/$slot/$tag" attempt log started seconds status missing result
+  local directory="$OUTPUT/$slot/$tag" attempt log started seconds status missing result spent=0
   local line="Capturing $slot: $tag ($position of $total)"
   for attempt in $(seq "$ATTEMPTS"); do
     log="$LOGS/$slot/$tag.log"
@@ -277,13 +281,15 @@ capture_language() {
     status=0
     run_ui_test "$slot" "$udid" "$tag" "$log" || status=$?
     seconds=$(($(date +%s) - started))
+    # Every try counts toward the language's time, as it does toward the slot's.
+    spent=$((spent + seconds))
     if [ "$GITHUB_ACTIONS" = true ]; then echo "::endgroup::"; fi
     missing="$(first_missing_screen "$directory")"
     if [ "$status" -eq 0 ] && [ -z "$missing" ]; then
       result="captured"
       if [ "$attempt" -gt 1 ]; then result="captured on try $attempt"; fi
-      summary "| $tag | ✅ $result | $(duration "$seconds") |"
-      language_seconds="$seconds"
+      summary "| $tag | ✅ $result | $(duration "$spent") |"
+      language_seconds="$spent"
       # What the test does once per simulator (the iPad's full-screen apps) is done: the next runs skip it.
       device_is_set_up=1
       return 0
@@ -299,7 +305,7 @@ capture_language() {
   # others are an earlier run's.
   forget_captures "$directory"
   if [ -z "$STORE_SCREENSHOTS_SCREENS" ]; then rm -rf "${directory:?}"; fi
-  summary "| $tag | ❌ $result, $ATTEMPTS tries | $(duration "$seconds") |"
+  summary "| $tag | ❌ $result, $ATTEMPTS tries | $(duration "$spent") |"
   return 1
 }
 
@@ -349,6 +355,10 @@ capture_slot() {
   return 1
 }
 
+# A malformed row would fail every language's run alike, after two tries each: stop before the build instead.
+check_table locales 4
+check_table screens 3
+check_table assets 2
 chosen="$(picked locales 1 "$STORE_SCREENSHOTS_LOCALES")"
 # Split on purpose: one tag or file name per line, none with a space.
 # shellcheck disable=SC2206
