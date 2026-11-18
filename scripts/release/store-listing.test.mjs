@@ -186,8 +186,7 @@ test("the screenshots go to the store locales the listing text goes to", () => {
 // The iPhone Duo's shelf takes each screen once, open for the ones StoreScreenshots.kt names by file name. A name no
 // screen has (a screen renamed, a typo) would send that screen up closed with nothing failing. Staging matches the
 // names the frames are written under, StoreScreen's, which are the ones the captures are written under, screens.tsv's.
-const STORE_SCREEN_KT =
-  "android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt";
+const STORE_SCREEN_KT = `${GENERATORS}/StoreScreen.kt`;
 const SCREENS_TSV = "scripts/store-screenshots/screens.tsv";
 
 test("the screens the iPhone Duo's shelf takes open are screens the captures and the frames write", () => {
