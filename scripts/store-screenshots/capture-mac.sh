@@ -18,6 +18,8 @@ set -eo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TABLES="$ROOT/scripts/store-screenshots"
+# shellcheck source=scripts/store-screenshots/tables.sh
+. "$TABLES/tables.sh"
 OUTPUT="${STORE_SCREENSHOTS_OUTPUT:-$ROOT/build/outputs/apple-screenshot-captures}"
 DERIVED_DATA="$ROOT/build/apple-screenshots/DerivedData-mac"
 APP="$DERIVED_DATA/Build/Products/Debug/BoraRachar.app"
@@ -28,24 +30,6 @@ APP_OUTPUT="$DERIVED_DATA/store-screenshots-app-output.txt"
 # How long the app may take to open its window, and how long a screen takes to seed, open and settle after that.
 WINDOW_TIMEOUT=30
 SETTLE=4
-
-# The rows of a table of scripts/store-screenshots, without its # comment lines and its empty ones, as the iOS test
-# reads them.
-rows() { grep -v -e '^#' -e '^[[:space:]]*$' "$TABLES/$1.tsv"; }
-
-# Stops on a row that hasn't the table's number of tab-separated fields (spaces typed for a tab), naming it: read as
-# it is, it would launch the app on the wrong screen and write the capture under an empty name.
-check_table() {
-  local bad
-  bad="$(rows "$1" | awk -F'\t' -v fields="$2" 'NF != fields { print; exit }')"
-  if [ -n "$bad" ]; then
-    echo "$1.tsv: \"$bad\" has not $2 fields" >&2
-    exit 1
-  fi
-}
-
-# Whether a comma-separated list (empty: everything) has the item.
-wanted() { [ -z "$1" ] || [[ ",$1," == *",$2,"* ]]; }
 
 # Ends the app as the iOS test's terminate() does, and kills it if it is still there five seconds later, so a stuck
 # launch can't hold the run. Every launch starts from a fresh database, so nothing of the one ended is read again.
@@ -61,6 +45,9 @@ quit_app() {
 check_table locales 4
 check_table screens 3
 check_table assets 2
+# The rows asked for, read before the build so that a locale or a screen no row has stops the script here.
+locale_rows="$(picked locales 0 "$STORE_SCREENSHOTS_LOCALES")"
+screen_rows="$(picked screens 0 "$STORE_SCREENSHOTS_SCREENS")"
 
 "$ROOT/iosApp/generate-project.sh"
 
@@ -98,10 +85,8 @@ trap restore_language EXIT
 
 last_capture=""
 while IFS=$'\t' read -r tag language apple_language apple_locale; do
-  wanted "$STORE_SCREENSHOTS_LOCALES" "$tag" || continue
   mkdir -p "$OUTPUT/mac/$tag"
   while IFS=$'\t' read -r code file_name theme; do
-    wanted "$STORE_SCREENSHOTS_SCREENS" "$code" || continue
     : > "$APP_OUTPUT"
     open -n "${assets[@]}" --stdout "$APP_OUTPUT" "$APP" --args \
       -StoreScreenshotsLanguage "$language" -StoreScreenshotsTheme "$theme" -StoreScreenshotsScreen "$code" \
@@ -138,9 +123,9 @@ while IFS=$'\t' read -r tag language apple_language apple_locale; do
       fi
     fi
     last_capture="$capture"
-  done < <(rows screens)
+  done <<< "$screen_rows"
   echo "Captured $tag"
-done < <(rows locales)
+done <<< "$locale_rows"
 
 if [ -z "$last_capture" ]; then
   echo "Nothing captured: no row of locales.tsv and screens.tsv matches what was asked for" >&2

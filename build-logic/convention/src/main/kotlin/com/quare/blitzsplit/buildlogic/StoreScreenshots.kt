@@ -128,6 +128,8 @@ private val appleDevices = mapOf(
 private val duoScreensStagedOpen = setOf("01_group", "04_balances", "06_statistics", "07_home", "09_activity")
 private val macDevices = mapOf("mac" to "mac")
 private val appleFrameClasses = listOf("*.IPhone*", "*.IPad*", "*.Mac*")
+private val requiredCaptureSlots = listOf("iphone63", "iphone67", "ipad13")
+private val optionalCaptureSlots = listOf(DUO_CLOSED, DUO_OPEN, "mac")
 
 private fun copyGenerated(
     generated: File,
@@ -155,6 +157,19 @@ private fun copyGenerated(
         }
     }
     return copied
+}
+
+// The slot and the languages it has no capture of, for a message: null when it has them all.
+private fun findMissingCaptures(
+    capturesDir: File,
+    slot: String,
+): String? {
+    val locales = listingLocales.filterNot { capturesDir.resolve("$slot/$it").isDirectory }
+    return when {
+        locales.isEmpty() -> null
+        locales.size == listingLocales.size -> "$slot (every language)"
+        else -> "$slot (${locales.joinToString()})"
+    }
 }
 
 // Whether a generated image goes on its App Store shelf. Every image does but the iPhone Duo's, which shares its shelf
@@ -229,11 +244,18 @@ fun Project.configureStoreScreenshots() {
         if (generatesAppStoreScreenshots) {
             inputs.dir(capturesDir)
             doFirst {
-                val captured = listOf("iphone63", "iphone67", "ipad13").all { slot ->
-                    listingLocales.all { capturesDir.resolve("$slot/$it").isDirectory }
-                }
-                check(captured) {
-                    "No iOS captures of every language in $capturesDir: " +
+                // A slot of the captures (AppleScreenshotSlot) is framed only with every language
+                // (hasAppleCaptures). The iPhone's and the iPad's are required. One of the others captured in
+                // part, as capture-ios.sh leaves a slot whose language failed, isn't framed, which is said here
+                // since a skipped generator says nothing: the Mac's listing then gets no screenshots, and the
+                // iPhone Duo's shelf takes that display's screens from the other one.
+                optionalCaptureSlots
+                    .filter { capturesDir.resolve(it).isDirectory }
+                    .mapNotNull { findMissingCaptures(capturesDir, it) }
+                    .forEach { logger.warn("No captures of $it in $capturesDir: the slot is not framed") }
+                val missing = requiredCaptureSlots.mapNotNull { findMissingCaptures(capturesDir, it) }
+                check(missing.isEmpty()) {
+                    "No iOS captures of ${missing.joinToString()} in $capturesDir: " +
                         "run scripts/store-screenshots/capture-ios.sh first"
                 }
             }
