@@ -2,6 +2,8 @@ package com.quare.blitzsplit.android.storescreenshots
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrip
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
@@ -27,6 +29,7 @@ internal abstract class StoreScreenshots(
     formFactor: FormFactor,
     canvas: ScreenshotCanvas? = null,
     mockupFrame: (@Composable (content: @Composable () -> Unit) -> Unit)? = null,
+    bannerFontSizes: BannerFontSizes? = null,
 ) : StoreScreenshotsTest(
         formFactor = formFactor,
         canvas = canvas,
@@ -35,6 +38,14 @@ internal abstract class StoreScreenshots(
             showStatusBar = appleSlot == null,
             statusBarClock = "9:41",
             mockupFrame = mockupFrame,
+            title = bannerSlotOf(
+                fontSize = bannerFontSizes?.title,
+                isTitle = true,
+            ),
+            description = bannerSlotOf(
+                fontSize = bannerFontSizes?.description,
+                isTitle = false,
+            ),
         ),
     ) {
     @Test
@@ -144,6 +155,21 @@ internal abstract class StoreScreenshots(
     }
 }
 
+// A line of the banner at a size of the slot's own, or null to leave the library's: the title's and the description's
+// slots of ScreenshotStyle differ in nothing else.
+private fun bannerSlotOf(
+    fontSize: TextUnit?,
+    isTitle: Boolean,
+): (@Composable (String) -> Unit)? = fontSize?.let { size ->
+    { text ->
+        BannerText(
+            text = text,
+            fontSize = size,
+            isTitle = isTitle,
+        )
+    }
+}
+
 internal class PhoneStoreScreenshots : StoreScreenshots(formFactor = FormFactor.Phone)
 
 internal class Tablet7StoreScreenshots : StoreScreenshots(formFactor = FormFactor.Tablet7)
@@ -166,20 +192,35 @@ internal class IPhone67StoreScreenshots :
         formFactor = FormFactor.AppleIPhone67,
     )
 
+// The 13" iPad lying down, the way it is captured: upright, the sidebar the iPad opens with covers the screen. The
+// canvas is the capture's own 2732x2048, one of the two sizes the 13" slot takes lying down, and the library's iPad
+// frame only stands upright, so the bezel is this module's (IPadLandscapeBezelSurface). The banner stays on top, as on
+// the Mac's wide canvas, which leaves the iPad four fifths of the height.
 internal class IPad13StoreScreenshots :
     StoreScreenshots(
         appleSlot = AppleScreenshotSlot.IPAD_13,
         formFactor = FormFactor.AppleIPad13,
+        canvas = ScreenshotCanvas.px(2732, 2048),
+        mockupFrame = { content -> IPadLandscapeBezelSurface(content) },
+        bannerFontSizes = BannerFontSizes(
+            title = 44.sp,
+            description = 22.sp,
+        ),
     )
 
-// The 11" slot: the same bezel on a taller canvas, so Apple doesn't letterbox the 13" one. The screen inside is the
-// same size, so it frames the 13" capture.
+// The 11" slot: the same iPad on the 11" slot's own canvas, 2388x1668 lying down, so Apple doesn't scale the 13" image
+// into it. The device drawn is the same, so it frames the 13" capture, with a banner in step with the smaller canvas.
 internal class IPad11StoreScreenshots :
     StoreScreenshots(
         appleSlot = AppleScreenshotSlot.IPAD_13,
         formFactor = FormFactor.AppleIPad13,
         outputSubdir = "ipad11",
-        canvas = ScreenshotCanvas.px(1668, 2388),
+        canvas = ScreenshotCanvas.px(2388, 1668),
+        mockupFrame = { content -> IPadLandscapeBezelSurface(content) },
+        bannerFontSizes = BannerFontSizes(
+            title = 36.sp,
+            description = 18.sp,
+        ),
     )
 
 // The iPhone Duo: the simulator boots it closed, so this is its outer display, in a plain rounded bezel of its own.

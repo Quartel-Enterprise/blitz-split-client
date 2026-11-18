@@ -12,9 +12,10 @@
 #
 # Each slot's simulator is the one whose screen matches what the frame draws (AppleScreenshotSlot): Dynamic Island
 # (medium), the size App Store Connect requires, from an iPhone 17 Pro (1206x2622); Dynamic Island (large) from an
-# iPhone 16 Plus (1290x2796); the 13" iPad from an iPad Air 13" (2048x2732), switched to full-screen apps by the test;
-# the iPhone Duo, on the runtime that has it, twice: closed, as it boots, its outer display (1398x2034), and open, its
-# inner display lying down (2853x2007, which XCTest hands as 2852x2006). Only Device Hub can open it (open_duo below).
+# iPhone 16 Plus (1290x2796); the 13" iPad from an iPad Air 13" lying down (2732x2048), which the test turns and
+# switches to full-screen apps: upright, the sidebar the iPad opens with covers the screen; the iPhone Duo, on the
+# runtime that has it, twice: closed, as it boots, its outer display (1398x2034), and open, its inner display lying
+# down (2853x2007, which XCTest hands as 2852x2006). Only Device Hub can open it (open_duo below).
 # The simulators are made once, named "Store screenshots <slot>", and their status bar shows Apple's 9:41.
 # STORE_SCREENSHOTS_SIMULATOR names another one to use or make, for a run of one device beside another run of this
 # script (a task's own simulator: two runs can't share one).
