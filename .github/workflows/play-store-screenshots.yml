@@ -10,8 +10,11 @@ name: play-store-screenshots
 #   1. `draw` checks who dispatched the run and from where, then draws every language's images on the runner, as a
 #      release does (the play-screenshots-draw action): Robolectric draws them, so no capture is involved and any
 #      runner makes the same ones. They are the run's artifact `play-store-screenshots`, to download and look at.
-#   2. `send` uploads them one locale per job, one after the other: the jobs a release runs for the same images
-#      (play-store-screenshots-upload.yml). Only the images whose content changed go up.
+#   2. `send` uploads them a few locales per job, one job after the other: the jobs a release runs for the same
+#      images (play-store-screenshots-upload.yml). Each job is one save of Google Play's daily quota at most, five
+#      for the 27 locales, and none for a group Google Play already holds as drawn: only the images whose content
+#      changed go up. A save refused for the quota ends the run well, with a warning and the locales to send later
+#      (docs/store-listing-screenshots.md#google-plays-daily-save-quota).
 #
 # Google Play shows a listing's screenshots to everyone the moment they change, whatever release is out: this is
 # the whole publication, with no review to wait for on the run's side. A stable release with `screenshots` on does
@@ -34,6 +37,10 @@ on:
         description: "Only draw them and ask Google Play whether it would take them: the listing doesn't change"
         type: boolean
         default: false
+      group_size:
+        description: "How many locales go through one Play edit, in one job: each edit Google Play saves counts against its daily quota"
+        type: number
+        default: 6
 
 permissions:
   contents: read
@@ -82,7 +89,7 @@ jobs:
         with:
           token: ${{ github.token }}
 
-      # A release sends its bundle, and a listing its text, through a Play edit, as each locale's screenshots do:
+      # A release sends its bundle, and a listing its text, through a Play edit, as each group's screenshots do:
       # the newer edit drops the one still open. Another run of this workflow would send the same shelves over
       # this one.
       - name: Check that nothing else is writing on Google Play
@@ -107,7 +114,7 @@ jobs:
             echo "::error::No screenshot was staged, so there is nothing to send."
             exit 1
           fi
-          going="Going to Google Play, one locale per job, where they show to everyone as each lands"
+          going="Going to Google Play, a few locales per job, where they show to everyone as each job lands"
           if [ "$VALIDATE_ONLY" = true ]; then
             going="Only checked against Google Play (\`validate_only\`): the listing doesn't change"
           fi
@@ -125,12 +132,13 @@ jobs:
     permissions:
       contents: read
       # Each upload job looks for a release or a listing going, as `draw` did: a job run again starts without
-      # `draw`.
+      # `draw`. And for a group before it that used Google Play's save quota up.
       actions: read
     uses: ./.github/workflows/play-store-screenshots-upload.yml
     with:
       locales: ${{ needs.draw.outputs.locales }}
       validate_only: ${{ inputs.validate_only }}
+      group_size: ${{ inputs.group_size }}
       refuse_while_going: release-production.yml store-listing.yml play-store-screenshots.yml
     secrets:
       PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}

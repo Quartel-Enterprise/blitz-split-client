@@ -5,11 +5,23 @@ name: play-store-screenshots-upload
 # their run drew with the play-screenshots-draw action, the staged folder fastlane/metadata/android
 # (docs/store-listing-screenshots.md).
 #
-# One job per locale, as in Bible Planner's releases: supply sends a locale's screenshots through a Play edit of its
-# own and commits it at the end, so a locale Google Play refused costs that locale alone, and that locale's own
-# re-run button sends only it again, without drawing anything a second time. One after the other, since Play keeps
-# a single edit open per app: two uploads at once would drop each other's. Only the images whose content changed
-# are sent, so a locale with the same screens uploads nothing.
+# A few locales per job, `group_size` of them, one job after the other. supply sends a job's locales through one
+# Play edit and commits it at the end, and Google Play counts each commit, a save, against a daily quota it
+# documents nowhere (docs/store-listing-screenshots.md#google-plays-daily-save-quota): one job per locale, as
+# these were until 3.0.0, spent 27 saves on one set of screenshots, and a day with a listing, a release and two sets
+# ran out of them. So:
+#
+#   - `groups` splits the locales into as few groups as the size allows (27 locales by 6 are five), which is what a
+#     whole set costs at most.
+#   - A locale whose images Google Play already holds as drawn is left out of its group's edit, and a group with
+#     none left commits nothing: no save for what didn't change. Only the images whose content changed are sent.
+#   - A group Google Play refused costs that group alone, and its own re-run button sends only it again, without
+#     drawing anything a second time. Small enough, too, that no edit grows until supply times out.
+#   - A save refused for the quota is not a failure: the job ends well with a warning and says on the run's page
+#     which locales didn't go and how to send them later, and the groups after it stop before they reach Google
+#     Play, each with a warning, since they would only be refused too. Any other error fails the job as before.
+#
+# One after the other, since Play keeps a single edit open per app: two uploads at once would drop each other's.
 #
 # Google Play shows a listing's screenshots to everyone the moment they change, whatever release is out. Nothing
 # waits for an approval: the jobs name the `Production` environment, whose branch policy only lets main deploy, and
@@ -18,9 +30,13 @@ on:
   workflow_call:
     inputs:
       locales:
-        description: "The locales to send, one job each, as a JSON array of Google Play's codes: what the artifact holds"
+        description: "The locales to send, as a JSON array of Google Play's codes: what the artifact holds"
         type: string
         required: true
+      group_size:
+        description: "How many locales go through one Play edit, in one job: each edit Google Play saves counts against its daily quota"
+        type: number
+        default: 6
       artifact:
         description: "The artifact of this run that holds the staged folder, one folder per locale"
         type: string
@@ -30,33 +46,76 @@ on:
         type: string
         default: ""
       validate_only:
-        description: "Only ask Google Play whether it would take each locale's images: the listing doesn't change"
+        description: "Only ask Google Play whether it would take each group's images: the listing doesn't change"
         type: boolean
         default: false
       refuse_while_going:
-        description: "The workflows whose runs stop every job here while one isn't over, by file name with a space between them. The caller's job then grants actions: read. Blank checks nothing"
+        description: "The workflows whose runs stop every job here while one isn't over, by file name with a space between them. Blank checks nothing"
         type: string
         default: ""
     secrets:
       PLAY_STORE_SERVICE_ACCOUNT_JSON:
         required: true
 
-# No permissions of its own: the jobs take the calling job's, contents: read with the actions: read that
-# refuse_while_going needs. Naming more here than a caller grants would refuse the caller's whole run.
+# No permissions of its own: the jobs take the calling job's, contents: read with actions: read, which
+# refuse_while_going needs and which lets a group see that one before it used the quota up (without it each group
+# asks Google Play itself). Naming more here than a caller grants would refuse the caller's whole run.
+
+# Named, so every step runs with pipefail.
+defaults:
+  run:
+    shell: bash
 
 jobs:
+  # No environment here: this job reaches no store and reads no store's secret.
+  groups:
+    name: group the locales
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      groups: ${{ steps.groups.outputs.groups }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # The matrix of the jobs below, from a script with tests. Read into a variable first, so a script that fails
+      # stops the step: inside the echo it would read as no group at all.
+      - name: Group the locales
+        id: groups
+        env:
+          LOCALES: ${{ inputs.locales }}
+          GROUP_SIZE: ${{ inputs.group_size }}
+        run: |
+          groups="$(node scripts/release/play-screenshot-groups.mjs groups "$LOCALES" --size="$GROUP_SIZE")"
+          echo "groups=$groups" >> "$GITHUB_OUTPUT"
+
   send:
-    name: send ${{ matrix.locale }}
+    name: send ${{ matrix.group.name }}
+    needs: groups
     runs-on: ubuntu-latest
     environment: Production
-    # Per locale: the chain has no cap of its own, and the next release waits behind a release's (the `release`
+    # Per group: the chain has no cap of its own, and the next release waits behind a release's (the `release`
     # group).
-    timeout-minutes: 15
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       max-parallel: 1
       matrix:
-        locale: ${{ fromJSON(inputs.locales) }}
+        group: ${{ fromJSON(needs.groups.outputs.groups) }}
+    env:
+      # The artifact a group Google Play refused for the quota leaves for the ones after it. Named after the attempt,
+      # so a job run again later, which is an attempt of its own, doesn't stop for a quota that ran out days ago.
+      QUOTA_MARKER: play-save-quota-reached-${{ github.run_attempt }}
+      GROUP_MATRIX: ${{ needs.groups.outputs.groups }}
+      GROUP: ${{ matrix.group.group }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -69,31 +128,94 @@ jobs:
         with:
           token: ${{ github.token }}
 
+      # The lane asks the script which locales changed, and the steps around it what to say.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # A group Google Play refused for its daily save quota leaves a marker, and every group after it would be
+      # refused the same way: this one stops here, before it reaches Google Play, and says so. Not a failure, as
+      # the refusal wasn't one: the job ends well, and its own re-run sends the group later.
+      - name: Check that no group before this one used Google Play's save quota up
+        id: quota
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          script=scripts/release/play-screenshot-groups.mjs
+          reached="$(node "$script" quota-reached)"
+          echo "reached=$reached" >> "$GITHUB_OUTPUT"
+          if [ "$reached" = true ]; then
+            # Read into a variable first, so a script that fails stops the step instead of leaving a warning with
+            # no words.
+            warning="$(node "$script" warning --groups="$GROUP_MATRIX" --group="$GROUP")"
+            echo "::warning title=Google Play's daily save quota is used up::$warning"
+          fi
+
       # The caller's first job refuses its run while something else writes on Google Play, and this is the same
-      # check for a locale's job run again later, which starts without that first job (its own run is left out of
+      # check for a group's job run again later, which starts without that first job (its own run is left out of
       # the check). Each writes through a Play edit of its own, and the newer edit drops the one still open; a
       # later run's images are also the newer ones, which a job of an earlier run sent again would cover. Sent
       # alone, the workflows are a release, a listing and another run of play-store-screenshots.yml; a release
       # names the last two, since the next release waits behind it.
       - name: Check that nothing else is writing on Google Play
-        if: ${{ inputs.refuse_while_going != '' }}
+        if: ${{ steps.quota.outputs.reached != 'true' && inputs.refuse_while_going != '' }}
         uses: ./.github/actions/no-run-going
         with:
           token: ${{ github.token }}
           workflows: ${{ inputs.refuse_while_going }}
           then: send the screenshots once that run is over
 
-      # The whole of it: the lane picks this job's locale out.
+      # The whole of it: the lane picks this job's locales out.
       - name: Download the screenshots
+        if: ${{ steps.quota.outputs.reached != 'true' }}
         uses: actions/download-artifact@v8
         with:
           name: ${{ inputs.artifact }}
           path: fastlane/metadata/android
 
+      # One Play edit for the group, less the locales Google Play already holds as drawn; no edit at all when that
+      # is every one of them. With save_quota_is_no_failure the lane ends well when Google Play refuses the save
+      # for its daily quota, and says so in its outputs, which the next two steps read.
       - name: Send the screenshots to Google Play
+        id: send
+        if: ${{ steps.quota.outputs.reached != 'true' }}
         uses: ./.github/actions/play-store-lane
         with:
           lane: >-
-            upload_screenshots platform:android locale:${{ matrix.locale }}
-            validate_only:${{ inputs.validate_only }}
+            upload_screenshots platform:android locales:${{ matrix.group.locales }}
+            validate_only:${{ inputs.validate_only }} save_quota_is_no_failure:true
           service-account-json: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+
+      # On the run's page: what went, what Google Play already had, and, when the quota ran out, the locales that
+      # didn't go, the groups left untried and how to send them later.
+      - name: Say what went to Google Play
+        if: ${{ steps.quota.outputs.reached != 'true' }}
+        env:
+          SENT: ${{ steps.send.outputs.sent }}
+          UNCHANGED: ${{ steps.send.outputs.unchanged }}
+          NOT_SENT: ${{ steps.send.outputs.not-sent }}
+          SAVE_QUOTA: ${{ steps.send.outputs.save-quota }}
+          VALIDATE_ONLY: ${{ inputs.validate_only }}
+        run: |
+          script=scripts/release/play-screenshot-groups.mjs
+          node "$script" summary --groups="$GROUP_MATRIX" --group="$GROUP" --sent="$SENT" --unchanged="$UNCHANGED" \
+            --not-sent="$NOT_SENT" --quota="$SAVE_QUOTA" --validate-only="$VALIDATE_ONLY" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$SAVE_QUOTA" = reached ]; then
+            warning="$(node "$script" warning --groups="$GROUP_MATRIX" --group="$GROUP" --not-sent="$NOT_SENT")"
+            echo "::warning title=Google Play's daily save quota is used up::$warning"
+            mkdir -p "$RUNNER_TEMP/play-save-quota"
+            echo "$GROUP" > "$RUNNER_TEMP/play-save-quota/group"
+          fi
+
+      # overwrite: a group that couldn't see the marker asks Google Play itself, and leaves it again when it is
+      # refused too. Without it the second upload fails on the name, and the refusal would read as a failure.
+      - name: Tell the groups after this one that the quota is used up
+        if: ${{ steps.send.outputs.save-quota == 'reached' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.QUOTA_MARKER }}
+          path: ${{ runner.temp }}/play-save-quota/group
+          retention-days: 1
+          if-no-files-found: error
+          overwrite: true

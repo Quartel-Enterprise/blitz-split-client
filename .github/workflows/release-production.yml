@@ -19,14 +19,16 @@ name: release-production
 #          goes out by itself once approved.
 #        - Web: Cloudflare Pages, the project of CLOUDFLARE_PAGES_PROJECT, which app.blitzsplit.com serves. The
 #          beta's build and deploy, at the stable version (the composite action web-deploy).
-#        - With `screenshots`, the listings' screenshots are made again and uploaded, one job per language so that
-#          a language a store refused is the only one sent again: Google Play's after the bundle reached
-#          production, the App Store's before the submission, since a version in review can't take them. Best
-#          effort: none of these jobs holds the release back. Off unless asked for: a release that changes no
-#          screen and adds no language leaves the listings' images as they are. The App Store's are captured on the
-#          iPhone and the iPad; `screenshots_iphone_duo` and `screenshots_mac` add the iPhone Duo and the Mac, whose
-#          captures don't work on the runners yet (docs/release-process.md#screenshots-with-a-release). Google
-#          Play's alone, with the App Store's left as they are, go through play-store-screenshots.yml instead.
+#        - With `screenshots`, the listings' screenshots are made again and uploaded, one job per language on
+#          the App Store and a few languages per job on Google Play, so that what a store refused is all that is
+#          sent again: Google Play's after the bundle reached production, so the bundle is never the upload its
+#          daily save quota refuses, the App Store's before the submission, since a version in review can't take
+#          them. Best effort: none of these jobs holds the release back. Off unless asked for: a release that
+#          changes no screen and adds no language leaves the listings' images as they are. The App Store's are
+#          captured on the iPhone and the iPad; `screenshots_iphone_duo` and `screenshots_mac` add the iPhone Duo
+#          and the Mac, whose captures don't work on the runners yet
+#          (docs/release-process.md#screenshots-with-a-release). Google Play's alone, with the App Store's left as
+#          they are, go through play-store-screenshots.yml instead.
 #   3. `finalize` runs when a store took a build or the web was deployed. When the run released (the production
 #      track, a submission for review, or the web) it tags X.Y.Z and publishes the GitHub release, then merges the
 #      versionCode, the versionName and the removal of the fragments the version told back into main. A run that
@@ -575,26 +577,33 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
-  # One job per locale, one after the other, only after the bundle reached the track: the jobs of
-  # play-store-screenshots-upload.yml, which play-store-screenshots.yml calls too, to send them without a release.
-  # Shown as "Android, Google Play screenshots / send <locale>". A locale Google Play refused costs that locale
-  # alone, and that locale's own re-run button sends only it again, without drawing anything a second time
-  # ("Re-run failed jobs" would also run the App Store jobs that failed with continue-on-error). Run again after
-  # the release, a locale's job stops while a listing or Google Play's screenshots sent alone are going.
+  # A few locales per job, one job after the other: the jobs of play-store-screenshots-upload.yml, which
+  # play-store-screenshots.yml calls too, to send them without a release. Shown as "Android, Google Play
+  # screenshots / send 1 of 5: <locales>". A group Google Play refused costs that group alone, and that group's own
+  # re-run button sends only it again, without drawing anything a second time ("Re-run failed jobs" would also run
+  # the App Store jobs that failed with continue-on-error). Run again after the release, a group's job stops while
+  # a listing or Google Play's screenshots sent alone are going.
+  #
+  # Only after the bundle reached the track (`needs: android-upload`, with no `if` that would let them run past a
+  # failed upload): every job here that changes something is a save, which Google Play counts against a daily
+  # quota it documents nowhere, and the bundle's edit is a save too. Sent first, the bundle is never the one left
+  # without quota by its own run's screenshots; a save they are refused is a warning, not a failed job
+  # (docs/store-listing-screenshots.md#google-plays-daily-save-quota).
   android-screenshots:
     name: Android, Google Play screenshots
     needs: [plan, android-upload, android-screenshots-render]
     if: ${{ needs.android-screenshots-render.outputs.locales != '' }}
     permissions:
       contents: read
-      # Each upload job looks for a listing or Google Play's screenshots going up alone.
+      # Each upload job looks for a listing or Google Play's screenshots going up alone, and for a group before
+      # it that used Google Play's save quota up.
       actions: read
     uses: ./.github/workflows/play-store-screenshots-upload.yml
     with:
       ref: ${{ needs.plan.outputs.sha }}
       locales: ${{ needs.android-screenshots-render.outputs.locales }}
-      # Neither can start while this run is going, so the check only ever stops a locale's job run again after
-      # it. Not the releases: the next one waiting behind this run would stop every locale.
+      # Neither can start while this run is going, so the check only ever stops a group's job run again after
+      # it. Not the releases: the next one waiting behind this run would stop every group.
       refuse_while_going: store-listing.yml play-store-screenshots.yml
     secrets:
       PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}

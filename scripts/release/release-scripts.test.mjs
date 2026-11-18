@@ -528,7 +528,7 @@ describe("the two ways Google Play's screenshots go up", () => {
     assert.match(upload, /name: \$\{\{ inputs\.artifact \}\}\n\s+path: fastlane\/metadata\/android\n/);
   });
 
-  test("refuse to start while the other is going, and each locale's job sent alone checks again", () => {
+  test("refuse to start while the other is going, and each group's job sent alone checks again", () => {
     assert.ok(guarded(release).some((workflows) => workflows.includes("play-store-screenshots.yml")));
     // Whatever its platforms: the upload jobs sent alone can't tell a release without Android apart, nor the App
     // Store's one that submits nothing.
@@ -536,10 +536,10 @@ describe("the two ways Google Play's screenshots go up", () => {
     const everything = ["release-production.yml", "store-listing.yml", "play-store-screenshots.yml"];
     assert.deepEqual(guarded(alone), [everything]);
     assert.deepEqual(guarded(upload), [["${{", "inputs.refuse_while_going", "}}"]]);
-    /** The workflows a caller has each locale's job check again. */
+    /** The workflows a caller has each group's job check again. */
     const checkedAgain = (caller) => caller.match(/\n {6}refuse_while_going: (.+)\n/)?.[1].split(" ");
     assert.deepEqual(checkedAgain(alone), everything);
-    // A release's own jobs leave the releases out: the next one waiting behind it would stop every locale.
+    // A release's own jobs leave the releases out: the next one waiting behind it would stop every group.
     assert.deepEqual(checkedAgain(release), ["store-listing.yml", "play-store-screenshots.yml"]);
   });
 

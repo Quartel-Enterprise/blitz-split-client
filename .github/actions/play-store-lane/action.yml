@@ -12,6 +12,22 @@ inputs:
     description: 'The key of a Google Cloud service account the Play Console knows, as JSON'
     required: true
 
+# What the upload_screenshots lane says of a group of locales (upload_play_screenshots of fastlane/Fastfile); the
+# other lanes write none of them.
+outputs:
+  sent:
+    description: 'The locales whose screenshots went through the edit, with a comma between them'
+    value: ${{ steps.lane.outputs.sent }}
+  unchanged:
+    description: 'The locales Google Play already held as staged, which were left out of the edit'
+    value: ${{ steps.lane.outputs.unchanged }}
+  not-sent:
+    description: 'The locales whose edit Google Play refused to save for its daily quota'
+    value: ${{ steps.lane.outputs.not_sent }}
+  save-quota:
+    description: '`reached` when Google Play refused the save for its daily quota, which is no failure of the lane'
+    value: ${{ steps.lane.outputs.save_quota }}
+
 runs:
   using: composite
   steps:
@@ -32,6 +48,7 @@ runs:
         fi
 
     - name: Run the lane
+      id: lane
       shell: bash
       env:
         PLAY_STORE_JSON_KEY_PATH: ${{ runner.temp }}/play-service-account.json

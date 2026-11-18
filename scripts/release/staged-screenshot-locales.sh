@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Prints the locales that have screenshots staged under a store's folder, as a JSON array (["de-DE","en-US"]): the
-# matrix of the release's upload jobs, one job per locale (release-production.yml). A locale is a folder right under
+# Prints the locales that have screenshots staged under a store's folder, as a JSON array (["de-DE","en-US"]): what
+# the release's upload jobs are made of, one job per locale on the App Store and a few locales per job on Google
+# Play, which play-screenshot-groups.mjs groups (release-production.yml). A locale is a folder right under
 # the store's folder that holds a PNG at any depth, which fits the three layouts: fastlane/metadata/android
 # (<locale>/images/<type>/), fastlane/screenshots and fastlane/screenshots-mac (<locale>/).
 #
