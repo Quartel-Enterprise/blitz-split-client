@@ -303,8 +303,11 @@ What is known of the three captures behind the markers, from the first release t
   ([store-listing-screenshots.md](store-listing-screenshots.md#what-the-images-show)).
 - **The iPhone Duo closed (`iphoneduo`)**: the UI test failed about nine minutes in
   (`StoreScreenshotsUITests.testCaptureStoreScreenshots()`, "TEST EXECUTE FAILED"), after nineteen launches of the
-  app some thirteen seconds apart and then four minutes with none. The cause is not known: `xcodebuild` runs quiet
-  and the job keeps no result bundle, so the log names neither the screen, the language nor the failure.
+  app some thirteen seconds apart and then four minutes with none. The cause is not known: `xcodebuild` ran quiet
+  then, one test for the 26 languages, so the log names neither the screen, the language nor the failure. Since
+  then the capture runs one language at a time and prints xcodebuild's output, so the next run that fails there
+  says which language, at which screen and with what message. On this project's Mac the closed Duo's capture
+  went through its 26 languages the same day, so the failure is the runner's so far.
 - **The Mac (`mac`)**: "The Mac capture is 1440 px wide and the frame takes 2880: its display isn't Retina". The
   runner has no signing account, so the Mac app is built signed to run locally and without its entitlements, and
   that part worked: the app launched and its window was photographed. The runner's display is not Retina, and the

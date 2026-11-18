@@ -340,7 +340,12 @@ language's fault. When it fails again:
   that hangs for minutes, twice per language, would use up a release job's time.
 - The script fails at the end, naming every slot and language that failed (an error on the run's page on GitHub
   Actions). The log has the screen each try stopped at and the test's message, and the summary's table the same
-  screen.
+  screen:
+
+  ```
+  Failed iphone63: ja after 0m 38s, at 03_receipt (try 2 of 2)
+  The App Store captures failed for iphone63 (ja): the frame takes a slot only with every language
+  ```
 
 What the frame does with such a slot: `stageAppStoreScreenshots` frames a slot only with every language. Without
 one of the iPhone's or the iPad's it stops, naming the slot and the language ("No iOS captures of iphone67 (ar)"),
@@ -361,8 +366,8 @@ artifact `apple-captures-<slot>`: download each slot's into `build/outputs/apple
 them all, measured on an iPhone 17 Pro's simulator in November 2026 with three languages of ten screens: 327 s in
 one run, 333 s in three. The runs read the built tests' `.xctestrun` file; through the project and its scheme, each
 one loads the project and resolves the Swift packages again, and the same three took 362 s. What the test does once
-per simulator, the iPad's switch to full-screen apps, only the runs before a slot's first captured language do
-(`STORE_SCREENSHOTS_DEVICE_IS_SET_UP`). A language takes a little under two minutes on this project's Mac and about
+per simulator, the iPad's switch to full-screen apps (eleven seconds in Settings), only the runs before a slot's
+first captured language do (`STORE_SCREENSHOTS_DEVICE_IS_SET_UP`). A language takes a little under two minutes on this project's Mac and about
 three on a release's runner, where a slot's 26 took 88 and 95 minutes in the release of November 2026, build
 included: the run per language adds about two minutes to that, far from the job's limit of 150.
 
