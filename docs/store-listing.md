@@ -96,6 +96,27 @@ locale: `play/<locale>/` with `title.txt`, `short_description.txt` and `full_des
 `app-store/<locale>/` with `name.txt`, `subtitle.txt`, `keywords.txt`, `promotional_text.txt` and `description.txt`
 for deliver. `fastlane upload_listing` stages into a temporary folder and uploads it.
 
+Four things the App Store asks for are not in a language's file, since they are the same in every one, and are
+staged from the script's constants:
+
+- **The support, the marketing and the privacy policy address** (`APP_STORE_URL_FILES`: `support_url.txt`,
+  `marketing_url.txt` and `privacy_url.txt` in every locale's folder), "App Support", the developer's site and the
+  privacy policy on the app's page. Each locale holds its own, and a locale the upload creates starts with none,
+  though the App Store asks for a support address in each before a review, so every upload writes them in every
+  locale. The marketing address is https://blitzsplit.com and the support one https://blitzsplit.com/support, the
+  site's Support page: the App Store's review looks there for a way to reach the developer, which the landing
+  doesn't have. The privacy policy's is https://blitzsplit.com/privacy, the page the apps open, which the site
+  shows in the reader's language.
+- **The copyright line** (`appStoreCopyright()`, `app-store/copyright.txt`, beside the locales' folders): one per
+  version, the current year and "Quartel Enterprise • PI Software LTDA", the owner the site's footer and Bible
+  Planner's name (Pierre's call), with no ©, which the App Store adds. The year is never written down (Pierre's
+  call): the script reads it off the clock, and since a new version starts with the line of the one before it, a
+  release writes it too (`app_store_submit` asks `store-listing.mjs copyright`). So the line moves on by itself with
+  the first upload of the listing or the first release of a new year.
+
+Google Play has none of them: its contact details are the developer account's, and its privacy policy address is
+App content's, in the Play Console.
+
 A language goes to one or more locales of each store (`PLAY_LOCALES` and `APP_STORE_LOCALES` of the script): Latin
 America's Spanish is `es-419` and `es-US` on Play and `es-MX` on the App Store, and Spain's is `es-ES` on both. They
 are the codes the screenshots

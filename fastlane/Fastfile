@@ -212,7 +212,9 @@ lane :finish_app_store_screenshots do |options|
 end
 
 desc "Upload the stores' listing text, the files of store-listing/ (docs/store-listing.md): the name, the"
-desc "descriptions and, on the App Store, the subtitle, the keywords and the promotional text, in every language."
+desc "descriptions and, on the App Store, the subtitle, the keywords and the promotional text, in every language,"
+desc "with the App Store's support, marketing and privacy policy addresses in every locale and the version's"
+desc "copyright line."
 desc "Options: platform (android|ios|mac; all three when left out). Needs PLAY_STORE_JSON_KEY_PATH (Play) and the"
 desc "App Store Connect key variables (App Store). version_code names the production release supply reads when the"
 desc "track holds more than one (a staged rollout). VALIDATE_ONLY=true, or validate_only:true, only asks Play whether"
@@ -607,6 +609,11 @@ lane :app_store_submit do |options|
   never_released = app.get_live_app_store_version(platform: connect_platform).nil?
 
   with_notes_for(File.expand_path(options.fetch(:notes), repo_root), localizations.map(&:locale), "release_notes.txt") do |metadata|
+    # The copyright line, which carries the current year: a version starts with the one before it's, so a release
+    # is what moves the year on. Beside the locales' folders, where deliver reads it (docs/store-listing.md)
+    copyright = Dir.chdir(repo_root) { sh("node", "scripts/release/store-listing.mjs", "copyright", log: false) }.strip
+    UI.user_error!("store-listing.mjs printed no copyright line") if copyright.empty?
+    File.write(File.join(metadata, "copyright.txt"), copyright)
     upload_to_app_store(
       api_key: api_key,
       app_identifier: BUNDLE_ID,
@@ -615,7 +622,7 @@ lane :app_store_submit do |options|
       build_number: build,
       skip_binary_upload: true,
       skip_screenshots: true,
-      # Only release_notes.txt is there, so the rest of the listing stays as App Store Connect has it; deliver
+      # Only release_notes.txt and the copyright line are there, so the rest of the listing stays as App Store Connect has it; deliver
       # leaves the text out by itself on an app's first version, which has no "What's new"
       skip_metadata: false,
       metadata_path: metadata,

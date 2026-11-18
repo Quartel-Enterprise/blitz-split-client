@@ -1079,6 +1079,12 @@ jobs:
           name: release-notes
           path: release-notes
 
+      # The lane asks scripts/release/store-listing.mjs, plain Node, for the version's copyright line.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
       - name: Submit for review
         uses: ./.github/actions/app-store-lane
         with:
@@ -1192,6 +1198,12 @@ jobs:
         with:
           name: release-notes
           path: release-notes
+
+      # The lane asks scripts/release/store-listing.mjs, plain Node, for the version's copyright line.
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
 
       - name: Submit for review
         uses: ./.github/actions/app-store-lane
