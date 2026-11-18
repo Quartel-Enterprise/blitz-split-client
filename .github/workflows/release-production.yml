@@ -278,7 +278,6 @@ jobs:
           SCREENSHOTS: ${{ inputs.screenshots }}
           SCREENSHOTS_IPHONE_DUO: ${{ inputs.screenshots_iphone_duo }}
           SCREENSHOTS_MAC: ${{ inputs.screenshots_mac }}
-          CAPTURE_SLOTS: ${{ steps.slots.outputs.capture_slots }}
         run: |
           android="not in this run"
           if [ "$ANDROID" = true ]; then
@@ -311,37 +310,15 @@ jobs:
             note="The stores only get a trial (a testing track, or TestFlight), but the web app is deployed for everyone: the version gets its tag and its notes are published. For a run that reaches no user, cancel this one now, before the web job deploys, and dispatch again with \`web\` off. What a store already took stays there, and the run still records it."
             echo "::warning title=The web is released::${note//\`/}"
           fi
-          # Which devices the App Store's captures run on, read off the list apple-screenshots-capture's matrix is
-          # made of, when that job runs at all (its `if`), and which marker a device the run releases and leaves out
-          # is behind. A marker that is on and adds no slot is said at once, since nothing else would say it:
-          # without `screenshots`, in a run that doesn't submit, or for a platform the run doesn't release.
-          screenshots="left as they are"
-          captured=""
-          if [ "$SCREENSHOTS" = true ]; then
-            screenshots="made again and uploaded with a release"
-            if [ "$SUBMIT" = true ]; then captured="$CAPTURE_SLOTS"; fi
-          elif [ "$SCREENSHOTS_IPHONE_DUO" = true ] || [ "$SCREENSHOTS_MAC" = true ]; then
-            screenshots="left as they are: \`screenshots\` is off, and the devices' markers only count with it"
+          # The row about the screenshots, and a warning for each device marker that is on and adds no capture, from
+          # a script with tests, which reads the list apple-screenshots-capture's matrix is made of. The warnings
+          # come on stderr: kept apart from the row, then printed for the run's page.
+          warnings="$RUNNER_TEMP/screenshots-warnings.txt"
+          if ! screenshots="$(./scripts/release/app-store-screenshots-plan.sh 2> "$warnings")"; then
+            cat "$warnings"
+            exit 1
           fi
-          captures() { [[ "$captured" == *"\"$1\""* ]]; }
-          if [ -n "$captured" ]; then
-            screenshots="$screenshots. The App Store's are captured on $(jq -r 'map("`" + . + "`") | join(", ")' <<< "$captured")"
-            if [ "$IOS" = true ] && ! captures iphoneduo; then
-              screenshots="$screenshots, without the iPhone Duo (\`screenshots_iphone_duo\`)"
-            fi
-            if [ "$MACOS" = true ] && ! captures mac; then
-              screenshots="$screenshots, without the Mac (\`screenshots_mac\`)"
-            fi
-          elif [ "$SCREENSHOTS" = true ] && [ "$SUBMIT" = true ] && [ "$MACOS" = true ]; then
-            # The one run that submits and could upload none of them: the Mac alone, without its marker.
-            screenshots="$screenshots. None of the App Store's is: the Mac's capture is behind \`screenshots_mac\`"
-          fi
-          if [ "$SCREENSHOTS_IPHONE_DUO" = true ] && ! captures iphoneduo; then
-            echo "::warning title=The iPhone Duo is not captured::screenshots_iphone_duo is on, but the iPhone Duo's screenshots are only made with screenshots on, in a run that submits iOS for review."
-          fi
-          if [ "$SCREENSHOTS_MAC" = true ] && ! captures mac; then
-            echo "::warning title=The Mac is not captured::screenshots_mac is on, but the Mac's screenshots are only made with screenshots on, in a run that submits macOS for review."
-          fi
+          cat "$warnings"
           {
             echo ""
             echo "| Platform | Where it goes |"
@@ -746,7 +723,9 @@ jobs:
 
       # The runner has no signing account, so the app is signed to run locally and without its entitlements, which
       # only a provisioning profile could grant. The script fails where it isn't allowed to record the screen, and
-      # on a display that isn't Retina, whose captures the frame would blur: the Mac's listing keeps its screenshots.
+      # on a display that isn't Retina, whose captures the frame would blur: the Mac's listing keeps what it has, which
+      # is nothing today, so `macos-submit` refuses the version
+      # (docs/release-process.md#the-devices-the-app-stores-captures-run-on).
       - name: Capture on the runner's screen
         if: ${{ matrix.slot == 'mac' }}
         env:

@@ -249,8 +249,10 @@ don't work on the runners yet, so a release leaves them out until they do):
 | `screenshots_mac` | off | `mac` |
 
 `plan` lists the run's slots ([`app-store-capture-slots.sh`](../scripts/release/app-store-capture-slots.sh)) and
-says them in the run summary, and `apple-screenshots-capture` is one job per slot of that list: a device left out
-starts no Mac runner, where a job that started only to stop would hold one.
+says them in the run summary
+([`app-store-screenshots-plan.sh`](../scripts/release/app-store-screenshots-plan.sh)), and
+`apple-screenshots-capture` is one job per slot of that list: a device left out starts no Mac runner, where a job
+that started only to stop would hold one.
 
 - **The iPhone's two sizes and the iPad's have no marker.** The frames of every device, the Mac's too, can't be
   drawn without them (`stageAppStoreScreenshots` fails), so a run without one of them would frame and upload
@@ -259,8 +261,9 @@ starts no Mac runner, where a job that started only to stop would hold one.
   that turns one on with `screenshots` off, and so does `release-production.sh`.
 - **A device is captured only in a run that can upload its images.** The Duo's go up with the iPhone's and the
   iPad's, so its marker needs `ios` on; the Mac's needs `macos` on; and both need a run that submits, as every
-  App Store screenshot does. `plan` warns about a marker that is on and adds no capture. A run of the Mac alone still captures the iPhone and the iPad, for the frames, when
-  `screenshots_mac` is on; without it, it captures nothing of the App Store's, and the summary says so.
+  App Store screenshot does. `plan` warns about a marker that is on and adds no capture. A run of the Mac alone
+  still captures the iPhone and the iPad, for the frames, when `screenshots_mac` is on; without it, it captures
+  nothing of the App Store's, and the summary says so.
 - **Without the iPhone Duo**, the iPhone's and the iPad's shelves are the only ones a locale gets: deliver deletes
   all of a locale's screenshots before it uploads, so a locale that had the Duo's loses them, as it does when both
   of the Duo's captures fail. No release has uploaded them yet, and App Store Connect only requires the Duo's shelf
