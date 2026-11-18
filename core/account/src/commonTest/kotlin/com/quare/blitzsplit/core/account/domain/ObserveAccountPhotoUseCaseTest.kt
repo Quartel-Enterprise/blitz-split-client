@@ -279,6 +279,7 @@ class ObserveAccountPhotoUseCaseTest {
         displayName = "Pierre Vieira",
         photoUrl = GOOGLE_PHOTO_URL,
         email = null,
+        linkedProviders = listOf(AccountProvider.GOOGLE),
     )
 
     private fun TestScope.prepareScenario(

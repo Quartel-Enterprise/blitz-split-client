@@ -217,7 +217,8 @@ class AccountRepositoryImplTest {
         runTest {
             // Given
             prepareScenario(currentUser = null)
-            remote.sessionUsers.value = SessionUser("user-1", AccountProvider.GOOGLE, "Pierre", null, null)
+            remote.sessionUsers.value =
+                SessionUser("user-1", AccountProvider.GOOGLE, "Pierre", null, null, listOf(AccountProvider.GOOGLE))
 
             // When
             repository.ensureRegistered()
@@ -2342,6 +2343,150 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN both identities WHEN signing in with Apple THEN the device shows Apple whichever was linked first`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = googleUser,
+                idTokenUser = googleAndAppleUser,
+            )
+
+            // When
+            repository.signInWithIdToken(
+                AccountProvider.APPLE,
+                idToken = "token",
+                rawNonce = "nonce",
+                fullName = null,
+                authorizationCode = null,
+            )
+
+            // Then
+            val status = repository.observeAccount().first().status
+            assertEquals(AccountStatus.Connected("user-1", AccountProvider.APPLE), status)
+        }
+
+    @Test
+    fun `GIVEN a sign in with Apple WHEN a refresh ranks Google first THEN the device keeps showing Apple`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = googleUser,
+            idTokenUser = googleAndAppleUser,
+        )
+        repository.signInWithIdToken(
+            AccountProvider.APPLE,
+            idToken = "token",
+            rawNonce = "nonce",
+            fullName = null,
+            authorizationCode = null,
+        )
+        startMirroring()
+
+        // When
+        sessions.emit(googleAndAppleUser)
+        runCurrent()
+
+        // Then
+        val status = repository.observeAccount().first().status
+        assertEquals(AccountStatus.Connected("user-1", AccountProvider.APPLE), status)
+    }
+
+    @Test
+    fun `GIVEN no provider kept on the device WHEN the session is mirrored THEN follows the latest sign in`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = googleUser)
+            repository.ensureRegistered()
+            startMirroring()
+
+            // When
+            sessions.emit(
+                googleAndAppleUser.copy(
+                    socialProvider = AccountProvider.APPLE,
+                    linkedProviders = appleFirst,
+                ),
+            )
+            runCurrent()
+
+            // Then
+            val status = repository.observeAccount().first().status
+            assertEquals(AccountStatus.Connected("user-1", AccountProvider.APPLE), status)
+        }
+
+    @Test
+    fun `GIVEN a sign in with Apple WHEN the user no longer holds Apple THEN falls back to the one it holds`() =
+        runTest {
+            // Given
+            prepareScenario(
+                currentUser = googleUser,
+                idTokenUser = googleAndAppleUser,
+            )
+            repository.signInWithIdToken(
+                AccountProvider.APPLE,
+                idToken = "token",
+                rawNonce = "nonce",
+                fullName = null,
+                authorizationCode = null,
+            )
+            startMirroring()
+
+            // When
+            sessions.emit(googleUser)
+            runCurrent()
+
+            // Then
+            val status = repository.observeAccount().first().status
+            assertEquals(AccountStatus.Connected("user-1", AccountProvider.GOOGLE), status)
+        }
+
+    @Test
+    fun `GIVEN a sign in with Apple WHEN another user is mirrored THEN does not carry Apple over`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = googleUser,
+            idTokenUser = googleAndAppleUser,
+        )
+        repository.signInWithIdToken(
+            AccountProvider.APPLE,
+            idToken = "token",
+            rawNonce = "nonce",
+            fullName = null,
+            authorizationCode = null,
+        )
+        startMirroring()
+
+        // When
+        sessions.emit(googleAndAppleUser.copy(userId = "user-2"))
+        runCurrent()
+
+        // Then
+        val status = repository.observeAccount().first().status
+        assertEquals(AccountStatus.Connected("user-2", AccountProvider.GOOGLE), status)
+    }
+
+    @Test
+    fun `GIVEN a browser sign in with Apple WHEN its session and a refresh are mirrored THEN shows Apple`() = runTest {
+        // Given
+        prepareScenario(
+            currentUser = googleUser,
+            callback = BrowserCallback.SIGNED_IN,
+        )
+        repository.ensureRegistered()
+        startMirroring()
+        repository.signInWithBrowser(AccountProvider.APPLE, isFromProfile = true)
+        repository.handleBrowserCallback(signInCallbackUrl)
+
+        // When
+        sessions.emit(googleAndAppleUser)
+        runCurrent()
+        sessions.emit(googleAndAppleUser.copy(displayName = "Pierre V"))
+        runCurrent()
+
+        // Then
+        val status = repository.observeAccount().first().status
+        assertEquals(AccountStatus.Connected("user-1", AccountProvider.APPLE), status)
+    }
+
+    @Test
     fun `GIVEN a Google account WHEN another anonymous user is mirrored THEN keeps its recovery code prompt`() =
         runTest {
             // Given
@@ -3421,6 +3566,7 @@ class AccountRepositoryImplTest {
             displayName = null,
             photoUrl = null,
             email = null,
+            linkedProviders = emptyList(),
         )
 
     // Why: not the id of the user an anonymous sign in creates, so a case tells the lost user from the new one.
@@ -3433,7 +3579,14 @@ class AccountRepositoryImplTest {
             displayName = "Pierre",
             photoUrl = null,
             email = null,
+            linkedProviders = listOf(AccountProvider.GOOGLE),
         )
+
+    private val googleAndAppleUser = googleUser.copy(
+        linkedProviders = listOf(AccountProvider.GOOGLE, AccountProvider.APPLE),
+    )
+
+    private val appleFirst = listOf(AccountProvider.APPLE, AccountProvider.GOOGLE)
 
     private val appleName = "Pierre Vieira"
 
@@ -3450,6 +3603,7 @@ class AccountRepositoryImplTest {
             displayName = "Pierre",
             photoUrl = null,
             email = appleRelayEmail,
+            linkedProviders = listOf(AccountProvider.APPLE),
         )
 
     // Why: a user restored with its code signs in with the hidden recovery address, which is not worth showing.
@@ -3460,6 +3614,7 @@ class AccountRepositoryImplTest {
             displayName = null,
             photoUrl = null,
             email = "restored@recovery.borarachar.com",
+            linkedProviders = emptyList(),
         )
 
     private val appleUserWithoutName =
@@ -3469,6 +3624,7 @@ class AccountRepositoryImplTest {
             displayName = null,
             photoUrl = null,
             email = null,
+            linkedProviders = listOf(AccountProvider.APPLE),
         )
 
     private val appleUserWithName =
@@ -3478,6 +3634,7 @@ class AccountRepositoryImplTest {
             displayName = "Pierre",
             photoUrl = null,
             email = null,
+            linkedProviders = listOf(AccountProvider.APPLE),
         )
 
     // Why: a session flow the test emits into while mirrorSession collects it in the background.
@@ -3605,6 +3762,7 @@ private class FakeAccountLocalDataSource(
             awaitsFullSync = false,
             lostAnonymousUserId = null,
             inactivityExpiry = null,
+            signedInProvider = null,
         ),
     )
 
@@ -3688,7 +3846,7 @@ private class FakeAccountRemoteDataSource(
 
     override suspend fun signInAnonymously(): SessionUser {
         anonymousSignIns++
-        return SessionUser("anonymous", null, null, null, null).also { currentUser = it }
+        return SessionUser("anonymous", null, null, null, null, emptyList()).also { currentUser = it }
     }
 
     override suspend fun linkIdToken(
@@ -3732,7 +3890,7 @@ private class FakeAccountRemoteDataSource(
     }
 
     override suspend fun signInWithPassword(credentials: RecoveryCredentials) {
-        currentUser = SessionUser("restored", null, null, null, null)
+        currentUser = SessionUser("restored", null, null, null, null, emptyList())
     }
 
     override suspend fun fetchRecoveryCredentials(code: String): RecoveryCredentials {

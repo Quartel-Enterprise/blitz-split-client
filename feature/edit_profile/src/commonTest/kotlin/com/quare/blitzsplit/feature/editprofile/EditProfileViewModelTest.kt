@@ -1560,6 +1560,7 @@ class EditProfileViewModelTest {
         displayName = "Pierre Vieira",
         photoUrl = GOOGLE_PHOTO_URL,
         email = null,
+        linkedProviders = listOf(AccountProvider.GOOGLE),
     )
     private val appleUser = googleUser.copy(
         socialProvider = AccountProvider.APPLE,
