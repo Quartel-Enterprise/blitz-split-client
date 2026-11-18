@@ -116,11 +116,13 @@ jobs:
       # A release writes through the same Play account and on the same App Store version: a second Play edit drops
       # the one still open. The releases share a concurrency group this workflow can't join, since a listing run
       # waiting in it would cancel a release waiting too, so a release in progress or waiting stops the run here.
+      # So does a run of play-store-screenshots.yml, which sends each locale's screenshots through a Play edit too.
       - name: Check that no release is running
         uses: ./.github/actions/no-run-going
         with:
           token: ${{ github.token }}
-          then: send the listing once the release is over
+          workflows: release-beta.yml release-production.yml play-store-screenshots.yml
+          then: send the listing once that run is over
 
       - name: Set up Node
         uses: actions/setup-node@v7

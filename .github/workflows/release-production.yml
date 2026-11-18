@@ -25,7 +25,8 @@ name: release-production
 #          effort: none of these jobs holds the release back. Off unless asked for: a release that changes no
 #          screen and adds no language leaves the listings' images as they are. The App Store's are captured on the
 #          iPhone and the iPad; `screenshots_iphone_duo` and `screenshots_mac` add the iPhone Duo and the Mac, whose
-#          captures don't work on the runners yet (docs/release-process.md#screenshots-with-a-release).
+#          captures don't work on the runners yet (docs/release-process.md#screenshots-with-a-release). Google
+#          Play's alone, with the App Store's left as they are, go through play-store-screenshots.yml instead.
 #   3. `finalize` runs when a store took a build or the web was deployed. When the run released (the production
 #      track, a submission for review, or the web) it tags X.Y.Z and publishes the GitHub release, then merges the
 #      versionCode, the versionName and the removal of the fragments the version told back into main. A run that
@@ -136,7 +137,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read
-      # To read the environment's deployment branch policy, and whether App Store screenshots are going up.
+      # To read the environment's deployment branch policy, and whether a store's screenshots are going up.
       actions: read
     outputs:
       version: ${{ steps.resolve.outputs.version }}
@@ -232,13 +233,26 @@ jobs:
       # A run that submits sends the App Store versions to review, and a version waiting for review takes no
       # screenshot: started while a set made on a Mac is still going up, one locale per job
       # (app-store-screenshots.yml), it would leave the locales still to go without theirs. That workflow refuses to
-      # start during a release; this is the other way round.
+      # start during a release; this is the other way round. Whatever the run submits or releases: that workflow's
+      # upload jobs stop while any release is going, since they can't tell one that submits nothing apart, so a
+      # release let through would fail every locale still to go.
       - name: Check that no App Store screenshots are going up
-        if: ${{ inputs.submit_for_review && (inputs.ios || inputs.macos) }}
         uses: ./.github/actions/no-run-going
         with:
           token: ${{ github.token }}
           workflows: app-store-screenshots.yml
+          then: dispatch the release once every locale of that run is up
+
+      # The bundle goes to Google Play through an edit, as each locale of the listing's screenshots does when they
+      # are sent alone (play-store-screenshots.yml), and the newer edit drops the one still open. That workflow
+      # refuses to start during a release; this is the other way round. Whatever the run's platforms: that
+      # workflow's upload jobs stop while any stable release is going, since they can't tell one without Android
+      # apart, so a release let through would fail every locale still to go.
+      - name: Check that no Google Play screenshots are going up
+        uses: ./.github/actions/no-run-going
+        with:
+          token: ${{ github.token }}
+          workflows: play-store-screenshots.yml
           then: dispatch the release once every locale of that run is up
 
       # The version and the notes both come from scripts/release/release-notes.mjs, plain Node.
@@ -539,7 +553,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     outputs:
-      locales: ${{ steps.locales.outputs.locales }}
+      locales: ${{ steps.draw.outputs.locales }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -552,76 +566,38 @@ jobs:
         with:
           token: ${{ github.token }}
 
-      - name: Setup Gradle and Java
-        uses: ./.github/actions/gradle
+      # Robolectric draws the real Compose screens from the sample trip (docs/store-listing-screenshots.md), and the
+      # images are handed over as the artifact `play-store-screenshots`: the steps play-store-screenshots.yml runs
+      # to send them without a release.
+      - name: Draw the screenshots
+        id: draw
+        uses: ./.github/actions/play-screenshots-draw
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-          cache-read-only: 'true'
 
-      # Robolectric draws the real Compose screens from the sample trip (docs/store-listing-screenshots.md).
-      - name: Make the screenshots
-        run: ./gradlew stagePlayStoreScreenshots
-
-      # The upload jobs' matrix, read off what was staged: the list of languages lives in the generators alone. Read
-      # into a variable first, so a script that fails stops the step: inside the echo it would read as nothing staged.
-      - name: List the staged locales
-        id: locales
-        run: |
-          locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/metadata/android)"
-          echo "locales=$locales" >> "$GITHUB_OUTPUT"
-
-      # Rooted at the locales' folders, so it lands back where it was staged.
-      - name: Upload the screenshots as a build artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: play-store-screenshots
-          path: fastlane/metadata/android/*/images/
-          retention-days: 7
-          if-no-files-found: error
-
-  # One job per locale, as in Bible Planner's releases: supply sends a locale's screenshots through a Play edit of its
-  # own and commits it at the end, so a locale Google Play refused costs that locale alone, and that locale's own
-  # re-run button sends only it again, without drawing anything a second time ("Re-run failed jobs" would also run the
-  # App Store jobs that failed with continue-on-error). One after the other, since Play keeps a single edit open per
-  # app: two uploads at once would drop each other's. Only after the bundle reached the track.
+  # One job per locale, one after the other, only after the bundle reached the track: the jobs of
+  # play-store-screenshots-upload.yml, which play-store-screenshots.yml calls too, to send them without a release.
+  # Shown as "Android, Google Play screenshots / send <locale>". A locale Google Play refused costs that locale
+  # alone, and that locale's own re-run button sends only it again, without drawing anything a second time
+  # ("Re-run failed jobs" would also run the App Store jobs that failed with continue-on-error). Run again after
+  # the release, a locale's job stops while a listing or Google Play's screenshots sent alone are going.
   android-screenshots:
-    name: Android, send the ${{ matrix.locale }} screenshots to Google Play
+    name: Android, Google Play screenshots
     needs: [plan, android-upload, android-screenshots-render]
     if: ${{ needs.android-screenshots-render.outputs.locales != '' }}
-    runs-on: ubuntu-latest
-    environment: Production
-    # Per locale: the chain has no cap of its own, and the next release waits behind it (the `release` group).
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        locale: ${{ fromJSON(needs.android-screenshots-render.outputs.locales) }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ needs.plan.outputs.sha }}
-          fetch-depth: 1
-
-      - name: Check who releases
-        uses: ./.github/actions/release-admin
-        with:
-          token: ${{ github.token }}
-
-      # The whole of it: the lane picks this job's locale out.
-      - name: Download the screenshots
-        uses: actions/download-artifact@v8
-        with:
-          name: play-store-screenshots
-          path: fastlane/metadata/android
-
-      # Only the images whose content changed are sent, so a locale with the same screens uploads nothing.
-      - name: Send the screenshots to Google Play
-        uses: ./.github/actions/play-store-lane
-        with:
-          lane: upload_screenshots platform:android locale:${{ matrix.locale }}
-          service-account-json: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+    permissions:
+      contents: read
+      # Each upload job looks for a listing or Google Play's screenshots going up alone.
+      actions: read
+    uses: ./.github/workflows/play-store-screenshots-upload.yml
+    with:
+      ref: ${{ needs.plan.outputs.sha }}
+      locales: ${{ needs.android-screenshots-render.outputs.locales }}
+      # Neither can start while this run is going, so the check only ever stops a locale's job run again after
+      # it. Not the releases: the next one waiting behind this run would stop every locale.
+      refuse_while_going: store-listing.yml play-store-screenshots.yml
+    secrets:
+      PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
 
   # ---------------------------------------------------------------------------------------------
   # The App Store's screenshots: captured on the simulators and this runner's screen, framed, uploaded

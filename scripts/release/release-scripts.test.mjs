@@ -1,6 +1,6 @@
 // The tests of the release workflows' shell scripts, suggest-version.sh, merge-back.sh,
 // staged-screenshot-locales.sh, app-store-capture-slots.sh, app-store-screenshots-plan.sh, release-production.sh and
-// dispatch-release.sh:
+// dispatch-release.sh, and of what holds the two workflows that send Google Play's screenshots together:
 // node --test scripts/release/release-scripts.test.mjs
 //
 // Each runs a copy of the scripts inside a repository made for the test, with a remote of its own, since they read
@@ -416,9 +416,11 @@ describe("the stable release's script", () => {
 
 describe("dispatching a release", () => {
   // A stand-in for gh that answers the run lists the script reads: GH_UPLOADING runs of app-store-screenshots.yml that
-  // aren't over ("unreadable" fails that read), no release waiting, and a new run once the workflow was dispatched.
-  // `sleep` is one too, so the wait for that run takes no time.
-  const dispatch = (workflow, env = {}) => {
+  // aren't over ("unreadable" fails that read) and GH_PLAY_UPLOADING of play-store-screenshots.yml ("missing" answers
+  // as GitHub does for a workflow main doesn't have), no release
+  // waiting, and a new run once the workflow was dispatched. `sleep` is one too, so the wait for that run takes no
+  // time. `inputs` are the workflow's, each passed as -f input=value after web=false.
+  const dispatch = (workflow, env = {}, inputs = []) => {
     const bin = join(root, "dispatch-bin");
     mkdirSync(bin, { recursive: true });
     const stub = [
@@ -426,6 +428,10 @@ describe("dispatching a release", () => {
       `echo "$*" >> "${join(root, "gh.log")}"`,
       'case "$*" in',
       '  *app-store-screenshots.yml*) [ "${GH_UPLOADING:-0}" != unreadable ] || exit 1; echo "${GH_UPLOADING:-0}" ;;',
+      '  *play-store-screenshots.yml*)',
+      '    [ "${GH_PLAY_UPLOADING:-0}" != unreadable ] || exit 1',
+      '    [ "${GH_PLAY_UPLOADING:-0}" != missing ] || { echo "HTTP 404: workflow play-store-screenshots.yml not found on the default branch" >&2; exit 1; }',
+      '    echo "${GH_PLAY_UPLOADING:-0}" ;;',
       '  *"--status "*) echo 0 ;;',
       `  "workflow run"*) touch "${join(root, "dispatched")}" ;;`,
       `  *"--json databaseId"*) if [ -f "${join(root, "dispatched")}" ]; then echo 2; else echo 1; fi ;;`,
@@ -437,7 +443,8 @@ describe("dispatching a release", () => {
     writeFileSync(join(bin, "sleep"), "#!/usr/bin/env bash\n");
     chmodSync(join(bin, "gh"), 0o755);
     chmodSync(join(bin, "sleep"), 0o755);
-    return spawnSync(join(HERE, "dispatch-release.sh"), [workflow, "-f", "web=false"], { encoding: "utf8", env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, ...env } });
+    const passed = ["web=false", ...inputs].flatMap((input) => ["-f", input]);
+    return spawnSync(join(HERE, "dispatch-release.sh"), [workflow, ...passed], { encoding: "utf8", env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, ...env } });
   };
   const dispatched = () => ghCalls().filter((call) => call.startsWith("workflow run"));
 
@@ -456,15 +463,91 @@ describe("dispatching a release", () => {
     assert.deepEqual(dispatched(), []);
   });
 
-  test("refuses it when GitHub can't say whether one is", () => {
-    const { status, stderr } = dispatch("release-production.yml", { GH_UPLOADING: "unreadable" });
+  // The release's bundle and a locale's screenshots each go through a Play edit, and the newer one drops the other.
+  test("refuses a stable release while Google Play screenshots are still going up", () => {
+    const { status, stderr } = dispatch("release-production.yml", { GH_PLAY_UPLOADING: "2" });
     assert.equal(status, 1);
-    assert.match(stderr, /Could not see whether App Store screenshots are going up/);
+    assert.match(stderr, /Google Play screenshots are still going up \(a run of play-store-screenshots\.yml isn't over\)/);
     assert.deepEqual(dispatched(), []);
   });
 
-  test("lets a beta go while they are, since it submits nothing", () => {
-    assert.equal(dispatch("release-beta.yml", { GH_UPLOADING: "1" }).status, 0);
+  // The upload jobs of both stop while any stable release is going: one let through would fail the locales to go.
+  test("refuses it whatever the release's platforms", () => {
+    assert.equal(dispatch("release-production.yml", { GH_PLAY_UPLOADING: "1" }, ["android=false"]).status, 1);
+    assert.equal(dispatch("release-production.yml", { GH_UPLOADING: "1" }, ["submit_for_review=false"]).status, 1);
+    assert.deepEqual(dispatched(), []);
+  });
+
+  test("refuses it when GitHub can't say whether one is", () => {
+    const appStore = dispatch("release-production.yml", { GH_UPLOADING: "unreadable" });
+    assert.equal(appStore.status, 1);
+    assert.match(appStore.stderr, /Could not see whether App Store screenshots are going up/);
+    const play = dispatch("release-production.yml", { GH_PLAY_UPLOADING: "unreadable" });
+    assert.equal(play.status, 1);
+    assert.match(play.stderr, /Could not see whether Google Play screenshots are going up/);
+    assert.deepEqual(dispatched(), []);
+  });
+
+  // As the loop over the releases does: a release can't wait for a run of a workflow that isn't there.
+  test("goes on when main doesn't have the workflow that sends Google Play's", () => {
+    assert.equal(dispatch("release-production.yml", { GH_PLAY_UPLOADING: "missing" }).status, 0);
+    assert.equal(dispatched().length, 1);
+  });
+
+  test("dispatches a beta while they are, as it always did", () => {
+    assert.equal(dispatch("release-beta.yml", { GH_UPLOADING: "1", GH_PLAY_UPLOADING: "1" }).status, 0);
     assert.deepEqual(dispatched(), ["workflow run release-beta.yml --repo Quartel-Enterprise/blitz-split-client --ref main -f web=false"]);
+  });
+});
+
+// Google Play's screenshots go up from a release and alone (play-store-screenshots.yml). Both runs draw them with one
+// action and send them with one called workflow, and each refuses to start while the other is going: a piece copied
+// into one of them, or a guard that names a file since renamed, would only show in a run that reaches the store.
+describe("the two ways Google Play's screenshots go up", () => {
+  const WORKFLOWS = join(HERE, "../../.github");
+  const read = (path) => readFileSync(join(WORKFLOWS, path), "utf8");
+  const release = read("workflows/release-production.yml");
+  const alone = read("workflows/play-store-screenshots.yml");
+  const upload = read("workflows/play-store-screenshots-upload.yml");
+  const draw = read("actions/play-screenshots-draw/action.yml");
+  /** The `workflows:` lists of a file's no-run-going steps, each as the file names it lists. */
+  const guarded = (source) => [...source.matchAll(/uses: \.\/\.github\/actions\/no-run-going\n\s+with:\n(?:\s+(?!workflows:)\w+: .*\n)*\s+workflows: (.+)\n/g)].map((match) => match[1].split(" "));
+
+  test("draw them with the same action and send them with the same jobs", () => {
+    for (const workflow of [release, alone]) {
+      assert.equal(workflow.match(/uses: \.\/\.github\/actions\/play-screenshots-draw\n/g)?.length, 1);
+      assert.equal(workflow.match(/uses: \.\/\.github\/workflows\/play-store-screenshots-upload\.yml\n/g)?.length, 1);
+      assert.doesNotMatch(workflow, /stagePlayStoreScreenshots|upload_screenshots platform:android/);
+    }
+  });
+
+  test("hand the images over under the name the upload jobs download", () => {
+    const [, uploaded] = draw.match(/uses: actions\/upload-artifact@v\d+\n\s+with:\n\s+name: (\S+)\n/);
+    const [, downloaded] = upload.match(/artifact:\n(?:\s+\w+: .*\n)*?\s+default: (\S+)\n/);
+    assert.equal(uploaded, downloaded);
+    assert.match(upload, /name: \$\{\{ inputs\.artifact \}\}\n\s+path: fastlane\/metadata\/android\n/);
+  });
+
+  test("refuse to start while the other is going, and each locale's job sent alone checks again", () => {
+    assert.ok(guarded(release).some((workflows) => workflows.includes("play-store-screenshots.yml")));
+    // Whatever its platforms: the upload jobs sent alone can't tell a release without Android apart, nor the App
+    // Store's one that submits nothing.
+    assert.doesNotMatch(release, /name: Check that no (Google Play|App Store) screenshots are going up\n\s+if:/);
+    const everything = ["release-production.yml", "store-listing.yml", "play-store-screenshots.yml"];
+    assert.deepEqual(guarded(alone), [everything]);
+    assert.deepEqual(guarded(upload), [["${{", "inputs.refuse_while_going", "}}"]]);
+    /** The workflows a caller has each locale's job check again. */
+    const checkedAgain = (caller) => caller.match(/\n {6}refuse_while_going: (.+)\n/)?.[1].split(" ");
+    assert.deepEqual(checkedAgain(alone), everything);
+    // A release's own jobs leave the releases out: the next one waiting behind it would stop every locale.
+    assert.deepEqual(checkedAgain(release), ["store-listing.yml", "play-store-screenshots.yml"]);
+  });
+
+  test("send them only from a run an administrator dispatched on main", () => {
+    assert.match(alone, /^on:\n {2}workflow_dispatch:\n/m);
+    assert.doesNotMatch(alone, /\n {2}(push|pull_request|schedule):/);
+    assert.match(alone, /"\$REF" != refs\/heads\/main/);
+    assert.match(upload, /environment: Production\n/);
+    for (const workflow of [alone, upload]) assert.match(workflow, /uses: \.\/\.github\/actions\/release-admin\n/);
   });
 });

@@ -1,0 +1,99 @@
+name: play-store-screenshots-upload
+
+# Sends the Google Play listing's screenshots to Google Play. Called by release-production.yml, once its bundle
+# reached the production track, and by play-store-screenshots.yml, which sends them alone: both hand it the artifact
+# their run drew with the play-screenshots-draw action, the staged folder fastlane/metadata/android
+# (docs/store-listing-screenshots.md).
+#
+# One job per locale, as in Bible Planner's releases: supply sends a locale's screenshots through a Play edit of its
+# own and commits it at the end, so a locale Google Play refused costs that locale alone, and that locale's own
+# re-run button sends only it again, without drawing anything a second time. One after the other, since Play keeps
+# a single edit open per app: two uploads at once would drop each other's. Only the images whose content changed
+# are sent, so a locale with the same screens uploads nothing.
+#
+# Google Play shows a listing's screenshots to everyone the moment they change, whatever release is out. Nothing
+# waits for an approval: the jobs name the `Production` environment, whose branch policy only lets main deploy, and
+# each starts by checking that an administrator started the run.
+on:
+  workflow_call:
+    inputs:
+      locales:
+        description: "The locales to send, one job each, as a JSON array of Google Play's codes: what the artifact holds"
+        type: string
+        required: true
+      artifact:
+        description: "The artifact of this run that holds the staged folder, one folder per locale"
+        type: string
+        default: play-store-screenshots
+      ref:
+        description: "The commit whose lanes run. Blank is the run's own"
+        type: string
+        default: ""
+      validate_only:
+        description: "Only ask Google Play whether it would take each locale's images: the listing doesn't change"
+        type: boolean
+        default: false
+      refuse_while_going:
+        description: "The workflows whose runs stop every job here while one isn't over, by file name with a space between them. The caller's job then grants actions: read. Blank checks nothing"
+        type: string
+        default: ""
+    secrets:
+      PLAY_STORE_SERVICE_ACCOUNT_JSON:
+        required: true
+
+# No permissions of its own: the jobs take the calling job's, contents: read with the actions: read that
+# refuse_while_going needs. Naming more here than a caller grants would refuse the caller's whole run.
+
+jobs:
+  send:
+    name: send ${{ matrix.locale }}
+    runs-on: ubuntu-latest
+    environment: Production
+    # Per locale: the chain has no cap of its own, and the next release waits behind a release's (the `release`
+    # group).
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        locale: ${{ fromJSON(inputs.locales) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      # The caller's first job refuses its run while something else writes on Google Play, and this is the same
+      # check for a locale's job run again later, which starts without that first job (its own run is left out of
+      # the check). Each writes through a Play edit of its own, and the newer edit drops the one still open; a
+      # later run's images are also the newer ones, which a job of an earlier run sent again would cover. Sent
+      # alone, the workflows are a release, a listing and another run of play-store-screenshots.yml; a release
+      # names the last two, since the next release waits behind it.
+      - name: Check that nothing else is writing on Google Play
+        if: ${{ inputs.refuse_while_going != '' }}
+        uses: ./.github/actions/no-run-going
+        with:
+          token: ${{ github.token }}
+          workflows: ${{ inputs.refuse_while_going }}
+          then: send the screenshots once that run is over
+
+      # The whole of it: the lane picks this job's locale out.
+      - name: Download the screenshots
+        uses: actions/download-artifact@v8
+        with:
+          name: ${{ inputs.artifact }}
+          path: fastlane/metadata/android
+
+      - name: Send the screenshots to Google Play
+        uses: ./.github/actions/play-store-lane
+        with:
+          lane: >-
+            upload_screenshots platform:android locale:${{ matrix.locale }}
+            validate_only:${{ inputs.validate_only }}
+          service-account-json: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}

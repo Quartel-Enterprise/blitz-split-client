@@ -36,7 +36,9 @@ three failed on the runners in the first release that ran them, and only in a ru
 releases, when a release's screenshot jobs failed, and for the devices a release leaves out.
 
 **For the App Store, the runners' captures can't be trusted today**, so its screenshots are made on a Mac, looked
-at, and sent through GitHub: [Sending a set made on a Mac](#sending-a-set-made-on-a-mac).
+at, and sent through GitHub: [Sending a set made on a Mac](#sending-a-set-made-on-a-mac). **Google Play's go alone**
+through the `play-store-screenshots` workflow, which draws and sends them without a release and leaves the App
+Store's as they are: [Sending Google Play's alone](#sending-google-plays-alone).
 
 The lane runs, each step under `scripts/heavy-check.sh`:
 
@@ -86,7 +88,9 @@ The rules the upload follows:
 - **Each locale needs its listing in the store first.** Play and App Store Connect attach screenshots to a language
   the listing already has: add its title and description there before uploading its images.
 - **Play** sends only the images whose SHA-256 changed (`sync_image_upload`). It tries a Play 5xx three times, 30
-  seconds apart. `VALIDATE_ONLY=true` checks the upload against the API without publishing.
+  seconds apart. `VALIDATE_ONLY=true`, or the lane's `validate_only:true`, checks the upload against the API
+  without publishing. The App Store has no such check, so that run leaves its screenshots out, and stops when
+  Google Play isn't among the platforms asked for.
 - **The Mac app is a version of its own** on App Store Connect: its screenshots (`fastlane/screenshots-mac/`) go up
   through a second `deliver` with `platform: osx`, and only when they were staged.
 - **App Store** screenshots only change on an editable version. "Screenshot Set Already Exists" is tried three
@@ -190,6 +194,57 @@ that App Store Connect takes the uploads as the lanes send them, that it files t
 shelf ([above](#what-the-images-show)), and that it takes the iPad's sizes lying down. The first run says, per
 locale; the check, the transport and the matrix were tried on that set without reaching the store.
 
+## Sending Google Play's alone
+
+Robolectric draws Play's images, so nothing is captured and any machine makes the same ones: a runner's are as good
+as a Mac's, and they need no set sent from one. The [`play-store-screenshots`](../.github/workflows/play-store-screenshots.yml)
+workflow draws them and sends them, with no release and without touching the App Store's:
+
+```bash
+gh workflow run play-store-screenshots.yml -f validate_only=true   # draw them and ask Google Play: nothing changes
+gh workflow run play-store-screenshots.yml                         # draw them and send them
+```
+
+**Google Play shows a listing's screenshots to everyone the moment they change**, whatever release is out, so the
+second command is the whole publication. Dispatch it, an administrator, on `main`, once no release and no listing
+is going:
+
+1. **"Draw the screenshots"** checks who dispatched the run and from where, then runs
+   `./gradlew stagePlayStoreScreenshots` on the runner, as a release does (the
+   [`play-screenshots-draw`](../.github/actions/play-screenshots-draw/action.yml) action). The images of every
+   locale are the run's artifact `play-store-screenshots`, kept seven days, and the run's summary lists the locales.
+2. **"Google Play / send \<locale\>"** uploads them, **one locale per job, one after the other**: the jobs a release
+   runs for the same images ([`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml)).
+   Only the images whose content changed go up, the phone's too when they did. About two minutes a locale in the
+   release that timed them (3.0.0), so a little under an hour for Play's 27 locales.
+
+**To look before anything is public**, dispatch with `validate_only=true` first: the run draws the same images,
+hands them over as the artifact and only asks Google Play whether it would take each locale's, which changes
+nothing. Download the artifact (`gh run download <run> -n play-store-screenshots`) and look, or draw them on any
+machine with `./gradlew collectPlayStoreScreenshots` and look at `store_listings/android/`. The run that sends
+draws them again, from `main` as it is when that run starts: a screen changed by a pull request merged in between
+comes out changed. A run with `validate_only` holds releases and listings off as any run of the workflow does, so
+wait for it to end before dispatching either.
+
+**A locale that failed** fails the run, and the others are up. Run that locale's job again with its own re-run
+button: it finds the images in the run's artifacts and draws nothing again.
+
+**Not while something else writes on Google Play.** A release's bundle, a listing's text and each locale's
+screenshots go through a Play edit of their own, and the newer edit drops the one still open. So the run refuses
+to start while a stable release, a run of `store-listing` or another run of itself is going, each of its upload
+jobs checks again (a job run again later starts without the first one), `store-listing` refuses to start while it
+is going, and a stable release refuses too, whatever its platforms: its `plan` fails, naming the run, and
+`release-production.sh` says so before dispatching ([`no-run-going`](../.github/actions/no-run-going/action.yml)).
+The upload jobs can't tell a release without Android apart, so one let through would fail every locale still to
+go. A beta reaches neither Google Play's listing nor its tracks, so it goes on. As with the listing text, an edit sent
+through the API takes every change waiting in the Play Console's Publishing overview to review with it
+([store-listing.md](store-listing.md)).
+
+**What no run has shown yet** (November 2026): the workflow itself, which nothing has dispatched. Its draw step and
+its upload jobs are the ones a release with `screenshots` on ran for 3.0.0, moved to an action and a called
+workflow both now share; the first run says whether Google Play takes the tablets' new size
+([below](#the-play-tablets-are-drawn-lying-down)).
+
 ## What the images show
 
 | # | Screen | Play | App Store | Shows |
@@ -223,7 +278,7 @@ photos than the screenshots use, to pick from.
 | --- | --- | --- |
 | Phone | `phoneScreenshots`, 1242x2484 | **Dynamic Island (medium), 1206x2622, the one App Store Connect requires**, from an iPhone 17 Pro. Dynamic Island (large), 1290x2796, from an iPhone 16 Plus. Face ID (large) is only a fallback for the large size, so it isn't made |
 | Foldable | | iPhone Duo, from the Duo simulator (on the runtime that has it): closed, as it boots, its outer display at 1398x2034, and open, its inner display lying down at 2853x2007 (XCTest hands the capture as 2852x2006, which the frame draws on the display's own canvas). Optional until April 2027, when apps built with the iOS 27.1 SDK must have it |
-| Tablet | `sevenInchScreenshots`, `tenInchScreenshots` | 13", lying down at 2732x2048, from an iPad Air 13", and 11" framing the same capture on that slot's own canvas, 2388x1668 ([why lying down](#the-ipad-is-captured-lying-down)) |
+| Tablet | `sevenInchScreenshots` and `tenInchScreenshots`, both lying down at 2560x1440: a 960x600 dp tablet on the 7" shelf, a 1280x800 dp one on the 10" ([why lying down](#the-play-tablets-are-drawn-lying-down)) | 13", lying down at 2732x2048, from an iPad Air 13", and 11" framing the same capture on that slot's own canvas, 2388x1668 ([why lying down](#the-ipad-is-captured-lying-down)) |
 | Mac | | The Mac app's window at 1440x900 points, framed on 2880x1800 (16:10) |
 
 **The Duo open needs Device Hub.** The simulator boots closed, and its hinge moves only from Device Hub: its Open
@@ -289,9 +344,39 @@ listed as failed and the release goes on
 **The iPad runs in full-screen apps.** iPadOS 26 opens apps in windows by default, which would leave the app short
 of the screen. On an iPad slot, the UI test first switches Settings › Multitasking & Gestures to full-screen apps.
 
-store-screenshots has no frame for the Duo or the Mac, and its iPad frame only stands upright. The Duo and the Mac
-get a plain rounded bezel and a window shadow, and the iPad lying down a bezel drawn from the library's own
-measures of an iPad Air 13" (`CustomBezels.kt`), with the same banner as the other shots.
+store-screenshots has no frame for the Duo or the Mac, and its iPad and tablet frames only stand upright. The Duo
+and the Mac get a plain rounded bezel and a window shadow, the iPad lying down a bezel drawn from the library's own
+measures of an iPad Air 13", and the Play tablets the library's own tablet mockup, which does turn
+(`CustomBezels.kt`), with the same banner as the other shots.
+
+### The Play tablets are drawn lying down
+
+A tablet lying down is where the app has the most to show: every screen in two columns, beside the navigation rail
+where the screen has one ([responsive-layouts.md](architecture/responsive-layouts.md)). Upright, a tablet draws a
+screen as one centered column. So both shelves are drawn lying down, as the iPad's is (Pierre's call, November
+2026). The phone's shelf stays upright.
+
+- **The frame.** `PlayTabletLandscapeSurface` draws the library's `DeviceMockup` with
+  `MockupOrientation.Landscape`: the same neutral Android tablet its upright frame drew, turned, with the status bar
+  along the top. The mockup measures the screen at the tablet's own size lying down and tells it so (the window's
+  size and the configuration's orientation), which is what `rememberFoldLayout()` reads: 960x600 dp on the 7"
+  shelf and 1280x800 dp on the 10" are both a tablet lying down (`FormFactor.TabletLandscape`, 600 dp or more on
+  the short side and 960 or more on the long one). Nothing in a `…ScreenshotContent` changed: each screen picked its
+  layout by itself.
+- **The sizes** (Google's [Add preview assets to showcase your app](https://support.google.com/googleplay/android-developer/answer/9866151),
+  read on 18 November 2026). Every screenshot: JPEG or 24-bit PNG without alpha, each side from 320 to 3840 px, the
+  long side at most twice the short one. For tablets and Chromebooks it asks for 1080 to 7680 px and **16:9 lying
+  down** (9:16 upright), and its recommendation formats take only screenshots of 16:9 at 1920x1080 or more. So both
+  canvases are **2560x1440**: 16:9, within every limit, and the library flattens the PNG to 24 bits. The page gives
+  the 7" and the 10" shelves no sizes of their own, and the upright images before these were 10:16 (1200x1920 and
+  1600x2560), which Google Play took.
+- **One canvas, two tablets.** At the library's 2 px per dp the canvas is 1280x720 dp. The banner stays on top, at
+  40 sp and 20 sp so its description fits in one line in every language, and the tablet takes the height left:
+  about seven tenths of the image's, and a little under two thirds of its width. The 7" tablet is drawn larger than life to fill
+  it and the 10" one smaller, so the 7" shelf shows each screen bigger and the 10" one shows more of it.
+- **Changing the size** is the canvas of `PlayTabletStoreScreenshots` in `StoreScreenshots.kt`, in pixels a whole
+  number of dp at that density. A canvas taller for its width (16:10) gives the tablet more of the image, and leaves the 16:9 Google
+  asks for.
 
 ### The iPad is captured lying down
 
@@ -343,6 +428,8 @@ build-logic/.../StoreScreenshots.kt            # the collect and stage tasks, th
 fastlane/Fastfile                              # the screenshots and upload lanes
 scripts/store-screenshots/local-set.mjs        # the check of a set made on a Mac, its devices' sizes, and its way to GitHub
 .github/workflows/app-store-screenshots*.yml   # the upload of such a set, and the jobs a release shares with it
+.github/workflows/play-store-screenshots*.yml  # Google Play's alone, and the jobs a release shares with it
+.github/actions/play-screenshots-draw/         # the drawing of Google Play's on a runner, a release's and its own
 ```
 
 - **Banner copy:** `BannerCopies.kt`, per screen and language. The frame wraps the description to two lines, so keep it
@@ -583,8 +670,16 @@ headless Chrome photograph it. Nothing to install: it drives the Chrome already 
   `./gradlew build` or `test` skips them. Only a `*StoreScreenshots` task, or
   `:android:store_screenshots:testDebugUnitTest` asked for by name, draws the images.
 - **Robolectric has no SDK 37**: the library pins SDK 35 for the generators.
-- **The Play tablets** render the screens' own tablet layouts at the frame's size, and the iPad capture is the
-  iPad's real layout.
+- **The Play tablets** render the screens' own layouts for a tablet lying down, at the tablet's size and not the
+  canvas's, and the iPad capture is the iPad's real layout. Home on the 7" tablet (960 dp wide) is as tight as the
+  app is there: its side column cuts a bill's description short after a few letters and its second pinned group
+  runs off the edge, where it scrolls.
+- **Robolectric lays every locale out left to right**, Arabic and Hebrew too: the library hands it the language,
+  never a direction. A Play screen is therefore drawn in its set's own direction (`StoreLocale.layoutDirection`,
+  provided in `StoreScreenshots.shot`), or the Arabic listing shows Arabic words in a left-to-right layout, the back
+  arrow on the left, as every Play image was drawn until November 2026. Only the screen is turned: the device around it and the frame's status bar, its clock on the left,
+  stay as the library draws them, since a device isn't mirrored and the library's phone frame can't be told. An
+  Apple capture was taken in its language's direction on the simulator.
 - **Faces and group photos on Play** come through Coil's preview handler (`SamplePhotosComponent`), which answers at
   once. A real load would still be running when Robolectric captures.
 - **`ItemsEditorContent` is public** so the generator can draw "Bill items" without the ViewModel.

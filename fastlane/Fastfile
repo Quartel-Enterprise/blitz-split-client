@@ -167,7 +167,8 @@ lane :screenshots do |options|
 end
 
 desc "Upload what `fastlane screenshots skip_upload:true` staged, without generating again. Same options, and"
-desc "platform:mac for the Mac's alone."
+desc "platform:mac for the Mac's alone. validate_only:true, as VALIDATE_ONLY=true, only asks Google Play whether it"
+desc "would take the images: the App Store has no such check, so its screenshots are left out of that run."
 lane :upload_screenshots do |options|
   repo_root = File.expand_path("..", __dir__)
   platforms = options[:platform] ? [options[:platform].to_s] : %w[android ios]
@@ -178,9 +179,16 @@ end
 # when they were staged and skip_mac wasn't passed: a run with skip_mac leaves its listing as it is, even when an
 # earlier run's Mac captures were framed again. platform:mac sends the Mac's alone, as the release does from a job of
 # its own (release-production.yml). The stores name a language differently (es-419 on Play, es-MX on the App Store),
-# so a locale: goes only to the stores that have it staged.
+# so a locale: goes only to the stores that have it staged. VALIDATE_ONLY is Google Play's check alone, as for the
+# listing's text: the App Store has none, and its screenshots would go up for real, so they are left out of that run.
 def upload_store_screenshots(repo_root, platforms, options)
   locale = options[:locale]
+  validates_only = validate_only?(options[:validate_only])
+  if validates_only && platforms != ["android"]
+    UI.user_error!("VALIDATE_ONLY checks Google Play alone: the App Store has no such check") unless platforms.include?("android")
+    UI.important("VALIDATE_ONLY: only Google Play is checked, the App Store's screenshots are left as they are")
+    platforms = ["android"]
+  end
   play_path = File.join(repo_root, "fastlane/metadata/android")
   app_store_path = File.join(repo_root, "fastlane/screenshots")
   mac_path = File.join(repo_root, "fastlane/screenshots-mac")
@@ -188,7 +196,7 @@ def upload_store_screenshots(repo_root, platforms, options)
     platforms.include?(platform) && (locale.nil? || File.directory?(File.join(path, locale)))
   end
   UI.user_error!("No store has screenshots staged for #{locale}") if stores.empty?
-  upload_play_screenshots(play_path, locale) if stores.key?("android")
+  upload_play_screenshots(play_path, locale, validates_only) if stores.key?("android")
   upload_app_store_screenshots(mac_path, locale, "osx") if stores.key?("mac")
   return unless stores.key?("ios")
 
@@ -291,7 +299,7 @@ end
 # Listing images only: no bundle, no track, no text. sync_image_upload sends only the images whose SHA-256 differs from
 # what Play holds, so running it again uploads nothing that already landed. supply sends everything in one edit and
 # commits it at the end, so a 5xx throws the edit away and the next attempt starts over.
-def upload_play_screenshots(metadata_path, locale)
+def upload_play_screenshots(metadata_path, locale, validates_only)
   with_locale_only(metadata_path, locale) do |path|
     ensure_screenshots_staged(File.join(path, "*", "images", "*", "*.png"))
     retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
@@ -306,7 +314,7 @@ def upload_play_screenshots(metadata_path, locale)
         skip_upload_images: true,
         skip_upload_screenshots: false,
         sync_image_upload: true,
-        validate_only: validate_only?,
+        validate_only: validates_only,
       )
     end
   end

@@ -1,7 +1,9 @@
 package com.quare.blitzsplit.android.storescreenshots
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
@@ -36,7 +38,7 @@ internal abstract class StoreScreenshots(
         style = ScreenshotStyle(
             edgeToEdge = appleSlot != null,
             showStatusBar = appleSlot == null,
-            statusBarClock = "9:41",
+            statusBarClock = STATUS_BAR_CLOCK,
             mockupFrame = mockupFrame,
             title = bannerSlotOf(
                 fontSize = bannerFontSizes?.title,
@@ -112,8 +114,13 @@ internal abstract class StoreScreenshots(
             ) {
                 val slot = appleSlot
                 if (slot == null) {
-                    BlitzSplitTheme(isDark = screen.isDark) {
-                        SamplePhotosComponent { content(SampleTrips.tripOf(locale.language)) }
+                    // Robolectric lays every locale out left to right, Arabic and Hebrew too. The screen alone is
+                    // turned: the device around it, its buttons and its status bar stay as the library draws them,
+                    // and an Apple capture was already taken in its language's direction.
+                    CompositionLocalProvider(LocalLayoutDirection provides locale.layoutDirection) {
+                        BlitzSplitTheme(isDark = screen.isDark) {
+                            SamplePhotosComponent { content(SampleTrips.tripOf(locale.language)) }
+                        }
                     }
                 } else {
                     AppleScreenshotImage(
@@ -172,9 +179,26 @@ private fun bannerSlotOf(
 
 internal class PhoneStoreScreenshots : StoreScreenshots(formFactor = FormFactor.Phone)
 
-internal class Tablet7StoreScreenshots : StoreScreenshots(formFactor = FormFactor.Tablet7)
+// Play's tablets lie down, so each screen draws the app's own layout for a tablet lying down: two columns, beside the
+// navigation rail where the screen has one. The library's tablet frame only stands upright, but its mockup turns
+// (PlayTabletLandscapeSurface). The canvas is 2560x1440: the 16:9 Google Play asks of a landscape screenshot, over the
+// 1080 px it wants of a large screen's short side. The two shelves differ in the tablet drawn: 960x600 dp on the 7"
+// one, 1280x800 dp on the 10" one, which shows more of each screen.
+internal abstract class PlayTabletStoreScreenshots(
+    formFactor: FormFactor,
+) : StoreScreenshots(
+        formFactor = formFactor,
+        canvas = ScreenshotCanvas.px(2560, 1440),
+        mockupFrame = { content -> PlayTabletLandscapeSurface(formFactor, content) },
+        bannerFontSizes = BannerFontSizes(
+            title = 40.sp,
+            description = 20.sp,
+        ),
+    )
 
-internal class Tablet10StoreScreenshots : StoreScreenshots(formFactor = FormFactor.Tablet10)
+internal class Tablet7StoreScreenshots : PlayTabletStoreScreenshots(FormFactor.Tablet7)
+
+internal class Tablet10StoreScreenshots : PlayTabletStoreScreenshots(FormFactor.Tablet10)
 
 // Dynamic Island (medium display), the iPhone size App Store Connect requires: the 6.7" bezel on a 1206x2622 canvas,
 // around an iPhone 17 Pro's 402x874 capture, whose proportions are the 6.7" screen's to within 0.3%.
