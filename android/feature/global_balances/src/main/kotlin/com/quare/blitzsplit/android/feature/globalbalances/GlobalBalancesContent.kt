@@ -72,8 +72,9 @@ private fun eventOf(tab: HomeTab): GlobalBalancesUiEvent? = when (tab) {
  * Why: titled only on a wide screen (HomeTabTitle), with "Rachar conta" floating on a phone and on top of the rail
  * otherwise, as on every home tab; the other actions are on each person. Upright, one column with "Por grupo" opening
  * in the row; a phone lying down puts the filter on the left and the people on the right, as the app's other screens
- * split. With nothing open at all, "Tudo acertado" takes that width alone. A tablet lying down and an unfolded book list the people beside the one picked, whose groups and actions fill
- * the pane on the right.
+ * split. With nothing open at all, "Tudo acertado" takes that width alone, but never across a book's hinge. A tablet
+ * lying down and an unfolded book list the people beside the one picked, whose groups and actions fill the pane on the
+ * right.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -250,7 +251,6 @@ private fun SettledBalancesPane(
     title: String,
     onEvent: (GlobalBalancesUiEvent) -> Unit,
     modifier: Modifier = Modifier,
-    barModifier: Modifier = Modifier,
 ) {
     val emptyState = state.emptyState ?: return
     val total = state.emptyStateTotal ?: return
@@ -260,15 +260,23 @@ private fun SettledBalancesPane(
             title = title,
             onEvent = onEvent,
             scrollBehavior = null,
-            modifier = barModifier,
             windowInsets = WindowInsets(0),
         )
-        Box(
+        // Why: scrolls, since a phone lying down at a large font is shorter than the empty state.
+        Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.TopCenter,
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = listBottomPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            if (state.showsOfflineNotice) {
+                OfflineChip(
+                    text = stringResource(R.string.global_balances_offline),
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+            }
             EmptyBalancesSection(
                 emptyState = emptyState,
                 total = total,
@@ -292,13 +300,13 @@ private fun BalancesListDetailLayout(
     modifier: Modifier = Modifier,
 ) {
     val selected = state.selectedPerson
-    if (!state.showsSummary) {
+    // Why: a book keeps its two panes, so the empty state stays in the right half instead of on the hinge.
+    if (!state.showsSummary && !listDetail.isBook) {
         SettledBalancesPane(
             state = state,
             title = title,
             onEvent = onEvent,
             modifier = modifier,
-            barModifier = Modifier.padding(end = if (listDetail.isBook) 16.dp else 0.dp),
         )
         return
     }
@@ -491,9 +499,7 @@ private fun FilterHeaderColumn(
                 onFilterClick = { onEvent(GlobalBalancesUiEvent.OnFilterChanged(it)) },
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
-            val hint = if (state.emptyState ==
-                null
-            ) {
+            val hint = if (state.emptyState == null) {
                 R.string.global_balances_hint
             } else {
                 R.string.global_balances_hint_empty

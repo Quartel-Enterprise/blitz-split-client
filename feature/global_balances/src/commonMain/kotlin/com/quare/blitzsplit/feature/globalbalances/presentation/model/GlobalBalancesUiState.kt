@@ -26,7 +26,8 @@ data class GlobalBalancesUiState(
     val people: Loadable<List<PersonRow>>,
     /*
      * Why: "Tudo", "Você deve" and "Te devem", one per currency of the groups, the currency with the most groups
-     * first; once loaded never empty, so a device with nothing open still says R$ 0,00. Loading as people is.
+     * first; once loaded never empty (the empty states need a currency), though the totals are not drawn at all while
+     * nobody has an open balance (see showsSummary). Loading as people is.
      */
     val totals: Loadable<List<PeopleTotal>>,
     // Why: "Sem internet. Seus dados aparecem quando reconectar." under the shimmer while the copy waits offline.

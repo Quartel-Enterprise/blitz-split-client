@@ -104,6 +104,8 @@ struct GlobalBalancesView: View {
             if let model, model.state.isLoaded {
                 // With nobody owing anything the summary, the side column and the inspector have nothing to say
                 let hasSummary = model.state.showsSummary
+                // An open iPhone Duo keeps the empty state after the fold, in the inspector
+                let showsPersonColumn = showsDetail && (hasSummary || fold != nil)
                 // One list whatever the fold, so opening the iPhone Duo keeps its scroll
                 HStack(alignment: .top, spacing: 0) {
                     #if os(iOS)
@@ -115,12 +117,12 @@ struct GlobalBalancesView: View {
                     #endif
                     GlobalBalancesList(
                         model: model,
-                        showsDetail: showsDetail && hasSummary,
+                        showsDetail: showsPersonColumn,
                         showsSummary: !(usesSideColumn && hasSummary),
                         isSplitBillExpanded: splitBillExpansion,
                     )
-                    .frame(width: showsDetail && hasSummary ? fold?.minX : nil)
-                    if showsDetail && hasSummary {
+                    .frame(width: showsPersonColumn ? fold?.minX : nil)
+                    if showsPersonColumn {
                         // An iPhone Duo open: the people before the fold, the person picked after it
                         ListDetailSeparator(fold: fold)
                         PersonInspector(model: model)
