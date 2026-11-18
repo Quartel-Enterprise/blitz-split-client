@@ -14,8 +14,8 @@ inputs:
 outputs:
   locales:
     description: >-
-      The locales that were staged, as a JSON array of Google Play's codes: the matrix of
-      play-store-screenshots-upload.yml. Nothing when nothing was staged
+      The locales that were staged, as a JSON array of Google Play's codes: what play-store-screenshots-upload.yml
+      groups into its jobs. Nothing when nothing was staged
     value: ${{ steps.locales.outputs.locales }}
 
 runs:

@@ -4,8 +4,9 @@ name: release-notes
 # platform the site doesn't know, Markdown in a note), or when a store listing of store-listing/ has something a
 # store would refuse or cut (docs/store-listing.md), and runs the tests of the scripts the releases run: the ones
 # that read the fragments and the listings, the ones that resolve a release's version and merge it back, the one
-# that checks and sends a set of App Store screenshots made on a Mac, and the one that holds together the workflows
-# Google Play's screenshots go up through. See
+# that checks and sends a set of App Store screenshots made on a Mac, and the ones that hold together the workflows
+# Google Play's screenshots go up through and decide how its locales are grouped and what its daily save quota
+# stops (the lane's own tests need fastlane and are skipped on this runner). See
 # docs/release-notes.md. Locally: node scripts/release/release-notes.mjs check and
 # node scripts/release/store-listing.mjs check.
 on:
@@ -36,6 +37,9 @@ on:
       - '.github/workflows/play-store-screenshots.yml'
       - '.github/workflows/play-store-screenshots-upload.yml'
       - '.github/actions/play-screenshots-draw/**'
+      # The action that runs their lane and the lane itself, which a test holds to the upload jobs
+      - '.github/actions/play-store-lane/**'
+      - 'fastlane/Fastfile'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreLocale.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreenshots.kt'
@@ -62,6 +66,9 @@ on:
       - '.github/workflows/play-store-screenshots.yml'
       - '.github/workflows/play-store-screenshots-upload.yml'
       - '.github/actions/play-screenshots-draw/**'
+      # The action that runs their lane and the lane itself, which a test holds to the upload jobs
+      - '.github/actions/play-store-lane/**'
+      - 'fastlane/Fastfile'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreLocale.kt'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreenshots.kt'
@@ -114,5 +121,6 @@ jobs:
 
       - name: Test the scripts
         run: >-
-          node --test scripts/release/release-notes.test.mjs scripts/release/release-scripts.test.mjs
+          node --test scripts/release/play-screenshot-groups.test.mjs scripts/release/play-screenshots-lane.test.mjs
+          scripts/release/release-notes.test.mjs scripts/release/release-scripts.test.mjs
           scripts/release/store-listing.test.mjs scripts/store-screenshots/local-set.test.mjs

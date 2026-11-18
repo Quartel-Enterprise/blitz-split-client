@@ -37,6 +37,10 @@ gh workflow run store-listing.yml -f android=false          # the App Store alon
 gh workflow run store-listing.yml -f validate_only=true     # ask Google Play, change nothing
 ```
 
+A run that reaches Google Play is one save of
+[its daily save quota](store-listing-screenshots.md#google-plays-daily-save-quota), which a release's bundle needs
+too: on a day with a release, send the listing another day or after the release, not several times before it.
+
 Not while a release is running: both write through the same Play account and on the same App Store version, so the
 workflow's first job refuses the run then. Nor while Google Play's screenshots are going up alone
 (`play-store-screenshots`), which writes through that account too. Its `version_code` input is the lane's option for a staged rollout, and

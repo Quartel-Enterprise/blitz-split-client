@@ -22,12 +22,13 @@ fastlane screenshots skip_upload:true                # generate only, nothing re
 fastlane screenshots platform:android skip_upload:true
 fastlane screenshots platform:ios skip_capture:true  # frame the iOS captures already in build/ again
 fastlane upload_screenshots locale:es-419            # upload what is staged, one locale
+fastlane upload_screenshots platform:android locales:es-419,es-US   # some of Play's locales, through one Play edit
 fastlane upload_screenshots platform:mac             # upload the Mac's alone
 ```
 
 A stable release dispatched with `screenshots` on runs the same steps in CI, in jobs of `release-production`: the
-capture on one runner per slot, the frames, and the upload to each store, one job per locale
-([release-process.md](release-process.md#screenshots-with-a-release)). The input is off unless asked for, so a
+capture on one runner per slot, the frames, and the upload to each store, one job per locale on the App Store and a
+few locales per job on Google Play ([release-process.md](release-process.md#screenshots-with-a-release)). The input is off unless asked for, so a
 release after a new language or a changed screen has to pass `screenshots=true`. That captures the iPhone's and the
 iPad's slots (`iphone63`, `iphone67`, `ipad13`). The iPhone Duo's two (`iphoneduo`, `iphoneduoopen`) and the Mac's
 are captured only with `screenshots_iphone_duo=true` and `screenshots_mac=true`, off unless asked for, since all
@@ -87,10 +88,13 @@ The rules the upload follows:
 
 - **Each locale needs its listing in the store first.** Play and App Store Connect attach screenshots to a language
   the listing already has: add its title and description there before uploading its images.
-- **Play** sends only the images whose SHA-256 changed (`sync_image_upload`). It tries a Play 5xx three times, 30
-  seconds apart. `VALIDATE_ONLY=true`, or the lane's `validate_only:true`, checks the upload against the API
-  without publishing. The App Store has no such check, so that run leaves its screenshots out, and stops when
-  Google Play isn't among the platforms asked for.
+- **Play** sends only the images whose SHA-256 changed (`sync_image_upload`), and leaves a locale out altogether
+  when Google Play already holds all of its staged images: with no locale left it opens no edit and saves nothing,
+  since every save counts against [Google Play's daily save quota](#google-plays-daily-save-quota). The locales
+  named with `locales:` go through one edit, as everything staged does when none is named. It tries a Play 5xx
+  three times, 30 seconds apart. `VALIDATE_ONLY=true`, or the lane's `validate_only:true`, checks the upload
+  against the API without publishing. The App Store has no such check, so that run leaves its screenshots out, and
+  stops when Google Play isn't among the platforms asked for.
 - **The Mac app is a version of its own** on App Store Connect: its screenshots (`fastlane/screenshots-mac/`) go up
   through a second `deliver` with `platform: osx`, and only when they were staged.
 - **App Store** screenshots only change on an editable version. "Screenshot Set Already Exists" is tried three
@@ -213,37 +217,111 @@ is going:
    `./gradlew stagePlayStoreScreenshots` on the runner, as a release does (the
    [`play-screenshots-draw`](../.github/actions/play-screenshots-draw/action.yml) action). The images of every
    locale are the run's artifact `play-store-screenshots`, kept seven days, and the run's summary lists the locales.
-2. **"Google Play / send \<locale\>"** uploads them, **one locale per job, one after the other**: the jobs a release
-   runs for the same images ([`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml)).
-   Only the images whose content changed go up, the phone's too when they did. About two minutes a locale in the
-   release that timed them (3.0.0), so a little under an hour for Play's 27 locales.
+2. **"Google Play / send 1 of 5: \<locales\>"** uploads them, **a few locales per job, one job after the other**:
+   the jobs a release runs for the same images
+   ([`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml)), after "group
+   the locales" split them, six to a job unless the run's `group_size` says otherwise. A job's locales go through
+   one Play edit, so a whole set is five saves of
+   [Google Play's daily save quota](#google-plays-daily-save-quota). Only the images whose content changed go up,
+   the phone's too when they did, and a locale Google Play already holds as drawn is left out of its job's edit:
+   each job's summary says which went and which were already there. One job per locale took about two minutes a
+   locale in the release that timed them (3.0.0); the groups are not timed yet.
 
 **To look before anything is public**, dispatch with `validate_only=true` first: the run draws the same images,
-hands them over as the artifact and only asks Google Play whether it would take each locale's, which changes
-nothing. Download the artifact (`gh run download <run> -n play-store-screenshots`) and look, or draw them on any
+hands them over as the artifact and only asks Google Play whether it would take the images of the locales that
+differ from what it holds, which changes nothing (a locale it already holds as drawn is left out, as when sending,
+and a group with none left asks nothing). Download the artifact (`gh run download <run> -n play-store-screenshots`) and look, or draw them on any
 machine with `./gradlew collectPlayStoreScreenshots` and look at `store_listings/android/`. The run that sends
 draws them again, from `main` as it is when that run starts: a screen changed by a pull request merged in between
 comes out changed. A run with `validate_only` holds releases and listings off as any run of the workflow does, so
 wait for it to end before dispatching either.
 
-**A locale that failed** fails the run, and the others are up. Run that locale's job again with its own re-run
-button: it finds the images in the run's artifacts and draws nothing again.
+**A group that failed** fails the run, and the others are up. Run that group's job again with its own re-run
+button: it finds the images in the run's artifacts and draws nothing again, and sends only the locales of the group
+Google Play doesn't hold yet. **A group Google Play refused for its daily save quota** did not fail: the run ends
+well with a warning, and [what didn't go is sent later](#google-plays-daily-save-quota).
 
-**Not while something else writes on Google Play.** A release's bundle, a listing's text and each locale's
+**Not while something else writes on Google Play.** A release's bundle, a listing's text and each group's
 screenshots go through a Play edit of their own, and the newer edit drops the one still open. So the run refuses
 to start while a stable release, a run of `store-listing` or another run of itself is going, each of its upload
 jobs checks again (a job run again later starts without the first one), `store-listing` refuses to start while it
 is going, and a stable release refuses too, whatever its platforms: its `plan` fails, naming the run, and
 `release-production.sh` says so before dispatching ([`no-run-going`](../.github/actions/no-run-going/action.yml)).
-The upload jobs can't tell a release without Android apart, so one let through would fail every locale still to
+The upload jobs can't tell a release without Android apart, so one let through would fail every group still to
 go. A beta reaches neither Google Play's listing nor its tracks, so it goes on. As with the listing text, an edit sent
 through the API takes every change waiting in the Play Console's Publishing overview to review with it
 ([store-listing.md](store-listing.md)).
 
-**What no run has shown yet** (November 2026): the workflow itself, which nothing has dispatched. Its draw step and
-its upload jobs are the ones a release with `screenshots` on ran for 3.0.0, moved to an action and a called
-workflow both now share; the first run says whether Google Play takes the tablets' new size
-([below](#the-play-tablets-are-drawn-lying-down)).
+**What the runs have shown** (November 2026): the workflow's first run, 44335758033 on 2026-11-18, still one
+locale per job, sent 18 locales before Google Play refused the 19th for
+[its daily save quota](#google-plays-daily-save-quota). The jobs as they are now, a few locales each, have not run
+against Google Play yet ([what no run has shown](#google-plays-daily-save-quota)).
+
+## Google Play's daily save quota
+
+**What it is.** Everything sent to Google Play through its API goes through an edit, and the commit of an edit is a
+*save*. Google Play counts an app's saves, and once it has had too many in a day it refuses the next one with
+"Google Api Error: Invalid request - Daily save quota exceeded." (`publishingDailySaveQuotaExceeded`). The count is
+the app's, whatever does the saving: a release's bundle, a run of `store-listing`, each edit of screenshots. Google
+documents neither how many saves a day allows nor when the count starts over, and fastlane's maintainers call it
+outside their control ([fastlane#8390](https://github.com/fastlane/fastlane/issues/8390)).
+
+**What was seen here.** On 2026-11-18, run 44335758033 of `play-store-screenshots` was refused at its 19th locale,
+after roughly 50 saves in about 15 hours: three runs of `store-listing`, a release to a testing track, the 3.0.0
+release with its 27 locales of screenshots, then 18 locales of that run. Each locale was a job and a save of its own then, and
+the 9 jobs after the refusal ran only to be refused the same way. Other projects report the same error after about
+25 runs in 16 hours and after about 120 writes in a day, and assume the count starts over at midnight Pacific time.
+**Nobody here has measured when it does**: once refused, try again the next day.
+
+**What the upload does about it** ([`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml)
+and `upload_play_screenshots` of the [Fastfile](../fastlane/Fastfile), with the decisions in
+[`play-screenshot-groups.mjs`](../scripts/release/play-screenshot-groups.mjs), which has tests):
+
+- **A few locales per save.** The locales go up in groups, `group_size` to a job (6 unless the run says), each
+  group through one edit: five saves for Play's 27 locales, where one job per locale was 27.
+- **No save for what didn't change.** Before it opens an edit to write, the lane reads what Google Play holds
+  (through an edit it deletes, which is no save) and leaves out every locale whose staged images are the ones
+  already there, shelf by shelf and in order. A group with no locale left opens no edit. supply's
+  `sync_image_upload` alone uploads nothing for such a locale and still commits its edit. So a set sent a second
+  time costs nothing for what already landed, and a set where one screen of one language changed costs one save.
+- **A refusal for the quota is not a failure.** The job Google Play refused ends well, with a warning on the run's
+  page, and its summary names the locales that didn't go and the groups left untried. Every group after it stops
+  before it reaches Google Play, each with a warning of its own, since it would only be refused too. Any other
+  error from Google Play fails the job as it always did. The lane ends well only for a caller that passes
+  `save_quota_is_no_failure:true` and reads its outputs, as these jobs do: anywhere else (`fastlane
+  upload_screenshots` on a Mac, another workflow) it stops with an error that says the quota ran out.
+- **In a release, the bundle goes first**: `android-screenshots` only starts once `android-upload` sent the
+  bundle, so the bundle is never the save its own run's screenshots left without quota.
+
+**Sending what didn't go**, once Google Play takes saves again. Either way costs a save only for the groups that
+still have something to send:
+
+- **Run each job again with its own re-run button**, the one Google Play refused first, then each group that
+  wasn't tried, one at a time (GitHub runs one job again per attempt; from a terminal,
+  `gh run rerun <run> --job <job id>`, the ids from `gh run view <run> --json jobs`). A job sends its group alone
+  with the images the run drew, while GitHub keeps the run's artifact (seven days), and draws nothing again. **Re-run failed jobs** does
+  not pick these jobs up, since none of them failed. After a release, it is the way that sends the release's own
+  images.
+- **Or dispatch `play-store-screenshots` again.** It draws the images again from `main` as it is then, and every
+  locale that landed costs no save.
+
+**On a day with many sends**, the order matters, since the screenshots are what can wait:
+
+1. **The release first, the screenshots after it.** A bundle Google Play refuses to save is a release that didn't
+   go out; a set of screenshots it refuses goes the next day.
+2. **Not everything on one day.** A release to a testing track to try the run, a listing, the release and a set of
+   screenshots are each at least one save, and a set whose every locale changed is five. Spread them when the day
+   already had many. A run with `validate_only` commits nothing, so as far as the error's name says it is no save.
+3. **A second set on the same day is cheap only when little changed**: what Google Play already holds costs
+   nothing, and a frame or a screen that changed in every language is five saves again.
+
+**What no run has shown yet** (November 2026): the groups, the check of what Google Play holds and the quota's path
+have not run against Google Play. The lane's tests run it against a stand-in for supply's client (a group held
+whole, one locale changed, the save refused for the quota and for another reason:
+[`play-screenshots-lane.test.mjs`](../scripts/release/play-screenshots-lane.test.mjs), which needs fastlane and so
+runs on a Mac, not on the runner), and the script's tests cover the rest.
+Whether an edit that is opened to read and then deleted counts as a save is assumed, from the error's name, not
+measured.
 
 ## What the images show
 
@@ -666,6 +744,12 @@ headless Chrome photograph it. Nothing to install: it drives the Chrome already 
 
 ## Things that bite
 
+- **Google Play counts every save against a daily quota it documents nowhere**, and refuses the next one with
+  "Daily save quota exceeded" once it runs out, the release's bundle included. Roughly 50 saves in about 15 hours
+  ran it out on 2026-11-18, and nobody has measured when the count starts over. Send the release first and the
+  screenshots after it, and not a release to a testing track, a listing, the release and a set of screenshots on
+  one day
+  ([Google Play's daily save quota](#google-plays-daily-save-quota)).
 - **The generators run only when asked for.** They are the unit tests of `:android:store_screenshots`, but a
   `./gradlew build` or `test` skips them. Only a `*StoreScreenshots` task, or
   `:android:store_screenshots:testDebugUnitTest` asked for by name, draws the images.

@@ -137,6 +137,10 @@ SCREENSHOT_SET_RACE_WAIT_SECONDS = 30
 PLAY_SERVER_ERROR_MESSAGE = "Google Api Error: Server error".freeze
 PLAY_SERVER_ERROR_ATTEMPTS = 3
 PLAY_SERVER_ERROR_WAIT_SECONDS = 30
+# What Google Play answers a save, the commit of an edit, once the app has had too many in a day
+# (publishingDailySaveQuotaExceeded). Nothing is wrong with what was sent: it goes later
+# (docs/store-listing-screenshots.md#google-plays-daily-save-quota).
+PLAY_SAVE_QUOTA_MESSAGE = "Daily save quota exceeded".freeze
 # App Store Connect refuses to reorder a shelf holding a screenshot it is still copying or deleting:
 SCREENSHOT_REORDER_REFUSED_MESSAGE = "Can't Add/Remove Relationship when reorder Set".freeze
 SCREENSHOT_REORDER_ATTEMPTS = 3
@@ -146,7 +150,9 @@ desc "Generate the store listing screenshots of both stores in all 26 languages,
 desc "Options: skip_upload:true only generates (store_listings/ and the fastlane folders); platform:android or"
 desc "platform:ios does one store (ios: iPhone, iPad, iPhone Duo and Mac); skip_capture:true reuses the Apple captures"
 desc "already in build/; skip_mac:true leaves the Mac out (its capture drives this Mac's screen); locale:<store code>"
-desc "uploads that locale alone (es-419, es-MX…). Uploading needs PLAY_STORE_JSON_KEY_PATH (Play) and the"
+desc "uploads that locale alone (es-419, es-MX…); locales:<store code>,<store code> sends those to Google Play through"
+desc "one edit, which is one of its daily saves (platform:android), and save_quota_is_no_failure:true ends the lane"
+desc "well when Google Play refuses that save for the quota. Uploading needs PLAY_STORE_JSON_KEY_PATH (Play) and the"
 desc "APP_STORE_CONNECT_API_KEY_ID / _ISSUER_ID with KEY_PATH or APP_STORE_CONNECT_API_KEY_P8 (App Store)."
 lane :screenshots do |options|
   repo_root = File.expand_path("..", __dir__)
@@ -168,7 +174,8 @@ end
 
 desc "Upload what `fastlane screenshots skip_upload:true` staged, without generating again. Same options, and"
 desc "platform:mac for the Mac's alone. validate_only:true, as VALIDATE_ONLY=true, only asks Google Play whether it"
-desc "would take the images: the App Store has no such check, so its screenshots are left out of that run."
+desc "would take the images: the App Store has no such check, so its screenshots are left out of that run. A locale"
+desc "whose images Google Play already holds is left out of its edit, and with nothing left no edit is saved."
 lane :upload_screenshots do |options|
   repo_root = File.expand_path("..", __dir__)
   platforms = options[:platform] ? [options[:platform].to_s] : %w[android ios]
@@ -179,10 +186,19 @@ end
 # when they were staged and skip_mac wasn't passed: a run with skip_mac leaves its listing as it is, even when an
 # earlier run's Mac captures were framed again. platform:mac sends the Mac's alone, as the release does from a job of
 # its own (release-production.yml). The stores name a language differently (es-419 on Play, es-MX on the App Store),
-# so a locale: goes only to the stores that have it staged. VALIDATE_ONLY is Google Play's check alone, as for the
-# listing's text: the App Store has none, and its screenshots would go up for real, so they are left out of that run.
+# so a locale: goes only to the stores that have it staged. locales: names several, for Google Play alone, where
+# they go through one edit: the group of a job of play-store-screenshots-upload.yml. VALIDATE_ONLY is Google Play's
+# check alone, as for the listing's text: the App Store has none, and its screenshots would go up for real, so they
+# are left out of that run.
 def upload_store_screenshots(repo_root, platforms, options)
   locale = options[:locale]
+  play_locales = options[:locales].to_s.split(",").map(&:strip).reject(&:empty?)
+  if options.key?(:locales)
+    # Without this an empty list would read as no locale named, which sends everything staged
+    UI.user_error!("locales: names no locale") if play_locales.empty?
+    UI.user_error!("locales: is Google Play's alone (platform:android) and takes the place of locale:") if platforms != ["android"] || locale
+  end
+  quota_is_no_failure = options[:save_quota_is_no_failure].to_s == "true"
   validates_only = validate_only?(options[:validate_only])
   if validates_only && platforms != ["android"]
     UI.user_error!("VALIDATE_ONLY checks Google Play alone: the App Store has no such check") unless platforms.include?("android")
@@ -196,7 +212,9 @@ def upload_store_screenshots(repo_root, platforms, options)
     platforms.include?(platform) && (locale.nil? || File.directory?(File.join(path, locale)))
   end
   UI.user_error!("No store has screenshots staged for #{locale}") if stores.empty?
-  upload_play_screenshots(play_path, locale, validates_only) if stores.key?("android")
+  if stores.key?("android")
+    upload_play_screenshots(play_path, play_locales.empty? ? [locale].compact : play_locales, validates_only, quota_is_no_failure)
+  end
   upload_app_store_screenshots(mac_path, locale, "osx") if stores.key?("mac")
   return unless stores.key?("ios")
 
@@ -296,28 +314,125 @@ def upload_app_store_listing(metadata_path, platform)
   )
 end
 
-# Listing images only: no bundle, no track, no text. sync_image_upload sends only the images whose SHA-256 differs from
-# what Play holds, so running it again uploads nothing that already landed. supply sends everything in one edit and
-# commits it at the end, so a 5xx throws the edit away and the next attempt starts over.
-def upload_play_screenshots(metadata_path, locale, validates_only)
-  with_locale_only(metadata_path, locale) do |path|
-    ensure_screenshots_staged(File.join(path, "*", "images", "*", "*.png"))
-    retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
-      upload_to_play_store(
-        package_name: ANDROID_PACKAGE,
-        json_key: ENV.fetch("PLAY_STORE_JSON_KEY_PATH"),
-        metadata_path: path,
-        skip_upload_aab: true,
-        skip_upload_apk: true,
-        skip_upload_metadata: true,
-        skip_upload_changelogs: true,
-        skip_upload_images: true,
-        skip_upload_screenshots: false,
-        sync_image_upload: true,
-        validate_only: validates_only,
-      )
-    end
+# Listing images only: no bundle, no track, no text, through one Play edit that supply commits at the end, so a 5xx
+# throws the edit away and the next attempt starts over. Each commit is a save, which Google Play counts against a
+# daily quota (docs/store-listing-screenshots.md#google-plays-daily-save-quota), so:
+# - `locales` go through one edit together, and everything staged does when none is named;
+# - a locale whose staged images Google Play already holds is left out, and with none left nothing is committed.
+#   sync_image_upload sends only the images whose SHA-256 differs from what Play holds, so it would upload nothing
+#   for such a locale, and supply would still commit the edit;
+# - a save refused for the quota is no failure of the upload, for a caller that says so (play_save_quota_reached).
+def upload_play_screenshots(metadata_path, locales, validates_only, quota_is_no_failure)
+  require "supply"
+
+  json_key = ENV.fetch("PLAY_STORE_JSON_KEY_PATH")
+  # Only the shelves supply uploads: a locale with images anywhere else has nothing to compare, and nothing to send
+  shelves = "{#{Supply::SCREENSHOT_TYPES.join(',')}}"
+  ensure_screenshots_staged(File.join(metadata_path, "*", Supply::IMAGES_FOLDER_NAME, shelves, "*.png"))
+  staged = Dir.glob("*/#{Supply::IMAGES_FOLDER_NAME}/#{shelves}/*.png", base: metadata_path).map { |image| image.split("/").first }.uniq.sort
+  missing = locales - staged
+  UI.user_error!("No staged screenshots for #{missing.join(', ')} under #{metadata_path}") if missing.any?
+  asked = locales.empty? ? staged : locales
+
+  changed = retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
+    play_locales_to_send(metadata_path, asked, json_key)
   end
+  unchanged = asked - changed
+  UI.message("Google Play already holds the staged images of #{unchanged.join(', ')}: left out of the upload") if unchanged.any?
+  if changed.empty?
+    UI.success("Nothing to send: Google Play holds every staged image as it is, and no save is spent")
+    github_output(sent: "", unchanged: unchanged.join(","))
+    return
+  end
+
+  begin
+    with_locales_only(metadata_path, changed == staged ? nil : changed) do |path|
+      retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
+        upload_to_play_store(
+          package_name: ANDROID_PACKAGE,
+          json_key: json_key,
+          metadata_path: path,
+          skip_upload_aab: true,
+          skip_upload_apk: true,
+          skip_upload_metadata: true,
+          skip_upload_changelogs: true,
+          skip_upload_images: true,
+          skip_upload_screenshots: false,
+          sync_image_upload: true,
+          validate_only: validates_only,
+        )
+      end
+    end
+  rescue => e
+    raise unless e.message.include?(PLAY_SAVE_QUOTA_MESSAGE)
+
+    return play_save_quota_reached(changed, unchanged, quota_is_no_failure)
+  end
+  github_output(sent: changed.join(","), unchanged: unchanged.join(","))
+end
+
+# The locales among `locales` with a shelf Google Play doesn't hold as it is staged. Read through an edit that is
+# deleted, never committed, so asking costs no save. What "as it is staged" means is play-screenshot-groups.mjs's
+# to say, where it has tests. A shelf Google Play can't be asked about counts as changed, so its upload says what is
+# wrong with it.
+def play_locales_to_send(metadata_path, locales, json_key)
+  require "digest"
+  require "json"
+  require "open3"
+  require "supply"
+
+  client = Supply::Client.make_from_config(params: { json_key: json_key, timeout: 300 })
+  client.begin_edit(package_name: ANDROID_PACKAGE)
+  shelves = locales.to_h do |locale|
+    by_shelf = Supply::SCREENSHOT_TYPES.filter_map do |shelf|
+      # The files supply uploads to the shelf, in its order
+      pattern = File.join(metadata_path, locale, Supply::IMAGES_FOLDER_NAME, shelf, "*.#{Supply::IMAGE_FILE_EXTENSIONS}")
+      staged = Dir.glob(pattern, File::FNM_CASEFOLD).sort
+      next if staged.empty?
+
+      held = begin
+        client.fetch_images(image_type: shelf, language: locale).map(&:sha256)
+      rescue => e
+        UI.important("Could not read #{locale}'s #{shelf} on Google Play, so it is sent: #{e.message.lines.first.to_s.strip}")
+        nil
+      end
+      [shelf, { staged: staged.map { |image| Digest::SHA256.file(image).hexdigest }, held: held }]
+    end
+    [locale, by_shelf.to_h]
+  end
+  # A leftover edit expires on its own, so failing to delete it must not throw the answer away
+  begin
+    client.abort_current_edit
+  rescue => e
+    UI.error("Could not delete the Play edit used to read the screenshots: #{e.message}")
+  end
+
+  script = File.expand_path("../scripts/release/play-screenshot-groups.mjs", __dir__)
+  changed, status = Open3.capture2("node", script, "changed", stdin_data: JSON.generate(shelves))
+  UI.user_error!("play-screenshot-groups.mjs could not say which locales changed") unless status.success?
+  JSON.parse(changed)
+end
+
+# A save Google Play refuses for its daily quota is no failure of the upload: the same images go later, as they
+# are. For a caller that passed save_quota_is_no_failure:true the lane ends well and says so through the step's
+# outputs, which the job turns into a warning, the run's summary and the stop of the groups after it
+# (play-store-screenshots-upload.yml). For any other caller nothing reads an output, a workflow's step included, so
+# the lane stops, with an error that says what happened.
+def play_save_quota_reached(not_sent, unchanged, is_no_failure)
+  message = "Google Play's daily save quota is used up: #{not_sent.join(', ')} not sent. Nothing is wrong with the " \
+            "images: send them again later (docs/store-listing-screenshots.md#google-plays-daily-save-quota)"
+  told = github_output(save_quota: "reached", not_sent: not_sent.join(","), unchanged: unchanged.join(","))
+  UI.user_error!(message) unless is_no_failure && told
+  UI.important(message)
+end
+
+# Writes the outputs of the step that runs the lane; false outside GitHub Actions, where nothing reads them.
+def github_output(values)
+  file = ENV["GITHUB_OUTPUT"].to_s
+  return false if file.empty?
+
+  File.open(file, "a") { |out| values.each { |name, value| out.puts("#{name}=#{value}") } }
+  true
 end
 
 # deliver deletes a locale's screenshots and recreates its sets; a set recreated before App Store Connect finished
@@ -389,14 +504,21 @@ def ensure_screenshots_staged(glob)
 end
 
 # Yields `path`, or a temporary copy holding only `locale`'s folder: supply and deliver upload every locale they find.
-def with_locale_only(path, locale)
-  return yield(path) if locale.nil?
+def with_locale_only(path, locale, &block)
+  with_locales_only(path, locale.nil? ? nil : [locale], &block)
+end
+
+# The same for several locales' folders; `path` itself when `locales` is nil.
+def with_locales_only(path, locales)
+  return yield(path) if locales.nil?
 
   require "tmpdir"
-  source = File.join(path, locale)
-  UI.user_error!("No staged screenshots for #{locale} under #{path}") unless File.directory?(source)
-  Dir.mktmpdir("screenshots-#{locale}-") do |dir|
-    FileUtils.cp_r(source, File.join(dir, locale))
+  Dir.mktmpdir("screenshots-") do |dir|
+    locales.each do |locale|
+      source = File.join(path, locale)
+      UI.user_error!("No staged screenshots for #{locale} under #{path}") unless File.directory?(source)
+      FileUtils.cp_r(source, File.join(dir, locale))
+    end
     yield(dir)
   end
 end
