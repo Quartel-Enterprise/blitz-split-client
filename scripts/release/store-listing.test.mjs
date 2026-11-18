@@ -149,6 +149,22 @@ test("the copyright line carries the current year unless it is told another", ()
   assert.equal(appStoreCopyright(2027), "2027 Quartel Enterprise • PI Software LTDA");
 });
 
+// Robolectric draws every image, the Play screens and the banner over an Apple capture alike, in a locale it gets as
+// an Android resource qualifier: the library turns "zh-TW" into "zh-rTW", and a tag with a script ("zh-Hant" would
+// become "zh-rHant") or more parts is one Robolectric refuses, which fails every frame of that device.
+const GENERATORS = "android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots";
+test("the generators draw every image in a locale Robolectric takes", () => {
+  const locales = readFileSync(`${GENERATORS}/StoreLocale.kt`, "utf8");
+  const constants = Object.fromEntries([...locales.matchAll(/const val (\w+) = "([^"]+)"/g)].map(([, name, value]) => [name, value]));
+  const drawnIn = [...locales.matchAll(/playLocale = ("([^"]+)"|\w+),/g)].map(([, raw, literal]) => literal ?? constants[raw]);
+  assert.equal(drawnIn.length, LISTING_LANGS.length);
+  for (const locale of drawnIn) assert.match(locale ?? "", /^[a-z]{2,3}(-[A-Z]{2})?$/, `playLocale ${locale}`);
+  // An Apple slot is no exception: its listing tag may carry a script (zh-Hant), which is not such a locale.
+  const drawn = readFileSync(`${GENERATORS}/StoreScreenshots.kt`, "utf8").match(/val drawnIn = (.+)/);
+  assert.ok(drawn, "no drawnIn in StoreScreenshots.kt");
+  assert.equal(drawn[1].trim(), "locale.playLocale");
+});
+
 // The screenshots are staged from maps of their own, in Kotlin (build-logic's StoreScreenshots.kt). A store attaches a
 // locale's screenshots to the listing of that same locale, so the two must send each language to the same codes.
 const SCREENSHOTS_KT = "build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt";

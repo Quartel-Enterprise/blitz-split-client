@@ -3,7 +3,8 @@ package com.quare.blitzsplit.android.storescreenshots
 /**
  * A language of the listings. [tag] names the generated folder; [language] picks the sample trip and the banner copy:
  * the app language's code, Portugal's Portuguese by its whole tag (pt-PT), since "pt" is Brazil's, and Spain's Spanish
- * by its own (es-ES), since "es" is Latin America's. [playLocale] is what Robolectric draws the Play screens in: the
+ * by its own (es-ES), since "es" is Latin America's. [playLocale] is what Robolectric draws in, the Play screens and
+ * the banner over an Apple capture alike, so it is always a language with at most a region, never a script: the
  * resources' language and the region the amounts, dates and hours are written in, the tag itself for every set but
  * Latin America's Spanish, Chinese, drawn in zh-CN for mainland China's yuan, Hebrew, drawn in iw-IL, the legacy
  * code Android's values-iw answers to, Thai, drawn in th-TH for the baht, Vietnamese, drawn in vi-VN for the

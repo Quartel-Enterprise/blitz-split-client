@@ -19,11 +19,14 @@ on:
       - 'scripts/release/**'
       - 'release-notes/**'
       - 'store-listing/**'
-      # The screenshots' store locales, which a test compares with the listing text's, and the screens the iPhone
-      # Duo's shelf takes open, which another compares with the captures' screens and the frames'
+      # The screenshots' store locales, which a test compares with the listing text's, the screens the iPhone
+      # Duo's shelf takes open, which another compares with the captures' screens and the frames', and the locales
+      # the generators draw in, which a third holds to what Robolectric takes
       - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
       - 'scripts/store-screenshots/screens.tsv'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
+      - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreLocale.kt'
+      - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreenshots.kt'
   push:
     branches:
       - main
@@ -32,11 +35,14 @@ on:
       - 'scripts/release/**'
       - 'release-notes/**'
       - 'store-listing/**'
-      # The screenshots' store locales, which a test compares with the listing text's, and the screens the iPhone
-      # Duo's shelf takes open, which another compares with the captures' screens and the frames'
+      # The screenshots' store locales, which a test compares with the listing text's, the screens the iPhone
+      # Duo's shelf takes open, which another compares with the captures' screens and the frames', and the locales
+      # the generators draw in, which a third holds to what Robolectric takes
       - 'build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt'
       - 'scripts/store-screenshots/screens.tsv'
       - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreen.kt'
+      - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreLocale.kt'
+      - 'android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/StoreScreenshots.kt'
 
 permissions:
   contents: read
