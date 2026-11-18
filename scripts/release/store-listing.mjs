@@ -7,8 +7,8 @@
 //       a commit).
 //   node scripts/release/store-listing.mjs stage --out <folder>
 //       Writes every listing in the layout fastlane uploads, a folder per store locale: <folder>/play/<locale>/ for
-//       supply and <folder>/app-store/<locale>/ for deliver, with the App Store's support and marketing addresses
-//       and the version's copyright line. `fastlane upload_listing` runs it.
+//       supply and <folder>/app-store/<locale>/ for deliver, with the App Store's support, marketing and privacy
+//       policy addresses and the version's copyright line. `fastlane upload_listing` runs it.
 //
 // Plain Node, no dependencies: the check and the lane run it as it is.
 
@@ -119,18 +119,21 @@ const APP_STORE_FILES = {
 };
 
 /**
- * What every App Store locale gets beside its text, the same in every language: the address of "App Support" and of
- * the developer's site on the app's page. Each locale holds its own, and one the upload created starts with none,
- * though the App Store asks for a support address in each before a review. The review looks for a way to reach the
- * developer at the support address, which the site's Support page has and its landing doesn't.
+ * What every App Store locale gets beside its text, the same in every language: the address of "App Support", of
+ * the developer's site and of the privacy policy on the app's page. Each locale holds its own, and one the upload
+ * created starts with none, though the App Store asks for a support address in each before a review. The review
+ * looks for a way to reach the developer at the support address, which the site's Support page has and its landing
+ * doesn't. The privacy policy's is the page the apps open, which the site shows in the reader's language.
  */
 export const APP_STORE_URL_FILES = {
   "support_url.txt": "https://blitzsplit.com/support",
   "marketing_url.txt": "https://blitzsplit.com",
+  "privacy_url.txt": "https://blitzsplit.com/privacy",
 };
 /**
  * The version's copyright line, one for every locale: the line of the site's footer (Pierre's call: the same as
- * Bible Planner's), without the © the App Store adds.
+ * Bible Planner's), without the © the App Store adds. The year is the one the app came out in, not the current one:
+ * the App Store asks for the year the rights were obtained, so it stays as it is in the years to come.
  */
 export const APP_STORE_COPYRIGHT = "2026 Quartel Enterprise • PI Software LTDA";
 

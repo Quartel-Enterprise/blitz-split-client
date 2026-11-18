@@ -96,20 +96,24 @@ locale: `play/<locale>/` with `title.txt`, `short_description.txt` and `full_des
 `app-store/<locale>/` with `name.txt`, `subtitle.txt`, `keywords.txt`, `promotional_text.txt` and `description.txt`
 for deliver. `fastlane upload_listing` stages into a temporary folder and uploads it.
 
-Three things the App Store asks for are not in a language's file, since they are the same in every one, and are
+Four things the App Store asks for are not in a language's file, since they are the same in every one, and are
 staged from the script's constants:
 
-- **The support and the marketing address** (`APP_STORE_URL_FILES`: `support_url.txt` and `marketing_url.txt` in
-  every locale's folder), "App Support" and the developer's site on the app's page. Each locale holds its own, and a
-  locale the upload creates starts with none, though the App Store asks for a support address in each before a
-  review, so every upload writes them in every locale. The marketing address is https://blitzsplit.com and the
-  support one https://blitzsplit.com/support, the site's Support page: the App Store's review looks there for a way
-  to reach the developer, which the landing doesn't have.
+- **The support, the marketing and the privacy policy address** (`APP_STORE_URL_FILES`: `support_url.txt`,
+  `marketing_url.txt` and `privacy_url.txt` in every locale's folder), "App Support", the developer's site and the
+  privacy policy on the app's page. Each locale holds its own, and a locale the upload creates starts with none,
+  though the App Store asks for a support address in each before a review, so every upload writes them in every
+  locale. The marketing address is https://blitzsplit.com and the support one https://blitzsplit.com/support, the
+  site's Support page: the App Store's review looks there for a way to reach the developer, which the landing
+  doesn't have. The privacy policy's is https://blitzsplit.com/privacy, the page the apps open, which the site
+  shows in the reader's language.
 - **The copyright line** (`APP_STORE_COPYRIGHT`, `app-store/copyright.txt`, beside the locales' folders): one per
   version, "2026 Quartel Enterprise • PI Software LTDA", the line of the site's footer and of Bible Planner's
-  (Pierre's call), with no ©, which the App Store adds.
+  (Pierre's call), with no ©, which the App Store adds. The year stays 2026: the App Store asks for the year the
+  rights were obtained, not the current one.
 
-Google Play has none of them: its contact details are the developer account's.
+Google Play has none of them: its contact details are the developer account's, and its privacy policy address is
+App content's, in the Play Console.
 
 A language goes to one or more locales of each store (`PLAY_LOCALES` and `APP_STORE_LOCALES` of the script): Latin
 America's Spanish is `es-419` and `es-US` on Play and `es-MX` on the App Store, and Spain's is `es-ES` on both. They
