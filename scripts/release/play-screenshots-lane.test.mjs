@@ -51,7 +51,7 @@ describe("the lane that sends Google Play's screenshots", { skip }, () => {
     Object.fromEntries(locales.map((locale) => [locale, Object.fromEntries(Object.entries(SHELVES).map(([shelf, files]) => [shelf, files.map((file) => createHash("sha256").update(readFileSync(staged(locale, shelf, file))).digest("hex"))]))]));
 
   /** Runs the lane with what Google Play `held`; answers its exit code, what reached Google Play and the step's outputs. */
-  const lane = (options, { held = {}, commitError = "", output = true } = {}) => {
+  const lane = (options, { held = {}, commitError = "", beginError = "", output = true } = {}) => {
     writeFileSync(join(root, "held.json"), JSON.stringify(held));
     for (const file of ["play.log", "output.txt"]) writeFileSync(join(root, file), "");
     const { status, stdout, stderr } = spawnSync("fastlane", ["upload_screenshots", "platform:android", ...options], {
@@ -68,6 +68,7 @@ describe("the lane that sends Google Play's screenshots", { skip }, () => {
         FAKE_PLAY_HELD: join(root, "held.json"),
         FAKE_PLAY_LOG: join(root, "play.log"),
         FAKE_PLAY_COMMIT_ERROR: commitError,
+        FAKE_PLAY_BEGIN_ERROR: beginError,
         PLAY_STORE_JSON_KEY_PATH: join(root, "key.json"),
         GITHUB_OUTPUT: output ? join(root, "output.txt") : "",
         VALIDATE_ONLY: "",
@@ -111,6 +112,13 @@ describe("the lane that sends Google Play's screenshots", { skip }, () => {
     assert.equal(count(play, "commit"), 1);
     assert.deepEqual(outputs, { save_quota: "reached", not_sent: "de-DE,pt-BR", unchanged: "en-US" });
     assert.match(said, /Google Play's daily save quota is used up: de-DE, pt-BR not sent/);
+  });
+
+  test("ends well too when Google Play refuses, for the quota, the edit it reads through: the whole group waits", () => {
+    const { status, play, outputs } = lane(["locales:en-US,pt-BR", "save_quota_is_no_failure:true"], { held: holding("en-US"), beginError: QUOTA });
+    assert.equal(status, 0);
+    assert.deepEqual(play, ["begin_edit"]);
+    assert.deepEqual(outputs, { save_quota: "reached", not_sent: "en-US,pt-BR", unchanged: "" });
   });
 
   test("stops on the quota, saying what it is, for a caller that reads no output", () => {

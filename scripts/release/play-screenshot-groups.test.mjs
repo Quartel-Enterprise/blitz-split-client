@@ -168,7 +168,9 @@ describe("Google Play's daily save quota", () => {
     assert.match(summary, /^### Google Play's daily save quota is used up \(group 2 of 3\)\n/);
     assert.match(summary, /Nothing is wrong with the images or the run/);
     assert.match(summary, /\n- \*\*Not sent, group 2 of 3:\*\* en-US\n/);
-    assert.match(summary, /\n- \*\*Not tried, group 3 of 3:\*\* ja-JP, pt-BR\n/);
+    assert.match(summary, /\n- \*\*Not tried by this attempt, group 3 of 3:\*\* ja-JP, pt-BR\n/);
+    // A job run again alone is an attempt of its own: a group after it may have gone in an earlier one.
+    assert.match(summary, /went up in an earlier attempt of this run stays sent/);
     assert.match(summary, /\n- \*\*Already on Google Play as drawn, so not sent again:\*\* fr-FR\n/);
     assert.match(summary, /own re-run button, "send 2 of 3" first and one at a time/);
     assert.ok(summary.includes(QUOTA_DOC));
@@ -192,6 +194,12 @@ describe("Google Play's daily save quota", () => {
     }
   });
 
+  test("names the whole group when the lane named no locale of the one refused", () => {
+    assert.match(quotaWarning({ groups, group: 2, notSent: [] }), /^Google Play's daily save quota is used up: en-US, fr-FR not sent,/);
+    assert.match(groupSummary({ groups, group: 2, notSent: [], quota: true }), /\n- \*\*Not sent, group 2 of 3:\*\* en-US, fr-FR\n/);
+    assert.match(cli(["warning", `--groups=${JSON.stringify(groups)}`, "--group=2", "--not-sent="]).stdout, /used up: en-US, fr-FR not sent/);
+  });
+
   test("is told apart from a group that simply went, or had nothing to send", () => {
     assert.equal(groupSummary({ groups, group: 1, sent: ["ar"], unchanged: ["de-DE"] }), "### Google Play screenshots, group 1 of 3\n\n- **Sent:** ar\n- **Already on Google Play as drawn, so not sent again:** de-DE");
     assert.equal(groupSummary({ groups, group: 1, unchanged: ["ar", "de-DE"] }), "### Google Play screenshots, group 1 of 3\n\n- **Sent:** nothing, so no save was spent\n- **Already on Google Play as drawn, so not sent again:** ar, de-DE");
@@ -204,7 +212,7 @@ describe("Google Play's daily save quota", () => {
     assert.equal(went.status, 0);
     assert.equal(went.stdout, "### Google Play screenshots, group 1 of 3\n\n- **Sent:** ar, de-DE\n");
     const refused = cli(["summary", `--groups=${matrix}`, "--group=1", "--sent=", "--unchanged=", "--not-sent=ar,de-DE", "--quota=reached", "--validate-only=false"]);
-    assert.match(refused.stdout, /\n- \*\*Not sent, group 1 of 3:\*\* ar, de-DE\n- \*\*Not tried, group 2 of 3:\*\* en-US, fr-FR\n- \*\*Not tried, group 3 of 3:\*\* ja-JP, pt-BR\n/);
+    assert.match(refused.stdout, /\n- \*\*Not sent, group 1 of 3:\*\* ar, de-DE\n- \*\*Not tried by this attempt, group 2 of 3:\*\* en-US, fr-FR\n- \*\*Not tried by this attempt, group 3 of 3:\*\* ja-JP, pt-BR\n/);
     assert.equal(cli(["warning", `--groups=${matrix}`, "--group=2"]).stdout, `${quotaWarning({ groups, group: 2 })}\n`);
     assert.equal(cli(["warning", `--groups=${matrix}`, "--group=1", "--not-sent=ar"]).stdout, `${quotaWarning({ groups, group: 1, notSent: ["ar"] })}\n`);
     assert.equal(cli(["summary", "--groups=nothing", "--group=1"]).status, 1);

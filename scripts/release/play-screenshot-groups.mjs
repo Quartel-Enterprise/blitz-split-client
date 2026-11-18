@@ -92,11 +92,13 @@ export function groupSummary({ groups, group, sent = [], unchanged = [], notSent
     return [
       `### Google Play's daily save quota is used up (group ${own.group} of ${own.of})`,
       "",
-      `Google Play refused to save this group's screenshots ("Daily save quota exceeded"). Nothing is wrong with the images or the run: the app had too many saves today, and Google says neither how many it allows nor when it counts from zero again. The groups after this one are not tried, since each would be refused the same way.`,
+      `Google Play refused to save this group's screenshots ("Daily save quota exceeded"). Nothing is wrong with the images or the run: the app had too many saves today, and Google says neither how many it allows nor when it counts from zero again. The groups after this one are not tried by this attempt of the run, since each would be refused the same way.`,
       "",
-      `- **Not sent, group ${own.group} of ${own.of}:** ${spaced(notSent)}`,
-      ...after.map((each) => `- **Not tried, group ${each.group} of ${each.of}:** ${spaced(listOf(each.locales))}`),
+      `- **Not sent, group ${own.group} of ${own.of}:** ${spaced(notSent.length > 0 ? notSent : listOf(own.locales))}`,
+      ...after.map((each) => `- **Not tried by this attempt, group ${each.group} of ${each.of}:** ${spaced(listOf(each.locales))}`),
       ...had,
+      "",
+      `A group listed here that went up in an earlier attempt of this run stays sent: its own job says so, and running it again costs no save.`,
       "",
       `**To send them later**, once Google Play takes saves again (nobody has measured when: try the next day): run each of these jobs again with its own re-run button, "send ${own.group} of ${own.of}" first and one at a time. A job sends its group alone, with the images this run drew, for as long as GitHub keeps the run's artifact, and a locale Google Play already holds costs no save. See ${QUOTA_DOC}.`,
     ].join("\n");
@@ -106,12 +108,16 @@ export function groupSummary({ groups, group, sent = [], unchanged = [], notSent
   return [`### Google Play screenshots, group ${own.group} of ${own.of}`, "", `- **${went}:** ${sent.length > 0 ? spaced(sent) : nothing}`, ...had].join("\n");
 }
 
-/** The warning's one line: for the group Google Play refused (`notSent`), or for one after it, which wasn't tried. */
+/**
+ * The warning's one line: for the group Google Play refused (`notSent` given, the whole group when it names no
+ * locale), or for one after it, which wasn't tried (`notSent` left out).
+ */
 export function quotaWarning({ groups, group, notSent }) {
   const { own } = placeOf(groups, group);
   const later = `Run this job again later with its own re-run button (${QUOTA_DOC}).`;
-  if (notSent) return `Google Play's daily save quota is used up: ${spaced(notSent)} not sent, and the groups after this one are not tried. Nothing is wrong with the images. ${later}`;
-  return `Google Play's daily save quota was used up by a group before this one, so ${spaced(listOf(own.locales))} were not tried. ${later}`;
+  if (notSent === undefined) return `Google Play's daily save quota was used up by a group before this one, so ${spaced(listOf(own.locales))} were not tried. ${later}`;
+  const refused = notSent.length > 0 ? notSent : listOf(own.locales);
+  return `Google Play's daily save quota is used up: ${spaced(refused)} not sent, and the groups after this one are not tried. Nothing is wrong with the images. ${later}`;
 }
 
 /**

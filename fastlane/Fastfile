@@ -329,9 +329,11 @@ def upload_play_screenshots(metadata_path, locales, validates_only, quota_is_no_
   # Only the shelves supply uploads, and the files it uploads from them (the ones play_locales_to_send compares): a
   # locale with images anywhere else has nothing to compare, and nothing to send
   shelves = "{#{Supply::SCREENSHOT_TYPES.join(',')}}"
-  images = "*.#{Supply::IMAGE_FILE_EXTENSIONS}"
-  ensure_screenshots_staged(File.join(metadata_path, "*", Supply::IMAGES_FOLDER_NAME, shelves, images))
-  staged = Dir.glob("*/#{Supply::IMAGES_FOLDER_NAME}/#{shelves}/#{images}", base: metadata_path).map { |image| image.split("/").first }.uniq.sort
+  images = Dir.glob("*/#{Supply::IMAGES_FOLDER_NAME}/#{shelves}/*.#{Supply::IMAGE_FILE_EXTENSIONS}", base: metadata_path)
+  # supply replaces a listing's screenshots with what is staged, so an empty folder would wipe it instead of failing
+  UI.user_error!("No staged screenshots under #{metadata_path}") if images.empty?
+  UI.message("Found #{images.size} staged screenshot(s)")
+  staged = images.map { |image| image.split("/").first }.uniq.sort
   missing = locales - staged
   UI.user_error!("No staged screenshots for #{missing.join(', ')} under #{metadata_path}") if missing.any?
   asked = locales.empty? ? staged : locales
@@ -355,7 +357,7 @@ def upload_play_screenshots(metadata_path, locales, validates_only, quota_is_no_
   end
 
   begin
-    with_locales_only(metadata_path, changed == staged ? nil : changed) do |path|
+    with_locales_only(metadata_path, changed) do |path|
       retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
         upload_to_play_store(
           package_name: ANDROID_PACKAGE,

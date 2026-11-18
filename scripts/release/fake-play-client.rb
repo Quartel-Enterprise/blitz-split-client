@@ -4,6 +4,7 @@
 #   FAKE_PLAY_HELD          a JSON file of what Google Play holds: {"<locale>":{"<shelf>":["<sha256>",…]}}
 #   FAKE_PLAY_LOG           the file every call that would reach Google Play is written to, one per line
 #   FAKE_PLAY_COMMIT_ERROR  when set, what Google Play answers the commit of an edit with
+#   FAKE_PLAY_BEGIN_ERROR   when set, what Google Play answers the opening of an edit with
 require "json"
 require "ostruct"
 
@@ -18,8 +19,9 @@ class FakePlayClient
   def begin_edit(package_name: nil)
     raise "an edit is already open" if @open
 
-    @open = true
     log("begin_edit")
+    refuse(ENV["FAKE_PLAY_BEGIN_ERROR"])
+    @open = true
   end
 
   def abort_current_edit
@@ -54,15 +56,19 @@ class FakePlayClient
     log("validate")
   end
 
-  # As supply's client does: the error is fastlane's, worded "Google Api Error: <what Google answered>"
+  # As supply's client does, here and in begin_edit: the error is fastlane's, worded "Google Api Error: <what
+  # Google answered>"
   def commit_current_edit!
     log("commit")
-    refusal = ENV["FAKE_PLAY_COMMIT_ERROR"].to_s
-    FastlaneCore::UI.user_error!(refusal) unless refusal.empty?
+    refuse(ENV["FAKE_PLAY_COMMIT_ERROR"])
     @open = false
   end
 
   private
+
+  def refuse(refusal)
+    FastlaneCore::UI.user_error!(refusal) unless refusal.to_s.empty?
+  end
 
   def log(line)
     File.open(ENV.fetch("FAKE_PLAY_LOG"), "a") { |file| file.puts(line) }

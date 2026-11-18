@@ -321,7 +321,7 @@ whole, one locale changed, the save refused for the quota and for another reason
 [`play-screenshots-lane.test.mjs`](../scripts/release/play-screenshots-lane.test.mjs), which needs fastlane and so
 runs on a Mac, not on the runner), and the script's tests cover the rest.
 Whether an edit that is opened to read and then deleted counts as a save is assumed, from the error's name, not
-measured.
+measured. Should Google Play refuse to open that edit for the quota, the group waits the same way, with a warning.
 
 ## What the images show
 
