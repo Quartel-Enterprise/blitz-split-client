@@ -1,0 +1,52 @@
+name: 'Draw the Google Play screenshots'
+description: >-
+  Draws the Google Play listing's screenshots of every language (Robolectric draws the real Compose screens from the
+  sample trip, docs/store-listing-screenshots.md), stages them where supply uploads from and hands them to the jobs
+  after it as the artifact `play-store-screenshots`. For release-production.yml, next to its build, and
+  play-store-screenshots.yml, which sends them alone. The calling job checks out the repository first.
+
+inputs:
+  cache-encryption-key:
+    description: 'The secret Gradle''s configuration cache is encrypted with (GRADLE_ENCRYPTION_KEY)'
+    required: false
+    default: ''
+
+outputs:
+  locales:
+    description: >-
+      The locales that were staged, as a JSON array of Google Play's codes: the matrix of
+      play-store-screenshots-upload.yml. Nothing when nothing was staged
+    value: ${{ steps.locales.outputs.locales }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Gradle and Java
+      uses: ./.github/actions/gradle
+      with:
+        cache-encryption-key: ${{ inputs.cache-encryption-key }}
+        cache-read-only: 'true'
+
+    - name: Make the screenshots
+      shell: bash
+      run: ./gradlew stagePlayStoreScreenshots
+
+    # The upload jobs' matrix, read off what was staged: the list of languages lives in the generators alone. Read
+    # into a variable first, so a script that fails stops the step: inside the echo it would read as nothing staged.
+    - name: List the staged locales
+      id: locales
+      shell: bash
+      run: |
+        locales="$(./scripts/release/staged-screenshot-locales.sh fastlane/metadata/android)"
+        echo "locales=$locales" >> "$GITHUB_OUTPUT"
+
+    # Rooted at the locales' folders, so it lands back where it was staged. Also what a person downloads to look at
+    # the images a run drew.
+    - name: Upload the screenshots as a build artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: play-store-screenshots
+        path: fastlane/metadata/android/*/images/
+        retention-days: 7
+        if-no-files-found: error
+        overwrite: true

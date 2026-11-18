@@ -1,5 +1,10 @@
 package com.quare.blitzsplit.android.storescreenshots
 
+import android.text.TextUtils
+import android.view.View
+import androidx.compose.ui.unit.LayoutDirection
+import java.util.Locale
+
 /**
  * A language of the listings. [tag] names the generated folder; [language] picks the sample trip and the banner copy:
  * the app language's code, Portugal's Portuguese by its whole tag (pt-PT), since "pt" is Brazil's, and Spain's Spanish
@@ -17,6 +22,16 @@ internal data class StoreLocale(
     val language: String,
     val drawnLocale: String,
 )
+
+/**
+ * The way the set's language is read: right to left for Arabic and Hebrew. Robolectric draws every locale left to
+ * right unless told otherwise, so a Play screen is handed this (StoreScreenshots).
+ */
+internal val StoreLocale.layoutDirection: LayoutDirection
+    get() {
+        val direction = TextUtils.getLayoutDirectionFromLocale(Locale.forLanguageTag(drawnLocale))
+        return if (direction == View.LAYOUT_DIRECTION_RTL) LayoutDirection.Rtl else LayoutDirection.Ltr
+    }
 
 /**
  * The locale Latin America's Spanish set is drawn in: Equatorial Guinea's region, the one its App Store set is

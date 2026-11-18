@@ -150,9 +150,11 @@ is built:
   `admin` or can't be read. So **Re-run failed jobs**, which runs jobs again without `plan`, is an admin's too, and
   someone else's re-run stops before it builds anything. The [`store-listing`](../.github/workflows/store-listing.yml)
   workflow, which sends the listing text to the stores, starts each of its jobs with the same check
-  ([store-listing.md](store-listing.md)), and so does
+  ([store-listing.md](store-listing.md)), and so do
   [`app-store-screenshots`](../.github/workflows/app-store-screenshots.yml), which sends screenshots made on a Mac
-  ([Screenshots made on a Mac](#screenshots-made-on-a-mac)).
+  ([Screenshots made on a Mac](#screenshots-made-on-a-mac)), and
+  [`play-store-screenshots`](../.github/workflows/play-store-screenshots.yml), which sends Google Play's alone
+  ([Google Play's screenshots alone](#google-plays-screenshots-alone)).
 - **On `main`**: a run dispatched on another branch would take that branch's copy of the workflow, and fails.
 - **The `Production` environment only lets `main` deploy.** The jobs that reach a store or app.blitzsplit.com (the
   uploads, the submissions, the creation of the App Store version, the screenshots' uploads, the web) name the
@@ -195,7 +197,8 @@ read them ([Secrets](#secrets)).
 
 **For the App Store, leave it off today and send the screenshots from a Mac first**
 ([Screenshots made on a Mac](#screenshots-made-on-a-mac)): what the runners captured in the one release that tried
-was not fit for a listing.
+was not fit for a listing. `screenshots` makes both stores' in a run that releases to both, so **Google Play's then
+go alone**, before or after the release ([Google Play's screenshots alone](#google-plays-screenshots-alone)).
 
 `screenshots` is off unless the release asks for it (Pierre's call): making them again takes a Mac runner per
 App Store slot for up to two and a half hours, and most releases change nothing the listings show. Turn it on when
@@ -210,8 +213,10 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
 ([store-listing-screenshots.md](store-listing-screenshots.md)), as Bible Planner's releases do:
 
 - **Google Play**, after the bundle reached the production track: `android-screenshots-render` draws them next to
-  the build, and `android-screenshots` uploads the ones that changed. Play shows a listing's screenshots to everyone
-  at once, so a testing track brings none.
+  the build (the [`play-screenshots-draw`](../.github/actions/play-screenshots-draw/action.yml) action), and
+  `android-screenshots` uploads the ones that changed, one "send \<locale\>" job each (the jobs of
+  [`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml), which also send
+  them without a release). Play shows a listing's screenshots to everyone at once, so a testing track brings none.
 - **App Store**, before the submission, since a version in review can't take them, and only in a run that submits:
   `app-store-versions` creates the version (as it does in every run that submits, so the previous version's
   screenshots are copied into it long before anything looks at them), `apple-screenshots-capture` runs the UI tests on one simulator per slot
@@ -243,7 +248,9 @@ the submission waits for the App Store's, and the next release or beta for them
 all, since they share the `release` group.
 
 - **On Google Play**, that locale's job sends it again with the images the run already drew, at any time: the
-  listing takes them whenever. Run it with **the job's own re-run button**, not **Re-run failed jobs**, which also
+  listing takes them whenever. A release's own job doesn't look at what else is writing on Google Play, so run it
+  again once no other release, no listing and no run of `play-store-screenshots` is going, and not after a later
+  run sent newer images, which it would cover. Run it with **the job's own re-run button**, not **Re-run failed jobs**, which also
   runs every App Store job that failed without failing the run (a capture on a Mac runner, the uploads of a version
   already in review) and the jobs after them.
 - **On the App Store**, deliver deletes a locale's screenshots before it uploads the new ones, so a locale whose job
@@ -356,6 +363,33 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to A
   device out is refused unless `allow_missing_devices` says it is meant.
 - **A locale that failed** fails the run and keeps the set: run that locale's job again with its own re-run button,
   while the version is still editable. Dispatch the release once the run's summary says every locale landed.
+
+### Google Play's screenshots alone
+
+Google Play's screenshots are drawn by Robolectric, on any machine, and Google Play shows them to everyone the
+moment they change, whatever release is out. So they don't need a release, and the
+[`play-store-screenshots`](../.github/workflows/play-store-screenshots.yml) workflow sends them without one
+([Sending Google Play's alone](store-listing-screenshots.md#sending-google-plays-alone)):
+
+```bash
+gh workflow run play-store-screenshots.yml -f validate_only=true   # draw them and ask Google Play: nothing changes
+gh workflow run play-store-screenshots.yml                         # draw them and send them, one locale per job
+```
+
+- **When.** Whenever Play's images should change and the App Store's must not be captured on the runners: a
+  release with `screenshots` on that submits for review makes both stores', and today the App Store's come from a
+  Mac ([above](#screenshots-made-on-a-mac)). Also between releases, for a screen or a frame that changed.
+- **Before or after the release, not during.** The bundle and each locale's screenshots go through a Play edit of
+  their own, and the newer edit drops the one still open, so each side refuses the other
+  ([`no-run-going`](../.github/actions/no-run-going/action.yml)): the workflow refuses to start while a stable
+  release or a run of `store-listing` is in progress or waiting, each of its upload jobs checks again, and a stable
+  release refuses to start while a run of it isn't over, whatever its platforms, `plan` failing however the release
+  was dispatched and `release-production.sh` saying so first. About an hour for Play's 27 locales.
+- **Who and where** are a release's: an administrator of the repository, on `main`, with the jobs that reach
+  Google Play in the `Production` environment and each one checking who started it
+  ([Who releases](#who-releases)).
+- **A locale that failed** fails the run and the others are up: run that locale's job again with its own re-run
+  button.
 
 ### Re-runs and what a run leaves
 

@@ -1,0 +1,136 @@
+name: play-store-screenshots
+
+# Draws the Google Play listing's screenshots again and sends them to Google Play, without a release and without
+# touching the App Store's (docs/store-listing-screenshots.md#sending-google-plays-alone). By hand only, by an
+# administrator of the repository, on main.
+#
+#   gh workflow run play-store-screenshots.yml                         # draw them and send them
+#   gh workflow run play-store-screenshots.yml -f validate_only=true   # draw them and ask Google Play, nothing changes
+#
+#   1. `draw` checks who dispatched the run and from where, then draws every language's images on the runner, as a
+#      release does (the play-screenshots-draw action): Robolectric draws them, so no capture is involved and any
+#      runner makes the same ones. They are the run's artifact `play-store-screenshots`, to download and look at.
+#   2. `send` uploads them one locale per job, one after the other: the jobs a release runs for the same images
+#      (play-store-screenshots-upload.yml). Only the images whose content changed go up.
+#
+# Google Play shows a listing's screenshots to everyone the moment they change, whatever release is out: this is
+# the whole publication, with no review to wait for on the run's side. A stable release with `screenshots` on does
+# the same and also captures the App Store's on the runners; this is how Google Play's go when those must stay as
+# they are (docs/release-process.md#google-plays-screenshots-alone).
+#
+# Not while a release or a listing is going: each writes through a Play edit of its own, and the newer edit drops
+# the one still open. The `draw` job refuses the run then, each upload job checks again (one run again later starts
+# without `draw`), and a stable release refuses to start while a run of this is going (the `plan` job of
+# release-production.yml).
+#
+# A run with `validate_only` changes nothing on Google Play and still holds releases and listings off until it ends,
+# as any run of this workflow does: the guards don't tell the two apart.
+#
+# Repository secrets: PLAY_STORE_SERVICE_ACCOUNT_JSON, the releases' own (docs/release-process.md#secrets).
+on:
+  workflow_dispatch:
+    inputs:
+      validate_only:
+        description: "Only draw them and ask Google Play whether it would take them: the listing doesn't change"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# One at a time, and no concurrency group for it: GitHub keeps one run waiting per group and cancels it without a
+# word when another arrives. `draw` refuses the run instead while another run of this workflow is going, as it does
+# during a release. Two dispatched in the same instant refuse each other.
+
+# Named, so every step runs with pipefail.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # No environment here: this job reaches no store and reads no store's secret, and its own step checks the branch.
+  draw:
+    name: Draw the screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      # To see whether a release, a listing or another run of this workflow is going.
+      actions: read
+    outputs:
+      locales: ${{ steps.draw.outputs.locales }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      # The jobs that reach the store name the Production environment, whose branch rule keeps a copy of this
+      # workflow on another branch from reaching it. GitHub makes a missing environment with no rule, so the ref is
+      # checked here too.
+      - name: Check where the run comes from
+        env:
+          REF: ${{ github.ref }}
+        run: |
+          if [ "$REF" != refs/heads/main ]; then
+            echo "::error::Screenshots are sent from main, and this run was dispatched on $REF. See docs/store-listing-screenshots.md."
+            exit 1
+          fi
+
+      - name: Check who sends
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      # A release sends its bundle, and a listing its text, through a Play edit, as each locale's screenshots do:
+      # the newer edit drops the one still open. Another run of this workflow would send the same shelves over
+      # this one.
+      - name: Check that nothing else is writing on Google Play
+        uses: ./.github/actions/no-run-going
+        with:
+          token: ${{ github.token }}
+          workflows: release-production.yml store-listing.yml play-store-screenshots.yml
+          then: send the screenshots once that run is over
+
+      - name: Draw the screenshots
+        id: draw
+        uses: ./.github/actions/play-screenshots-draw
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+      - name: Say what the run sends
+        env:
+          LOCALES: ${{ steps.draw.outputs.locales }}
+          VALIDATE_ONLY: ${{ inputs.validate_only }}
+        run: |
+          if [ -z "$LOCALES" ]; then
+            echo "::error::No screenshot was staged, so there is nothing to send."
+            exit 1
+          fi
+          going="Going to Google Play, one locale per job, where they show to everyone as each lands"
+          if [ "$VALIDATE_ONLY" = true ]; then
+            going="Only checked against Google Play (\`validate_only\`): the listing doesn't change"
+          fi
+          {
+            echo "## Google Play's screenshots"
+            echo
+            echo "$going: $(jq -r 'join(", ")' <<< "$LOCALES")."
+            echo
+            echo "The images are this run's artifact \`play-store-screenshots\`, to download and look at."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  send:
+    name: Google Play
+    needs: draw
+    permissions:
+      contents: read
+      # Each upload job looks for a release or a listing going, as `draw` did: a job run again starts without
+      # `draw`.
+      actions: read
+    uses: ./.github/workflows/play-store-screenshots-upload.yml
+    with:
+      locales: ${{ needs.draw.outputs.locales }}
+      validate_only: ${{ inputs.validate_only }}
+      refuse_while_play_is_written: true
+    secrets:
+      PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}

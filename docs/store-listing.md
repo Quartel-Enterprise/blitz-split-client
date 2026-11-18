@@ -38,7 +38,8 @@ gh workflow run store-listing.yml -f validate_only=true     # ask Google Play, c
 ```
 
 Not while a release is running: both write through the same Play account and on the same App Store version, so the
-workflow's first job refuses the run then. Its `version_code` input is the lane's option for a staged rollout, and
+workflow's first job refuses the run then. Nor while Google Play's screenshots are going up alone
+(`play-store-screenshots`), which writes through that account too. Its `version_code` input is the lane's option for a staged rollout, and
 `app_version` names the App Store version to write on (`APP_VERSION`), created when it is missing.
 
 On Play the upload reads the production track's release on its way. While the track holds more than one, as in a

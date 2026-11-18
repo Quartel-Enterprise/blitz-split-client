@@ -33,21 +33,32 @@ for each in "${GROUP_WORKFLOWS[@]}"; do
   fi
 done
 
+# Fails, saying why, while a workflow that sends a store's screenshots has a run that isn't over, whatever it is
+# waiting for. A list that can't be read is not an empty one: dispatching then would be a guess.
+refuse_while_going() {
+  local sending="$1" what="$2" why="$3" going
+  if ! going="$(gh run list --workflow="$sending" --repo "$REPO" --limit 30 --json status --jq '[.[] | select(.status != "completed")] | length')"; then
+    echo "Could not see whether $what are going up ($sending). Run this again." >&2
+    exit 1
+  fi
+  if [ "${going:-0}" -gt 0 ]; then
+    echo "$what are still going up (a run of $sending isn't over), and $why. Wait for that run to end, then run this again." >&2
+    exit 1
+  fi
+}
+
 # A stable release submits the App Store versions, and a version waiting for review takes no screenshot. Dispatched
 # while a set made on a Mac is still going up, one locale per job (app-store-screenshots.yml), it would leave the
-# locales still to go without theirs. The release's own first job refuses the run then; this says so before anything
-# is dispatched. A beta submits nothing, so it goes on.
+# locales still to go without theirs. It also sends its bundle to Google Play through an edit, as each locale of the
+# listing's screenshots does when they go alone (play-store-screenshots.yml), and the newer edit drops the one still
+# open. The release's own first job refuses the run then; this says so before anything is dispatched, whatever the
+# release's inputs: the upload jobs of both stop while any stable release is going, so one that reaches neither store
+# would still fail the locales still to go. A beta is let through, as before.
 if [ "$workflow" = release-production.yml ]; then
-  # Every run that isn't over, whatever it is waiting for. A list that can't be read is not an empty one:
-  # dispatching then would be a guess.
-  if ! uploading="$(gh run list --workflow=app-store-screenshots.yml --repo "$REPO" --limit 30 --json status --jq '[.[] | select(.status != "completed")] | length')"; then
-    echo "Could not see whether App Store screenshots are going up (app-store-screenshots.yml). Run this again." >&2
-    exit 1
-  fi
-  if [ "${uploading:-0}" -gt 0 ]; then
-    echo "App Store screenshots are still going up (a run of app-store-screenshots.yml isn't over), and the release would submit the versions before the last locale landed. Wait for that run to end, then run this again." >&2
-    exit 1
-  fi
+  refuse_while_going app-store-screenshots.yml "App Store screenshots" \
+    "the release would submit the versions before the last locale landed"
+  refuse_while_going play-store-screenshots.yml "Google Play screenshots" \
+    "the release's bundle and a locale's screenshots would drop each other's Play edit"
 fi
 
 before="$(gh run list --workflow="$workflow" --repo "$REPO" --limit 1 --json databaseId --jq '.[0].databaseId // 0')"

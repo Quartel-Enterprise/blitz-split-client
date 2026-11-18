@@ -2,8 +2,9 @@ name: 'Check that no run of some workflows is going'
 description: >-
   Fails while one of the workflows named has a run that isn't over, this run aside: in progress, waiting or queued.
   For the workflows that write on what another one writes on, through the same Play account or on the same App
-  Store version: store-listing.yml and app-store-screenshots.yml against the releases, and release-production.yml
-  against app-store-screenshots.yml. The releases share a concurrency group the others can't join, since a run of
+  Store version: store-listing.yml, app-store-screenshots.yml and play-store-screenshots.yml against the releases
+  (and the last against store-listing.yml, both ways), and release-production.yml against the two screenshot
+  workflows. The releases share a concurrency group the others can't join, since a run of
   theirs waiting in it would cancel a release waiting too, so a run that is going stops the new one here instead.
 
 inputs:

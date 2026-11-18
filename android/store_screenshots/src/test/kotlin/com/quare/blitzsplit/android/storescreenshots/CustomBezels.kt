@@ -20,6 +20,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.lucianosantos.storescreenshots.DeviceMockup
+import dev.lucianosantos.storescreenshots.FormFactor
+import dev.lucianosantos.storescreenshots.MockupOrientation
+
+// The time on every status bar a frame draws, Play's phone and tablets: the one Apple's own screenshots show.
+internal const val STATUS_BAR_CLOCK = "9:41"
 
 // Each frame takes the width the canvas offers and its height from the screen's own proportions, never a fixed size:
 // the library measures a custom frame at the offered width, so a fixed size wider than that is narrowed alone and the
@@ -57,6 +63,26 @@ private val iPadBezelColor = Color(0xFF020202)
 private val iPadCameraColor = Color(0xFF0E0F13)
 private val iPadCameraLensColor = Color(0xFF1B2130)
 private val iPadVolumeButtons = listOf(123.8f to 47.9f, 185.7f to 49f)
+
+/**
+ * A Play tablet lying down: the library's own tablet, turned a quarter. Its tablet frame only stands upright, but the
+ * mockup that frame draws takes an orientation, and lying down it measures the screen wider than tall and tells it
+ * so (the window's size and the configuration's orientation), which is what makes a screen pick its layout for a
+ * tablet lying down. The status bar is the one the upright frame drew, along the top edge, the screen under it.
+ */
+@Composable
+internal fun PlayTabletLandscapeSurface(
+    formFactor: FormFactor,
+    content: @Composable () -> Unit,
+) {
+    DeviceMockup(
+        formFactor = formFactor,
+        orientation = MockupOrientation.Landscape,
+        statusBarClock = STATUS_BAR_CLOCK,
+        edgeToEdge = false,
+        content = content,
+    )
+}
 
 /** The iPhone Duo closed, its outer display drawn in a plain bezel: store-screenshots has no Duo frame. */
 @Composable
