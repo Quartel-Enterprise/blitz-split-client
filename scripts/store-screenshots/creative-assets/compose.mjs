@@ -63,7 +63,6 @@ const ticketOf = ({ name, share }, person) => `
   </div></div>`;
 
 function pageOf(template, asset, tag, title, people) {
-  const language = tag.split("-")[0];
   const capture = (screen) => pathToFileURL(join(CAPTURES, tag, `${SCREENS[screen]}.png`)).href;
   const slots = {
     lang: tag,
