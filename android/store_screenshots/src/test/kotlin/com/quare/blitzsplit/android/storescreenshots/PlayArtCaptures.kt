@@ -110,6 +110,7 @@ internal class PlayArtCaptures(
         private const val OUTPUT_PROPERTY = "playArt.outputDir"
         private const val STATUS_BAR_HEIGHT = 36
         private const val FULL_QUALITY = 100
+        private const val BRAZIL = "pt-BR"
 
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters(name = "{0} {1} {2}")
@@ -123,39 +124,13 @@ internal class PlayArtCaptures(
     }
 }
 
-private const val BRAZIL = "pt-BR"
-
-internal enum class PlayArtDevice(
-    val directory: String,
-    val qualifiers: String,
-) {
-    PHONE("playphone", "w412dp-h892dp-port-xxhdpi"),
-    TABLET_7("playtablet7", "w960dp-h600dp-land-xhdpi"),
-    TABLET_10("playtablet10", "w1280dp-h800dp-land-xhdpi"),
-}
-
-internal enum class PlayArtScreen(
-    val fileName: String,
-    val content: @Composable (SampleTrip) -> Unit,
-) {
-    GROUP("01_group", { GroupScreenshotContent(it) }),
-    ITEMS("02_split_by_items", { ItemsScreenshotContent(it) }),
-    RECEIPT("03_receipt", { ReceiptScreenshotContent(it) }),
-    BALANCES("04_balances", { BalancesScreenshotContent(it) }),
-    INVITE("05_invite", { InviteScreenshotContent(it) }),
-    STATISTICS("06_statistics", { StatisticsScreenshotContent(it) }),
-    HOME("07_home", { HomeScreenshotContent(it) }),
-    PAYERS("08_payers_and_currencies", { PayersScreenshotContent(it) }),
-    PAY("11_pay", { PayScreenshotContent(it) }),
-}
-
 /** What Robolectric's qualifiers call a locale: "pt-BR" is "pt-rBR". */
 private val StoreLocale.qualifier: String
     get() = drawnLocale.replace("-", "-r")
 
 // Why: "Pagar Carla", the person this device's user owes, with the made-up key the App Store's capture shows.
 @Composable
-private fun PayScreenshotContent(trip: SampleTrip) {
+internal fun PayScreenshotContent(trip: SampleTrip) {
     val snackbar = remember { SnackbarHostState() }
     RegisterPaymentContent(
         state = payStateOf(trip),
@@ -178,7 +153,10 @@ private fun SampleTrip.personOf(index: Int): PaymentPerson = PaymentPerson(
 
 private fun payStateOf(trip: SampleTrip): RegisterPaymentUiState {
     val creditor = SampleTrips.CREDITOR
-    val debt = trip.debts.first { it.fromMemberId == memberIdOf(trip.me) && it.toMemberId == memberIdOf(creditor) }.amountMinor
+    val debt = trip.debts
+        .first {
+            it.fromMemberId == memberIdOf(trip.me) && it.toMemberId == memberIdOf(creditor)
+        }.amountMinor
     val code = PixBrCode.of(
         key = SampleTrips.PIX_KEY,
         amountMinor = debt,
@@ -203,13 +181,13 @@ private fun payStateOf(trip: SampleTrip): RegisterPaymentUiState {
         isSaving = false,
         isLoaded = true,
         receiverKeys = listOf(
-                ReceiverKey(
-                    id = "sample-pix-key",
-                    type = PaymentKeyType.RANDOM,
-                    value = SampleTrips.PIX_KEY,
-                    text = SampleTrips.PIX_KEY,
-                    isDefault = true,
-                ),
+            ReceiverKey(
+                id = "sample-pix-key",
+                type = PaymentKeyType.RANDOM,
+                value = SampleTrips.PIX_KEY,
+                text = SampleTrips.PIX_KEY,
+                isDefault = true,
+            ),
         ).toLoaded(),
         areReceiverKeysUnknown = false,
         groupName = trip.groupName,

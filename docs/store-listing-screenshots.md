@@ -411,6 +411,26 @@ show changes** (the group, Bill items, Statistics and Home, the `iphone67` captu
 up by hand in App Store Connect, on the version open for editing, with that language picked at the top of Product Page
 Information. Latin America's Spanish (`es`) goes on Spanish (Mexico). Check the page's **Preview** before submitting.
 
+## The listing art (new design, not uploaded yet)
+
+A second set of store images, drawn in the ticket design approved in November 2026, sits beside the framed one above
+and replaces nothing until someone uploads it: ten images a device on the App Store, eight on Google Play, the words
+in [`listing-art/copy.tsv`](../scripts/store-screenshots/listing-art/copy.tsv), and the Brazilian listing with Pix
+second ("Pagar Carla", from a made-up key the sample trip gives the person you owe in reais).
+
+```bash
+./scripts/store-screenshots/listing-art/capture.sh            # iPhone 6.7" and 6.3", iPad 13", closed iPhone Duo
+python3 scripts/store-screenshots/listing-art/capture-duo-open.py <udid>   # the Duo open, once something opened it
+./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt --rerun   # Google Play's bare Compose screens
+./gradlew :android:store_screenshots:testDebugUnitTest -PcreativeAssets --rerun   # the tickets' names and amounts
+node scripts/store-screenshots/listing-art/compose.mjs        # every device and language, into store_listings/listing-art/
+```
+
+`ART_DEVICES` and `ART_LOCALES` narrow the last step. A callout (the part of a screen drawn larger) is placed by its
+coordinates in `compose.mjs`, and for the cards whose height moves with a language's words, found in the capture by
+color. Right-to-left languages get the callout from the mirrored side. Google Play's 7" tablet has no callouts: its
+screens lay out differently enough that fixed coordinates miss. The Mac has no art yet: it keeps the framed set.
+
 ## What the images show
 
 | # | Screen | Play | App Store | Shows |

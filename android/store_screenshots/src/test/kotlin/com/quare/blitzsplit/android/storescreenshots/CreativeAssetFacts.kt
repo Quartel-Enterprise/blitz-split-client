@@ -31,7 +31,8 @@ import java.util.Locale
 internal class CreativeAssetFacts {
     @Test
     fun write() {
-        val directory = File(checkNotNull(System.getProperty(OUTPUT_DIRECTORY_PROPERTY)) { "Run with -PcreativeAssets" })
+        val directory =
+            File(checkNotNull(System.getProperty(OUTPUT_DIRECTORY_PROPERTY)) { "Run with -PcreativeAssets" })
         val facts = JSONObject()
         storeLocales.forEach { locale -> facts.put(locale.tag, factsOf(locale)) }
         directory.mkdirs()
@@ -45,7 +46,10 @@ internal class CreativeAssetFacts {
         val money = MoneyFormatter(
             currency = trip.currency,
             showsSats = false,
-            satsText = SatsText(amount = "%1\$s sats", symbol = "sats"),
+            satsText = SatsText(
+                amount = "%1\$s sats",
+                symbol = "sats",
+            ),
             locale = platformLocale,
         )
         val share = money.toText(trip.equalShareOfDinner)
