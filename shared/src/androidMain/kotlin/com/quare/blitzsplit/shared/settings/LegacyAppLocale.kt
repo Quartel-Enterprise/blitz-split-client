@@ -14,7 +14,7 @@ object LegacyAppLocale {
     private const val PREFERENCES = "app_language"
     private const val KEY_TAG = "tag"
 
-    private val nativeDigitLanguages = setOf("ar", "bn")
+    private val latinDigitLanguages = setOf("ar", "bn")
     private const val NUMBERING_SYSTEM = "nu"
     private const val LATIN_DIGITS = "latn"
 
@@ -34,7 +34,7 @@ object LegacyAppLocale {
      */
     private fun withLatinDigits(context: Context): Context {
         val locale = context.resources.configuration.locales[0]
-        val keepsItsDigits = locale.language !in nativeDigitLanguages
+        val keepsItsDigits = locale.language !in latinDigitLanguages
         if (keepsItsDigits || locale.getUnicodeLocaleType(NUMBERING_SYSTEM) == LATIN_DIGITS) return context
         val latin = Locale
             .Builder()
