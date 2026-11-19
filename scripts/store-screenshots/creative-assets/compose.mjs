@@ -119,7 +119,8 @@ async function main() {
   if (missingCopy.length) throw new Error(`copy.tsv has no row for ${missingCopy.join(", ")}`);
   if (!existsSync(FACTS)) throw new Error(`No ${FACTS}: run scripts/store-screenshots/creative-assets/generate.sh`);
   const facts = JSON.parse(await readFile(FACTS, "utf8"));
-  const asked = process.env.CREATIVE_ASSETS_LOCALES?.split(",") ?? tags;
+  // Why: an empty variable means every language, as generate.sh hands it to capture-ios.sh.
+  const asked = process.env.CREATIVE_ASSETS_LOCALES ? process.env.CREATIVE_ASSETS_LOCALES.split(",") : tags;
   const unknown = asked.filter((tag) => !tags.includes(tag));
   if (unknown.length) throw new Error(`locales.tsv has no ${unknown.join(", ")}`);
   const missingCaptures = asked.flatMap((tag) =>
@@ -129,6 +130,12 @@ async function main() {
   );
   if (missingCaptures.length) throw new Error(`No iPhone captures of ${missingCaptures.join(", ")}`);
 
+  const missingFacts = asked.filter((tag) => !facts[tag]);
+  if (missingFacts.length) throw new Error(`${FACTS} has no ${missingFacts.join(", ")}: run generate.sh again`);
+  const templates = new Map(
+    await Promise.all(ASSETS.map(async ({ name }) => [name, await readFile(join(HERE, `${name}.html`), "utf8")])),
+  );
+
   await rm(PAGES, { recursive: true, force: true });
   await mkdir(PAGES, { recursive: true });
   const chrome = await launchChrome();
@@ -136,8 +143,8 @@ async function main() {
     for (const tag of asked) {
       await mkdir(join(OUTPUT, tag), { recursive: true });
       for (const asset of ASSETS) {
-        const template = await readFile(join(HERE, `${asset.name}.html`), "utf8");
         const page = join(PAGES, `${tag}-${asset.name}.html`);
+        const template = templates.get(asset.name);
         await writeFile(page, pageOf(template, asset, tag, copy.get(tag)[asset.name], facts[tag].people));
         await chrome.setViewport(asset.width, asset.height, 1);
         await chrome.open(pathToFileURL(page).href);

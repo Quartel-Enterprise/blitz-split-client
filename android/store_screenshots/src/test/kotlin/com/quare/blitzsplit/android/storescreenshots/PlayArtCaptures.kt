@@ -19,7 +19,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.layout.FormPresentation
-import com.quare.blitzsplit.android.designsystem.layout.previewInitialsOf
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.android.feature.registerpayment.RegisterPaymentContent
 import com.quare.blitzsplit.core.expenses.domain.model.RelativeDay
@@ -144,7 +143,7 @@ internal fun PayScreenshotContent(trip: SampleTrip) {
 private fun SampleTrip.personOf(index: Int): PaymentPerson = PaymentPerson(
     id = memberIdOf(index),
     name = people[index],
-    initials = previewInitialsOf(people[index]),
+    initials = initialsOf(index),
     avatarColor = avatarColorOf(index),
     photoUrl = photoUrlOf(index),
     isMe = index == me,

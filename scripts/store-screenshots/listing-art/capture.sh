@@ -19,8 +19,10 @@ SLOTS="${ART_SLOTS:-iphone67 iphone63 ipad13 iphoneduo}"
 LOCALES="${ART_LOCALES:-}"
 
 for slot in $SLOTS; do
-  STORE_SCREENSHOTS_SLOTS="$slot" STORE_SCREENSHOTS_LOCALES="$LOCALES" \
-    STORE_SCREENSHOTS_SCREENS=group,items,receipt,balances,invite,statistics,home,payers,light \
+  screens=group,items,receipt,balances,invite,statistics,home,payers,light
+  # The art takes the group, Balances and Statistics of the Duo from its open display (capture-duo-open.py).
+  if [ "$slot" = iphoneduo ]; then screens=items,receipt,invite,home,payers,light; fi
+  STORE_SCREENSHOTS_SLOTS="$slot" STORE_SCREENSHOTS_LOCALES="$LOCALES" STORE_SCREENSHOTS_SCREENS="$screens" \
     "$HEAVY" "$CAPTURE"
   STORE_SCREENSHOTS_SLOTS="$slot" STORE_SCREENSHOTS_LOCALES="$LOCALES" \
     STORE_SCREENSHOTS_TABLE=art-screens STORE_SCREENSHOTS_SCREENS=splitmodes \

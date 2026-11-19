@@ -113,12 +113,11 @@ object BlitzSplitApple : KoinComponent {
     private val scope = MainScope() + Dispatchers.Main.immediate
 
     /*
-     * Why: the store screenshots' "Bill items" launch, with the screen still to open. Its bill's screen opens "Bill
-     * items" by itself once the dinner is loaded, as its Split row does: nothing taps on the Mac's capture, and on a
-     * phone the row's place changes with the screen's height.
+     * Why: the store screenshots' "Bill items" launch, or the listing art's "Dividir", with the split still to open.
+     * The bill's screen opens it by itself once the bill is loaded, as its Split row does: nothing taps on the Mac's
+     * capture, and on a phone the row's place changes with the screen's height.
      */
-    private var opensBillItems = false
-    private var opensSplitModes = false
+    private var opensSplitOf: StoreScreenshotsScreen? = null
 
     fun start() {
         startBlitzSplitKoin()
@@ -160,8 +159,7 @@ object BlitzSplitApple : KoinComponent {
             )
         }
         val screen = StoreScreenshotsScreen.fromCodeOrNull(screenCode)
-        opensBillItems = screen == StoreScreenshotsScreen.ITEMS
-        opensSplitModes = screen == StoreScreenshotsScreen.SPLIT_MODES
+        opensSplitOf = screen?.takeIf { it == StoreScreenshotsScreen.ITEMS || it == StoreScreenshotsScreen.SPLIT_MODES }
         val routes = screen?.routesOf(seeded).orEmpty()
         val navigator = get<Navigator>()
         scope.launch { navigator.openOverHome(routes) }
@@ -291,28 +289,24 @@ object BlitzSplitApple : KoinComponent {
         ViewModelHolder(ContactInviteViewModel::class) { get { parametersOf(route) } }
 
     fun createSplitBillViewModel(route: Route.SplitBill): ViewModelHolder<SplitBillViewModel> =
-        ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }
-            .also(::openBillItemsOnce)
-            .also(::openSplitModesOnce)
+        ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }.also(::openSplitOnce)
 
-    // Why: only the first bill of the launch, the dinner the screenshot opens: a bill opened after it stays as it is.
-    private fun openBillItemsOnce(holder: ViewModelHolder<SplitBillViewModel>) {
-        if (!opensBillItems) return
-        opensBillItems = false
+    /*
+     * Why: only the first bill of the launch, the one the screenshot opens: a bill opened after it stays as it is.
+     * "Bill items" waits for the dinner's items; the art's "Dividir" for the bill the receipt filled in.
+     */
+    private fun openSplitOnce(holder: ViewModelHolder<SplitBillViewModel>) {
+        val screen = opensSplitOf ?: return
+        opensSplitOf = null
         val viewModel = holder.viewModel
         scope.launch {
-            viewModel.uiState.first { it.split.mode == SplitMode.ITEMS }
-            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
-        }
-    }
-
-    // Why: the listing's art shows "Dividir" of the bill the receipt filled in, split equally.
-    private fun openSplitModesOnce(holder: ViewModelHolder<SplitBillViewModel>) {
-        if (!opensSplitModes) return
-        opensSplitModes = false
-        val viewModel = holder.viewModel
-        scope.launch {
-            viewModel.uiState.first { it.description.isNotBlank() && it.amountMinor != null }
+            viewModel.uiState.first { state ->
+                if (screen == StoreScreenshotsScreen.ITEMS) {
+                    state.split.mode == SplitMode.ITEMS
+                } else {
+                    state.description.isNotBlank() && state.amountMinor != null
+                }
+            }
             viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
         }
     }

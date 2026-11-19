@@ -84,42 +84,43 @@ function filtered(row, previous, bytesPerPixel) {
   return candidates.reduce((best, candidate) => (candidate.cost < best.cost ? candidate : best)).output;
 }
 
-/** The picture's pixels, four bytes each, for an 8-bit RGB or RGBA PNG. */
-export function readPixels(png) {
+// Each scanline of an 8-bit, non-interlaced RGB or RGBA PNG, its filter undone, with the bytes a pixel takes in it.
+function* scanlinesOf(png) {
   const { width, height, depth, colorType } = describePng(png);
-  if (depth !== 8 || (colorType !== COLOR_RGB && colorType !== COLOR_RGBA)) {
-    throw new Error(`Unexpected PNG: color type ${colorType}, depth ${depth}`);
+  const interlace = chunksOf(png).find((chunk) => chunk.type === "IHDR").data[12];
+  if (depth !== 8 || (colorType !== COLOR_RGB && colorType !== COLOR_RGBA) || interlace !== 0) {
+    throw new Error(`Unexpected PNG: color type ${colorType}, depth ${depth}, interlace ${interlace}`);
   }
   const channels = colorType === COLOR_RGBA ? 4 : 3;
   const raw = inflateSync(Buffer.concat(chunksOf(png).filter((chunk) => chunk.type === "IDAT").map((chunk) => chunk.data)));
   const stride = width * channels;
-  const pixels = Buffer.alloc(width * height * 4, 0xff);
   let previous = Buffer.alloc(stride);
   for (let y = 0; y < height; y++) {
     const start = y * (stride + 1);
     const row = Buffer.from(raw.subarray(start + 1, start + 1 + stride));
     unfilter(raw[start], row, previous, channels);
-    for (let x = 0; x < width; x++) row.copy(pixels, (y * width + x) * 4, x * channels, x * channels + channels);
+    yield { y, row, channels };
     previous = row;
+  }
+}
+
+/** The picture's pixels, four bytes each, for an 8-bit RGB or RGBA PNG. */
+export function readPixels(png) {
+  const { width, height } = describePng(png);
+  const pixels = Buffer.alloc(width * height * 4, 0xff);
+  for (const { y, row, channels } of scanlinesOf(png)) {
+    for (let x = 0; x < width; x++) row.copy(pixels, (y * width + x) * 4, x * channels, x * channels + channels);
   }
   return { width, height, pixels };
 }
 
 /** The same picture without its alpha channel. Refuses a pixel that isn't opaque: dropping it would change the image. */
 export function withoutAlpha(png) {
-  const { width, height, depth, colorType } = describePng(png);
+  const { width, colorType } = describePng(png);
   if (colorType === COLOR_RGB) return png;
-  if (colorType !== COLOR_RGBA || depth !== 8) throw new Error(`Unexpected PNG: color type ${colorType}, depth ${depth}`);
-  const chunks = chunksOf(png);
-  const raw = inflateSync(Buffer.concat(chunks.filter((chunk) => chunk.type === "IDAT").map((chunk) => chunk.data)));
-  const stride = width * 4;
-  let previous = Buffer.alloc(stride);
   let previousRgb = Buffer.alloc(width * 3);
   const rows = [];
-  for (let y = 0; y < height; y++) {
-    const start = y * (stride + 1);
-    const row = Buffer.from(raw.subarray(start + 1, start + 1 + stride));
-    unfilter(raw[start], row, previous, 4);
+  for (const { y, row } of scanlinesOf(png)) {
     const rgb = Buffer.alloc(width * 3);
     for (let x = 0; x < width; x++) {
       if (row[x * 4 + 3] !== 0xff) throw new Error(`The pixel at ${x},${y} is not opaque`);
@@ -128,10 +129,9 @@ export function withoutAlpha(png) {
       rgb[x * 3 + 2] = row[x * 4 + 2];
     }
     rows.push(filtered(rgb, previousRgb, 3));
-    previous = row;
     previousRgb = rgb;
   }
-  const header = Buffer.from(chunks.find((chunk) => chunk.type === "IHDR").data);
+  const header = Buffer.from(chunksOf(png).find((chunk) => chunk.type === "IHDR").data);
   header[9] = COLOR_RGB;
   return Buffer.concat([
     SIGNATURE,

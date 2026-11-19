@@ -139,15 +139,10 @@ async function table(path) {
   );
 }
 
-const pictures = new Map();
-async function pictureOf(file) {
-  if (!pictures.has(file)) pictures.set(file, readPixels(await readFile(file)));
-  return pictures.get(file);
-}
-
-// The run of rows the card fills, or null: the capture then falls back on the callout's own place.
-async function findCard(file, card, ratio, mirrored) {
-  const { width, height, pixels } = await pictureOf(file);
+// The run of rows the card fills, or null: the capture then falls back on the callout's own place. Each capture is
+// read once per panel, so its pixels aren't kept: a whole run would hold gigabytes of them.
+function findCard(png, card, ratio, mirrored) {
+  const { width, height, pixels } = readPixels(png);
   const differs = (y) => {
     const at = (x) => (y * width + (mirrored ? width - 1 - Math.round(x * ratio) : Math.round(x * ratio))) * 4;
     const [probe, edge] = [at(card.probe), at(card.edge)];
@@ -169,10 +164,11 @@ async function calloutOf(kind, file, name, mirrored) {
   const spec = kind.callouts[name];
   if (!spec) return "";
   const ratio = kind.ratio ?? 1;
-  const captureWidth = describePng(await readFile(file)).width;
+  const png = await readFile(file);
+  const captureWidth = describePng(png).width;
   const designWidth = { ipad13: 2732, iphone63: 1290 }[kind.slot] ?? captureWidth;
   const capture = captureWidth / designWidth;
-  const found = spec.card ? await findCard(file, spec.card, capture, mirrored) : null;
+  const found = spec.card ? findCard(png, spec.card, capture, mirrored) : null;
   // Why: a right-to-left screen is the left-to-right one mirrored, so its parts sit on the other side.
   const left0 = mirrored ? captureWidth - (spec.x + spec.w) * capture : spec.x * capture;
   const [x, y, w, h] = [left0, found?.y ?? spec.y * capture, spec.w * capture, found?.h ?? spec.h * capture];
@@ -204,15 +200,23 @@ function extraOf(kind, entry, words, people) {
 async function panelOf(device, tag, entry, words, people, offset) {
   const kind = DEVICES[device](entry.screen);
   const file = join(kind.play ? PLAY_CAPTURES : CAPTURES, kind.slot, tag, `${FILES[entry.screen]}.png`);
-  if (!existsSync(file)) throw new Error(`No capture at ${file}: run scripts/store-screenshots/listing-art/capture.sh`);
+  if (!existsSync(file)) {
+    const how = kind.play
+      ? "./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt --rerun"
+      : "scripts/store-screenshots/listing-art/capture.sh";
+    throw new Error(`No capture at ${file}: run ${how}`);
+  }
   const [titleLeft, titleTop, titleSize] = kind.title;
   const [left, top, width, padding, radius] = kind.device;
   const lines = words[entry.copy].split("|");
   const title = (kind.wide ? [lines.join(" ")] : lines).map((line) => `<span>${escapeHtml(line)}</span>`).join("");
-  const side = RIGHT_TO_LEFT.has(tag.split("-")[0]) ? "right" : "left";
+  const isRightToLeft = RIGHT_TO_LEFT.has(tag.split("-")[0]);
+  const side = isRightToLeft ? "right" : "left";
+  // Why: the stage is left to right so the panels sit side by side; the words in it are read in the language's own
+  // direction, or Arabic's and Hebrew's closing period lands at the start of the line.
   return {
     kind,
-    html: `<section class="panel" style="left:${offset}px;width:${kind.width}px;height:${kind.height}px"><h1 data-width="${kind.width - 2 * titleLeft}" style="${side}:${titleLeft}px;top:${titleTop}px;font-size:${titleSize}px">${title}</h1><div class="device" style="left:${left}px;top:${top}px;width:${width}px;padding:${padding}px;border-radius:${radius}px"><img src="${pathToFileURL(file).href}" alt="" style="border-radius:${radius - padding}px"></div>${await calloutOf(kind, file, entry.callout, side === "right")}${extraOf(kind, entry, words, people)}</section>`,
+    html: `<section class="panel" dir="${isRightToLeft ? "rtl" : "ltr"}" style="left:${offset}px;width:${kind.width}px;height:${kind.height}px"><h1 data-width="${kind.width - 2 * titleLeft}" style="${side}:${titleLeft}px;top:${titleTop}px;font-size:${titleSize}px">${title}</h1><div class="device" style="left:${left}px;top:${top}px;width:${width}px;padding:${padding}px;border-radius:${radius}px"><img src="${pathToFileURL(file).href}" alt="" style="border-radius:${radius - padding}px"></div>${await calloutOf(kind, file, entry.callout, side === "right")}${extraOf(kind, entry, words, people)}</section>`,
   };
 }
 
@@ -233,14 +237,24 @@ h1{position:absolute;font-weight:800;letter-spacing:-.03em;line-height:1.08}h1 s
 .pills{position:absolute;display:flex;justify-content:center;align-items:center;gap:26px;flex-wrap:wrap}
 .pill{padding:30px 58px;border-radius:80px;background:#fff;color:#00507f;font-size:58px;font-weight:800;letter-spacing:-.015em;white-space:nowrap;box-shadow:0 40px 80px rgba(0,20,50,.5)}`;
 
-// Shrinks what is too long for its place, then says what still doesn't fit.
+// Shrinks what is too long for its place, then says what still doesn't fit. The tickets' names, and their amounts,
+// shrink together, so the tickets of one image stay one size.
 const FIT = `(() => {
-  const shrink = (element, width) => { let size = parseFloat(getComputedStyle(element).fontSize);
-    while (element.scrollWidth > width && size > 16) { size -= 1; element.style.fontSize = size + 'px'; } };
-  document.querySelectorAll('h1').forEach((title) => { const width = Number(title.dataset.width); let size = parseFloat(getComputedStyle(title).fontSize);
-    while ([...title.children].some((line) => line.offsetWidth > width) && size > 40) { size -= 1; title.style.fontSize = size + 'px'; } });
-  document.querySelectorAll('.stub span, .stub b').forEach((text) => shrink(text, 262));
-  document.querySelectorAll('.pill').forEach((pill) => shrink(pill, pill.parentElement.offsetWidth));
+  const shrink = (elements, width) => { if (!elements.length) return; let size = parseFloat(getComputedStyle(elements[0]).fontSize);
+    while (elements.some((element) => element.scrollWidth > width) && size > 16) { size -= 1; elements.forEach((element) => { element.style.fontSize = size + 'px'; }); } };
+  const titles = [...document.querySelectorAll('h1')];
+  const tooWide = (title) => [...title.children].some((line) => line.offsetWidth > Number(title.dataset.width));
+  titles.forEach((title) => { let size = parseFloat(getComputedStyle(title).fontSize);
+    while (tooWide(title) && size > 40) { size -= 1; title.style.fontSize = size + 'px'; } });
+  shrink([...document.querySelectorAll('.stub span')], 262);
+  shrink([...document.querySelectorAll('.stub b')], 262);
+  const pills = [...document.querySelectorAll('.pill')];
+  pills.forEach((pill) => shrink([pill], pill.parentElement.offsetWidth));
+  return [
+    ...titles.filter(tooWide).map((title) => title.textContent),
+    ...[...document.querySelectorAll('.stub span, .stub b')].filter((text) => text.scrollWidth > 262).map((text) => text.textContent),
+    ...pills.filter((pill) => pill.scrollWidth > pill.parentElement.offsetWidth).map((pill) => pill.textContent),
+  ];
 })()`;
 
 function stageOf(panels) {
@@ -258,9 +272,17 @@ function stageOf(panels) {
 
 async function main() {
   const copy = await table(join(HERE, "copy.tsv"));
+  if (!existsSync(FACTS)) {
+    throw new Error(`No ${FACTS}: run ./gradlew :android:store_screenshots:testDebugUnitTest -PcreativeAssets --rerun`);
+  }
   const facts = JSON.parse(await readFile(FACTS, "utf8"));
-  const tags = process.env.ART_LOCALES?.split(",") ?? [...copy.keys()];
-  const devices = process.env.ART_DEVICES?.split(",") ?? Object.keys(DEVICES);
+  // Why: an empty variable means every one, as capture.sh reads ART_LOCALES.
+  const tags = process.env.ART_LOCALES ? process.env.ART_LOCALES.split(",") : [...copy.keys()];
+  const devices = process.env.ART_DEVICES ? process.env.ART_DEVICES.split(",") : Object.keys(DEVICES);
+  const unknownTags = tags.filter((tag) => !copy.has(tag) || !facts[tag]);
+  if (unknownTags.length) throw new Error(`copy.tsv or facts.json has no ${unknownTags.join(", ")}`);
+  const unknownDevices = devices.filter((device) => !DEVICES[device]);
+  if (unknownDevices.length) throw new Error(`No device ${unknownDevices.join(", ")}: one of ${Object.keys(DEVICES).join(", ")}`);
   await rm(PAGES, { recursive: true, force: true });
   await mkdir(PAGES, { recursive: true });
   const chrome = await launchChrome();
@@ -287,8 +309,9 @@ async function main() {
           await chrome.setViewport(panel.kind.width, panel.kind.height, 1);
           await chrome.open(pathToFileURL(page).href);
           await chrome.waitFor(`document.readyState === 'complete' && document.fonts.status === 'loaded' && [...document.images].every((image) => image.complete && image.naturalWidth > 0)`);
-          await chrome.evaluate(FIT);
           const file = join(folder, `${String(index + 1).padStart(2, "0")}_${story[index].copy}.png`);
+          const overflowing = await chrome.evaluate(FIT);
+          if (overflowing.length) console.warn(`${file}: still too long for its place: ${overflowing.join(" / ")}`);
           await chrome.screenshot(file);
           const flat = withoutAlpha(await readFile(file));
           const size = describePng(flat);

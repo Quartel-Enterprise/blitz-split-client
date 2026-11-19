@@ -48,6 +48,10 @@ TABLES="$ROOT/scripts/store-screenshots"
 OUTPUT="${STORE_SCREENSHOTS_OUTPUT:-$ROOT/build/outputs/apple-screenshot-captures}"
 # The table of the screens to capture: the listing's, or art-screens for the two only the listing's art shows.
 SCREENS_TABLE="${STORE_SCREENSHOTS_TABLE:-screens}"
+# A run of every screen of the listing's table starts a slot or a language over; one of another table writes beside
+# the listing's captures, so it never deletes them.
+is_whole_table=""
+if [ "$SCREENS_TABLE" = screens ] && [ -z "$STORE_SCREENSHOTS_SCREENS" ]; then is_whole_table=1; fi
 DERIVED_DATA="$ROOT/build/apple-screenshots/DerivedData"
 LOGS="$ROOT/build/apple-screenshots/logs"
 SLOTS="${STORE_SCREENSHOTS_SLOTS:-iphone63 iphone67 ipad13 iphoneduo iphoneduoopen}"
@@ -311,7 +315,7 @@ capture_language() {
   # Nothing of what it was to capture stays: its whole folder, unless the run was narrowed to some screens, whose
   # others are an earlier run's.
   forget_captures "$directory"
-  if [ -z "$STORE_SCREENSHOTS_SCREENS" ]; then rm -rf "${directory:?}"; fi
+  if [ -n "$is_whole_table" ]; then rm -rf "${directory:?}"; fi
   summary "| $tag | ❌ $result, $ATTEMPTS tries | $(duration "$spent") |"
   return 1
 }
@@ -364,7 +368,7 @@ capture_slot() {
 
 # A malformed row would fail every language's run alike, after two tries each: stop before the build instead.
 check_table locales 4
-check_table screens 3
+check_table "$SCREENS_TABLE" 3
 check_table assets 2
 # The app's own language comes back once a slot's captures end, whatever they stopped on: one launch without the seed
 # (StoreScreenshotsRun), here, where the test's own would be one more launch per language. Nothing to restore, and
@@ -427,7 +431,7 @@ for slot in $SLOTS; do
     --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100
   # Only the locales and screens asked for are captured again: a narrowed run keeps the others' PNGs. A whole run
   # starts the slot over, so one it then skips leaves no older capture to frame.
-  if [ -z "$STORE_SCREENSHOTS_LOCALES" ] && [ -z "$STORE_SCREENSHOTS_SCREENS" ]; then rm -rf "${OUTPUT:?}/$slot"; fi
+  if [ -z "$STORE_SCREENSHOTS_LOCALES" ] && [ -n "$is_whole_table" ]; then rm -rf "${OUTPUT:?}/$slot"; fi
   if [ "$slot" = iphoneduoopen ] && ! open_duo "$udid" "$(simulator_name "$slot")"; then
     echo "The iPhone Duo didn't open: skipping $slot, the other slots go on" >&2
     xcrun simctl shutdown "$udid" || true

@@ -382,7 +382,7 @@ measured. Should Google Play refuse to open that edit for the quota, the group w
 
 Besides the screenshots, an App Store product page takes two images of its own, under **Product Page Information ›
 Header and Search Results** in App Store Connect. They appear on iOS and iPadOS 27 and later, and are generated like
-the screenshots, in all 26 languages:
+the screenshots, in all 29 languages:
 
 ```bash
 ./scripts/store-screenshots/creative-assets/generate.sh                               # capture, then draw

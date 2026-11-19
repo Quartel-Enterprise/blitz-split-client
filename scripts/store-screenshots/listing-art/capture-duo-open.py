@@ -28,12 +28,24 @@ def rows(name):
 
 def main():
     udid = sys.argv[1]
-    only = set(sys.argv[2].split(",")) if len(sys.argv) > 2 else None
+    only = set(sys.argv[2].split(",")) if len(sys.argv) > 2 and sys.argv[2] else None
+    unknown = (only or set()) - {row[0] for row in rows("locales")}
+    if unknown:
+        sys.exit(f"locales.tsv has no {', '.join(sorted(unknown))}")
     environment = dict(os.environ)
     for name, path in rows("assets"):
         encoded = base64.b64encode((TABLES / path).read_bytes()).decode()
         environment[f"SIMCTL_CHILD_STORE_SCREENSHOTS_ASSET_{name}"] = encoded
     subprocess.run(["xcrun", "simctl", "install", udid, str(APP)], check=True)
+    # The status bar capture-ios.sh draws on every other capture: Apple's 9:41, full bars and battery.
+    subprocess.run(
+        [
+            "xcrun", "simctl", "status_bar", udid, "override", "--time", "9:41", "--dataNetwork", "wifi",
+            "--wifiMode", "active", "--wifiBars", "3", "--cellularMode", "active", "--cellularBars", "4",
+            "--batteryState", "discharging", "--batteryLevel", "100",
+        ],
+        check=True,
+    )
     for tag, language, apple_language, apple_locale in rows("locales"):
         if only and tag not in only:
             continue
@@ -59,6 +71,13 @@ def main():
                 capture_output=True,
             )
         print(f"Captured iphoneduoopen: {tag}", flush=True)
+    # The app's own language back, as capture-ios.sh puts it once a slot's captures end (StoreScreenshotsRun).
+    subprocess.run(
+        ["xcrun", "simctl", "launch", "--terminate-running-process", udid, "com.quare.blitzsplit",
+         "-StoreScreenshotsRestore", "YES"],
+        capture_output=True,
+    )
+    time.sleep(2)
     subprocess.run(["xcrun", "simctl", "terminate", udid, "com.quare.blitzsplit"], capture_output=True)
 
 
