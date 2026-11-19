@@ -14,6 +14,7 @@ import { describePng, readPixels, withoutAlpha } from "../creative-assets/png.mj
 const HERE = import.meta.dirname;
 const ROOT = resolve(HERE, "../../..");
 const CAPTURES = join(ROOT, "build/outputs/apple-screenshot-captures");
+const PLAY_CAPTURES = join(ROOT, "build/outputs/play-art-captures");
 const FACTS = join(ROOT, "build/outputs/app-store-creative-asset-facts/facts.json");
 const PAGES = join(ROOT, "build/outputs/listing-art-pages");
 const OUTPUT = join(ROOT, "store_listings/listing-art");
@@ -44,15 +45,19 @@ const STORY = [
   { copy: "offline", screen: "light" },
 ];
 
+// Google Play holds eight a device, and Android's art draws no light theme nor "Dividir": the story without them, and
+// with Pix in Brazil's place of the groups at a glance.
+const PLAY_STORY = STORY.filter((entry) => !["split", "offline"].includes(entry.copy));
+
 // A callout is the part of a capture drawn larger over it: x, y, width, height and its scale, in the capture's pixels.
 // `card` finds its top and height in the capture instead, as a language's longer words move what is above it: the first
 // run of rows from `from` on, at least `min` tall, whose pixel at `probe` differs from the screen's own at `edge`.
 const PHONE_CALLOUTS = {
   group: { x: 40, y: 1170, w: 1210, h: 360, s: 0.9, card: { from: 900, min: 200, max: 420, probe: 90, edge: 8 } },
   pay: { x: 30, y: 1260, w: 1230, h: 430, s: 0.92, card: { from: 1120, min: 300, max: 520, probe: 60, edge: 8 } },
-  items: { x: 50, y: 1250, w: 850, h: 155, s: 1.25 },
+  items: { x: 50, y: 1250, w: 850, h: 155, s: 1.25, card: { from: 1170, min: 100, max: 175, probe: 90, edge: 8 } },
   balances: { x: 40, y: 1930, w: 1210, h: 620, s: 0.95, card: { from: 1650, min: 300, max: 620, probe: 90, edge: 8 } },
-  split: { x: 40, y: 755, w: 1250, h: 125, s: 0.944 },
+  split: { x: 40, y: 755, w: 1250, h: 125, s: 0.944, card: { from: 640, min: 80, max: 140, probe: 90, edge: 8 } },
   payers: { x: 40, y: 735, w: 900, h: 250, s: 1.1 },
   statistics: { x: 40, y: 1600, w: 1210, h: 420, s: 0.92, card: { from: 1450, min: 280, max: 460, probe: 90, edge: 8 } },
   home: { x: 40, y: 500, w: 990, h: 340, s: 1.05 },
@@ -73,6 +78,22 @@ const DUO_CALLOUTS = {
   split: { x: 60, y: 500, w: 1085, h: 115, s: 0.98 },
   payers: { x: 60, y: 525, w: 760, h: 225, s: 1.25 },
   home: { x: 40, y: 200, w: 1090, h: 420, s: 0.95 },
+};
+const PLAY_PHONE_CALLOUTS = {
+  group: { x: 40, y: 960, w: 1160, h: 260, s: 0.95, card: { from: 850, min: 180, max: 300, probe: 90, edge: 8 } },
+  pay: { x: 40, y: 950, w: 1160, h: 400, s: 0.95, card: { from: 900, min: 300, max: 440, probe: 90, edge: 8 } },
+  items: { x: 40, y: 930, w: 1100, h: 170, s: 1.05 },
+  balances: { x: 40, y: 1560, w: 1160, h: 420, s: 0.95 },
+  payers: { x: 40, y: 600, w: 900, h: 300, s: 1.1 },
+  statistics: { x: 40, y: 1480, w: 1160, h: 460, s: 0.95, card: { from: 1380, min: 300, max: 480, probe: 90, edge: 8 } },
+  home: { x: 40, y: 440, w: 1160, h: 380, s: 0.95 },
+};
+const PLAY_TABLET_CALLOUTS = {
+  group: { x: 280, y: 650, w: 760, h: 180, s: 1.6 },
+  items: { x: 110, y: 620, w: 950, h: 250, s: 1.3 },
+  balances: { x: 1060, y: 470, w: 1460, h: 470, s: 1.0 },
+  payers: { x: 100, y: 470, w: 900, h: 200, s: 1.4 },
+  home: { x: 220, y: 220, w: 700, h: 330, s: 1.6 },
 };
 const DUO_OPEN_CALLOUTS = {
   group: { x: 61, y: 967, w: 1245, h: 290, s: 1.05 },
@@ -98,6 +119,9 @@ const DEVICES = {
   iphone_6_3: () => ({ ...scaled(PHONE, 1206 / 1290), width: 1206, height: 2622, slot: "iphone63" }),
   ipad_13: () => ({ ...IPAD, width: 2732, height: 2048, slot: "ipad13" }),
   ipad_11: () => ({ ...scaled(IPAD, 2388 / 2732), width: 2388, height: 1668, slot: "ipad13" }),
+  play_phone: () => ({ ...scaled(PHONE, 1242 / 1290), width: 1242, height: 2484, slot: "playphone", play: true, callouts: PLAY_PHONE_CALLOUTS }),
+  play_tablet_10: () => ({ ...scaled(IPAD, 2560 / 2732), width: 2560, height: 1440, slot: "playtablet10", play: true, callouts: PLAY_TABLET_CALLOUTS }),
+  play_tablet_7: () => ({ ...scaled(IPAD, 2560 / 2732), width: 2560, height: 1440, slot: "playtablet7", play: true, callouts: {} }),
   iphone_duo: (screen) => (["group", "balances", "statistics"].includes(screen) ? DUO_OPEN : DUO_CLOSED),
 };
 
@@ -122,10 +146,10 @@ async function pictureOf(file) {
 }
 
 // The run of rows the card fills, or null: the capture then falls back on the callout's own place.
-async function findCard(file, card, ratio) {
+async function findCard(file, card, ratio, mirrored) {
   const { width, height, pixels } = await pictureOf(file);
   const differs = (y) => {
-    const at = (x) => (y * width + Math.round(x * ratio)) * 4;
+    const at = (x) => (y * width + (mirrored ? width - 1 - Math.round(x * ratio) : Math.round(x * ratio))) * 4;
     const [probe, edge] = [at(card.probe), at(card.edge)];
     return Math.abs(pixels[probe] - pixels[edge]) + Math.abs(pixels[probe + 1] - pixels[edge + 1]) + Math.abs(pixels[probe + 2] - pixels[edge + 2]) > 12;
   };
@@ -141,14 +165,17 @@ async function findCard(file, card, ratio) {
   return null;
 }
 
-async function calloutOf(kind, file, name) {
+async function calloutOf(kind, file, name, mirrored) {
   const spec = kind.callouts[name];
   if (!spec) return "";
   const ratio = kind.ratio ?? 1;
   const captureWidth = describePng(await readFile(file)).width;
-  const capture = captureWidth / (kind.slot === "ipad13" ? 2732 : kind.slot === "iphone63" ? 1290 : captureWidth);
-  const found = spec.card ? await findCard(file, spec.card, capture) : null;
-  const [x, y, w, h] = [spec.x * capture, found?.y ?? spec.y * capture, spec.w * capture, found?.h ?? spec.h * capture];
+  const designWidth = { ipad13: 2732, iphone63: 1290 }[kind.slot] ?? captureWidth;
+  const capture = captureWidth / designWidth;
+  const found = spec.card ? await findCard(file, spec.card, capture, mirrored) : null;
+  // Why: a right-to-left screen is the left-to-right one mirrored, so its parts sit on the other side.
+  const left0 = mirrored ? captureWidth - (spec.x + spec.w) * capture : spec.x * capture;
+  const [x, y, w, h] = [left0, found?.y ?? spec.y * capture, spec.w * capture, found?.h ?? spec.h * capture];
   const [left, top, deviceWidth, padding] = kind.device;
   const fit = (deviceWidth - 2 * padding) / captureWidth;
   const scale = spec.s * (ratio / capture);
@@ -176,7 +203,7 @@ function extraOf(kind, entry, words, people) {
 
 async function panelOf(device, tag, entry, words, people, offset) {
   const kind = DEVICES[device](entry.screen);
-  const file = join(CAPTURES, kind.slot, tag, `${FILES[entry.screen]}.png`);
+  const file = join(kind.play ? PLAY_CAPTURES : CAPTURES, kind.slot, tag, `${FILES[entry.screen]}.png`);
   if (!existsSync(file)) throw new Error(`No capture at ${file}: run scripts/store-screenshots/listing-art/capture.sh`);
   const [titleLeft, titleTop, titleSize] = kind.title;
   const [left, top, width, padding, radius] = kind.device;
@@ -185,7 +212,7 @@ async function panelOf(device, tag, entry, words, people, offset) {
   const side = RIGHT_TO_LEFT.has(tag.split("-")[0]) ? "right" : "left";
   return {
     kind,
-    html: `<section class="panel" style="left:${offset}px;width:${kind.width}px;height:${kind.height}px"><h1 data-width="${kind.width - 2 * titleLeft}" style="${side}:${titleLeft}px;top:${titleTop}px;font-size:${titleSize}px">${title}</h1><div class="device" style="left:${left}px;top:${top}px;width:${width}px;padding:${padding}px;border-radius:${radius}px"><img src="${pathToFileURL(file).href}" alt="" style="border-radius:${radius - padding}px"></div>${await calloutOf(kind, file, entry.callout)}${extraOf(kind, entry, words, people)}</section>`,
+    html: `<section class="panel" style="left:${offset}px;width:${kind.width}px;height:${kind.height}px"><h1 data-width="${kind.width - 2 * titleLeft}" style="${side}:${titleLeft}px;top:${titleTop}px;font-size:${titleSize}px">${title}</h1><div class="device" style="left:${left}px;top:${top}px;width:${width}px;padding:${padding}px;border-radius:${radius}px"><img src="${pathToFileURL(file).href}" alt="" style="border-radius:${radius - padding}px"></div>${await calloutOf(kind, file, entry.callout, side === "right")}${extraOf(kind, entry, words, people)}</section>`,
   };
 }
 
@@ -240,8 +267,9 @@ async function main() {
   try {
     for (const device of devices) {
       for (const tag of tags) {
-        const story = STORY.filter((entry) => (!entry.only || entry.only === tag) && entry.except !== tag);
-        if (story.length !== 10) throw new Error(`${tag} has ${story.length} images`);
+        const play = device.startsWith("play_");
+        const story = (play ? PLAY_STORY : STORY).filter((entry) => (!entry.only || entry.only === tag) && entry.except !== tag);
+        if (story.length !== (play ? 8 : 10)) throw new Error(`${tag} has ${story.length} images`);
         const panels = [];
         let offset = 0;
         for (const entry of story) {

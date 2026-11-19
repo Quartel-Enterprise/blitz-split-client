@@ -22,6 +22,7 @@ dependencies {
     testImplementation(project(":core:expenses"))
     testImplementation(project(":core:activity"))
     testImplementation(project(":core:groups"))
+    testImplementation(project(":core:profile"))
     testImplementation(project(":android:platform"))
     testImplementation(project(":android:feature:group_detail"))
     testImplementation(project(":feature:group_detail"))

@@ -235,6 +235,11 @@ fun Project.configureStoreScreenshots() {
         .dir("outputs/app-store-creative-asset-facts")
         .get()
         .asFile
+    val generatesPlayArt = providers.gradleProperty("playArt").isPresent
+    val playArtDir = rootProject.layout.buildDirectory
+        .dir("outputs/play-art-captures")
+        .get()
+        .asFile
     tasks.withType<Test>().configureEach {
         val isGenerator = name == GENERATE_TASK
         onlyIf("the build asked for the store screenshots") { isGenerator && generatesScreenshots }
@@ -263,6 +268,14 @@ fun Project.configureStoreScreenshots() {
             return@configureEach
         }
         filter.excludeTestsMatching("*.CreativeAssetFacts")
+        // The bare screens of Google Play's art (scripts/store-screenshots/listing-art), only when asked.
+        if (generatesPlayArt) {
+            filter.includeTestsMatching("*.PlayArtCaptures")
+            systemProperty("playArt.outputDir", playArtDir.absolutePath)
+            outputs.dir(playArtDir)
+            return@configureEach
+        }
+        filter.excludeTestsMatching("*.PlayArtCaptures")
         if (generatesAppStoreScreenshots) {
             inputs.dir(capturesDir)
             doFirst {
