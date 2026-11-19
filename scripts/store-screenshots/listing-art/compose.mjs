@@ -6,21 +6,18 @@
 //   ART_DEVICES=iphone_6_7,ipad_13 ART_LOCALES=en-US,pt-BR node scripts/store-screenshots/listing-art/compose.mjs
 import { existsSync } from "node:fs";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { launchChrome } from "../../readme-hero/chrome.mjs";
-import { describePng, readPixels, withoutAlpha } from "../creative-assets/png.mjs";
+import { describePng, readPixels } from "../creative-assets/png.mjs";
+import { escapeHtml, FACES, FACTS, isRightToLeft, ROOT, screenshotOpaque } from "../creative-assets/shared.mjs";
 
 const HERE = import.meta.dirname;
-const ROOT = resolve(HERE, "../../..");
 const CAPTURES = join(ROOT, "build/outputs/apple-screenshot-captures");
 const PLAY_CAPTURES = join(ROOT, "build/outputs/play-art-captures");
-const FACTS = join(ROOT, "build/outputs/app-store-creative-asset-facts/facts.json");
 const PAGES = join(ROOT, "build/outputs/listing-art-pages");
 const OUTPUT = join(ROOT, "store_listings/listing-art");
-const FACES = join(ROOT, "scripts/store-screenshots/faces");
 const RECEIPT = join(ROOT, "scripts/store-screenshots/receipt.jpg");
-const RIGHT_TO_LEFT = new Set(["ar", "he"]);
 const COLORS = ["#0077cc", "#00558f", "#0070c0", "#00558f", "#0070c0", "#173a80", "#1b2f6e", "#173a80", "#0070c0", "#0077cc"];
 const SHARE_PEOPLE = { promise: [2, 3], split: [1, 4] };
 
@@ -138,7 +135,6 @@ const DEVICES = {
   iphone_duo: (screen) => (["group", "balances", "statistics"].includes(screen) ? DUO_OPEN : DUO_CLOSED),
 };
 
-const escapeHtml = (text) => text.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
 async function table(path) {
   const rows = (await readFile(path, "utf8")).split("\n").filter(Boolean);
@@ -224,13 +220,13 @@ async function panelOf(device, tag, entry, words, people, offset) {
   const [left, top, width, padding, radius] = kind.device;
   const lines = words[entry.copy].split("|");
   const title = (kind.wide ? [lines.join(" ")] : lines).map((line) => `<span>${escapeHtml(line)}</span>`).join("");
-  const isRightToLeft = RIGHT_TO_LEFT.has(tag.split("-")[0]);
-  const side = isRightToLeft ? "right" : "left";
+  const rtl = isRightToLeft(tag);
+  const side = rtl ? "right" : "left";
   // Why: the stage is left to right so the panels sit side by side; the words in it are read in the language's own
   // direction, or Arabic's and Hebrew's closing period lands at the start of the line.
   return {
     kind,
-    html: `<section class="panel" dir="${isRightToLeft ? "rtl" : "ltr"}" style="left:${offset}px;width:${kind.width}px;height:${kind.height}px"><h1 data-width="${kind.width - 2 * titleLeft}" style="${side}:${titleLeft}px;top:${titleTop}px;font-size:${titleSize}px">${title}</h1>${kind.window ? `<img class="window" src="${pathToFileURL(file).href}" alt="" style="left:${left}px;top:${top}px;width:${width}px">` : `<div class="device" style="left:${left}px;top:${top}px;width:${width}px;padding:${padding}px;border-radius:${radius}px"><img src="${pathToFileURL(file).href}" alt="" style="border-radius:${radius - padding}px"></div>`}${await calloutOf(kind, file, entry.callout, side === "right")}${extraOf(kind, entry, words, people)}</section>`,
+    html: `<section class="panel" dir="${rtl ? "rtl" : "ltr"}" style="left:${offset}px;width:${kind.width}px;height:${kind.height}px"><h1 data-width="${kind.width - 2 * titleLeft}" style="${side}:${titleLeft}px;top:${titleTop}px;font-size:${titleSize}px">${title}</h1>${kind.window ? `<img class="window" src="${pathToFileURL(file).href}" alt="" style="left:${left}px;top:${top}px;width:${width}px">` : `<div class="device" style="left:${left}px;top:${top}px;width:${width}px;padding:${padding}px;border-radius:${radius}px"><img src="${pathToFileURL(file).href}" alt="" style="border-radius:${radius - padding}px"></div>`}${await calloutOf(kind, file, entry.callout, side === "right")}${extraOf(kind, entry, words, people)}</section>`,
   };
 }
 
@@ -320,7 +316,7 @@ async function main() {
         await mkdir(folder, { recursive: true });
         for (const [index, panel] of panels.entries()) {
           const page = join(PAGES, `${device}-${tag}-${index}.html`);
-          const dir = RIGHT_TO_LEFT.has(tag.split("-")[0]) ? "rtl" : "ltr";
+          const dir = isRightToLeft(tag) ? "rtl" : "ltr";
           await writeFile(page, `<!doctype html><html lang="${tag}" dir="${dir}"><head><meta charset="utf-8"><style>${CSS}html,body{width:${panel.kind.width}px;height:${panel.kind.height}px}</style></head><body><div id="stage" dir="ltr" style="left:${-offsets[index]}px;width:${total}px;height:${height}px;background:linear-gradient(90deg,${stops})">${svg}${panel.html}</div></body></html>`);
           await chrome.setViewport(panel.kind.width, panel.kind.height, 1);
           await chrome.open(pathToFileURL(page).href);
@@ -328,11 +324,7 @@ async function main() {
           const file = join(folder, `${String(index + 1).padStart(2, "0")}_${story[index].copy}.png`);
           const overflowing = await chrome.evaluate(FIT);
           if (overflowing.length) console.warn(`${file}: still too long for its place: ${overflowing.join(" / ")}`);
-          await chrome.screenshot(file);
-          const flat = withoutAlpha(await readFile(file));
-          const size = describePng(flat);
-          if (size.width !== panel.kind.width || size.height !== panel.kind.height) throw new Error(`${file} came out ${size.width}x${size.height}`);
-          await writeFile(file, flat);
+          await screenshotOpaque(chrome, file, panel.kind.width, panel.kind.height);
         }
         console.log(`Drew ${device} ${tag}`);
       }

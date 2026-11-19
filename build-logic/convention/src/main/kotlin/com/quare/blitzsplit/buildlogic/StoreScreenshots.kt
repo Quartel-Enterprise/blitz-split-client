@@ -240,6 +240,10 @@ fun Project.configureStoreScreenshots() {
         .dir("outputs/play-art-captures")
         .get()
         .asFile
+    // Each draws a different test class alone, so asking for both would quietly draw only the first.
+    check(!(generatesCreativeAssetFacts && generatesPlayArt)) {
+        "-PcreativeAssets and -PplayArt draw different tests: run them one at a time"
+    }
     tasks.withType<Test>().configureEach {
         val isGenerator = name == GENERATE_TASK
         onlyIf("the build asked for the store screenshots") { isGenerator && generatesScreenshots }

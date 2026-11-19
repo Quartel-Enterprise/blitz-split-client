@@ -6,21 +6,17 @@
 //   CREATIVE_ASSETS_LOCALES=en-US,ja node scripts/store-screenshots/creative-assets/compose.mjs
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { launchChrome } from "../../readme-hero/chrome.mjs";
-import { describePng, withoutAlpha } from "./png.mjs";
+import { escapeHtml, FACES, FACTS, isRightToLeft, ROOT, screenshotOpaque } from "./shared.mjs";
 
 const HERE = import.meta.dirname;
-const ROOT = resolve(HERE, "../../..");
 const CAPTURES = join(ROOT, "build/outputs/apple-screenshot-captures/iphone67");
-const FACTS = join(ROOT, "build/outputs/app-store-creative-asset-facts/facts.json");
 const PAGES = join(ROOT, "build/outputs/app-store-creative-asset-pages");
 const OUTPUT = join(ROOT, "store_listings/creative-assets");
-const FACES = join(ROOT, "scripts/store-screenshots/faces");
 
 const SCREENS = { group: "01_group", items: "02_split_by_items", statistics: "06_statistics", home: "07_home" };
-const RIGHT_TO_LEFT = new Set(["ar", "he"]);
 
 // Each asset's canvas and art safe area, from Apple's creative assets specifications, and the people on its tickets
 // by their index in the sample trip, the one their faces are filed under.
@@ -44,9 +40,6 @@ const ASSETS = [
     ticketTextWidth: 290,
   },
 ];
-
-const escapeHtml = (text) =>
-  text.replace(/[&<>"]/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[character]);
 
 async function readCopy() {
   const rows = (await readFile(join(HERE, "copy.tsv"), "utf8")).split("\n").filter((row) => row && !row.startsWith("#"));
@@ -74,7 +67,7 @@ function pageOf(template, asset, tag, title, people) {
   const capture = (screen) => pathToFileURL(join(CAPTURES, tag, `${SCREENS[screen]}.png`)).href;
   const slots = {
     lang: tag,
-    dir: RIGHT_TO_LEFT.has(language) ? "rtl" : "ltr",
+    dir: isRightToLeft(tag) ? "rtl" : "ltr",
     css: pathToFileURL(join(HERE, "shared.css")).href,
     title: title.split("|").map((line) => `<span class="line">${escapeHtml(line)}</span>`).join(""),
     tickets: asset.people.map((person) => ticketOf(people[person], person)).join(""),
@@ -155,13 +148,7 @@ async function main() {
         const outside = await chrome.evaluate(fitAndCheck(asset));
         if (outside.length) throw new Error(`${tag} ${asset.name}: ${outside.join(", ")} left the art safe area`);
         const file = join(OUTPUT, tag, `${asset.name}.png`);
-        await chrome.screenshot(file);
-        const flat = withoutAlpha(await readFile(file));
-        const { width, height } = describePng(flat);
-        if (width !== asset.width || height !== asset.height) {
-          throw new Error(`${tag} ${asset.name} came out ${width}x${height}`);
-        }
-        await writeFile(file, flat);
+        await screenshotOpaque(chrome, file, asset.width, asset.height);
       }
       console.log(`Drew ${tag}`);
     }
