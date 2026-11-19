@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Αποθήκευσε τον κωδικό ανάκτησης</string>
+    <string name="recovery_code_body">Χρησιμοποιείς την εφαρμογή χωρίς λογαριασμό. Αυτές οι 12 λέξεις φέρνουν πίσω τα δεδομένα σου αν αλλάξεις ή χάσεις τη συσκευή σου. Γράψε τες με τη σειρά. Μετά από 30 ημέρες χωρίς χρήση, τα δεδομένα σου διαγράφονται και οι λέξεις σταματούν να λειτουργούν.</string>
+    <string name="recovery_code_copy">Αντιγραφή λέξεων</string>
+    <string name="recovery_code_save_to_password_manager">Αποθήκευση στη διαχείριση κωδικών</string>
+    <string name="recovery_code_connect_instead">Σύνδεσε Google ή Apple αντί γι\' αυτό</string>
+    <string name="recovery_code_connect_instead_body">Δεν χρειάζεται κωδικός</string>
+    <string name="recovery_code_sign_in_failed">Δεν ήταν δυνατή η σύνδεση αυτή τη στιγμή. Δοκίμασε ξανά.</string>
+    <string name="recovery_code_also_in_profile">Τον βρίσκεις και στο Προφίλ › Ανάκτηση.</string>
+    <string name="recovery_code_remind_later">Υπενθύμισέ μου αργότερα</string>
+    <string name="recovery_code_saved">Τον αποθήκευσα</string>
+    <string name="recovery_code_download">Λήψη</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · κωδικός ανάκτησης\n\n%1$s\n\nΧρησιμοποίησέ τον στην επιλογή «Τον έχω χρησιμοποιήσει σε άλλη συσκευή» για να φέρεις πίσω τα δεδομένα σου.\n</string>
+</resources>

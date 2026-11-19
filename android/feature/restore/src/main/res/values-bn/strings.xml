@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">আপনার গ্রুপগুলো ফিরিয়ে আনুন</string>
+    <string name="restore_subtitle">আগে অ্যাকাউন্ট দিয়ে সাইন ইন করেছিলেন? আবার সাইন ইন করলেই হবে। না হলে রিকভারি কোড অথবা আপনার পুরোনো ডিভাইসের QR কোড ব্যবহার করুন।</string>
+    <string name="restore_no_connection_title">সংযোগ নেই</string>
+    <string name="restore_no_connection_body">অ্যাকাউন্ট বা কোড দিয়ে সাইন ইন করতে আপনার গ্রুপগুলো ডাউনলোডের জন্য ইন্টারনেট প্রয়োজন। আপনি যা লিখেছেন তা রাখা আছে।</string>
+    <string name="restore_code_label">অথবা রিকভারি কোড ব্যবহার করুন</string>
+    <string name="restore_code_hint">ক্রম অনুযায়ী 12 টি শব্দ। সব ঘর পূরণ করতে একটি ঘরেই সবগুলো পেস্ট করুন।</string>
+    <string name="restore_scan_qr_title">আপনার পুরোনো ডিভাইসের QR কোড স্ক্যান করুন</string>
+    <string name="restore_scan_qr_body">সেখানে: প্রোফাইল › রিকভারি › QR কোড দেখান</string>
+    <string name="restore_recover">পুনরুদ্ধার করুন</string>
+    <string name="restore_try_again">আবার চেষ্টা করুন</string>
+    <string name="restore_start_fresh">এই ডিভাইসে নতুন করে শুরু করুন</string>
+    <string name="restore_error_invalid_code">কোডটি পাওয়া যায়নি। শব্দগুলো ও তাদের ক্রম দেখে আবার চেষ্টা করুন।</string>
+    <string name="restore_error_too_many_attempts">অনেকবার চেষ্টা করা হয়েছে। কয়েক মিনিট অপেক্ষা করে আবার চেষ্টা করুন।</string>
+    <string name="restore_error_sign_in_failed">এই মুহূর্তে সাইন ইন করা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="restore_error_unknown">কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন।</string>
+</resources>

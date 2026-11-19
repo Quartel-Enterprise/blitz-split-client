@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">বন্ধুরা আপনাকে কী নামে ডাকেন?</string>
+    <string name="profile_setup_subtitle">আপনার গ্রুপের সদস্যরা এবং আপনার প্রোফাইল লিংক যাঁদের কাছে আছে, তাঁরা আপনার নাম দেখতে পান।</string>
+    <string name="profile_setup_avatar_color">অবতারের রং</string>
+    <string name="profile_setup_add_photo">ছবি যোগ করুন</string>
+    <string name="profile_setup_photo_error">এই ছবিটি ব্যবহার করা যায়নি। অন্য একটি চেষ্টা করুন।</string>
+    <string name="profile_setup_name_label">আপনার নাম</string>
+    <string name="profile_setup_name_placeholder">রাহুল দাস</string>
+    <string name="profile_setup_name_too_short">কমপক্ষে %d টি অক্ষর লিখুন।</string>
+    <string name="profile_setup_name_too_long">সর্বোচ্চ %d টি অক্ষর ব্যবহার করুন।</string>
+    <string name="profile_setup_name_hint">পরে প্রোফাইলে এটি বদলাতে পারবেন।</string>
+    <string name="profile_setup_saved_locally">আপাতত শুধু এই ডিভাইসে সংরক্ষিত।</string>
+    <string name="profile_setup_continue">চালিয়ে যান</string>
+</resources>

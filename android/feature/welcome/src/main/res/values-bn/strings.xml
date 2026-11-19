@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">ঝামেলা ছাড়াই বিল ভাগ করুন</string>
+    <string name="welcome_offline_title">অফলাইনেও কাজ করে</string>
+    <string name="welcome_offline_body">সবকিছু আপনার ডিভাইসে থাকে এবং পরে সিঙ্ক হয়।</string>
+    <string name="welcome_optional_title">অ্যাকাউন্ট ঐচ্ছিক</string>
+    <string name="welcome_optional_body">ডিভাইস বদলালেও যাতে কিছু না হারায়, Google বা Apple শুধু সেটুকুই নিশ্চিত করে।</string>
+    <string name="welcome_invite_title">লিংক বা QR কোড দিয়ে আমন্ত্রণ জানান</string>
+    <string name="welcome_invite_body">বন্ধুরা অ্যাকাউন্ট না খুলেই গ্রুপে যোগ দিতে পারেন।</string>
+    <string name="welcome_no_connection_title">সংযোগ নেই।</string>
+    <string name="welcome_no_connection_body">অ্যাকাউন্ট দিয়ে সাইন ইন করতে ইন্টারনেট লাগবে। এখন অ্যাকাউন্ট ছাড়াই ব্যবহার করুন এবং পরে প্রোফাইলে সংযুক্ত করুন।</string>
+    <string name="welcome_or">অথবা</string>
+    <string name="welcome_use_without_account">অ্যাকাউন্ট ছাড়াই ব্যবহার করুন</string>
+    <string name="welcome_used_on_another_device">আমি অন্য ডিভাইসে ব্যবহার করেছি</string>
+    <string name="welcome_sign_in_failed">এই মুহূর্তে সাইন ইন করা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="welcome_legal_notice">চালিয়ে গেলে আপনি %1$s গ্রহণ করছেন এবং %2$s স্বীকার করছেন।</string>
+    <string name="welcome_legal_terms">পরিষেবার শর্তাবলি</string>
+    <string name="welcome_legal_privacy">গোপনীয়তা নীতি</string>
+    <string name="welcome_no_account_note">অ্যাকাউন্ট ছাড়া 30 দিন ব্যবহার না করলে আপনার ডেটা মুছে যাবে। তা রাখতে Google বা Apple সংযুক্ত করুন।</string>
+    <string name="welcome_no_account_note_offline">অ্যাকাউন্ট ছাড়া 30 দিন ব্যবহার না করলে আপনার ডেটা মুছে যাবে। তা রাখতে পরে প্রোফাইলে Google বা Apple সংযুক্ত করুন।</string>
+    <string name="welcome_expired_title">আপনার ডেটা মুছে ফেলা হয়েছে</string>
+    <string name="welcome_expired_body">আপনি অ্যাকাউন্ট ছাড়া অ্যাপ ব্যবহার করছিলেন এবং 30 দিন খোলেননি, তাই আপনার ডেটা মুছে ফেলা হয়েছে। পরের বার ডেটা রাখতে Google বা Apple সংযুক্ত করুন।</string>
+    <string name="welcome_expired_ok">ঠিক আছে</string>
+</resources>

@@ -82,6 +82,9 @@
     <string name="profile_language_swedish">Szwedzki</string>
     <string name="profile_language_czech">Czeski</string>
     <string name="profile_language_romanian">Rumuński</string>
+    <string name="profile_language_bengali">Bengalski</string>
+    <string name="profile_language_malay">Malajski</string>
+    <string name="profile_language_greek">Grecki</string>
     <string name="profile_language_system_detail">Język urządzenia</string>
     <string name="profile_notifications">Powiadomienia</string>
     <plurals name="profile_notifications_active">

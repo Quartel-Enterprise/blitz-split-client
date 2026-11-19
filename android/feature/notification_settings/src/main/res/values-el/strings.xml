@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Ειδοποιήσεις</string>
+    <string name="notification_settings_denied_title">Οι ειδοποιήσεις του Blitz Split είναι απενεργοποιημένες στο Android.</string>
+    <string name="notification_settings_denied_body">Ενεργοποίησέ τες στις ρυθμίσεις συστήματος για να λαμβάνεις τις παρακάτω ειδοποιήσεις push. Το καμπανάκι συνεχίζει να λειτουργεί.</string>
+    <string name="notification_settings_open_settings">Άνοιγμα ρυθμίσεων</string>
+    <string name="notification_settings_refused_body">Το Android σου επιτρέπει να τις ενεργοποιήσεις άλλη μία φορά για να λαμβάνεις τις παρακάτω ειδοποιήσεις push. Το καμπανάκι συνεχίζει να λειτουργεί.</string>
+    <string name="notification_settings_turn_on">Ενεργοποίηση</string>
+    <string name="notification_settings_blocked_in_android">Αποκλεισμένο στο Android</string>
+    <string name="notification_settings_open_channel_settings_description">Άνοιξε τις ρυθμίσεις Android για %1$s</string>
+    <string name="notification_settings_push_switch">Ειδοποιήσεις push</string>
+    <string name="notification_settings_push_switch_detail">Μόνο σε αυτή τη συσκευή</string>
+    <string name="notification_settings_section">Ειδοποίησέ με για</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Στην εφαρμογή</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Το Push στέλνει ειδοποίηση σε αυτή τη συσκευή. Το «Στην εφαρμογή» τη σημειώνει ως νέα στο καμπανάκι και στη Δραστηριότητα· όταν είναι απενεργοποιημένο, εμφανίζεται και πάλι στη Δραστηριότητα, ήδη διαβασμένη.</string>
+    <string name="notification_settings_bills">Έξοδα</string>
+    <string name="notification_settings_bills_detail">Νέα, επεξεργασμένα ή διαγραμμένα έξοδα στα οποία συμμετέχεις</string>
+    <string name="notification_settings_payments">Πληρωμές και εξοφλήσεις</string>
+    <string name="notification_settings_payments_detail">Πληρωμές προς ή από εσένα και απλοποιημένα χρέη</string>
+    <string name="notification_settings_comments">Σχόλια</string>
+    <string name="notification_settings_comments_detail">Σε έξοδα στα οποία συμμετέχεις και σε συζητήσεις όπου έγραψες</string>
+    <string name="notification_settings_people_and_groups">Άτομα και ομάδες</string>
+    <string name="notification_settings_people_and_groups_detail">Ποιος μπαίνει ή φεύγει από τις ομάδες σου και τι αλλάζει σε αυτές</string>
+    <string name="notification_settings_payment_requests">Αιτήματα πληρωμής</string>
+    <string name="notification_settings_payment_requests_detail">Όταν κάποιος σου ζητά να πληρώσεις</string>
+    <string name="notification_settings_balance_reminder">Υπενθύμιση ανοιχτού υπολοίπου</string>
+    <string name="notification_settings_balance_reminder_detail">Μία φορά την εβδομάδα, αν υπάρχει ανοιχτό υπόλοιπο</string>
+    <string name="notification_settings_footer">Οι ειδοποιήσεις φτάνουν όταν υπάρχει ίντερνετ. Για να σιγάσεις μια ομάδα, χρησιμοποίησε το μενού μέσα σε αυτήν.</string>
+</resources>

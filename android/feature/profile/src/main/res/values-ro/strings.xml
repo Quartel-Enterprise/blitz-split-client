@@ -81,6 +81,9 @@
     <string name="profile_language_swedish">Suedeză</string>
     <string name="profile_language_czech">Cehă</string>
     <string name="profile_language_romanian">Română</string>
+    <string name="profile_language_bengali">Bengaleză</string>
+    <string name="profile_language_malay">Malaeză</string>
+    <string name="profile_language_greek">Greacă</string>
     <string name="profile_language_system_detail">Limba dispozitivului</string>
     <string name="profile_notifications">Notificări</string>
     <plurals name="profile_notifications_active">

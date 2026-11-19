@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Νέος τρόπος πληρωμής</string>
+    <string name="paying_method_edit_title">Επεξεργασία τρόπου πληρωμής</string>
+    <string name="paying_method_type">Τύπος</string>
+    <string name="paying_method_name">Όνομα</string>
+    <string name="paying_method_name_optional">Όνομα (προαιρετικό)</string>
+    <string name="paying_method_color">Χρώμα</string>
+    <string name="paying_method_default">Προεπιλεγμένος τρόπος</string>
+    <string name="paying_method_default_hint">Τα νέα έξοδα που πληρώνεις ξεκινούν με αυτόν.</string>
+    <string name="paying_method_delete">Διαγραφή τρόπου πληρωμής</string>
+    <string name="paying_method_delete_title">Διαγραφή αυτού του τρόπου πληρωμής;</string>
+    <string name="paying_method_delete_body">Τα έξοδα που σημείωσες με αυτήν δεν θα τη δείχνουν πια.</string>
+    <string name="paying_method_delete_confirm">Διάγραψε</string>
+    <string name="paying_method_save">Αποθήκευσε</string>
+</resources>

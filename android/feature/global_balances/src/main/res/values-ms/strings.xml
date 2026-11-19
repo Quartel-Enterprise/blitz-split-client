@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Baki</string>
+    <string name="global_balances_profile">Profil</string>
+    <string name="global_balances_offline">Luar talian · baki peranti ini</string>
+    <string name="global_balances_filter">Tunjukkan</string>
+    <string name="global_balances_filter_all">Semua</string>
+    <string name="global_balances_filter_you_owe">Anda berhutang</string>
+    <string name="global_balances_filter_owes_you">Berhutang kepada anda</string>
+    <string name="global_balances_hint">Sudah diimbangi merentas kumpulan: setiap orang dipaparkan sekali.</string>
+    <string name="global_balances_hint_empty">Menjumlahkan setiap kumpulan pada peranti ini.</string>
+    <string name="global_balances_section_you_owe">Anda berhutang · %d</string>
+    <string name="global_balances_section_owes_you">Berhutang kepada anda · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="other">%d kumpulan</item>
+    </plurals>
+    <string name="global_balances_guest">%s · tetamu</string>
+    <string name="global_balances_you_owe">anda berhutang</string>
+    <string name="global_balances_owes_you">berhutang kepada anda</string>
+    <string name="global_balances_by_group_show">Tunjukkan %s mengikut kumpulan</string>
+    <string name="global_balances_by_group_hide">Sembunyikan %s mengikut kumpulan</string>
+    <string name="global_balances_received">Diterima</string>
+    <string name="global_balances_received_from">Diterima daripada %s</string>
+    <string name="global_balances_settle">Selesaikan</string>
+    <string name="global_balances_settle_with">Selesaikan dengan %s</string>
+    <string name="global_balances_charge">Minta bayaran</string>
+    <string name="global_balances_charge_person">Minta bayaran daripada %s</string>
+    <string name="global_balances_detail_pane">Baki dengan %s</string>
+    <string name="global_balances_detail_owes_you">%s berhutang kepada anda</string>
+    <string name="global_balances_detail_you_owe">Anda berhutang kepada %s</string>
+    <string name="global_balances_detail_guest">%s · tetamu tanpa aplikasi</string>
+    <string name="global_balances_detail_note_owed">Jumlah bersih sudah mengimbangi kumpulan: Minta bayaran dan Diterima menggunakan %s. Aplikasi merekodkan satu bayaran dalam setiap kumpulan.</string>
+    <string name="global_balances_detail_note_settle">Jumlah bersih sudah mengimbangi kumpulan: Selesaikan menggunakan %s. Aplikasi merekodkan satu bayaran dalam setiap kumpulan.</string>
+    <string name="global_balances_detail_note_single">Hanya satu kumpulan belum selesai dengan %s.</string>
+    <string name="global_balances_settled_title">Semua selesai</string>
+    <string name="global_balances_settled_body">Tiada sesiapa berhutang kepada anda dan anda tidak berhutang kepada sesiapa. Apabila seseorang menambah bil, baki akan dipaparkan di sini.</string>
+    <string name="global_balances_settled_action">Lihat kumpulan</string>
+    <string name="global_balances_nothing_to_pay_title">Anda tiada hutang</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="other">Anda sudah selesai dengan semua orang. Anda masih perlu menerima %2$s daripada %1$d orang.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Lihat siapa berhutang kepada anda</string>
+    <string name="global_balances_nothing_to_receive_title">Tiada sesiapa berhutang kepada anda</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="other">Anda masih berhutang %2$s kepada %1$d orang.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Lihat kepada siapa anda berhutang</string>
+    <string name="global_balances_coming_soon">Akan datang</string>
+    <string name="global_balances_change_error">Tidak dapat menyimpan perubahan. Cuba lagi.</string>
+    <string name="global_balances_copied">Disalin</string>
+    <string name="global_balances_charge_title">Minta bayaran daripada %s</string>
+    <string name="global_balances_charge_owes">Berhutang %1$s kepada anda · %2$s</string>
+    <string name="global_balances_charge_close">Tutup</string>
+    <string name="global_balances_charge_guest">%s ialah tetamu tanpa aplikasi. Mereka hanya mengetahuinya melalui mesej ini, jadi mesej ini sudah menyatakan perkara yang termasuk dalam bil.</string>
+    <string name="global_balances_charge_message">Mesej</string>
+    <string name="global_balances_charge_pix">Sertakan kunci Pix saya</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Salin mesej</string>
+    <string name="global_balances_charge_send">Hantar</string>
+    <string name="global_balances_message">Hai %1$s! Mengikut kiraan Blitz Split, anda berhutang %2$s kepada saya daripada %3$s.</string>
+    <string name="global_balances_message_guest">Hai %1$s! Anda berhutang %2$s kepada saya daripada %3$s: bahagian anda untuk %4$s.</string>
+    <string name="global_balances_message_guest_paid">Hai %1$s! Anda berhutang %2$s kepada saya daripada %3$s: bahagian anda untuk %4$s, tolak %5$s yang sudah anda bayar.</string>
+    <string name="global_balances_message_group">kumpulan %s</string>
+    <string name="global_balances_message_groups">kumpulan %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefon</string>
+    <string name="global_balances_key_email">E-mel</string>
+    <string name="global_balances_key_random">Kunci rawak</string>
+    <string name="global_balances_message_reroute">%1$s mempermudahkan hutangnya, jadi anda membayar terus kepada saya dan bukan kepada %2$s; jumlah anda tidak berubah.</string>
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Pemberitahuan</string>
+    <string name="notification_settings_denied_title">Pemberitahuan Blitz Split dimatikan pada Android.</string>
+    <string name="notification_settings_denied_body">Hidupkannya dalam tetapan sistem untuk menerima pemberitahuan push di bawah. Loceng terus berfungsi.</string>
+    <string name="notification_settings_open_settings">Buka tetapan</string>
+    <string name="notification_settings_refused_body">Android membenarkan anda mengizinkannya sekali lagi untuk menerima pemberitahuan push di bawah. Loceng terus berfungsi.</string>
+    <string name="notification_settings_turn_on">Hidupkan</string>
+    <string name="notification_settings_blocked_in_android">Disekat dalam Android</string>
+    <string name="notification_settings_open_channel_settings_description">Buka tetapan Android untuk %1$s</string>
+    <string name="notification_settings_push_switch">Pemberitahuan push</string>
+    <string name="notification_settings_push_switch_detail">Pada peranti ini sahaja</string>
+    <string name="notification_settings_section">Beritahu saya tentang</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Dalam aplikasi</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push menghantar pemberitahuan ke peranti ini. Dalam aplikasi menandakannya sebagai baharu pada loceng dan dalam Aktiviti; jika dimatikan, ia tetap dipaparkan dalam Aktiviti, sebagai sudah dibaca.</string>
+    <string name="notification_settings_bills">Bil</string>
+    <string name="notification_settings_bills_detail">Bil baharu, diedit atau dipadam yang melibatkan anda</string>
+    <string name="notification_settings_payments">Bayaran dan penyelesaian</string>
+    <string name="notification_settings_payments_detail">Bayaran kepada atau daripada anda, dan hutang yang dipermudahkan</string>
+    <string name="notification_settings_comments">Komen</string>
+    <string name="notification_settings_comments_detail">Pada bil yang melibatkan anda dan perbualan yang anda sertai</string>
+    <string name="notification_settings_people_and_groups">Orang dan kumpulan</string>
+    <string name="notification_settings_people_and_groups_detail">Siapa yang menyertai atau meninggalkan kumpulan anda, dan perubahan di dalamnya</string>
+    <string name="notification_settings_payment_requests">Permintaan bayaran</string>
+    <string name="notification_settings_payment_requests_detail">Apabila seseorang meminta anda membayar</string>
+    <string name="notification_settings_balance_reminder">Peringatan baki belum selesai</string>
+    <string name="notification_settings_balance_reminder_detail">Seminggu sekali, jika ada baki belum selesai</string>
+    <string name="notification_settings_footer">Notis tiba apabila ada internet. Untuk meredamkan kumpulan, gunakan menu di dalamnya.</string>
+</resources>

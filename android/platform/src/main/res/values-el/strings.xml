@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · κωδικός ανάκτησης</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Επίτρεψε την κάμερα στις Ρυθμίσεις για να βγάλεις φωτογραφία.</string>
+    <string name="platform_camera_settings">Ρυθμίσεις</string>
+    <string name="platform_receipt_source_camera">Λήψη φωτογραφίας</string>
+    <string name="platform_receipt_source_gallery">Επιλογή από τη συλλογή</string>
+    <string name="platform_receipt_source_file">Επιλογή αρχείου</string>
+    <string name="platform_receipt_camera_title">Σάρωση απόδειξης</string>
+    <string name="platform_receipt_camera_close">Κλείσιμο</string>
+    <string name="platform_receipt_camera_flash_on">Άναψε το φλας</string>
+    <string name="platform_receipt_camera_flash_off">Σβήσε το φλας</string>
+    <string name="platform_receipt_camera_hint">Χώρεσε ολόκληρη την απόδειξη στο πλαίσιο. Εμείς συμπληρώνουμε το ποσό, την ημερομηνία και την περιγραφή· εσύ τα ελέγχεις πριν την αποθήκευση.</string>
+    <string name="platform_receipt_camera_gallery">Επιλογή από τη συλλογή</string>
+    <string name="platform_receipt_camera_shutter">Λήψη φωτογραφίας</string>
+    <string name="platform_receipt_camera_unavailable">Η κάμερα δεν είναι διαθέσιμη. Διάλεξε μια φωτογραφία της απόδειξης από τη συλλογή.</string>
+    <string name="platform_receipt_camera_permission">Επίτρεψε την κάμερα για να σαρώσεις την απόδειξη ή διάλεξε μια φωτογραφία από τη συλλογή.</string>
+    <string name="platform_receipt_camera_allow">Να επιτρέπεται η κάμερα</string>
+    <string name="platform_receipt_camera_settings">Άνοιγμα ρυθμίσεων</string>
+</resources>
