@@ -29,7 +29,7 @@ dependencies, and [release-process.md](release-process.md) says how a release ru
         "pt-PT": "Agora podes exportar os dados de um grupo a partir do menu dele.",
         "es": "…", "fr": "…", "de": "…", "it": "…", "pl": "…", "nl": "…", "ja": "…", "tr": "…", "id": "…",
         "ru": "…", "uk": "…", "ko": "…", "hi": "…", "ar": "…", "zh": "…", "he": "…", "th": "…", "vi": "…", "zh-Hant": "…",
-        "sv": "…", "cs": "…", "ro": "…"
+        "sv": "…", "cs": "…", "ro": "…", "bn": "…", "ms": "…", "el": "…"
       }
     }
   ]
@@ -45,8 +45,8 @@ dependencies, and [release-process.md](release-process.md) says how a release ru
 - **`platforms`**: `["all"]`, or some of `android`, `ios` (iPhone and iPad), `mac` and `web`, in that order; never all
   four, which is `["all"]`. The platforms whose UI the change reaches: a note for a change in the shared ViewModel is
   for all, one for a SwiftUI-only change is `["ios", "mac"]` or one of them.
-- **`text`**: the note in each of the twenty-five languages the fragments have (`en`, `pt`, `pt-PT`, `es`, `fr`, `de`,
-  `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `zh`, `he`, `th`, `vi`, `zh-Hant`, `sv`, `cs`, `ro`), one plain line each, with no Markdown and no HTML: the apps and the page draw it as
+- **`text`**: the note in each of the twenty-eight languages the fragments have (`en`, `pt`, `pt-PT`, `es`, `fr`, `de`,
+  `it`, `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `zh`, `he`, `th`, `vi`, `zh-Hant`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`), one plain line each, with no Markdown and no HTML: the apps and the page draw it as
   it is. Portugal's Portuguese is written in full here, as on the site, not as the few words over Brazil's that the
   apps keep for it: nearly every note differs ("tu" for "você", "ecrã" for "tela", "estar a" for the gerund).
 - **`betaOnly`**, optional: `true` for a note about something no stable version ever had, such as the fix of a bug

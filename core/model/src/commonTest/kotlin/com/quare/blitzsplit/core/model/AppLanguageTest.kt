@@ -348,6 +348,42 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Bengali tag WHEN reading it THEN is Bengali`() {
+        // Given
+        val tags = listOf("bn", "bn-BD", "bn_IN", "BN-bd")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.BENGALI }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Malay tag WHEN reading it THEN is Malay`() {
+        // Given
+        val tags = listOf("ms", "ms-MY", "ms_SG", "MS-my")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.MALAY }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Greek tag WHEN reading it THEN is Greek`() {
+        // Given
+        val tags = listOf("el", "el-GR", "el_CY", "EL-gr")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.GREEK }, languages)
+    }
+
+    @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN is Traditional Chinese`() {
         // Given
         val tags = listOf("zh-Hant", "zh-TW", "zh_TW", "zh-Hant-TW", "zh-HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
@@ -462,6 +498,9 @@ class AppLanguageTest {
                 "SV",
                 "CS",
                 "RO",
+                "BN",
+                "MS",
+                "EL",
             ),
             codes,
         )

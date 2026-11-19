@@ -1,0 +1,76 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Bengali, Malay and Greek: pick \"বাংলা\", \"Bahasa Melayu\" or \"Ελληνικά\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala bengali, malaio e grego: escolha \"বাংলা\", \"Bahasa Melayu\" ou \"Ελληνικά\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora bengali, malaio e grego: escolhe \"বাংলা\", \"Bahasa Melayu\" ou \"Ελληνικά\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla bengalí, malayo y griego: elige \"বাংলা\", \"Bahasa Melayu\" o \"Ελληνικά\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais bengali, malais et grec : choisis « বাংলা », « Bahasa Melayu » ou « Ελληνικά » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Bengalisch, Malaiisch und Griechisch: Wähle „বাংলা“, „Bahasa Melayu“ oder „Ελληνικά“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla bengalese, malese e greco: scegli \"বাংলা\", \"Bahasa Melayu\" o \"Ελληνικά\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po bengalsku, malajsku i grecku: wybierz „বাংলা”, „Bahasa Melayu” lub „Ελληνικά” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Bengaals, Maleis en Grieks: kies \"বাংলা\", \"Bahasa Melayu\" of \"Ελληνικά\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがベンガル語、マレー語、ギリシャ語に対応しました。プロフィール › 言語で「বাংলা」「Bahasa Melayu」「Ελληνικά」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Bengalce, Malayca ve Yunanca konuşuyor: Profil › Dil'den \"বাংলা\", \"Bahasa Melayu\" ya da \"Ελληνικά\"yı seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Bengali, Melayu, dan Yunani: pilih \"বাংলা\", \"Bahasa Melayu\", atau \"Ελληνικά\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на бенгальском, малайском и греческом: выбери «বাংলা», «Bahasa Melayu» или «Ελληνικά» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить бенгальською, малайською та грецькою: обери «বাংলা», «Bahasa Melayu» або «Ελληνικά» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 벵골어, 말레이어, 그리스어를 쓸 수 있어요. 프로필 › 언어에서 ‘বাংলা’, ‘Bahasa Melayu’, ‘Ελληνικά’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप बांग्ला, मलय और यूनानी में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “বাংলা”, “Bahasa Melayu” या “Ελληνικά” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث البنغالية والملايوية واليونانية: يمكنك اختيار «বাংলা» أو «Bahasa Melayu» أو «Ελληνικά» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持孟加拉语、马来语和希腊语：在“个人资料 › 语言”中选择“বাংলা”“Bahasa Melayu”或“Ελληνικά”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו בנגלית, מלאית ויוונית: אפשר לבחור \"বাংলা\", \"Bahasa Melayu\" או \"Ελληνικά\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาเบงกาลี มลายู และกรีกแล้ว เลือก “বাংলা” “Bahasa Melayu” หรือ “Ελληνικά” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Bengal, tiếng Mã Lai và tiếng Hy Lạp: chọn “বাংলা”, “Bahasa Melayu” hoặc “Ελληνικά” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援孟加拉文、馬來文和希臘文：在「個人資料 › 語言」中選擇「বাংলা」、「Bahasa Melayu」或「Ελληνικά」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu bengali, malajiska och grekiska: välj ”বাংলা”, ”Bahasa Melayu” eller ”Ελληνικά” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví bengálsky, malajsky a řecky: vyber „বাংলা“, „Bahasa Melayu“ nebo „Ελληνικά“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum bengaleză, malaeză și greacă: alege „বাংলা”, „Bahasa Melayu” sau „Ελληνικά” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন বাংলা, মালয় ও গ্রিক ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “বাংলা”, “Bahasa Melayu” বা “Ελληνικά” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Bengali, Melayu dan Greek: pilih \"বাংলা\", \"Bahasa Melayu\" atau \"Ελληνικά\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον βεγγαλικά, μαλαϊκά και ελληνικά: διάλεξε «বাংলা», «Bahasa Melayu» ή «Ελληνικά» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now use the Bangladeshi taka and the Malaysian ringgit.",
+        "pt": "Os grupos agora podem usar o taka de Bangladesh e o ringgit malaio.",
+        "pt-PT": "Os grupos já podem usar o taka do Bangladesh e o ringgit malaio.",
+        "es": "Los grupos ahora pueden usar el taka bangladesí y el ringgit malayo.",
+        "fr": "Les groupes peuvent désormais utiliser le taka bangladais et le ringgit malaisien.",
+        "de": "Gruppen können jetzt den bangladeschischen Taka und den malaysischen Ringgit verwenden.",
+        "it": "I gruppi ora possono usare il taka bengalese e il ringgit malese.",
+        "pl": "Grupy mogą teraz korzystać z bangladeskiej taki i malezyjskiego ringgita.",
+        "nl": "Groepen kunnen nu de Bengalese taka en de Maleisische ringgit gebruiken.",
+        "ja": "グループでバングラデシュ・タカとマレーシア・リンギットを使えるようになりました。",
+        "tr": "Gruplar artık Bangladeş takası ve Malezya ringgiti kullanabilir.",
+        "id": "Grup kini bisa memakai taka Bangladesh dan ringgit Malaysia.",
+        "ru": "В группах теперь можно использовать бангладешскую таку и малайзийский ринггит.",
+        "uk": "У групах тепер можна використовувати бангладеську таку й малайзійський ринггіт.",
+        "ko": "이제 그룹에서 방글라데시 타카와 말레이시아 링깃을 쓸 수 있어요.",
+        "hi": "अब ग्रुप में बांग्लादेशी टका और मलेशियाई रिंगिट का इस्तेमाल किया जा सकता है।",
+        "ar": "يمكن للمجموعات الآن استخدام التاكا البنغلاديشية والرينغيت الماليزي.",
+        "zh": "群组现在可以使用孟加拉塔卡和马来西亚林吉特。",
+        "he": "קבוצות יכולות עכשיו להשתמש בטאקה בנגלדשי וברינגיט מלזי.",
+        "th": "ตอนนี้กลุ่มใช้สกุลเงินตากาบังกลาเทศและริงกิตมาเลเซียได้แล้ว",
+        "vi": "Các nhóm giờ có thể dùng taka Bangladesh và ringgit Malaysia.",
+        "zh-Hant": "群組現在可以使用孟加拉塔卡和馬來西亞令吉。",
+        "sv": "Grupper kan nu använda bangladeshisk taka och malaysisk ringgit.",
+        "cs": "Skupiny teď mohou používat bangladéšskou taku a malajsijský ringgit.",
+        "ro": "Grupurile pot folosi acum taka din Bangladesh și ringgitul malaezian.",
+        "bn": "গ্রুপে এখন বাংলাদেশি টাকা ও মালয়েশিয়ান রিঙ্গিত ব্যবহার করা যাবে।",
+        "ms": "Kumpulan kini boleh menggunakan taka Bangladesh dan ringgit Malaysia.",
+        "el": "Οι ομάδες μπορούν πλέον να χρησιμοποιούν το τάκα Μπανγκλαντές και το ρίνγκιτ Μαλαισίας."
+      }
+    }
+  ]
+}

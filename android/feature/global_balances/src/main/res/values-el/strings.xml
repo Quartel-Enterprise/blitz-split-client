@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Υπόλοιπα</string>
+    <string name="global_balances_profile">Προφίλ</string>
+    <string name="global_balances_offline">Εκτός σύνδεσης · υπόλοιπα αυτής της συσκευής</string>
+    <string name="global_balances_filter">Εμφάνιση</string>
+    <string name="global_balances_filter_all">Όλα</string>
+    <string name="global_balances_filter_you_owe">Χρωστάς</string>
+    <string name="global_balances_filter_owes_you">Σου χρωστούν</string>
+    <string name="global_balances_hint">Έχουν ήδη συμψηφιστεί μεταξύ των ομάδων: κάθε άτομο εμφανίζεται μία φορά.</string>
+    <string name="global_balances_hint_empty">Άθροιση όλων των ομάδων σε αυτή τη συσκευή.</string>
+    <string name="global_balances_section_you_owe">Χρωστάς · %d</string>
+    <string name="global_balances_section_owes_you">Σου χρωστούν · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d ομάδα</item>
+        <item quantity="other">%d ομάδες</item>
+    </plurals>
+    <string name="global_balances_guest">%s · επισκέπτης</string>
+    <string name="global_balances_you_owe">χρωστάς</string>
+    <string name="global_balances_owes_you">σου χρωστάει</string>
+    <string name="global_balances_by_group_show">Εμφάνιση ανά ομάδα: %s</string>
+    <string name="global_balances_by_group_hide">Απόκρυψη ανά ομάδα: %s</string>
+    <string name="global_balances_received">Το έλαβα</string>
+    <string name="global_balances_received_from">Το έλαβα από %s</string>
+    <string name="global_balances_settle">Εξόφλησε</string>
+    <string name="global_balances_settle_with">Εξόφλησε με %s</string>
+    <string name="global_balances_charge">Ζήτησε πληρωμή</string>
+    <string name="global_balances_charge_person">Ζήτησε πληρωμή από %s</string>
+    <string name="global_balances_detail_pane">Υπόλοιπο με %s</string>
+    <string name="global_balances_detail_owes_you">%s σου χρωστάει</string>
+    <string name="global_balances_detail_you_owe">Χρωστάς σε %s</string>
+    <string name="global_balances_detail_guest">%s · επισκέπτης χωρίς την εφαρμογή</string>
+    <string name="global_balances_detail_note_owed">Το καθαρό ποσό συμψηφίζει ήδη τις ομάδες: τα «Ζήτησε πληρωμή» και «Το έλαβα» χρησιμοποιούν %s. Η εφαρμογή καταγράφει μια πληρωμή σε κάθε ομάδα.</string>
+    <string name="global_balances_detail_note_settle">Το καθαρό ποσό συμψηφίζει ήδη τις ομάδες: το «Εξόφλησε» χρησιμοποιεί %s. Η εφαρμογή καταγράφει μια πληρωμή σε κάθε ομάδα.</string>
+    <string name="global_balances_detail_note_single">Μόνο μία ανοιχτή ομάδα με %s.</string>
+    <string name="global_balances_settled_title">Όλα εξοφλημένα</string>
+    <string name="global_balances_settled_body">Κανείς δεν σου χρωστάει και δεν χρωστάς σε κανέναν. Όταν κάποιος προσθέσει ένα έξοδο, το υπόλοιπο θα εμφανιστεί εδώ.</string>
+    <string name="global_balances_settled_action">Δες τις ομάδες</string>
+    <string name="global_balances_nothing_to_pay_title">Δεν χρωστάς τίποτα</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Έχεις εξοφλήσει με όλους. Έχεις ακόμα να πάρεις %2$s από %1$d άτομο.</item>
+        <item quantity="other">Έχεις εξοφλήσει με όλους. Έχεις ακόμα να πάρεις %2$s από %1$d άτομα.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Δες ποιοι σου χρωστούν</string>
+    <string name="global_balances_nothing_to_receive_title">Κανείς δεν σου χρωστάει</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Χρωστάς ακόμα %2$s σε %1$d άτομο.</item>
+        <item quantity="other">Χρωστάς ακόμα %2$s σε %1$d άτομα.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Δες σε ποιους χρωστάς</string>
+    <string name="global_balances_coming_soon">Έρχεται σύντομα</string>
+    <string name="global_balances_change_error">Δεν ήταν δυνατή η αποθήκευση της αλλαγής. Δοκίμασε ξανά.</string>
+    <string name="global_balances_copied">Αντιγράφηκε</string>
+    <string name="global_balances_charge_title">Ζήτησε πληρωμή από %s</string>
+    <string name="global_balances_charge_owes">Σου χρωστάει %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Κλείσιμο</string>
+    <string name="global_balances_charge_guest">%s είναι επισκέπτης χωρίς την εφαρμογή. Θα το μάθει μόνο από αυτό το μήνυμα, οπότε αναφέρει ήδη τι περιλαμβάνει το ποσό.</string>
+    <string name="global_balances_charge_message">Μήνυμα</string>
+    <string name="global_balances_charge_pix">Συμπερίληψη του κλειδιού Pix μου</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Αντιγραφή μηνύματος</string>
+    <string name="global_balances_charge_send">Αποστολή</string>
+    <string name="global_balances_message">Γεια σου %1$s! Σύμφωνα με τους υπολογισμούς του Blitz Split, μου χρωστάς %2$s από %3$s.</string>
+    <string name="global_balances_message_guest">Γεια σου %1$s! Μου χρωστάς %2$s από %3$s: το μερίδιό σου από %4$s.</string>
+    <string name="global_balances_message_guest_paid">Γεια σου %1$s! Μου χρωστάς %2$s από %3$s: το μερίδιό σου από %4$s, μείον %5$s που έχεις ήδη πληρώσει.</string>
+    <string name="global_balances_message_group">την ομάδα %s</string>
+    <string name="global_balances_message_groups">τις ομάδες %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Τηλέφωνο</string>
+    <string name="global_balances_key_email">Email</string>
+    <string name="global_balances_key_random">Τυχαίο κλειδί</string>
+    <string name="global_balances_message_reroute">Η ομάδα %1$s απλοποίησε τα χρέη της, οπότε αντί να πληρώσεις σε %2$s, πληρώνεις απευθείας εμένα· το σύνολό σου δεν άλλαξε.</string>
+</resources>

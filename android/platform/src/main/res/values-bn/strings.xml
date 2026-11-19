@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · রিকভারি কোড</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">ছবি তুলতে সেটিংসে ক্যামেরার অনুমতি দিন।</string>
+    <string name="platform_camera_settings">সেটিংস</string>
+    <string name="platform_receipt_source_camera">ছবি তুলুন</string>
+    <string name="platform_receipt_source_gallery">গ্যালারি থেকে বেছে নিন</string>
+    <string name="platform_receipt_source_file">ফাইল বেছে নিন</string>
+    <string name="platform_receipt_camera_title">রসিদ স্ক্যান করুন</string>
+    <string name="platform_receipt_camera_close">বন্ধ করুন</string>
+    <string name="platform_receipt_camera_flash_on">ফ্ল্যাশ চালু করুন</string>
+    <string name="platform_receipt_camera_flash_off">ফ্ল্যাশ বন্ধ করুন</string>
+    <string name="platform_receipt_camera_hint">পুরো রসিদটি ফ্রেমের মধ্যে আনুন। আমরা পরিমাণ, তারিখ ও বিবরণ পূরণ করে দেব; সংরক্ষণের আগে আপনি মিলিয়ে দেখবেন।</string>
+    <string name="platform_receipt_camera_gallery">গ্যালারি থেকে বেছে নিন</string>
+    <string name="platform_receipt_camera_shutter">ছবি তুলুন</string>
+    <string name="platform_receipt_camera_unavailable">ক্যামেরা পাওয়া যাচ্ছে না। গ্যালারি থেকে রসিদের একটি ছবি বেছে নিন।</string>
+    <string name="platform_receipt_camera_permission">রসিদ স্ক্যান করতে ক্যামেরার অনুমতি দিন, অথবা গ্যালারি থেকে একটি ছবি বেছে নিন।</string>
+    <string name="platform_receipt_camera_allow">ক্যামেরার অনুমতি দিন</string>
+    <string name="platform_receipt_camera_settings">সেটিংস খুলুন</string>
+</resources>

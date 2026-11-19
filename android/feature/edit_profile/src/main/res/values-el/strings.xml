@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Επεξεργασία προφίλ</string>
+    <string name="edit_profile_save">Αποθήκευσε</string>
+    <string name="edit_profile_change_photo">Αλλαγή φωτογραφίας</string>
+    <string name="edit_profile_take_photo">Λήψη φωτογραφίας</string>
+    <string name="edit_profile_choose_photo">Επιλογή από τη συλλογή</string>
+    <string name="edit_profile_use_account_photo">Χρησιμοποίησε τη φωτογραφία του λογαριασμού %1$s</string>
+    <string name="edit_profile_remove_photo">Αφαίρεση φωτογραφίας</string>
+    <string name="edit_profile_photo_error">Δεν ήταν δυνατή η χρήση αυτής της φωτογραφίας. Δοκίμασε μια άλλη.</string>
+    <string name="edit_profile_avatar_color">Χρώμα avatar</string>
+    <string name="edit_profile_avatar_color_hint">Εμφανίζεται όταν δεν έχεις φωτογραφία.</string>
+    <string name="edit_profile_name_label">Το όνομά σου</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Γράψε τουλάχιστον %d γράμματα.</string>
+    <string name="edit_profile_name_too_long">Χρησιμοποίησε έως %d χαρακτήρες.</string>
+    <string name="edit_profile_account_notice">Το όνομα και η φωτογραφία προέρχονται από τον λογαριασμό σου %1$s. Οι αλλαγές εδώ ισχύουν μόνο για το Blitz Split και δεν αλλάζουν τον λογαριασμό σου %1$s.</string>
+    <string name="edit_profile_footer">Οι ομάδες σου και όποιος έχει τον σύνδεσμο του προφίλ σου βλέπουν το όνομα και τη φωτογραφία σου.</string>
+    <string name="profile_photo_close">Κλείσιμο</string>
+    <string name="profile_photo_camera">Κάμερα</string>
+    <string name="profile_photo_gallery">Συλλογή</string>
+    <string name="profile_photo_remove">Αφαίρεση</string>
+    <string name="profile_photo_title">Φωτογραφία προφίλ</string>
+</resources>

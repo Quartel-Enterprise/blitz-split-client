@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">নতুন পেমেন্ট পদ্ধতি</string>
+    <string name="paying_method_edit_title">পেমেন্ট পদ্ধতি সম্পাদনা করুন</string>
+    <string name="paying_method_type">ধরন</string>
+    <string name="paying_method_name">নাম</string>
+    <string name="paying_method_name_optional">নাম (ঐচ্ছিক)</string>
+    <string name="paying_method_color">রং</string>
+    <string name="paying_method_default">ডিফল্ট পদ্ধতি</string>
+    <string name="paying_method_default_hint">আপনার পরিশোধ করা নতুন বিল এটি দিয়ে শুরু হবে।</string>
+    <string name="paying_method_delete">পেমেন্ট পদ্ধতি মুছুন</string>
+    <string name="paying_method_delete_title">এই পেমেন্ট পদ্ধতি মুছবেন?</string>
+    <string name="paying_method_delete_body">যেসব বিলে এটি চিহ্নিত করেছেন, সেগুলোতে আর এটি দেখা যাবে না।</string>
+    <string name="paying_method_delete_confirm">মুছুন</string>
+    <string name="paying_method_save">সংরক্ষণ করুন</string>
+</resources>

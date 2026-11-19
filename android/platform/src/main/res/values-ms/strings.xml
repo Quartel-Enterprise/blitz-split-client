@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · kod pemulihan</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Benarkan kamera dalam Tetapan untuk mengambil foto.</string>
+    <string name="platform_camera_settings">Tetapan</string>
+    <string name="platform_receipt_source_camera">Ambil foto</string>
+    <string name="platform_receipt_source_gallery">Pilih daripada galeri</string>
+    <string name="platform_receipt_source_file">Pilih fail</string>
+    <string name="platform_receipt_camera_title">Imbas resit</string>
+    <string name="platform_receipt_camera_close">Tutup</string>
+    <string name="platform_receipt_camera_flash_on">Hidupkan denyar</string>
+    <string name="platform_receipt_camera_flash_off">Matikan denyar</string>
+    <string name="platform_receipt_camera_hint">Muatkan keseluruhan resit dalam bingkai. Kami akan mengisi amaun, tarikh dan keterangan; anda semak sebelum menyimpan.</string>
+    <string name="platform_receipt_camera_gallery">Pilih daripada galeri</string>
+    <string name="platform_receipt_camera_shutter">Ambil foto</string>
+    <string name="platform_receipt_camera_unavailable">Kamera tidak tersedia. Pilih foto resit daripada galeri.</string>
+    <string name="platform_receipt_camera_permission">Benarkan kamera untuk mengimbas resit, atau pilih foto daripada galeri.</string>
+    <string name="platform_receipt_camera_allow">Benarkan kamera</string>
+    <string name="platform_receipt_camera_settings">Buka tetapan</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Dapatkan semula kumpulan anda</string>
+    <string name="restore_subtitle">Pernah log masuk dengan akaun? Log masuk sekali lagi. Jika tidak, gunakan kod pemulihan atau kod QR daripada peranti lama anda.</string>
+    <string name="restore_no_connection_title">Tiada sambungan</string>
+    <string name="restore_no_connection_body">Log masuk dengan akaun atau kod memerlukan internet untuk memuat turun kumpulan anda. Perkara yang anda taip akan dikekalkan.</string>
+    <string name="restore_code_label">Atau gunakan kod pemulihan</string>
+    <string name="restore_code_hint">12 perkataan mengikut urutan. Tampal semuanya dalam satu ruangan untuk mengisi setiap ruangan.</string>
+    <string name="restore_scan_qr_title">Imbas kod QR daripada peranti lama anda</string>
+    <string name="restore_scan_qr_body">Di sana: Profil › Kod pemulihan › Tunjukkan kod QR</string>
+    <string name="restore_recover">Pulihkan</string>
+    <string name="restore_try_again">Cuba lagi</string>
+    <string name="restore_start_fresh">Mula baharu pada peranti ini</string>
+    <string name="restore_error_invalid_code">Kod tidak ditemui. Semak perkataan dan urutannya, kemudian cuba lagi.</string>
+    <string name="restore_error_too_many_attempts">Terlalu banyak percubaan. Tunggu beberapa minit dan cuba lagi.</string>
+    <string name="restore_error_sign_in_failed">Tidak dapat log masuk sekarang. Cuba lagi.</string>
+    <string name="restore_error_unknown">Berlaku masalah. Cuba lagi.</string>
+</resources>

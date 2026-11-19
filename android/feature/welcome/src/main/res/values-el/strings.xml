@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Μοίρασε τα έξοδα χωρίς μπελάδες</string>
+    <string name="welcome_offline_title">Λειτουργεί εκτός σύνδεσης</string>
+    <string name="welcome_offline_body">Όλα μένουν στη συσκευή σου και συγχρονίζονται αργότερα.</string>
+    <string name="welcome_optional_title">Ο λογαριασμός είναι προαιρετικός</string>
+    <string name="welcome_optional_body">Το Google ή το Apple απλώς σε βοηθούν να μη χάσεις τίποτα όταν αλλάξεις συσκευή.</string>
+    <string name="welcome_invite_title">Πρόσκληση με σύνδεσμο ή κωδικό QR</string>
+    <string name="welcome_invite_body">Οι φίλοι σου μπαίνουν στην ομάδα χωρίς να δημιουργήσουν λογαριασμό.</string>
+    <string name="welcome_no_connection_title">Χωρίς σύνδεση.</string>
+    <string name="welcome_no_connection_body">Για να συνδεθείς με λογαριασμό χρειάζεται ίντερνετ. Χρησιμοποίησε την εφαρμογή χωρίς λογαριασμό τώρα και συνδέσου αργότερα από το Προφίλ.</string>
+    <string name="welcome_or">ή</string>
+    <string name="welcome_use_without_account">Χρήση χωρίς λογαριασμό</string>
+    <string name="welcome_used_on_another_device">Τον έχω χρησιμοποιήσει σε άλλη συσκευή</string>
+    <string name="welcome_sign_in_failed">Δεν ήταν δυνατή η σύνδεση αυτή τη στιγμή. Δοκίμασε ξανά.</string>
+    <string name="welcome_legal_notice">Συνεχίζοντας, αποδέχεσαι τους %1$s και αναγνωρίζεις την %2$s.</string>
+    <string name="welcome_legal_terms">Όρους χρήσης</string>
+    <string name="welcome_legal_privacy">Πολιτική απορρήτου</string>
+    <string name="welcome_no_account_note">Χωρίς λογαριασμό, τα δεδομένα σου διαγράφονται μετά από 30 ημέρες αδράνειας. Σύνδεσε το Google ή το Apple για να τα κρατήσεις.</string>
+    <string name="welcome_no_account_note_offline">Χωρίς λογαριασμό, τα δεδομένα σου διαγράφονται μετά από 30 ημέρες αδράνειας. Σύνδεσε το Google ή το Apple αργότερα, από το Προφίλ, για να τα κρατήσεις.</string>
+    <string name="welcome_expired_title">Τα δεδομένα σου διαγράφηκαν</string>
+    <string name="welcome_expired_body">Χρησιμοποιούσες την εφαρμογή χωρίς λογαριασμό και δεν την άνοιξες για 30 ημέρες, οπότε τα δεδομένα σου διαγράφηκαν. Σύνδεσε το Google ή το Apple για να τα κρατήσεις την επόμενη φορά.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

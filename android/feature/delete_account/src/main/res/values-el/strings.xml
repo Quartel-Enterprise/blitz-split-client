@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Διαγραφή λογαριασμού</string>
+    <string name="delete_account_offline_title">Χωρίς ίντερνετ.</string>
+    <string name="delete_account_offline_body">Για τη διαγραφή του λογαριασμού σου χρειάζεται σύνδεση στο ίντερνετ. Συνδέσου και δοκίμασε ξανά.</string>
+    <string name="delete_account_heading">Διαγραφή του λογαριασμού και των δεδομένων σου;</string>
+    <string name="delete_account_deleted_title">Τι διαγράφεται</string>
+    <string name="delete_account_deleted_profile">Το προφίλ σου (όνομα, φωτογραφία και χρώμα)</string>
+    <string name="delete_account_deleted_keys">Τα κλειδιά σου Pix και Bitcoin</string>
+    <string name="delete_account_deleted_provider">Η σύνδεση με τον λογαριασμό σου %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Ο κωδικός ανάκτησής σου</string>
+    <string name="delete_account_deleted_device">Το αντίγραφο των δεδομένων σου σε αυτή τη συσκευή</string>
+    <string name="delete_account_kept_title">Τι μένει στις ομάδες σου</string>
+    <string name="delete_account_kept_groups">Οι ομάδες, με τα έξοδα και τις πληρωμές τους, για τα υπόλοιπα μέλη</string>
+    <string name="delete_account_kept_member">Το όνομά σου σε κάθε ομάδα, ως μέλος χωρίς λογαριασμό</string>
+    <string name="delete_account_kept_comments">Τα σχόλιά σου και οι φωτογραφίες που πρόσθεσες, με το όνομά σου</string>
+    <string name="delete_account_export">Εξαγωγή των δεδομένων μου πρώτα</string>
+    <string name="delete_account_confirm">Καταλαβαίνω ότι αυτό δεν αναιρείται</string>
+    <string name="delete_account_delete">Διαγραφή λογαριασμού</string>
+    <string name="delete_account_cancel">Άκυρο</string>
+    <string name="delete_account_failed">Δεν ήταν δυνατή η διαγραφή του λογαριασμού σου. Δοκίμασε ξανά.</string>
+</resources>

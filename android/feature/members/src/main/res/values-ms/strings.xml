@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Pautan jemputan</string>
+    <string name="members_link_pending">Belum dicipta</string>
+    <string name="members_share">Kongsi</string>
+    <string name="members_me">%s (anda)</string>
+    <string name="members_status_this_device">Peranti ini</string>
+    <string name="members_status_joined">Sudah menyertai</string>
+    <string name="members_status_not_joined">Belum menyertai</string>
+    <string name="members_options">Pilihan untuk %s</string>
+    <string name="members_rename">Tukar nama</string>
+    <string name="members_personal_invite">Jemputan peribadi untuk %s</string>
+    <string name="members_personal_message">Sesiapa yang membuka pautan ini terus menyertai sebagai %s, tanpa memilih daripada senarai. Pautan ini berfungsi sekali sahaja.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="other">Sesiapa yang membuka pautan ini terus menyertai sebagai %1$s, tanpa memilih daripada senarai, dan sudah melihat bahagian mereka sebanyak %2$s dalam %3$d bil yang ditambah setakat ini. Pautan ini berfungsi sekali sahaja.</item>
+    </plurals>
+    <string name="members_personal_copy">Salin pautan</string>
+    <string name="members_personal_copied">Disalin</string>
+    <string name="members_personal_share">Kongsi dengan %s</string>
+    <string name="members_personal_share_message">Sertai %1$s sebagai %2$s di Blitz Split: %3$s</string>
+    <string name="members_remove">Alih keluar daripada kumpulan</string>
+    <string name="members_remove_joined">%s sudah menyertai kumpulan</string>
+    <string name="members_remove_title">Alih keluar %s daripada kumpulan?</string>
+    <string name="members_remove_message">%s belum menyertai. Anda boleh menambah mereka semula kemudian.</string>
+    <string name="members_remove_confirm">Alih keluar</string>
+    <string name="members_release">Lepaskan nama</string>
+    <string name="members_release_title">Lepaskan nama %s?</string>
+    <string name="members_release_message">Sesiapa yang menyertai sebagai %1$s akan keluar daripada kumpulan. Nama, warna dan bil %1$s kekal, dan %1$s boleh dipilih semula melalui pautan kumpulan.</string>
+    <string name="members_release_confirm">Lepaskan</string>
+    <string name="members_release_error">Tidak dapat melepaskan nama. Semak sambungan internet anda dan cuba lagi.</string>
+    <string name="members_add">Tambah orang</string>
+    <string name="members_invite_instead">Ada aplikasi? Jemput dengan pautan</string>
+    <string name="members_name_label">Nama</string>
+    <string name="members_save">Simpan</string>
+    <string name="members_cancel">Batal</string>
+    <string name="members_change_error">Tidak dapat menyimpan perubahan. Cuba lagi.</string>
+    <string name="members_remove_open_balance">%s mempunyai baki belum selesai</string>
+    <string name="members_balance_to_get_back">%s untuk diterima</string>
+    <string name="members_balance_owes">berhutang %s</string>
+    <string name="members_balance_settled">Selesai</string>
+</resources>

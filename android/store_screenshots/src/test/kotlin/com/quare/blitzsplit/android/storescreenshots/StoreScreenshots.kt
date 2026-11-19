@@ -1,11 +1,16 @@
 package com.quare.blitzsplit.android.storescreenshots
 
+import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import com.quare.blitzsplit.android.designsystem.format.withLatinDigits
 import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrip
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
@@ -118,8 +123,10 @@ internal abstract class StoreScreenshots(
                     // turned: the device around it, its buttons and its status bar stay as the library draws them,
                     // and an Apple capture was already taken in its language's direction.
                     CompositionLocalProvider(LocalLayoutDirection provides locale.layoutDirection) {
-                        BlitzSplitTheme(isDark = screen.isDark) {
-                            SamplePhotosComponent { content(SampleTrips.tripOf(locale.language)) }
+                        LatinDigitsComponent {
+                            BlitzSplitTheme(isDark = screen.isDark) {
+                                SamplePhotosComponent { content(SampleTrips.tripOf(locale.language)) }
+                            }
                         }
                     }
                 } else {
@@ -277,3 +284,22 @@ internal class MacStoreScreenshots :
         canvas = ScreenshotCanvas.px(2880, 1800),
         mockupFrame = { content -> MacWindowSurface(content) },
     )
+
+/*
+ * Why: the app writes its counts with 0-9 through LegacyAppLocale.wrap, which Robolectric never runs, so a "%d" of a
+ * string resource would be drawn in Bengali's own digits here.
+ */
+@Composable
+private fun LatinDigitsComponent(content: @Composable () -> Unit) {
+    val context = LocalContext.current
+    val latinContext = remember(context) {
+        val configuration = Configuration(context.resources.configuration)
+        configuration.setLocale(configuration.locales[0].withLatinDigits())
+        context.createConfigurationContext(configuration)
+    }
+    CompositionLocalProvider(
+        LocalContext provides latinContext,
+        LocalConfiguration provides latinContext.resources.configuration,
+        content = content,
+    )
+}

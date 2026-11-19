@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Σημειώσεις έκδοσης</string>
+    <string name="release_notes_show_beta">Εμφάνιση εκδόσεων beta</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Αυτή η έκδοση</string>
+    <string name="release_notes_empty">Δεν υπάρχουν ακόμα σημειώσεις έκδοσης.</string>
+    <string name="release_notes_empty_only_betas">Δεν υπάρχει ακόμα σταθερή έκδοση. Ενεργοποίησε τις εκδόσεις beta για να δεις τι δοκιμάζεται.</string>
+    <string name="release_notes_load_failed_title">Δεν ήταν δυνατή η φόρτωση των σημειώσεων έκδοσης</string>
+    <string name="release_notes_load_failed_body">Έλεγξε τη σύνδεσή σου και δοκίμασε ξανά.</string>
+    <string name="release_notes_retry">Δοκίμασε ξανά</string>
+    <string name="release_notes_open_on_github">Άνοιγμα στο GitHub</string>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">বন্ধ করুন</string>
+    <string name="invite_group_created">গ্রুপ তৈরি হয়েছে</string>
+    <string name="invite_title">সবাইকে আমন্ত্রণ জানান: %s</string>
+    <string name="invite_qr_description">গ্রুপের আমন্ত্রণ লিংকের QR কোড</string>
+    <string name="invite_copy">কপি করুন</string>
+    <string name="invite_copied">কপি হয়েছে</string>
+    <string name="invite_who_picks">যিনি লিংকটি খুলবেন, তিনি তালিকা থেকে বেছে নেবেন তিনি কে: %s। কোনো অ্যাকাউন্ট লাগবে না।</string>
+    <string name="invite_names_or">%1$s বা %2$s</string>
+    <string name="invite_anyone_joins">যিনি লিংকটি খুলবেন, তিনি গ্রুপে যোগ দেবেন। কোনো অ্যাকাউন্ট লাগবে না।</string>
+    <string name="invite_pending_title">লিংক অপেক্ষমাণ</string>
+    <string name="invite_pending_offline">আপনি অনলাইনে এলে এটি তৈরি হবে।</string>
+    <string name="invite_pending_online">লিংক তৈরি হচ্ছে…</string>
+    <string name="invite_failed_title">লিংক তৈরি করা যায়নি</string>
+    <string name="invite_failed_body">গ্রুপ সিঙ্ক করার সময় কিছু সমস্যা হয়েছে।</string>
+    <string name="invite_retry">আবার চেষ্টা করুন</string>
+    <string name="invite_share">লিংক শেয়ার করুন</string>
+    <string name="invite_see_who_joined">কে কে যোগ দিয়েছেন দেখুন</string>
+    <string name="invite_add_person">অ্যাপ ছাড়া কাউকে যোগ করুন</string>
+    <string name="invite_go_to_group">গ্রুপে যান</string>
+    <string name="invite_change_link">লিংক বদলান</string>
+    <string name="invite_change_link_title">আমন্ত্রণ লিংক বদলাবেন?</string>
+    <string name="invite_change_link_message">বর্তমান লিংক ও QR কোড আর কাজ করবে না, অব্যবহৃত ব্যক্তিগত আমন্ত্রণগুলোও নয়। যাঁরা ইতিমধ্যে যোগ দিয়েছেন, তাঁরা গ্রুপেই থাকবেন।</string>
+    <string name="invite_change_link_failed">লিংক বদলানো যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="invite_share_message">চলুন Blitz Split-এ বিল ভাগ করি। গ্রুপ: %1$s। এই লিংক দিয়ে যোগ দিন: %2$s</string>
+</resources>

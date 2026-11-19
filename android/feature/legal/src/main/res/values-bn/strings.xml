@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">গোপনীয়তা নীতি</string>
+    <string name="legal_terms">পরিষেবার শর্তাবলি</string>
+    <string name="legal_updated_privacy_policy">আপডেট করা হয়েছে: %1$s</string>
+    <string name="legal_updated_terms">আপডেট করা হয়েছে: %1$s</string>
+    <string name="legal_load_failed_title">এই পৃষ্ঠাটি লোড করা যায়নি</string>
+    <string name="legal_load_failed_body">আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।</string>
+    <string name="legal_retry">আবার চেষ্টা করুন</string>
+</resources>

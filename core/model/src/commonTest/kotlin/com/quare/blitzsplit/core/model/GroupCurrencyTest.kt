@@ -325,6 +325,30 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Bangladesh WHEN picking its currency THEN it is the Bangladeshi taka`() {
+        // Given
+        val region = "BD"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.BDT to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Malaysia WHEN picking its currency THEN it is the Malaysian ringgit`() {
+        // Given
+        val region = "MY"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.MYR to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN the rupiah WHEN picking the digits to type THEN it types none though ISO gives it 2`() {
         // Given
         val currency = GroupCurrency.IDR

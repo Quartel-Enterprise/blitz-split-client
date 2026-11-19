@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Χωρίς όρους</string>
+    <string name="category_map_title">Χάρτης κατηγοριών</string>
+    <string name="category_map_search">Αναζήτηση όρων</string>
+    <string name="category_map_add">Προσθήκη όρου</string>
+    <string name="category_map_more">Περισσότερες επιλογές</string>
+    <string name="category_map_restore">Επαναφορά προεπιλογής</string>
+    <string name="category_map_back">Πίσω</string>
+    <string name="category_map_intro">Όταν ο τίτλος ενός εξόδου έχει μία από αυτές τις λέξεις, η κατηγορία μπαίνει μόνη της. Το «Uber για το σπίτι» γίνεται Μεταφορές.</string>
+    <string name="category_map_intro_offline">Ο χάρτης λειτουργεί εκτός σύνδεσης: οι αλλαγές ισχύουν αμέσως σε αυτή τη συσκευή και φτάνουν στις άλλες σου μόλις συνδεθείς ξανά.</string>
+    <string name="category_map_device_only">Ο χάρτης σου μένει μόνο σε αυτή τη συσκευή. Για να τον έχεις και στις άλλες συσκευές σου, συνδέσου με Google ή Apple στο Προφίλ σου.</string>
+    <string name="category_map_open_profile">Άνοιγμα Προφίλ</string>
+    <string name="category_map_longest_wins">Όταν δύο όροι ταιριάζουν με έναν τίτλο, υπερισχύει ο μεγαλύτερος.</string>
+    <string name="category_map_no_result">Κανένας όρος με «%1$s»</string>
+    <string name="category_map_no_result_body">Πρόσθεσέ τον και τα έξοδα με αυτή τη λέξη στον τίτλο θα έχουν τη σωστή κατηγορία.</string>
+    <string name="category_map_add_query">Προσθήκη «%1$s»</string>
+    <string name="category_map_empty_title">Ο χάρτης σου είναι άδειος</string>
+    <string name="category_map_empty_body">Χωρίς όρους, η κατηγορία δεν προκύπτει από τον τίτλο: τη διαλέγεις σε κάθε έξοδο.</string>
+    <string name="category_map_group_category"> · κατηγορία: %1$s</string>
+    <string name="category_map_only_main">Μόνο %1$s</string>
+    <string name="category_map_only_in_group">μόνο σε %1$s</string>
+    <string name="category_map_no_terms_yet">Δεν υπάρχουν όροι ακόμα.</string>
+    <string name="category_map_add_in">Προσθήκη όρου σε %1$s</string>
+    <string name="category_map_tip">Πάτησε έναν όρο για να αλλάξεις την κατηγορία του ή να τον αφαιρέσεις. Ταιριάζει με ολόκληρη τη λέξη, χωρίς να λαμβάνει υπόψη τόνους και πεζά ή κεφαλαία.</string>
+    <string name="category_map_queued">σε αναμονή</string>
+    <string name="category_map_term_action">%1$s, %2$s. Επεξεργασία</string>
+    <string name="category_map_new_term">Νέος όρος</string>
+    <string name="category_map_edit_term">Επεξεργασία όρου</string>
+    <string name="category_map_term_label">Λέξη ή φράση</string>
+    <string name="category_map_term_help">Ταιριάζει με ολόκληρη τη λέξη, χωρίς να λαμβάνει υπόψη τόνους και πεζά ή κεφαλαία.</string>
+    <string name="category_map_term_help_app">Όρος της εφαρμογής. Η επαναφορά της προεπιλογής τον φέρνει πίσω όπως ήταν.</string>
+    <string name="category_map_term_duplicate">Ο όρος «%1$s» επιλέγει ήδη την κατηγορία %2$s. Κάθε όρος έχει μία κατηγορία.</string>
+    <string name="category_map_term_too_short">Χρησιμοποίησε τουλάχιστον 2 γράμματα.</string>
+    <string name="category_map_term_too_long">Χρησιμοποίησε έως 30 γράμματα.</string>
+    <string name="category_map_term_invalid">Χρησιμοποίησε μόνο γράμματα, αριθμούς και κενά.</string>
+    <string name="category_map_category">Κατηγορία</string>
+    <string name="category_map_category_help">Μπορεί να είναι η κατηγορία ή μια υποκατηγορία.</string>
+    <string name="category_map_category_help_edit">Αν την αλλάξεις εδώ, ο όρος μετακινείται σε άλλη κατηγορία.</string>
+    <string name="category_map_category_help_move">Η μετακίνηση αφαιρεί τον όρο από την κατηγορία %1$s.</string>
+    <string name="category_map_example">Παράδειγμα</string>
+    <string name="category_map_example_move">Αν μετακινηθεί</string>
+    <string name="category_map_remove">Αφαίρεση</string>
+    <string name="category_map_cancel">Άκυρο</string>
+    <string name="category_map_save">Αποθήκευσε</string>
+    <string name="category_map_move_to">Μετακίνηση σε %1$s</string>
+    <string name="category_map_removed">Ο όρος «%1$s» αφαιρέθηκε από τον χάρτη</string>
+    <string name="category_map_undo">Αναίρεση</string>
+    <string name="category_map_restore_title">Επαναφορά του προεπιλεγμένου χάρτη;</string>
+    <string name="category_map_restore_body">Οι 60 όροι της εφαρμογής επανέρχονται όπως ήταν, μαζί με όσους αφαίρεσες ή μετακίνησες.</string>
+    <string name="category_map_restore_own_one">Ο όρος που δημιούργησες, «%1$s», παραμένει.</string>
+    <string name="category_map_restore_confirm">Επαναφορά</string>
+    <string name="category_map_save_error">Δεν ήταν δυνατή η αποθήκευση του χάρτη. Δοκίμασε ξανά.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d όρος</item>
+        <item quantity="other">%d όροι</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d υποκατηγορία</item>
+        <item quantity="other">%d υποκατηγορίες</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d όρος με «%2$s»</item>
+        <item quantity="other">%1$d όροι με «%2$s»</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Εκτός σύνδεσης · %d αλλαγή σε αναμονή</item>
+        <item quantity="other">Εκτός σύνδεσης · %d αλλαγές σε αναμονή</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Ο %d όρος που δημιούργησες παραμένει.</item>
+        <item quantity="other">Οι %d όροι που δημιούργησες παραμένουν.</item>
+    </plurals>
+    <string name="category_map_new_category">Νέα κατηγορία</string>
+    <string name="category_map_new_subcategory_in">Νέα υποκατηγορία σε %s</string>
+    <string name="category_map_edit_category">Επεξεργασία: %s</string>
+    <string name="category_map_category_group">Ομάδα</string>
+    <string name="category_map_change_color">Αλλαγή χρώματος: %1$s</string>
+    <string name="category_map_restore_color">Επαναφορά χρώματος</string>
+    <string name="category_map_color_done">Τέλος</string>
+</resources>

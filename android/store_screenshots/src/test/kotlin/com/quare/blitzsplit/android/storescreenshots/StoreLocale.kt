@@ -12,8 +12,8 @@ import java.util.Locale
  * resources' language and the region the amounts, dates and hours are written in, the tag itself for every set but
  * Latin America's Spanish, Chinese, drawn in zh-CN for mainland China's yuan, Hebrew, drawn in iw-IL, the legacy
  * code Android's values-iw answers to, Thai, drawn in th-TH for the baht, Vietnamese, drawn in vi-VN for the
- * đồng, Traditional Chinese, drawn in zh-TW for the New Taiwan dollar, Swedish, drawn in sv-SE for the krona, and
- * Czech, drawn in cs-CZ for the koruna. The stores' own codes (es-419, es-MX…) come from the tags in the staging tasks
+ * đồng, Traditional Chinese, drawn in zh-TW for the New Taiwan dollar, Swedish, drawn in sv-SE for the krona,
+ * Czech, drawn in cs-CZ for the koruna, Bengali, drawn in bn-BD for the taka, and Malay, drawn in ms-MY for the ringgit. The stores' own codes (es-419, es-MX…) come from the tags in the staging tasks
  * of build-logic's StoreScreenshots.kt.
  */
 internal data class StoreLocale(
@@ -164,6 +164,21 @@ internal val storeLocales = listOf(
         tag = "ro",
         language = "ro",
         drawnLocale = "ro",
+    ),
+    StoreLocale(
+        tag = "bn",
+        language = "bn",
+        drawnLocale = "bn-BD",
+    ),
+    StoreLocale(
+        tag = "ms",
+        language = "ms",
+        drawnLocale = "ms-MY",
+    ),
+    StoreLocale(
+        tag = "el",
+        language = "el",
+        drawnLocale = "el",
     ),
     StoreLocale(
         tag = "ja",

@@ -80,6 +80,9 @@
     <string name="profile_language_swedish">Zweeds</string>
     <string name="profile_language_czech">Tsjechisch</string>
     <string name="profile_language_romanian">Roemeens</string>
+    <string name="profile_language_bengali">Bengaals</string>
+    <string name="profile_language_malay">Maleis</string>
+    <string name="profile_language_greek">Grieks</string>
     <string name="profile_language_system_detail">Taal van het apparaat</string>
     <string name="profile_notifications">Meldingen</string>
     <plurals name="profile_notifications_active">

@@ -42,6 +42,9 @@ class ProfileUiStateTest {
             AppLanguage.SWEDISH -> listOf("Svenska", "Swedish")
             AppLanguage.CZECH -> listOf("Čeština", "Czech")
             AppLanguage.ROMANIAN -> listOf("Română", "Romanian")
+            AppLanguage.BENGALI -> listOf("বাংলা", "Bengali")
+            AppLanguage.MALAY -> listOf("Bahasa Melayu", "Malay")
+            AppLanguage.GREEK -> listOf("Ελληνικά", "Greek")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -83,6 +86,9 @@ class ProfileUiStateTest {
         AppLanguage.SWEDISH,
         AppLanguage.CZECH,
         AppLanguage.ROMANIAN,
+        AppLanguage.BENGALI,
+        AppLanguage.MALAY,
+        AppLanguage.GREEK,
     )
 
     @Test
@@ -667,6 +673,9 @@ class ProfileUiStateTest {
                 AppLanguage.SWEDISH,
                 AppLanguage.CZECH,
                 AppLanguage.ROMANIAN,
+                AppLanguage.BENGALI,
+                AppLanguage.MALAY,
+                AppLanguage.GREEK,
             ),
             options,
         )
@@ -710,6 +719,9 @@ class ProfileUiStateTest {
                 AppLanguage.SWEDISH,
                 AppLanguage.CZECH,
                 AppLanguage.ROMANIAN,
+                AppLanguage.BENGALI,
+                AppLanguage.MALAY,
+                AppLanguage.GREEK,
             ),
             options,
         )
@@ -844,7 +856,10 @@ class ProfileUiStateTest {
         val options = profile.findLanguageOptions(englishNames)
 
         // Then
-        assertEquals(listOf(AppLanguage.ENGLISH, AppLanguage.FRENCH, AppLanguage.SWEDISH), options)
+        assertEquals(
+            listOf(AppLanguage.ENGLISH, AppLanguage.FRENCH, AppLanguage.SWEDISH, AppLanguage.BENGALI),
+            options,
+        )
     }
 
     @Test

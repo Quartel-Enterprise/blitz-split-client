@@ -49,6 +49,10 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "cs" to ("Kdo co zaplatil, na první pohled" over "Všechny výdaje výletu na jednom místě, tvůj zůstatek nahoře"),
         "ro" to
             ("Cine ce a plătit, dintr-o privire" over "Toate cheltuielile călătoriei într-un loc, cu soldul tău sus"),
+        "bn" to ("কে কত দিলেন, এক নজরে" over "ট্রিপের সব বিল এক জায়গায়, ওপরে আপনার ব্যালেন্স"),
+        "ms" to ("Siapa bayar apa, sekali pandang" over "Semua bil percutian di satu tempat, dengan baki anda di atas"),
+        "el" to
+            ("Ποιος πλήρωσε τι, με μια ματιά" over "Όλα τα έξοδα του ταξιδιού μαζί, με το υπόλοιπό σου στην κορυφή"),
     ),
     StoreScreen.ITEMS to mapOf(
         "en" to ("Split by what each one had" over "Tick who had each item and the service charge splits fairly"),
@@ -101,6 +105,10 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
                 "Împarte după ce a luat fiecare" over
                     "Bifează cine a luat fiecare produs, iar taxa de serviciu se împarte corect"
             ),
+        "bn" to
+            ("যিনি যা নিয়েছেন, সেভাবে ভাগ" over "কে কোন আইটেম নিয়েছেন টিক দিন, সার্ভিস চার্জ ন্যায্যভাবে ভাগ হবে"),
+        "ms" to ("Bahagi ikut apa yang diambil" over "Tanda siapa ambil item, caj perkhidmatan dibahagi adil"),
+        "el" to ("Ο καθένας πληρώνει ό,τι πήρε" over "Τσέκαρε ποιος πήρε κάθε είδος και το σέρβις μοιράζεται δίκαια"),
     ),
     StoreScreen.RECEIPT to mapOf(
         "en" to ("Snap the receipt, skip the typing" over "The items fill themselves in from a photo"),
@@ -130,6 +138,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "sv" to ("Fota kvittot, slipp skriva" over "Artiklarna fylls i själva från ett foto"),
         "cs" to ("Vyfoť účtenku, nic nepiš" over "Položky se vyplní samy z fotky"),
         "ro" to ("Fă poză bonului, fără să tastezi" over "Produsele se completează singure dintr-o fotografie"),
+        "bn" to ("রসিদের ছবি তুলুন, টাইপ নয়" over "ছবি থেকেই আইটেমগুলো নিজে থেকে ভরে যায়"),
+        "ms" to ("Foto resit, tanpa perlu menaip" over "Item diisi sendiri daripada foto"),
+        "el" to ("Σκάναρε την απόδειξη και τελείωσες" over "Τα είδη συμπληρώνονται μόνα τους από μια φωτογραφία"),
     ),
     StoreScreen.BALANCES to mapOf(
         "en" to ("Know who owes whom" over "Settle up in a tap and record the payment"),
@@ -158,6 +169,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "sv" to ("Se vem som är skyldig vem" over "Gör upp med ett tryck och registrera betalningen"),
         "cs" to ("Věz, kdo komu dluží" over "Vyrovnej se jedním klepnutím a zaznamenej platbu"),
         "ro" to ("Vezi cine cui datorează" over "Achită dintr-o atingere și înregistrează plata"),
+        "bn" to ("জানুন কে কার কাছে কত পাবেন" over "এক ট্যাপে হিসাব মেটান, পেমেন্ট লিখে রাখুন"),
+        "ms" to ("Ketahui siapa berhutang" over "Selesaikan dengan satu ketikan, rekod bayaran"),
+        "el" to ("Μάθε ποιος χρωστάει σε ποιον" over "Εξόφλησε με ένα πάτημα και κατάγραψε την πληρωμή"),
     ),
     StoreScreen.INVITE to mapOf(
         "en" to ("Invite with a link or QR code" over "Friends join the group in seconds, no sign-up needed"),
@@ -188,6 +202,10 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "sv" to ("Bjud in med länk eller QR-kod" over "Vänner går med i gruppen på sekunder, utan registrering"),
         "cs" to ("Pozvi odkazem nebo QR kódem" over "Přátelé jsou ve skupině za pár sekund, bez registrace"),
         "ro" to ("Invită cu un link sau un cod QR" over "Prietenii intră în grup în câteva secunde, fără înregistrare"),
+        "bn" to ("লিংক বা QR কোডে আমন্ত্রণ" over "বন্ধুরা কয়েক সেকেন্ডে গ্রুপে যোগ দেবেন, সাইন আপ লাগবে না"),
+        "ms" to ("Jemput dengan pautan atau kod QR" over "Rakan sertai kumpulan segera, tanpa perlu mendaftar"),
+        "el" to
+            ("Πρόσκληση με σύνδεσμο ή κωδικό QR" over "Οι φίλοι μπαίνουν στην ομάδα σε δευτερόλεπτα, χωρίς εγγραφή"),
     ),
     StoreScreen.STATISTICS to mapOf(
         "en" to ("See where the money went" over "Spending by category and by person"),
@@ -216,6 +234,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "sv" to ("Se vart pengarna tog vägen" over "Utgifter per kategori och per person"),
         "cs" to ("Podívej se, kam šly peníze" over "Výdaje podle kategorií a podle lidí"),
         "ro" to ("Vezi unde s-au dus banii" over "Cheltuieli pe categorii și pe persoane"),
+        "bn" to ("দেখুন টাকা কোথায় গেল" over "ক্যাটাগরি ও ব্যক্তি অনুযায়ী খরচ"),
+        "ms" to ("Lihat ke mana perginya wang" over "Perbelanjaan mengikut kategori dan orang"),
+        "el" to ("Δες πού πήγαν τα χρήματα" over "Έξοδα ανά κατηγορία και ανά άτομο"),
     ),
     StoreScreen.HOME to mapOf(
         "en" to ("Your groups, front and center" over "Pin the ones you use most and see your balance in each"),
@@ -248,6 +269,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "sv" to ("Dina grupper, alltid nära" over "Fäst dem du använder mest och se ditt saldo i varje"),
         "cs" to ("Tvoje skupiny vždy po ruce" over "Připni ty nejpoužívanější a měj u každé svůj zůstatek"),
         "ro" to ("Grupurile tale, la îndemână" over "Fixează-le pe cele folosite des și vezi-ți soldul în fiecare"),
+        "bn" to ("আপনার গ্রুপ, সবার সামনে" over "বেশি ব্যবহৃত গ্রুপ পিন করুন, প্রতিটির ব্যালেন্স দেখুন"),
+        "ms" to ("Kumpulan anda, sentiasa di depan" over "Semat yang kerap digunakan dan lihat baki setiap satu"),
+        "el" to ("Οι ομάδες σου σε πρώτο πλάνο" over "Καρφίτσωσε τις πιο συχνές και δες το υπόλοιπό σου στην καθεμία"),
     ),
     StoreScreen.PAYERS_AND_CURRENCIES to mapOf(
         "en" to ("Several payers, any currency" over "Split bills more than one person paid, even in crypto"),
@@ -288,6 +312,10 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "cs" to ("Víc plátců, jakákoli měna" over "Rozděl výdaje, které platilo víc lidí, i v kryptu"),
         "ro" to
             ("Mai mulți plătitori, orice monedă" over "Împarte cheltuieli plătite de mai mulți, chiar și în cripto"),
+        "bn" to ("একাধিক পরিশোধকারী, যেকোনো মুদ্রা" over "কয়েকজন মিলে দেওয়া বিলও ভাগ করুন, এমনকি ক্রিপ্টোতেও"),
+        "ms" to ("Ramai pembayar, semua mata wang" over "Bahagi bil yang dibayar ramai, malah dalam kripto"),
+        "el" to
+            ("Πολλοί πληρωτές, κάθε νόμισμα" over "Μοίρασε έξοδα που πλήρωσαν πολλοί, ακόμη και σε κρυπτονομίσματα"),
     ),
     StoreScreen.ACTIVITY to mapOf(
         "en" to ("Never miss a change" over "Every new bill and payment in your groups, as it happens"),
@@ -315,6 +343,10 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "sv" to ("Missa aldrig en ändring" over "Varje ny utgift och betalning i dina grupper, direkt"),
         "cs" to ("Nic ti neuteče" over "Každý nový výdaj a platba ve skupinách, hned jak přibudou"),
         "ro" to ("Nu rata nicio schimbare" over "Fiecare cheltuială și plată nouă din grupurile tale, pe loc"),
+        "bn" to ("কোনো পরিবর্তন আর মিস নয়" over "গ্রুপের প্রতিটি নতুন বিল ও পেমেন্ট, সঙ্গে সঙ্গে"),
+        "ms" to ("Jangan terlepas perubahan" over "Setiap bil dan bayaran baharu kumpulan anda, serta-merta"),
+        "el" to
+            ("Δεν σου ξεφεύγει καμία αλλαγή" over "Κάθε νέο έξοδο και πληρωμή στις ομάδες σου, τη στιγμή που γίνεται"),
     ),
     StoreScreen.LIGHT_THEME to mapOf(
         "en" to ("Light or dark, it follows you" over "Works offline, with or without an account"),
@@ -342,6 +374,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "sv" to ("Ljust eller mörkt, som du vill" over "Fungerar offline, med eller utan konto"),
         "cs" to ("Světlý, nebo tmavý, jak chceš" over "Funguje offline, s účtem i bez něj"),
         "ro" to ("Luminos sau întunecat, cum vrei" over "Merge offline, cu sau fără cont"),
+        "bn" to ("লাইট বা ডার্ক, আপনার পছন্দে" over "অফলাইনেও চলে, অ্যাকাউন্ট থাকুক বা না থাকুক"),
+        "ms" to ("Cerah atau gelap, ikut suka anda" over "Berfungsi di luar talian, dengan atau tanpa akaun"),
+        "el" to ("Φωτεινό ή σκοτεινό, όπως σου αρέσει" over "Λειτουργεί εκτός σύνδεσης, με ή χωρίς λογαριασμό"),
     ),
 )
 

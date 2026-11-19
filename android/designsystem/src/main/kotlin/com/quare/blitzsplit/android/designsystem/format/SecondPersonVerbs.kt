@@ -26,6 +26,9 @@ private const val CZECH = "cs"
 private const val CZECH_SECOND_PERSON_AUXILIARY = "jsi"
 private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
 private const val ROMANIAN = "ro"
+private const val BENGALI = "bn"
+private const val GREEK = "el"
+private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
@@ -55,6 +58,8 @@ private val youSubjectLanguages = setOf(
     SWEDISH,
     CZECH,
     ROMANIAN,
+    BENGALI,
+    GREEK,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -90,8 +95,10 @@ private val irregularSecondPerson = mapOf(
  * sound of a name) and the user as "내가", the user's subject word holding its own particle: every Korean verb phrase
  * starts with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요"). Hindi's past puts the ergative "ने" after the
  * actor, written apart after a name and as one word with the user's "आपने": every Hindi verb phrase starts with "ने",
- * which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Same rules as the web's and the Apple app's
- * `verbForYou`.
+ * which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Greek ends its aorist in "-ε" for someone else and "-ες"
+ * for the user, an object pronoun staying before it: "Ana μοίρασε", "Εσύ μοίρασες"; "το επισύναψε", "το επισύναψες".
+ * Bengali needs no rule: its respectful verb is the same for "আপনি" and for a name ("Ana ভাগ করেছেন", "আপনি ভাগ করেছেন"),
+ * and Malay's verb doesn't change with the person. Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -116,6 +123,8 @@ fun toSecondPerson(
     HINDI -> dropSubjectParticle(verb, HINDI_ERGATIVE)
 
     CZECH -> if (czechPast.containsMatchIn(verb)) "$CZECH_SECOND_PERSON_AUXILIARY $verb" else verb
+
+    GREEK -> greekPast.replace(verb) { match -> match.value + "ς" }
 
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
@@ -190,7 +199,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…" likewise. Czech says "Ty jsi smazal(a)…" and Romanian "Tu ai șters…", with their verb rule.
+ * Swedish "Du raderade…" and Bengali "আপনি মুছে ফেলেছেন…" likewise. Czech says "Ty jsi smazal(a)…", Romanian "Tu ai
+ * șters…" and Greek "Εσύ διέγραψες…", with their verb rule.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

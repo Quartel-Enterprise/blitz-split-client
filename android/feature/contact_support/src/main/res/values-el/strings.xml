@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Επικοινωνία με την υποστήριξη</string>
+    <string name="contact_support_description">Θα ανοίξουμε την εφαρμογή email σου με ένα έτοιμο μήνυμα. Περίγραψε τι συνέβη και στείλε το: κάθε μήνυμα το διαβάζουν πραγματικοί άνθρωποι.</string>
+    <string name="contact_support_to">Προς</string>
+    <string name="contact_support_diagnostics">Θα συμπεριληφθούν στο email</string>
+    <string name="contact_support_app_version">Έκδοση εφαρμογής</string>
+    <string name="contact_support_platform">Πλατφόρμα</string>
+    <string name="contact_support_language">Γλώσσα</string>
+    <string name="contact_support_account">Λογαριασμός</string>
+    <string name="contact_support_profile">Προφίλ</string>
+    <string name="contact_support_language_system">Σύστημα</string>
+    <string name="contact_support_account_local">Μόνο αυτή η συσκευή</string>
+    <string name="contact_support_account_anonymous">Χωρίς σύνδεση λογαριασμού</string>
+    <string name="contact_support_open_email">Άνοιγμα email</string>
+    <string name="contact_support_copy_email">Αντιγραφή διεύθυνσης email</string>
+    <string name="contact_support_notice_copied">Η διεύθυνση email αντιγράφηκε.</string>
+    <string name="contact_support_notice_no_app">Δεν βρέθηκε εφαρμογή email. Αντί γι\' αυτό, η διεύθυνση αντιγράφηκε.</string>
+    <string name="contact_support_close">Κλείσιμο</string>
+</resources>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Σύνδεσμος πρόσκλησης</string>
+    <string name="members_link_pending">Δεν έχει δημιουργηθεί ακόμα</string>
+    <string name="members_share">Κοινοποίηση</string>
+    <string name="members_me">%s (εσύ)</string>
+    <string name="members_status_this_device">Αυτή η συσκευή</string>
+    <string name="members_status_joined">Έχει μπει</string>
+    <string name="members_status_not_joined">Δεν έχει μπει ακόμα</string>
+    <string name="members_options">Επιλογές για %s</string>
+    <string name="members_rename">Μετονομασία</string>
+    <string name="members_personal_invite">Προσωπική πρόσκληση για %s</string>
+    <string name="members_personal_message">Όποιος ανοίξει αυτόν τον σύνδεσμο μπαίνει κατευθείαν ως %s, χωρίς να διαλέξει από τη λίστα. Λειτουργεί μία φορά.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Όποιος ανοίξει αυτόν τον σύνδεσμο μπαίνει κατευθείαν ως %1$s, χωρίς να διαλέξει από τη λίστα, και βλέπει ήδη το μερίδιό του, %2$s, στο έξοδο που έχει προστεθεί ως τώρα. Λειτουργεί μία φορά.</item>
+        <item quantity="other">Όποιος ανοίξει αυτόν τον σύνδεσμο μπαίνει κατευθείαν ως %1$s, χωρίς να διαλέξει από τη λίστα, και βλέπει ήδη το μερίδιό του, %2$s, στα %3$d έξοδα που έχουν προστεθεί ως τώρα. Λειτουργεί μία φορά.</item>
+    </plurals>
+    <string name="members_personal_copy">Αντιγραφή συνδέσμου</string>
+    <string name="members_personal_copied">Αντιγράφηκε</string>
+    <string name="members_personal_share">Κοινοποίηση σε %s</string>
+    <string name="members_personal_share_message">Μπες στην ομάδα %1$s ως %2$s στο Blitz Split: %3$s</string>
+    <string name="members_remove">Αφαίρεση από την ομάδα</string>
+    <string name="members_remove_joined">%s έχει ήδη μπει στην ομάδα</string>
+    <string name="members_remove_title">Αφαίρεση από την ομάδα: %s;</string>
+    <string name="members_remove_message">%s δεν έχει μπει ακόμα. Μπορείς να προσθέσεις ξανά το άτομο αργότερα.</string>
+    <string name="members_remove_confirm">Αφαίρεση</string>
+    <string name="members_release">Αποδέσμευση ονόματος</string>
+    <string name="members_release_title">Αποδέσμευση του ονόματος %s;</string>
+    <string name="members_release_message">Όποιος μπήκε ως %1$s φεύγει από την ομάδα. Το όνομα, το χρώμα και τα έξοδα για %1$s παραμένουν, και το όνομα %1$s μπορεί να επιλεγεί ξανά μέσω του συνδέσμου της ομάδας.</string>
+    <string name="members_release_confirm">Αποδέσμευση</string>
+    <string name="members_release_error">Δεν ήταν δυνατή η αποδέσμευση του ονόματος. Έλεγξε τη σύνδεσή σου και δοκίμασε ξανά.</string>
+    <string name="members_add">Πρόσθεσε άτομο</string>
+    <string name="members_invite_instead">Έχει την εφαρμογή; Προσκάλεσε με τον σύνδεσμο</string>
+    <string name="members_name_label">Όνομα</string>
+    <string name="members_save">Αποθήκευσε</string>
+    <string name="members_cancel">Άκυρο</string>
+    <string name="members_change_error">Δεν ήταν δυνατή η αποθήκευση της αλλαγής. Δοκίμασε ξανά.</string>
+    <string name="members_remove_open_balance">%s έχει ανοιχτό υπόλοιπο</string>
+    <string name="members_balance_to_get_back">Παίρνει πίσω %s</string>
+    <string name="members_balance_owes">Χρωστάει %s</string>
+    <string name="members_balance_settled">Έχει εξοφλήσει</string>
+</resources>

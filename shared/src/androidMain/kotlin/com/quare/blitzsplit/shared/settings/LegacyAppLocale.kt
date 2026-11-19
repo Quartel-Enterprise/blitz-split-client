@@ -14,7 +14,7 @@ object LegacyAppLocale {
     private const val PREFERENCES = "app_language"
     private const val KEY_TAG = "tag"
 
-    private const val ARABIC = "ar"
+    private val nativeDigitLanguages = setOf("ar", "bn")
     private const val NUMBERING_SYSTEM = "nu"
     private const val LATIN_DIGITS = "latn"
 
@@ -28,13 +28,14 @@ object LegacyAppLocale {
     fun wrapApplication(base: Context): Context = wrapLegacy(base)
 
     /*
-     * Why: Arabic writes its numbers, amounts and dates with Latin digits (docs/product/general.md), so the amount
-     * fields read what the number keyboard types. Every "%d" of a string resource, a date and a count follow the
-     * context's locale, so an Arabic one, picked or the device's, gets the "nu-latn" extension once here.
+     * Why: Arabic and Bengali write their numbers, amounts and dates with Latin digits (docs/product/general.md), so the
+     * amount fields read what the number keyboard types. Every "%d" of a string resource, a date and a count follow the
+     * context's locale, so an Arabic or Bengali one, picked or the device's, gets the "nu-latn" extension once here.
      */
     private fun withLatinDigits(context: Context): Context {
         val locale = context.resources.configuration.locales[0]
-        if (locale.language != ARABIC || locale.getUnicodeLocaleType(NUMBERING_SYSTEM) == LATIN_DIGITS) return context
+        val keepsItsDigits = locale.language !in nativeDigitLanguages
+        if (keepsItsDigits || locale.getUnicodeLocaleType(NUMBERING_SYSTEM) == LATIN_DIGITS) return context
         val latin = Locale
             .Builder()
             .setLocale(locale)
