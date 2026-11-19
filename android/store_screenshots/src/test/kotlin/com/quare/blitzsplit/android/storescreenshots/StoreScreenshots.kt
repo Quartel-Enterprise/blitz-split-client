@@ -292,14 +292,14 @@ internal class MacStoreScreenshots :
 @Composable
 private fun LatinDigitsComponent(content: @Composable () -> Unit) {
     val context = LocalContext.current
-    val latinContext = remember(context) {
-        val configuration = Configuration(context.resources.configuration)
-        configuration.setLocale(configuration.locales[0].withLatinDigits())
-        context.createConfigurationContext(configuration)
+    val configuration = LocalConfiguration.current
+    val latinConfiguration = remember(configuration) {
+        Configuration(configuration).apply { setLocale(configuration.locales[0].withLatinDigits()) }
     }
+    val latinContext = remember(context, latinConfiguration) { context.createConfigurationContext(latinConfiguration) }
     CompositionLocalProvider(
         LocalContext provides latinContext,
-        LocalConfiguration provides latinContext.resources.configuration,
+        LocalConfiguration provides latinConfiguration,
         content = content,
     )
 }
