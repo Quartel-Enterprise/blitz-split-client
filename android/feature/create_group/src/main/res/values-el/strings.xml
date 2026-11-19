@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Νέα ομάδα</string>
+    <string name="create_group_close">Κλείσιμο</string>
+    <string name="create_group_create">Δημιουργία</string>
+    <string name="create_group_change_color">Άλλαξε το χρώμα της ομάδας</string>
+    <string name="create_group_name_label">Όνομα ομάδας</string>
+    <string name="create_group_type_label">Τύπος ομάδας</string>
+    <string name="create_group_members_title">Ποιοι συμμετέχουν</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d άτομο</item>
+        <item quantity="other">%d άτομα</item>
+    </plurals>
+    <string name="create_group_me">εσύ</string>
+    <string name="create_group_remove_member">Αφαίρεσε %s</string>
+    <string name="create_group_add_placeholder">Πρόσθεσε με όνομα</string>
+    <string name="create_group_add">Πρόσθεσε</string>
+    <string name="create_group_no_app_notice">Κανείς δεν χρειάζεται την εφαρμογή προς το παρόν. Μπορείς ήδη να προσθέτεις έξοδα για όλους και να στείλεις τον σύνδεσμο αργότερα.</string>
+    <string name="create_group_currency">Προεπιλεγμένο νόμισμα</string>
+    <string name="create_group_currency_caption">Τα νέα έξοδα ξεκινούν με αυτό το νόμισμα· κάθε έξοδο μπορεί να χρησιμοποιεί άλλο.</string>
+    <string name="create_group_save_error">Δεν ήταν δυνατή η αποθήκευση της ομάδας. Δοκίμασε ξανά.</string>
+    <string name="create_group_photo">Φωτογραφία ομάδας</string>
+    <string name="create_group_take_photo">Λήψη φωτογραφίας</string>
+    <string name="create_group_choose_photo">Επιλογή φωτογραφίας</string>
+    <string name="create_group_remove_photo">Αφαίρεση φωτογραφίας</string>
+    <string name="create_group_photo_error">Δεν ήταν δυνατή η χρήση αυτής της φωτογραφίας. Δοκίμασε μια άλλη.</string>
+</resources>

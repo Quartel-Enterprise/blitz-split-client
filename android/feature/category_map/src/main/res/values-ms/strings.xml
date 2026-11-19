@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Tiada istilah</string>
+    <string name="category_map_title">Peta kategori</string>
+    <string name="category_map_search">Cari istilah</string>
+    <string name="category_map_add">Tambah istilah</string>
+    <string name="category_map_more">Lagi pilihan</string>
+    <string name="category_map_restore">Pulihkan lalai</string>
+    <string name="category_map_back">Kembali</string>
+    <string name="category_map_intro">Apabila tajuk bil mengandungi salah satu perkataan ini, kategorinya ditetapkan dengan sendirinya. “Uber pulang” menjadi Pengangkutan.</string>
+    <string name="category_map_intro_offline">Peta ini berfungsi di luar talian: perubahan berkuat kuasa serta-merta pada peranti ini dan sampai ke peranti lain anda apabila kembali dalam talian.</string>
+    <string name="category_map_device_only">Peta anda kekal pada peranti ini sahaja. Untuk membawanya ke peranti lain, log masuk dengan Google atau Apple dalam Profil anda.</string>
+    <string name="category_map_open_profile">Buka Profil</string>
+    <string name="category_map_longest_wins">Apabila dua istilah sepadan dengan tajuk, istilah paling panjang digunakan.</string>
+    <string name="category_map_no_result">Tiada istilah dengan “%1$s”</string>
+    <string name="category_map_no_result_body">Tambahkannya dan bil dengan perkataan ini dalam tajuk akan tiba dengan kategori yang betul.</string>
+    <string name="category_map_add_query">Tambah “%1$s”</string>
+    <string name="category_map_empty_title">Peta anda kosong</string>
+    <string name="category_map_empty_body">Tanpa istilah, kategori tidak diambil daripada tajuk: anda memilihnya pada setiap bil.</string>
+    <string name="category_map_group_category"> · kategori %1$s</string>
+    <string name="category_map_only_main">Hanya %1$s</string>
+    <string name="category_map_only_in_group">hanya dalam %1$s</string>
+    <string name="category_map_no_terms_yet">Belum ada istilah.</string>
+    <string name="category_map_add_in">Tambah istilah dalam %1$s</string>
+    <string name="category_map_tip">Ketik istilah untuk menukar kategorinya atau mengalih keluarnya. Padanan dibuat pada seluruh perkataan, tanpa mengira aksen dan huruf besar atau kecil.</string>
+    <string name="category_map_queued">dalam baris gilir</string>
+    <string name="category_map_term_action">%1$s, %2$s. Edit</string>
+    <string name="category_map_new_term">Istilah baharu</string>
+    <string name="category_map_edit_term">Edit istilah</string>
+    <string name="category_map_term_label">Perkataan atau frasa</string>
+    <string name="category_map_term_help">Padanan dibuat pada seluruh perkataan, tanpa mengira aksen dan huruf besar atau kecil.</string>
+    <string name="category_map_term_help_app">Istilah aplikasi. Pulihkan lalai mengembalikannya seperti asal.</string>
+    <string name="category_map_term_duplicate">“%1$s” sudah memilih %2$s. Setiap istilah mempunyai satu kategori.</string>
+    <string name="category_map_term_too_short">Gunakan sekurang-kurangnya 2 huruf.</string>
+    <string name="category_map_term_too_long">Gunakan paling banyak 30 huruf.</string>
+    <string name="category_map_term_invalid">Gunakan huruf, digit dan ruang sahaja.</string>
+    <string name="category_map_category">Kategori</string>
+    <string name="category_map_category_help">Boleh jadi kategori atau subkategori.</string>
+    <string name="category_map_category_help_edit">Menukarnya di sini memindahkan istilah ke kategori lain.</string>
+    <string name="category_map_category_help_move">Pemindahan mengeluarkan istilah daripada %1$s.</string>
+    <string name="category_map_example">Contoh</string>
+    <string name="category_map_example_move">Jika dipindahkan</string>
+    <string name="category_map_remove">Alih keluar</string>
+    <string name="category_map_cancel">Batal</string>
+    <string name="category_map_save">Simpan</string>
+    <string name="category_map_move_to">Pindah ke %1$s</string>
+    <string name="category_map_removed">“%1$s” dikeluarkan daripada peta</string>
+    <string name="category_map_undo">Buat asal</string>
+    <string name="category_map_restore_title">Pulihkan peta lalai?</string>
+    <string name="category_map_restore_body">60 istilah aplikasi kembali seperti asal, termasuk yang anda alih keluar atau pindahkan.</string>
+    <string name="category_map_restore_own_one">Istilah yang anda cipta, “%1$s”, dikekalkan.</string>
+    <string name="category_map_restore_confirm">Pulihkan</string>
+    <string name="category_map_save_error">Tidak dapat menyimpan peta. Cuba lagi.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="other">%d istilah</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="other">%d subkategori</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="other">%1$d istilah dengan “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="other">Luar talian · %d perubahan dalam baris gilir</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="other">%d istilah yang anda cipta dikekalkan.</item>
+    </plurals>
+    <string name="category_map_new_category">Kategori baharu</string>
+    <string name="category_map_new_subcategory_in">Subkategori baharu dalam %s</string>
+    <string name="category_map_edit_category">Edit %s</string>
+    <string name="category_map_category_group">Kumpulan</string>
+    <string name="category_map_change_color">Tukar warna %1$s</string>
+    <string name="category_map_restore_color">Pulihkan warna</string>
+    <string name="category_map_color_done">Selesai</string>
+</resources>

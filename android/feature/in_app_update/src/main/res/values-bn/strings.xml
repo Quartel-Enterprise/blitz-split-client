@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">আপডেট ডাউনলোড হচ্ছে…</string>
+    <string name="in_app_update_download_failed">আপডেট ডাউনলোড করা যায়নি। পরে আবার চেষ্টা করুন।</string>
+</resources>

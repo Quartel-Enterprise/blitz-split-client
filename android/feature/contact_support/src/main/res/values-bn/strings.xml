@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">সহায়তায় যোগাযোগ করুন</string>
+    <string name="contact_support_description">আমরা আপনার ইমেইল অ্যাপে একটি প্রস্তুত মেসেজ খুলে দেব। কী হয়েছে লিখে পাঠিয়ে দিন: প্রতিটি মেসেজ সত্যিকারের মানুষ পড়েন।</string>
+    <string name="contact_support_to">প্রাপক</string>
+    <string name="contact_support_diagnostics">ইমেইলে যা যুক্ত থাকবে</string>
+    <string name="contact_support_app_version">অ্যাপের সংস্করণ</string>
+    <string name="contact_support_platform">প্ল্যাটফর্ম</string>
+    <string name="contact_support_language">ভাষা</string>
+    <string name="contact_support_account">অ্যাকাউন্ট</string>
+    <string name="contact_support_profile">প্রোফাইল</string>
+    <string name="contact_support_language_system">সিস্টেম</string>
+    <string name="contact_support_account_local">শুধু এই ডিভাইসে</string>
+    <string name="contact_support_account_anonymous">সংযুক্ত নয়</string>
+    <string name="contact_support_open_email">ইমেইল খুলুন</string>
+    <string name="contact_support_copy_email">ইমেইল ঠিকানা কপি করুন</string>
+    <string name="contact_support_notice_copied">ইমেইল ঠিকানা কপি হয়েছে।</string>
+    <string name="contact_support_notice_no_app">কোনো ইমেইল অ্যাপ পাওয়া যায়নি। তার বদলে ঠিকানাটি কপি করা হয়েছে।</string>
+    <string name="contact_support_close">বন্ধ করুন</string>
+</resources>

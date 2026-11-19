@@ -49,7 +49,7 @@ final class ClockFormat {
     }
 
     /// `base` on `timeFormat`'s hour cycle, whatever was picked: Profile's examples of each option. Latin digits in
-    /// Arabic, as every amount and date (`AppNumbers`).
+    /// Arabic and Bengali, as every amount and date (`AppNumbers`).
     func locale(from base: Locale, as timeFormat: TimeFormatPreference) -> Locale {
         let hourCycle: Locale.HourCycle? = switch timeFormat {
         case .twentyFourHour: .zeroToTwentyThree

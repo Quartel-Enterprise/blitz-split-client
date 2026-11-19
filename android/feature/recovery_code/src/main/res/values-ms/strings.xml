@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Simpan kod pemulihan anda</string>
+    <string name="recovery_code_body">Anda menggunakan aplikasi ini tanpa akaun. 12 perkataan ini memulihkan data anda jika anda menukar atau kehilangan peranti. Tulis mengikut urutan. Selepas 30 hari tanpa penggunaan, data anda akan dipadam dan perkataan ini tidak lagi berfungsi.</string>
+    <string name="recovery_code_copy">Salin perkataan</string>
+    <string name="recovery_code_save_to_password_manager">Simpan ke pengurus kata laluan</string>
+    <string name="recovery_code_connect_instead">Sambungkan Google atau Apple sahaja</string>
+    <string name="recovery_code_connect_instead_body">Tidak perlu kod</string>
+    <string name="recovery_code_sign_in_failed">Tidak dapat menyambung sekarang. Cuba lagi.</string>
+    <string name="recovery_code_also_in_profile">Kod ini juga ada di Profil › Kod pemulihan.</string>
+    <string name="recovery_code_remind_later">Ingatkan saya kemudian</string>
+    <string name="recovery_code_saved">Saya sudah menyimpannya</string>
+    <string name="recovery_code_download">Muat turun</string>
+    <string name="recovery_code_file_name">blitz-split-kod-pemulihan.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · kod pemulihan\n\n%1$s\n\nGunakannya dalam \"Saya pernah menggunakannya pada peranti lain\" untuk mendapatkan semula data anda.\n</string>
+</resources>

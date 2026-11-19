@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">নতুন গ্রুপ</string>
+    <string name="create_group_close">বন্ধ করুন</string>
+    <string name="create_group_create">তৈরি করুন</string>
+    <string name="create_group_change_color">গ্রুপের রং বদলান</string>
+    <string name="create_group_name_label">গ্রুপের নাম</string>
+    <string name="create_group_type_label">গ্রুপের ধরন</string>
+    <string name="create_group_members_title">কে কে আছেন</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d জন</item>
+        <item quantity="other">%d জন</item>
+    </plurals>
+    <string name="create_group_me">আপনি</string>
+    <string name="create_group_remove_member">%s-কে সরান</string>
+    <string name="create_group_add_placeholder">নাম দিয়ে যোগ করুন</string>
+    <string name="create_group_add">যোগ করুন</string>
+    <string name="create_group_no_app_notice">এখন কারও অ্যাপের দরকার নেই। আপনি এখনই সবার জন্য খরচ যোগ করতে পারেন এবং পরে লিংক পাঠাতে পারেন।</string>
+    <string name="create_group_currency">ডিফল্ট মুদ্রা</string>
+    <string name="create_group_currency_caption">নতুন বিল এই মুদ্রায় শুরু হবে; প্রতিটি বিলে অন্য মুদ্রা ব্যবহার করা যাবে।</string>
+    <string name="create_group_save_error">গ্রুপটি সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="create_group_photo">গ্রুপের ছবি</string>
+    <string name="create_group_take_photo">ছবি তুলুন</string>
+    <string name="create_group_choose_photo">ছবি বেছে নিন</string>
+    <string name="create_group_remove_photo">ছবি সরান</string>
+    <string name="create_group_photo_error">এই ছবিটি ব্যবহার করা যায়নি। অন্য একটি চেষ্টা করুন।</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Kaedah pembayaran baharu</string>
+    <string name="paying_method_edit_title">Edit kaedah pembayaran</string>
+    <string name="paying_method_type">Jenis</string>
+    <string name="paying_method_name">Nama</string>
+    <string name="paying_method_name_optional">Nama (pilihan)</string>
+    <string name="paying_method_color">Warna</string>
+    <string name="paying_method_default">Kaedah lalai</string>
+    <string name="paying_method_default_hint">Bil baharu yang anda bayar bermula dengan kaedah ini.</string>
+    <string name="paying_method_delete">Padam kaedah pembayaran</string>
+    <string name="paying_method_delete_title">Padam kaedah pembayaran ini?</string>
+    <string name="paying_method_delete_body">Bil yang anda tandakan dengan kaedah ini tidak akan memaparkannya lagi.</string>
+    <string name="paying_method_delete_confirm">Padam</string>
+    <string name="paying_method_save">Simpan</string>
+</resources>

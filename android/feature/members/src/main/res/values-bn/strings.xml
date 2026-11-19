@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">আমন্ত্রণ লিংক</string>
+    <string name="members_link_pending">এখনও তৈরি হয়নি</string>
+    <string name="members_share">শেয়ার করুন</string>
+    <string name="members_me">%s (আপনি)</string>
+    <string name="members_status_this_device">এই ডিভাইস</string>
+    <string name="members_status_joined">যোগ দিয়েছেন</string>
+    <string name="members_status_not_joined">এখনও যোগ দেননি</string>
+    <string name="members_options">বিকল্প: %s</string>
+    <string name="members_rename">নাম বদলান</string>
+    <string name="members_personal_invite">ব্যক্তিগত আমন্ত্রণ: %s</string>
+    <string name="members_personal_message">যিনি এই লিংকটি খুলবেন, তিনি তালিকা থেকে বেছে না নিয়েই সরাসরি %s হিসেবে যোগ দেবেন। এটি একবারই কাজ করে।</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">যিনি এই লিংকটি খুলবেন, তিনি তালিকা থেকে বেছে না নিয়েই সরাসরি %1$s হিসেবে যোগ দেবেন এবং এখন পর্যন্ত যোগ করা বিলে নিজের %2$s অংশ দেখতে পাবেন। এটি একবারই কাজ করে।</item>
+        <item quantity="other">যিনি এই লিংকটি খুলবেন, তিনি তালিকা থেকে বেছে না নিয়েই সরাসরি %1$s হিসেবে যোগ দেবেন এবং এখন পর্যন্ত যোগ করা %3$d টি বিলে নিজের %2$s অংশ দেখতে পাবেন। এটি একবারই কাজ করে।</item>
+    </plurals>
+    <string name="members_personal_copy">লিংক কপি করুন</string>
+    <string name="members_personal_copied">কপি হয়েছে</string>
+    <string name="members_personal_share">%s-কে পাঠান</string>
+    <string name="members_personal_share_message">Blitz Split-এ %2$s হিসেবে যোগ দিন। গ্রুপ: %1$s। লিংক: %3$s</string>
+    <string name="members_remove">গ্রুপ থেকে সরান</string>
+    <string name="members_remove_joined">%s ইতিমধ্যে গ্রুপে যোগ দিয়েছেন</string>
+    <string name="members_remove_title">%s-কে গ্রুপ থেকে সরাবেন?</string>
+    <string name="members_remove_message">%s এখনও যোগ দেননি। পরে আবার তাঁকে যোগ করতে পারবেন।</string>
+    <string name="members_remove_confirm">সরান</string>
+    <string name="members_release">নাম ছেড়ে দিন</string>
+    <string name="members_release_title">“%s” নামটি মুক্ত করবেন?</string>
+    <string name="members_release_message">যিনি %1$s হিসেবে যোগ দিয়েছেন, তিনি গ্রুপ ছেড়ে যাবেন। %1$s নাম, রং ও বিলগুলো থেকে যাবে, এবং গ্রুপের লিংক দিয়ে %1$s নামটি আবার বেছে নেওয়া যাবে।</string>
+    <string name="members_release_confirm">ছেড়ে দিন</string>
+    <string name="members_release_error">নামটি মুক্ত করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।</string>
+    <string name="members_add">ব্যক্তি যোগ করুন</string>
+    <string name="members_invite_instead">অ্যাপ আছে? লিংক দিয়ে আমন্ত্রণ জানান</string>
+    <string name="members_name_label">নাম</string>
+    <string name="members_save">সংরক্ষণ করুন</string>
+    <string name="members_cancel">বাতিল</string>
+    <string name="members_change_error">পরিবর্তন সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="members_remove_open_balance">ব্যালেন্স এখনও বাকি আছে: %s</string>
+    <string name="members_balance_to_get_back">%s পাবেন</string>
+    <string name="members_balance_owes">%s দেবেন</string>
+    <string name="members_balance_settled">হিসাব মিটে গেছে</string>
+</resources>

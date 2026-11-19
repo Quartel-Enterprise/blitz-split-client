@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Nota keluaran</string>
+    <string name="release_notes_show_beta">Tunjukkan versi beta</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Versi ini</string>
+    <string name="release_notes_empty">Belum ada nota keluaran.</string>
+    <string name="release_notes_empty_only_betas">Belum ada versi stabil. Hidupkan versi beta untuk melihat apa yang sedang diuji.</string>
+    <string name="release_notes_load_failed_title">Tidak dapat memuatkan nota keluaran</string>
+    <string name="release_notes_load_failed_body">Semak sambungan internet anda dan cuba lagi.</string>
+    <string name="release_notes_retry">Cuba lagi</string>
+    <string name="release_notes_open_on_github">Buka di GitHub</string>
+</resources>

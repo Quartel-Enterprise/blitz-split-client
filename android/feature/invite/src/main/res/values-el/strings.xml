@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Κλείσιμο</string>
+    <string name="invite_group_created">Η ομάδα δημιουργήθηκε</string>
+    <string name="invite_title">Προσκάλεσε όλους στην ομάδα %s</string>
+    <string name="invite_qr_description">Κωδικός QR του συνδέσμου πρόσκλησης της ομάδας</string>
+    <string name="invite_copy">Αντιγραφή</string>
+    <string name="invite_copied">Αντιγράφηκε</string>
+    <string name="invite_who_picks">Όποιος ανοίξει τον σύνδεσμο διαλέγει ποιος είναι στη λίστα: %s. Δεν χρειάζεται λογαριασμός.</string>
+    <string name="invite_names_or">%1$s ή %2$s</string>
+    <string name="invite_anyone_joins">Όποιος ανοίξει τον σύνδεσμο μπαίνει στην ομάδα. Δεν χρειάζεται λογαριασμός.</string>
+    <string name="invite_pending_title">Ο σύνδεσμος εκκρεμεί</string>
+    <string name="invite_pending_offline">Δημιουργείται μόλις συνδεθείς.</string>
+    <string name="invite_pending_online">Δημιουργία συνδέσμου…</string>
+    <string name="invite_failed_title">Δεν ήταν δυνατή η δημιουργία του συνδέσμου</string>
+    <string name="invite_failed_body">Κάτι πήγε στραβά κατά τον συγχρονισμό της ομάδας.</string>
+    <string name="invite_retry">Δοκίμασε ξανά</string>
+    <string name="invite_share">Κοινοποίησε τον σύνδεσμο</string>
+    <string name="invite_see_who_joined">Δες ποιοι μπήκαν</string>
+    <string name="invite_add_person">Πρόσθεσε κάποιον χωρίς την εφαρμογή</string>
+    <string name="invite_go_to_group">Πήγαινε στην ομάδα</string>
+    <string name="invite_change_link">Αλλαγή συνδέσμου</string>
+    <string name="invite_change_link_title">Αλλαγή του συνδέσμου πρόσκλησης;</string>
+    <string name="invite_change_link_message">Ο τρέχων σύνδεσμος και ο κωδικός QR σταματούν να λειτουργούν, μαζί με τις αχρησιμοποίητες προσωπικές προσκλήσεις. Όσοι έχουν ήδη μπει παραμένουν στην ομάδα.</string>
+    <string name="invite_change_link_failed">Δεν ήταν δυνατή η αλλαγή του συνδέσμου. Δοκίμασε ξανά.</string>
+    <string name="invite_share_message">Ας μοιράσουμε τα έξοδα της ομάδας %1$s στο Blitz Split. Μπες με αυτόν τον σύνδεσμο: %2$s</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Φέρε πίσω τις ομάδες σου</string>
+    <string name="restore_subtitle">Είχες συνδεθεί με λογαριασμό στο παρελθόν; Απλώς συνδέσου ξανά. Αν όχι, χρησιμοποίησε τον κωδικό ανάκτησης ή τον κωδικό QR από την παλιά σου συσκευή.</string>
+    <string name="restore_no_connection_title">Χωρίς σύνδεση</string>
+    <string name="restore_no_connection_body">Η σύνδεση με λογαριασμό ή κωδικό χρειάζεται ίντερνετ για τη λήψη των ομάδων σου. Όσα έγραψες διατηρούνται.</string>
+    <string name="restore_code_label">Ή χρησιμοποίησε τον κωδικό ανάκτησης</string>
+    <string name="restore_code_hint">Οι 12 λέξεις με τη σειρά. Επικόλλησέ τες όλες σε ένα πεδίο για να συμπληρωθούν όλα τα πεδία.</string>
+    <string name="restore_scan_qr_title">Σάρωσε τον κωδικό QR από την παλιά σου συσκευή</string>
+    <string name="restore_scan_qr_body">Εκεί: Προφίλ › Ανάκτηση › Εμφάνιση κωδικού QR</string>
+    <string name="restore_recover">Ανάκτηση</string>
+    <string name="restore_try_again">Δοκίμασε ξανά</string>
+    <string name="restore_start_fresh">Ξεκίνα από την αρχή σε αυτή τη συσκευή</string>
+    <string name="restore_error_invalid_code">Ο κωδικός δεν βρέθηκε. Έλεγξε τις λέξεις και τη σειρά τους και δοκίμασε ξανά.</string>
+    <string name="restore_error_too_many_attempts">Πάρα πολλές προσπάθειες. Περίμενε λίγα λεπτά και δοκίμασε ξανά.</string>
+    <string name="restore_error_sign_in_failed">Δεν ήταν δυνατή η σύνδεση αυτή τη στιγμή. Δοκίμασε ξανά.</string>
+    <string name="restore_error_unknown">Κάτι πήγε στραβά. Δοκίμασε ξανά.</string>
+</resources>

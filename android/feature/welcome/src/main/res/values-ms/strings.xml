@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Bahagikan bil, tanpa leceh</string>
+    <string name="welcome_offline_title">Berfungsi di luar talian</string>
+    <string name="welcome_offline_body">Semuanya kekal pada peranti anda dan disegerakkan kemudian.</string>
+    <string name="welcome_optional_title">Akaun adalah pilihan</string>
+    <string name="welcome_optional_body">Google atau Apple hanya memastikan anda tidak kehilangan apa-apa apabila menukar peranti.</string>
+    <string name="welcome_invite_title">Jemput dengan pautan atau kod QR</string>
+    <string name="welcome_invite_body">Rakan menyertai kumpulan tanpa perlu mencipta akaun.</string>
+    <string name="welcome_no_connection_title">Tiada sambungan.</string>
+    <string name="welcome_no_connection_body">Log masuk dengan akaun memerlukan internet. Gunakan tanpa akaun sekarang dan sambungkan kemudian dalam Profil.</string>
+    <string name="welcome_or">atau</string>
+    <string name="welcome_use_without_account">Gunakan tanpa akaun</string>
+    <string name="welcome_used_on_another_device">Saya pernah menggunakannya pada peranti lain</string>
+    <string name="welcome_sign_in_failed">Tidak dapat log masuk sekarang. Cuba lagi.</string>
+    <string name="welcome_legal_notice">Dengan meneruskan, anda menerima %1$s dan mengakui %2$s.</string>
+    <string name="welcome_legal_terms">Terma Perkhidmatan</string>
+    <string name="welcome_legal_privacy">Dasar Privasi</string>
+    <string name="welcome_no_account_note">Tanpa akaun, data anda dipadam selepas 30 hari tidak digunakan. Sambungkan Google atau Apple untuk menyimpannya.</string>
+    <string name="welcome_no_account_note_offline">Tanpa akaun, data anda dipadam selepas 30 hari tidak digunakan. Sambungkan Google atau Apple kemudian, dalam Profil, untuk menyimpannya.</string>
+    <string name="welcome_expired_title">Data anda telah dipadam</string>
+    <string name="welcome_expired_body">Anda menggunakan aplikasi tanpa akaun dan tidak membukanya selama 30 hari, jadi data anda telah dipadam. Sambungkan Google atau Apple untuk menyimpannya pada masa akan datang.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

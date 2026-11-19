@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">অ্যাকাউন্ট মুছুন</string>
+    <string name="delete_account_offline_title">ইন্টারনেট নেই।</string>
+    <string name="delete_account_offline_body">অ্যাকাউন্ট মুছতে ইন্টারনেট সংযোগ লাগবে। সংযুক্ত হয়ে আবার চেষ্টা করুন।</string>
+    <string name="delete_account_heading">আপনার অ্যাকাউন্ট ও ডেটা মুছবেন?</string>
+    <string name="delete_account_deleted_title">যা মুছে যাবে</string>
+    <string name="delete_account_deleted_profile">আপনার প্রোফাইল (নাম, ছবি ও রং)</string>
+    <string name="delete_account_deleted_keys">আপনার Pix ও Bitcoin কী</string>
+    <string name="delete_account_deleted_provider">আপনার %1$s অ্যাকাউন্টের সাথে সংযোগ</string>
+    <string name="delete_account_deleted_recovery_code">আপনার রিকভারি কোড</string>
+    <string name="delete_account_deleted_device">এই ডিভাইসে থাকা আপনার ডেটার কপি</string>
+    <string name="delete_account_kept_title">আপনার গ্রুপে যা থেকে যাবে</string>
+    <string name="delete_account_kept_groups">অন্য সদস্যদের জন্য গ্রুপগুলো, তাদের বিল ও পেমেন্টসহ</string>
+    <string name="delete_account_kept_member">প্রতিটি গ্রুপে আপনার নাম, অ্যাকাউন্ট ছাড়া সদস্য হিসেবে</string>
+    <string name="delete_account_kept_comments">আপনার মন্তব্য ও যোগ করা ছবি, আপনার নামে</string>
+    <string name="delete_account_export">আগে আমার ডেটা এক্সপোর্ট করুন</string>
+    <string name="delete_account_confirm">আমি বুঝেছি যে এটি আর ফেরানো যাবে না</string>
+    <string name="delete_account_delete">অ্যাকাউন্ট মুছুন</string>
+    <string name="delete_account_cancel">বাতিল</string>
+    <string name="delete_account_failed">আপনার অ্যাকাউন্ট মোছা যায়নি। আবার চেষ্টা করুন।</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Edit profil</string>
+    <string name="edit_profile_save">Simpan</string>
+    <string name="edit_profile_change_photo">Tukar foto</string>
+    <string name="edit_profile_take_photo">Ambil foto</string>
+    <string name="edit_profile_choose_photo">Pilih daripada galeri</string>
+    <string name="edit_profile_use_account_photo">Gunakan foto akaun %1$s</string>
+    <string name="edit_profile_remove_photo">Alih keluar foto</string>
+    <string name="edit_profile_photo_error">Tidak dapat menggunakan foto ini. Cuba foto lain.</string>
+    <string name="edit_profile_avatar_color">Warna avatar</string>
+    <string name="edit_profile_avatar_color_hint">Dipaparkan apabila anda tiada foto.</string>
+    <string name="edit_profile_name_label">Nama anda</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Taip sekurang-kurangnya %d huruf.</string>
+    <string name="edit_profile_name_too_long">Gunakan sehingga %d aksara.</string>
+    <string name="edit_profile_account_notice">Nama dan foto datang daripada akaun %1$s anda. Menukarnya di sini hanya berkuat kuasa di Blitz Split dan tidak mengubah akaun %1$s anda.</string>
+    <string name="edit_profile_footer">Kumpulan anda dan sesiapa yang mempunyai pautan profil anda dapat melihat nama dan foto anda.</string>
+    <string name="profile_photo_close">Tutup</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galeri</string>
+    <string name="profile_photo_remove">Alih keluar</string>
+    <string name="profile_photo_title">Foto profil</string>
+</resources>

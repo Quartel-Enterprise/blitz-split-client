@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Hubungi sokongan</string>
+    <string name="contact_support_description">Kami akan membuka aplikasi e-mel anda dengan mesej yang sudah sedia. Terangkan perkara yang berlaku dan hantar: setiap mesej dibaca oleh orang sebenar.</string>
+    <string name="contact_support_to">Kepada</string>
+    <string name="contact_support_diagnostics">Akan disertakan dalam e-mel</string>
+    <string name="contact_support_app_version">Versi aplikasi</string>
+    <string name="contact_support_platform">Platform</string>
+    <string name="contact_support_language">Bahasa</string>
+    <string name="contact_support_account">Akaun</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Sistem</string>
+    <string name="contact_support_account_local">Peranti ini sahaja</string>
+    <string name="contact_support_account_anonymous">Tidak disambungkan</string>
+    <string name="contact_support_open_email">Buka e-mel</string>
+    <string name="contact_support_copy_email">Salin alamat e-mel</string>
+    <string name="contact_support_notice_copied">Alamat e-mel disalin.</string>
+    <string name="contact_support_notice_no_app">Tiada aplikasi e-mel ditemui. Alamat telah disalin.</string>
+    <string name="contact_support_close">Tutup</string>
+</resources>

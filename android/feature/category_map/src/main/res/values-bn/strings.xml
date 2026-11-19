@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">কোনো শব্দ নেই</string>
+    <string name="category_map_title">ক্যাটাগরি ম্যাপ</string>
+    <string name="category_map_search">শব্দ খুঁজুন</string>
+    <string name="category_map_add">শব্দ যোগ করুন</string>
+    <string name="category_map_more">আরও বিকল্প</string>
+    <string name="category_map_restore">ডিফল্ট পুনরুদ্ধার করুন</string>
+    <string name="category_map_back">ফিরে যান</string>
+    <string name="category_map_intro">বিলের শিরোনামে এই শব্দগুলোর কোনো একটি থাকলে ক্যাটাগরি নিজে থেকেই বসে যায়। “বাড়ি ফেরার Uber” হয়ে যায় পরিবহন।</string>
+    <string name="category_map_intro_offline">ম্যাপটি অফলাইনে কাজ করে: পরিবর্তন এই ডিভাইসে সঙ্গে সঙ্গে কার্যকর হয় এবং আবার অনলাইনে এলে আপনার অন্য ডিভাইসে পৌঁছে যায়।</string>
+    <string name="category_map_device_only">আপনার ম্যাপ শুধু এই ডিভাইসেই থাকে। অন্য ডিভাইসে নিতে প্রোফাইলে Google বা Apple দিয়ে সাইন ইন করুন।</string>
+    <string name="category_map_open_profile">প্রোফাইল খুলুন</string>
+    <string name="category_map_longest_wins">দুটি শব্দ কোনো শিরোনামের সাথে মিললে সবচেয়ে লম্বাটি প্রাধান্য পায়।</string>
+    <string name="category_map_no_result">“%1$s” সহ কোনো শব্দ নেই</string>
+    <string name="category_map_no_result_body">এটি যোগ করুন, তাহলে শিরোনামে এই শব্দ থাকা বিলগুলো সঠিক ক্যাটাগরিতে আসবে।</string>
+    <string name="category_map_add_query">“%1$s” যোগ করুন</string>
+    <string name="category_map_empty_title">আপনার ম্যাপ খালি</string>
+    <string name="category_map_empty_body">শব্দ না থাকলে ক্যাটাগরি শিরোনাম থেকে আসে না: প্রতিটি বিলে আপনাকে বেছে নিতে হবে।</string>
+    <string name="category_map_group_category"> · ক্যাটাগরি: %1$s</string>
+    <string name="category_map_only_main">শুধু %1$s</string>
+    <string name="category_map_only_in_group">শুধু এখানে: %1$s</string>
+    <string name="category_map_no_terms_yet">এখনও কোনো শব্দ নেই।</string>
+    <string name="category_map_add_in">শব্দ যোগ করুন: %1$s</string>
+    <string name="category_map_tip">কোনো শব্দের ক্যাটাগরি বদলাতে বা সেটি সরাতে তাতে ট্যাপ করুন। এটি পুরো শব্দ মেলায়, অ্যাকসেন্ট ও বড়-ছোট হাতের অক্ষর উপেক্ষা করে।</string>
+    <string name="category_map_queued">সারিতে আছে</string>
+    <string name="category_map_term_action">%1$s, %2$s। সম্পাদনা করুন</string>
+    <string name="category_map_new_term">নতুন শব্দ</string>
+    <string name="category_map_edit_term">শব্দ সম্পাদনা করুন</string>
+    <string name="category_map_term_label">শব্দ বা বাক্যাংশ</string>
+    <string name="category_map_term_help">পুরো শব্দ মেলায়, অ্যাকসেন্ট ও বড়-ছোট হাতের অক্ষর উপেক্ষা করে।</string>
+    <string name="category_map_term_help_app">এটি অ্যাপের একটি শব্দ। ডিফল্টে ফেরালে এটি আগের মতো ফিরে আসবে।</string>
+    <string name="category_map_term_duplicate">“%1$s” ইতিমধ্যে এই ক্যাটাগরিতে আছে: %2$s। প্রতিটি শব্দের একটিই ক্যাটাগরি থাকে।</string>
+    <string name="category_map_term_too_short">কমপক্ষে 2 টি অক্ষর ব্যবহার করুন।</string>
+    <string name="category_map_term_too_long">সর্বোচ্চ 30 টি অক্ষর ব্যবহার করুন।</string>
+    <string name="category_map_term_invalid">শুধু অক্ষর, সংখ্যা ও স্পেস ব্যবহার করুন।</string>
+    <string name="category_map_category">ক্যাটাগরি</string>
+    <string name="category_map_category_help">এটি ক্যাটাগরি বা সাবক্যাটাগরি হতে পারে।</string>
+    <string name="category_map_category_help_edit">এখানে বদলালে শব্দটি অন্য ক্যাটাগরিতে চলে যাবে।</string>
+    <string name="category_map_category_help_move">সরালে শব্দটি এখান থেকে চলে যাবে: %1$s।</string>
+    <string name="category_map_example">উদাহরণ</string>
+    <string name="category_map_example_move">সরালে</string>
+    <string name="category_map_remove">সরান</string>
+    <string name="category_map_cancel">বাতিল</string>
+    <string name="category_map_save">সংরক্ষণ করুন</string>
+    <string name="category_map_move_to">এখানে সরান: %1$s</string>
+    <string name="category_map_removed">“%1$s” ম্যাপ থেকে সরানো হয়েছে</string>
+    <string name="category_map_undo">পূর্বাবস্থায় ফেরান</string>
+    <string name="category_map_restore_title">ডিফল্ট ম্যাপ পুনরুদ্ধার করবেন?</string>
+    <string name="category_map_restore_body">অ্যাপের 60 টি শব্দ আগের মতো ফিরে আসবে, আপনার সরানো বা স্থানান্তর করা শব্দগুলোসহ।</string>
+    <string name="category_map_restore_own_one">আপনার তৈরি করা শব্দ “%1$s” থেকে যাবে।</string>
+    <string name="category_map_restore_confirm">পুনরুদ্ধার করুন</string>
+    <string name="category_map_save_error">ম্যাপ সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d টি শব্দ</item>
+        <item quantity="other">%d টি শব্দ</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d টি সাব-ক্যাটাগরি</item>
+        <item quantity="other">%d টি সাব-ক্যাটাগরি</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” সহ %1$d টি শব্দ</item>
+        <item quantity="other">“%2$s” সহ %1$d টি শব্দ</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">অফলাইন · %d টি পরিবর্তন সারিতে আছে</item>
+        <item quantity="other">অফলাইন · %d টি পরিবর্তন সারিতে আছে</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">আপনার তৈরি করা %d টি শব্দ থেকে যাবে।</item>
+        <item quantity="other">আপনার তৈরি করা %d টি শব্দ থেকে যাবে।</item>
+    </plurals>
+    <string name="category_map_new_category">নতুন ক্যাটাগরি</string>
+    <string name="category_map_new_subcategory_in">নতুন সাব-ক্যাটাগরি: %s</string>
+    <string name="category_map_edit_category">সম্পাদনা করুন: %s</string>
+    <string name="category_map_category_group">গ্রুপ</string>
+    <string name="category_map_change_color">রং বদলান: %1$s</string>
+    <string name="category_map_restore_color">রং পুনরুদ্ধার করুন</string>
+    <string name="category_map_color_done">সম্পন্ন</string>
+</resources>

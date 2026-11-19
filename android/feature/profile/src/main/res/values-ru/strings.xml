@@ -82,6 +82,9 @@
     <string name="profile_language_swedish">Шведский</string>
     <string name="profile_language_czech">Чешский</string>
     <string name="profile_language_romanian">Румынский</string>
+    <string name="profile_language_bengali">Бенгальский</string>
+    <string name="profile_language_malay">Малайский</string>
+    <string name="profile_language_greek">Греческий</string>
     <string name="profile_language_system_detail">Язык устройства</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_notifications">Уведомления</string>

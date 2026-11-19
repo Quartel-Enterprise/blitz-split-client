@@ -1,7 +1,7 @@
 # Store listing screenshots
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
-showing a sample trip among five friends, inside a device frame with a title and description, in all 26 languages
+showing a sample trip among five friends, inside a device frame with a title and description, in all 29 languages
 of the listings. The frames come from the [store-screenshots](https://github.com/lucianosantosdev/store-screenshots)
 library, as in Bible Planner. None of the images is versioned: every run rebuilds them from source.
 
@@ -276,7 +276,7 @@ is going:
    the jobs a release runs for the same images
    ([`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml)), after "group
    the locales" split them, six to a job unless the run's `group_size` says otherwise. A job's locales go through
-   one Play edit, so a whole set is five saves of
+   one Play edit, so a whole set is six saves of
    [Google Play's daily save quota](#google-plays-daily-save-quota). Only the images whose content changed go up,
    the phone's too when they did, and a locale Google Play already holds as drawn is left out of its job's edit:
    each job's summary says which went and which were already there. One job per locale took about two minutes a
@@ -333,7 +333,7 @@ and `upload_play_screenshots` of the [Fastfile](../fastlane/Fastfile), with the 
 [`play-screenshot-groups.mjs`](../scripts/release/play-screenshot-groups.mjs), which has tests):
 
 - **A few locales per save.** The locales go up in groups, `group_size` to a job (6 unless the run says), each
-  group through one edit: five saves for Play's 27 locales, where one job per locale was 27.
+  group through one edit: six saves for Play's 31 locales, where one job per locale was 31.
 - **No save for what didn't change.** Before it opens an edit to write, the lane reads what Google Play holds
   (through an edit it deletes, which is no save) and leaves out every locale whose staged images are the ones
   already there, shelf by shelf and in order. A group with no locale left opens no edit. supply's
@@ -368,7 +368,7 @@ still have something to send:
    screenshots are each at least one save, and a set whose every locale changed is five. Spread them when the day
    already had many. A run with `validate_only` commits nothing, so as far as the error's name says it is no save.
 3. **A second set on the same day is cheap only when little changed**: what Google Play already holds costs
-   nothing, and a frame or a screen that changed in every language is five saves again.
+   nothing, and a frame or a screen that changed in every language is six saves again.
 
 **What no run has shown yet** (November 2026): the groups, the check of what Google Play holds and the quota's path
 have not run against Google Play. The lane's tests run it against a stand-in for supply's client (a group held
@@ -588,8 +588,8 @@ scripts/store-screenshots/local-set.mjs        # the check of a set made on a Ma
 Robolectric draws every image in its set's `StoreLocale.drawnLocale` (`StoreLocale.kt`), the Play screens and the
 banner over an Apple capture alike: the language the resources are read in and the region the amounts, dates and
 hours are written in. It is the set's own tag for most sets. Chinese (`zh-CN`), Traditional Chinese (`zh-TW`, since
-its tag, `zh-Hant`, carries a script), Hebrew (`iw-IL`), Thai (`th-TH`), Vietnamese (`vi-VN`), Swedish (`sv-SE`)
-and Czech (`cs-CZ`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
+its tag, `zh-Hant`, carries a script), Hebrew (`iw-IL`), Thai (`th-TH`), Vietnamese (`vi-VN`), Swedish (`sv-SE`),
+Czech (`cs-CZ`), Bengali (`bn-BD`) and Malay (`ms-MY`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
 tag, `es`, has no region: a bare `es` writes the symbol after the amount, as Spain does
 ("84,08 €", "120 US$"), while the same listing's App Store set, captured in Equatorial Guinea's region, writes
 "€84,08" and "US$120". So that set is drawn in **`es-GQ`** (`LATIN_AMERICAN_DRAWN_LOCALE`), **the region of the `es`

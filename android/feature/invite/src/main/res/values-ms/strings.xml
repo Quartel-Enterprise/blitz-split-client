@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Tutup</string>
+    <string name="invite_group_created">Kumpulan dicipta</string>
+    <string name="invite_title">Jemput semua orang ke %s</string>
+    <string name="invite_qr_description">Kod QR pautan jemputan kumpulan</string>
+    <string name="invite_copy">Salin</string>
+    <string name="invite_copied">Disalin</string>
+    <string name="invite_who_picks">Sesiapa yang membuka pautan memilih siapa mereka dalam senarai: %s. Tiada akaun diperlukan.</string>
+    <string name="invite_names_or">%1$s atau %2$s</string>
+    <string name="invite_anyone_joins">Sesiapa yang membuka pautan akan menyertai kumpulan. Tiada akaun diperlukan.</string>
+    <string name="invite_pending_title">Pautan belum sedia</string>
+    <string name="invite_pending_offline">Pautan dicipta sebaik sahaja anda dalam talian.</string>
+    <string name="invite_pending_online">Mencipta pautan…</string>
+    <string name="invite_failed_title">Tidak dapat mencipta pautan</string>
+    <string name="invite_failed_body">Berlaku masalah semasa menyegerakkan kumpulan.</string>
+    <string name="invite_retry">Cuba lagi</string>
+    <string name="invite_share">Kongsi pautan</string>
+    <string name="invite_see_who_joined">Lihat siapa yang menyertai</string>
+    <string name="invite_add_person">Tambah seseorang tanpa aplikasi</string>
+    <string name="invite_go_to_group">Pergi ke kumpulan</string>
+    <string name="invite_change_link">Tukar pautan</string>
+    <string name="invite_change_link_title">Tukar pautan jemputan?</string>
+    <string name="invite_change_link_message">Pautan dan kod QR semasa akan berhenti berfungsi, termasuk jemputan peribadi yang belum digunakan. Sesiapa yang sudah menyertai kekal dalam kumpulan.</string>
+    <string name="invite_change_link_failed">Tidak dapat menukar pautan. Cuba lagi.</string>
+    <string name="invite_share_message">Jom bahagikan bil %1$s di Blitz Split. Sertai dengan pautan ini: %2$s</string>
+</resources>

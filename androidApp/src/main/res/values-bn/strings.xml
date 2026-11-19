@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="push_reminder_title">হিসাব মেটানোর রিমাইন্ডার</string>
+    <string name="push_bill_created">%1$s আপনার সঙ্গে “%2$s” যোগ করেছেন</string>
+    <string name="push_bill_edited">%1$s “%2$s” সম্পাদনা করেছেন</string>
+    <string name="push_bill_deleted">%1$s “%2$s” মুছে ফেলেছেন</string>
+    <string name="push_comment_added">%1$s “%2$s” বিলে মন্তব্য করেছেন: %3$s</string>
+    <string name="push_payment_paid_you">%1$s জানিয়েছেন যে তিনি আপনাকে পরিশোধ করেছেন</string>
+    <string name="push_payment_to_you">%1$s জানিয়েছেন যে %2$s আপনাকে পরিশোধ করেছেন</string>
+    <string name="push_payment_received_yours">%1$s আপনার পেমেন্ট পেয়েছেন বলে চিহ্নিত করেছেন</string>
+    <string name="push_payment_from_you">%1$s জানিয়েছেন যে আপনি %2$s-কে পরিশোধ করেছেন</string>
+    <string name="push_payment_undone">%1$s আপনার সঙ্গে একটি পেমেন্ট ফিরিয়ে নিয়েছেন</string>
+    <string name="push_charge_sent">%1$s আপনাকে হিসাব মেটানোর রিমাইন্ডার পাঠিয়েছেন</string>
+    <string name="push_settle_reminder">%1$s গ্রুপে আপনার বকেয়া ব্যালেন্স আছে</string>
+    <string name="push_settle_reminders">%1$s টি গ্রুপে আপনার বকেয়া ব্যালেন্স আছে</string>
+    <string name="push_added_to_group">%1$s আপনাকে গ্রুপে যোগ করেছেন</string>
+    <string name="push_member_joined">%1$s গ্রুপে যোগ দিয়েছেন</string>
+    <string name="push_debts_simplified_to_you">%1$s দেনা সহজ করেছেন। এখন %2$s আপনাকে %3$s দেবেন।</string>
+    <string name="push_debts_simplified_from_you">%1$s দেনা সহজ করেছেন। এখন আপনি %2$s-কে %3$s দেবেন।</string>
+    <string name="push_debts_simplified_other">%1$s দেনা সহজ করেছেন। আপনার জন্য কী বদলেছে দেখুন।</string>
+    <string name="push_debts_unsimplified_to_you">%1$s “দেনা সহজ করুন” বন্ধ করেছেন। এখন %2$s আপনাকে %3$s দেবেন।</string>
+    <string name="push_debts_unsimplified_from_you">%1$s “দেনা সহজ করুন” বন্ধ করেছেন। এখন আপনি %2$s-কে %3$s দেবেন।</string>
+    <string name="push_debts_unsimplified_other">%1$s “দেনা সহজ করুন” বন্ধ করেছেন। আপনার জন্য কী বদলেছে দেখুন।</string>
+    <string name="bill_link_not_in_group_title">আপনি এই গ্রুপে নেই</string>
+    <string name="bill_link_not_in_group_message">এই মন্তব্যটি এমন একটি গ্রুপে আছে যেখানে আপনি নেই। যিনি লিংকটি পাঠিয়েছেন তাঁর কাছে আমন্ত্রণ চেয়ে নিন।</string>
+    <string name="bill_link_offline_title">ইন্টারনেট নেই</string>
+    <string name="bill_link_offline_message">আবার অনলাইনে এলে লিংকটি খুলুন।</string>
+    <string name="bill_link_go_home">হোমে যান</string>
+    <string name="discard_changes_title">পরিবর্তন বাতিল করবেন?</string>
+    <string name="discard_changes_message">সংরক্ষণ না করা পরিবর্তনগুলো হারিয়ে যাবে।</string>
+    <string name="discard_changes_discard">বাতিল করুন</string>
+    <string name="discard_changes_keep_editing">সম্পাদনা চালিয়ে যান</string>
+</resources>

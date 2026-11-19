@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Padam akaun</string>
+    <string name="delete_account_offline_title">Tiada internet.</string>
+    <string name="delete_account_offline_body">Memadam akaun anda memerlukan sambungan internet. Sambung dan cuba lagi.</string>
+    <string name="delete_account_heading">Padam akaun dan data anda?</string>
+    <string name="delete_account_deleted_title">Apa yang dipadam</string>
+    <string name="delete_account_deleted_profile">Profil anda (nama, foto dan warna)</string>
+    <string name="delete_account_deleted_keys">Kunci Pix dan Bitcoin anda</string>
+    <string name="delete_account_deleted_provider">Pautan ke akaun %1$s anda</string>
+    <string name="delete_account_deleted_recovery_code">Kod pemulihan anda</string>
+    <string name="delete_account_deleted_device">Salinan data anda pada peranti ini</string>
+    <string name="delete_account_kept_title">Apa yang kekal dalam kumpulan anda</string>
+    <string name="delete_account_kept_groups">Kumpulan, dengan bil dan bayarannya, untuk ahli lain</string>
+    <string name="delete_account_kept_member">Nama anda dalam setiap kumpulan, sebagai ahli tanpa akaun</string>
+    <string name="delete_account_kept_comments">Komen anda dan foto yang anda tambah, atas nama anda</string>
+    <string name="delete_account_export">Eksport data saya dahulu</string>
+    <string name="delete_account_confirm">Saya faham tindakan ini tidak boleh dibuat asal</string>
+    <string name="delete_account_delete">Padam akaun</string>
+    <string name="delete_account_cancel">Batal</string>
+    <string name="delete_account_failed">Tidak dapat memadam akaun anda. Cuba lagi.</string>
+</resources>
