@@ -46,10 +46,11 @@ const STORY = [
 // with Pix in Brazil's place of the groups at a glance.
 const PLAY_STORY = STORY.filter((entry) => !["split", "offline"].includes(entry.copy));
 
-// The Mac's capture is its window alone, so it has neither "Pagar Carla" nor "Dividir": nine images, the window drawn
-// as it is, with its own corners and shadow, in place of a device.
-const MAC_STORY = STORY.filter((entry) => !["pix", "split"].includes(entry.copy)).map(({ except, ...entry }) => entry);
+// The Mac's art draws its window as it is, with its own corners and shadow, in place of a device. It has no "Dividir",
+// and keeps Home in every language: nine images, ten in Brazil's, where "Pagar Carla" with its Pix code comes second.
+const MAC_STORY = STORY.filter((entry) => entry.copy !== "split").map(({ except, ...entry }) => entry);
 const MAC_CALLOUTS = {
+  pay: { x: 1010, y: 590, w: 850, h: 510, s: 1.4 },
   group: { x: 320, y: 320, w: 750, h: 160, s: 1.7 },
   items: { x: 1500, y: 740, w: 650, h: 520, s: 1.3 },
   balances: { x: 310, y: 590, w: 900, h: 330, s: 1.4 },
@@ -303,7 +304,7 @@ async function main() {
         const play = device.startsWith("play_");
         const mac = device === "mac";
         const story = (play ? PLAY_STORY : mac ? MAC_STORY : STORY).filter((entry) => (!entry.only || entry.only === tag) && entry.except !== tag);
-        if (story.length !== (play ? 8 : mac ? 9 : 10)) throw new Error(`${tag} has ${story.length} images`);
+        if (story.length !== (play ? 8 : mac ? (tag === "pt-BR" ? 10 : 9) : 10)) throw new Error(`${tag} has ${story.length} images`);
         const panels = [];
         let offset = 0;
         for (const entry of story) {

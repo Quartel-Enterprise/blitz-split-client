@@ -429,7 +429,7 @@ node scripts/store-screenshots/listing-art/compose.mjs        # every device and
 `ART_DEVICES` and `ART_LOCALES` narrow the last step. A callout (the part of a screen drawn larger) is placed by its
 coordinates in `compose.mjs`, and for the cards whose height moves with a language's words, found in the capture by
 color. Right-to-left languages get the callout from the mirrored side. Google Play's 7" tablet has no callouts: its
-screens lay out differently enough that fixed coordinates miss. The Mac's art (`ART_DEVICES=mac`) draws its window as captured, with no device around it, in nine images: it has no "Pagar Carla" nor "Dividir", and in Arabic and Hebrew no callouts, since the window mirrors only part of its layout.
+screens lay out differently enough that fixed coordinates miss. The Mac's art (`ART_DEVICES=mac`) draws its window as captured, with no device around it, in nine images, ten in Brazil's, where "Pagar Carla" comes second as on the phones (`STORE_SCREENSHOTS_TABLE=art-screens STORE_SCREENSHOTS_LOCALES=pt-BR STORE_SCREENSHOTS_SCREENS=pay ./scripts/store-screenshots/capture-mac.sh` captures it). It has no "Dividir", and in Arabic and Hebrew no callouts, since the window mirrors only part of its layout.
 
 ## What the images show
 
