@@ -49,6 +49,18 @@ const STORY = [
 // with Pix in Brazil's place of the groups at a glance.
 const PLAY_STORY = STORY.filter((entry) => !["split", "offline"].includes(entry.copy));
 
+// The Mac's capture is its window alone, so it has neither "Pagar Carla" nor "Dividir": nine images, the window drawn
+// as it is, with its own corners and shadow, in place of a device.
+const MAC_STORY = STORY.filter((entry) => !["pix", "split"].includes(entry.copy)).map(({ except, ...entry }) => entry);
+const MAC_CALLOUTS = {
+  group: { x: 320, y: 320, w: 750, h: 160, s: 1.7 },
+  items: { x: 1500, y: 740, w: 650, h: 520, s: 1.3 },
+  balances: { x: 310, y: 590, w: 900, h: 330, s: 1.4 },
+  statistics: { x: 500, y: 470, w: 1050, h: 560, s: 1.2 },
+  home: { x: 940, y: 160, w: 1300, h: 330, s: 1.25 },
+  payers: { x: 1440, y: 330, w: 720, h: 400, s: 1.4 },
+};
+
 // A callout is the part of a capture drawn larger over it: x, y, width, height and its scale, in the capture's pixels.
 // `card` finds its top and height in the capture instead, as a language's longer words move what is above it: the first
 // run of rows from `from` on, at least `min` tall, whose pixel at `probe` differs from the screen's own at `edge`.
@@ -122,6 +134,7 @@ const DEVICES = {
   play_phone: () => ({ ...scaled(PHONE, 1242 / 1290), width: 1242, height: 2484, slot: "playphone", play: true, callouts: PLAY_PHONE_CALLOUTS }),
   play_tablet_10: () => ({ ...scaled(IPAD, 2560 / 2732), width: 2560, height: 1440, slot: "playtablet10", play: true, callouts: PLAY_TABLET_CALLOUTS }),
   play_tablet_7: () => ({ ...scaled(IPAD, 2560 / 2732), width: 2560, height: 1440, slot: "playtablet7", play: true, callouts: {} }),
+  mac: () => ({ title: [150, 110, 150], device: [300, 360, 2280, 0, 0], band: 1060, notch: 140, wide: true, width: 2880, height: 1800, slot: "mac", window: true, callouts: MAC_CALLOUTS }),
   iphone_duo: (screen) => (["group", "balances", "statistics"].includes(screen) ? DUO_OPEN : DUO_CLOSED),
 };
 
@@ -162,7 +175,8 @@ function findCard(png, card, ratio, mirrored) {
 
 async function calloutOf(kind, file, name, mirrored) {
   const spec = kind.callouts[name];
-  if (!spec) return "";
+  // Why: the Mac window lays a right-to-left language out only partly mirrored, so a mirrored callout misses.
+  if (!spec || (kind.window && mirrored)) return "";
   const ratio = kind.ratio ?? 1;
   const png = await readFile(file);
   const captureWidth = describePng(png).width;
@@ -216,7 +230,7 @@ async function panelOf(device, tag, entry, words, people, offset) {
   // direction, or Arabic's and Hebrew's closing period lands at the start of the line.
   return {
     kind,
-    html: `<section class="panel" dir="${isRightToLeft ? "rtl" : "ltr"}" style="left:${offset}px;width:${kind.width}px;height:${kind.height}px"><h1 data-width="${kind.width - 2 * titleLeft}" style="${side}:${titleLeft}px;top:${titleTop}px;font-size:${titleSize}px">${title}</h1><div class="device" style="left:${left}px;top:${top}px;width:${width}px;padding:${padding}px;border-radius:${radius}px"><img src="${pathToFileURL(file).href}" alt="" style="border-radius:${radius - padding}px"></div>${await calloutOf(kind, file, entry.callout, side === "right")}${extraOf(kind, entry, words, people)}</section>`,
+    html: `<section class="panel" dir="${isRightToLeft ? "rtl" : "ltr"}" style="left:${offset}px;width:${kind.width}px;height:${kind.height}px"><h1 data-width="${kind.width - 2 * titleLeft}" style="${side}:${titleLeft}px;top:${titleTop}px;font-size:${titleSize}px">${title}</h1>${kind.window ? `<img class="window" src="${pathToFileURL(file).href}" alt="" style="left:${left}px;top:${top}px;width:${width}px">` : `<div class="device" style="left:${left}px;top:${top}px;width:${width}px;padding:${padding}px;border-radius:${radius}px"><img src="${pathToFileURL(file).href}" alt="" style="border-radius:${radius - padding}px"></div>`}${await calloutOf(kind, file, entry.callout, side === "right")}${extraOf(kind, entry, words, people)}</section>`,
   };
 }
 
@@ -228,6 +242,7 @@ h1{position:absolute;font-weight:800;letter-spacing:-.03em;line-height:1.08}h1 s
 :lang(ar) h1,:lang(he) h1,:lang(hi) h1,:lang(th) h1{letter-spacing:0;line-height:1.3}
 .device{position:absolute;background:linear-gradient(145deg,#55606c,#15191e 35%,#0b0d10 70%,#434d58);box-shadow:0 80px 150px rgba(0,24,60,.55),0 20px 50px rgba(0,24,60,.4)}
 .device img{display:block;width:100%}
+.window{position:absolute;filter:drop-shadow(0 60px 110px rgba(0,20,50,.55)) drop-shadow(0 0 2px rgba(0,0,0,.6))}
 .crop{position:absolute;overflow:hidden;border-radius:44px;background-repeat:no-repeat;background-color:#1c1c1e;box-shadow:0 50px 100px rgba(0,20,50,.6),0 0 0 4px rgba(255,255,255,.22)}
 .receipt{position:absolute;border-radius:16px;transform:rotate(-8deg);box-shadow:0 60px 110px rgba(0,20,50,.55)}
 .ticket{position:absolute;filter:drop-shadow(0 30px 40px rgba(0,24,60,.45))}
@@ -290,8 +305,9 @@ async function main() {
     for (const device of devices) {
       for (const tag of tags) {
         const play = device.startsWith("play_");
-        const story = (play ? PLAY_STORY : STORY).filter((entry) => (!entry.only || entry.only === tag) && entry.except !== tag);
-        if (story.length !== (play ? 8 : 10)) throw new Error(`${tag} has ${story.length} images`);
+        const mac = device === "mac";
+        const story = (play ? PLAY_STORY : mac ? MAC_STORY : STORY).filter((entry) => (!entry.only || entry.only === tag) && entry.except !== tag);
+        if (story.length !== (play ? 8 : mac ? 9 : 10)) throw new Error(`${tag} has ${story.length} images`);
         const panels = [];
         let offset = 0;
         for (const entry of story) {
