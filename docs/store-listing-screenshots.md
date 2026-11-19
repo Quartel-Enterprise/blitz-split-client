@@ -378,6 +378,39 @@ runs on a Mac, not on the runner), and the script's tests cover the rest.
 Whether an edit that is opened to read and then deleted counts as a save is assumed, from the error's name, not
 measured. Should Google Play refuse to open that edit for the quota, the group waits the same way, with a warning.
 
+## The App Store's creative assets
+
+Besides the screenshots, an App Store product page takes two images of its own, under **Product Page Information ›
+Header and Search Results** in App Store Connect. They appear on iOS and iPadOS 27 and later, and are generated like
+the screenshots, in all 26 languages:
+
+```bash
+./scripts/store-screenshots/creative-assets/generate.sh                               # capture, then draw
+CREATIVE_ASSETS_CAPTURE=none ./scripts/store-screenshots/creative-assets/generate.sh  # draw from the captures there
+CREATIVE_ASSETS_LOCALES=en-US,ja ./scripts/store-screenshots/creative-assets/generate.sh   # a few languages
+```
+
+| Image | Size | Art safe area | Shows |
+| --- | --- | --- | --- |
+| `header.png` | 3840x1646 | 1646x661 at (1097, 493) | One phrase and a bill split into five tickets, with phones around them |
+| `search-results.png` | 3840x2560 | 2168x1030 at (836, 765) | One phrase, three tickets and the group and Bill items screens |
+
+They land in `store_listings/creative-assets/<locale>/`. **Run the script again when one of the four screens they
+show changes** (the group, Bill items, Statistics and Home, the `iphone67` captures) **or the sample trip does.**
+
+- **The words** are in [`copy.tsv`](../scripts/store-screenshots/creative-assets/copy.tsv), one row per language of
+  `locales.tsv`. A phrase too long for its place is drawn smaller, and the run stops if anything leaves the art safe
+  area.
+- **The tickets** come from the sample trip: `CreativeAssetFacts` in `:android:store_screenshots` writes each
+  person's name and equal part of the dinner in the app's own format, so they can't drift from the screens.
+- **The layout** is `header.html` and `search-results.html` beside the script. The sizes and safe areas are Apple's
+  [creative assets specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications),
+  and the images carry no alpha channel, which App Store Connect refuses.
+
+**Nothing uploads them yet**: `fastlane` and the workflows above send screenshots alone. Each language's two images go
+up by hand in App Store Connect, on the version open for editing, with that language picked at the top of Product Page
+Information. Latin America's Spanish (`es`) goes on Spanish (Mexico). Check the page's **Preview** before submitting.
+
 ## What the images show
 
 | # | Screen | Play | App Store | Shows |

@@ -118,6 +118,7 @@ object BlitzSplitApple : KoinComponent {
      * phone the row's place changes with the screen's height.
      */
     private var opensBillItems = false
+    private var opensSplitModes = false
 
     fun start() {
         startBlitzSplitKoin()
@@ -160,6 +161,7 @@ object BlitzSplitApple : KoinComponent {
         }
         val screen = StoreScreenshotsScreen.fromCodeOrNull(screenCode)
         opensBillItems = screen == StoreScreenshotsScreen.ITEMS
+        opensSplitModes = screen == StoreScreenshotsScreen.SPLIT_MODES
         val routes = screen?.routesOf(seeded).orEmpty()
         val navigator = get<Navigator>()
         scope.launch { navigator.openOverHome(routes) }
@@ -289,7 +291,9 @@ object BlitzSplitApple : KoinComponent {
         ViewModelHolder(ContactInviteViewModel::class) { get { parametersOf(route) } }
 
     fun createSplitBillViewModel(route: Route.SplitBill): ViewModelHolder<SplitBillViewModel> =
-        ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }.also(::openBillItemsOnce)
+        ViewModelHolder(SplitBillViewModel::class) { get { parametersOf(route) } }
+            .also(::openBillItemsOnce)
+            .also(::openSplitModesOnce)
 
     // Why: only the first bill of the launch, the dinner the screenshot opens: a bill opened after it stays as it is.
     private fun openBillItemsOnce(holder: ViewModelHolder<SplitBillViewModel>) {
@@ -298,6 +302,17 @@ object BlitzSplitApple : KoinComponent {
         val viewModel = holder.viewModel
         scope.launch {
             viewModel.uiState.first { it.split.mode == SplitMode.ITEMS }
+            viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
+        }
+    }
+
+    // Why: the listing's art shows "Dividir" of the bill the receipt filled in, split equally.
+    private fun openSplitModesOnce(holder: ViewModelHolder<SplitBillViewModel>) {
+        if (!opensSplitModes) return
+        opensSplitModes = false
+        val viewModel = holder.viewModel
+        scope.launch {
+            viewModel.uiState.first { it.description.isNotBlank() && it.amountMinor != null }
             viewModel.onEvent(SplitBillUiEvent.OnSplitClicked)
         }
     }

@@ -1,0 +1,278 @@
+// Draws the store listing's art (docs/store-listing-screenshots.md): ten images per device and language, from the
+// captures of capture.sh, the words of copy.tsv and the sample trip's facts. One long picture is drawn per set and each
+// image is its slice of it, so the ticket-shaped band runs on from one image to the next.
+//
+//   node scripts/store-screenshots/listing-art/compose.mjs
+//   ART_DEVICES=iphone_6_7,ipad_13 ART_LOCALES=en-US,pt-BR node scripts/store-screenshots/listing-art/compose.mjs
+import { existsSync } from "node:fs";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+import { launchChrome } from "../../readme-hero/chrome.mjs";
+import { describePng, readPixels, withoutAlpha } from "../creative-assets/png.mjs";
+
+const HERE = import.meta.dirname;
+const ROOT = resolve(HERE, "../../..");
+const CAPTURES = join(ROOT, "build/outputs/apple-screenshot-captures");
+const FACTS = join(ROOT, "build/outputs/app-store-creative-asset-facts/facts.json");
+const PAGES = join(ROOT, "build/outputs/listing-art-pages");
+const OUTPUT = join(ROOT, "store_listings/listing-art");
+const FACES = join(ROOT, "scripts/store-screenshots/faces");
+const RECEIPT = join(ROOT, "scripts/store-screenshots/receipt.jpg");
+const RIGHT_TO_LEFT = new Set(["ar", "he"]);
+const COLORS = ["#0077cc", "#00558f", "#0070c0", "#00558f", "#0070c0", "#173a80", "#1b2f6e", "#173a80", "#0070c0", "#0077cc"];
+const SHARE_PEOPLE = { promise: [2, 3], split: [1, 4] };
+
+const FILES = {
+  group: "01_group", items: "02_split_by_items", receipt: "03_receipt", balances: "04_balances", invite: "05_invite",
+  statistics: "06_statistics", home: "07_home", payers: "08_payers_and_currencies", light: "10_light_theme",
+  pay: "11_pay", split: "12_split_modes",
+};
+
+// The ten images of a listing, in order: its words, its screen and what is drawn over the screen.
+const STORY = [
+  { copy: "promise", screen: "group", callout: "group", extra: "tickets" },
+  { copy: "pix", screen: "pay", callout: "pay", only: "pt-BR" },
+  { copy: "receipt", screen: "receipt", extra: "receipt" },
+  { copy: "items", screen: "items", callout: "items" },
+  { copy: "balances", screen: "balances", callout: "balances" },
+  { copy: "invite", screen: "invite", extra: "pills" },
+  { copy: "split", screen: "split", callout: "split", extra: "tickets" },
+  { copy: "currencies", screen: "payers", callout: "payers" },
+  { copy: "statistics", screen: "statistics", callout: "statistics" },
+  { copy: "home", screen: "home", callout: "home", except: "pt-BR" },
+  { copy: "offline", screen: "light" },
+];
+
+// A callout is the part of a capture drawn larger over it: x, y, width, height and its scale, in the capture's pixels.
+// `card` finds its top and height in the capture instead, as a language's longer words move what is above it: the first
+// run of rows from `from` on, at least `min` tall, whose pixel at `probe` differs from the screen's own at `edge`.
+const PHONE_CALLOUTS = {
+  group: { x: 40, y: 1170, w: 1210, h: 360, s: 0.9, card: { from: 900, min: 200, max: 420, probe: 90, edge: 8 } },
+  pay: { x: 30, y: 1260, w: 1230, h: 430, s: 0.92, card: { from: 1120, min: 300, max: 520, probe: 60, edge: 8 } },
+  items: { x: 50, y: 1250, w: 850, h: 155, s: 1.25 },
+  balances: { x: 40, y: 1930, w: 1210, h: 620, s: 0.95, card: { from: 1650, min: 300, max: 620, probe: 90, edge: 8 } },
+  split: { x: 40, y: 755, w: 1250, h: 125, s: 0.944 },
+  payers: { x: 40, y: 735, w: 900, h: 250, s: 1.1 },
+  statistics: { x: 40, y: 1600, w: 1210, h: 420, s: 0.92, card: { from: 1450, min: 280, max: 460, probe: 90, edge: 8 } },
+  home: { x: 40, y: 500, w: 990, h: 340, s: 1.05 },
+};
+const IPAD_CALLOUTS = {
+  group: { x: 766, y: 651, w: 576, h: 304, s: 1.3 },
+  pay: { x: 826, y: 972, w: 1080, h: 288, s: 1.1 },
+  items: { x: 560, y: 1050, w: 790, h: 350, s: 1.2 },
+  balances: { x: 1415, y: 440, w: 1134, h: 563, s: 1.02 },
+  split: { x: 570, y: 725, w: 800, h: 95, s: 1.3 },
+  payers: { x: 555, y: 755, w: 720, h: 185, s: 1.35 },
+  statistics: { x: 580, y: 1020, w: 1030, h: 270, s: 1.1 },
+  home: { x: 680, y: 300, w: 1000, h: 420, s: 1.05 },
+};
+const DUO_CALLOUTS = {
+  pay: { x: 85, y: 923, w: 1000, h: 429, s: 0.98 },
+  items: { x: 60, y: 825, w: 850, h: 150, s: 1.2 },
+  split: { x: 60, y: 500, w: 1085, h: 115, s: 0.98 },
+  payers: { x: 60, y: 525, w: 760, h: 225, s: 1.25 },
+  home: { x: 40, y: 200, w: 1090, h: 420, s: 0.95 },
+};
+const DUO_OPEN_CALLOUTS = {
+  group: { x: 61, y: 967, w: 1245, h: 290, s: 1.05 },
+  balances: { x: 1488, y: 609, w: 1114, h: 640, s: 1.02 },
+  statistics: { x: 50, y: 1349, w: 1315, h: 424, s: 1.05 },
+};
+
+const PHONE = { title: [90, 190, 134], device: [165, 790, 960, 24, 168], band: 1420, notch: 110, wide: false, callouts: PHONE_CALLOUTS };
+const scaled = (kind, ratio) => ({
+  ...kind,
+  title: kind.title.map((value) => Math.round(value * ratio)),
+  device: kind.device.map((value) => Math.round(value * ratio)),
+  band: Math.round(kind.band * ratio),
+  notch: Math.round(kind.notch * ratio),
+  ratio,
+});
+const IPAD = { title: [130, 100, 158], device: [236, 385, 2260, 26, 72], band: 1180, notch: 130, wide: true, callouts: IPAD_CALLOUTS };
+const DUO_CLOSED = { width: 1398, height: 2034, slot: "iphoneduo", title: [90, 130, 116], device: [179, 610, 1040, 24, 96], band: 1120, notch: 90, wide: false, callouts: DUO_CALLOUTS };
+const DUO_OPEN = { width: 2853, height: 2007, slot: "iphoneduoopen", title: [150, 105, 158], device: [226, 385, 2400, 26, 84], band: 1120, notch: 130, wide: true, callouts: DUO_OPEN_CALLOUTS };
+
+const DEVICES = {
+  iphone_6_7: () => ({ ...PHONE, width: 1290, height: 2796, slot: "iphone67" }),
+  iphone_6_3: () => ({ ...scaled(PHONE, 1206 / 1290), width: 1206, height: 2622, slot: "iphone63" }),
+  ipad_13: () => ({ ...IPAD, width: 2732, height: 2048, slot: "ipad13" }),
+  ipad_11: () => ({ ...scaled(IPAD, 2388 / 2732), width: 2388, height: 1668, slot: "ipad13" }),
+  iphone_duo: (screen) => (["group", "balances", "statistics"].includes(screen) ? DUO_OPEN : DUO_CLOSED),
+};
+
+const escapeHtml = (text) => text.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+async function table(path) {
+  const rows = (await readFile(path, "utf8")).split("\n").filter(Boolean);
+  const header = rows.find((row) => row.startsWith("# tag")).slice(2).split("\t");
+  return new Map(
+    rows.filter((row) => !row.startsWith("#")).map((row) => {
+      const fields = row.split("\t");
+      if (fields.length !== header.length) throw new Error(`copy.tsv: ${fields[0]} has ${fields.length} fields`);
+      return [fields[0], Object.fromEntries(header.map((name, index) => [name, fields[index]]))];
+    }),
+  );
+}
+
+const pictures = new Map();
+async function pictureOf(file) {
+  if (!pictures.has(file)) pictures.set(file, readPixels(await readFile(file)));
+  return pictures.get(file);
+}
+
+// The run of rows the card fills, or null: the capture then falls back on the callout's own place.
+async function findCard(file, card, ratio) {
+  const { width, height, pixels } = await pictureOf(file);
+  const differs = (y) => {
+    const at = (x) => (y * width + Math.round(x * ratio)) * 4;
+    const [probe, edge] = [at(card.probe), at(card.edge)];
+    return Math.abs(pixels[probe] - pixels[edge]) + Math.abs(pixels[probe + 1] - pixels[edge + 1]) + Math.abs(pixels[probe + 2] - pixels[edge + 2]) > 12;
+  };
+  // Short gaps are text or a row's divider crossing the probe's column.
+  const gap = Math.round(8 * ratio);
+  for (let y = Math.round(card.from * ratio); y < height; y++) {
+    if (!differs(y)) continue;
+    let end = y;
+    for (let next = y; next < height && next - end <= gap; next++) if (differs(next)) end = next;
+    if (end - y >= card.min * ratio) return { y, h: Math.min(end - y + 1, Math.round(card.max * ratio)) };
+    y = end;
+  }
+  return null;
+}
+
+async function calloutOf(kind, file, name) {
+  const spec = kind.callouts[name];
+  if (!spec) return "";
+  const ratio = kind.ratio ?? 1;
+  const captureWidth = describePng(await readFile(file)).width;
+  const capture = captureWidth / (kind.slot === "ipad13" ? 2732 : kind.slot === "iphone63" ? 1290 : captureWidth);
+  const found = spec.card ? await findCard(file, spec.card, capture) : null;
+  const [x, y, w, h] = [spec.x * capture, found?.y ?? spec.y * capture, spec.w * capture, found?.h ?? spec.h * capture];
+  const [left, top, deviceWidth, padding] = kind.device;
+  const fit = (deviceWidth - 2 * padding) / captureWidth;
+  const scale = spec.s * (ratio / capture);
+  const [drawnWidth, drawnHeight] = [Math.round(w * scale), Math.round(h * scale)];
+  const boxLeft = Math.max(40, Math.min(kind.width - drawnWidth - 40, Math.round(left + padding + (x + w / 2) * fit - drawnWidth / 2)));
+  const boxTop = Math.round(top + padding + (y + h / 2) * fit - drawnHeight / 2);
+  return `<div class="crop" style="left:${boxLeft}px;top:${boxTop}px;width:${drawnWidth}px;height:${drawnHeight}px;background-image:url(${pathToFileURL(file).href});background-size:${Math.round(captureWidth * scale)}px auto;background-position:${-Math.round(x * scale)}px ${-Math.round(y * scale)}px"></div>`;
+}
+
+function extraOf(kind, entry, words, people) {
+  if (entry.extra === "tickets") {
+    const [first, second] = SHARE_PEOPLE[entry.copy];
+    const top = kind.height - (kind.wide ? 500 : 496);
+    return [[36, -6, first], [kind.width - 326, 6, second]].map(([left, angle, person]) =>
+      `<div class="ticket" style="left:${left}px;top:${top}px;transform:rotate(${angle}deg)"><div class="stub"><img src="${pathToFileURL(join(FACES, `person${person}.jpg`)).href}" alt=""><span>${escapeHtml(people[person].name)}</span><b>${escapeHtml(people[person].share)}</b></div></div>`).join("");
+  }
+  if (entry.extra === "receipt") {
+    return `<img class="receipt" src="${pathToFileURL(RECEIPT).href}" alt="" style="left:50px;top:${kind.height - 960}px;width:470px">`;
+  }
+  if (entry.extra === "pills") {
+    return `<div class="pills" style="left:60px;top:${kind.height - 300}px;width:${kind.width - 120}px"><div class="pill">${escapeHtml(words.noAccount)}</div><div class="pill">${escapeHtml(words.worksOffline)}</div></div>`;
+  }
+  return "";
+}
+
+async function panelOf(device, tag, entry, words, people, offset) {
+  const kind = DEVICES[device](entry.screen);
+  const file = join(CAPTURES, kind.slot, tag, `${FILES[entry.screen]}.png`);
+  if (!existsSync(file)) throw new Error(`No capture at ${file}: run scripts/store-screenshots/listing-art/capture.sh`);
+  const [titleLeft, titleTop, titleSize] = kind.title;
+  const [left, top, width, padding, radius] = kind.device;
+  const lines = words[entry.copy].split("|");
+  const title = (kind.wide ? [lines.join(" ")] : lines).map((line) => `<span>${escapeHtml(line)}</span>`).join("");
+  const side = RIGHT_TO_LEFT.has(tag.split("-")[0]) ? "right" : "left";
+  return {
+    kind,
+    html: `<section class="panel" style="left:${offset}px;width:${kind.width}px;height:${kind.height}px"><h1 data-width="${kind.width - 2 * titleLeft}" style="${side}:${titleLeft}px;top:${titleTop}px;font-size:${titleSize}px">${title}</h1><div class="device" style="left:${left}px;top:${top}px;width:${width}px;padding:${padding}px;border-radius:${radius}px"><img src="${pathToFileURL(file).href}" alt="" style="border-radius:${radius - padding}px"></div>${await calloutOf(kind, file, entry.callout)}${extraOf(kind, entry, words, people)}</section>`,
+  };
+}
+
+const CSS = `
+*{box-sizing:border-box;margin:0}html,body{overflow:hidden;background:#0068b5}
+body{position:relative;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;top:0}.band{position:absolute;left:0;top:0}.panel{position:absolute;top:0;overflow:hidden}
+h1{position:absolute;font-weight:800;letter-spacing:-.03em;line-height:1.08}h1 span{display:block;width:max-content;white-space:nowrap}
+:lang(ar) h1,:lang(he) h1,:lang(hi) h1,:lang(th) h1{letter-spacing:0;line-height:1.3}
+.device{position:absolute;background:linear-gradient(145deg,#55606c,#15191e 35%,#0b0d10 70%,#434d58);box-shadow:0 80px 150px rgba(0,24,60,.55),0 20px 50px rgba(0,24,60,.4)}
+.device img{display:block;width:100%}
+.crop{position:absolute;overflow:hidden;border-radius:44px;background-repeat:no-repeat;background-color:#1c1c1e;box-shadow:0 50px 100px rgba(0,20,50,.6),0 0 0 4px rgba(255,255,255,.22)}
+.receipt{position:absolute;border-radius:16px;transform:rotate(-8deg);box-shadow:0 60px 110px rgba(0,20,50,.55)}
+.ticket{position:absolute;filter:drop-shadow(0 30px 40px rgba(0,24,60,.45))}
+.stub{width:290px;height:430px;padding:40px 12px 0;display:flex;flex-direction:column;align-items:center;background:#fff;color:#06283f;-webkit-mask:radial-gradient(circle 28px at 0 50%,transparent 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 28px at 100% 50%,transparent 98%,#000) right/51% 100% no-repeat}
+.stub img{width:160px;height:160px;border-radius:50%;object-fit:cover;margin-bottom:18px}
+.stub span{font-size:46px;font-weight:600;margin-bottom:10px;white-space:nowrap}.stub b{font-size:52px;font-weight:800;letter-spacing:-.02em;color:#00639c;white-space:nowrap}
+.pills{position:absolute;display:flex;justify-content:center;align-items:center;gap:26px;flex-wrap:wrap}
+.pill{padding:30px 58px;border-radius:80px;background:#fff;color:#00507f;font-size:58px;font-weight:800;letter-spacing:-.015em;white-space:nowrap;box-shadow:0 40px 80px rgba(0,20,50,.5)}`;
+
+// Shrinks what is too long for its place, then says what still doesn't fit.
+const FIT = `(() => {
+  const shrink = (element, width) => { let size = parseFloat(getComputedStyle(element).fontSize);
+    while (element.scrollWidth > width && size > 16) { size -= 1; element.style.fontSize = size + 'px'; } };
+  document.querySelectorAll('h1').forEach((title) => { const width = Number(title.dataset.width); let size = parseFloat(getComputedStyle(title).fontSize);
+    while ([...title.children].some((line) => line.offsetWidth > width) && size > 40) { size -= 1; title.style.fontSize = size + 'px'; } });
+  document.querySelectorAll('.stub span, .stub b').forEach((text) => shrink(text, 262));
+  document.querySelectorAll('.pill').forEach((pill) => shrink(pill, pill.parentElement.offsetWidth));
+})()`;
+
+function stageOf(panels) {
+  const total = panels.reduce((sum, panel) => sum + panel.kind.width, 0);
+  const height = Math.max(...panels.map((panel) => panel.kind.height));
+  const { band, notch } = panels[0].kind;
+  let offset = 0;
+  const offsets = panels.map((panel) => { const start = offset; offset += panel.kind.width; return start; });
+  const arcs = offsets.slice(1).map((x) => `L${x - notch},${band} A${notch},${notch} 0 0 0 ${x + notch},${band}`).join(" ");
+  const path = `M0,${band} ${arcs} L${total},${band}`;
+  const stops = panels.map((panel, index) => `${COLORS[index]} ${((100 * (offsets[index] + panel.kind.width / 2)) / total).toFixed(2)}%`).join(",");
+  const svg = `<svg class="band" width="${total}" height="${height}" viewBox="0 0 ${total} ${height}"><path d="${path} L${total},${height} L0,${height} Z" fill="rgba(255,255,255,.13)"/><path d="${path}" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="7" stroke-dasharray="30 26" stroke-linecap="round"/></svg>`;
+  return { total, height, offsets, stops, svg };
+}
+
+async function main() {
+  const copy = await table(join(HERE, "copy.tsv"));
+  const facts = JSON.parse(await readFile(FACTS, "utf8"));
+  const tags = process.env.ART_LOCALES?.split(",") ?? [...copy.keys()];
+  const devices = process.env.ART_DEVICES?.split(",") ?? Object.keys(DEVICES);
+  await rm(PAGES, { recursive: true, force: true });
+  await mkdir(PAGES, { recursive: true });
+  const chrome = await launchChrome();
+  try {
+    for (const device of devices) {
+      for (const tag of tags) {
+        const story = STORY.filter((entry) => (!entry.only || entry.only === tag) && entry.except !== tag);
+        if (story.length !== 10) throw new Error(`${tag} has ${story.length} images`);
+        const panels = [];
+        let offset = 0;
+        for (const entry of story) {
+          const panel = await panelOf(device, tag, entry, copy.get(tag), facts[tag].people, offset);
+          panels.push(panel);
+          offset += panel.kind.width;
+        }
+        const { total, height, offsets, stops, svg } = stageOf(panels);
+        const folder = join(OUTPUT, device, tag);
+        await mkdir(folder, { recursive: true });
+        for (const [index, panel] of panels.entries()) {
+          const page = join(PAGES, `${device}-${tag}-${index}.html`);
+          const dir = RIGHT_TO_LEFT.has(tag.split("-")[0]) ? "rtl" : "ltr";
+          await writeFile(page, `<!doctype html><html lang="${tag}" dir="${dir}"><head><meta charset="utf-8"><style>${CSS}html,body{width:${panel.kind.width}px;height:${panel.kind.height}px}</style></head><body><div id="stage" dir="ltr" style="left:${-offsets[index]}px;width:${total}px;height:${height}px;background:linear-gradient(90deg,${stops})">${svg}${panel.html}</div></body></html>`);
+          await chrome.setViewport(panel.kind.width, panel.kind.height, 1);
+          await chrome.open(pathToFileURL(page).href);
+          await chrome.waitFor(`document.readyState === 'complete' && document.fonts.status === 'loaded' && [...document.images].every((image) => image.complete && image.naturalWidth > 0)`);
+          await chrome.evaluate(FIT);
+          const file = join(folder, `${String(index + 1).padStart(2, "0")}_${story[index].copy}.png`);
+          await chrome.screenshot(file);
+          const flat = withoutAlpha(await readFile(file));
+          const size = describePng(flat);
+          if (size.width !== panel.kind.width || size.height !== panel.kind.height) throw new Error(`${file} came out ${size.width}x${size.height}`);
+          await writeFile(file, flat);
+        }
+        console.log(`Drew ${device} ${tag}`);
+      }
+    }
+  } finally {
+    await chrome.close();
+  }
+}
+
+await main();

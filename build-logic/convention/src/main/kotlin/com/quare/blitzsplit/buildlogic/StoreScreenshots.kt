@@ -221,6 +221,11 @@ fun Project.configureStoreScreenshots() {
         .dir("outputs/readme-hero-android")
         .get()
         .asFile
+    val generatesCreativeAssetFacts = providers.gradleProperty("creativeAssets").isPresent
+    val creativeAssetFactsDir = rootProject.layout.buildDirectory
+        .dir("outputs/app-store-creative-asset-facts")
+        .get()
+        .asFile
     tasks.withType<Test>().configureEach {
         val isGenerator = name == GENERATE_TASK
         onlyIf("the build asked for the store screenshots") { isGenerator && generatesScreenshots }
@@ -241,6 +246,14 @@ fun Project.configureStoreScreenshots() {
             return@configureEach
         }
         filter.excludeTestsMatching("*.ReadmeHeroScreens")
+        // What the creative assets write on their tickets (scripts/store-screenshots/creative-assets), only when asked.
+        if (generatesCreativeAssetFacts) {
+            filter.includeTestsMatching("*.CreativeAssetFacts")
+            systemProperty("creativeAssets.outputDir", creativeAssetFactsDir.absolutePath)
+            outputs.dir(creativeAssetFactsDir)
+            return@configureEach
+        }
+        filter.excludeTestsMatching("*.CreativeAssetFacts")
         if (generatesAppStoreScreenshots) {
             inputs.dir(capturesDir)
             doFirst {

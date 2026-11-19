@@ -46,6 +46,8 @@ TABLES="$ROOT/scripts/store-screenshots"
 # shellcheck source=scripts/store-screenshots/tables.sh
 . "$TABLES/tables.sh"
 OUTPUT="${STORE_SCREENSHOTS_OUTPUT:-$ROOT/build/outputs/apple-screenshot-captures}"
+# The table of the screens to capture: the listing's, or art-screens for the two only the listing's art shows.
+SCREENS_TABLE="${STORE_SCREENSHOTS_TABLE:-screens}"
 DERIVED_DATA="$ROOT/build/apple-screenshots/DerivedData"
 LOGS="$ROOT/build/apple-screenshots/logs"
 SLOTS="${STORE_SCREENSHOTS_SLOTS:-iphone63 iphone67 ipad13 iphoneduo iphoneduoopen}"
@@ -231,6 +233,7 @@ run_ui_test() {
     "TEST_RUNNER_STORE_SCREENSHOTS_ASSETS=$TABLES"
     "TEST_RUNNER_STORE_SCREENSHOTS_LOCALES=$tag"
     "TEST_RUNNER_STORE_SCREENSHOTS_SCREENS=$STORE_SCREENSHOTS_SCREENS"
+    "TEST_RUNNER_STORE_SCREENSHOTS_TABLE=$SCREENS_TABLE"
     "TEST_RUNNER_STORE_SCREENSHOTS_DEVICE_IS_SET_UP=$device_is_set_up"
     "TEST_RUNNER_STORE_SCREENSHOTS_CALLER_RESTORES_LANGUAGE=1"
     xcodebuild test-without-building
@@ -378,7 +381,7 @@ chosen="$(picked locales 1 "$STORE_SCREENSHOTS_LOCALES")"
 # Split on purpose: one tag or file name per line, none with a space.
 # shellcheck disable=SC2206
 locales=($chosen)
-chosen="$(picked screens 2 "$STORE_SCREENSHOTS_SCREENS")"
+chosen="$(picked "$SCREENS_TABLE" 2 "$STORE_SCREENSHOTS_SCREENS")"
 # shellcheck disable=SC2206
 screen_files=($chosen)
 

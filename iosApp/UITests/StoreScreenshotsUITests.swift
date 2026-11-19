@@ -77,7 +77,8 @@ final class StoreScreenshotsUITests: XCTestCase {
         let locales = try Self.rows(of: "locales", fields: 4, in: tables).map {
             ListingLocale(tag: $0[0], language: $0[1], appleLanguage: $0[2], appleLocale: $0[3])
         }
-        let screens = try Self.rows(of: "screens", fields: 3, in: tables).map {
+        let screensTable = environment["STORE_SCREENSHOTS_TABLE"].flatMap { $0.isEmpty ? nil : $0 } ?? "screens"
+        let screens = try Self.rows(of: screensTable, fields: 3, in: tables).map {
             ListingScreen(code: $0[0], fileName: $0[1], isDark: $0[2] == "dark")
         }
         let assets = try Self.assetsEnvironment(tables)
