@@ -14,20 +14,11 @@ struct BalanceWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: WidgetBalancesStore.kind, provider: BalanceTimelineProvider()) { entry in
             BalanceWidgetView(balances: entry.balances)
-                .containerBackground(for: .widget) { BalanceWidgetBackground() }
+                .containerBackground(for: .widget) { Color.card }
         }
         .configurationDisplayName("Balances")
         .description("Your overall balance and the groups still open.")
         .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular])
-    }
-}
-
-/// The card behind the Home Screen's faces: white in light, the system's dark card in dark (board 15.8).
-private struct BalanceWidgetBackground: View {
-    @Environment(\.colorScheme) private var colorScheme
-
-    var body: some View {
-        colorScheme == .dark ? Color(red: 0x1C / 255, green: 0x1C / 255, blue: 0x1E / 255) : Color.white
     }
 }
 

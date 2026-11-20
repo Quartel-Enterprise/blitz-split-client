@@ -81,17 +81,18 @@ extension GroupCurrency {
         RightToLeft.isolated(Self.signed(minor, unisolated(minor == .min ? .max : abs(minor))))
     }
 
-    /// "+186" or "−1,2 mil", whole and with no symbol: where only a few characters fit (the Lock Screen's circular
+    /// "+186", "−1,2 mil" or "+456K", whole and with no symbol: where only a few characters fit (the Lock Screen's circular
     /// widget). An amount under one unit (bitcoin) keeps its decimals, as `formatSignedPlain` writes it.
     func formatSignedCompact(_ minor: Int64) -> String {
         let magnitude = minor == .min ? Decimal(Int64.max) : Decimal(abs(minor))
         let major = magnitude / pow(Decimal(10), typedDigits)
         guard major >= 1 else { return formatSignedPlain(minor) }
-        // Whole units under a thousand ("186"), two significant digits past it ("1,2 mil", "12K")
+        // Whole units under a thousand ("186"), two significant digits up to a hundred thousand ("1,2 mil", "12K") and
+        // three past it ("456K", "1,23 mi"), so a large amount keeps the digits that tell it apart
         let compact = major < 1000
             ? major.formatted(.number.precision(.fractionLength(0)).rounded(rule: .towardZero).locale(AppNumbers.locale))
             : major.formatted(
-                .number.notation(.compactName).precision(.significantDigits(1 ... 2))
+                .number.notation(.compactName).precision(.significantDigits(1 ... (major < 100_000 ? 2 : 3)))
                     .rounded(rule: .towardZero).locale(AppNumbers.locale),
             )
         return RightToLeft.isolated(Self.signed(minor, compact))

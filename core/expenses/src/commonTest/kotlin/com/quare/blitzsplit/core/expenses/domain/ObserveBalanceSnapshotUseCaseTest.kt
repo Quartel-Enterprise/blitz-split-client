@@ -86,6 +86,8 @@ class ObserveBalanceSnapshotUseCaseTest {
         assertEquals(
             BalanceSnapshot(
                 overall = null,
+                toReceive = null,
+                toPay = null,
                 openGroups = emptyList(),
                 isSettled = true,
             ),

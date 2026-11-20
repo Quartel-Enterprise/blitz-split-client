@@ -278,7 +278,7 @@ class AppViewModel(
                 uiState.first { it == AppUiState.READY }
                 linkInbox.take(url)
                 PushLink.of(url)?.let { link -> return@onEach openPushLink(link) }
-                WidgetLink.homeTabOf(url)?.let { tab -> return@onEach openWidgetLink(tab) }
+                WidgetLink.routeOf(url)?.let { route -> return@onEach navigator.openHomeTab(route) }
                 SharedBillLink.codeOf(url)?.let { code ->
                     return@onEach openSharedBill(code, SharedBillLink.commentIdOf(url))
                 }
@@ -381,11 +381,6 @@ class AppViewModel(
     fun onBillLinkNoticeDismissed() {
         billLinkNotice.value = BillLinkNoticeState(null)
         if (Route.Home in navigator.backStack.value) navigator.openHomeTab(HomeTab.HOME)
-    }
-
-    // Why: the balance widget's tap opens Balances; without a profile there is nothing to show, so the app stays as it is.
-    private fun openWidgetLink(tab: HomeTab) {
-        if (Route.Home in navigator.backStack.value) navigator.openHomeTab(tab)
     }
 
     /*

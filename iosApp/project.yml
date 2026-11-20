@@ -63,6 +63,8 @@ targetTemplates:
     type: application
     sources:
       - path: Sources/Shared
+      # What the app and its widget share: the color tokens, the locale's direction
+      - path: Sources/Common
       - path: Resources
     preBuildScripts:
       - name: Build the Shared framework
@@ -194,6 +196,7 @@ targets:
     sources:
       - path: Widgets/Shared
       - path: Widgets/Extension
+      - path: Sources/Common
       # The faces' words, which the app's build extracts into the catalog
       - path: Resources/Localizable.xcstrings
     settings:
@@ -210,7 +213,7 @@ targets:
         # WidgetKit calls the timeline provider off the main actor
         SWIFT_DEFAULT_ACTOR_ISOLATION: nonisolated
         ASSETCATALOG_COMPILER_APPICON_NAME: ""
-        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
         INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
     postBuildScripts:
       # As the app's: the widget draws in the app's language, es-ES and pt-PT included, whose tables hold only the

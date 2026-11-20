@@ -5,15 +5,21 @@ import com.quare.blitzsplit.core.groups.domain.model.Group
 /*
  * Why: what the balance widget (the iPhone's Home Screen and Lock Screen, later the watch's complication and Smart
  * Stack card) shows, worked out by the app from the device's data and handed to a process that has no Room: the overall
- * balance as Início shows it, with "You're owed" and "You owe" in its currency, and the groups where this device's
- * user has an open balance.
+ * balance as Início shows it, with its "Owe you" and "You owe", and the groups where this device's user has an open
+ * balance.
  */
 data class BalanceSnapshot(
-    // Why: Início's big amount, the first currency with a net, else the first one; null with no group.
+    // Why: Início's big amount (findMain); null with no group.
     val overall: PeopleTotal?,
+    // Why: Início's "Te devem" and "Você deve", each in the first currency with something that way; null for none.
+    val toReceive: PeopleTotal?,
+    val toPay: PeopleTotal?,
     // Why: the groups with an open balance, the most recently active first; a settled group never shows.
     val openGroups: List<OpenGroupBalance>,
-    // Why: "All settled": nobody owes you and you owe nobody, in any currency, or there is no group yet.
+    /*
+     * Why: "All settled": nobody owes you and you owe nobody, in any currency, and no group is open either (someone who
+     * owes you in one group what you owe them in another nets to zero, yet both groups are still open).
+     */
     val isSettled: Boolean,
 ) {
     companion object {
@@ -23,10 +29,13 @@ data class BalanceSnapshot(
             money: Map<String, GroupMoney>,
         ): BalanceSnapshot {
             val totals = PeopleBalances.of(groups, money).totals
+            val openGroups = groups.flatMap { group -> openBalancesOf(group, money[group.id] ?: GroupMoney.NONE) }
             return BalanceSnapshot(
-                overall = totals.firstOrNull { it.netMinor != 0L } ?: totals.firstOrNull(),
-                openGroups = groups.flatMap { group -> openBalancesOf(group, money[group.id] ?: GroupMoney.NONE) },
-                isSettled = totals.all { it.toReceiveMinor == 0L && it.toPayMinor == 0L },
+                overall = totals.findMain(),
+                toReceive = totals.findToReceive(),
+                toPay = totals.findToPay(),
+                openGroups = openGroups,
+                isSettled = openGroups.isEmpty() && totals.all { it.toReceiveMinor == 0L && it.toPayMinor == 0L },
             )
         }
 

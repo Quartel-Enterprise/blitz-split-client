@@ -161,8 +161,6 @@ struct BalanceRectangularView: View {
 
 /// "Balances" in the accent with the logo, at the top of the Home Screen's faces.
 private struct BalanceWidgetHeader: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
         HStack(spacing: 6) {
             Image("Logo")
@@ -174,7 +172,7 @@ private struct BalanceWidgetHeader: View {
                 .font(.footnote.weight(.semibold))
                 .lineLimit(1)
         }
-        .foregroundStyle(WidgetPalette.accent(colorScheme))
+        .foregroundStyle(Color(ColorToken.accent))
         .widgetAccentable()
     }
 }
@@ -183,8 +181,6 @@ private struct BalanceWidgetHeader: View {
 private struct OverallBalanceView: View {
     let balances: WidgetBalances
     let amountSize: CGFloat
-
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         if let overall = balances.overall, !balances.isSettled {
@@ -200,7 +196,7 @@ private struct OverallBalanceView: View {
                         .lineLimit(1)
                 }
             }
-            .foregroundStyle(WidgetPalette.balance(overall.direction, colorScheme))
+            .foregroundStyle(WidgetPalette.balance(overall.direction))
             .widgetAccentable()
         } else if balances.isKnown {
             Text("All settled")
@@ -219,8 +215,6 @@ private struct OverallBalanceView: View {
 private struct WidgetGroupRow: View {
     let group: WidgetBalances.Group
 
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(verbatim: group.name)
@@ -229,7 +223,7 @@ private struct WidgetGroupRow: View {
             AmountAndWord(signed: group.signed, direction: group.direction)
                 .font(.footnote.weight(.semibold))
                 .monospacedDigit()
-                .foregroundStyle(WidgetPalette.balance(group.direction, colorScheme))
+                .foregroundStyle(WidgetPalette.balance(group.direction))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
@@ -263,28 +257,14 @@ enum WidgetWords {
     }
 }
 
-/// The app's tokens (`Palette`, docs/product/general.md): the money's green and orange and the accent, light and dark.
+/// The money's color: the green of what comes back, the orange of what is owed, secondary at zero.
 enum WidgetPalette {
-    static func accent(_ scheme: ColorScheme) -> Color {
-        scheme == .dark ? Color(widgetHex: 0x95CDF7) : Color(widgetHex: 0x266489)
-    }
-
-    static func balance(_ direction: WidgetBalances.Direction, _ scheme: ColorScheme) -> Color {
+    static func balance(_ direction: WidgetBalances.Direction) -> Color {
         switch direction {
-        case .toReceive: scheme == .dark ? Color(widgetHex: 0x6EDBAA) : Color(widgetHex: 0x006C4C)
-        case .youOwe: scheme == .dark ? Color(widgetHex: 0xFFB599) : Color(widgetHex: 0x8E4D31)
+        case .toReceive: Color(ColorToken.positive)
+        case .youOwe: Color(ColorToken.negative)
         case .settled: .secondary
         }
-    }
-}
-
-private extension Color {
-    init(widgetHex rgb: UInt32) {
-        self.init(
-            red: Double((rgb >> 16) & 0xFF) / 255,
-            green: Double((rgb >> 8) & 0xFF) / 255,
-            blue: Double(rgb & 0xFF) / 255,
-        )
     }
 }
 
@@ -293,12 +273,7 @@ private extension View {
     @ViewBuilder
     func appLanguage(_ identifier: String?) -> some View {
         if let identifier {
-            let locale = Locale(identifier: identifier)
-            environment(\.locale, locale)
-                .environment(
-                    \.layoutDirection,
-                    locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight,
-                )
+            drawn(in: Locale(identifier: identifier))
         } else {
             self
         }

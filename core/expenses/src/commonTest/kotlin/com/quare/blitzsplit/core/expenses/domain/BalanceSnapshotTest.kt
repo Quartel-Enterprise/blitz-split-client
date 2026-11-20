@@ -346,6 +346,75 @@ class BalanceSnapshotTest {
         assertEquals(listOf("c", "a", "b"), snapshot.openGroups.map { it.groupId })
     }
 
+    @Test
+    fun `GIVEN Ana owes you in one group what you owe her in another WHEN building THEN both groups stay open`() {
+        // Given
+        val groups = listOf(group("ape", "Apê 302", me, ana), group("floripa", "Viagem Floripa", me, ana))
+        val money = mapOf(
+            "ape" to moneyOf(owes("ape", ana.id, me.id, 1_000L)),
+            "floripa" to moneyOf(owes("floripa", me.id, ana.id, 1_000L)),
+        )
+
+        // When
+        val snapshot = BalanceSnapshot.of(groups, money)
+
+        // Then
+        assertEquals(
+            listOf(
+                OpenGroupBalance("ape", "Apê 302", GroupCurrency.BRL, 1_000L),
+                OpenGroupBalance("floripa", "Viagem Floripa", GroupCurrency.BRL, -1_000L),
+            ),
+            snapshot.openGroups,
+        )
+        assertFalse(snapshot.isSettled)
+    }
+
+    @Test
+    fun `GIVEN the main currency settled and another offsetting WHEN building THEN its totals are the open ones`() {
+        // Given
+        val groups = listOf(
+            group("ape", "Apê 302", me, ana),
+            group("churrasco", "Churrasco", me, bruno),
+            group("nyc", "Nova York", me, ana, bruno, currency = GroupCurrency.USD),
+        )
+        val money = mapOf(
+            "nyc" to moneyOf(
+                owes(
+                    "nyc",
+                    ana.id,
+                    me.id,
+                    1_000L,
+                    id = "dinner",
+                    currency = GroupCurrency.USD,
+                ),
+                owes(
+                    "nyc",
+                    me.id,
+                    bruno.id,
+                    1_000L,
+                    id = "taxi",
+                    currency = GroupCurrency.USD,
+                ),
+            ),
+        )
+
+        // When
+        val snapshot = BalanceSnapshot.of(groups, money)
+
+        // Then
+        assertEquals(total(GroupCurrency.BRL), snapshot.overall)
+        val usd = total(
+            GroupCurrency.USD,
+            toReceiveMinor = 1_000L,
+            toPayMinor = 1_000L,
+            toReceiveCount = 1,
+            toPayCount = 1,
+        )
+        assertEquals(usd, snapshot.toReceive)
+        assertEquals(usd, snapshot.toPay)
+        assertFalse(snapshot.isSettled)
+    }
+
     private val me = member("me", "Pierre", isMe = true)
     private val ana = member("ana", "Ana", userId = "ana")
     private val bruno = member("bruno", "Bruno", userId = "bruno")

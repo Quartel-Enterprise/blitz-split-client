@@ -167,24 +167,29 @@ and orange, the accent):
     active that have an open balance, each with its name and "−R$ 98 you owe" or "+R$ 214,90 to get back". A group with
     bills in two currencies is a line per currency with an open balance, as its own Balances; a settled group never
     shows.
-  - Lock Screen, circle: the logo over the compact overall balance ("+186", whole units, "1.2K" past a thousand), the
-    sign saying which way since the Lock Screen drops the color.
-  - Lock Screen, rectangle: "Blitz Split" ("Bora Rachar" in Brazil's Portuguese), "+R$ 186,40 to get back", and the other way's
-    total ("You owe R$ 126" under what comes back, "Owe you …" under what you owe).
+  - Lock Screen, circle: the logo over the compact overall balance ("+186", whole units; two significant digits past
+    a thousand, "1.2K", and three past a hundred thousand, "456K"), the sign saying which way since the Lock Screen
+    drops the color.
+  - Lock Screen, rectangle: the app's name ("Bora Rachar" in Brazil's Portuguese, "Blitz Split" elsewhere), "+R$ 186,40
+    to get back", and the other way's total ("You owe R$ 126" under what comes back, "Owe you …" under what you owe).
 
-The figures are Home's: the overall balance is the "Overall balance" of the first currency with a net (the global
-Balances' totals), "Owe you" and "You owe" are its "Owe you" and "You owe" in that currency, and every amount is written
-by the app's own formatter (decimals dropped when zero, bitcoin in sats when Profile says so, Latin digits in Arabic and
-Bengali), in the app's language (Profile › Language) whatever the device's, offline too. With nobody owing anyone in any
-currency, or no group yet, every size says "All settled" (the circle a check mark); an overall balance of zero whose
-two ways offset each other shows "R$ 0" with no word, "Owe you" and "You owe" under it saying what is still open.
-Before the app has written anything (an update not opened yet) every size shows a dash, never "All settled". A local only profile, an anonymous
-account and a signed in one all get it, since it reads only this device's data. Tapping any size opens Balances
-(`borarachar://balances`, `WidgetLink`), over wherever the app was; without a profile it opens the app as it is.
+The figures are Home's, from the same rules (`findMain`, `findToReceive`, `findToPay`): the overall balance is the
+"Overall balance" of the first currency with a net (the global Balances' totals), "Owe you" and "You owe" each in the
+first currency with something that way, and every amount is written by the app's own formatter (decimals dropped when
+zero, bitcoin in sats when Profile says so, Latin digits in Arabic and Bengali), in the app's language (Profile ›
+Language) whatever the device's, offline too. With nobody owing anyone in any currency and no group open, or no group
+yet, every size says "All settled" (the circle a check mark); an overall balance of zero whose two ways offset each
+other shows "R$ 0" with no word, "Owe you" and "You owe" under it and the open groups saying what is still open.
+Before the app has written anything (an update not opened yet) every size shows a dash, never "All settled". A local
+only profile, an anonymous account and a signed in one all get it, since it reads only this device's data. Tapping any
+size opens Balances on All (`borarachar://balances`, `WidgetLink`) as its tab does: what was open above Home closes,
+as a push notification's tap does; without a profile it opens the app as it is.
 
 The widget's process has no Room and no Kotlin: the app builds the snapshot in the shared code
 (`ObserveBalanceSnapshot`, `BalanceSnapshot`), formats it and writes it as JSON to the App Group
-`group.com.quare.blitzsplit` whenever a group, a bill or a payment changes here or through a sync, and again each time
-the app goes to the background, then reloads the widget (`BalanceWidgetWriter`). "Updated at" is when the app last
-wrote it, on Profile's Time format. The faces live in `iosApp/Widgets/Shared`, which the watch's complication and
-Smart Stack card reuse; the Mac, Android and the web have no widget yet.
+`group.com.quare.blitzsplit`, then reloads the widget (`BalanceWidgetWriter`): when a group, a bill or a payment changes
+here or through a sync (a burst, such as a first sync, written once), when Profile's language, Time format or bitcoin
+unit change, and when the app goes to the background, each time only if the widget would draw something different, so
+WidgetKit's daily reloads aren't spent on nothing. "Updated at" is when the figures were last written, on Profile's Time
+format. The faces live in `iosApp/Widgets/Shared`, which the watch's complication and Smart Stack card reuse, and draw
+with the app's color tokens (`iosApp/Sources/Common`); the Mac, Android and the web have no widget yet.
