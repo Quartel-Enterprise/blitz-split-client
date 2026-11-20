@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Óra csatlakoztatása</string>
+    <string name="connect_watch_close">Bezárás</string>
+    <string name="connect_watch_body">Írd be a kódot, amelyet az órád mutat. Az óra bejelentkezik a fiókodba, és utána magától szinkronizál.</string>
+    <string name="connect_watch_code_label">Az óra kódja</string>
+    <string name="connect_watch_error_invalid">Hibás vagy lejárt kód. Kérj újat az órán.</string>
+    <string name="connect_watch_error_too_many">Túl sok hibás kód. Várj néhány percet, és próbáld újra.</string>
+    <string name="connect_watch_error_needs_account">Előbb csatlakoztass egy fiókot: az adataid csak ezen az eszközön vannak.</string>
+    <string name="connect_watch_error_failed">Nem sikerült csatlakoztatni az órát. Próbáld újra.</string>
+    <string name="connect_watch_offline">Az óra csatlakoztatásához internet kell.</string>
+    <string name="connect_watch_own_watch_only">Csak a saját órádon megjelenő kódot írd be: aki ezt az órát birtokolja, belép a fiókodba.</string>
+    <string name="connect_watch_validity">A kód 5 percig és csak egyszer érvényes.</string>
+    <string name="connect_watch_button">Csatlakoztatás</string>
+    <string name="connect_watch_connected_title">Óra csatlakoztatva</string>
+    <string name="connect_watch_connected_body">Látja a csoportjaidat, és magától szinkronizál. A leválasztáshoz jelentkezz ki az órán.</string>
+</resources>

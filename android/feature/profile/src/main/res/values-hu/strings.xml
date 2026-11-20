@@ -148,6 +148,8 @@
     <string name="profile_bitcoin_in_sats_detail">A bitcoinösszegeket satsban mutatja és így is adhatod meg őket (1 ₿ = 100 000 000 sats).</string>
     <string name="profile_category_map">Kategóriatérkép</string>
     <string name="profile_category_map_detail">A szavak, amelyek kiválasztják a számla kategóriáját</string>
+    <string name="profile_connect_watch">Óra csatlakoztatása</string>
+    <string name="profile_connect_watch_detail">Az órád által mutatott kóddal</string>
     <string name="profile_photo_open">Fotó megtekintése</string>
     <string name="profile_share">Profil megosztása</string>
     <string name="profile_share_message">Itt a profilom a Blitz Splitben: %1$s</string>
