@@ -139423,7 +139423,7 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Tvoj saldo je podmiren. Grupa nestaje s ovog uređaja, a tvoji troškovi zadržavaju tvoje ime za drugog člana. Da se vratiš, netko te mora ponovno pozvati."
+                  "value" : "Tvoj saldo je podmiren. Grupa nestaje s ovog uređaja, a tvoji troškovi zadržavaju tvoje ime za %lld drugog člana. Da se vratiš, netko te mora ponovno pozvati."
                 }
               },
               "few" : {

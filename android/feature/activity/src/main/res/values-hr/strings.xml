@@ -76,8 +76,8 @@
     <string name="activity_detail_charge">%s · poruka je poslana</string>
     <string name="activity_detail_comment">„%s“</string>
     <string name="activity_detail_change">%1$s %2$s → %3$s</string>
-    <string name="activity_deleted_notice_bill">%2$s je izbrisao/la trošak „%1$s“ %3$s. Zapis ostaje u pregledu, ali se trošak više ne može otvoriti.</string>
-    <string name="activity_deleted_notice_group">%2$s je izbrisao/la grupu „%1$s“ %3$s. Zapis ostaje u pregledu, ali se grupa više ne može otvoriti.</string>
+    <string name="activity_deleted_notice_bill">%2$s je izbrisao/la trošak „%1$s“ (%3$s). Zapis ostaje u pregledu, ali se trošak više ne može otvoriti.</string>
+    <string name="activity_deleted_notice_group">%2$s je izbrisao/la grupu „%1$s“ (%3$s). Zapis ostaje u pregledu, ali se grupa više ne može otvoriti.</string>
     <string name="activity_deleted_notice_bill_unknown">Trošak „%s“ je izbrisan. Zapis ostaje u pregledu, ali se trošak više ne može otvoriti.</string>
     <string name="activity_deleted_notice_group_unknown">Grupa „%s“ je izbrisana. Zapis ostaje u pregledu, ali se grupa više ne može otvoriti.</string>
     <string name="activity_this_bill">Ovaj trošak</string>

@@ -12,7 +12,7 @@
     <string name="members_personal_invite">Osobna pozivnica za: %s</string>
     <string name="members_personal_message">Tko otvori ovu poveznicu, ulazi izravno kao %s, bez biranja s popisa. Radi jednom.</string>
     <plurals name="members_personal_message_bills">
-        <item quantity="one">Tko otvori ovu poveznicu, ulazi izravno kao %1$s, bez biranja s popisa, i već vidi svoj dio od %2$s u dosad dodanom trošku. Radi jednom.</item>
+        <item quantity="one">Tko otvori ovu poveznicu, ulazi izravno kao %1$s, bez biranja s popisa, i već vidi svoj dio od %2$s u %3$d dosad dodanom trošku. Radi jednom.</item>
         <item quantity="few">Tko otvori ovu poveznicu, ulazi izravno kao %1$s, bez biranja s popisa, i već vidi svoj dio od %2$s u %3$d dosad dodana troška. Radi jednom.</item>
         <item quantity="other">Tko otvori ovu poveznicu, ulazi izravno kao %1$s, bez biranja s popisa, i već vidi svoj dio od %2$s u %3$d dosad dodanih troškova. Radi jednom.</item>
     </plurals>
