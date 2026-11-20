@@ -3,22 +3,24 @@
 Google Play shows one preview video above a listing's screenshots, and autoplays its first 30 seconds muted on
 home, search and the listing. Ours is **generated, not edited by hand**: the real Android app recorded on an emulator,
 on the store screenshots' sample trip, inside a 3D phone with camera moves, cards lifted out of the screen, the words
-of the narration on screen, a narrator and a music bed. Today **pt-BR** and **en-US** exist; each other language is a
-new `scripts/store-video/locales/<locale>.json` (the `store-video` skill walks through one). Nothing the scripts produce
-is versioned: recordings, audio and the video live in `build/store-video/<locale>/`, and the video goes to YouTube.
+of the narration on screen, a narrator and a music bed. Today **pt-BR**, **en-US**, **es** (Latin America) and
+**es-ES** (Spain) exist; each other language is a new `scripts/store-video/locales/<locale>.json` (the `store-video`
+skill walks through one). Nothing the scripts produce is versioned: recordings, audio, the video and its thumbnails
+live in `build/store-video/<locale>/`, and the video goes to YouTube.
 
 ```bash
 ./gradlew :androidApp:installDebug            # on the emulator the recording uses
 scripts/store-video/generate.sh pt-BR          # records, voices, composes: build/store-video/pt-BR/store-video-pt-BR.mp4
 scripts/store-video/generate.sh pt-BR --skip-record        # compose again from the recordings already made
 scripts/store-video/generate.sh pt-BR group bal            # record only these scenes again, then compose
+scripts/store-video/thumbnail.sh pt-BR         # the YouTube thumbnails, from the recording's stills
 ```
 
 ## Play's rules the video follows
 
 From [Add preview assets](https://support.google.com/googleplay/android-developer/answer/9866151) (Preview video):
 
-- **At most 30 seconds** (only those autoplay) and the core features in the first 10: pt-BR and en-US run 27.7 s.
+- **At most 30 seconds** (only those autoplay) and the core features in the first 10: every locale runs 27.7 s.
 - **At least 80% of it is the app's real experience**: every screen is a recording of the app, never a mockup or
   an AI-generated video (those redraw text and amounts frame by frame); only the end card is ours.
 - **No fingers on screen** (`show_touches` is off), **no black bars**, a portrait video.
@@ -38,6 +40,7 @@ From [Add preview assets](https://support.google.com/googleplay/android-develope
 | [`elevenlabs.py`](../scripts/store-video/elevenlabs.py) | The narration's takes and the music from ElevenLabs, then the chosen take and the music for the render |
 | [`remotion/`](../scripts/store-video/remotion/src/StoreVideo.tsx) | The composition, with [Remotion](https://www.remotion.dev): the phone, the camera, the pushes, the freezes and their cards, the titles, the end card, the sound |
 | [`generate.sh`](../scripts/store-video/generate.sh) | All of it in order, then the loudness YouTube expects (-14 LUFS) |
+| [`thumbnail.sh`](../scripts/store-video/thumbnail.sh) | The YouTube thumbnails, drawn by [`Thumbnail.tsx`](../scripts/store-video/remotion/src/Thumbnail.tsx) from the locale's `thumbnail` and two of its stills |
 
 ### Recording on the emulator
 
@@ -85,6 +88,19 @@ From [Add preview assets](https://support.google.com/googleplay/android-develope
   started so its own ending lands on the last frame. A whoosh marks each whip, a soft pop each lifted card; both are
   synthesized by `generate.sh`, as the end card's icon is copied from the Apple app, so no binary lives here.
 
+### Spanish: two videos
+
+Spain and Latin America get one video each: the app has Spain's own words (`values-es-rES`: "Importe pagado",
+"Hecho"), the sample trip has Spain's names, and the narration says "A dividir los gastos" and "importe" in es-ES,
+"A dividir la cuenta" and "monto" in es. Each one's title and Settle up card follow.
+
+### The YouTube thumbnail
+
+`thumbnail.sh <locale>` draws two, after `generate.sh` has recorded the stills: 1280x720 (`thumb-<locale>-16x9`,
+kept for marketing) and 1080x1920 (`-9x16`), the one YouTube shows for these vertical videos (Shorts) and the one
+uploaded. The locale JSON's `thumbnail` gives the headline, its accent words and the two stills (`back`, `front`);
+the name and the chips are the end card's, unless `thumbnail.chips` gives others (pt-BR's names Pix copia e cola).
+
 ## ElevenLabs
 
 The narration and the music come from [ElevenLabs](https://elevenlabs.io), on Pierre's **Creator** plan (annual, with
@@ -107,9 +123,10 @@ pay-as-you-go off, so it never bills past the plan's credits). What it costs and
   Warm and Clear), take 1. Line 2 was reworded after take 1 was picked and only it was voiced again; the other five
   lines are take 1's files, voiced with the old line 2 around them and renamed by hand to the new requests' hashes.
   So their cache names don't match what they were voiced with, and a fresh `narration` would voice them all again.
-  For en-US, Zara (The Warm, Real-World Conversationalist), take 1, over pt-BR's music prompt and track. The music
-  is cached per locale, so `music en-US` asks for a new, different track: copy pt-BR's `music-<hash>.mp3` (the same
-  prompt and length, so the same name) into `build/store-video/en-US/` first.
+  For en-US, Zara (The Warm, Real-World Conversationalist), take 1; for es, Camila, take 3; for es-ES, Lydia,
+  take 2; all over pt-BR's music prompt and track. The music is cached per locale, so `music <locale>` asks for a
+  new, different track: copy pt-BR's `music-<hash>.mp3` (the same prompt and length, so the same name) into
+  `build/store-video/<locale>/` first.
   Each line is generated with the lines around it (`previous_text`, `next_text`), so the question in "Viagem com os
   amigos?" rises like one. Takes differ from run to run: a new run means picking again.
 - **The music** is instrumental (ElevenLabs Music, `music_v2`), prompted to stay out of the voice's way.
@@ -128,14 +145,18 @@ pay-as-you-go off, so it never bills past the plan's credits). What it costs and
   dpi (a Pixel-sized emulator); another size moves every one of them. Taps are found by their text instead.
 - **Another language moves the layout.** Longer words wrap, so a card's rectangle and a drag's start can move: check
   the frames (`build/store-video/<locale>/public/*.png`) before trusting a locale's numbers.
+- **Record on the app this checkout builds.** An emulator restored from an old snapshot may hold an older install
+  with a higher `versionCode` (`installDebug` then fails with `INSTALL_FAILED_VERSION_DOWNGRADE`) and no
+  `files/store-video` support, and the run ends with "the sample trip was never seeded". Use an emulator of the
+  task, made from a 1080x2400, 420 dpi config, rather than wiping someone's app.
 - **The device recorder is not an option.** `adb shell screenrecord` records smoothly but loads the emulator enough
   for Android to kill the app on a busy Mac.
 - **Pix is pt-BR's alone.** Only the pt-BR video has the Pix shot ("E pra acertar, Pix copia e cola…"): the app
   offers Pix only to people likely to use it ([the Pix rule](product/general.md)), and the sample trip has a Pix key
-  only in reais. No other locale, pt-PT included, has that shot, its line or its `pix` scene. en-US shows Record
-  payment there instead (Pierre's call): its `settle` scene taps Settle up and stops on the sheet, whose lifted card
-  frames "You owe Olivia $57.73" and the amount already filled in ("Then settle up and record the payment, with the
-  exact amount."); nothing is confirmed.
+  only in reais. No other locale, pt-PT included, has that shot, its line or its `pix` scene. en-US, es and es-ES
+  show Record payment there instead (Pierre's call): their `settle` scene taps Settle up and stops on the sheet, whose
+  lifted card frames the debt and the amount already filled in (en-US: "You owe Olivia $57.73", over "Then settle up
+  and record the payment, with the exact amount."); nothing is confirmed.
 - **Copying the Pix code shows the system's clipboard bubble**, so the Pix scene (Settle up, then Pay Carla) stops
   before tapping Copy code; the lifted "Pix copy and paste" card does the pointing.
 - **Remotion's license** is free for individuals and companies of up to three people; past that it needs a company
