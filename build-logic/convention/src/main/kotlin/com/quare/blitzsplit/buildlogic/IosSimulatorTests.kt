@@ -97,9 +97,25 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
         listOf("simctl", "list", "runtimes"),
         listOf("simctl", "runtime", "list"),
     )
+
+    // The wait allowance and a simctl that stopped answering are the build's, whichever simulator
+    // found them; the outage each family logged is its own, so one family's doesn't mute the other's.
     private var waitLeft: Duration? = null
-    private var isOutageLogged = false
+    private val loggedOutages = mutableSetOf<SimulatorFamily>()
     private var hasStoppedAnswering = false
+    private val installedRuntimes = mutableMapOf<SimulatorFamily, Boolean>()
+
+    /**
+     * Whether `simctl` lists a runtime of [family]. A Mac set up for the phone app may have no
+     * watchOS runtime (Xcode installs it apart), and its suites are then skipped rather than failed.
+     * A simctl that gives no answer counts as having one, so [fetchDevice] reports the outage.
+     */
+    @Synchronized
+    fun hasRuntime(family: SimulatorFamily): Boolean = installedRuntimes.getOrPut(family) {
+        val listing = run(listOf("simctl", "list", "runtimes"))
+        !listing.hasAnswered ||
+            listing.output.lineSequence().any { it.trimStart().startsWith(family.runtimeName + " ", ignoreCase = true) }
+    }
 
     @Synchronized
     fun fetchDevice(family: SimulatorFamily): String {
@@ -108,7 +124,7 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
         val listing = if (hasStoppedAnswering) null else run(availableDevices)
         val device = listing?.let { findDefaultDeviceOrNull(it.output, family) ?: waitForDeviceOrNull(it, family) }
         if (device != null) {
-            isOutageLogged = false
+            loggedOutages -= family
             return device
         }
         throw GradleException(
@@ -124,8 +140,7 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
         firstListing: CommandResult,
         family: SimulatorFamily,
     ): String? {
-        if (!isOutageLogged) {
-            isOutageLogged = true
+        if (loggedOutages.add(family)) {
             logger.warn(
                 "The ${family.runtimeName} simulator lists no available device. Its state:\n{}",
                 buildStateReport(firstListing),
@@ -231,6 +246,13 @@ internal fun Project.configureIosSimulatorTests() {
         // and disables it off a Mac in its own configuration, which may run after this one.
         SimulatorFamily.entries.firstOrNull { name.startsWith(it.taskPrefix) }?.let { family ->
             device.set(simulator.map { it.fetchDevice(family) })
+            // Why: CI runs no watchOS suite, and a Mac without the watchOS runtime would fail
+            // `build` and `allTests` on every module. The iOS suites keep failing, as CI needs.
+            if (family == SimulatorFamily.WATCHOS) {
+                onlyIf("a watchOS simulator runtime is installed (xcodebuild -downloadPlatform watchOS)") {
+                    simulator.get().hasRuntime(family)
+                }
+            }
         }
     }
 }

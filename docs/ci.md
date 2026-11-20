@@ -123,9 +123,13 @@ each, with every module's compilation restored.
 
 `apple-watch` links the watchOS `Shared` for the device (arm64_32) and the simulator into an XCFramework
 (`:shared:assembleSharedDebugXCFramework`), the only check that compiles the watchOS targets. It runs when
-`apple-tests` does, side by side with it, and restores the cache `apple-tests` saves. No test runs on the watchOS
-simulator in CI: the suite is the same `commonTest` over the same `appleMain` as macOS's, and
-`./scripts/heavy-check.sh ./gradlew :<module>:watchosSimulatorArm64Test` runs it on the Mac.
+`apple-tests` does, side by side with it. Since no other job compiles for watchOS, it saves its own Gradle home on
+`main` (a second entry beside `apple-tests`'), so a pull request restores every module's watchOS compilation and only
+compiles what it changed. It doesn't save `~/.konan`: `apple-tests` does, and Kotlin/Native keeps no library cache for
+the watchOS targets. Its first runs set its 40-minute bound; check their times before tightening it. No test runs on
+the watchOS simulator in CI: the suite is the same `commonTest` over the same `appleMain` as macOS's, and
+`./scripts/heavy-check.sh ./gradlew :<module>:watchosSimulatorArm64Test` runs it on the Mac once the watchOS runtime
+is installed (`xcodebuild -downloadPlatform watchOS`); without it the suites are skipped.
 
 Only five macOS jobs run at once, for the whole organization, and a pull request's jobs wait for a runner while all
 five are taken. So the `apple` runs of `main` share one concurrency group that never cancels a run once it started: a
@@ -168,7 +172,8 @@ its own, checked on the Mac, since that pull request's `apple-tests` runs macOS 
 `./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test`. Close the issue once `main` is green.
 
 The simulator's suites run one module at a time, while Gradle still links their test binaries side by side: the
-`blitzsplit.kotlin.multiplatform` plugin gives every `iosSimulatorArm64Test` a shared build service with a single slot.
+`blitzsplit.kotlin.multiplatform` plugin gives every `iosSimulatorArm64Test` and `watchosSimulatorArm64Test` a shared
+build service with a single slot.
 Each suite starts its own `simctl`, and two at once could crash CoreSimulator while it reported the device set
 (`Invalid parameter not satisfying: devicePair`), failing one module's suite with exit code 134 before any of its tests
 ran. A suite, the boot of its own simulator included, took 3 seconds on the Mac (`:core:model`), so running the

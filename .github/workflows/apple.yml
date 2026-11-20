@@ -2,8 +2,9 @@ name: apple
 
 # The Apple side of the app, on a macOS runner (free on a public repository): every module's
 # commonTest on the macOS target, and on the iOS simulator too on main, both schemes of the Apple
-# app, which link the Shared framework, and the watchOS Shared framework. create-pr leaves these to CI and builds a scheme locally only
-# when the branch changes the Swift code (see the create-pr skill, step 8).
+# app, which link the Shared framework, and the watchOS Shared framework. create-pr leaves these to
+# CI and builds a scheme locally only when the branch changes the Swift code (see the create-pr
+# skill, step 8).
 on:
   pull_request:
     # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
@@ -410,7 +411,8 @@ jobs:
   # The watchOS Shared framework (docs/architecture/stack.md), both slices: watchosArm64, the device's
   # arm64_32, which no other check compiles, and watchosSimulatorArm64. No Swift app links it yet, so
   # Gradle packs them into the XCFramework the watch app will take. It runs when apple-tests does: a
-  # change to the Swift app alone leaves it as main built it.
+  # change to the Swift app alone leaves it as main built it. No other job compiles for watchOS, so
+  # on main it saves a Gradle home of its own, which the pull requests' runs restore.
   apple-watch:
     needs: [review-gate, changes]
     if: >-
@@ -430,8 +432,6 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
           kotlin-native: 'true'
-          # apple-tests saves the Gradle cache of the macOS runner.
-          cache-read-only: 'true'
 
       - name: Build the watchOS framework
         run: ./gradlew :shared:assembleSharedDebugXCFramework
