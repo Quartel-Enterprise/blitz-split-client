@@ -151,6 +151,8 @@
     <string name="profile_bitcoin_in_sats_detail">Prikazuje i unosi iznose u bitcoinu u satsima (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Mapa kategorija</string>
     <string name="profile_category_map_detail">Riječi koje biraju kategoriju troška</string>
+    <string name="profile_connect_watch">Poveži sat</string>
+    <string name="profile_connect_watch_detail">Kodom koji prikazuje tvoj sat</string>
     <string name="profile_photo_open">Prikaži fotografiju</string>
     <string name="profile_share">Podijeli profil</string>
     <string name="profile_share_message">Ovo je moj profil u aplikaciji Blitz Split: %1$s</string>
