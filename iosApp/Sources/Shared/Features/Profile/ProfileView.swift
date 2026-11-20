@@ -1549,17 +1549,28 @@ private struct CategoryMapRow: View {
     let model: ProfileModel
 
     var body: some View {
-        Button {
+        ChevronRow(title: "Category map", detail: "The words that pick a bill's category") {
             model.send(ProfileUiEventOnCategoryMapClicked.shared)
-        } label: {
+        }
+    }
+}
+
+/// A row that opens another screen: its title over a detail, and the chevron.
+private struct ChevronRow: View {
+    let title: LocalizedStringKey
+    let detail: LocalizedStringKey
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
             LabeledContent {
                 Image(systemName: "chevron.forward")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.tertiary)
             } label: {
-                Text("Category map")
+                Text(title)
                 // The button's primary style would reach it too
-                Text("The words that pick a bill's category")
+                Text(detail)
                     .foregroundStyle(.secondary)
             }
         }
@@ -1572,21 +1583,9 @@ private struct ConnectWatchRow: View {
     let model: ProfileModel
 
     var body: some View {
-        Button {
+        ChevronRow(title: "Connect watch", detail: "With the code your watch shows") {
             model.send(ProfileUiEventOnConnectWatchClicked.shared)
-        } label: {
-            LabeledContent {
-                Image(systemName: "chevron.forward")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-            } label: {
-                Text("Connect watch")
-                // The button's primary style would reach it too
-                Text("With the code your watch shows")
-                    .foregroundStyle(.secondary)
-            }
         }
-        .foregroundStyle(.primary)
     }
 }
 

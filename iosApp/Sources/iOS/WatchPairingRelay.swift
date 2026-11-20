@@ -1,6 +1,5 @@
 import Foundation
 import Shared
-import UIKit
 import UserNotifications
 import WatchConnectivity
 
@@ -50,23 +49,36 @@ final class WatchPairingRelay: NSObject, WCSessionDelegate {
         didReceiveMessage message: [String: Any],
         replyHandler: @escaping ([String: Any]) -> Void,
     ) {
+        approvePairing(message, reply: ReplyHandler(send: replyHandler))
+    }
+
+    /// A pairing sent with no reply handler is still approved; only the watch's wait goes unanswered.
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        approvePairing(message, reply: nil)
+    }
+
+    private nonisolated func approvePairing(_ message: [String: Any], reply: ReplyHandler?) {
         let link = AppleWatchLink.shared
         guard message[link.PATH_KEY] as? String == link.PAIR_PATH,
               let code = message[link.CODE_KEY] as? String else {
-            replyHandler([link.REPLY_KEY: link.REPLY_FAILED])
+            reply?.send([link.REPLY_KEY: link.REPLY_FAILED])
             return
         }
-        let reply = ReplyHandler(send: replyHandler)
-        Task { @MainActor in
-            let link = AppleWatchLink.shared
-            // The message may have woken the app in the background, which iOS suspends as soon as it can: the time
-            // asked here lasts until the server answered and the watch got the reply
-            let backgroundTime = BackgroundTime(name: "Watch pairing")
-            BlitzSplitApple.shared.approveNearbyWatch(code: code) { answer in
-                reply.send([link.REPLY_KEY: answer])
-                if answer == link.REPLY_APPROVED { WatchConnectedNotice.show() }
-                backgroundTime.end()
+        // The message may have woken the app in the background, which iOS suspends as soon as it can: the time is asked
+        // here, on WatchConnectivity's own queue, before the main thread (busy launching) gets to the approval, and lasts
+        // until the watch got its reply. The shared approval gives up after 20 seconds, within the time iOS gives.
+        ProcessInfo.processInfo.performExpiringActivity(withReason: "Watch pairing") { expired in
+            guard !expired else { return }
+            let answered = DispatchSemaphore(value: 0)
+            Task { @MainActor in
+                let link = AppleWatchLink.shared
+                BlitzSplitApple.shared.approveNearbyWatch(code: code) { answer in
+                    reply?.send([link.REPLY_KEY: answer])
+                    if answer == link.REPLY_APPROVED { WatchConnectedNotice.show() }
+                    answered.signal()
+                }
             }
+            _ = answered.wait(timeout: .now() + .seconds(25))
         }
     }
 
@@ -86,23 +98,6 @@ final class WatchPairingRelay: NSObject, WCSessionDelegate {
     /// The person switched to another watch: the session starts again for it.
     nonisolated func sessionDidDeactivate(_ session: WCSession) {
         session.activate()
-    }
-}
-
-/// Time iOS gives the app to finish a piece of work in the background, ended once the work is done or the time is up.
-private final class BackgroundTime {
-    private var identifier = UIBackgroundTaskIdentifier.invalid
-
-    init(name: String) {
-        identifier = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
-            self?.end()
-        }
-    }
-
-    func end() {
-        guard identifier != .invalid else { return }
-        UIApplication.shared.endBackgroundTask(identifier)
-        identifier = .invalid
     }
 }
 

@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsService
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
+import com.quare.blitzsplit.core.utils.suspendRunCatching
 import com.quare.blitzsplit.core.watch.domain.usecase.ApproveNearbyWatch
 import com.quare.blitzsplit.core.watch.domain.usecase.ObserveAccountSignOuts
 import com.quare.blitzsplit.core.watch.link.WatchLink
@@ -266,7 +267,9 @@ object BlitzSplitApple : KoinComponent {
     ) {
         val approve = get<ApproveNearbyWatch>()
         scope.launch {
-            onReply(withTimeoutOrNull(nearbyApprovalTimeout) { approve(code) } ?: WatchLink.REPLY_FAILED)
+            // Why: anything thrown instead of a Result would end the app on Kotlin/Native and leave the watch unanswered.
+            val reply = suspendRunCatching { withTimeoutOrNull(nearbyApprovalTimeout) { approve(code) } }.getOrNull()
+            onReply(reply ?: WatchLink.REPLY_FAILED)
         }
     }
 

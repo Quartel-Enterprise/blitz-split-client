@@ -231,29 +231,23 @@ export function ProfileScreen() {
               <AppearanceCard presenter={presenter} state={state} className="order-5" />
               <NotificationSettingsCard className="order-6" />
               {state.showsConnectWatch && (
-                <Card className="order-6">
-                  <CardHeader>
-                    <CardTitle>{t('profile_connectWatch')}</CardTitle>
-                    <CardDescription>{t('profile_connectWatchDetail')}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button variant="outline" onClick={() => presenter.connectWatch()}>
-                      <Watch /> {t('connectWatch_connect')}
-                    </Button>
-                  </CardContent>
-                </Card>
+                <ActionCard
+                  className="order-6"
+                  title={t('profile_connectWatch')}
+                  description={t('profile_connectWatchDetail')}
+                  icon={<Watch />}
+                  label={t('connectWatch_connect')}
+                  onClick={() => presenter.connectWatch()}
+                />
               )}
-              <Card className="order-6">
-                <CardHeader>
-                  <CardTitle>{t('profile_categoryMap')}</CardTitle>
-                  <CardDescription>{t('profile_categoryMapDetail')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" onClick={() => presenter.categoryMap()}>
-                    <Tag /> {t('profile_categoryMapOpen')}
-                  </Button>
-                </CardContent>
-              </Card>
+              <ActionCard
+                className="order-6"
+                title={t('profile_categoryMap')}
+                description={t('profile_categoryMapDetail')}
+                icon={<Tag />}
+                label={t('profile_categoryMapOpen')}
+                onClick={() => presenter.categoryMap()}
+              />
               {/* Why: "Support and feedback", right before "Privacy and about" (same order, before it in the page). */}
               <Card className="order-7">
                 <CardHeader>
@@ -293,6 +287,37 @@ function Row({ title, detail, className, children }: { title: string; detail?: s
       </div>
       {children}
     </div>
+  )
+}
+
+/** A card that only opens another screen: its title, what it is for, and one outline button. */
+function ActionCard({
+  title,
+  description,
+  icon,
+  label,
+  onClick,
+  className,
+}: {
+  title: string
+  description: string
+  icon: ReactNode
+  label: string
+  onClick: () => void
+  className?: string
+}) {
+  return (
+    <Card className={className}>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button variant="outline" onClick={onClick}>
+          {icon} {label}
+        </Button>
+      </CardContent>
+    </Card>
   )
 }
 
