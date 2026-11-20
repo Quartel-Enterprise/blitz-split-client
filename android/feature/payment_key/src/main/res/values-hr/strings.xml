@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Novi Pix ključ</string>
+    <string name="payment_key_title_pix_edit">Uredi Pix ključ</string>
+    <string name="payment_key_title_bitcoin_new">Novi Bitcoin ključ</string>
+    <string name="payment_key_title_bitcoin_edit">Uredi Bitcoin ključ</string>
+    <string name="payment_key_save">Spremi</string>
+
+    <string name="payment_key_pix_intro">Tko ti plaća, vidi ovaj ključ pri podmirivanju. Koja vrsta ključa?</string>
+    <string name="payment_key_pix_question">Koja vrsta ključa?</string>
+    <string name="payment_key_pix_explanation">Tko ti plaća, vidi ovaj ključ pri podmirivanju.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefon</string>
+    <string name="payment_key_type_email">E-pošta</string>
+    <string name="payment_key_type_random">Nasumični</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Broj mobitela s pozivnim brojem</string>
+    <string name="payment_key_label_email">E-pošta</string>
+    <string name="payment_key_label_random">Nasumični ključ</string>
+
+    <string name="payment_key_bitcoin_intro">Kako želiš primati?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">brzo, niska naknada</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">na blockchainu</string>
+    <string name="payment_key_label_lightning">Lightning Address ili LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin adresa</string>
+
+    <string name="payment_key_paste">Zalijepi</string>
+
+    <string name="payment_key_hint_cpf">Format 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Format ime@domena.com</string>
+    <string name="payment_key_hint_random">32 slova i broja, kako ih prikazuje tvoja banka</string>
+    <string name="payment_key_hint_lightning">Npr. ime@novcanik.com ili LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainnet adresa koja počinje s bc1q ili bc1p</string>
+
+    <string name="payment_key_valid_cpf">Format 000.000.000-00 · kontrolne znamenke se podudaraju</string>
+    <string name="payment_key_valid_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Format ime@domena.com</string>
+    <string name="payment_key_valid_random">Nasumični ključ prepoznat (32 znaka)</string>
+    <string name="payment_key_valid_lightning_address">Valjana Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Valjan LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Neispravan CPF: kontrolne znamenke se ne podudaraju.</string>
+    <string name="payment_key_error_invalid_phone">Nepotpun broj mobitela: upiši pozivni broj i 9 znamenki, počevši s 9.</string>
+    <string name="payment_key_error_invalid_email">Nepotpuna e-pošta: nedostaje domena, npr. .com ili .com.br.</string>
+    <string name="payment_key_error_invalid_random">Nepotpun nasumični ključ: ima 32 slova i broja.</string>
+    <string name="payment_key_error_invalid_lightning">Ovo nije Lightning Address (ime@novcanik) ni LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Ovo je Lightning faktura (lnbc…): plaća se jednom i istječe. Zalijepi Lightning Address ili LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Neispravna adresa. Upotrijebi mainnet adresu bc1q ili bc1p.</string>
+    <string name="payment_key_error_testnet_address">Ovo je testnet adresa (tb1…). Ovdje radi samo Bitcoin mainnet, s adresama bc1….</string>
+    <string name="payment_key_error_already_saved">Već imaš ovaj ključ.</string>
+
+    <string name="payment_key_switched_to_onchain">Ovo je on-chain adresa, pa smo prebacili na On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Ovo je Lightning Address, pa smo prebacili na Lightning.</string>
+    <string name="payment_key_cpf_notice">Tko ti plaća, vidi tvoj cijeli CPF. Ako ga radije ne želiš dijeliti, upotrijebi telefon, e-poštu ili nasumični ključ.</string>
+    <string name="payment_key_held_notice">Možeš imati samo jedan Pix ključ ove vrste, pa je ovo onaj koji si spremio/la. Promijeni ga ovdje ako želiš.</string>
+
+    <string name="payment_key_accepted_title">Prihvaćamo</string>
+    <string name="payment_key_accepted_lightning_address_sample">ime@novcanik.app</string>
+
+    <string name="payment_key_default_pix_title">Zadani Pix ključ</string>
+    <string name="payment_key_default_bitcoin_title">Zadani Bitcoin ključ</string>
+    <string name="payment_key_default_pix_detail">Prikazuje se prvi pri podmirivanju.</string>
+    <string name="payment_key_default_bitcoin_detail">Prikazuje se prvi kad netko plaća u BTC-u.</string>
+    <string name="payment_key_default_now">Sada: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Da ga promijeniš, postavi drugi ključ kao zadani.</string>
+    <string name="payment_key_default_locked_new">Tvoj prvi ključ ove vrste je zadani.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefon</string>
+    <string name="payment_key_default_type_email">e-pošta</string>
+    <string name="payment_key_default_type_random">nasumični ključ</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split ne prenosi novac: platitelj plaća u aplikaciji svoje banke. Provjeri da je ključ na tvoje ime.</string>
+    <string name="payment_key_footer_bitcoin">Pri podmirivanju prikazujemo iznos u satsima po trenutačnom tečaju. To je samo procjena: platitelj ga potvrđuje u svom novčaniku.</string>
+
+    <string name="payment_key_delete">Izbriši ključ</string>
+    <string name="payment_key_delete_title">Izbrisati ovaj ključ?</string>
+    <string name="payment_key_delete_body">Osobe koje ti duguju više ga neće vidjeti pri podmirivanju.</string>
+    <string name="payment_key_delete_confirm">Izbriši</string>
+</resources>

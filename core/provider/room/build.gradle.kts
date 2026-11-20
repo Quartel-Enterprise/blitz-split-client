@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.blitzsplit.kotlin.multiplatform)
+    alias(libs.plugins.blitzsplit.kotlin.multiplatform.watchos)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
 }
@@ -50,6 +51,8 @@ dependencies {
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspMacosArm64", libs.androidx.room.compiler)
+    add("kspWatchosArm64", libs.androidx.room.compiler)
+    add("kspWatchosSimulatorArm64", libs.androidx.room.compiler)
     add("kspJs", libs.androidx.room.compiler)
     add("kspJvm", libs.androidx.room.compiler)
 }

@@ -1,3 +1,9 @@
+/*
+ * Why: size_t, CFIndex and CGFloat are 32 bits on the Apple Watch's arm64_32 and 64 on the other Apple targets; each
+ * call converts them (convert(), toCGFloat()) where the code is compiled for one target.
+ */
+@file:OptIn(UnsafeNumber::class)
+
 package com.quare.blitzsplit.core.provider.image
 
 import kotlinx.cinterop.CPointer
@@ -6,8 +12,10 @@ import kotlinx.cinterop.DoubleVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.UByteVar
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.readBytes
@@ -46,11 +54,13 @@ import platform.CoreGraphics.CGColorSpaceRelease
 import platform.CoreGraphics.CGContextConcatCTM
 import platform.CoreGraphics.CGContextDrawImage
 import platform.CoreGraphics.CGContextFillRect
+import platform.CoreGraphics.CGContextRef
 import platform.CoreGraphics.CGContextRelease
 import platform.CoreGraphics.CGContextScaleCTM
 import platform.CoreGraphics.CGContextSetInterpolationQuality
 import platform.CoreGraphics.CGContextSetRGBFillColor
 import platform.CoreGraphics.CGContextTranslateCTM
+import platform.CoreGraphics.CGFloat
 import platform.CoreGraphics.CGImageAlphaInfo
 import platform.CoreGraphics.CGImageGetHeight
 import platform.CoreGraphics.CGImageGetWidth
@@ -74,7 +84,7 @@ import platform.ImageIO.kCGImageSourceCreateThumbnailWithTransform
 import platform.ImageIO.kCGImageSourceThumbnailMaxPixelSize
 
 private const val JPEG_TYPE = "public.jpeg"
-private const val BITS_PER_COMPONENT = 8uL
+private const val BITS_PER_COMPONENT = 8
 private const val PERCENT = 100.0
 
 internal actual fun createAvatarImageEncoder(): AvatarImageEncoder = AppleAvatarImageEncoder()
@@ -143,9 +153,9 @@ private fun CGImageRef.createSquare(
     val colorSpace = CGColorSpaceCreateDeviceRGB()
     val context = CGBitmapContextCreate(
         data = null,
-        width = sidePx.toULong(),
-        height = sidePx.toULong(),
-        bitsPerComponent = BITS_PER_COMPONENT,
+        width = sidePx.convert(),
+        height = sidePx.convert(),
+        bitsPerComponent = BITS_PER_COMPONENT.convert(),
         bytesPerRow = 0u,
         space = colorSpace,
         bitmapInfo = CGImageAlphaInfo.kCGImageAlphaNoneSkipLast.value,
@@ -153,25 +163,24 @@ private fun CGImageRef.createSquare(
     CGColorSpaceRelease(colorSpace)
     context ?: return null
     CGContextSetInterpolationQuality(context, kCGInterpolationHigh)
-    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0)
-    CGContextFillRect(context, CGRectMake(0.0, 0.0, side, side))
+    context.fillWhite(side, side)
     // Why: each call applies before the ones above it, so a point of the image goes up the list.
-    CGContextTranslateCTM(context, 0.0, side)
-    CGContextScaleCTM(context, 1.0, -1.0)
+    CGContextTranslateCTM(context, 0.0.toCGFloat(), side.toCGFloat())
+    CGContextScaleCTM(context, 1.0.toCGFloat(), (-1.0).toCGFloat())
     CGContextConcatCTM(
         context,
         CGAffineTransformMake(
-            a = transform.scaleX,
-            b = transform.skewY,
-            c = transform.skewX,
-            d = transform.scaleY,
-            tx = transform.translateX,
-            ty = transform.translateY,
+            a = transform.scaleX.toCGFloat(),
+            b = transform.skewY.toCGFloat(),
+            c = transform.skewX.toCGFloat(),
+            d = transform.scaleY.toCGFloat(),
+            tx = transform.translateX.toCGFloat(),
+            ty = transform.translateY.toCGFloat(),
         ),
     )
-    CGContextTranslateCTM(context, 0.0, photoHeight)
-    CGContextScaleCTM(context, 1.0, -1.0)
-    CGContextDrawImage(context, CGRectMake(0.0, 0.0, CGImageGetWidth(this).toDouble(), photoHeight), this)
+    CGContextTranslateCTM(context, 0.0.toCGFloat(), photoHeight.toCGFloat())
+    CGContextScaleCTM(context, 1.0.toCGFloat(), (-1.0).toCGFloat())
+    CGContextDrawImage(context, createRect(CGImageGetWidth(this).toDouble(), photoHeight), this)
     return CGBitmapContextCreateImage(context).also { CGContextRelease(context) }
 }
 
@@ -188,7 +197,7 @@ internal class AppleBillImageEncoder : BillImageEncoder {
         val flat = upright.createOnWhite(
             width = outputWidth,
             height = outputHeight,
-            at = CGRectMake(0.0, 0.0, outputWidth.toDouble(), outputHeight.toDouble()),
+            at = createRect(outputWidth.toDouble(), outputHeight.toDouble()),
         )
         CGImageRelease(upright)
         flat ?: throw UnsupportedImageException()
@@ -256,9 +265,9 @@ private fun CGImageRef.createOnWhite(
     val colorSpace = CGColorSpaceCreateDeviceRGB()
     val context = CGBitmapContextCreate(
         data = null,
-        width = width.toULong(),
-        height = height.toULong(),
-        bitsPerComponent = BITS_PER_COMPONENT,
+        width = width.convert(),
+        height = height.convert(),
+        bitsPerComponent = BITS_PER_COMPONENT.convert(),
         bytesPerRow = 0u,
         space = colorSpace,
         bitmapInfo = CGImageAlphaInfo.kCGImageAlphaNoneSkipLast.value,
@@ -266,8 +275,7 @@ private fun CGImageRef.createOnWhite(
     CGColorSpaceRelease(colorSpace)
     context ?: return null
     CGContextSetInterpolationQuality(context, kCGInterpolationHigh)
-    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0)
-    CGContextFillRect(context, CGRectMake(0.0, 0.0, width.toDouble(), height.toDouble()))
+    context.fillWhite(width.toDouble(), height.toDouble())
     CGContextDrawImage(context, at, this)
     return CGBitmapContextCreateImage(context).also { CGContextRelease(context) }
 }
@@ -309,10 +317,33 @@ private fun CFDictionaryRef.getIntValue(key: CFTypeRef?): Int = memScoped {
 
 @OptIn(ExperimentalForeignApi::class)
 private fun ByteArray.toCFData(): CFDataRef? = usePinned { pinned ->
-    CFDataCreate(null, pinned.addressOf(0).reinterpret<UByteVar>(), size.toLong())
+    CFDataCreate(null, pinned.addressOf(0).reinterpret<UByteVar>(), size.convert())
 }
 
 @OptIn(ExperimentalForeignApi::class)
 private fun CFRelease(pointer: CPointer<*>?) {
     pointer?.let { platform.CoreFoundation.CFRelease(it) }
+}
+
+/*
+ * Why: CGFloat is a Float on the Apple Watch's arm64_32 and a Double on the other Apple targets, and appleMain compiles
+ * for both, so the width is picked where the code is compiled for each.
+ */
+private inline fun <reified T> Double.toNativeWidth(): T = (if (T::class == Float::class) toFloat() else this) as T
+
+private fun Double.toCGFloat(): CGFloat = toNativeWidth()
+
+@OptIn(ExperimentalForeignApi::class)
+private fun createRect(
+    width: Double,
+    height: Double,
+): CValue<CGRect> = CGRectMake(0.0.toCGFloat(), 0.0.toCGFloat(), width.toCGFloat(), height.toCGFloat())
+
+@OptIn(ExperimentalForeignApi::class)
+private fun CGContextRef.fillWhite(
+    width: Double,
+    height: Double,
+) {
+    CGContextSetRGBFillColor(this, 1.0.toCGFloat(), 1.0.toCGFloat(), 1.0.toCGFloat(), 1.0.toCGFloat())
+    CGContextFillRect(this, createRect(width, height))
 }

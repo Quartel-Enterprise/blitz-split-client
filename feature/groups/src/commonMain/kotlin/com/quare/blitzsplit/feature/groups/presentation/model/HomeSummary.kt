@@ -1,6 +1,9 @@
 package com.quare.blitzsplit.feature.groups.presentation.model
 
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
+import com.quare.blitzsplit.core.expenses.domain.model.findMain
+import com.quare.blitzsplit.core.expenses.domain.model.findToPay
+import com.quare.blitzsplit.core.expenses.domain.model.findToReceive
 
 /*
  * Why: Início's "Saldo geral", with "Te devem" and "Você deve" beside it. Its net is Grupos' Saldo geral; the two
@@ -15,7 +18,7 @@ data class HomeSummary(
      * currencies go on lines under it. Null with no group.
      */
     val main: PeopleTotal?
-        get() = totals.firstOrNull { it.netMinor != 0L } ?: totals.firstOrNull()
+        get() = totals.findMain()
 
     // Why: the other currencies with a net, on lines under the big amount, as Grupos' Saldo geral lists them.
     val others: List<PeopleTotal>
@@ -37,10 +40,10 @@ data class HomeSummary(
      * says R$ 0,00 while another currency has some; null is "Nada a receber" and "Nada a pagar", disabled.
      */
     val toReceive: PeopleTotal?
-        get() = totals.firstOrNull { it.toReceiveMinor > 0 }
+        get() = totals.findToReceive()
 
     val toPay: PeopleTotal?
-        get() = totals.firstOrNull { it.toPayMinor > 0 }
+        get() = totals.findToPay()
 
     val canOpenToReceive: Boolean
         get() = toReceive != null

@@ -231,9 +231,9 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   iPhone's and the iPad's, plus the iPhone Duo's and the Mac's when the run asks for them
   ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)).
 
-**The captures say which language they are on.** A slot's job captures its 29 languages one after the other, each
+**The captures say which language they are on.** A slot's job captures its 30 languages one after the other, each
 a run of the UI test of its own, about an hour and a half in all. Open the job's "Capture on the simulator" step:
-every language has a "Capturing <slot>: <language> (2 of 29)" line there, folded over xcodebuild's output for it,
+every language has a "Capturing <slot>: <language> (2 of 30)" line there, folded over xcodebuild's output for it,
 and a "Captured" one once it is done, with the time it took and about how many minutes the slot still takes. When
 the job ends, its summary on the run's page has the table of the languages, each with its result and its time. A
 language that fails is tried once more; failing again, the job goes on with the others (a third failed language
@@ -245,8 +245,8 @@ the language and the screen it stops at.
 
 **The uploads are split into jobs**, one after the other, on each store (Bible Planner's releases lost a whole
 upload to one image Google Play answered with a server error): what a store refused is all that failed, and the
-rest is up. On the App Store a job sends one locale, which adds up over its 29 (not timed yet). On Google Play a
-job sends a few, six unless the caller says otherwise, through one Play edit: six jobs for its 31 locales, since
+rest is up. On the App Store a job sends one locale, which adds up over its 30 (not timed yet). On Google Play a
+job sends a few, six unless the caller says otherwise, through one Play edit: six jobs for its 32 locales, since
 each edit Google Play saves counts against [a daily quota](#google-plays-daily-save-quota) that one job per locale
 ran out of (27 saves a set, about two minutes a locale, in the first release that ran them, 3.0.0). The submission
 waits for the App Store's, and the next release or beta for them all, since they share the `release` group.
@@ -405,7 +405,7 @@ gh workflow run play-store-screenshots.yml                         # draw them a
   ([`no-run-going`](../.github/actions/no-run-going/action.yml)): the workflow refuses to start while a stable
   release or a run of `store-listing` is in progress or waiting, each of its upload jobs checks again, and a stable
   release refuses to start while a run of it isn't over, whatever its platforms, `plan` failing however the release
-  was dispatched and `release-production.sh` saying so first. Six jobs for Play's 31 locales, not timed yet (one
+  was dispatched and `release-production.sh` saying so first. Six jobs for Play's 32 locales, not timed yet (one
   job per locale took about an hour).
 - **After the release when both happen on one day**: each job that changes something is a save of
   [Google Play's daily save quota](#google-plays-daily-save-quota), and so is the release's bundle, which must not
@@ -590,8 +590,9 @@ The iOS and macOS betas sign with the team's **Apple Distribution** certificate 
 `com.quare.blitzsplit`, which [fastlane match](https://docs.fastlane.tools/actions/match/) keeps encrypted in the
 private repository `Quartel-Enterprise/bible-planner-certs`, shared with Bible Planner (same team, `TTV2A365LG`). The
 `apple_signing` lane of [`fastlane/Fastfile`](../fastlane/Fastfile) fetches them read-only into a temporary keychain,
-switches the app target's Release configuration to manual signing (the committed `project.yml` keeps automatic
-signing for local builds), sets `aps-environment` to `production`, and writes the export options. The macOS package
+switches the Release configuration of the app target and its extensions (the iPhone's balance widget,
+`com.quare.blitzsplit.BalanceWidget`, which has profiles of its own) to manual signing (the committed `project.yml`
+keeps automatic signing for local builds), sets `aps-environment` to `production`, and writes the export options. The macOS package
 also needs the team's **Mac Installer Distribution** certificate, which the repository holds.
 
 Why not Xcode's cloud-managed certificate, which the betas used first: the certificate's name is "Apple
@@ -605,13 +606,20 @@ Store profiles of `com.quare.blitzsplit` and the iOS ad hoc one (match reuses th
 repository). The iOS job fetches the ad hoc profile too, so without it the iOS beta fails, TestFlight included:
 
 ```bash
-fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 fastlane match appstore --platform macos --additional_cert_types mac_installer_distribution --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
-fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 ```
 
 A capability added to the App ID later (Sign in with Apple, push, associated domains) needs the profiles made again:
 the same commands with `--force`.
+
+The balance widget reads the file the iPhone app writes to the App Group `group.com.quare.blitzsplit`, so before the
+first iOS beta that has it, once, on developer.apple.com › Certificates, Identifiers & Profiles: create the App Group
+`group.com.quare.blitzsplit`, register the App ID `com.quare.blitzsplit.BalanceWidget`, turn App Groups on for it and
+for `com.quare.blitzsplit` with that group, then make the iOS profiles again (the two iOS commands above with
+`--force`). Until then match finds no profile for the widget and the iOS beta fails; the macOS one, which has no
+widget, doesn't change.
 
 ## iOS on Firebase App Distribution
 
@@ -631,7 +639,7 @@ To add a tester's iPhone:
 3. Make the ad hoc profile again with the new device, from a Mac with the passphrase:
 
    ```bash
-   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
    ```
 
 4. Add the tester to the group: `firebase appdistribution:testers:add --group-alias ios-beta --project blitz-split <email>`.

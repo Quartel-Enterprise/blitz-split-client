@@ -56,6 +56,7 @@ private val listingLocales = listOf(
     "bn",
     "ms",
     "el",
+    "hr",
     "ja",
 )
 private val playLocales = mapOf(
@@ -87,6 +88,7 @@ private val playLocales = mapOf(
     "bn" to listOf("bn-BD"),
     "ms" to listOf("ms", "ms-MY"),
     "el" to listOf("el-GR"),
+    "hr" to listOf("hr"),
     "ja" to listOf("ja-JP"),
 )
 private val appStoreLocales = mapOf(
@@ -118,6 +120,7 @@ private val appStoreLocales = mapOf(
     "bn" to listOf("bn-BD"),
     "ms" to listOf("ms"),
     "el" to listOf("el"),
+    "hr" to listOf("hr"),
     "ja" to listOf("ja"),
 )
 private val playDevices = mapOf(

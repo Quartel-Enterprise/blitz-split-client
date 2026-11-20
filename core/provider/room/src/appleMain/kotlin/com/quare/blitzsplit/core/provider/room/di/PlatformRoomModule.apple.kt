@@ -6,6 +6,7 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.provider.room.db.DATABASE_NAME
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.UnsafeNumber
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import platform.Foundation.NSApplicationSupportDirectory
@@ -22,9 +23,10 @@ internal actual val platformRoomModule: Module = module {
 
 /*
  * Why: Application Support is private to the app on iOS and inside the sandbox container on macOS,
- * and unlike Documents it is not shown to the person in Files.
+ * and unlike Documents it is not shown to the person in Files. NSUInteger is 32 bits on the Apple Watch's arm64_32 and
+ * 64 on the other Apple targets, and the constants take each target's own.
  */
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
 private fun getApplicationSupportPath(): String {
     val directory = NSFileManager.defaultManager.URLForDirectory(
         directory = NSApplicationSupportDirectory,

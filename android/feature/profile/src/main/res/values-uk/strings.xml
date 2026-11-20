@@ -85,6 +85,7 @@
     <string name="profile_language_bengali">Бенгальська</string>
     <string name="profile_language_malay">Малайська</string>
     <string name="profile_language_greek">Грецька</string>
+    <string name="profile_language_croatian">Хорватська</string>
     <string name="profile_language_system_detail">Мова пристрою</string>
     <string name="profile_notifications">Сповіщення</string>
     <plurals name="profile_notifications_active">

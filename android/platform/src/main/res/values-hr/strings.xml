@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · kod za oporavak</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Dopusti kameru u Postavkama da snimiš fotografiju.</string>
+    <string name="platform_camera_settings">Postavke</string>
+    <string name="platform_receipt_source_camera">Snimi fotografiju</string>
+    <string name="platform_receipt_source_gallery">Odaberi iz galerije</string>
+    <string name="platform_receipt_source_file">Odaberi datoteku</string>
+    <string name="platform_receipt_camera_title">Skeniraj račun</string>
+    <string name="platform_receipt_camera_close">Zatvori</string>
+    <string name="platform_receipt_camera_flash_on">Uključi bljeskalicu</string>
+    <string name="platform_receipt_camera_flash_off">Isključi bljeskalicu</string>
+    <string name="platform_receipt_camera_hint">Smjesti cijeli račun u okvir. Mi ispunjavamo iznos, datum i opis; ti provjeravaš prije spremanja.</string>
+    <string name="platform_receipt_camera_gallery">Odaberi iz galerije</string>
+    <string name="platform_receipt_camera_shutter">Snimi fotografiju</string>
+    <string name="platform_receipt_camera_unavailable">Kamera nije dostupna. Odaberi fotografiju računa iz galerije.</string>
+    <string name="platform_receipt_camera_permission">Dopusti kameru da skeniraš račun ili odaberi fotografiju iz galerije.</string>
+    <string name="platform_receipt_camera_allow">Dopusti kameru</string>
+    <string name="platform_receipt_camera_settings">Otvori postavke</string>
+</resources>

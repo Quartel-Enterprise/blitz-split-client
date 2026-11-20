@@ -10,7 +10,8 @@ each platform.
       module (see [use-cases.md](use-cases.md))
 - [ ] A synced table follows [the sync rules](data-sources-and-sync.md#the-sync-synccoordinator): `updatedAt`,
       `pendingSync`, `applyRemote`, `markSynced`, and a step in `SyncCoordinator.syncNow()`
-- [ ] Create `feature/<name>` with `blitzsplit.kotlin.multiplatform`, and include it in `settings.gradle.kts`. It may
+- [ ] Create `feature/<name>` with `blitzsplit.kotlin.multiplatform` and `blitzsplit.kotlin.multiplatform.watchos`
+      (`:shared` builds for the watch and depends on every feature), and include it in `settings.gradle.kts`. It may
       not depend on another feature (see [Dependency rules](module-structure.md#dependency-rules))
 - [ ] `XUiState` (data class, no defaults, derived rules as getters), `XUiEvent : UiEvent` with each case's
       `analytics` and its rows in the catalog (the `add-analytics-event` skill, [analytics](../analytics/README.md)), `XUiAction` only if a
@@ -18,7 +19,7 @@ each platform.
       [state-management.md](state-management.md))
 - [ ] `XViewModel`: public, extends `TrackedViewModel<XUiEvent>(trackEvent)`, `uiState` / `uiAction` with explicit
       backing fields, `stateWatcher` / `actionWatcher`, `handleEvent`; navigation through `Navigator`
-- [ ] `di/XModule.kt` with `viewModelOf(::XViewModel)`, added to `sharedModules` in `shared/.../di/AppModules.kt`
+- [ ] `di/XModule.kt` with `factoryOf(::XViewModel)`, added to `sharedModules` in `shared/.../di/AppModules.kt`
 - [ ] If it is a screen of its own: a `Route` (see [Adding a route](navigation.md#adding-a-route))
 - [ ] `XViewModelTest` in `commonTest`, and tests for the new use cases, repository and mapper (see
       [docs/testing](../testing/README.md)); `./gradlew jvmTest :koverVerifyCi` passes
@@ -52,7 +53,8 @@ each platform.
       `res/values-th/strings.xml`, in Vietnamese in `res/values-vi/strings.xml`, in Traditional Chinese in
       `res/values-b+zh+Hant/strings.xml`, in Swedish in `res/values-sv/strings.xml`, in Czech in `res/values-cs/strings.xml`,
       in Romanian in `res/values-ro/strings.xml`, in Bengali in `res/values-bn/strings.xml`, in Malay in
-      `res/values-ms/strings.xml` and in Greek in `res/values-el/strings.xml`
+      `res/values-ms/strings.xml`, in Greek in `res/values-el/strings.xml` and in Croatian in
+      `res/values-hr/strings.xml` (one, few and other)
 - [ ] Any resource of a `values-pt-rPT` or `values-es-rES` (a string, a bool) also in `values-pt` or `values-es`:
       Android 7 and later fall back to a child of the language when its bare folder lacks a resource, so a pt-BR
       device read Portugal's `designsystem_portugal_portuguese` and wrote "Você criaste a conta"

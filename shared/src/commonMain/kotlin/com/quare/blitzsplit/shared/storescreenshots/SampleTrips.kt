@@ -69,6 +69,7 @@ object SampleTrips {
         "bn" to GroupCurrency.BDT,
         "ms" to GroupCurrency.MYR,
         "el" to GroupCurrency.EUR,
+        "hr" to GroupCurrency.EUR,
     )
 
     fun avatarColorOf(person: Int): AvatarColor = avatarColors[person % avatarColors.size]

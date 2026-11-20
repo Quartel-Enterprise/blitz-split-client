@@ -2,6 +2,7 @@ import org.gradle.api.tasks.PathSensitivity
 
 plugins {
     alias(libs.plugins.blitzsplit.kotlin.multiplatform)
+    alias(libs.plugins.blitzsplit.kotlin.multiplatform.watchos)
 }
 
 kotlin {
