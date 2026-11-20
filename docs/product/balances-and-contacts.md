@@ -153,3 +153,36 @@ Balances on the filter it was opened with: see the tab switch in [the home and t
     (`ContactsUiState.selectedKey`) or the agenda; the invite is a bottom sheet on an Android phone, a 560 dp dialog
     on its tablets (the book's right half), a sheet on iOS and the Mac (540 pt on the iPad), a 480 px dialog on the
     web (a drawer on a phone).
+
+## The balance widget (iPhone)
+
+Board 15.8 of page 15 (the watch, [issue #419](https://github.com/Quartel-Enterprise/blitz-split-client/issues/419)).
+Until the watch has its own product doc, its rules live here. The iPhone (and the iPad, which takes the same
+extension) gets a WidgetKit widget, "Balances", in four sizes, light and dark from the app's tokens (the money's green
+and orange, the accent):
+
+  - Small: "Balances" with the logo, the overall balance with its sign and word ("+R$ 186,40", "to get back"), and under
+    it "Owe you R$ 312,40" and "You owe R$ 126", each only when it isn't zero.
+  - Medium: the same on the left with "Updated at 14:32" at the bottom, and on the right the three groups most recently
+    active that have an open balance, each with its name and "−R$ 98 you owe" or "+R$ 214,90 to get back". A group with
+    bills in two currencies is a line per currency with an open balance, as its own Balances; a settled group never
+    shows.
+  - Lock Screen, circle: the logo over the compact overall balance ("+186", whole units, "1.2K" past a thousand), the
+    sign saying which way since the Lock Screen drops the color.
+  - Lock Screen, rectangle: "Blitz Split" ("Bora Rachar" in Portuguese), "+R$ 186,40 to get back", and the other way's
+    total ("You owe R$ 126" under what comes back, "Owe you …" under what you owe).
+
+The figures are Home's: the overall balance is the "Overall balance" of the first currency with a net (the global
+Balances' totals), "Owe you" and "You owe" are its "Owe you" and "You owe" in that currency, and every amount is written
+by the app's own formatter (decimals dropped when zero, bitcoin in sats when Profile says so, Latin digits in Arabic and
+Bengali), in the app's language (Profile › Language) whatever the device's, offline too. With nobody owing anyone in any
+currency, or no group yet, every size says "All settled" (the circle a check mark). A local only profile, an anonymous
+account and a signed in one all get it, since it reads only this device's data. Tapping any size opens Balances
+(`borarachar://balances`, `WidgetLink`), over wherever the app was; without a profile it opens the app as it is.
+
+The widget's process has no Room and no Kotlin: the app builds the snapshot in the shared code
+(`ObserveBalanceSnapshot`, `BalanceSnapshot`), formats it and writes it as JSON to the App Group
+`group.com.quare.blitzsplit` whenever a group, a bill or a payment changes here or through a sync, and again each time
+the app goes to the background, then reloads the widget (`BalanceWidgetWriter`). "Updated at" is when the app last
+wrote it, on Profile's Time format. The faces live in `iosApp/Widgets/Shared`, which the watch's complication and
+Smart Stack card reuse; the Mac, Android and the web have no widget yet.

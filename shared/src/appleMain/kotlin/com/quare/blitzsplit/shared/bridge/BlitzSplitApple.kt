@@ -4,11 +4,14 @@ import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.expenses.domain.model.BalanceSnapshot
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBalanceSnapshot
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
@@ -174,6 +177,12 @@ object BlitzSplitApple : KoinComponent {
     fun attachAnalytics(service: AnalyticsService) {
         get<AnalyticsHub>().attach(service)
     }
+
+    /*
+     * Why: the iPhone's balance widget reads a snapshot the app writes to the App Group, since the widget's process has
+     * no Room; the app writes it again on each change (docs/product/balances-and-contacts.md).
+     */
+    fun createBalanceSnapshotWatcher(): FlowWatcher<BalanceSnapshot> = FlowWatcher(get<ObserveBalanceSnapshot>()())
 
     fun createAppViewModel(): ViewModelHolder<AppViewModel> = ViewModelHolder(AppViewModel::class) { get() }
 

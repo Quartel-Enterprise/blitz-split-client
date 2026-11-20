@@ -81,6 +81,19 @@ extension GroupCurrency {
         RightToLeft.isolated(Self.signed(minor, unisolated(minor == .min ? .max : abs(minor))))
     }
 
+    /// "+186" or "−1,2 mil", whole and with no symbol: where only a few characters fit (the Lock Screen's circular
+    /// widget). An amount under one unit (bitcoin) keeps its decimals, as `formatSignedPlain` writes it.
+    func formatSignedCompact(_ minor: Int64) -> String {
+        let magnitude = minor == .min ? Decimal(Int64.max) : Decimal(abs(minor))
+        let major = magnitude / pow(Decimal(10), typedDigits)
+        guard major >= 1 else { return formatSignedPlain(minor) }
+        let compact = major.formatted(
+            .number.notation(.compactName).precision(.significantDigits(1 ... 3))
+                .rounded(rule: .towardZero).locale(AppNumbers.locale),
+        )
+        return RightToLeft.isolated(Self.signed(minor, compact))
+    }
+
     /// "+214,90" or "−98", with no symbol: a balance whose currency is the line's own (the Mac sidebar's net).
     func formatSignedPlain(_ minor: Int64) -> String {
         RightToLeft.isolated(Self.signed(minor, unisolatedPlain(minor == .min ? .max : abs(minor))))
