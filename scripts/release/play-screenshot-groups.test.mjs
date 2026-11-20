@@ -311,9 +311,10 @@ describe("the jobs that send Google Play's screenshots", () => {
 
   test("come after a release's bundle, so the bundle is never the save the quota refuses", () => {
     const screenshots = job(release, "android-screenshots");
-    assert.match(screenshots, /\n {4}needs: \[plan, android-upload, android-screenshots-render\]\n/);
+    assert.match(screenshots, /\n {4}needs: \[plan, android-upload, wear-upload, android-screenshots-render\]\n/);
     // No status function: a failed or skipped upload skips the screenshots.
     assert.doesNotMatch(screenshots.match(/\n {4}if: (.+)\n/)[1], /always\(\)|cancelled\(\)|failure\(\)/);
     assert.match(job(release, "android-upload"), /play_upload aab:/);
+    assert.match(job(release, "wear-upload"), /play_upload aab:wear-aab\/\*\.aab form_factor:wear /);
   });
 });

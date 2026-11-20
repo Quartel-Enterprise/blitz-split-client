@@ -1,0 +1,43 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "android"
+      ],
+      "text": {
+        "en": "Blitz Split is now on Wear OS watches: see your balances on a Tile and a watch face complication, record \"I paid\" right from your wrist, and get your notifications on the watch, even with your phone far away.",
+        "pt": "O Bora Rachar agora chegou aos relógios Wear OS: veja seus saldos em um Bloco e em uma complicação do mostrador, registre \"Já paguei\" direto do pulso e receba suas notificações no relógio, mesmo com o celular longe.",
+        "pt-PT": "O Blitz Split chegou aos relógios Wear OS: vê os teus saldos num Mosaico e numa complicação do mostrador, regista \"Já paguei\" diretamente do pulso e recebe as tuas notificações no relógio, mesmo com o telemóvel longe.",
+        "es": "Blitz Split ya está en los relojes Wear OS: mira tus saldos en una Tarjeta y en una complicación de la esfera, registra \"Ya pagué\" desde la muñeca y recibe tus notificaciones en el reloj, aunque el teléfono esté lejos.",
+        "fr": "Blitz Split arrive sur les montres Wear OS : vois tes soldes dans une Carte et une complication du cadran, enregistre « J’ai payé » depuis ton poignet et reçois tes notifications sur la montre, même loin de ton téléphone.",
+        "de": "Blitz Split gibt es jetzt auf Wear OS-Uhren: Sieh deine Salden in einer Kachel und einer Zifferblatt-Komplikation, tippe „Ich habe bezahlt“ direkt am Handgelenk und erhalte deine Benachrichtigungen auf der Uhr, auch wenn das Smartphone weit weg ist.",
+        "it": "Blitz Split arriva sugli smartwatch Wear OS: vedi i tuoi saldi in un Riquadro e in una complicazione del quadrante, registra \"Ho pagato\" direttamente dal polso e ricevi le notifiche sull’orologio, anche con il telefono lontano.",
+        "pl": "Blitz Split jest już na zegarkach z Wear OS: sprawdzaj salda na kafelku i komplikacji tarczy, zapisuj „Już zapłacono” prosto z nadgarstka i dostawaj powiadomienia na zegarku, nawet gdy telefon jest daleko.",
+        "nl": "Blitz Split staat nu op Wear OS-horloges: bekijk je saldi in een tegel en een complicatie op de wijzerplaat, registreer \"Ik heb betaald\" vanaf je pols en krijg je meldingen op het horloge, ook als je telefoon ver weg is.",
+        "ja": "Blitz Split が Wear OS のスマートウォッチに対応しました。タイルや文字盤のコンプリケーションで残高を確認し、手首から「支払った」を記録でき、スマートフォンが離れていても通知を受け取れます。",
+        "tr": "Blitz Split artık Wear OS saatlerde: bakiyelerini bir Kutucukta ve saat kadranı komplikasyonunda gör, \"Ödedim\"i doğrudan bileğinden kaydet ve telefonun uzaktayken bile bildirimlerini saatte al.",
+        "id": "Blitz Split kini hadir di jam tangan Wear OS: lihat saldomu di Kartu dan komplikasi tampilan jam, catat \"Sudah bayar\" langsung dari pergelangan tangan, dan terima notifikasi di jam, meski ponselmu jauh.",
+        "ru": "Blitz Split теперь на часах с Wear OS: смотри балансы в плитке и в усложнении циферблата, отмечай «Уже оплачено» прямо с запястья и получай уведомления на часах, даже если телефон далеко.",
+        "uk": "Blitz Split тепер на годинниках з Wear OS: дивись баланси в плитці та в ускладненні циферблата, позначай «Уже сплачено» просто із зап’ястка й отримуй сповіщення на годиннику, навіть коли телефон далеко.",
+        "ko": "이제 Wear OS 시계에서도 Blitz Split을 쓸 수 있어요. 타일과 워치 페이스 컴플리케이션에서 잔액을 보고, 손목에서 바로 \"이미 보냈어요\"를 기록하고, 휴대전화가 멀리 있어도 시계로 알림을 받아요.",
+        "hi": "Blitz Split अब Wear OS घड़ियों पर है: टाइल और वॉच फ़ेस कॉम्प्लिकेशन पर अपने बैलेंस देखें, कलाई से ही \"भुगतान कर दिया\" दर्ज करें, और फ़ोन दूर होने पर भी घड़ी पर सूचनाएं पाएं।",
+        "ar": "أصبح Blitz Split متاحًا على ساعات Wear OS: اطّلع على أرصدتك في مربّع وفي إضافة على واجهة الساعة، وسجّل \"تم الدفع\" من معصمك مباشرةً، واستلم إشعاراتك على الساعة حتى لو كان هاتفك بعيدًا.",
+        "zh": "Blitz Split 现已登陆 Wear OS 手表：在功能块和表盘复杂功能上查看余额，直接在手腕上记录“已付款”，即使手机不在身边也能在手表上收到通知。",
+        "he": "Blitz Split זמין עכשיו בשעוני Wear OS: אפשר לראות את היתרות באריח ובסיבוך של לוח השעון, לרשום \"כבר שילמתי\" ישירות מפרק היד ולקבל את ההתראות בשעון, גם כשהטלפון רחוק.",
+        "th": "Blitz Split มาถึงนาฬิกา Wear OS แล้ว: ดูยอดคงเหลือบนไทล์และคอมพลิเคชันของหน้าปัด บันทึก \"จ่ายแล้ว\" ได้จากข้อมือ และรับการแจ้งเตือนบนนาฬิกาได้แม้โทรศัพท์จะอยู่ไกล",
+        "vi": "Blitz Split đã có trên đồng hồ Wear OS: xem số dư trên Ô và trên tiện ích mặt đồng hồ, ghi \"Đã trả\" ngay trên cổ tay và nhận thông báo trên đồng hồ, kể cả khi điện thoại ở xa.",
+        "zh-Hant": "Blitz Split 現已登上 Wear OS 手錶：在資訊方塊和錶面複雜功能上查看餘額，直接在手腕上記錄「已付款」，即使手機不在身邊也能在手錶上收到通知。",
+        "sv": "Blitz Split finns nu på Wear OS-klockor: se dina saldon i en ruta och en urtavlekomplikation, registrera ”Jag har betalat” direkt från handleden och få dina aviseringar på klockan, även när telefonen är långt borta.",
+        "cs": "Blitz Split je teď na hodinkách s Wear OS: zůstatky uvidíš na dlaždici i v komplikaci ciferníku, „Už zaplaceno“ zaznamenáš přímo ze zápěstí a oznámení ti přijdou na hodinky, i když je telefon daleko.",
+        "ro": "Blitz Split e acum pe ceasurile Wear OS: vezi soldurile pe o Placă și într-o complicație a cadranului, înregistrează „Am plătit” direct de la încheietură și primește notificările pe ceas, chiar și cu telefonul departe.",
+        "bn": "Blitz Split এখন Wear OS ঘড়িতে: টাইল আর ঘড়ির ফেসের কমপ্লিকেশনে ব্যালেন্স দেখুন, কবজি থেকেই \"ইতিমধ্যে দিয়েছি\" রেকর্ড করুন, আর ফোন দূরে থাকলেও ঘড়িতে নোটিফিকেশন পান।",
+        "ms": "Blitz Split kini ada pada jam tangan Wear OS: lihat baki anda pada Jubin dan komplikasi muka jam, rekod \"Sudah dibayar\" terus dari pergelangan tangan dan terima pemberitahuan pada jam, walaupun telefon anda jauh.",
+        "el": "Το Blitz Split ήρθε στα ρολόγια Wear OS: δες τα υπόλοιπά σου σε ένα Πλακίδιο και σε μια επιπλοκή της πρόσοψης, κατέγραψε «Πλήρωσα» από τον καρπό σου και λάβε τις ειδοποιήσεις σου στο ρολόι, ακόμη κι όταν το τηλέφωνο είναι μακριά.",
+        "hr": "Blitz Split sada je na satovima s Wear OS-om: pogledaj salda na pločici i u komplikaciji brojčanika, zabilježi „Platio/la sam” ravno sa zapešća i primaj obavijesti na satu, čak i kad je mobitel daleko.",
+        "hu": "A Blitz Split már Wear OS-órákon is elérhető: nézd meg az egyenlegeidet egy csempén és egy óralap-komplikációban, rögzítsd a „Fizettem” lépést közvetlenül a csuklódról, és kapd meg az értesítéseidet az órán is, még ha a telefonod messze van is.",
+        "ur": "Blitz Split اب Wear OS گھڑیوں پر ہے: ٹائل اور گھڑی کے فیس کی کمپلیکیشن پر اپنے بیلنس دیکھیں، کلائی سے ہی \"میں نے ادا کیا\" درج کریں، اور فون دور ہو تب بھی گھڑی پر اپنی اطلاعات پائیں۔"
+      }
+    }
+  ]
+}

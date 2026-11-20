@@ -175,9 +175,10 @@ jobs:
 
       # Release matters: it is the only variant where R8 runs, so a missing keep rule surfaces here
       # instead of on a device. Without the signing secrets it is signed with the debug key, which
-      # is all a compile check needs.
+      # is all a compile check needs. The phone's app and the watch's (:wearApp), which a release
+      # ships together.
       - name: Assemble the Android release
-        run: ./gradlew :androidApp:assembleRelease
+        run: ./gradlew :androidApp:assembleRelease :wearApp:assembleRelease
 
   android-lint:
     needs: review-gate
@@ -195,7 +196,7 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
-      # lintDebug lints :androidApp and every :android:* module.
+      # lintDebug lints :androidApp, :wearApp and every :android:* module.
       - name: Lint the Android UI
         run: ./gradlew lintDebug --continue
 

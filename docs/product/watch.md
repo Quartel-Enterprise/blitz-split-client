@@ -81,5 +81,9 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
 
 ## Shipping
 
-  - The release workflows don't build `:wearApp` yet (its own `google-services.json`, a bundle for Play's Wear OS
-    track); until they do, no release mentions the watch app. Its release note waits for that change.
+  - Every stable version with Android ships the watch too, at the phone's version: `release-production` signs
+    `:wearApp`'s bundle with the phone's key and sends it to the same track of Google Play's Wear OS form factor,
+    with `versionCode` = the phone's + 1,000,000 ([release-process.md](../release-process.md#the-watch-on-google-play)).
+    It has the phone's applicationId, so it uses the phone's `google-services.json` (the same Firebase Android app).
+    Betas don't build it: the watch's testers get it from Play's Wear OS testing tracks.
+  - CI builds `:wearApp`'s release (R8) next to the phone's, and `lintDebug` lints it.
