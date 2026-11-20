@@ -98,7 +98,13 @@ The feed, unread state, real time and push notifications.
     and the user's rows add the "ς" ("Ana μοίρασε…", "Εσύ μοίρασες…", "το επισύναψε", "το επισύναψες"). Bengali needs no
     rule: its verbs are always in the respectful form, the same for a name and for "আপনি" ("Ana ভাগ করেছেন…", "আপনি ভাগ
     করেছেন…"). Both start the deleted-item notice with who deleted it (`youSubjectLanguages`). Malay verbs don't change
-    with the person ("Ana membahagikan…", "Anda membahagikan…"), and its notice stays passive ("dipadam oleh anda"). Arabic's     verbs say both the person and a gender the app doesn't know, so an Arabic row names the actor, a colon and a
+    with the person ("Ana membahagikan…", "Anda membahagikan…"), and its notice stays passive ("dipadam oleh anda"). Croatian
+    swaps its perfect's auxiliary as Romanian does: every Croatian verb phrase starts with "je" and a past written
+    "-o/la", the app not knowing the gender, which the user's rows turn into "si" ("Ana je podijelio/la…", "Ti si
+    podijelio/la…"). No reflexive "se" nor object pronoun comes before that "je", since Croatian would put them after "je"
+    but before "si": a join is "je ušao/la u grupu", a photo line "je priložio/la danas u 21:10". A name is never declined,
+    standing after a noun that takes the case ("je dodao/la člana Ana"), and the deleted-item notice starts with who
+    deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`) rather than a "by" that would decline the name ("od Ane"). Arabic's     verbs say both the person and a gender the app doesn't know, so an Arabic row names the actor, a colon and a
     verbal noun instead of a verb ("Ana: تقسيم «عشاء»", "أنت: تقسيم «عشاء»"): the same words serve the user and everyone
     else, and none of the three helpers has an Arabic rule. Its deleted-item notice is passive ("تم الحذف بواسطة Ana"). Hebrew rows are built the same way ("Ana: פיצול "ארוחת ערב"", "אני: פיצול …"), the user's subject word being "אני", and its deleted-item notice agrees with the item, never with the person. The same rules say a bill's photo line to the user who attached it, in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
     "Tu l’as joint…", "Ty dodałeś(-aś) je…". A Spanish object pronoun before the verb stays ("lo adjuntó" to "lo
