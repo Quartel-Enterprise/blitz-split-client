@@ -5,16 +5,20 @@ import WatchKit
 @main
 struct BoraRacharWatchApp: App {
     @WKApplicationDelegateAdaptor private var appDelegate: WatchAppDelegate
+    /// Made once the shared code started, as the iPhone's `AppModel`: the body runs again on each scene phase, and a
+    /// model made in `WatchRootView`'s own `@State` would start a `WatchRootViewModel` each time.
+    @State private var root: WatchRootModel
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
         BlitzSplitWatch.shared.start()
         WatchWidgetWriter.shared.start()
+        _root = State(initialValue: WatchRootModel())
     }
 
     var body: some Scene {
         WindowGroup {
-            WatchRootView()
+            WatchRootView(model: root)
         }
         .onChange(of: scenePhase, initial: true) { _, phase in
             // Real time listens only while the app is on screen; the background refresh catches up after
@@ -50,7 +54,7 @@ enum WatchBackgroundRefresh {
         WKApplication.shared().scheduleBackgroundRefresh(
             withPreferredDate: Date(timeIntervalSinceNow: interval),
             userInfo: identifier as NSString,
-        ) { _ in }
+        ) { @Sendable _ in }
     }
 
     @MainActor
@@ -58,6 +62,8 @@ enum WatchBackgroundRefresh {
         await withCheckedContinuation { continuation in
             BlitzSplitWatch.shared.syncInBackground { continuation.resume() }
         }
+        // The faces' file before the task ends, or they would only follow the sync at the app's next launch
+        await WatchWidgetWriter.shared.writeAfterSync()
         schedule()
     }
 }

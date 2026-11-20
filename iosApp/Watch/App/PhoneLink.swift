@@ -17,27 +17,31 @@ final class PhoneLink: NSObject, WCSessionDelegate {
     func start() {
         guard WCSession.isSupported() else { return }
         WCSession.default.delegate = self
+        isActivating = true
         WCSession.default.activate()
     }
 
     /// The code to the paired iPhone; `reply` comes back on the main actor, `.unreachable` when no iPhone with the app
     /// took it. The pairing waits 20 seconds at most for an answer on its own.
     func sendPairingCode(_ code: String, reply: @escaping @MainActor (PhoneReply) -> Void) {
-        let session = WCSession.default
-        // Connect tapped right after launch: the session activates in a moment, then the code goes
-        if WCSession.isSupported(), session.activationState != .activated {
+        // Connect tapped right after launch: the session activates in a moment, then the code goes. Only while the
+        // activation is under way: one that already failed never calls back again, so the code would wait forever
+        if isActivating {
             pendingSends.append((code, reply))
             return
         }
-        guard WCSession.isSupported(), session.isCompanionAppInstalled, session.isReachable else {
+        let session = WCSession.default
+        guard WCSession.isSupported(), session.activationState == .activated, session.isCompanionAppInstalled,
+              session.isReachable else {
             reply(.unreachable)
             return
         }
         let message: [String: Any] = [Self.link.PATH_KEY: Self.link.PAIR_PATH, Self.link.CODE_KEY: code]
-        session.sendMessage(message) { answer in
+        // Sendable: WatchConnectivity calls both on its own queue, never the main actor's
+        session.sendMessage(message) { @Sendable answer in
             let value = answer[Self.link.REPLY_KEY] as? String
             Task { @MainActor in reply(Self.phoneReply(of: value)) }
-        } errorHandler: { _ in
+        } errorHandler: { @Sendable _ in
             Task { @MainActor in reply(.unreachable) }
         }
     }
@@ -50,6 +54,9 @@ final class PhoneLink: NSObject, WCSessionDelegate {
         }
     }
 
+    /// From `start` until the session's activation calls back.
+    private var isActivating = false
+
     /// Codes sent before the session activated; an activation that fails sends them anyway, as out of reach.
     private var pendingSends: [(code: String, reply: @MainActor (PhoneReply) -> Void)] = []
 
@@ -59,14 +66,11 @@ final class PhoneLink: NSObject, WCSessionDelegate {
         error: Error?,
     ) {
         Task { @MainActor in
+            self.isActivating = false
             let sends = self.pendingSends
             self.pendingSends = []
             for send in sends {
-                if activationState == .activated {
-                    self.sendPairingCode(send.code, reply: send.reply)
-                } else {
-                    send.reply(.unreachable)
-                }
+                self.sendPairingCode(send.code, reply: send.reply)
             }
         }
     }

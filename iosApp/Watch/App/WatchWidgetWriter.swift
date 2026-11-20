@@ -15,6 +15,8 @@ final class WatchWidgetWriter {
     private let watches = WatchBag()
     private var written: WidgetBalances?
     private var pendingWrite: Task<Void, Never>?
+    /// The snapshot `pendingWrite` waits to write.
+    private var pendingSnapshot: BalanceSnapshot?
 
     private init() {}
 
@@ -25,12 +27,26 @@ final class WatchWidgetWriter {
         })
     }
 
+    /// A background refresh ends right after its sync, and watchOS suspends the app then, before a write still
+    /// settling would run: this waits for the sync's changes to reach the snapshot and writes them before the task
+    /// ends.
+    func writeAfterSync() async {
+        try? await Task.sleep(for: Self.settleDelay)
+        pendingWrite?.cancel()
+        pendingWrite = nil
+        guard let snapshot = pendingSnapshot else { return }
+        pendingSnapshot = nil
+        write(snapshot)
+    }
+
     private func scheduleWrite(_ snapshot: BalanceSnapshot) {
+        pendingSnapshot = snapshot
         pendingWrite?.cancel()
         pendingWrite = Task { [weak self] in
             try? await Task.sleep(for: Self.settleDelay)
-            guard !Task.isCancelled else { return }
-            self?.write(snapshot)
+            guard !Task.isCancelled, let self else { return }
+            self.pendingSnapshot = nil
+            self.write(snapshot)
         }
     }
 

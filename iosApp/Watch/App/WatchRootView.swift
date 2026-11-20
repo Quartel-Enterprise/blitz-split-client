@@ -69,7 +69,7 @@ final class WatchRootModel {
 
 /// The watch's one window: the connect screens or the balances, and the group pushed over them.
 struct WatchRootView: View {
-    @State private var model = WatchRootModel()
+    @Bindable var model: WatchRootModel
 
     var body: some View {
         Group {

@@ -31,8 +31,8 @@ import kotlin.time.Duration.Companion.seconds
 
 /*
  * Why: what the Apple Watch app calls besides BlitzSplitApple (which writes the complication's snapshot and reports
- * the app in front): starting the shared code as a watch, the watch's screens, its back stack, and what the iPhone and the watch's own pushes ask of it. Only the
- * watchOS framework has it.
+ * the app in front): starting the shared code as a watch, the watch's screens, its back stack, and what the iPhone
+ * and the watch's own pushes ask of it. Only the watchOS framework has it.
  */
 object BlitzSplitWatch : KoinComponent {
     private val scope = MainScope() + Dispatchers.Main.immediate
@@ -95,7 +95,8 @@ object BlitzSplitWatch : KoinComponent {
 
     /*
      * Why: "Received" on "Elisa marked that she paid you" (15.7): the payment is already recorded by whoever paid, so
-     * the watch takes it as seen, the activity read (Pierre's call, November 2026). onDone lets the system's handler end.
+     * the watch takes it as seen, the activity read (Pierre's call, November 2026). onDone lets the system's handler
+     * end.
      */
     fun handleReceived(
         link: String,

@@ -196,8 +196,8 @@ targets:
         com.apple.security.application-groups: [group.com.quare.blitzsplit]
 
   # The iPhone's balance widget (board 15.8): the Home Screen's small and medium, the Lock Screen's circle and
-  # rectangle. It reads only the file the app writes to the App Group, never Room nor the Shared framework. Its faces
-  # (Widgets/Shared) are what the watch's complication and Smart Stack card draw later.
+  # rectangle. It reads only the file the app writes to the App Group, never Room nor the Shared framework. Its
+  # accessory faces (Widgets/Shared) are what the watch's complications and Smart Stack card draw (BalanceWidget-watchOS).
   BalanceWidget:
     type: app-extension
     platform: iOS
