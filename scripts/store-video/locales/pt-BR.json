@@ -9,8 +9,8 @@
     "languageCode": "pt",
     "stability": 0.5,
     "similarity": 0.75,
-    "takes": 3,
-    "take": 2
+    "takes": 1,
+    "take": 1
   },
   "music": {
     "prompt": "Light, warm, upbeat acoustic pop instrumental for a friendly mobile app commercial about splitting bills with friends on a trip. Ukulele and clean guitar plucks, soft claps, gentle bass, light percussion, bright and positive, mid tempo around 105 BPM. Sits under a voiceover: sparse arrangement, no lead melody fighting the voice. Clean ending with a final soft hit at the end.",
@@ -18,9 +18,9 @@
   },
   "lines": [
     "Viagem com os amigos? Bora rachar.",
-    "Anota quem pagou e divide do jeito que quiser.",
+    "Anote quem pagou e divida do jeito que quiser.",
     "Até item por item da conta do restaurante.",
-    "No fim, o app mostra quem paga quem, com o mínimo de transferências.",
+    "No fim, o app mostra quem deve quanto a quem.",
     "E pra acertar, Pix copia e cola com o valor certinho.",
     "Funciona offline, sem precisar de conta."
   ],
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "title": [{ "text": "Anota quem pagou" }, { "text": "e divide do seu jeito", "accent": ["divide"] }],
+      "title": [{ "text": "Anote quem pagou" }, { "text": "e divida do seu jeito", "accent": ["divida"] }],
       "whip": false,
       "steps": [
         { "kind": "play", "clip": "detail", "from": 0, "to": 0.5, "enter": "push" },
@@ -89,7 +89,6 @@
     },
     {
       "title": [{ "text": "No fim, quem paga quem", "accent": ["quem", "paga"] }],
-      "subtitle": "com o mínimo de transferências",
       "whip": true,
       "steps": [
         { "kind": "play", "clip": "bal", "from": 0, "to": 0.6 },

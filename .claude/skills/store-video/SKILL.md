@@ -29,8 +29,12 @@ nothing else needs registering. Then:
 
 - **`lines`**: the narration, one per shot plus the end card's. Translate the meaning, not the words, in the tone of
   that language's store listing (`docs/store-listing.md`); keep each line about as long as pt-BR's, since the shots'
-  lengths follow them. The Pix line exists only where Pix is used (pt-BR): elsewhere drop that shot and its line, or
-  show what that market uses to pay back, if the app supports it — ask Pierre.
+  lengths follow them.
+- **Pix is Brazil's alone: only `pt-BR` has the Pix shot and its line.** Every other locale, `pt-PT` included, drops
+  that shot, its line and its `pix` scene. Pix means nothing outside Brazil, the app shows it only to people likely to
+  use it ([the Pix rule](../../../docs/product/general.md)), and the sample trip only has a Pix key when it is in
+  reais, so another locale's Settle up has no "Pix copy and paste" to record. Showing instead how that market pays
+  back (a bank transfer, a payment link) is Pierre's call, and only if the app does it: ask before adding a shot.
 - **Titles and the end card**: the line's key words (`title`, `subtitle`, `accent`), the app's name in that language
   ("Bora Rachar" in Portuguese, "Blitz Split" elsewhere) and the two chips. Nothing Play forbids: no call to action,
   ranking, "new", "free" or price.
@@ -49,8 +53,9 @@ nothing else needs registering. Then:
   `text_to_speech`), check each with Whisper (the words, the language, the question rising), and build a page that
   plays them one after another, the current video's voice first for reference. Send it with SendUserFile and let
   Pierre choose by ear: the voice is his call.
-- Put the chosen voice in the JSON, run `elevenlabs.py narration <locale>` for its three takes, check them the same
-  way, and have Pierre pick the take (`voice.take`).
+- Put the chosen voice in the JSON with `"takes": 3`, run `elevenlabs.py narration <locale>` for its three takes,
+  check them the same way, and have Pierre pick the take (`voice.take`); then set `"takes"` back to 1, so a later
+  render asks for nothing new.
 - **Music**: reuse a locale's prompt unless Pierre asks for another; a new one gets three options in a page, mixed
   under the narration, for him to pick.
 
