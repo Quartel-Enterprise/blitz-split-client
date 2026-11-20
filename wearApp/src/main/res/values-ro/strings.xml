@@ -46,6 +46,8 @@
     <string name="balances_sign_out">Deconectează-te</string>
     <string name="balances_sign_out_title">Te deconectezi de pe acest ceas?</string>
     <string name="balances_sign_out_body">Datele lui se șterg după ce se trimite ce e în așteptare. Telefonul rămâne conectat.</string>
+    <string name="balances_sign_out_scheduled">Deconectare programată</string>
+    <string name="balances_sign_out_scheduled_detail">Te deconectezi imediat ce totul e încărcat</string>
     <string name="balances_settled_title">Nimic deschis</string>
     <string name="balances_settled_body">Nu datorezi nimic și nimeni nu-ți datorează. Grupurile și cheltuielile noi apar aici singure.</string>
     <string name="group_you_owe_person">datorezi către %1$s</string>
@@ -70,10 +72,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">Am primit</string>
     <string name="push_view_group">Vezi grupul</string>
-    <string name="push_channel_bills">Cheltuieli</string>
-    <string name="push_channel_payments">Plăți și achitări</string>
-    <string name="push_channel_comments">Comentarii</string>
-    <string name="push_channel_people">Persoane și grupuri</string>
-    <string name="push_channel_requests">Cereri de plată</string>
-    <string name="push_channel_reminders">Memento pentru sold deschis</string>
 </resources>

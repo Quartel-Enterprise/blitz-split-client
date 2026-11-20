@@ -44,6 +44,8 @@
     <string name="balances_sign_out">退出登录</string>
     <string name="balances_sign_out_title">要在这块手表上退出登录吗？</string>
     <string name="balances_sign_out_body">待发送的内容发出后，手表上的数据会被清除。你的手机仍保持登录。</string>
+    <string name="balances_sign_out_scheduled">已安排退出登录</string>
+    <string name="balances_sign_out_scheduled_detail">所有内容上传完成后立即退出登录</string>
     <string name="balances_settled_title">没有未结清款项</string>
     <string name="balances_settled_body">你不欠任何人，也没有人欠你。新的群组和账单会自动显示在这里。</string>
     <string name="group_you_owe_person">你欠%1$s</string>
@@ -68,10 +70,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">已收款</string>
     <string name="push_view_group">查看群组</string>
-    <string name="push_channel_bills">账单</string>
-    <string name="push_channel_payments">付款和结清</string>
-    <string name="push_channel_comments">评论</string>
-    <string name="push_channel_people">成员和群组</string>
-    <string name="push_channel_requests">付款请求</string>
-    <string name="push_channel_reminders">未结清余额提醒</string>
 </resources>

@@ -45,6 +45,8 @@
     <string name="balances_sign_out">Çıkış yap</string>
     <string name="balances_sign_out_title">Bu saatte oturum kapatılsın mı?</string>
     <string name="balances_sign_out_body">Sıradakiler gönderilince verileri silinir. Telefonundaki oturum açık kalır.</string>
+    <string name="balances_sign_out_scheduled">Çıkış planlandı</string>
+    <string name="balances_sign_out_scheduled_detail">Her şey yüklenir yüklenmez çıkış yapılır</string>
     <string name="balances_settled_title">Açık hesap yok</string>
     <string name="balances_settled_body">Kimseye borcun yok, kimsenin de sana borcu yok. Yeni gruplar ve harcamalar burada kendiliğinden görünür.</string>
     <string name="group_you_owe_person">%1$s kişisine borçlusun</string>
@@ -69,10 +71,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">Alındı</string>
     <string name="push_view_group">Grubu gör</string>
-    <string name="push_channel_bills">Harcamalar</string>
-    <string name="push_channel_payments">Ödemeler ve hesaplaşmalar</string>
-    <string name="push_channel_comments">Yorumlar</string>
-    <string name="push_channel_people">Kişiler ve gruplar</string>
-    <string name="push_channel_requests">Ödeme istekleri</string>
-    <string name="push_channel_reminders">Açık bakiye hatırlatıcısı</string>
 </resources>

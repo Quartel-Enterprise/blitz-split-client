@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s关闭了简化债务。现在%2$s付给你%3$s。</string>
     <string name="push_debts_unsimplified_from_you">%1$s关闭了简化债务。现在你付给%2$s %3$s。</string>
     <string name="push_debts_unsimplified_other">%1$s关闭了“简化债务”。看看对你有什么影响。</string>
+    <string name="notification_settings_bills">账单</string>
+    <string name="notification_settings_bills_detail">与你相关的账单被新建、编辑或删除</string>
+    <string name="notification_settings_payments">付款和结清</string>
+    <string name="notification_settings_payments_detail">你收到或付出的款项，以及简化后的债务</string>
+    <string name="notification_settings_comments">评论</string>
+    <string name="notification_settings_comments_detail">与你相关的账单和你参与过的讨论</string>
+    <string name="notification_settings_people_and_groups">成员和群组</string>
+    <string name="notification_settings_people_and_groups_detail">谁加入或退出了你的群组，以及群组中的变化</string>
+    <string name="notification_settings_payment_requests">付款请求</string>
+    <string name="notification_settings_payment_requests_detail">有人请求你付款时</string>
+    <string name="notification_settings_balance_reminder">未结清余额提醒</string>
+    <string name="notification_settings_balance_reminder_detail">每周一次，如有未结清的余额</string>
 </resources>

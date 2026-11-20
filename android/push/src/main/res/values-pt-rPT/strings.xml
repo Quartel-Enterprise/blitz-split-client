@@ -14,4 +14,8 @@
     <string name="push_debts_unsimplified_to_you">%1$s desligou Simplificar dívidas. Agora %2$s paga-te %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s desligou Simplificar dívidas. Agora pagas %3$s a %2$s.</string>
     <string name="push_debts_unsimplified_other">%1$s desligou Simplificar dívidas. Vê como ficou para ti.</string>
+    <string name="notification_settings_bills_detail">Contas novas, editadas ou apagadas em que estás</string>
+    <string name="notification_settings_payments_detail">Pagamentos contigo e dívidas simplificadas</string>
+    <string name="notification_settings_comments_detail">Em contas tuas e conversas em que escreveste</string>
+    <string name="notification_settings_people_and_groups_detail">Quem entra ou sai dos teus grupos e o que muda neles</string>
 </resources>

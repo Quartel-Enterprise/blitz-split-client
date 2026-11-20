@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">Push schickt eine Mitteilung an dieses Gerät. In der App markiert sie als neu an der Glocke und in Aktivität; ausgeschaltet erscheint sie trotzdem in Aktivität, schon gelesen.</string>
-    <string name="notification_settings_bills">Ausgaben</string>
-    <string name="notification_settings_bills_detail">Neue, bearbeitete oder gelöschte Ausgaben, an denen du beteiligt bist</string>
-    <string name="notification_settings_payments">Zahlungen und Begleichungen</string>
-    <string name="notification_settings_payments_detail">Zahlungen an dich oder von dir und vereinfachte Schulden</string>
-    <string name="notification_settings_comments">Kommentare</string>
-    <string name="notification_settings_comments_detail">Zu Ausgaben, an denen du beteiligt bist, und Unterhaltungen, in denen du geschrieben hast</string>
-    <string name="notification_settings_people_and_groups">Personen und Gruppen</string>
-    <string name="notification_settings_people_and_groups_detail">Wer deinen Gruppen beitritt oder sie verlässt und was sich darin ändert</string>
-    <string name="notification_settings_payment_requests">Zahlungsanforderungen</string>
-    <string name="notification_settings_payment_requests_detail">Wenn dich jemand bittet zu zahlen</string>
-    <string name="notification_settings_balance_reminder">Erinnerung an offene Salden</string>
-    <string name="notification_settings_balance_reminder_detail">Einmal pro Woche, wenn ein Saldo offen ist</string>
     <string name="notification_settings_footer">Mitteilungen kommen an, sobald du Internet hast. Um eine Gruppe stummzuschalten, nutze das Menü darin.</string>
 </resources>

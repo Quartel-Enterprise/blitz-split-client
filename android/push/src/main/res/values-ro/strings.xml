@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s a dezactivat Simplifică datoriile. Acum %2$s îți plătește %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s a dezactivat Simplifică datoriile. Acum plătești %3$s către %2$s.</string>
     <string name="push_debts_unsimplified_other">%1$s a dezactivat Simplifică datoriile. Vezi cum e pentru tine.</string>
+    <string name="notification_settings_bills">Cheltuieli</string>
+    <string name="notification_settings_bills_detail">Cheltuieli noi, editate sau șterse în care ești inclus</string>
+    <string name="notification_settings_payments">Plăți și achitări</string>
+    <string name="notification_settings_payments_detail">Plăți către tine sau de la tine și datorii simplificate</string>
+    <string name="notification_settings_comments">Comentarii</string>
+    <string name="notification_settings_comments_detail">La cheltuielile în care ești inclus și la conversațiile în care ai scris</string>
+    <string name="notification_settings_people_and_groups">Persoane și grupuri</string>
+    <string name="notification_settings_people_and_groups_detail">Cine intră în grupurile tale sau le părăsește și ce se schimbă în ele</string>
+    <string name="notification_settings_payment_requests">Cereri de plată</string>
+    <string name="notification_settings_payment_requests_detail">Când cineva îți cere să plătești</string>
+    <string name="notification_settings_balance_reminder">Memento pentru sold deschis</string>
+    <string name="notification_settings_balance_reminder_detail">O dată pe săptămână, dacă există un sold deschis</string>
 </resources>

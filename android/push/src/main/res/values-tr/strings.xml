@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s Borçları sadeleştir\'i kapattı. Artık %2$s sana %3$s ödüyor.</string>
     <string name="push_debts_unsimplified_from_you">%1$s Borçları sadeleştir\'i kapattı. Artık %2$s kişisine %3$s ödüyorsun.</string>
     <string name="push_debts_unsimplified_other">%1$s Borçları sadeleştir\'i kapattı. Senin için ne değiştiğine bak.</string>
+    <string name="notification_settings_bills">Harcamalar</string>
+    <string name="notification_settings_bills_detail">İçinde olduğun yeni, düzenlenen ya da silinen harcamalar</string>
+    <string name="notification_settings_payments">Ödemeler ve hesaplaşmalar</string>
+    <string name="notification_settings_payments_detail">Sana ya da senden ödemeler ve sadeleştirilen borçlar</string>
+    <string name="notification_settings_comments">Yorumlar</string>
+    <string name="notification_settings_comments_detail">İçinde olduğun harcamalarda ve yazdığın konuşmalarda</string>
+    <string name="notification_settings_people_and_groups">Kişiler ve gruplar</string>
+    <string name="notification_settings_people_and_groups_detail">Gruplarına kimin katıldığı ya da ayrıldığı ve onlarda neyin değiştiği</string>
+    <string name="notification_settings_payment_requests">Ödeme istekleri</string>
+    <string name="notification_settings_payment_requests_detail">Biri senden ödeme istediğinde</string>
+    <string name="notification_settings_balance_reminder">Açık bakiye hatırlatıcısı</string>
+    <string name="notification_settings_balance_reminder_detail">Açık bir bakiye varsa haftada bir</string>
 </resources>

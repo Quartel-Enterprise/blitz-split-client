@@ -82,6 +82,7 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:profile"))
     implementation(project(":core:expenses"))
+    implementation(project(":core:settings"))
     implementation(project(":core:watch"))
     implementation(project(":core:sync"))
     implementation(project(":feature:watch_pairing"))

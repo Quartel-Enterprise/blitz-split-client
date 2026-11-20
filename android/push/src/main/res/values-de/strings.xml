@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s hat „Schulden vereinfachen“ ausgeschaltet. Jetzt zahlt %2$s dir %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s hat „Schulden vereinfachen“ ausgeschaltet. Jetzt zahlst du %2$s %3$s.</string>
     <string name="push_debts_unsimplified_other">%1$s hat „Schulden vereinfachen“ ausgeschaltet. Sieh nach, was sich für dich ändert.</string>
+    <string name="notification_settings_bills">Ausgaben</string>
+    <string name="notification_settings_bills_detail">Neue, bearbeitete oder gelöschte Ausgaben, an denen du beteiligt bist</string>
+    <string name="notification_settings_payments">Zahlungen und Begleichungen</string>
+    <string name="notification_settings_payments_detail">Zahlungen an dich oder von dir und vereinfachte Schulden</string>
+    <string name="notification_settings_comments">Kommentare</string>
+    <string name="notification_settings_comments_detail">Zu Ausgaben, an denen du beteiligt bist, und Unterhaltungen, in denen du geschrieben hast</string>
+    <string name="notification_settings_people_and_groups">Personen und Gruppen</string>
+    <string name="notification_settings_people_and_groups_detail">Wer deinen Gruppen beitritt oder sie verlässt und was sich darin ändert</string>
+    <string name="notification_settings_payment_requests">Zahlungsanforderungen</string>
+    <string name="notification_settings_payment_requests_detail">Wenn dich jemand bittet zu zahlen</string>
+    <string name="notification_settings_balance_reminder">Erinnerung an offene Salden</string>
+    <string name="notification_settings_balance_reminder_detail">Einmal pro Woche, wenn ein Saldo offen ist</string>
 </resources>

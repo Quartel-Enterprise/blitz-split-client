@@ -509,7 +509,11 @@ class AccountRepositoryImpl(
                 recoveryCodePrompt
             },
             email = null,
-            signOutWhenSynced = signOutWhenSynced && userId == user.userId,
+            /*
+             * Why: only a session that was anonymous already keeps its schedule (a watch's): a Google or Apple one an
+             * older install unlinked must not sign out of an account it can only get back with a code shown elsewhere.
+             */
+            signOutWhenSynced = signOutWhenSynced && userId == user.userId && provider == null,
             awaitsFullSync = awaitsFullSync || (userId != null && userId != user.userId),
             lostAnonymousUserId = null,
             inactivityExpiry = null,

@@ -20,6 +20,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:profile"))
+    api(project(":core:profile"))
     implementation(libs.androidx.annotation)
 }

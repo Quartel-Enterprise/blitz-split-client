@@ -44,6 +44,8 @@
     <string name="balances_sign_out">ออกจากระบบ</string>
     <string name="balances_sign_out_title">ออกจากระบบในนาฬิกานี้ไหม</string>
     <string name="balances_sign_out_body">ข้อมูลในนาฬิกาจะถูกลบเมื่อส่งรายการที่รอส่งแล้ว โทรศัพท์ของคุณยังคงเข้าสู่ระบบอยู่</string>
+    <string name="balances_sign_out_scheduled">ตั้งเวลาออกจากระบบแล้ว</string>
+    <string name="balances_sign_out_scheduled_detail">จะออกจากระบบทันทีที่อัปโหลดทุกอย่างเสร็จ</string>
     <string name="balances_settled_title">ไม่มียอดค้าง</string>
     <string name="balances_settled_body">ไม่มีใครค้างคุณ และคุณก็ไม่ได้ค้างใคร กลุ่มและบิลใหม่จะแสดงที่นี่เอง</string>
     <string name="group_you_owe_person">คุณค้าง %1$s</string>
@@ -68,10 +70,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">ได้รับแล้ว</string>
     <string name="push_view_group">ดูกลุ่ม</string>
-    <string name="push_channel_bills">บิล</string>
-    <string name="push_channel_payments">การจ่ายเงินและการเคลียร์ยอด</string>
-    <string name="push_channel_comments">ความคิดเห็น</string>
-    <string name="push_channel_people">คนและกลุ่ม</string>
-    <string name="push_channel_requests">คำขอเงิน</string>
-    <string name="push_channel_reminders">การเตือนยอดค้าง</string>
 </resources>

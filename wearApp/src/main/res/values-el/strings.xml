@@ -45,6 +45,8 @@
     <string name="balances_sign_out">Αποσύνδεση</string>
     <string name="balances_sign_out_title">Αποσύνδεση από αυτό το ρολόι;</string>
     <string name="balances_sign_out_body">Τα δεδομένα του σβήνονται μόλις σταλούν όσα περιμένουν. Το τηλέφωνό σου μένει συνδεδεμένο.</string>
+    <string name="balances_sign_out_scheduled">Η αποσύνδεση προγραμματίστηκε</string>
+    <string name="balances_sign_out_scheduled_detail">Θα αποσυνδεθείς μόλις ανέβουν όλα</string>
     <string name="balances_settled_title">Τίποτα ανοιχτό</string>
     <string name="balances_settled_body">Δεν χρωστάς τίποτα και κανείς δεν σου χρωστάει. Νέες ομάδες και έξοδα εμφανίζονται εδώ μόνα τους.</string>
     <string name="group_you_owe_person">χρωστάς σε %1$s</string>
@@ -69,10 +71,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">Το έλαβα</string>
     <string name="push_view_group">Προβολή ομάδας</string>
-    <string name="push_channel_bills">Έξοδα</string>
-    <string name="push_channel_payments">Πληρωμές και εξοφλήσεις</string>
-    <string name="push_channel_comments">Σχόλια</string>
-    <string name="push_channel_people">Άτομα και ομάδες</string>
-    <string name="push_channel_requests">Αιτήματα πληρωμής</string>
-    <string name="push_channel_reminders">Υπενθύμιση ανοιχτού υπολοίπου</string>
 </resources>

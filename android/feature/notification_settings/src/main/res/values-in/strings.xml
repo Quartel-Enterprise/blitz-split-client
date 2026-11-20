@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">Push mengirim notifikasi ke perangkat ini. Di aplikasi menandainya sebagai baru di lonceng dan di Aktivitas; jika dimatikan, tetap muncul di Aktivitas, sudah dibaca.</string>
-    <string name="notification_settings_bills">Tagihan</string>
-    <string name="notification_settings_bills_detail">Tagihan baru, diedit, atau dihapus yang melibatkanmu</string>
-    <string name="notification_settings_payments">Pembayaran dan pelunasan</string>
-    <string name="notification_settings_payments_detail">Pembayaran ke atau dari kamu, dan utang yang disederhanakan</string>
-    <string name="notification_settings_comments">Komentar</string>
-    <string name="notification_settings_comments_detail">Di tagihan yang melibatkanmu dan diskusi tempat kamu menulis</string>
-    <string name="notification_settings_people_and_groups">Orang dan grup</string>
-    <string name="notification_settings_people_and_groups_detail">Siapa yang bergabung atau keluar dari grupmu, dan apa yang berubah di sana</string>
-    <string name="notification_settings_payment_requests">Permintaan pembayaran</string>
-    <string name="notification_settings_payment_requests_detail">Saat seseorang memintamu membayar</string>
-    <string name="notification_settings_balance_reminder">Pengingat saldo terbuka</string>
-    <string name="notification_settings_balance_reminder_detail">Seminggu sekali, jika ada saldo terbuka</string>
     <string name="notification_settings_footer">Pemberitahuan tiba saat ada internet. Untuk membisukan grup, gunakan menu di dalamnya.</string>
 </resources>

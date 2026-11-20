@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s вимкнув(-ла) «Спростити борги». Тепер %2$s платить тобі %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s вимкнув(-ла) «Спростити борги». Тепер ти платиш учаснику %2$s %3$s.</string>
     <string name="push_debts_unsimplified_other">%1$s вимкнув(-ла) «Спростити борги». Подивись, що змінилося для тебе.</string>
+    <string name="notification_settings_bills">Рахунки</string>
+    <string name="notification_settings_bills_detail">Нові, змінені чи видалені рахунки, у яких ти береш участь</string>
+    <string name="notification_settings_payments">Платежі й розрахунки</string>
+    <string name="notification_settings_payments_detail">Платежі тобі чи від тебе та спрощені борги</string>
+    <string name="notification_settings_comments">Коментарі</string>
+    <string name="notification_settings_comments_detail">До рахунків, у яких ти береш участь, і в обговореннях, де ти писав(-ла)</string>
+    <string name="notification_settings_people_and_groups">Люди та групи</string>
+    <string name="notification_settings_people_and_groups_detail">Хто приєднується до твоїх груп чи виходить із них і що в них змінюється</string>
+    <string name="notification_settings_payment_requests">Нагадування про оплату</string>
+    <string name="notification_settings_payment_requests_detail">Коли хтось просить тебе заплатити</string>
+    <string name="notification_settings_balance_reminder">Нагадування про відкритий баланс</string>
+    <string name="notification_settings_balance_reminder_detail">Раз на тиждень, якщо є відкритий баланс</string>
 </resources>

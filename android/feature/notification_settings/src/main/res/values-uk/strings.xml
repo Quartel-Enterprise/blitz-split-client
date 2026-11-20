@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">Push надсилає сповіщення на цей пристрій. «У застосунку» позначає його як нове на дзвіночку та в «Активності»; якщо вимкнено, воно все одно з\'являється в «Активності», уже прочитаним.</string>
-    <string name="notification_settings_bills">Рахунки</string>
-    <string name="notification_settings_bills_detail">Нові, змінені чи видалені рахунки, у яких ти береш участь</string>
-    <string name="notification_settings_payments">Платежі й розрахунки</string>
-    <string name="notification_settings_payments_detail">Платежі тобі чи від тебе та спрощені борги</string>
-    <string name="notification_settings_comments">Коментарі</string>
-    <string name="notification_settings_comments_detail">До рахунків, у яких ти береш участь, і в обговореннях, де ти писав(-ла)</string>
-    <string name="notification_settings_people_and_groups">Люди та групи</string>
-    <string name="notification_settings_people_and_groups_detail">Хто приєднується до твоїх груп чи виходить із них і що в них змінюється</string>
-    <string name="notification_settings_payment_requests">Нагадування про оплату</string>
-    <string name="notification_settings_payment_requests_detail">Коли хтось просить тебе заплатити</string>
-    <string name="notification_settings_balance_reminder">Нагадування про відкритий баланс</string>
-    <string name="notification_settings_balance_reminder_detail">Раз на тиждень, якщо є відкритий баланс</string>
     <string name="notification_settings_footer">Сповіщення надходять, коли є інтернет. Щоб вимкнути звук групи, скористайся меню всередині неї.</string>
 </resources>

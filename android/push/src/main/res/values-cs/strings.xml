@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s vypnul(a) Zjednodušit dluhy. Teď ti %2$s platí %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s vypnul(a) Zjednodušit dluhy. Teď platíš osobě %2$s %3$s.</string>
     <string name="push_debts_unsimplified_other">%1$s vypnul(a) Zjednodušit dluhy. Podívej se, jak to vypadá pro tebe.</string>
+    <string name="notification_settings_bills">Výdaje</string>
+    <string name="notification_settings_bills_detail">Nové, upravené nebo smazané výdaje, ve kterých jsi</string>
+    <string name="notification_settings_payments">Platby a vyrovnání</string>
+    <string name="notification_settings_payments_detail">Platby tobě nebo od tebe a zjednodušené dluhy</string>
+    <string name="notification_settings_comments">Komentáře</string>
+    <string name="notification_settings_comments_detail">U výdajů, ve kterých jsi, a vláken, do kterých jsi psal(a)</string>
+    <string name="notification_settings_people_and_groups">Lidé a skupiny</string>
+    <string name="notification_settings_people_and_groups_detail">Kdo vstoupí do tvých skupin nebo je opustí a co se v nich změní</string>
+    <string name="notification_settings_payment_requests">Žádosti o platbu</string>
+    <string name="notification_settings_payment_requests_detail">Když tě někdo požádá o platbu</string>
+    <string name="notification_settings_balance_reminder">Připomínka otevřeného zůstatku</string>
+    <string name="notification_settings_balance_reminder_detail">Jednou týdně, pokud je otevřený zůstatek</string>
 </resources>

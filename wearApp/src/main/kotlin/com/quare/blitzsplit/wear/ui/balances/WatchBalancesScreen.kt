@@ -70,6 +70,9 @@ import com.quare.blitzsplit.wear.ui.theme.WearTheme
 import com.quare.blitzsplit.wear.ui.theme.moneyColorOf
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val PERMISSION_PREFERENCES = "wear_permissions"
+private const val KEY_NOTIFICATIONS_ASKED = "notifications_asked"
+
 @Composable
 fun WatchBalancesScreen(viewModel: WatchBalancesViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -104,9 +107,6 @@ private fun NotificationPermissionEffect() {
         launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }
-
-private const val PERMISSION_PREFERENCES = "wear_permissions"
-private const val KEY_NOTIFICATIONS_ASKED = "notifications_asked"
 
 // Why: "Sign out of this watch?", the one way to disconnect only the watch; the phone stays signed in.
 @Composable
@@ -189,11 +189,28 @@ fun WatchBalancesContent(
             state.lastSyncedAt?.let { syncedAt ->
                 item { UpdatedAtLine(syncedAt) }
             }
+            if (state.isSignOutScheduled) {
+                item { SignOutScheduledSection() }
+            }
             item {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     FilledTonalButton(
-                        onClick = { onEvent(WatchBalancesUiEvent.OnSignOutClicked) },
-                        label = { Text(stringResource(R.string.balances_sign_out)) },
+                        onClick = {
+                            onEvent(
+                                if (state.isSignOutScheduled) {
+                                    WatchBalancesUiEvent.OnCancelScheduledSignOutClicked
+                                } else {
+                                    WatchBalancesUiEvent.OnSignOutClicked
+                                },
+                            )
+                        },
+                        label = {
+                            Text(
+                                stringResource(
+                                    if (state.isSignOutScheduled) R.string.pair_cancel else R.string.balances_sign_out,
+                                ),
+                            )
+                        },
                     )
                 }
             }
@@ -362,6 +379,27 @@ private fun SettledMessage() {
     }
 }
 
+// Why: as the phone's Profile says it, while what the watch queued waits to go up; Cancel keeps it signed in.
+@Composable
+private fun SignOutScheduledSection() {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = stringResource(R.string.balances_sign_out_scheduled),
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = stringResource(R.string.balances_sign_out_scheduled_detail),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
 @Composable
 private fun UpdatedAtLine(syncedAt: Long) {
     val time = rememberDateTimeTextFormatter().toTimeText(syncedAt)
@@ -401,6 +439,7 @@ private fun createPreviewState(isSettled: Boolean): WatchBalancesUiState = Watch
     queuedChangeCount = if (isSettled) 0 else 1,
     lastSyncedAt = 1_795_000_000_000,
     isConfirmingSignOut = false,
+    isSignOutScheduled = false,
 )
 
 @WearPreviewDevices

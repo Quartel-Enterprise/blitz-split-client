@@ -44,6 +44,8 @@
     <string name="balances_sign_out">Đăng xuất</string>
     <string name="balances_sign_out_title">Đăng xuất khỏi đồng hồ này?</string>
     <string name="balances_sign_out_body">Dữ liệu của đồng hồ sẽ bị xóa sau khi các mục đang chờ được gửi đi. Điện thoại của bạn vẫn đăng nhập.</string>
+    <string name="balances_sign_out_scheduled">Đã lên lịch đăng xuất</string>
+    <string name="balances_sign_out_scheduled_detail">Sẽ đăng xuất ngay khi mọi thứ được tải lên</string>
     <string name="balances_settled_title">Không có khoản nào mở</string>
     <string name="balances_settled_body">Không ai nợ bạn và bạn không nợ ai. Nhóm và khoản chi mới sẽ tự hiện ở đây.</string>
     <string name="group_you_owe_person">bạn nợ %1$s</string>
@@ -68,10 +70,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">Đã nhận tiền</string>
     <string name="push_view_group">Xem nhóm</string>
-    <string name="push_channel_bills">Khoản chi</string>
-    <string name="push_channel_payments">Thanh toán và trả nợ</string>
-    <string name="push_channel_comments">Bình luận</string>
-    <string name="push_channel_people">Người và nhóm</string>
-    <string name="push_channel_requests">Yêu cầu trả tiền</string>
-    <string name="push_channel_reminders">Nhắc số dư chưa thanh toán</string>
 </resources>

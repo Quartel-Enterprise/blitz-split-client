@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s desactivó Simplificar deudas. Ahora %2$s te paga %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s desactivó Simplificar deudas. Ahora le pagas %3$s a %2$s.</string>
     <string name="push_debts_unsimplified_other">%1$s desactivó Simplificar deudas. Mira cómo quedó para ti.</string>
+    <string name="notification_settings_bills">Gastos</string>
+    <string name="notification_settings_bills_detail">Gastos nuevos, editados o eliminados en los que participas</string>
+    <string name="notification_settings_payments">Pagos y cuentas saldadas</string>
+    <string name="notification_settings_payments_detail">Pagos hacia ti o desde ti, y deudas simplificadas</string>
+    <string name="notification_settings_comments">Comentarios</string>
+    <string name="notification_settings_comments_detail">En gastos en los que participas y en hilos donde escribiste</string>
+    <string name="notification_settings_people_and_groups">Personas y grupos</string>
+    <string name="notification_settings_people_and_groups_detail">Quién se une o sale de tus grupos, y qué cambia en ellos</string>
+    <string name="notification_settings_payment_requests">Cobros</string>
+    <string name="notification_settings_payment_requests_detail">Cuando alguien te pide que pagues</string>
+    <string name="notification_settings_balance_reminder">Recordatorio de saldo pendiente</string>
+    <string name="notification_settings_balance_reminder_detail">Una vez por semana, si hay un saldo pendiente</string>
 </resources>

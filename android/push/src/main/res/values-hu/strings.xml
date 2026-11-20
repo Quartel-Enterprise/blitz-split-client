@@ -21,4 +21,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s kikapcsolta az Adósságok egyszerűsítését. Most %2$s fizet neked: %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s kikapcsolta az Adósságok egyszerűsítését. Most %3$s összeget fizetsz neki: %2$s.</string>
     <string name="push_debts_unsimplified_other">%1$s kikapcsolta az Adósságok egyszerűsítését. Nézd meg, mit jelent ez neked.</string>
+    <string name="notification_settings_bills">Számlák</string>
+    <string name="notification_settings_bills_detail">Új, szerkesztett vagy törölt számlák, amelyekben benne vagy</string>
+    <string name="notification_settings_payments">Fizetések és elszámolások</string>
+    <string name="notification_settings_payments_detail">Neked szóló vagy tőled érkező fizetések és egyszerűsített tartozások</string>
+    <string name="notification_settings_comments">Hozzászólások</string>
+    <string name="notification_settings_comments_detail">Azokon a számlákon, amelyekben benne vagy, és azokban a beszélgetésekben, amelyekbe írtál</string>
+    <string name="notification_settings_people_and_groups">Emberek és csoportok</string>
+    <string name="notification_settings_people_and_groups_detail">Ki csatlakozik a csoportjaidhoz vagy lép ki belőlük, és mi változik bennük</string>
+    <string name="notification_settings_payment_requests">Fizetési kérések</string>
+    <string name="notification_settings_payment_requests_detail">Amikor valaki fizetést kér tőled</string>
+    <string name="notification_settings_balance_reminder">Emlékeztető nyitott egyenlegről</string>
+    <string name="notification_settings_balance_reminder_detail">Hetente egyszer, ha van nyitott egyenleg</string>
 </resources>

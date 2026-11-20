@@ -21,4 +21,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s “দেনা সহজ করুন” বন্ধ করেছেন। এখন %2$s আপনাকে %3$s দেবেন।</string>
     <string name="push_debts_unsimplified_from_you">%1$s “দেনা সহজ করুন” বন্ধ করেছেন। এখন আপনি %2$s-কে %3$s দেবেন।</string>
     <string name="push_debts_unsimplified_other">%1$s “দেনা সহজ করুন” বন্ধ করেছেন। আপনার জন্য কী বদলেছে দেখুন।</string>
+    <string name="notification_settings_bills">বিল</string>
+    <string name="notification_settings_bills_detail">আপনি আছেন এমন নতুন, সম্পাদিত বা মুছে ফেলা বিল</string>
+    <string name="notification_settings_payments">পেমেন্ট ও হিসাব মেটানো</string>
+    <string name="notification_settings_payments_detail">আপনাকে করা বা আপনার করা পেমেন্ট, এবং সহজ করা দেনা</string>
+    <string name="notification_settings_comments">মন্তব্য</string>
+    <string name="notification_settings_comments_detail">আপনি আছেন এমন বিলে এবং আপনি যেসব আলোচনায় লিখেছেন</string>
+    <string name="notification_settings_people_and_groups">ব্যক্তি ও গ্রুপ</string>
+    <string name="notification_settings_people_and_groups_detail">আপনার গ্রুপে কে যোগ দিলেন বা ছেড়ে গেলেন, এবং সেখানে কী বদলাল</string>
+    <string name="notification_settings_payment_requests">পেমেন্টের অনুরোধ</string>
+    <string name="notification_settings_payment_requests_detail">কেউ আপনাকে পরিশোধ করতে বললে</string>
+    <string name="notification_settings_balance_reminder">বকেয়া ব্যালেন্সের রিমাইন্ডার</string>
+    <string name="notification_settings_balance_reminder_detail">সপ্তাহে একবার, যদি বকেয়া ব্যালেন্স থাকে</string>
 </resources>

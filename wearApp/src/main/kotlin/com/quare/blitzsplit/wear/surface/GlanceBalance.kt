@@ -4,25 +4,26 @@ import android.content.Context
 import com.quare.blitzsplit.android.designsystem.format.MoneyFormatter
 import com.quare.blitzsplit.android.designsystem.format.SatsText
 import com.quare.blitzsplit.android.designsystem.format.withLatinDigits
-import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
-import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchBalanceDirection
+import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchTotal
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs
 import com.quare.blitzsplit.android.designsystem.R as DesignR
 
 /*
- * Why: what the Tile (15.1) and the complications (15.2) show: the overall balance in the currency with the most
- * groups, the first of PeopleBalances' totals, as the watch's Balances shows it on top; null when nothing is open.
+ * Why: how the Tile (15.1) and the complications (15.2) write the open total WatchGlance picks, the one Balances shows
+ * on top.
  */
 class GlanceBalance(
-    private val total: PeopleTotal,
+    private val total: WatchTotal,
     private val money: MoneyFormatter,
+    private val showsSats: Boolean,
 ) {
     // Why: the word and the color the watch's Balances gives the same total, "Even overall" when open pairs offset.
     val direction: WatchBalanceDirection
-        get() = WatchBalanceDirection.of(total.netMinor)
+        get() = total.direction
 
     val netText: String
         get() = money.toSignedText(total.netMinor)
@@ -36,17 +37,35 @@ class GlanceBalance(
     val hasToPay: Boolean
         get() = total.toPayMinor > 0
 
-    // Why: "+186", the short complication's whole units with the sign, since the word and the cents don't fit.
+    /*
+     * Why: "+186", the short complication's whole units with the sign, since the word and the cents don't fit. Under
+     * one unit it keeps the cents ("−0,50"), never a "−0" that hides a debt; bitcoin in sats counts whole sats.
+     */
     val shortText: String
         get() {
+            val net = abs(total.netMinor)
+            val fractionDigits = if (total.currency == GroupCurrency.BTC &&
+                showsSats
+            ) {
+                0
+            } else {
+                total.currency.fractionDigits
+            }
             var minorPerUnit = 1L
-            repeat(total.currency.fractionDigits) { minorPerUnit *= DECIMAL_BASE }
-            val whole = abs(total.netMinor) / minorPerUnit
-            val digits = NumberFormat.getIntegerInstance(Locale.getDefault().withLatinDigits()).format(whole)
-            return when {
-                total.netMinor > 0 -> "+$digits"
-                total.netMinor < 0 -> "−$digits"
-                else -> digits
+            repeat(fractionDigits) { minorPerUnit *= DECIMAL_BASE }
+            val format = NumberFormat.getNumberInstance(Locale.getDefault().withLatinDigits())
+            val digits = if (net >= minorPerUnit) {
+                format.maximumFractionDigits = 0
+                format.format(net / minorPerUnit)
+            } else {
+                format.minimumFractionDigits = fractionDigits
+                format.maximumFractionDigits = fractionDigits
+                format.format(net.toDouble() / minorPerUnit)
+            }
+            return when (direction) {
+                WatchBalanceDirection.TO_RECEIVE -> "+$digits"
+                WatchBalanceDirection.TO_PAY -> "−$digits"
+                WatchBalanceDirection.EVEN -> digits
             }
         }
 
@@ -55,19 +74,19 @@ class GlanceBalance(
 
         fun of(
             context: Context,
-            balances: PeopleBalances,
-        ): GlanceBalance? {
-            val total = balances.totals.firstOrNull { it.toReceiveMinor != 0L || it.toPayMinor != 0L } ?: return null
+            total: WatchTotal,
+            showsSats: Boolean,
+        ): GlanceBalance {
             val money = MoneyFormatter(
                 currency = total.currency,
-                showsSats = false,
+                showsSats = showsSats,
                 satsText = SatsText(
                     amount = context.getString(DesignR.string.designsystem_money_sats),
                     symbol = context.getString(DesignR.string.designsystem_money_sats_symbol),
                 ),
                 locale = Locale.getDefault(),
             )
-            return GlanceBalance(total, money)
+            return GlanceBalance(total, money, showsSats)
         }
     }
 }

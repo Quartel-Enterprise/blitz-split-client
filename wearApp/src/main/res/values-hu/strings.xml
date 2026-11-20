@@ -45,6 +45,8 @@
     <string name="balances_sign_out">Kijelentkezés</string>
     <string name="balances_sign_out_title">Kijelentkezel erről az óráról?</string>
     <string name="balances_sign_out_body">Az adatai törlődnek, amint elküldte, ami sorban áll. A telefonod bejelentkezve marad.</string>
+    <string name="balances_sign_out_scheduled">Kijelentkezés ütemezve</string>
+    <string name="balances_sign_out_scheduled_detail">Kijelentkezik, amint minden feltöltődött</string>
     <string name="balances_settled_title">Nincs nyitott tétel</string>
     <string name="balances_settled_body">Nem tartozol senkinek, és neked sem tartozik senki. Az új csoportok és számlák maguktól megjelennek itt.</string>
     <string name="group_you_owe_person">tartozol neki: %1$s</string>
@@ -69,10 +71,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">Megkaptam</string>
     <string name="push_view_group">Csoport megnyitása</string>
-    <string name="push_channel_bills">Számlák</string>
-    <string name="push_channel_payments">Fizetések és elszámolások</string>
-    <string name="push_channel_comments">Hozzászólások</string>
-    <string name="push_channel_people">Emberek és csoportok</string>
-    <string name="push_channel_requests">Fizetési kérések</string>
-    <string name="push_channel_reminders">Emlékeztető nyitott egyenlegről</string>
 </resources>

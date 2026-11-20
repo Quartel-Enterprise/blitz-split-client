@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s a désactivé Simplifier les dettes. Maintenant, %2$s te paie %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s a désactivé Simplifier les dettes. Maintenant, tu paies %3$s à %2$s.</string>
     <string name="push_debts_unsimplified_other">%1$s a désactivé Simplifier les dettes. Découvre ce que ça change pour toi.</string>
+    <string name="notification_settings_bills">Dépenses</string>
+    <string name="notification_settings_bills_detail">Dépenses ajoutées, modifiées ou supprimées auxquelles tu participes</string>
+    <string name="notification_settings_payments">Paiements et règlements</string>
+    <string name="notification_settings_payments_detail">Paiements envoyés ou reçus, et dettes simplifiées</string>
+    <string name="notification_settings_comments">Commentaires</string>
+    <string name="notification_settings_comments_detail">Sur les dépenses auxquelles tu participes et les fils où tu as écrit</string>
+    <string name="notification_settings_people_and_groups">Personnes et groupes</string>
+    <string name="notification_settings_people_and_groups_detail">Qui rejoint ou quitte tes groupes, et ce qui change dedans</string>
+    <string name="notification_settings_payment_requests">Demandes de paiement</string>
+    <string name="notification_settings_payment_requests_detail">Quand quelqu’un te demande de payer</string>
+    <string name="notification_settings_balance_reminder">Rappel de solde en cours</string>
+    <string name="notification_settings_balance_reminder_detail">Une fois par semaine, s’il y a un solde en cours</string>
 </resources>

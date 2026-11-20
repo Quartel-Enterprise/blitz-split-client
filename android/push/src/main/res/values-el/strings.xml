@@ -21,4 +21,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s απενεργοποίησε την Απλοποίηση χρεών. Τώρα %2$s σου πληρώνει %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s απενεργοποίησε την Απλοποίηση χρεών. Τώρα πληρώνεις %3$s σε %2$s.</string>
     <string name="push_debts_unsimplified_other">%1$s απενεργοποίησε την Απλοποίηση χρεών. Δες τι αλλάζει για σένα.</string>
+    <string name="notification_settings_bills">Έξοδα</string>
+    <string name="notification_settings_bills_detail">Νέα, επεξεργασμένα ή διαγραμμένα έξοδα στα οποία συμμετέχεις</string>
+    <string name="notification_settings_payments">Πληρωμές και εξοφλήσεις</string>
+    <string name="notification_settings_payments_detail">Πληρωμές προς ή από εσένα και απλοποιημένα χρέη</string>
+    <string name="notification_settings_comments">Σχόλια</string>
+    <string name="notification_settings_comments_detail">Σε έξοδα στα οποία συμμετέχεις και σε συζητήσεις όπου έγραψες</string>
+    <string name="notification_settings_people_and_groups">Άτομα και ομάδες</string>
+    <string name="notification_settings_people_and_groups_detail">Ποιος μπαίνει ή φεύγει από τις ομάδες σου και τι αλλάζει σε αυτές</string>
+    <string name="notification_settings_payment_requests">Αιτήματα πληρωμής</string>
+    <string name="notification_settings_payment_requests_detail">Όταν κάποιος σου ζητά να πληρώσεις</string>
+    <string name="notification_settings_balance_reminder">Υπενθύμιση ανοιχτού υπολοίπου</string>
+    <string name="notification_settings_balance_reminder_detail">Μία φορά την εβδομάδα, αν υπάρχει ανοιχτό υπόλοιπο</string>
 </resources>

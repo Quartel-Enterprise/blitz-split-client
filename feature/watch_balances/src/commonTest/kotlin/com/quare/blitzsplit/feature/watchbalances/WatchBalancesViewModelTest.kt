@@ -1,9 +1,12 @@
 package com.quare.blitzsplit.feature.watchbalances
 
+import com.quare.blitzsplit.core.account.domain.model.AccountSnapshot
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
+import com.quare.blitzsplit.core.model.AccountStatus
 import com.quare.blitzsplit.core.model.AvatarColor
 import com.quare.blitzsplit.core.model.GroupCurrency
+import com.quare.blitzsplit.core.model.RecoveryCodePrompt
 import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.sync.domain.model.FirstDownloadProgress
@@ -29,6 +32,8 @@ import kotlin.test.assertTrue
 
 class WatchBalancesViewModelTest {
     private var signOutCount = 0
+    private var cancelCount = 0
+    private lateinit var account: MutableStateFlow<AccountSnapshot>
 
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -484,18 +489,69 @@ class WatchBalancesViewModelTest {
             assertEquals(emptyList(), trackedEvents)
         }
 
+    @Test
+    fun `GIVEN the balances WHEN a sign out is scheduled THEN shows it is scheduled`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        account.value = accountOf(signOutScheduled = true)
+
+        // Then
+        assertTrue(viewModel.uiState.value.isSignOutScheduled)
+    }
+
+    @Test
+    fun `GIVEN a sign out scheduled WHEN Cancel is tapped THEN cancels it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(signOutScheduled = true)
+
+        // When
+        viewModel.onEvent(WatchBalancesUiEvent.OnCancelScheduledSignOutClicked)
+
+        // Then
+        assertEquals(1, cancelCount)
+        assertEquals(listOf("watch_sign_out_scheduled_cancelled"), trackedEvents.map { it.first })
+    }
+
+    @Test
+    fun `GIVEN a scheduled sign out WHEN it is cancelled elsewhere THEN no longer shows it`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(signOutScheduled = true)
+
+            // When
+            account.value = accountOf(signOutScheduled = false)
+
+            // Then
+            assertFalse(viewModel.uiState.value.isSignOutScheduled)
+        }
+
+    private fun accountOf(signOutScheduled: Boolean): AccountSnapshot = AccountSnapshot(
+        status = AccountStatus.Anonymous("watch-user"),
+        recoveryCode = null,
+        recoveryCodePrompt = RecoveryCodePrompt.SAVED,
+        email = null,
+        signOutWhenSynced = signOutScheduled,
+        awaitsFullSync = false,
+        inactivityExpiry = null,
+        hasLostAnonymousUser = false,
+    )
+
     private fun prepareScenario(
         balances: PeopleBalances? = balances(),
         money: Map<String, GroupMoney> = emptyMap(),
         download: FirstDownloadProgress? = null,
         syncedAt: Long? = 1_000L,
         online: Boolean = true,
+        signOutScheduled: Boolean = false,
     ) {
         peopleBalances = MutableStateFlow(balances)
         groupsMoney = MutableStateFlow(money)
         firstDownload = MutableStateFlow(download)
         lastSyncedAt = MutableStateFlow(syncedAt)
         isOnline = MutableStateFlow(online)
+        account = MutableStateFlow(accountOf(signOutScheduled))
         navigator = BackStackNavigator(startRoute = Route.WatchBalances)
         viewModel = WatchBalancesViewModel(
             navigator = navigator,
@@ -504,6 +560,8 @@ class WatchBalancesViewModelTest {
             observeFirstDownload = { firstDownload },
             observeLastSyncedAt = { lastSyncedAt },
             signOutWhenSynced = { signOutCount++ },
+            cancelSignOutWhenSynced = { cancelCount++ },
+            observeAccount = { account },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             trackEvent = { name, params -> trackedEvents += name to params },
         )

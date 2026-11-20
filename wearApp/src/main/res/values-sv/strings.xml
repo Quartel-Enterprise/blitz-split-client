@@ -45,6 +45,8 @@
     <string name="balances_sign_out">Logga ut</string>
     <string name="balances_sign_out_title">Logga ut från den här klockan?</string>
     <string name="balances_sign_out_body">Dess data raderas när det som väntar har skickats. Telefonen förblir inloggad.</string>
+    <string name="balances_sign_out_scheduled">Utloggning schemalagd</string>
+    <string name="balances_sign_out_scheduled_detail">Loggar ut så snart allt är uppladdat</string>
     <string name="balances_settled_title">Inget öppet</string>
     <string name="balances_settled_body">Du är inte skyldig något och ingen är skyldig dig. Nya grupper och utgifter dyker upp här av sig själva.</string>
     <string name="group_you_owe_person">du är skyldig %1$s</string>
@@ -69,10 +71,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">Mottaget</string>
     <string name="push_view_group">Visa grupp</string>
-    <string name="push_channel_bills">Utgifter</string>
-    <string name="push_channel_payments">Betalningar och uppgörelser</string>
-    <string name="push_channel_comments">Kommentarer</string>
-    <string name="push_channel_people">Personer och grupper</string>
-    <string name="push_channel_requests">Betalningsförfrågningar</string>
-    <string name="push_channel_reminders">Påminnelse om öppet saldo</string>
 </resources>

@@ -7,7 +7,7 @@ import android.os.Build
 import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.quare.blitzsplit.BuildConfig
-import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
+import com.quare.blitzsplit.android.push.PushChannel
 import com.quare.blitzsplit.android.push.PushTokens
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 

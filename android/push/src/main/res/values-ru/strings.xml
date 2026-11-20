@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s выключил(а) «Упростить долги». Теперь %2$s платит тебе %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s выключил(а) «Упростить долги». Теперь ты платишь %3$s участнику %2$s.</string>
     <string name="push_debts_unsimplified_other">%1$s выключил(а) «Упростить долги». Посмотри, что изменилось для тебя.</string>
+    <string name="notification_settings_bills">Счета</string>
+    <string name="notification_settings_bills_detail">Новые, изменённые или удалённые счета, в которых ты участвуешь</string>
+    <string name="notification_settings_payments">Платежи и расчёты</string>
+    <string name="notification_settings_payments_detail">Платежи тебе или от тебя и упрощённые долги</string>
+    <string name="notification_settings_comments">Комментарии</string>
+    <string name="notification_settings_comments_detail">В счетах, где ты участвуешь, и в обсуждениях, где ты писал(а)</string>
+    <string name="notification_settings_people_and_groups">Люди и группы</string>
+    <string name="notification_settings_people_and_groups_detail">Кто присоединяется к твоим группам или выходит из них и что в них меняется</string>
+    <string name="notification_settings_payment_requests">Запросы оплаты</string>
+    <string name="notification_settings_payment_requests_detail">Когда кто-то просит тебя заплатить</string>
+    <string name="notification_settings_balance_reminder">Напоминание об открытом балансе</string>
+    <string name="notification_settings_balance_reminder_detail">Раз в неделю, если есть открытый баланс</string>
 </resources>

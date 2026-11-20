@@ -21,4 +21,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s: إيقاف تبسيط الديون. الآن على %2$s لك %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s: إيقاف تبسيط الديون. الآن عليك لـ %2$s %3$s.</string>
     <string name="push_debts_unsimplified_other">%1$s: إيقاف تبسيط الديون. يمكن الاطلاع على وضعك.</string>
+    <string name="notification_settings_bills">الفواتير</string>
+    <string name="notification_settings_bills_detail">الفواتير الجديدة أو المعدّلة أو المحذوفة التي تشملك</string>
+    <string name="notification_settings_payments">الدفعات والتسويات</string>
+    <string name="notification_settings_payments_detail">الدفعات منك أو إليك، والديون المبسّطة</string>
+    <string name="notification_settings_comments">التعليقات</string>
+    <string name="notification_settings_comments_detail">على الفواتير التي تشملك والمحادثات التي شاركت فيها</string>
+    <string name="notification_settings_people_and_groups">الأشخاص والمجموعات</string>
+    <string name="notification_settings_people_and_groups_detail">من ينضم إلى مجموعاتك أو يغادرها، وما يتغير فيها</string>
+    <string name="notification_settings_payment_requests">طلبات الدفع</string>
+    <string name="notification_settings_payment_requests_detail">عندما يطلب منك شخص ما الدفع</string>
+    <string name="notification_settings_balance_reminder">تذكير بالرصيد المفتوح</string>
+    <string name="notification_settings_balance_reminder_detail">مرة في الأسبوع، إذا وُجد رصيد مفتوح</string>
 </resources>

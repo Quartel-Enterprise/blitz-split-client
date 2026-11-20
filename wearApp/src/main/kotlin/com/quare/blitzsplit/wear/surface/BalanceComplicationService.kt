@@ -13,6 +13,9 @@ import androidx.wear.watchface.complications.data.ShortTextComplicationData
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
+import com.quare.blitzsplit.feature.watchbalances.presentation.mapper.WatchGlance
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import com.quare.blitzsplit.wear.MainActivity
 import com.quare.blitzsplit.wear.R
@@ -30,6 +33,8 @@ class BalanceComplicationService : SuspendingComplicationDataSourceService() {
     }
 
     private val observePeopleBalances: ObservePeopleBalances by inject()
+    private val observeBitcoinInSats: ObserveBitcoinInSats by inject()
+    private val observeProfile: ObserveProfile by inject()
 
     override fun getPreviewData(type: ComplicationType): ComplicationData? = when (type) {
         ComplicationType.SHORT_TEXT -> shortTextOf(
@@ -43,20 +48,39 @@ class BalanceComplicationService : SuspendingComplicationDataSourceService() {
     }
 
     override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? {
-        val balance = GlanceBalance.of(this, observePeopleBalances().first())
+        val glance = WatchGlance.of(
+            hasProfile = observeProfile().first() != null,
+            balances = observePeopleBalances().first(),
+        )
+        val balance = (glance as? WatchGlance.Open)?.let {
+            GlanceBalance.of(this, it.total, showsSats = observeBitcoinInSats().first())
+        }
+        // Why: a watch with no account shows the app's icon alone, no number, until it connects.
+        val isConnected = glance != WatchGlance.NotConnected
         return when (request.complicationType) {
             ComplicationType.SHORT_TEXT -> shortTextOf(
-                text = balance?.shortText ?: "0",
-                description = balance?.netText ?: getString(R.string.tile_settled_title),
-            )
-
-            ComplicationType.LONG_TEXT -> longTextOf(
-                when {
-                    balance == null -> getString(R.string.tile_settled_title)
-                    balance.hasToPay -> getString(R.string.complication_you_owe, balance.toPayText)
-                    else -> getString(R.string.complication_owed_to_you, balance.toReceiveText)
+                text = if (isConnected) balance?.shortText ?: "0" else "",
+                description = when {
+                    !isConnected -> getString(R.string.pair_connect)
+                    balance != null -> balance.netText
+                    else -> getString(R.string.tile_settled_title)
                 },
             )
+
+            ComplicationType.LONG_TEXT -> if (!isConnected) {
+                longTextOf(
+                    text = "",
+                    description = getString(R.string.pair_connect),
+                )
+            } else {
+                longTextOf(
+                    when {
+                        balance == null -> getString(R.string.tile_settled_title)
+                        balance.hasToPay -> getString(R.string.complication_you_owe, balance.toPayText)
+                        else -> getString(R.string.complication_owed_to_you, balance.toReceiveText)
+                    },
+                )
+            }
 
             else -> null
         }
@@ -73,10 +97,13 @@ class BalanceComplicationService : SuspendingComplicationDataSourceService() {
         .setTapAction(openApp())
         .build()
 
-    private fun longTextOf(text: String): ComplicationData = LongTextComplicationData
+    private fun longTextOf(
+        text: String,
+        description: String = text,
+    ): ComplicationData = LongTextComplicationData
         .Builder(
             text = PlainComplicationText.Builder(text).build(),
-            contentDescription = PlainComplicationText.Builder(text).build(),
+            contentDescription = PlainComplicationText.Builder(description).build(),
         ).setMonochromaticImage(createIcon())
         .setTapAction(openApp())
         .build()

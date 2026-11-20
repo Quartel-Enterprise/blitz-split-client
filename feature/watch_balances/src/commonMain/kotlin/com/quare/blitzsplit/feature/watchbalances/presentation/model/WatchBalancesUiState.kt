@@ -14,6 +14,8 @@ data class WatchBalancesUiState(
     val lastSyncedAt: Long?,
     // Why: "Sign out of this watch?" shows; the phone stays signed in.
     val isConfirmingSignOut: Boolean,
+    // Why: "Sign out scheduled" with Cancel in place of "Sign out", while what the watch queued waits to go up.
+    val isSignOutScheduled: Boolean,
 ) {
     // Why: 15.3b "Nothing open": you owe nothing and nobody owes you.
     val isAllSettled: Boolean

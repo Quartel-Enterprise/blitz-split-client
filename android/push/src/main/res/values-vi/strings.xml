@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s đã tắt Đơn giản hóa nợ. Giờ %2$s trả bạn %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s đã tắt Đơn giản hóa nợ. Giờ bạn trả %2$s %3$s.</string>
     <string name="push_debts_unsimplified_other">%1$s đã tắt Đơn giản hóa nợ. Xem thay đổi với bạn thế nào.</string>
+    <string name="notification_settings_bills">Khoản chi</string>
+    <string name="notification_settings_bills_detail">Khoản chi mới, đã sửa hoặc đã xóa có bạn tham gia</string>
+    <string name="notification_settings_payments">Thanh toán và trả nợ</string>
+    <string name="notification_settings_payments_detail">Khoản thanh toán đến hoặc từ bạn, và nợ đã đơn giản hóa</string>
+    <string name="notification_settings_comments">Bình luận</string>
+    <string name="notification_settings_comments_detail">Trong các khoản chi có bạn và các chuỗi bạn đã viết</string>
+    <string name="notification_settings_people_and_groups">Người và nhóm</string>
+    <string name="notification_settings_people_and_groups_detail">Ai tham gia hoặc rời nhóm của bạn, và những gì thay đổi trong nhóm</string>
+    <string name="notification_settings_payment_requests">Yêu cầu trả tiền</string>
+    <string name="notification_settings_payment_requests_detail">Khi ai đó yêu cầu bạn trả tiền</string>
+    <string name="notification_settings_balance_reminder">Nhắc số dư chưa thanh toán</string>
+    <string name="notification_settings_balance_reminder_detail">Mỗi tuần một lần, nếu còn số dư chưa thanh toán</string>
 </resources>

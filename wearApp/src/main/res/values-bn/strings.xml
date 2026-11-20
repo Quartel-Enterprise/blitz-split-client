@@ -45,6 +45,8 @@
     <string name="balances_sign_out">সাইন আউট</string>
     <string name="balances_sign_out_title">এই ঘড়ি থেকে সাইন আউট করবেন?</string>
     <string name="balances_sign_out_body">অপেক্ষায় থাকা সব পাঠানো হলে এর ডেটা মুছে যাবে। আপনার ফোনে সাইন ইন থাকবে।</string>
+    <string name="balances_sign_out_scheduled">সাইন আউট নির্ধারিত হয়েছে</string>
+    <string name="balances_sign_out_scheduled_detail">সবকিছু আপলোড হলেই সাইন আউট হবে</string>
     <string name="balances_settled_title">কিছু বাকি নেই</string>
     <string name="balances_settled_body">কেউ আপনাকে কিছু দেবেন না, আপনিও কাউকে কিছু দেবেন না। নতুন গ্রুপ ও বিল এখানে নিজেই দেখা যাবে।</string>
     <string name="group_you_owe_person">আপনি %1$s-কে দেবেন</string>
@@ -69,10 +71,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">পেয়েছি</string>
     <string name="push_view_group">গ্রুপ দেখুন</string>
-    <string name="push_channel_bills">বিল</string>
-    <string name="push_channel_payments">পেমেন্ট ও হিসাব মেটানো</string>
-    <string name="push_channel_comments">মন্তব্য</string>
-    <string name="push_channel_people">ব্যক্তি ও গ্রুপ</string>
-    <string name="push_channel_requests">পেমেন্টের অনুরোধ</string>
-    <string name="push_channel_reminders">বকেয়া ব্যালেন্সের রিমাইন্ডার</string>
 </resources>

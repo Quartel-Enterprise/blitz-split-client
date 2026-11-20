@@ -1,10 +1,9 @@
-package com.quare.blitzsplit.android.feature.notificationsettings
+package com.quare.blitzsplit.android.push
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.StringRes
-import com.quare.blitzsplit.android.push.PushChannelIds
 import com.quare.blitzsplit.core.model.NotificationType
 
 /*

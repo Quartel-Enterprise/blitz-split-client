@@ -21,4 +21,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s نے “قرض آسان کریں” بند کیا۔ اب %2$s آپ کو %3$s دیں گے۔</string>
     <string name="push_debts_unsimplified_from_you">%1$s نے “قرض آسان کریں” بند کیا۔ اب آپ %2$s کو %3$s دیں گے۔</string>
     <string name="push_debts_unsimplified_other">%1$s نے “قرض آسان کریں” بند کیا۔ دیکھیں آپ کے لیے کیا بدلا۔</string>
+    <string name="notification_settings_bills">خرچ</string>
+    <string name="notification_settings_bills_detail">جن خرچوں میں آپ شامل ہیں، ان کا نیا آنا، ترمیم ہونا یا حذف ہونا</string>
+    <string name="notification_settings_payments">ادائیگیاں اور حساب برابر</string>
+    <string name="notification_settings_payments_detail">آپ کو یا آپ سے ہونے والی ادائیگیاں، اور آسان کیے گئے قرض</string>
+    <string name="notification_settings_comments">تبصرے</string>
+    <string name="notification_settings_comments_detail">جن خرچوں میں آپ شامل ہیں اور جن گفتگوؤں میں آپ نے لکھا ہے، ان پر</string>
+    <string name="notification_settings_people_and_groups">لوگ اور گروپ</string>
+    <string name="notification_settings_people_and_groups_detail">کون آپ کے گروپوں میں شامل ہوتا ہے یا انہیں چھوڑتا ہے، اور ان میں کیا بدلتا ہے</string>
+    <string name="notification_settings_payment_requests">ادائیگی کی درخواستیں</string>
+    <string name="notification_settings_payment_requests_detail">جب کوئی آپ سے ادائیگی کرنے کو کہے</string>
+    <string name="notification_settings_balance_reminder">باقی بیلنس کی یاد دہانی</string>
+    <string name="notification_settings_balance_reminder_detail">ہفتے میں ایک بار، اگر کوئی بیلنس باقی ہو</string>
 </resources>

@@ -46,6 +46,8 @@
     <string name="balances_sign_out">Esci</string>
     <string name="balances_sign_out_title">Uscire dall’account su questo orologio?</string>
     <string name="balances_sign_out_body">I suoi dati vengono cancellati dopo l’invio di ciò che è in coda. Il telefono resta connesso.</string>
+    <string name="balances_sign_out_scheduled">Uscita programmata</string>
+    <string name="balances_sign_out_scheduled_detail">L’uscita avviene appena tutto è caricato</string>
     <string name="balances_settled_title">Niente in sospeso</string>
     <string name="balances_settled_body">Non devi nulla e nessuno ti deve nulla. Nuovi gruppi e spese compaiono qui da soli.</string>
     <string name="group_you_owe_person">devi a %1$s</string>
@@ -70,10 +72,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">Ricevuto</string>
     <string name="push_view_group">Vedi gruppo</string>
-    <string name="push_channel_bills">Spese</string>
-    <string name="push_channel_payments">Pagamenti e saldi</string>
-    <string name="push_channel_comments">Commenti</string>
-    <string name="push_channel_people">Persone e gruppi</string>
-    <string name="push_channel_requests">Richieste di pagamento</string>
-    <string name="push_channel_reminders">Promemoria saldo aperto</string>
 </resources>

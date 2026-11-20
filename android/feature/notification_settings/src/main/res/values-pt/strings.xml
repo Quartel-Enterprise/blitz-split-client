@@ -17,17 +17,5 @@
     <string name="notification_settings_in_app">No app</string>
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">O push manda uma notificação para este aparelho. No app marca como novo no sino e na Atividade; desligado, ainda aparece na Atividade, já lido.</string>
-    <string name="notification_settings_bills">Contas</string>
-    <string name="notification_settings_bills_detail">Contas novas, editadas ou apagadas em que você está</string>
-    <string name="notification_settings_payments">Pagamentos e acertos</string>
-    <string name="notification_settings_payments_detail">Pagamentos com você e dívidas simplificadas</string>
-    <string name="notification_settings_comments">Comentários</string>
-    <string name="notification_settings_comments_detail">Em contas suas e conversas em que você escreveu</string>
-    <string name="notification_settings_people_and_groups">Pessoas e grupos</string>
-    <string name="notification_settings_people_and_groups_detail">Quem entra ou sai dos seus grupos e o que muda neles</string>
-    <string name="notification_settings_payment_requests">Cobranças</string>
-    <string name="notification_settings_payment_requests_detail">Quando alguém te cobra</string>
-    <string name="notification_settings_balance_reminder">Lembrete de saldo em aberto</string>
-    <string name="notification_settings_balance_reminder_detail">Uma vez por semana, se houver saldo em aberto</string>
     <string name="notification_settings_footer">Os avisos chegam quando há internet. Para silenciar um grupo, use o menu dentro dele.</string>
 </resources>

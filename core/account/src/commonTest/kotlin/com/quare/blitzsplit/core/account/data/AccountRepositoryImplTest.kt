@@ -1967,6 +1967,43 @@ class AccountRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a Google account with a scheduled sign out WHEN it comes back anonymous THEN drops the schedule`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+            remote.sessionUsers.value = googleUser
+            repository.ensureRegistered()
+            repository.updateSignOutWhenSynced(true)
+            remote.sessionUsers.value = googleUser.copy(
+                socialProvider = null,
+                linkedProviders = emptyList(),
+            )
+
+            // When
+            repository.ensureRegistered()
+
+            // Then
+            val account = repository.observeAccount().first()
+            assertEquals(AccountStatus.Anonymous("user-1"), account.status)
+            assertFalse(account.signOutWhenSynced)
+        }
+
+    @Test
+    fun `GIVEN an anonymous account with a scheduled sign out WHEN ensuring registration THEN keeps the schedule`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = anonymousUser)
+            repository.ensureRegistered()
+            repository.updateSignOutWhenSynced(true)
+
+            // When
+            repository.ensureRegistered()
+
+            // Then
+            assertTrue(repository.observeAccount().first().signOutWhenSynced)
+        }
+
+    @Test
     fun `GIVEN a Google account with a scheduled sign out WHEN signing out THEN ends the session as local only`() =
         runTest {
             // Given

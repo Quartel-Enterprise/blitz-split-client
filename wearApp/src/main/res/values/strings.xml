@@ -45,6 +45,8 @@
     <string name="balances_sign_out">Sign out</string>
     <string name="balances_sign_out_title">Sign out of this watch?</string>
     <string name="balances_sign_out_body">Its data is erased once what it queued is sent. Your phone stays signed in.</string>
+    <string name="balances_sign_out_scheduled">Sign out scheduled</string>
+    <string name="balances_sign_out_scheduled_detail">Signs out as soon as everything is uploaded</string>
     <string name="balances_settled_title">Nothing open</string>
     <string name="balances_settled_body">You owe nothing and nobody owes you. New groups and bills show up here on their own.</string>
     <string name="group_you_owe_person">you owe %1$s</string>
@@ -69,10 +71,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">Received</string>
     <string name="push_view_group">View group</string>
-    <string name="push_channel_bills">Bills</string>
-    <string name="push_channel_payments">Payments and settle-ups</string>
-    <string name="push_channel_comments">Comments</string>
-    <string name="push_channel_people">People and groups</string>
-    <string name="push_channel_requests">Payment requests</string>
-    <string name="push_channel_reminders">Open balance reminder</string>
 </resources>

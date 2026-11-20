@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.watchbalances.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -9,6 +10,7 @@ import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastSyncedAt
+import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
 import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.feature.watchbalances.presentation.mapper.WatchBalancesMapper
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
 
 /*
@@ -29,6 +32,8 @@ import software.quare.connectivity.NetworkConnectivityObserver
 class WatchBalancesViewModel(
     private val navigator: Navigator,
     private val signOutWhenSynced: SignOutWhenSynced,
+    private val cancelSignOutWhenSynced: CancelSignOutWhenSynced,
+    observeAccount: ObserveAccount,
     observePeopleBalances: ObservePeopleBalances,
     observeGroupsMoney: ObserveGroupsMoney,
     observeFirstDownload: ObserveFirstDownload,
@@ -46,6 +51,7 @@ class WatchBalancesViewModel(
                 queuedChangeCount = 0,
                 lastSyncedAt = null,
                 isConfirmingSignOut = false,
+                isSignOutScheduled = false,
             ),
         )
 
@@ -68,6 +74,9 @@ class WatchBalancesViewModel(
         }.launchIn(viewModelScope)
         observeLastSyncedAt()
             .onEach { syncedAt -> uiState.update { it.copy(lastSyncedAt = syncedAt) } }
+            .launchIn(viewModelScope)
+        observeAccount()
+            .onEach { account -> uiState.update { it.copy(isSignOutScheduled = account.signOutWhenSynced) } }
             .launchIn(viewModelScope)
         connectivityObserver
             .observe()
@@ -103,6 +112,8 @@ class WatchBalancesViewModel(
             WatchBalancesUiEvent.OnSignOutConfirmed -> signOut()
 
             WatchBalancesUiEvent.OnSignOutDismissed -> uiState.update { it.copy(isConfirmingSignOut = false) }
+
+            WatchBalancesUiEvent.OnCancelScheduledSignOutClicked -> viewModelScope.launch { cancelSignOutWhenSynced() }
         }
     }
 }

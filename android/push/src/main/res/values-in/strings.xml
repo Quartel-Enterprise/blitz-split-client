@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s mematikan Sederhanakan utang. Sekarang %2$s membayar %3$s ke kamu.</string>
     <string name="push_debts_unsimplified_from_you">%1$s mematikan Sederhanakan utang. Sekarang kamu membayar %3$s ke %2$s.</string>
     <string name="push_debts_unsimplified_other">%1$s mematikan Sederhanakan utang. Lihat bagaimana pengaruhnya untukmu.</string>
+    <string name="notification_settings_bills">Tagihan</string>
+    <string name="notification_settings_bills_detail">Tagihan baru, diedit, atau dihapus yang melibatkanmu</string>
+    <string name="notification_settings_payments">Pembayaran dan pelunasan</string>
+    <string name="notification_settings_payments_detail">Pembayaran ke atau dari kamu, dan utang yang disederhanakan</string>
+    <string name="notification_settings_comments">Komentar</string>
+    <string name="notification_settings_comments_detail">Di tagihan yang melibatkanmu dan diskusi tempat kamu menulis</string>
+    <string name="notification_settings_people_and_groups">Orang dan grup</string>
+    <string name="notification_settings_people_and_groups_detail">Siapa yang bergabung atau keluar dari grupmu, dan apa yang berubah di sana</string>
+    <string name="notification_settings_payment_requests">Permintaan pembayaran</string>
+    <string name="notification_settings_payment_requests_detail">Saat seseorang memintamu membayar</string>
+    <string name="notification_settings_balance_reminder">Pengingat saldo terbuka</string>
+    <string name="notification_settings_balance_reminder_detail">Seminggu sekali, jika ada saldo terbuka</string>
 </resources>

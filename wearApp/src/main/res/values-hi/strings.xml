@@ -45,6 +45,8 @@
     <string name="balances_sign_out">साइन आउट करें</string>
     <string name="balances_sign_out_title">इस वॉच से साइन आउट करें?</string>
     <string name="balances_sign_out_body">कतार में रखा सब भेजे जाने के बाद इसका डेटा मिट जाएगा। आपका फ़ोन साइन इन रहेगा।</string>
+    <string name="balances_sign_out_scheduled">साइन आउट तय है</string>
+    <string name="balances_sign_out_scheduled_detail">सब कुछ अपलोड होते ही साइन आउट हो जाएगा</string>
     <string name="balances_settled_title">कुछ बाकी नहीं</string>
     <string name="balances_settled_body">न किसी पर आपका बकाया है, न आप पर किसी का। नए ग्रुप और खर्च यहां अपने आप दिखेंगे।</string>
     <string name="group_you_owe_person">आपको %1$s को देने हैं</string>
@@ -69,10 +71,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">पैसे मिल गए</string>
     <string name="push_view_group">ग्रुप देखें</string>
-    <string name="push_channel_bills">खर्च</string>
-    <string name="push_channel_payments">भुगतान और हिसाब</string>
-    <string name="push_channel_comments">टिप्पणियां</string>
-    <string name="push_channel_people">लोग और ग्रुप</string>
-    <string name="push_channel_requests">भुगतान अनुरोध</string>
-    <string name="push_channel_reminders">बाकी बैलेंस का रिमाइंडर</string>
 </resources>

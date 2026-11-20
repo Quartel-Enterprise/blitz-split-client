@@ -28,4 +28,9 @@ sealed interface WatchBalancesUiEvent : UiEvent {
     data object OnSignOutDismissed : WatchBalancesUiEvent {
         override val analytics: EventAnalytics = EventAnalytics.Automatic("watch_sign_out_cancelled")
     }
+
+    // Why: Cancel on "Sign out scheduled": the watch stays signed in.
+    data object OnCancelScheduledSignOutClicked : WatchBalancesUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Automatic("watch_sign_out_scheduled_cancelled")
+    }
 }

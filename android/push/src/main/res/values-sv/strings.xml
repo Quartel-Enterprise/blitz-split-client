@@ -22,4 +22,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s stängde av Förenkla skulder. Nu betalar %2$s dig %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s stängde av Förenkla skulder. Nu betalar du %2$s %3$s.</string>
     <string name="push_debts_unsimplified_other">%1$s stängde av Förenkla skulder. Se hur det blir för dig.</string>
+    <string name="notification_settings_bills">Utgifter</string>
+    <string name="notification_settings_bills_detail">Nya, redigerade eller raderade utgifter du är med i</string>
+    <string name="notification_settings_payments">Betalningar och uppgörelser</string>
+    <string name="notification_settings_payments_detail">Betalningar till eller från dig, och förenklade skulder</string>
+    <string name="notification_settings_comments">Kommentarer</string>
+    <string name="notification_settings_comments_detail">På utgifter du är med i och trådar du har skrivit i</string>
+    <string name="notification_settings_people_and_groups">Personer och grupper</string>
+    <string name="notification_settings_people_and_groups_detail">Vem som går med i eller lämnar dina grupper, och vad som ändras i dem</string>
+    <string name="notification_settings_payment_requests">Betalningsförfrågningar</string>
+    <string name="notification_settings_payment_requests_detail">När någon ber dig att betala</string>
+    <string name="notification_settings_balance_reminder">Påminnelse om öppet saldo</string>
+    <string name="notification_settings_balance_reminder_detail">En gång i veckan, om det finns ett öppet saldo</string>
 </resources>

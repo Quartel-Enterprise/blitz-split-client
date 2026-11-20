@@ -421,7 +421,8 @@ class SyncCoordinator(
 
     /*
      * Why: the phone schedules it only for a Google or Apple account, whose profile comes back with it; a watch also for
-     * an anonymous one, which it connects again from the phone. The schedule is read last, right before the session
+     * an anonymous one, which it connects again from the phone. A Google or Apple one that comes back anonymous drops
+     * its schedule (AccountRepositoryImpl), so the phone never signs out of an anonymous account. The schedule is read last, right before the session
      * ends, so a cancel up to then still keeps it.
      */
     private suspend fun signOutIfScheduledAndSynced() {

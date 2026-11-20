@@ -46,6 +46,8 @@
     <string name="balances_sign_out">Se déconnecter</string>
     <string name="balances_sign_out_title">Se déconnecter de cette montre ?</string>
     <string name="balances_sign_out_body">Ses données sont effacées une fois ses modifications en attente envoyées. Ton téléphone reste connecté.</string>
+    <string name="balances_sign_out_scheduled">Déconnexion programmée</string>
+    <string name="balances_sign_out_scheduled_detail">Te déconnecte dès que tout est envoyé</string>
     <string name="balances_settled_title">Rien en cours</string>
     <string name="balances_settled_body">Tu ne dois rien et personne ne te doit rien. Les nouveaux groupes et dépenses apparaissent ici tout seuls.</string>
     <string name="group_you_owe_person">tu dois à %1$s</string>
@@ -70,10 +72,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">Reçu</string>
     <string name="push_view_group">Voir le groupe</string>
-    <string name="push_channel_bills">Dépenses</string>
-    <string name="push_channel_payments">Paiements et règlements</string>
-    <string name="push_channel_comments">Commentaires</string>
-    <string name="push_channel_people">Personnes et groupes</string>
-    <string name="push_channel_requests">Demandes de paiement</string>
-    <string name="push_channel_reminders">Rappel de solde en cours</string>
 </resources>

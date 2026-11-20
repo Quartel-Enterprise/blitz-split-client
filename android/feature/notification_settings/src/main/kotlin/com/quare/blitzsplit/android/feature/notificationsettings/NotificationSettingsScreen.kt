@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.platform.findSilencedNotificationChannels
 import com.quare.blitzsplit.android.platform.openNotificationChannelSettings
 import com.quare.blitzsplit.android.platform.rememberNotificationPermissionAccess
+import com.quare.blitzsplit.android.push.PushChannel
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiAction
 import com.quare.blitzsplit.feature.notificationsettings.presentation.model.NotificationSettingsUiEvent
 import com.quare.blitzsplit.feature.notificationsettings.presentation.viewmodel.NotificationSettingsViewModel

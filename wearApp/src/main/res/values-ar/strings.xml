@@ -49,6 +49,8 @@
     <string name="balances_sign_out">تسجيل الخروج</string>
     <string name="balances_sign_out_title">تسجيل الخروج من هذه الساعة؟</string>
     <string name="balances_sign_out_body">تُمحى بياناتها بعد إرسال ما في قائمة الانتظار. يبقى هاتفك مسجّل الدخول.</string>
+    <string name="balances_sign_out_scheduled">تسجيل الخروج مجدول</string>
+    <string name="balances_sign_out_scheduled_detail">يتم تسجيل الخروج فور رفع كل شيء</string>
     <string name="balances_settled_title">لا شيء مفتوح</string>
     <string name="balances_settled_body">لا شيء عليك ولا أحد عليه لك. تظهر المجموعات والفواتير الجديدة هنا تلقائيًا.</string>
     <string name="group_you_owe_person">عليك لـ %1$s</string>
@@ -73,10 +75,4 @@
     <!-- The watch's own pushes (15.7) -->
     <string name="push_received">تم الاستلام</string>
     <string name="push_view_group">عرض المجموعة</string>
-    <string name="push_channel_bills">الفواتير</string>
-    <string name="push_channel_payments">الدفعات والتسويات</string>
-    <string name="push_channel_comments">التعليقات</string>
-    <string name="push_channel_people">الأشخاص والمجموعات</string>
-    <string name="push_channel_requests">طلبات الدفع</string>
-    <string name="push_channel_reminders">تذكير بالرصيد المفتوح</string>
 </resources>

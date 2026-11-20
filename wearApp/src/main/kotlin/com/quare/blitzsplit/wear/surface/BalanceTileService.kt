@@ -22,6 +22,9 @@ import androidx.wear.tiles.TileBuilders
 import androidx.wear.tiles.TileService
 import com.google.common.util.concurrent.ListenableFuture
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
+import com.quare.blitzsplit.feature.watchbalances.presentation.mapper.WatchGlance
 import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchBalanceDirection
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import com.quare.blitzsplit.wear.MainActivity
@@ -54,10 +57,16 @@ class BalanceTileService : TileService() {
     private val freshness = 30.minutes
 
     private val observePeopleBalances: ObservePeopleBalances by inject()
+    private val observeBitcoinInSats: ObserveBitcoinInSats by inject()
+    private val observeProfile: ObserveProfile by inject()
 
     override fun onTileRequest(requestParams: RequestBuilders.TileRequest): ListenableFuture<TileBuilders.Tile> =
         SuspendToFutureAdapter.launchFuture {
-            val balance = GlanceBalance.of(this@BalanceTileService, observePeopleBalances().first())
+            val glance = WatchGlance.of(
+                hasProfile = observeProfile().first() != null,
+                balances = observePeopleBalances().first(),
+            )
+            val showsSats = observeBitcoinInSats().first()
             val layout = materialScope(
                 context = this@BalanceTileService,
                 deviceConfiguration = requestParams.deviceConfiguration,
@@ -67,11 +76,29 @@ class BalanceTileService : TileService() {
             ) {
                 primaryLayout(
                     titleSlot = { text(getString(R.string.tile_title).layoutString) },
-                    mainSlot = { if (balance == null) buildSettledContent() else buildBalanceContent(balance) },
+                    mainSlot = {
+                        when (glance) {
+                            WatchGlance.NotConnected -> buildConnectContent()
+
+                            WatchGlance.Settled -> buildSettledContent()
+
+                            is WatchGlance.Open -> buildBalanceContent(
+                                GlanceBalance.of(this@BalanceTileService, glance.total, showsSats),
+                            )
+                        }
+                    },
                     bottomSlot = {
+                        // Why: "Connect" opens the app on its connect screens, which the root shows a watch with no account.
+                        val label = if (glance ==
+                            WatchGlance.NotConnected
+                        ) {
+                            R.string.pair_connect
+                        } else {
+                            R.string.tile_open
+                        }
                         textEdgeButton(
                             onClick = clickable(action = openAppAction()),
-                            labelContent = { text(getString(R.string.tile_open).layoutString) },
+                            labelContent = { text(getString(label).layoutString) },
                         )
                     },
                 )
@@ -135,6 +162,12 @@ class BalanceTileService : TileService() {
         .addContent(text(getString(R.string.tile_settled_body).layoutString, typography = Typography.BODY_SMALL))
         .build()
 
+    private fun MaterialScope.buildConnectContent(): LayoutElementBuilders.LayoutElement = text(
+        getString(R.string.pair_welcome_body).layoutString,
+        typography = Typography.BODY_SMALL,
+        maxLines = CONNECT_MAX_LINES,
+    )
+
     private fun openAppAction(): ActionBuilders.Action = ActionBuilders.LaunchAction
         .Builder()
         .setAndroidActivity(
@@ -147,5 +180,6 @@ class BalanceTileService : TileService() {
 
     private companion object {
         const val RESOURCES_VERSION = "1"
+        const val CONNECT_MAX_LINES = 4
     }
 }

@@ -15,17 +15,5 @@
     <string name="notification_settings_in_app">داخل التطبيق</string>
     <string name="notification_settings_toggle_description">%1$s، %2$s</string>
     <string name="notification_settings_legend">«فوري» يرسل إشعارًا إلى هذا الجهاز. «داخل التطبيق» يميّزه كجديد على الجرس وفي «النشاط»؛ وعند إيقافه، يظل ظاهرًا في «النشاط» كمقروء.</string>
-    <string name="notification_settings_bills">الفواتير</string>
-    <string name="notification_settings_bills_detail">الفواتير الجديدة أو المعدّلة أو المحذوفة التي تشملك</string>
-    <string name="notification_settings_payments">الدفعات والتسويات</string>
-    <string name="notification_settings_payments_detail">الدفعات منك أو إليك، والديون المبسّطة</string>
-    <string name="notification_settings_comments">التعليقات</string>
-    <string name="notification_settings_comments_detail">على الفواتير التي تشملك والمحادثات التي شاركت فيها</string>
-    <string name="notification_settings_people_and_groups">الأشخاص والمجموعات</string>
-    <string name="notification_settings_people_and_groups_detail">من ينضم إلى مجموعاتك أو يغادرها، وما يتغير فيها</string>
-    <string name="notification_settings_payment_requests">طلبات الدفع</string>
-    <string name="notification_settings_payment_requests_detail">عندما يطلب منك شخص ما الدفع</string>
-    <string name="notification_settings_balance_reminder">تذكير بالرصيد المفتوح</string>
-    <string name="notification_settings_balance_reminder_detail">مرة في الأسبوع، إذا وُجد رصيد مفتوح</string>
     <string name="notification_settings_footer">تصل الإشعارات عند توفر الإنترنت. لكتم مجموعة، يمكن استخدام القائمة داخلها.</string>
 </resources>

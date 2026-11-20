@@ -21,4 +21,16 @@
     <string name="push_debts_unsimplified_to_you">%1$s: כיבוי פישוט החובות. עכשיו מגיע לך מ-%2$s %3$s.</string>
     <string name="push_debts_unsimplified_from_you">%1$s: כיבוי פישוט החובות. עכשיו ל-%2$s מגיע ממך %3$s.</string>
     <string name="push_debts_unsimplified_other">%1$s: כיבוי פישוט החובות. כדאי לבדוק מה זה אומר לגביך.</string>
+    <string name="notification_settings_bills">חשבונות</string>
+    <string name="notification_settings_bills_detail">חשבונות חדשים, ערוכים או מחוקים שכוללים אותך</string>
+    <string name="notification_settings_payments">תשלומים וסגירות חשבון</string>
+    <string name="notification_settings_payments_detail">תשלומים אליך או ממך, וחובות מפושטים</string>
+    <string name="notification_settings_comments">תגובות</string>
+    <string name="notification_settings_comments_detail">על חשבונות שכוללים אותך ועל שרשורים שכתבת בהם</string>
+    <string name="notification_settings_people_and_groups">אנשים וקבוצות</string>
+    <string name="notification_settings_people_and_groups_detail">הצטרפויות ויציאות בקבוצות שלך, ושינויים בהן</string>
+    <string name="notification_settings_payment_requests">בקשות תשלום</string>
+    <string name="notification_settings_payment_requests_detail">כשמבקשים ממך לשלם</string>
+    <string name="notification_settings_balance_reminder">תזכורת על יתרה פתוחה</string>
+    <string name="notification_settings_balance_reminder_detail">פעם בשבוע, אם יש יתרה פתוחה</string>
 </resources>
