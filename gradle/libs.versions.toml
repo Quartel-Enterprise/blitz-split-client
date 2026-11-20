@@ -12,7 +12,7 @@ kover = "0.9.11"
 
 # Android SDK levels
 android-minSdk = "26"
-android-compileSdk = "37"
+android-compileSdk = "37.1"
 android-targetSdk = "37"
 
 # AndroidX
@@ -33,10 +33,7 @@ kotlinx-datetime = "0.8.0"
 
 # Compose: only the Android app draws with Compose, so it takes the AndroidX artifacts straight
 # from their BOM.
-androidx-compose-bom = "2026.09.00"
-# The BOM pins the stable 1.4.0, which lacks the Material 3 Expressive APIs (MaterialExpressiveTheme,
-# MaterialShapes); they ship on 1.5. The newer BOMs (Compose 1.13) need compileSdk 37.1: stay until it moves.
-androidx-compose-material3 = "1.5.0"
+androidx-compose-bom = "2026.11.01"
 androidx-graphics-shapes = "1.1.0"
 
 # Third party
@@ -122,7 +119,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 # Compose (Android UI only)
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-compose-material3" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
 # The list and detail of the home on a wide window: the window's size class and hinge, and Navigation 3's scene.
 compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive" }
 compose-material3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout" }

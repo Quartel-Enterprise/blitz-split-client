@@ -36,9 +36,15 @@ val collectsAnalytics = true
 
 android {
     namespace = "com.quare.blitzsplit"
-    compileSdk = libs.versions.android.compileSdk
-        .get()
-        .toInt()
+    compileSdk {
+        // "37.1" is API level 37 with its first minor release.
+        val (api, minor) = libs.versions.android.compileSdk
+            .get()
+            .split('.')
+            .map(String::toInt)
+            .let { it[0] to it.getOrElse(1) { 0 } }
+        version = release(api) { minorApiLevel = minor }
+    }
     defaultConfig {
         // The legacy app's id: this app replaces it in the Play Store
         applicationId = "com.quare.blitzsplit"

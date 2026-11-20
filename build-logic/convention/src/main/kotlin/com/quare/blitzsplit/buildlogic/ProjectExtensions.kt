@@ -22,8 +22,17 @@ fun Project.getAndroidSdkVersions(): AndroidSdkVersions {
         .get()
         .requiredVersion
         .toInt()
+    // "37.1" is API level 37 with its first minor release: the Compose 1.13 artifacts ask for it.
+    val (compileSdk, compileSdkMinor) = libs
+        .findVersion("android-compileSdk")
+        .get()
+        .requiredVersion
+        .split('.')
+        .map(String::toInt)
+        .let { it[0] to it.getOrElse(1) { 0 } }
     return AndroidSdkVersions(
-        compileSdk = readVersion("android-compileSdk"),
+        compileSdk = compileSdk,
+        compileSdkMinor = compileSdkMinor,
         minSdk = readVersion("android-minSdk"),
         targetSdk = readVersion("android-targetSdk"),
     )
