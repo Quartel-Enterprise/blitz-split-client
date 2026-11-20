@@ -176,7 +176,9 @@ The figures are Home's: the overall balance is the "Overall balance" of the firs
 Balances' totals), "Owe you" and "You owe" are its "Owe you" and "You owe" in that currency, and every amount is written
 by the app's own formatter (decimals dropped when zero, bitcoin in sats when Profile says so, Latin digits in Arabic and
 Bengali), in the app's language (Profile › Language) whatever the device's, offline too. With nobody owing anyone in any
-currency, or no group yet, every size says "All settled" (the circle a check mark). A local only profile, an anonymous
+currency, or no group yet, every size says "All settled" (the circle a check mark); an overall balance of zero whose
+two ways offset each other shows "R$ 0" with no word, "Owe you" and "You owe" under it saying what is still open.
+Before the app has written anything (an update not opened yet) every size shows a dash, never "All settled". A local only profile, an anonymous
 account and a signed in one all get it, since it reads only this device's data. Tapping any size opens Balances
 (`borarachar://balances`, `WidgetLink`), over wherever the app was; without a profile it opens the app as it is.
 

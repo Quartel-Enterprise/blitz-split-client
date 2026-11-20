@@ -87,10 +87,13 @@ extension GroupCurrency {
         let magnitude = minor == .min ? Decimal(Int64.max) : Decimal(abs(minor))
         let major = magnitude / pow(Decimal(10), typedDigits)
         guard major >= 1 else { return formatSignedPlain(minor) }
-        let compact = major.formatted(
-            .number.notation(.compactName).precision(.significantDigits(1 ... 3))
-                .rounded(rule: .towardZero).locale(AppNumbers.locale),
-        )
+        // Whole units under a thousand ("186"), two significant digits past it ("1,2 mil", "12K")
+        let compact = major < 1000
+            ? major.formatted(.number.precision(.fractionLength(0)).rounded(rule: .towardZero).locale(AppNumbers.locale))
+            : major.formatted(
+                .number.notation(.compactName).precision(.significantDigits(1 ... 2))
+                    .rounded(rule: .towardZero).locale(AppNumbers.locale),
+            )
         return RightToLeft.isolated(Self.signed(minor, compact))
     }
 

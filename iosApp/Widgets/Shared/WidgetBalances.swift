@@ -46,10 +46,14 @@ struct WidgetBalances: Codable, Equatable, Sendable {
     /// "14:32" or "2:32 PM", as Profile's Time format writes it.
     var updatedTime: String
 
-    /// What the gallery and a widget added before the app ever wrote shows: nothing open yet.
-    static let empty = WidgetBalances(
+    /// Whether the app wrote anything yet: with no file (an update not opened yet, a build without the App Group) the
+    /// widget can't tell "All settled" from a debt, so it draws a dash.
+    var isKnown: Bool { overall != nil || isSettled }
+
+    /// What a widget shows before the app ever wrote the file.
+    static let unknown = WidgetBalances(
         language: nil,
-        isSettled: true,
+        isSettled: false,
         overall: nil,
         groups: [],
         updatedAt: .distantPast,

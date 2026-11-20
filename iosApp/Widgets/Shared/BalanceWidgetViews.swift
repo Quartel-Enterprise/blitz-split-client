@@ -107,10 +107,12 @@ struct BalanceCircularView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
                         .accessibilityLabel(Text(verbatim: overall.signed))
-                } else {
+                } else if balances.isKnown {
                     Image(systemName: "checkmark")
                         .font(.system(size: 12, weight: .bold))
                         .accessibilityLabel(Text("All settled"))
+                } else {
+                    Text(verbatim: "–").font(.system(size: 13, weight: .bold))
                 }
             }
             .padding(4)
@@ -135,10 +137,12 @@ struct BalanceRectangularView: View {
                 if let other = otherLine(overall) {
                     Text(other).font(.caption)
                 }
-            } else {
+            } else if balances.isKnown {
                 Text("All settled")
                     .font(.subheadline.weight(.bold))
                     .widgetAccentable()
+            } else {
+                Text(verbatim: "–").font(.subheadline.weight(.bold))
             }
         }
         .lineLimit(1)
@@ -190,17 +194,23 @@ private struct OverallBalanceView: View {
                     .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
-                Text(WidgetWords.word(overall.direction))
-                    .font(.footnote)
-                    .lineLimit(1)
+                if let word = WidgetWords.word(overall.direction) {
+                    Text(word)
+                        .font(.footnote)
+                        .lineLimit(1)
+                }
             }
             .foregroundStyle(WidgetPalette.balance(overall.direction, colorScheme))
             .widgetAccentable()
-        } else {
+        } else if balances.isKnown {
             Text("All settled")
                 .font(.system(size: 20, weight: .bold))
                 .lineLimit(2)
                 .minimumScaleFactor(0.7)
+        } else {
+            Text(verbatim: "–")
+                .font(.system(size: amountSize, weight: .bold))
+                .foregroundStyle(.secondary)
         }
     }
 }
@@ -236,18 +246,19 @@ private struct AmountAndWord: View {
     var body: some View {
         HStack(spacing: 4) {
             Text(verbatim: signed)
-            Text(WidgetWords.word(direction))
+            if let word = WidgetWords.word(direction) { Text(word) }
         }
     }
 }
 
-/// The words beside an amount, the app's own ("to get back", "you owe").
+/// The words beside an amount, the app's own ("to get back", "you owe"); none beside a zero, which only an overall
+/// balance whose two ways offset each other shows, with "Owe you" and "You owe" under it saying what is still open.
 enum WidgetWords {
-    static func word(_ direction: WidgetBalances.Direction) -> LocalizedStringKey {
+    static func word(_ direction: WidgetBalances.Direction) -> LocalizedStringKey? {
         switch direction {
         case .toReceive: "to get back"
         case .youOwe: "you owe"
-        case .settled: "All settled"
+        case .settled: nil
         }
     }
 }

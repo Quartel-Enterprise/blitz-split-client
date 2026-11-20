@@ -214,6 +214,13 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: ""
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
+    postBuildScripts:
+      # As the app's: the widget draws in the app's language, es-ES and pt-PT included, whose tables hold only the
+      # words Spain and Portugal say differently until this fills them with es's and pt-BR's
+      - name: Fill the regional tables with their language's
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/merge-regional-strings.py" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH" "$SRCROOT/Resources"
     info:
       path: Generated/BalanceWidget-Info.plist
       properties:

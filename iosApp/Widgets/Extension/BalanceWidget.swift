@@ -43,12 +43,12 @@ struct BalanceTimelineProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (BalanceEntry) -> Void) {
-        let balances = WidgetBalancesStore.read() ?? (context.isPreview ? .preview : .empty)
+        let balances = WidgetBalancesStore.read() ?? (context.isPreview ? .preview : .unknown)
         completion(BalanceEntry(date: .now, balances: balances))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<BalanceEntry>) -> Void) {
-        let entry = BalanceEntry(date: .now, balances: WidgetBalancesStore.read() ?? .empty)
+        let entry = BalanceEntry(date: .now, balances: WidgetBalancesStore.read() ?? .unknown)
         completion(Timeline(entries: [entry], policy: .never))
     }
 }
@@ -57,12 +57,12 @@ struct BalanceTimelineProvider: TimelineProvider {
     BalanceWidget()
 } timeline: {
     BalanceEntry(date: .now, balances: .preview)
-    BalanceEntry(date: .now, balances: .empty)
+    BalanceEntry(date: .now, balances: .unknown)
 }
 
 #Preview("Home Screen, medium", as: .systemMedium) {
     BalanceWidget()
 } timeline: {
     BalanceEntry(date: .now, balances: .preview)
-    BalanceEntry(date: .now, balances: .empty)
+    BalanceEntry(date: .now, balances: .unknown)
 }

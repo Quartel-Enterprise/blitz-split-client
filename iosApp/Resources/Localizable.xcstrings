@@ -342068,7 +342068,8 @@
             "value" : "你的總餘額和仍未結清的群組。"
           }
         }
-      }
+      },
+      "extractionState" : "manual"
     }
   },
   "version" : "1.0"
