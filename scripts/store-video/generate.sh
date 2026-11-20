@@ -29,9 +29,11 @@ mkdir -p $PUBLIC
 
 # The re-timing needs numpy and Pillow, in an environment of their own.
 VENV=$ROOT/build/store-video/.venv
-if [[ ! -x $VENV/bin/python ]]; then
-  python3 -m venv $VENV
+# A stamp written only once the install succeeds, newer than requirements.txt: a failed or outdated install runs again.
+if [[ ! -f $VENV/.installed || $HERE/requirements.txt -nt $VENV/.installed ]]; then
+  [[ -x $VENV/bin/python ]] || python3 -m venv $VENV
   $VENV/bin/pip install --quiet --disable-pip-version-check -r $HERE/requirements.txt
+  touch $VENV/.installed
 fi
 
 if (( RECORD )); then

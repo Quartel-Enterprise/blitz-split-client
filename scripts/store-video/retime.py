@@ -118,7 +118,8 @@ def retime(frames_dir, out, hold0, duration, hold1, band0, band1):
             gap = offsets[index] - offsets[max(index - 1, 0)]
             rows = np.arange(band0, band0 + d)
             image[band0:band0 + d] = preceding[np.clip(rows + int(round(gap - d)), 0, HEIGHT - 1)]
-        encoder.stdin.write(clean_bar(image.copy()).tobytes())
+        # A shifted frame is already a copy; an unshifted one is the cached (read-only) frame.
+        encoder.stdin.write(clean_bar(image if d else image.copy()).tobytes())
     encoder.stdin.close()
     encoder.wait()
     if encoder.returncode:

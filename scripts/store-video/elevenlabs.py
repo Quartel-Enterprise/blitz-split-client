@@ -112,6 +112,19 @@ def seconds(path):
     return round(float(out), 3)
 
 
+def check_lines_fit(locale, config, durations):
+    """The shots' lengths come from their steps, not from the lines, and StoreVideo.tsx starts each line 0.25 s into its
+    shot (the end card's 0.5 s in): a longer line would still be playing when the next one starts."""
+    lengths = [sum(step["to"] - step["from"] if step["kind"] == "play" else step["seconds"] for step in shot["steps"])
+               for shot in config["shots"]]
+    room = [length - 0.25 for length in lengths] + [config["endSeconds"] - 0.5]
+    late = [f"line {i + 1}: {spoken:.2f}s in {fits:.2f}s" for i, (spoken, fits) in enumerate(zip(durations, room))
+            if spoken > fits]
+    if late:
+        raise SystemExit(f"{locale}.json: lines longer than their shots ({'; '.join(late)}); shorten them, lengthen "
+                         "the shots' steps, or pick another take")
+
+
 def prepare(locale):
     """Each line of the chosen take, at -16 LUFS, as public/voice<n>.wav; the music as public/music.wav; and the props
     the render reads (the locale, how long each line and the music last)."""
@@ -129,6 +142,7 @@ def prepare(locale):
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(source), "-af",
                         "loudnorm=I=-16:TP=-1.5:LRA=7,aresample=48000", "-ac", "1", str(out)], check=True)
         durations.append(seconds(out))
+    check_lines_fit(locale, config, durations)
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(music_file(base, config["music"])), "-ar", "48000",
                     str(public / "music.wav")],
                    check=True)

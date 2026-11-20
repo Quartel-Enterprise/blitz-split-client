@@ -9,6 +9,7 @@ screenshots for screens shown still. Writes build/store-video/<locale>/public/<s
 video's freezes and pushes need. Puts the emulator back as it was, even when a step fails.
 """
 import json
+import math
 import os
 import re
 import shutil
@@ -42,8 +43,8 @@ def adb(*args, check=True, capture=False):
     return result.stdout if capture else None
 
 
-def demo(*args):
-    adb("shell", "am", "broadcast", "-a", "com.android.systemui.demo", "-e", "command", *args)
+def demo(*args, check=True):
+    adb("shell", "am", "broadcast", "-a", "com.android.systemui.demo", "-e", "command", *args, check=check)
 
 
 def nodes():
@@ -134,17 +135,18 @@ def tap(target):
     raise SystemExit(f"nothing on the emulator matches {target}")
 
 
+def frame_times(path):
+    return subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v", "-show_entries", "frame=pts_time", "-of",
+                           "csv=p=0", str(path)], capture_output=True, text=True, check=True).stdout.split()
+
+
 def frame_count(path):
-    out = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v", "-show_entries", "frame=pts_time", "-of",
-                          "csv=p=0", path], capture_output=True, text=True, check=True).stdout
-    return len(out.split())
+    return len(frame_times(path))
 
 
 def first_change(path, after):
     """The time, in seconds, of the first frame after `after` that differs visibly from the one before it."""
-    probe = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v", "-show_entries", "frame=pts_time", "-of",
-                            "csv=p=0", str(path)], capture_output=True, text=True, check=True).stdout.split()
-    times = [float(t) for t in probe]
+    times = [float(t) for t in frame_times(path)]
     raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(path), "-vf", "scale=54:120,format=gray", "-fps_mode",
                           "passthrough", "-f", "rawvideo", "-"], capture_output=True, check=True).stdout
     frame_size = 54 * 120
@@ -288,7 +290,7 @@ def setup(config):
 def teardown(saved):
     for package in SUSPENDED:
         adb("shell", "pm", "unsuspend", package, check=False)
-    demo("exit")
+    demo("exit", check=False)  # a failure here must not skip putting the rest back
     adb("shell", f"run-as {PACKAGE} rm -f {FILES}/store-video {FILES}/store-video.ready", check=False)
     adb("shell", "am", "force-stop", PACKAGE, check=False)
     for table, key, value in saved["settings"]:
@@ -305,7 +307,8 @@ def stills(config, out_dir):
         for step in shot["steps"]:
             if step["kind"] != "play":
                 continue
-            index = round(step["to"] * FPS) - 1
+            # Rounds half up like StoreVideo.tsx's Math.round (Python's round goes to even), so the names match.
+            index = math.floor(step["to"] * FPS + 0.5) - 1
             target = out_dir / f"{step['clip']}_{index}.png"
             target.unlink(missing_ok=True)
             subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(out_dir / f"{step['clip']}.mp4"), "-vf",
@@ -334,9 +337,13 @@ def main():
                 screen = subprocess.run(["adb", "exec-out", "screencap", "-p"], capture_output=True, check=True).stdout
                 subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "png_pipe", "-i", "-", "-filter_complex",
                                 CLEAN_BAR_FILTER, str(out_dir / f"{scene['still']}.png")], input=screen, check=True)
-            elif "record" not in scene and "still" not in scene:
+            elif "still" not in scene:
+                # A recorded scene left out still walks the app (its swipe or tap, unrecorded), so the scenes after it
+                # start where they were measured.
                 if "tap" in scene:
                     tap(scene["tap"])
+                    if "shows" in scene:
+                        wait_for(scene["shows"])
                 if "backUntil" in scene:
                     back_until(scene["backUntil"])
                 if "scrollUpUntil" in scene:

@@ -8,6 +8,7 @@ import androidx.sqlite.driver.AndroidSQLiteDriver
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
+import com.quare.blitzsplit.core.utils.suspendRunCatching
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +68,7 @@ fun startBlitzSplitForStoreVideoIfAsked(
      * for the ready file instead, and a failed seed leaves it unwritten, with the reason in logcat.
      */
     CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
-        runCatching {
+        suspendRunCatching {
             StoreScreenshotsSeed(
                 trip = trip,
                 assets = StoreScreenshotsAssets { path ->
