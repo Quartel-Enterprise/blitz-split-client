@@ -28,6 +28,7 @@ import { ro } from './ro'
 import { bn } from './bn'
 import { ms } from './ms'
 import { el } from './el'
+import { hr } from './hr'
 import { hu } from './hu'
 
 export type { MessageKey }
@@ -36,12 +37,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hu'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hu }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hu']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -67,10 +68,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el` or `hu` tag
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr` or `hu` tag
  * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN,
- * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hu-RO…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek or Hungarian, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian or Hungarian, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, any `en` tag is English, and English when none
  * matches.
  */
@@ -160,6 +161,7 @@ const documentLanguages: Record<Locale, string> = {
   bn: 'bn',
   ms: 'ms',
   el: 'el',
+  hr: 'hr',
   hu: 'hu',
 }
 
@@ -230,6 +232,9 @@ const everyFormOrder: readonly Intl.LDMLPluralRule[] | undefined = (() => {
 // being Czech's fractions, which say the few form ("1,5 skupiny"), where Polish's is the one its `many` takes.
 const secondFormIsOther = locale === 'cs' || locale === 'ro'
 
+// Why: Croatian's third form is the one its other takes ("5 grupa"), its plural having no many.
+const thirdFormIsOther = !pluralRules.resolvedOptions().pluralCategories.includes('many')
+
 /**
  * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many (0,
  * 5–21…). Its message for a `…Other` key with a `{count}` holds both, "{count} grupy|{count} grup", and this picks the
@@ -237,7 +242,9 @@ const secondFormIsOther = locale === 'cs' || locale === 'ro'
  * группа"), so theirs hold three, one|few|many: "{count} группа|{count} группы|{count} групп". A fraction takes few's,
  * which is Russian's own; Ukrainian has a form of its own for it ("1,5 платежу"), which no count the app passes needs.
  * Czech ("{count} skupiny|{count} skupin") and Romanian ("{count} grupuri|{count} de grupuri") hold two forms too,
- * their second one being the one their other takes (`secondFormIsOther`). Arabic has a dual, so its messages hold every
+ * their second one being the one their other takes (`secondFormIsOther`). Croatian says 21 in the singular too, and
+ * holds three, one|few|other ("{count} grupa|{count} grupe|{count} grupa"), the third being its other's
+ * (`thirdFormIsOther`), a fraction taking the form CLDR gives it. Arabic has a dual, so its messages hold every
  * category it has, in CLDR's order, "zero|one|two|few|many|other" (`everyFormOrder`), and so does any language whose
  * plural has a two. Any other message has one form. `count` must be the number itself, not a formatted string: one that
  * isn't a number gets the many form, the one most counts take (other, in a language that holds every form).
@@ -250,7 +257,10 @@ function pluralFormOf(message: string, count: string | number | undefined): stri
     return forms[everyFormOrder.indexOf(category)] ?? forms[forms.length - 1]
   }
   const category = typeof count === 'number' ? pluralRules.select(count) : 'many'
-  if (forms.length === 3) return forms[category === 'one' ? 0 : category === 'many' ? 2 : 1]
+  if (forms.length === 3) {
+    const isLast = category === 'many' || (thirdFormIsOther && category === 'other')
+    return forms[category === 'one' ? 0 : isLast ? 2 : 1]
+  }
   if (secondFormIsOther) return category === 'other' || typeof count !== 'number' ? forms[1] : forms[0]
   return category === 'many' ? forms[1] : forms[0]
 }
@@ -318,6 +328,7 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
   it: { ha: 'hai', 'l’ha': 'l’hai', "l'ha": "l'hai" },
   nl: { heeft: 'hebt', is: 'bent' },
   ro: { a: 'ai' },
+  hr: { je: 'si' },
 }
 
 /**
@@ -331,7 +342,8 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * person ("Ты разделил(а)"). Korean writes someone else as "Ana 님이" and the user as "내가", whose subject word holds its
  * own particle, so its verb phrases all start with "님이", which the user's drops: "님이 나눴어요" becomes "나눴어요". Hindi does
  * the same with its ergative "ने", the user's "आपने" holding it: "ने खर्च बांटा" becomes "खर्च बांटा". Romanian swaps
- * its perfect's auxiliary as French does ("a împărțit" becomes "ai împărțit"), and Czech puts the auxiliary "jsi"
+ * its perfect's auxiliary as French does ("a împărțit" becomes "ai împărțit"), Croatian its "je" ("je podijelio/la"
+ * becomes "si podijelio/la"), and Czech puts the auxiliary "jsi"
  * before a past in "l(a)", which the third person says without one ("rozdělil(a)" becomes "jsi rozdělil(a)"). Greek
  * ends its aorist in "-ες" for the user, an object pronoun staying before it ("μοίρασε" becomes "μοίρασες", "το
  * επισύναψε" "το επισύναψες"). Hungarian starts each with a past: a definite one in "-ta"/"-te" takes a "d" ("létrehozta"

@@ -83,6 +83,7 @@
     <string name="profile_language_bengali">Bengali</string>
     <string name="profile_language_malay">Malaio</string>
     <string name="profile_language_greek">Grego</string>
+    <string name="profile_language_croatian">Croata</string>
     <string name="profile_language_hungarian">Húngaro</string>
     <string name="profile_language_system_detail">Idioma do aparelho</string>
     <string name="profile_notifications">Notificações</string>

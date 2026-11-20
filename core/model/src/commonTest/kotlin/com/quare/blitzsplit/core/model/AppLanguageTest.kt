@@ -384,6 +384,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Croatian tag WHEN reading it THEN is Croatian`() {
+        // Given
+        val tags = listOf("hr", "hr-HR", "hr_BA", "HR-hr")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.CROATIAN }, languages)
+    }
+
+    @Test
     fun `GIVEN any Hungarian tag WHEN reading it THEN is Hungarian`() {
         // Given
         val tags = listOf("hu", "hu-HU", "hu_RO", "HU-hu")
@@ -513,6 +525,7 @@ class AppLanguageTest {
                 "BN",
                 "MS",
                 "EL",
+                "HR",
                 "HU",
             ),
             codes,

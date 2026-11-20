@@ -78,6 +78,7 @@ export const PLAY_LOCALES = {
   bn: ["bn-BD"],
   ms: ["ms", "ms-MY"],
   el: ["el-GR"],
+  hr: ["hr"],
   hu: ["hu-HU"],
 };
 export const APP_STORE_LOCALES = {
@@ -110,6 +111,7 @@ export const APP_STORE_LOCALES = {
   bn: ["bn-BD"],
   ms: ["ms"],
   el: ["el"],
+  hr: ["hr"],
   hu: ["hu"],
 };
 

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Salda</string>
+    <string name="global_balances_profile">Profil</string>
+    <string name="global_balances_offline">Izvanmrežno · salda na ovom uređaju</string>
+    <string name="global_balances_filter">Prikaži</string>
+    <string name="global_balances_filter_all">Sve</string>
+    <string name="global_balances_filter_you_owe">Duguješ</string>
+    <string name="global_balances_filter_owes_you">Duguju ti</string>
+    <string name="global_balances_hint">Već prebijeno među grupama: svaka se osoba prikazuje jednom.</string>
+    <string name="global_balances_hint_empty">Zbrajanje svih grupa na ovom uređaju.</string>
+    <string name="global_balances_section_you_owe">Duguješ · %d</string>
+    <string name="global_balances_section_owes_you">Duguju ti · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d grupa</item>
+        <item quantity="few">%d grupe</item>
+        <item quantity="other">%d grupa</item>
+    </plurals>
+    <string name="global_balances_guest">%s · gost</string>
+    <string name="global_balances_you_owe">duguješ</string>
+    <string name="global_balances_owes_you">ti duguje</string>
+    <string name="global_balances_by_group_show">Prikaži po grupama: %s</string>
+    <string name="global_balances_by_group_hide">Sakrij po grupama: %s</string>
+    <string name="global_balances_received">Primljeno</string>
+    <string name="global_balances_received_from">Primljeno od: %s</string>
+    <string name="global_balances_settle">Podmiri</string>
+    <string name="global_balances_settle_with">Podmiri s: %s</string>
+    <string name="global_balances_charge">Zatraži</string>
+    <string name="global_balances_charge_person">Zatraži od: %s</string>
+    <string name="global_balances_detail_pane">Saldo s: %s</string>
+    <string name="global_balances_detail_owes_you">%s ti duguje</string>
+    <string name="global_balances_detail_you_owe">Duguješ: %s</string>
+    <string name="global_balances_detail_guest">%s · gost bez aplikacije</string>
+    <string name="global_balances_detail_note_owed">Neto iznos već prebija grupe: Zatraži i Primljeno koriste %s. Aplikacija bilježi uplatu u svakoj grupi.</string>
+    <string name="global_balances_detail_note_settle">Neto iznos već prebija grupe: Podmiri koristi %s. Aplikacija bilježi uplatu u svakoj grupi.</string>
+    <string name="global_balances_detail_note_single">Otvorena je samo jedna grupa s: %s.</string>
+    <string name="global_balances_settled_title">Sve je podmireno</string>
+    <string name="global_balances_settled_body">Nitko ti ne duguje i ti nikome ne duguješ. Kad netko doda trošak, saldo će se pojaviti ovdje.</string>
+    <string name="global_balances_settled_action">Pogledaj grupe</string>
+    <string name="global_balances_nothing_to_pay_title">Ništa ne duguješ</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Sa svima si podmiren/a. Još trebaš dobiti %2$s od %1$d osobe.</item>
+        <item quantity="few">Sa svima si podmiren/a. Još trebaš dobiti %2$s od %1$d osobe.</item>
+        <item quantity="other">Sa svima si podmiren/a. Još trebaš dobiti %2$s od %1$d osoba.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Pogledaj tko ti duguje</string>
+    <string name="global_balances_nothing_to_receive_title">Nitko ti ne duguje</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Još imaš dug od %2$s prema %1$d osobi.</item>
+        <item quantity="few">Još imaš dug od %2$s prema %1$d osobe.</item>
+        <item quantity="other">Još imaš dug od %2$s prema %1$d osoba.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Pogledaj kome duguješ</string>
+    <string name="global_balances_coming_soon">Uskoro</string>
+    <string name="global_balances_change_error">Promjena nije spremljena. Pokušaj ponovno.</string>
+    <string name="global_balances_copied">Kopirano</string>
+    <string name="global_balances_charge_title">Zatraži od: %s</string>
+    <string name="global_balances_charge_owes">Duguje ti %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Zatvori</string>
+    <string name="global_balances_charge_guest">%s je gost bez aplikacije. Za ovo će saznati samo iz ove poruke, pa ona već navodi što je ušlo u trošak.</string>
+    <string name="global_balances_charge_message">Poruka</string>
+    <string name="global_balances_charge_pix">Dodaj moj Pix ključ</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Kopiraj poruku</string>
+    <string name="global_balances_charge_send">Pošalji</string>
+    <string name="global_balances_message">Bok %1$s! Prema izračunu u aplikaciji Blitz Split duguješ mi %2$s (%3$s).</string>
+    <string name="global_balances_message_guest">Bok %1$s! Duguješ mi %2$s (%3$s): tvoj dio za %4$s.</string>
+    <string name="global_balances_message_guest_paid">Bok %1$s! Duguješ mi %2$s (%3$s): tvoj dio za %4$s, umanjen za %5$s koje si već platio/la.</string>
+    <string name="global_balances_message_group">grupa „%s“</string>
+    <string name="global_balances_message_groups">grupe %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefon</string>
+    <string name="global_balances_key_email">E-pošta</string>
+    <string name="global_balances_key_random">Nasumični ključ</string>
+    <string name="global_balances_message_reroute">Grupa „%1$s“ je pojednostavila dugove, pa umjesto plaćanja drugima (%2$s) plaćaš izravno meni; tvoj ukupni iznos nije se promijenio.</string>
+</resources>

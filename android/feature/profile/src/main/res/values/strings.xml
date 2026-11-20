@@ -86,6 +86,7 @@
     <string name="profile_language_bengali">Bengali</string>
     <string name="profile_language_malay">Malay</string>
     <string name="profile_language_greek">Greek</string>
+    <string name="profile_language_croatian">Croatian</string>
     <string name="profile_language_hungarian">Hungarian</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
@@ -118,6 +119,7 @@
     <string name="profile_language_native_bengali" translatable="false">বাংলা</string>
     <string name="profile_language_native_malay" translatable="false">Bahasa Melayu</string>
     <string name="profile_language_native_greek" translatable="false">Ελληνικά</string>
+    <string name="profile_language_native_croatian" translatable="false">Hrvatski</string>
     <string name="profile_language_native_hungarian" translatable="false">Magyar</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">

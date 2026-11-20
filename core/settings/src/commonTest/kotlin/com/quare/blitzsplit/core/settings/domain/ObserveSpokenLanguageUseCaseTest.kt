@@ -135,6 +135,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.BENGALI,
                 AppLanguage.MALAY,
                 AppLanguage.GREEK,
+                AppLanguage.CROATIAN,
                 AppLanguage.HUNGARIAN,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
@@ -173,6 +174,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "bn",
                     "ms",
                     "el",
+                    "hr",
                     "hu",
                     "zh-Hant",
                 ),
@@ -226,6 +228,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "bn",
             "ms",
             "el",
+            "hr",
             "hu",
             "zh-Hant",
         )
@@ -273,6 +276,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "bn-IN",
                 "ms-SG",
                 "el-CY",
+                "hr-BA",
                 "hu-RO",
                 "zh-TW",
             )
@@ -313,6 +317,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "bn",
                     "ms",
                     "el",
+                    "hr",
                     "hu",
                     "zh-Hant",
                 ),
