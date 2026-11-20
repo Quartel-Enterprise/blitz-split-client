@@ -2375,6 +2375,21 @@ export const en = {
   reminder_eventTitle: 'Settle up: {group}',
   reminder_eventBody: 'Time to settle up in {group}.',
   reminder_eventFileName: 'settle-up-reminder.ics',
+  profile_connectWatch: 'Connect watch',
+  profile_connectWatchDetail: 'With the code your watch shows',
+  connectWatch_title: 'Connect watch',
+  connectWatch_body: 'Type the code your watch shows. It signs in to your account and then syncs on its own.',
+  connectWatch_codeLabel: 'Watch code',
+  connectWatch_errorInvalid: 'Wrong or expired code. Get a new one on the watch.',
+  connectWatch_errorTooMany: 'Too many wrong codes. Wait a few minutes and try again.',
+  connectWatch_errorNeedsAccount: 'Connect an account first: your data is only on this device.',
+  connectWatch_errorFailed: "Couldn't connect the watch. Try again.",
+  connectWatch_offline: 'Connecting the watch needs the internet.',
+  connectWatch_ownWatchOnly: 'Type only a code shown on your own watch: whoever has that watch gets into your account.',
+  connectWatch_validity: 'The code is valid for 5 minutes, once.',
+  connectWatch_connect: 'Connect',
+  connectWatch_connectedTitle: 'Watch connected',
+  connectWatch_connectedBody: 'It sees your groups and syncs on its own. To disconnect it, sign out on the watch.',
 } satisfies Record<string, string>
 
 export type MessageKey = keyof typeof en

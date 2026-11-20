@@ -110,6 +110,7 @@ struct SettingsView: View {
                 case .profilePhoto: ProfilePhotoView()
                 case .deleteAccount: DeleteAccountView()
                 case .contactSupport: ContactSupportView()
+                case .connectWatch: ConnectWatchView()
                 case let .inAppUpdate(route): InAppUpdateView(route: route)
                 case let .appDownload(route): AppDownloadView(route: route)
                 // A new identity per text: a link to the other one swaps it in this sheet
