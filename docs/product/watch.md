@@ -39,7 +39,10 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
     the Apple Watch, both in the format `WatchLink` names), which approves it with its own session, with no confirmation on the phone (Pierre's call,
     November 2026: the channel only exists with a watch paired to that phone, and pairing needs it unlocked). The phone
     then shows a notice with no buttons, "Pixel Watch connected to your account" with the watch's own name (15.15).
-    It goes to a channel of its own, "Watch", outside Notifications' rows, so it can be silenced alone.
+    It goes to a channel of its own, "Watch", outside Notifications' rows, so it can be silenced alone. The iPhone
+    can't read the watch's name over WatchConnectivity, so its notice says "Apple Watch connected" (15.15), shown only
+    where the person allowed notifications; the code comes as a WatchConnectivity message, which wakes the iPhone app
+    in the background, and the reply goes back in the message's answer.
     The watch shows "Ready, Pierre" with the photo and "Continue".
   - Works for anonymous, Google and Apple accounts alike. A local only profile can't connect (15.11b): the watch says
     the data is only on the phone, to connect an account in Profile on the phone, and to tap Connect again.
@@ -49,9 +52,12 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
   - Profile › Connect watch (15.14, `ConnectWatchViewModel`), on any signed-in device: six boxes for the code (case and
     spaces never matter), "Connect". A wrong or expired code (15.14b) and no internet (15.14c) disable Connect and say
     why; typing again brings it back. Too many wrong codes, and a local only profile, say so too. Once connected the
-    screen says so, with Close only. The row shows only with an account (anonymous, Google or Apple).
+    screen says so, with Close only. The row shows only with an account (anonymous, Google or Apple). Android draws it
+    full screen on a phone and as a dialog on a tablet; the iPhone as a large sheet with ✕ and ✓ in its bar, the iPad
+    as a form sheet, the Mac as a sheet on Settings' window, the web as a dialog (a drawer under 768 px).
   - Signed out on the phone (15.13): the phone tells its watch, which signs out and erases its data once what it
-    queued went up (`EndWatchSessionFromPhone`, as "Sign out when synced"), then shows "You signed out on your phone" and "Connect again". A watch out of reach
+    queued went up (`EndWatchSessionFromPhone`, as "Sign out when synced"), then shows "You signed out on your phone" and "Connect again". The iPhone
+    queues it for its watch (WatchConnectivity's `transferUserInfo`), so a watch app that isn't running gets it once it opens. A watch out of reach
     finds out on its next sync, when its session is refused. Deleting the account drops the watch's session too.
   - To disconnect only the watch, sign out on it. A list of connected devices in Profile is for later.
   - The word for the phone is "phone" on Wear OS and "iPhone" on watchOS.

@@ -217,8 +217,11 @@ The profile, its photo, appearance, in-app update and Adjust photo.
   - Profile › Preferences › "Connect watch", right under Notifications, with "With the code your watch shows": for every
     account but a local only one (`ProfileUiState.showsConnectWatch`), since the watch signs in to the account on the
     server. It opens Connect watch (15.14, [watch.md](watch.md)): full screen on a phone (two columns lying down, the
-    code and Connect on the right), a dialog on a tablet, a book and a tabletop, as Delete account. Android only for
-    now; iOS, the web and the Mac draw it in a later phase.
+    code and Connect on the right), a dialog on a tablet, a book and a tabletop, as Delete account. On iPhone a large
+    sheet with ✕ and the ✓ that connects in its bar, a form sheet on iPad; on the Mac the row sits in Settings'
+    Appearance section and opens a sheet on Settings' window, Close and Connect at its foot. The web shows it as a card
+    of its own ("Connect watch", "With the code your watch shows", Connect) next to Category map, opening a dialog, a
+    drawer under 768 px.
   - Android's Profile › Preferences › "Appearance" is a row ("System", "System · dynamic colors") opening a sheet
     as Bible Planner's theme picker (`ProfileDialog.APPEARANCE`): a card per theme with a preview of the app in it
     (System half light, half dark, in the Android system's colors while they are on), then "Dynamic colors" with an
