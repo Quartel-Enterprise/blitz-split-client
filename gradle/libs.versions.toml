@@ -40,6 +40,12 @@ androidx-graphics-shapes = "1.1.0"
 coil = "3.6.3"
 googleid = "1.2.1"
 play-services-code-scanner = "16.1.0"
+play-services-wearable = "20.0.1"
+wear-compose = "1.7.2"
+wear-tiles = "1.6.2"
+wear-protolayout = "1.4.2"
+wear-complications = "1.3.0"
+wear-tooling-preview = "1.0.0"
 firebase-bom = "35.2.0"
 firebase-crashlytics-plugin = "3.0.8"
 google-services = "4.6.0"
@@ -86,6 +92,19 @@ androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", versi
 # Google Play's in-app updates: the flexible flow that downloads the new version while the app is in use
 play-app-update = { module = "com.google.android.play:app-update", version.ref = "play-app-update" }
 play-review = { module = "com.google.android.play:review", version.ref = "play-review" }
+play-services-wearable = { module = "com.google.android.gms:play-services-wearable", version.ref = "play-services-wearable" }
+kotlinx-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
+wear-compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "wear-compose" }
+wear-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "wear-compose" }
+wear-compose-navigation3 = { module = "androidx.wear.compose:compose-navigation3", version.ref = "wear-compose" }
+wear-compose-uiTooling = { module = "androidx.wear.compose:compose-ui-tooling", version.ref = "wear-compose" }
+wear-tiles = { module = "androidx.wear.tiles:tiles", version.ref = "wear-tiles" }
+wear-tiles-toolingPreview = { module = "androidx.wear.tiles:tiles-tooling-preview", version.ref = "wear-tiles" }
+wear-protolayout = { module = "androidx.wear.protolayout:protolayout", version.ref = "wear-protolayout" }
+wear-protolayout-material3 = { module = "androidx.wear.protolayout:protolayout-material3", version.ref = "wear-protolayout" }
+wear-protolayout-expression = { module = "androidx.wear.protolayout:protolayout-expression", version.ref = "wear-protolayout" }
+wear-complications-dataSourceKtx = { module = "androidx.wear.watchface:watchface-complications-data-source-ktx", version.ref = "wear-complications" }
+wear-toolingPreview = { module = "androidx.wear:wear-tooling-preview", version.ref = "wear-tooling-preview" }
 play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "play-services-code-scanner" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }

@@ -84,6 +84,8 @@
     <string name="profile_language_malay">Malaiisch</string>
     <string name="profile_language_greek">Griechisch</string>
     <string name="profile_language_croatian">Kroatisch</string>
+    <string name="profile_language_hungarian">Ungarisch</string>
+    <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_system_detail">Sprache des Geräts</string>
     <string name="profile_notifications">Mitteilungen</string>
     <plurals name="profile_notifications_active">
@@ -147,6 +149,8 @@
     <string name="profile_bitcoin_in_sats_detail">Zeigt Bitcoin-Beträge in sats an und nimmt sie so entgegen (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Kategorienzuordnung</string>
     <string name="profile_category_map_detail">Die Wörter, die die Kategorie einer Ausgabe bestimmen</string>
+    <string name="profile_connect_watch">Uhr verbinden</string>
+    <string name="profile_connect_watch_detail">Mit dem Code, den deine Uhr anzeigt</string>
     <string name="profile_photo_open">Foto ansehen</string>
     <string name="profile_share">Profil teilen</string>
     <string name="profile_share_message">Hier ist mein Profil bei Blitz Split: %1$s</string>

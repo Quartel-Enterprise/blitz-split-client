@@ -6,6 +6,7 @@ import com.quare.blitzsplit.core.model.AppLanguage
 
 private const val HINDI = "hi"
 private const val BENGALI = "bn"
+private const val URDU = "ur"
 private const val THAI = "th"
 private val unspacedLanguages = setOf(
     AppLanguage.JAPANESE,
@@ -16,10 +17,9 @@ private val unspacedLanguages = setOf(
 /*
  * Why: a sentence the code joins from pieces ("Ana" + "changed the category", two sentences of a detail) puts a space
  * between them, but Japanese and Chinese write them with none ("Anaがカテゴリを変更しました") and end a sentence with
- * "。", not ".". Hindi and Bengali end it with their danda, "।", and Thai with nothing, the space between two being its stop. Read
- * through `AppLanguage`, so both Chinese are unspaced whichever tag the device names them by (zh-TW, zh-Hant-HK,
- * zh-CN…). Same rule
- * as the web's `wordGap` and `fullStop`.
+ * "。", not ".". Hindi and Bengali end it with their danda, "।", Urdu with "۔", and Thai with nothing, the space between
+ * two being its stop. Read through `AppLanguage`, so both Chinese are unspaced whichever tag the device names them by
+ * (zh-TW, zh-Hant-HK, zh-CN…). Same rule as the web's `wordGap` and `fullStop`.
  */
 @Composable
 fun wordGapUi(): String = if (isUnspacedUi()) "" else " "
@@ -29,6 +29,7 @@ fun fullStopUi(): String {
     if (isUnspacedUi()) return "。"
     return when (LocalLocale.current.platformLocale.language) {
         HINDI, BENGALI -> "।"
+        URDU -> "۔"
         THAI -> ""
         else -> "."
     }

@@ -55,6 +55,10 @@ internal fun Route.toScreenView(): ScreenView = when (this) {
     is Route.JoinPick -> ScreenView("join_pick", emptyMap())
     is Route.PaymentKey -> ScreenView("payment_key", mapOf("method" to method, "is_new" to (keyId == null)))
     is Route.PayingMethod -> ScreenView("paying_method", mapOf("is_new" to (methodId == null)))
+    Route.ConnectWatch -> ScreenView("connect_watch", emptyMap())
+    Route.WatchConnect -> ScreenView("watch_connect", emptyMap())
+    Route.WatchBalances -> ScreenView("watch_balances", emptyMap())
+    is Route.WatchGroup -> ScreenView("watch_group", emptyMap())
 }
 
 // Why: one person's history, or Início's "Ver tudo" over "Últimas despesas" (its bills).

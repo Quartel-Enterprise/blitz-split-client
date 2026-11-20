@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Neuložené změny se ztratí.</string>
     <string name="discard_changes_discard">Zahodit</string>
     <string name="discard_changes_keep_editing">Pokračovat v úpravách</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Hodinky</string>
+    <string name="watch_connected_title">Zařízení %1$s je připojené k tvému účtu</string>
+    <string name="watch_connected_title_unnamed">Hodinky jsou připojené k tvému účtu</string>
+    <string name="watch_connected_text">Vidí tvoje skupiny a synchronizují se samy. Pokud je chceš odpojit, odhlas se na hodinkách.</string>
 </resources>

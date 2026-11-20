@@ -39,6 +39,10 @@ interface DeviceSettingsRepository {
 
     suspend fun updateLastNotificationPromptAt(epochMillis: Long)
 
+    fun observeLastSyncedAt(): Flow<Long?>
+
+    suspend fun updateLastSyncedAt(epochMillis: Long)
+
     fun observeAppBannerDismissed(): Flow<Boolean>
 
     suspend fun dismissAppBanner()

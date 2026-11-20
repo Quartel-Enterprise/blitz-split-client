@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Fiók törlése</string>
+    <string name="delete_account_offline_title">Nincs internet.</string>
+    <string name="delete_account_offline_body">A fiókod törléséhez internetkapcsolat kell. Csatlakozz, és próbáld újra.</string>
+    <string name="delete_account_heading">Törlöd a fiókodat és az adataidat?</string>
+    <string name="delete_account_deleted_title">Mi törlődik</string>
+    <string name="delete_account_deleted_profile">A profilod (név, fotó és szín)</string>
+    <string name="delete_account_deleted_keys">A Pix- és Bitcoin-kulcsaid</string>
+    <string name="delete_account_deleted_provider">A kapcsolat ezzel a fiókoddal: %1$s</string>
+    <string name="delete_account_deleted_recovery_code">A helyreállító kódod</string>
+    <string name="delete_account_deleted_device">Az adataid másolata ezen az eszközön</string>
+    <string name="delete_account_kept_title">Mi marad a csoportjaidban</string>
+    <string name="delete_account_kept_groups">A csoportok a számláikkal és fizetéseikkel együtt, a többi tag számára</string>
+    <string name="delete_account_kept_member">A neved minden csoportban, fiók nélküli tagként</string>
+    <string name="delete_account_kept_comments">A hozzászólásaid és az általad hozzáadott fotók, a neved alatt</string>
+    <string name="delete_account_export">Előbb exportálom az adataimat</string>
+    <string name="delete_account_confirm">Megértettem, hogy ez nem vonható vissza</string>
+    <string name="delete_account_delete">Fiók törlése</string>
+    <string name="delete_account_cancel">Mégse</string>
+    <string name="delete_account_failed">Nem sikerült törölni a fiókodat. Próbáld újra.</string>
+</resources>

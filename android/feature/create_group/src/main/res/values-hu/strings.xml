@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Új csoport</string>
+    <string name="create_group_close">Bezárás</string>
+    <string name="create_group_create">Létrehozás</string>
+    <string name="create_group_change_color">A csoport színének módosítása</string>
+    <string name="create_group_name_label">Csoport neve</string>
+    <string name="create_group_type_label">Csoport típusa</string>
+    <string name="create_group_members_title">Kik vannak benne</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d ember</item>
+        <item quantity="other">%d ember</item>
+    </plurals>
+    <string name="create_group_me">te</string>
+    <string name="create_group_remove_member">Eltávolítás: %s</string>
+    <string name="create_group_add_placeholder">Hozzáadás név alapján</string>
+    <string name="create_group_add">Hozzáadás</string>
+    <string name="create_group_no_app_notice">Most senkinek nem kell az alkalmazás. Már most hozzáadhatsz kiadásokat mindenkinek, és a linket később is elküldheted.</string>
+    <string name="create_group_currency">Alapértelmezett pénznem</string>
+    <string name="create_group_currency_caption">Az új számlák ebben a pénznemben indulnak; minden számla használhat másikat.</string>
+    <string name="create_group_save_error">Nem sikerült menteni a csoportot. Próbáld újra.</string>
+    <string name="create_group_photo">Csoportfotó</string>
+    <string name="create_group_take_photo">Fotó készítése</string>
+    <string name="create_group_choose_photo">Fotó kiválasztása</string>
+    <string name="create_group_remove_photo">Fotó eltávolítása</string>
+    <string name="create_group_photo_error">Nem sikerült használni ezt a fotót. Próbálj meg egy másikat.</string>
+</resources>

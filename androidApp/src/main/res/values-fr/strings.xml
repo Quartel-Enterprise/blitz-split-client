@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Les modifications non enregistrées seront perdues.</string>
     <string name="discard_changes_discard">Abandonner</string>
     <string name="discard_changes_keep_editing">Continuer la modification</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Montre</string>
+    <string name="watch_connected_title">%1$s connectée à ton compte</string>
+    <string name="watch_connected_title_unnamed">Montre connectée à ton compte</string>
+    <string name="watch_connected_text">Elle voit tes groupes et se synchronise toute seule. Pour la déconnecter, déconnecte-toi sur la montre.</string>
 </resources>

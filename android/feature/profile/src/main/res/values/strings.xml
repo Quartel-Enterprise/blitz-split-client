@@ -87,6 +87,8 @@
     <string name="profile_language_malay">Malay</string>
     <string name="profile_language_greek">Greek</string>
     <string name="profile_language_croatian">Croatian</string>
+    <string name="profile_language_hungarian">Hungarian</string>
+    <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English</string>
@@ -119,6 +121,8 @@
     <string name="profile_language_native_malay" translatable="false">Bahasa Melayu</string>
     <string name="profile_language_native_greek" translatable="false">Ελληνικά</string>
     <string name="profile_language_native_croatian" translatable="false">Hrvatski</string>
+    <string name="profile_language_native_hungarian" translatable="false">Magyar</string>
+    <string name="profile_language_native_urdu" translatable="false">اردو</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>
@@ -181,6 +185,8 @@
     <string name="profile_bitcoin_in_sats_detail">Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).</string>
     <string name="profile_category_map">Category map</string>
     <string name="profile_category_map_detail">The words that pick a bill\'s category</string>
+    <string name="profile_connect_watch">Connect watch</string>
+    <string name="profile_connect_watch_detail">With the code your watch shows</string>
     <string name="profile_photo_open">View photo</string>
     <string name="profile_share">Share profile</string>
     <string name="profile_share_message">Here\'s my profile on Blitz Split: %1$s</string>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Σύνδεση ρολογιού</string>
+    <string name="connect_watch_close">Κλείσιμο</string>
+    <string name="connect_watch_body">Πληκτρολόγησε τον κωδικό που δείχνει το ρολόι σου. Συνδέεται στον λογαριασμό σου και μετά συγχρονίζεται μόνο του.</string>
+    <string name="connect_watch_code_label">Κωδικός ρολογιού</string>
+    <string name="connect_watch_error_invalid">Λάθος ή ληγμένος κωδικός. Δημιούργησε νέο στο ρολόι.</string>
+    <string name="connect_watch_error_too_many">Πάρα πολλοί λάθος κωδικοί. Περίμενε λίγα λεπτά και δοκίμασε ξανά.</string>
+    <string name="connect_watch_error_needs_account">Σύνδεσε πρώτα έναν λογαριασμό: τα δεδομένα σου υπάρχουν μόνο σε αυτή τη συσκευή.</string>
+    <string name="connect_watch_error_failed">Δεν ήταν δυνατή η σύνδεση του ρολογιού. Δοκίμασε ξανά.</string>
+    <string name="connect_watch_offline">Για τη σύνδεση του ρολογιού χρειάζεται ίντερνετ.</string>
+    <string name="connect_watch_own_watch_only">Πληκτρολόγησε μόνο κωδικό που δείχνει το δικό σου ρολόι: όποιος έχει αυτό το ρολόι μπαίνει στον λογαριασμό σου.</string>
+    <string name="connect_watch_validity">Ο κωδικός ισχύει για 5 λεπτά και μόνο μία φορά.</string>
+    <string name="connect_watch_button">Σύνδεση</string>
+    <string name="connect_watch_connected_title">Το ρολόι συνδέθηκε</string>
+    <string name="connect_watch_connected_body">Βλέπει τις ομάδες σου και συγχρονίζεται μόνο του. Για να το αποσυνδέσεις, αποσυνδέσου στο ρολόι.</string>
+</resources>

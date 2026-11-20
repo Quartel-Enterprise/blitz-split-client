@@ -31,4 +31,9 @@
     <string name="discard_changes_message">সংরক্ষণ না করা পরিবর্তনগুলো হারিয়ে যাবে।</string>
     <string name="discard_changes_discard">বাতিল করুন</string>
     <string name="discard_changes_keep_editing">সম্পাদনা চালিয়ে যান</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">ঘড়ি</string>
+    <string name="watch_connected_title">%1$s আপনার অ্যাকাউন্টে সংযুক্ত হয়েছে</string>
+    <string name="watch_connected_title_unnamed">ঘড়ি আপনার অ্যাকাউন্টে সংযুক্ত হয়েছে</string>
+    <string name="watch_connected_text">এটি আপনার গ্রুপগুলো দেখে এবং নিজে থেকেই সিঙ্ক হয়। সংযোগ বিচ্ছিন্ন করতে ঘড়িতে সাইন আউট করুন।</string>
 </resources>

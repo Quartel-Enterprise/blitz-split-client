@@ -51,6 +51,8 @@ struct BoraRacharApp: App {
         _app = State(initialValue: AppModel())
         #if os(iOS)
         BalanceWidgetWriter.shared.start()
+        // A watch's pairing code may be what woke the app
+        WatchPairingRelay.shared.start()
         #endif
     }
 

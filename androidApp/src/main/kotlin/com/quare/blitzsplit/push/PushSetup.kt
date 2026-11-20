@@ -1,6 +1,10 @@
 package com.quare.blitzsplit.push
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.quare.blitzsplit.BuildConfig
 import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
@@ -45,3 +49,11 @@ object PushSetup {
         )
     }
 }
+
+/*
+ * Why: whether a notification the app posts itself (a push, the watch's notice) shows. Before Android 13 the permission
+ * doesn't exist and notifications are on until the settings turn them off.
+ */
+internal fun Context.canPostNotifications(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+    ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+    PackageManager.PERMISSION_GRANTED

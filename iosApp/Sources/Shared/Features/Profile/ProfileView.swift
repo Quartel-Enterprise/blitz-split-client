@@ -473,6 +473,10 @@ private struct PreferencesSection: View {
             }
             .foregroundStyle(.primary)
             #endif
+            // The code a watch shows when its phone is out of reach (15.14); only with an account on the server
+            if model.state.showsConnectWatch {
+                ConnectWatchRow(model: model)
+            }
             CategoryMapRow(model: model)
         }
     }
@@ -560,6 +564,8 @@ private struct LanguageName: View {
         case .malay: "Bahasa Melayu"
         case .greek: "Ελληνικά"
         case .croatian: "Hrvatski"
+        case .hungarian: "Magyar"
+        case .urdu: "اردو"
         default: nil
         }
     }
@@ -713,6 +719,16 @@ private struct LanguageName: View {
         )
         case .croatian: String(
             localized: "Croatian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .hungarian: String(
+            localized: "Hungarian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .urdu: String(
+            localized: "Urdu",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )
@@ -1533,21 +1549,43 @@ private struct CategoryMapRow: View {
     let model: ProfileModel
 
     var body: some View {
-        Button {
+        ChevronRow(title: "Category map", detail: "The words that pick a bill's category") {
             model.send(ProfileUiEventOnCategoryMapClicked.shared)
-        } label: {
+        }
+    }
+}
+
+/// A row that opens another screen: its title over a detail, and the chevron.
+private struct ChevronRow: View {
+    let title: LocalizedStringKey
+    let detail: LocalizedStringKey
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
             LabeledContent {
                 Image(systemName: "chevron.forward")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.tertiary)
             } label: {
-                Text("Category map")
+                Text(title)
                 // The button's primary style would reach it too
-                Text("The words that pick a bill's category")
+                Text(detail)
                     .foregroundStyle(.secondary)
             }
         }
         .foregroundStyle(.primary)
+    }
+}
+
+/// Preferences › "Connect watch" (15.14): a sheet on iPhone and iPad, and on Settings' window on the Mac.
+private struct ConnectWatchRow: View {
+    let model: ProfileModel
+
+    var body: some View {
+        ChevronRow(title: "Connect watch", detail: "With the code your watch shows") {
+            model.send(ProfileUiEventOnConnectWatchClicked.shared)
+        }
     }
 }
 

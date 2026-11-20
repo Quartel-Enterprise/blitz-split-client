@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Несохранённые изменения будут потеряны.</string>
     <string name="discard_changes_discard">Отменить</string>
     <string name="discard_changes_keep_editing">Продолжить редактирование</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Часы</string>
+    <string name="watch_connected_title">Устройство %1$s подключено к твоему аккаунту</string>
+    <string name="watch_connected_title_unnamed">Часы подключены к твоему аккаунту</string>
+    <string name="watch_connected_text">Они видят твои группы и синхронизируются сами. Чтобы отключить их, выйди из аккаунта на часах.</string>
 </resources>

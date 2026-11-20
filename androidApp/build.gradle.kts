@@ -66,7 +66,7 @@ android {
     // Lists English, Portuguese (pt and pt-PT), Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish,
     // Indonesian (values-in, Android's legacy code for id), Russian, Ukrainian, Korean, Hindi, Arabic, Simplified
     // Chinese (values-b+zh+Hans), Hebrew (values-iw, Android's legacy code for he), Thai, Vietnamese, Traditional
-    // Chinese (values-b+zh+Hant), Swedish, Czech, Romanian, Bengali, Malay, Greek and Croatian in the system's per-app language setting (Android 13+)
+    // Chinese (values-b+zh+Hant), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian and Urdu in the system's per-app language setting (Android 13+)
     androidResources {
         generateLocaleConfig = true
     }
@@ -117,6 +117,7 @@ dependencies {
     implementation(project(":core:provider:crashlytics"))
     implementation(project(":core:provider:analytics"))
     implementation(project(":core:sync"))
+    implementation(project(":core:watch"))
     implementation(project(":core:in_app_update"))
     implementation(project(":android:platform"))
 
@@ -145,6 +146,7 @@ dependencies {
     implementation(project(":android:feature:payment_key"))
     implementation(project(":android:feature:paying_method"))
     implementation(project(":android:feature:delete_account"))
+    implementation(project(":android:feature:connect_watch"))
     implementation(project(":android:feature:contact_support"))
     implementation(project(":android:feature:notification_settings"))
     implementation(project(":android:feature:category_map"))
@@ -155,6 +157,10 @@ dependencies {
     // Atividade's push notifications (Crashlytics comes with :core:provider:crashlytics)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
+
+    // The paired watch: its pairing code and the sign out it follows (docs/product/watch.md)
+    implementation(libs.play.services.wearable)
+    implementation(libs.kotlinx.coroutines.playServices)
 
     // Koin
     implementation(project.dependencies.platform(libs.koin.bom))

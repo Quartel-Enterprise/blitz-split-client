@@ -47,6 +47,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
                 timeFormat = null,
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -83,6 +84,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
                 timeFormat = null,
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -113,6 +115,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
                 timeFormat = null,
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -150,6 +153,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
                 timeFormat = null,
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -181,6 +185,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
                 timeFormat = null,
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -218,6 +223,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
                 timeFormat = null,
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -249,6 +255,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                     sharesUsageData = false,
                     showsBetaReleaseNotes = null,
                     timeFormat = null,
+                    lastSyncedAt = null,
                 ),
                 dataSource.observe().first(),
             )
@@ -279,6 +286,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
                 timeFormat = null,
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -318,6 +326,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = false,
                 showsBetaReleaseNotes = null,
                 timeFormat = null,
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -349,6 +358,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = false,
                 showsBetaReleaseNotes = null,
                 timeFormat = null,
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -365,6 +375,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                     sharesUsageData = false,
                     showsBetaReleaseNotes = null,
                     timeFormat = null,
+                    lastSyncedAt = null,
                 )
             }
 
@@ -388,6 +399,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                     sharesUsageData = true,
                     showsBetaReleaseNotes = null,
                     timeFormat = null,
+                    lastSyncedAt = null,
                 ),
                 dataSource.observe().first(),
             )
@@ -432,6 +444,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
                 timeFormat = "24h",
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -470,6 +483,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = false,
                 showsBetaReleaseNotes = null,
                 timeFormat = "12h",
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )
@@ -501,6 +515,7 @@ class RoomDeviceSettingsLocalDataSourceTest {
                 sharesUsageData = true,
                 showsBetaReleaseNotes = null,
                 timeFormat = "12h",
+                lastSyncedAt = null,
             ),
             dataSource.observe().first(),
         )

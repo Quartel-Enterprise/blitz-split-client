@@ -33,4 +33,9 @@
     <string name="discard_changes_message">저장하지 않은 변경 사항은 사라져요.</string>
     <string name="discard_changes_discard">버리기</string>
     <string name="discard_changes_keep_editing">계속 수정</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">워치</string>
+    <string name="watch_connected_title">%1$s이(가) 계정에 연결됐어요</string>
+    <string name="watch_connected_title_unnamed">워치가 계정에 연결됐어요</string>
+    <string name="watch_connected_text">그룹을 보고 알아서 동기화해요. 연결을 해제하려면 워치에서 로그아웃하세요.</string>
 </resources>

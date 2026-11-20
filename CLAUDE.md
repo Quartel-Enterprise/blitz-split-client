@@ -4,7 +4,7 @@
 
 An app to split bills among friends, offline first and with an optional account. It is **Bora Rachar** in
 Portuguese and **Blitz Split** in every other language (English is the fallback; Portuguese (Brazil and Portugal), Spanish, French,
-German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek and Croatian are translated); Blitz Split is also the code name: the package `com.quare.blitzsplit`, the Gradle project, the
+German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian and Urdu are translated); Blitz Split is also the code name: the package `com.quare.blitzsplit`, the Gradle project, the
 `blitzsplit.*` convention plugins. The apps keep the legacy Blitz Split `applicationId` and bundle id, since they
 replace it in the stores.
 
@@ -62,4 +62,5 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - [Split a bill](docs/product/split-bill.md): payers, Dividir, Itens, categories, receipts.
   - [Joining and foldables](docs/product/joining-and-folds.md): invite links, cameras, foldables, iPhone Duo.
   - [Get the app](docs/product/get-the-app.md): the web's and the Mac's invite to the phone app, its code and Profile's row.
+  - [The watch](docs/product/watch.md): the Wear OS app (and later the Apple Watch's), connecting it, its Tile and complications, Connect watch.
 - Product choices nobody wrote down yet are Pierre's call: ask before settling one.

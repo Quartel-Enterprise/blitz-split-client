@@ -83,6 +83,8 @@
     <string name="profile_language_malay">Melayu</string>
     <string name="profile_language_greek">Yunani</string>
     <string name="profile_language_croatian">Kroasia</string>
+    <string name="profile_language_hungarian">Hungaria</string>
+    <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>
     <plurals name="profile_notifications_active">
@@ -143,6 +145,8 @@
     <string name="profile_bitcoin_in_sats_detail">Menampilkan dan mengetik jumlah bitcoin dalam sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Peta kategori</string>
     <string name="profile_category_map_detail">Kata-kata yang memilih kategori tagihan</string>
+    <string name="profile_connect_watch">Hubungkan jam tangan</string>
+    <string name="profile_connect_watch_detail">Dengan kode yang muncul di jam tanganmu</string>
     <string name="profile_photo_open">Lihat foto</string>
     <string name="profile_share">Bagikan profil</string>
     <string name="profile_share_message">Ini profilku di Blitz Split: %1$s</string>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Nincs kifejezés</string>
+    <string name="category_map_title">Kategóriatérkép</string>
+    <string name="category_map_search">Kifejezések keresése</string>
+    <string name="category_map_add">Kifejezés hozzáadása</string>
+    <string name="category_map_more">További lehetőségek</string>
+    <string name="category_map_restore">Alapértelmezett visszaállítása</string>
+    <string name="category_map_back">Vissza</string>
+    <string name="category_map_intro">Ha egy számla címében szerepel ezek közül valamelyik szó, a kategóriája magától beáll. Az „Uber haza” Közlekedés lesz.</string>
+    <string name="category_map_intro_offline">A térkép offline is működik: a módosítások ezen az eszközön azonnal érvényesek, a többire pedig akkor jutnak el, amikor újra online leszel.</string>
+    <string name="category_map_device_only">A térképed csak ezen az eszközön marad. Ha a többi eszközödön is szeretnéd, jelentkezz be Google- vagy Apple-fiókkal a Profilodban.</string>
+    <string name="category_map_open_profile">Profil megnyitása</string>
+    <string name="category_map_longest_wins">Ha két kifejezés is illeszkedik egy címre, a hosszabb nyer.</string>
+    <string name="category_map_no_result">Nincs kifejezés ezzel: „%1$s”</string>
+    <string name="category_map_no_result_body">Add hozzá, és az ezt a szót tartalmazó című számlák a megfelelő kategóriával érkeznek.</string>
+    <string name="category_map_add_query">Hozzáadás: „%1$s”</string>
+    <string name="category_map_empty_title">A térképed üres</string>
+    <string name="category_map_empty_body">Kifejezések nélkül a kategória nem a címből jön: minden számlánál te választod ki.</string>
+    <string name="category_map_group_category"> · %1$s kategóriája</string>
+    <string name="category_map_only_main">Csak: %1$s</string>
+    <string name="category_map_only_in_group">csak ebben a csoportban: %1$s</string>
+    <string name="category_map_no_terms_yet">Még nincs kifejezés.</string>
+    <string name="category_map_add_in">Kifejezés hozzáadása ide: %1$s</string>
+    <string name="category_map_tip">Koppints egy kifejezésre a kategóriája módosításához vagy az eltávolításához. Az egész szóra illeszkedik, az ékezeteket és a kis- és nagybetűket figyelmen kívül hagyva.</string>
+    <string name="category_map_queued">sorban áll</string>
+    <string name="category_map_term_action">%1$s, %2$s. Szerkesztés</string>
+    <string name="category_map_new_term">Új kifejezés</string>
+    <string name="category_map_edit_term">Kifejezés szerkesztése</string>
+    <string name="category_map_term_label">Szó vagy kifejezés</string>
+    <string name="category_map_term_help">Az egész szóra illeszkedik, az ékezeteket és a kis- és nagybetűket figyelmen kívül hagyva.</string>
+    <string name="category_map_term_help_app">Az alkalmazás kifejezése. Az Alapértelmezett visszaállítása eredeti formájában hozza vissza.</string>
+    <string name="category_map_term_duplicate">„%1$s” már ezt választja: %2$s. Minden kifejezéshez egy kategória tartozik.</string>
+    <string name="category_map_term_too_short">Legalább 2 betűt használj.</string>
+    <string name="category_map_term_too_long">Legfeljebb 30 betűt használj.</string>
+    <string name="category_map_term_invalid">Csak betűket, számjegyeket és szóközt használj.</string>
+    <string name="category_map_category">Kategória</string>
+    <string name="category_map_category_help">Lehet kategória vagy alkategória.</string>
+    <string name="category_map_category_help_edit">Ha itt módosítod, a kifejezés átkerül egy másik kategóriába.</string>
+    <string name="category_map_category_help_move">Az áthelyezéssel a kifejezés kikerül innen: %1$s.</string>
+    <string name="category_map_example">Példa</string>
+    <string name="category_map_example_move">Áthelyezés után</string>
+    <string name="category_map_remove">Eltávolítás</string>
+    <string name="category_map_cancel">Mégse</string>
+    <string name="category_map_save">Mentés</string>
+    <string name="category_map_move_to">Áthelyezés ide: %1$s</string>
+    <string name="category_map_removed">„%1$s” lekerült a térképről</string>
+    <string name="category_map_undo">Visszavonás</string>
+    <string name="category_map_restore_title">Visszaállítod az alapértelmezett térképet?</string>
+    <string name="category_map_restore_body">Az alkalmazás 60 kifejezése eredeti formájában visszakerül, azokat is beleértve, amelyeket eltávolítottál vagy áthelyeztél.</string>
+    <string name="category_map_restore_own_one">Az általad létrehozott kifejezés („%1$s”) megmarad.</string>
+    <string name="category_map_restore_confirm">Visszaállítás</string>
+    <string name="category_map_save_error">Nem sikerült menteni a térképet. Próbáld újra.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d kifejezés</item>
+        <item quantity="other">%d kifejezés</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d alkategória</item>
+        <item quantity="other">%d alkategória</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d kifejezés, amelyben szerepel: „%2$s”</item>
+        <item quantity="other">%1$d kifejezés, amelyekben szerepel: „%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d módosítás sorban áll</item>
+        <item quantity="other">Offline · %d módosítás sorban áll</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Az általad létrehozott %d kifejezés megmarad.</item>
+        <item quantity="other">Az általad létrehozott %d kifejezés megmarad.</item>
+    </plurals>
+    <string name="category_map_new_category">Új kategória</string>
+    <string name="category_map_new_subcategory_in">Új alkategória itt: %s</string>
+    <string name="category_map_edit_category">Szerkesztés: %s</string>
+    <string name="category_map_category_group">Csoport</string>
+    <string name="category_map_change_color">Szín módosítása: %1$s</string>
+    <string name="category_map_restore_color">Szín visszaállítása</string>
+    <string name="category_map_color_done">Kész</string>
+</resources>

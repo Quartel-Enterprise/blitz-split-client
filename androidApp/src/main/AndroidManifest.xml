@@ -39,6 +39,20 @@
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_notification" />
 
+        <!-- A nearby watch's pairing code over the Data Layer (WatchLink.PAIR_PATH), approved with this phone's session -->
+        <service
+            android:name=".watch.WatchPairingListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+
+                <data
+                    android:host="*"
+                    android:path="/blitzsplit/watch/pair"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
+
         <!-- Compose owns the keyboard inset through Modifier.imePadding(); without adjustResize the
              system pans the whole window as well. -->
         <activity

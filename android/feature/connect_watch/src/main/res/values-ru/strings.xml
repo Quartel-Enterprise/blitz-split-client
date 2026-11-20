@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Подключить часы</string>
+    <string name="connect_watch_close">Закрыть</string>
+    <string name="connect_watch_body">Введи код, который показывают часы. Они войдут в твой аккаунт и дальше будут синхронизироваться сами.</string>
+    <string name="connect_watch_code_label">Код с часов</string>
+    <string name="connect_watch_error_invalid">Неверный или просроченный код. Получи новый на часах.</string>
+    <string name="connect_watch_error_too_many">Слишком много неверных кодов. Подожди несколько минут и попробуй ещё раз.</string>
+    <string name="connect_watch_error_needs_account">Сначала подключи аккаунт: сейчас твои данные есть только на этом устройстве.</string>
+    <string name="connect_watch_error_failed">Не удалось подключить часы. Попробуй ещё раз.</string>
+    <string name="connect_watch_offline">Чтобы подключить часы, нужен интернет.</string>
+    <string name="connect_watch_own_watch_only">Вводи только код со своих собственных часов: тот, у кого эти часы, получит доступ к твоему аккаунту.</string>
+    <string name="connect_watch_validity">Код действует 5 минут и только один раз.</string>
+    <string name="connect_watch_button">Подключить</string>
+    <string name="connect_watch_connected_title">Часы подключены</string>
+    <string name="connect_watch_connected_body">Они видят твои группы и синхронизируются сами. Чтобы отключить их, выйди из аккаунта на часах.</string>
+</resources>

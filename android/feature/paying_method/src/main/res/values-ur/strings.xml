@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">ادائیگی کا نیا طریقہ</string>
+    <string name="paying_method_edit_title">ادائیگی کے طریقے میں ترمیم کریں</string>
+    <string name="paying_method_type">قسم</string>
+    <string name="paying_method_name">نام</string>
+    <string name="paying_method_name_optional">نام (اختیاری)</string>
+    <string name="paying_method_color">رنگ</string>
+    <string name="paying_method_default">ڈیفالٹ طریقہ</string>
+    <string name="paying_method_default_hint">آپ کے ادا کیے گئے نئے خرچ اسی سے شروع ہوں گے۔</string>
+    <string name="paying_method_delete">ادائیگی کا طریقہ حذف کریں</string>
+    <string name="paying_method_delete_title">ادائیگی کا یہ طریقہ حذف کریں؟</string>
+    <string name="paying_method_delete_body">جن خرچوں پر آپ نے اسے لگایا تھا، ان پر یہ اب نظر نہیں آئے گا۔</string>
+    <string name="paying_method_delete_confirm">حذف کریں</string>
+    <string name="paying_method_save">محفوظ کریں</string>
+</resources>

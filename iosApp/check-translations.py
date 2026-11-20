@@ -22,7 +22,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 # Every language the app is translated into, but English (the source), es-ES and pt-PT (partial)
-REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh-Hans", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr")
+REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh-Hans", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr", "hu", "ur")
 # The regional ones that hold only their own words: no key needs them, but the ones they give keep the placeholders
 PARTIAL = ("es-ES", "pt-PT")
 # The plural categories each language needs when it varies by plural, where it needs more than one and other: a

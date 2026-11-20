@@ -85,6 +85,8 @@
     <string name="profile_language_malay">Malaeză</string>
     <string name="profile_language_greek">Greacă</string>
     <string name="profile_language_croatian">Croată</string>
+    <string name="profile_language_hungarian">Maghiară</string>
+    <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_system_detail">Limba dispozitivului</string>
     <string name="profile_notifications">Notificări</string>
     <plurals name="profile_notifications_active">
@@ -151,6 +153,8 @@
     <string name="profile_bitcoin_in_sats_detail">Afișează și introduce sumele în bitcoin în sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Harta categoriilor</string>
     <string name="profile_category_map_detail">Cuvintele care aleg categoria unei cheltuieli</string>
+    <string name="profile_connect_watch">Conectează ceasul</string>
+    <string name="profile_connect_watch_detail">Cu codul afișat pe ceas</string>
     <string name="profile_photo_open">Vezi fotografia</string>
     <string name="profile_share">Distribuie profilul</string>
     <string name="profile_share_message">Iată profilul meu în Blitz Split: %1$s</string>

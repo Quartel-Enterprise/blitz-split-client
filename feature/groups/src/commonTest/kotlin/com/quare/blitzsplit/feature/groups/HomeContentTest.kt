@@ -701,6 +701,7 @@ class HomeContentTest {
         people = people.toList(),
         totals = emptyList(),
         me = null,
+        evenPeople = emptyList(),
     )
 
     private fun person(

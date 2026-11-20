@@ -55,6 +55,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
             ("Ποιος πλήρωσε τι, με μια ματιά" over "Όλα τα έξοδα του ταξιδιού μαζί, με το υπόλοιπό σου στην κορυφή"),
         "hr" to
             ("Tko je što platio, na prvi pogled" over "Svi troškovi putovanja na jednom mjestu, tvoj saldo na vrhu"),
+        "hu" to ("Ki mit fizetett, egy pillantással" over "Az út összes számlája egy helyen, felül az egyenlegeddel"),
+        "ur" to ("کس نے کیا دیا، ایک نظر میں" over "سفر کے سارے خرچ ایک جگہ، اوپر آپ کا بیلنس"),
     ),
     StoreScreen.ITEMS to mapOf(
         "en" to ("Split by what each one had" over "Tick who had each item and the service charge splits fairly"),
@@ -112,6 +114,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Bahagi ikut apa yang diambil" over "Tanda siapa ambil item, caj perkhidmatan dibahagi adil"),
         "el" to ("Ο καθένας πληρώνει ό,τι πήρε" over "Τσέκαρε ποιος πήρε κάθε είδος και το σέρβις μοιράζεται δίκαια"),
         "hr" to ("Svatko plaća ono što je imao" over "Označi tko je imao koju stavku, a usluga se dijeli pošteno"),
+        "hu" to ("Mindenki azt fizeti, amit evett" over "Jelöld, ki mit kért, és a szervizdíj igazságosan oszlik el"),
+        "ur" to ("جس نے جو لیا، وہی دے" over "چنیں ہر آئٹم کس نے لیا، سروس چارج بھی انصاف سے بٹے گا"),
     ),
     StoreScreen.RECEIPT to mapOf(
         "en" to ("Snap the receipt, skip the typing" over "The items fill themselves in from a photo"),
@@ -145,6 +149,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Foto resit, tanpa perlu menaip" over "Item diisi sendiri daripada foto"),
         "el" to ("Σκάναρε την απόδειξη και τελείωσες" over "Τα είδη συμπληρώνονται μόνα τους από μια φωτογραφία"),
         "hr" to ("Slikaj račun, bez tipkanja" over "Stavke se same upišu s fotografije"),
+        "hu" to ("Fotózd le a nyugtát, ne gépelj" over "A tételek maguktól kitöltődnek egy fotóból"),
+        "ur" to ("رسید کی تصویر لیں، ٹائپ نہ کریں" over "تصویر سے آئٹمز خود بخود بھر جاتے ہیں"),
     ),
     StoreScreen.BALANCES to mapOf(
         "en" to ("Know who owes whom" over "Settle up in a tap and record the payment"),
@@ -177,6 +183,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Ketahui siapa berhutang" over "Selesaikan dengan satu ketikan, rekod bayaran"),
         "el" to ("Μάθε ποιος χρωστάει σε ποιον" over "Εξόφλησε με ένα πάτημα και κατάγραψε την πληρωμή"),
         "hr" to ("Znaj tko kome duguje" over "Podmiri jednim dodirom i zabilježi uplatu"),
+        "hu" to ("Lásd, ki kinek tartozik" over "Számolj el egy koppintással, és rögzítsd a fizetést"),
+        "ur" to ("جانیں کس نے کس کو کتنا دینا ہے" over "ایک ٹیپ میں حساب برابر کریں اور ادائیگی درج کریں"),
     ),
     StoreScreen.INVITE to mapOf(
         "en" to ("Invite with a link or QR code" over "Friends join the group in seconds, no sign-up needed"),
@@ -212,6 +220,9 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "el" to
             ("Πρόσκληση με σύνδεσμο ή κωδικό QR" over "Οι φίλοι μπαίνουν στην ομάδα σε δευτερόλεπτα, χωρίς εγγραφή"),
         "hr" to ("Pozovi poveznicom ili QR kodom" over "Prijatelji uđu u grupu za par sekundi, bez registracije"),
+        "hu" to
+            ("Meghívás linkkel vagy QR-kóddal" over "A barátok másodpercek alatt csatlakoznak, regisztráció nélkül"),
+        "ur" to ("لنک یا QR کوڈ سے دعوت دیں" over "دوست سیکنڈوں میں گروپ میں شامل، سائن اپ کی ضرورت نہیں"),
     ),
     StoreScreen.STATISTICS to mapOf(
         "en" to ("See where the money went" over "Spending by category and by person"),
@@ -244,6 +255,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Lihat ke mana perginya wang" over "Perbelanjaan mengikut kategori dan orang"),
         "el" to ("Δες πού πήγαν τα χρήματα" over "Έξοδα ανά κατηγορία και ανά άτομο"),
         "hr" to ("Vidi kamo je otišao novac" over "Potrošnja po kategoriji i po osobi"),
+        "hu" to ("Lásd, hová ment a pénz" over "Költések kategóriánként és személyenként"),
+        "ur" to ("دیکھیں پیسہ کہاں گیا" over "کیٹیگری اور شخص کے لحاظ سے خرچ"),
     ),
     StoreScreen.HOME to mapOf(
         "en" to ("Your groups, front and center" over "Pin the ones you use most and see your balance in each"),
@@ -280,6 +293,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Kumpulan anda, sentiasa di depan" over "Semat yang kerap digunakan dan lihat baki setiap satu"),
         "el" to ("Οι ομάδες σου σε πρώτο πλάνο" over "Καρφίτσωσε τις πιο συχνές και δες το υπόλοιπό σου στην καθεμία"),
         "hr" to ("Tvoje grupe uvijek na vrhu" over "Prikvači one koje najčešće koristiš i vidi saldo u svakoj"),
+        "hu" to ("A csoportjaid mindig elöl" over "Tűzd ki a leggyakoribbakat, és lásd mindegyikben az egyenleged"),
+        "ur" to ("آپ کے گروپ، ہمیشہ سامنے" over "زیادہ استعمال ہونے والے پن کریں، ہر ایک میں اپنا بیلنس دیکھیں"),
     ),
     StoreScreen.PAYERS_AND_CURRENCIES to mapOf(
         "en" to ("Several payers, any currency" over "Split bills more than one person paid, even in crypto"),
@@ -326,6 +341,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
             ("Πολλοί πληρωτές, κάθε νόμισμα" over "Μοίρασε έξοδα που πλήρωσαν πολλοί, ακόμη και σε κρυπτονομίσματα"),
         "hr" to
             ("Više platitelja, bilo koja valuta" over "Podijeli troškove koje je platilo više osoba, čak i u kriptu"),
+        "hu" to ("Több fizető, bármilyen pénznem" over "Oszd fel a többek által fizetett számlákat, akár kriptóban is"),
+        "ur" to ("کئی ادا کرنے والے، کوئی بھی کرنسی" over "کئی لوگوں کے ادا کیے بل بھی بانٹیں، کرپٹو میں بھی"),
     ),
     StoreScreen.ACTIVITY to mapOf(
         "en" to ("Never miss a change" over "Every new bill and payment in your groups, as it happens"),
@@ -358,6 +375,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "el" to
             ("Δεν σου ξεφεύγει καμία αλλαγή" over "Κάθε νέο έξοδο και πληρωμή στις ομάδες σου, τη στιγμή που γίνεται"),
         "hr" to ("Ne propusti nijednu promjenu" over "Svaki novi trošak i uplata u tvojim grupama, odmah"),
+        "hu" to ("Egy változás se kerülje el a figyelmed" over "Minden új számla és fizetés a csoportjaidban, azonnal"),
+        "ur" to ("کوئی تبدیلی نہ چھوٹے" over "آپ کے گروپوں کا ہر نیا خرچ اور ادائیگی، اسی وقت"),
     ),
     StoreScreen.LIGHT_THEME to mapOf(
         "en" to ("Light or dark, it follows you" over "Works offline, with or without an account"),
@@ -389,6 +408,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Cerah atau gelap, ikut suka anda" over "Berfungsi di luar talian, dengan atau tanpa akaun"),
         "el" to ("Φωτεινό ή σκοτεινό, όπως σου αρέσει" over "Λειτουργεί εκτός σύνδεσης, με ή χωρίς λογαριασμό"),
         "hr" to ("Svijetlo ili tamno, kako ti paše" over "Radi izvanmrežno, s korisničkim računom ili bez njega"),
+        "hu" to ("Világos vagy sötét, ahogy szereted" over "Offline is működik, fiókkal vagy anélkül"),
+        "ur" to ("لائٹ یا ڈارک، جیسا آپ چاہیں" over "آف لائن بھی چلتی ہے، اکاؤنٹ کے ساتھ یا اس کے بغیر"),
     ),
 )
 
