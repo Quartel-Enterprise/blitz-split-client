@@ -22,6 +22,7 @@ new features or modifying existing ones.
 - [@docs/release-notes.md](release-notes.md)
 - [@docs/store-listing.md](store-listing.md)
 - [@docs/store-listing-screenshots.md](store-listing-screenshots.md)
+- [@docs/store-video.md](store-video.md)
 
 The one idea behind all of them: Kotlin Multiplatform is shared **up to the ViewModel**. Every `ViewModel`,
 `UiState`, `UiEvent` and `UiAction` lives in `:feature:*`, and three native UIs draw them: Jetpack Compose

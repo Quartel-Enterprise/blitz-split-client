@@ -1,0 +1,13 @@
+{
+  "name": "blitzsplit-store-video",
+  "private": true,
+  "type": "module",
+  "description": "The store preview video, composed with Remotion from the app's recordings (docs/store-video.md).",
+  "dependencies": {
+    "@remotion/cli": "4.0.545",
+    "@remotion/google-fonts": "4.0.545",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.545"
+  }
+}
