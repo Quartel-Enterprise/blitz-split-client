@@ -236,6 +236,17 @@ class AccountRepositoryImpl(
         }
     }
 
+    override suspend fun signInWithPairingToken(tokenHash: String): Result<Unit> = suspendRunCatching {
+        failWhileExpiring()
+        remote.signInWithMagicLink(tokenHash)
+        val user = requireNotNull(remote.getCurrentUserOrNull())
+        /*
+         * Why: the account's recovery code is the phone's to keep; a watch asking for one would rotate it and void the
+         * words the person saved, so the watch takes it as saved, as a restore does.
+         */
+        local.update { account -> account.toMirrorOf(user).copy(recoveryCodePrompt = RecoveryCodePrompt.SAVED.code) }
+    }
+
     override suspend fun createRecoveryCode(): Result<String> = suspendRunCatching {
         try {
             val code = remote.createRecoveryCode()

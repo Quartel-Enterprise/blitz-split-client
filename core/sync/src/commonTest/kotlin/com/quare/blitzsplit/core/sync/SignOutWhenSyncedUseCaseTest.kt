@@ -104,6 +104,7 @@ class SignOutWhenSyncedUseCaseTest {
                 appForeground = AppForeground(),
                 connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
                 crashReporter = CrashReporter {},
+                lastSyncRecorder = {},
                 scope = backgroundScope,
             ),
         )

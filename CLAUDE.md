@@ -62,4 +62,5 @@ First-time setup (JDK, Android SDK, Xcode, XcodeGen, Node, Supabase settings): [
   - [Split a bill](docs/product/split-bill.md): payers, Dividir, Itens, categories, receipts.
   - [Joining and foldables](docs/product/joining-and-folds.md): invite links, cameras, foldables, iPhone Duo.
   - [Get the app](docs/product/get-the-app.md): the web's and the Mac's invite to the phone app, its code and Profile's row.
+  - [The watch](docs/product/watch.md): the Wear OS app (and later the Apple Watch's), connecting it, its Tile and complications, Connect watch.
 - Product choices nobody wrote down yet are Pierre's call: ask before settling one.

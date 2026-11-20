@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.account.domain.model.TooManyRecoveryAttemptsExc
 import com.quare.blitzsplit.core.model.AccountProvider
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.auth.OtpType
 import io.github.jan.supabase.auth.exception.AuthErrorCode
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.auth.providers.Apple
@@ -160,6 +161,13 @@ class SupabaseAccountRemoteDataSource(
             email = credentials.email
             password = credentials.password
         }
+    }
+
+    override suspend fun signInWithMagicLink(tokenHash: String) {
+        auth.verifyEmailOtp(
+            type = OtpType.Email.MAGIC_LINK,
+            tokenHash = tokenHash,
+        )
     }
 
     override suspend fun fetchRecoveryCredentials(code: String): RecoveryCredentials {

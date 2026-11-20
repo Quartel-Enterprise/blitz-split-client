@@ -791,6 +791,7 @@ class SyncCoordinatorExpiryTest {
         appForeground = AppForeground(),
         connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(online) },
         crashReporter = CrashReporter { reportedFailures += it },
+        lastSyncRecorder = {},
         scope = backgroundScope,
     )
 

@@ -87,6 +87,8 @@ class FakeAccountRepository(
     val browserConnections = mutableListOf<AccountProvider>()
     val browserCallbacks = mutableListOf<String>()
     val restoredCodes = mutableListOf<String>()
+    val pairingTokens = mutableListOf<String>()
+    var pairingSignInError: Throwable? = null
     var registrationCount = 0
     var recoveryCodeCreations = 0
     var appPauseCount = 0
@@ -203,6 +205,13 @@ class FakeAccountRepository(
     override suspend fun restoreWithRecoveryCode(code: String): Result<Unit> {
         restoredCodes += code
         restoreError?.let { return Result.failure(it) }
+        status = restoredStatus
+        return Result.success(Unit)
+    }
+
+    override suspend fun signInWithPairingToken(tokenHash: String): Result<Unit> {
+        pairingTokens += tokenHash
+        pairingSignInError?.let { return Result.failure(it) }
         status = restoredStatus
         return Result.success(Unit)
     }

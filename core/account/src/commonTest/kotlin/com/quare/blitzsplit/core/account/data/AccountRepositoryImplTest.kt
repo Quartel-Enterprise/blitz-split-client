@@ -314,6 +314,22 @@ class AccountRepositoryImplTest {
         }
 
     @Test
+    fun `GIVEN no session WHEN a watch signs in with its pairing token THEN mirrors the user and never asks a code`() =
+        runTest {
+            // Given
+            prepareScenario(currentUser = null)
+
+            // When
+            val result = repository.signInWithPairingToken("token-hash")
+
+            // Then
+            assertTrue(result.isSuccess)
+            assertEquals(listOf("token-hash"), remote.magicLinkTokens)
+            assertEquals(AccountStatus.Anonymous("paired"), repository.observeStatus().first())
+            assertEquals(RecoveryCodePrompt.SAVED, repository.observeAccount().first().recoveryCodePrompt)
+        }
+
+    @Test
     fun `GIVEN an anonymous user WHEN connecting Apple in the browser THEN links and remembers the pending link`() =
         runTest {
             // Given
@@ -3812,6 +3828,7 @@ private class FakeAccountRemoteDataSource(
     val linkedTokens = mutableListOf<String>()
     val signedInTokens = mutableListOf<String>()
     val exchangedCodes = mutableListOf<String>()
+    val magicLinkTokens = mutableListOf<String>()
     val browserLinks = mutableListOf<AccountProvider>()
     val browserSignIns = mutableListOf<AccountProvider>()
     val readCallbackUrls = mutableListOf<String>()
@@ -3891,6 +3908,11 @@ private class FakeAccountRemoteDataSource(
 
     override suspend fun signInWithPassword(credentials: RecoveryCredentials) {
         currentUser = SessionUser("restored", null, null, null, null, emptyList())
+    }
+
+    override suspend fun signInWithMagicLink(tokenHash: String) {
+        magicLinkTokens += tokenHash
+        currentUser = SessionUser("paired", null, null, null, null, emptyList())
     }
 
     override suspend fun fetchRecoveryCredentials(code: String): RecoveryCredentials {

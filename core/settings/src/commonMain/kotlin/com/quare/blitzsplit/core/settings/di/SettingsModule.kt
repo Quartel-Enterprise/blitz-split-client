@@ -15,6 +15,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastNotificationPromptAt
+import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastSyncedAt
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastUpdatePromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveSpokenLanguage
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveStatsChartPreferences
@@ -42,6 +43,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveBitcoinInSa
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveDynamicColorsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveGroupsLayoutUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveLastNotificationPromptAtUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveLastSyncedAtUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveLastUpdatePromptAtUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveSpokenLanguageUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.ObserveStatsChartPreferencesUseCase
@@ -83,6 +85,7 @@ val settingsModule = module {
     factoryOf(::ObserveLastUpdatePromptAtUseCase).bind<ObserveLastUpdatePromptAt>()
     factoryOf(::UpdateLastUpdatePromptAtUseCase).bind<UpdateLastUpdatePromptAt>()
     factoryOf(::ObserveLastNotificationPromptAtUseCase).bind<ObserveLastNotificationPromptAt>()
+    factoryOf(::ObserveLastSyncedAtUseCase).bind<ObserveLastSyncedAt>()
     factoryOf(::UpdateLastNotificationPromptAtUseCase).bind<UpdateLastNotificationPromptAt>()
     factoryOf(::ObserveAppBannerDismissedUseCase).bind<ObserveAppBannerDismissed>()
     factoryOf(::DismissAppBannerUseCase).bind<DismissAppBanner>()

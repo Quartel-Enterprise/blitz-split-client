@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.sync.di
 
 import com.quare.blitzsplit.core.sync.AppForeground
+import com.quare.blitzsplit.core.sync.DeviceSettingsLastSyncRecorder
 import com.quare.blitzsplit.core.sync.FirstDownload
 import com.quare.blitzsplit.core.sync.PersonalCategoryData
 import com.quare.blitzsplit.core.sync.SyncCoordinator
@@ -90,6 +91,7 @@ val syncModule = module {
             appForeground = get(),
             connectivityObserver = get(),
             crashReporter = get(),
+            lastSyncRecorder = DeviceSettingsLastSyncRecorder(get(), get()),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
     }

@@ -1,0 +1,31 @@
+package com.quare.blitzsplit.feature.watchbalances.presentation.model
+
+import com.quare.blitzsplit.core.model.GroupCurrency
+
+data class WatchGroupUiState(
+    val isLoaded: Boolean,
+    val groupName: String?,
+    val currency: GroupCurrency,
+    // Why: your net in the group, in big on top (15.4).
+    val netMinor: Long,
+    // Why: each pair with you, the largest first.
+    val debts: List<WatchDebt>,
+    // Why: the pair whose "I paid" asks "Paid R$ 98.00 to Carla?" (15.5); null while nothing is asked.
+    val confirming: WatchDebt?,
+    val isRecording: Boolean,
+    // Why: a payment of the group recorded here waits to go up ("waiting to send").
+    val isQueued: Boolean,
+) {
+    /*
+     * Why: the EdgeButton "I paid" names no one, so it shows only while you owe a single person; with two or more,
+     * each row you owe on is its own "I paid".
+     */
+    val singleDebtToPay: WatchDebt?
+        get() = debts.singleOrNull(WatchDebt::isOwedByMe)
+
+    val showsIPaid: Boolean
+        get() = singleDebtToPay != null && !isRecording
+
+    val areDebtsClickable: Boolean
+        get() = debts.count(WatchDebt::isOwedByMe) > 1 && !isRecording
+}

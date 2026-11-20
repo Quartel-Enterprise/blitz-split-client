@@ -805,6 +805,7 @@ class SyncCoordinatorRealtimeTest {
             appForeground = appForeground,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             crashReporter = CrashReporter {},
+            lastSyncRecorder = {},
             scope = backgroundScope,
         )
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
