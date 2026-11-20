@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">اپنے گروپ واپس لائیں</string>
+    <string name="restore_subtitle">پہلے کسی اکاؤنٹ سے سائن اِن کیا تھا؟ بس دوبارہ سائن اِن کریں۔ اگر نہیں، تو ریکوری کوڈ یا اپنی پرانی ڈیوائس کا QR کوڈ استعمال کریں۔</string>
+    <string name="restore_no_connection_title">کنکشن نہیں ہے</string>
+    <string name="restore_no_connection_body">اکاؤنٹ یا کوڈ سے سائن اِن کرنے کے لیے آپ کے گروپ ڈاؤن لوڈ کرنے کو انٹرنیٹ چاہیے۔ آپ نے جو لکھا ہے وہ محفوظ رہے گا۔</string>
+    <string name="restore_code_label">یا ریکوری کوڈ استعمال کریں</string>
+    <string name="restore_code_hint">12 الفاظ، ترتیب سے۔ تمام خانے بھرنے کے لیے سارے الفاظ ایک ہی خانے میں پیسٹ کریں۔</string>
+    <string name="restore_scan_qr_title">اپنی پرانی ڈیوائس کا QR کوڈ اسکین کریں</string>
+    <string name="restore_scan_qr_body">وہاں: پروفائل › ریکوری › QR کوڈ دکھائیں</string>
+    <string name="restore_recover">واپس لائیں</string>
+    <string name="restore_try_again">دوبارہ کوشش کریں</string>
+    <string name="restore_start_fresh">اس ڈیوائس پر نئے سرے سے شروع کریں</string>
+    <string name="restore_error_invalid_code">کوڈ نہیں ملا۔ الفاظ اور ان کی ترتیب چیک کریں، پھر دوبارہ کوشش کریں۔</string>
+    <string name="restore_error_too_many_attempts">بہت زیادہ کوششیں۔ چند منٹ انتظار کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="restore_error_sign_in_failed">ابھی سائن اِن نہیں ہو سکا۔ دوبارہ کوشش کریں۔</string>
+    <string name="restore_error_unknown">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</string>
+</resources>

@@ -14,8 +14,8 @@ import java.util.Locale
  * code Android's values-iw answers to, Thai, drawn in th-TH for the baht, Vietnamese, drawn in vi-VN for the
  * đồng, Traditional Chinese, drawn in zh-TW for the New Taiwan dollar, Swedish, drawn in sv-SE for the krona,
  * Czech, drawn in cs-CZ for the koruna, Bengali, drawn in bn-BD for the taka, Malay, drawn in ms-MY for the
- * ringgit, and Hungarian, drawn in hu-HU for the forint. The stores' own codes (es-419, es-MX…) come from the tags
- * in the staging tasks of build-logic's StoreScreenshots.kt.
+ * ringgit, Hungarian, drawn in hu-HU for the forint, and Urdu, drawn in ur-PK for the rupee. The stores' own codes
+ * (es-419, es-MX…) come from the tags in the staging tasks of build-logic's StoreScreenshots.kt.
  */
 internal data class StoreLocale(
     val tag: String,
@@ -24,8 +24,8 @@ internal data class StoreLocale(
 )
 
 /**
- * The way the set's language is read: right to left for Arabic and Hebrew, by the app's own rule, the one its arrows
- * turn by. Robolectric draws every locale left to right unless told otherwise, so a Play screen is handed this
+ * The way the set's language is read: right to left for Arabic, Hebrew and Urdu, by the app's own rule, the one its
+ * arrows turn by. Robolectric draws every locale left to right unless told otherwise, so a Play screen is handed this
  * (StoreScreenshots).
  */
 internal val StoreLocale.layoutDirection: LayoutDirection
@@ -190,6 +190,11 @@ internal val storeLocales = listOf(
         tag = "hu",
         language = "hu",
         drawnLocale = "hu-HU",
+    ),
+    StoreLocale(
+        tag = "ur",
+        language = "ur",
+        drawnLocale = "ur-PK",
     ),
     StoreLocale(
         tag = "ja",

@@ -857,6 +857,7 @@ export const ja: Record<MessageKey, string> = {
   profile_languageGreek: 'ギリシャ語',
   profile_languageCroatian: 'クロアチア語',
   profile_languageHungarian: 'ハンガリー語',
+  profile_languageUrdu: 'ウルドゥー語',
   profile_bitcoinInSats: 'ビットコインをサトシで表示',
   profile_bitcoinInSatsDetail: 'ビットコインの金額をsatsで表示・入力します（1 ₿ = 100,000,000 sats）。',
   profile_shareUsageData: "利用データを共有",
