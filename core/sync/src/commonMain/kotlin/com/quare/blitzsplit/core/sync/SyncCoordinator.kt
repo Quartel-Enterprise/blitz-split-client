@@ -420,13 +420,14 @@ class SyncCoordinator(
     }
 
     /*
-     * Why: only a Google or Apple account schedules it, and the profile comes back only with that account.
-     * The schedule is read last, right before the session ends, so a cancel up to then still keeps it.
+     * Why: the phone schedules it only for a Google or Apple account, whose profile comes back with it; a watch also for
+     * an anonymous one, which it connects again from the phone. The schedule is read last, right before the session
+     * ends, so a cancel up to then still keeps it.
      */
     private suspend fun signOutIfScheduledAndSynced() {
         if (observeHasPendingChanges().first()) return
         val account = accountRepository.observeAccount().first()
-        if (account.signOutWhenSynced && account.status is AccountStatus.Connected) clearSession()
+        if (account.signOutWhenSynced && account.status != AccountStatus.LocalOnly) clearSession()
     }
 
     /*

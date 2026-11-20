@@ -28,6 +28,8 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class WatchBalancesViewModelTest {
+    private var signOutCount = 0
+
     private val trackedEvents = mutableListOf<Pair<String, Map<String, Any>>>()
     private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var peopleBalances: MutableStateFlow<PeopleBalances?>
@@ -426,6 +428,62 @@ class WatchBalancesViewModelTest {
         assertEquals(listOf("watch_group_opened" to emptyMap<String, Any>()), trackedEvents)
     }
 
+    @Test
+    fun `GIVEN the balances WHEN Sign out is tapped THEN asks first and signs out nothing yet`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(WatchBalancesUiEvent.OnSignOutClicked)
+
+            // Then
+            assertTrue(viewModel.uiState.value.isConfirmingSignOut)
+            assertEquals(0, signOutCount)
+        }
+
+    @Test
+    fun `GIVEN the sign out question WHEN confirmed THEN signs the watch out once synced`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(WatchBalancesUiEvent.OnSignOutClicked)
+
+        // When
+        viewModel.onEvent(WatchBalancesUiEvent.OnSignOutConfirmed)
+
+        // Then
+        assertEquals(1, signOutCount)
+        assertFalse(viewModel.uiState.value.isConfirmingSignOut)
+    }
+
+    @Test
+    fun `GIVEN the sign out question WHEN dismissed THEN keeps the watch signed in`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(WatchBalancesUiEvent.OnSignOutClicked)
+
+        // When
+        viewModel.onEvent(WatchBalancesUiEvent.OnSignOutDismissed)
+
+        // Then
+        assertEquals(0, signOutCount)
+        assertFalse(viewModel.uiState.value.isConfirmingSignOut)
+    }
+
+    @Test
+    fun `GIVEN no question shown WHEN a confirm arrives THEN signs out nothing and tracks nothing`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+
+            // When
+            viewModel.onEvent(WatchBalancesUiEvent.OnSignOutConfirmed)
+
+            // Then
+            assertEquals(0, signOutCount)
+            assertEquals(emptyList(), trackedEvents)
+        }
+
     private fun prepareScenario(
         balances: PeopleBalances? = balances(),
         money: Map<String, GroupMoney> = emptyMap(),
@@ -445,6 +503,7 @@ class WatchBalancesViewModelTest {
             observeGroupsMoney = { groupsMoney },
             observeFirstDownload = { firstDownload },
             observeLastSyncedAt = { lastSyncedAt },
+            signOutWhenSynced = { signOutCount++ },
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             trackEvent = { name, params -> trackedEvents += name to params },
         )

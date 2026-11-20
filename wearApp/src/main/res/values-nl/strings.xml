@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Gebruik hier hetzelfde account als op je telefoon. Daarna werkt het horloge zelfstandig.</string>
+    <string name="pair_connect">Koppelen</string>
+    <string name="pair_connecting">Je account ophalen van je telefoon…</string>
+    <string name="pair_connected_title">Klaar, %1$s</string>
+    <string name="pair_connected_title_unnamed">Klaar</string>
+    <string name="pair_connected_body">Het horloge synchroniseert vanzelf, ook ver van je telefoon.</string>
+    <string name="pair_continue">Doorgaan</string>
+    <string name="pair_local_only_title">Je gegevens staan alleen op je telefoon</string>
+    <string name="pair_local_only_body">Koppel op je telefoon een account in Profiel en tik hier opnieuw op Koppelen.</string>
+    <string name="pair_ok">OK</string>
+    <string name="pair_far_title">Telefoon buiten bereik</string>
+    <string name="pair_far_body">Breng je telefoon dichterbij, of koppel met een code.</string>
+    <string name="pair_try_again">Opnieuw proberen</string>
+    <string name="pair_use_code">Code gebruiken</string>
+    <string name="pair_code_label">Je code</string>
+    <string name="pair_code_description">Code %1$s</string>
+    <string name="pair_code_where">Op je telefoon: Profiel › Horloge koppelen</string>
+    <string name="pair_code_validity">5 minuten geldig</string>
+    <string name="pair_cancel">Annuleren</string>
+    <string name="pair_signed_out_title">Je bent uitgelogd op je telefoon</string>
+    <string name="pair_signed_out_body">De gegevens zijn ook van dit horloge verwijderd.</string>
+    <string name="pair_connect_again">Opnieuw koppelen</string>
+    <string name="pair_error_offline">Voor het koppelen van het horloge is internet nodig.</string>
+    <string name="pair_error_too_many">Te veel pogingen. Wacht een paar minuten en koppel opnieuw.</string>
+    <string name="pair_error_failed">Kan het horloge niet koppelen. Probeer het opnieuw.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Saldi</string>
+    <string name="balances_offline">Offline</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Offline · %d wijziging in de wachtrij</item>
+        <item quantity="other">Offline · %d wijzigingen in de wachtrij</item>
+    </plurals>
+    <string name="balances_overall">Totaal saldo</string>
+    <string name="balances_to_receive">te ontvangen</string>
+    <string name="balances_you_owe">je bent schuldig</string>
+    <string name="balances_group_to_receive">%1$s te ontvangen</string>
+    <string name="balances_group_you_owe">je bent %1$s schuldig</string>
+    <string name="balances_group_even">In totaal quitte</string>
+    <string name="balances_waiting">wacht op verzenden</string>
+    <string name="balances_updated_at">Bijgewerkt om %1$s</string>
+    <string name="balances_sign_out">Uitloggen</string>
+    <string name="balances_sign_out_title">Uitloggen op dit horloge?</string>
+    <string name="balances_sign_out_body">De gegevens worden gewist zodra alles in de wachtrij is verstuurd. Je telefoon blijft ingelogd.</string>
+    <string name="balances_settled_title">Niets open</string>
+    <string name="balances_settled_body">Je bent niemand iets schuldig en niemand jou. Nieuwe groepen en uitgaven verschijnen hier vanzelf.</string>
+    <string name="group_you_owe_person">je bent %1$s schuldig</string>
+    <string name="group_owes_you">%1$s is je schuldig</string>
+    <string name="group_former_member">Voormalig lid</string>
+    <string name="group_i_paid">Ik heb betaald</string>
+    <string name="group_confirm_title">%1$s betaald aan %2$s?</string>
+    <string name="group_confirm_body">%1$s. De groep ziet het meteen, of zodra er weer internet is.</string>
+    <string name="group_payment_recorded">Betaling vastgelegd</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Saldi</string>
+    <string name="tile_to_receive_total">in totaal te ontvangen</string>
+    <string name="tile_to_pay_total">in totaal te betalen</string>
+    <string name="tile_owed_to_you">Te ontvangen %1$s</string>
+    <string name="tile_you_owe">Je bent %1$s schuldig</string>
+    <string name="tile_settled_title">Alles verrekend</string>
+    <string name="tile_settled_body">Niets te betalen of te ontvangen</string>
+    <string name="tile_open">Openen</string>
+    <string name="complication_name">Totaal saldo</string>
+    <string name="complication_you_owe">Je bent %1$s schuldig</string>
+    <string name="complication_owed_to_you">Te ontvangen %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Ontvangen</string>
+    <string name="push_view_group">Groep bekijken</string>
+    <string name="push_channel_bills">Uitgaven</string>
+    <string name="push_channel_payments">Betalingen en verrekeningen</string>
+    <string name="push_channel_comments">Reacties</string>
+    <string name="push_channel_people">Mensen en groepen</string>
+    <string name="push_channel_requests">Betaalverzoeken</string>
+    <string name="push_channel_reminders">Herinnering openstaand saldo</string>
+</resources>

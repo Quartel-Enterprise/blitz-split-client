@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">כאן משתמשים באותו חשבון כמו בטלפון. אחר כך השעון עובד לבד.</string>
+    <string name="pair_connect">חיבור</string>
+    <string name="pair_connecting">החשבון מגיע מהטלפון…</string>
+    <string name="pair_connected_title">הכול מוכן, %1$s</string>
+    <string name="pair_connected_title_unnamed">הכול מוכן</string>
+    <string name="pair_connected_body">השעון מסתנכרן לבד, גם רחוק מהטלפון.</string>
+    <string name="pair_continue">המשך</string>
+    <string name="pair_local_only_title">הנתונים נמצאים רק בטלפון</string>
+    <string name="pair_local_only_body">בטלפון, יש לחבר חשבון בפרופיל ולהקיש כאן שוב על חיבור.</string>
+    <string name="pair_ok">אישור</string>
+    <string name="pair_far_title">הטלפון מחוץ לטווח</string>
+    <string name="pair_far_body">אפשר לקרב את הטלפון או להתחבר עם קוד.</string>
+    <string name="pair_try_again">ניסיון חוזר</string>
+    <string name="pair_use_code">שימוש בקוד</string>
+    <string name="pair_code_label">הקוד שלך</string>
+    <string name="pair_code_description">קוד %1$s</string>
+    <string name="pair_code_where">בטלפון: פרופיל › חיבור שעון</string>
+    <string name="pair_code_validity">בתוקף ל-5 דקות</string>
+    <string name="pair_cancel">ביטול</string>
+    <string name="pair_signed_out_title">בוצעה יציאה מהחשבון בטלפון</string>
+    <string name="pair_signed_out_body">הנתונים נמחקו גם מהשעון הזה.</string>
+    <string name="pair_connect_again">חיבור מחדש</string>
+    <string name="pair_error_offline">כדי לחבר את השעון צריך אינטרנט.</string>
+    <string name="pair_error_too_many">יותר מדי ניסיונות. כדאי לחכות כמה דקות ולחבר מחדש.</string>
+    <string name="pair_error_failed">לא ניתן היה לחבר את השעון. כדאי לנסות שוב.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">יתרות</string>
+    <string name="balances_offline">אופליין</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">אופליין · %d שינוי בתור</item>
+        <item quantity="two">אופליין · %d שינויים בתור</item>
+        <item quantity="other">אופליין · %d שינויים בתור</item>
+    </plurals>
+    <string name="balances_overall">יתרה כוללת</string>
+    <string name="balances_to_receive">מגיע לך</string>
+    <string name="balances_you_owe">מגיע ממך</string>
+    <string name="balances_group_to_receive">מגיע לך %1$s</string>
+    <string name="balances_group_you_owe">מגיע ממך %1$s</string>
+    <string name="balances_group_even">מאוזן בסך הכול</string>
+    <string name="balances_waiting">ממתין לשליחה</string>
+    <string name="balances_updated_at">עודכן ב-%1$s</string>
+    <string name="balances_sign_out">התנתקות</string>
+    <string name="balances_sign_out_title">להתנתק מהשעון הזה?</string>
+    <string name="balances_sign_out_body">הנתונים שלו יימחקו אחרי שכל מה שבתור יישלח. הטלפון שלך יישאר מחובר.</string>
+    <string name="balances_settled_title">אין חובות פתוחים</string>
+    <string name="balances_settled_body">לאף אחד אין חוב אליך ואין לך חובות. קבוצות וחשבונות חדשים יופיעו כאן לבד.</string>
+    <string name="group_you_owe_person">ל-%1$s מגיע ממך</string>
+    <string name="group_owes_you">מגיע לך מ-%1$s</string>
+    <string name="group_former_member">משתתף לשעבר</string>
+    <string name="group_i_paid">כבר שילמתי</string>
+    <string name="group_confirm_title">שולמו %1$s ל-%2$s?</string>
+    <string name="group_confirm_body">%1$s. הקבוצה רואה את זה מיד, או כשהאינטרנט חוזר.</string>
+    <string name="group_payment_recorded">התשלום נרשם</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">יתרות</string>
+    <string name="tile_to_receive_total">מגיע לך בסך הכול</string>
+    <string name="tile_to_pay_total">לתשלום בסך הכול</string>
+    <string name="tile_owed_to_you">מגיע לך %1$s</string>
+    <string name="tile_you_owe">מגיע ממך %1$s</string>
+    <string name="tile_settled_title">הכול סגור</string>
+    <string name="tile_settled_body">אין מה לשלם או לקבל</string>
+    <string name="tile_open">פתיחה</string>
+    <string name="complication_name">יתרה כוללת</string>
+    <string name="complication_you_owe">מגיע ממך %1$s</string>
+    <string name="complication_owed_to_you">מגיע לך %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">התקבל</string>
+    <string name="push_view_group">צפייה בקבוצה</string>
+    <string name="push_channel_bills">חשבונות</string>
+    <string name="push_channel_payments">תשלומים וסגירות חשבון</string>
+    <string name="push_channel_comments">תגובות</string>
+    <string name="push_channel_people">אנשים וקבוצות</string>
+    <string name="push_channel_requests">בקשות תשלום</string>
+    <string name="push_channel_reminders">תזכורת על יתרה פתוחה</string>
+</resources>

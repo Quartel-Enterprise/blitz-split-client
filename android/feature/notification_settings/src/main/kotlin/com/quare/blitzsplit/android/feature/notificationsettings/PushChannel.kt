@@ -4,6 +4,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import androidx.annotation.StringRes
+import com.quare.blitzsplit.android.push.PushChannelIds
 import com.quare.blitzsplit.core.model.NotificationType
 
 /*
@@ -20,39 +21,39 @@ enum class PushChannel(
     private val formerChannelId: String? = null,
 ) {
     NEW_EXPENSE(
-        "new_expense",
+        PushChannelIds.NEW_EXPENSE,
         NotificationType.BILLS,
         R.string.notification_settings_bills,
         R.string.notification_settings_bills_detail,
     ),
     PAYMENT_MARKED(
-        "payment_marked",
+        PushChannelIds.PAYMENT_MARKED,
         NotificationType.PAYMENTS,
         R.string.notification_settings_payments,
         R.string.notification_settings_payments_detail,
     ),
     COMMENTS(
-        "comments",
+        PushChannelIds.COMMENTS,
         NotificationType.COMMENTS,
         R.string.notification_settings_comments,
         R.string.notification_settings_comments_detail,
-        formerChannelId = "new_expense",
+        formerChannelId = PushChannelIds.NEW_EXPENSE,
     ),
     INVITES(
-        "invites",
+        PushChannelIds.INVITES,
         NotificationType.PEOPLE_AND_GROUPS,
         R.string.notification_settings_people_and_groups,
         R.string.notification_settings_people_and_groups_detail,
     ),
     PAYMENT_REQUESTS(
-        "payment_requests",
+        PushChannelIds.PAYMENT_REQUESTS,
         NotificationType.PAYMENT_REQUESTS,
         R.string.notification_settings_payment_requests,
         R.string.notification_settings_payment_requests_detail,
-        formerChannelId = "settle_reminders",
+        formerChannelId = PushChannelIds.SETTLE_REMINDERS,
     ),
     SETTLE_REMINDERS(
-        "settle_reminders",
+        PushChannelIds.SETTLE_REMINDERS,
         NotificationType.BALANCE_REMINDER,
         R.string.notification_settings_balance_reminder,
         R.string.notification_settings_balance_reminder_detail,

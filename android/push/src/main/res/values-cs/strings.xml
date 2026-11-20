@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Připomínka vyrovnání</string>
+    <string name="push_bill_created">%1$s přidal(a) „%2$s“ s tebou</string>
+    <string name="push_bill_edited">%1$s upravil(a) „%2$s“</string>
+    <string name="push_bill_deleted">%1$s smazal(a) „%2$s“</string>
+    <string name="push_comment_added">%1$s okomentoval(a) „%2$s“: %3$s</string>
+    <string name="push_payment_paid_you">%1$s označil(a), že ti zaplatil(a)</string>
+    <string name="push_payment_to_you">%1$s označil(a), že ti %2$s zaplatil(a)</string>
+    <string name="push_payment_received_yours">%1$s označil(a) tvou platbu jako přijatou</string>
+    <string name="push_payment_from_you">%1$s označil(a), že jsi zaplatil(a) osobě %2$s</string>
+    <string name="push_payment_undone">%1$s zrušil(a) platbu s tebou</string>
+    <string name="push_charge_sent">%1$s ti poslal(a) připomínku k vyrovnání</string>
+    <string name="push_settle_reminder">Máš otevřený zůstatek ve skupině %1$s</string>
+    <string name="push_settle_reminders">Máš otevřené zůstatky v %1$s skupinách</string>
+    <string name="push_added_to_group">%1$s tě přidal(a) do skupiny</string>
+    <string name="push_member_joined">%1$s vstoupil(a) do skupiny</string>
+    <string name="push_debts_simplified_to_you">%1$s zjednodušil(a) dluhy. Teď ti %2$s platí %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s zjednodušil(a) dluhy. Teď platíš osobě %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s zjednodušil(a) dluhy. Podívej se, jak to vypadá pro tebe.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s vypnul(a) Zjednodušit dluhy. Teď ti %2$s platí %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s vypnul(a) Zjednodušit dluhy. Teď platíš osobě %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s vypnul(a) Zjednodušit dluhy. Podívej se, jak to vypadá pro tebe.</string>
+</resources>

@@ -13,4 +13,19 @@ sealed interface WatchBalancesUiEvent : UiEvent {
         override val analytics: EventAnalytics
             get() = EventAnalytics.Automatic("watch_group_opened")
     }
+
+    // Why: "Sign out" at the end of Balances, the one way to disconnect only the watch.
+    data object OnSignOutClicked : WatchBalancesUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Automatic("watch_sign_out_clicked")
+    }
+
+    // Why: ✓ on "Sign out of this watch?".
+    data object OnSignOutConfirmed : WatchBalancesUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Automatic("watch_sign_out_confirmed")
+    }
+
+    // Why: ✕ on the question, or swiped away.
+    data object OnSignOutDismissed : WatchBalancesUiEvent {
+        override val analytics: EventAnalytics = EventAnalytics.Automatic("watch_sign_out_cancelled")
+    }
 }

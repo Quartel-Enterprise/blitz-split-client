@@ -53,7 +53,8 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
   - Signed out on the phone (15.13): the phone tells its watch, which signs out and erases its data once what it
     queued went up (`EndWatchSessionFromPhone`, as "Sign out when synced"), then shows "You signed out on your phone" and "Connect again". A watch out of reach
     finds out on its next sync, when its session is refused. Deleting the account drops the watch's session too.
-  - To disconnect only the watch, sign out on it. A list of connected devices in Profile is for later.
+  - To disconnect only the watch, sign out on it: "Sign out" at the end of its Balances asks "Sign out of this watch?" and signs out once what it queued went up; the phone stays signed in. A list of connected devices in Profile is for later.
+  - The watch asks for the notification permission (Wear OS 4 and later) on its first Balances once connected.
   - The word for the phone is "phone" on Wear OS and "iPhone" on watchOS.
 
 ## Glanceable surfaces
@@ -67,5 +68,14 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
 ## Notifications
 
   - The watch gets its own pushes of Activity (FCM on Wear OS, APNs on watchOS), worded on the watch as the phone words
-    them, not the phone's mirrored notifications. "Payment marked" has the watch's two buttons; the others open the
-    group on the watch.
+    them (`:android:push` holds the kinds, their sentences and the channel ids both Android apps share), not the
+    phone's mirrored notifications. It registers its own token for the account signed in on it.
+  - "X marked that they paid you" and "X marked that Y paid you" have "Received" and "View group". The payment is already recorded by whoever paid
+    (no one confirms a payment, [members-and-payments.md](members-and-payments.md)), so "Received" records nothing:
+    it marks the activity read and clears the notification (Pierre's call, November 2026). "View group" and every
+    other notification open the app on its balances for now.
+
+## Shipping
+
+  - The release workflows don't build `:wearApp` yet (its own `google-services.json`, a bundle for Play's Wear OS
+    track); until they do, no release mentions the watch app. Its release note waits for that change.

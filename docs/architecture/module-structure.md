@@ -37,6 +37,7 @@ feature/                # Presentation only: ViewModel, UiState, UiEvent, UiActi
 android/
 ├── designsystem/       # BlitzSplitTheme, DeviceLayout, FoldLayout, DevicePreviews, shared composables
 ├── platform/           # Credential Manager (Google), password manager, QR scanner
+├── push/               # Activity's push kinds, their sentences and channel ids, shared by the phone and the watch
 └── feature/            # The Compose UI of each feature: XScreen + XContent
     ├── welcome/
     ├── profile_setup/
@@ -45,6 +46,7 @@ android/
     ├── groups/
     └── create_group/
 androidApp/             # Application, MainActivity, AppNavDisplay
+wearApp/                # The Wear OS app: WearRoot over the shared back stack, the Tile, the complication, its pushes
 iosApp/                 # XcodeGen project: Sources/Shared (both platforms), Sources/iOS, Sources/macOS
 webApp/                 # Vite + React app: src/app, src/bridge, src/features, src/components, src/sqlite
 build-logic/            # Convention plugins

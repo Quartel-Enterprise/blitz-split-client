@@ -114,6 +114,7 @@ dependencies {
     implementation(project(":core:watch"))
     implementation(project(":core:in_app_update"))
     implementation(project(":android:platform"))
+    implementation(project(":android:push"))
 
     // Android UI
     implementation(project(":android:designsystem"))

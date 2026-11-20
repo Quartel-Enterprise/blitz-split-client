@@ -8,6 +8,7 @@ local.properties
 
 # Firebase: each app starts it only when its file is there (docs/crash-reporting.md)
 androidApp/google-services.json
+wearApp/google-services.json
 iosApp/Resources/GoogleService-Info.plist
 
 # IDEs

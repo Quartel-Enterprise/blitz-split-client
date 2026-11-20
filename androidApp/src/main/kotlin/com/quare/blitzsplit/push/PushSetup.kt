@@ -8,8 +8,7 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.quare.blitzsplit.BuildConfig
 import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
-import com.quare.blitzsplit.core.profile.domain.model.PushDevice
-import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
+import com.quare.blitzsplit.android.push.PushTokens
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 
 /*
@@ -30,23 +29,7 @@ object PushSetup {
         // Why: see BlitzSplitMessagingService.onNewToken; the token stays until push moves to registration ids.
         @Suppress("DEPRECATION")
         val token = FirebaseMessaging.getInstance().token
-        token.addOnSuccessListener { value -> handOver(setPushDevice, value) }
-    }
-
-    // Why: the one place an FCM token becomes this device's PushDevice, at launch and when FCM renews it.
-    fun handOver(
-        setPushDevice: SetPushDevice,
-        token: String,
-    ) {
-        setPushDevice(
-            PushDevice(
-                token = token,
-                platform = PushPlatform.ANDROID,
-                apnsEnvironment = null,
-                webP256dh = null,
-                webAuth = null,
-            ),
-        )
+        token.addOnSuccessListener { value -> PushTokens.handOver(setPushDevice, value) }
     }
 }
 

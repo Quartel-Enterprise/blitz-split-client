@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastSyncedAt
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.feature.watchbalances.presentation.mapper.WatchBalancesMapper
 import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchBalancesUiEvent
 import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchBalancesUiState
@@ -27,6 +28,7 @@ import software.quare.connectivity.NetworkConnectivityObserver
  */
 class WatchBalancesViewModel(
     private val navigator: Navigator,
+    private val signOutWhenSynced: SignOutWhenSynced,
     observePeopleBalances: ObservePeopleBalances,
     observeGroupsMoney: ObserveGroupsMoney,
     observeFirstDownload: ObserveFirstDownload,
@@ -43,6 +45,7 @@ class WatchBalancesViewModel(
                 isOnline = true,
                 queuedChangeCount = 0,
                 lastSyncedAt = null,
+                isConfirmingSignOut = false,
             ),
         )
 
@@ -72,11 +75,34 @@ class WatchBalancesViewModel(
             .launchIn(viewModelScope)
     }
 
+    /*
+     * Why: the watch alone signs out (the phone keeps its session), once what it queued went up, so a payment recorded
+     * offline isn't lost; the root then shows the connect screens.
+     */
+    private fun signOut() {
+        uiState.update { it.copy(isConfirmingSignOut = false) }
+        signOutWhenSynced()
+    }
+
+    // Why: ✓ and ✕ only answer the question while it shows.
+    override fun isAccepted(event: WatchBalancesUiEvent): Boolean =
+        if (event == WatchBalancesUiEvent.OnSignOutConfirmed || event == WatchBalancesUiEvent.OnSignOutDismissed) {
+            uiState.value.isConfirmingSignOut
+        } else {
+            true
+        }
+
     override fun handleEvent(event: WatchBalancesUiEvent) {
         when (event) {
             is WatchBalancesUiEvent.OnGroupClicked -> navigator.navigate(
                 Route.WatchGroup(event.groupId, event.currency),
             )
+
+            WatchBalancesUiEvent.OnSignOutClicked -> uiState.update { it.copy(isConfirmingSignOut = true) }
+
+            WatchBalancesUiEvent.OnSignOutConfirmed -> signOut()
+
+            WatchBalancesUiEvent.OnSignOutDismissed -> uiState.update { it.copy(isConfirmingSignOut = false) }
         }
     }
 }

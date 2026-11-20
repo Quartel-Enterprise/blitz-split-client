@@ -1,28 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Blitz Split</string>
-    <!-- Atividade's push notifications, worded from the server's kind and words -->
-    <string name="push_reminder_title">結清提醒</string>
-    <string name="push_bill_created">%1$s新增了與你有關的「%2$s」</string>
-    <string name="push_bill_edited">%1$s編輯了「%2$s」</string>
-    <string name="push_bill_deleted">%1$s刪除了「%2$s」</string>
-    <string name="push_comment_added">%1$s在「%2$s」留言：%3$s</string>
-    <string name="push_payment_paid_you">%1$s標記了已付款給你</string>
-    <string name="push_payment_to_you">%1$s標記了%2$s已付款給你</string>
-    <string name="push_payment_received_yours">%1$s將你的付款標記為已收款</string>
-    <string name="push_payment_from_you">%1$s標記了你已付款給%2$s</string>
-    <string name="push_payment_undone">%1$s復原了一筆與你相關的付款</string>
-    <string name="push_charge_sent">%1$s提醒你去結清</string>
-    <string name="push_settle_reminder">你在「%1$s」中有未結清的餘額</string>
-    <string name="push_settle_reminders">你在%1$s個群組中有未結清的餘額</string>
-    <string name="push_added_to_group">%1$s將你加入了群組</string>
-    <string name="push_member_joined">%1$s加入了群組</string>
-    <string name="push_debts_simplified_to_you">%1$s簡化了債務。現在%2$s付給你%3$s。</string>
-    <string name="push_debts_simplified_from_you">%1$s簡化了債務。現在你付給%2$s %3$s。</string>
-    <string name="push_debts_simplified_other">%1$s簡化了債務。看看對你有什麼影響。</string>
-    <string name="push_debts_unsimplified_to_you">%1$s關閉了簡化債務。現在%2$s付給你%3$s。</string>
-    <string name="push_debts_unsimplified_from_you">%1$s關閉了簡化債務。現在你付給%2$s %3$s。</string>
-    <string name="push_debts_unsimplified_other">%1$s關閉了「簡化債務」。看看對你有什麼影響。</string>
     <!-- A comment's link that opened nothing -->
     <string name="bill_link_not_in_group_title">你不在這個群組中</string>
     <string name="bill_link_not_in_group_message">這則留言所在的群組你沒有加入。請向傳連結給你的人索取邀請。</string>

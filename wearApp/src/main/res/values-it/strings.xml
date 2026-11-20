@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Usa qui lo stesso account del telefono. Poi l’orologio funziona da solo.</string>
+    <string name="pair_connect">Collega</string>
+    <string name="pair_connecting">Recupero dell’account dal telefono…</string>
+    <string name="pair_connected_title">Fatto, %1$s</string>
+    <string name="pair_connected_title_unnamed">Fatto</string>
+    <string name="pair_connected_body">L’orologio si sincronizza da solo, anche lontano dal telefono.</string>
+    <string name="pair_continue">Continua</string>
+    <string name="pair_local_only_title">I tuoi dati sono solo sul telefono</string>
+    <string name="pair_local_only_body">Sul telefono, collega un account in Profilo e tocca di nuovo Collega qui.</string>
+    <string name="pair_ok">OK</string>
+    <string name="pair_far_title">Telefono fuori portata</string>
+    <string name="pair_far_body">Avvicina il telefono o collegati con un codice.</string>
+    <string name="pair_try_again">Riprova</string>
+    <string name="pair_use_code">Usa un codice</string>
+    <string name="pair_code_label">Il tuo codice</string>
+    <string name="pair_code_description">Codice %1$s</string>
+    <string name="pair_code_where">Sul telefono: Profilo › Collega orologio</string>
+    <string name="pair_code_validity">Valido per 5 minuti</string>
+    <string name="pair_cancel">Annulla</string>
+    <string name="pair_signed_out_title">Hai chiuso la sessione sul telefono</string>
+    <string name="pair_signed_out_body">I dati sono stati rimossi anche da questo orologio.</string>
+    <string name="pair_connect_again">Collega di nuovo</string>
+    <string name="pair_error_offline">Per collegare l’orologio serve internet.</string>
+    <string name="pair_error_too_many">Troppi tentativi. Aspetta qualche minuto e collega di nuovo.</string>
+    <string name="pair_error_failed">Impossibile collegare l’orologio. Riprova.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Saldi</string>
+    <string name="balances_offline">Offline</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Offline · %d modifica in coda</item>
+        <item quantity="many">Offline · %d modifiche in coda</item>
+        <item quantity="other">Offline · %d modifiche in coda</item>
+    </plurals>
+    <string name="balances_overall">Saldo complessivo</string>
+    <string name="balances_to_receive">da ricevere</string>
+    <string name="balances_you_owe">devi</string>
+    <string name="balances_group_to_receive">%1$s da ricevere</string>
+    <string name="balances_group_you_owe">devi %1$s</string>
+    <string name="balances_group_even">In pari in totale</string>
+    <string name="balances_waiting">in attesa di invio</string>
+    <string name="balances_updated_at">Aggiornato alle %1$s</string>
+    <string name="balances_sign_out">Esci</string>
+    <string name="balances_sign_out_title">Uscire dall’account su questo orologio?</string>
+    <string name="balances_sign_out_body">I suoi dati vengono cancellati dopo l’invio di ciò che è in coda. Il telefono resta connesso.</string>
+    <string name="balances_settled_title">Niente in sospeso</string>
+    <string name="balances_settled_body">Non devi nulla e nessuno ti deve nulla. Nuovi gruppi e spese compaiono qui da soli.</string>
+    <string name="group_you_owe_person">devi a %1$s</string>
+    <string name="group_owes_you">%1$s ti deve</string>
+    <string name="group_former_member">Ex membro</string>
+    <string name="group_i_paid">Ho pagato</string>
+    <string name="group_confirm_title">Hai pagato %1$s a %2$s?</string>
+    <string name="group_confirm_body">%1$s. Il gruppo lo vede subito, o quando torna internet.</string>
+    <string name="group_payment_recorded">Pagamento registrato</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Saldi</string>
+    <string name="tile_to_receive_total">da ricevere in totale</string>
+    <string name="tile_to_pay_total">da pagare in totale</string>
+    <string name="tile_owed_to_you">Ti devono %1$s</string>
+    <string name="tile_you_owe">Devi %1$s</string>
+    <string name="tile_settled_title">Tutto in pari</string>
+    <string name="tile_settled_body">Niente da pagare né da ricevere</string>
+    <string name="tile_open">Apri</string>
+    <string name="complication_name">Saldo complessivo</string>
+    <string name="complication_you_owe">Devi %1$s</string>
+    <string name="complication_owed_to_you">Ti devono %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Ricevuto</string>
+    <string name="push_view_group">Vedi gruppo</string>
+    <string name="push_channel_bills">Spese</string>
+    <string name="push_channel_payments">Pagamenti e saldi</string>
+    <string name="push_channel_comments">Commenti</string>
+    <string name="push_channel_people">Persone e gruppi</string>
+    <string name="push_channel_requests">Richieste di pagamento</string>
+    <string name="push_channel_reminders">Promemoria saldo aperto</string>
+</resources>

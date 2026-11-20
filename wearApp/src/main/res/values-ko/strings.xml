@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">휴대폰과 같은 계정을 여기서 사용하세요. 그다음엔 워치가 알아서 작동해요.</string>
+    <string name="pair_connect">연결</string>
+    <string name="pair_connecting">휴대폰에서 계정을 가져오는 중…</string>
+    <string name="pair_connected_title">준비 완료, %1$s 님</string>
+    <string name="pair_connected_title_unnamed">준비 완료</string>
+    <string name="pair_connected_body">휴대폰과 떨어져 있어도 워치가 알아서 동기화돼요.</string>
+    <string name="pair_continue">계속</string>
+    <string name="pair_local_only_title">데이터가 휴대폰에만 있어요</string>
+    <string name="pair_local_only_body">휴대폰의 프로필에서 계정을 연결한 뒤 여기서 다시 연결을 탭하세요.</string>
+    <string name="pair_ok">확인</string>
+    <string name="pair_far_title">휴대폰이 범위 밖에 있어요</string>
+    <string name="pair_far_body">휴대폰을 가까이 두거나 코드로 연결하세요.</string>
+    <string name="pair_try_again">다시 시도</string>
+    <string name="pair_use_code">코드 사용</string>
+    <string name="pair_code_label">내 코드</string>
+    <string name="pair_code_description">코드 %1$s</string>
+    <string name="pair_code_where">휴대폰: 프로필 › 워치 연결</string>
+    <string name="pair_code_validity">5분 동안 유효</string>
+    <string name="pair_cancel">취소</string>
+    <string name="pair_signed_out_title">휴대폰에서 로그아웃했어요</string>
+    <string name="pair_signed_out_body">이 워치의 데이터도 삭제됐어요.</string>
+    <string name="pair_connect_again">다시 연결</string>
+    <string name="pair_error_offline">워치를 연결하려면 인터넷이 필요해요.</string>
+    <string name="pair_error_too_many">시도 횟수가 너무 많아요. 몇 분 기다린 후 다시 연결해 주세요.</string>
+    <string name="pair_error_failed">워치를 연결하지 못했어요. 다시 시도해 주세요.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">잔액</string>
+    <string name="balances_offline">오프라인</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="other">오프라인 · 대기 중인 변경 %d건</item>
+    </plurals>
+    <string name="balances_overall">전체 잔액</string>
+    <string name="balances_to_receive">받을 돈</string>
+    <string name="balances_you_owe">줄 돈</string>
+    <string name="balances_group_to_receive">받을 돈 %1$s</string>
+    <string name="balances_group_you_owe">줄 돈 %1$s</string>
+    <string name="balances_group_even">합계 0</string>
+    <string name="balances_waiting">전송 대기 중</string>
+    <string name="balances_updated_at">%1$s에 업데이트됨</string>
+    <string name="balances_sign_out">로그아웃</string>
+    <string name="balances_sign_out_title">이 워치에서 로그아웃할까요?</string>
+    <string name="balances_sign_out_body">대기 중인 변경 사항이 전송되면 데이터가 삭제돼요. 휴대폰은 로그인 상태로 유지돼요.</string>
+    <string name="balances_settled_title">미정산 없음</string>
+    <string name="balances_settled_body">받을 돈도 줄 돈도 없어요. 새 그룹과 지출은 여기에 알아서 표시돼요.</string>
+    <string name="group_you_owe_person">%1$s 님에게 줄 돈</string>
+    <string name="group_owes_you">%1$s 님에게 받을 돈</string>
+    <string name="group_former_member">이전 멤버</string>
+    <string name="group_i_paid">이미 보냈어요</string>
+    <string name="group_confirm_title">%2$s 님에게 %1$s 보냈나요?</string>
+    <string name="group_confirm_body">%1$s. 그룹에 바로, 또는 인터넷이 돌아오면 표시돼요.</string>
+    <string name="group_payment_recorded">송금을 기록했어요</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">잔액</string>
+    <string name="tile_to_receive_total">총 받을 돈</string>
+    <string name="tile_to_pay_total">총 줄 돈</string>
+    <string name="tile_owed_to_you">받을 돈 %1$s</string>
+    <string name="tile_you_owe">줄 돈 %1$s</string>
+    <string name="tile_settled_title">모두 정산 완료</string>
+    <string name="tile_settled_body">줄 돈도 받을 돈도 없어요</string>
+    <string name="tile_open">열기</string>
+    <string name="complication_name">전체 잔액</string>
+    <string name="complication_you_owe">줄 돈 %1$s</string>
+    <string name="complication_owed_to_you">받을 돈 %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">받음</string>
+    <string name="push_view_group">그룹 보기</string>
+    <string name="push_channel_bills">지출</string>
+    <string name="push_channel_payments">송금 및 정산</string>
+    <string name="push_channel_comments">댓글</string>
+    <string name="push_channel_people">사람과 그룹</string>
+    <string name="push_channel_requests">송금 요청</string>
+    <string name="push_channel_reminders">미정산 잔액 알림</string>
+</resources>

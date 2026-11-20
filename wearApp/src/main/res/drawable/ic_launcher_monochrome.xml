@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The themed launcher icon: ic_notification's glyph inside the adaptive icon's safe zone, where it sat at
+    x 96..336 and y 93.58..333.58 of the original 432 viewport. One copy of the paths keeps both icons on one logo.
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_notification"
+    android:insetLeft="22.22%"
+    android:insetRight="22.22%"
+    android:insetTop="21.66%"
+    android:insetBottom="22.78%" />

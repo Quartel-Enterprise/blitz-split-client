@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Memento pentru achitarea datoriilor</string>
+    <string name="push_bill_created">%1$s a adăugat „%2$s” cu tine</string>
+    <string name="push_bill_edited">%1$s a editat „%2$s”</string>
+    <string name="push_bill_deleted">%1$s a șters „%2$s”</string>
+    <string name="push_comment_added">%1$s a comentat la „%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s a marcat o plată către tine</string>
+    <string name="push_payment_to_you">%1$s a marcat că %2$s te-a plătit</string>
+    <string name="push_payment_received_yours">%1$s a marcat plata ta ca primită</string>
+    <string name="push_payment_from_you">%1$s a marcat că ai plătit către %2$s</string>
+    <string name="push_payment_undone">%1$s a anulat o plată cu tine</string>
+    <string name="push_charge_sent">%1$s a trimis un memento ca să achiți datoriile</string>
+    <string name="push_settle_reminder">Ai un sold deschis în %1$s</string>
+    <string name="push_settle_reminders">Ai solduri deschise în mai multe grupuri: %1$s</string>
+    <string name="push_added_to_group">%1$s te-a adăugat în grup</string>
+    <string name="push_member_joined">%1$s a intrat în grup</string>
+    <string name="push_debts_simplified_to_you">%1$s a simplificat datoriile. Acum %2$s îți plătește %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s a simplificat datoriile. Acum plătești %3$s către %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s a simplificat datoriile. Vezi cum e pentru tine.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s a dezactivat Simplifică datoriile. Acum %2$s îți plătește %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s a dezactivat Simplifică datoriile. Acum plătești %3$s către %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s a dezactivat Simplifică datoriile. Vezi cum e pentru tine.</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Υπενθύμιση εξόφλησης</string>
+    <string name="push_bill_created">%1$s πρόσθεσε το έξοδο «%2$s» μαζί σου</string>
+    <string name="push_bill_edited">%1$s επεξεργάστηκε το έξοδο «%2$s»</string>
+    <string name="push_bill_deleted">%1$s διέγραψε το έξοδο «%2$s»</string>
+    <string name="push_comment_added">%1$s σχολίασε στο έξοδο «%2$s»: %3$s</string>
+    <string name="push_payment_paid_you">%1$s σημείωσε ότι σε πλήρωσε</string>
+    <string name="push_payment_to_you">%1$s σημείωσε ότι %2$s σε πλήρωσε</string>
+    <string name="push_payment_received_yours">%1$s σημείωσε ότι έλαβε την πληρωμή σου</string>
+    <string name="push_payment_from_you">%1$s σημείωσε την πληρωμή σου προς %2$s</string>
+    <string name="push_payment_undone">%1$s αναίρεσε μια πληρωμή μαζί σου</string>
+    <string name="push_charge_sent">%1$s σου έστειλε υπενθύμιση για εξόφληση</string>
+    <string name="push_settle_reminder">Έχεις ανοιχτό υπόλοιπο στην ομάδα %1$s</string>
+    <string name="push_settle_reminders">Έχεις ανοιχτά υπόλοιπα σε %1$s ομάδες</string>
+    <string name="push_added_to_group">%1$s σε πρόσθεσε στην ομάδα</string>
+    <string name="push_member_joined">%1$s μπήκε στην ομάδα</string>
+    <string name="push_debts_simplified_to_you">%1$s απλοποίησε τα χρέη. Τώρα %2$s σου πληρώνει %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s απλοποίησε τα χρέη. Τώρα πληρώνεις %3$s σε %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s απλοποίησε τα χρέη. Δες τι αλλάζει για σένα.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s απενεργοποίησε την Απλοποίηση χρεών. Τώρα %2$s σου πληρώνει %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s απενεργοποίησε την Απλοποίηση χρεών. Τώρα πληρώνεις %3$s σε %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s απενεργοποίησε την Απλοποίηση χρεών. Δες τι αλλάζει για σένα.</string>
+</resources>
