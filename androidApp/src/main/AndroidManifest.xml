@@ -48,7 +48,7 @@
 
                 <data
                     android:host="*"
-                    android:pathPrefix="/blitzsplit/watch/pair"
+                    android:path="/blitzsplit/watch/pair"
                     android:scheme="wear" />
             </intent-filter>
         </service>

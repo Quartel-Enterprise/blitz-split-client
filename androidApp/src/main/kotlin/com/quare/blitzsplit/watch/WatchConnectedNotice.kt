@@ -1,19 +1,16 @@
 package com.quare.blitzsplit.watch
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import com.quare.blitzsplit.MainActivity
 import com.quare.blitzsplit.R
+import com.quare.blitzsplit.push.canPostNotifications
 
 /*
  * Why: "Pixel Watch connected to your account" (15.15), information only, with no buttons; a tap opens the app. Its own
@@ -23,12 +20,12 @@ object WatchConnectedNotice {
     private const val CHANNEL_ID = "watch"
     private const val NOTIFICATION_ID = 15_15
 
-    @SuppressLint("MissingPermission") // Why: canNotify() checks it, on the versions that have it.
+    @SuppressLint("MissingPermission") // Why: canPostNotifications() checks it, on the versions that have it.
     fun show(
         context: Context,
         watchName: String?,
     ) {
-        if (!canNotify(context)) return
+        if (!context.canPostNotifications()) return
         createChannel(context)
         val title = watchName
             ?.let { context.getString(R.string.watch_connected_title, it) }
@@ -60,9 +57,4 @@ object WatchConnectedNotice {
         )
         context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
-
-    // Why: before Android 13 the permission doesn't exist and notifications are on until the settings turn them off.
-    private fun canNotify(context: Context): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
-        PackageManager.PERMISSION_GRANTED
 }

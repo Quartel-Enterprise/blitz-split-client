@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,7 +58,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -103,9 +106,11 @@ fun ConnectWatchContent(
                     isDialog = true,
                     onEvent = onEvent,
                 )
+                // Why: the code field takes the focus, so the keyboard comes up under the dialog, as FormLayout's.
                 Column(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
+                        .imePadding()
                         .padding(
                             start = 24.dp,
                             end = 24.dp,
@@ -163,6 +168,8 @@ private fun ConnectWatchTwoColumnScaffold(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                // Why: the scaffold's padding holds the navigation bar, which the keyboard's inset holds too.
+                .consumeWindowInsets(padding)
                 .windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
                 .imePadding()
                 .padding(horizontal = 24.dp),
@@ -389,7 +396,10 @@ private fun CodeField(
 ) {
     val focusRequester = remember { FocusRequester() }
     val label = stringResource(R.string.connect_watch_code_label)
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    // Why: the field is disabled while connecting, which drops its focus, so a refused code is typed again at once.
+    LaunchedEffect(state.isConnecting) {
+        if (!state.isConnecting) focusRequester.requestFocus()
+    }
     BasicTextField(
         value = state.code,
         onValueChange = { onEvent(ConnectWatchUiEvent.OnCodeChanged(it)) },
@@ -466,8 +476,11 @@ private fun NoticeLine(
     text: String,
     color: Color,
 ) {
+    // Why: a refused code or a lost connection shows up while the person types, so a screen reader says it.
     Row(
-        modifier = Modifier.padding(bottom = 8.dp),
+        modifier = Modifier
+            .padding(bottom = 8.dp)
+            .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
