@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+  The App Store search result, 3840x2560. The phrase, the tickets and the two phones in front stay inside Apple's art
+  safe area; the two phones further out are the background. compose.mjs fills the {{…}} slots.
+-->
+<html lang="{{lang}}" dir="{{dir}}">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="{{css}}">
+<style>
+  html, body { width: 3840px; height: 2560px; }
+  body { background: radial-gradient(ellipse 2300px 1500px at 42% 50%, #00558f 0%, #0068b5 52%, #008fe0 80%, #00b2ff 100%); }
+  .copy {
+    position: absolute; left: 870px; top: 765px; width: 1080px; height: 1030px;
+    display: flex; flex-direction: column; justify-content: center; gap: 70px;
+  }
+  h1 { font-size: 168px; line-height: 1.02; letter-spacing: -.03em; }
+  .stubs { justify-content: flex-start; gap: 22px; }
+  .stub { --notch: 24px; width: 318px; height: 400px; padding-top: 36px; }
+  .stub img { width: 150px; height: 150px; margin-bottom: 18px; }
+  .stub span { font-size: 44px; margin-bottom: 8px; }
+  .stub b { font-size: 68px; }
+  .phone { width: 560px; }
+  .main, .side { width: 476px; top: 778px; padding: 13px; border-radius: 84px; }
+  .main img, .side img { border-radius: 72px; }
+  .main::after, .side::after { top: 32px; height: 38px; }
+  .main { left: 2010px; }
+  .side { left: 2510px; }
+  .far { left: 3090px; top: 640px; transform: rotate(9deg); }
+  .back { left: 60px; top: 760px; transform: rotate(-8deg); }
+</style>
+</head>
+<body>
+  <div class="phone back" dir="ltr"><img src="{{home}}" alt=""></div>
+  <div class="phone far" dir="ltr"><img src="{{statistics}}" alt=""></div>
+  <div class="phone side" data-safe dir="ltr"><img src="{{items}}" alt=""></div>
+  <div class="phone main" data-safe dir="ltr"><img src="{{group}}" alt=""></div>
+  <div class="copy">
+    <h1 data-safe>{{title}}</h1>
+    <div class="stubs">{{tickets}}</div>
+  </div>
+</body>
+</html>

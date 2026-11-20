@@ -18,6 +18,7 @@ import com.quare.blitzsplit.core.groups.domain.usecase.ObserveGroup
 import com.quare.blitzsplit.core.groups.domain.usecase.SetGroupPinned
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.AvatarColor
+import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupShape
 import com.quare.blitzsplit.core.model.GroupType
 import com.quare.blitzsplit.core.model.ThemePreference
@@ -130,6 +131,9 @@ internal class StoreScreenshotsSeed(
             groupId = tripId,
             dinnerId = billIds[trip.bills.indexOfFirst { it.items != null }],
             foreignBillId = billIds[trip.bills.indexOfFirst { it.currency != trip.currency }],
+            myMemberId = tripMembers.idOf(0),
+            creditorMemberId = tripMembers.idOf(SampleTrips.CREDITOR),
+            currency = trip.currency,
         )
     }
 
@@ -238,6 +242,16 @@ internal class StoreScreenshotsSeed(
                         userIdOf(person),
                     )} WHERE id = ${toSqlLiteral(memberId)}"
             }
+        }
+        /*
+         * Why: "Pagar Carla" with its Pix code, the screen the Brazilian listing leads with: a made-up random key of
+         * the person this device's user owes, as a sync of a group in reais would have brought it down.
+         */
+        if (trip.currency == GroupCurrency.BRL) {
+            statements += "INSERT OR REPLACE INTO member_payment_key " +
+                "(id, userId, viewerUserId, type, value, isDefault, addedAt, updatedAt) VALUES ('sample-pix-key', " +
+                "${toSqlLiteral(userIdOf(SampleTrips.CREDITOR))}, ${toSqlLiteral(userIdOf(0))}, 'random', " +
+                "${toSqlLiteral(SampleTrips.PIX_KEY)}, 1, 0, 0)"
         }
         trip.people.indices.forEach { person ->
             val face = faceOf(person) ?: return@forEach

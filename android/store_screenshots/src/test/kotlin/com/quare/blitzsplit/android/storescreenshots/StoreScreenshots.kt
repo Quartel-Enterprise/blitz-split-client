@@ -290,7 +290,7 @@ internal class MacStoreScreenshots :
  * string resource would be drawn in Bengali's own digits here.
  */
 @Composable
-private fun LatinDigitsComponent(content: @Composable () -> Unit) {
+internal fun LatinDigitsComponent(content: @Composable () -> Unit) {
     val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val latinConfiguration = remember(configuration) {

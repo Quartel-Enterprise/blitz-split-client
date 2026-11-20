@@ -230,6 +230,20 @@ fun Project.configureStoreScreenshots() {
         .dir("outputs/readme-hero-android")
         .get()
         .asFile
+    val generatesCreativeAssetFacts = providers.gradleProperty("creativeAssets").isPresent
+    val creativeAssetFactsDir = rootProject.layout.buildDirectory
+        .dir("outputs/app-store-creative-asset-facts")
+        .get()
+        .asFile
+    val generatesPlayArt = providers.gradleProperty("playArt").isPresent
+    val playArtDir = rootProject.layout.buildDirectory
+        .dir("outputs/play-art-captures")
+        .get()
+        .asFile
+    // Each draws a different test class alone, so asking for both would quietly draw only the first.
+    check(!(generatesCreativeAssetFacts && generatesPlayArt)) {
+        "-PcreativeAssets and -PplayArt draw different tests: run them one at a time"
+    }
     tasks.withType<Test>().configureEach {
         val isGenerator = name == GENERATE_TASK
         onlyIf("the build asked for the store screenshots") { isGenerator && generatesScreenshots }
@@ -250,6 +264,22 @@ fun Project.configureStoreScreenshots() {
             return@configureEach
         }
         filter.excludeTestsMatching("*.ReadmeHeroScreens")
+        // What the creative assets write on their tickets (scripts/store-screenshots/creative-assets), only when asked.
+        if (generatesCreativeAssetFacts) {
+            filter.includeTestsMatching("*.CreativeAssetFacts")
+            systemProperty("creativeAssets.outputDir", creativeAssetFactsDir.absolutePath)
+            outputs.dir(creativeAssetFactsDir)
+            return@configureEach
+        }
+        filter.excludeTestsMatching("*.CreativeAssetFacts")
+        // The bare screens of Google Play's art (scripts/store-screenshots/listing-art), only when asked.
+        if (generatesPlayArt) {
+            filter.includeTestsMatching("*.PlayArtCaptures")
+            systemProperty("playArt.outputDir", playArtDir.absolutePath)
+            outputs.dir(playArtDir)
+            return@configureEach
+        }
+        filter.excludeTestsMatching("*.PlayArtCaptures")
         if (generatesAppStoreScreenshots) {
             inputs.dir(capturesDir)
             doFirst {

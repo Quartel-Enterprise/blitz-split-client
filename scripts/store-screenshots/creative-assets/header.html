@@ -1,0 +1,42 @@
+<!doctype html>
+<!--
+  The App Store product page's header, 3840x1646. Everything that says what the app does stays inside Apple's art safe
+  area (.safe); the phones around it are the background the wider screens show. compose.mjs fills the {{…}} slots.
+-->
+<html lang="{{lang}}" dir="{{dir}}">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="{{css}}">
+<style>
+  html, body { width: 3840px; height: 1646px; }
+  body { background: radial-gradient(ellipse 1500px 900px at 50% 50%, #00558f 0%, #0068b5 48%, #008fe0 78%, #00b2ff 100%); }
+  .phone { width: 640px; }
+  .a { left: -110px; top: 250px; transform: rotate(-9deg); }
+  .b { left: 420px; top: 120px; transform: rotate(-5deg); }
+  .c { left: 2780px; top: 120px; transform: rotate(5deg); }
+  .d { left: 3310px; top: 250px; transform: rotate(9deg); }
+  .safe {
+    position: absolute; left: 1097px; top: 493px; width: 1646px; height: 661px; padding: 14px 0 24px;
+    display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+  }
+  h1 { font-size: 96px; line-height: 1.08; }
+  .stubs { gap: 26px; width: 100%; }
+  .stub { --notch: 26px; width: 290px; height: 462px; padding-top: 40px; }
+  .stub img { width: 176px; height: 176px; margin-bottom: 22px; }
+  .stub span { font-size: 48px; margin-bottom: 10px; }
+  .stub b { font-size: 70px; }
+  .ticket:nth-child(odd) { transform: translateY(-8px) rotate(-1.4deg); }
+  .ticket:nth-child(even) { transform: translateY(8px) rotate(1.4deg); }
+</style>
+</head>
+<body>
+  <div class="phone a" dir="ltr"><img src="{{home}}" alt=""></div>
+  <div class="phone b" dir="ltr"><img src="{{group}}" alt=""></div>
+  <div class="phone c" dir="ltr"><img src="{{items}}" alt=""></div>
+  <div class="phone d" dir="ltr"><img src="{{statistics}}" alt=""></div>
+  <div class="safe">
+    <h1 data-safe>{{title}}</h1>
+    <div class="stubs">{{tickets}}</div>
+  </div>
+</body>
+</html>

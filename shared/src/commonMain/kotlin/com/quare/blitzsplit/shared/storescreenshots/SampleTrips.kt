@@ -27,6 +27,10 @@ object SampleTrips {
     val sideGroupColors: List<AvatarColor> = listOf(AvatarColor.BLUE, AvatarColor.GREEN)
     const val INVITE_CODE = "Lx7Kp2Qa"
 
+    // Why: the person this device's user owes on the trip, and the made-up key "Pagar Carla" shows in reais.
+    const val CREDITOR = 2
+    const val PIX_KEY = "7d9f0335-8dcc-4054-9bf9-0dbd61d36906"
+
     /*
      * Why: the three groups' photos, files of scripts/store-screenshots/bank/groups without their extension. The App
      * Store's captures hand the app the same three files, listed in scripts/store-screenshots/assets.tsv since

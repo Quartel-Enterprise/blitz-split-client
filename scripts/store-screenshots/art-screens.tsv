@@ -1,0 +1,5 @@
+# The screens only the store listing's art shows (scripts/store-screenshots/listing-art), captured like those of
+# screens.tsv with STORE_SCREENSHOTS_TABLE=art-screens: the code the app opens it by, its file and its theme.
+# code	fileName	theme
+pay	11_pay	dark
+splitmodes	12_split_modes	dark

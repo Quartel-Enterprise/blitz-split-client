@@ -21,6 +21,8 @@ TABLES="$ROOT/scripts/store-screenshots"
 # shellcheck source=scripts/store-screenshots/tables.sh
 . "$TABLES/tables.sh"
 OUTPUT="${STORE_SCREENSHOTS_OUTPUT:-$ROOT/build/outputs/apple-screenshot-captures}"
+# The table of the screens to capture: the listing's, or art-screens for those only the listing's art shows.
+SCREENS_TABLE="${STORE_SCREENSHOTS_TABLE:-screens}"
 DERIVED_DATA="$ROOT/build/apple-screenshots/DerivedData-mac"
 APP="$DERIVED_DATA/Build/Products/Debug/BoraRachar.app"
 # The app's processes, for pkill and pgrep, which read a regular expression: the path's own characters are escaped,
@@ -43,11 +45,11 @@ quit_app() {
 }
 
 check_table locales 4
-check_table screens 3
+check_table "$SCREENS_TABLE" 3
 check_table assets 2
 # The rows asked for, read before the build so that a locale or a screen no row has stops the script here.
 locale_rows="$(picked locales 0 "$STORE_SCREENSHOTS_LOCALES")"
-screen_rows="$(picked screens 0 "$STORE_SCREENSHOTS_SCREENS")"
+screen_rows="$(picked "$SCREENS_TABLE" 0 "$STORE_SCREENSHOTS_SCREENS")"
 
 "$ROOT/iosApp/generate-project.sh"
 
@@ -71,7 +73,7 @@ while IFS=$'\t' read -r name file; do
 done < <(rows assets)
 
 # Only the locales and screens asked for are captured again: a narrowed run keeps the others' PNGs.
-if [ -z "$STORE_SCREENSHOTS_LOCALES" ] && [ -z "$STORE_SCREENSHOTS_SCREENS" ]; then rm -rf "${OUTPUT:?}/mac"; fi
+if [ "$SCREENS_TABLE" = screens ] && [ -z "$STORE_SCREENSHOTS_LOCALES" ] && [ -z "$STORE_SCREENSHOTS_SCREENS" ]; then rm -rf "${OUTPUT:?}/mac"; fi
 
 quit_app
 # The app's own language comes back once the captures end, whatever they stopped on.

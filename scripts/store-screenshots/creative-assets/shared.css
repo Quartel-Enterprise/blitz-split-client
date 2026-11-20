@@ -1,0 +1,53 @@
+* { box-sizing: border-box; margin: 0; }
+html, body { overflow: hidden; background: #0068b5; }
+body {
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", sans-serif;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 { font-weight: 800; letter-spacing: -.025em; }
+.line { display: block; width: max-content; max-width: none; white-space: nowrap; }
+
+/* Letters that join or stack: tightened, Arabic falls apart and Hindi's and Thai's marks touch the line above. */
+:lang(ar) h1, :lang(he) h1, :lang(hi) h1, :lang(th) h1,
+:lang(ar) .stub b, :lang(he) .stub b, :lang(hi) .stub b, :lang(th) .stub b { letter-spacing: 0; }
+:lang(ar) h1, :lang(hi) h1, :lang(th) h1 { line-height: 1.3; }
+
+.phone {
+  position: absolute;
+  padding: 16px;
+  border-radius: 112px;
+  background: linear-gradient(145deg, #4b5560, #15191e 35%, #0b0d10 70%, #39424c);
+  box-shadow: 0 70px 130px rgba(0, 28, 66, .5), 0 16px 40px rgba(0, 28, 66, .35);
+}
+.phone img { display: block; width: 100%; border-radius: 96px; }
+.phone::after {
+  content: "";
+  position: absolute;
+  top: 42px;
+  left: 50%;
+  width: 29%;
+  height: 50px;
+  border-radius: 25px;
+  background: #000;
+  transform: translateX(-50%);
+}
+
+.stubs { display: flex; justify-content: center; }
+.ticket { filter: drop-shadow(0 26px 34px rgba(0, 28, 66, .35)); }
+.stub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  color: #06283f;
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+}
+.stub img { display: block; border-radius: 50%; object-fit: cover; }
+.stub span, .stub b { display: block; width: max-content; white-space: nowrap; }
+.stub span { font-weight: 600; }
+.stub b { font-weight: 800; letter-spacing: -.02em; color: #00639c; }

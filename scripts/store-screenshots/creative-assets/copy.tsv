@@ -1,0 +1,32 @@
+# The words of the App Store's creative assets (docs/store-listing-screenshots.md), one row per listing language of
+# ../locales.tsv: the product page header's phrase and the search result's, whose | breaks the line.
+# tag	header	searchResults
+en-US	Split the bill. Keep the friends.	Split bills|with friends.
+pt-BR	Divida a conta, não a amizade.	Divida a conta|com os amigos.
+pt-PT	Divide a conta, não a amizade.	Divide a conta|com os amigos.
+es	Divide la cuenta, no la amistad.	Divide cuentas|con amigos.
+es-ES	Divide la cuenta, no la amistad.	Divide gastos|con amigos.
+fr	Partagez l'addition, gardez vos amis.	Partagez les frais|entre amis.
+de	Teile die Rechnung, nicht die Freundschaft.	Rechnungen teilen|mit Freunden.
+it	Dividi il conto, non l'amicizia.	Dividi le spese|con gli amici.
+pl	Dziel rachunek, nie przyjaźń.	Dziel rachunki|ze znajomymi.
+nl	Deel de rekening, niet de vriendschap.	Deel kosten|met vrienden.
+tr	Hesabı böl, dostluğu değil.	Hesapları|arkadaşlarınla böl.
+id	Bagi tagihannya, jaga pertemanannya.	Bagi tagihan|bareng teman.
+ru	Дели счёт, а не дружбу.	Дели счета|с друзьями.
+uk	Діли рахунок, а не дружбу.	Діли рахунки|з друзями.
+ko	계산은 나눠도, 우정은 그대로.	친구와 함께|간편한 더치페이.
+hi	बिल बाँटें, दोस्ती नहीं।	दोस्तों के साथ|बिल बाँटें।
+ar	قسّم الفاتورة وحافظ على الصداقة.	قسّم الفواتير|مع الأصدقاء.
+zh	账单分清楚，友谊更长久。	和朋友|轻松分账。
+he	מחלקים את החשבון, שומרים על החברות.	מחלקים חשבונות|עם חברים.
+th	หารบิลลงตัว เพื่อนก็ยังรักกัน	หารบิล|กับเพื่อนง่ายๆ
+vi	Chia hóa đơn, giữ tình bạn.	Chia hóa đơn|cùng bạn bè.
+zh-Hant	帳單分清楚，友誼更長久。	和朋友|輕鬆分帳。
+sv	Dela notan, inte vänskapen.	Dela notan|med vännerna.
+cs	Rozděl účet, ne přátelství.	Rozděl účty|s přáteli.
+ro	Împarte nota, nu prietenia.	Împarte nota|cu prietenii.
+ja	割り勘はかんたんに、友情はそのままに。	友だちと|かんたん割り勘。
+bn	বিল ভাগ করুন, বন্ধুত্ব নয়।	বন্ধুদের সাথে|বিল ভাগ করুন।
+ms	Bahagi bil, bukan persahabatan.	Bahagi bil|bersama rakan.
+el	Μοιράστε τον λογαριασμό, όχι τη φιλία.	Μοιράστε έξοδα|με φίλους.

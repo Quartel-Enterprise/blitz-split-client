@@ -25,6 +25,10 @@ internal enum class StoreScreenshotsScreen(
     PAYERS("payers"),
     ACTIVITY("activity"),
     LIGHT_THEME("light"),
+
+    // Why: the two screens only the listing's art shows (scripts/store-screenshots/art-screens.tsv).
+    PAY("pay"),
+    SPLIT_MODES("splitmodes"),
     ;
 
     fun routesOf(trip: SeededTrip): List<Route> {
@@ -39,7 +43,7 @@ internal enum class StoreScreenshotsScreen(
 
             ITEMS -> listOf(group, Route.SplitBill.createEditing(trip.groupId, trip.dinnerId))
 
-            RECEIPT -> listOf(
+            RECEIPT, SPLIT_MODES -> listOf(
                 Route.SplitBill(
                     groupId = trip.groupId,
                     expenseId = null,
@@ -73,6 +77,17 @@ internal enum class StoreScreenshotsScreen(
             )
 
             ACTIVITY -> listOf(Route.Activity.all)
+
+            PAY -> listOf(
+                group.copy(tab = GroupTab.BALANCES),
+                Route.RegisterPayment(
+                    groupId = trip.groupId,
+                    fromMemberId = trip.myMemberId,
+                    toMemberId = trip.creditorMemberId,
+                    currency = trip.currency,
+                    offersReceiverKeys = true,
+                ),
+            )
         }
     }
 
