@@ -82,6 +82,8 @@ enum AppRoute: Hashable, Identifiable {
     /// "Contact support", a sheet over the profile (Settings on the Mac).
     case contactSupport
     case notificationSettings
+    /// Profile's "Connect watch" (15.14): a sheet everywhere, on Settings' window on the Mac.
+    case connectWatch
     case categoryMap
     /// "Release notes", from the profile's "Privacy and about": what each version changed on this platform.
     case releaseNotes
@@ -138,6 +140,7 @@ enum AppRoute: Hashable, Identifiable {
         case is RouteDeleteAccount: self = .deleteAccount
         case is RouteContactSupport: self = .contactSupport
         case is RouteNotificationSettings: self = .notificationSettings
+        case is RouteConnectWatch: self = .connectWatch
         case is RouteCategoryMap: self = .categoryMap
         case is RouteReleaseNotes: self = .releaseNotes
         case let legalDocument as RouteLegalDocument: self = .legalDocument(legalDocument)
@@ -203,7 +206,7 @@ enum AppRoute: Hashable, Identifiable {
     private var isSheetEverywhere: Bool {
         switch self {
         case .deleteAccount, .contactSupport, .createGroup, .splitBill, .editGroup, .registerPayment, .settleUp, .charge, .pickPayment,
-             .contactInvite, .shareBill, .inAppUpdate, .appDownload, .editProfile, .payingMethod: true
+             .contactInvite, .shareBill, .inAppUpdate, .appDownload, .editProfile, .payingMethod, .connectWatch: true
         default: false
         }
     }
@@ -245,7 +248,7 @@ enum AppRoute: Hashable, Identifiable {
     var opensInSettings: Bool {
         #if os(macOS)
         switch self {
-        case .paymentKey, .profilePhoto, .deleteAccount, .contactSupport, .legalDocument, .releaseNotes: true
+        case .paymentKey, .profilePhoto, .deleteAccount, .contactSupport, .legalDocument, .releaseNotes, .connectWatch: true
         // Profile's opens there; Split a bill's "Add a payment method" over the bill, in the main window
         case let .payingMethod(route): !route.isOverBill
         // "Check for updates" is Ajustes' own; opening the app offers the update over the main window
@@ -264,7 +267,7 @@ enum AppRoute: Hashable, Identifiable {
     var usesFormSheet: Bool {
         switch self {
         case .createGroup, .contactInvite, .shareBill, .editProfile, .editGroup, .registerPayment, .settleUp,
-             .charge, .pickPayment, .inAppUpdate, .contactSupport, .payingMethod: true
+             .charge, .pickPayment, .inAppUpdate, .contactSupport, .payingMethod, .connectWatch: true
         default: false
         }
     }
