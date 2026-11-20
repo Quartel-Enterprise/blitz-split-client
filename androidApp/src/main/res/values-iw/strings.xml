@@ -1,27 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Blitz Split</string>
-    <string name="push_reminder_title">תזכורת לסגירת חשבון</string>
-    <string name="push_bill_created">%1$s: הוספת \"%2$s\" שכולל אותך</string>
-    <string name="push_bill_edited">%1$s: עריכת \"%2$s\"</string>
-    <string name="push_bill_deleted">%1$s: מחיקת \"%2$s\"</string>
-    <string name="push_comment_added">%1$s: תגובה על \"%2$s\": %3$s</string>
-    <string name="push_payment_paid_you">%1$s: סימון תשלום אליך</string>
-    <string name="push_payment_to_you">%1$s: סימון תשלום מ-%2$s אליך</string>
-    <string name="push_payment_received_yours">%1$s: סימון התשלום שלך כהתקבל</string>
-    <string name="push_payment_from_you">%1$s: סימון תשלום שלך ל-%2$s</string>
-    <string name="push_payment_undone">%1$s: ביטול תשלום איתך</string>
-    <string name="push_charge_sent">%1$s: תזכורת אליך לסגירת חשבון</string>
-    <string name="push_settle_reminder">יש לך יתרה פתוחה ב-%1$s</string>
-    <string name="push_settle_reminders">יש לך יתרות פתוחות ב-%1$s קבוצות</string>
-    <string name="push_added_to_group">%1$s: הוספה שלך לקבוצה</string>
-    <string name="push_member_joined">%1$s: הצטרפות לקבוצה</string>
-    <string name="push_debts_simplified_to_you">%1$s: פישוט חובות. עכשיו מגיע לך מ-%2$s %3$s.</string>
-    <string name="push_debts_simplified_from_you">%1$s: פישוט חובות. עכשיו ל-%2$s מגיע ממך %3$s.</string>
-    <string name="push_debts_simplified_other">%1$s: פישוט חובות. כדאי לבדוק מה זה אומר לגביך.</string>
-    <string name="push_debts_unsimplified_to_you">%1$s: כיבוי פישוט החובות. עכשיו מגיע לך מ-%2$s %3$s.</string>
-    <string name="push_debts_unsimplified_from_you">%1$s: כיבוי פישוט החובות. עכשיו ל-%2$s מגיע ממך %3$s.</string>
-    <string name="push_debts_unsimplified_other">%1$s: כיבוי פישוט החובות. כדאי לבדוק מה זה אומר לגביך.</string>
     <string name="bill_link_not_in_group_title">הקבוצה הזו לא כוללת אותך</string>
     <string name="bill_link_not_in_group_message">התגובה הזו נמצאת בקבוצה שלא כוללת אותך. כדאי לבקש הזמנה ממי ששלח את הקישור.</string>
     <string name="bill_link_offline_title">אין אינטרנט</string>

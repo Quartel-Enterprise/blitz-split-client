@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Usa aquí la misma cuenta del móvil. Después, el reloj funciona solo.</string>
+    <string name="pair_connecting">Trayendo tu cuenta del móvil…</string>
+    <string name="pair_connected_body">El reloj se sincroniza solo, incluso lejos del móvil.</string>
+    <string name="pair_local_only_title">Tus datos solo están en el móvil</string>
+    <string name="pair_local_only_body">En el móvil, conecta una cuenta en Perfil y toca Conectar aquí de nuevo.</string>
+    <string name="pair_far_title">Móvil fuera de alcance</string>
+    <string name="pair_far_body">Acerca el móvil o conéctate con un código.</string>
+    <string name="pair_code_where">En el móvil: Perfil › Conectar reloj</string>
+    <string name="pair_code_validity">Válido durante 5 minutos</string>
+    <string name="pair_signed_out_title">Has cerrado sesión en el móvil</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_sign_out_body">Sus datos se borran cuando se envíe lo que tiene en cola. Tu móvil sigue con la sesión iniciada.</string>
+    <string name="group_confirm_title">¿Has pagado %1$s a %2$s?</string>
+</resources>

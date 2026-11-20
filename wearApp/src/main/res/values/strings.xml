@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Use the same account as your phone here. Then the watch works on its own.</string>
+    <string name="pair_connect">Connect</string>
+    <string name="pair_connecting">Getting your account from your phone…</string>
+    <string name="pair_connected_title">Ready, %1$s</string>
+    <string name="pair_connected_title_unnamed">Ready</string>
+    <string name="pair_connected_body">The watch syncs on its own, even away from your phone.</string>
+    <string name="pair_continue">Continue</string>
+    <string name="pair_local_only_title">Your data is only on your phone</string>
+    <string name="pair_local_only_body">On your phone, connect an account in Profile and tap Connect here again.</string>
+    <string name="pair_ok">OK</string>
+    <string name="pair_far_title">Phone out of reach</string>
+    <string name="pair_far_body">Bring your phone closer, or connect with a code.</string>
+    <string name="pair_try_again">Try again</string>
+    <string name="pair_use_code">Use code</string>
+    <string name="pair_code_label">Your code</string>
+    <string name="pair_code_description">Code %1$s</string>
+    <string name="pair_code_where">On your phone: Profile › Connect watch</string>
+    <string name="pair_code_validity">Valid for 5 minutes</string>
+    <string name="pair_cancel">Cancel</string>
+    <string name="pair_signed_out_title">You signed out on your phone</string>
+    <string name="pair_signed_out_body">The data left this watch too.</string>
+    <string name="pair_connect_again">Connect again</string>
+    <string name="pair_error_offline">Connecting the watch needs the internet.</string>
+    <string name="pair_error_too_many">Too many tries. Wait a few minutes and connect again.</string>
+    <string name="pair_error_failed">Couldn\'t connect the watch. Try again.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Balances</string>
+    <string name="balances_offline">Offline</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Offline · %d change queued</item>
+        <item quantity="other">Offline · %d changes queued</item>
+    </plurals>
+    <string name="balances_overall">Overall balance</string>
+    <string name="balances_to_receive">to receive</string>
+    <string name="balances_you_owe">you owe</string>
+    <string name="balances_group_to_receive">%1$s to receive</string>
+    <string name="balances_group_you_owe">%1$s you owe</string>
+    <string name="balances_group_even">Even overall</string>
+    <string name="balances_waiting">waiting to send</string>
+    <string name="balances_updated_at">Updated at %1$s</string>
+    <string name="balances_sign_out">Sign out</string>
+    <string name="balances_sign_out_title">Sign out of this watch?</string>
+    <string name="balances_sign_out_body">Its data is erased once what it queued is sent. Your phone stays signed in.</string>
+    <string name="balances_sign_out_scheduled">Sign out scheduled</string>
+    <string name="balances_sign_out_scheduled_detail">Signs out as soon as everything is uploaded</string>
+    <string name="balances_settled_title">Nothing open</string>
+    <string name="balances_settled_body">You owe nothing and nobody owes you. New groups and bills show up here on their own.</string>
+    <string name="group_you_owe_person">you owe %1$s</string>
+    <string name="group_owes_you">%1$s owes you</string>
+    <string name="group_former_member">Former member</string>
+    <string name="group_i_paid">I paid</string>
+    <string name="group_confirm_title">Paid %1$s to %2$s?</string>
+    <string name="group_confirm_body">%1$s. The group sees it right away, or when the internet is back.</string>
+    <string name="group_payment_recorded">Payment recorded</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Balances</string>
+    <string name="tile_to_receive_total">to receive in total</string>
+    <string name="tile_to_pay_total">to pay in total</string>
+    <string name="tile_owed_to_you">Owed to you %1$s</string>
+    <string name="tile_you_owe">You owe %1$s</string>
+    <string name="tile_settled_title">All settled</string>
+    <string name="tile_settled_body">Nothing to pay or receive</string>
+    <string name="tile_open">Open</string>
+    <string name="complication_name">Overall balance</string>
+    <string name="complication_you_owe">You owe %1$s</string>
+    <string name="complication_owed_to_you">Owed to you %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Received</string>
+    <string name="push_view_group">View group</string>
+</resources>

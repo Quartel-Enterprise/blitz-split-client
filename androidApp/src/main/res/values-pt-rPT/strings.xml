@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Blitz Split</string>
-    <string name="push_bill_created">%1$s registou “%2$s” contigo</string>
-    <string name="push_payment_received_yours">%1$s marcou que recebeu o teu pagamento</string>
-    <string name="push_payment_from_you">%1$s marcou que pagaste %2$s</string>
-    <string name="push_payment_undone">%1$s desfez um pagamento contigo</string>
-    <string name="push_charge_sent">%1$s cobrou-te</string>
-    <string name="push_settle_reminder">Tens saldo em aberto em %1$s</string>
-    <string name="push_settle_reminders">Tens saldo em aberto em %1$s grupos</string>
-    <string name="push_added_to_group">%1$s adicionou-te ao grupo</string>
-    <string name="push_debts_simplified_to_you">%1$s simplificou as dívidas. Agora %2$s paga-te %3$s.</string>
-    <string name="push_debts_simplified_from_you">%1$s simplificou as dívidas. Agora pagas %3$s a %2$s.</string>
-    <string name="push_debts_simplified_other">%1$s simplificou as dívidas. Vê como ficou para ti.</string>
-    <string name="push_debts_unsimplified_to_you">%1$s desligou Simplificar dívidas. Agora %2$s paga-te %3$s.</string>
-    <string name="push_debts_unsimplified_from_you">%1$s desligou Simplificar dívidas. Agora pagas %3$s a %2$s.</string>
-    <string name="push_debts_unsimplified_other">%1$s desligou Simplificar dívidas. Vê como ficou para ti.</string>
     <string name="bill_link_not_in_group_title">Não estás neste grupo</string>
     <string name="bill_link_not_in_group_message">Esse comentário é de um grupo em que não estás. Pede o convite a quem te enviou o link.</string>
     <string name="bill_link_offline_message">Abre o link de novo quando a ligação voltar.</string>

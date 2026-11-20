@@ -11,14 +11,16 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.quare.blitzsplit.MainActivity
 import com.quare.blitzsplit.R
-import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
+import com.quare.blitzsplit.android.push.PushMessage
+import com.quare.blitzsplit.android.push.PushPayload
+import com.quare.blitzsplit.android.push.PushTokens
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import org.json.JSONArray
 import org.koin.android.ext.android.inject
+import com.quare.blitzsplit.android.push.R as PushR
 
 /*
  * Why: FCM sends data messages, which reach the app open or closed, so the app words and shows each notification
@@ -39,27 +41,27 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
      */
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onNewToken(token: String) {
-        PushSetup.handOver(setPushDevice, token)
+        PushTokens.handOver(setPushDevice, token)
     }
 
     @SuppressLint("MissingPermission") // Why: canPostNotifications() checks it, on the versions that have it.
     override fun onMessageReceived(message: RemoteMessage) {
         val data = message.data
-        val kind = PushMessage.ofKind(data[KIND]) ?: return
+        val kind = PushMessage.ofKind(data[PushPayload.KIND]) ?: return
         // Why: words that don't fit this version's sentence (a newer server's) drop the notification, never the app.
-        val text = runCatching { buildText(kind, data[ARGS]) }.getOrNull() ?: return
+        val text = kind.toText(this, data[PushPayload.ARGS]) ?: return
         // Why: only a reminder comes without a group to name; anything else missing one still names the app.
-        val fallbackTitle = if (kind.channel == PushChannel.SETTLE_REMINDERS) {
-            R.string.push_reminder_title
+        val fallbackTitle = if (kind.isReminder) {
+            PushR.string.push_reminder_title
         } else {
             R.string.app_name
         }
-        val title = data[TITLE].orEmpty().ifEmpty { getString(fallbackTitle) }
-        val tag = data[EVENT_ID] ?: kind.kind
-        val link = data[LINK]
+        val title = data[PushPayload.TITLE].orEmpty().ifEmpty { getString(fallbackTitle) }
+        val tag = data[PushPayload.EVENT_ID] ?: kind.kind
+        val link = data[PushPayload.LINK]
         if (!canPostNotifications() || !isPushEnabled()) return
         val notification = NotificationCompat
-            .Builder(this, kind.channel.id)
+            .Builder(this, kind.channelId)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(text)
@@ -77,14 +79,6 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
      */
     private fun isPushEnabled(): Boolean = runBlocking { observePushEnabled().first() }
 
-    private fun buildText(
-        kind: PushMessage,
-        args: String?,
-    ): String {
-        val words = args?.let(::JSONArray)?.let { array -> List(array.length()) { array.getString(it) } }.orEmpty()
-        return getString(kind.textRes, *words.toTypedArray())
-    }
-
     private fun openIntent(
         link: String,
         tag: String,
@@ -94,12 +88,4 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
         Intent(Intent.ACTION_VIEW, link.toUri(), this, MainActivity::class.java),
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
     )
-
-    private companion object {
-        const val KIND = "kind"
-        const val TITLE = "title"
-        const val ARGS = "args"
-        const val LINK = "link"
-        const val EVENT_ID = "event_id"
-    }
 }

@@ -15,4 +15,7 @@ data class WatchGroupRow(
     val netMinor: Long,
     // Why: a payment recorded here waits to go up: the orange dot and "waiting to send" (15.6b).
     val isQueued: Boolean,
-)
+) {
+    val direction: WatchBalanceDirection
+        get() = WatchBalanceDirection.of(netMinor)
+}

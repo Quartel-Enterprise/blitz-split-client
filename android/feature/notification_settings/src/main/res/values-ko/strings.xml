@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">푸시는 이 기기로 알림을 보내요. 앱 내 알림은 종 아이콘과 활동에 새 알림으로 표시돼요. 끄면 활동에는 읽은 상태로 표시돼요.</string>
-    <string name="notification_settings_bills">지출</string>
-    <string name="notification_settings_bills_detail">내가 포함된 지출의 추가, 수정, 삭제</string>
-    <string name="notification_settings_payments">송금 및 정산</string>
-    <string name="notification_settings_payments_detail">내가 받거나 보낸 송금, 정산 간소화</string>
-    <string name="notification_settings_comments">댓글</string>
-    <string name="notification_settings_comments_detail">내가 포함된 지출과 내가 댓글을 단 대화</string>
-    <string name="notification_settings_people_and_groups">사람과 그룹</string>
-    <string name="notification_settings_people_and_groups_detail">그룹에 들어오거나 나가는 사람, 그룹의 변경 사항</string>
-    <string name="notification_settings_payment_requests">송금 요청</string>
-    <string name="notification_settings_payment_requests_detail">누군가 송금을 요청할 때</string>
-    <string name="notification_settings_balance_reminder">미정산 잔액 알림</string>
-    <string name="notification_settings_balance_reminder_detail">미정산 잔액이 있으면 일주일에 한 번</string>
     <string name="notification_settings_footer">알림은 인터넷에 연결되어 있을 때 와요. 그룹 알림을 끄려면 그룹 안의 메뉴를 사용하세요.</string>
 </resources>

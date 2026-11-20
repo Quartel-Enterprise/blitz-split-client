@@ -105,8 +105,10 @@ include(":feature:app_download")
 
 // Android: the native Jetpack Compose UI of each feature
 include(":androidApp")
+include(":wearApp")
 include(":android:designsystem")
 include(":android:platform")
+include(":android:push")
 include(":android:feature:welcome")
 include(":android:feature:profile_setup")
 include(":android:feature:restore")

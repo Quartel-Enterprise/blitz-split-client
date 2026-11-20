@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Påminnelse om att göra upp</string>
+    <string name="push_bill_created">%1$s lade till ”%2$s” med dig</string>
+    <string name="push_bill_edited">%1$s redigerade ”%2$s”</string>
+    <string name="push_bill_deleted">%1$s raderade ”%2$s”</string>
+    <string name="push_comment_added">%1$s kommenterade ”%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s markerade att hen har betalat dig</string>
+    <string name="push_payment_to_you">%1$s markerade att %2$s har betalat dig</string>
+    <string name="push_payment_received_yours">%1$s markerade din betalning som mottagen</string>
+    <string name="push_payment_from_you">%1$s markerade att du har betalat %2$s</string>
+    <string name="push_payment_undone">%1$s ångrade en betalning med dig</string>
+    <string name="push_charge_sent">%1$s skickade en påminnelse om att göra upp</string>
+    <string name="push_settle_reminder">Du har ett öppet saldo i %1$s</string>
+    <string name="push_settle_reminders">Du har öppna saldon i %1$s grupper</string>
+    <string name="push_added_to_group">%1$s lade till dig i gruppen</string>
+    <string name="push_member_joined">%1$s gick med i gruppen</string>
+    <string name="push_debts_simplified_to_you">%1$s förenklade skulderna. Nu betalar %2$s dig %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s förenklade skulderna. Nu betalar du %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s förenklade skulderna. Se hur det blir för dig.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s stängde av Förenkla skulder. Nu betalar %2$s dig %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s stängde av Förenkla skulder. Nu betalar du %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s stängde av Förenkla skulder. Se hur det blir för dig.</string>
+    <string name="notification_settings_bills">Utgifter</string>
+    <string name="notification_settings_bills_detail">Nya, redigerade eller raderade utgifter du är med i</string>
+    <string name="notification_settings_payments">Betalningar och uppgörelser</string>
+    <string name="notification_settings_payments_detail">Betalningar till eller från dig, och förenklade skulder</string>
+    <string name="notification_settings_comments">Kommentarer</string>
+    <string name="notification_settings_comments_detail">På utgifter du är med i och trådar du har skrivit i</string>
+    <string name="notification_settings_people_and_groups">Personer och grupper</string>
+    <string name="notification_settings_people_and_groups_detail">Vem som går med i eller lämnar dina grupper, och vad som ändras i dem</string>
+    <string name="notification_settings_payment_requests">Betalningsförfrågningar</string>
+    <string name="notification_settings_payment_requests_detail">När någon ber dig att betala</string>
+    <string name="notification_settings_balance_reminder">Påminnelse om öppet saldo</string>
+    <string name="notification_settings_balance_reminder_detail">En gång i veckan, om det finns ett öppet saldo</string>
+</resources>

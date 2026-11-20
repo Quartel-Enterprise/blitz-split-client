@@ -84,6 +84,11 @@ internal class SyncOutcomes(
         }
     }
 
+    // Why: a real time pull that went through brought the account up to date as a sync does: "Updated at" moves too.
+    suspend fun onPulled() {
+        suspendRunCatching { lastSyncRecorder.record() }
+    }
+
     private suspend fun recordOutcome(failure: Throwable?) {
         mutableLastSyncFailed.value = failure != null
         if (failure != null) firstDownload.syncFailed() else firstDownload.syncSucceeded()

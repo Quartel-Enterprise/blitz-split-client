@@ -59,7 +59,8 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
     queued went up (`EndWatchSessionFromPhone`, as "Sign out when synced"), then shows "You signed out on your phone" and "Connect again". The iPhone
     queues it for its watch (WatchConnectivity's `transferUserInfo`), so a watch app that isn't running gets it once it opens. A watch out of reach
     finds out on its next sync, when its session is refused. Deleting the account drops the watch's session too.
-  - To disconnect only the watch, sign out on it. A list of connected devices in Profile is for later.
+  - To disconnect only the watch, sign out on it: "Sign out" at the end of its Balances asks "Sign out of this watch?" and signs out once what it queued went up; the phone stays signed in. Until then the end of Balances says "Sign out scheduled · Signs out as soon as everything is uploaded" with "Cancel", as the phone's Profile does. A list of connected devices in Profile is for later.
+  - The watch asks for the notification permission (Wear OS 4 and later) on its first Balances once connected.
   - The word for the phone is "phone" on Wear OS and "iPhone" on watchOS.
 
 ## Glanceable surfaces
@@ -67,11 +68,24 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
   - The Tile (15.1): "Balances", the overall balance in the currency with the most groups ("+R$ 186,40", "to receive
     in total", "Owed to you R$ 312,40", "You owe R$ 126,00") and "Open"; all settled (15.1b): "All settled", "Nothing to
     pay or receive".
-  - Complications (15.2): short text "+186" with the app's icon (the word doesn't fit; the color says it), long text
+  - A watch with no account (never connected, or signed out) never reads "All settled": the Tile shows "Use the same
+    account as your phone here…" with "Connect", which opens the connect screens, and the complications show the app's
+    icon alone, no number.
+  - Complications (15.2): short text "+186" with the app's icon (the word doesn't fit; the color says it); under one
+    unit it keeps the cents ("−0,50") rather than a "−0" that hides a debt, and bitcoin follows the sats preference. Long text
     "You owe R$ 126,00". Tapping either opens the app.
 
 ## Notifications
 
   - The watch gets its own pushes of Activity (FCM on Wear OS, APNs on watchOS), worded on the watch as the phone words
-    them, not the phone's mirrored notifications. "Payment marked" has the watch's two buttons; the others open the
-    group on the watch.
+    them (`:android:push` holds the kinds, their sentences and the channels, ids and names, both Android apps share), not the
+    phone's mirrored notifications. It registers its own token for the account signed in on it.
+  - "X marked that they paid you" and "X marked that Y paid you" have "Received" and "View group". The payment is already recorded by whoever paid
+    (no one confirms a payment, [members-and-payments.md](members-and-payments.md)), so "Received" records nothing:
+    it marks the activity read and clears the notification (Pierre's call, November 2026). "View group" and every
+    other notification open the app on its balances for now.
+
+## Shipping
+
+  - The release workflows don't build `:wearApp` yet (its own `google-services.json`, a bundle for Play's Wear OS
+    track); until they do, no release mentions the watch app. Its release note waits for that change.

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.feature.watchbalances.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.quare.blitzsplit.core.account.domain.usecase.ObserveAccount
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveGroupsMoney
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
 import com.quare.blitzsplit.core.navigation.Navigator
@@ -9,7 +10,9 @@ import com.quare.blitzsplit.core.presentation.analytics.TrackedViewModel
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.settings.domain.usecase.ObserveLastSyncedAt
+import com.quare.blitzsplit.core.sync.domain.usecase.CancelSignOutWhenSynced
 import com.quare.blitzsplit.core.sync.domain.usecase.ObserveFirstDownload
+import com.quare.blitzsplit.core.sync.domain.usecase.SignOutWhenSynced
 import com.quare.blitzsplit.feature.watchbalances.presentation.mapper.WatchBalancesMapper
 import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchBalancesUiEvent
 import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchBalancesUiState
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import software.quare.connectivity.NetworkConnectivityObserver
 
 /*
@@ -27,6 +31,9 @@ import software.quare.connectivity.NetworkConnectivityObserver
  */
 class WatchBalancesViewModel(
     private val navigator: Navigator,
+    private val signOutWhenSynced: SignOutWhenSynced,
+    private val cancelSignOutWhenSynced: CancelSignOutWhenSynced,
+    observeAccount: ObserveAccount,
     observePeopleBalances: ObservePeopleBalances,
     observeGroupsMoney: ObserveGroupsMoney,
     observeFirstDownload: ObserveFirstDownload,
@@ -43,6 +50,8 @@ class WatchBalancesViewModel(
                 isOnline = true,
                 queuedChangeCount = 0,
                 lastSyncedAt = null,
+                isConfirmingSignOut = false,
+                isSignOutScheduled = false,
             ),
         )
 
@@ -66,17 +75,45 @@ class WatchBalancesViewModel(
         observeLastSyncedAt()
             .onEach { syncedAt -> uiState.update { it.copy(lastSyncedAt = syncedAt) } }
             .launchIn(viewModelScope)
+        observeAccount()
+            .onEach { account -> uiState.update { it.copy(isSignOutScheduled = account.signOutWhenSynced) } }
+            .launchIn(viewModelScope)
         connectivityObserver
             .observe()
             .onEach { isOnline -> uiState.update { it.copy(isOnline = isOnline) } }
             .launchIn(viewModelScope)
     }
 
+    /*
+     * Why: the watch alone signs out (the phone keeps its session), once what it queued went up, so a payment recorded
+     * offline isn't lost; the root then shows the connect screens.
+     */
+    private fun signOut() {
+        uiState.update { it.copy(isConfirmingSignOut = false) }
+        signOutWhenSynced()
+    }
+
+    // Why: ✓ and ✕ only answer the question while it shows.
+    override fun isAccepted(event: WatchBalancesUiEvent): Boolean =
+        if (event == WatchBalancesUiEvent.OnSignOutConfirmed || event == WatchBalancesUiEvent.OnSignOutDismissed) {
+            uiState.value.isConfirmingSignOut
+        } else {
+            true
+        }
+
     override fun handleEvent(event: WatchBalancesUiEvent) {
         when (event) {
             is WatchBalancesUiEvent.OnGroupClicked -> navigator.navigate(
                 Route.WatchGroup(event.groupId, event.currency),
             )
+
+            WatchBalancesUiEvent.OnSignOutClicked -> uiState.update { it.copy(isConfirmingSignOut = true) }
+
+            WatchBalancesUiEvent.OnSignOutConfirmed -> signOut()
+
+            WatchBalancesUiEvent.OnSignOutDismissed -> uiState.update { it.copy(isConfirmingSignOut = false) }
+
+            WatchBalancesUiEvent.OnCancelScheduledSignOutClicked -> viewModelScope.launch { cancelSignOutWhenSynced() }
         }
     }
 }

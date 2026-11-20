@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">在这里使用和手机上相同的账号。之后手表可独立运行。</string>
+    <string name="pair_connect">连接</string>
+    <string name="pair_connecting">正在从手机获取你的账号…</string>
+    <string name="pair_connected_title">准备就绪，%1$s</string>
+    <string name="pair_connected_title_unnamed">准备就绪</string>
+    <string name="pair_connected_body">手表会自动同步，即使远离手机。</string>
+    <string name="pair_continue">继续</string>
+    <string name="pair_local_only_title">你的数据只在手机上</string>
+    <string name="pair_local_only_body">请在手机的个人资料中关联账号，然后在这里再次点按连接。</string>
+    <string name="pair_ok">OK</string>
+    <string name="pair_far_title">手机不在范围内</string>
+    <string name="pair_far_body">请将手机靠近，或使用代码连接。</string>
+    <string name="pair_try_again">重试</string>
+    <string name="pair_use_code">使用代码</string>
+    <string name="pair_code_label">你的代码</string>
+    <string name="pair_code_description">代码 %1$s</string>
+    <string name="pair_code_where">在手机上：个人资料 › 连接手表</string>
+    <string name="pair_code_validity">5 分钟内有效</string>
+    <string name="pair_cancel">取消</string>
+    <string name="pair_signed_out_title">你已在手机上退出登录</string>
+    <string name="pair_signed_out_body">数据也已从这块手表上移除。</string>
+    <string name="pair_connect_again">重新连接</string>
+    <string name="pair_error_offline">连接手表需要网络。</string>
+    <string name="pair_error_too_many">尝试次数过多。请等几分钟后重新连接。</string>
+    <string name="pair_error_failed">无法连接手表，请重试。</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">余额</string>
+    <string name="balances_offline">离线</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="other">离线 · %d项更改在排队</item>
+    </plurals>
+    <string name="balances_overall">总余额</string>
+    <string name="balances_to_receive">应收</string>
+    <string name="balances_you_owe">你欠</string>
+    <string name="balances_group_to_receive">应收 %1$s</string>
+    <string name="balances_group_you_owe">你欠 %1$s</string>
+    <string name="balances_group_even">总计持平</string>
+    <string name="balances_waiting">等待发送</string>
+    <string name="balances_updated_at">更新于 %1$s</string>
+    <string name="balances_sign_out">退出登录</string>
+    <string name="balances_sign_out_title">要在这块手表上退出登录吗？</string>
+    <string name="balances_sign_out_body">待发送的内容发出后，手表上的数据会被清除。你的手机仍保持登录。</string>
+    <string name="balances_sign_out_scheduled">已安排退出登录</string>
+    <string name="balances_sign_out_scheduled_detail">所有内容上传完成后立即退出登录</string>
+    <string name="balances_settled_title">没有未结清款项</string>
+    <string name="balances_settled_body">你不欠任何人，也没有人欠你。新的群组和账单会自动显示在这里。</string>
+    <string name="group_you_owe_person">你欠%1$s</string>
+    <string name="group_owes_you">%1$s欠你</string>
+    <string name="group_former_member">前成员</string>
+    <string name="group_i_paid">已付款</string>
+    <string name="group_confirm_title">已向%2$s付款%1$s？</string>
+    <string name="group_confirm_body">%1$s。群组会立即看到，或在网络恢复后看到。</string>
+    <string name="group_payment_recorded">已记录付款</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">余额</string>
+    <string name="tile_to_receive_total">总计应收</string>
+    <string name="tile_to_pay_total">总计应付</string>
+    <string name="tile_owed_to_you">别人欠你 %1$s</string>
+    <string name="tile_you_owe">你欠 %1$s</string>
+    <string name="tile_settled_title">全部已结清</string>
+    <string name="tile_settled_body">无需付款或收款</string>
+    <string name="tile_open">打开</string>
+    <string name="complication_name">总余额</string>
+    <string name="complication_you_owe">你欠 %1$s</string>
+    <string name="complication_owed_to_you">别人欠你 %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">已收款</string>
+    <string name="push_view_group">查看群组</string>
+</resources>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_bill_created">%1$s añadió “%2$s” contigo</string>
+    <string name="push_added_to_group">%1$s te añadió al grupo</string>
+</resources>

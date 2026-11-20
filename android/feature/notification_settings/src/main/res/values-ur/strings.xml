@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s، %2$s</string>
     <string name="notification_settings_legend">پُش اس ڈیوائس پر نوٹیفکیشن بھیجتا ہے۔ ایپ میں اسے گھنٹی اور سرگرمی میں نیا دکھاتا ہے؛ بند ہونے پر بھی یہ سرگرمی میں پڑھا ہوا دکھائی دیتا ہے۔</string>
-    <string name="notification_settings_bills">خرچ</string>
-    <string name="notification_settings_bills_detail">جن خرچوں میں آپ شامل ہیں، ان کا نیا آنا، ترمیم ہونا یا حذف ہونا</string>
-    <string name="notification_settings_payments">ادائیگیاں اور حساب برابر</string>
-    <string name="notification_settings_payments_detail">آپ کو یا آپ سے ہونے والی ادائیگیاں، اور آسان کیے گئے قرض</string>
-    <string name="notification_settings_comments">تبصرے</string>
-    <string name="notification_settings_comments_detail">جن خرچوں میں آپ شامل ہیں اور جن گفتگوؤں میں آپ نے لکھا ہے، ان پر</string>
-    <string name="notification_settings_people_and_groups">لوگ اور گروپ</string>
-    <string name="notification_settings_people_and_groups_detail">کون آپ کے گروپوں میں شامل ہوتا ہے یا انہیں چھوڑتا ہے، اور ان میں کیا بدلتا ہے</string>
-    <string name="notification_settings_payment_requests">ادائیگی کی درخواستیں</string>
-    <string name="notification_settings_payment_requests_detail">جب کوئی آپ سے ادائیگی کرنے کو کہے</string>
-    <string name="notification_settings_balance_reminder">باقی بیلنس کی یاد دہانی</string>
-    <string name="notification_settings_balance_reminder_detail">ہفتے میں ایک بار، اگر کوئی بیلنس باقی ہو</string>
     <string name="notification_settings_footer">اطلاعات انٹرنیٹ ہونے پر آتی ہیں۔ کسی گروپ کو میوٹ کرنے کے لیے اس کے اندر کا مینو استعمال کریں۔</string>
 </resources>

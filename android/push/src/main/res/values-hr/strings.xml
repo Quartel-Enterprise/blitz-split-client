@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Podsjetnik za podmirenje</string>
+    <string name="push_bill_created">%1$s je dodao/la trošak „%2$s“ u kojem sudjeluješ</string>
+    <string name="push_bill_edited">%1$s je uredio/la trošak „%2$s“</string>
+    <string name="push_bill_deleted">%1$s je izbrisao/la trošak „%2$s“</string>
+    <string name="push_comment_added">%1$s je komentirao/la trošak „%2$s“: %3$s</string>
+    <string name="push_payment_paid_you">%1$s je označio/la da ti je platio/la</string>
+    <string name="push_payment_to_you">%1$s je označio/la da ti je %2$s platio/la</string>
+    <string name="push_payment_received_yours">%1$s je označio/la tvoju uplatu kao primljenu</string>
+    <string name="push_payment_from_you">%1$s je označio/la da si platio/la osobi %2$s</string>
+    <string name="push_payment_undone">%1$s je poništio/la uplatu s tobom</string>
+    <string name="push_charge_sent">%1$s ti je poslao/la podsjetnik za podmirenje</string>
+    <string name="push_settle_reminder">Imaš otvoreni saldo u grupi „%1$s“</string>
+    <string name="push_settle_reminders">Broj grupa u kojima imaš otvoreni saldo: %1$s</string>
+    <string name="push_added_to_group">%1$s te je dodao/la u grupu</string>
+    <string name="push_member_joined">%1$s je ušao/la u grupu</string>
+    <string name="push_debts_simplified_to_you">%1$s je pojednostavio/la dugove. Sada ti %2$s plaća %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s je pojednostavio/la dugove. Sada plaćaš %3$s osobi %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s je pojednostavio/la dugove. Pogledaj što to znači za tebe.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s je isključio/la Pojednostavi dugove. Sada ti %2$s plaća %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s je isključio/la Pojednostavi dugove. Sada plaćaš %3$s osobi %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s je isključio/la Pojednostavi dugove. Pogledaj što to znači za tebe.</string>
+    <string name="notification_settings_bills">Troškovi</string>
+    <string name="notification_settings_bills_detail">Novi, uređeni ili izbrisani troškovi u kojima sudjeluješ</string>
+    <string name="notification_settings_payments">Uplate i podmirenja</string>
+    <string name="notification_settings_payments_detail">Uplate tebi ili od tebe i pojednostavljeni dugovi</string>
+    <string name="notification_settings_comments">Komentari</string>
+    <string name="notification_settings_comments_detail">Na troškovima u kojima sudjeluješ i u razgovorima u kojima si pisao/la</string>
+    <string name="notification_settings_people_and_groups">Osobe i grupe</string>
+    <string name="notification_settings_people_and_groups_detail">Tko ulazi u tvoje grupe ili ih napušta i što se u njima mijenja</string>
+    <string name="notification_settings_payment_requests">Zahtjevi za plaćanje</string>
+    <string name="notification_settings_payment_requests_detail">Kad netko zatraži da platiš</string>
+    <string name="notification_settings_balance_reminder">Podsjetnik na otvoreni saldo</string>
+    <string name="notification_settings_balance_reminder_detail">Jednom tjedno, ako postoji otvoreni saldo</string>
+</resources>

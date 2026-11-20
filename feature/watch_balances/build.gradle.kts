@@ -10,6 +10,7 @@ kotlin {
             api(project(":core:model"))
             api(project(":core:navigation"))
             implementation(project(":core:utils"))
+            implementation(project(":core:account"))
             implementation(project(":core:groups"))
             implementation(project(":core:expenses"))
             implementation(project(":core:settings"))

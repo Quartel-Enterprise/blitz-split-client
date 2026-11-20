@@ -12,6 +12,10 @@ data class WatchBalancesUiState(
     val queuedChangeCount: Int,
     // Why: "Updated at 14:32", the watch's last sync in epoch millis; null until one went through.
     val lastSyncedAt: Long?,
+    // Why: "Sign out of this watch?" shows; the phone stays signed in.
+    val isConfirmingSignOut: Boolean,
+    // Why: "Sign out scheduled" with Cancel in place of "Sign out", while what the watch queued waits to go up.
+    val isSignOutScheduled: Boolean,
 ) {
     // Why: 15.3b "Nothing open": you owe nothing and nobody owes you.
     val isAllSettled: Boolean
