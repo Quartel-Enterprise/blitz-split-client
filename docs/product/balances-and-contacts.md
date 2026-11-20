@@ -169,7 +169,7 @@ and orange, the accent):
     shows.
   - Lock Screen, circle: the logo over the compact overall balance ("+186", whole units, "1.2K" past a thousand), the
     sign saying which way since the Lock Screen drops the color.
-  - Lock Screen, rectangle: "Blitz Split" ("Bora Rachar" in Portuguese), "+R$ 186,40 to get back", and the other way's
+  - Lock Screen, rectangle: "Blitz Split" ("Bora Rachar" in Brazil's Portuguese), "+R$ 186,40 to get back", and the other way's
     total ("You owe R$ 126" under what comes back, "Owe you …" under what you owe).
 
 The figures are Home's: the overall balance is the "Overall balance" of the first currency with a net (the global

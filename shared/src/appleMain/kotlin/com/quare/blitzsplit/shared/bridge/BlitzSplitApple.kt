@@ -89,6 +89,7 @@ import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
@@ -180,9 +181,11 @@ object BlitzSplitApple : KoinComponent {
 
     /*
      * Why: the iPhone's balance widget reads a snapshot the app writes to the App Group, since the widget's process has
-     * no Room; the app writes it again on each change (docs/product/balances-and-contacts.md).
+     * no Room; the app writes it again on each change (docs/product/balances-and-contacts.md). It runs for the app's
+     * whole life, whatever screen is open, so the balances are worked out off the main thread.
      */
-    fun createBalanceSnapshotWatcher(): FlowWatcher<BalanceSnapshot> = FlowWatcher(get<ObserveBalanceSnapshot>()())
+    fun createBalanceSnapshotWatcher(): FlowWatcher<BalanceSnapshot> =
+        FlowWatcher(get<ObserveBalanceSnapshot>()().flowOn(Dispatchers.Default))
 
     fun createAppViewModel(): ViewModelHolder<AppViewModel> = ViewModelHolder(AppViewModel::class) { get() }
 
