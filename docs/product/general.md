@@ -150,7 +150,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     the plain Urdu Pakistani apps write, English loanwords included (گروپ, بیلنس, اکاؤنٹ); it calls the app Blitz Split.
     It reads right to left as Arabic does, with the same mirrored layouts, and writes numbers, amounts and dates with
     0-9, never its own Eastern Arabic digits (Pierre's call). It ends a sentence with "۔" (`fullStopUi`,
-    `WordGap.fullStop`, `fullStop`), and its plurals have one and other. Its verbs and adjectives say a gender the app
+    `WordGap.fullStop`, `fullStop`) and joins two clauses with "،" (the web's `clauseBreak`, as its Android strings
+    write it), and its plurals have one and other. Its verbs and adjectives say a gender the app
     never knows, so it does as Hindi does (Pierre's call): the masculine as the generic where a person decides it, and
     the ergative past, which agrees with the object, wherever it fits. Its past puts "نے" after the actor, apart after
     a name and after the user's "آپ" alike, so its activity sentences need no rule for the user

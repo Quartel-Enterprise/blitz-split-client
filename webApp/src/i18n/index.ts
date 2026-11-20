@@ -130,7 +130,8 @@ export const fullStop = isUnspaced ? '。' : (ownFullStops[locale] ?? '.')
  * first sentence instead ("…払います。…なくなりました"), Chinese takes its own comma ("…，Ana不再欠你"), Urdu its "،", as its
  * Android strings write it, and Thai, which has no comma, a space.
  */
-export const clauseBreak = locale === 'ja' ? '。' : isUnspaced ? '，' : locale === 'ur' ? '، ' : locale === 'th' ? ' ' : ', '
+const ownClauseBreaks: Partial<Record<Locale, string>> = { ja: '。', zh: '，', 'zh-Hant': '，', ur: '، ', th: ' ' }
+export const clauseBreak = ownClauseBreaks[locale] ?? ', '
 
 const documentLanguages: Record<Locale, string> = {
   en: 'en',
