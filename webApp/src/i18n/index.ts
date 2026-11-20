@@ -335,7 +335,7 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * before a past in "l(a)", which the third person says without one ("rozdělil(a)" becomes "jsi rozdělil(a)"). Greek
  * ends its aorist in "-ες" for the user, an object pronoun staying before it ("μοίρασε" becomes "μοίρασες", "το
  * επισύναψε" "το επισύναψες"). Hungarian starts each with a past: a definite one in "-ta"/"-te" takes a "d" ("létrehozta"
- * becomes "létrehoztad"), an indefinite one is one of the few the translations use ("felosztott" becomes
+ * becomes "létrehoztad"), an indefinite one is one of a short list a translation may start with ("felosztott" becomes
  * "felosztottál"). Bengali's respectful verb is the same for a name and for "আপনি", and Malay's never changes.
  * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste". Same
  * rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.

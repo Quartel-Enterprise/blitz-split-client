@@ -125,8 +125,8 @@ private val irregularSecondPerson = mapOf(
  * which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Greek ends its aorist in "-ε" for someone else and "-ες"
  * for the user, an object pronoun staying before it: "Ana μοίρασε", "Εσύ μοίρασες"; "το επισύναψε", "το επισύναψες".
  * Hungarian starts every verb phrase with a past: a definite one in "-ta"/"-te" takes a "d" for the user ("Ana
- * létrehozta", "Te létrehoztad"), an indefinite one is one of the few the translations use, each with its own second
- * person ("Ana felosztott", "Te felosztottál"; "kilépett", "kiléptél").
+ * létrehozta", "Te létrehoztad"), an indefinite one is one of a short list of pasts a translation may start with,
+ * each with its own second person ("Ana felosztott", "Te felosztottál"; "kilépett", "kiléptél").
  * Bengali needs no rule: its respectful verb is the same for "আপনি" and for a name ("Ana ভাগ করেছেন", "আপনি ভাগ করেছেন"),
  * and Malay's verb doesn't change with the person. Same rules as the web's and the Apple app's `verbForYou`.
  */

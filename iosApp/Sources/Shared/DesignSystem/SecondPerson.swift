@@ -14,9 +14,9 @@ import SwiftUI
 /// perfect's auxiliary as French does ("Ana a împărțit", "Tu ai împărțit"), and Czech adds one before the past ("Ana
 /// rozdělil(a)", "Ty jsi rozdělil(a)"). Greek ends its aorist in "-ε" for someone else and "-ες" for the user ("Ana
 /// μοίρασε", "Εσύ μοίρασες"). Hungarian starts each verb phrase with a past: a definite one in "-ta"/"-te" takes a "d"
-/// for the user ("Ana létrehozta", "Te létrehoztad"), an indefinite one is one of the few the translations use, each
-/// with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's respectful verb is the same for a name
-/// and for "আপনি", and Malay's doesn't change.
+/// for the user ("Ana létrehozta", "Te létrehoztad"), an indefinite one is one of a short list a translation may
+/// start with, each with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's respectful verb is the
+/// same for a name and for "আপনি", and Malay's doesn't change.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -73,7 +73,9 @@ enum SecondPerson {
     /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
     /// "böldün:". Korean: every verb phrase starts with "님이" after the actor, which the user's drops, since the user's
     /// subject word ("내가") holds its own particle, so "님이 나눴어요" → "나눴어요". Hindi: the same with "ने", the user's
-    /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Another language keeps the verb as it is.
+    /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Greek: the aorist takes an "ς", so "μοίρασε" → "μοίρασες".
+    /// Hungarian: the past the phrase starts with takes a "d" in "-ta"/"-te" ("létrehozta" → "létrehoztad"), or its
+    /// listed second person ("felosztott" → "felosztottál"). Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
@@ -94,7 +96,8 @@ enum SecondPerson {
             guard let past = verb.range(of: #"^[^\s,:]+"#, options: .regularExpression) else { return verb }
             let word = String(verb[past])
             if let known = hungarianIndefinitePast[word] { return verb.replacingCharacters(in: past, with: known) }
-            return word.hasSuffix("ta") || word.hasSuffix("te") ? verb.replacingCharacters(in: past, with: word + "d") : verb
+            guard word.hasSuffix("ta") || word.hasSuffix("te") else { return verb }
+            return verb.replacingCharacters(in: past, with: word + "d")
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }
