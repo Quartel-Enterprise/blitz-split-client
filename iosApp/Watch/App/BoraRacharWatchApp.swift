@@ -8,7 +8,7 @@ struct BoraRacharWatchApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
-        BlitzSplitApple.shared.start()
+        BlitzSplitWatch.shared.start()
         WatchWidgetWriter.shared.start()
     }
 

@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.core.sync.di.lastSyncRecordingModule
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.watch.domain.usecase.EndWatchSessionFromPhone
 import com.quare.blitzsplit.feature.watchbalances.presentation.navigation.OpenWatchGroup
@@ -17,6 +18,7 @@ import com.quare.blitzsplit.feature.watchbalances.presentation.viewmodel.WatchBa
 import com.quare.blitzsplit.feature.watchbalances.presentation.viewmodel.WatchGroupViewModel
 import com.quare.blitzsplit.feature.watchpairing.presentation.viewmodel.WatchPairingViewModel
 import com.quare.blitzsplit.feature.watchpairing.presentation.viewmodel.WatchRootViewModel
+import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -26,12 +28,17 @@ import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
 
 /*
- * Why: what the Apple Watch app calls besides BlitzSplitApple (which starts Koin and writes the complication's
- * snapshot): the watch's screens, its back stack, and what the iPhone and the watch's own pushes ask of it. Only the
+ * Why: what the Apple Watch app calls besides BlitzSplitApple (which writes the complication's snapshot and reports
+ * the app in front): starting the shared code as a watch, the watch's screens, its back stack, and what the iPhone and the watch's own pushes ask of it. Only the
  * watchOS framework has it.
  */
 object BlitzSplitWatch : KoinComponent {
     private val scope = MainScope() + Dispatchers.Main.immediate
+
+    // Why: as the phone's start, plus the time of each sync that went through, the balances' "Updated at 14:32".
+    fun start() {
+        startBlitzSplitKoin(extraModules = listOf(lastSyncRecordingModule))
+    }
 
     // Why: the watch's NavigationStack draws the shared back stack, as the phone's does.
     fun createBackStackWatcher(): FlowWatcher<List<Route>> = FlowWatcher(get<Navigator>().backStack)

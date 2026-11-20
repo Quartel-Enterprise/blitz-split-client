@@ -261,6 +261,10 @@ targets:
       - target: BalanceWidget-watchOS
         embed: true
         codeSign: true
+      # The shared code's crash reporting (crashkios) calls Crashlytics, so the watch links it; Firebase starts only
+      # with a GoogleService-Info.plist, which the watch app has none of yet
+      - package: Firebase
+        product: FirebaseCrashlytics
     settings:
       base:
         PRODUCT_NAME: BoraRachar
@@ -270,7 +274,9 @@ targets:
         # Kotlin/Native builds Shared for arm64_32 only on the device (watchosDeviceArm64 waits for lifecycle-viewmodel
         # and supabase-kt), so the app leaves out the arm64 slice Xcode adds for Series 9 and later, which run arm64_32
         ARCHS[sdk=watchos*]: arm64_32
-        OTHER_LDFLAGS: [-framework, Shared, -lsqlite3]
+        # Shared has no x86_64 simulator slice either: Apple silicon simulators only
+        ARCHS[sdk=watchsimulator*]: arm64
+        OTHER_LDFLAGS: [-framework, Shared, -lsqlite3, -ObjC]
         INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
         INFOPLIST_KEY_WKApplication: YES
         INFOPLIST_KEY_WKCompanionAppBundleIdentifier: com.quare.blitzsplit

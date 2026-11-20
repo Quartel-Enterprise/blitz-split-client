@@ -228,7 +228,7 @@ private extension Text {
     }
 
     func messageBody() -> some View {
-        font(.subheadline)
+        font(.footnote)
             .foregroundStyle(WatchPalette.secondary)
             .multilineTextAlignment(.center)
     }
