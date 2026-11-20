@@ -131,7 +131,7 @@ intent gives is a **Should fix**; one that breaks a platform or the module graph
   the root `build.gradle.kts`). What two features share moves down to `core`; what one screen needs
   from another feature comes in as a slot the app fills (`GroupsScreen(recoveryCodeSheet = ...)`).
   Production code never depends on a `:testing` module.
-- **Wiring a new feature or ViewModel**: its Koin module (`di/XModule.kt`, `viewModelOf(::X)`) is
+- **Wiring a new feature or ViewModel**: its Koin module (`di/XModule.kt`, `factoryOf(::X)`) is
   added to `sharedModules` in `shared/src/commonMain/.../di/AppModules.kt`; its module to
   `exportedToApple` in `shared/build.gradle.kts`; a `createXViewModel()` to `BlitzSplitApple`; an
   `XPresenter` to `shared/src/jsMain/.../bridge`; and its `include` to `settings.gradle.kts`. A

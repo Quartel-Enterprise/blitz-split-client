@@ -9,6 +9,7 @@ import org.gradle.api.services.BuildServiceParameters
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -24,21 +25,24 @@ private val runtimeHeading = Regex("""^-- (.+) --$""")
 private val deviceId = Regex("""[0-9A-F]{8}-(?:[0-9A-F]{4}-){3}[0-9A-F]{12}""")
 
 /**
- * The device the Kotlin plugin picks for an iOS simulator suite, from the standard output of
- * `simctl list devices available`: the first one of the last iOS runtime listed. It mirrors the
+ * The device the Kotlin plugin picks for a simulator suite of [family], from the standard output of
+ * `simctl list devices available`: the first one of the last runtime of that family listed. It mirrors the
  * plugin's own lookup (XcodeDefaultTestDevicesValueSource, as of Kotlin 2.4), which is internal.
  */
-private fun findDefaultIosDeviceOrNull(availableDevices: String): String? {
+private fun findDefaultDeviceOrNull(
+    availableDevices: String,
+    family: SimulatorFamily,
+): String? {
     var device: String? = null
-    var isFirstOfIosRuntime = false
+    var isFirstOfRuntime = false
     availableDevices.lineSequence().forEach { line ->
         val runtime = runtimeHeading.find(line)?.groupValues?.get(1)
         if (runtime != null) {
-            isFirstOfIosRuntime = runtime.substringBefore(' ').equals("iOS", ignoreCase = true)
-        } else if (isFirstOfIosRuntime) {
+            isFirstOfRuntime = runtime.substringBefore(' ').equals(family.runtimeName, ignoreCase = true)
+        } else if (isFirstOfRuntime) {
             deviceId.find(line)?.let {
                 device = it.value
-                isFirstOfIosRuntime = false
+                isFirstOfRuntime = false
             }
         }
     }
@@ -94,39 +98,50 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
         listOf("simctl", "list", "runtimes"),
         listOf("simctl", "runtime", "list"),
     )
+
+    // The wait allowance and a simctl that stopped answering are the build's, whichever simulator
+    // found them; the outage each family logged is its own, so one family's doesn't mute the other's.
     private var waitLeft: Duration? = null
-    private var isOutageLogged = false
+    private val loggedOutages = mutableSetOf<SimulatorFamily>()
     private var hasStoppedAnswering = false
 
     @Synchronized
-    fun fetchDevice(): String {
+    fun fetchDevice(family: SimulatorFamily): String {
         // A simctl that no longer answers would take its timeout from every suite left, and an
         // xcrun that cannot run has nothing new to say.
         val listing = if (hasStoppedAnswering) null else run(availableDevices)
-        val device = listing?.let { findDefaultIosDeviceOrNull(it.output) ?: waitForDeviceOrNull(it) }
+        val device = listing?.let { findDefaultDeviceOrNull(it.output, family) ?: waitForDeviceOrNull(it, family) }
         if (device != null) {
-            isOutageLogged = false
+            loggedOutages -= family
             return device
         }
         throw GradleException(
-            "The iOS simulator has no available device to run the tests on: `xcrun simctl list devices " +
-                "available` listed none under an iOS runtime, or gave no answer. Its state is logged where a " +
-                "suite first found none.",
+            "The ${family.runtimeName} simulator has no available device to run the tests on: `xcrun simctl list " +
+                "devices available` listed none under a ${family.runtimeName} runtime, or gave no answer. Its state " +
+                "is logged where a suite first found none.",
         )
     }
 
     // The time waited comes out of the build's allowance, so a simulator that never comes back
     // holds the build once, not once per module.
-    private fun waitForDeviceOrNull(firstListing: CommandResult): String? {
-        if (!isOutageLogged) {
-            isOutageLogged = true
-            logger.warn("The iOS simulator lists no available device. Its state:\n{}", buildStateReport(firstListing))
+    private fun waitForDeviceOrNull(
+        firstListing: CommandResult,
+        family: SimulatorFamily,
+    ): String? {
+        if (loggedOutages.add(family)) {
+            logger.warn(
+                "The ${family.runtimeName} simulator lists no available device. Its state:\n{}",
+                buildStateReport(firstListing),
+            )
         }
         var listing = firstListing
         val allowance = waitLeft ?: parameters.waitSeconds.get().seconds
         // An xcrun that cannot run stays that way, unlike a simulator that lists no device.
         if (allowance > Duration.ZERO && !firstListing.hasFailedToRun) {
-            logger.warn("Waiting up to {} for the iOS simulator to list a device.", toWholeSeconds(allowance))
+            logger.warn(
+                "Waiting up to {} for the ${family.runtimeName} simulator to list a device.",
+                toWholeSeconds(allowance),
+            )
             val start = TimeSource.Monotonic.markNow()
             try {
                 while (start.elapsedNow() < allowance) {
@@ -135,17 +150,17 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
                     val timeLeft = allowance - start.elapsedNow()
                     val timeout = timeLeft.coerceAtLeast(pollInterval).coerceAtMost(commandTimeout)
                     listing = run(availableDevices, timeout)
-                    val device = findDefaultIosDeviceOrNull(listing.output)
+                    val device = findDefaultDeviceOrNull(listing.output, family)
                     if (device != null) {
                         logger.warn(
-                            "The iOS simulator listed a device again after {}.",
+                            "The ${family.runtimeName} simulator listed a device again after {}.",
                             toWholeSeconds(start.elapsedNow()),
                         )
                         return device
                     }
                 }
                 logger.warn(
-                    "The iOS simulator still lists no available device after {}. Its state now:\n{}",
+                    "The ${family.runtimeName} simulator still lists no available device after {}. Its state now:\n{}",
                     toWholeSeconds(start.elapsedNow()),
                     buildStateReport(listing),
                 )
@@ -202,9 +217,8 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
 }
 
 /**
- * Runs one module's simulator suite at a time, each iOS one on the device [IosSimulator] hands it.
- * A task disabled on this host (the simulator's, off a Mac) never reads its device, and a suite of
- * another simulator (watchOS, tvOS) keeps the one the Kotlin plugin picks for it.
+ * Runs one module's simulator suite at a time, each iOS or watchOS one on the device [IosSimulator]
+ * hands it. A task disabled on this host (the simulator's, off a Mac) never reads its device.
  */
 internal fun Project.configureIosSimulatorTests() {
     val simulator = gradle.sharedServices.registerIfAbsent("iosSimulator", IosSimulator::class) {
@@ -218,8 +232,27 @@ internal fun Project.configureIosSimulatorTests() {
         usesService(simulator)
         // By the task's name, which it has from the start: the Kotlin plugin sets its target name
         // and disables it off a Mac in its own configuration, which may run after this one.
-        if (name.startsWith("ios")) {
-            device.set(simulator.map { it.fetchDevice() })
+        SimulatorFamily.entries.firstOrNull { name.startsWith(it.taskPrefix) }?.let { family ->
+            device.set(simulator.map { it.fetchDevice(family) })
         }
+    }
+    skipWatchosTestsWithoutRuntime()
+}
+
+/*
+ * Why: CI runs no watchOS suite, and on a Mac without the watchOS runtime the suites, and the test
+ * binaries only they run, would fail or slow `build` and `allTests` on every module. The iOS suites
+ * keep failing without a device, as CI needs.
+ */
+private fun Project.skipWatchosTestsWithoutRuntime() {
+    val hasRuntime = providers.of(SimulatorRuntimeValueSource::class.java) {
+        parameters.runtimeName.set(SimulatorFamily.WATCHOS.runtimeName)
+    }
+    val reason = "a watchOS simulator runtime is installed (xcodebuild -downloadPlatform watchOS)"
+    tasks.withType<KotlinNativeSimulatorTest>().configureEach {
+        if (name.startsWith(SimulatorFamily.WATCHOS.taskPrefix)) onlyIf(reason) { hasRuntime.get() }
+    }
+    tasks.withType<KotlinNativeLink>().configureEach {
+        if (name.endsWith("TestWatchosSimulatorArm64")) onlyIf(reason) { hasRuntime.get() }
     }
 }

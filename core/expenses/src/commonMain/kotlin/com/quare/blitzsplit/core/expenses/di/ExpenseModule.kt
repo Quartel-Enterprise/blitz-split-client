@@ -120,6 +120,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.LoadSharedBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.LocateBill
 import com.quare.blitzsplit.core.expenses.domain.usecase.MarkBillPayingMethod
 import com.quare.blitzsplit.core.expenses.domain.usecase.NoticeBillGone
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBalanceSnapshot
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillAttachments
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillComments
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBillDeletion
@@ -188,6 +189,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LoadSharedBillUseC
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.LocateBillUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.MarkBillPayingMethodUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.NoticeBillGoneUseCase
+import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBalanceSnapshotUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillAttachmentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillCommentsUseCase
 import com.quare.blitzsplit.core.expenses.domain.usecase.impl.ObserveBillDeletionUseCase
@@ -286,6 +288,7 @@ val expenseModule = module {
     factoryOf(::ObserveRecordedPaymentUseCase).bind<ObserveRecordedPayment>()
     factoryOf(::ConsumeRecordedPaymentUseCase).bind<ConsumeRecordedPayment>()
     factoryOf(::ObservePeopleBalancesUseCase).bind<ObservePeopleBalances>()
+    factoryOf(::ObserveBalanceSnapshotUseCase).bind<ObserveBalanceSnapshot>()
     factoryOf(::SettleUpUseCase).bind<SettleUp>()
     factoryOf(::SetSimplifiesDebtsUseCase).bind<SetSimplifiesDebts>()
     factoryOf(::ObserveSettledUpUseCase).bind<ObserveSettledUp>()

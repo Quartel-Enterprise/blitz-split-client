@@ -590,8 +590,9 @@ The iOS and macOS betas sign with the team's **Apple Distribution** certificate 
 `com.quare.blitzsplit`, which [fastlane match](https://docs.fastlane.tools/actions/match/) keeps encrypted in the
 private repository `Quartel-Enterprise/bible-planner-certs`, shared with Bible Planner (same team, `TTV2A365LG`). The
 `apple_signing` lane of [`fastlane/Fastfile`](../fastlane/Fastfile) fetches them read-only into a temporary keychain,
-switches the app target's Release configuration to manual signing (the committed `project.yml` keeps automatic
-signing for local builds), sets `aps-environment` to `production`, and writes the export options. The macOS package
+switches the Release configuration of the app target and its extensions (the iPhone's balance widget,
+`com.quare.blitzsplit.BalanceWidget`, which has profiles of its own) to manual signing (the committed `project.yml`
+keeps automatic signing for local builds), sets `aps-environment` to `production`, and writes the export options. The macOS package
 also needs the team's **Mac Installer Distribution** certificate, which the repository holds.
 
 Why not Xcode's cloud-managed certificate, which the betas used first: the certificate's name is "Apple
@@ -605,13 +606,20 @@ Store profiles of `com.quare.blitzsplit` and the iOS ad hoc one (match reuses th
 repository). The iOS job fetches the ad hoc profile too, so without it the iOS beta fails, TestFlight included:
 
 ```bash
-fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 fastlane match appstore --platform macos --additional_cert_types mac_installer_distribution --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
-fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 ```
 
 A capability added to the App ID later (Sign in with Apple, push, associated domains) needs the profiles made again:
 the same commands with `--force`.
+
+The balance widget reads the file the iPhone app writes to the App Group `group.com.quare.blitzsplit`, so before the
+first iOS beta that has it, once, on developer.apple.com › Certificates, Identifiers & Profiles: create the App Group
+`group.com.quare.blitzsplit`, register the App ID `com.quare.blitzsplit.BalanceWidget`, turn App Groups on for it and
+for `com.quare.blitzsplit` with that group, then make the iOS profiles again (the two iOS commands above with
+`--force`). Until then match finds no profile for the widget and the iOS beta fails; the macOS one, which has no
+widget, doesn't change.
 
 ## iOS on Firebase App Distribution
 
@@ -631,7 +639,7 @@ To add a tester's iPhone:
 3. Make the ad hoc profile again with the new device, from a Mac with the passphrase:
 
    ```bash
-   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
    ```
 
 4. Add the tester to the group: `firebase appdistribution:testers:add --group-alias ios-beta --project blitz-split <email>`.

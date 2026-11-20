@@ -63,6 +63,8 @@ targetTemplates:
     type: application
     sources:
       - path: Sources/Shared
+      # What the app and its widget share: the color tokens, the locale's direction
+      - path: Sources/Common
       - path: Resources
     preBuildScripts:
       - name: Build the Shared framework
@@ -146,6 +148,13 @@ targets:
     platform: iOS
     sources:
       - path: Sources/iOS
+      # The balance widget's file and faces: the app writes the file, and compiling the faces here extracts their
+      # words into Localizable.xcstrings
+      - path: Widgets/Shared
+    dependencies:
+      - target: BalanceWidget
+        embed: true
+        codeSign: true
     info:
       path: Generated/iOS-Info.plist
       properties:
@@ -175,6 +184,53 @@ targets:
         # Atividade's push notifications. Xcode's automatic signing adds Push Notifications to the App ID; the betas'
         # signing lane (fastlane/Fastfile) sets production
         aps-environment: development
+        # The balance widget reads the file the app writes there (Widgets/Shared/WidgetBalances.swift)
+        com.apple.security.application-groups: [group.com.quare.blitzsplit]
+
+  # The iPhone's balance widget (board 15.8): the Home Screen's small and medium, the Lock Screen's circle and
+  # rectangle. It reads only the file the app writes to the App Group, never Room nor the Shared framework. Its faces
+  # (Widgets/Shared) are what the watch's complication and Smart Stack card draw later.
+  BalanceWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widgets/Shared
+      - path: Widgets/Extension
+      - path: Sources/Common
+      # The faces' words, which the app's build extracts into the catalog
+      - path: Resources/Localizable.xcstrings
+    settings:
+      base:
+        PRODUCT_NAME: BalanceWidget
+        PRODUCT_MODULE_NAME: BalanceWidget
+        PRODUCT_BUNDLE_IDENTIFIER: com.quare.blitzsplit.BalanceWidget
+        TARGETED_DEVICE_FAMILY: "1,2"
+        # Only the app links the Shared framework and Firebase
+        OTHER_LDFLAGS: []
+        FRAMEWORK_SEARCH_PATHS: []
+        # The app's build already extracts the faces' words; a second extraction would mark them twice
+        SWIFT_EMIT_LOC_STRINGS: NO
+        # WidgetKit calls the timeline provider off the main actor
+        SWIFT_DEFAULT_ACTOR_ISOLATION: nonisolated
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
+        INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
+    postBuildScripts:
+      # As the app's: the widget draws in the app's language, es-ES and pt-PT included, whose tables hold only the
+      # words Spain and Portugal say differently until this fills them with es's and pt-BR's
+      - name: Fill the regional tables with their language's
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/merge-regional-strings.py" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH" "$SRCROOT/Resources"
+    info:
+      path: Generated/BalanceWidget-Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Generated/BalanceWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.quare.blitzsplit]
 
   # The App Store screenshots (docs/store-listing-screenshots.md): launches the debug app seeded with the sample trip
   # and captures each listing screen. Run by scripts/store-screenshots/capture-ios.sh, never by CI's build. The Mac

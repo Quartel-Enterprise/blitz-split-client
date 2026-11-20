@@ -5,6 +5,7 @@ import androidx.room3.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.UnsafeNumber
 import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
@@ -30,7 +31,8 @@ internal fun deleteStoreScreenshotsDatabase() {
     }
 }
 
-@OptIn(ExperimentalForeignApi::class)
+// Why: NSUInteger is 32 bits on the Apple Watch's arm64_32, and the constants take each target's own width.
+@OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
 private fun getApplicationSupportPath(): String {
     val directory = NSFileManager.defaultManager.URLForDirectory(
         directory = NSApplicationSupportDirectory,

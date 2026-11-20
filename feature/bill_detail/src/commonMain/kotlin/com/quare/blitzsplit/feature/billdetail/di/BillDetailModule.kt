@@ -3,16 +3,15 @@ package com.quare.blitzsplit.feature.billdetail.di
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.ShareBillViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.SharedBillViewModel
-import org.koin.core.module.dsl.viewModel
-import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 /*
  * Why: the route comes in as a parameter (parametersOf(route)), so each bill opens its own ViewModel. Spelled out
- * since viewModelOf takes at most 22 dependencies.
+ * since factoryOf takes at most 22 dependencies.
  */
 val billDetailModule = module {
-    viewModel { parameters ->
+    factory { parameters ->
         BillDetailViewModel(
             route = parameters.get(),
             navigator = get(),
@@ -48,6 +47,6 @@ val billDetailModule = module {
             trackEvent = get(),
         )
     }
-    viewModelOf(::ShareBillViewModel)
-    viewModelOf(::SharedBillViewModel)
+    factoryOf(::ShareBillViewModel)
+    factoryOf(::SharedBillViewModel)
 }

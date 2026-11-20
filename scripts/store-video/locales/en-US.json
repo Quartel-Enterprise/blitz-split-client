@@ -1,0 +1,121 @@
+{
+  "appLanguage": "en",
+  "theme": "dark",
+  "launchWaitFor": "Your groups",
+  "voice": {
+    "id": "jqcCZkN6Knx8BJ5TBdYR",
+    "name": "Zara - The Warm, Real-World Conversationalist",
+    "model": "eleven_v4",
+    "languageCode": "en",
+    "stability": 0.5,
+    "similarity": 0.75,
+    "takes": 1,
+    "take": 1
+  },
+  "music": {
+    "prompt": "Light, warm, upbeat acoustic pop instrumental for a friendly mobile app commercial about splitting bills with friends on a trip. Ukulele and clean guitar plucks, soft claps, gentle bass, light percussion, bright and positive, mid tempo around 105 BPM. Sits under a voiceover: sparse arrangement, no lead melody fighting the voice. Clean ending with a final soft hit at the end.",
+    "seconds": 32
+  },
+  "lines": [
+    "Traveling with friends? Let's split it.",
+    "Log who paid, and split it any way you like.",
+    "Even item by item, straight from the restaurant bill.",
+    "In the end, the app shows who owes how much to whom.",
+    "Then settle up and record the payment, with the exact amount.",
+    "Works offline, no account needed."
+  ],
+  "endCard": { "name": ["Blitz", "Split"], "chips": ["Works offline", "No account needed"] },
+  "scenes": [
+    { "record": "home", "swipe": [540, 1900, 1000, 30000], "retime": [1.0, 1.7, 0.8, 150, 2120] },
+    { "tap": { "descStarts": "Lisbon trip," }, "waitFor": "Expenses" },
+    { "record": "group", "swipe": [600, 1630, 730, 30000], "retime": [1.0, 1.6, 0.8, 250, 2300] },
+    { "tap": { "text": "Dinner at the trattoria" }, "waitFor": "Your share" },
+    { "record": "detail", "swipe": [700, 1560, 960, 24000], "retime": [0.8, 0.9, 0.6, 220, 2130] },
+    { "tap": { "desc": "Edit" }, "waitFor": "Edit bill" },
+    { "still": "edit" },
+    { "tap": { "text": "By items among 5" }, "waitFor": "Bill items" },
+    { "record": "items", "swipe": [300, 1075, 375, 28000], "retime": [0.8, 1.4, 0.6, 220, 2330] },
+    { "backUntil": "Balances" },
+    { "scrollUpUntil": "Your balance in this group" },
+    { "tap": { "text": "Balances" }, "waitFor": "With you" },
+    { "record": "bal", "swipe": [700, 1298, 548, 30000], "retime": [0.8, 1.7, 0.6, 250, 2300] },
+    { "scrollUpUntil": "Your balance in this group" },
+    { "record": "settle", "tap": { "text": "Settle up" }, "shows": "Amount paid", "after": 2.5, "trim": [0.6, 3.6] }
+  ],
+  "shots": [
+    {
+      "title": [{ "text": "Traveling with friends?" }, { "text": "Let's split it.", "accent": ["split", "it."] }],
+      "whip": false,
+      "steps": [
+        { "kind": "play", "clip": "home", "from": 0.2, "to": 3.1 },
+        { "kind": "play", "clip": "group", "from": 0.6, "to": 2.4, "enter": "push" }
+      ]
+    },
+    {
+      "title": [{ "text": "Log who paid" }, { "text": "and split your way", "accent": ["split"] }],
+      "whip": false,
+      "steps": [
+        { "kind": "play", "clip": "detail", "from": 0, "to": 0.5, "enter": "push" },
+        {
+          "kind": "freeze",
+          "seconds": 2.0,
+          "fy": 0.39,
+          "cards": [{ "x": 42, "y": 800, "w": 996, "h": 296, "delay": 0.4, "radius": 36, "tilt": -2.5 }]
+        },
+        { "kind": "play", "clip": "detail", "from": 0.5, "to": 1.7 },
+        { "kind": "still", "img": "edit.png", "seconds": 0.8, "enter": "push" }
+      ]
+    },
+    {
+      "title": [{ "text": "Even item by item" }, { "text": "from the restaurant bill", "accent": ["item", "by"] }],
+      "whip": false,
+      "steps": [
+        { "kind": "play", "clip": "items", "from": 0, "to": 0.5, "enter": "push" },
+        {
+          "kind": "freeze",
+          "seconds": 2.2,
+          "fy": 0.37,
+          "cards": [
+            { "x": 42, "y": 806, "w": 280, "h": 158, "delay": 0.4, "radius": 36, "tilt": -3 },
+            { "x": 346, "y": 806, "w": 278, "h": 158, "delay": 0.53, "radius": 36, "tilt": 0 },
+            { "x": 650, "y": 806, "w": 276, "h": 158, "delay": 0.66, "radius": 36, "tilt": 3 }
+          ]
+        },
+        { "kind": "play", "clip": "items", "from": 0.5, "to": 2.1 }
+      ]
+    },
+    {
+      "title": [{ "text": "In the end, who owes whom", "accent": ["owes", "whom"] }],
+      "whip": true,
+      "steps": [
+        { "kind": "play", "clip": "bal", "from": 0, "to": 0.6 },
+        {
+          "kind": "freeze",
+          "seconds": 2.6,
+          "fy": 0.64,
+          "cards": [
+            { "x": 42, "y": 1350, "w": 996, "h": 186, "delay": 0.45, "radius": 30, "tilt": -2 },
+            { "x": 42, "y": 1541, "w": 996, "h": 190, "delay": 0.62, "radius": 30, "tilt": 2 }
+          ]
+        },
+        { "kind": "play", "clip": "bal", "from": 0.6, "to": 2.6 }
+      ]
+    },
+    {
+      "title": [{ "text": "Settle up", "accent": ["Settle"] }],
+      "subtitle": "with the exact amount",
+      "whip": true,
+      "steps": [
+        { "kind": "play", "clip": "settle", "from": 0, "to": 1.7 },
+        {
+          "kind": "freeze",
+          "seconds": 2.2,
+          "fy": 0.5,
+          "cards": [{ "x": 63, "y": 1030, "w": 954, "h": 330, "delay": 0.35, "radius": 48, "tilt": -2 }]
+        },
+        { "kind": "play", "clip": "settle", "from": 1.7, "to": 2.8 }
+      ]
+    }
+  ],
+  "endSeconds": 3.9
+}

@@ -4,11 +4,14 @@ import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.expenses.domain.model.BalanceSnapshot
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBalanceSnapshot
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
@@ -81,11 +84,14 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
@@ -174,6 +180,14 @@ object BlitzSplitApple : KoinComponent {
     fun attachAnalytics(service: AnalyticsService) {
         get<AnalyticsHub>().attach(service)
     }
+
+    /*
+     * Why: the iPhone's balance widget reads a snapshot the app writes to the App Group, since the widget's process has
+     * no Room; the app writes it again on each change (docs/product/balances-and-contacts.md). It runs for the app's
+     * whole life, whatever screen is open, so the balances are worked out off the main thread.
+     */
+    fun createBalanceSnapshotWatcher(): FlowWatcher<BalanceSnapshot> =
+        FlowWatcher(get<ObserveBalanceSnapshot>()().flowOn(Dispatchers.Default))
 
     fun createAppViewModel(): ViewModelHolder<AppViewModel> = ViewModelHolder(AppViewModel::class) { get() }
 
@@ -399,21 +413,27 @@ object BlitzSplitApple : KoinComponent {
         get<ReportAppForeground>().invoke(isForeground)
     }
 
-    // Why: a picked photo is megabytes, and filling a KotlinByteArray from Swift goes one byte per call.
-    @OptIn(ExperimentalForeignApi::class)
+    /*
+     * Why: a picked photo is megabytes, and filling a KotlinByteArray from Swift goes one byte per call. NSUInteger and
+     * size_t are 32 bits on the Apple Watch's arm64_32, the same width as each other on every target.
+     */
+    @OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
     fun toByteArray(data: NSData): ByteArray = ByteArray(data.length.toInt()).apply {
         if (isNotEmpty()) usePinned { pinned -> memcpy(pinned.addressOf(0), data.bytes, data.length) }
     }
 
-    // Why: a photo added offline reaches Swift as a KotlinByteArray, and reading it from Swift goes one byte per call.
-    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+    /*
+     * Why: a photo added offline reaches Swift as a KotlinByteArray, and reading it from Swift goes one byte per call.
+     * NSUInteger is 32 bits on the Apple Watch's arm64_32, so the length converts to each target's width.
+     */
+    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class, UnsafeNumber::class)
     fun toData(bytes: ByteArray): NSData = if (bytes.isEmpty()) {
         NSData()
     } else {
         bytes.usePinned { pinned ->
             NSData.create(
                 bytes = pinned.addressOf(0),
-                length = bytes.size.toULong(),
+                length = bytes.size.convert(),
             )
         }
     }

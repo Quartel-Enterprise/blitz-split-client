@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.SharedBillLeftForSignIn
+import com.quare.blitzsplit.core.navigation.WidgetLink
 import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -277,6 +278,7 @@ class AppViewModel(
                 uiState.first { it == AppUiState.READY }
                 linkInbox.take(url)
                 PushLink.of(url)?.let { link -> return@onEach openPushLink(link) }
+                WidgetLink.routeOf(url)?.let { route -> return@onEach navigator.openHomeTab(route) }
                 SharedBillLink.codeOf(url)?.let { code ->
                     return@onEach openSharedBill(code, SharedBillLink.commentIdOf(url))
                 }

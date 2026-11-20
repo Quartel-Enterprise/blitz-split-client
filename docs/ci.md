@@ -121,6 +121,20 @@ diff that fails counts as a change to the Kotlin code. A skipped check counts as
 test binary but not the link of a framework, so each scheme links `Shared` again, close to four minutes of Gradle
 each, with every module's compilation restored.
 
+`apple-watch` links the watchOS `Shared` for the device (arm64_32) and the simulator into an XCFramework
+(`:shared:assembleSharedDebugXCFramework`), the only check that compiles the watchOS targets. It runs when
+`apple-tests` does on a pull request, side by side with it, one more of the five macOS runners: a pull request
+whose `apple-tests` splits in two holds all five. On `main` the same build is a step of `apple-tests`, after the
+tests, so the Gradle home that job saves, the one every macOS job restores, holds the watchOS compilations, and
+`main`'s run keeps to two runners. A job of its own saving a home on `main` would be one more entry that
+`drop-failed-cache` doesn't clean, and one a job without an entry of its own (`apple-app`) could restore in place of
+`apple-tests`' (setup-gradle falls back to the newest entry of the runner's OS). Kotlin/Native keeps no library cache
+for the watchOS targets, so `~/.konan` gains nothing from it. Its 60-minute bounds leave room for a cold build of
+every module for two targets; check the first runs' times before tightening them. No test runs on
+the watchOS simulator in CI: the suite is the same `commonTest` over the same `appleMain` as macOS's, and
+`./scripts/heavy-check.sh ./gradlew :<module>:watchosSimulatorArm64Test` runs it on the Mac once the watchOS runtime
+is installed (`xcodebuild -downloadPlatform watchOS`); without it the suites are skipped.
+
 Only five macOS jobs run at once, for the whole organization, and a pull request's jobs wait for a runner while all
 five are taken. So the `apple` runs of `main` share one concurrency group that never cancels a run once it started: a
 push that arrives meanwhile waits, and a later one takes its place in the queue. A burst of merges then runs the first
@@ -162,7 +176,8 @@ its own, checked on the Mac, since that pull request's `apple-tests` runs macOS 
 `./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test`. Close the issue once `main` is green.
 
 The simulator's suites run one module at a time, while Gradle still links their test binaries side by side: the
-`blitzsplit.kotlin.multiplatform` plugin gives every `iosSimulatorArm64Test` a shared build service with a single slot.
+`blitzsplit.kotlin.multiplatform` plugin gives every `iosSimulatorArm64Test` and `watchosSimulatorArm64Test` a shared
+build service with a single slot.
 Each suite starts its own `simctl`, and two at once could crash CoreSimulator while it reported the device set
 (`Invalid parameter not satisfying: devicePair`), failing one module's suite with exit code 134 before any of its tests
 ran. A suite, the boot of its own simulator included, took 3 seconds on the Mac (`:core:model`), so running the

@@ -72,7 +72,6 @@ import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import software.quare.connectivity.connectivityModule
 import com.quare.blitzsplit.feature.profile.di.profileModule as profileScreenModule
@@ -86,7 +85,7 @@ private val appModule = module {
     factoryOf(::SiteTextUseCases)
     factoryOf(::DisplayPreferenceUseCases)
     factoryOf(::StorePromptUseCases)
-    viewModelOf(::AppViewModel)
+    factoryOf(::AppViewModel)
     // Why: a single that owns its scope, following the choices for the app's whole life, as SyncCoordinator does.
     single {
         AnalyticsChoices(
