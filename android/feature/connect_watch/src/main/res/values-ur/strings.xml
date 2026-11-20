@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">گھڑی کنیکٹ کریں</string>
+    <string name="connect_watch_close">بند کریں</string>
+    <string name="connect_watch_body">وہ کوڈ لکھیں جو آپ کی گھڑی دکھا رہی ہے۔ وہ آپ کے اکاؤنٹ میں سائن اِن ہو کر خود سنک ہوتی رہے گی۔</string>
+    <string name="connect_watch_code_label">گھڑی کا کوڈ</string>
+    <string name="connect_watch_error_invalid">غلط یا میعاد ختم کوڈ۔ گھڑی پر نیا کوڈ لیں۔</string>
+    <string name="connect_watch_error_too_many">بہت زیادہ غلط کوڈ۔ چند منٹ انتظار کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="connect_watch_error_needs_account">پہلے اکاؤنٹ کنیکٹ کریں: آپ کا ڈیٹا صرف اس ڈیوائس پر ہے۔</string>
+    <string name="connect_watch_error_failed">گھڑی کنیکٹ نہیں ہو سکی۔ دوبارہ کوشش کریں۔</string>
+    <string name="connect_watch_offline">گھڑی کنیکٹ کرنے کے لیے انٹرنیٹ درکار ہے۔</string>
+    <string name="connect_watch_own_watch_only">صرف وہی کوڈ لکھیں جو آپ کی اپنی گھڑی پر نظر آئے: جس کے پاس وہ گھڑی ہو گی وہ آپ کے اکاؤنٹ میں داخل ہو جائے گا۔</string>
+    <string name="connect_watch_validity">کوڈ 5 منٹ تک، ایک بار، کارآمد ہے۔</string>
+    <string name="connect_watch_button">کنیکٹ کریں</string>
+    <string name="connect_watch_connected_title">گھڑی کنیکٹ ہو گئی</string>
+    <string name="connect_watch_connected_body">اسے آپ کے گروپس نظر آتے ہیں اور وہ خود سنک ہوتی ہے۔ ڈس کنیکٹ کرنے کے لیے گھڑی پر سائن آؤٹ کریں۔</string>
+</resources>

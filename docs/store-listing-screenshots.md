@@ -1,7 +1,7 @@
 # Store listing screenshots
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
-showing a sample trip among five friends, inside a device frame with a title and description, in all 31 languages
+showing a sample trip among five friends, inside a device frame with a title and description, in all 32 languages
 of the listings. The frames come from the [store-screenshots](https://github.com/lucianosantosdev/store-screenshots)
 library, as in Bible Planner. None of the images is versioned: every run rebuilds them from source.
 
@@ -382,7 +382,7 @@ measured. Should Google Play refuse to open that edit for the quota, the group w
 
 Besides the screenshots, an App Store product page takes two images of its own, under **Product Page Information ›
 Header and Search Results** in App Store Connect. They appear on iOS and iPadOS 27 and later, and are generated like
-the screenshots, in all 31 languages:
+the screenshots, in all 32 languages:
 
 ```bash
 ./scripts/store-screenshots/creative-assets/generate.sh                               # capture, then draw
@@ -642,7 +642,7 @@ Robolectric draws every image in its set's `StoreLocale.drawnLocale` (`StoreLoca
 banner over an Apple capture alike: the language the resources are read in and the region the amounts, dates and
 hours are written in. It is the set's own tag for most sets. Chinese (`zh-CN`), Traditional Chinese (`zh-TW`, since
 its tag, `zh-Hant`, carries a script), Hebrew (`iw-IL`), Thai (`th-TH`), Vietnamese (`vi-VN`), Swedish (`sv-SE`),
-Czech (`cs-CZ`), Bengali (`bn-BD`), Malay (`ms-MY`) and Hungarian (`hu-HU`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
+Czech (`cs-CZ`), Bengali (`bn-BD`), Malay (`ms-MY`), Hungarian (`hu-HU`) and Urdu (`ur-PK`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
 tag, `es`, has no region: a bare `es` writes the symbol after the amount, as Spain does
 ("84,08 €", "120 US$"), while the same listing's App Store set, captured in Equatorial Guinea's region, writes
 "€84,08" and "US$120". So that set is drawn in **`es-GQ`** (`LATIN_AMERICAN_DRAWN_LOCALE`), **the region of the `es`

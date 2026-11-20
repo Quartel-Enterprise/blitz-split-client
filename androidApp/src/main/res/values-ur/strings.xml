@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">آپ اس گروپ میں نہیں ہیں</string>
+    <string name="bill_link_not_in_group_message">یہ تبصرہ ایک ایسے گروپ میں ہے جس میں آپ نہیں ہیں۔ جس نے آپ کو لنک بھیجا ہے، اس سے دعوت نامہ مانگیں۔</string>
+    <string name="bill_link_offline_title">انٹرنیٹ نہیں ہے</string>
+    <string name="bill_link_offline_message">آن لائن ہونے پر لنک دوبارہ کھولیں۔</string>
+    <string name="bill_link_go_home">ہوم پر جائیں</string>
+    <string name="discard_changes_title">تبدیلیاں رد کریں؟</string>
+    <string name="discard_changes_message">غیر محفوظ تبدیلیاں ضائع ہو جائیں گی۔</string>
+    <string name="discard_changes_discard">رد کریں</string>
+    <string name="discard_changes_keep_editing">ترمیم جاری رکھیں</string>
+    <string name="watch_channel_name">گھڑی</string>
+    <string name="watch_connected_title">%1$s آپ کے اکاؤنٹ سے کنیکٹ ہو گئی</string>
+    <string name="watch_connected_title_unnamed">گھڑی آپ کے اکاؤنٹ سے کنیکٹ ہو گئی</string>
+    <string name="watch_connected_text">اسے آپ کے گروپس نظر آتے ہیں اور وہ خود سنک ہوتی ہے۔ ڈس کنیکٹ کرنے کے لیے گھڑی پر سائن آؤٹ کریں۔</string>
+</resources>

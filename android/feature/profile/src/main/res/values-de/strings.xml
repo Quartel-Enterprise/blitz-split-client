@@ -85,6 +85,7 @@
     <string name="profile_language_greek">Griechisch</string>
     <string name="profile_language_croatian">Kroatisch</string>
     <string name="profile_language_hungarian">Ungarisch</string>
+    <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_system_detail">Sprache des Geräts</string>
     <string name="profile_notifications">Mitteilungen</string>
     <plurals name="profile_notifications_active">
