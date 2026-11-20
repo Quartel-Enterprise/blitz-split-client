@@ -15,8 +15,12 @@ class OpenWatchGroup(
     private val navigator: Navigator,
     private val observePeopleBalances: ObservePeopleBalances,
 ) {
+    private val watchRoots = setOf(Route.WatchBalances, Route.WatchConnect)
+
     suspend operator fun invoke(groupId: String?) {
-        if (navigator.backStack.value.firstOrNull() == Route.WatchConnect) return
+        // Why: a tap that launched the app waits for WatchRootViewModel's first screen, which would replace the group.
+        val root = navigator.backStack.first { it.firstOrNull() in watchRoots }.first()
+        if (root == Route.WatchConnect) return
         val row = groupId?.let { id ->
             WatchBalancesMapper
                 .groupsOf(observePeopleBalances().first(), money = emptyMap())

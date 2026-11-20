@@ -128,7 +128,7 @@ struct WatchPairingView: View {
     private func connectedView(_ state: WatchPairingUiState) -> some View {
         WatchMessageScreen {
             WatchAvatar(
-                initials: String((state.profileName ?? "").prefix(1)).uppercased(),
+                initials: state.profileInitials,
                 color: state.profileColor,
                 photoUrl: state.profilePhotoUrl,
                 size: 48,

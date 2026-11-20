@@ -23,9 +23,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import kotlin.time.Duration.Companion.seconds
 
 /*
  * Why: what the Apple Watch app calls besides BlitzSplitApple (which writes the complication's snapshot and reports
@@ -119,13 +121,16 @@ object BlitzSplitWatch : KoinComponent {
 
     /*
      * Why: watchOS's background refresh, a few times an hour at most, so the complication and the Smart Stack card
-     * follow the other devices' changes while the app isn't open. onDone ends the background task.
+     * follow the other devices' changes while the app isn't open. onDone ends the background task, within the few
+     * seconds watchOS gives it even when the network hangs: a refresh that runs over is killed and costs budget.
      */
     fun syncInBackground(onDone: () -> Unit) {
         val syncNow = get<SyncNow>()
         scope.launch {
-            syncNow()
+            withTimeoutOrNull(backgroundSyncLimit) { syncNow() }
             onDone()
         }
     }
+
+    private val backgroundSyncLimit = 10.seconds
 }

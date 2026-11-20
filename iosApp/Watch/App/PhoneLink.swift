@@ -24,9 +24,12 @@ final class PhoneLink: NSObject, WCSessionDelegate {
     /// took it. The pairing waits 20 seconds at most for an answer on its own.
     func sendPairingCode(_ code: String, reply: @escaping @MainActor (PhoneReply) -> Void) {
         let session = WCSession.default
-        guard WCSession.isSupported(), session.activationState == .activated, session.isCompanionAppInstalled,
-              session.isReachable
-        else {
+        // Connect tapped right after launch: the session activates in a moment, then the code goes
+        if WCSession.isSupported(), session.activationState != .activated {
+            pendingSends.append((code, reply))
+            return
+        }
+        guard WCSession.isSupported(), session.isCompanionAppInstalled, session.isReachable else {
             reply(.unreachable)
             return
         }
@@ -47,11 +50,26 @@ final class PhoneLink: NSObject, WCSessionDelegate {
         }
     }
 
+    /// Codes sent before the session activated; an activation that fails sends them anyway, as out of reach.
+    private var pendingSends: [(code: String, reply: @MainActor (PhoneReply) -> Void)] = []
+
     nonisolated func session(
         _ session: WCSession,
         activationDidCompleteWith activationState: WCSessionActivationState,
         error: Error?,
-    ) {}
+    ) {
+        Task { @MainActor in
+            let sends = self.pendingSends
+            self.pendingSends = []
+            for send in sends {
+                if activationState == .activated {
+                    self.sendPairingCode(send.code, reply: send.reply)
+                } else {
+                    send.reply(.unreachable)
+                }
+            }
+        }
+    }
 
     /// The iPhone signed out (15.13): queued user info, delivered even while the app wasn't running.
     nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {

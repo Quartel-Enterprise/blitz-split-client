@@ -93,3 +93,7 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
     background: the activity read, nothing recorded) and "View group". A push names its group but not its currency, so
     the watch opens the group in the currency where your balance in it is largest, over the balances; one with
     nothing open with you opens the balances. The watch asks for the notification permission once connected.
+  - An Apple Watch whose iPhone has the app gets no push of its own: iOS forwards the iPhone's notice to the paired
+    watch (iPhone locked, watch worn), and watchOS draws it with the watch app's categories and hands its "Received" or
+    "View group" to the watch app, so a second push would show each notice twice. The server sends the watch's own
+    push only to a user with no iPhone token (an iPhone without the app, or with its pushes off).

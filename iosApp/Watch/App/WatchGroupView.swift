@@ -49,7 +49,7 @@ struct WatchGroupView: View {
             VStack(spacing: 6) {
                 if state.isLoaded {
                     netCard(state)
-                    ForEach(state.debts.dropFirst(state.debts.count == 1 ? 1 : 0), id: \.memberId) { debt in
+                    ForEach(state.rowDebts, id: \.memberId) { debt in
                         debtRow(debt, isClickable: state.areDebtsClickable)
                     }
                 }
@@ -116,7 +116,7 @@ struct WatchGroupView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
                 .foregroundStyle(WatchPalette.balance(state.netMinor))
-            if state.debts.count == 1, let debt = state.debts.first {
+            if let debt = state.cardDebt {
                 WatchDebtLine(debt: debt, showsAmount: false)
             }
             if state.isQueued {

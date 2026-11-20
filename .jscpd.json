@@ -1,5 +1,5 @@
 {
-  "path": ["core", "feature", "shared", "android", "androidApp", "iosApp/Sources", "webApp/src"],
+  "path": ["core", "feature", "shared", "android", "androidApp", "iosApp/Sources", "iosApp/Watch", "iosApp/Widgets", "webApp/src"],
   "format": ["kotlin", "swift", "tsx"],
   "formatsExts": { "tsx": ["ts", "tsx"] },
   "minTokens": 70,

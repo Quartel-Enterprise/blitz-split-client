@@ -41,8 +41,13 @@ final class WatchPush: NSObject, UNUserNotificationCenterDelegate {
         WKApplication.shared().registerForRemoteNotifications()
     }
 
-    /// Once connected, the first time: the system's prompt, so the watch's pushes can show.
+    private var askedPermission = false
+
+    /// Once connected, once per launch: the system's prompt, so the watch's pushes can show (it answers at once after
+    /// the person's first answer).
     func requestPermission() {
+        guard !askedPermission else { return }
+        askedPermission = true
         Task {
             _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
         }

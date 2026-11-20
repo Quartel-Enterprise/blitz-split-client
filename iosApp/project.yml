@@ -152,6 +152,8 @@ targets:
       # The balance widget's file and faces: the app writes the file, and compiling the faces here extracts their
       # words into Localizable.xcstrings
       - path: Widgets/Shared
+      # The widget's file from the shared code's snapshot, which the watch app writes too
+      - path: Sources/WidgetSnapshot
     dependencies:
       - target: BalanceWidget
         embed: true
@@ -250,6 +252,7 @@ targets:
       - path: Watch/Assets.xcassets
       - path: Sources/Common
       - path: Widgets/Shared
+      - path: Sources/WidgetSnapshot
       - path: Sources/Shared/Bridge/WatchBag.swift
       - path: Sources/Shared/DesignSystem/ExpenseFormat.swift
       - path: Sources/Shared/DesignSystem/RightToLeft.swift

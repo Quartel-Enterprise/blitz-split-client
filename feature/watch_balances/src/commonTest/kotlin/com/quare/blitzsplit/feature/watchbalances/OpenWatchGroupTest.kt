@@ -6,6 +6,8 @@ import com.quare.blitzsplit.core.navigation.BackStackNavigator
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.feature.watchbalances.presentation.navigation.OpenWatchGroup
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -60,6 +62,24 @@ class OpenWatchGroupTest {
         // Then
         assertEquals(listOf(Route.WatchConnect), navigator.backStack.value)
     }
+
+    @Test
+    fun `GIVEN a push that launched the app WHEN the root opens the balances after it THEN the group still opens`() =
+        runTest(UnconfinedTestDispatcher()) {
+            // Given
+            val navigator = BackStackNavigator(Route.Welcome)
+            val open = openWatchGroupWith(navigator, balances(person("Carla", pair(APE, "carla", -1_000L))))
+            launch { open(APE) }
+
+            // When
+            navigator.replaceAll(Route.WatchBalances)
+
+            // Then
+            assertEquals(
+                listOf(Route.WatchBalances, Route.WatchGroup(APE, GroupCurrency.BRL)),
+                navigator.backStack.value,
+            )
+        }
 
     private fun openWatchGroupWith(
         navigator: BackStackNavigator,

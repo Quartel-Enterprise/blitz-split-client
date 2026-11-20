@@ -380194,6 +380194,12 @@
             "state" : "translated",
             "value" : "在這裡使用和iPhone上相同的帳號。之後手錶可獨立運作。"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "یہاں وہی اکاؤنٹ استعمال کریں جو آپ کے iPhone پر ہے۔ پھر واچ خود سے چلے گی۔"
+          }
         }
       }
     },
@@ -380373,6 +380379,12 @@
             "state" : "translated",
             "value" : "正在從iPhone取得你的帳號…"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آپ کے iPhone سے آپ کا اکاؤنٹ لیا جا رہا ہے…"
+          }
         }
       }
     },
@@ -380545,6 +380557,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "準備就緒，%@"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تیار ہے، %@"
           }
         }
       }
@@ -380719,6 +380737,12 @@
             "state" : "translated",
             "value" : "準備就緒"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تیار ہے"
+          }
         }
       }
     },
@@ -380891,6 +380915,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "手錶會自動同步，即使遠離iPhone。"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "واچ خود سے سنک ہوتی ہے، iPhone سے دور ہونے پر بھی۔"
           }
         }
       }
@@ -381071,6 +381101,12 @@
             "state" : "translated",
             "value" : "你的資料只在iPhone上"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آپ کا ڈیٹا صرف آپ کے iPhone پر ہے"
+          }
         }
       }
     },
@@ -381250,6 +381286,12 @@
             "state" : "translated",
             "value" : "請在iPhone的個人資料中連結帳號，然後在這裡再次輕觸連結。"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone پر پروفائل میں اکاؤنٹ کنیکٹ کریں اور یہاں دوبارہ “کنیکٹ کریں” پر ٹیپ کریں۔"
+          }
         }
       }
     },
@@ -381422,6 +381464,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "iPhone不在範圍內"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone پہنچ سے باہر ہے"
           }
         }
       }
@@ -381602,6 +381650,12 @@
             "state" : "translated",
             "value" : "請將iPhone靠近，或使用代碼連接。"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اپنا iPhone قریب لائیں، یا کوڈ سے کنیکٹ کریں۔"
+          }
         }
       }
     },
@@ -381774,6 +381828,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用代碼"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کوڈ استعمال کریں"
           }
         }
       }
@@ -381954,6 +382014,12 @@
             "state" : "translated",
             "value" : "你的代碼"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آپ کا کوڈ"
+          }
         }
       }
     },
@@ -382126,6 +382192,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "代碼 %@"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کوڈ %@"
           }
         }
       }
@@ -382306,6 +382378,12 @@
             "state" : "translated",
             "value" : "在iPhone上：個人資料 › 連接手錶"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone پر: پروفائل › واچ کنیکٹ کریں"
+          }
         }
       }
     },
@@ -382484,6 +382562,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "5 分鐘內有效"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 منٹ کے لیے درست"
           }
         }
       }
@@ -382670,6 +382754,12 @@
             "state" : "translated",
             "value" : "你已在iPhone上登出"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آپ نے iPhone پر سائن آؤٹ کیا"
+          }
         }
       }
     },
@@ -382842,6 +382932,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "資料也已從這支手錶上移除。"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ڈیٹا اس واچ سے بھی ہٹ گیا۔"
           }
         }
       }
@@ -383022,6 +383118,12 @@
             "state" : "translated",
             "value" : "重新連接"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "دوبارہ کنیکٹ کریں"
+          }
         }
       }
     },
@@ -383200,6 +383302,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "連接手錶需要網路。"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "واچ کنیکٹ کرنے کے لیے انٹرنیٹ چاہیے۔"
           }
         }
       }
@@ -383380,6 +383488,12 @@
             "state" : "translated",
             "value" : "嘗試次數過多。請等幾分鐘後重新連接。"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بہت زیادہ کوششیں۔ چند منٹ انتظار کریں اور دوبارہ کنیکٹ کریں۔"
+          }
         }
       }
     },
@@ -383559,6 +383673,12 @@
             "state" : "translated",
             "value" : "無法連接手錶，請重試。"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "واچ کنیکٹ نہیں ہو سکی۔ دوبارہ کوشش کریں۔"
+          }
         }
       }
     },
@@ -383731,6 +383851,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "離線"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آف لائن"
           }
         }
       }
@@ -383905,6 +384031,12 @@
             "state" : "translated",
             "value" : "應收"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "واپس لینے ہیں"
+          }
         }
       }
     },
@@ -384077,6 +384209,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "應收 %@"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ واپس لینے ہیں"
           }
         }
       }
@@ -384257,6 +384395,12 @@
             "state" : "translated",
             "value" : "你欠 %@"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ آپ نے دینے ہیں"
+          }
         }
       }
     },
@@ -384430,6 +384574,12 @@
             "state" : "translated",
             "value" : "總計持平"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مجموعی طور پر برابر"
+          }
         }
       }
     },
@@ -384602,6 +384752,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有未結清款項"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کچھ کھلا نہیں"
           }
         }
       }
@@ -384782,6 +384938,12 @@
             "state" : "translated",
             "value" : "你不欠任何人，也沒有人欠你。新的群組和帳單會自動顯示在這裡。"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نہ آپ نے کسی کو کچھ دینا ہے اور نہ کسی نے آپ کو۔ نئے گروپ اور خرچ یہاں خود ہی نظر آئیں گے۔"
+          }
         }
       }
     },
@@ -384954,6 +385116,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已付款"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "میں نے ادا کر دیا"
           }
         }
       }
@@ -385140,6 +385308,12 @@
             "state" : "translated",
             "value" : "已向%2$@付款%1$@？"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%2$@ کو %1$@ ادا کر دیے؟"
+          }
         }
       }
     },
@@ -385312,6 +385486,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@。群組會立即看到，或在網路恢復後看到。"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@۔ گروپ اسے فوراً دیکھ لے گا، یا انٹرنیٹ واپس آنے پر۔"
           }
         }
       }
@@ -385492,6 +385672,12 @@
             "state" : "translated",
             "value" : "已記錄付款"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادائیگی درج ہو گئی"
+          }
         }
       }
     },
@@ -385665,6 +385851,12 @@
             "state" : "translated",
             "value" : "已收款"
           }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رقم مل گئی"
+          }
         }
       }
     },
@@ -385837,6 +386029,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "查看群組"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "گروپ دیکھیں"
           }
         }
       }

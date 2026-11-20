@@ -63,50 +63,10 @@ final class BalanceWidgetWriter {
 
     private func write() {
         guard let snapshot else { return }
-        let balances = Self.balances(of: snapshot)
+        let balances = WidgetBalances(snapshot: snapshot, language: Bundle.appLanguageIdentifier)
         if let written, written.drawsLike(balances) { return }
         guard WidgetBalancesStore.write(balances) else { return }
         written = balances
         WidgetCenter.shared.reloadTimelines(ofKind: WidgetBalancesStore.kind)
-    }
-
-    private static func balances(of snapshot: BalanceSnapshot) -> WidgetBalances {
-        let overall = snapshot.overall.map { total in
-            WidgetBalances.Overall(
-                signed: total.currency.formatSigned(total.netMinor),
-                compact: total.currency.formatSignedCompact(total.netMinor),
-                direction: .init(minor: total.netMinor),
-                // Home's "Owe you" and "You owe", each in the first currency with something that way
-                owed: snapshot.toReceive.map { $0.currency.format($0.toReceiveMinor) },
-                owing: snapshot.toPay.map { $0.currency.format($0.toPayMinor) },
-            )
-        }
-        let groups = snapshot.openGroups.map { group in
-            WidgetBalances.Group(
-                id: "\(group.groupId):\(group.currency.code)",
-                name: group.name,
-                signed: group.currency.formatSigned(group.netMinor),
-                direction: .init(minor: group.netMinor),
-            )
-        }
-        return WidgetBalances(
-            language: Bundle.appLanguageIdentifier,
-            isSettled: snapshot.isSettled,
-            overall: overall,
-            groups: groups,
-            updatedAt: .now,
-            // "Updated at 14:32": when the widget's figures were last written, on Profile's Time format
-            updatedTime: ExpenseFormat.time(Int64(Date.now.timeIntervalSince1970 * 1000)),
-        )
-    }
-}
-
-private extension WidgetBalances {
-    /// The same figures, words and language, whenever they were written.
-    func drawsLike(_ other: WidgetBalances) -> Bool {
-        var other = other
-        other.updatedAt = updatedAt
-        other.updatedTime = updatedTime
-        return self == other
     }
 }
