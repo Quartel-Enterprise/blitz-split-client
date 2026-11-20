@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Új Pix-kulcs</string>
+    <string name="payment_key_title_pix_edit">Pix-kulcs szerkesztése</string>
+    <string name="payment_key_title_bitcoin_new">Új Bitcoin-kulcs</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin-kulcs szerkesztése</string>
+    <string name="payment_key_save">Mentés</string>
+
+    <string name="payment_key_pix_intro">Aki fizet neked, elszámoláskor ezt a kulcsot látja. Milyen típusú kulcs?</string>
+    <string name="payment_key_pix_question">Milyen típusú kulcs?</string>
+    <string name="payment_key_pix_explanation">Aki fizet neked, elszámoláskor ezt a kulcsot látja.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefon</string>
+    <string name="payment_key_type_email">E-mail</string>
+    <string name="payment_key_type_random">Véletlen</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mobilszám körzetszámmal</string>
+    <string name="payment_key_label_email">E-mail</string>
+    <string name="payment_key_label_random">Véletlen kulcs</string>
+
+    <string name="payment_key_bitcoin_intro">Hogyan szeretnél fogadni?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">gyors, alacsony díj</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">a blokkláncon</string>
+    <string name="payment_key_label_lightning">Lightning Address vagy LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin-cím</string>
+
+    <string name="payment_key_paste">Beillesztés</string>
+
+    <string name="payment_key_hint_cpf">Formátum: 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Formátum: +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Formátum: nev@domain.com</string>
+    <string name="payment_key_hint_random">32 betű és szám, ahogy a bankod mutatja</string>
+    <string name="payment_key_hint_lightning">Például nev@wallet.com vagy LNURL1…</string>
+    <string name="payment_key_hint_onchain">bc1q vagy bc1p kezdetű mainnet cím</string>
+
+    <string name="payment_key_valid_cpf">Formátum: 000.000.000-00 · az ellenőrző számjegyek egyeznek</string>
+    <string name="payment_key_valid_phone">Formátum: +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Formátum: nev@domain.com</string>
+    <string name="payment_key_valid_random">Véletlen kulcs felismerve (32 karakter)</string>
+    <string name="payment_key_valid_lightning_address">Érvényes Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Érvényes LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Érvénytelen CPF: az ellenőrző számjegyek nem egyeznek.</string>
+    <string name="payment_key_error_invalid_phone">Hiányos mobilszám: add meg a körzetszámot és a 9 számjegyet, 9-cel kezdve.</string>
+    <string name="payment_key_error_invalid_email">Hiányos e-mail-cím: hiányzik a domain, például .com vagy .com.br.</string>
+    <string name="payment_key_error_invalid_random">Hiányos véletlen kulcs: 32 betűből és számból áll.</string>
+    <string name="payment_key_error_invalid_lightning">Ez nem Lightning Address (nev@wallet) és nem is LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Ez egy Lightning-számla (lnbc…): egyszer fizethető ki, és lejár. Illessz be egy Lightning Addresst vagy egy LNURL-t.</string>
+    <string name="payment_key_error_invalid_onchain">Érvénytelen cím. Használj bc1q vagy bc1p kezdetű mainnet címet.</string>
+    <string name="payment_key_error_testnet_address">Ez egy testnet cím (tb1…). Itt csak a Bitcoin mainnet működik, bc1… címekkel.</string>
+    <string name="payment_key_error_already_saved">Ez a kulcs már megvan neked.</string>
+
+    <string name="payment_key_switched_to_onchain">Ez egy on-chain cím, ezért átváltottunk On-chainre.</string>
+    <string name="payment_key_switched_to_lightning">Ez egy Lightning Address, ezért átváltottunk Lightningra.</string>
+    <string name="payment_key_cpf_notice">Aki fizet neked, a teljes CPF-edet látja. Ha nem szeretnéd megosztani, használj telefonszámot, e-mailt vagy véletlen kulcsot.</string>
+    <string name="payment_key_held_notice">Ebből a típusból csak egy Pix-kulcsod lehet, ezért ez az, amelyiket elmentetted. Ha szeretnéd, itt módosíthatod.</string>
+
+    <string name="payment_key_accepted_title">Elfogadjuk</string>
+    <string name="payment_key_accepted_lightning_address_sample">nev@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">Alapértelmezett Pix-kulcs</string>
+    <string name="payment_key_default_bitcoin_title">Alapértelmezett Bitcoin-kulcs</string>
+    <string name="payment_key_default_pix_detail">Elszámoláskor ez jelenik meg elsőként.</string>
+    <string name="payment_key_default_bitcoin_detail">Ez jelenik meg elsőként, amikor valaki BTC-ben fizet.</string>
+    <string name="payment_key_default_now">Jelenleg: %1$s.</string>
+    <string name="payment_key_default_locked_editing">A módosításhoz tegyél egy másik kulcsot alapértelmezetté.</string>
+    <string name="payment_key_default_locked_new">Az első ilyen típusú kulcsod az alapértelmezett.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefon</string>
+    <string name="payment_key_default_type_email">e-mail</string>
+    <string name="payment_key_default_type_random">véletlen kulcs</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">A Blitz Split nem mozgat pénzt: a fizető a saját banki alkalmazásában fizet. Ellenőrizd, hogy a kulcs a te nevedre szól.</string>
+    <string name="payment_key_footer_bitcoin">Elszámoláskor az összeget satsban mutatjuk, az aktuális árfolyamon. Ez csak becslés: a fizető a tárcájában erősíti meg.</string>
+
+    <string name="payment_key_delete">Kulcs törlése</string>
+    <string name="payment_key_delete_title">Törlöd ezt a kulcsot?</string>
+    <string name="payment_key_delete_body">Akik tartoznak neked, elszámoláskor már nem fogják látni.</string>
+    <string name="payment_key_delete_confirm">Törlés</string>
+</resources>

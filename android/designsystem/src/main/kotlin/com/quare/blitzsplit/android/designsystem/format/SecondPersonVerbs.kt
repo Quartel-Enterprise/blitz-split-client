@@ -29,6 +29,32 @@ private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
 private const val GREEK = "el"
 private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
+private const val HUNGARIAN = "hu"
+private val hungarianFirstWord = Regex("""^[^\s,:]+""")
+private val hungarianDefinitePast = Regex("""t[ae]$""")
+private val hungarianIndefinitePast = mapOf(
+    "felosztott" to "felosztottál",
+    "szerkesztett" to "szerkesztettél",
+    "törölt" to "töröltél",
+    "rögzített" to "rögzítettél",
+    "visszavont" to "visszavontál",
+    "hozzáadott" to "hozzáadtál",
+    "csatlakozott" to "csatlakoztál",
+    "kilépett" to "kiléptél",
+    "eltávolított" to "eltávolítottál",
+    "átnevezett" to "átneveztél",
+    "hozzászólt" to "hozzászóltál",
+    "csatolt" to "csatoltál",
+    "kért" to "kértél",
+    "küldött" to "küldtél",
+    "létrehozott" to "létrehoztál",
+    "módosított" to "módosítottál",
+    "megváltoztatott" to "megváltoztattál",
+    "elolvasott" to "elolvastál",
+    "bekapcsolt" to "bekapcsoltál",
+    "kikapcsolt" to "kikapcsoltál",
+    "fizetett" to "fizettél",
+)
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
 private const val SINGULAR_SUFFIX_IO = "ió"
@@ -60,6 +86,7 @@ private val youSubjectLanguages = setOf(
     ROMANIAN,
     BENGALI,
     GREEK,
+    HUNGARIAN,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -97,6 +124,9 @@ private val irregularSecondPerson = mapOf(
  * actor, written apart after a name and as one word with the user's "आपने": every Hindi verb phrase starts with "ने",
  * which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Greek ends its aorist in "-ε" for someone else and "-ες"
  * for the user, an object pronoun staying before it: "Ana μοίρασε", "Εσύ μοίρασες"; "το επισύναψε", "το επισύναψες".
+ * Hungarian starts every verb phrase with a past: a definite one in "-ta"/"-te" takes a "d" for the user ("Ana
+ * létrehozta", "Te létrehoztad"), an indefinite one is one of the few the translations use, each with its own second
+ * person ("Ana felosztott", "Te felosztottál"; "kilépett", "kiléptél").
  * Bengali needs no rule: its respectful verb is the same for "আপনি" and for a name ("Ana ভাগ করেছেন", "আপনি ভাগ করেছেন"),
  * and Malay's verb doesn't change with the person. Same rules as the web's and the Apple app's `verbForYou`.
  */
@@ -126,8 +156,14 @@ fun toSecondPerson(
 
     GREEK -> greekPast.replace(verb) { match -> match.value + "ς" }
 
+    HUNGARIAN -> hungarianFirstWord.replace(verb) { match -> toHungarianSecondPerson(match.value) }
+
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
+
+// Why: "felosztott" → "felosztottál", "létrehozta" → "létrehoztad"; any other word stays as it is.
+private fun toHungarianSecondPerson(past: String): String = hungarianIndefinitePast[past]
+    ?: if (hungarianDefinitePast.containsMatchIn(past)) past + "d" else past
 
 // Why: the verb phrase with its first word replaced, or as it is when `replacement` has none for that word.
 private fun replaceFirstWord(
@@ -200,7 +236,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
  * Swedish "Du raderade…" and Bengali "আপনি মুছে ফেলেছেন…" likewise. Czech says "Ty jsi smazal(a)…", Romanian "Tu ai
- * șters…" and Greek "Εσύ διέγραψες…", with their verb rule.
+ * șters…", Greek "Εσύ διέγραψες…" and Hungarian "Te törölted…", with their verb rule.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

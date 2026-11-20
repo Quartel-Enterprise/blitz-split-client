@@ -13,7 +13,10 @@ import SwiftUI
 /// phrases all start with "ने", which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Romanian swaps its
 /// perfect's auxiliary as French does ("Ana a împărțit", "Tu ai împărțit"), and Czech adds one before the past ("Ana
 /// rozdělil(a)", "Ty jsi rozdělil(a)"). Greek ends its aorist in "-ε" for someone else and "-ες" for the user ("Ana
-/// μοίρασε", "Εσύ μοίρασες"). Bengali's respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
+/// μοίρασε", "Εσύ μοίρασες"). Hungarian starts each verb phrase with a past: a definite one in "-ta"/"-te" takes a "d"
+/// for the user ("Ana létrehozta", "Te létrehoztad"), an indefinite one is one of the few the translations use, each
+/// with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's respectful verb is the same for a name
+/// and for "আপনি", and Malay's doesn't change.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -38,6 +41,17 @@ enum SecondPerson {
 
     /// The object pronoun Spanish puts before the verb ("lo adjuntó"), which stays as the verb changes ("lo adjuntaste").
     private static let spanishObjectPronouns: Set = ["lo", "la", "los", "las", "le", "les"]
+
+    /// The indefinite pasts Hungarian's verb phrases start with, with their second person.
+    private static let hungarianIndefinitePast = [
+        "felosztott": "felosztottál", "szerkesztett": "szerkesztettél", "törölt": "töröltél",
+        "rögzített": "rögzítettél", "visszavont": "visszavontál", "hozzáadott": "hozzáadtál",
+        "csatlakozott": "csatlakoztál", "kilépett": "kiléptél", "eltávolított": "eltávolítottál",
+        "átnevezett": "átneveztél", "hozzászólt": "hozzászóltál", "csatolt": "csatoltál", "kért": "kértél",
+        "küldött": "küldtél", "létrehozott": "létrehoztál", "módosított": "módosítottál",
+        "megváltoztatott": "megváltoztattál", "elolvasott": "elolvastál", "bekapcsolt": "bekapcsoltál",
+        "kikapcsolt": "kikapcsoltál", "fizetett": "fizettél",
+    ]
 
     /// Each language's perfect auxiliary in the third person, with its second person.
     private static let auxiliaries = [
@@ -75,6 +89,12 @@ enum SecondPerson {
             guard let past = verb.range(of: #"^((το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)"#, options: .regularExpression)
             else { return verb }
             return verb.replacingCharacters(in: past, with: verb[past] + "ς")
+        case "hu":
+            // Why: the past may be followed by a comma or a colon ("csatolta, 21:10-kor").
+            guard let past = verb.range(of: #"^[^\s,:]+"#, options: .regularExpression) else { return verb }
+            let word = String(verb[past])
+            if let known = hungarianIndefinitePast[word] { return verb.replacingCharacters(in: past, with: known) }
+            return word.hasSuffix("ta") || word.hasSuffix("te") ? verb.replacingCharacters(in: past, with: word + "d") : verb
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }

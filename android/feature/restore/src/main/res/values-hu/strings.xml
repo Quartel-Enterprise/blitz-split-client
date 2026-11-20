@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Hozd vissza a csoportjaidat</string>
+    <string name="restore_subtitle">Korábban fiókkal jelentkeztél be? Csak jelentkezz be újra. Ha nem, használd a helyreállító kódot vagy a régi eszközöd QR-kódját.</string>
+    <string name="restore_no_connection_title">Nincs kapcsolat</string>
+    <string name="restore_no_connection_body">A fiókkal vagy kóddal való bejelentkezéshez internet kell a csoportjaid letöltéséhez. Amit beírtál, megmarad.</string>
+    <string name="restore_code_label">Vagy használd a helyreállító kódot</string>
+    <string name="restore_code_hint">A 12 szó sorrendben. Ha mindet egy mezőbe illeszted be, az összes mező kitöltődik.</string>
+    <string name="restore_scan_qr_title">Olvasd be a régi eszközöd QR-kódját</string>
+    <string name="restore_scan_qr_body">Ott: Profil › Helyreállítás › QR-kód megjelenítése</string>
+    <string name="restore_recover">Helyreállítás</string>
+    <string name="restore_try_again">Próbáld újra</string>
+    <string name="restore_start_fresh">Kezdés elölről ezen az eszközön</string>
+    <string name="restore_error_invalid_code">A kód nem található. Ellenőrizd a szavakat és a sorrendjüket, majd próbáld újra.</string>
+    <string name="restore_error_too_many_attempts">Túl sok próbálkozás. Várj néhány percet, és próbáld újra.</string>
+    <string name="restore_error_sign_in_failed">Most nem sikerült bejelentkezni. Próbáld újra.</string>
+    <string name="restore_error_unknown">Hiba történt. Próbáld újra.</string>
+</resources>

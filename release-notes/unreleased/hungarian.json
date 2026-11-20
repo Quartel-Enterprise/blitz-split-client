@@ -1,0 +1,78 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Hungarian: pick \"Magyar\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala húngaro: escolha \"Magyar\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora húngaro: escolhe \"Magyar\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla húngaro: elige \"Magyar\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais hongrois : choisis « Magyar » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Ungarisch: Wähle „Magyar“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla ungherese: scegli \"Magyar\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po węgiersku: wybierz „Magyar” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Hongaars: kies \"Magyar\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがハンガリー語に対応しました。プロフィール › 言語で「Magyar」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Macarca konuşuyor: Profil › Dil'den \"Magyar\"ı seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Hungaria: pilih \"Magyar\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на венгерском: выбери «Magyar» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить угорською: обери «Magyar» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 헝가리어를 쓸 수 있어요. 프로필 › 언어에서 ‘Magyar’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप हंगेरियन में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Magyar” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث المجرية: يمكنك اختيار «Magyar» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持匈牙利语：在“个人资料 › 语言”中选择“Magyar”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו הונגרית: אפשר לבחור \"Magyar\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาฮังการีแล้ว เลือก “Magyar” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Hungary: chọn “Magyar” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援匈牙利文：在「個人資料 › 語言」中選擇「Magyar」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu ungerska: välj ”Magyar” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví maďarsky: vyber „Magyar“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum maghiară: alege „Magyar” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন হাঙ্গেরীয় ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “Magyar” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Hungary: pilih \"Magyar\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον ουγγρικά: διάλεξε «Magyar» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hu": "Az app mostantól magyarul is beszél: válaszd a „Magyar” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now use the Hungarian forint.",
+        "pt": "Os grupos agora podem usar o florim húngaro.",
+        "pt-PT": "Os grupos já podem usar o florim húngaro.",
+        "es": "Los grupos ahora pueden usar el forinto húngaro.",
+        "fr": "Les groupes peuvent désormais utiliser le forint hongrois.",
+        "de": "Gruppen können jetzt den ungarischen Forint verwenden.",
+        "it": "I gruppi ora possono usare il fiorino ungherese.",
+        "pl": "Grupy mogą teraz korzystać z węgierskiego forinta.",
+        "nl": "Groepen kunnen nu de Hongaarse forint gebruiken.",
+        "ja": "グループでハンガリー・フォリントを使えるようになりました。",
+        "tr": "Gruplar artık Macar forinti kullanabilir.",
+        "id": "Grup kini bisa memakai forint Hungaria.",
+        "ru": "В группах теперь можно использовать венгерский форинт.",
+        "uk": "У групах тепер можна використовувати угорський форинт.",
+        "ko": "이제 그룹에서 헝가리 포린트를 쓸 수 있어요.",
+        "hi": "अब ग्रुप में हंगेरियन फ़ोरिंट का इस्तेमाल किया जा सकता है।",
+        "ar": "يمكن للمجموعات الآن استخدام الفورنت المجري.",
+        "zh": "群组现在可以使用匈牙利福林。",
+        "he": "קבוצות יכולות עכשיו להשתמש בפורינט הונגרי.",
+        "th": "ตอนนี้กลุ่มใช้สกุลเงินฟอรินต์ฮังการีได้แล้ว",
+        "vi": "Các nhóm giờ có thể dùng forint Hungary.",
+        "zh-Hant": "群組現在可以使用匈牙利福林。",
+        "sv": "Grupper kan nu använda ungersk forint.",
+        "cs": "Skupiny teď mohou používat maďarský forint.",
+        "ro": "Grupurile pot folosi acum forintul maghiar.",
+        "bn": "গ্রুপে এখন হাঙ্গেরীয় ফোরিন্ট ব্যবহার করা যাবে।",
+        "ms": "Kumpulan kini boleh menggunakan forint Hungary.",
+        "el": "Οι ομάδες μπορούν πλέον να χρησιμοποιούν το φιορίνι Ουγγαρίας.",
+        "hu": "A csoportok mostantól forintot is használhatnak."
+      }
+    }
+  ]
+}

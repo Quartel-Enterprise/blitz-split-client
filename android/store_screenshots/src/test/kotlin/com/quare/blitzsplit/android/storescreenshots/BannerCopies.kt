@@ -53,6 +53,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Siapa bayar apa, sekali pandang" over "Semua bil percutian di satu tempat, dengan baki anda di atas"),
         "el" to
             ("Ποιος πλήρωσε τι, με μια ματιά" over "Όλα τα έξοδα του ταξιδιού μαζί, με το υπόλοιπό σου στην κορυφή"),
+        "hu" to ("Ki mit fizetett, egy pillantással" over "Az út összes számlája egy helyen, felül az egyenlegeddel"),
     ),
     StoreScreen.ITEMS to mapOf(
         "en" to ("Split by what each one had" over "Tick who had each item and the service charge splits fairly"),
@@ -109,6 +110,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
             ("যিনি যা নিয়েছেন, সেভাবে ভাগ" over "কে কোন আইটেম নিয়েছেন টিক দিন, সার্ভিস চার্জ ন্যায্যভাবে ভাগ হবে"),
         "ms" to ("Bahagi ikut apa yang diambil" over "Tanda siapa ambil item, caj perkhidmatan dibahagi adil"),
         "el" to ("Ο καθένας πληρώνει ό,τι πήρε" over "Τσέκαρε ποιος πήρε κάθε είδος και το σέρβις μοιράζεται δίκαια"),
+        "hu" to ("Mindenki azt fizeti, amit evett" over "Jelöld, ki mit kért, és a szervizdíj igazságosan oszlik el"),
     ),
     StoreScreen.RECEIPT to mapOf(
         "en" to ("Snap the receipt, skip the typing" over "The items fill themselves in from a photo"),
@@ -141,6 +143,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "bn" to ("রসিদের ছবি তুলুন, টাইপ নয়" over "ছবি থেকেই আইটেমগুলো নিজে থেকে ভরে যায়"),
         "ms" to ("Foto resit, tanpa perlu menaip" over "Item diisi sendiri daripada foto"),
         "el" to ("Σκάναρε την απόδειξη και τελείωσες" over "Τα είδη συμπληρώνονται μόνα τους από μια φωτογραφία"),
+        "hu" to ("Fotózd le a nyugtát, ne gépelj" over "A tételek maguktól kitöltődnek egy fotóból"),
     ),
     StoreScreen.BALANCES to mapOf(
         "en" to ("Know who owes whom" over "Settle up in a tap and record the payment"),
@@ -172,6 +175,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "bn" to ("জানুন কে কার কাছে কত পাবেন" over "এক ট্যাপে হিসাব মেটান, পেমেন্ট লিখে রাখুন"),
         "ms" to ("Ketahui siapa berhutang" over "Selesaikan dengan satu ketikan, rekod bayaran"),
         "el" to ("Μάθε ποιος χρωστάει σε ποιον" over "Εξόφλησε με ένα πάτημα και κατάγραψε την πληρωμή"),
+        "hu" to ("Lásd, ki kinek tartozik" over "Számolj el egy koppintással, és rögzítsd a fizetést"),
     ),
     StoreScreen.INVITE to mapOf(
         "en" to ("Invite with a link or QR code" over "Friends join the group in seconds, no sign-up needed"),
@@ -206,6 +210,8 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Jemput dengan pautan atau kod QR" over "Rakan sertai kumpulan segera, tanpa perlu mendaftar"),
         "el" to
             ("Πρόσκληση με σύνδεσμο ή κωδικό QR" over "Οι φίλοι μπαίνουν στην ομάδα σε δευτερόλεπτα, χωρίς εγγραφή"),
+        "hu" to
+            ("Meghívás linkkel vagy QR-kóddal" over "A barátok másodpercek alatt csatlakoznak, regisztráció nélkül"),
     ),
     StoreScreen.STATISTICS to mapOf(
         "en" to ("See where the money went" over "Spending by category and by person"),
@@ -237,6 +243,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "bn" to ("দেখুন টাকা কোথায় গেল" over "ক্যাটাগরি ও ব্যক্তি অনুযায়ী খরচ"),
         "ms" to ("Lihat ke mana perginya wang" over "Perbelanjaan mengikut kategori dan orang"),
         "el" to ("Δες πού πήγαν τα χρήματα" over "Έξοδα ανά κατηγορία και ανά άτομο"),
+        "hu" to ("Lásd, hová ment a pénz" over "Költések kategóriánként és személyenként"),
     ),
     StoreScreen.HOME to mapOf(
         "en" to ("Your groups, front and center" over "Pin the ones you use most and see your balance in each"),
@@ -272,6 +279,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "bn" to ("আপনার গ্রুপ, সবার সামনে" over "বেশি ব্যবহৃত গ্রুপ পিন করুন, প্রতিটির ব্যালেন্স দেখুন"),
         "ms" to ("Kumpulan anda, sentiasa di depan" over "Semat yang kerap digunakan dan lihat baki setiap satu"),
         "el" to ("Οι ομάδες σου σε πρώτο πλάνο" over "Καρφίτσωσε τις πιο συχνές και δες το υπόλοιπό σου στην καθεμία"),
+        "hu" to ("A csoportjaid mindig elöl" over "Tűzd ki a leggyakoribbakat, és lásd mindegyikben az egyenleged"),
     ),
     StoreScreen.PAYERS_AND_CURRENCIES to mapOf(
         "en" to ("Several payers, any currency" over "Split bills more than one person paid, even in crypto"),
@@ -316,6 +324,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Ramai pembayar, semua mata wang" over "Bahagi bil yang dibayar ramai, malah dalam kripto"),
         "el" to
             ("Πολλοί πληρωτές, κάθε νόμισμα" over "Μοίρασε έξοδα που πλήρωσαν πολλοί, ακόμη και σε κρυπτονομίσματα"),
+        "hu" to ("Több fizető, bármilyen pénznem" over "Oszd fel a többek által fizetett számlákat, akár kriptóban is"),
     ),
     StoreScreen.ACTIVITY to mapOf(
         "en" to ("Never miss a change" over "Every new bill and payment in your groups, as it happens"),
@@ -347,6 +356,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "ms" to ("Jangan terlepas perubahan" over "Setiap bil dan bayaran baharu kumpulan anda, serta-merta"),
         "el" to
             ("Δεν σου ξεφεύγει καμία αλλαγή" over "Κάθε νέο έξοδο και πληρωμή στις ομάδες σου, τη στιγμή που γίνεται"),
+        "hu" to ("Egy változás se kerülje el a figyelmed" over "Minden új számla és fizetés a csoportjaidban, azonnal"),
     ),
     StoreScreen.LIGHT_THEME to mapOf(
         "en" to ("Light or dark, it follows you" over "Works offline, with or without an account"),
@@ -377,6 +387,7 @@ private val bannerCopies: Map<StoreScreen, Map<String, BannerCopy>> = mapOf(
         "bn" to ("লাইট বা ডার্ক, আপনার পছন্দে" over "অফলাইনেও চলে, অ্যাকাউন্ট থাকুক বা না থাকুক"),
         "ms" to ("Cerah atau gelap, ikut suka anda" over "Berfungsi di luar talian, dengan atau tanpa akaun"),
         "el" to ("Φωτεινό ή σκοτεινό, όπως σου αρέσει" over "Λειτουργεί εκτός σύνδεσης, με ή χωρίς λογαριασμό"),
+        "hu" to ("Világos vagy sötét, ahogy szereted" over "Offline is működik, fiókkal vagy anélkül"),
     ),
 )
 

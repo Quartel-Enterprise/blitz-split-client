@@ -854,6 +854,7 @@ export const pt: Record<MessageKey, string> = {
   profile_languageBengali: 'Bengali',
   profile_languageMalay: 'Malaio',
   profile_languageGreek: 'Grego',
+  profile_languageHungarian: 'Húngaro',
   profile_bitcoinInSats: 'Bitcoin em satoshis',
   profile_bitcoinInSatsDetail: 'Mostra e digita valores em bitcoin em sats (1 ₿ = 100.000.000 sats).',
   profile_shareUsageData: "Compartilhar dados de uso",

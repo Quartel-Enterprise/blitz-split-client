@@ -28,6 +28,7 @@ import { ro } from './ro'
 import { bn } from './bn'
 import { ms } from './ms'
 import { el } from './el'
+import { hu } from './hu'
 
 export type { MessageKey }
 /**
@@ -35,12 +36,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hu'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hu }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hu']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -66,10 +67,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms` or `el` tag (de-AT,
- * it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN, sv-FI,
- * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
- * Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay or Greek, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el` or `hu` tag
+ * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN,
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hu-RO…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek or Hungarian, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, any `en` tag is English, and English when none
  * matches.
  */
@@ -159,6 +160,7 @@ const documentLanguages: Record<Locale, string> = {
   bn: 'bn',
   ms: 'ms',
   el: 'el',
+  hu: 'hu',
 }
 
 const documentLanguage = documentLanguages[locale]
@@ -281,6 +283,31 @@ const portugueseIrregularSecondPerson: Record<string, string> = {
   pôs: 'puseste',
 }
 
+// Why: the indefinite pasts Hungarian's verb phrases start with, with their second person.
+const hungarianIndefinitePast: Readonly<Record<string, string>> = {
+  felosztott: 'felosztottál',
+  szerkesztett: 'szerkesztettél',
+  törölt: 'töröltél',
+  rögzített: 'rögzítettél',
+  visszavont: 'visszavontál',
+  hozzáadott: 'hozzáadtál',
+  csatlakozott: 'csatlakoztál',
+  kilépett: 'kiléptél',
+  eltávolított: 'eltávolítottál',
+  átnevezett: 'átneveztél',
+  hozzászólt: 'hozzászóltál',
+  csatolt: 'csatoltál',
+  kért: 'kértél',
+  küldött: 'küldtél',
+  létrehozott: 'létrehoztál',
+  módosított: 'módosítottál',
+  megváltoztatott: 'megváltoztattál',
+  elolvasott: 'elolvastál',
+  bekapcsolt: 'bekapcsoltál',
+  kikapcsolt: 'kikapcsoltál',
+  fizetett: 'fizettél',
+}
+
 // Why: the object pronoun Spanish puts before the verb ("lo adjuntó"), which stays as the verb changes ("lo adjuntaste").
 const spanishObjectPronouns = new Set(['lo', 'la', 'los', 'las', 'le', 'les'])
 
@@ -307,7 +334,9 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * its perfect's auxiliary as French does ("a împărțit" becomes "ai împărțit"), and Czech puts the auxiliary "jsi"
  * before a past in "l(a)", which the third person says without one ("rozdělil(a)" becomes "jsi rozdělil(a)"). Greek
  * ends its aorist in "-ες" for the user, an object pronoun staying before it ("μοίρασε" becomes "μοίρασες", "το
- * επισύναψε" "το επισύναψες"). Bengali's respectful verb is the same for a name and for "আপনি", and Malay's never changes.
+ * επισύναψε" "το επισύναψες"). Hungarian starts each with a past: a definite one in "-ta"/"-te" takes a "d" ("létrehozta"
+ * becomes "létrehoztad"), an indefinite one is one of the few the translations use ("felosztott" becomes
+ * "felosztottál"). Bengali's respectful verb is the same for a name and for "আপনি", and Malay's never changes.
  * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste". Same
  * rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
@@ -323,6 +352,9 @@ export function verbForYou(verb: string): string {
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
   if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
   if (locale === 'cs') return /^\S*l\(a\)(?=[\s,:]|$)/.test(verb) ? `jsi ${verb}` : verb
+  if (locale === 'hu') {
+    return verb.replace(/^[^\s,:]+/, (past) => hungarianIndefinitePast[past] ?? (/t[ae]$/.test(past) ? `${past}d` : past))
+  }
   if (locale === 'el') return verb.replace(/^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)/, '$&ς')
   if (!isSpanish) return verb
   const [first, ...rest] = verb.split(' ')

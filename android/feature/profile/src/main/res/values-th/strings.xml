@@ -82,6 +82,7 @@
     <string name="profile_language_bengali">เบงกาลี</string>
     <string name="profile_language_malay">มลายู</string>
     <string name="profile_language_greek">กรีก</string>
+    <string name="profile_language_hungarian">ฮังการี</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>
     <plurals name="profile_notifications_active">

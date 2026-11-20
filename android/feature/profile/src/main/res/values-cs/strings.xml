@@ -85,6 +85,7 @@
     <string name="profile_language_bengali">Bengálština</string>
     <string name="profile_language_malay">Malajština</string>
     <string name="profile_language_greek">Řečtina</string>
+    <string name="profile_language_hungarian">Maďarština</string>
     <string name="profile_language_system_detail">Jazyk zařízení</string>
     <string name="profile_notifications">Oznámení</string>
     <plurals name="profile_notifications_active">

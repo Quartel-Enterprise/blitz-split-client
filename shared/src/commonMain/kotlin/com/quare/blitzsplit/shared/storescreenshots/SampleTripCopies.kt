@@ -414,5 +414,19 @@ internal object SampleTripCopies {
             court = "Κράτηση γηπέδου",
             items = listOf("Πίτσα Μαργαρίτα", "Μπουράτα", "Ριζότο με μανιτάρια", "Τιραμισού", "Προσέκο", "Εσπρέσο"),
         ),
+        "hu" to SampleTripCopy(
+            groupName = "Lisszaboni út",
+            people = listOf("Anna", "Bence", "Eszter", "Máté", "Zsófi"),
+            dinner = "Vacsora a trattoriában",
+            apartment = "Apartman az Alfamában",
+            groceries = "Bevásárlás",
+            carRental = "Autóbérlés",
+            boatTour = "Hajókirándulás",
+            taxi = "Taxi a reptérről",
+            roommates = "Lakótársak",
+            soccer = "Pénteki foci",
+            court = "Pályabérlés",
+            items = listOf("Margherita pizza", "Burrata", "Gombás rizottó", "Tiramisu", "Prosecco", "Eszpresszó"),
+        ),
     )
 }

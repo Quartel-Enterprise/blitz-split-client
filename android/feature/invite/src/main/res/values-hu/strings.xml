@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Bezárás</string>
+    <string name="invite_group_created">Csoport létrehozva</string>
+    <string name="invite_title">Hívj meg mindenkit ebbe a csoportba: %s</string>
+    <string name="invite_qr_description">A csoport meghívólinkjének QR-kódja</string>
+    <string name="invite_copy">Másolás</string>
+    <string name="invite_copied">Másolva</string>
+    <string name="invite_who_picks">Aki megnyitja a linket, kiválasztja a listán, ki ő: %s. Nem kell fiók.</string>
+    <string name="invite_names_or">%1$s vagy %2$s</string>
+    <string name="invite_anyone_joins">Aki megnyitja a linket, csatlakozik a csoporthoz. Nem kell fiók.</string>
+    <string name="invite_pending_title">A link függőben van</string>
+    <string name="invite_pending_offline">Amint online leszel, létrejön.</string>
+    <string name="invite_pending_online">Link létrehozása…</string>
+    <string name="invite_failed_title">Nem sikerült létrehozni a linket</string>
+    <string name="invite_failed_body">Hiba történt a csoport szinkronizálása közben.</string>
+    <string name="invite_retry">Próbáld újra</string>
+    <string name="invite_share">Link megosztása</string>
+    <string name="invite_see_who_joined">Kik csatlakoztak</string>
+    <string name="invite_add_person">Valaki hozzáadása alkalmazás nélkül</string>
+    <string name="invite_go_to_group">Ugrás a csoporthoz</string>
+    <string name="invite_change_link">Link megváltoztatása</string>
+    <string name="invite_change_link_title">Megváltoztatod a meghívólinket?</string>
+    <string name="invite_change_link_message">A jelenlegi link és QR-kód nem fog működni, a fel nem használt személyes meghívókkal együtt. Aki már csatlakozott, a csoportban marad.</string>
+    <string name="invite_change_link_failed">Nem sikerült megváltoztatni a linket. Próbáld újra.</string>
+    <string name="invite_share_message">Osszuk fel a számlákat a Blitz Split alkalmazásban! Csoport: %1$s. Csatlakozz ezzel a linkkel: %2$s</string>
+</resources>
