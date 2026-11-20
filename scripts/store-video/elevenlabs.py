@@ -146,9 +146,10 @@ def prepare(locale):
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(music_file(base, config["music"])), "-ar", "48000",
                     str(public / "music.wav")],
                    check=True)
-    props = {"locale": locale, "voiceSeconds": durations, "musicSeconds": seconds(public / "music.wav")}
+    video = {key: config[key] for key in ("shots", "endCard", "endSeconds")}
+    props = {"video": video, "voiceSeconds": durations, "musicSeconds": seconds(public / "music.wav")}
     (base / "props.json").write_text(json.dumps(props))
-    print(json.dumps(props))
+    print(json.dumps({"voiceSeconds": durations, "musicSeconds": props["musicSeconds"]}))
 
 
 if __name__ == "__main__":

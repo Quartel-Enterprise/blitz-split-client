@@ -12,7 +12,6 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import ptBR from '../../locales/pt-BR.json';
 
 const { fontFamily } = loadFont('normal', { weights: ['400', '500', '700', '900'], subsets: ['latin'] });
 
@@ -45,12 +44,11 @@ type Step =
   // A screen with nothing moving on it, shown as an image; it can be pushed in like a play.
   | { kind: 'still'; img: string; seconds: number; enter?: string };
 type Shot = { title: { text: string; accent?: string[] }[]; subtitle?: string; whip: boolean; steps: Step[] };
-// What scripts/store-video/locales/<locale>.json holds that the video draws.
-type Locale = { shots: Shot[]; endSeconds: number; endCard: { name: string[]; chips: string[] } };
+// What scripts/store-video/locales/<locale>.json holds that the video draws, handed over in props.json by
+// elevenlabs.py prepare, so a new locale needs no change here.
+export type Locale = { shots: Shot[]; endSeconds: number; endCard: { name: string[]; chips: string[] } };
 
-export const LOCALES: Record<string, Locale> = { 'pt-BR': ptBR as Locale };
-
-export type StoreVideoProps = { locale: string; voiceSeconds: number[]; musicSeconds: number };
+export type StoreVideoProps = { video: Locale; voiceSeconds: number[]; musicSeconds: number };
 
 type Placed = { step: Step; start: number; dur: number; shot: number; prev?: Placed };
 type Timeline = Locale & { placed: Placed[]; shotStarts: number[]; endAt: number; duration: number; whips: number[] };
@@ -158,9 +156,9 @@ const liftOf = (frame: number, p: Placed, card: Card, fps: number) => {
   return Math.min(up, down);
 };
 
-export const StoreVideo = ({ locale, voiceSeconds, musicSeconds }: StoreVideoProps) => {
+export const StoreVideo = ({ video, voiceSeconds, musicSeconds }: StoreVideoProps) => {
   const frame = useCurrentFrame();
-  const tl = timelineOf(LOCALES[locale]);
+  const tl = timelineOf(video);
   return (
     <AbsoluteFill style={{ fontFamily, backgroundColor: '#0A1B26', overflow: 'hidden' }}>
       <Backdrop time={frame / FPS} />
@@ -217,10 +215,14 @@ const Phone = ({ tl }: { tl: Timeline }) => {
       >
         <div style={{ width: SCREEN_W, height: SCREEN_H, borderRadius: 56, overflow: 'hidden', position: 'relative', background: '#111418' }}>
           {tl.placed.map((pl, i) => (
-            <Sequence key={i} from={pl.start} durationInFrames={pl.dur + (i === tl.placed.length - 1 ? f(1) : 0)} layout="none">
+            <Sequence key={i} from={pl.start} durationInFrames={pl.dur} layout="none">
               <StepView placed={pl} />
             </Sequence>
           ))}
+          {/* The phone leaves on the last frame held still: the last clip ends where its step does. */}
+          <Sequence from={tl.endAt} layout="none">
+            <Img src={staticFile(lastFrameOf(tl.placed[tl.placed.length - 1]))} style={full} />
+          </Sequence>
           <div style={{ position: 'absolute', inset: 0, background: 'black', opacity: 0.5 * lift }} />
           <div
             style={{

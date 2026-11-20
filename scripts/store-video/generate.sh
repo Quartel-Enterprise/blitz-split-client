@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 # The store preview video of one locale, from scratch (docs/store-video.md):
 #
 #   scripts/store-video/generate.sh <locale> [--skip-record] [scene ...]
@@ -9,8 +9,8 @@
 # 3. composes the video with Remotion into build/store-video/<locale>/store-video-<locale>.mp4.
 set -euo pipefail
 
-HERE=${0:A:h}
-ROOT=${HERE:h:h}
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$HERE/../.." && pwd)"
 LOCALE=${1:?usage: generate.sh <locale> [--skip-record] [scene ...]}
 shift
 RECORD=1
@@ -19,46 +19,46 @@ if [[ ${1:-} == --skip-record ]]; then
   shift
   (( $# == 0 )) || { echo "--skip-record records nothing, so it takes no scenes: $*" >&2; exit 1; }
 fi
-OUT=$ROOT/build/store-video/$LOCALE
-PUBLIC=$OUT/public
-[[ -f $HERE/locales/$LOCALE.json ]] || { echo "No scripts/store-video/locales/$LOCALE.json" >&2; exit 1; }
+OUT="$ROOT/build/store-video/$LOCALE"
+PUBLIC="$OUT/public"
+[[ -f "$HERE/locales/$LOCALE.json" ]] || { echo "No scripts/store-video/locales/$LOCALE.json" >&2; exit 1; }
 for tool in adb ffmpeg ffprobe node npm python3; do
-  command -v $tool >/dev/null || { echo "$tool is missing (docs/store-video.md)" >&2; exit 1; }
+  command -v "$tool" >/dev/null || { echo "$tool is missing (docs/store-video.md)" >&2; exit 1; }
 done
-mkdir -p $PUBLIC
+mkdir -p "$PUBLIC"
 
 # The re-timing needs numpy and Pillow, in an environment of their own.
-VENV=$ROOT/build/store-video/.venv
+VENV="$ROOT/build/store-video/.venv"
 # A stamp written only once the install succeeds, newer than requirements.txt: a failed or outdated install runs again.
-if [[ ! -f $VENV/.installed || $HERE/requirements.txt -nt $VENV/.installed ]]; then
-  [[ -x $VENV/bin/python ]] || python3 -m venv $VENV
-  $VENV/bin/pip install --quiet --disable-pip-version-check -r $HERE/requirements.txt
-  touch $VENV/.installed
+if [[ ! -f "$VENV/.installed" || "$HERE/requirements.txt" -nt "$VENV/.installed" ]]; then
+  [[ -x "$VENV/bin/python" ]] || python3 -m venv "$VENV"
+  "$VENV/bin/pip" install --quiet --disable-pip-version-check -r "$HERE/requirements.txt"
+  touch "$VENV/.installed"
 fi
 
 if (( RECORD )); then
   adb get-state >/dev/null 2>&1 || { echo "No emulator is running" >&2; exit 1; }
-  $VENV/bin/python -I $HERE/record.py $LOCALE "$@"
+  "$VENV/bin/python" -I "$HERE/record.py" "$LOCALE" ${@+"$@"}  # macOS bash 3.2 calls an empty "$@" unbound
 fi
 
-$VENV/bin/python -I $HERE/elevenlabs.py narration $LOCALE
-$VENV/bin/python -I $HERE/elevenlabs.py music $LOCALE
-$VENV/bin/python -I $HERE/elevenlabs.py prepare $LOCALE
+"$VENV/bin/python" -I "$HERE/elevenlabs.py" narration "$LOCALE"
+"$VENV/bin/python" -I "$HERE/elevenlabs.py" music "$LOCALE"
+"$VENV/bin/python" -I "$HERE/elevenlabs.py" prepare "$LOCALE"
 
 # The end card's icon and the two sound effects, made here so no binary lives in the repository.
-cp $ROOT/iosApp/Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png $PUBLIC/icon.png
+cp "$ROOT/iosApp/Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png" "$PUBLIC/icon.png"
 ffmpeg -y -v error -f lavfi -i "anoisesrc=d=0.55:c=pink:a=0.6:seed=7" \
   -af "highpass=f=250,lowpass=f=3500,afade=t=in:d=0.3:curve=exp,afade=t=out:st=0.3:d=0.25,volume=0.5,aformat=channel_layouts=stereo" \
-  $PUBLIC/whoosh.wav
+  "$PUBLIC/whoosh.wav"
 ffmpeg -y -v error -f lavfi -i "sine=f=660:d=0.18" -f lavfi -i "sine=f=1320:d=0.18" \
-  -filter_complex "[0][1]amix=2,afade=t=out:d=0.17:curve=exp,volume=0.35,aformat=channel_layouts=stereo" $PUBLIC/pop.wav
+  -filter_complex "[0][1]amix=2,afade=t=out:d=0.17:curve=exp,volume=0.35,aformat=channel_layouts=stereo" "$PUBLIC/pop.wav"
 
-cd $HERE/remotion
+cd "$HERE/remotion"
 [[ -d node_modules ]] || npm ci --no-audit --no-fund
-npx remotion render src/index.ts StoreVideo $OUT/raw.mp4 --props=$OUT/props.json --public-dir=$PUBLIC \
+npx remotion render src/index.ts StoreVideo "$OUT/raw.mp4" --props="$OUT/props.json" --public-dir="$PUBLIC" \
   --codec=h264 --crf=16 --log=error
 # -14 LUFS, YouTube's loudness, where the Play listing's video lives.
-ffmpeg -y -v error -i $OUT/raw.mp4 -c:v copy -af "loudnorm=I=-14:TP=-1.5:LRA=9" -c:a aac -b:a 192k -ar 48000 \
-  $OUT/store-video-$LOCALE.mp4
-rm $OUT/raw.mp4
+ffmpeg -y -v error -i "$OUT/raw.mp4" -c:v copy -af "loudnorm=I=-14:TP=-1.5:LRA=9" -c:a aac -b:a 192k -ar 48000 \
+  "$OUT/store-video-$LOCALE.mp4"
+rm "$OUT/raw.mp4"
 echo "$OUT/store-video-$LOCALE.mp4"

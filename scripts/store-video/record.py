@@ -33,9 +33,9 @@ DEMO = [
     ["network", "-e", "wifi", "show", "-e", "level", "4", "-e", "fully", "true"],
     ["notifications", "-e", "visible", "false"],
 ]
-# The dialog a busy emulator shows when the app is slow to answer; "Wait" keeps it running.
-NOT_RESPONDING = re.compile(r"(isn.t responding|não está respondendo)")
-WAIT_BUTTON = re.compile(r"^(Wait|Aguardar)$")
+# The Wait button of the dialog a busy emulator shows when the app is slow to answer, found by its id so any system
+# language matches.
+WAIT_BUTTON = re.compile(r'resource-id="android:id/aerr_wait"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"')
 
 
 def adb(*args, check=True, capture=False):
@@ -56,21 +56,18 @@ def nodes():
         time.sleep(2)
         return []
     xml = adb("shell", "cat", "/sdcard/store-video-ui.xml", check=False, capture=True) or ""
+    wait = WAIT_BUTTON.search(xml)
+    if wait:
+        # "Wait" keeps the app running; the screen behind the dialog can be read once it is gone.
+        x0, y0, x1, y1 = map(int, wait.groups())
+        adb("shell", "input", "tap", str((x0 + x1) // 2), str((y0 + y1) // 2))
+        time.sleep(3)
+        return []
     found = []
     for text, desc, bounds in re.findall(r'text="([^"]*)"[^>]*content-desc="([^"]*)"[^>]*bounds="([^"]*)"', xml):
         x0, y0, x1, y1 = map(int, re.findall(r"\d+", bounds))
         found.append((text.replace("\xa0", " "), desc, ((x0 + x1) // 2, (y0 + y1) // 2)))
     return found
-
-
-def answer_not_responding(found):
-    if any(NOT_RESPONDING.search(t) for t, _, _ in found):
-        for text, _, (x, y) in found:
-            if WAIT_BUTTON.match(text):
-                adb("shell", "input", "tap", str(x), str(y))
-                time.sleep(3)
-                return True
-    return False
 
 
 def find(target, found):
@@ -112,8 +109,6 @@ def wait_for(text, seconds=60):
     deadline = time.time() + seconds
     while time.time() < deadline:
         found = nodes()
-        if answer_not_responding(found):
-            continue
         if any(t == text for t, _, _ in found):
             time.sleep(1.5)  # the screen's own animations settle
             return
@@ -125,8 +120,6 @@ def tap(target):
     deadline = time.time() + 60
     while time.time() < deadline:
         found = nodes()
-        if answer_not_responding(found):
-            continue
         center = find(target, found)
         if center:
             adb("shell", "input", "tap", str(center[0]), str(center[1]))
@@ -253,7 +246,7 @@ def wait_for_seed(seconds=240):
     while time.time() < deadline:
         if adb("shell", f"run-as {PACKAGE} ls {FILES}/store-video.ready", check=False, capture=True).strip():
             return
-        answer_not_responding(nodes())
+        nodes()  # answers a "not responding" dialog, if the seed's work raised one
         time.sleep(2)
     raise SystemExit("the sample trip was never seeded: look for StoreVideo in adb logcat")
 

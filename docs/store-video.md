@@ -110,6 +110,9 @@ pay-as-you-go off, so it never bills past the plan's credits). What it costs and
 - **Right-to-left languages mirror the status bar**: the clock moves to the right, so the stretch `clean_bar` paints
   over (x 120 to 860) would cover the Wi-Fi and leave the notification icons. Mirror it before recording Arabic or
   Hebrew.
+- **The emulator needs Android 13 (API 33) or newer.** `record.py` puts the app's language back with
+  `cmd locale set-app-locales`, which older versions lack; there the seed's language stays in the app's legacy
+  locale setting after the run.
 - **Coordinates are the emulator's.** The swipes and the cards' rectangles are pixels of a 1080x2400 screen at 420
   dpi (a Pixel-sized emulator); another size moves every one of them. Taps are found by their text instead.
 - **Another language moves the layout.** Longer words wrap, so a card's rectangle and a drag's start can move: check

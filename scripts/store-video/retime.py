@@ -5,7 +5,6 @@ gives hundreds of frames. Each frame's scroll offset is measured by phase correl
 output frame then takes the captured frame whose offset is nearest to an eased curve, and the few pixels left are
 closed by shifting the scrolling band, with the rows it uncovers taken from the next (or previous) frame.
 """
-import json
 import os
 import subprocess
 
@@ -124,6 +123,4 @@ def retime(frames_dir, out, hold0, duration, hold1, band0, band1):
     encoder.wait()
     if encoder.returncode:
         raise SystemExit(f"ffmpeg failed writing {out}")
-    with open(out + ".plan.json", "w") as plan_file:
-        json.dump({"start": start, "end": end, "scroll": total, "files": [files[i] for i, _ in plan]}, plan_file)
     return total, float(residual.max()), float(residual.mean())
