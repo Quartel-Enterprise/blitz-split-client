@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Spremi svoj kod za oporavak</string>
+    <string name="recovery_code_body">Koristiš aplikaciju bez računa. Ovih 12 riječi vraća tvoje podatke ako promijeniš ili izgubiš uređaj. Zapiši ih redom. Nakon 30 dana nekorištenja tvoji se podaci brišu i riječi prestaju vrijediti.</string>
+    <string name="recovery_code_copy">Kopiraj riječi</string>
+    <string name="recovery_code_save_to_password_manager">Spremi u upravitelj lozinki</string>
+    <string name="recovery_code_connect_instead">Radije poveži Google ili Apple</string>
+    <string name="recovery_code_connect_instead_body">Kod nije potreban</string>
+    <string name="recovery_code_sign_in_failed">Povezivanje trenutačno nije uspjelo. Pokušaj ponovno.</string>
+    <string name="recovery_code_also_in_profile">Nalazi se i u Profil › Oporavak.</string>
+    <string name="recovery_code_remind_later">Podsjeti me kasnije</string>
+    <string name="recovery_code_saved">Spremio/la sam ga</string>
+    <string name="recovery_code_download">Preuzmi</string>
+    <string name="recovery_code_file_name">blitz-split-kod-za-oporavak.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · kod za oporavak\n\n%1$s\n\nUpotrijebi ga u opciji „Već sam koristio/la aplikaciju na drugom uređaju“ da vratiš svoje podatke.\n</string>
+</resources>

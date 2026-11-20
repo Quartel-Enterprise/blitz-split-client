@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Pravila privatnosti</string>
+    <string name="legal_terms">Uvjeti korištenja</string>
+    <string name="legal_updated_privacy_policy">Ažurirano %1$s</string>
+    <string name="legal_updated_terms">Ažurirano %1$s</string>
+    <string name="legal_load_failed_title">Ova se stranica ne može učitati</string>
+    <string name="legal_load_failed_body">Provjeri vezu i pokušaj ponovno.</string>
+    <string name="legal_retry">Pokušaj ponovno</string>
+</resources>

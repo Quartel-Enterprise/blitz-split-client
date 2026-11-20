@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Kontaktiraj podršku</string>
+    <string name="contact_support_description">Otvorit ćemo tvoju aplikaciju za e-poštu s pripremljenom porukom. Opiši što se dogodilo i pošalji: svaku poruku čitaju stvarni ljudi.</string>
+    <string name="contact_support_to">Prima</string>
+    <string name="contact_support_diagnostics">Bit će uključeno u e-poruku</string>
+    <string name="contact_support_app_version">Verzija aplikacije</string>
+    <string name="contact_support_platform">Platforma</string>
+    <string name="contact_support_language">Jezik</string>
+    <string name="contact_support_account">Račun</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Sustav</string>
+    <string name="contact_support_account_local">Samo na ovom uređaju</string>
+    <string name="contact_support_account_anonymous">Nije povezano</string>
+    <string name="contact_support_open_email">Otvori e-poštu</string>
+    <string name="contact_support_copy_email">Kopiraj adresu e-pošte</string>
+    <string name="contact_support_notice_copied">Adresa e-pošte je kopirana.</string>
+    <string name="contact_support_notice_no_app">Nije pronađena aplikacija za e-poštu. Umjesto toga adresa je kopirana.</string>
+    <string name="contact_support_close">Zatvori</string>
+</resources>
