@@ -25,7 +25,9 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 namespace = createNamespace()
-                compileSdk = sdkVersions.compileSdk
+                compileSdk {
+                    version = release(sdkVersions.compileSdk) { minorApiLevel = sdkVersions.compileSdkMinor }
+                }
                 defaultConfig {
                     minSdk = sdkVersions.minSdk
                 }
