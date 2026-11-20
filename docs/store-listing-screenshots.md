@@ -345,8 +345,9 @@ and `upload_play_screenshots` of the [Fastfile](../fastlane/Fastfile), with the 
   error from Google Play fails the job as it always did. The lane ends well only for a caller that passes
   `save_quota_is_no_failure:true` and reads its outputs, as these jobs do: anywhere else (`fastlane
   upload_screenshots` on a Mac, another workflow) it stops with an error that says the quota ran out.
-- **In a release, the bundle goes first**: `android-screenshots` only starts once `android-upload` sent the
-  bundle, so the bundle is never the save its own run's screenshots left without quota.
+- **In a release, the bundles go first**: `android-screenshots` only starts once `android-upload` sent the
+  phone's bundle and `wear-upload` the watch's, so a bundle is never the save its own run's screenshots left
+  without quota.
 
 **Sending what didn't go**, once Google Play takes saves again. Either way costs a save only for the groups that
 still have something to send:

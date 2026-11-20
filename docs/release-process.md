@@ -180,33 +180,6 @@ read them ([Secrets](#secrets)).
   `rollout` under 100 starts a staged rollout: raise it, halt it or finish it in the Play Console (Test and release ›
   Production). The other tracks get the release whole. The listing's text is not touched: it is
   `fastlane upload_listing`'s ([store-listing.md](store-listing.md)).
-
-#### The watch on Google Play
-
-The Wear OS app (`:wearApp`, [product/watch.md](product/watch.md)) ships with every stable version that has
-`android` on, at the phone's version: one listing, one applicationId (`com.quare.blitzsplit`), one key, since Wear
-OS's Data Layer only links the phone's and the watch's apps when both match. Its `versionCode` is the phone's +
-1,000,000 (`wearVersionCodeOffset` in `wearApp/build.gradle.kts`), so the watch's never takes a code a later phone
-bundle needs.
-
-- **Its own tracks.** Google Play gives a form factor tracks of its own, and the API names them
-  `<form factor>:<track>`: `wear-upload` runs `play_upload ... form_factor:wear`, which sends the watch's bundle to
-  the Wear OS track that mirrors the run's `track` (`wear:production`, `wear:beta`, `wear:alpha`, and `wear:qa` for
-  `internal`), with the same notes and, on production, the same `rollout`.
-- **After the phone's.** Google Play drops an edit still open when another one commits, so the two bundles go one
-  after the other, the phone's first, and the screenshots' jobs wait for both. A failed `wear-upload` holds nothing
-  back: the release is tagged on the phone's result, and the GitHub release's Android row says `success (watch:
-  failure)`. **Re-run failed jobs** then sends only the watch's bundle again.
-- **Firebase.** `wearApp/google-services.json` is not committed either: `android-build` writes the phone's
-  (`GOOGLE_SERVICES_JSON`) there too, since the Firebase Android app is chosen by the package name, which the watch
-  shares. No secret of its own.
-- **Betas** don't build the watch: Firebase App Distribution installs on phones, and a watch app gets to testers
-  through Play's Wear OS testing tracks (a stable run with `track` `internal`, `alpha` or `beta` and `web` off).
-- **Once, in the Play Console**: add the Wear OS form factor (Test and release › Advanced settings › Form factors ›
-  Add form factor › Wear OS), which creates its tracks, and make the closed testing track of the Wear OS form factor
-  named `alpha` if the watch should follow the phone's `alpha` runs. Then the listing needs its Wear OS screenshots
-  and Play's Wear OS review (the app quality guidelines) before the watch's production release goes out. Until the
-  form factor exists, `wear-upload` fails, and the phone's release goes on.
 - **App Store.** The `app_store_submit` lane waits for App Store Connect to process the build (up to 45 minutes),
   makes `X.Y.Z` the editable version, writes its "What's new" and its copyright line with the current year
   ([store-listing.md](store-listing.md#how-it-reaches-the-stores)), selects the build and submits it (`deliver`). An
@@ -223,6 +196,35 @@ bundle needs.
   rollout. Before building, it asks Cloudflare for the project and stops, naming it, when it doesn't exist or when
   its production branch isn't `main`, which would make the deployment a preview no domain serves. It warns when the
   project doesn't serve the domain yet ([The production web app](#the-production-web-app)).
+
+#### The watch on Google Play
+
+The Wear OS app (`:wearApp`, [product/watch.md](product/watch.md)) ships with every stable version that has
+`android` on, at the phone's version: one listing, one applicationId (`com.quare.blitzsplit`), one key, since Wear
+OS's Data Layer only links the phone's and the watch's apps when both match. Its `versionCode` is the phone's +
+1,000,000 (`wearVersionCodeOffset` in `wearApp/build.gradle.kts`), so the watch's never takes a code a later phone
+bundle needs.
+
+- **Its own tracks.** Google Play gives a form factor tracks of its own, and the API names them
+  `<form factor>:<track>`: `wear-upload` runs `play_upload ... form_factor:wear`, which sends the watch's bundle to
+  the Wear OS track that mirrors the run's `track` (`wear:production`, `wear:beta`, `wear:alpha`, and `wear:qa` for
+  `internal`), with the same notes and, on production, the same `rollout`.
+- **After the phone's.** Google Play drops an edit still open when another one commits, so the two bundles go one
+  after the other, the phone's first, and the screenshots' jobs wait for both. A failed `wear-upload` doesn't hold
+  the release back: it is tagged on the phone's result, and the GitHub release's Android row says `success (watch:
+  failure)`. It does skip the run's Google Play screenshots, which only go after both bundles landed: **Re-run
+  failed jobs** then sends only the watch's bundle again, and the screenshots after it.
+- **Firebase.** `wearApp/google-services.json` is not committed either: `android-build` writes the phone's
+  (`GOOGLE_SERVICES_JSON`) there too, since the Firebase Android app is chosen by the package name, which the watch
+  shares. No secret of its own.
+- **Betas** don't build the watch: Firebase App Distribution installs on phones, and a watch app gets to testers
+  through Play's Wear OS testing tracks (a stable run with `track` `internal`, `alpha` or `beta` and `web` off).
+- **Once, in the Play Console**: add the Wear OS form factor (Test and release › Advanced settings › Form factors ›
+  Add form factor › Wear OS), which creates its tracks, and make the closed testing track of the Wear OS form factor
+  named `alpha` if the watch should follow the phone's `alpha` runs. Then the listing needs its Wear OS screenshots
+  and Play's Wear OS review (the app quality guidelines) before the watch's production release goes out. Until the
+  form factor exists, `wear-upload` fails: the phone's release goes on, without the run's Google Play screenshots
+  (send them alone, [Google Play's screenshots alone](#google-plays-screenshots-alone)).
 
 ### Screenshots with a release
 
@@ -540,7 +542,7 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | --- | --- |
 | `ANDROID_KEYSTORE_BASE64` | The release keystore, `base64 -i release.jks`. The same key every beta, or testers cannot update, and Google sign in is registered for its SHA-1. Google Play takes a stable version's bundle only when this is the app's **upload key** (Play Console › Test and release › App integrity › App signing): `android-build` prints the certificate's SHA-1 to compare. If it isn't, put the upload key's keystore here or ask Play to reset the upload key to this one |
 | `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | Its store password, alias and key password |
-| `GOOGLE_SERVICES_JSON` | `androidApp/google-services.json`, `base64 -i` encoded: the file is not committed. A stable release writes it to `wearApp/` too, since the watch has the phone's package name |
+| `GOOGLE_SERVICES_JSON` | `androidApp/google-services.json`, `base64 -i` encoded: the file is not committed. The `android-build` action writes it to `wearApp/` too, since the watch has the phone's package name |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | A service account key (JSON) with the **Firebase App Distribution Admin** role on `blitz-split` |
 | `PLAY_STORE_SERVICE_ACCOUNT_JSON` | For the stable versions: the key (the JSON itself, not base64) of a Google Cloud service account that the Play Console knows ([Google Play access](#google-play-access)) |
 | `GOOGLE_SERVICE_INFO_PLIST` | `iosApp/Resources/GoogleService-Info.plist`, `base64 -i` encoded |
