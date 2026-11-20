@@ -115,6 +115,7 @@ class SyncCoordinatorTest {
     private val firstDownloadProgress = mutableListOf<FirstDownloadProgress?>()
     private val pendingAtGroupsFullDownload = mutableListOf<Boolean>()
     private val reportedFailures = mutableListOf<Throwable>()
+    private var recordedSyncCount = 0
 
     @Test
     fun `GIVEN no profile WHEN syncing THEN does not register with the server`() = runTest {
@@ -966,6 +967,31 @@ class SyncCoordinatorTest {
 
         // Then
         assertEquals(emptyList(), reportedFailures)
+    }
+
+    @Test
+    fun `GIVEN online WHEN a sync succeeds THEN its time is recorded`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(1, recordedSyncCount)
+    }
+
+    @Test
+    fun `GIVEN the pull gets no answer WHEN syncing THEN no sync time is recorded`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        profile.pullError = noAnswer
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(0, recordedSyncCount)
     }
 
     @Test
@@ -7735,6 +7761,7 @@ class SyncCoordinatorTest {
             appForeground = appForeground,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             crashReporter = CrashReporter { reportedFailures += it },
+            lastSyncRecorder = { recordedSyncCount++ },
             scope = backgroundScope,
         )
     }

@@ -54,6 +54,9 @@ interface AccountRepository {
 
     suspend fun restoreWithRecoveryCode(code: String): Result<Unit>
 
+    // Why: a watch connected by another device signs in as the same user, with the token hash its pairing brought.
+    suspend fun signInWithPairingToken(tokenHash: String): Result<Unit>
+
     suspend fun createRecoveryCode(): Result<String>
 
     suspend fun updateRecoveryCodePrompt(prompt: RecoveryCodePrompt)

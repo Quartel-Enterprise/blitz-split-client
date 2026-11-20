@@ -446,4 +446,19 @@ sealed interface Route {
         val methodId: String?,
         val isOverBill: Boolean,
     ) : Route
+
+    // Why: Profile › "Connect watch" (15.14): the code a watch shows, typed on any device with the account.
+    data object ConnectWatch : Route
+
+    // Why: the watch app's first screen until it has the account (15.9 to 15.13), and again after a sign out.
+    data object WatchConnect : Route
+
+    // Why: the watch app's "Balances" (15.3), its home once connected.
+    data object WatchBalances : Route
+
+    // Why: a group on the watch (15.4), in one currency: who owes whom with you, and "I paid".
+    data class WatchGroup(
+        val groupId: String,
+        val currency: GroupCurrency,
+    ) : Route
 }

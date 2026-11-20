@@ -58,4 +58,7 @@ data class DeviceSettingsEntity(
     // Why: Profile's "Time format" ("system", "24h" or "12h"); null until picked on this device, when it follows the system.
     @ColumnInfo(defaultValue = "NULL")
     val timeFormat: String?,
+    // Why: when a sync last went through on this device (epoch millis), the watch's "Updated at 14:32"; null until one did.
+    @ColumnInfo(defaultValue = "NULL")
+    val lastSyncedAt: Long?,
 )

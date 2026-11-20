@@ -67,6 +67,7 @@ class SyncCoordinator(
     private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
+    lastSyncRecorder: LastSyncRecorder,
     crashReporter: CrashReporter,
     remoteChangeRepository: RemoteChangeRepository,
     appForeground: AppForeground,
@@ -108,7 +109,7 @@ class SyncCoordinator(
 
     // Why: counts the syncs waiting on the lock too, so the state stays SYNCING between two queued ones.
     private val requestedSyncs = MutableStateFlow(0)
-    private val outcomes = SyncOutcomes(firstDownload, crashReporter, connectivityObserver, scope)
+    private val outcomes = SyncOutcomes(firstDownload, crashReporter, connectivityObserver, lastSyncRecorder, scope)
 
     /*
      * Why: how many syncs began reading the groups, the bills and the rest real time tells of, so a channel that joined

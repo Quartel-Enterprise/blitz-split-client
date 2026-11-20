@@ -53,6 +53,9 @@ private val exportedToApple = listOf(
     ":feature:legal",
     ":feature:release_notes",
     ":feature:app_download",
+    ":feature:connect_watch",
+    ":feature:watch_pairing",
+    ":feature:watch_balances",
 ).map { dependencies.project(it) }
 
 kotlin {
@@ -86,6 +89,7 @@ kotlin {
             implementation(project(":core:groups"))
             implementation(project(":core:contacts"))
             implementation(project(":core:sync"))
+            implementation(project(":core:watch"))
             implementation(project(":core:settings"))
             implementation(project(":core:in_app_update"))
             implementation(project(":core:provider:room"))

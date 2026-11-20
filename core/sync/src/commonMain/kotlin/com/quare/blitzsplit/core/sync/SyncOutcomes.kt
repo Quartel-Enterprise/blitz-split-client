@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.core.sync
 
 import com.quare.blitzsplit.core.provider.crashlytics.CrashReporter
+import com.quare.blitzsplit.core.utils.suspendRunCatching
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -30,6 +31,7 @@ internal class SyncOutcomes(
     private val firstDownload: FirstDownload,
     private val crashReporter: CrashReporter,
     private val connectivityObserver: NetworkConnectivityObserver,
+    private val lastSyncRecorder: LastSyncRecorder,
     private val scope: CoroutineScope,
 ) {
     private val mutableLastSyncFailed = MutableStateFlow(false)
@@ -85,6 +87,8 @@ internal class SyncOutcomes(
     private suspend fun recordOutcome(failure: Throwable?) {
         mutableLastSyncFailed.value = failure != null
         if (failure != null) firstDownload.syncFailed() else firstDownload.syncSucceeded()
+        // Why: a failed write of the time never fails the sync it records.
+        if (failure == null) suspendRunCatching { lastSyncRecorder.record() }
         when {
             failure == null -> hasReportedFailure = false
             !hasReportedFailure -> hasReportedFailure = report(failure)

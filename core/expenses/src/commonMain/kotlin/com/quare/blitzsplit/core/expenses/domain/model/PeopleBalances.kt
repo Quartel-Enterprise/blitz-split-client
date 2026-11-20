@@ -15,6 +15,11 @@ data class PeopleBalances(
     val totals: List<PeopleTotal>,
     // Why: this device's user as the most recently active group has them, the payer or receiver of "Acertar".
     val me: GroupMember?,
+    /*
+     * Why: whoever's groups offset each other to zero overall, left out of people; the watch still shows their pair in
+     * each group, since each has its own payment.
+     */
+    val evenPeople: List<PersonBalance>,
 ) {
     fun findPersonOrNull(
         key: String,
@@ -22,6 +27,14 @@ data class PeopleBalances(
     ): PersonBalance? = people.firstOrNull { it.key == key && it.currency.code == currency }
 
     companion object {
+        // Why: nobody with an open balance, what a screen holds before Room's first answer.
+        val NONE = PeopleBalances(
+            people = emptyList(),
+            totals = emptyList(),
+            me = null,
+            evenPeople = emptyList(),
+        )
+
         private const val USER_KEY_PREFIX = "user:"
 
         /*
@@ -36,9 +49,10 @@ data class PeopleBalances(
                 val ofGroup = money[group.id] ?: GroupMoney.NONE
                 partsOf(group, ofGroup)
             }
-            val people = parts
+            val everyone = parts
                 .groupBy { it.key to it.currency }
                 .map { (keyAndCurrency, ofPerson) -> personOf(keyAndCurrency.first, ofPerson, money) }
+            val people = everyone
                 // Why: someone whose groups offset each other to zero owes nothing and is owed nothing.
                 .filter { it.netMinor != 0L }
                 .withIndex()
@@ -49,6 +63,7 @@ data class PeopleBalances(
                 people = people,
                 totals = totalsOf(groups, money, people),
                 me = groups.firstNotNullOfOrNull { group -> group.members.firstOrNull { it.isMe } },
+                evenPeople = everyone.filter { it.netMinor == 0L },
             )
         }
 

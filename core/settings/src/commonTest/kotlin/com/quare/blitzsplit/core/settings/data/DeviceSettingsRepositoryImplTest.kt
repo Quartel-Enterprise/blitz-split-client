@@ -649,6 +649,45 @@ class DeviceSettingsRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN no row WHEN the last sync time is read THEN there is none`() = runTest {
+        // Given
+        prepareScenario(stored = null)
+
+        // When
+        val lastSyncedAt = repository.observeLastSyncedAt().first()
+
+        // Then
+        assertEquals(null, lastSyncedAt)
+    }
+
+    @Test
+    fun `GIVEN other settings WHEN a sync goes through THEN only its time changes`() = runTest {
+        // Given
+        prepareScenario(
+            stored = settings(
+                theme = "dark",
+                lastNotificationPromptAt = 1_600_000_000_000L,
+            ),
+        )
+
+        // When
+        repository.updateLastSyncedAt(1_700_000_000_000L)
+
+        // Then
+        assertEquals(
+            listOf(
+                settings(
+                    theme = "dark",
+                    lastNotificationPromptAt = 1_600_000_000_000L,
+                    lastSyncedAt = 1_700_000_000_000L,
+                ),
+            ),
+            local.rows.values.toList(),
+        )
+        assertEquals(1_700_000_000_000L, repository.observeLastSyncedAt().first())
+    }
+
+    @Test
     fun `GIVEN no row WHEN the app banner is read THEN it is not dismissed`() = runTest {
         // Given
         prepareScenario(stored = null)
@@ -1292,6 +1331,7 @@ class DeviceSettingsRepositoryImplTest {
         sharesUsageData: Boolean = true,
         showsBetaReleaseNotes: Boolean? = null,
         timeFormat: String? = null,
+        lastSyncedAt: Long? = null,
     ): DeviceSettingsEntity = DeviceSettingsEntity(
         id = SINGLE_ROW_ID,
         theme = theme,
@@ -1307,6 +1347,7 @@ class DeviceSettingsRepositoryImplTest {
         sharesUsageData = sharesUsageData,
         showsBetaReleaseNotes = showsBetaReleaseNotes,
         timeFormat = timeFormat,
+        lastSyncedAt = lastSyncedAt,
     )
 
     private fun TestScope.prepareScenario(stored: DeviceSettingsEntity?) {
@@ -1376,6 +1417,7 @@ private class FakeDeviceSettingsLocalDataSource(
             sharesUsageData = true,
             showsBetaReleaseNotes = null,
             timeFormat = null,
+            lastSyncedAt = null,
         )
         rows[SINGLE_ROW_ID] = transform(current)
         emitAgain()

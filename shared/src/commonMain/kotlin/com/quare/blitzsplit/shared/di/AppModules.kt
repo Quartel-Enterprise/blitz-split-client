@@ -25,10 +25,12 @@ import com.quare.blitzsplit.core.utils.RandomCode
 import com.quare.blitzsplit.core.utils.SecureRandomCode
 import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
 import com.quare.blitzsplit.core.utils.SystemMinuteTicks
+import com.quare.blitzsplit.core.watch.di.watchModule
 import com.quare.blitzsplit.feature.activity.di.activityFeatureModule
 import com.quare.blitzsplit.feature.appdownload.di.appDownloadModule
 import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
 import com.quare.blitzsplit.feature.categorymap.di.categoryMapModule
+import com.quare.blitzsplit.feature.connectwatch.di.connectWatchModule
 import com.quare.blitzsplit.feature.contacts.di.contactsModule
 import com.quare.blitzsplit.feature.contactsupport.di.contactSupportModule
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
@@ -53,6 +55,8 @@ import com.quare.blitzsplit.feature.registerpayment.di.registerPaymentModule
 import com.quare.blitzsplit.feature.releasenotes.di.releaseNotesFeatureModule
 import com.quare.blitzsplit.feature.restore.di.restoreModule
 import com.quare.blitzsplit.feature.splitbill.di.splitBillModule
+import com.quare.blitzsplit.feature.watchbalances.di.watchBalancesModule
+import com.quare.blitzsplit.feature.watchpairing.di.watchPairingModule
 import com.quare.blitzsplit.feature.welcome.di.welcomeModule
 import com.quare.blitzsplit.shared.app.AnalyticsChoices
 import com.quare.blitzsplit.shared.app.AppViewModel
@@ -109,6 +113,7 @@ val sharedModules: List<Module> = listOf(
     activityModule,
     contactModule,
     syncModule,
+    watchModule,
     settingsModule,
     inAppUpdateModule,
     legalModule,
@@ -137,6 +142,9 @@ val sharedModules: List<Module> = listOf(
     editGroupModule,
     registerPaymentModule,
     globalBalancesModule,
+    connectWatchModule,
+    watchPairingModule,
+    watchBalancesModule,
     groupStatsModule,
     activityFeatureModule,
     contactsModule,

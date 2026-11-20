@@ -46,6 +46,9 @@ interface AccountRemoteDataSource {
 
     suspend fun signInWithPassword(credentials: RecoveryCredentials)
 
+    // Why: the magic link's token hash the server minted for a watch another device connected.
+    suspend fun signInWithMagicLink(tokenHash: String)
+
     suspend fun fetchRecoveryCredentials(code: String): RecoveryCredentials
 
     suspend fun createRecoveryCode(): String
