@@ -7,12 +7,11 @@ plugins {
  * The Wear OS app (docs/product/watch.md): a standalone watch app with its own session, Room database and sync, over
  * the same shared modules as the phone. It keeps the phone's applicationId, as Google Play's Wear OS track asks, so
  * the two talk over the Data Layer, which only links apps of one id signed by one key.
- */
-/*
- * Why: Play needs a version code no APK of the listing used before, and the phone's grows by one each release, so the
+ *
+ * Why the version code offset: Play needs a version code no APK of the listing used before, and the phone's grows by one each release, so the
  * watch's sits a million above it: the watch of one release never takes the phone's code of the next.
  */
-val WEAR_VERSION_CODE_OFFSET = 1_000_000
+val wearVersionCodeOffset = 1_000_000
 
 val releaseKeystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
 
@@ -38,7 +37,7 @@ android {
         targetSdk = libs.versions.android.targetSdk
             .get()
             .toInt()
-        versionCode = project.property("versionCode").toString().toInt() + WEAR_VERSION_CODE_OFFSET
+        versionCode = project.property("versionCode").toString().toInt() + wearVersionCodeOffset
         versionName = project.property("versionName").toString()
         buildConfigField("boolean", "HAS_FIREBASE", "$hasFirebaseConfig")
     }
