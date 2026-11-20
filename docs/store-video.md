@@ -91,7 +91,9 @@ The narration and the music come from [ElevenLabs](https://elevenlabs.io), on Pi
 pay-as-you-go off, so it never bills past the plan's credits). What it costs and allows:
 
 - **Credits.** One take of the six pt-BR lines is about 300 credits; `elevenlabs.py` makes `voice.takes` of them
-  (three while a voice is being picked, one once the take is chosen, so a re-render asks for nothing). A
+  (three while a voice is being picked). A re-render is free only on the machine that holds the chosen take's files
+  in `build/store-video/<locale>/voice/`, which are not versioned: on a fresh checkout, or after a line changes,
+  `narration` asks for new takes, whose audio differs from the one Pierre picked, so they have to be picked again. A
   32-second track is about 450. The plan has 121k a month. `elevenlabs.py` never asks twice for the same audio: each
   file is named after a hash of its request (voice, model, settings, the line and its neighbours, or the music's
   prompt and length), so changing any of them makes a new file and the old one stays unused.
@@ -102,8 +104,10 @@ pay-as-you-go off, so it never bills past the plan's credits). What it costs and
   never printed. A restricted key needs Text to Speech, Voices (read) and Music Generation; the
   [ElevenLabs MCP](https://github.com/elevenlabs/elevenlabs-mcp) uses the same key.
 - **The voice** is a native speaker from the voice library, chosen by ear by Pierre: for pt-BR, Amanda Kelly (Sweet,
-  Warm and Clear), take 1, with line 2 ("Anote quem pagou e divida…") made again alone and the others kept. Each
-  line is generated with the lines around it (`previous_text`, `next_text`), so the question in "Viagem com os
+  Warm and Clear), take 1. Line 2 was reworded after take 1 was picked and only it was voiced again; the other five
+  lines are take 1's files, voiced with the old line 2 around them and renamed by hand to the new requests' hashes.
+  So their cache names don't match what they were voiced with, and a fresh `narration` would voice them all again.
+  Each line is generated with the lines around it (`previous_text`, `next_text`), so the question in "Viagem com os
   amigos?" rises like one. Takes differ from run to run: a new run means picking again.
 - **The music** is instrumental (ElevenLabs Music, `music_v2`), prompted to stay out of the voice's way.
 

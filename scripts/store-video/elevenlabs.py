@@ -139,6 +139,9 @@ def prepare(locale):
     for i in range(1, len(lines) + 1):
         out = public / f"voice{i}.wav"
         source = take_file(base, voice, lines, voice["take"], i)
+        if not source.exists():
+            raise SystemExit(f"{source.relative_to(ROOT)} is missing: voice.take is {voice['take']} but narration made "
+                             f"{voice['takes']} take(s) of these lines; raise voice.takes, run narration, pick again")
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(source), "-af",
                         "loudnorm=I=-16:TP=-1.5:LRA=7,aresample=48000", "-ac", "1", str(out)], check=True)
         durations.append(seconds(out))
