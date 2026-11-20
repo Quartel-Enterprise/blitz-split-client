@@ -42,8 +42,8 @@ fun Locale.withGregorianCalendar(): Locale {
 
 /*
  * Why: amounts, dates and counts are written with 0-9 in every language, so what a field shows is what it parses and
- * an amount reads the same as the one typed on the number keyboard. Arabic's, Thai's, Bengali's and Urdu's own digits stay for their
- * words only.
+ * an amount reads the same as the one typed on the number keyboard. Arabic's, Thai's, Bengali's and Urdu's own digits
+ * stay for their words only.
  */
 fun Locale.withLatinDigits(): Locale {
     if (language !in latinDigitLanguages) return this

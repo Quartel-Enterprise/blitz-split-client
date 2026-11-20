@@ -122,22 +122,15 @@ export const wordGap = isUnspaced ? '' : ' '
  * in Thai, which ends a sentence with none (the word gap's space parts two), the others' ".". Same rule as Android's
  * `fullStopUi`.
  */
-export const fullStop = isUnspaced
-  ? '。'
-  : locale === 'hi' || locale === 'bn'
-    ? '।'
-    : locale === 'ur'
-      ? '۔'
-      : locale === 'th'
-        ? ''
-        : '.'
+const ownFullStops: Partial<Record<Locale, string>> = { hi: '।', bn: '।', ur: '۔', th: '' }
+export const fullStop = isUnspaced ? '。' : (ownFullStops[locale] ?? '.')
 
 /**
  * Between two clauses of one sentence the code joins ("…pays you $64, and Ana no longer owes you"): Japanese ends the
- * first sentence instead ("…払います。…なくなりました"), Chinese takes its own comma ("…，Ana不再欠你"), and Thai,
- * which has no comma, a space.
+ * first sentence instead ("…払います。…なくなりました"), Chinese takes its own comma ("…，Ana不再欠你"), Urdu its "،", as its
+ * Android strings write it, and Thai, which has no comma, a space.
  */
-export const clauseBreak = locale === 'ja' ? '。' : isUnspaced ? '，' : locale === 'th' ? ' ' : ', '
+export const clauseBreak = locale === 'ja' ? '。' : isUnspaced ? '，' : locale === 'ur' ? '، ' : locale === 'th' ? ' ' : ', '
 
 const documentLanguages: Record<Locale, string> = {
   en: 'en',

@@ -44,7 +44,7 @@ settings:
     # Firebase's Objective-C categories, as its setup asks.
     FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
     OTHER_LDFLAGS: [-framework, Shared, -lsqlite3, -ObjC]
-    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR, pt-PT, es, es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms and el)
+    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR, pt-PT, es, es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms, el and ur)
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
     GENERATE_INFOPLIST_FILE: YES
