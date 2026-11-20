@@ -365,8 +365,8 @@ internal fun deletedNoticeTextOf(
     val atMillis = deletion.atMillis
     /*
      * Why: in Spanish, Portugal's Portuguese, French, German, Italian, Polish, Dutch, Turkish, Russian, Ukrainian,
-     * Korean, Hindi, Vietnamese, Swedish, Czech, Romanian, Bengali and Greek the sentence starts with who did it, "Tú…",
-     * "내가…", "आपने…", "Bạn…", "Du…", "Ty jsi…", "Tu ai…", "আপনি…", "Εσύ…".
+     * Korean, Hindi, Vietnamese, Swedish, Czech, Romanian, Bengali, Greek and Urdu the sentence starts with who did it,
+     * "Tú…", "내가…", "आपने…", "Bạn…", "Du…", "Ty jsi…", "Tu ai…", "আপনি…", "Εσύ…", "آپ نے…".
      */
     val isYouSubject = deletion.byMe && isYouSubjectUi()
     val byName = when {

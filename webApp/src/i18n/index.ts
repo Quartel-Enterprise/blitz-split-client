@@ -28,6 +28,7 @@ import { ro } from './ro'
 import { bn } from './bn'
 import { ms } from './ms'
 import { el } from './el'
+import { ur } from './ur'
 
 export type { MessageKey }
 /**
@@ -35,12 +36,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'ur'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, ur }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'ur']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -66,10 +67,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms` or `el` tag (de-AT,
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el` or `ur` tag (de-AT,
  * it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN, sv-FI,
- * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
- * Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay or Greek, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, ur-PK…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
+ * Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek or Urdu, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, any `en` tag is English, and English when none
  * matches.
  */
@@ -117,10 +118,19 @@ const isUnspaced = locale === 'ja' || locale === 'zh' || locale === 'zh-Hant'
 export const wordGap = isUnspaced ? '' : ' '
 
 /**
- * The end of a sentence the code finishes: Japanese's and Chinese's "。", Hindi's and Bengali's danda "।", nothing in Thai, which
- * ends a sentence with none (the word gap's space parts two), the others' ".". Same rule as Android's `fullStopUi`.
+ * The end of a sentence the code finishes: Japanese's and Chinese's "。", Hindi's and Bengali's danda "।", Urdu's "۔", nothing
+ * in Thai, which ends a sentence with none (the word gap's space parts two), the others' ".". Same rule as Android's
+ * `fullStopUi`.
  */
-export const fullStop = isUnspaced ? '。' : locale === 'hi' || locale === 'bn' ? '।' : locale === 'th' ? '' : '.'
+export const fullStop = isUnspaced
+  ? '。'
+  : locale === 'hi' || locale === 'bn'
+    ? '।'
+    : locale === 'ur'
+      ? '۔'
+      : locale === 'th'
+        ? ''
+        : '.'
 
 /**
  * Between two clauses of one sentence the code joins ("…pays you $64, and Ana no longer owes you"): Japanese ends the
@@ -159,19 +169,20 @@ const documentLanguages: Record<Locale, string> = {
   bn: 'bn',
   ms: 'ms',
   el: 'el',
+  ur: 'ur',
 }
 
 const documentLanguage = documentLanguages[locale]
 
 // Why: the languages written right to left; "iw" is Hebrew's legacy code, which older browsers still send.
-const rightToLeftLanguages: ReadonlySet<string> = new Set(['ar', 'he', 'iw'])
+const rightToLeftLanguages: ReadonlySet<string> = new Set(['ar', 'he', 'iw', 'ur'])
 
-/** Whether `tag` ("ar", "he-IL", "ar_EG") is a language written right to left. */
+/** Whether `tag` ("ar", "he-IL", "ar_EG", "ur-PK") is a language written right to left. */
 export function isRightToLeft(tag: string): boolean {
   return rightToLeftLanguages.has(tag.toLowerCase().split(/[-_]/)[0])
 }
 
-/** The page's direction, from the app's language: `rtl` for Arabic and Hebrew, `ltr` for the others. */
+/** The page's direction, from the app's language: `rtl` for Arabic, Hebrew and Urdu, `ltr` for the others. */
 export const direction: 'ltr' | 'rtl' = isRightToLeft(documentLanguage) ? 'rtl' : 'ltr'
 
 /** "→", the arrow that points the way a line reads: "←" in a right-to-left language, where arrows don't mirror. */
@@ -179,7 +190,7 @@ export const forwardArrow = direction === 'rtl' ? '←' : '→'
 
 /**
  * `text` kept in one piece inside a right-to-left sentence: wrapped in FIRST STRONG ISOLATE … POP DIRECTIONAL
- * ISOLATE, so "−R$ 118,50" or a symbol's "US$" keeps its order among Arabic or Hebrew words. A left-to-right language
+ * ISOLATE, so "−R$ 118,50" or a symbol's "US$" keeps its order among Arabic, Hebrew or Urdu words. A left-to-right language
  * gets `text` unchanged.
  */
 export function isolated(text: string): string {
@@ -187,19 +198,20 @@ export function isolated(text: string): string {
 }
 
 /**
- * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai and Bengali, whose own
- * ("١٢٫٥٠", "๑๒.๕๐", "১২.৫০") the amount fields can't parse, and the Gregorian calendar for Thai, whose default is the
+ * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali and Urdu, whose own
+ * ("١٢٫٥٠", "๑๒.๕๐", "১২.৫০", "۱۲٫۵۰") the amount fields can't parse, and the Gregorian calendar for Thai, whose default is the
  * Buddhist era (2569 for 2026), so the web writes the year Android writes.
  */
 const formattingKeys: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   ar: { nu: 'latn' },
   bn: { nu: 'latn' },
+  ur: { nu: 'latn' },
   th: { nu: 'latn', ca: 'gregory' },
 }
 
 /**
  * The tag to hand `Intl` for numbers, amounts and dates: `tag` itself, but with Latin digits (`-u-nu-latn`) for
- * Arabic, Thai and Bengali, so an amount reads "12.50" as the amount fields type it, and the Gregorian calendar
+ * Arabic, Thai, Bengali and Urdu, so an amount reads "12.50" as the amount fields type it, and the Gregorian calendar
  * (`-u-ca-gregory`) for Thai. Every other language gets `tag` unchanged.
  */
 export function formattingLocale(tag: string): string {
@@ -308,6 +320,7 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * before a past in "l(a)", which the third person says without one ("rozdělil(a)" becomes "jsi rozdělil(a)"). Greek
  * ends its aorist in "-ες" for the user, an object pronoun staying before it ("μοίρασε" becomes "μοίρασες", "το
  * επισύναψε" "το επισύναψες"). Bengali's respectful verb is the same for a name and for "আপনি", and Malay's never changes.
+ * Urdu writes its ergative "نے" apart after a name and after the user's "آپ" alike, so its verb stays as it is.
  * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste". Same
  * rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */

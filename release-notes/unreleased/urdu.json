@@ -1,0 +1,78 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Urdu: pick \"اردو\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala urdu: escolha \"اردو\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora urdu: escolhe \"اردو\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla urdu: elige \"اردو\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais ourdou : choisis « اردو » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Urdu: Wähle „اردو“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla urdu: scegli \"اردو\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz w urdu: wybierz „اردو” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Urdu: kies \"اردو\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがウルドゥー語に対応しました。プロフィール › 言語で「اردو」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Urduca konuşuyor: Profil › Dil'den \"اردو\"yu seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Urdu: pilih \"اردو\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на урду: выбери «اردو» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить мовою урду: обери «اردو» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 우르두어를 쓸 수 있어요. 프로필 › 언어에서 ‘اردو’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप उर्दू में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “اردو” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث الأردية: يمكنك اختيار «اردو» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持乌尔都语：在“个人资料 › 语言”中选择“اردو”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו אורדו: אפשר לבחור \"اردو\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาอูรดูแล้ว เลือก “اردو” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Urdu: chọn “اردو” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援烏爾都文：在「個人資料 › 語言」中選擇「اردو」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu urdu: välj ”اردو” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví urdsky: vyber „اردو“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum urdu: alege „اردو” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন উর্দু ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “اردو” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Urdu: pilih \"اردو\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον ουρντού: διάλεξε «اردو» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "ur": "اب ایپ اردو میں بھی دستیاب ہے: پروفائل › زبان میں “اردو” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔"
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the Pakistani rupee (PKR), and a group made in Pakistan starts in it.",
+        "pt": "Os grupos agora podem dividir em rupia paquistanesa (PKR), e um grupo criado no Paquistão já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em rupia paquistanesa (PKR), e um grupo criado no Paquistão começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en rupia pakistaní (PKR), y un grupo creado en Pakistán empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en roupie pakistanaise (PKR), et un groupe créé au Pakistan démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Pakistanischer Rupie (PKR) teilen, und eine in Pakistan erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in rupia pakistana (PKR), e un gruppo creato in Pakistan parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w rupiach pakistańskich (PKR), a grupa założona w Pakistanie startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Pakistaanse roepie (PKR), en een groep die in Pakistan wordt gemaakt, start in die valuta.",
+        "ja": "グループでパキスタン・ルピー（PKR）が使えるようになり、パキスタンで作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık Pakistan rupisi (PKR) ile bölebiliyor; Pakistan'da açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam rupee Pakistan (PKR), dan grup yang dibuat di Pakistan langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в пакистанских рупиях (PKR), а группа, созданная в Пакистане, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати в пакистанських рупіях (PKR), а група, створена в Пакистані, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 파키스탄 루피(PKR)로 나눌 수 있고, 파키스탄에서 만든 그룹은 루피로 시작해요.",
+        "hi": "ग्रुप अब पाकिस्तानी रुपये (PKR) में बांट सकते हैं, और पाकिस्तान में बना ग्रुप इसी रुपये में शुरू होता है।",
+        "ar": "يمكن للمجموعات الآن التقسيم بالروبية الباكستانية (PKR)، والمجموعة التي تُنشأ في باكستان تبدأ بها.",
+        "zh": "群组现在可以使用巴基斯坦卢比（PKR）分摊，在巴基斯坦创建的群组也会默认使用卢比。",
+        "he": "קבוצות יכולות עכשיו לחלק ברופי פקיסטני (PKR), וקבוצה שנוצרת בפקיסטן מתחילה בו.",
+        "th": "กลุ่มหารเป็นรูปีปากีสถาน (PKR) ได้แล้ว และกลุ่มที่สร้างในปากีสถานจะเริ่มด้วยสกุลเงินนี้",
+        "vi": "Nhóm giờ có thể chia bằng rupee Pakistan (PKR), và nhóm được tạo ở Pakistan sẽ bắt đầu với đồng tiền này.",
+        "zh-Hant": "群組現在可以使用巴基斯坦盧比（PKR）分攤，在巴基斯坦建立的群組也會從盧比開始。",
+        "sv": "Grupper kan nu dela upp i pakistanska rupier (PKR), och en grupp som skapas i Pakistan börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit v pákistánské rupii (PKR) a skupina založená v Pákistánu začne v ní.",
+        "ro": "Grupurile pot împărți acum în rupii pakistaneze (PKR), iar un grup creat în Pakistan pornește în această monedă.",
+        "bn": "গ্রুপে এখন পাকিস্তানি রুপি (PKR) দিয়ে ভাগ করা যাবে, আর পাকিস্তানে তৈরি গ্রুপ এই মুদ্রাতেই শুরু হবে।",
+        "ms": "Kumpulan kini boleh membahagi dalam rupee Pakistan (PKR), dan kumpulan yang dibuat di Pakistan bermula dengan mata wang itu.",
+        "el": "Οι ομάδες μπορούν πλέον να μοιράζουν σε ρουπία Πακιστάν (PKR), και μια ομάδα που δημιουργείται στο Πακιστάν ξεκινά σε αυτήν.",
+        "ur": "اب گروپ پاکستانی روپے (PKR) میں تقسیم کر سکتے ہیں، اور پاکستان میں بنایا گیا گروپ اسی کرنسی سے شروع ہوتا ہے۔"
+      }
+    }
+  ]
+}

@@ -82,6 +82,7 @@
     <string name="profile_language_bengali">Bengali</string>
     <string name="profile_language_malay">Melayu</string>
     <string name="profile_language_greek">Yunani</string>
+    <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>
     <plurals name="profile_notifications_active">

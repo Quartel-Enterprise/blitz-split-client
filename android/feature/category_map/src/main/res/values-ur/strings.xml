@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">کوئی الفاظ نہیں</string>
+    <string name="category_map_title">کیٹیگری میپ</string>
+    <string name="category_map_search">الفاظ تلاش کریں</string>
+    <string name="category_map_add">لفظ شامل کریں</string>
+    <string name="category_map_more">مزید اختیارات</string>
+    <string name="category_map_restore">ڈیفالٹ بحال کریں</string>
+    <string name="category_map_back">واپس</string>
+    <string name="category_map_intro">جب کسی خرچ کے عنوان میں ان میں سے کوئی لفظ ہو تو اس کی کیٹیگری خود بخود لگ جاتی ہے۔ “Uber home” ٹرانسپورٹ بن جاتا ہے۔</string>
+    <string name="category_map_intro_offline">میپ آف لائن کام کرتا ہے: تبدیلیاں اس ڈیوائس پر فوراً لاگو ہوتی ہیں اور آن لائن ہوتے ہی آپ کی دوسری ڈیوائسز تک پہنچ جاتی ہیں۔</string>
+    <string name="category_map_device_only">آپ کا میپ صرف اس ڈیوائس پر رہتا ہے۔ اسے اپنی دوسری ڈیوائسز پر لے جانے کے لیے اپنے پروفائل میں Google یا Apple سے سائن اِن کریں۔</string>
+    <string name="category_map_open_profile">پروفائل کھولیں</string>
+    <string name="category_map_longest_wins">جب دو الفاظ کسی عنوان سے ملیں تو سب سے لمبا لفظ جیتتا ہے۔</string>
+    <string name="category_map_no_result">“%1$s” کے ساتھ کوئی لفظ نہیں</string>
+    <string name="category_map_no_result_body">اسے شامل کریں اور جن خرچوں کے عنوان میں یہ لفظ ہو وہ صحیح کیٹیگری کے ساتھ آئیں گے۔</string>
+    <string name="category_map_add_query">“%1$s” شامل کریں</string>
+    <string name="category_map_empty_title">آپ کا میپ خالی ہے</string>
+    <string name="category_map_empty_body">الفاظ کے بغیر کیٹیگری عنوان سے نہیں آتی: آپ ہر خرچ پر اسے خود منتخب کرتے ہیں۔</string>
+    <string name="category_map_group_category"> · ‘%1$s’ گروپ کی کیٹیگری</string>
+    <string name="category_map_only_main">صرف %1$s</string>
+    <string name="category_map_only_in_group">صرف ‘%1$s’ گروپ میں</string>
+    <string name="category_map_no_terms_yet">ابھی کوئی لفظ نہیں۔</string>
+    <string name="category_map_add_in">%1$s میں لفظ شامل کریں</string>
+    <string name="category_map_tip">کسی لفظ کی کیٹیگری بدلنے یا اسے ہٹانے کے لیے اس پر ٹیپ کریں۔ یہ پورے لفظ سے ملتا ہے، اعراب اور چھوٹے بڑے حروف کو نظر انداز کرتے ہوئے۔</string>
+    <string name="category_map_queued">قطار میں</string>
+    <string name="category_map_term_action">%1$s، %2$s۔ ترمیم کریں</string>
+    <string name="category_map_new_term">نیا لفظ</string>
+    <string name="category_map_edit_term">لفظ میں ترمیم کریں</string>
+    <string name="category_map_term_label">لفظ یا جملہ</string>
+    <string name="category_map_term_help">پورے لفظ سے ملتا ہے، اعراب اور چھوٹے بڑے حروف کو نظر انداز کرتے ہوئے۔</string>
+    <string name="category_map_term_help_app">ایپ کا لفظ۔ ڈیفالٹ بحال کریں اسے ویسا ہی واپس لے آتا ہے جیسا یہ آیا تھا۔</string>
+    <string name="category_map_term_duplicate">“%1$s” پہلے سے %2$s منتخب کرتا ہے۔ ہر لفظ کی ایک ہی کیٹیگری ہوتی ہے۔</string>
+    <string name="category_map_term_too_short">کم از کم 2 حروف استعمال کریں۔</string>
+    <string name="category_map_term_too_long">زیادہ سے زیادہ 30 حروف استعمال کریں۔</string>
+    <string name="category_map_term_invalid">صرف حروف، ہندسے اور خالی جگہیں استعمال کریں۔</string>
+    <string name="category_map_category">کیٹیگری</string>
+    <string name="category_map_category_help">یہ کیٹیگری یا ذیلی کیٹیگری ہو سکتی ہے۔</string>
+    <string name="category_map_category_help_edit">یہاں بدلنے سے لفظ دوسری کیٹیگری میں چلا جاتا ہے۔</string>
+    <string name="category_map_category_help_move">منتقل کرنے سے لفظ %1$s سے نکل جاتا ہے۔</string>
+    <string name="category_map_example">مثال</string>
+    <string name="category_map_example_move">منتقل کرنے پر</string>
+    <string name="category_map_remove">ہٹائیں</string>
+    <string name="category_map_cancel">منسوخ کریں</string>
+    <string name="category_map_save">محفوظ کریں</string>
+    <string name="category_map_move_to">%1$s میں منتقل کریں</string>
+    <string name="category_map_removed">“%1$s” میپ سے ہٹ گیا</string>
+    <string name="category_map_undo">واپس لیں</string>
+    <string name="category_map_restore_title">ڈیفالٹ میپ بحال کریں؟</string>
+    <string name="category_map_restore_body">ایپ کے 60 الفاظ ویسے ہی واپس آ جائیں گے جیسے آئے تھے، ان سمیت جو آپ نے ہٹائے یا منتقل کیے۔</string>
+    <string name="category_map_restore_own_one">آپ کا بنایا ہوا لفظ، “%1$s”، باقی رہے گا۔</string>
+    <string name="category_map_restore_confirm">بحال کریں</string>
+    <string name="category_map_save_error">میپ محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d لفظ</item>
+        <item quantity="other">%d الفاظ</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ذیلی کیٹیگری</item>
+        <item quantity="other">%d ذیلی کیٹیگریز</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” کے ساتھ %1$d لفظ</item>
+        <item quantity="other">“%2$s” کے ساتھ %1$d الفاظ</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">آف لائن · %d تبدیلی قطار میں</item>
+        <item quantity="other">آف لائن · %d تبدیلیاں قطار میں</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">آپ کے بنائے ہوئے %d الفاظ باقی رہیں گے۔</item>
+        <item quantity="other">آپ کے بنائے ہوئے %d الفاظ باقی رہیں گے۔</item>
+    </plurals>
+    <string name="category_map_new_category">نئی کیٹیگری</string>
+    <string name="category_map_new_subcategory_in">%s میں نئی ذیلی کیٹیگری</string>
+    <string name="category_map_edit_category">%s میں ترمیم کریں</string>
+    <string name="category_map_category_group">گروپ</string>
+    <string name="category_map_change_color">%1$s کا رنگ بدلیں</string>
+    <string name="category_map_restore_color">رنگ بحال کریں</string>
+    <string name="category_map_color_done">مکمل</string>
+</resources>

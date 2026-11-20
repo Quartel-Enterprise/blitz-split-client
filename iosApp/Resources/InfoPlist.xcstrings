@@ -155,6 +155,12 @@
             "value" : "Blitz Split"
           }
         },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -324,6 +330,12 @@
           }
         },
         "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "ur" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -503,6 +515,12 @@
             "value" : "Щоб сканувати QR-код запрошення або зі старого пристрою, а також робити фото профілю й фото рахунків."
           }
         },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کسی دعوت کا یا آپ کی پرانی ڈیوائس کا QR کوڈ اسکین کرنے، اور آپ کی پروفائل تصویر اور خرچوں کی تصویریں لینے کے لیے۔"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -677,6 +695,12 @@
             "value" : "Щоб запрошувати людей з твоїх контактів за посиланням на групу. Їхні номери залишаються на цьому пристрої."
           }
         },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "گروپ کے لنک سے آپ کے رابطوں میں سے لوگوں کو دعوت دینے کے لیے۔ ان کے نمبر اسی ڈیوائس پر رہتے ہیں۔"
+          }
+        },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
@@ -849,6 +873,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Щоб зберігати фото рахунків у твою фототеку."
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کسی خرچ کی تصویریں آپ کی لائبریری میں محفوظ کرنے کے لیے۔"
           }
         },
         "vi" : {

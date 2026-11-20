@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">حساب برابر کرنے کی یاد دہانی</string>
+    <string name="push_bill_created">%1$s نے آپ کے ساتھ “%2$s” شامل کیا</string>
+    <string name="push_bill_edited">%1$s نے “%2$s” میں ترمیم کی</string>
+    <string name="push_bill_deleted">%1$s نے “%2$s” حذف کیا</string>
+    <string name="push_comment_added">%1$s نے “%2$s” پر تبصرہ کیا: %3$s</string>
+    <string name="push_payment_paid_you">%1$s نے درج کیا کہ انہوں نے آپ کو ادائیگی کی</string>
+    <string name="push_payment_to_you">%1$s نے درج کیا کہ %2$s نے آپ کو ادائیگی کی</string>
+    <string name="push_payment_received_yours">%1$s نے آپ کی ادائیگی وصول شدہ درج کی</string>
+    <string name="push_payment_from_you">%1$s نے درج کیا کہ آپ نے %2$s کو ادائیگی کی</string>
+    <string name="push_payment_undone">%1$s نے آپ کے ساتھ ایک ادائیگی واپس لی</string>
+    <string name="push_charge_sent">%1$s نے آپ کو حساب برابر کرنے کی یاد دہانی بھیجی</string>
+    <string name="push_settle_reminder">%1$s میں آپ کا بیلنس ابھی باقی ہے</string>
+    <string name="push_settle_reminders">%1$s گروپس میں آپ کے بیلنس ابھی باقی ہیں</string>
+    <string name="push_added_to_group">%1$s نے آپ کو گروپ میں شامل کیا</string>
+    <string name="push_member_joined">%1$s نے گروپ جوائن کیا</string>
+    <string name="push_debts_simplified_to_you">%1$s نے قرض آسان کیے۔ اب %2$s آپ کو %3$s دیں گے۔</string>
+    <string name="push_debts_simplified_from_you">%1$s نے قرض آسان کیے۔ اب آپ %2$s کو %3$s دیں گے۔</string>
+    <string name="push_debts_simplified_other">%1$s نے قرض آسان کیے۔ دیکھیں آپ کے لیے کیا بدلا۔</string>
+    <string name="push_debts_unsimplified_to_you">%1$s نے “قرض آسان کریں” بند کیا۔ اب %2$s آپ کو %3$s دیں گے۔</string>
+    <string name="push_debts_unsimplified_from_you">%1$s نے “قرض آسان کریں” بند کیا۔ اب آپ %2$s کو %3$s دیں گے۔</string>
+    <string name="push_debts_unsimplified_other">%1$s نے “قرض آسان کریں” بند کیا۔ دیکھیں آپ کے لیے کیا بدلا۔</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">آپ اس گروپ میں نہیں ہیں</string>
+    <string name="bill_link_not_in_group_message">یہ تبصرہ ایک ایسے گروپ میں ہے جس میں آپ نہیں ہیں۔ جس نے آپ کو لنک بھیجا ہے، اس سے دعوت نامہ مانگیں۔</string>
+    <string name="bill_link_offline_title">انٹرنیٹ نہیں ہے</string>
+    <string name="bill_link_offline_message">آن لائن ہونے پر لنک دوبارہ کھولیں۔</string>
+    <string name="bill_link_go_home">ہوم پر جائیں</string>
+    <string name="discard_changes_title">تبدیلیاں رد کریں؟</string>
+    <string name="discard_changes_message">غیر محفوظ تبدیلیاں ضائع ہو جائیں گی۔</string>
+    <string name="discard_changes_discard">رد کریں</string>
+    <string name="discard_changes_keep_editing">ترمیم جاری رکھیں</string>
+</resources>

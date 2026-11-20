@@ -28,6 +28,7 @@ private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
 private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
 private const val GREEK = "el"
+private const val URDU = "ur"
 private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
 private const val POLISH_SECOND_PERSON_SUFFIX = "łeś(-aś)"
@@ -60,6 +61,7 @@ private val youSubjectLanguages = setOf(
     ROMANIAN,
     BENGALI,
     GREEK,
+    URDU,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -98,7 +100,9 @@ private val irregularSecondPerson = mapOf(
  * which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Greek ends its aorist in "-ε" for someone else and "-ες"
  * for the user, an object pronoun staying before it: "Ana μοίρασε", "Εσύ μοίρασες"; "το επισύναψε", "το επισύναψες".
  * Bengali needs no rule: its respectful verb is the same for "আপনি" and for a name ("Ana ভাগ করেছেন", "আপনি ভাগ করেছেন"),
- * and Malay's verb doesn't change with the person. Same rules as the web's and the Apple app's `verbForYou`.
+ * and Malay's verb doesn't change with the person. Urdu needs none either: its ergative "نے" is written apart after
+ * a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ بانٹا"). Same rules as the web's and the Apple
+ * app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -199,7 +203,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…" and Bengali "আপনি মুছে ফেলেছেন…" likewise. Czech says "Ty jsi smazal(a)…", Romanian "Tu ai
+ * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Czech says "Ty jsi smazal(a)…", Romanian "Tu ai
  * șters…" and Greek "Εσύ διέγραψες…", with their verb rule.
  */
 @Composable

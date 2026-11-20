@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">سپورٹ سے رابطہ کریں</string>
+    <string name="contact_support_description">ہم آپ کی ای میل ایپ ایک تیار پیغام کے ساتھ کھولیں گے۔ بتائیں کیا ہوا اور اسے بھیج دیں: ہر پیغام اصل لوگ پڑھتے ہیں۔</string>
+    <string name="contact_support_to">بنام</string>
+    <string name="contact_support_diagnostics">ای میل میں شامل ہوگا</string>
+    <string name="contact_support_app_version">ایپ ورژن</string>
+    <string name="contact_support_platform">پلیٹ فارم</string>
+    <string name="contact_support_language">زبان</string>
+    <string name="contact_support_account">اکاؤنٹ</string>
+    <string name="contact_support_profile">پروفائل</string>
+    <string name="contact_support_language_system">سسٹم</string>
+    <string name="contact_support_account_local">صرف یہ ڈیوائس</string>
+    <string name="contact_support_account_anonymous">منسلک نہیں</string>
+    <string name="contact_support_open_email">ای میل کھولیں</string>
+    <string name="contact_support_copy_email">ای میل ایڈریس کاپی کریں</string>
+    <string name="contact_support_notice_copied">ای میل ایڈریس کاپی ہو گیا۔</string>
+    <string name="contact_support_notice_no_app">کوئی ای میل ایپ نہیں ملی۔ اس کے بجائے ایڈریس کاپی کر دیا گیا۔</string>
+    <string name="contact_support_close">بند کریں</string>
+</resources>

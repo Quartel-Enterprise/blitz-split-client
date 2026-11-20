@@ -11,12 +11,12 @@ import java.util.IllformedLocaleException
 import java.util.Locale
 
 /*
- * Why: the right to left languages (Hebrew under its current code and the legacy one Java still hands out, "iw"),
- * and the ones whose own digits the app writes as 0-9 (Arabic, Thai and Bengali; Persian and Urdu would join once the
- * app speaks them).
+ * Why: the right to left languages (Hebrew under its current code and the legacy one Java still hands out, "iw"), and
+ * the ones whose own digits the app writes as 0-9 (Arabic, Thai, Bengali and Urdu; Persian would join once the app
+ * speaks it).
  */
 private val rightToLeftLanguages = setOf("ar", "fa", "he", "iw", "ur")
-private val latinDigitLanguages = setOf("ar", "th", "bn")
+private val latinDigitLanguages = setOf("ar", "th", "bn", "ur")
 private const val THAI = "th"
 private const val FIRST_STRONG_ISOLATE = '\u2068'
 private const val POP_DIRECTIONAL_ISOLATE = '\u2069'
@@ -42,7 +42,8 @@ fun Locale.withGregorianCalendar(): Locale {
 
 /*
  * Why: amounts, dates and counts are written with 0-9 in every language, so what a field shows is what it parses and
- * an amount reads the same as the one typed on the number keyboard. Arabic's, Thai's and Bengali's own digits stay for their words only.
+ * an amount reads the same as the one typed on the number keyboard. Arabic's, Thai's, Bengali's and Urdu's own digits stay for their
+ * words only.
  */
 fun Locale.withLatinDigits(): Locale {
     if (language !in latinDigitLanguages) return this

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">اپنا ریکوری کوڈ محفوظ کریں</string>
+    <string name="recovery_code_body">آپ اسے اکاؤنٹ کے بغیر استعمال کر رہے ہیں۔ اگر آپ ڈیوائس بدلیں یا کھو دیں تو یہ 12 الفاظ آپ کا ڈیٹا واپس لے آتے ہیں۔ انہیں ترتیب سے لکھ لیں۔ 30 دن استعمال نہ ہونے پر آپ کا ڈیٹا حذف ہو جاتا ہے اور یہ الفاظ کام کرنا بند کر دیتے ہیں۔</string>
+    <string name="recovery_code_copy">الفاظ کاپی کریں</string>
+    <string name="recovery_code_save_to_password_manager">پاس ورڈ مینیجر میں محفوظ کریں</string>
+    <string name="recovery_code_connect_instead">اس کی بجائے Google یا Apple کنیکٹ کریں</string>
+    <string name="recovery_code_connect_instead_body">کوڈ کی ضرورت نہیں</string>
+    <string name="recovery_code_sign_in_failed">ابھی کنیکٹ نہیں ہو سکا۔ دوبارہ کوشش کریں۔</string>
+    <string name="recovery_code_also_in_profile">یہ پروفائل › ریکوری میں بھی موجود ہے۔</string>
+    <string name="recovery_code_remind_later">بعد میں یاد دلائیں</string>
+    <string name="recovery_code_saved">میں نے اسے محفوظ کر لیا ہے</string>
+    <string name="recovery_code_download">ڈاؤن لوڈ کریں</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · ریکوری کوڈ\n\n%1$s\n\nاپنا ڈیٹا واپس لانے کے لیے اسے \"میں نے اسے کسی دوسری ڈیوائس پر استعمال کیا ہے\" میں استعمال کریں۔\n</string>
+</resources>

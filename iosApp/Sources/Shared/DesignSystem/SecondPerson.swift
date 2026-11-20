@@ -14,6 +14,8 @@ import SwiftUI
 /// perfect's auxiliary as French does ("Ana a împărțit", "Tu ai împărțit"), and Czech adds one before the past ("Ana
 /// rozdělil(a)", "Ty jsi rozdělil(a)"). Greek ends its aorist in "-ε" for someone else and "-ες" for the user ("Ana
 /// μοίρασε", "Εσύ μοίρασες"). Bengali's respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
+/// Urdu writes its ergative "نے" apart after a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ
+/// بانٹا"), so its verb stays as it is.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.

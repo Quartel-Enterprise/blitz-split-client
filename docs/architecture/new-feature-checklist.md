@@ -53,7 +53,7 @@ each platform.
       `res/values-th/strings.xml`, in Vietnamese in `res/values-vi/strings.xml`, in Traditional Chinese in
       `res/values-b+zh+Hant/strings.xml`, in Swedish in `res/values-sv/strings.xml`, in Czech in `res/values-cs/strings.xml`,
       in Romanian in `res/values-ro/strings.xml`, in Bengali in `res/values-bn/strings.xml`, in Malay in
-      `res/values-ms/strings.xml` and in Greek in `res/values-el/strings.xml`
+      `res/values-ms/strings.xml`, in Greek in `res/values-el/strings.xml` and in Urdu in `res/values-ur/strings.xml`
 - [ ] Any resource of a `values-pt-rPT` or `values-es-rES` (a string, a bool) also in `values-pt` or `values-es`:
       Android 7 and later fall back to a child of the language when its bare folder lacks a resource, so a pt-BR
       device read Portugal's `designsystem_portugal_portuguese` and wrote "Você criaste a conta"
