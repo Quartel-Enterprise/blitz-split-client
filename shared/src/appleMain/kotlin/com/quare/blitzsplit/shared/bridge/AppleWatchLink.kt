@@ -3,8 +3,9 @@ package com.quare.blitzsplit.shared.bridge
 import com.quare.blitzsplit.core.watch.link.WatchLink
 
 /*
- * Why: WatchLink's paths and replies for Swift, which doesn't see :core:watch: the iPhone and the Apple Watch say them
- * to each other over WatchConnectivity as a dictionary of two strings, "path" and "payload".
+ * Why: WatchLink's paths and replies for Swift, which doesn't see :core:watch. Over WatchConnectivity the watch sends
+ * [PATH_KEY: PAIR_PATH, CODE_KEY: code] and the iPhone answers [REPLY_KEY: one of the REPLY_ values]; the iPhone tells
+ * its watch of a sign out with transferUserInfo [PATH_KEY: SIGNED_OUT_PATH, USER_ID_KEY: userId].
  */
 object AppleWatchLink {
     const val PATH_KEY = "path"

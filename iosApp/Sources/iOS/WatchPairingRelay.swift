@@ -1,5 +1,6 @@
 import Foundation
 import Shared
+import UIKit
 import UserNotifications
 import WatchConnectivity
 
@@ -18,6 +19,8 @@ final class WatchPairingRelay: NSObject, WCSessionDelegate {
     static let shared = WatchPairingRelay()
 
     private let watches = WatchBag()
+    /// A sign out seen before the session finished activating, sent once it does.
+    private var pendingSignOut: String?
 
     /// From the app's launch, after the shared code started, so a message that woke the app finds its delegate.
     func start() {
@@ -25,14 +28,19 @@ final class WatchPairingRelay: NSObject, WCSessionDelegate {
         let session = WCSession.default
         session.delegate = self
         session.activate()
-        watches.add(BlitzSplitApple.shared.createAccountSignOutsWatcher().observe { userId in
-            Self.tellWatchSignedOut(userId: userId as String)
+        watches.add(BlitzSplitApple.shared.createAccountSignOutsWatcher().observe { [weak self] userId in
+            self?.tellWatchSignedOut(userId: userId as String)
         })
     }
 
-    private static func tellWatchSignedOut(userId: String) {
+    private func tellWatchSignedOut(userId: String) {
         let session = WCSession.default
-        guard session.activationState == .activated, session.isPaired, session.isWatchAppInstalled else { return }
+        guard session.activationState == .activated else {
+            pendingSignOut = userId
+            return
+        }
+        pendingSignOut = nil
+        guard session.isPaired, session.isWatchAppInstalled else { return }
         let link = AppleWatchLink.shared
         session.transferUserInfo([link.PATH_KEY: link.SIGNED_OUT_PATH, link.USER_ID_KEY: userId])
     }
@@ -51,9 +59,13 @@ final class WatchPairingRelay: NSObject, WCSessionDelegate {
         let reply = ReplyHandler(send: replyHandler)
         Task { @MainActor in
             let link = AppleWatchLink.shared
+            // The message may have woken the app in the background, which iOS suspends as soon as it can: the time
+            // asked here lasts until the server answered and the watch got the reply
+            let backgroundTime = BackgroundTime(name: "Watch pairing")
             BlitzSplitApple.shared.approveNearbyWatch(code: code) { answer in
                 reply.send([link.REPLY_KEY: answer])
                 if answer == link.REPLY_APPROVED { WatchConnectedNotice.show() }
+                backgroundTime.end()
             }
         }
     }
@@ -62,13 +74,35 @@ final class WatchPairingRelay: NSObject, WCSessionDelegate {
         _ session: WCSession,
         activationDidCompleteWith activationState: WCSessionActivationState,
         error: (any Error)?,
-    ) {}
+    ) {
+        guard activationState == .activated else { return }
+        Task { @MainActor in
+            if let userId = self.pendingSignOut { self.tellWatchSignedOut(userId: userId) }
+        }
+    }
 
     nonisolated func sessionDidBecomeInactive(_ session: WCSession) {}
 
     /// The person switched to another watch: the session starts again for it.
     nonisolated func sessionDidDeactivate(_ session: WCSession) {
         session.activate()
+    }
+}
+
+/// Time iOS gives the app to finish a piece of work in the background, ended once the work is done or the time is up.
+private final class BackgroundTime {
+    private var identifier = UIBackgroundTaskIdentifier.invalid
+
+    init(name: String) {
+        identifier = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
+            self?.end()
+        }
+    }
+
+    func end() {
+        guard identifier != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(identifier)
+        identifier = .invalid
     }
 }
 

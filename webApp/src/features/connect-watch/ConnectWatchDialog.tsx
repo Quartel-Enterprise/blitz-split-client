@@ -4,6 +4,7 @@ import { ConnectWatchPresenter, type JsConnectWatchState } from 'blitzsplit-shar
 import { usePresenter, useWatch } from '@/bridge/usePresenter'
 import { ResponsiveDialog } from '@/components/ResponsiveDialog'
 import { Button } from '@/components/ui/button'
+import { useDraft } from '@/hooks/useDraft'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { t, type MessageKey } from '@/i18n'
 import { cn } from '@/lib/utils'
@@ -74,6 +75,11 @@ function WatchTile({ isConnected }: { isConnected: boolean }) {
 function ConnectWatchForm({ presenter, state }: { presenter: ConnectWatchPresenter; state: JsConnectWatchState }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [isFocused, setFocused] = useState(false)
+  // Why: the presenter's state comes a tick later; the field shows the code the ViewModel kept in the same keystroke.
+  const [code, changeCode] = useDraft(state.code, (text) => {
+    presenter.changeCode(text)
+    return presenter.getCode()
+  })
   // Why: the field is disabled while connecting, which drops its focus, so a refused code is typed again at once.
   useEffect(() => {
     if (!state.isConnecting) inputRef.current?.focus()
@@ -89,8 +95,8 @@ function ConnectWatchForm({ presenter, state }: { presenter: ConnectWatchPresent
         <input
           ref={inputRef}
           id="connect-watch-code"
-          value={state.code}
-          onChange={(event) => presenter.changeCode(event.target.value)}
+          value={code}
+          onChange={(event) => changeCode(event.target.value)}
           onKeyDown={(event) => {
             if (event.key === 'Enter') presenter.connect()
           }}
@@ -110,10 +116,10 @@ function ConnectWatchForm({ presenter, state }: { presenter: ConnectWatchPresent
           {Array.from({ length: state.codeLength }, (_, index) => (
             <CodeBox
               key={index}
-              char={state.code[index]}
+              char={code[index]}
               hasGap={index === CODE_GROUP}
               hasError={state.isCodeWrong}
-              isCurrent={isFocused && index === Math.min(state.code.length, state.codeLength - 1)}
+              isCurrent={isFocused && index === Math.min(code.length, state.codeLength - 1)}
             />
           ))}
         </div>

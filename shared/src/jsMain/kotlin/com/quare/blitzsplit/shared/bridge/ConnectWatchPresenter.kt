@@ -51,6 +51,9 @@ class ConnectWatchPresenter {
         viewModel.onEvent(ConnectWatchUiEvent.OnCodeChanged(text))
     }
 
+    // Why: the code the ViewModel kept, read in the same keystroke, so the field never waits for the next state (useDraft).
+    fun getCode(): String = viewModel.uiState.value.code
+
     fun connect() {
         viewModel.onEvent(ConnectWatchUiEvent.OnConnectClicked)
     }
