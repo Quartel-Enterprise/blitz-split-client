@@ -9,7 +9,9 @@ import com.quare.blitzsplit.core.watch.link.WatchLink
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.android.ext.android.inject
+import kotlin.time.Duration.Companion.seconds
 
 /*
  * Why: a nearby watch hands its pairing code over the Data Layer, and the phone approves it with its own session, with
@@ -19,6 +21,8 @@ import org.koin.android.ext.android.inject
  */
 class WatchPairingListenerService : WearableListenerService() {
     private val approveNearbyWatch: ApproveNearbyWatch by inject()
+
+    private val approvalTimeout = 30.seconds
 
     // Why: before Android 13 the notice it posts is in Profile › Language's pick, as the screens are.
     override fun attachBaseContext(newBase: Context) {
@@ -30,7 +34,8 @@ class WatchPairingListenerService : WearableListenerService() {
         if (event.path != WatchLink.PAIR_PATH) return
         val code = event.data.decodeToString()
         runBlocking {
-            val reply = approveNearbyWatch(code)
+            // Why: the messages come one at a time, so a server that never answers can't hold the next watch's code.
+            val reply = withTimeoutOrNull(approvalTimeout) { approveNearbyWatch(code) } ?: WatchLink.REPLY_FAILED
             attemptOrNull {
                 Wearable
                     .getMessageClient(this@WatchPairingListenerService)

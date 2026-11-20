@@ -149,9 +149,9 @@
     <string name="profile_bitcoin_in_sats">Bitcoin în satoshi</string>
     <string name="profile_bitcoin_in_sats_detail">Afișează și introduce sumele în bitcoin în sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Harta categoriilor</string>
+    <string name="profile_category_map_detail">Cuvintele care aleg categoria unei cheltuieli</string>
     <string name="profile_connect_watch">Conectează ceasul</string>
     <string name="profile_connect_watch_detail">Cu codul afișat pe ceas</string>
-    <string name="profile_category_map_detail">Cuvintele care aleg categoria unei cheltuieli</string>
     <string name="profile_photo_open">Vezi fotografia</string>
     <string name="profile_share">Distribuie profilul</string>
     <string name="profile_share_message">Iată profilul meu în Blitz Split: %1$s</string>

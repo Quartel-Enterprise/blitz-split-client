@@ -153,9 +153,9 @@
     <string name="profile_bitcoin_in_sats">Bitcoin у сатоші</string>
     <string name="profile_bitcoin_in_sats_detail">Показує й дозволяє вводити суми в bitcoin у сатах (1 ₿ = 100 000 000 сат).</string>
     <string name="profile_category_map">Мапа категорій</string>
+    <string name="profile_category_map_detail">Слова, за якими обирається категорія рахунку</string>
     <string name="profile_connect_watch">Підключити годинник</string>
     <string name="profile_connect_watch_detail">За кодом, який показує годинник</string>
-    <string name="profile_category_map_detail">Слова, за якими обирається категорія рахунку</string>
     <string name="profile_photo_open">Переглянути фото</string>
     <string name="profile_share">Поділитися профілем</string>
     <string name="profile_share_message">Ось мій профіль у Blitz Split: %1$s</string>

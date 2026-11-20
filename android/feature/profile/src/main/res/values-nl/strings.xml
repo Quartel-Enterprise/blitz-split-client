@@ -145,9 +145,9 @@
     <string name="profile_bitcoin_in_sats">Bitcoin in satoshi’s</string>
     <string name="profile_bitcoin_in_sats_detail">Toont en typt bitcoinbedragen in sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Categoriekaart</string>
+    <string name="profile_category_map_detail">De woorden die de categorie van een uitgave kiezen</string>
     <string name="profile_connect_watch">Horloge koppelen</string>
     <string name="profile_connect_watch_detail">Met de code die je horloge toont</string>
-    <string name="profile_category_map_detail">De woorden die de categorie van een uitgave kiezen</string>
     <string name="profile_photo_open">Foto bekijken</string>
     <string name="profile_share">Profiel delen</string>
     <string name="profile_share_message">Dit is mijn profiel op Blitz Split: %1$s</string>

@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.watch
 
 import android.content.Context
+import com.google.android.gms.wearable.CapabilityClient
 import com.google.android.gms.wearable.Wearable
 import com.quare.blitzsplit.core.watch.domain.usecase.ObserveAccountSignOuts
 import com.quare.blitzsplit.core.watch.link.WatchLink
@@ -30,10 +31,12 @@ object WatchSignOutRelay {
         userId: String,
     ) {
         val messages = Wearable.getMessageClient(context)
+        // Why: only the watches that have the app, which declare its capability, not every paired device.
         Wearable
-            .getNodeClient(context)
-            .connectedNodes
+            .getCapabilityClient(context)
+            .getCapability(WatchLink.WATCH_CAPABILITY, CapabilityClient.FILTER_REACHABLE)
             .await()
+            .nodes
             .forEach { node ->
                 attemptOrNull {
                     messages

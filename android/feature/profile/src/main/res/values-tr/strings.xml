@@ -145,9 +145,9 @@
     <string name="profile_bitcoin_in_sats">Satoshi cinsinden Bitcoin</string>
     <string name="profile_bitcoin_in_sats_detail">Bitcoin tutarlarını sats olarak gösterir ve girer (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Kategori haritası</string>
+    <string name="profile_category_map_detail">Bir harcamanın kategorisini seçen kelimeler</string>
     <string name="profile_connect_watch">Saati bağla</string>
     <string name="profile_connect_watch_detail">Saatinde görünen kodla</string>
-    <string name="profile_category_map_detail">Bir harcamanın kategorisini seçen kelimeler</string>
     <string name="profile_photo_open">Fotoğrafı gör</string>
     <string name="profile_share">Profili paylaş</string>
     <string name="profile_share_message">Blitz Split\'teki profilim: %1$s</string>

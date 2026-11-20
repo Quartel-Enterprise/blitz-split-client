@@ -68,13 +68,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.quare.blitzsplit.android.designsystem.layout.AdaptiveScreen
-import com.quare.blitzsplit.android.designsystem.layout.DevicePreviews
-import com.quare.blitzsplit.android.designsystem.theme.BlitzSplitTheme
 import com.quare.blitzsplit.feature.connectwatch.presentation.model.ConnectWatchError
 import com.quare.blitzsplit.feature.connectwatch.presentation.model.ConnectWatchUiEvent
 import com.quare.blitzsplit.feature.connectwatch.presentation.model.ConnectWatchUiState
@@ -533,75 +530,4 @@ private fun errorTextOf(error: ConnectWatchError?): Int? = when (error) {
     ConnectWatchError.NEEDS_ACCOUNT -> R.string.connect_watch_error_needs_account
     ConnectWatchError.FAILED -> R.string.connect_watch_error_failed
     null -> null
-}
-
-private fun createPreviewState(
-    code: String = "K7P4QX",
-    isOnline: Boolean = true,
-    error: ConnectWatchError? = null,
-    isConnected: Boolean = false,
-): ConnectWatchUiState = ConnectWatchUiState(
-    code = code,
-    isOnline = isOnline,
-    isConnecting = false,
-    error = error,
-    isConnected = isConnected,
-)
-
-@DevicePreviews
-@Composable
-private fun ConnectWatchPreview() {
-    BlitzSplitTheme {
-        ConnectWatchContent(
-            state = createPreviewState(),
-            isDialog = false,
-            onEvent = {},
-        )
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun ConnectWatchWrongCodePreview() {
-    BlitzSplitTheme {
-        ConnectWatchContent(
-            state = createPreviewState(error = ConnectWatchError.INVALID_OR_EXPIRED),
-            isDialog = false,
-            onEvent = {},
-        )
-    }
-}
-
-@DevicePreviews
-@Composable
-private fun ConnectWatchOfflinePreview() {
-    BlitzSplitTheme {
-        ConnectWatchContent(
-            state = createPreviewState(isOnline = false),
-            isDialog = false,
-            onEvent = {},
-        )
-    }
-}
-
-@Preview(
-    name = "Tablet dialog",
-    device = "spec:width=1280dp,height=800dp,orientation=landscape",
-)
-@Composable
-private fun ConnectWatchDialogPreview() {
-    BlitzSplitTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.32f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            ConnectWatchContent(
-                state = createPreviewState(isConnected = true),
-                isDialog = true,
-                onEvent = {},
-            )
-        }
-    }
 }
