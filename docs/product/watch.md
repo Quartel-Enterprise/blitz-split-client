@@ -1,7 +1,7 @@
 # The watch
 
-The watch apps (canvas page 15, "Relógio", issue #419): Wear OS first, the Apple Watch in a later phase. Both draw the
-shared ViewModels of `:feature:watch_pairing` and `:feature:watch_balances`; Profile › Connect watch is
+The watch apps (canvas page 15, "Relógio", issue #419): Wear OS (`wearApp/`) and the Apple Watch (`iosApp/Watch`, the
+`BoraRachar-watchOS` target, watchOS 26). Both draw the shared ViewModels of `:feature:watch_pairing` and `:feature:watch_balances`; Profile › Connect watch is
 `:feature:connect_watch` on every platform.
 
 ## What the watch does
@@ -35,8 +35,8 @@ minutes (`watch-pairing-request`) and polls it (`watch-pairing-poll`) until a de
 brings a fresh token, so a sign in that fails polls again for the next (the server's contract is in `blitz-split-api`).
 
   - First launch (15.9): "Use the same account as your phone here. Then the watch works on its own." and "Connect".
-  - Nearby (15.10 → 15.11): the watch sends the code to the paired phone (Wear OS's Data Layer, later
-    WatchConnectivity), which approves it with its own session, with no confirmation on the phone (Pierre's call,
+  - Nearby (15.10 → 15.11): the watch sends the code to the paired phone (Wear OS's Data Layer, WatchConnectivity on
+    the Apple Watch, both in the format `WatchLink` names), which approves it with its own session, with no confirmation on the phone (Pierre's call,
     November 2026: the channel only exists with a watch paired to that phone, and pairing needs it unlocked). The phone
     then shows a notice with no buttons, "Pixel Watch connected to your account" with the watch's own name (15.15).
     The watch shows "Ready, Pierre" with the photo and "Continue".
@@ -55,6 +55,22 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
   - To disconnect only the watch, sign out on it. A list of connected devices in Profile is for later.
   - The word for the phone is "phone" on Wear OS and "iPhone" on watchOS.
 
+## On the Apple Watch
+
+  - SwiftUI over the same ViewModels (`BlitzSplitWatch` hands them to Swift), with watchOS 26's Liquid Glass controls:
+    the main action is the toolbar's tinted item at the bottom ("I paid" of 15.4, where Wear OS has its EdgeButton),
+    never a floating button; the message screens' buttons are glass, the main one tinted. The app's logo is
+    `Logo.imageset`.
+  - The question of 15.5 is a sheet with "I paid" and "Cancel" (swiping it away answers Cancel), and "Payment recorded"
+    (15.6) covers the screen for a moment with the accent's check and a haptic, then the watch goes back to the
+    balances.
+  - WatchConnectivity: the watch sends `["path": WatchLink.PAIR_PATH, "code": …]` with `sendMessage` and reads
+    `["reply": approved | local_only | failed]`; an iPhone that isn't reachable, has no app or answers anything else
+    counts as out of reach (15.11c). The iPhone's sign out comes as queued user info, `["path":
+    WatchLink.SIGNED_OUT_PATH, "userId": …]`, delivered even while the watch app isn't running.
+  - Battery: real time listens only while the app is on screen; watchOS's background refresh syncs about every half
+    hour while the app has the budget, so the complications follow the other devices.
+
 ## Glanceable surfaces
 
   - The Tile (15.1): "Balances", the overall balance in the currency with the most groups ("+R$ 186,40", "to receive
@@ -62,9 +78,18 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
     pay or receive".
   - Complications (15.2): short text "+186" with the app's icon (the word doesn't fit; the color says it), long text
     "You owe R$ 126,00". Tapping either opens the app.
+  - On the Apple Watch, WidgetKit (`BalanceWidget-watchOS`) draws the iPhone widget's accessory faces
+    (`iosApp/Widgets/Shared`): the circle "+186" with the logo, the rectangle with the overall balance and its other
+    way ("You owe R$ 126,00"), which is also the Smart Stack card (15.1), and a watch face's inline line. The watch app
+    writes their file itself from its own Room, in the currency with the most groups, whenever its balances change.
 
 ## Notifications
 
   - The watch gets its own pushes of Activity (FCM on Wear OS, APNs on watchOS), worded on the watch as the phone words
     them, not the phone's mirrored notifications. "Payment marked" has the watch's two buttons; the others open the
     group on the watch.
+  - On the Apple Watch the server sends the watch's token (`platform = watchos`) with the watch app's bundle id as the
+    APNs topic, and "Payment marked" in the `PAYMENT_MARKED` category, whose actions are the watch's "Received" (in the
+    background: the activity read, nothing recorded) and "View group". A push names its group but not its currency, so
+    the watch opens the group in the currency where your balance in it is largest, over the balances; one with
+    nothing open with you opens the balances. The watch asks for the notification permission once connected.

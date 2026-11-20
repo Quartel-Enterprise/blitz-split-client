@@ -13,17 +13,26 @@ PROJECT = File.expand_path("../iosApp/BoraRachar.xcodeproj", __dir__)
 # The scheme and its app target share a name; match and the entitlements key by platform
 PLATFORMS = { "BoraRachar-iOS" => "ios", "BoraRachar-macOS" => "macos" }.freeze
 KEYCHAIN = "fastlane_tmp_keychain".freeze
-# The app extensions each platform embeds, by target, with their own App ID and profiles: the iPhone's balance widget
-# (iosApp/project.yml). Each is signed as the app is.
+# The app extensions and watch app each platform embeds, by target, with their own App ID and profiles: the iPhone's
+# balance widget, the Apple Watch app and the watch's complications (iosApp/project.yml). Each is signed as the app is;
+# App Store Connect's profiles for the watch's ids are iOS ones, so one match of the ios platform fetches them all.
 EXTENSIONS = {
-  "ios" => { "BalanceWidget" => "com.quare.blitzsplit.BalanceWidget" },
+  "ios" => {
+    "BalanceWidget" => "com.quare.blitzsplit.BalanceWidget",
+    "BoraRachar-watchOS" => "com.quare.blitzsplit.watchkitapp",
+    "BalanceWidget-watchOS" => "com.quare.blitzsplit.watchkitapp.BalanceWidget",
+  },
   "macos" => {},
 }.freeze
 # XcodeGen writes these with "development", which an App Store profile refuses under manual signing. PlistBuddy's
 # Set fails when the file or the key is gone, so a change in project.yml stops the lane instead of shipping development
 APS_ENVIRONMENT = {
-  "ios" => ["iosApp/Generated/iOS.entitlements", "aps-environment"],
-  "macos" => ["iosApp/Generated/macOS.entitlements", "com.apple.developer.aps-environment"],
+  "ios" => [
+    ["iosApp/Generated/iOS.entitlements", "aps-environment"],
+    # The watch's own pushes (docs/product/watch.md#notifications)
+    ["iosApp/Generated/watchOS.entitlements", "aps-environment"],
+  ],
+  "macos" => [["iosApp/Generated/macOS.entitlements", "com.apple.developer.aps-environment"]],
 }.freeze
 
 # No fastlane/README.md written into the checkout after each run
@@ -107,9 +116,10 @@ lane :apple_signing do |options|
     )
   end
 
-  entitlements, key = APS_ENVIRONMENT.fetch(platform)
   # PlistBuddy, not plutil: plutil reads the dots of com.apple.developer.aps-environment as a key path
-  sh("/usr/libexec/PlistBuddy", "-c", "Set :#{key} production", File.join(repo_root, entitlements))
+  APS_ENVIRONMENT.fetch(platform).each do |entitlements, key|
+    sh("/usr/libexec/PlistBuddy", "-c", "Set :#{key} production", File.join(repo_root, entitlements))
+  end
 
   export_options = {
     "method" => "app-store-connect",

@@ -2,7 +2,7 @@ import SwiftUI
 
 #if os(iOS)
 import UIKit
-#else
+#elseif os(macOS)
 import AppKit
 #endif
 
@@ -39,11 +39,18 @@ extension Color {
         self.init(uiColor: UIColor { @Sendable traits in
             UIColor(rgb: traits.userInterfaceStyle == .dark ? dark : light)
         })
-        #else
+        #elseif os(macOS)
         self.init(nsColor: NSColor(name: nil) { @Sendable appearance in
             let isDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
             return NSColor(rgb: isDark ? dark : light)
         })
+        #else
+        // The watch is dark only (docs/product/watch.md)
+        self.init(
+            red: Double((dark >> 16) & 0xFF) / 255,
+            green: Double((dark >> 8) & 0xFF) / 255,
+            blue: Double(dark & 0xFF) / 255,
+        )
         #endif
     }
 }
@@ -59,7 +66,7 @@ private extension UIColor {
         )
     }
 }
-#else
+#elseif os(macOS)
 private extension NSColor {
     nonisolated convenience init(rgb: UInt32) {
         self.init(

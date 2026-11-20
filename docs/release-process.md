@@ -590,8 +590,9 @@ The iOS and macOS betas sign with the team's **Apple Distribution** certificate 
 `com.quare.blitzsplit`, which [fastlane match](https://docs.fastlane.tools/actions/match/) keeps encrypted in the
 private repository `Quartel-Enterprise/bible-planner-certs`, shared with Bible Planner (same team, `TTV2A365LG`). The
 `apple_signing` lane of [`fastlane/Fastfile`](../fastlane/Fastfile) fetches them read-only into a temporary keychain,
-switches the Release configuration of the app target and its extensions (the iPhone's balance widget,
-`com.quare.blitzsplit.BalanceWidget`, which has profiles of its own) to manual signing (the committed `project.yml`
+switches the Release configuration of the app target and what it embeds (the iPhone's balance widget,
+`com.quare.blitzsplit.BalanceWidget`, the Apple Watch app, `com.quare.blitzsplit.watchkitapp`, and its complications,
+`com.quare.blitzsplit.watchkitapp.BalanceWidget`, each with profiles of its own) to manual signing (the committed `project.yml`
 keeps automatic signing for local builds), sets `aps-environment` to `production`, and writes the export options. The macOS package
 also needs the team's **Mac Installer Distribution** certificate, which the repository holds.
 
@@ -606,9 +607,9 @@ Store profiles of `com.quare.blitzsplit` and the iOS ad hoc one (match reuses th
 repository). The iOS job fetches the ad hoc profile too, so without it the iOS beta fails, TestFlight included:
 
 ```bash
-fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget,com.quare.blitzsplit.watchkitapp,com.quare.blitzsplit.watchkitapp.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 fastlane match appstore --platform macos --additional_cert_types mac_installer_distribution --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
-fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget,com.quare.blitzsplit.watchkitapp,com.quare.blitzsplit.watchkitapp.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 ```
 
 A capability added to the App ID later (Sign in with Apple, push, associated domains) needs the profiles made again:
@@ -620,6 +621,33 @@ first iOS beta that has it, once, on developer.apple.com › Certificates, Ident
 for `com.quare.blitzsplit` with that group, then make the iOS profiles again (the two iOS commands above with
 `--force`). Until then match finds no profile for the widget and the iOS beta fails; the macOS one, which has no
 widget, doesn't change.
+
+### The Apple Watch app
+
+The iPhone app's archive carries the Apple Watch app (`BoraRachar-watchOS`, in its `Watch/` folder) and the watch app
+carries its complications (`BalanceWidget-watchOS`): App Store Connect ships them together, and the watch's App Store
+installs the watch app on its own too (`WKRunsIndependentlyOfCompanionApp`). So before the first iOS beta that has
+them, once, on developer.apple.com › Certificates, Identifiers & Profiles (nothing else changes on the account):
+
+1. Register the App ID `com.quare.blitzsplit.watchkitapp` (an iOS App ID; App Store Connect has no watchOS platform of
+   its own) with **App Groups** (`group.com.quare.blitzsplit`) and **Push Notifications**: the watch gets its own pushes
+   ([watch.md](product/watch.md#notifications)).
+2. Register the App ID `com.quare.blitzsplit.watchkitapp.BalanceWidget` with **App Groups** (`group.com.quare.blitzsplit`).
+   A watch's App Group is its own container, so the same group id shares nothing with the iPhone.
+3. Make the iOS profiles again, App Store and ad hoc: the two iOS commands above with `--force` (their identifiers
+   already list the watch's two).
+4. The APNs key the server uses already covers every app of the team, but the server sends each push with its app's
+   bundle id as the topic: the watch's tokens (`push_devices.platform = 'watchos'`) need the `push` edge function to
+   send them with `com.quare.blitzsplit.watchkitapp` (blitz-split-api).
+
+Until then match finds no profile for the watch's ids and the iOS beta fails at signing; the macOS one doesn't change.
+A local build signs automatically, so Xcode registers the two ids itself on the team the first time it builds the
+watch app for a device.
+
+The Shared framework has no `arm64` watchOS slice yet, only `arm64_32` (docs/architecture/stack.md#watchos), and the
+watch app's Release build leaves `arm64` out (`ARCHS[sdk=watchos*]`). Before the first watch release, check in App
+Store Connect that the upload is accepted: if Apple asks for the 64-bit slice, the watch app waits for
+`watchosDeviceArm64` (lifecycle-viewmodel and supabase-kt) or ships in a later version.
 
 ## iOS on Firebase App Distribution
 
@@ -639,7 +667,7 @@ To add a tester's iPhone:
 3. Make the ad hoc profile again with the new device, from a Mac with the passphrase:
 
    ```bash
-   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget,com.quare.blitzsplit.watchkitapp,com.quare.blitzsplit.watchkitapp.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
    ```
 
 4. Add the tester to the group: `firebase appdistribution:testers:add --group-alias ios-beta --project blitz-split <email>`.
