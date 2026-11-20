@@ -87,3 +87,6 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
     It has the phone's applicationId, so it uses the phone's `google-services.json` (the same Firebase Android app).
     Betas don't build it: the watch's testers get it from Play's Wear OS testing tracks.
   - CI builds `:wearApp`'s release (R8) next to the phone's, and `lintDebug` lints it.
+  - Its release note waits (Pierre's call, November 2026): it goes in a pull request of its own once the Play Console
+    has the Wear OS form factor and the watch passed Play's Wear OS review, so no release tells of a watch app Play
+    doesn't offer yet.
