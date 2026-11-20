@@ -723,6 +723,12 @@ end
 # uploaded builds to App Store review, each with the version's "What's new" in the languages its listing has.
 # release-production.yml runs these lanes; nothing here builds.
 PLAY_TRACKS = %w[production beta alpha internal].freeze
+# The Wear OS form factor's tracks, by the phone's track they mirror: the API names a form factor's track
+# "<prefix>:<default name>", and internal testing's default name is "qa" (developers.google.com/android-publisher/tracks).
+# Closed testing has no default: the watch's is the closed track named alpha, as the phone's.
+PLAY_FORM_FACTOR_TRACKS = {
+  "wear" => { "production" => "wear:production", "beta" => "wear:beta", "alpha" => "wear:alpha", "internal" => "wear:qa" },
+}.freeze
 # How long App Store Connect may take to process an upload before the build can be selected:
 BUILD_PROCESSING_TIMEOUT_SECONDS = 45 * 60
 # The states of a version that was submitted already, from waiting for its review to being on the store:
@@ -735,13 +741,21 @@ PLAY_VERSION_CODE_USED_MESSAGE = "has already been used".freeze
 
 desc "Upload a signed AAB to a Google Play track with the version's \"What's new\""
 desc "Options: aab (its path, or a pattern that finds it alone); track (production|beta|alpha|internal); rollout (the percentage of the users who get"
-desc "it, 1 to 100: a staged rollout, production only); notes (the folder of <language>.txt that release-notes.mjs"
+desc "it, 1 to 100: a staged rollout, production only); form_factor (wear: the same track of the Wear OS form factor, for the"
+desc "watch's bundle; omitted: the phone's); notes (the folder of <language>.txt that release-notes.mjs"
 desc "collect --out writes as stores/play); version_code (the bundle's, which lets a retry after a server error"
 desc "tell that the release landed). Needs PLAY_STORE_JSON_KEY_PATH."
 lane :play_upload do |options|
   repo_root = File.expand_path("..", __dir__)
   track = options.fetch(:track).to_s
   UI.user_error!("track is one of #{PLAY_TRACKS.join(', ')}") unless PLAY_TRACKS.include?(track)
+  # Staged or not by the track it mirrors, then sent to the form factor's own
+  play_track = track
+  form_factor = options[:form_factor].to_s
+  unless form_factor.empty?
+    tracks = PLAY_FORM_FACTOR_TRACKS.fetch(form_factor) { UI.user_error!("form_factor is one of #{PLAY_FORM_FACTOR_TRACKS.keys.join(', ')}") }
+    play_track = tracks.fetch(track)
+  end
   percentage = options.fetch(:rollout, 100).to_s
   UI.user_error!("rollout is a percentage of the users, from 1 to 100") unless percentage.match?(/\A\d+\z/) && (1..100).cover?(percentage.to_i)
   # Only production is rolled out in stages: a testing track gets the release whole
@@ -767,7 +781,7 @@ lane :play_upload do |options|
           package_name: ANDROID_PACKAGE,
           json_key: json_key,
           aab: aabs.first,
-          track: track,
+          track: play_track,
           **release,
           metadata_path: changelogs,
           skip_upload_changelogs: false,
@@ -778,10 +792,10 @@ lane :play_upload do |options|
           skip_upload_screenshots: true,
         )
       rescue => e
-        landed = attempt > 1 && e.message.include?(PLAY_VERSION_CODE_USED_MESSAGE) && play_track_has?(track, options[:version_code], json_key)
+        landed = attempt > 1 && e.message.include?(PLAY_VERSION_CODE_USED_MESSAGE) && play_track_has?(play_track, options[:version_code], json_key)
         raise unless landed
 
-        UI.important("The #{track} track already lists this versionCode: the attempt Google Play answered with a server error had landed")
+        UI.important("The #{play_track} track already lists this versionCode: the attempt Google Play answered with a server error had landed")
       end
     end
   end

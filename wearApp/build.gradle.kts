@@ -119,8 +119,9 @@ dependencies {
     implementation(libs.wear.complications.dataSourceKtx)
     implementation(libs.androidx.concurrent.futuresKtx)
     implementation(libs.wear.toolingPreview)
+    // Why: its WearPreviewDevices and WearPreviewFontScales annotate previews in main, which the release compiles too.
+    implementation(libs.wear.compose.uiTooling)
     implementation(libs.compose.ui.toolingPreview)
     debugImplementation(libs.compose.ui.tooling)
-    debugImplementation(libs.wear.compose.uiTooling)
     debugImplementation(libs.wear.tiles.toolingPreview)
 }
