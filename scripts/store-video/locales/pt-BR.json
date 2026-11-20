@@ -1,0 +1,125 @@
+{
+  "appLanguage": "pt",
+  "theme": "dark",
+  "launchWaitFor": "Seus grupos",
+  "voice": {
+    "id": "oi8rgjIfLgJRsQ6rbZh3",
+    "name": "Amanda Kelly - Sweet, Warm and Clear",
+    "model": "eleven_v4",
+    "languageCode": "pt",
+    "stability": 0.5,
+    "similarity": 0.75,
+    "takes": 3,
+    "take": 2
+  },
+  "music": {
+    "prompt": "Light, warm, upbeat acoustic pop instrumental for a friendly mobile app commercial about splitting bills with friends on a trip. Ukulele and clean guitar plucks, soft claps, gentle bass, light percussion, bright and positive, mid tempo around 105 BPM. Sits under a voiceover: sparse arrangement, no lead melody fighting the voice. Clean ending with a final soft hit at the end.",
+    "seconds": 32
+  },
+  "lines": [
+    "Viagem com os amigos? Bora rachar.",
+    "Anota quem pagou e divide do jeito que quiser.",
+    "Até item por item da conta do restaurante.",
+    "No fim, o app mostra quem paga quem, com o mínimo de transferências.",
+    "E pra acertar, Pix copia e cola com o valor certinho.",
+    "Funciona offline, sem precisar de conta."
+  ],
+  "endCard": {
+    "name": ["Bora", "Rachar"],
+    "chips": ["Funciona offline", "Sem precisar de conta"]
+  },
+  "scenes": [
+    { "record": "home", "swipe": [540, 1900, 1000, 30000], "retime": [1.0, 1.7, 0.8, 150, 2120] },
+    { "tap": { "descStarts": "Viagem a Lisboa," }, "waitFor": "Despesas" },
+    { "record": "group", "swipe": [600, 1630, 730, 30000], "retime": [1.0, 1.6, 0.8, 250, 2300] },
+    { "tap": { "text": "Jantar na trattoria" }, "waitFor": "Sua parte" },
+    { "record": "detail", "swipe": [700, 1560, 960, 24000], "retime": [0.8, 0.9, 0.6, 220, 2130] },
+    { "tap": { "desc": "Editar" }, "waitFor": "Editar conta" },
+    { "still": "edit" },
+    { "tap": { "text": "Por itens entre 5" }, "waitFor": "Itens da conta" },
+    { "record": "items", "swipe": [300, 1075, 375, 28000], "retime": [0.8, 1.4, 0.6, 220, 2330] },
+    { "backUntil": "Saldos" },
+    { "scrollUpUntil": "Seu saldo neste grupo" },
+    { "tap": { "text": "Saldos" }, "waitFor": "Com você" },
+    { "record": "bal", "swipe": [700, 1298, 548, 30000], "retime": [0.8, 1.7, 0.6, 250, 2300] },
+    { "scrollUpUntil": "Seu saldo neste grupo" },
+    { "record": "pix", "tap": { "text": "Acertar" }, "shows": "Pix copia e cola", "after": 2.5, "trim": [0.6, 3.6] }
+  ],
+  "shots": [
+    {
+      "title": [{ "text": "Viagem com os amigos?" }, { "text": "Bora rachar.", "accent": ["Bora", "rachar."] }],
+      "whip": false,
+      "steps": [
+        { "kind": "play", "clip": "home", "from": 0.2, "to": 3.1 },
+        { "kind": "play", "clip": "group", "from": 0.6, "to": 2.4, "enter": "push" }
+      ]
+    },
+    {
+      "title": [{ "text": "Anota quem pagou" }, { "text": "e divide do seu jeito", "accent": ["divide"] }],
+      "whip": false,
+      "steps": [
+        { "kind": "play", "clip": "detail", "from": 0, "to": 0.5, "enter": "push" },
+        {
+          "kind": "freeze",
+          "seconds": 2.0,
+          "fy": 0.39,
+          "cards": [{ "x": 42, "y": 800, "w": 996, "h": 296, "delay": 0.4, "radius": 36, "tilt": -2.5 }]
+        },
+        { "kind": "play", "clip": "detail", "from": 0.5, "to": 1.7 },
+        { "kind": "still", "img": "edit.png", "seconds": 0.8, "enter": "push" }
+      ]
+    },
+    {
+      "title": [{ "text": "Até item por item" }, { "text": "da conta do restaurante", "accent": ["item", "por"] }],
+      "whip": false,
+      "steps": [
+        { "kind": "play", "clip": "items", "from": 0, "to": 0.5, "enter": "push" },
+        {
+          "kind": "freeze",
+          "seconds": 2.2,
+          "fy": 0.37,
+          "cards": [
+            { "x": 42, "y": 806, "w": 334, "h": 158, "delay": 0.4, "radius": 36, "tilt": -3 },
+            { "x": 397, "y": 806, "w": 334, "h": 158, "delay": 0.53, "radius": 36, "tilt": 0 },
+            { "x": 752, "y": 806, "w": 328, "h": 158, "delay": 0.66, "radius": 36, "tilt": 3 }
+          ]
+        },
+        { "kind": "play", "clip": "items", "from": 0.5, "to": 2.1 }
+      ]
+    },
+    {
+      "title": [{ "text": "No fim, quem paga quem", "accent": ["quem", "paga"] }],
+      "subtitle": "com o mínimo de transferências",
+      "whip": true,
+      "steps": [
+        { "kind": "play", "clip": "bal", "from": 0, "to": 0.6 },
+        {
+          "kind": "freeze",
+          "seconds": 2.6,
+          "fy": 0.64,
+          "cards": [
+            { "x": 42, "y": 1350, "w": 996, "h": 186, "delay": 0.45, "radius": 30, "tilt": -2 },
+            { "x": 42, "y": 1541, "w": 996, "h": 190, "delay": 0.62, "radius": 30, "tilt": 2 }
+          ]
+        },
+        { "kind": "play", "clip": "bal", "from": 0.6, "to": 2.6 }
+      ]
+    },
+    {
+      "title": [{ "text": "Pix copia e cola", "accent": ["Pix"] }],
+      "subtitle": "com o valor certinho",
+      "whip": true,
+      "steps": [
+        { "kind": "play", "clip": "pix", "from": 0, "to": 1.7 },
+        {
+          "kind": "freeze",
+          "seconds": 2.2,
+          "fy": 0.66,
+          "cards": [{ "x": 63, "y": 1412, "w": 954, "h": 378, "delay": 0.35, "radius": 48, "tilt": -2 }]
+        },
+        { "kind": "play", "clip": "pix", "from": 1.7, "to": 2.8 }
+      ]
+    }
+  ],
+  "endSeconds": 3.9
+}

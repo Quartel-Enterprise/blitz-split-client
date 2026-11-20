@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.provider.crashlytics.startCrashReporting
 import com.quare.blitzsplit.push.PushSetup
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
+import com.quare.blitzsplit.shared.storescreenshots.startBlitzSplitForStoreVideoIfAsked
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 
@@ -25,7 +26,10 @@ class BlitzSplitApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.HAS_FIREBASE) startCrashReporting(isDebug = BuildConfig.DEBUG)
-        startBlitzSplitKoin { androidContext(this@BlitzSplitApplication) }
+        val startedForStoreVideo =
+            BuildConfig.DEBUG &&
+                startBlitzSplitForStoreVideoIfAsked(this) { androidContext(this@BlitzSplitApplication) }
+        if (!startedForStoreVideo) startBlitzSplitKoin { androidContext(this@BlitzSplitApplication) }
         if (BuildConfig.HAS_FIREBASE && BuildConfig.COLLECTS_ANALYTICS && !BuildConfig.DEBUG) {
             get<AnalyticsHub>().attach(FirebaseAnalyticsService(this))
         } else if (BuildConfig.HAS_FIREBASE) {
