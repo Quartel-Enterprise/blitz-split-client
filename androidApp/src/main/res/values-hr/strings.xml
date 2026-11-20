@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Nespremljene promjene bit će izgubljene.</string>
     <string name="discard_changes_discard">Odbaci</string>
     <string name="discard_changes_keep_editing">Nastavi uređivati</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Sat</string>
+    <string name="watch_connected_title">Uređaj %1$s povezan je s tvojim računom</string>
+    <string name="watch_connected_title_unnamed">Sat je povezan s tvojim računom</string>
+    <string name="watch_connected_text">Vidi tvoje grupe i sam se sinkronizira. Za odspajanje se odjavi na satu.</string>
 </resources>

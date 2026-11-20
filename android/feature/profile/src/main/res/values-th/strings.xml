@@ -145,6 +145,8 @@
     <string name="profile_bitcoin_in_sats_detail">แสดงและพิมพ์จำนวน bitcoin เป็น sats (1 ₿ = 100,000,000 sats)</string>
     <string name="profile_category_map">แผนที่หมวดหมู่</string>
     <string name="profile_category_map_detail">คำที่ใช้เลือกหมวดหมู่ของบิล</string>
+    <string name="profile_connect_watch">เชื่อมต่อนาฬิกา</string>
+    <string name="profile_connect_watch_detail">ด้วยรหัสที่แสดงบนนาฬิกา</string>
     <string name="profile_photo_open">ดูรูปภาพ</string>
     <string name="profile_share">แชร์โปรไฟล์</string>
     <string name="profile_share_message">นี่คือโปรไฟล์ของฉันบน Blitz Split: %1$s</string>

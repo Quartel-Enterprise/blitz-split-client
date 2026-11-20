@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Horloge koppelen</string>
+    <string name="connect_watch_close">Sluiten</string>
+    <string name="connect_watch_body">Typ de code die je horloge toont. Het logt in op je account en synchroniseert daarna vanzelf.</string>
+    <string name="connect_watch_code_label">Horlogecode</string>
+    <string name="connect_watch_error_invalid">Verkeerde of verlopen code. Maak een nieuwe aan op het horloge.</string>
+    <string name="connect_watch_error_too_many">Te veel verkeerde codes. Wacht een paar minuten en probeer het opnieuw.</string>
+    <string name="connect_watch_error_needs_account">Koppel eerst een account: je gegevens staan alleen op dit apparaat.</string>
+    <string name="connect_watch_error_failed">Kan het horloge niet koppelen. Probeer het opnieuw.</string>
+    <string name="connect_watch_offline">Voor het koppelen van het horloge is internet nodig.</string>
+    <string name="connect_watch_own_watch_only">Typ alleen een code die je eigen horloge toont: wie dat horloge heeft, komt in je account.</string>
+    <string name="connect_watch_validity">De code is 5 minuten geldig, en maar één keer.</string>
+    <string name="connect_watch_button">Koppelen</string>
+    <string name="connect_watch_connected_title">Horloge gekoppeld</string>
+    <string name="connect_watch_connected_body">Het ziet je groepen en synchroniseert vanzelf. Log uit op het horloge om het te ontkoppelen.</string>
+</resources>

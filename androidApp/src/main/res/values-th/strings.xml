@@ -33,4 +33,9 @@
     <string name="discard_changes_message">การเปลี่ยนแปลงที่ยังไม่ได้บันทึกจะหายไป</string>
     <string name="discard_changes_discard">ทิ้ง</string>
     <string name="discard_changes_keep_editing">แก้ไขต่อ</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">นาฬิกา</string>
+    <string name="watch_connected_title">เชื่อมต่อ %1$s กับบัญชีของคุณแล้ว</string>
+    <string name="watch_connected_title_unnamed">เชื่อมต่อนาฬิกากับบัญชีของคุณแล้ว</string>
+    <string name="watch_connected_text">นาฬิกาจะเห็นกลุ่มของคุณและซิงค์เอง หากต้องการยกเลิกการเชื่อมต่อ ให้ออกจากระบบบนนาฬิกา</string>
 </resources>

@@ -33,4 +33,9 @@
     <string name="discard_changes_message">غیر محفوظ تبدیلیاں ضائع ہو جائیں گی۔</string>
     <string name="discard_changes_discard">رد کریں</string>
     <string name="discard_changes_keep_editing">ترمیم جاری رکھیں</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">گھڑی</string>
+    <string name="watch_connected_title">%1$s آپ کے اکاؤنٹ سے کنیکٹ ہو گئی</string>
+    <string name="watch_connected_title_unnamed">گھڑی آپ کے اکاؤنٹ سے کنیکٹ ہو گئی</string>
+    <string name="watch_connected_text">یہ آپ کے گروپ دیکھتی ہے اور خود بخود سنک ہوتی ہے۔ اسے ڈس کنیکٹ کرنے کے لیے گھڑی پر سائن آؤٹ کریں۔</string>
 </resources>

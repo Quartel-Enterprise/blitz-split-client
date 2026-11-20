@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Unsaved changes will be lost.</string>
     <string name="discard_changes_discard">Discard</string>
     <string name="discard_changes_keep_editing">Keep editing</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Watch</string>
+    <string name="watch_connected_title">%1$s connected to your account</string>
+    <string name="watch_connected_title_unnamed">Watch connected to your account</string>
+    <string name="watch_connected_text">It sees your groups and syncs on its own. To disconnect it, sign out on the watch.</string>
 </resources>

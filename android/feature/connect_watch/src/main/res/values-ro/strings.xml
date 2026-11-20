@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Conectează ceasul</string>
+    <string name="connect_watch_close">Închide</string>
+    <string name="connect_watch_body">Scrie codul afișat pe ceas. Ceasul se conectează la contul tău și apoi se sincronizează singur.</string>
+    <string name="connect_watch_code_label">Codul ceasului</string>
+    <string name="connect_watch_error_invalid">Cod greșit sau expirat. Generează altul pe ceas.</string>
+    <string name="connect_watch_error_too_many">Prea multe coduri greșite. Așteaptă câteva minute și reîncearcă.</string>
+    <string name="connect_watch_error_needs_account">Conectează mai întâi un cont: datele tale sunt doar pe acest dispozitiv.</string>
+    <string name="connect_watch_error_failed">Conectarea ceasului nu a reușit. Încearcă din nou.</string>
+    <string name="connect_watch_offline">Ca să conectezi ceasul, ai nevoie de internet.</string>
+    <string name="connect_watch_own_watch_only">Scrie doar un cod afișat pe propriul tău ceas: cine are acel ceas intră în contul tău.</string>
+    <string name="connect_watch_validity">Codul este valabil 5 minute, o singură dată.</string>
+    <string name="connect_watch_button">Conectează</string>
+    <string name="connect_watch_connected_title">Ceas conectat</string>
+    <string name="connect_watch_connected_body">Vede grupurile tale și se sincronizează singur. Ca să-l deconectezi, deconectează-te pe ceas.</string>
+</resources>

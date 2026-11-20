@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Saati bağla</string>
+    <string name="connect_watch_close">Kapat</string>
+    <string name="connect_watch_body">Saatinde görünen kodu yaz. Saat hesabına giriş yapar ve sonra kendi kendine eşitlenir.</string>
+    <string name="connect_watch_code_label">Saat kodu</string>
+    <string name="connect_watch_error_invalid">Kod yanlış veya süresi dolmuş. Saatte yeni bir kod oluştur.</string>
+    <string name="connect_watch_error_too_many">Çok fazla yanlış kod. Birkaç dakika bekleyip tekrar dene.</string>
+    <string name="connect_watch_error_needs_account">Önce bir hesap bağla: verilerin yalnızca bu cihazda.</string>
+    <string name="connect_watch_error_failed">Saat bağlanamadı. Tekrar dene.</string>
+    <string name="connect_watch_offline">Saati bağlamak için internet gerekir.</string>
+    <string name="connect_watch_own_watch_only">Yalnızca kendi saatinde görünen bir kodu yaz: o saate sahip olan kişi hesabına girer.</string>
+    <string name="connect_watch_validity">Kod 5 dakika geçerlidir ve yalnızca bir kez kullanılabilir.</string>
+    <string name="connect_watch_button">Bağla</string>
+    <string name="connect_watch_connected_title">Saat bağlandı</string>
+    <string name="connect_watch_connected_body">Gruplarını görür ve kendi kendine eşitlenir. Bağlantıyı kesmek için saatte çıkış yap.</string>
+</resources>

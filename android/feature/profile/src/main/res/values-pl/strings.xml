@@ -157,6 +157,8 @@
     <string name="profile_bitcoin_in_sats_detail">Pokazuje i wpisuje kwoty w bitcoinach w satsach (1 ₿ = 100 000 000 sats).</string>
     <string name="profile_category_map">Mapa kategorii</string>
     <string name="profile_category_map_detail">Słowa, które wybierają kategorię wydatku</string>
+    <string name="profile_connect_watch">Połącz zegarek</string>
+    <string name="profile_connect_watch_detail">Kodem wyświetlanym na zegarku</string>
     <string name="profile_photo_open">Zobacz zdjęcie</string>
     <string name="profile_share">Udostępnij profil</string>
     <string name="profile_share_message">Oto mój profil w Blitz Split: %1$s</string>

@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Los cambios sin guardar se perderán.</string>
     <string name="discard_changes_discard">Descartar</string>
     <string name="discard_changes_keep_editing">Seguir editando</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Reloj</string>
+    <string name="watch_connected_title">%1$s conectado a tu cuenta</string>
+    <string name="watch_connected_title_unnamed">Reloj conectado a tu cuenta</string>
+    <string name="watch_connected_text">Ve tus grupos y se sincroniza solo. Para desconectarlo, cierra sesión en el reloj.</string>
 </resources>
