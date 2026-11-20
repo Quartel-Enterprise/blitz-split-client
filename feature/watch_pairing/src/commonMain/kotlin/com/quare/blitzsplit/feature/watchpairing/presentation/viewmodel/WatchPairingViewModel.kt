@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.provider.analytics.domain.usecase.TrackEvent
 import com.quare.blitzsplit.core.utils.CurrentTimeMillis
+import com.quare.blitzsplit.core.watch.domain.model.TooManyWatchPairingAttemptsException
 import com.quare.blitzsplit.core.watch.domain.model.WatchPairingCode
 import com.quare.blitzsplit.core.watch.domain.usecase.AwaitWatchPairing
 import com.quare.blitzsplit.core.watch.domain.usecase.DismissSignedOutOnPhone
@@ -169,7 +170,8 @@ class WatchPairingViewModel(
             uiState.update { it.copy(code = code.code) }
             startPolling(code)
             // Why: a code with less than a minute left is never on screen, so a new one replaces it then.
-            delay((code.expiresAt - currentTimeMillis()).milliseconds - minTimeLeft)
+            // Why: never at once, so a watch whose clock is off can't ask for code after code.
+            delay(maxOf((code.expiresAt - currentTimeMillis()).milliseconds - minTimeLeft, minTimeLeft))
             if (pairingCode == code) pairingCode = null
             if (uiState.value.step == WatchPairingStep.CODE) showCode()
         }
@@ -211,7 +213,11 @@ class WatchPairingViewModel(
             .onFailure {
                 // Why: read now, since the connection may have dropped during the request.
                 val isOnline = connectivityObserver.observe().first()
-                val error = if (isOnline) WatchPairingError.FAILED else WatchPairingError.NO_INTERNET
+                val error = when {
+                    !isOnline -> WatchPairingError.NO_INTERNET
+                    it is TooManyWatchPairingAttemptsException -> WatchPairingError.TOO_MANY_ATTEMPTS
+                    else -> WatchPairingError.FAILED
+                }
                 uiState.update { state ->
                     state.copy(
                         step = WatchPairingStep.WELCOME,
@@ -238,9 +244,10 @@ class WatchPairingViewModel(
                     codeExpired(code)
                     return@launch
                 }
-                phoneWait?.cancel()
-                request?.cancel()
+                // Why: the wait for the phone and the code's refresh go on until the sign in actually worked.
                 if (signInWithWatchPairing(tokenHash).isSuccess) {
+                    phoneWait?.cancel()
+                    request?.cancel()
                     showStep(WatchPairingStep.CONNECTED)
                     return@launch
                 }

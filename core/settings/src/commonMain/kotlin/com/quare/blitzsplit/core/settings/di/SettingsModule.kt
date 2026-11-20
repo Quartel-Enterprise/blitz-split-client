@@ -29,6 +29,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.UpdateBitcoinInSats
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateDynamicColors
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateGroupsLayout
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastNotificationPromptAt
+import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastSyncedAt
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateLastUpdatePromptAt
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateStatsChartPreferences
 import com.quare.blitzsplit.core.settings.domain.usecase.UpdateThemePreference
@@ -57,6 +58,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateBitcoinInSat
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateDynamicColorsUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateGroupsLayoutUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateLastNotificationPromptAtUseCase
+import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateLastSyncedAtUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateLastUpdatePromptAtUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateStatsChartPreferencesUseCase
 import com.quare.blitzsplit.core.settings.domain.usecase.impl.UpdateThemePreferenceUseCase
@@ -86,6 +88,7 @@ val settingsModule = module {
     factoryOf(::UpdateLastUpdatePromptAtUseCase).bind<UpdateLastUpdatePromptAt>()
     factoryOf(::ObserveLastNotificationPromptAtUseCase).bind<ObserveLastNotificationPromptAt>()
     factoryOf(::ObserveLastSyncedAtUseCase).bind<ObserveLastSyncedAt>()
+    factoryOf(::UpdateLastSyncedAtUseCase).bind<UpdateLastSyncedAt>()
     factoryOf(::UpdateLastNotificationPromptAtUseCase).bind<UpdateLastNotificationPromptAt>()
     factoryOf(::ObserveAppBannerDismissedUseCase).bind<ObserveAppBannerDismissed>()
     factoryOf(::DismissAppBannerUseCase).bind<DismissAppBanner>()

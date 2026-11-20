@@ -3,6 +3,7 @@ package com.quare.blitzsplit.core.sync.di
 import com.quare.blitzsplit.core.sync.AppForeground
 import com.quare.blitzsplit.core.sync.DeviceSettingsLastSyncRecorder
 import com.quare.blitzsplit.core.sync.FirstDownload
+import com.quare.blitzsplit.core.sync.LastSyncRecorder
 import com.quare.blitzsplit.core.sync.PersonalCategoryData
 import com.quare.blitzsplit.core.sync.SyncCoordinator
 import com.quare.blitzsplit.core.sync.connect.ProviderConnector
@@ -62,6 +63,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val syncModule = module {
+    // Why: only the watch shows when it last synced; elsewhere a sync writes nothing for it.
+    single<LastSyncRecorder> { LastSyncRecorder {} }
     single { FirstDownload() }
     single { AppForeground() }
     singleOf(::SupabaseRemoteChangeRemoteDataSource).bind<RemoteChangeRemoteDataSource>()
@@ -91,7 +94,7 @@ val syncModule = module {
             appForeground = get(),
             connectivityObserver = get(),
             crashReporter = get(),
-            lastSyncRecorder = DeviceSettingsLastSyncRecorder(get(), get()),
+            lastSyncRecorder = get(),
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
     }
@@ -118,4 +121,9 @@ val syncModule = module {
     factoryOf(::LeaveGroupUseCase).bind<LeaveGroup>()
     factoryOf(::DeleteGroupUseCase).bind<DeleteGroup>()
     factoryOf(::ClaimGuestAsMeUseCase).bind<ClaimGuestAsMe>()
+}
+
+// Why: the watch apps add it after the shared modules, so each sync that went through keeps its time there.
+val lastSyncRecordingModule = module {
+    single<LastSyncRecorder> { DeviceSettingsLastSyncRecorder(get(), get(), get()) }
 }

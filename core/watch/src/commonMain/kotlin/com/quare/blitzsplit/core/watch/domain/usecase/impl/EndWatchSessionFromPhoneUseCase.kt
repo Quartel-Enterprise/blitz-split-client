@@ -12,11 +12,11 @@ class EndWatchSessionFromPhoneUseCase(
     private val signOutWhenSynced: SignOutWhenSynced,
     private val notice: WatchSignOutNotice,
 ) : EndWatchSessionFromPhone {
-    override suspend fun invoke(userId: String): Result<Boolean> {
-        if (accountRepository.observeStatus().first().userIdOrNull() != userId) return Result.success(false)
+    override suspend fun invoke(userId: String): Boolean {
+        if (accountRepository.observeStatus().first().userIdOrNull() != userId) return false
         // Why: a payment recorded offline on the watch goes up first, so the sign out never loses it.
         signOutWhenSynced()
         notice.show()
-        return Result.success(true)
+        return true
     }
 }

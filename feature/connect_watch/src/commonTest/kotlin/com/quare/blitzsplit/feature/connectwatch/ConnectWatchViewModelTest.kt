@@ -331,19 +331,22 @@ class ConnectWatchViewModelTest {
         }
 
     @Test
-    fun `GIVEN the server does not answer WHEN Connect is clicked THEN says it failed`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(approveResult = Result.failure(IllegalStateException("No answer")))
-        viewModel.onEvent(ConnectWatchUiEvent.OnCodeChanged("K7P4QX"))
+    fun `GIVEN the server does not answer WHEN Connect is clicked THEN says it failed and lets Connect again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(approveResult = Result.failure(IllegalStateException("No answer")))
+            viewModel.onEvent(ConnectWatchUiEvent.OnCodeChanged("K7P4QX"))
 
-        // When
-        viewModel.onEvent(ConnectWatchUiEvent.OnConnectClicked)
+            // When
+            viewModel.onEvent(ConnectWatchUiEvent.OnConnectClicked)
 
-        // Then
-        assertEquals(ConnectWatchError.FAILED, viewModel.uiState.value.error)
-        assertFalse(viewModel.uiState.value.isConnecting)
-        assertEquals(listOf("connect_watch_clicked" to mapOf<String, Any>("result" to "failed")), trackedEvents)
-    }
+            // Then
+            assertEquals(ConnectWatchError.FAILED, viewModel.uiState.value.error)
+            assertFalse(viewModel.uiState.value.isConnecting)
+            assertEquals(listOf("connect_watch_clicked" to mapOf<String, Any>("result" to "failed")), trackedEvents)
+            assertTrue(viewModel.uiState.value.canConnect)
+            assertFalse(viewModel.uiState.value.isCodeWrong)
+        }
 
     @Test
     fun `GIVEN a wrong code shown WHEN another code is typed THEN clears the error and enables Connect again`() =

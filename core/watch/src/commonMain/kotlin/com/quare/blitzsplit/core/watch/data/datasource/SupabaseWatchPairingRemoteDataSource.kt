@@ -22,10 +22,12 @@ class SupabaseWatchPairingRemoteDataSource(
     }
 
     override suspend fun requestCode(): WatchPairingCodeDto {
-        val response = functions.invoke(
-            function = REQUEST_FUNCTION,
-            body = EmptyRequestDto(),
-        )
+        val response = mapErrors {
+            functions.invoke(
+                function = REQUEST_FUNCTION,
+                body = EmptyRequestDto(),
+            )
+        }
         return json.decodeFromString<WatchPairingCodeDto>(response.bodyAsText())
     }
 

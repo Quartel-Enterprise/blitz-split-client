@@ -390,6 +390,32 @@ class WatchGroupViewModelTest {
         }
 
     @Test
+    fun `GIVEN the payment being saved WHEN confirming again THEN records it once`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(recordGate = CompletableDeferred())
+        viewModel.onEvent(WatchGroupUiEvent.OnIPaidClicked("carla"))
+        viewModel.onEvent(WatchGroupUiEvent.OnPaymentConfirmed)
+
+        // When
+        viewModel.onEvent(WatchGroupUiEvent.OnPaymentConfirmed)
+
+        // Then
+        assertEquals(1, recordedCalls.size)
+    }
+
+    @Test
+    fun `GIVEN no question open WHEN dismissing THEN tracks nothing`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+
+        // When
+        viewModel.onEvent(WatchGroupUiEvent.OnConfirmDismissed)
+
+        // Then
+        assertEquals(emptyList(), trackedEvents)
+    }
+
+    @Test
     fun `GIVEN you owe two people WHEN the payment is being saved THEN the rows are not clickable`() =
         runTest(testDispatcher) {
             // Given
@@ -562,6 +588,22 @@ class WatchGroupViewModelTest {
 
             // Then
             assertEquals(listOf(Route.Home, Route.WatchBalances, route, Route.Profile), navigator.backStack.value)
+        }
+
+    @Test
+    fun `GIVEN another screen over the group WHEN a sync settles the group THEN its debts and question go`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(WatchGroupUiEvent.OnIPaidClicked("carla"))
+            navigator.navigate(Route.Profile)
+
+            // When
+            peopleBalances.value = settled
+
+            // Then
+            assertEquals(emptyList(), viewModel.uiState.value.debts)
+            assertNull(viewModel.uiState.value.confirming)
         }
 
     @Test

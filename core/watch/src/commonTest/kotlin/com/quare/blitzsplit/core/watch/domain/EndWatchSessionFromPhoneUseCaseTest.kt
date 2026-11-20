@@ -25,7 +25,7 @@ class EndWatchSessionFromPhoneUseCaseTest {
         val result = useCase(PIERRE_ID)
 
         // Then
-        assertEquals(Result.success(true), result)
+        assertEquals(true, result)
         assertEquals(1, signOutCount)
         assertTrue(notice.isShown.value)
     }
@@ -40,7 +40,7 @@ class EndWatchSessionFromPhoneUseCaseTest {
             val result = useCase(PIERRE_ID)
 
             // Then
-            assertEquals(Result.success(true), result)
+            assertEquals(true, result)
             assertEquals(1, signOutCount)
             assertTrue(notice.isShown.value)
         }
@@ -55,7 +55,7 @@ class EndWatchSessionFromPhoneUseCaseTest {
             val result = useCase(PIERRE_ID)
 
             // Then
-            assertEquals(Result.success(false), result)
+            assertEquals(false, result)
             assertEquals(0, signOutCount)
             assertFalse(notice.isShown.value)
         }
@@ -69,7 +69,7 @@ class EndWatchSessionFromPhoneUseCaseTest {
         val result = useCase(PIERRE_ID)
 
         // Then
-        assertEquals(Result.success(false), result)
+        assertEquals(false, result)
         assertEquals(0, signOutCount)
         assertFalse(notice.isShown.value)
     }

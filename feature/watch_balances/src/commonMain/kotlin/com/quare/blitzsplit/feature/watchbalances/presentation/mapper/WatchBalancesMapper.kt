@@ -2,6 +2,7 @@ package com.quare.blitzsplit.feature.watchbalances.presentation.mapper
 
 import com.quare.blitzsplit.core.expenses.domain.model.GroupMoney
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
+import com.quare.blitzsplit.core.expenses.domain.model.PersonBalance
 import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchDebt
@@ -29,7 +30,7 @@ internal object WatchBalancesMapper {
     fun groupsOf(
         balances: PeopleBalances,
         money: Map<String, GroupMoney>,
-    ): List<WatchGroupRow> = balances.people
+    ): List<WatchGroupRow> = everyoneOf(balances)
         .flatMap { person -> person.groups.map { part -> person.currency to part } }
         .groupBy { (currency, part) -> part.groupId to currency }
         .map { (key, parts) ->
@@ -52,7 +53,7 @@ internal object WatchBalancesMapper {
         balances: PeopleBalances,
         groupId: String,
         currency: GroupCurrency,
-    ): List<WatchDebt> = balances.people
+    ): List<WatchDebt> = everyoneOf(balances)
         .filter { it.currency == currency }
         .flatMap { person ->
             person.groups
@@ -73,10 +74,13 @@ internal object WatchBalancesMapper {
     fun meMemberIdOf(
         balances: PeopleBalances,
         groupId: String,
-    ): String? = balances.people
+    ): String? = everyoneOf(balances)
         .flatMap { it.groups }
         .firstOrNull { it.groupId == groupId }
         ?.meMemberId
+
+    // Why: whoever has an open pair with you in some group, also when their groups offset each other to zero overall.
+    fun everyoneOf(balances: PeopleBalances): List<PersonBalance> = balances.people + balances.evenPeople
 
     fun isQueued(
         money: GroupMoney?,

@@ -86,10 +86,12 @@ internal fun total(
 internal fun balances(
     vararg people: PersonBalance,
     totals: List<PeopleTotal> = emptyList(),
+    evenPeople: List<PersonBalance> = emptyList(),
 ): PeopleBalances = PeopleBalances(
     people = people.toList(),
     totals = totals,
     me = null,
+    evenPeople = evenPeople,
 )
 
 internal fun settlement(

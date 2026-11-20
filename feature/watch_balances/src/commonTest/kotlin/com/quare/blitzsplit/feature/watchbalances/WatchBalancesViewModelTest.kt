@@ -171,6 +171,25 @@ class WatchBalancesViewModelTest {
         }
 
     @Test
+    fun `GIVEN someone even overall WHEN the balances open THEN each of their groups shows`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(
+                balances = balances(
+                    evenPeople = listOf(
+                        person("Carla", pair(FLORIPA, "carla", 5_000L), pair(APE, "carla-ape", -5_000L)),
+                    ),
+                ),
+            )
+
+            // When
+            val groups = viewModel.uiState.value.groups
+
+            // Then
+            assertEquals(setOf(FLORIPA to 5_000L, APE to -5_000L), groups.map { it.groupId to it.netMinor }.toSet())
+        }
+
+    @Test
     fun `GIVEN groups you owe and groups that owe you WHEN the balances open THEN the largest balance comes first`() =
         runTest(testDispatcher) {
             // Given

@@ -20,7 +20,7 @@ class WatchPairingRepositoryImplTest {
     private lateinit var repository: WatchPairingRepositoryImpl
 
     @Test
-    fun `GIVEN the server hands out a code WHEN requesting a code THEN returns its code secret expiry and interval`() =
+    fun `GIVEN the server hands out a code WHEN requesting it THEN expires 5 minutes later on the watch clock`() =
         runTest {
             // Given
             prepareScenario(
@@ -38,7 +38,7 @@ class WatchPairingRepositoryImplTest {
                 WatchPairingCode(
                     code = CODE,
                     secret = SECRET,
-                    expiresAt = 1_795_176_300_123L,
+                    expiresAt = NOW + 300_000L,
                     pollInterval = 3.seconds,
                 ),
                 result.getOrNull(),
@@ -67,18 +67,6 @@ class WatchPairingRepositoryImplTest {
 
         // Then
         assertIs<IllegalStateException>(result.exceptionOrNull())
-    }
-
-    @Test
-    fun `GIVEN an expiry that is not an instant WHEN requesting a code THEN fails`() = runTest {
-        // Given
-        prepareScenario(codeDto = codeDto(expiresAt = "in five minutes"))
-
-        // When
-        val result = repository.requestCode()
-
-        // Then
-        assertIs<IllegalArgumentException>(result.exceptionOrNull())
     }
 
     @Test
@@ -250,11 +238,15 @@ class WatchPairingRepositoryImplTest {
             pollResponse = pollResponse,
             pollError = pollError,
         )
-        repository = WatchPairingRepositoryImpl(remote = remote)
+        repository = WatchPairingRepositoryImpl(
+            remote = remote,
+            currentTimeMillis = { NOW },
+        )
     }
 
     private companion object {
         const val CODE = "K7P4QX"
+        const val NOW = 1_795_176_000_000L
         const val SECRET = "watch-secret"
         const val TOKEN_HASH = "token-hash"
     }

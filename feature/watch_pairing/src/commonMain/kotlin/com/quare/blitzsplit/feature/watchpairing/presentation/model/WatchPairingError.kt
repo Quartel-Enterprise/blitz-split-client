@@ -7,4 +7,7 @@ enum class WatchPairingError {
 
     // Why: the server didn't give a code, or the sign in it approved failed.
     FAILED,
+
+    // Why: the server takes no more codes from this network for a while.
+    TOO_MANY_ATTEMPTS,
 }

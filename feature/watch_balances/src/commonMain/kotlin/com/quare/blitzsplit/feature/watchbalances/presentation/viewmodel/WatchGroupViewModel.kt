@@ -79,10 +79,21 @@ class WatchGroupViewModel(
             this.balances = balances
             val debts = WatchBalancesMapper.debtsOf(balances, route.groupId, route.currency)
             if (debts.isEmpty()) {
+                // Why: a group left under another screen shows no debt it no longer has, nor its question.
+                uiState.update {
+                    it.copy(
+                        netMinor = 0,
+                        debts = emptyList(),
+                        confirming = null,
+                    )
+                }
                 close()
                 return@combine
             }
-            val group = balances.people.flatMap { it.groups }.first { it.groupId == route.groupId }
+            val group = WatchBalancesMapper.everyoneOf(balances).flatMap { it.groups }.first {
+                it.groupId ==
+                    route.groupId
+            }
             uiState.update { state ->
                 state.copy(
                     isLoaded = true,
@@ -108,9 +119,14 @@ class WatchGroupViewModel(
     // Why: a tap the screen didn't take (on someone who owes you, while a payment saves) neither counts nor acts.
     override fun isAccepted(event: WatchGroupUiEvent): Boolean = when (event) {
         WatchGroupUiEvent.OnRecordedShown -> awaitsRecordedShown
+
         is WatchGroupUiEvent.OnIPaidClicked -> !isClosing && canAskToConfirm(event.memberId)
-        else -> !isClosing
+
+        // Why: ✓ and ✕ only answer an open question, once: a second ✓ while it saves would record it twice.
+        WatchGroupUiEvent.OnPaymentConfirmed, WatchGroupUiEvent.OnConfirmDismissed -> isAnswerable()
     }
+
+    private fun isAnswerable(): Boolean = !isClosing && uiState.value.confirming != null && !uiState.value.isRecording
 
     private fun canAskToConfirm(memberId: String): Boolean {
         val state = uiState.value

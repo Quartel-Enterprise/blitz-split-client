@@ -94,11 +94,7 @@ class GlobalBalancesViewModel(
     val actionWatcher: FlowWatcher<GlobalBalancesUiAction> = FlowWatcher(uiAction)
 
     // Why: what Room said last, which the rows are drawn from again when the filter or a toggle changes.
-    private var balances = PeopleBalances(
-        people = emptyList(),
-        totals = emptyList(),
-        me = null,
-    )
+    private var balances = PeopleBalances.NONE
 
     // Why: the people wait for Room's first answer and for the account's copy on this device to be whole.
     private var isBalancesRead = false

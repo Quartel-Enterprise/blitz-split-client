@@ -4062,6 +4062,7 @@ class GroupsViewModelTest {
             ),
         ),
         me = null,
+        evenPeople = emptyList(),
     )
 
     private fun daysAgo(days: Int): Long = now - days.days.inWholeMilliseconds
