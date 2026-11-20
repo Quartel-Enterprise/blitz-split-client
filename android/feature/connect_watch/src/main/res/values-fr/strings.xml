@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Connecter la montre</string>
+    <string name="connect_watch_close">Fermer</string>
+    <string name="connect_watch_body">Saisis le code affiché sur ta montre. Elle se connecte à ton compte puis se synchronise toute seule.</string>
+    <string name="connect_watch_code_label">Code de la montre</string>
+    <string name="connect_watch_error_invalid">Code incorrect ou expiré. Génère-en un autre sur la montre.</string>
+    <string name="connect_watch_error_too_many">Trop de codes incorrects. Attends quelques minutes et réessaie.</string>
+    <string name="connect_watch_error_needs_account">Connecte d’abord un compte : tes données sont uniquement sur cet appareil.</string>
+    <string name="connect_watch_error_failed">Impossible de connecter la montre. Réessaie.</string>
+    <string name="connect_watch_offline">Connecter la montre nécessite internet.</string>
+    <string name="connect_watch_own_watch_only">Saisis uniquement un code affiché sur ta propre montre : la personne qui a cette montre accède à ton compte.</string>
+    <string name="connect_watch_validity">Le code est valable 5 minutes, une seule fois.</string>
+    <string name="connect_watch_button">Connecter</string>
+    <string name="connect_watch_connected_title">Montre connectée</string>
+    <string name="connect_watch_connected_body">Elle voit tes groupes et se synchronise toute seule. Pour la déconnecter, déconnecte-toi sur la montre.</string>
+</resources>

@@ -8,12 +8,14 @@ import com.quare.blitzsplit.core.watch.data.dto.WatchPairingPollResponseDto
 import com.quare.blitzsplit.core.watch.domain.model.ExpiredWatchPairingException
 import com.quare.blitzsplit.core.watch.domain.model.InvalidWatchPairingCodeException
 import com.quare.blitzsplit.core.watch.domain.model.TooManyWatchPairingAttemptsException
+import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.functions.Functions
 import io.ktor.client.statement.bodyAsText
 import kotlinx.serialization.json.Json
 
 class SupabaseWatchPairingRemoteDataSource(
+    private val auth: Auth,
     private val functions: Functions,
 ) : WatchPairingRemoteDataSource {
     private val json = Json {
@@ -31,7 +33,12 @@ class SupabaseWatchPairingRemoteDataSource(
         return json.decodeFromString<WatchPairingCodeDto>(response.bodyAsText())
     }
 
+    /*
+     * Why: a nearby watch's message may start the phone's process cold, before Auth loaded (and refreshed) the stored
+     * session, and the call would then go without it and be refused.
+     */
     override suspend fun approve(code: String) {
+        auth.awaitInitialization()
         mapErrors {
             functions.invoke(
                 function = APPROVE_FUNCTION,

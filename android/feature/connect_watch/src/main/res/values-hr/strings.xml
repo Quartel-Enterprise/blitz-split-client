@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Poveži sat</string>
+    <string name="connect_watch_close">Zatvori</string>
+    <string name="connect_watch_body">Upiši kod koji prikazuje tvoj sat. Sat se prijavljuje u tvoj račun i zatim se sam sinkronizira.</string>
+    <string name="connect_watch_code_label">Kod sata</string>
+    <string name="connect_watch_error_invalid">Pogrešan ili istekao kod. Zatraži novi na satu.</string>
+    <string name="connect_watch_error_too_many">Previše pogrešnih kodova. Pričekaj nekoliko minuta i pokušaj ponovno.</string>
+    <string name="connect_watch_error_needs_account">Najprije poveži račun: tvoji su podaci samo na ovom uređaju.</string>
+    <string name="connect_watch_error_failed">Povezivanje sata nije uspjelo. Pokušaj ponovno.</string>
+    <string name="connect_watch_offline">Za povezivanje sata potreban je internet.</string>
+    <string name="connect_watch_own_watch_only">Upisuj samo kod koji prikazuje tvoj vlastiti sat: tko ima taj sat, ulazi u tvoj račun.</string>
+    <string name="connect_watch_validity">Kod vrijedi 5 minuta i samo jednom.</string>
+    <string name="connect_watch_button">Poveži</string>
+    <string name="connect_watch_connected_title">Sat je povezan</string>
+    <string name="connect_watch_connected_body">Vidi tvoje grupe i sam se sinkronizira. Za odspajanje se odjavi na satu.</string>
+</resources>

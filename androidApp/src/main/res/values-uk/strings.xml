@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Незбережені зміни буде втрачено.</string>
     <string name="discard_changes_discard">Скасувати зміни</string>
     <string name="discard_changes_keep_editing">Продовжити редагування</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Годинник</string>
+    <string name="watch_connected_title">Пристрій %1$s підключено до твого облікового запису</string>
+    <string name="watch_connected_title_unnamed">Годинник підключено до твого облікового запису</string>
+    <string name="watch_connected_text">Він бачить твої групи й синхронізується сам. Щоб відключити його, вийди з облікового запису на годиннику.</string>
 </resources>

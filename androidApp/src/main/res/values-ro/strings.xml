@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Modificările nesalvate se vor pierde.</string>
     <string name="discard_changes_discard">Renunță</string>
     <string name="discard_changes_keep_editing">Continuă editarea</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Ceas</string>
+    <string name="watch_connected_title">%1$s s-a conectat la contul tău</string>
+    <string name="watch_connected_title_unnamed">Ceasul s-a conectat la contul tău</string>
+    <string name="watch_connected_text">Vede grupurile tale și se sincronizează singur. Ca să-l deconectezi, deconectează-te pe ceas.</string>
 </resources>

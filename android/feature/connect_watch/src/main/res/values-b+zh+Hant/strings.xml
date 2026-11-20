@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">連接手錶</string>
+    <string name="connect_watch_close">關閉</string>
+    <string name="connect_watch_body">輸入手錶上顯示的代碼。手錶會登入你的帳號，之後自動同步。</string>
+    <string name="connect_watch_code_label">手錶代碼</string>
+    <string name="connect_watch_error_invalid">代碼錯誤或已過期。請在手錶上重新取得。</string>
+    <string name="connect_watch_error_too_many">錯誤代碼次數過多。請等幾分鐘後重試。</string>
+    <string name="connect_watch_error_needs_account">請先連結帳號：你的資料目前僅在此裝置上。</string>
+    <string name="connect_watch_error_failed">無法連接手錶，請重試。</string>
+    <string name="connect_watch_offline">連接手錶需要網路。</string>
+    <string name="connect_watch_own_watch_only">只輸入你自己手錶上顯示的代碼：拿著那支手錶的人會進入你的帳號。</string>
+    <string name="connect_watch_validity">代碼 5 分鐘內有效，且只能使用一次。</string>
+    <string name="connect_watch_button">連接</string>
+    <string name="connect_watch_connected_title">手錶已連接</string>
+    <string name="connect_watch_connected_body">手錶可以查看你的群組並自動同步。如需中斷連線，請在手錶上登出。</string>
+</resources>

@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Kaydedilmemiş değişiklikler kaybolacak.</string>
     <string name="discard_changes_discard">Sil</string>
     <string name="discard_changes_keep_editing">Düzenlemeye devam et</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Saat</string>
+    <string name="watch_connected_title">%1$s hesabına bağlandı</string>
+    <string name="watch_connected_title_unnamed">Saat hesabına bağlandı</string>
+    <string name="watch_connected_text">Gruplarını görür ve kendi kendine eşitlenir. Bağlantıyı kesmek için saatte çıkış yap.</string>
 </resources>

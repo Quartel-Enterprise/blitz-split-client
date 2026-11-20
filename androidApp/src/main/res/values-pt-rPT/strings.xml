@@ -20,4 +20,8 @@
     <string name="bill_link_offline_message">Abre o link de novo quando a ligação voltar.</string>
     <string name="discard_changes_message">As alterações não guardadas serão perdidas.</string>
     <string name="discard_changes_keep_editing">Continuar a editar</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_connected_title">%1$s ligado à tua conta</string>
+    <string name="watch_connected_title_unnamed">Relógio ligado à tua conta</string>
+    <string name="watch_connected_text">Ele vê os teus grupos e sincroniza sozinho. Para o desligar, termina sessão no relógio.</string>
 </resources>

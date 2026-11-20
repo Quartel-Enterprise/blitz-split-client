@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Kết nối đồng hồ</string>
+    <string name="connect_watch_close">Đóng</string>
+    <string name="connect_watch_body">Nhập mã hiển thị trên đồng hồ. Đồng hồ sẽ đăng nhập vào tài khoản của bạn và sau đó tự đồng bộ.</string>
+    <string name="connect_watch_code_label">Mã đồng hồ</string>
+    <string name="connect_watch_error_invalid">Mã sai hoặc đã hết hạn. Hãy tạo mã mới trên đồng hồ.</string>
+    <string name="connect_watch_error_too_many">Nhập sai mã quá nhiều lần. Hãy đợi vài phút rồi thử lại.</string>
+    <string name="connect_watch_error_needs_account">Hãy kết nối tài khoản trước: dữ liệu của bạn hiện chỉ có trên thiết bị này.</string>
+    <string name="connect_watch_error_failed">Không thể kết nối đồng hồ. Hãy thử lại.</string>
+    <string name="connect_watch_offline">Cần có internet để kết nối đồng hồ.</string>
+    <string name="connect_watch_own_watch_only">Chỉ nhập mã hiển thị trên đồng hồ của chính bạn: ai giữ đồng hồ đó sẽ vào được tài khoản của bạn.</string>
+    <string name="connect_watch_validity">Mã có hiệu lực trong 5 phút và chỉ dùng được một lần.</string>
+    <string name="connect_watch_button">Kết nối</string>
+    <string name="connect_watch_connected_title">Đã kết nối đồng hồ</string>
+    <string name="connect_watch_connected_body">Đồng hồ thấy các nhóm của bạn và tự đồng bộ. Để ngắt kết nối, hãy đăng xuất trên đồng hồ.</string>
+</resources>

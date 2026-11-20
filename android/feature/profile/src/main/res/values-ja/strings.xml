@@ -145,6 +145,8 @@
     <string name="profile_bitcoin_in_sats_detail">Bitcoinの金額をsatsで表示・入力します（1 ₿ = 100,000,000 sats）。</string>
     <string name="profile_category_map">カテゴリマップ</string>
     <string name="profile_category_map_detail">支出のカテゴリを決める言葉</string>
+    <string name="profile_connect_watch">ウォッチを接続</string>
+    <string name="profile_connect_watch_detail">ウォッチに表示されたコードで</string>
     <string name="profile_photo_open">写真を表示</string>
     <string name="profile_share">プロフィールを共有</string>
     <string name="profile_share_message">Blitz Splitの私のプロフィールです：%1$s</string>

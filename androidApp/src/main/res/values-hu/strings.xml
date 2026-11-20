@@ -31,4 +31,9 @@
     <string name="discard_changes_message">A nem mentett módosítások elvesznek.</string>
     <string name="discard_changes_discard">Elvetés</string>
     <string name="discard_changes_keep_editing">Szerkesztés folytatása</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Óra</string>
+    <string name="watch_connected_title">%1$s csatlakoztatva a fiókodhoz</string>
+    <string name="watch_connected_title_unnamed">Óra csatlakoztatva a fiókodhoz</string>
+    <string name="watch_connected_text">Látja a csoportjaidat, és magától szinkronizál. A leválasztáshoz jelentkezz ki az órán.</string>
 </resources>

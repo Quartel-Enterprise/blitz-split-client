@@ -33,4 +33,9 @@
     <string name="discard_changes_message">保存されていない変更は失われます。</string>
     <string name="discard_changes_discard">破棄</string>
     <string name="discard_changes_keep_editing">編集を続ける</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">ウォッチ</string>
+    <string name="watch_connected_title">%1$sがアカウントに接続されました</string>
+    <string name="watch_connected_title_unnamed">ウォッチがアカウントに接続されました</string>
+    <string name="watch_connected_text">グループを表示し、自動で同期します。接続を解除するには、ウォッチでログアウトしてください。</string>
 </resources>

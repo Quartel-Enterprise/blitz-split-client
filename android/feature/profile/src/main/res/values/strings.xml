@@ -185,6 +185,8 @@
     <string name="profile_bitcoin_in_sats_detail">Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).</string>
     <string name="profile_category_map">Category map</string>
     <string name="profile_category_map_detail">The words that pick a bill\'s category</string>
+    <string name="profile_connect_watch">Connect watch</string>
+    <string name="profile_connect_watch_detail">With the code your watch shows</string>
     <string name="profile_photo_open">View photo</string>
     <string name="profile_share">Share profile</string>
     <string name="profile_share_message">Here\'s my profile on Blitz Split: %1$s</string>

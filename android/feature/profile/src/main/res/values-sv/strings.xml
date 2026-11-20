@@ -149,6 +149,8 @@
     <string name="profile_bitcoin_in_sats_detail">Visar och anger bitcoinbelopp i sats (1 ₿ = 100 000 000 sats).</string>
     <string name="profile_category_map">Kategorikarta</string>
     <string name="profile_category_map_detail">Orden som väljer en utgifts kategori</string>
+    <string name="profile_connect_watch">Anslut klocka</string>
+    <string name="profile_connect_watch_detail">Med koden som klockan visar</string>
     <string name="profile_photo_open">Visa foto</string>
     <string name="profile_share">Dela profil</string>
     <string name="profile_share_message">Här är min profil på Blitz Split: %1$s</string>

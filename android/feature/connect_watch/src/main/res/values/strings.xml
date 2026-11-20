@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Connect watch</string>
+    <string name="connect_watch_close">Close</string>
+    <string name="connect_watch_body">Type the code your watch shows. It signs in to your account and then syncs on its own.</string>
+    <string name="connect_watch_code_label">Watch code</string>
+    <string name="connect_watch_error_invalid">Wrong or expired code. Get a new one on the watch.</string>
+    <string name="connect_watch_error_too_many">Too many wrong codes. Wait a few minutes and try again.</string>
+    <string name="connect_watch_error_needs_account">Connect an account first: your data is only on this device.</string>
+    <string name="connect_watch_error_failed">Couldn\'t connect the watch. Try again.</string>
+    <string name="connect_watch_offline">Connecting the watch needs the internet.</string>
+    <string name="connect_watch_own_watch_only">Type only a code shown on your own watch: whoever has that watch gets into your account.</string>
+    <string name="connect_watch_validity">The code is valid for 5 minutes, once.</string>
+    <string name="connect_watch_button">Connect</string>
+    <string name="connect_watch_connected_title">Watch connected</string>
+    <string name="connect_watch_connected_body">It sees your groups and syncs on its own. To disconnect it, sign out on the watch.</string>
+</resources>

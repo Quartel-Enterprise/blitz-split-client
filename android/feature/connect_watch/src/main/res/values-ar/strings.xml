@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">ربط الساعة</string>
+    <string name="connect_watch_close">إغلاق</string>
+    <string name="connect_watch_body">اكتب الرمز الظاهر على ساعتك. ستسجّل الساعة الدخول إلى حسابك ثم تتزامن تلقائيًا.</string>
+    <string name="connect_watch_code_label">رمز الساعة</string>
+    <string name="connect_watch_error_invalid">الرمز خاطئ أو منتهي الصلاحية. أنشئ رمزًا جديدًا على الساعة.</string>
+    <string name="connect_watch_error_too_many">رموز خاطئة كثيرة جدًا. يُرجى الانتظار بضع دقائق ثم إعادة المحاولة.</string>
+    <string name="connect_watch_error_needs_account">اربط حسابًا أولًا: بياناتك موجودة على هذا الجهاز فقط.</string>
+    <string name="connect_watch_error_failed">تعذّر ربط الساعة. أعد المحاولة.</string>
+    <string name="connect_watch_offline">يحتاج ربط الساعة إلى اتصال بالإنترنت.</string>
+    <string name="connect_watch_own_watch_only">اكتب فقط رمزًا يظهر على ساعتك أنت: من يملك تلك الساعة سيدخل إلى حسابك.</string>
+    <string name="connect_watch_validity">الرمز صالح لمدة 5 دقائق ولمرة واحدة فقط.</string>
+    <string name="connect_watch_button">ربط</string>
+    <string name="connect_watch_connected_title">تم ربط الساعة</string>
+    <string name="connect_watch_connected_body">ترى الساعة مجموعاتك وتتزامن تلقائيًا. لإلغاء ربطها، سجّل الخروج على الساعة.</string>
+</resources>

@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Nicht gespeicherte Änderungen gehen verloren.</string>
     <string name="discard_changes_discard">Verwerfen</string>
     <string name="discard_changes_keep_editing">Weiter bearbeiten</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Uhr</string>
+    <string name="watch_connected_title">%1$s mit deinem Konto verbunden</string>
+    <string name="watch_connected_title_unnamed">Uhr mit deinem Konto verbunden</string>
+    <string name="watch_connected_text">Sie sieht deine Gruppen und synchronisiert von selbst. Zum Trennen meldest du dich auf der Uhr ab.</string>
 </resources>

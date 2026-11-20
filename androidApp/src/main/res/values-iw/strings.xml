@@ -31,4 +31,9 @@
     <string name="discard_changes_message">שינויים שלא נשמרו יאבדו.</string>
     <string name="discard_changes_discard">ביטול השינויים</string>
     <string name="discard_changes_keep_editing">המשך עריכה</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">שעון</string>
+    <string name="watch_connected_title">%1$s מחובר לחשבון</string>
+    <string name="watch_connected_title_unnamed">השעון מחובר לחשבון</string>
+    <string name="watch_connected_text">השעון רואה את הקבוצות ומסתנכרן לבד. כדי לנתק אותו, צריך להתנתק בשעון.</string>
 </resources>
