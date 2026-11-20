@@ -1,9 +1,10 @@
 name: apple
 
 # The Apple side of the app, on a macOS runner (free on a public repository): every module's
-# commonTest on the macOS target, and on the iOS simulator too on main, and both schemes of the Apple
-# app, which link the Shared framework. create-pr leaves these to CI and builds a scheme locally only
-# when the branch changes the Swift code (see the create-pr skill, step 8).
+# commonTest on the macOS target, and on the iOS simulator too on main, both schemes of the Apple
+# app, which link the Shared framework, and the watchOS Shared framework. create-pr leaves these to
+# CI and builds a scheme locally only when the branch changes the Swift code (see the create-pr
+# skill, step 8).
 on:
   pull_request:
     # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
@@ -275,6 +276,15 @@ jobs:
           echo "finished=true" >> "$GITHUB_OUTPUT"
           exit "$status"
 
+      # main also links the watchOS Shared, apple-watch's build, here rather than in a job of its own:
+      # this job's Gradle home is the one every macOS job restores, so it then holds the watchOS
+      # compilations the pull requests' apple-watch reads, and main's run keeps to two runners. Its
+      # first, cold run compiles every module for two more targets; the bound leaves room for that.
+      - name: Build the watchOS framework
+        if: github.ref == 'refs/heads/main'
+        timeout-minutes: 60
+        run: ./gradlew :shared:assembleSharedDebugXCFramework
+
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v7
@@ -406,6 +416,37 @@ jobs:
           xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme "BoraRachar-$PLATFORM" "${target[@]}" \
             -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages \
             CODE_SIGNING_ALLOWED=NO build -quiet
+
+  # The watchOS Shared framework (docs/architecture/stack.md), both slices: watchosArm64, the device's
+  # arm64_32, which no other check compiles, and watchosSimulatorArm64. No Swift app links it yet, so
+  # Gradle packs them into the XCFramework the watch app will take. It runs on a pull request whose
+  # apple-tests runs: a change to the Swift app alone leaves it as main built it. main builds it in
+  # apple-tests instead, which saves the Gradle home this job restores with its watchOS compilations.
+  apple-watch:
+    needs: [review-gate, changes]
+    if: >-
+      ${{ !cancelled() && github.event_name == 'pull_request' &&
+      needs.review-gate.outputs.proceed != 'false' && needs.changes.outputs.kotlin != 'false' }}
+    runs-on: xcode-27
+    # A hung build would otherwise hold one of the few macOS runners for six hours. A cold build
+    # compiles every module for two targets, with no Kotlin/Native library cache for watchOS.
+    timeout-minutes: 60
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          kotlin-native: 'true'
+          # apple-tests saves the Gradle cache of the macOS runner, the watchOS compilations included.
+          cache-read-only: 'true'
+
+      - name: Build the watchOS framework
+        run: ./gradlew :shared:assembleSharedDebugXCFramework
 
   # On main, a failed apple-tests leaves no Gradle home in the cache. setup-gradle saves the home when
   # the job ends, whatever its result, under a key that ends with the commit, and every later run

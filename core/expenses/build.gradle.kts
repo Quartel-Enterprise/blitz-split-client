@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.blitzsplit.kotlin.multiplatform)
+    alias(libs.plugins.blitzsplit.kotlin.multiplatform.watchos)
     alias(libs.plugins.kotlin.serialization)
 }
 

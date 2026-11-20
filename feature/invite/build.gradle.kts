@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.blitzsplit.kotlin.multiplatform)
+    alias(libs.plugins.blitzsplit.kotlin.multiplatform.watchos)
 }
 
 kotlin {
@@ -12,7 +13,6 @@ kotlin {
             implementation(project(":core:sync"))
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
-            implementation(libs.koin.core.viewmodel)
             implementation(libs.quare.connectivity)
         }
         commonTest.dependencies {

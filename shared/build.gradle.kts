@@ -1,7 +1,10 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+import org.jetbrains.kotlin.konan.target.Family
 
 plugins {
     alias(libs.plugins.blitzsplit.kotlin.multiplatform)
+    alias(libs.plugins.blitzsplit.kotlin.multiplatform.watchos)
     alias(libs.plugins.buildkonfig)
 }
 
@@ -53,12 +56,17 @@ private val exportedToApple = listOf(
 ).map { dependencies.project(it) }
 
 kotlin {
-    listOf(iosArm64(), iosSimulatorArm64(), macosArm64()).forEach { target ->
+    // Why: the watchOS app's own `Shared`, kept out of the iOS and macOS ones so their API stays as it is. Xcode
+    // builds it through embedAndSignAppleFrameworkForXcode like the others; assembleSharedDebugXCFramework (or
+    // assembleSharedReleaseXCFramework) packs both watchOS slices.
+    val watchosFramework = XCFramework("Shared")
+    listOf(iosArm64(), iosSimulatorArm64(), macosArm64(), watchosArm64(), watchosSimulatorArm64()).forEach { target ->
         target.binaries.framework {
             baseName = "Shared"
             isStatic = true
             exportedToApple.forEach { export(it) }
             export(libs.quare.loadable)
+            if (target.konanTarget.family == Family.WATCHOS) watchosFramework.add(this)
         }
     }
 
@@ -88,7 +96,6 @@ kotlin {
             implementation(libs.kermit)
             api(project.dependencies.platform(libs.koin.bom))
             api(libs.koin.core)
-            implementation(libs.koin.core.viewmodel)
             // The store screenshots' seed (docs/store-listing-screenshots.md), which the Apple apps and the web run:
             // it writes the sample trip's feed and links, and points Supabase at a server that isn't there.
             implementation(libs.kotlinx.serialization.json)

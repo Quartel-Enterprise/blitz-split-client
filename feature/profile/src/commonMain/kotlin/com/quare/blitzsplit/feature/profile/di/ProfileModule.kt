@@ -1,12 +1,11 @@
 package com.quare.blitzsplit.feature.profile.di
 
 import com.quare.blitzsplit.feature.profile.presentation.viewmodel.ProfileViewModel
-import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-// Why: viewModelOf stops at 22 parameters, fewer than Perfil takes.
+// Why: factoryOf stops at 22 parameters, fewer than Perfil takes.
 val profileModule = module {
-    viewModel {
+    factory {
         ProfileViewModel(
             navigator = get(),
             providerConnector = get(),

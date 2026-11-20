@@ -93,7 +93,7 @@ photo saves, and saves in its own scope, so a photo chosen is saved even when th
 ### Many use cases in one ViewModel
 
 ViewModels take each use case as its own constructor parameter (`ProfileViewModel` takes fourteen). If a constructor
-ever reaches Koin's limit for `viewModelOf`, group the use cases in a `FeatureUseCases` data class bound with
+ever reaches Koin's limit for `factoryOf` (22 parameters), group the use cases in a `FeatureUseCases` data class bound with
 `factoryOf(::FeatureUseCases)`.
 
 ## Repository pattern

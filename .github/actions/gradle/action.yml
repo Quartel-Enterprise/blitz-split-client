@@ -84,7 +84,8 @@ runs:
     # then the run that saved it, and every job restores the newest one of its Kotlin version,
     # whatever comes after the prefix.
     # Nothing is saved here, since a composite action has no step that runs when the job ends: the
-    # job that compiles every Apple target saves it (apple-tests, on main). As with Gradle's cache, an
+    # job that compiles every Apple target saves it (apple-tests, on main; Kotlin/Native keeps no
+    # library cache for the watchOS ones). As with Gradle's cache, an
     # entry a pull request saves would be readable by that branch alone, and a gigabyte each would
     # push main's entries out of the repository's cache.
     - name: Read the Kotlin version
