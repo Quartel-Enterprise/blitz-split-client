@@ -23,7 +23,8 @@ struct WatchBalanceWidget: Widget {
     }
 }
 
-/// The accessory faces of `BalanceWidgetView`, plus the inline one of a watch face's top line ("+R$ 186,40").
+/// The accessory faces of `BalanceWidgetView`, plus the inline one of a watch face's top line ("+R$ 186,40"), and the
+/// app's icon alone on a watch with no account.
 private struct WatchBalanceWidgetView: View {
     let balances: WidgetBalances
 
@@ -32,6 +33,16 @@ private struct WatchBalanceWidgetView: View {
     var body: some View {
         if family == .accessoryInline {
             inline
+        } else if !balances.isKnown {
+            // No account on the watch yet (or signed out): the app's icon alone, a tap opens Connect
+            ZStack {
+                if family == .accessoryCircular { AccessoryWidgetBackground() }
+                Image("Logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 22, height: 22)
+                    .accessibilityLabel(Text("Blitz Split"))
+            }
         } else {
             BalanceWidgetView(balances: balances)
         }
@@ -44,7 +55,7 @@ private struct WatchBalanceWidgetView: View {
         } else if balances.isKnown {
             Text("All settled")
         } else {
-            Text(verbatim: "–")
+            Text("Blitz Split")
         }
     }
 }

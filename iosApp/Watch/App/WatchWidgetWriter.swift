@@ -17,12 +17,21 @@ final class WatchWidgetWriter {
     private var pendingWrite: Task<Void, Never>?
     /// The snapshot `pendingWrite` waits to write.
     private var pendingSnapshot: BalanceSnapshot?
+    /// Whether the watch has an account; nil until the shared code said.
+    private var hasAccount: Bool?
+    private var lastSnapshot: BalanceSnapshot?
 
     private init() {}
 
     /// Called once the shared code started, from the app's launch.
     func start() {
+        watches.add(BlitzSplitWatch.shared.createHasAccountWatcher().observe { [weak self] hasAccount in
+            guard let self else { return }
+            self.hasAccount = hasAccount.boolValue
+            if let snapshot = self.lastSnapshot { self.scheduleWrite(snapshot) }
+        })
         watches.add(BlitzSplitApple.shared.createBalanceSnapshotWatcher().observe { [weak self] snapshot in
+            self?.lastSnapshot = snapshot
             self?.scheduleWrite(snapshot)
         })
     }
@@ -51,8 +60,10 @@ final class WatchWidgetWriter {
     }
 
     private func write(_ snapshot: BalanceSnapshot) {
-        // The device's language: the watch has no Profile › Language of its own
-        let balances = WidgetBalances(snapshot: snapshot, language: nil)
+        guard let hasAccount else { return }
+        // A watch with no account shows the app's icon alone, never "All settled"; the device's language otherwise,
+        // since the watch has no Profile › Language of its own
+        let balances = hasAccount ? WidgetBalances(snapshot: snapshot, language: nil) : .unknown
         if let written, written.drawsLike(balances) { return }
         guard WidgetBalancesStore.write(balances) else { return }
         written = balances

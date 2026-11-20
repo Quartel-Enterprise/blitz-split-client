@@ -388258,6 +388258,376 @@
           }
         }
       }
+    },
+    "Sign out of this watch?" : {
+      "comment" : "Apple Watch Balances: confirms signing out of the watch only; the iPhone stays signed in",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تسجيل الخروج من هذه الساعة؟"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "এই ঘড়ি থেকে সাইন আউট করবেন?"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odhlásit se z těchto hodinek?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Von dieser Uhr abmelden?"
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Αποσύνδεση από αυτό το ρολόι;"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Cerrar sesión en este reloj?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se déconnecter de cette montre ?"
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "להתנתק מהשעון הזה?"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस वॉच से साइन आउट करें?"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odjaviti se s ovog sata?"
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kijelentkezel erről az óráról?"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keluar dari akun di jam tangan ini?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uscire dall’account su questo orologio?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このウォッチからログアウトしますか？"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 워치에서 로그아웃할까요?"
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log keluar daripada jam tangan ini?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uitloggen op dit horloge?"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wylogować się z tego zegarka?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair da conta neste relógio?"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminar sessão neste relógio?"
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te deconectezi de pe acest ceas?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выйти на этих часах?"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logga ut från den här klockan?"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ออกจากระบบในนาฬิกานี้ไหม"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu saatte oturum kapatılsın mı?"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вийти на цьому годиннику?"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اس گھڑی سے سائن آؤٹ کریں؟"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đăng xuất khỏi đồng hồ này?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要在这块手表上退出登录吗？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要在這支手錶上登出嗎？"
+          }
+        }
+      }
+    },
+    "Its data is erased once what it queued is sent. Your iPhone stays signed in." : {
+      "comment" : "Apple Watch: under Sign out of this watch?",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تُمحى بياناتها بعد إرسال ما في قائمة الانتظار. يبقى iPhone مسجّل الدخول."
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "অপেক্ষায় থাকা সব পাঠানো হলে এর ডেটা মুছে যাবে। আপনার iPhone-এ সাইন ইন থাকবে।"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jejich data se smažou, jakmile se odešle vše ve frontě. iPhone zůstane přihlášený."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihre Daten werden gelöscht, sobald alles Wartende gesendet ist. Dein iPhone bleibt angemeldet."
+          }
+        },
+        "el" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Τα δεδομένα του σβήνονται μόλις σταλούν όσα περιμένουν. Το iPhone σου μένει συνδεδεμένο."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sus datos se borran cuando se envíe lo que tiene en cola. Tu iPhone sigue con la sesión iniciada."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ses données sont effacées une fois ses modifications en attente envoyées. Ton iPhone reste connecté."
+          }
+        },
+        "he" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "הנתונים שלו יימחקו אחרי שכל מה שבתור יישלח. ה-iPhone שלך יישאר מחובר."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कतार में रखा सब भेजे जाने के बाद इसका डेटा मिट जाएगा। आपका iPhone साइन इन रहेगा।"
+          }
+        },
+        "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Njegovi se podaci brišu kad se pošalje sve iz reda čekanja. iPhone ostaje prijavljen."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Az adatai törlődnek, amint elküldte, ami sorban áll. Az iPhone-od bejelentkezve marad."
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datanya dihapus setelah antreannya terkirim. iPhone-mu tetap masuk ke akun."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I suoi dati vengono cancellati dopo l’invio di ciò che è in coda. L’iPhone resta connesso."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "送信待ちの内容が送られた後、データは消去されます。iPhoneはログインしたままです。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "대기 중인 변경 사항이 전송되면 데이터가 삭제돼요. iPhone은 로그인 상태로 유지돼요."
+          }
+        },
+        "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datanya dipadam selepas apa yang beratur dihantar. iPhone anda kekal log masuk."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De gegevens worden gewist zodra alles in de wachtrij is verstuurd. Je iPhone blijft ingelogd."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jego dane znikną po wysłaniu tego, co czeka w kolejce. iPhone pozostanie zalogowany."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os dados dele são apagados depois que o que está na fila for enviado. Seu iPhone continua conectado."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os dados dele são apagados assim que o que está na fila for enviado. O teu iPhone continua com sessão iniciada."
+          }
+        },
+        "ro" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datele lui se șterg după ce se trimite ce e în așteptare. iPhone-ul rămâne conectat."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Данные удалятся, когда отправится всё из очереди. На iPhone вход сохранится."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dess data raderas när det som väntar har skickats. Din iPhone förblir inloggad."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ข้อมูลในนาฬิกาจะถูกลบเมื่อส่งรายการที่รอส่งแล้ว iPhone ของคุณยังคงเข้าสู่ระบบอยู่"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sıradakiler gönderilince verileri silinir. iPhone'undaki oturum açık kalır."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дані видаляться, коли надішлеться все з черги. На iPhone вхід збережеться."
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قطار میں موجود چیزیں بھیجے جاتے ہی اس کا ڈیٹا مٹ جائے گا۔ آپ کا iPhone سائن اِن رہے گا۔"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dữ liệu của đồng hồ sẽ bị xóa sau khi các mục đang chờ được gửi đi. iPhone của bạn vẫn đăng nhập."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "待发送的内容发出后，手表上的数据会被清除。你的iPhone仍保持登录。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "待傳送的內容送出後，手錶上的資料會被清除。你的iPhone仍會保持登入。"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

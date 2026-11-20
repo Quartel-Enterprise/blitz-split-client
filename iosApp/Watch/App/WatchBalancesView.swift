@@ -65,6 +65,24 @@ private struct WatchBalancesScreen: View {
             }
         }
         .navigationTitle("Balances")
+        .sheet(isPresented: signOutBinding) {
+            WatchSignOutQuestion(
+                confirm: { model.send(WatchBalancesUiEventOnSignOutConfirmed.shared) },
+                cancel: { model.send(WatchBalancesUiEventOnSignOutDismissed.shared) },
+            )
+        }
+    }
+
+    /// Open while "Sign out of this watch?" is asked; swiped away, it answers Cancel.
+    private var signOutBinding: Binding<Bool> {
+        Binding(
+            get: { model.state.isConfirmingSignOut },
+            set: { isShown in
+                if !isShown, model.state.isConfirmingSignOut {
+                    model.send(WatchBalancesUiEventOnSignOutDismissed.shared)
+                }
+            },
+        )
     }
 
     private func list(_ state: WatchBalancesUiState) -> some View {
@@ -91,6 +109,7 @@ private struct WatchBalancesScreen: View {
                         .multilineTextAlignment(.center)
                         .padding(.top, 2)
                 }
+                WatchSignOutFooter(state: state, send: model.send)
             }
         }
     }
@@ -113,6 +132,8 @@ private struct WatchBalancesScreen: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 6)
+            WatchSignOutFooter(state: state, send: model.send)
+                .padding(.top, 8)
         }
     }
 }
@@ -230,4 +251,72 @@ struct WatchWaitingToSend: View {
 private extension WatchGroupRow {
     /// A group in two currencies is two rows.
     var rowId: String { "\(groupId):\(currency.code)" }
+}
+
+/// The end of Balances: "Sign out", the one way to disconnect only the watch; once asked, "Sign out scheduled" with
+/// Cancel until what the watch queued went up, as the phone's Profile shows it.
+private struct WatchSignOutFooter: View {
+    let state: WatchBalancesUiState
+    let send: (any WatchBalancesUiEvent) -> Void
+
+    var body: some View {
+        if state.isSignOutScheduled {
+            VStack(spacing: 6) {
+                VStack(spacing: 0) {
+                    Text("Sign out scheduled")
+                        .font(.footnote.weight(.semibold))
+                    Text("Signs out as soon as everything is uploaded")
+                        .font(.caption2)
+                        .foregroundStyle(WatchPalette.secondary)
+                }
+                .multilineTextAlignment(.center)
+                .accessibilityElement(children: .combine)
+                Button {
+                    send(WatchBalancesUiEventOnCancelScheduledSignOutClicked.shared)
+                } label: {
+                    Text("Cancel").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.glass)
+            }
+        } else {
+            Button(role: .destructive) {
+                send(WatchBalancesUiEventOnSignOutClicked.shared)
+            } label: {
+                Text("Sign out").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glass)
+        }
+    }
+}
+
+/// "Sign out of this watch?": the watch alone signs out, once what it queued went up; the iPhone stays signed in.
+private struct WatchSignOutQuestion: View {
+    let confirm: () -> Void
+    let cancel: () -> Void
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 4) {
+                Text("Sign out of this watch?")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                Text("Its data is erased once what it queued is sent. Your iPhone stays signed in.")
+                    .font(.footnote)
+                    .foregroundStyle(WatchPalette.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            VStack(spacing: 6) {
+                Button(role: .destructive, action: confirm) {
+                    Text("Sign out").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.glass)
+                Button(action: cancel) {
+                    Text("Cancel").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.glass)
+            }
+            .padding(.top, 10)
+        }
+        .toolbar(.hidden, for: .navigationBar)
+    }
 }

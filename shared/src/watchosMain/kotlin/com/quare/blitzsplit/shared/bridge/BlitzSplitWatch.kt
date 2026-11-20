@@ -9,6 +9,7 @@ import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
+import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import com.quare.blitzsplit.core.sync.di.lastSyncRecordingModule
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
@@ -21,6 +22,8 @@ import com.quare.blitzsplit.feature.watchpairing.presentation.viewmodel.WatchRoo
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.withTimeoutOrNull
@@ -52,6 +55,13 @@ object BlitzSplitWatch : KoinComponent {
     fun popTo(size: Int) {
         get<Navigator>().popTo(size)
     }
+
+    /*
+     * Why: the complications and the Smart Stack card of a watch with no account (never connected, or signed out) show
+     * the app's icon alone, never "All settled" (docs/product/watch.md#glanceable-surfaces).
+     */
+    fun createHasAccountWatcher(): FlowWatcher<Boolean> =
+        FlowWatcher(get<ObserveProfile>()().map { it != null }.distinctUntilChanged())
 
     fun createWatchRootViewModel(): ViewModelHolder<WatchRootViewModel> =
         ViewModelHolder(WatchRootViewModel::class) { get() }

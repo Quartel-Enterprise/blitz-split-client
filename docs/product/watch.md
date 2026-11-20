@@ -93,7 +93,10 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
   - On the Apple Watch, WidgetKit (`BalanceWidget-watchOS`) draws the iPhone widget's accessory faces
     (`iosApp/Widgets/Shared`): the circle "+186" with the logo, the rectangle with the overall balance and its other
     way ("You owe R$ 126,00"), which is also the Smart Stack card (15.1), and a watch face's inline line. The watch app
-    writes their file itself from its own Room, in the currency with the most groups, whenever its balances change.
+    writes their file itself from its own Room, in the currency with the most groups, whenever its balances change; a
+    watch with no account shows the logo alone, and the inline line "Blitz Split".
+  - The Apple Watch's Balances end with "Sign out", as on Wear OS: "Sign out of this watch?" in a sheet, then "Sign out
+    scheduled" with Cancel until what it queued went up.
 
 ## Notifications
 
