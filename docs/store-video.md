@@ -107,7 +107,9 @@ pay-as-you-go off, so it never bills past the plan's credits). What it costs and
   Warm and Clear), take 1. Line 2 was reworded after take 1 was picked and only it was voiced again; the other five
   lines are take 1's files, voiced with the old line 2 around them and renamed by hand to the new requests' hashes.
   So their cache names don't match what they were voiced with, and a fresh `narration` would voice them all again.
-  For en-US, Zara (The Warm, Real-World Conversationalist), take 1, over pt-BR's music prompt and track.
+  For en-US, Zara (The Warm, Real-World Conversationalist), take 1, over pt-BR's music prompt and track. The music
+  is cached per locale, so `music en-US` asks for a new, different track: copy pt-BR's `music-<hash>.mp3` (the same
+  prompt and length, so the same name) into `build/store-video/en-US/` first.
   Each line is generated with the lines around it (`previous_text`, `next_text`), so the question in "Viagem com os
   amigos?" rises like one. Takes differ from run to run: a new run means picking again.
 - **The music** is instrumental (ElevenLabs Music, `music_v2`), prompted to stay out of the voice's way.
