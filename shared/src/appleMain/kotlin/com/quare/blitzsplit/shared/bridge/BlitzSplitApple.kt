@@ -4,11 +4,14 @@ import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.expenses.domain.model.BalanceSnapshot
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBalanceSnapshot
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
@@ -86,6 +89,7 @@ import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
@@ -174,6 +178,14 @@ object BlitzSplitApple : KoinComponent {
     fun attachAnalytics(service: AnalyticsService) {
         get<AnalyticsHub>().attach(service)
     }
+
+    /*
+     * Why: the iPhone's balance widget reads a snapshot the app writes to the App Group, since the widget's process has
+     * no Room; the app writes it again on each change (docs/product/balances-and-contacts.md). It runs for the app's
+     * whole life, whatever screen is open, so the balances are worked out off the main thread.
+     */
+    fun createBalanceSnapshotWatcher(): FlowWatcher<BalanceSnapshot> =
+        FlowWatcher(get<ObserveBalanceSnapshot>()().flowOn(Dispatchers.Default))
 
     fun createAppViewModel(): ViewModelHolder<AppViewModel> = ViewModelHolder(AppViewModel::class) { get() }
 
