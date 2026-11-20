@@ -1,4 +1,5 @@
 import { loadFont } from '@remotion/google-fonts/Roboto';
+import { BACKDROP, BEZEL, BRAND } from './theme';
 import {
   AbsoluteFill,
   Audio,
@@ -18,7 +19,6 @@ const { fontFamily } = loadFont('normal', { weights: ['400', '500', '700', '900'
 export const FPS = 60;
 const f = (seconds: number) => Math.round(seconds * FPS);
 
-const BRAND = '#05AEFF';
 const GREEN = '#4ADE80';
 const SRC_W = 1080;
 const SRC_H = 2400;
@@ -183,7 +183,7 @@ const Backdrop = ({ time }: { time: number }) => (
       background: [
         `radial-gradient(900px 900px at ${30 + Math.sin(time * 0.5) * 12}% ${20 + Math.sin(time * 0.3) * 8}%, rgba(5,174,255,0.30), transparent 70%)`,
         `radial-gradient(800px 800px at ${70 + Math.cos(time * 0.4) * 10}% ${78 + Math.cos(time * 0.35) * 6}%, rgba(74,222,128,0.16), transparent 70%)`,
-        'linear-gradient(180deg, #0E2433 0%, #08151E 100%)',
+        BACKDROP,
       ].join(','),
     }}
   />
@@ -205,7 +205,7 @@ const Phone = ({ tl }: { tl: Timeline }) => {
           width: BOX_W,
           height: BOX_H,
           borderRadius: 70,
-          background: 'linear-gradient(145deg, #2a3640, #05080b 40%)',
+          background: BEZEL,
           padding: BEZEL,
           boxShadow: '0 60px 120px rgba(0,0,0,0.55), 0 0 0 2px rgba(255,255,255,0.06) inset',
           transformOrigin: `50% ${cam.fy * 100}%`,

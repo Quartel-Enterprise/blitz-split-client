@@ -15,6 +15,9 @@ JSON="$HERE/locales/$LOCALE.json"
 OUT="$ROOT/build/store-video/$LOCALE"
 PUBLIC="$OUT/public"
 [[ -f "$JSON" ]] || { echo "No scripts/store-video/locales/$LOCALE.json" >&2; exit 1; }
+for tool in ffmpeg node npm; do
+  command -v "$tool" >/dev/null || { echo "$tool is missing (docs/store-video.md)" >&2; exit 1; }
+done
 
 node -e '
   const fs = require("fs");
@@ -33,7 +36,7 @@ cd "$HERE/remotion"
 [[ -d node_modules ]] || npm ci --no-audit --no-fund
 for size in Thumbnail:16x9 ThumbnailVertical:9x16; do
   png="$OUT/thumb-$LOCALE-${size#*:}.png"
-  npx remotion still src/Thumbnail.tsx "${size%%:*}" "$png" --props="$OUT/thumbnail-props.json" \
+  npx remotion still src/thumbnail-index.ts "${size%%:*}" "$png" --props="$OUT/thumbnail-props.json" \
     --public-dir="$PUBLIC" --log=error
   ffmpeg -y -v error -i "$png" -q:v 2 "${png%.png}.jpg"
   echo "$png"

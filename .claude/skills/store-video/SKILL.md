@@ -23,9 +23,9 @@ code and the docs stay in English, the narration and titles in the video's langu
 
 ## 1. The language's JSON
 
-For a language that has none, copy `scripts/store-video/locales/pt-BR.json` to `<locale>.json` (the store
-screenshots' locale codes, `scripts/store-screenshots/locales.tsv`); the render reads it through `props.json`, so
-nothing else needs registering. Then:
+For a language that has none, copy `scripts/store-video/locales/en-US.json` to `<locale>.json`, named with the store
+screenshots' locale codes (`scripts/store-screenshots/locales.tsv`). Not pt-BR's: its Pix shot, `pix` scene and Pix
+thumbnail are no other locale's. The render reads it through `props.json`, so nothing else needs registering. Then:
 
 - **`lines`**: the narration, one per shot plus the end card's. Translate the meaning, not the words, in the tone of
   that language's store listing (`docs/store-listing.md`); keep each line about as long as pt-BR's, since the shots'
