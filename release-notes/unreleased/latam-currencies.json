@@ -1,0 +1,43 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now use the currencies of Bolivia, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, the Dominican Republic and Cuba, and a group created there starts in its own.",
+        "pt": "Os grupos agora podem usar as moedas da Bolívia, Venezuela, Costa Rica, Guatemala, Honduras, Nicarágua, República Dominicana e Cuba, e um grupo criado nesses países já começa na moeda local.",
+        "pt-PT": "Os grupos já podem usar as moedas da Bolívia, Venezuela, Costa Rica, Guatemala, Honduras, Nicarágua, República Dominicana e Cuba, e um grupo criado nesses países começa logo na moeda local.",
+        "es": "Los grupos ahora pueden usar las monedas de Bolivia, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, República Dominicana y Cuba, y un grupo creado en esos países empieza en la moneda local.",
+        "fr": "Les groupes peuvent désormais utiliser les monnaies de la Bolivie, du Venezuela, du Costa Rica, du Guatemala, du Honduras, du Nicaragua, de la République dominicaine et de Cuba, et un groupe créé dans ces pays démarre dans la monnaie locale.",
+        "de": "Gruppen können jetzt die Währungen von Bolivien, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, der Dominikanischen Republik und Kuba verwenden, und eine dort erstellte Gruppe startet in der Landeswährung.",
+        "it": "I gruppi ora possono usare le valute di Bolivia, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, Repubblica Dominicana e Cuba, e un gruppo creato in questi paesi parte nella valuta locale.",
+        "pl": "Grupy mogą teraz korzystać z walut Boliwii, Wenezueli, Kostaryki, Gwatemali, Hondurasu, Nikaragui, Dominikany i Kuby, a grupa założona w tych krajach startuje w lokalnej walucie.",
+        "nl": "Groepen kunnen nu de valuta van Bolivia, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, de Dominicaanse Republiek en Cuba gebruiken, en een groep die daar wordt gemaakt, start in de lokale valuta.",
+        "ja": "グループでボリビア、ベネズエラ、コスタリカ、グアテマラ、ホンジュラス、ニカラグア、ドミニカ共和国、キューバの通貨を使えるようになり、これらの国で作ったグループはその国の通貨で始まります。",
+        "tr": "Gruplar artık Bolivya, Venezuela, Kosta Rika, Guatemala, Honduras, Nikaragua, Dominik Cumhuriyeti ve Küba'nın para birimlerini kullanabilir; bu ülkelerde açılan bir grup yerel para birimiyle başlıyor.",
+        "id": "Grup kini bisa memakai mata uang Bolivia, Venezuela, Kosta Rika, Guatemala, Honduras, Nikaragua, Republik Dominika, dan Kuba, dan grup yang dibuat di sana langsung memakai mata uang setempat.",
+        "ru": "В группах теперь можно использовать валюты Боливии, Венесуэлы, Коста-Рики, Гватемалы, Гондураса, Никарагуа, Доминиканской Республики и Кубы, а группа, созданная в этих странах, начинается в местной валюте.",
+        "uk": "У групах тепер можна використовувати валюти Болівії, Венесуели, Коста-Рики, Гватемали, Гондурасу, Нікарагуа, Домініканської Республіки та Куби, а група, створена в цих країнах, починається в місцевій валюті.",
+        "ko": "이제 그룹에서 볼리비아, 베네수엘라, 코스타리카, 과테말라, 온두라스, 니카라과, 도미니카 공화국, 쿠바의 통화를 쓸 수 있고, 이 나라에서 만든 그룹은 현지 통화로 시작해요.",
+        "hi": "अब ग्रुप में बोलीविया, वेनेज़ुएला, कोस्टा रिका, ग्वाटेमाला, होंडुरास, निकारागुआ, डोमिनिकन रिपब्लिक और क्यूबा की मुद्राओं का इस्तेमाल किया जा सकता है, और इन देशों में बना ग्रुप वहीं की मुद्रा से शुरू होता है।",
+        "ar": "يمكن للمجموعات الآن استخدام عملات بوليفيا وفنزويلا وكوستاريكا وغواتيمالا وهندوراس ونيكاراغوا وجمهورية الدومينيكان وكوبا، والمجموعة التي تُنشأ في هذه البلدان تبدأ بعملتها المحلية.",
+        "zh": "群组现在可以使用玻利维亚、委内瑞拉、哥斯达黎加、危地马拉、洪都拉斯、尼加拉瓜、多米尼加共和国和古巴的货币，在这些国家创建的群组也会默认使用当地货币。",
+        "he": "קבוצות יכולות עכשיו להשתמש במטבעות של בוליביה, ונצואלה, קוסטה ריקה, גואטמלה, הונדורס, ניקרגואה, הרפובליקה הדומיניקנית וקובה, וקבוצה שנוצרת שם מתחילה במטבע המקומי.",
+        "th": "ตอนนี้กลุ่มใช้สกุลเงินของโบลิเวีย เวเนซุเอลา คอสตาริกา กัวเตมาลา ฮอนดูรัส นิการากัว สาธารณรัฐโดมินิกัน และคิวบาได้แล้ว และกลุ่มที่สร้างในประเทศเหล่านี้จะเริ่มด้วยสกุลเงินท้องถิ่น",
+        "vi": "Các nhóm giờ có thể dùng tiền tệ của Bolivia, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, Cộng hòa Dominica và Cuba, và nhóm được tạo ở các nước này sẽ bắt đầu với đồng tiền địa phương.",
+        "zh-Hant": "群組現在可以使用玻利維亞、委內瑞拉、哥斯大黎加、瓜地馬拉、宏都拉斯、尼加拉瓜、多明尼加共和國和古巴的貨幣，在這些國家建立的群組也會從當地貨幣開始。",
+        "sv": "Grupper kan nu använda valutorna i Bolivia, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, Dominikanska republiken och Kuba, och en grupp som skapas där börjar i den lokala valutan.",
+        "cs": "Skupiny teď mohou používat měny Bolívie, Venezuely, Kostariky, Guatemaly, Hondurasu, Nikaraguy, Dominikánské republiky a Kuby a skupina založená v těchto zemích začne v místní měně.",
+        "ro": "Grupurile pot folosi acum monedele din Bolivia, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, Republica Dominicană și Cuba, iar un grup creat acolo pornește în moneda locală.",
+        "bn": "গ্রুপে এখন বলিভিয়া, ভেনেজুয়েলা, কোস্টা রিকা, গুয়াতেমালা, হন্ডুরাস, নিকারাগুয়া, ডোমিনিকান প্রজাতন্ত্র ও কিউবার মুদ্রা ব্যবহার করা যাবে, আর এসব দেশে তৈরি গ্রুপ সেখানকার মুদ্রা দিয়েই শুরু হবে।",
+        "ms": "Kumpulan kini boleh menggunakan mata wang Bolivia, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, Republik Dominica dan Cuba, dan kumpulan yang dibuat di sana bermula dengan mata wang tempatan.",
+        "el": "Οι ομάδες μπορούν πλέον να χρησιμοποιούν τα νομίσματα της Βολιβίας, της Βενεζουέλας, της Κόστα Ρίκα, της Γουατεμάλας, της Ονδούρας, της Νικαράγουας, της Δομινικανής Δημοκρατίας και της Κούβας, και μια ομάδα που δημιουργείται εκεί ξεκινά στο τοπικό νόμισμα.",
+        "hr": "Grupe sada mogu koristiti valute Bolivije, Venezuele, Kostarike, Gvatemale, Hondurasa, Nikaragve, Dominikanske Republike i Kube, a grupa stvorena u tim zemljama počinje u lokalnoj valuti.",
+        "hu": "A csoportok mostantól Bolívia, Venezuela, Costa Rica, Guatemala, Honduras, Nicaragua, a Dominikai Köztársaság és Kuba pénznemét is használhatják, az ott létrehozott csoportok pedig a helyi pénznemmel indulnak.",
+        "ur": "اب گروپوں میں بولیویا، وینزویلا، کوسٹا ریکا، گواتیمالا، ہونڈوراس، نکاراگوا، ڈومینیکن ریپبلک اور کیوبا کی کرنسیاں استعمال کی جا سکتی ہیں، اور ان ممالک میں بنایا گیا گروپ وہیں کی کرنسی سے شروع ہوتا ہے۔"
+      }
+    }
+  ]
+}

@@ -96,6 +96,14 @@ class GroupCurrency private constructor(
         val PEN = GroupCurrency("PEN", setOf("PE"))
         val UYU = GroupCurrency("UYU", setOf("UY"))
         val PYG = GroupCurrency("PYG", setOf("PY"), fractionDigits = 0)
+        val BOB = GroupCurrency("BOB", setOf("BO"))
+        val VES = GroupCurrency("VES", setOf("VE"))
+        val CRC = GroupCurrency("CRC", setOf("CR"))
+        val GTQ = GroupCurrency("GTQ", setOf("GT"))
+        val HNL = GroupCurrency("HNL", setOf("HN"))
+        val NIO = GroupCurrency("NIO", setOf("NI"))
+        val DOP = GroupCurrency("DOP", setOf("DO"))
+        val CUP = GroupCurrency("CUP", setOf("CU"))
         val CAD = GroupCurrency("CAD", setOf("CA"))
         val AUD = GroupCurrency("AUD", setOf("AU"))
         val JPY = GroupCurrency("JPY", setOf("JP"), fractionDigits = 0)
@@ -153,6 +161,14 @@ class GroupCurrency private constructor(
             PEN,
             UYU,
             PYG,
+            BOB,
+            VES,
+            CRC,
+            GTQ,
+            HNL,
+            NIO,
+            DOP,
+            CUP,
             CAD,
             AUD,
             JPY,

@@ -362,6 +362,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Pakistani rupee (PKR) follows the Hungarian forint (Pierre's call, with Urdu), and starts a new group in
     Pakistan. It has 2 decimals, as ISO gives it, and the usual 100 million cap (about US$ 360,000), so an app version
     from before it shows its amounts by the raw code, with the right decimals.
+  - The boliviano (BOB), the bolívar (VES), the Costa Rican colón (CRC), the quetzal (GTQ), the lempira (HNL), the
+    córdoba (NIO), the Dominican peso (DOP) and the Cuban peso (CUP) follow the guaraní, in that order (Pierre's call:
+    every Latin American country's own currency), and start a new group in Bolivia, Venezuela, Costa Rica, Guatemala,
+    Honduras, Nicaragua, the Dominican Republic and Cuba, which split in dollars before. Each has 2 decimals, as ISO
+    gives it (the colón too, though no price in Costa Rica shows céntimos: a call taken without Pierre, as the Colombian
+    peso keeps its 2), and the
+    usual 100 million cap, so an app version from before them shows their amounts by the raw code, with the right
+    decimals. Ecuador, El Salvador, Panama and Puerto Rico keep the dollar, their own.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
