@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Profil szerkesztése</string>
+    <string name="edit_profile_save">Mentés</string>
+    <string name="edit_profile_change_photo">Fotó módosítása</string>
+    <string name="edit_profile_take_photo">Fotó készítése</string>
+    <string name="edit_profile_choose_photo">Választás a galériából</string>
+    <string name="edit_profile_use_account_photo">Fiókfotó használata: %1$s</string>
+    <string name="edit_profile_remove_photo">Fotó eltávolítása</string>
+    <string name="edit_profile_photo_error">Nem sikerült használni ezt a fotót. Próbálj meg egy másikat.</string>
+    <string name="edit_profile_avatar_color">Avatar színe</string>
+    <string name="edit_profile_avatar_color_hint">Akkor látszik, ha nincs fotód.</string>
+    <string name="edit_profile_name_label">A neved</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Írj legalább %d betűt.</string>
+    <string name="edit_profile_name_too_long">Legfeljebb %d karaktert használj.</string>
+    <string name="edit_profile_account_notice">A név és a fotó a fiókodból származik (%1$s). Ha itt módosítod őket, az csak a Blitz Split alkalmazásban érvényes, a fiókodat (%1$s) nem változtatja meg.</string>
+    <string name="edit_profile_footer">A csoportjaid és bárki, akinek megvan a profillinked, látja a nevedet és a fotódat.</string>
+    <string name="profile_photo_close">Bezárás</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galéria</string>
+    <string name="profile_photo_remove">Eltávolítás</string>
+    <string name="profile_photo_title">Profilfotó</string>
+</resources>

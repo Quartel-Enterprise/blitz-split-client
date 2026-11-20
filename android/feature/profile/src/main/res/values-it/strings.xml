@@ -85,6 +85,7 @@
     <string name="profile_language_malay">Malese</string>
     <string name="profile_language_greek">Greco</string>
     <string name="profile_language_croatian">Croato</string>
+    <string name="profile_language_hungarian">Ungherese</string>
     <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_system_detail">Lingua del dispositivo</string>
     <string name="profile_notifications">Notifiche</string>

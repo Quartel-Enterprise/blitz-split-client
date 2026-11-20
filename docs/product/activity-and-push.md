@@ -104,10 +104,13 @@ The feed, unread state, real time and push notifications.
     podijelio/la…"). No reflexive "se" nor object pronoun comes before that "je", since Croatian would put them after "je"
     but before "si": a join is "je ušao/la u grupu", a photo line "je priložio/la danas u 21:10". A name is never declined,
     standing after a noun that takes the case ("je dodao/la člana Ana"), and the deleted-item notice starts with who
-    deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`) rather than a "by" that would decline the name ("od Ane"). Urdu needs no rule either: its past puts the ergative "نے" after
-    the actor, written apart after a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا…", "آپ نے خرچ بانٹا…"), so
-    every Urdu verb phrase starts with "نے" and stays as it is; its deleted-item notice starts with who deleted it
-    (`youSubjectLanguages`). Arabic's     verbs say both the person and a gender the app doesn't know, so an Arabic row names the actor, a colon and a
+    deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`) rather than a "by" that would decline the name ("od Ane").
+    Hungarian conjugates by person, so every Hungarian verb phrase starts with a past right after the actor, the object
+    after a colon with no suffix: a definite past in "-ta"/"-te" takes a "d" in the user's rows ("Ana létrehozta a
+    csoportot: …", "Te létrehoztad…"), and an indefinite one is one of the few listed in the three helpers, each with its
+    own second person ("Ana felosztott egy számlát: …", "Te felosztottál…"; "kilépett", "kiléptél"). A translation
+    reaches for a definite past, or for one of those, and never puts another word before the verb. Its deleted-item
+    notice starts with who deleted it ("Te törölted ezt: …", `youSubjectLanguages`). Arabic's     verbs say both the person and a gender the app doesn't know, so an Arabic row names the actor, a colon and a
     verbal noun instead of a verb ("Ana: تقسيم «عشاء»", "أنت: تقسيم «عشاء»"): the same words serve the user and everyone
     else, and none of the three helpers has an Arabic rule. Its deleted-item notice is passive ("تم الحذف بواسطة Ana"). Hebrew rows are built the same way ("Ana: פיצול "ארוחת ערב"", "אני: פיצול …"), the user's subject word being "אני", and its deleted-item notice agrees with the item, never with the person. The same rules say a bill's photo line to the user who attached it, in the subject's form ("Tu", not the list's "Toi"): "Tú lo adjuntaste hoy a las 21:10", "Tu as joint la photo…" or
     "Tu l’as joint…", "Ty dodałeś(-aś) je…". A Spanish object pronoun before the verb stays ("lo adjuntó" to "lo

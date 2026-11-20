@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="push_reminder_title">Emlékeztető az elszámolásra</string>
+    <string name="push_bill_created">%1$s hozzáadott egy közös számlát veled: „%2$s”</string>
+    <string name="push_bill_edited">%1$s szerkesztett egy számlát: „%2$s”</string>
+    <string name="push_bill_deleted">%1$s törölt egy számlát: „%2$s”</string>
+    <string name="push_comment_added">%1$s hozzászólt egy számlához („%2$s”): %3$s</string>
+    <string name="push_payment_paid_you">%1$s jelezte, hogy fizetett neked</string>
+    <string name="push_payment_to_you">%1$s jelezte, hogy %2$s fizetett neked</string>
+    <string name="push_payment_received_yours">%1$s jelezte, hogy megkapta a fizetésedet</string>
+    <string name="push_payment_from_you">%1$s jelezte, hogy fizettél neki: %2$s</string>
+    <string name="push_payment_undone">%1$s visszavont egy veled közös fizetést</string>
+    <string name="push_charge_sent">%1$s küldött neked egy emlékeztetőt az elszámolásról</string>
+    <string name="push_settle_reminder">Nyitott egyenleged van ebben a csoportban: %1$s</string>
+    <string name="push_settle_reminders">Nyitott egyenlegeid vannak %1$s csoportban</string>
+    <string name="push_added_to_group">%1$s hozzáadott téged a csoporthoz</string>
+    <string name="push_member_joined">%1$s csatlakozott a csoporthoz</string>
+    <string name="push_debts_simplified_to_you">%1$s egyszerűsítette az adósságokat. Most %2$s fizet neked: %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s egyszerűsítette az adósságokat. Most %3$s összeget fizetsz neki: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s egyszerűsítette az adósságokat. Nézd meg, mit jelent ez neked.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s kikapcsolta az Adósságok egyszerűsítését. Most %2$s fizet neked: %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s kikapcsolta az Adósságok egyszerűsítését. Most %3$s összeget fizetsz neki: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s kikapcsolta az Adósságok egyszerűsítését. Nézd meg, mit jelent ez neked.</string>
+    <string name="bill_link_not_in_group_title">Nem vagy tagja ennek a csoportnak</string>
+    <string name="bill_link_not_in_group_message">Ez a hozzászólás egy olyan csoportban van, amelynek nem vagy tagja. Kérj meghívót attól, aki a linket küldte.</string>
+    <string name="bill_link_offline_title">Nincs internet</string>
+    <string name="bill_link_offline_message">Nyisd meg újra a linket, amikor újra online leszel.</string>
+    <string name="bill_link_go_home">Ugrás a Kezdőlapra</string>
+    <string name="discard_changes_title">Elveted a módosításokat?</string>
+    <string name="discard_changes_message">A nem mentett módosítások elvesznek.</string>
+    <string name="discard_changes_discard">Elvetés</string>
+    <string name="discard_changes_keep_editing">Szerkesztés folytatása</string>
+</resources>

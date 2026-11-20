@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Egyenlegek</string>
+    <string name="global_balances_profile">Profil</string>
+    <string name="global_balances_offline">Offline · az eszköz egyenlegei</string>
+    <string name="global_balances_filter">Megjelenítés</string>
+    <string name="global_balances_filter_all">Mind</string>
+    <string name="global_balances_filter_you_owe">Tartozol</string>
+    <string name="global_balances_filter_owes_you">Tartoznak neked</string>
+    <string name="global_balances_hint">A csoportok már beszámítva: mindenki egyszer szerepel.</string>
+    <string name="global_balances_hint_empty">Az eszközön lévő összes csoport összesítése.</string>
+    <string name="global_balances_section_you_owe">Tartozol · %d</string>
+    <string name="global_balances_section_owes_you">Tartoznak neked · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d csoport</item>
+        <item quantity="other">%d csoport</item>
+    </plurals>
+    <string name="global_balances_guest">%s · vendég</string>
+    <string name="global_balances_you_owe">tartozol</string>
+    <string name="global_balances_owes_you">tartozik neked</string>
+    <string name="global_balances_by_group_show">Csoportonkénti bontás megjelenítése: %s</string>
+    <string name="global_balances_by_group_hide">Csoportonkénti bontás elrejtése: %s</string>
+    <string name="global_balances_received">Megkaptam</string>
+    <string name="global_balances_received_from">Megkaptam tőle: %s</string>
+    <string name="global_balances_settle">Elszámolás</string>
+    <string name="global_balances_settle_with">Elszámolás vele: %s</string>
+    <string name="global_balances_charge">Kérés</string>
+    <string name="global_balances_charge_person">Fizetési kérés neki: %s</string>
+    <string name="global_balances_detail_pane">Egyenleg vele: %s</string>
+    <string name="global_balances_detail_owes_you">%s tartozik neked</string>
+    <string name="global_balances_detail_you_owe">Tartozol neki: %s</string>
+    <string name="global_balances_detail_guest">%s · vendég, alkalmazás nélkül</string>
+    <string name="global_balances_detail_note_owed">A nettó összeg már beszámítja a csoportokat: a Kérés és a Megkaptam ezt használja: %s. Az alkalmazás minden csoportban rögzít egy fizetést.</string>
+    <string name="global_balances_detail_note_settle">A nettó összeg már beszámítja a csoportokat: az Elszámolás ezt használja: %s. Az alkalmazás minden csoportban rögzít egy fizetést.</string>
+    <string name="global_balances_detail_note_single">Csak egy nyitott csoportod van vele: %s.</string>
+    <string name="global_balances_settled_title">Minden elszámolva</string>
+    <string name="global_balances_settled_body">Senki nem tartozik neked, és te sem tartozol senkinek. Ha valaki számlát ad hozzá, az egyenleg itt jelenik meg.</string>
+    <string name="global_balances_settled_action">Csoportok megtekintése</string>
+    <string name="global_balances_nothing_to_pay_title">Nem tartozol semmivel</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Mindenkivel elszámoltál. Még %2$s jár vissza neked %1$d embertől.</item>
+        <item quantity="other">Mindenkivel elszámoltál. Még %2$s jár vissza neked %1$d embertől.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Kik tartoznak neked</string>
+    <string name="global_balances_nothing_to_receive_title">Senki nem tartozik neked</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Még tartozol %1$d embernek, összesen: %2$s.</item>
+        <item quantity="other">Még tartozol %1$d embernek, összesen: %2$s.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Kiknek tartozol</string>
+    <string name="global_balances_coming_soon">Hamarosan</string>
+    <string name="global_balances_change_error">Nem sikerült menteni a módosítást. Próbáld újra.</string>
+    <string name="global_balances_copied">Másolva</string>
+    <string name="global_balances_charge_title">Fizetési kérés neki: %s</string>
+    <string name="global_balances_charge_owes">Tartozik neked: %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Bezárás</string>
+    <string name="global_balances_charge_guest">%s vendég, alkalmazás nélkül. Csak ebből az üzenetből értesül róla, ezért az üzenet már tartalmazza, mi került a számlába.</string>
+    <string name="global_balances_charge_message">Üzenet</string>
+    <string name="global_balances_charge_pix">Pix-kulcsom hozzáadása</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Üzenet másolása</string>
+    <string name="global_balances_charge_send">Küldés</string>
+    <string name="global_balances_message">Szia, %1$s! A Blitz Split számítása szerint ennyivel tartozol nekem: %2$s (%3$s).</string>
+    <string name="global_balances_message_guest">Szia, %1$s! Ennyivel tartozol nekem: %2$s (%3$s). Ez a részed ebből: %4$s.</string>
+    <string name="global_balances_message_guest_paid">Szia, %1$s! Ennyivel tartozol nekem: %2$s (%3$s). Ez a részed ebből: %4$s, levonva, amit már kifizettél: %5$s.</string>
+    <string name="global_balances_message_group">csoport: %s</string>
+    <string name="global_balances_message_groups">csoportok: %s</string>
+    <string name="global_balances_message_pix">Pix-kulcs (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefon</string>
+    <string name="global_balances_key_email">E-mail</string>
+    <string name="global_balances_key_random">Véletlen kulcs</string>
+    <string name="global_balances_message_reroute">Egyszerűsítették az adósságokat ebben a csoportban: %1$s, ezért ahelyett, hogy neki fizetnél (%2$s), közvetlenül nekem fizetsz; a teljes összeged nem változott.</string>
+</resources>
