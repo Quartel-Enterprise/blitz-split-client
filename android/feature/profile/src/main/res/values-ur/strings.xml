@@ -149,6 +149,8 @@
     <string name="profile_bitcoin_in_sats_detail">Bitcoin کی رقمیں sats میں دکھاتا اور لکھواتا ہے (1 ₿ = 100,000,000 sats)۔</string>
     <string name="profile_category_map">کیٹیگری میپ</string>
     <string name="profile_category_map_detail">وہ الفاظ جو خرچ کی کیٹیگری منتخب کرتے ہیں</string>
+    <string name="profile_connect_watch">گھڑی کنیکٹ کریں</string>
+    <string name="profile_connect_watch_detail">آپ کی گھڑی پر دکھائے گئے کوڈ سے</string>
     <string name="profile_photo_open">تصویر دیکھیں</string>
     <string name="profile_share">پروفائل شیئر کریں</string>
     <string name="profile_share_message">Blitz Split پر میرا پروفائل: %1$s</string>
@@ -160,6 +162,4 @@
     <string name="profile_user_id">یوزر ID</string>
     <string name="profile_user_id_copy">یوزر ID کاپی کریں</string>
     <string name="profile_user_id_copied">یوزر ID کاپی ہو گئی</string>
-    <string name="profile_connect_watch">گھڑی کنیکٹ کریں</string>
-    <string name="profile_connect_watch_detail">اس کوڈ سے جو آپ کی گھڑی دکھاتی ہے</string>
 </resources>
