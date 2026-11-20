@@ -7,7 +7,7 @@ import com.quare.blitzsplit.core.settings.domain.usecase.ObserveTimeFormatPrefer
 
 /*
  * Why: the device's choices on how the whole app draws (the theme, dynamic colors, bitcoin's unit, the time format),
- * as one dependency of AppViewModel, whose constructor is at the size Koin's viewModelOf takes.
+ * as one dependency of AppViewModel, whose constructor is at the size Koin's factoryOf takes.
  */
 data class DisplayPreferenceUseCases(
     val observeThemePreference: ObserveThemePreference,

@@ -60,11 +60,7 @@ extension View {
     @ViewBuilder
     func appLocale(_ language: AppLanguage) -> some View {
         if let locale = AppLocale.of(language) {
-            environment(\.locale, locale)
-                .environment(
-                    \.layoutDirection,
-                    locale.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight,
-                )
+            drawn(in: locale)
         } else {
             self
         }

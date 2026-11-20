@@ -13,6 +13,12 @@ PROJECT = File.expand_path("../iosApp/BoraRachar.xcodeproj", __dir__)
 # The scheme and its app target share a name; match and the entitlements key by platform
 PLATFORMS = { "BoraRachar-iOS" => "ios", "BoraRachar-macOS" => "macos" }.freeze
 KEYCHAIN = "fastlane_tmp_keychain".freeze
+# The app extensions each platform embeds, by target, with their own App ID and profiles: the iPhone's balance widget
+# (iosApp/project.yml). Each is signed as the app is.
+EXTENSIONS = {
+  "ios" => { "BalanceWidget" => "com.quare.blitzsplit.BalanceWidget" },
+  "macos" => {},
+}.freeze
 # XcodeGen writes these with "development", which an App Store profile refuses under manual signing. PlistBuddy's
 # Set fails when the file or the key is gone, so a change in project.yml stops the lane instead of shipping development
 APS_ENVIRONMENT = {
@@ -29,6 +35,9 @@ desc "adhoc_export_options (iOS only: path of the ad hoc plist, for Firebase App
 lane :apple_signing do |options|
   target = options.fetch(:scheme)
   platform = PLATFORMS.fetch(target)
+  # Each target to sign with the bundle id its profile is for: the app's, then its extensions'
+  signed_targets = { target => BUNDLE_ID }.merge(EXTENSIONS.fetch(platform))
+  identifiers = signed_targets.values
   repo_root = File.expand_path("..", __dir__)
 
   # A temporary keychain on CI, so the certificate never lands in the login one; nothing outside CI. setup_ci locks
@@ -48,14 +57,14 @@ lane :apple_signing do |options|
     type: "appstore",
     readonly: true,
     platform: platform,
-    app_identifier: BUNDLE_ID,
+    app_identifier: identifiers,
     team_id: TEAM_ID,
     storage_mode: "git",
     git_url: CERTS_REPO,
     api_key: api_key,
     additional_cert_types: platform == "macos" ? ["mac_installer_distribution"] : [],
   )
-  profile = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].fetch(BUNDLE_ID)
+  profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].slice(*identifiers)
 
   # The ad hoc profile lists the iPhones registered on the team, which are the only ones the Firebase App
   # Distribution build installs on. A new tester's iPhone needs registering and the profile made again
@@ -65,36 +74,38 @@ lane :apple_signing do |options|
   UI.user_error!("adhoc_export_options is iOS only") if adhoc_export_options && platform != "ios"
   # Best effort: a missing or broken ad hoc profile only costs the Firebase build. The App Store signing goes on, so
   # TestFlight still gets its build, and no ad hoc plist is written, which skips the ad hoc export.
-  adhoc_profile = nil
+  adhoc_profiles = nil
   if adhoc_export_options
     begin
       match(
         type: "adhoc",
         readonly: true,
         platform: platform,
-        app_identifier: BUNDLE_ID,
+        app_identifier: identifiers,
         team_id: TEAM_ID,
         storage_mode: "git",
         git_url: CERTS_REPO,
         api_key: api_key,
       )
-      adhoc_profile = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].fetch(BUNDLE_ID)
+      adhoc_profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].slice(*identifiers)
     rescue StandardError => e
       UI.error("No ad hoc profile, so no Firebase App Distribution build: #{e.message}")
     end
   end
 
-  # Only the app target and only Release: the Swift packages' frameworks take no profile, and the committed
-  # project.yml keeps automatic signing for local builds
-  update_code_signing_settings(
-    use_automatic_signing: false,
-    path: PROJECT,
-    team_id: TEAM_ID,
-    targets: [target],
-    code_sign_identity: "Apple Distribution",
-    profile_name: profile,
-    build_configurations: ["Release"],
-  )
+  # Only the app and its extensions, and only Release: the Swift packages' frameworks take no profile, and the
+  # committed project.yml keeps automatic signing for local builds
+  signed_targets.each do |signed_target, identifier|
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: PROJECT,
+      team_id: TEAM_ID,
+      targets: [signed_target],
+      code_sign_identity: "Apple Distribution",
+      profile_name: profiles.fetch(identifier),
+      build_configurations: ["Release"],
+    )
+  end
 
   entitlements, key = APS_ENVIRONMENT.fetch(platform)
   # PlistBuddy, not plutil: plutil reads the dots of com.apple.developer.aps-environment as a key path
@@ -105,7 +116,7 @@ lane :apple_signing do |options|
     "teamID" => TEAM_ID,
     "signingStyle" => "manual",
     "signingCertificate" => "Apple Distribution",
-    "provisioningProfiles" => { BUNDLE_ID => profile },
+    "provisioningProfiles" => profiles,
     "destination" => "export",
     "uploadSymbols" => true,
     # The workflow sets the build number itself, from version.properties
@@ -115,13 +126,13 @@ lane :apple_signing do |options|
   File.write(options.fetch(:export_options), Plist::Emit.dump(export_options))
 
   # Only the keys a release-testing export takes, not the App Store ones
-  if adhoc_profile
+  if adhoc_profiles
     File.write(adhoc_export_options, Plist::Emit.dump({
       "method" => "release-testing",
       "teamID" => TEAM_ID,
       "signingStyle" => "manual",
       "signingCertificate" => "Apple Distribution",
-      "provisioningProfiles" => { BUNDLE_ID => adhoc_profile },
+      "provisioningProfiles" => adhoc_profiles,
     }))
   end
 end
