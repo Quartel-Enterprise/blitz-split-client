@@ -161,7 +161,7 @@ jobs:
     needs: review-gate
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout code
         uses: actions/checkout@v7

@@ -210,10 +210,10 @@ bundle needs.
   the Wear OS track that mirrors the run's `track` (`wear:production`, `wear:beta`, `wear:alpha`, and `wear:qa` for
   `internal`), with the same notes and, on production, the same `rollout`.
 - **After the phone's.** Google Play drops an edit still open when another one commits, so the two bundles go one
-  after the other, the phone's first, and the screenshots' jobs wait for both. A failed `wear-upload` doesn't hold
-  the release back: it is tagged on the phone's result, and the GitHub release's Android row says `success (watch:
-  failure)`. It does skip the run's Google Play screenshots, which only go after both bundles landed: **Re-run
-  failed jobs** then sends only the watch's bundle again, and the screenshots after it.
+  after the other, the phone's first, and the screenshots' jobs wait for both to be over. A failed `wear-upload` doesn't hold
+  the release back: it is tagged on the phone's result, the GitHub release's Android row says `success (watch:
+  failure)`, and the run's Google Play screenshots still go, since they only need the phone's bundle to have landed.
+  **Re-run failed jobs** then sends only the watch's bundle again.
 - **Firebase.** `wearApp/google-services.json` is not committed either: `android-build` writes the phone's
   (`GOOGLE_SERVICES_JSON`) there too, since the Firebase Android app is chosen by the package name, which the watch
   shares. No secret of its own.
@@ -223,8 +223,7 @@ bundle needs.
   Add form factor › Wear OS), which creates its tracks, and make the closed testing track of the Wear OS form factor
   named `alpha` if the watch should follow the phone's `alpha` runs. Then the listing needs its Wear OS screenshots
   and Play's Wear OS review (the app quality guidelines) before the watch's production release goes out. Until the
-  form factor exists, `wear-upload` fails: the phone's release goes on, without the run's Google Play screenshots
-  (send them alone, [Google Play's screenshots alone](#google-plays-screenshots-alone)).
+  form factor exists, `wear-upload` fails, and the phone's release and its screenshots go on.
 
 ### Screenshots with a release
 
@@ -250,7 +249,7 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   `android-screenshots` uploads the ones that changed, a few locales per "send 1 of 5: \<locales\>" job (the jobs
   of [`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml), which also send
   them without a release). Play shows a listing's screenshots to everyone at once, so a testing track brings none.
-  **The bundles always go first**: `android-screenshots` needs `android-upload` and `wear-upload`, so a bundle is never the save
+  **The bundles always go first**: `android-screenshots` needs `android-upload` to have landed and `wear-upload` to be over, so a bundle is never the save
   the run's own screenshots left without quota ([Google Play's daily save quota](#google-plays-daily-save-quota)).
 - **App Store**, before the submission, since a version in review can't take them, and only in a run that submits:
   `app-store-versions` creates the version (as it does in every run that submits, so the previous version's

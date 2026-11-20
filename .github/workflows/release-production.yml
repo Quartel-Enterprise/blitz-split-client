@@ -596,11 +596,19 @@ jobs:
           name: release-notes
           path: release-notes
 
+      # The offset read from wearApp/build.gradle.kts, its one place, so the code the lane checks after a 5xx is the
+      # bundle's.
       - name: The watch's versionCode
         id: code
         env:
           VERSION_CODE: ${{ needs.plan.outputs.version_code }}
-        run: echo "version_code=$((VERSION_CODE + 1000000))" >> "$GITHUB_OUTPUT"
+        run: |
+          offset="$(sed -n 's/^val wearVersionCodeOffset = \([0-9_]*\)$/\1/p' wearApp/build.gradle.kts | tr -d _)"
+          if [ -z "$offset" ]; then
+            echo "::error::No wearVersionCodeOffset in wearApp/build.gradle.kts."
+            exit 1
+          fi
+          echo "version_code=$((VERSION_CODE + offset))" >> "$GITHUB_OUTPUT"
 
       - name: Send the watch's AAB to Google Play
         uses: ./.github/actions/play-store-lane
@@ -658,9 +666,13 @@ jobs:
   # (docs/store-listing-screenshots.md#google-plays-daily-save-quota).
   android-screenshots:
     name: Android, Google Play screenshots
-    # After the watch's bundle too: an edit of theirs that committed first would drop the watch's still open.
+    # After the watch's bundle too, whatever became of it: an edit of theirs that committed first would drop the
+    # watch's still open. Only the phone's has to have landed, so a watch that failed (no Wear OS form factor yet)
+    # costs the listing nothing; a phone that failed or was skipped skips them, as before.
     needs: [plan, android-upload, wear-upload, android-screenshots-render]
-    if: ${{ needs.android-screenshots-render.outputs.locales != '' }}
+    if: >-
+      ${{ !cancelled() && needs.android-upload.result == 'success' &&
+      needs.android-screenshots-render.outputs.locales != '' }}
     permissions:
       contents: read
       # Each upload job looks for a listing or Google Play's screenshots going up alone, and for a group before
@@ -1338,7 +1350,8 @@ jobs:
 
           android_channel="Google Play, \`$TRACK\` track"
           if [ "$TRACK" = production ]; then android_channel="$android_channel, $ROLLOUT% of the users"; fi
-          android_channel="$android_channel, the watch on Wear OS's"
+          # The watch's part only when its upload ran: a phone that failed never sent it.
+          if [ "$WEAR" != skipped ]; then android_channel="$android_channel, the watch on Wear OS's"; fi
           # The phone's result decides the release; the watch's, sent after it, is told next to it when it differs.
           android="$ANDROID"
           if [ "$ANDROID" = success ] && [ "$WEAR" != success ]; then android="success (watch: $WEAR)"; fi
