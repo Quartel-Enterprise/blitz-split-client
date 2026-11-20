@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.wear.ui.balances
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
@@ -84,7 +86,8 @@ fun WatchBalancesScreen(viewModel: WatchBalancesViewModel = koinViewModel()) {
 
 /*
  * Why: the watch's own pushes need the permission from Wear OS 4 (API 33) on; asked once the watch has the account,
- * on its first Balances, as there is nothing to notify about before.
+ * on its first Balances, as there is nothing to notify about before. Only once: a "Don't allow" isn't asked again
+ * each time Balances shows.
  */
 @Composable
 private fun NotificationPermissionEffect() {
@@ -92,11 +95,18 @@ private fun NotificationPermissionEffect() {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
     LaunchedEffect(Unit) {
+        val preferences = context.getSharedPreferences(PERMISSION_PREFERENCES, Context.MODE_PRIVATE)
+        if (preferences.getBoolean(KEY_NOTIFICATIONS_ASKED, false)) return@LaunchedEffect
         val isGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
             PackageManager.PERMISSION_GRANTED
-        if (!isGranted) launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        if (isGranted) return@LaunchedEffect
+        preferences.edit { putBoolean(KEY_NOTIFICATIONS_ASKED, true) }
+        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }
+
+private const val PERMISSION_PREFERENCES = "wear_permissions"
+private const val KEY_NOTIFICATIONS_ASKED = "notifications_asked"
 
 // Why: "Sign out of this watch?", the one way to disconnect only the watch; the phone stays signed in.
 @Composable
