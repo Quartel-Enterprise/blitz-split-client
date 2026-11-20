@@ -56,8 +56,9 @@ private val exportedToApple = listOf(
 ).map { dependencies.project(it) }
 
 kotlin {
-    // Why: the watchOS app's own `Shared`, kept out of the iOS and macOS ones so their API stays as it is. Xcode builds
-    // it through embedAndSignAppleFrameworkForXcode like the others; assembleSharedDebugXCFramework (or Release) packs both.
+    // Why: the watchOS app's own `Shared`, kept out of the iOS and macOS ones so their API stays as it is. Xcode
+    // builds it through embedAndSignAppleFrameworkForXcode like the others; assembleSharedDebugXCFramework (or
+    // assembleSharedReleaseXCFramework) packs both watchOS slices.
     val watchosFramework = XCFramework("Shared")
     listOf(iosArm64(), iosSimulatorArm64(), macosArm64(), watchosArm64(), watchosSimulatorArm64()).forEach { target ->
         target.binaries.framework {

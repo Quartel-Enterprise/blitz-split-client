@@ -9,6 +9,7 @@ import org.gradle.api.services.BuildServiceParameters
 import org.gradle.kotlin.dsl.registerIfAbsent
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
+import org.jetbrains.kotlin.gradle.tasks.KotlinNativeLink
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -103,19 +104,6 @@ abstract class IosSimulator : BuildService<IosSimulator.Parameters> {
     private var waitLeft: Duration? = null
     private val loggedOutages = mutableSetOf<SimulatorFamily>()
     private var hasStoppedAnswering = false
-    private val installedRuntimes = mutableMapOf<SimulatorFamily, Boolean>()
-
-    /**
-     * Whether `simctl` lists a runtime of [family]. A Mac set up for the phone app may have no
-     * watchOS runtime (Xcode installs it apart), and its suites are then skipped rather than failed.
-     * A simctl that gives no answer counts as having one, so [fetchDevice] reports the outage.
-     */
-    @Synchronized
-    fun hasRuntime(family: SimulatorFamily): Boolean = installedRuntimes.getOrPut(family) {
-        val listing = run(listOf("simctl", "list", "runtimes"))
-        !listing.hasAnswered ||
-            listing.output.lineSequence().any { it.trimStart().startsWith(family.runtimeName + " ", ignoreCase = true) }
-    }
 
     @Synchronized
     fun fetchDevice(family: SimulatorFamily): String {
@@ -246,13 +234,25 @@ internal fun Project.configureIosSimulatorTests() {
         // and disables it off a Mac in its own configuration, which may run after this one.
         SimulatorFamily.entries.firstOrNull { name.startsWith(it.taskPrefix) }?.let { family ->
             device.set(simulator.map { it.fetchDevice(family) })
-            // Why: CI runs no watchOS suite, and a Mac without the watchOS runtime would fail
-            // `build` and `allTests` on every module. The iOS suites keep failing, as CI needs.
-            if (family == SimulatorFamily.WATCHOS) {
-                onlyIf("a watchOS simulator runtime is installed (xcodebuild -downloadPlatform watchOS)") {
-                    simulator.get().hasRuntime(family)
-                }
-            }
         }
+    }
+    skipWatchosTestsWithoutRuntime()
+}
+
+/*
+ * Why: CI runs no watchOS suite, and on a Mac without the watchOS runtime the suites, and the test
+ * binaries only they run, would fail or slow `build` and `allTests` on every module. The iOS suites
+ * keep failing without a device, as CI needs.
+ */
+private fun Project.skipWatchosTestsWithoutRuntime() {
+    val hasRuntime = providers.of(SimulatorRuntimeValueSource::class.java) {
+        parameters.runtimeName.set(SimulatorFamily.WATCHOS.runtimeName)
+    }
+    val reason = "a watchOS simulator runtime is installed (xcodebuild -downloadPlatform watchOS)"
+    tasks.withType<KotlinNativeSimulatorTest>().configureEach {
+        if (name.startsWith(SimulatorFamily.WATCHOS.taskPrefix)) onlyIf(reason) { hasRuntime.get() }
+    }
+    tasks.withType<KotlinNativeLink>().configureEach {
+        if (name.endsWith("TestWatchosSimulatorArm64")) onlyIf(reason) { hasRuntime.get() }
     }
 }

@@ -123,10 +123,14 @@ each, with every module's compilation restored.
 
 `apple-watch` links the watchOS `Shared` for the device (arm64_32) and the simulator into an XCFramework
 (`:shared:assembleSharedDebugXCFramework`), the only check that compiles the watchOS targets. It runs when
-`apple-tests` does, side by side with it. Since no other job compiles for watchOS, it saves its own Gradle home on
-`main` (a second entry beside `apple-tests`'), so a pull request restores every module's watchOS compilation and only
-compiles what it changed. It doesn't save `~/.konan`: `apple-tests` does, and Kotlin/Native keeps no library cache for
-the watchOS targets. Its first runs set its 40-minute bound; check their times before tightening it. No test runs on
+`apple-tests` does on a pull request, side by side with it, one more of the five macOS runners: a pull request
+whose `apple-tests` splits in two holds all five. On `main` the same build is a step of `apple-tests`, after the
+tests, so the Gradle home that job saves, the one every macOS job restores, holds the watchOS compilations, and
+`main`'s run keeps to two runners. A job of its own saving a home on `main` would be one more entry that
+`drop-failed-cache` doesn't clean, and one a job without an entry of its own (`apple-app`) could restore in place of
+`apple-tests`' (setup-gradle falls back to the newest entry of the runner's OS). Kotlin/Native keeps no library cache
+for the watchOS targets, so `~/.konan` gains nothing from it. Its 60-minute bounds leave room for a cold build of
+every module for two targets; check the first runs' times before tightening them. No test runs on
 the watchOS simulator in CI: the suite is the same `commonTest` over the same `appleMain` as macOS's, and
 `./scripts/heavy-check.sh ./gradlew :<module>:watchosSimulatorArm64Test` runs it on the Mac once the watchOS runtime
 is installed (`xcodebuild -downloadPlatform watchOS`); without it the suites are skipped.

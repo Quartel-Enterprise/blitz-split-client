@@ -276,6 +276,15 @@ jobs:
           echo "finished=true" >> "$GITHUB_OUTPUT"
           exit "$status"
 
+      # main also links the watchOS Shared, apple-watch's build, here rather than in a job of its own:
+      # this job's Gradle home is the one every macOS job restores, so it then holds the watchOS
+      # compilations the pull requests' apple-watch reads, and main's run keeps to two runners. Its
+      # first, cold run compiles every module for two more targets; the bound leaves room for that.
+      - name: Build the watchOS framework
+        if: github.ref == 'refs/heads/main'
+        timeout-minutes: 60
+        run: ./gradlew :shared:assembleSharedDebugXCFramework
+
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v7
@@ -410,17 +419,18 @@ jobs:
 
   # The watchOS Shared framework (docs/architecture/stack.md), both slices: watchosArm64, the device's
   # arm64_32, which no other check compiles, and watchosSimulatorArm64. No Swift app links it yet, so
-  # Gradle packs them into the XCFramework the watch app will take. It runs when apple-tests does: a
-  # change to the Swift app alone leaves it as main built it. No other job compiles for watchOS, so
-  # on main it saves a Gradle home of its own, which the pull requests' runs restore.
+  # Gradle packs them into the XCFramework the watch app will take. It runs on a pull request whose
+  # apple-tests runs: a change to the Swift app alone leaves it as main built it. main builds it in
+  # apple-tests instead, which saves the Gradle home this job restores with its watchOS compilations.
   apple-watch:
     needs: [review-gate, changes]
     if: >-
-      ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
-      needs.changes.outputs.kotlin != 'false' }}
+      ${{ !cancelled() && github.event_name == 'pull_request' &&
+      needs.review-gate.outputs.proceed != 'false' && needs.changes.outputs.kotlin != 'false' }}
     runs-on: xcode-27
-    # A hung build would otherwise hold one of the few macOS runners for six hours.
-    timeout-minutes: 40
+    # A hung build would otherwise hold one of the few macOS runners for six hours. A cold build
+    # compiles every module for two targets, with no Kotlin/Native library cache for watchOS.
+    timeout-minutes: 60
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
@@ -432,6 +442,8 @@ jobs:
         with:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
           kotlin-native: 'true'
+          # apple-tests saves the Gradle cache of the macOS runner, the watchOS compilations included.
+          cache-read-only: 'true'
 
       - name: Build the watchOS framework
         run: ./gradlew :shared:assembleSharedDebugXCFramework
@@ -490,7 +502,7 @@ jobs:
   # `concurrency` above), so the issue links those commits. A run someone cancelled reports nothing,
   # and neither does one replaced in the queue.
   report-failure:
-    needs: [apple-tests, apple-app, apple-watch]
+    needs: [apple-tests, apple-app]
     if: >-
       ${{ !cancelled() && github.event_name == 'push' &&
       (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
@@ -509,7 +521,6 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           TESTS: ${{ needs.apple-tests.result }}
           APP: ${{ needs.apple-app.result }}
-          WATCH: ${{ needs.apple-watch.result }}
           ACTOR: ${{ github.actor }}
         # The commits to look at start after the last run of main that passed or failed: a run
         # replaced in the queue was cancelled, and so was one someone stopped, which leaves a longer
@@ -525,7 +536,7 @@ jobs:
             commits=" The run also stands for the pushes it replaced in the queue, so what broke is in [the commits since the last run that completed]($GITHUB_SERVER_URL/$GH_REPO/compare/$previous...$GITHUB_SHA)."
           fi
           body=$(printf '%s\n\n%s\n' \
-            "[This run]($RUN_URL) of \`apple\` failed on \`main\` at $GITHUB_SHA: \`apple-tests\` $TESTS, \`apple-app\` $APP, \`apple-watch\` $WATCH.$commits" \
+            "[This run]($RUN_URL) of \`apple\` failed on \`main\` at $GITHUB_SHA: \`apple-tests\` $TESTS, \`apple-app\` $APP.$commits" \
             "Pull requests run the Kotlin tests on macOS only, so a test that fails on the iOS simulator alone first fails here, and the pull request that fixes it can't check the fix: run \`./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test\` on the Mac. See \"Speed and timeouts\" in docs/ci.md.")
           issue=$(gh issue list --state open --limit 200 --json number,title \
             --jq "map(select(.title == \"$TITLE\"))[0].number // empty")

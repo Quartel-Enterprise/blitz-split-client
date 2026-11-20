@@ -49,7 +49,8 @@ Left out, and why:
 - `watchosDeviceArm64`, the 64-bit slice of Series 9 and later: a Kotlin/Native **tier 3** target (built, not tested
   by Kotlin's CI), and `lifecycle-viewmodel` 2.11.0 and supabase-kt 3.9.0 don't publish it. The arm64_32 slice runs
   on those watches meanwhile; add the target to the plugin once both libraries publish it, knowing the watch tests
-  still run on the simulator only.
+  still run on the simulator only. Running is not shipping: before the first watch release, check whether App Store
+  Connect accepts a watch app without the arm64 slice. If it doesn't, the watch app waits for those libraries.
 - `watchosArm32` (Series 3, stuck on watchOS 8) and `watchosX64` (Intel simulators): deprecated in Kotlin.
 
 A library the shared code takes needs a watchOS target too: `software.quare:loadable` from 1.2.0 and
