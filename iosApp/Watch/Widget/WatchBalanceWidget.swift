@@ -86,10 +86,12 @@ struct WatchBalanceTimelineProvider: TimelineProvider {
     WatchBalanceWidget()
 } timeline: {
     WatchBalanceEntry(date: .now, balances: .preview)
+    WatchBalanceEntry(date: .now, balances: .unknown)
 }
 
 #Preview("Rectangular", as: .accessoryRectangular) {
     WatchBalanceWidget()
 } timeline: {
     WatchBalanceEntry(date: .now, balances: .preview)
+    WatchBalanceEntry(date: .now, balances: .unknown)
 }
