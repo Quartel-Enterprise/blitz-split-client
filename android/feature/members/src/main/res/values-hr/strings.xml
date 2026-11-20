@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Poveznica za poziv</string>
+    <string name="members_link_pending">Još nije stvorena</string>
+    <string name="members_share">Podijeli</string>
+    <string name="members_me">%s (ti)</string>
+    <string name="members_status_this_device">Ovaj uređaj</string>
+    <string name="members_status_joined">Ušao/la</string>
+    <string name="members_status_not_joined">Još nije ušao/la</string>
+    <string name="members_options">Opcije za: %s</string>
+    <string name="members_rename">Preimenuj</string>
+    <string name="members_personal_invite">Osobna pozivnica za: %s</string>
+    <string name="members_personal_message">Tko otvori ovu poveznicu, ulazi izravno kao %s, bez biranja s popisa. Radi jednom.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Tko otvori ovu poveznicu, ulazi izravno kao %1$s, bez biranja s popisa, i već vidi svoj dio od %2$s u dosad dodanom trošku. Radi jednom.</item>
+        <item quantity="few">Tko otvori ovu poveznicu, ulazi izravno kao %1$s, bez biranja s popisa, i već vidi svoj dio od %2$s u %3$d dosad dodana troška. Radi jednom.</item>
+        <item quantity="other">Tko otvori ovu poveznicu, ulazi izravno kao %1$s, bez biranja s popisa, i već vidi svoj dio od %2$s u %3$d dosad dodanih troškova. Radi jednom.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopiraj poveznicu</string>
+    <string name="members_personal_copied">Kopirano</string>
+    <string name="members_personal_share">Podijeli s: %s</string>
+    <string name="members_personal_share_message">Uđi u grupu „%1$s“ kao %2$s u aplikaciji Blitz Split: %3$s</string>
+    <string name="members_remove">Ukloni iz grupe</string>
+    <string name="members_remove_joined">%s je već ušao/la u grupu</string>
+    <string name="members_remove_title">Ukloniti člana %s iz grupe?</string>
+    <string name="members_remove_message">%s još nije ušao/la. Kasnije ga/je možeš ponovno dodati.</string>
+    <string name="members_remove_confirm">Ukloni</string>
+    <string name="members_release">Oslobodi ime</string>
+    <string name="members_release_title">Osloboditi ime %s?</string>
+    <string name="members_release_message">Tko je ušao kao %1$s, napušta grupu. Ime, boja i troškovi člana %1$s ostaju, a ime %1$s može se ponovno odabrati preko poveznice grupe.</string>
+    <string name="members_release_confirm">Oslobodi</string>
+    <string name="members_release_error">Ime nije oslobođeno. Provjeri vezu i pokušaj ponovno.</string>
+    <string name="members_add">Dodaj osobu</string>
+    <string name="members_invite_instead">Ima aplikaciju? Pozovi poveznicom</string>
+    <string name="members_name_label">Ime</string>
+    <string name="members_save">Spremi</string>
+    <string name="members_cancel">Odustani</string>
+    <string name="members_change_error">Promjena nije spremljena. Pokušaj ponovno.</string>
+    <string name="members_remove_open_balance">%s ima otvoreni saldo</string>
+    <string name="members_balance_to_get_back">prima %s</string>
+    <string name="members_balance_owes">duguje %s</string>
+    <string name="members_balance_settled">Podmireno</string>
+</resources>

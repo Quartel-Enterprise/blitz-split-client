@@ -23,7 +23,7 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     messenger keeps a preview it already fetched: changing the link doesn't change the previews already posted.
     A crawler says nothing of who reads the preview, so the group's currency picks its language: BRL Portuguese ("Bora
     Rachar"), ARS, CLP, COP, MXN, PEN, UYU and PYG Spanish, JPY Japanese, TRY Turkish, IDR Indonesian, PLN Polish, RUB Russian, UAH Ukrainian, KRW Korean, INR Hindi, SAR and EGP Arabic, CNY Simplified Chinese, ILS Hebrew, THB Thai, VND Vietnamese, TWD Traditional Chinese, SEK Swedish, CZK Czech, RON Romanian, BDT Bengali, MYR Malay,
-    any other English. No currency picks French, German, Italian, Dutch or Greek, since the euro, the Swiss franc and the
+    any other English. No currency picks French, German, Italian, Dutch, Greek or Croatian, since the euro, the Swiss franc and the
     Canadian dollar are each spoken in more than one language, and a USD or EUR group of Spanish speakers gets English
     too: an accepted trade-off. The UAE dirham and the Moroccan dirham pick none either, English and French being as
     common there as Arabic.
