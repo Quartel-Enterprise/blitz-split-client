@@ -297,24 +297,21 @@ private struct CodeField: View {
     }
 
     private var boxes: some View {
-        HStack(spacing: 6) {
+        // The code's characters once per draw, not once per box
+        let characters = Array(state.code)
+        return HStack(spacing: 6) {
             ForEach(0 ..< Int(state.codeLength), id: \.self) { index in
                 if index == 3 { Spacer().frame(width: 4) }
                 CodeBox(
-                    character: character(at: index),
+                    character: index < characters.count ? String(characters[index]) : nil,
                     hasError: state.isCodeWrong,
-                    isCurrent: isFocused && index == state.code.count,
+                    isCurrent: isFocused && index == characters.count,
                 )
             }
         }
         .frame(maxWidth: .infinity)
         // A Latin code reads left to right in Arabic and Hebrew too, as the watch shows it
         .environment(\.layoutDirection, .leftToRight)
-    }
-
-    private func character(at index: Int) -> String? {
-        let code = Array(state.code)
-        return index < code.count ? String(code[index]) : nil
     }
 }
 

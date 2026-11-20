@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.core.watch.domain.usecase.ApproveNearbyWatch
 import com.quare.blitzsplit.core.watch.domain.usecase.ObserveAccountSignOuts
+import com.quare.blitzsplit.core.watch.link.WatchLink
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.appdownload.presentation.viewmodel.AppDownloadViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
@@ -98,6 +99,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -108,6 +110,7 @@ import platform.Foundation.create
 import platform.posix.memcpy
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.Platform
+import kotlin.time.Duration.Companion.seconds
 import com.quare.blitzsplit.core.provider.crashlytics.startCrashReporting as startCrashlytics
 
 /*
@@ -253,15 +256,21 @@ object BlitzSplitApple : KoinComponent {
     /*
      * Why: the iPhone's side of nearby pairing (15.10): the paired watch hands its code over WatchConnectivity and the
      * iPhone approves it with its own session, with no confirmation, as Android's WatchPairingListenerService does.
-     * onReply gets one of WatchLink's REPLY_ values, on the main thread.
+     * onReply gets one of WatchLink's REPLY_ values, on the main thread. A server that never answers is a failure, as
+     * on Android's listener, and sooner than its 30 seconds: iOS gives an app woken in the background about that long,
+     * and the reply has to reach the watch before the app is suspended.
      */
     fun approveNearbyWatch(
         code: String,
         onReply: (String) -> Unit,
     ) {
         val approve = get<ApproveNearbyWatch>()
-        scope.launch { onReply(approve(code)) }
+        scope.launch {
+            onReply(withTimeoutOrNull(nearbyApprovalTimeout) { approve(code) } ?: WatchLink.REPLY_FAILED)
+        }
     }
+
+    private val nearbyApprovalTimeout = 20.seconds
 
     // Why: the user id of each sign out (or deleted account) on the iPhone, which it tells its watch (15.13).
     fun createAccountSignOutsWatcher(): FlowWatcher<String> = FlowWatcher(get<ObserveAccountSignOuts>()())
