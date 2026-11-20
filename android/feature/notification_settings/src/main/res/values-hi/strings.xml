@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">पुश इस डिवाइस पर नोटिफ़िकेशन भेजता है। ऐप में इसे घंटी और गतिविधि में नया दिखाता है; बंद होने पर भी यह गतिविधि में दिखता है, पढ़ा हुआ।</string>
-    <string name="notification_settings_bills">खर्च</string>
-    <string name="notification_settings_bills_detail">जिन खर्चों में आप शामिल हैं, उनका जुड़ना, बदलना या हटना</string>
-    <string name="notification_settings_payments">भुगतान और हिसाब</string>
-    <string name="notification_settings_payments_detail">आपको या आपसे होने वाले भुगतान, और सरल किए गए कर्ज़</string>
-    <string name="notification_settings_comments">टिप्पणियां</string>
-    <string name="notification_settings_comments_detail">जिन खर्चों में आप शामिल हैं और जिन बातचीत में आपने लिखा है, उन पर</string>
-    <string name="notification_settings_people_and_groups">लोग और ग्रुप</string>
-    <string name="notification_settings_people_and_groups_detail">कौन आपके ग्रुप से जुड़ता या उन्हें छोड़ता है, और उनमें क्या बदलता है</string>
-    <string name="notification_settings_payment_requests">भुगतान अनुरोध</string>
-    <string name="notification_settings_payment_requests_detail">जब कोई आपसे भुगतान करने को कहे</string>
-    <string name="notification_settings_balance_reminder">बाकी बैलेंस का रिमाइंडर</string>
-    <string name="notification_settings_balance_reminder_detail">हफ़्ते में एक बार, अगर कोई बैलेंस बाकी हो</string>
     <string name="notification_settings_footer">सूचनाएं इंटरनेट होने पर आती हैं। किसी ग्रुप को म्यूट करने के लिए उसके अंदर का मेन्यू इस्तेमाल करें।</string>
 </resources>

@@ -15,17 +15,5 @@
     <string name="notification_settings_in_app">Alkalmazásban</string>
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">A Push értesítést küld erre az eszközre. Az Alkalmazásban újként jelöli a csengőn és a Tevékenységben; kikapcsolva is megjelenik a Tevékenységben, már olvasottként.</string>
-    <string name="notification_settings_bills">Számlák</string>
-    <string name="notification_settings_bills_detail">Új, szerkesztett vagy törölt számlák, amelyekben benne vagy</string>
-    <string name="notification_settings_payments">Fizetések és elszámolások</string>
-    <string name="notification_settings_payments_detail">Neked szóló vagy tőled érkező fizetések és egyszerűsített tartozások</string>
-    <string name="notification_settings_comments">Hozzászólások</string>
-    <string name="notification_settings_comments_detail">Azokon a számlákon, amelyekben benne vagy, és azokban a beszélgetésekben, amelyekbe írtál</string>
-    <string name="notification_settings_people_and_groups">Emberek és csoportok</string>
-    <string name="notification_settings_people_and_groups_detail">Ki csatlakozik a csoportjaidhoz vagy lép ki belőlük, és mi változik bennük</string>
-    <string name="notification_settings_payment_requests">Fizetési kérések</string>
-    <string name="notification_settings_payment_requests_detail">Amikor valaki fizetést kér tőled</string>
-    <string name="notification_settings_balance_reminder">Emlékeztető nyitott egyenlegről</string>
-    <string name="notification_settings_balance_reminder_detail">Hetente egyszer, ha van nyitott egyenleg</string>
     <string name="notification_settings_footer">Az értesítések akkor érkeznek, amikor van internet. Egy csoport némításához használd a csoporton belüli menüt.</string>
 </resources>

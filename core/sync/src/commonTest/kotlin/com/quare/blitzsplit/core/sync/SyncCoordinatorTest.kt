@@ -1978,7 +1978,7 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN an anonymous account with a queued change WHEN signing out once synced THEN pushes it and stays`() =
+    fun `GIVEN an anonymous watch with a queued change WHEN signing out once synced THEN pushes it then signs out`() =
         runTest {
             // Given
             prepareScenario(
@@ -1993,9 +1993,8 @@ class SyncCoordinatorTest {
 
             // Then
             assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
-            assertEquals(0, account.signOutCount)
-            assertEquals(anonymous, account.status)
-            assertEquals(pierre, profile.profile.value)
+            assertEquals(1, account.signOutCount)
+            assertNull(profile.profile.value)
         }
 
     @Test
@@ -2134,6 +2133,26 @@ class SyncCoordinatorTest {
 
             // Then
             assertEquals(2, profile.uploadedUserIds.size)
+            assertEquals(1, account.signOutCount)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN an anonymous watch that scheduled its sign out WHEN the app starts online THEN pushes and signs out`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                pendingChanges = true,
+                signOutScheduled = true,
+            )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
             assertEquals(1, account.signOutCount)
             assertNull(profile.profile.value)
         }

@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">Push stuurt een melding naar dit apparaat. In app markeert hem als nieuw bij de bel en in Activiteit; staat het uit, dan verschijnt hij nog steeds in Activiteit, al gelezen.</string>
-    <string name="notification_settings_bills">Uitgaven</string>
-    <string name="notification_settings_bills_detail">Nieuwe, bewerkte of verwijderde uitgaven waar je in zit</string>
-    <string name="notification_settings_payments">Betalingen en verrekeningen</string>
-    <string name="notification_settings_payments_detail">Betalingen aan of van jou, en vereenvoudigde schulden</string>
-    <string name="notification_settings_comments">Reacties</string>
-    <string name="notification_settings_comments_detail">Op uitgaven waar je in zit en gesprekken waarin je hebt geschreven</string>
-    <string name="notification_settings_people_and_groups">Mensen en groepen</string>
-    <string name="notification_settings_people_and_groups_detail">Wie lid wordt van of vertrekt uit je groepen, en wat er daarin verandert</string>
-    <string name="notification_settings_payment_requests">Betaalverzoeken</string>
-    <string name="notification_settings_payment_requests_detail">Als iemand je vraagt te betalen</string>
-    <string name="notification_settings_balance_reminder">Herinnering openstaand saldo</string>
-    <string name="notification_settings_balance_reminder_detail">Eén keer per week, als er een openstaand saldo is</string>
     <string name="notification_settings_footer">Meldingen komen binnen als er internet is. Gebruik het menu in een groep om die te dempen.</string>
 </resources>

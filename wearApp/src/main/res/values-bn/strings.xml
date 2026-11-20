@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">ফোনের একই অ্যাকাউন্ট এখানে ব্যবহার করুন। তারপর ঘড়ি নিজেই চলবে।</string>
+    <string name="pair_connect">সংযুক্ত করুন</string>
+    <string name="pair_connecting">ফোন থেকে আপনার অ্যাকাউন্ট আনা হচ্ছে…</string>
+    <string name="pair_connected_title">প্রস্তুত, %1$s</string>
+    <string name="pair_connected_title_unnamed">প্রস্তুত</string>
+    <string name="pair_connected_body">ঘড়ি নিজেই সিঙ্ক হয়, ফোন থেকে দূরে থাকলেও।</string>
+    <string name="pair_continue">চালিয়ে যান</string>
+    <string name="pair_local_only_title">আপনার ডেটা শুধু ফোনে আছে</string>
+    <string name="pair_local_only_body">ফোনে প্রোফাইল থেকে একটি অ্যাকাউন্ট সংযুক্ত করুন, তারপর এখানে আবার সংযুক্ত করুন-এ ট্যাপ করুন।</string>
+    <string name="pair_ok">ঠিক আছে</string>
+    <string name="pair_far_title">ফোন নাগালের বাইরে</string>
+    <string name="pair_far_body">ফোন কাছে আনুন, অথবা কোড দিয়ে সংযুক্ত করুন।</string>
+    <string name="pair_try_again">আবার চেষ্টা করুন</string>
+    <string name="pair_use_code">কোড ব্যবহার করুন</string>
+    <string name="pair_code_label">আপনার কোড</string>
+    <string name="pair_code_description">কোড %1$s</string>
+    <string name="pair_code_where">ফোনে: প্রোফাইল › ঘড়ি সংযুক্ত করুন</string>
+    <string name="pair_code_validity">5 মিনিটের জন্য বৈধ</string>
+    <string name="pair_cancel">বাতিল</string>
+    <string name="pair_signed_out_title">আপনি ফোনে সাইন আউট করেছেন</string>
+    <string name="pair_signed_out_body">এই ঘড়ি থেকেও ডেটা মুছে গেছে।</string>
+    <string name="pair_connect_again">আবার সংযুক্ত করুন</string>
+    <string name="pair_error_offline">ঘড়ি সংযুক্ত করতে ইন্টারনেট লাগবে।</string>
+    <string name="pair_error_too_many">অনেক বেশি চেষ্টা হয়েছে। কয়েক মিনিট অপেক্ষা করে আবার সংযুক্ত করুন।</string>
+    <string name="pair_error_failed">ঘড়িটি সংযুক্ত করা যায়নি। আবার চেষ্টা করুন।</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">ব্যালেন্স</string>
+    <string name="balances_offline">অফলাইন</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">অফলাইন · %d টি পরিবর্তন সারিতে আছে</item>
+        <item quantity="other">অফলাইন · %d টি পরিবর্তন সারিতে আছে</item>
+    </plurals>
+    <string name="balances_overall">সামগ্রিক ব্যালেন্স</string>
+    <string name="balances_to_receive">আপনি পাবেন</string>
+    <string name="balances_you_owe">আপনি দেবেন</string>
+    <string name="balances_group_to_receive">আপনি পাবেন %1$s</string>
+    <string name="balances_group_you_owe">আপনি দেবেন %1$s</string>
+    <string name="balances_group_even">সব মিলিয়ে সমান</string>
+    <string name="balances_waiting">পাঠানোর অপেক্ষায়</string>
+    <string name="balances_updated_at">%1$s-এ আপডেট হয়েছে</string>
+    <string name="balances_sign_out">সাইন আউট</string>
+    <string name="balances_sign_out_title">এই ঘড়ি থেকে সাইন আউট করবেন?</string>
+    <string name="balances_sign_out_body">অপেক্ষায় থাকা সব পাঠানো হলে এর ডেটা মুছে যাবে। আপনার ফোনে সাইন ইন থাকবে।</string>
+    <string name="balances_sign_out_scheduled">সাইন আউট নির্ধারিত হয়েছে</string>
+    <string name="balances_sign_out_scheduled_detail">সবকিছু আপলোড হলেই সাইন আউট হবে</string>
+    <string name="balances_settled_title">কিছু বাকি নেই</string>
+    <string name="balances_settled_body">কেউ আপনাকে কিছু দেবেন না, আপনিও কাউকে কিছু দেবেন না। নতুন গ্রুপ ও বিল এখানে নিজেই দেখা যাবে।</string>
+    <string name="group_you_owe_person">আপনি %1$s-কে দেবেন</string>
+    <string name="group_owes_you">%1$s আপনাকে দেবেন</string>
+    <string name="group_former_member">প্রাক্তন সদস্য</string>
+    <string name="group_i_paid">ইতিমধ্যে দিয়েছি</string>
+    <string name="group_confirm_title">%2$s-কে %1$s দিয়েছেন?</string>
+    <string name="group_confirm_body">%1$s। গ্রুপ সঙ্গে সঙ্গে দেখবে, বা ইন্টারনেট ফিরলে।</string>
+    <string name="group_payment_recorded">পেমেন্ট রেকর্ড হয়েছে</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">ব্যালেন্স</string>
+    <string name="tile_to_receive_total">মোট আপনি পাবেন</string>
+    <string name="tile_to_pay_total">মোট আপনি দেবেন</string>
+    <string name="tile_owed_to_you">আপনি পাবেন %1$s</string>
+    <string name="tile_you_owe">আপনি দেবেন %1$s</string>
+    <string name="tile_settled_title">সব হিসাব মিটে গেছে</string>
+    <string name="tile_settled_body">দেওয়া বা পাওয়ার কিছু নেই</string>
+    <string name="tile_open">খুলুন</string>
+    <string name="complication_name">সামগ্রিক ব্যালেন্স</string>
+    <string name="complication_you_owe">আপনি দেবেন %1$s</string>
+    <string name="complication_owed_to_you">আপনি পাবেন %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">পেয়েছি</string>
+    <string name="push_view_group">গ্রুপ দেখুন</string>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Usa aqui a mesma conta do telemóvel. Depois, o relógio funciona sozinho.</string>
+    <string name="pair_connect">Ligar</string>
+    <string name="pair_connecting">A obter a tua conta no telemóvel…</string>
+    <string name="pair_connected_body">O relógio sincroniza sozinho, mesmo longe do telemóvel.</string>
+    <string name="pair_local_only_title">Os teus dados estão só no telemóvel</string>
+    <string name="pair_local_only_body">No telemóvel, liga uma conta em Perfil e toca em Ligar aqui de novo.</string>
+    <string name="pair_far_title">Telemóvel fora de alcance</string>
+    <string name="pair_far_body">Aproxima o telemóvel, ou liga com um código.</string>
+    <string name="pair_code_label">O teu código</string>
+    <string name="pair_code_where">No telemóvel: Perfil › Ligar relógio</string>
+    <string name="pair_signed_out_title">Terminaste sessão no telemóvel</string>
+    <string name="pair_connect_again">Ligar de novo</string>
+    <string name="pair_error_offline">Ligar o relógio precisa de internet.</string>
+    <string name="pair_error_too_many">Demasiadas tentativas. Espera alguns minutos e liga de novo.</string>
+    <string name="pair_error_failed">Não foi possível ligar o relógio. Tenta de novo.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_you_owe">deves</string>
+    <string name="balances_group_you_owe">%1$s deves</string>
+    <string name="balances_waiting">a aguardar envio</string>
+    <string name="balances_sign_out">Terminar sessão</string>
+    <string name="balances_sign_out_title">Terminar sessão neste relógio?</string>
+    <string name="balances_sign_out_body">Os dados dele são apagados assim que o que está na fila for enviado. O teu telemóvel continua com sessão iniciada.</string>
+    <string name="balances_sign_out_scheduled">Fim de sessão agendado</string>
+    <string name="balances_sign_out_scheduled_detail">Termina a sessão assim que tudo for enviado</string>
+    <string name="balances_settled_body">Não deves nada e ninguém te deve. Novos grupos e contas aparecem aqui sozinhos.</string>
+    <string name="group_you_owe_person">deves a %1$s</string>
+    <string name="group_owes_you">%1$s deve-te</string>
+    <string name="group_confirm_title">Pagaste %1$s a %2$s?</string>
+    <string name="group_payment_recorded">Pagamento registado</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_owed_to_you">Devem-te %1$s</string>
+    <string name="tile_you_owe">Deves %1$s</string>
+    <string name="complication_you_owe">Deves %1$s</string>
+    <string name="complication_owed_to_you">Devem-te %1$s</string>
+</resources>

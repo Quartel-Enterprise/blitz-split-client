@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">ใช้บัญชีเดียวกับในโทรศัพท์ที่นี่ จากนั้นนาฬิกาจะทำงานเองได้</string>
+    <string name="pair_connect">เชื่อมต่อ</string>
+    <string name="pair_connecting">กำลังดึงบัญชีจากโทรศัพท์…</string>
+    <string name="pair_connected_title">พร้อมแล้ว %1$s</string>
+    <string name="pair_connected_title_unnamed">พร้อมแล้ว</string>
+    <string name="pair_connected_body">นาฬิกาซิงค์เอง แม้อยู่ห่างจากโทรศัพท์</string>
+    <string name="pair_continue">ดำเนินการต่อ</string>
+    <string name="pair_local_only_title">ข้อมูลของคุณอยู่ในโทรศัพท์เท่านั้น</string>
+    <string name="pair_local_only_body">ในโทรศัพท์ ให้เชื่อมต่อบัญชีในโปรไฟล์ แล้วแตะเชื่อมต่อที่นี่อีกครั้ง</string>
+    <string name="pair_ok">OK</string>
+    <string name="pair_far_title">โทรศัพท์อยู่นอกระยะ</string>
+    <string name="pair_far_body">นำโทรศัพท์มาใกล้ขึ้น หรือเชื่อมต่อด้วยรหัส</string>
+    <string name="pair_try_again">ลองอีกครั้ง</string>
+    <string name="pair_use_code">ใช้รหัส</string>
+    <string name="pair_code_label">รหัสของคุณ</string>
+    <string name="pair_code_description">รหัส %1$s</string>
+    <string name="pair_code_where">ในโทรศัพท์: โปรไฟล์ › เชื่อมต่อนาฬิกา</string>
+    <string name="pair_code_validity">ใช้ได้ 5 นาที</string>
+    <string name="pair_cancel">ยกเลิก</string>
+    <string name="pair_signed_out_title">คุณออกจากระบบในโทรศัพท์แล้ว</string>
+    <string name="pair_signed_out_body">ข้อมูลถูกลบออกจากนาฬิกานี้ด้วย</string>
+    <string name="pair_connect_again">เชื่อมต่ออีกครั้ง</string>
+    <string name="pair_error_offline">ต้องใช้อินเทอร์เน็ตในการเชื่อมต่อนาฬิกา</string>
+    <string name="pair_error_too_many">ลองหลายครั้งเกินไป รอสักครู่แล้วเชื่อมต่ออีกครั้ง</string>
+    <string name="pair_error_failed">เชื่อมต่อนาฬิกาไม่ได้ ลองอีกครั้ง</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">ยอดคงเหลือ</string>
+    <string name="balances_offline">ออฟไลน์</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="other">ออฟไลน์ · มี %d การเปลี่ยนแปลงอยู่ในคิว</item>
+    </plurals>
+    <string name="balances_overall">ยอดคงเหลือรวม</string>
+    <string name="balances_to_receive">ได้คืน</string>
+    <string name="balances_you_owe">คุณค้าง</string>
+    <string name="balances_group_to_receive">ได้คืน %1$s</string>
+    <string name="balances_group_you_owe">คุณค้าง %1$s</string>
+    <string name="balances_group_even">รวมแล้วเท่ากัน</string>
+    <string name="balances_waiting">รอส่ง</string>
+    <string name="balances_updated_at">อัปเดตเมื่อ %1$s</string>
+    <string name="balances_sign_out">ออกจากระบบ</string>
+    <string name="balances_sign_out_title">ออกจากระบบในนาฬิกานี้ไหม</string>
+    <string name="balances_sign_out_body">ข้อมูลในนาฬิกาจะถูกลบเมื่อส่งรายการที่รอส่งแล้ว โทรศัพท์ของคุณยังคงเข้าสู่ระบบอยู่</string>
+    <string name="balances_sign_out_scheduled">ตั้งเวลาออกจากระบบแล้ว</string>
+    <string name="balances_sign_out_scheduled_detail">จะออกจากระบบทันทีที่อัปโหลดทุกอย่างเสร็จ</string>
+    <string name="balances_settled_title">ไม่มียอดค้าง</string>
+    <string name="balances_settled_body">ไม่มีใครค้างคุณ และคุณก็ไม่ได้ค้างใคร กลุ่มและบิลใหม่จะแสดงที่นี่เอง</string>
+    <string name="group_you_owe_person">คุณค้าง %1$s</string>
+    <string name="group_owes_you">%1$s ค้างคุณ</string>
+    <string name="group_former_member">อดีตสมาชิก</string>
+    <string name="group_i_paid">จ่ายแล้ว</string>
+    <string name="group_confirm_title">จ่าย %1$s ให้ %2$s แล้วใช่ไหม</string>
+    <string name="group_confirm_body">%1$s กลุ่มจะเห็นทันที หรือเมื่ออินเทอร์เน็ตกลับมา</string>
+    <string name="group_payment_recorded">บันทึกการจ่ายเงินแล้ว</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">ยอดคงเหลือ</string>
+    <string name="tile_to_receive_total">ได้คืนทั้งหมด</string>
+    <string name="tile_to_pay_total">ต้องจ่ายทั้งหมด</string>
+    <string name="tile_owed_to_you">คนอื่นค้างคุณ %1$s</string>
+    <string name="tile_you_owe">คุณค้าง %1$s</string>
+    <string name="tile_settled_title">เคลียร์หมดแล้ว</string>
+    <string name="tile_settled_body">ไม่มียอดที่ต้องจ่ายหรือได้รับ</string>
+    <string name="tile_open">เปิด</string>
+    <string name="complication_name">ยอดคงเหลือรวม</string>
+    <string name="complication_you_owe">คุณค้าง %1$s</string>
+    <string name="complication_owed_to_you">คนอื่นค้างคุณ %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">ได้รับแล้ว</string>
+    <string name="push_view_group">ดูกลุ่ม</string>
+</resources>

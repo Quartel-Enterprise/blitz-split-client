@@ -10,4 +10,7 @@ data class WatchTotal(
     val toReceiveMinor: Long,
     // Why: positive, what you owe; each UI writes its minus.
     val toPayMinor: Long,
-)
+) {
+    val direction: WatchBalanceDirection
+        get() = WatchBalanceDirection.of(netMinor)
+}

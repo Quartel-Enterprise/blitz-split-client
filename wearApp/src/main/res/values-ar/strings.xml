@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">استخدم هنا الحساب نفسه الموجود على الهاتف. بعد ذلك تعمل الساعة وحدها.</string>
+    <string name="pair_connect">ربط</string>
+    <string name="pair_connecting">جارٍ جلب حسابك من الهاتف…</string>
+    <string name="pair_connected_title">كل شيء جاهز، %1$s</string>
+    <string name="pair_connected_title_unnamed">كل شيء جاهز</string>
+    <string name="pair_connected_body">تتزامن الساعة تلقائيًا، حتى بعيدًا عن الهاتف.</string>
+    <string name="pair_continue">متابعة</string>
+    <string name="pair_local_only_title">بياناتك على الهاتف فقط</string>
+    <string name="pair_local_only_body">على الهاتف، اربط حسابًا من الملف الشخصي ثم اضغط ربط هنا مجددًا.</string>
+    <string name="pair_ok">حسنًا</string>
+    <string name="pair_far_title">الهاتف خارج النطاق</string>
+    <string name="pair_far_body">قرّب الهاتف، أو اربط باستخدام رمز.</string>
+    <string name="pair_try_again">إعادة المحاولة</string>
+    <string name="pair_use_code">استخدام رمز</string>
+    <string name="pair_code_label">رمزك</string>
+    <string name="pair_code_description">الرمز %1$s</string>
+    <string name="pair_code_where">على الهاتف: الملف الشخصي › ربط الساعة</string>
+    <string name="pair_code_validity">صالح لمدة 5 دقائق</string>
+    <string name="pair_cancel">إلغاء</string>
+    <string name="pair_signed_out_title">تم تسجيل الخروج على الهاتف</string>
+    <string name="pair_signed_out_body">حُذفت البيانات من هذه الساعة أيضًا.</string>
+    <string name="pair_connect_again">الربط مجددًا</string>
+    <string name="pair_error_offline">يحتاج ربط الساعة إلى اتصال بالإنترنت.</string>
+    <string name="pair_error_too_many">محاولات كثيرة جدًا. انتظر بضع دقائق وأعد الربط.</string>
+    <string name="pair_error_failed">تعذّر ربط الساعة. أعد المحاولة.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">الأرصدة</string>
+    <string name="balances_offline">دون اتصال</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="zero">دون اتصال · %d تغيير في قائمة الانتظار</item>
+        <item quantity="one">دون اتصال · %d تغيير في قائمة الانتظار</item>
+        <item quantity="two">دون اتصال · %d تغييران في قائمة الانتظار</item>
+        <item quantity="few">دون اتصال · %d تغييرات في قائمة الانتظار</item>
+        <item quantity="many">دون اتصال · %d تغيير في قائمة الانتظار</item>
+        <item quantity="other">دون اتصال · %d تغيير في قائمة الانتظار</item>
+    </plurals>
+    <string name="balances_overall">الرصيد الإجمالي</string>
+    <string name="balances_to_receive">لك</string>
+    <string name="balances_you_owe">عليك</string>
+    <string name="balances_group_to_receive">لك %1$s</string>
+    <string name="balances_group_you_owe">عليك %1$s</string>
+    <string name="balances_group_even">متعادل إجمالًا</string>
+    <string name="balances_waiting">بانتظار الإرسال</string>
+    <string name="balances_updated_at">آخر تحديث %1$s</string>
+    <string name="balances_sign_out">تسجيل الخروج</string>
+    <string name="balances_sign_out_title">تسجيل الخروج من هذه الساعة؟</string>
+    <string name="balances_sign_out_body">تُمحى بياناتها بعد إرسال ما في قائمة الانتظار. يبقى هاتفك مسجّل الدخول.</string>
+    <string name="balances_sign_out_scheduled">تسجيل الخروج مجدول</string>
+    <string name="balances_sign_out_scheduled_detail">يتم تسجيل الخروج فور رفع كل شيء</string>
+    <string name="balances_settled_title">لا شيء مفتوح</string>
+    <string name="balances_settled_body">لا شيء عليك ولا أحد عليه لك. تظهر المجموعات والفواتير الجديدة هنا تلقائيًا.</string>
+    <string name="group_you_owe_person">عليك لـ %1$s</string>
+    <string name="group_owes_you">على %1$s لك</string>
+    <string name="group_former_member">عضو سابق</string>
+    <string name="group_i_paid">تم الدفع</string>
+    <string name="group_confirm_title">هل دفعت %1$s إلى %2$s؟</string>
+    <string name="group_confirm_body">%1$s. ترى المجموعة ذلك فورًا، أو عند عودة الإنترنت.</string>
+    <string name="group_payment_recorded">تم تسجيل الدفعة</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">الأرصدة</string>
+    <string name="tile_to_receive_total">لك إجمالًا</string>
+    <string name="tile_to_pay_total">عليك إجمالًا</string>
+    <string name="tile_owed_to_you">مستحق لك %1$s</string>
+    <string name="tile_you_owe">عليك %1$s</string>
+    <string name="tile_settled_title">تمت التسوية بالكامل</string>
+    <string name="tile_settled_body">لا شيء للدفع أو الاستلام</string>
+    <string name="tile_open">فتح</string>
+    <string name="complication_name">الرصيد الإجمالي</string>
+    <string name="complication_you_owe">عليك %1$s</string>
+    <string name="complication_owed_to_you">مستحق لك %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">تم الاستلام</string>
+    <string name="push_view_group">عرض المجموعة</string>
+</resources>

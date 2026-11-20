@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">Đẩy gửi thông báo đến thiết bị này. Trong ứng dụng đánh dấu mới trên chuông và trong Hoạt động; khi tắt, mục vẫn hiện trong Hoạt động, ở dạng đã đọc.</string>
-    <string name="notification_settings_bills">Khoản chi</string>
-    <string name="notification_settings_bills_detail">Khoản chi mới, đã sửa hoặc đã xóa có bạn tham gia</string>
-    <string name="notification_settings_payments">Thanh toán và trả nợ</string>
-    <string name="notification_settings_payments_detail">Khoản thanh toán đến hoặc từ bạn, và nợ đã đơn giản hóa</string>
-    <string name="notification_settings_comments">Bình luận</string>
-    <string name="notification_settings_comments_detail">Trong các khoản chi có bạn và các chuỗi bạn đã viết</string>
-    <string name="notification_settings_people_and_groups">Người và nhóm</string>
-    <string name="notification_settings_people_and_groups_detail">Ai tham gia hoặc rời nhóm của bạn, và những gì thay đổi trong nhóm</string>
-    <string name="notification_settings_payment_requests">Yêu cầu trả tiền</string>
-    <string name="notification_settings_payment_requests_detail">Khi ai đó yêu cầu bạn trả tiền</string>
-    <string name="notification_settings_balance_reminder">Nhắc số dư chưa thanh toán</string>
-    <string name="notification_settings_balance_reminder_detail">Mỗi tuần một lần, nếu còn số dư chưa thanh toán</string>
     <string name="notification_settings_footer">Thông báo đến khi có internet. Để tắt tiếng một nhóm, dùng menu bên trong nhóm đó.</string>
 </resources>

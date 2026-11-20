@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">Push šalje obavijest na ovaj uređaj. U aplikaciji je označava kao novu na zvoncu i u Aktivnosti; kad je isključeno, i dalje se prikazuje u Aktivnosti, već pročitana.</string>
-    <string name="notification_settings_bills">Troškovi</string>
-    <string name="notification_settings_bills_detail">Novi, uređeni ili izbrisani troškovi u kojima sudjeluješ</string>
-    <string name="notification_settings_payments">Uplate i podmirenja</string>
-    <string name="notification_settings_payments_detail">Uplate tebi ili od tebe i pojednostavljeni dugovi</string>
-    <string name="notification_settings_comments">Komentari</string>
-    <string name="notification_settings_comments_detail">Na troškovima u kojima sudjeluješ i u razgovorima u kojima si pisao/la</string>
-    <string name="notification_settings_people_and_groups">Osobe i grupe</string>
-    <string name="notification_settings_people_and_groups_detail">Tko ulazi u tvoje grupe ili ih napušta i što se u njima mijenja</string>
-    <string name="notification_settings_payment_requests">Zahtjevi za plaćanje</string>
-    <string name="notification_settings_payment_requests_detail">Kad netko zatraži da platiš</string>
-    <string name="notification_settings_balance_reminder">Podsjetnik na otvoreni saldo</string>
-    <string name="notification_settings_balance_reminder_detail">Jednom tjedno, ako postoji otvoreni saldo</string>
     <string name="notification_settings_footer">Obavijesti stižu kad ima interneta. Za utišavanje grupe koristi izbornik unutar nje.</string>
 </resources>

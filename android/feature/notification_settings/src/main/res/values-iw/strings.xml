@@ -15,17 +15,5 @@
     <string name="notification_settings_in_app">באפליקציה</string>
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">\"פוש\" שולח התראה למכשיר הזה. \"באפליקציה\" מסמן אותה כחדשה בפעמון ובפעילות; כשהוא כבוי, היא עדיין מופיעה בפעילות, כבר כנקראה.</string>
-    <string name="notification_settings_bills">חשבונות</string>
-    <string name="notification_settings_bills_detail">חשבונות חדשים, ערוכים או מחוקים שכוללים אותך</string>
-    <string name="notification_settings_payments">תשלומים וסגירות חשבון</string>
-    <string name="notification_settings_payments_detail">תשלומים אליך או ממך, וחובות מפושטים</string>
-    <string name="notification_settings_comments">תגובות</string>
-    <string name="notification_settings_comments_detail">על חשבונות שכוללים אותך ועל שרשורים שכתבת בהם</string>
-    <string name="notification_settings_people_and_groups">אנשים וקבוצות</string>
-    <string name="notification_settings_people_and_groups_detail">הצטרפויות ויציאות בקבוצות שלך, ושינויים בהן</string>
-    <string name="notification_settings_payment_requests">בקשות תשלום</string>
-    <string name="notification_settings_payment_requests_detail">כשמבקשים ממך לשלם</string>
-    <string name="notification_settings_balance_reminder">תזכורת על יתרה פתוחה</string>
-    <string name="notification_settings_balance_reminder_detail">פעם בשבוע, אם יש יתרה פתוחה</string>
     <string name="notification_settings_footer">ההתראות מגיעות כשיש אינטרנט. כדי להשתיק קבוצה, אפשר להשתמש בתפריט שבתוכה.</string>
 </resources>

@@ -376,6 +376,10 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `watch_local_only_acknowledged` | none | "OK" on the watch when the phone's profile is local only (15.11b) | `:feature:watch_pairing` |
 | `watch_connected_continue_clicked` | none | "Continue" on the watch once connected (15.11) | `:feature:watch_pairing` |
 | `watch_group_opened` | none | A group's row on the watch's Balances (15.3) | `:feature:watch_balances` |
+| `watch_sign_out_clicked` | none | "Sign out" at the end of the watch's Balances | `:feature:watch_balances` |
+| `watch_sign_out_confirmed` | none | ✓ on the watch's "Sign out of this watch?" | `:feature:watch_balances` |
+| `watch_sign_out_cancelled` | none | ✕ on the watch's "Sign out of this watch?" | `:feature:watch_balances` |
+| `watch_sign_out_scheduled_cancelled` | none | Cancel on the watch's "Sign out scheduled" | `:feature:watch_balances` |
 | `watch_i_paid_clicked` | none | "I paid" on a group on the watch (15.4) | `:feature:watch_balances` |
 | `watch_i_paid_cancelled` | none | ✕ on the watch's "Paid … to …?" (15.5) | `:feature:watch_balances` |
 | `watch_payment_recorded` | `is_online` | ✓ on the watch's "Paid … to …?", once the payment is saved on the watch (15.6) | `:feature:watch_balances` |

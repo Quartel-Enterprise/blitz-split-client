@@ -7,9 +7,5 @@
     <string name="notification_settings_open_channel_settings_description">Abrir as definições de %1$s no Android</string>
     <string name="notification_settings_in_app">Na app</string>
     <string name="notification_settings_legend">O push envia uma notificação para este aparelho. Na app marca como novo no sino e na Atividade; desligado, ainda aparece na Atividade, já lido.</string>
-    <string name="notification_settings_bills_detail">Contas novas, editadas ou apagadas em que estás</string>
-    <string name="notification_settings_payments_detail">Pagamentos contigo e dívidas simplificadas</string>
-    <string name="notification_settings_comments_detail">Em contas tuas e conversas em que escreveste</string>
-    <string name="notification_settings_people_and_groups_detail">Quem entra ou sai dos teus grupos e o que muda neles</string>
     <string name="notification_settings_footer">Os avisos chegam quando há internet. Para silenciar um grupo, usa o menu dentro dele.</string>
 </resources>

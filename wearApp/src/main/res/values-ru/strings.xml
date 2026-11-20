@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Используй здесь тот же аккаунт, что на телефоне. Дальше часы работают сами.</string>
+    <string name="pair_connect">Подключить</string>
+    <string name="pair_connecting">Получаем аккаунт с телефона…</string>
+    <string name="pair_connected_title">Готово, %1$s</string>
+    <string name="pair_connected_title_unnamed">Готово</string>
+    <string name="pair_connected_body">Часы синхронизируются сами, даже вдали от телефона.</string>
+    <string name="pair_continue">Продолжить</string>
+    <string name="pair_local_only_title">Твои данные только на телефоне</string>
+    <string name="pair_local_only_body">На телефоне подключи аккаунт в Профиле и снова нажми здесь «Подключить».</string>
+    <string name="pair_ok">ОК</string>
+    <string name="pair_far_title">Телефон вне зоны доступа</string>
+    <string name="pair_far_body">Поднеси телефон ближе или подключи по коду.</string>
+    <string name="pair_try_again">Попробовать ещё раз</string>
+    <string name="pair_use_code">Ввести код</string>
+    <string name="pair_code_label">Твой код</string>
+    <string name="pair_code_description">Код %1$s</string>
+    <string name="pair_code_where">На телефоне: Профиль › Подключить часы</string>
+    <string name="pair_code_validity">Действует 5 минут</string>
+    <string name="pair_cancel">Отмена</string>
+    <string name="pair_signed_out_title">На телефоне выполнен выход</string>
+    <string name="pair_signed_out_body">Данные удалены и с этих часов.</string>
+    <string name="pair_connect_again">Подключить снова</string>
+    <string name="pair_error_offline">Чтобы подключить часы, нужен интернет.</string>
+    <string name="pair_error_too_many">Слишком много попыток. Подожди несколько минут и подключи снова.</string>
+    <string name="pair_error_failed">Не удалось подключить часы. Попробуй ещё раз.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Балансы</string>
+    <string name="balances_offline">Офлайн</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Офлайн · %d изменение в очереди</item>
+        <item quantity="few">Офлайн · %d изменения в очереди</item>
+        <item quantity="many">Офлайн · %d изменений в очереди</item>
+        <item quantity="other">Офлайн · %d изменения в очереди</item>
+    </plurals>
+    <string name="balances_overall">Общий баланс</string>
+    <string name="balances_to_receive">тебе должны</string>
+    <string name="balances_you_owe">ты должен(-на)</string>
+    <string name="balances_group_to_receive">тебе должны %1$s</string>
+    <string name="balances_group_you_owe">ты должен(-на) %1$s</string>
+    <string name="balances_group_even">В итоге по нулям</string>
+    <string name="balances_waiting">ждёт отправки</string>
+    <string name="balances_updated_at">Обновлено в %1$s</string>
+    <string name="balances_sign_out">Выйти</string>
+    <string name="balances_sign_out_title">Выйти на этих часах?</string>
+    <string name="balances_sign_out_body">Данные удалятся, когда отправится всё из очереди. На телефоне вход сохранится.</string>
+    <string name="balances_sign_out_scheduled">Выход запланирован</string>
+    <string name="balances_sign_out_scheduled_detail">Выход произойдёт, как только всё загрузится</string>
+    <string name="balances_settled_title">Открытых долгов нет</string>
+    <string name="balances_settled_body">Никто не должен тебе, и ты никому не должен(-на). Новые группы и счета появятся здесь сами.</string>
+    <string name="group_you_owe_person">ты должен(-на) участнику %1$s</string>
+    <string name="group_owes_you">%1$s должен(-на) тебе</string>
+    <string name="group_former_member">Бывший участник</string>
+    <string name="group_i_paid">Уже оплачено</string>
+    <string name="group_confirm_title">Оплачено %1$s участнику %2$s?</string>
+    <string name="group_confirm_body">%1$s. Группа увидит это сразу или когда вернётся интернет.</string>
+    <string name="group_payment_recorded">Платёж записан</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Балансы</string>
+    <string name="tile_to_receive_total">тебе должны всего</string>
+    <string name="tile_to_pay_total">ты должен(-на) всего</string>
+    <string name="tile_owed_to_you">Тебе должны %1$s</string>
+    <string name="tile_you_owe">Ты должен(-на) %1$s</string>
+    <string name="tile_settled_title">Всё оплачено</string>
+    <string name="tile_settled_body">Ни платить, ни получать нечего</string>
+    <string name="tile_open">Открыть</string>
+    <string name="complication_name">Общий баланс</string>
+    <string name="complication_you_owe">Ты должен(-на) %1$s</string>
+    <string name="complication_owed_to_you">Тебе должны %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Получено</string>
+    <string name="push_view_group">Открыть группу</string>
+</resources>
