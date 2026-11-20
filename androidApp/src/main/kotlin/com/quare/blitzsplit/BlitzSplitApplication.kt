@@ -11,10 +11,17 @@ import com.quare.blitzsplit.push.PushSetup
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import com.quare.blitzsplit.shared.storescreenshots.startBlitzSplitForStoreVideoIfAsked
+import com.quare.blitzsplit.watch.WatchSignOutRelay
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 
 class BlitzSplitApplication : Application() {
+    // Why: what follows the account for the app's whole life, as SyncCoordinator's own scope.
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
     /*
      * Why: before Android 13 the application's own strings (the notification channels' names) follow Profile ›
      * Language's pick from the next start of the app.
@@ -40,6 +47,11 @@ class BlitzSplitApplication : Application() {
             FirebaseAnalyticsService(this).setCollectionEnabled(false)
         }
         PushSetup.start(this, setPushDevice = get())
+        WatchSignOutRelay.start(
+            this,
+            observeAccountSignOuts = get(),
+            scope = appScope,
+        )
         // Why: Google Play's update flow starts from the Activity in front, whichever screen asked for it.
         registerActivityLifecycleCallbacks(get<CurrentActivityProvider>())
         ProcessLifecycleOwner.get().lifecycle.addObserver(AppForegroundObserver(reportAppForeground = get()))

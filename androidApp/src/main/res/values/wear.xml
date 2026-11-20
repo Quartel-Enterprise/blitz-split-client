@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The phone's Data Layer capability, WatchLink.PHONE_CAPABILITY, which the watch looks for to send its code -->
+    <string-array name="android_wear_capabilities" translatable="false">
+        <item>blitzsplit_phone</item>
+    </string-array>
+</resources>

@@ -33,4 +33,9 @@
     <string name="discard_changes_message">未儲存的更改將會遺失。</string>
     <string name="discard_changes_discard">放棄</string>
     <string name="discard_changes_keep_editing">繼續編輯</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">手錶</string>
+    <string name="watch_connected_title">%1$s 已連接到你的帳號</string>
+    <string name="watch_connected_title_unnamed">手錶已連接到你的帳號</string>
+    <string name="watch_connected_text">手錶可以查看你的群組並自動同步。如需中斷連線，請在手錶上登出。</string>
 </resources>

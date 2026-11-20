@@ -4656,6 +4656,45 @@ class ProfileViewModelTest {
         }
 
     @Test
+    fun `GIVEN an anonymous user WHEN the profile opens THEN offers to connect a watch`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(
+            status = anonymous,
+            code = recoveryCode,
+        )
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertTrue(state.showsConnectWatch)
+    }
+
+    @Test
+    fun `GIVEN a local only user WHEN the profile opens THEN offers no watch to connect`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = AccountStatus.LocalOnly)
+
+        // When
+        val state = viewModel.uiState.value
+
+        // Then
+        assertFalse(state.showsConnectWatch)
+    }
+
+    @Test
+    fun `GIVEN the profile WHEN tapping connect watch THEN opens it over the profile`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(status = connectedWithGoogle)
+
+        // When
+        viewModel.onEvent(ProfileUiEvent.OnConnectWatchClicked)
+
+        // Then
+        assertEquals(listOf(Route.Groups, Route.Profile, Route.ConnectWatch), navigator.backStack.value)
+    }
+
+    @Test
     fun `GIVEN an account connected with Google WHEN the profile opens THEN shows delete account`() =
         runTest(testDispatcher) {
             // Given

@@ -33,4 +33,9 @@
     <string name="discard_changes_message">बिना सहेजे बदलाव खो जाएंगे।</string>
     <string name="discard_changes_discard">छोड़ दें</string>
     <string name="discard_changes_keep_editing">बदलाव जारी रखें</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">वॉच</string>
+    <string name="watch_connected_title">%1$s आपके अकाउंट से कनेक्ट हो गई</string>
+    <string name="watch_connected_title_unnamed">वॉच आपके अकाउंट से कनेक्ट हो गई</string>
+    <string name="watch_connected_text">यह आपके ग्रुप देखती है और अपने आप सिंक होती है। डिस्कनेक्ट करने के लिए वॉच पर साइन आउट करें।</string>
 </resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">连接手表</string>
+    <string name="connect_watch_close">关闭</string>
+    <string name="connect_watch_body">输入手表上显示的代码。手表会登录你的账号，之后自动同步。</string>
+    <string name="connect_watch_code_label">手表代码</string>
+    <string name="connect_watch_error_invalid">代码错误或已过期。请在手表上重新获取。</string>
+    <string name="connect_watch_error_too_many">错误代码次数过多。请等几分钟后重试。</string>
+    <string name="connect_watch_error_needs_account">请先关联账号：你的数据目前仅在此设备上。</string>
+    <string name="connect_watch_error_failed">无法连接手表，请重试。</string>
+    <string name="connect_watch_offline">连接手表需要网络。</string>
+    <string name="connect_watch_own_watch_only">只输入你自己手表上显示的代码：拿着那块手表的人会进入你的账号。</string>
+    <string name="connect_watch_validity">代码 5 分钟内有效，且只能使用一次。</string>
+    <string name="connect_watch_button">连接</string>
+    <string name="connect_watch_connected_title">手表已连接</string>
+    <string name="connect_watch_connected_body">手表可以查看你的群组并自动同步。如需断开连接，请在手表上退出登录。</string>
+</resources>

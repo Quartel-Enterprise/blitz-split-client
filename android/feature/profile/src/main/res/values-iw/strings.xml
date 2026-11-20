@@ -149,6 +149,8 @@
     <string name="profile_bitcoin_in_sats">ביטקוין בסאטושי</string>
     <string name="profile_bitcoin_in_sats_detail">הצגה והזנה של סכומי ביטקוין ב-sats (1 ₿ = 100,000,000 sats).</string>
     <string name="profile_category_map">מפת קטגוריות</string>
+    <string name="profile_connect_watch">חיבור שעון</string>
+    <string name="profile_connect_watch_detail">עם הקוד שמופיע בשעון</string>
     <string name="profile_category_map_detail">המילים שקובעות את הקטגוריה של חשבון</string>
     <string name="profile_photo_open">הצגת התמונה</string>
     <string name="profile_share">שיתוף הפרופיל</string>

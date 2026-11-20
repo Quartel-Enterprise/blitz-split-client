@@ -47,6 +47,7 @@ import com.quare.blitzsplit.android.feature.billdetail.BillDetailScreen
 import com.quare.blitzsplit.android.feature.billdetail.ShareBillScreen
 import com.quare.blitzsplit.android.feature.billdetail.SharedBillScreen
 import com.quare.blitzsplit.android.feature.categorymap.CategoryMapScreen
+import com.quare.blitzsplit.android.feature.connectwatch.ConnectWatchScreen
 import com.quare.blitzsplit.android.feature.contacts.AgendaScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactInviteScreen
 import com.quare.blitzsplit.android.feature.contacts.ContactProfileScreen
@@ -373,6 +374,10 @@ fun AppNavDisplay(appViewModel: AppViewModel = koinViewModel()) {
             }
             entry<Route.DeleteAccount>(metadata = deleteAccountMetadata) {
                 DeleteAccountScreen(isDialog = usesDeleteAccountDialog)
+            }
+            // Why: "Connect watch" over the profile, in one half of a book or a tabletop, as Delete account.
+            entry<Route.ConnectWatch>(metadata = deleteAccountMetadata) {
+                ConnectWatchScreen(isDialog = usesDeleteAccountDialog)
             }
             // Why: "Contact support" over the profile, as short as "Who paid whom?": a sheet on a phone, a dialog wider.
             entry<Route.ContactSupport>(metadata = pickPaymentMetadata) {

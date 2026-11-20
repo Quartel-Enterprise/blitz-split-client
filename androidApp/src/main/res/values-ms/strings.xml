@@ -31,4 +31,9 @@
     <string name="discard_changes_message">Perubahan yang belum disimpan akan hilang.</string>
     <string name="discard_changes_discard">Buang</string>
     <string name="discard_changes_keep_editing">Teruskan mengedit</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Jam tangan</string>
+    <string name="watch_connected_title">%1$s disambungkan ke akaun anda</string>
+    <string name="watch_connected_title_unnamed">Jam tangan disambungkan ke akaun anda</string>
+    <string name="watch_connected_text">Jam tangan melihat kumpulan anda dan menyegerak sendiri. Untuk memutuskannya, log keluar pada jam tangan.</string>
 </resources>

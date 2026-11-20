@@ -43,6 +43,8 @@ sealed interface ProfileUiEvent : UiEvent {
 
             OnNotificationsClicked -> EventAnalytics.Automatic("profile_notifications_clicked")
 
+            OnConnectWatchClicked -> EventAnalytics.Automatic("profile_connect_watch_clicked")
+
             OnContactSupportClicked -> EventAnalytics.Automatic("profile_contact_support_clicked")
 
             OnRateAppClicked -> EventAnalytics.Automatic("profile_rate_app_clicked")
@@ -262,6 +264,9 @@ sealed interface ProfileUiEvent : UiEvent {
 
     // Why: the "Notificações" row of Android and iOS; the web and macOS show the toggles in the profile itself.
     data object OnNotificationsClicked : ProfileUiEvent
+
+    // Why: "Connect watch", the code a watch shows when its phone is out of reach (15.14).
+    data object OnConnectWatchClicked : ProfileUiEvent
 
     // Why: Preferências › "Mapa de categorias" (flow 9); the Mac opens it in its Ajustes instead.
     data object OnCategoryMapClicked : ProfileUiEvent

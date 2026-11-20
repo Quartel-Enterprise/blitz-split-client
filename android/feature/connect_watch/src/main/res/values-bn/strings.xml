@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">ঘড়ি সংযুক্ত করুন</string>
+    <string name="connect_watch_close">বন্ধ করুন</string>
+    <string name="connect_watch_body">আপনার ঘড়িতে দেখানো কোডটি লিখুন। ঘড়িটি আপনার অ্যাকাউন্টে সাইন ইন করবে এবং তারপর নিজে থেকেই সিঙ্ক হবে।</string>
+    <string name="connect_watch_code_label">ঘড়ির কোড</string>
+    <string name="connect_watch_error_invalid">কোডটি ভুল বা মেয়াদোত্তীর্ণ। ঘড়িতে নতুন একটি কোড তৈরি করুন।</string>
+    <string name="connect_watch_error_too_many">অনেকবার ভুল কোড দেওয়া হয়েছে। কয়েক মিনিট অপেক্ষা করে আবার চেষ্টা করুন।</string>
+    <string name="connect_watch_error_needs_account">আগে একটি অ্যাকাউন্ট সংযুক্ত করুন: আপনার ডেটা শুধু এই ডিভাইসে আছে।</string>
+    <string name="connect_watch_error_failed">ঘড়িটি সংযুক্ত করা যায়নি। আবার চেষ্টা করুন।</string>
+    <string name="connect_watch_offline">ঘড়ি সংযুক্ত করতে ইন্টারনেট লাগবে।</string>
+    <string name="connect_watch_own_watch_only">শুধু আপনার নিজের ঘড়িতে দেখানো কোডই লিখুন: যার কাছে ওই ঘড়ি আছে, সে আপনার অ্যাকাউন্টে ঢুকে যাবে।</string>
+    <string name="connect_watch_validity">কোডটি 5 মিনিট এবং শুধু একবারের জন্য বৈধ।</string>
+    <string name="connect_watch_button">সংযুক্ত করুন</string>
+    <string name="connect_watch_connected_title">ঘড়ি সংযুক্ত হয়েছে</string>
+    <string name="connect_watch_connected_body">এটি আপনার গ্রুপগুলো দেখে এবং নিজে থেকেই সিঙ্ক হয়। সংযোগ বিচ্ছিন্ন করতে ঘড়িতে সাইন আউট করুন।</string>
+</resources>

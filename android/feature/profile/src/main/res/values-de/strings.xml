@@ -145,6 +145,8 @@
     <string name="profile_bitcoin_in_sats">Bitcoin in Satoshis</string>
     <string name="profile_bitcoin_in_sats_detail">Zeigt Bitcoin-Beträge in sats an und nimmt sie so entgegen (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Kategorienzuordnung</string>
+    <string name="profile_connect_watch">Uhr verbinden</string>
+    <string name="profile_connect_watch_detail">Mit dem Code, den deine Uhr anzeigt</string>
     <string name="profile_category_map_detail">Die Wörter, die die Kategorie einer Ausgabe bestimmen</string>
     <string name="profile_photo_open">Foto ansehen</string>
     <string name="profile_share">Profil teilen</string>

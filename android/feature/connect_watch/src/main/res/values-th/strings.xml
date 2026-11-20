@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">เชื่อมต่อนาฬิกา</string>
+    <string name="connect_watch_close">ปิด</string>
+    <string name="connect_watch_body">พิมพ์รหัสที่แสดงบนนาฬิกา นาฬิกาจะลงชื่อเข้าใช้บัญชีของคุณแล้วซิงค์เองหลังจากนั้น</string>
+    <string name="connect_watch_code_label">รหัสนาฬิกา</string>
+    <string name="connect_watch_error_invalid">รหัสไม่ถูกต้องหรือหมดอายุ สร้างรหัสใหม่บนนาฬิกา</string>
+    <string name="connect_watch_error_too_many">ใส่รหัสผิดหลายครั้งเกินไป รอสักครู่แล้วลองอีกครั้ง</string>
+    <string name="connect_watch_error_needs_account">เชื่อมต่อบัญชีก่อน ตอนนี้ข้อมูลของคุณอยู่ในอุปกรณ์นี้เท่านั้น</string>
+    <string name="connect_watch_error_failed">เชื่อมต่อนาฬิกาไม่ได้ ลองอีกครั้ง</string>
+    <string name="connect_watch_offline">ต้องใช้อินเทอร์เน็ตในการเชื่อมต่อนาฬิกา</string>
+    <string name="connect_watch_own_watch_only">พิมพ์เฉพาะรหัสที่แสดงบนนาฬิกาของคุณเองเท่านั้น ใครก็ตามที่มีนาฬิกาเรือนนั้นจะเข้าสู่บัญชีของคุณได้</string>
+    <string name="connect_watch_validity">รหัสใช้ได้ 5 นาทีและใช้ได้ครั้งเดียว</string>
+    <string name="connect_watch_button">เชื่อมต่อ</string>
+    <string name="connect_watch_connected_title">เชื่อมต่อนาฬิกาแล้ว</string>
+    <string name="connect_watch_connected_body">นาฬิกาจะเห็นกลุ่มของคุณและซิงค์เอง หากต้องการยกเลิกการเชื่อมต่อ ให้ออกจากระบบบนนาฬิกา</string>
+</resources>

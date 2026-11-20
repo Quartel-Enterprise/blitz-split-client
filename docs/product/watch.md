@@ -39,6 +39,7 @@ brings a fresh token, so a sign in that fails polls again for the next (the serv
     WatchConnectivity), which approves it with its own session, with no confirmation on the phone (Pierre's call,
     November 2026: the channel only exists with a watch paired to that phone, and pairing needs it unlocked). The phone
     then shows a notice with no buttons, "Pixel Watch connected to your account" with the watch's own name (15.15).
+    It goes to a channel of its own, "Watch", outside Notifications' rows, so it can be silenced alone.
     The watch shows "Ready, Pierre" with the photo and "Continue".
   - Works for anonymous, Google and Apple accounts alike. A local only profile can't connect (15.11b): the watch says
     the data is only on the phone, to connect an account in Profile on the phone, and to tap Connect again.

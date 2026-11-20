@@ -31,4 +31,9 @@
     <string name="discard_changes_message">Οι μη αποθηκευμένες αλλαγές θα χαθούν.</string>
     <string name="discard_changes_discard">Απόρριψη</string>
     <string name="discard_changes_keep_editing">Συνέχεια επεξεργασίας</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Ρολόι</string>
+    <string name="watch_connected_title">Το %1$s συνδέθηκε στον λογαριασμό σου</string>
+    <string name="watch_connected_title_unnamed">Το ρολόι συνδέθηκε στον λογαριασμό σου</string>
+    <string name="watch_connected_text">Βλέπει τις ομάδες σου και συγχρονίζεται μόνο του. Για να το αποσυνδέσεις, αποσυνδέσου στο ρολόι.</string>
 </resources>
