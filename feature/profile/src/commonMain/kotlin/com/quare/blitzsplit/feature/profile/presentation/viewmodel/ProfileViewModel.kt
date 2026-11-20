@@ -343,6 +343,8 @@ class ProfileViewModel(
 
             ProfileUiEvent.OnNotificationsClicked -> navigator.navigate(Route.NotificationSettings)
 
+            ProfileUiEvent.OnConnectWatchClicked -> navigator.navigate(Route.ConnectWatch)
+
             ProfileUiEvent.OnContactSupportClicked -> navigator.navigate(Route.ContactSupport)
 
             ProfileUiEvent.OnRateAppClicked -> findRateAppLink()?.let { emit(ProfileUiAction.OpenUrl(it)) }

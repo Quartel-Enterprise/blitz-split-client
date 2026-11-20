@@ -155,6 +155,8 @@
     <string name="profile_bitcoin_in_sats">Bitcoin v satoshi</string>
     <string name="profile_bitcoin_in_sats_detail">Zobrazuje a zadává částky v bitcoinu v sats (1 ₿ = 100 000 000 sats).</string>
     <string name="profile_category_map">Mapa kategorií</string>
+    <string name="profile_connect_watch">Připojit hodinky</string>
+    <string name="profile_connect_watch_detail">Kódem, který ukazují hodinky</string>
     <string name="profile_category_map_detail">Slova, podle kterých se vybírá kategorie výdaje</string>
     <string name="profile_photo_open">Zobrazit fotku</string>
     <string name="profile_share">Sdílet profil</string>

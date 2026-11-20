@@ -1,15 +1,11 @@
 package com.quare.blitzsplit.push
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -46,7 +42,7 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
         PushSetup.handOver(setPushDevice, token)
     }
 
-    @SuppressLint("MissingPermission") // Why: canNotify() checks it, on the versions that have it.
+    @SuppressLint("MissingPermission") // Why: canPostNotifications() checks it, on the versions that have it.
     override fun onMessageReceived(message: RemoteMessage) {
         val data = message.data
         val kind = PushMessage.ofKind(data[KIND]) ?: return
@@ -61,7 +57,7 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
         val title = data[TITLE].orEmpty().ifEmpty { getString(fallbackTitle) }
         val tag = data[EVENT_ID] ?: kind.kind
         val link = data[LINK]
-        if (!canNotify() || !isPushEnabled()) return
+        if (!canPostNotifications() || !isPushEnabled()) return
         val notification = NotificationCompat
             .Builder(this, kind.channel.id)
             .setSmallIcon(R.drawable.ic_notification)
@@ -80,11 +76,6 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
      * and the read is one Room row.
      */
     private fun isPushEnabled(): Boolean = runBlocking { observePushEnabled().first() }
-
-    // Why: before Android 13 the permission doesn't exist and notifications are on until the settings turn them off.
-    private fun canNotify(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-        ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-        PackageManager.PERMISSION_GRANTED
 
     private fun buildText(
         kind: PushMessage,

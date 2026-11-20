@@ -31,4 +31,9 @@
     <string name="discard_changes_message">ستضيع التغييرات غير المحفوظة.</string>
     <string name="discard_changes_discard">تجاهل</string>
     <string name="discard_changes_keep_editing">متابعة التعديل</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">الساعة</string>
+    <string name="watch_connected_title">تم ربط %1$s بحسابك</string>
+    <string name="watch_connected_title_unnamed">تم ربط الساعة بحسابك</string>
+    <string name="watch_connected_text">ترى الساعة مجموعاتك وتتزامن تلقائيًا. لإلغاء ربطها، سجّل الخروج على الساعة.</string>
 </resources>

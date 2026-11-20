@@ -147,6 +147,8 @@
     <string name="profile_bitcoin_in_sats">सातोशी में Bitcoin</string>
     <string name="profile_bitcoin_in_sats_detail">Bitcoin की रकम sats में दिखाता और लिखवाता है (1 ₿ = 100,000,000 sats)।</string>
     <string name="profile_category_map">श्रेणी मैप</string>
+    <string name="profile_connect_watch">वॉच कनेक्ट करें</string>
+    <string name="profile_connect_watch_detail">आपकी वॉच पर दिख रहे कोड से</string>
     <string name="profile_category_map_detail">वे शब्द जो खर्च की श्रेणी चुनते हैं</string>
     <string name="profile_photo_open">फ़ोटो देखें</string>
     <string name="profile_share">प्रोफ़ाइल शेयर करें</string>

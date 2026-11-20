@@ -143,6 +143,8 @@
     <string name="profile_bitcoin_in_sats">Bitcoin dalam satoshi</string>
     <string name="profile_bitcoin_in_sats_detail">Menampilkan dan mengetik jumlah bitcoin dalam sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Peta kategori</string>
+    <string name="profile_connect_watch">Hubungkan jam tangan</string>
+    <string name="profile_connect_watch_detail">Dengan kode yang muncul di jam tanganmu</string>
     <string name="profile_category_map_detail">Kata-kata yang memilih kategori tagihan</string>
     <string name="profile_photo_open">Lihat foto</string>
     <string name="profile_share">Bagikan profil</string>

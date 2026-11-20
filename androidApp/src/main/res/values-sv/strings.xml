@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Ändringar som inte har sparats går förlorade.</string>
     <string name="discard_changes_discard">Släng</string>
     <string name="discard_changes_keep_editing">Fortsätt redigera</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Klocka</string>
+    <string name="watch_connected_title">%1$s är ansluten till ditt konto</string>
+    <string name="watch_connected_title_unnamed">Klockan är ansluten till ditt konto</string>
+    <string name="watch_connected_text">Den ser dina grupper och synkroniserar av sig själv. Logga ut på klockan för att koppla från den.</string>
 </resources>

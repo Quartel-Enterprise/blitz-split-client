@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Các thay đổi chưa lưu sẽ bị mất.</string>
     <string name="discard_changes_discard">Bỏ</string>
     <string name="discard_changes_keep_editing">Tiếp tục sửa</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Đồng hồ</string>
+    <string name="watch_connected_title">%1$s đã kết nối với tài khoản của bạn</string>
+    <string name="watch_connected_title_unnamed">Đồng hồ đã kết nối với tài khoản của bạn</string>
+    <string name="watch_connected_text">Đồng hồ thấy các nhóm của bạn và tự đồng bộ. Để ngắt kết nối, hãy đăng xuất trên đồng hồ.</string>
 </resources>

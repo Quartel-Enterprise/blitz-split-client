@@ -151,6 +151,8 @@
     <string name="profile_bitcoin_in_sats">Bitcoin en satoshis</string>
     <string name="profile_bitcoin_in_sats_detail">Muestra e ingresa los montos de bitcoin en sats (1 ₿ = 100 000 000 sats).</string>
     <string name="profile_category_map">Mapa de categorías</string>
+    <string name="profile_connect_watch">Conectar reloj</string>
+    <string name="profile_connect_watch_detail">Con el código que muestra tu reloj</string>
     <string name="profile_category_map_detail">Las palabras que eligen la categoría de un gasto</string>
     <string name="profile_photo_open">Ver foto</string>
     <string name="profile_share">Compartir perfil</string>

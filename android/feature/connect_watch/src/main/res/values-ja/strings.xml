@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">ウォッチを接続</string>
+    <string name="connect_watch_close">閉じる</string>
+    <string name="connect_watch_body">ウォッチに表示されたコードを入力してください。ウォッチがアカウントにログインし、その後は自動で同期します。</string>
+    <string name="connect_watch_code_label">ウォッチのコード</string>
+    <string name="connect_watch_error_invalid">コードが間違っているか、期限切れです。ウォッチで新しいコードを表示してください。</string>
+    <string name="connect_watch_error_too_many">間違ったコードが多すぎます。数分待ってから、もう一度お試しください。</string>
+    <string name="connect_watch_error_needs_account">先にアカウントを連携してください。データはこのデバイスにしかありません。</string>
+    <string name="connect_watch_error_failed">ウォッチを接続できませんでした。もう一度お試しください。</string>
+    <string name="connect_watch_offline">ウォッチの接続にはインターネットが必要です。</string>
+    <string name="connect_watch_own_watch_only">自分のウォッチに表示されたコードだけを入力してください。そのウォッチを持っている人があなたのアカウントに入れます。</string>
+    <string name="connect_watch_validity">コードの有効期限は5分で、使えるのは1回だけです。</string>
+    <string name="connect_watch_button">接続</string>
+    <string name="connect_watch_connected_title">ウォッチを接続しました</string>
+    <string name="connect_watch_connected_body">グループを表示し、自動で同期します。接続を解除するには、ウォッチでログアウトしてください。</string>
+</resources>

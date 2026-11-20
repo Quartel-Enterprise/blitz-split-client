@@ -143,6 +143,8 @@
     <string name="profile_bitcoin_in_sats">Bitcoin tính bằng satoshi</string>
     <string name="profile_bitcoin_in_sats_detail">Hiển thị và nhập số tiền bitcoin theo sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Bản đồ danh mục</string>
+    <string name="profile_connect_watch">Kết nối đồng hồ</string>
+    <string name="profile_connect_watch_detail">Bằng mã hiển thị trên đồng hồ</string>
     <string name="profile_category_map_detail">Các từ dùng để chọn danh mục cho khoản chi</string>
     <string name="profile_photo_open">Xem ảnh</string>
     <string name="profile_share">Chia sẻ hồ sơ</string>

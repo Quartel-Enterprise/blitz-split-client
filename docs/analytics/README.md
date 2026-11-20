@@ -560,6 +560,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `profile_recovery_code_clicked` | none | "Recovery code" | `:feature:profile` |
 | `bitcoin_in_sats_toggled` | `is_on` | "Bitcoin in satoshis" | `:feature:profile` |
 | `profile_notifications_clicked` | none | "Notifications" (Android and iOS) | `:feature:profile` |
+| `profile_connect_watch_clicked` | none | Profile's "Connect watch" | `:feature:profile` |
 | `privacy_policy_clicked` | `source` (`profile`, `welcome`) | "Privacy Policy", in Profile's footer or Welcome's notice under the buttons | `:feature:profile`, `:feature:welcome` |
 | `terms_clicked` | `source` (`profile`, `welcome`) | "Terms of Service", in Profile's footer or Welcome's notice under the buttons | `:feature:profile`, `:feature:welcome` |
 | `legal_document_retry_clicked` | none | "Try again" on a legal text that couldn't be downloaded (Android, iOS, macOS) | `:feature:legal` |

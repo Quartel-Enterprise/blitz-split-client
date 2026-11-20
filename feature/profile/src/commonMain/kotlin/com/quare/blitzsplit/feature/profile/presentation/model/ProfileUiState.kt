@@ -189,6 +189,10 @@ data class ProfileUiState(
     val showsDeleteAccount: Boolean
         get() = isLoaded && !isLocalOnly
 
+    // Why: "Connect watch" (15.14) needs an account on the server for the watch to sign in to, anonymous included.
+    val showsConnectWatch: Boolean
+        get() = isLoaded && !isLocalOnly
+
     // Why: a local only user has no ID on the server yet, so the account row can't call it anonymous.
     val hasAnonymousId: Boolean
         get() = userId != null && !hasAccount

@@ -33,4 +33,9 @@
     <string name="discard_changes_message">Niet-bewaarde wijzigingen gaan verloren.</string>
     <string name="discard_changes_discard">Negeer</string>
     <string name="discard_changes_keep_editing">Verder bewerken</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Horloge</string>
+    <string name="watch_connected_title">%1$s gekoppeld aan je account</string>
+    <string name="watch_connected_title_unnamed">Horloge gekoppeld aan je account</string>
+    <string name="watch_connected_text">Het ziet je groepen en synchroniseert vanzelf. Log uit op het horloge om het te ontkoppelen.</string>
 </resources>
