@@ -166,7 +166,7 @@ class GroupCurrencyTest {
     }
 
     @Test
-    fun `GIVEN the rest of Latin America WHEN picking their currencies THEN each has its own with 2 decimals`() {
+    fun `GIVEN the rest of Latin America WHEN picking their currencies THEN each has its own with its decimals`() {
         // Given
         val regions = listOf("BO", "VE", "CR", "GT", "HN", "NI", "DO", "CU")
 
@@ -178,12 +178,12 @@ class GroupCurrencyTest {
             listOf(
                 GroupCurrency.BOB to 2,
                 GroupCurrency.VES to 2,
-                GroupCurrency.CRC to 2,
+                GroupCurrency.CRC to 0,
                 GroupCurrency.GTQ to 2,
                 GroupCurrency.HNL to 2,
                 GroupCurrency.NIO to 2,
                 GroupCurrency.DOP to 2,
-                GroupCurrency.CUP to 2,
+                GroupCurrency.CUP to 0,
             ),
             currencies.map { it to it.fractionDigits },
         )

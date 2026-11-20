@@ -11,8 +11,8 @@ class GroupCurrency private constructor(
     private val regions: Set<String>,
     /*
      * Why: the digits of the minor unit, as ISO 4217 has them, so an amount is stored as a whole number of it. The
-     * rupiah, the New Taiwan dollar and the forint are the exceptions: ISO gives each 2, but no price or receipt in
-     * Indonesia, Taiwan or Hungary shows cents (fillér), so they have none.
+     * rupiah, the New Taiwan dollar, the forint, the Costa Rican colón and the Cuban peso are the exceptions: ISO gives
+     * each 2, but no price or receipt in Indonesia, Taiwan, Hungary, Costa Rica or Cuba shows cents, so they have none.
      */
     val fractionDigits: Int = 2,
     // Why: "Criptomoedas" in the picker, and shown with only the decimals an amount needs.
@@ -98,12 +98,12 @@ class GroupCurrency private constructor(
         val PYG = GroupCurrency("PYG", setOf("PY"), fractionDigits = 0)
         val BOB = GroupCurrency("BOB", setOf("BO"))
         val VES = GroupCurrency("VES", setOf("VE"))
-        val CRC = GroupCurrency("CRC", setOf("CR"))
+        val CRC = GroupCurrency("CRC", setOf("CR"), fractionDigits = 0)
         val GTQ = GroupCurrency("GTQ", setOf("GT"))
         val HNL = GroupCurrency("HNL", setOf("HN"))
         val NIO = GroupCurrency("NIO", setOf("NI"))
         val DOP = GroupCurrency("DOP", setOf("DO"))
-        val CUP = GroupCurrency("CUP", setOf("CU"))
+        val CUP = GroupCurrency("CUP", setOf("CU"), fractionDigits = 0)
         val CAD = GroupCurrency("CAD", setOf("CA"))
         val AUD = GroupCurrency("AUD", setOf("AU"))
         val JPY = GroupCurrency("JPY", setOf("JP"), fractionDigits = 0)
