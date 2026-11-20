@@ -84,6 +84,7 @@
     <string name="profile_language_greek">希腊语</string>
     <string name="profile_language_croatian">克罗地亚语</string>
     <string name="profile_language_hungarian">匈牙利语</string>
+    <string name="profile_language_urdu">乌尔都语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">
@@ -143,9 +144,9 @@
     <string name="profile_bitcoin_in_sats">以聪为单位显示比特币</string>
     <string name="profile_bitcoin_in_sats_detail">以聪（sats）为单位显示和输入比特币金额（1 ₿ = 100,000,000 sats）。</string>
     <string name="profile_category_map">类别映射</string>
+    <string name="profile_category_map_detail">用于判断账单类别的关键词</string>
     <string name="profile_connect_watch">连接手表</string>
     <string name="profile_connect_watch_detail">使用手表上显示的代码</string>
-    <string name="profile_category_map_detail">用于判断账单类别的关键词</string>
     <string name="profile_photo_open">查看照片</string>
     <string name="profile_share">分享个人资料</string>
     <string name="profile_share_message">这是我在Blitz Split上的个人资料：%1$s</string>

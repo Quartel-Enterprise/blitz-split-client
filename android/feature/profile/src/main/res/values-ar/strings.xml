@@ -89,6 +89,7 @@
     <string name="profile_language_greek">اليونانية</string>
     <string name="profile_language_croatian">الكرواتية</string>
     <string name="profile_language_hungarian">المجرية</string>
+    <string name="profile_language_urdu">الأردية</string>
     <string name="profile_language_system_detail">لغة الجهاز</string>
     <string name="profile_notifications">الإشعارات</string>
     <plurals name="profile_notifications_active">
@@ -163,9 +164,9 @@
     <string name="profile_bitcoin_in_sats">Bitcoin بوحدة الساتوشي</string>
     <string name="profile_bitcoin_in_sats_detail">عرض مبالغ Bitcoin وإدخالها بوحدة sats (1 ₿ = 100,000,000 sats).</string>
     <string name="profile_category_map">خريطة الفئات</string>
+    <string name="profile_category_map_detail">الكلمات التي تحدد فئة الفاتورة</string>
     <string name="profile_connect_watch">ربط الساعة</string>
     <string name="profile_connect_watch_detail">بالرمز الظاهر على ساعتك</string>
-    <string name="profile_category_map_detail">الكلمات التي تحدد فئة الفاتورة</string>
     <string name="profile_photo_open">عرض الصورة</string>
     <string name="profile_share">مشاركة الملف الشخصي</string>
     <string name="profile_share_message">هذا ملفي الشخصي على Blitz Split: %1$s</string>

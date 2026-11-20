@@ -87,6 +87,7 @@
     <string name="profile_language_greek">Греческий</string>
     <string name="profile_language_croatian">Хорватский</string>
     <string name="profile_language_hungarian">Венгерский</string>
+    <string name="profile_language_urdu">Урду</string>
     <string name="profile_language_system_detail">Язык устройства</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_notifications">Уведомления</string>
@@ -156,9 +157,9 @@
     <string name="profile_bitcoin_in_sats">Bitcoin в сатоши</string>
     <string name="profile_bitcoin_in_sats_detail">Показывает и вводит суммы в биткоинах в sats (1 ₿ = 100 000 000 sats).</string>
     <string name="profile_category_map">Карта категорий</string>
+    <string name="profile_category_map_detail">Слова, по которым выбирается категория счёта</string>
     <string name="profile_connect_watch">Подключить часы</string>
     <string name="profile_connect_watch_detail">По коду, который показывают часы</string>
-    <string name="profile_category_map_detail">Слова, по которым выбирается категория счёта</string>
     <string name="profile_photo_open">Посмотреть фото</string>
     <string name="profile_share">Поделиться профилем</string>
     <string name="profile_share_message">Вот мой профиль в Blitz Split: %1$s</string>

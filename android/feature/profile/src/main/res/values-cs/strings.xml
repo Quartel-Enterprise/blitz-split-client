@@ -87,6 +87,7 @@
     <string name="profile_language_greek">Řečtina</string>
     <string name="profile_language_croatian">Chorvatština</string>
     <string name="profile_language_hungarian">Maďarština</string>
+    <string name="profile_language_urdu">Urdština</string>
     <string name="profile_language_system_detail">Jazyk zařízení</string>
     <string name="profile_notifications">Oznámení</string>
     <plurals name="profile_notifications_active">
@@ -155,9 +156,9 @@
     <string name="profile_bitcoin_in_sats">Bitcoin v satoshi</string>
     <string name="profile_bitcoin_in_sats_detail">Zobrazuje a zadává částky v bitcoinu v sats (1 ₿ = 100 000 000 sats).</string>
     <string name="profile_category_map">Mapa kategorií</string>
+    <string name="profile_category_map_detail">Slova, podle kterých se vybírá kategorie výdaje</string>
     <string name="profile_connect_watch">Připojit hodinky</string>
     <string name="profile_connect_watch_detail">Kódem, který ukazují hodinky</string>
-    <string name="profile_category_map_detail">Slova, podle kterých se vybírá kategorie výdaje</string>
     <string name="profile_photo_open">Zobrazit fotku</string>
     <string name="profile_share">Sdílet profil</string>
     <string name="profile_share_message">Tady je můj profil v Blitz Split: %1$s</string>

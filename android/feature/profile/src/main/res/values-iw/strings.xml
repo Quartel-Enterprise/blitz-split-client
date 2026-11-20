@@ -86,6 +86,7 @@
     <string name="profile_language_greek">יוונית</string>
     <string name="profile_language_croatian">קרואטית</string>
     <string name="profile_language_hungarian">הונגרית</string>
+    <string name="profile_language_urdu">אורדו</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>
     <plurals name="profile_notifications_active">
@@ -151,9 +152,9 @@
     <string name="profile_bitcoin_in_sats">ביטקוין בסאטושי</string>
     <string name="profile_bitcoin_in_sats_detail">הצגה והזנה של סכומי ביטקוין ב-sats (1 ₿ = 100,000,000 sats).</string>
     <string name="profile_category_map">מפת קטגוריות</string>
+    <string name="profile_category_map_detail">המילים שקובעות את הקטגוריה של חשבון</string>
     <string name="profile_connect_watch">חיבור שעון</string>
     <string name="profile_connect_watch_detail">עם הקוד שמופיע בשעון</string>
-    <string name="profile_category_map_detail">המילים שקובעות את הקטגוריה של חשבון</string>
     <string name="profile_photo_open">הצגת התמונה</string>
     <string name="profile_share">שיתוף הפרופיל</string>
     <string name="profile_share_message">הנה הפרופיל שלי ב-Blitz Split: %1$s</string>
