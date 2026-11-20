@@ -473,6 +473,10 @@ private struct PreferencesSection: View {
             }
             .foregroundStyle(.primary)
             #endif
+            // The code a watch shows when its phone is out of reach (15.14); only with an account on the server
+            if model.state.showsConnectWatch {
+                ConnectWatchRow(model: model)
+            }
             CategoryMapRow(model: model)
         }
     }
@@ -1550,6 +1554,29 @@ private struct CategoryMapRow: View {
                 Text("Category map")
                 // The button's primary style would reach it too
                 Text("The words that pick a bill's category")
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .foregroundStyle(.primary)
+    }
+}
+
+/// Preferences › "Connect watch" (15.14): a sheet on iPhone and iPad, and on Settings' window on the Mac.
+private struct ConnectWatchRow: View {
+    let model: ProfileModel
+
+    var body: some View {
+        Button {
+            model.send(ProfileUiEventOnConnectWatchClicked.shared)
+        } label: {
+            LabeledContent {
+                Image(systemName: "chevron.forward")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            } label: {
+                Text("Connect watch")
+                // The button's primary style would reach it too
+                Text("With the code your watch shows")
                     .foregroundStyle(.secondary)
             }
         }

@@ -21,12 +21,15 @@ import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsService
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
+import com.quare.blitzsplit.core.watch.domain.usecase.ApproveNearbyWatch
+import com.quare.blitzsplit.core.watch.domain.usecase.ObserveAccountSignOuts
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.appdownload.presentation.viewmodel.AppDownloadViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.ShareBillViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.SharedBillViewModel
 import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
+import com.quare.blitzsplit.feature.connectwatch.presentation.viewmodel.ConnectWatchViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.AgendaViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInviteViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
@@ -242,6 +245,26 @@ object BlitzSplitApple : KoinComponent {
 
     fun createContactSupportViewModel(): ViewModelHolder<ContactSupportViewModel> =
         ViewModelHolder(ContactSupportViewModel::class) { get() }
+
+    // Why: Profile › Connect watch (15.14), Settings' sheet on the Mac.
+    fun createConnectWatchViewModel(): ViewModelHolder<ConnectWatchViewModel> =
+        ViewModelHolder(ConnectWatchViewModel::class) { get() }
+
+    /*
+     * Why: the iPhone's side of nearby pairing (15.10): the paired watch hands its code over WatchConnectivity and the
+     * iPhone approves it with its own session, with no confirmation, as Android's WatchPairingListenerService does.
+     * onReply gets one of WatchLink's REPLY_ values, on the main thread.
+     */
+    fun approveNearbyWatch(
+        code: String,
+        onReply: (String) -> Unit,
+    ) {
+        val approve = get<ApproveNearbyWatch>()
+        scope.launch { onReply(approve(code)) }
+    }
+
+    // Why: the user id of each sign out (or deleted account) on the iPhone, which it tells its watch (15.13).
+    fun createAccountSignOutsWatcher(): FlowWatcher<String> = FlowWatcher(get<ObserveAccountSignOuts>()())
 
     fun createNotificationSettingsViewModel(): ViewModelHolder<NotificationSettingsViewModel> =
         ViewModelHolder(NotificationSettingsViewModel::class) { get() }

@@ -190,6 +190,7 @@ struct RootView: View {
         case .deleteAccount: DeleteAccountView()
         case .contactSupport: ContactSupportView()
         case .notificationSettings: NotificationSettingsView()
+        case .connectWatch: ConnectWatchView()
         case .categoryMap: CategoryMapView()
         case .releaseNotes: ReleaseNotesView()
         case let .legalDocument(route): LegalDocumentView(route: route)

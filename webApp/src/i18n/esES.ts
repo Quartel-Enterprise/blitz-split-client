@@ -133,4 +133,6 @@ export const esES: Partial<Record<MessageKey, string>> = {
   contactSupport_noticeNoApp: 'No se ha encontrado ninguna app de correo. Se ha copiado la dirección.',
   profile_rateApp: 'Valorar la app',
   editGroup_simplifyUnavailableToast: 'Simplificar deudas no está disponible con menos de 3 personas. Estará disponible en cuanto el grupo tenga, como mínimo, 3 personas.',
+  connectWatch_errorInvalid: 'Código incorrecto o caducado. Genera otro en el reloj.',
+  connectWatch_validity: 'El código es válido durante 5 minutos y una sola vez.',
 }
