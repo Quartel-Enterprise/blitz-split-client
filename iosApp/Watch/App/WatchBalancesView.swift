@@ -30,7 +30,26 @@ final class WatchBalancesModel {
 /// balance" card per currency, each open group with your net in it, and "Updated at 14:32" at the end. With nothing
 /// open, "Nothing open" (15.3b).
 struct WatchBalancesView: View {
-    @State private var model = WatchBalancesModel()
+    /// Made once the screen appears: SwiftUI builds this view's value again whenever its parent redraws, and a model
+    /// made in the initial value would start a Kotlin ViewModel each time.
+    @State private var model: WatchBalancesModel?
+
+    var body: some View {
+        Group {
+            if let model {
+                WatchBalancesScreen(model: model)
+            } else {
+                Color.black.ignoresSafeArea()
+            }
+        }
+        .onAppear {
+            if model == nil { model = WatchBalancesModel() }
+        }
+    }
+}
+
+private struct WatchBalancesScreen: View {
+    let model: WatchBalancesModel
 
     var body: some View {
         let state = model.state

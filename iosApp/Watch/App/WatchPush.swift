@@ -54,17 +54,7 @@ final class WatchPush: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func register(deviceToken: Data) {
-        let token = deviceToken.map { String(format: "%02x", $0) }.joined()
-        BlitzSplitWatch.shared.setPushToken(token: token, isSandbox: Self.isSandbox)
-    }
-
-    /// A debug build gets the sandbox's token; an App Store or TestFlight one, production's.
-    private static var isSandbox: Bool {
-        #if DEBUG
-        true
-        #else
-        false
-        #endif
+        BlitzSplitWatch.shared.setPushToken(token: ApnsToken.hex(deviceToken), isSandbox: ApnsToken.isSandbox)
     }
 
     nonisolated func userNotificationCenter(

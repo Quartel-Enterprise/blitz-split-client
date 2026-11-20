@@ -37,11 +37,28 @@ final class WatchGroupModel {
 /// toolbar's tinted item at the bottom while you owe a single person; owing two or more, each of their rows is its own
 /// "I paid". Its question (15.5) is a sheet, and "Payment recorded" (15.6) covers the screen.
 struct WatchGroupView: View {
-    @State private var model: WatchGroupModel
+    let route: RouteWatchGroup
 
-    init(route: RouteWatchGroup) {
-        _model = State(initialValue: WatchGroupModel(route: route))
+    /// Made once the screen appears: SwiftUI builds this view's value again whenever its parent redraws, and a model
+    /// made in the initial value would start a Kotlin ViewModel each time.
+    @State private var model: WatchGroupModel?
+
+    var body: some View {
+        Group {
+            if let model {
+                WatchGroupScreen(model: model)
+            } else {
+                Color.black.ignoresSafeArea()
+            }
+        }
+        .onAppear {
+            if model == nil { model = WatchGroupModel(route: route) }
+        }
     }
+}
+
+private struct WatchGroupScreen: View {
+    @Bindable var model: WatchGroupModel
 
     var body: some View {
         let state = model.state

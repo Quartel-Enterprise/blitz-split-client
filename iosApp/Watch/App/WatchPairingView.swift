@@ -36,7 +36,26 @@ final class WatchPairingModel {
 /// Connecting the watch to the iPhone's account (15.9 to 15.13): one screen per step of `WatchPairingViewModel`, each
 /// a message with its button at the end. The word for the phone is "iPhone" on the watch.
 struct WatchPairingView: View {
-    @State private var model = WatchPairingModel()
+    /// Made once the screen appears: SwiftUI builds this view's value again whenever its parent redraws, and a model
+    /// made in the initial value would start a Kotlin ViewModel each time.
+    @State private var model: WatchPairingModel?
+
+    var body: some View {
+        Group {
+            if let model {
+                WatchPairingScreen(model: model)
+            } else {
+                Color.black.ignoresSafeArea()
+            }
+        }
+        .onAppear {
+            if model == nil { model = WatchPairingModel() }
+        }
+    }
+}
+
+private struct WatchPairingScreen: View {
+    let model: WatchPairingModel
 
     var body: some View {
         let state = model.state
