@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="join_close">Zatvori</string>
     <string name="join_chip">Pozivnica</string>
     <string name="join_title">%1$s te je pozvao/la u grupu „%2$s“</string>
@@ -11,7 +11,7 @@
     </plurals>
     <string name="join_summary_creator">%1$s · stvorio/la: %2$s</string>
     <plurals name="join_already_in">
-        <item quantity="one">%s je već u grupi</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%s je već u grupi</item>
         <item quantity="few">%s su već u grupi</item>
         <item quantity="other">%s su već u grupi</item>
     </plurals>

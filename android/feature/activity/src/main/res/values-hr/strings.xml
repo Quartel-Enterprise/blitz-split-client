@@ -141,11 +141,11 @@
         <item quantity="other">Od %1$d uplata sada je %2$d.</item>
     </plurals>
     <string name="activity_detail_simplify_pays_you">Sada ti %1$s plaća %2$s</string>
-    <string name="activity_detail_simplify_you_pay">Sada plaćaš %2$s osobi %1$s</string>
+    <string name="activity_detail_simplify_you_pay">Sada plaćaš %2$s članu %1$s</string>
     <string name="activity_detail_simplify_and_owed_you">, a %s ti više ne duguje</string>
-    <string name="activity_detail_simplify_and_you_owed">, a ti više ne duguješ osobi %s</string>
+    <string name="activity_detail_simplify_and_you_owed">, a ti više ne duguješ članu %s</string>
     <string name="activity_detail_simplify_owed_you">%s ti više ne duguje</string>
-    <string name="activity_detail_simplify_you_owed">Više ne duguješ osobi %s</string>
+    <string name="activity_detail_simplify_you_owed">Više ne duguješ članu %s</string>
     <string name="activity_simplify_owed_you">dugovao/la ti je %s</string>
     <string name="activity_simplify_you_owed">dugovao/la si %s</string>
     <string name="activity_simplify_did_not_owe">nije ti ništa dugovao/la</string>

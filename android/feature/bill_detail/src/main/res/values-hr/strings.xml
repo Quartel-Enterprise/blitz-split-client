@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="bill_detail_back">Natrag</string>
     <string name="bill_detail_group_photo_open">Pogledaj fotografiju grupe</string>
     <string name="bill_detail_edit">Uredi</string>
@@ -145,12 +145,12 @@
         <item quantity="other">je priložio/la %d fotografija</item>
     </plurals>
     <plurals name="bill_detail_owe_you_each">
-        <item quantity="one">%1$s ti duguje %2$s.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%1$s ti duguje %2$s.</item>
         <item quantity="few">%1$s ti duguju po %2$s.</item>
         <item quantity="other">%1$s ti duguju po %2$s.</item>
     </plurals>
     <plurals name="bill_detail_owe_you_total">
-        <item quantity="one">%1$s ti duguje %2$s.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%1$s ti duguje %2$s.</item>
         <item quantity="few">%1$s ti duguju ukupno %2$s.</item>
         <item quantity="other">%1$s ti duguju ukupno %2$s.</item>
     </plurals>
@@ -195,7 +195,7 @@
     <string name="share_bill_who_can_open">Tko ga može otvoriti</string>
     <string name="share_bill_members">Samo osobe u trošku</string>
     <plurals name="share_bill_members_named">
-        <item quantity="one">%s ga otvara svojim računom za pregled i komentiranje.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%s ga otvara svojim računom za pregled i komentiranje.</item>
         <item quantity="few">%s ga otvaraju svojim računom za pregled i komentiranje.</item>
         <item quantity="other">%s ga otvaraju svojim računom za pregled i komentiranje.</item>
     </plurals>
