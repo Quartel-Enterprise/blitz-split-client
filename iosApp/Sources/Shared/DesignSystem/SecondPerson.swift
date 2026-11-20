@@ -90,7 +90,7 @@ enum SecondPerson {
             else { return verb }
             return verb.replacingCharacters(in: past, with: verb[past] + "ς")
         case "hu":
-            // Why: the past may be followed by a comma or a colon ("csatolta, 21:10-kor").
+            // Why: the past may be followed by a comma or a colon ("csatolta ma, 21:10").
             guard let past = verb.range(of: #"^[^\s,:]+"#, options: .regularExpression) else { return verb }
             let word = String(verb[past])
             if let known = hungarianIndefinitePast[word] { return verb.replacingCharacters(in: past, with: known) }

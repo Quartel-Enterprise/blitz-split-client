@@ -66,8 +66,8 @@
     </plurals>
     <string name="group_detail_balances_settle">Elszámolás</string>
     <string name="group_detail_balances_got_paid">Megkaptam</string>
-    <string name="group_detail_balances_already_paid">Már kifizettem</string>
-    <string name="group_detail_balances_note">Minden pár tartozásai már össze vannak vezetve: ha Ana tartozik neked, és te is tartozol neki, csak a különbség látszik. A „Megkaptam” és a „Már kifizettem” az alkalmazáson kívül teljesített fizetést rögzít (Pix, készpénz, átutalás).</string>
+    <string name="group_detail_balances_already_paid">Már kifizette</string>
+    <string name="group_detail_balances_note">Minden pár tartozásai már össze vannak vezetve: ha Ana tartozik neked, és te is tartozol neki, csak a különbség látszik. A „Megkaptam” és a „Már kifizette” az alkalmazáson kívül teljesített fizetést rögzít (Pix, készpénz, átutalás).</string>
     <string name="group_detail_balances_empty_title">Még senki nem tartozik semmivel</string>
     <string name="group_detail_balances_empty_message">Az egyenlegek az első kiadás hozzáadása után jelennek meg.</string>
     <string name="group_detail_balances_settled_title">Mindenki elszámolt</string>
@@ -95,7 +95,7 @@
     <string name="group_detail_simplified_minimal">Már a legkevesebb fizetés. A következő számlák már egyszerűsítve érkeznek.</string>
     <string name="group_detail_simplified_how">Hogyan működik</string>
     <string name="group_detail_simplified_pair">Új pár az egyszerűsítésből</string>
-    <string name="group_detail_balances_note_simplified">Egyszerűsített adósságokkal az alkalmazás a lehető legkevesebb fizetést javasolja. A „Megkaptam” és a „Már kifizettem” az alkalmazáson kívül teljesített fizetést rögzít (Pix, készpénz, átutalás).</string>
+    <string name="group_detail_balances_note_simplified">Egyszerűsített adósságokkal az alkalmazás a lehető legkevesebb fizetést javasolja. A „Megkaptam” és a „Már kifizette” az alkalmazáson kívül teljesített fizetést rögzít (Pix, készpénz, átutalás).</string>
     <string name="group_detail_photo_open">Csoportfotó megtekintése</string>
     <string name="group_export_payment_method">Fizetési mód</string>
     <string name="group_detail_reminder_title">Ideje elszámolni</string>

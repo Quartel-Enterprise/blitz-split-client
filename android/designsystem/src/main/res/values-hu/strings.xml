@@ -318,8 +318,8 @@
     <string name="designsystem_reminder_calendar_new_caption">Ismétlődő eseményt ad a naptáradhoz, amikor a csoport létrejön.</string>
     <string name="designsystem_reminder_calendar">Hozzáadás a naptárhoz</string>
     <string name="designsystem_reminder_calendar_join">Emlékeztető hozzáadása a naptáradhoz</string>
-    <string name="designsystem_reminder_schedule_weekly">Minden héten: %1$s, %2$s-kor</string>
-    <string name="designsystem_reminder_schedule_monthly">Minden hónap %1$d. napján, %2$s-kor</string>
+    <string name="designsystem_reminder_schedule_weekly">Minden héten: %1$s, %2$s</string>
+    <string name="designsystem_reminder_schedule_monthly">Minden hónap %1$d. napján, %2$s</string>
     <string name="designsystem_reminder_event_title">Elszámolás: %1$s</string>
     <string name="designsystem_reminder_event_description">Ideje elszámolni ebben a csoportban: %1$s.</string>
 </resources>

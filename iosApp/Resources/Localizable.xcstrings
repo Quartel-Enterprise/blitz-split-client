@@ -2082,7 +2082,7 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Egyesíted a fiókoddal ezt a vendéget: %@?"
+            "value" : "Összevonod a fiókoddal ezt a vendéget: %@?"
           }
         },
         "id" : {
@@ -2428,7 +2428,7 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Egyesítés"
+            "value" : "Összevonás"
           }
         },
         "id" : {
@@ -2595,7 +2595,7 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nem sikerült egyesíteni. Próbáld újra."
+            "value" : "Nem sikerült összevonni. Próbáld újra."
           }
         },
         "id" : {
@@ -3791,7 +3791,7 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ csatolta %@, %@-kor"
+            "value" : "%@ csatolta %@, %@"
           }
         },
         "id" : {
@@ -3957,7 +3957,7 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ csatolta ma, %@-kor"
+            "value" : "%@ csatolta ma, %@"
           }
         },
         "id" : {
@@ -4123,7 +4123,7 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ csatolta tegnap, %@-kor"
+            "value" : "%@ csatolta tegnap, %@"
           }
         },
         "id" : {
@@ -7653,7 +7653,7 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ beolvasta a nyugtát %@, %@-kor"
+            "value" : "%@ beolvasta a nyugtát %@, %@"
           }
         },
         "id" : {
@@ -7825,7 +7825,7 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ beolvasta a nyugtát ma, %@-kor"
+            "value" : "%@ beolvasta a nyugtát ma, %@"
           }
         },
         "id" : {
@@ -7997,7 +7997,7 @@
         "hu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ beolvasta a nyugtát tegnap, %@-kor"
+            "value" : "%@ beolvasta a nyugtát tegnap, %@"
           }
         },
         "id" : {
