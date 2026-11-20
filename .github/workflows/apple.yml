@@ -1,8 +1,8 @@
 name: apple
 
 # The Apple side of the app, on a macOS runner (free on a public repository): every module's
-# commonTest on the macOS target, and on the iOS simulator too on main, and both schemes of the Apple
-# app, which link the Shared framework. create-pr leaves these to CI and builds a scheme locally only
+# commonTest on the macOS target, and on the iOS simulator too on main, both schemes of the Apple
+# app, which link the Shared framework, and the watchOS Shared framework. create-pr leaves these to CI and builds a scheme locally only
 # when the branch changes the Swift code (see the create-pr skill, step 8).
 on:
   pull_request:
@@ -407,6 +407,35 @@ jobs:
             -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages \
             CODE_SIGNING_ALLOWED=NO build -quiet
 
+  # The watchOS Shared framework (docs/architecture/stack.md), both slices: watchosArm64, the device's
+  # arm64_32, which no other check compiles, and watchosSimulatorArm64. No Swift app links it yet, so
+  # Gradle packs them into the XCFramework the watch app will take. It runs when apple-tests does: a
+  # change to the Swift app alone leaves it as main built it.
+  apple-watch:
+    needs: [review-gate, changes]
+    if: >-
+      ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
+      needs.changes.outputs.kotlin != 'false' }}
+    runs-on: xcode-27
+    # A hung build would otherwise hold one of the few macOS runners for six hours.
+    timeout-minutes: 40
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Setup Gradle
+        uses: ./.github/actions/gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          kotlin-native: 'true'
+          # apple-tests saves the Gradle cache of the macOS runner.
+          cache-read-only: 'true'
+
+      - name: Build the watchOS framework
+        run: ./gradlew :shared:assembleSharedDebugXCFramework
+
   # On main, a failed apple-tests leaves no Gradle home in the cache. setup-gradle saves the home when
   # the job ends, whatever its result, under a key that ends with the commit, and every later run
   # restores the newest entry. A run that lost the network restored nothing, found no plugin to
@@ -461,7 +490,7 @@ jobs:
   # `concurrency` above), so the issue links those commits. A run someone cancelled reports nothing,
   # and neither does one replaced in the queue.
   report-failure:
-    needs: [apple-tests, apple-app]
+    needs: [apple-tests, apple-app, apple-watch]
     if: >-
       ${{ !cancelled() && github.event_name == 'push' &&
       (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
@@ -480,6 +509,7 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           TESTS: ${{ needs.apple-tests.result }}
           APP: ${{ needs.apple-app.result }}
+          WATCH: ${{ needs.apple-watch.result }}
           ACTOR: ${{ github.actor }}
         # The commits to look at start after the last run of main that passed or failed: a run
         # replaced in the queue was cancelled, and so was one someone stopped, which leaves a longer
@@ -495,7 +525,7 @@ jobs:
             commits=" The run also stands for the pushes it replaced in the queue, so what broke is in [the commits since the last run that completed]($GITHUB_SERVER_URL/$GH_REPO/compare/$previous...$GITHUB_SHA)."
           fi
           body=$(printf '%s\n\n%s\n' \
-            "[This run]($RUN_URL) of \`apple\` failed on \`main\` at $GITHUB_SHA: \`apple-tests\` $TESTS, \`apple-app\` $APP.$commits" \
+            "[This run]($RUN_URL) of \`apple\` failed on \`main\` at $GITHUB_SHA: \`apple-tests\` $TESTS, \`apple-app\` $APP, \`apple-watch\` $WATCH.$commits" \
             "Pull requests run the Kotlin tests on macOS only, so a test that fails on the iOS simulator alone first fails here, and the pull request that fixes it can't check the fix: run \`./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test\` on the Mac. See \"Speed and timeouts\" in docs/ci.md.")
           issue=$(gh issue list --state open --limit 200 --json number,title \
             --jq "map(select(.title == \"$TITLE\"))[0].number // empty")

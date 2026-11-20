@@ -17,14 +17,18 @@ val profileModule = module {
 }
 ```
 
-A feature module only declares its ViewModel:
+A feature module only declares its ViewModel, as a factory:
 
 ```kotlin
 // feature/restore/.../di/RestoreModule.kt
 val restoreModule = module {
-    viewModelOf(::RestoreViewModel)
+    factoryOf(::RestoreViewModel)
 }
 ```
+
+Why `factoryOf` and not Koin's `viewModelOf`: `viewModelOf` lives in `koin-core-viewmodel`, which publishes no watchOS
+target, and it only wraps `factory { }`. Android's `koinViewModel()` resolves a factory the same way, keeping the
+instance in the screen's `ViewModelStore`, and Swift and React hold theirs through the bridge.
 
 Write the constructor out (`single { … }`) only when a parameter is not in the graph, as `syncModule` does to give
 `SyncCoordinator` its own `CoroutineScope(SupervisorJob() + Dispatchers.Default)`.

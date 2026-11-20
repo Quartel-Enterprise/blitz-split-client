@@ -121,6 +121,12 @@ diff that fails counts as a change to the Kotlin code. A skipped check counts as
 test binary but not the link of a framework, so each scheme links `Shared` again, close to four minutes of Gradle
 each, with every module's compilation restored.
 
+`apple-watch` links the watchOS `Shared` for the device (arm64_32) and the simulator into an XCFramework
+(`:shared:assembleSharedDebugXCFramework`), the only check that compiles the watchOS targets. It runs when
+`apple-tests` does, side by side with it, and restores the cache `apple-tests` saves. No test runs on the watchOS
+simulator in CI: the suite is the same `commonTest` over the same `appleMain` as macOS's, and
+`./scripts/heavy-check.sh ./gradlew :<module>:watchosSimulatorArm64Test` runs it on the Mac.
+
 Only five macOS jobs run at once, for the whole organization, and a pull request's jobs wait for a runner while all
 five are taken. So the `apple` runs of `main` share one concurrency group that never cancels a run once it started: a
 push that arrives meanwhile waits, and a later one takes its place in the queue. A burst of merges then runs the first

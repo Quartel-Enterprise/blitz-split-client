@@ -15,6 +15,10 @@ gradlePlugin {
             id = "blitzsplit.kotlin.multiplatform"
             implementationClass = "KotlinMultiplatformConventionPlugin"
         }
+        register("watchos") {
+            id = "blitzsplit.kotlin.multiplatform.watchos"
+            implementationClass = "WatchosConventionPlugin"
+        }
         register("androidCompose") {
             id = "blitzsplit.android.compose"
             implementationClass = "AndroidComposeConventionPlugin"

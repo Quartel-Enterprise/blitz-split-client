@@ -81,7 +81,9 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -399,21 +401,27 @@ object BlitzSplitApple : KoinComponent {
         get<ReportAppForeground>().invoke(isForeground)
     }
 
-    // Why: a picked photo is megabytes, and filling a KotlinByteArray from Swift goes one byte per call.
-    @OptIn(ExperimentalForeignApi::class)
+    /*
+     * Why: a picked photo is megabytes, and filling a KotlinByteArray from Swift goes one byte per call. NSUInteger and
+     * size_t are 32 bits on the Apple Watch's arm64_32, the same width as each other on every target.
+     */
+    @OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
     fun toByteArray(data: NSData): ByteArray = ByteArray(data.length.toInt()).apply {
         if (isNotEmpty()) usePinned { pinned -> memcpy(pinned.addressOf(0), data.bytes, data.length) }
     }
 
-    // Why: a photo added offline reaches Swift as a KotlinByteArray, and reading it from Swift goes one byte per call.
-    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+    /*
+     * Why: a photo added offline reaches Swift as a KotlinByteArray, and reading it from Swift goes one byte per call.
+     * NSUInteger is 32 bits on the Apple Watch's arm64_32, so the length converts to each target's width.
+     */
+    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class, UnsafeNumber::class)
     fun toData(bytes: ByteArray): NSData = if (bytes.isEmpty()) {
         NSData()
     } else {
         bytes.usePinned { pinned ->
             NSData.create(
                 bytes = pinned.addressOf(0),
-                length = bytes.size.toULong(),
+                length = bytes.size.convert(),
             )
         }
     }

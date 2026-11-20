@@ -18,7 +18,7 @@ each platform.
       [state-management.md](state-management.md))
 - [ ] `XViewModel`: public, extends `TrackedViewModel<XUiEvent>(trackEvent)`, `uiState` / `uiAction` with explicit
       backing fields, `stateWatcher` / `actionWatcher`, `handleEvent`; navigation through `Navigator`
-- [ ] `di/XModule.kt` with `viewModelOf(::XViewModel)`, added to `sharedModules` in `shared/.../di/AppModules.kt`
+- [ ] `di/XModule.kt` with `factoryOf(::XViewModel)`, added to `sharedModules` in `shared/.../di/AppModules.kt`
 - [ ] If it is a screen of its own: a `Route` (see [Adding a route](navigation.md#adding-a-route))
 - [ ] `XViewModelTest` in `commonTest`, and tests for the new use cases, repository and mapper (see
       [docs/testing](../testing/README.md)); `./gradlew jvmTest :koverVerifyCi` passes
