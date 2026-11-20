@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">دعوت کا لنک</string>
+    <string name="members_link_pending">ابھی نہیں بنا</string>
+    <string name="members_share">شیئر کریں</string>
+    <string name="members_me">%s (آپ)</string>
+    <string name="members_status_this_device">یہ ڈیوائس</string>
+    <string name="members_status_joined">شامل ہو گئے</string>
+    <string name="members_status_not_joined">ابھی شامل نہیں ہوئے</string>
+    <string name="members_options">%s کے آپشنز</string>
+    <string name="members_rename">نام بدلیں</string>
+    <string name="members_personal_invite">%s کے لیے ذاتی دعوت</string>
+    <string name="members_personal_message">جو بھی یہ لنک کھولے گا، وہ فہرست سے چنے بغیر سیدھا %s کے طور پر شامل ہو جائے گا۔ یہ ایک ہی بار کام کرتا ہے۔</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">جو بھی یہ لنک کھولے گا، وہ فہرست سے چنے بغیر سیدھا %1$s کے طور پر شامل ہو جائے گا، اور اب تک شامل کیے گئے خرچ میں اپنا %2$s کا حصہ فوراً دیکھے گا۔ یہ ایک ہی بار کام کرتا ہے۔</item>
+        <item quantity="other">جو بھی یہ لنک کھولے گا، وہ فہرست سے چنے بغیر سیدھا %1$s کے طور پر شامل ہو جائے گا، اور اب تک شامل کیے گئے %3$d خرچوں میں اپنا %2$s کا حصہ فوراً دیکھے گا۔ یہ ایک ہی بار کام کرتا ہے۔</item>
+    </plurals>
+    <string name="members_personal_copy">لنک کاپی کریں</string>
+    <string name="members_personal_copied">کاپی ہو گیا</string>
+    <string name="members_personal_share">%s کے ساتھ شیئر کریں</string>
+    <string name="members_personal_share_message">Blitz Split پر %2$s کے طور پر %1$s میں شامل ہوں: %3$s</string>
+    <string name="members_remove">گروپ سے ہٹائیں</string>
+    <string name="members_remove_joined">%s پہلے ہی گروپ میں شامل ہو چکے ہیں</string>
+    <string name="members_remove_title">%s کو گروپ سے ہٹائیں؟</string>
+    <string name="members_remove_message">%s ابھی تک شامل نہیں ہوئے۔ آپ انہیں بعد میں دوبارہ شامل کر سکتے ہیں۔</string>
+    <string name="members_remove_confirm">ہٹائیں</string>
+    <string name="members_release">نام خالی کریں</string>
+    <string name="members_release_title">%s کا نام خالی کریں؟</string>
+    <string name="members_release_message">جو %1$s کے طور پر شامل ہوا تھا، وہ گروپ سے نکل جائے گا۔ %1$s کا نام، رنگ اور خرچ باقی رہیں گے، اور گروپ کے لنک سے %1$s کو دوبارہ چنا جا سکتا ہے۔</string>
+    <string name="members_release_confirm">خالی کریں</string>
+    <string name="members_release_error">نام خالی نہیں ہو سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="members_add">کسی کو شامل کریں</string>
+    <string name="members_invite_instead">ایپ ہے؟ لنک سے مدعو کریں</string>
+    <string name="members_name_label">نام</string>
+    <string name="members_save">محفوظ کریں</string>
+    <string name="members_cancel">منسوخ کریں</string>
+    <string name="members_change_error">تبدیلی محفوظ نہیں ہو سکی۔ دوبارہ کوشش کریں۔</string>
+    <string name="members_remove_open_balance">%s کا بیلنس باقی ہے</string>
+    <string name="members_balance_to_get_back">%s واپس لینے ہیں</string>
+    <string name="members_balance_owes">%s دینے ہیں</string>
+    <string name="members_balance_settled">حساب برابر</string>
+</resources>

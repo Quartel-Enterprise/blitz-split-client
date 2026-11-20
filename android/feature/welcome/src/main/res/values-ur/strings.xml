@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">خرچ بانٹیں، بغیر کسی جھنجھٹ کے</string>
+    <string name="welcome_offline_title">آف لائن کام کرتی ہے</string>
+    <string name="welcome_offline_body">سب کچھ آپ کی ڈیوائس پر رہتا ہے اور بعد میں سنک ہو جاتا ہے۔</string>
+    <string name="welcome_optional_title">اکاؤنٹ اختیاری ہے</string>
+    <string name="welcome_optional_body">Google یا Apple صرف اس لیے ہیں کہ ڈیوائس بدلنے پر آپ کا کچھ ضائع نہ ہو۔</string>
+    <string name="welcome_invite_title">لنک یا QR کوڈ سے دعوت دیں</string>
+    <string name="welcome_invite_body">دوست اکاؤنٹ بنائے بغیر گروپ میں شامل ہو جاتے ہیں۔</string>
+    <string name="welcome_no_connection_title">کنکشن نہیں ہے۔</string>
+    <string name="welcome_no_connection_body">اکاؤنٹ سے سائن اِن کرنے کے لیے انٹرنیٹ چاہیے۔ ابھی اکاؤنٹ کے بغیر استعمال کریں اور بعد میں پروفائل میں کنیکٹ کریں۔</string>
+    <string name="welcome_or">یا</string>
+    <string name="welcome_use_without_account">اکاؤنٹ کے بغیر استعمال کریں</string>
+    <string name="welcome_used_on_another_device">میں نے اسے کسی دوسری ڈیوائس پر استعمال کیا ہے</string>
+    <string name="welcome_sign_in_failed">ابھی سائن اِن نہیں ہو سکا۔ دوبارہ کوشش کریں۔</string>
+    <string name="welcome_legal_notice">جاری رکھ کر، آپ %1$s قبول کرتے ہیں اور %2$s کو تسلیم کرتے ہیں۔</string>
+    <string name="welcome_legal_terms">سروس کی شرائط</string>
+    <string name="welcome_legal_privacy">رازداری کی پالیسی</string>
+    <string name="welcome_no_account_note">اکاؤنٹ کے بغیر، 30 دن استعمال نہ ہونے پر آپ کا ڈیٹا حذف ہو جاتا ہے۔ اسے برقرار رکھنے کے لیے Google یا Apple کنیکٹ کریں۔</string>
+    <string name="welcome_no_account_note_offline">اکاؤنٹ کے بغیر، 30 دن استعمال نہ ہونے پر آپ کا ڈیٹا حذف ہو جاتا ہے۔ اسے برقرار رکھنے کے لیے بعد میں پروفائل میں Google یا Apple کنیکٹ کریں۔</string>
+    <string name="welcome_expired_title">آپ کا ڈیٹا حذف کر دیا گیا</string>
+    <string name="welcome_expired_body">آپ اکاؤنٹ کے بغیر ایپ استعمال کر رہے تھے اور 30 دن تک اسے نہیں کھولا، اس لیے آپ کا ڈیٹا حذف کر دیا گیا۔ اگلی بار اسے برقرار رکھنے کے لیے Google یا Apple کنیکٹ کریں۔</string>
+    <string name="welcome_expired_ok">ٹھیک ہے</string>
+</resources>

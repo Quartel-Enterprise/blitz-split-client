@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · ریکوری کوڈ</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">تصویر لینے کے لیے ترتیبات میں کیمرے کی اجازت دیں۔</string>
+    <string name="platform_camera_settings">ترتیبات</string>
+    <string name="platform_receipt_source_camera">تصویر لیں</string>
+    <string name="platform_receipt_source_gallery">گیلری سے منتخب کریں</string>
+    <string name="platform_receipt_source_file">فائل منتخب کریں</string>
+    <string name="platform_receipt_camera_title">رسید اسکین کریں</string>
+    <string name="platform_receipt_camera_close">بند کریں</string>
+    <string name="platform_receipt_camera_flash_on">فلیش آن کریں</string>
+    <string name="platform_receipt_camera_flash_off">فلیش آف کریں</string>
+    <string name="platform_receipt_camera_hint">پوری رسید فریم میں رکھیں۔ رقم، تاریخ اور تفصیل ہم بھر دیں گے؛ محفوظ کرنے سے پہلے آپ چیک کر لیں۔</string>
+    <string name="platform_receipt_camera_gallery">گیلری سے منتخب کریں</string>
+    <string name="platform_receipt_camera_shutter">تصویر لیں</string>
+    <string name="platform_receipt_camera_unavailable">کیمرا دستیاب نہیں ہے۔ گیلری سے رسید کی تصویر منتخب کریں۔</string>
+    <string name="platform_receipt_camera_permission">رسید اسکین کرنے کے لیے کیمرے کی اجازت دیں، یا گیلری سے تصویر منتخب کریں۔</string>
+    <string name="platform_receipt_camera_allow">کیمرے کی اجازت دیں</string>
+    <string name="platform_receipt_camera_settings">ترتیبات کھولیں</string>
+</resources>

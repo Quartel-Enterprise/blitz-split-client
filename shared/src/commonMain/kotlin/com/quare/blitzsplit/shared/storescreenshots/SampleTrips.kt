@@ -71,6 +71,7 @@ object SampleTrips {
         "el" to GroupCurrency.EUR,
         "hr" to GroupCurrency.EUR,
         "hu" to GroupCurrency.HUF,
+        "ur" to GroupCurrency.PKR,
     )
 
     fun avatarColorOf(person: Int): AvatarColor = avatarColors[person % avatarColors.size]
@@ -264,6 +265,7 @@ object SampleTrips {
             GroupCurrency.BDT -> 120.0 to 1_000L
             GroupCurrency.MYR -> 4.5 to 50L
             GroupCurrency.HUF -> 360.0 to 100L
+            GroupCurrency.PKR -> 280.0 to 1_000L
             else -> 1.0 to 50L
         }
         val minor = usdCents / CENTS_PER_DOLLAR * rate * currency.minorPerMajor

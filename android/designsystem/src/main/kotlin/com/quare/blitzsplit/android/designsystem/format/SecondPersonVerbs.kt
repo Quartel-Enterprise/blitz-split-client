@@ -29,6 +29,7 @@ private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
 private const val GREEK = "el"
 private const val CROATIAN = "hr"
+private const val URDU = "ur"
 private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
 private const val HUNGARIAN = "hu"
 private val hungarianFirstWord = Regex("""^[^\s,:]+""")
@@ -90,6 +91,7 @@ private val youSubjectLanguages = setOf(
     GREEK,
     CROATIAN,
     HUNGARIAN,
+    URDU,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -133,7 +135,9 @@ private val irregularSecondPerson = mapOf(
  * létrehozta", "Te létrehoztad"), an indefinite one is one of a short list of pasts a translation may start with,
  * each with its own second person ("Ana felosztott", "Te felosztottál"; "kilépett", "kiléptél").
  * Bengali needs no rule: its respectful verb is the same for "আপনি" and for a name ("Ana ভাগ করেছেন", "আপনি ভাগ করেছেন"),
- * and Malay's verb doesn't change with the person. Same rules as the web's and the Apple app's `verbForYou`.
+ * and Malay's verb doesn't change with the person. Urdu needs none either: its ergative "نے" is written apart after
+ * a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ بانٹا"). Same rules as the web's and the Apple
+ * app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -240,9 +244,10 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…" and Bengali "আপনি মুছে ফেলেছেন…" likewise. Czech says "Ty jsi smazal(a)…", Romanian "Tu ai
- * șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si izbrisao/la…", with their verb
- * rule, Croatian also so as not to decline the names of everyone else after "by" ("od Ane").
+ * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Czech says "Ty jsi
+ * smazal(a)…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
+ * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
+ * ("od Ane").
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

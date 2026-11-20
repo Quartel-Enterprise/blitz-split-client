@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">نوٹیفکیشنز</string>
+    <string name="notification_settings_denied_title">Android پر Blitz Split کے نوٹیفکیشنز بند ہیں۔</string>
+    <string name="notification_settings_denied_body">نیچے دیے گئے پُش پانے کے لیے سسٹم ترتیبات میں انہیں آن کریں۔ گھنٹی کام کرتی رہے گی۔</string>
+    <string name="notification_settings_open_settings">ترتیبات کھولیں</string>
+    <string name="notification_settings_refused_body">نیچے دیے گئے پُش پانے کے لیے Android آپ کو انہیں ایک بار اور اجازت دینے دیتا ہے۔ گھنٹی کام کرتی رہے گی۔</string>
+    <string name="notification_settings_turn_on">آن کریں</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Android میں بلاک ہے</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">%1$s کے لیے Android ترتیبات کھولیں</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">پُش نوٹیفکیشنز</string>
+    <string name="notification_settings_push_switch_detail">صرف اس ڈیوائس پر</string>
+    <string name="notification_settings_section">مجھے ان کے بارے میں بتائیں</string>
+    <string name="notification_settings_push">پُش</string>
+    <string name="notification_settings_in_app">ایپ میں</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s، %2$s</string>
+    <string name="notification_settings_legend">پُش اس ڈیوائس پر نوٹیفکیشن بھیجتا ہے۔ ایپ میں اسے گھنٹی اور سرگرمی میں نیا دکھاتا ہے؛ بند ہونے پر بھی یہ سرگرمی میں پڑھا ہوا دکھائی دیتا ہے۔</string>
+    <string name="notification_settings_bills">خرچ</string>
+    <string name="notification_settings_bills_detail">جن خرچوں میں آپ شامل ہیں، ان کا نیا آنا، ترمیم ہونا یا حذف ہونا</string>
+    <string name="notification_settings_payments">ادائیگیاں اور حساب برابر</string>
+    <string name="notification_settings_payments_detail">آپ کو یا آپ سے ہونے والی ادائیگیاں، اور آسان کیے گئے قرض</string>
+    <string name="notification_settings_comments">تبصرے</string>
+    <string name="notification_settings_comments_detail">جن خرچوں میں آپ شامل ہیں اور جن گفتگوؤں میں آپ نے لکھا ہے، ان پر</string>
+    <string name="notification_settings_people_and_groups">لوگ اور گروپ</string>
+    <string name="notification_settings_people_and_groups_detail">کون آپ کے گروپوں میں شامل ہوتا ہے یا انہیں چھوڑتا ہے، اور ان میں کیا بدلتا ہے</string>
+    <string name="notification_settings_payment_requests">ادائیگی کی درخواستیں</string>
+    <string name="notification_settings_payment_requests_detail">جب کوئی آپ سے ادائیگی کرنے کو کہے</string>
+    <string name="notification_settings_balance_reminder">باقی بیلنس کی یاد دہانی</string>
+    <string name="notification_settings_balance_reminder_detail">ہفتے میں ایک بار، اگر کوئی بیلنس باقی ہو</string>
+    <string name="notification_settings_footer">اطلاعات انٹرنیٹ ہونے پر آتی ہیں۔ کسی گروپ کو میوٹ کرنے کے لیے اس کے اندر کا مینو استعمال کریں۔</string>
+</resources>
