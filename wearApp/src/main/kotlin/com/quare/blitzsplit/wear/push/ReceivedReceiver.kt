@@ -31,8 +31,12 @@ class ReceivedReceiver :
         val eventId = intent.getStringExtra(EXTRA_EVENT_ID) ?: return
         val pending = goAsync()
         CoroutineScope(Dispatchers.Default).launch {
-            markActivityRead(eventId)
-            pending.finish()
+            // Why: the broadcast ends whatever happens, or the system waits on it until its timeout.
+            try {
+                markActivityRead(eventId)
+            } finally {
+                pending.finish()
+            }
         }
     }
 

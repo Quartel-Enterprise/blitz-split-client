@@ -22,6 +22,7 @@ import androidx.wear.tiles.TileBuilders
 import androidx.wear.tiles.TileService
 import com.google.common.util.concurrent.ListenableFuture
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObservePeopleBalances
+import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchBalanceDirection
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import com.quare.blitzsplit.wear.MainActivity
 import com.quare.blitzsplit.wear.R
@@ -94,7 +95,13 @@ class BalanceTileService : TileService() {
     }
 
     private fun MaterialScope.buildBalanceContent(balance: GlanceBalance): LayoutElementBuilders.LayoutElement {
-        val color = LayoutColor(if (balance.netMinor < 0) WearColors.TO_PAY.toInt() else WearColors.TO_RECEIVE.toInt())
+        // Why: as the watch's Balances draws the same total: open pairs that offset read "Even overall", plain.
+        val (argb, label) = when (balance.direction) {
+            WatchBalanceDirection.TO_RECEIVE -> WearColors.TO_RECEIVE to R.string.tile_to_receive_total
+            WatchBalanceDirection.TO_PAY -> WearColors.TO_PAY to R.string.tile_to_pay_total
+            WatchBalanceDirection.EVEN -> WearColors.ON_SURFACE_VARIANT to R.string.balances_group_even
+        }
+        val color = LayoutColor(argb.toInt())
         return LayoutElementBuilders.Column
             .Builder()
             .addContent(
@@ -105,8 +112,7 @@ class BalanceTileService : TileService() {
                 ),
             ).addContent(
                 text(
-                    getString(if (balance.netMinor < 0) R.string.tile_to_pay_total else R.string.tile_to_receive_total)
-                        .layoutString,
+                    getString(label).layoutString,
                     typography = Typography.LABEL_SMALL,
                     color = color,
                 ),

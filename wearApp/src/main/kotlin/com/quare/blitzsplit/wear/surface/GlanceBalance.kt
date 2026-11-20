@@ -6,6 +6,7 @@ import com.quare.blitzsplit.android.designsystem.format.SatsText
 import com.quare.blitzsplit.android.designsystem.format.withLatinDigits
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleBalances
 import com.quare.blitzsplit.core.expenses.domain.model.PeopleTotal
+import com.quare.blitzsplit.feature.watchbalances.presentation.model.WatchBalanceDirection
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs
@@ -19,8 +20,9 @@ class GlanceBalance(
     private val total: PeopleTotal,
     private val money: MoneyFormatter,
 ) {
-    val netMinor: Long
-        get() = total.netMinor
+    // Why: the word and the color the watch's Balances gives the same total, "Even overall" when open pairs offset.
+    val direction: WatchBalanceDirection
+        get() = WatchBalanceDirection.of(total.netMinor)
 
     val netText: String
         get() = money.toSignedText(total.netMinor)
@@ -30,9 +32,6 @@ class GlanceBalance(
 
     val toPayText: String
         get() = money.toText(total.toPayMinor)
-
-    val hasToReceive: Boolean
-        get() = total.toReceiveMinor > 0
 
     val hasToPay: Boolean
         get() = total.toPayMinor > 0
