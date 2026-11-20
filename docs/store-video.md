@@ -76,6 +76,9 @@ From [Add preview assets](https://support.google.com/googleplay/android-develope
 - **Shots.** Each line of narration is a shot: one or more steps, `play` (a stretch of a recording), `freeze` (the
   frame the step before ended on, held while cards lift out of it) and `still` (a screenshot). The cards are
   rectangles in the recording's 1080x2400 pixels, cut from that same frame, so what lifts always matches the screen.
+- **Say only what the recording shows.** The trip's groups keep Simplify debts off, the app's default, so Balances
+  shows each pair's net and the line says "quem deve quanto a quem", never "the fewest transfers". Turning it on
+  would leave this device's user owing nobody, and the Pix scene (Pay Carla) with nothing to pay.
 - **Titles** are the line's words, shortened where needed, the key words in the brand blue. Each line fades in and
   rises a little; no per-word bounce or blur (Pierre's call: it read as a tremble).
 - **Sound.** Each line starts 0.25 s into its shot. The music plays under everything, dips while a line plays, and is
@@ -87,7 +90,10 @@ From [Add preview assets](https://support.google.com/googleplay/android-develope
 The narration and the music come from [ElevenLabs](https://elevenlabs.io), on Pierre's **Creator** plan (annual, with
 pay-as-you-go off, so it never bills past the plan's credits). What it costs and allows:
 
-- **Credits.** One take of the six pt-BR lines is about 300 credits; `elevenlabs.py` makes three per locale. A
+- **Credits.** One take of the six pt-BR lines is about 300 credits; `elevenlabs.py` makes `voice.takes` of them
+  (three while a voice is being picked). A re-render is free only on the machine that holds the chosen take's files
+  in `build/store-video/<locale>/voice/`, which are not versioned: on a fresh checkout, or after a line changes,
+  `narration` asks for new takes, whose audio differs from the one Pierre picked, so they have to be picked again. A
   32-second track is about 450. The plan has 121k a month. `elevenlabs.py` never asks twice for the same audio: each
   file is named after a hash of its request (voice, model, settings, the line and its neighbours, or the music's
   prompt and length), so changing any of them makes a new file and the old one stays unused.
@@ -98,9 +104,11 @@ pay-as-you-go off, so it never bills past the plan's credits). What it costs and
   never printed. A restricted key needs Text to Speech, Voices (read) and Music Generation; the
   [ElevenLabs MCP](https://github.com/elevenlabs/elevenlabs-mcp) uses the same key.
 - **The voice** is a native speaker from the voice library, chosen by ear by Pierre: for pt-BR, Amanda Kelly (Sweet,
-  Warm and Clear), take 2 of three. Each line is generated with the lines around it (`previous_text`, `next_text`),
-  so the question in "Viagem com os amigos?" rises like one. Takes differ from run to run: a new run means picking
-  again.
+  Warm and Clear), take 1. Line 2 was reworded after take 1 was picked and only it was voiced again; the other five
+  lines are take 1's files, voiced with the old line 2 around them and renamed by hand to the new requests' hashes.
+  So their cache names don't match what they were voiced with, and a fresh `narration` would voice them all again.
+  Each line is generated with the lines around it (`previous_text`, `next_text`), so the question in "Viagem com os
+  amigos?" rises like one. Takes differ from run to run: a new run means picking again.
 - **The music** is instrumental (ElevenLabs Music, `music_v2`), prompted to stay out of the voice's way.
 
 ## Things that bite
@@ -119,6 +127,9 @@ pay-as-you-go off, so it never bills past the plan's credits). What it costs and
   the frames (`build/store-video/<locale>/public/*.png`) before trusting a locale's numbers.
 - **The device recorder is not an option.** `adb shell screenrecord` records smoothly but loads the emulator enough
   for Android to kill the app on a busy Mac.
+- **Pix is pt-BR's alone.** Only the pt-BR video has the Pix shot ("E pra acertar, Pix copia e cola…"): the app
+  offers Pix only to people likely to use it ([the Pix rule](product/general.md)), and the sample trip has a Pix key
+  only in reais. Every other locale, pt-PT included, drops that shot, its line and its `pix` scene.
 - **Copying the Pix code shows the system's clipboard bubble**, so the Pix scene (Settle up, then Pay Carla) stops
   before tapping Copy code; the lifted "Pix copy and paste" card does the pointing.
 - **Remotion's license** is free for individuals and companies of up to three people; past that it needs a company
