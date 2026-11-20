@@ -1,9 +1,9 @@
 [versions]
 # Build tooling (kept in step with the Bible Planner, which already builds with this set)
-agp = "9.5.1"
+agp = "9.5.2"
 kotlin = "2.4.21"
 ksp = "2.3.12"
-buildkonfig = "0.24.0"
+buildkonfig = "0.24.1"
 # Read by scripts/ktlint.sh: the ruleset, its runner and the ktlint CLI all come from this release
 # (github.com/Quartel-Enterprise/ktlint-rules)
 quare-ktlint-rules = "1.2.0"
@@ -17,11 +17,11 @@ android-targetSdk = "37"
 
 # AndroidX
 androidx-activity = "1.13.0"
-androidx-camera = "1.6.2"
+androidx-camera = "1.7.0"
 androidx-core = "1.19.1"
 androidx-credentials = "1.6.0"
 androidx-lifecycle = "2.11.0"
-navigation3 = "1.2.1"
+navigation3 = "1.2.2"
 room = "3.0.3"
 sqlite = "2.7.1"
 
@@ -35,8 +35,8 @@ kotlinx-datetime = "0.8.0"
 # from their BOM.
 androidx-compose-bom = "2026.09.00"
 # The BOM pins the stable 1.4.0, which lacks the Material 3 Expressive APIs (MaterialExpressiveTheme,
-# MaterialShapes); they ship on the 1.5 pre-releases only.
-androidx-compose-material3 = "1.5.0-rc01"
+# MaterialShapes); they ship on 1.5. The newer BOMs (Compose 1.13) need compileSdk 37.1: stay until it moves.
+androidx-compose-material3 = "1.5.0"
 androidx-graphics-shapes = "1.1.0"
 
 # Third party
