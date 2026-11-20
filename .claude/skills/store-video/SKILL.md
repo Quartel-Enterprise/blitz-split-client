@@ -76,7 +76,10 @@ Mac (a busy emulator stalls the app and the scrolls stutter). Afterwards, before
   frames.
 - **The words**: Whisper on the video's audio transcribes every line as written, each inside its shot.
 - **Under 30 s**, and the titles never touch the phone (a contact sheet at 1 fps).
-- Send the video with SendUserFile and wait for Pierre's approval; what he dislikes goes back to the JSON or to
+- **The thumbnails**: fill the JSON's `thumbnail` (a short headline in the listing's tone, its accent words, a
+  Balances still behind a payment still), run `scripts/store-video/thumbnail.sh <locale>` and look at both sizes:
+  the vertical one's words never touch its edges.
+- Send the video and the thumbnails with SendUserFile and wait for Pierre's approval; what he dislikes goes back to the JSON or to
   `StoreVideo.tsx`, and what he decided goes into docs/store-video.md.
 
 ## 5. Publish
