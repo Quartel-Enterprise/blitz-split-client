@@ -557,17 +557,17 @@ class SyncCoordinator(
 
     /*
      * Why: under the sync lock, like any download, so a sync's writes and the pull's never interleave. It doesn't count
-     * as a sync for the badge, which only asks for attention. What only the full sync drops, and a pull that failed, go to
-     * the full sync, which tries again and reports it.
+     * as a sync for the badge, which only asks for attention, but moves the time of the last sync ("Updated at"). What
+     * only the full sync drops, and a pull that failed, go to the full sync, which tries again and reports it.
      */
     private suspend fun pullRemoteChanges(
         userId: String,
         changes: List<RemoteChange>,
     ) {
-        val isPulled = syncLock.withLock {
+        val isPulled: Boolean? = syncLock.withLock {
             suspendRunCatching {
-                // Why: a sign out, an erased profile or another user may have taken the lock first.
-                if (!isSignedInWithProfile(userId)) return@suspendRunCatching true
+                // Why: a sign out, an erased profile or another user may have taken the lock first: nothing pulled.
+                if (!isSignedInWithProfile(userId)) return@suspendRunCatching null
                 val pull = RemotePull.of(
                     changes = changes,
                     userId = userId,
@@ -576,7 +576,7 @@ class SyncCoordinator(
                 !pull.isFullSync
             }.getOrDefault(false)
         }
-        if (!isPulled) scope.launch { syncUntilSettled() }
+        isPulled?.let { if (it) outcomes.onPulled() else scope.launch { syncUntilSettled() } }
     }
 
     private suspend fun isSignedInWithProfile(userId: String): Boolean =
