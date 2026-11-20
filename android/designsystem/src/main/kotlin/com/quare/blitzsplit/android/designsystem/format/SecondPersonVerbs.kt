@@ -28,6 +28,7 @@ private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
 private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
 private const val GREEK = "el"
+private const val CROATIAN = "hr"
 private const val URDU = "ur"
 private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
 private const val POLISH_THIRD_PERSON_SUFFIX = "ł(a)"
@@ -40,6 +41,7 @@ private val secondPersonAuxiliaries = mapOf(
     ITALIAN to mapOf("ha" to "hai", "l’ha" to "l’hai", "l'ha" to "l'hai"),
     DUTCH to mapOf("heeft" to "hebt", "is" to "bent"),
     ROMANIAN to mapOf("a" to "ai"),
+    CROATIAN to mapOf("je" to "si"),
 )
 private val turkishPast = Regex("[dt][ıiuü]$")
 private val youSubjectLanguages = setOf(
@@ -61,6 +63,7 @@ private val youSubjectLanguages = setOf(
     ROMANIAN,
     BENGALI,
     GREEK,
+    CROATIAN,
     URDU,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
@@ -86,7 +89,9 @@ private val irregularSecondPerson = mapOf(
  * "dividió" becomes "dividiste", "se unió a" "te uniste a" and "lo adjuntó" "lo adjuntaste". French does the same with
  * its auxiliary, every verb phrase being a passé composé that starts with "a" or "l’a": "Ana a divisé", "Tu as divisé".
  * German, Italian and Dutch too, with their perfect's auxiliary: "Ana hat geteilt", "Du hast geteilt"; "Ana ha diviso",
- * "Tu hai diviso"; "Ana heeft verdeeld", "Jij hebt verdeeld"; Romanian's "a" too: "Ana a împărțit", "Tu ai împărțit".
+ * "Tu hai diviso"; "Ana heeft verdeeld", "Jij hebt verdeeld"; Romanian's "a" too: "Ana a împărțit", "Tu ai împărțit";
+ * and Croatian's "je", every Croatian verb phrase starting with it before a past written "-o/la", the app not knowing
+ * the gender: "Ana je podijelio/la", "Ti si podijelio/la".
  * Czech says the person with an auxiliary before its past, which the third person has none of: "Ana rozdělil(a)", "Ty
  * jsi rozdělil(a)". Polish's past says the gender, which the app doesn't know, so its verb phrases start with a past in
  * "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü", "Sen böldün".
@@ -203,8 +208,9 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Czech says "Ty jsi smazal(a)…", Romanian "Tu ai
- * șters…" and Greek "Εσύ διέγραψες…", with their verb rule.
+ * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Czech says "Ty jsi
+ * smazal(a)…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…" and Croatian "Ti si izbrisao/la…", with their verb rule,
+ * Croatian also so as not to decline the names of everyone else after "by" ("od Ane").
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

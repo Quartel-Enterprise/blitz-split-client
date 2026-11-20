@@ -82,6 +82,7 @@
     <string name="profile_language_bengali">ベンガル語</string>
     <string name="profile_language_malay">マレー語</string>
     <string name="profile_language_greek">ギリシャ語</string>
+    <string name="profile_language_croatian">クロアチア語</string>
     <string name="profile_language_urdu">ウルドゥー語</string>
     <string name="profile_language_system_detail">デバイスの言語</string>
     <string name="profile_notifications">通知</string>

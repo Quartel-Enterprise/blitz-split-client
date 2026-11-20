@@ -98,7 +98,13 @@ The feed, unread state, real time and push notifications.
     and the user's rows add the "ς" ("Ana μοίρασε…", "Εσύ μοίρασες…", "το επισύναψε", "το επισύναψες"). Bengali needs no
     rule: its verbs are always in the respectful form, the same for a name and for "আপনি" ("Ana ভাগ করেছেন…", "আপনি ভাগ
     করেছেন…"). Both start the deleted-item notice with who deleted it (`youSubjectLanguages`). Malay verbs don't change
-    with the person ("Ana membahagikan…", "Anda membahagikan…"), and its notice stays passive ("dipadam oleh anda"). Urdu needs no rule either: its past puts the ergative "نے" after
+    with the person ("Ana membahagikan…", "Anda membahagikan…"), and its notice stays passive ("dipadam oleh anda"). Croatian
+    swaps its perfect's auxiliary as Romanian does: every Croatian verb phrase starts with "je" and a past written
+    "-o/la", the app not knowing the gender, which the user's rows turn into "si" ("Ana je podijelio/la…", "Ti si
+    podijelio/la…"). No reflexive "se" nor object pronoun comes before that "je", since Croatian would put them after "je"
+    but before "si": a join is "je ušao/la u grupu", a photo line "je priložio/la danas u 21:10". A name is never declined,
+    standing after a noun that takes the case ("je dodao/la člana Ana"), and the deleted-item notice starts with who
+    deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`) rather than a "by" that would decline the name ("od Ane"). Urdu needs no rule either: its past puts the ergative "نے" after
     the actor, written apart after a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا…", "آپ نے خرچ بانٹا…"), so
     every Urdu verb phrase starts with "نے" and stays as it is; its deleted-item notice starts with who deleted it
     (`youSubjectLanguages`). Arabic's     verbs say both the person and a gender the app doesn't know, so an Arabic row names the actor, a colon and a

@@ -45,6 +45,7 @@ class ProfileUiStateTest {
             AppLanguage.BENGALI -> listOf("বাংলা", "Bengali")
             AppLanguage.MALAY -> listOf("Bahasa Melayu", "Malay")
             AppLanguage.GREEK -> listOf("Ελληνικά", "Greek")
+            AppLanguage.CROATIAN -> listOf("Hrvatski", "Croatian")
             AppLanguage.URDU -> listOf("اردو", "Urdu")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
@@ -90,6 +91,7 @@ class ProfileUiStateTest {
         AppLanguage.BENGALI,
         AppLanguage.MALAY,
         AppLanguage.GREEK,
+        AppLanguage.CROATIAN,
         AppLanguage.URDU,
     )
 
@@ -678,6 +680,7 @@ class ProfileUiStateTest {
                 AppLanguage.BENGALI,
                 AppLanguage.MALAY,
                 AppLanguage.GREEK,
+                AppLanguage.CROATIAN,
                 AppLanguage.URDU,
             ),
             options,
@@ -725,6 +728,7 @@ class ProfileUiStateTest {
                 AppLanguage.BENGALI,
                 AppLanguage.MALAY,
                 AppLanguage.GREEK,
+                AppLanguage.CROATIAN,
                 AppLanguage.URDU,
             ),
             options,

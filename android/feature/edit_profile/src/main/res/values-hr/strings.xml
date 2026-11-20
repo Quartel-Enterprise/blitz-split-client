@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Uredi profil</string>
+    <string name="edit_profile_save">Spremi</string>
+    <string name="edit_profile_change_photo">Promijeni fotografiju</string>
+    <string name="edit_profile_take_photo">Snimi fotografiju</string>
+    <string name="edit_profile_choose_photo">Odaberi iz galerije</string>
+    <string name="edit_profile_use_account_photo">Koristi fotografiju s računa %1$s</string>
+    <string name="edit_profile_remove_photo">Ukloni fotografiju</string>
+    <string name="edit_profile_photo_error">Ova se fotografija ne može koristiti. Pokušaj s drugom.</string>
+    <string name="edit_profile_avatar_color">Boja avatara</string>
+    <string name="edit_profile_avatar_color_hint">Prikazuje se kad nemaš fotografiju.</string>
+    <string name="edit_profile_name_label">Tvoje ime</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Upiši barem ovoliko slova: %d.</string>
+    <string name="edit_profile_name_too_long">Koristi najviše ovoliko znakova: %d.</string>
+    <string name="edit_profile_account_notice">Ime i fotografija stigli su s tvog računa %1$s. Ako ih ovdje promijeniš, to vrijedi samo za Blitz Split i ne mijenja tvoj račun %1$s.</string>
+    <string name="edit_profile_footer">Tvoje ime i fotografiju vide tvoje grupe i svi koji imaju poveznicu na tvoj profil.</string>
+    <string name="profile_photo_close">Zatvori</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galerija</string>
+    <string name="profile_photo_remove">Ukloni</string>
+    <string name="profile_photo_title">Fotografija profila</string>
+</resources>

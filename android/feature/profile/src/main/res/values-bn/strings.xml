@@ -83,6 +83,7 @@
     <string name="profile_language_bengali">বাংলা</string>
     <string name="profile_language_malay">মালয়</string>
     <string name="profile_language_greek">গ্রিক</string>
+    <string name="profile_language_croatian">ক্রোয়েশীয়</string>
     <string name="profile_language_urdu">উর্দু</string>
     <string name="profile_language_system_detail">ডিভাইসের ভাষা</string>
     <string name="profile_notifications">নোটিফিকেশন</string>

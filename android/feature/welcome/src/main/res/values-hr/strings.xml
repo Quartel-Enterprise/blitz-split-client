@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Podijeli trošak bez muke</string>
+    <string name="welcome_offline_title">Radi izvanmrežno</string>
+    <string name="welcome_offline_body">Sve ostaje na tvom uređaju i sinkronizira se kasnije.</string>
+    <string name="welcome_optional_title">Račun nije obavezan</string>
+    <string name="welcome_optional_body">Google ili Apple samo te čuvaju od gubitka podataka kad promijeniš uređaj.</string>
+    <string name="welcome_invite_title">Pozovi poveznicom ili QR kodom</string>
+    <string name="welcome_invite_body">Prijatelji ulaze u grupu bez stvaranja računa.</string>
+    <string name="welcome_no_connection_title">Nema veze.</string>
+    <string name="welcome_no_connection_body">Prijava računom treba internet. Sada koristi aplikaciju bez računa i poveži se kasnije u Profilu.</string>
+    <string name="welcome_or">ili</string>
+    <string name="welcome_use_without_account">Koristi bez računa</string>
+    <string name="welcome_used_on_another_device">Već sam koristio/la aplikaciju na drugom uređaju</string>
+    <string name="welcome_sign_in_failed">Prijava trenutačno nije uspjela. Pokušaj ponovno.</string>
+    <string name="welcome_legal_notice">Nastavkom prihvaćaš %1$s i primaš na znanje %2$s.</string>
+    <string name="welcome_legal_terms">Uvjete korištenja</string>
+    <string name="welcome_legal_privacy">Pravila privatnosti</string>
+    <string name="welcome_no_account_note">Bez računa tvoji se podaci brišu nakon 30 dana nekorištenja. Poveži Google ili Apple da ih sačuvaš.</string>
+    <string name="welcome_no_account_note_offline">Bez računa tvoji se podaci brišu nakon 30 dana nekorištenja. Poveži Google ili Apple kasnije, u Profilu, da ih sačuvaš.</string>
+    <string name="welcome_expired_title">Tvoji su podaci izbrisani</string>
+    <string name="welcome_expired_body">Koristio/la si aplikaciju bez računa i nisi je otvorio/la 30 dana, pa su tvoji podaci izbrisani. Poveži Google ili Apple da ih sljedeći put sačuvaš.</string>
+    <string name="welcome_expired_ok">U redu</string>
+</resources>

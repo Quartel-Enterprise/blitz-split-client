@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Nova grupa</string>
+    <string name="create_group_close">Zatvori</string>
+    <string name="create_group_create">Stvori</string>
+    <string name="create_group_change_color">Promijeni boju grupe</string>
+    <string name="create_group_name_label">Naziv grupe</string>
+    <string name="create_group_type_label">Vrsta grupe</string>
+    <string name="create_group_members_title">Tko sudjeluje</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d osoba</item>
+        <item quantity="few">%d osobe</item>
+        <item quantity="other">%d osoba</item>
+    </plurals>
+    <string name="create_group_me">ti</string>
+    <string name="create_group_remove_member">Ukloni: %s</string>
+    <string name="create_group_add_placeholder">Dodaj po imenu</string>
+    <string name="create_group_add">Dodaj</string>
+    <string name="create_group_no_app_notice">Zasad nitko ne treba aplikaciju. Već sada možeš dodavati troškove za sve i kasnije poslati poveznicu.</string>
+    <string name="create_group_currency">Zadana valuta</string>
+    <string name="create_group_currency_caption">Novi troškovi počinju u ovoj valuti; svaki trošak može koristiti drugu.</string>
+    <string name="create_group_save_error">Spremanje grupe nije uspjelo. Pokušaj ponovno.</string>
+    <string name="create_group_photo">Fotografija grupe</string>
+    <string name="create_group_take_photo">Snimi fotografiju</string>
+    <string name="create_group_choose_photo">Odaberi fotografiju</string>
+    <string name="create_group_remove_photo">Ukloni fotografiju</string>
+    <string name="create_group_photo_error">Ova se fotografija ne može koristiti. Pokušaj s drugom.</string>
+</resources>

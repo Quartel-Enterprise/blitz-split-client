@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek and Urdu: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian and Urdu: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -145,7 +145,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     digits. Only "-কে" is ever joined to a name the app fills in, since it doesn't follow the name's sound, and its plurals
     have one and other. Malay is Malaysia's, talks to the user as "anda", doesn't change its verbs with the person, and
     its plurals have one form. Greek talks to the user in the informal singular, "εσύ", and its plurals have one and
-    other. Urdu (Pierre's call, issue #492) is one variant for every `ur` tag, Pakistan's, in its Perso-Arabic script,
+    other. Croatian (Pierre's call, issue #486; the rest taken without him, after Czech) is one variant for every tag of
+    its, calls the app Blitz Split and talks to the user in the informal singular, "ti". Its past participle says a
+    gender the app doesn't know, so it is written "-o/la" ("podijelio/la"), every verb phrase after the actor starting
+    with the auxiliary "je", which the user's rows turn into "si" ("Ana je podijelio/la…", "Ti si podijelio/la…"). A
+    name the app fills in is never declined: it stays in the nominative after a noun that takes the case ("je dodao/la
+    člana Ana") or a colon, and the deleted-item notice starts with who deleted it (`youSubjectLanguages`), not "by Ana"
+    ("od Ane"). Its plurals have one, few and other, 21 taking one ("21 grupa", "2 grupe", "5 grupa"). A bill is
+    "trošak", since "račun" is the receipt and the account. Urdu (Pierre's call, issue #492) is one variant for every `ur` tag, Pakistan's, in its Perso-Arabic script,
     and talks to the user as "آپ" (as Hindi's "आप", the norm in Pakistani apps, even among friends: کریں, never کرو), in
     the plain Urdu Pakistani apps write, English loanwords included (گروپ, بیلنس, اکاؤنٹ); it calls the app Blitz Split.
     It reads right to left as Arabic does, with the same mirrored layouts, and writes numbers, amounts and dates with
@@ -339,7 +346,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Bangladeshi taka (BDT) and the Malaysian ringgit (MYR) follow the Romanian leu, in that order (Pierre's calls,
     with Bengali and Malay), and start a new group in Bangladesh and Malaysia. Each has 2 decimals, as ISO gives it, and
     the usual 100 million cap, so an app version from before them shows their amounts by the raw code, with the right
-    decimals. Greek brings no currency, the euro covering Greece.
+    decimals. Greek brings no currency, the euro covering Greece, nor does Croatian, the euro covering Croatia since
+    2023.
   - The Pakistani rupee (PKR) follows the Malaysian ringgit (Pierre's call, with Urdu), and starts a new group in
     Pakistan. It has 2 decimals, as ISO gives it, and the usual 100 million cap (about US$ 360,000), so an app version
     from before it shows its amounts by the raw code, with the right decimals.
