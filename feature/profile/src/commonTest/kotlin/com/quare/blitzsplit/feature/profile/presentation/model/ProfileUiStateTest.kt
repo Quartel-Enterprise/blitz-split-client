@@ -46,6 +46,7 @@ class ProfileUiStateTest {
             AppLanguage.MALAY -> listOf("Bahasa Melayu", "Malay")
             AppLanguage.GREEK -> listOf("Ελληνικά", "Greek")
             AppLanguage.CROATIAN -> listOf("Hrvatski", "Croatian")
+            AppLanguage.HUNGARIAN -> listOf("Magyar", "Hungarian")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -91,6 +92,7 @@ class ProfileUiStateTest {
         AppLanguage.MALAY,
         AppLanguage.GREEK,
         AppLanguage.CROATIAN,
+        AppLanguage.HUNGARIAN,
     )
 
     @Test
@@ -679,6 +681,7 @@ class ProfileUiStateTest {
                 AppLanguage.MALAY,
                 AppLanguage.GREEK,
                 AppLanguage.CROATIAN,
+                AppLanguage.HUNGARIAN,
             ),
             options,
         )
@@ -726,6 +729,7 @@ class ProfileUiStateTest {
                 AppLanguage.MALAY,
                 AppLanguage.GREEK,
                 AppLanguage.CROATIAN,
+                AppLanguage.HUNGARIAN,
             ),
             options,
         )

@@ -84,6 +84,7 @@
     <string name="profile_language_malay">Maleis</string>
     <string name="profile_language_greek">Grieks</string>
     <string name="profile_language_croatian">Kroatisch</string>
+    <string name="profile_language_hungarian">Hongaars</string>
     <string name="profile_language_system_detail">Taal van het apparaat</string>
     <string name="profile_notifications">Meldingen</string>
     <plurals name="profile_notifications_active">
