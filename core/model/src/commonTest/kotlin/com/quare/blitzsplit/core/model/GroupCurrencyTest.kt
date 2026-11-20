@@ -349,6 +349,18 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Hungary WHEN picking its currency THEN it is the forint without decimals though ISO gives it 2`() {
+        // Given
+        val region = "HU"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.HUF to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN the rupiah WHEN picking the digits to type THEN it types none though ISO gives it 2`() {
         // Given
         val currency = GroupCurrency.IDR

@@ -45,7 +45,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek and Croatian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian and Hungarian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -152,7 +152,13 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     name the app fills in is never declined: it stays in the nominative after a noun that takes the case ("je dodao/la
     člana Ana") or a colon, and the deleted-item notice starts with who deleted it (`youSubjectLanguages`), not "by Ana"
     ("od Ane"). Its plurals have one, few and other, 21 taking one ("21 grupa", "2 grupe", "5 grupa"). A bill is
-    "trošak", since "račun" is the receipt and the account. The
+    "trošak", since "račun" is the receipt and the account.
+    Hungarian (Pierre's calls, issue #490) is one variant for every tag of it, calls the app Blitz Split and
+    talks to the user in the informal "te". Its case suffixes follow the sound of the word before them (-nak/-nek,
+    -val/-vel, a → á), so none is ever glued to a value the app fills in, as Turkish and Korean do: a name, a group, a
+    bill or an amount stands alone, after a colon or as the subject ("Tartozol neki: Ana", never "Anának"), and no
+    "a"/"az" goes right before one either. Its plurals have one and other, the noun staying singular after a number
+    ("5 tag"), and it starts Android's deleted-item notice with who deleted it (`youSubjectLanguages`). The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
@@ -338,6 +344,11 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     the usual 100 million cap, so an app version from before them shows their amounts by the raw code, with the right
     decimals. Greek brings no currency, the euro covering Greece, nor does Croatian, the euro covering Croatia since
     2023.
+  - The Hungarian forint (HUF) follows the Malaysian ringgit (Pierre's call, with Hungarian), and starts a new group in
+    Hungary. It has no decimals, as the rupiah and the New Taiwan dollar (Pierre's call): ISO gives it 2, but the
+    fillér is long gone and no price or receipt in Hungary shows one. Its cap is the usual 100 million (about
+    US$ 280,000). An app version from before it reads HUF as an unknown code with two decimals and shows its amounts
+    100 times smaller until it updates, as the rupiah did (Pierre's call: accepted, as with IDR, KRW and TWD).
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

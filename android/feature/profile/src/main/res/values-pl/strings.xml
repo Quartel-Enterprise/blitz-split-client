@@ -86,6 +86,7 @@
     <string name="profile_language_malay">Malajski</string>
     <string name="profile_language_greek">Grecki</string>
     <string name="profile_language_croatian">Chorwacki</string>
+    <string name="profile_language_hungarian">Węgierski</string>
     <string name="profile_language_system_detail">Język urządzenia</string>
     <string name="profile_notifications">Powiadomienia</string>
     <plurals name="profile_notifications_active">

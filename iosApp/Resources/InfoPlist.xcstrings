@@ -71,6 +71,12 @@
             "value" : "Blitz Split"
           }
         },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
@@ -246,6 +252,12 @@
           }
         },
         "hr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "hu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -431,6 +443,12 @@
             "value" : "Za skeniranje QR koda pozivnice ili sa starog uređaja te za snimanje tvoje profilne fotografije i fotografija troškova."
           }
         },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hogy beolvashasd egy meghívó vagy a régi eszközöd QR-kódját, és fotót készíthess a profilodhoz és a számlákhoz."
+          }
+        },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
@@ -611,6 +629,12 @@
             "value" : "Za pozivanje osoba iz tvojih kontakata poveznicom grupe. Njihovi brojevi ostaju na ovom uređaju."
           }
         },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hogy a névjegyeid közül meghívhass embereket egy csoport linkjével. A telefonszámaik ezen az eszközön maradnak."
+          }
+        },
         "id" : {
           "stringUnit" : {
             "state" : "translated",
@@ -789,6 +813,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Za spremanje fotografija troškova u tvoju fototeku."
+          }
+        },
+        "hu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hogy a számlák fotóit a fotótáradba menthesd."
           }
         },
         "id" : {

@@ -85,6 +85,7 @@
     <string name="profile_language_malay">Malaeză</string>
     <string name="profile_language_greek">Greacă</string>
     <string name="profile_language_croatian">Croată</string>
+    <string name="profile_language_hungarian">Maghiară</string>
     <string name="profile_language_system_detail">Limba dispozitivului</string>
     <string name="profile_notifications">Notificări</string>
     <plurals name="profile_notifications_active">

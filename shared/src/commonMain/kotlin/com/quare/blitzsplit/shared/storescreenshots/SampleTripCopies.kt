@@ -428,5 +428,19 @@ internal object SampleTripCopies {
             court = "Najam terena",
             items = listOf("Pizza margherita", "Burrata", "Rižoto s gljivama", "Tiramisu", "Prosecco", "Espresso"),
         ),
+        "hu" to SampleTripCopy(
+            groupName = "Lisszaboni út",
+            people = listOf("Anna", "Bence", "Eszter", "Máté", "Zsófi"),
+            dinner = "Vacsora a trattoriában",
+            apartment = "Apartman az Alfamában",
+            groceries = "Bevásárlás",
+            carRental = "Autóbérlés",
+            boatTour = "Hajókirándulás",
+            taxi = "Taxi a reptérről",
+            roommates = "Lakótársak",
+            soccer = "Pénteki foci",
+            court = "Pályabérlés",
+            items = listOf("Margherita pizza", "Burrata", "Gombás rizottó", "Tiramisu", "Prosecco", "Eszpresszó"),
+        ),
     )
 }

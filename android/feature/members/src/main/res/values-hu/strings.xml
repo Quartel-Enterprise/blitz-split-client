@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Meghívólink</string>
+    <string name="members_link_pending">Még nincs létrehozva</string>
+    <string name="members_share">Megosztás</string>
+    <string name="members_me">%s (te)</string>
+    <string name="members_status_this_device">Ez az eszköz</string>
+    <string name="members_status_joined">Csatlakozott</string>
+    <string name="members_status_not_joined">Még nem csatlakozott</string>
+    <string name="members_options">Beállítások: %s</string>
+    <string name="members_rename">Átnevezés</string>
+    <string name="members_personal_invite">Személyes meghívó: %s</string>
+    <string name="members_personal_message">Aki megnyitja ezt a linket, egyből ezen a néven csatlakozik: %s, anélkül hogy a listából választana. Egyszer működik.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Aki megnyitja ezt a linket, egyből ezen a néven csatlakozik: %1$s, anélkül hogy a listából választana, és már látja a saját részét (%2$s) az eddig hozzáadott számlában. Egyszer működik.</item>
+        <item quantity="other">Aki megnyitja ezt a linket, egyből ezen a néven csatlakozik: %1$s, anélkül hogy a listából választana, és már látja a saját részét (%2$s) az eddig hozzáadott %3$d számlában. Egyszer működik.</item>
+    </plurals>
+    <string name="members_personal_copy">Link másolása</string>
+    <string name="members_personal_copied">Másolva</string>
+    <string name="members_personal_share">Megosztás vele: %s</string>
+    <string name="members_personal_share_message">Csatlakozz a Blitz Splitben a csoporthoz: %1$s, ezen a néven: %2$s. %3$s</string>
+    <string name="members_remove">Eltávolítás a csoportból</string>
+    <string name="members_remove_joined">%s már csatlakozott a csoporthoz</string>
+    <string name="members_remove_title">Eltávolítod a csoportból? (%s)</string>
+    <string name="members_remove_message">%s még nem csatlakozott. Később újra hozzáadhatod.</string>
+    <string name="members_remove_confirm">Eltávolítás</string>
+    <string name="members_release">Név felszabadítása</string>
+    <string name="members_release_title">Felszabadítod a nevet? (%s)</string>
+    <string name="members_release_message">Aki %1$s néven csatlakozott, kikerül a csoportból. A név (%1$s), a szín és a számlák megmaradnak, és %1$s a csoport linkjén keresztül újra kiválasztható.</string>
+    <string name="members_release_confirm">Felszabadítás</string>
+    <string name="members_release_error">Nem sikerült felszabadítani a nevet. Ellenőrizd a kapcsolatot, és próbáld újra.</string>
+    <string name="members_add">Személy hozzáadása</string>
+    <string name="members_invite_instead">Megvan neki az alkalmazás? Hívd meg a linkkel</string>
+    <string name="members_name_label">Név</string>
+    <string name="members_save">Mentés</string>
+    <string name="members_cancel">Mégse</string>
+    <string name="members_change_error">Nem sikerült menteni a módosítást. Próbáld újra.</string>
+    <string name="members_remove_open_balance">%s egyenlege nyitott</string>
+    <string name="members_balance_to_get_back">jár neki: %s</string>
+    <string name="members_balance_owes">tartozik: %s</string>
+    <string name="members_balance_settled">Elszámolva</string>
+</resources>
