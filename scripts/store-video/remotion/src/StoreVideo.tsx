@@ -1,5 +1,5 @@
 import { loadFont } from '@remotion/google-fonts/Roboto';
-import { BACKDROP, BEZEL, BRAND } from './theme';
+import { BACKDROP, BEZEL_GRADIENT, BRAND } from './theme';
 import {
   AbsoluteFill,
   Audio,
@@ -205,7 +205,7 @@ const Phone = ({ tl }: { tl: Timeline }) => {
           width: BOX_W,
           height: BOX_H,
           borderRadius: 70,
-          background: BEZEL,
+          background: BEZEL_GRADIENT,
           padding: BEZEL,
           boxShadow: '0 60px 120px rgba(0,0,0,0.55), 0 0 0 2px rgba(255,255,255,0.06) inset',
           transformOrigin: `50% ${cam.fy * 100}%`,

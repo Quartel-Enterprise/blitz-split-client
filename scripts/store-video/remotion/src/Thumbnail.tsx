@@ -1,6 +1,6 @@
 import { AbsoluteFill, Composition, Img, staticFile } from 'remotion';
 import { loadFont } from '@remotion/google-fonts/Roboto';
-import { BACKDROP, BEZEL, BRAND } from './theme';
+import { BACKDROP, BEZEL_GRADIENT, BRAND } from './theme';
 
 // The YouTube thumbnails of a locale's store video, rendered by thumbnail.sh: the end card's name, a headline and two
 // chips beside two of the recording's stills in the video's phone frame, over the video's background. Thumbnail is
@@ -27,7 +27,7 @@ const Phone = ({ src, left, top, width, rotate }: { src: string; left: number; t
         top,
         padding: bezel,
         borderRadius: 44,
-        background: BEZEL,
+        background: BEZEL_GRADIENT,
         boxShadow: '0 40px 90px rgba(0,0,0,0.6), 0 0 0 2px rgba(255,255,255,0.06) inset',
         transform: `rotate(${rotate}deg)`,
       }}
