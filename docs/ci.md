@@ -206,6 +206,35 @@ fingerprint is the newest entry's saves none, and a failed test doesn't stop the
 as the key, the entry was saved once and every run compiled the libraries bumped since. An entry keeps the versions
 bumped away until a new Kotlin version starts an empty one.
 
+## Downloads
+
+Gradle downloads what the cache it restored doesn't hold. Maven Central rate-limits by IP address, and GitHub-hosted
+runners leave through IPs every project on GitHub Actions shares, so it may answer `429 Too Many Requests` to traffic
+that isn't ours. Three things keep that from failing a job:
+
+- **The mirror.** The repositories of `settings.gradle.kts` and `build-logic/settings.gradle.kts` list Google's mirror
+  of Maven Central (`maven-central.storage-download.googleapis.com/maven2`) before `mavenCentral()`, which stays as the
+  fallback for an artifact the mirror doesn't have: a release published minutes ago, and a few it lacks for good
+  (BuildKonfig 0.24.1 and `software.quare:loadable` 1.2.0 were 404s on 2026-11-20). A repository's content
+  filters stay where they are: the mirror only takes what reaches Maven Central today.
+- **The retries.** `gradle.properties` raises Gradle's tries of a download that fails with a 429, a 5xx or a dropped
+  connection from 3 to 6, and the first wait from 1 to 2 seconds, doubled each time: about a minute in all before
+  Gradle gives up. A repository that still fails is disabled for the rest of the build ("Repository MavenRepo is
+  disabled due to earlier error"). Gradle then stops looking in the repositories after it too, unless the repository
+  allows it: the mirror sets `allowInsecureContinueWhenDisabled`, so a disabled mirror leaves the rest to Maven
+  Central. Maven Central has nothing after it, so it still fails the build once it is disabled.
+- **A warm cache.** Pull requests restore `main`'s newest Gradle home (see "Speed and timeouts"), and setup-gradle saves
+  it on `main` whatever the job's result, so a red `main` still saves what it downloaded. The one exception is
+  `apple-tests`, whose home a failed run deletes (`drop-failed-cache`, see "Speed and timeouts"), so the macOS jobs
+  restore the last green one. A red `main` downloads nothing when the build fails while configuring, as `main` did
+  after the library bump of #522 (`compileSdk = "37.1"`): every pull request then downloads the new versions, every
+  job of each one at once. No warm-up job would help there, since resolving the dependencies needs a configured build,
+  so the mirror and the retries carry those runs until `main` is green again.
+
+A 429 shows in the failed task as `Received status code 429 from server: Too Many Requests`. The log of the step
+"Setup Gradle" says which Gradle home the job restored ("Restored cache entry with key gradle-home-...-<commit>"): the
+commit of `main` it came from.
+
 ## AI review
 
 Claude reviews a pull request at three points:

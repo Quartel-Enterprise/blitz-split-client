@@ -13,6 +13,14 @@ pluginManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
+        // Google's mirror of Maven Central, then Maven Central itself for what the mirror doesn't have
+        // (yet). Maven Central answers CI's shared runner IPs with 429s (docs/ci.md, "Downloads").
+        maven("https://maven-central.storage-download.googleapis.com/maven2/") {
+            name = "MavenCentralMirror"
+            // A mirror that keeps failing is disabled, and without this the lookup stops there instead of
+            // asking Maven Central, which serves the same artifacts.
+            allowInsecureContinueWhenDisabled = true
+        }
         mavenCentral()
         gradlePluginPortal()
     }
@@ -26,6 +34,14 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.android")
                 includeGroupAndSubgroups("com.google")
             }
+        }
+        // Google's mirror of Maven Central, then Maven Central itself for what the mirror doesn't have
+        // (yet). Maven Central answers CI's shared runner IPs with 429s (docs/ci.md, "Downloads").
+        maven("https://maven-central.storage-download.googleapis.com/maven2/") {
+            name = "MavenCentralMirror"
+            // A mirror that keeps failing is disabled, and without this the lookup stops there instead of
+            // asking Maven Central, which serves the same artifacts.
+            allowInsecureContinueWhenDisabled = true
         }
         mavenCentral()
     }
