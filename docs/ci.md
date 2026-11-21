@@ -212,17 +212,21 @@ Gradle downloads what the cache it restored doesn't hold. Maven Central rate-lim
 runners leave through IPs every project on GitHub Actions shares, so it may answer `429 Too Many Requests` to traffic
 that isn't ours. Three things keep that from failing a job:
 
-- **The mirror.** The repositories of `settings.gradle.kts` and `build-logic/settings.gradle.kts` list Google's mirror
-  of Maven Central (`maven-central.storage-download.googleapis.com/maven2`) before `mavenCentral()`, which stays as the
-  fallback for an artifact the mirror doesn't have: a release published minutes ago, and a few it lacks for good
-  (BuildKonfig 0.24.1 and `software.quare:loadable` 1.2.0 were 404s on 2026-11-20). A repository's content
-  filters stay where they are: the mirror only takes what reaches Maven Central today.
+- **The mirror.** The plugin and dependency repositories of `settings.gradle.kts` and `build-logic/settings.gradle.kts`
+  list Google's mirror of Maven Central (`maven-central.storage-download.googleapis.com/maven2`) before
+  `mavenCentral()` (`build-logic` has no `mavenCentral()` among its plugin repositories: the Plugin Portal comes
+  after the mirror there). Maven Central stays as the fallback for an artifact the mirror doesn't have: a release
+  published minutes ago, and a few it lacks for good (BuildKonfig 0.24.1 and `software.quare:loadable` 1.2.0 were
+  404s on 2026-11-20). A repository's content filters stay where they are: the mirror only takes what reaches Maven
+  Central today.
 - **The retries.** `gradle.properties` raises Gradle's tries of a download that fails with a 429, a 5xx or a dropped
-  connection from 3 to 6, and the first wait from 1 to 2 seconds, doubled each time: about a minute in all before
-  Gradle gives up. A repository that still fails is disabled for the rest of the build ("Repository MavenRepo is
-  disabled due to earlier error"). Gradle then stops looking in the repositories after it too, unless the repository
-  allows it: the mirror sets `allowInsecureContinueWhenDisabled`, so a disabled mirror leaves the rest to Maven
-  Central. Maven Central has nothing after it, so it still fails the build once it is disabled.
+  connection from 3 to 6, and the first wait from 1 to 2 seconds, doubled each time: about a minute of waits in all
+  before Gradle gives up, plus each try's own time, up to the 30 second socket timeout when a connection hangs. A
+  repository that still fails is disabled for the rest of the build ("Repository MavenRepo is disabled due to earlier
+  error"). Gradle then stops looking in the repositories after it too, unless the repository allows it: the mirror
+  sets `allowInsecureContinueWhenDisabled`, so a disabled mirror leaves the rest to Maven Central. Maven Central
+  doesn't set it, so once it is disabled the build fails, and where the Gradle Plugin Portal comes after it (the
+  root's `pluginManagement`, `build-logic`'s dependencies) the portal is no longer asked either.
 - **A warm cache.** Pull requests restore `main`'s newest Gradle home (see "Speed and timeouts"), and setup-gradle saves
   it on `main` whatever the job's result, so a red `main` still saves what it downloaded. The one exception is
   `apple-tests`, whose home a failed run deletes (`drop-failed-cache`, see "Speed and timeouts"), so the macOS jobs
