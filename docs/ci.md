@@ -6,7 +6,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
 | `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi` (with `compileCommonMainKotlinMetadata` and the store screenshots' `compileDebugUnitTestKotlin` in the same job), `jsTest` split across shards, `:androidApp:assembleRelease` and `:wearApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
-| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | Both schemes of the Apple app, each in a job of its own, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms); `compileKotlinIosArm64`, `compileKotlinWatchosArm64` and `compileAppleMainKotlinMetadata`, in the macOS scheme's job, skipped on a pull request that changes the Swift app alone; `macosArm64Test` on `main` and on a pull request that changes Apple code (an Apple source set of a module, the version catalog, the build logic of the Apple targets), in two jobs when the change reaches nearly every module, and `iosSimulatorArm64Test` too on one that changes an `iosMain` or the version catalog |
+| `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | Both schemes of the Apple app, each in a job of its own, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms); `compileKotlinIosArm64`, `compileKotlinWatchosArm64` and `compileAppleMainKotlinMetadata`, in the macOS scheme's job on a pull request (skipped on one that changes the Swift app alone) and in `apple-tests` on `main`, which also links `Shared` for the iOS simulator and the watchOS XCFramework there; `macosArm64Test` on `main` and on a pull request that changes Apple code (an Apple source set of a module, the version catalog, the build logic of the Apple targets), in two jobs when the change reaches nearly every module, and `iosSimulatorArm64Test` too on one that changes an `iosMain` or the version catalog |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
 | `module-graph` | Gradle scripts, `build-logic`, the version catalog, the wrapper | `./gradlew assertModuleGraph` |
@@ -102,9 +102,10 @@ includes:
 - `gradle/libs.versions.toml`: a library publishes its code for each target apart, so a bump is the change a target can
   take differently;
 - `gradle.properties`, where the `kotlin.native` settings are;
-- the build logic that sets up the Kotlin targets and their test tasks: the files of `build-logic/` named after the
-  multiplatform and watchOS convention plugins or the simulators (`IosSimulatorTests.kt`, `SimulatorFamily.kt`). Not the
-  rest of `build-logic/`: the store screenshots' file there changes with every language;
+- the build logic that sets up the test tasks: the files of `build-logic/` named after the multiplatform convention
+  plugin or the simulators (`IosSimulatorTests.kt`, `SimulatorFamily.kt`). Not the rest of `build-logic/`: the store
+  screenshots' file there changes with every language, and the watchOS convention plugin only adds targets no suite runs
+  on, which the schemes and "Compile the device targets" build;
 - what runs the job: `apple.yml`, the Gradle action, `scripts/modules-with-tests.sh`.
 
 A module's own `build.gradle.kts` is not on the list, though it can give an Apple source set a dependency: the schemes
@@ -116,14 +117,15 @@ it found nothing the other targets hadn't. A moved file counts under both of its
 a change to all of it. A skipped check counts as passed for `merge-when-green`.
 
 The iOS simulator runs the suite only on a pull request that changes an `iosMain`, the version catalog, the build logic
-of the simulators' test tasks or `apple.yml` itself, whose simulator steps no other run would try, and never on `main`.
-Its run repeats the macOS one: the suite is the same `commonTest`, the actuals it reaches are `appleMain`'s (only
-`core/profile` and `core/in_app_update` have an `iosMain` and a `macosMain`, one line each that no test reaches),
-`create-pr` compiles the main and the test code for the simulator before the pull request opens, and `apple-app` links
-`Shared` for it. It links one more test binary per module, which on `main`, on every push, made a run that recompiles
-everything take up to 48 minutes on a runner the pull requests waited for, and a week of its failures there were all the
-simulator's own (CoreSimulator crashing, no device listed), none a test. `main` compiles nothing for the simulator's
-tests any more, so a pull request that runs its suite links every module's test binary for it.
+of the test tasks (above) or `apple.yml` itself, whose simulator steps no other run would try, and never on `main`. A
+pull request whose `changes` job failed runs it too, as it runs `apple-tests`. Its run repeats the macOS one: the suite
+is the same `commonTest`, the actuals it reaches are `appleMain`'s (only `core/profile` and `core/in_app_update` have an
+`iosMain` and a `macosMain`, one line each that no test reaches), `create-pr` compiles the main and the test code for
+the simulator before the pull request opens, and `apple-app` links `Shared` for it. It links one more test binary per
+module, which on `main`, on every push, made a run that recompiles everything take up to 48 minutes on a runner the pull
+requests waited for, and a week of its failures there were all the simulator's own (CoreSimulator crashing, no device
+listed), none a test. `main` compiles nothing for the simulator's tests any more, so a pull request that runs its suite
+links every module's test binary for it.
 
 A pull request whose `apple-tests` runs and whose change reaches nearly every module splits it in two jobs, `apple-tests
 (1)` and `apple-tests (2)`. The `changes` job decides it from the changed paths: anything under `core/` or `gradle/`
@@ -150,7 +152,8 @@ Apple targets, which only a macOS host compiles. They are compiled and not linke
 watchOS `Shared` for both slices held a fifth runner on every pull request for 7 to 16 minutes, and what a device slice
 can take differently from the simulator's shows when it compiles. The step is skipped on a pull request that changes the
 Swift app alone, when every file is under `iosApp/` or `release-notes/`, or is Markdown: no input of a Gradle task of
-the Apple targets changed. On `main` the compilations are `apple-tests`' instead, with
+the Apple targets changed. It runs after a scheme that failed too, so a Swift error doesn't hide a device target's until
+the next push. On `main` the compilations are `apple-tests`' instead, with
 `:shared:linkDebugFrameworkIosSimulatorArm64`, so the Gradle home that job saves, the one every macOS job restores,
 holds what the pull requests' jobs read. That link is also what keeps the simulator's libraries in the Kotlin/Native
 entry (below), which only that job saves: a library is compiled to native code on its first link for a target, and the
@@ -190,11 +193,12 @@ nothing deletes those yet.
 `apple-tests` bounds its test step rather than the job, since only the step knows which targets run: 60 minutes on macOS
 alone, where recompiling everything took 22, and 80 with the simulator too, where it took up to 48 on `main`. `main`
 keeps the 80: its step also links `Shared` for the simulator and compiles the device targets, a cold run of which is not
-measured yet, and a run the bound kills saves no cache for the next to start from. `apple-app`'s 60 minutes leave room
-for the macOS scheme and the device targets after it, which have 30 of their own. The run with the simulator is the
-exception to the three times above: three times 48 would hold a runner for over two hours. A run the step's timeout
-kills saves no Kotlin/Native entry, since it may have left a library half compiled. The job's own `timeout-minutes` of
-100 only stops what hangs around the tests, with room for the caches restored before the longest run and saved after it.
+measured yet, and a run the bound kills saves no cache for the next to start from. `apple-app (macOS)` has 60 minutes,
+for its scheme and the device targets after it, which have 30 of their own; `apple-app (iOS)` keeps 40. The run with the
+simulator is the exception to the three times above: three times 48 would hold a runner for over two hours. A run the
+step's timeout kills saves no Kotlin/Native entry, since it may have left a library half compiled. The job's own
+`timeout-minutes` of 100 only stops what hangs around the tests, with room for the caches restored before the longest
+run and saved after it.
 
 A test that fails on an Apple target alone therefore shows up after the merge, as a failed `apple` run on `main`. The
 `report-failure` job then opens the issue "The apple checks failed on main", assigned to whoever merged the commit that

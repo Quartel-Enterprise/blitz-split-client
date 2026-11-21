@@ -115,8 +115,8 @@ jobs:
   # - `simulator`: whether the suite runs on the iOS simulator too. It is the macOS suite again,
   #   over the same appleMain, with one more test binary to link per module, so it only runs for
   #   what the two targets can take differently (an iosMain, the version catalog) and for what no
-  #   other run would try: the build logic of the simulators' test tasks, and this workflow, whose
-  #   simulator steps main never runs.
+  #   other run would try: the build logic that sets up the test tasks, the simulators' among them,
+  #   and this workflow, whose simulator steps main never runs.
   #
   # A diff that fails or lists no file counts as a change to all of it. On main this job is
   # skipped and the jobs read no answer: apple-tests runs there, on macOS, since that run also
@@ -156,9 +156,11 @@ jobs:
       # on splits for nothing, which costs a runner five minutes, and a change that reaches every
       # module from elsewhere runs in one job. build-logic and the root's Gradle scripts are left
       # out of the split: a change there gives a new key only to the tasks it configures differently
-      # (docs/ci.md, "Speed and timeouts"). Of build-logic, only the files named after what they set
-      # up for the Apple targets run the tests (the multiplatform and watchOS convention plugins,
-      # the simulators' test tasks): the store screenshots' file there changes with every language.
+      # (docs/ci.md, "Speed and timeouts"). Of build-logic, only the files that set up the test tasks
+      # run the tests, on the simulator too (the multiplatform convention plugin, the simulators'
+      # files): the store screenshots' file there changes with every language, and the watchOS
+      # convention plugin only adds targets no suite runs on, which the schemes and "Compile the
+      # device targets" build.
       # The source sets no Apple target compiles and Markdown don't count, as they don't to start
       # this workflow. A change to this workflow, to the Gradle action or to the script that lists
       # the modules runs the tests, and the first and the last split them too, so a change to the
@@ -174,10 +176,10 @@ jobs:
           own='^\.github/workflows/apple\.yml$|^scripts/modules-with-tests\.sh$'
           apple='^(core|feature)/.*/src/(apple|ios|macos|native)[A-Za-z0-9]*/'
           apple="$apple|^gradle/libs\.versions\.toml$|^gradle\.properties$"
-          apple="$apple|^build-logic/.*(Multiplatform|Watchos|Simulator)[A-Za-z]*\.kt$"
-          apple="$apple|^\.github/actions/gradle/action\.yml$|$own"
+          logic='^build-logic/.*(Multiplatform|Simulator)[A-Za-z]*\.kt$'
+          apple="$apple|$logic|^\.github/actions/gradle/action\.yml$|$own"
           ios='^(core|feature)/.*/src/ios[A-Za-z0-9]*/|^gradle/libs\.versions\.toml$'
-          ios="$ios|^build-logic/.*Simulator[A-Za-z]*\.kt$|^\.github/workflows/apple\.yml$"
+          ios="$ios|$logic|^\.github/workflows/apple\.yml$"
           wide="^(core|gradle)/|^gradle\.properties$|$own"
           not_apple='\.md$|/src/(js|jvm)(Main|Test)/|/src/androidMain/'
           if files=$(git -c core.quotePath=false diff --name-only --no-renames HEAD^1 HEAD) &&
@@ -260,6 +262,9 @@ jobs:
       # compilations of apple-app (macOS)'s "Compile the device targets". A pull request leaves
       # them to those jobs.
       #
+      # A pull request whose `changes` gave no answer (the job failed) runs the simulator's suite
+      # too, as a diff that fails does: only its "false" leaves it out.
+      #
       # One job of a pull request runs every suite by its task name. Two split the modules that
       # have a commonTest, dealt in turn from the sorted list js-tests deals its own from
       # (scripts/modules-with-tests.sh), so a new module joins a shard by itself. Each one compiles
@@ -276,7 +281,7 @@ jobs:
           SIMULATOR: ${{ needs.changes.outputs.simulator }}
         run: |
           simulator=''
-          if [ "$SIMULATOR" = true ]; then
+          if [ "$SIMULATOR" != false ]; then
             simulator=iosSimulatorArm64Test
           fi
           if [ "$EVENT_NAME" != pull_request ]; then
@@ -308,7 +313,7 @@ jobs:
       # library half compiled in ~/.konan, which main must not save.
       - name: Run the tests
         id: tests
-        timeout-minutes: ${{ (github.event_name == 'push' || needs.changes.outputs.simulator == 'true') && 80 || 60 }}
+        timeout-minutes: ${{ (github.event_name == 'push' || needs.changes.outputs.simulator != 'false') && 80 || 60 }}
         env:
           TASKS: ${{ steps.tasks.outputs.tasks }}
         run: |
@@ -395,8 +400,9 @@ jobs:
     # Xcode 26 only.
     runs-on: xcode-27
     # A hung build would otherwise hold one of the few macOS runners for six hours. The macOS job
-    # also compiles the device targets after its scheme, which has a bound of its own.
-    timeout-minutes: 60
+    # gets longer: it also compiles the device targets after its scheme, which has a bound of its
+    # own.
+    timeout-minutes: ${{ matrix.platform == 'macOS' && 60 || 40 }}
     strategy:
       # One scheme's failure doesn't hide the other's.
       fail-fast: false
@@ -470,10 +476,12 @@ jobs:
       # scheme, the shorter of the two builds, rather than on a runner of its own: with the
       # watchOS framework linked in a job apart, a pull request held all five macOS runners. On a
       # pull request only (main compiles them in apple-tests, which saves the Gradle home this job
-      # reads them from), and not on one that changes the Swift app alone.
+      # reads them from), and not on one that changes the Swift app alone. After a scheme that
+      # failed too: a Swift error would otherwise hide a device target's until the next push, one
+      # more round of every macOS job.
       - name: Compile the device targets
         if: >-
-          ${{ matrix.platform == 'macOS' && github.event_name == 'pull_request' &&
+          ${{ !cancelled() && matrix.platform == 'macOS' && github.event_name == 'pull_request' &&
           needs.changes.outputs.kotlin != 'false' }}
         timeout-minutes: 30
         run: ./gradlew compileKotlinIosArm64 compileKotlinWatchosArm64 compileAppleMainKotlinMetadata
@@ -567,7 +575,7 @@ jobs:
           fi
           body=$(printf '%s\n\n%s\n' \
             "[This run]($RUN_URL) of \`apple\` failed on \`main\` at $GITHUB_SHA: \`apple-tests\` $TESTS, \`apple-app\` $APP.$commits" \
-            "A pull request runs the Kotlin tests on macOS only when it changes Apple code, so a test that fails on an Apple target alone first fails here, and the pull request that fixes it may not run them: run \`./scripts/heavy-check.sh ./gradlew :<module>:macosArm64Test\` on the Mac. See \"Speed and timeouts\" in docs/ci.md.")
+            "A pull request runs the Kotlin tests on macOS only when it changes Apple code, so a test that fails on an Apple target alone first fails here, and the pull request that fixes it may not run them. The failed job's log names the task: on \`main\`, \`apple-tests\` runs every module's \`macosArm64Test\`, links \`Shared\` for the iOS simulator, compiles the device targets and builds the watchOS XCFramework. Run that task on the Mac, \`./scripts/heavy-check.sh ./gradlew :<module>:macosArm64Test\` for a test. See \"Speed and timeouts\" in docs/ci.md.")
           issue=$(gh issue list --state open --limit 200 --json number,title \
             --jq "map(select(.title == \"$TITLE\"))[0].number // empty")
           if [ -n "$issue" ]; then
