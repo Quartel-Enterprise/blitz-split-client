@@ -24,6 +24,7 @@ fun Project.getAndroidSdkVersions(): AndroidSdkVersions {
         .toInt()
     return AndroidSdkVersions(
         compileSdk = readVersion("android-compileSdk"),
+        compileSdkMinor = readVersion("android-compileSdkMinor"),
         minSdk = readVersion("android-minSdk"),
         targetSdk = readVersion("android-targetSdk"),
     )

@@ -5,7 +5,7 @@ them, and `merge-when-green`, which merges a pull request once they pass.
 
 | Workflow | Runs on | What it does |
 | --- | --- | --- |
-| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi` (with `compileCommonMainKotlinMetadata` and the store screenshots' `compileDebugUnitTestKotlin` in the same job), `jsTest` split across shards, `:androidApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
+| `build-and-test` | Pull requests and `main`, except docs, `.claude` and `iosApp` only changes | `jvmTest` and `:koverVerifyCi` (with `compileCommonMainKotlinMetadata` and the store screenshots' `compileDebugUnitTestKotlin` in the same job), `jsTest` split across shards, `:androidApp:assembleRelease` and `:wearApp:assembleRelease`, `lintDebug` (which fails on a missing or an extra Android translation), `npm --prefix webApp run check:messages` (every web language against English's keys and `{placeholders}`) and `npm --prefix webApp run build`, each in a job of its own |
 | `apple` | The shared Kotlin, `iosApp`, the build (on a macOS runner) | `macosArm64Test`, `compileKotlinIosArm64` and `compileAppleMainKotlinMetadata`, and `iosSimulatorArm64Test` too on `main` and on a pull request that changes the version catalog, in two jobs on a pull request whose change reaches nearly every module, all skipped on a pull request that changes the Swift app alone; both schemes of the Apple app, each in a job of its own, which link the `Shared` framework and run `iosApp/check-translations.py`, failing on a string without its pt-BR, es, fr, de, it or pl translation (or a Polish plural without its few and many forms) |
 | `static-analysis` | Kotlin, Gradle scripts, `.editorconfig`, the version catalog | `./scripts/ktlint.sh` |
 | `duplication` | Kotlin, Swift, `webApp/src`, the jscpd config and baseline, `scripts/cpd.sh` | `./scripts/cpd.sh`, one warning when the baseline takes in copied code against the base branch, with each file in the job summary |
@@ -44,7 +44,7 @@ short:
   across its shards, dealt round-robin from the sorted list of the modules that have `commonTest` or `jsTest` sources,
   found when the job runs, so a new module joins a shard on its own. Each shard compiles the modules its own depend on again, side by
   side with the others. Adding a shard is adding a number to the matrix.
-- `android` builds the release APK (R8 runs only there) and `android-lint` runs `lintDebug`. They compile different
+- `android` builds the release APKs of the phone and the watch (R8 runs only there) and `android-lint` runs `lintDebug`. They compile different
   variants and share no work, so in one job they ran one after the other.
 
 Every job has a `timeout-minutes`; the ones that build get about three times what they take on a pull request that

@@ -166,6 +166,42 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN the rest of Latin America WHEN picking their currencies THEN each has its own with its decimals`() {
+        // Given
+        val regions = listOf("BO", "VE", "CR", "GT", "HN", "NI", "DO", "CU")
+
+        // When
+        val currencies = regions.map { GroupCurrency.ofRegion(it) }
+
+        // Then
+        assertEquals(
+            listOf(
+                GroupCurrency.BOB to 2,
+                GroupCurrency.VES to 2,
+                GroupCurrency.CRC to 0,
+                GroupCurrency.GTQ to 2,
+                GroupCurrency.HNL to 2,
+                GroupCurrency.NIO to 2,
+                GroupCurrency.DOP to 2,
+                GroupCurrency.CUP to 0,
+            ),
+            currencies.map { it to it.fractionDigits },
+        )
+    }
+
+    @Test
+    fun `GIVEN the Latin American regions that use the dollar WHEN picking their currency THEN it is the dollar`() {
+        // Given
+        val regions = listOf("EC", "SV", "PA", "PR")
+
+        // When
+        val currencies = regions.map { GroupCurrency.ofRegion(it) }
+
+        // Then
+        assertEquals(List(regions.size) { GroupCurrency.USD }, currencies)
+    }
+
+    @Test
     fun `GIVEN Poland Turkey and Indonesia WHEN picking their currency THEN it is the zloty lira and rupiah`() {
         // Given
         val regions = listOf("PL", "TR", "ID")

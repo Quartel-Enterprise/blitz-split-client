@@ -27,9 +27,17 @@ if (hasFirebaseConfig) {
 
 android {
     namespace = "com.quare.blitzsplit.wear"
-    compileSdk = libs.versions.android.compileSdk
-        .get()
-        .toInt()
+    compileSdk {
+        version = release(
+            libs.versions.android.compileSdk
+                .get()
+                .toInt(),
+        ) {
+            minorApiLevel = libs.versions.android.compileSdkMinor
+                .get()
+                .toInt()
+        }
+    }
     defaultConfig {
         applicationId = "com.quare.blitzsplit"
         // Why: Wear OS 3, the first with Tiles and complications as drawn here (docs/product/general.md).
@@ -119,8 +127,9 @@ dependencies {
     implementation(libs.wear.complications.dataSourceKtx)
     implementation(libs.androidx.concurrent.futuresKtx)
     implementation(libs.wear.toolingPreview)
+    // Why: its WearPreviewDevices and WearPreviewFontScales annotate previews in main, which the release compiles too.
+    implementation(libs.wear.compose.uiTooling)
     implementation(libs.compose.ui.toolingPreview)
     debugImplementation(libs.compose.ui.tooling)
-    debugImplementation(libs.wear.compose.uiTooling)
     debugImplementation(libs.wear.tiles.toolingPreview)
 }

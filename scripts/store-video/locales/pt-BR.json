@@ -28,6 +28,13 @@
     "name": ["Bora", "Rachar"],
     "chips": ["Funciona offline", "Sem precisar de conta"]
   },
+  "thumbnail": {
+    "headline": ["Divida as contas", "com os amigos"],
+    "accent": ["Divida"],
+    "chips": ["Funciona offline", "Pix copia e cola"],
+    "back": "bal_35.png",
+    "front": "pix_101.png"
+  },
   "scenes": [
     { "record": "home", "swipe": [540, 1900, 1000, 30000], "retime": [1.0, 1.7, 0.8, 150, 2120] },
     { "tap": { "descStarts": "Viagem a Lisboa," }, "waitFor": "Despesas" },

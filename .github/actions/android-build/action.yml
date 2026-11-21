@@ -1,13 +1,13 @@
 name: 'Build the signed Android app'
 description: >-
   Builds a release of the Android app signed with the release keystore: the APK a beta sends to Firebase App
-  Distribution (release-beta.yml) or the bundle a stable version sends to Google Play (release-production.yml), which
-  differ only in the Gradle task. Leaves the keystore at $RUNNER_TEMP/release.jks, for the step that shows the
-  certificate the build carries. The calling job checks out the repository first, since the steps run its scripts.
+  Distribution (release-beta.yml) or the bundles a stable version sends to Google Play (release-production.yml), the
+  phone's and the watch's, which differ only in the Gradle tasks. Leaves the keystore at $RUNNER_TEMP/release.jks,
+  for the step that shows the certificate the build carries. The calling job checks out the repository first, since the steps run its scripts.
 
 inputs:
   task:
-    description: "The Gradle task: ':androidApp:assembleRelease' or ':androidApp:bundleRelease'"
+    description: "The Gradle tasks, separated by spaces: ':androidApp:assembleRelease', or ':androidApp:bundleRelease :wearApp:bundleRelease'"
     required: true
   version:
     description: 'The versionName, a beta suffix too'
@@ -28,7 +28,7 @@ inputs:
     description: "The key's password"
     required: true
   google-services-json:
-    description: 'androidApp/google-services.json, base64 encoded'
+    description: 'androidApp/google-services.json, base64 encoded; the watch (wearApp) gets it too'
     required: true
   google-web-client-id:
     description: 'The Google OAuth web client id (the SUPABASE_GOOGLE_WEB_CLIENT_ID variable)'
@@ -80,6 +80,9 @@ runs:
       run: |
         echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.jks"
         echo "$GOOGLE_SERVICES_JSON" | base64 --decode > androidApp/google-services.json
+        # The watch has the phone's applicationId, so the phone's Firebase Android app entry is its own too: the
+        # google-services plugin picks the client by package name (docs/product/watch.md).
+        cp androidApp/google-services.json wearApp/google-services.json
 
     - name: Build the signed app
       shell: bash
@@ -90,4 +93,7 @@ runs:
         ANDROID_KEYSTORE_PASSWORD: ${{ inputs.keystore-password }}
         ANDROID_KEY_ALIAS: ${{ inputs.key-alias }}
         ANDROID_KEY_PASSWORD: ${{ inputs.key-password }}
-      run: ./gradlew "$TASK"
+      # Split on spaces, so one Gradle run builds every app the caller names.
+      run: |
+        read -ra tasks <<< "$TASK"
+        ./gradlew "${tasks[@]}"

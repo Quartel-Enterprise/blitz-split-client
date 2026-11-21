@@ -36,9 +36,17 @@ val collectsAnalytics = true
 
 android {
     namespace = "com.quare.blitzsplit"
-    compileSdk = libs.versions.android.compileSdk
-        .get()
-        .toInt()
+    compileSdk {
+        version = release(
+            libs.versions.android.compileSdk
+                .get()
+                .toInt(),
+        ) {
+            minorApiLevel = libs.versions.android.compileSdkMinor
+                .get()
+                .toInt()
+        }
+    }
     defaultConfig {
         // The legacy app's id: this app replaces it in the Play Store
         applicationId = "com.quare.blitzsplit"

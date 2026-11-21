@@ -28,7 +28,9 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                     "androidLibrary",
                 ) {
                     namespace = createNamespace()
-                    compileSdk = sdkVersions.compileSdk
+                    compileSdk {
+                        version = release(sdkVersions.compileSdk) { minorApiLevel = sdkVersions.compileSdkMinor }
+                    }
                     minSdk = sdkVersions.minSdk
                 }
 

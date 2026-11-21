@@ -62,7 +62,7 @@ A library the shared code takes needs a watchOS target too: `software.quare:load
 
 ### Android
 
-- **Jetpack Compose** from the AndroidX BOM, with **Material 3 Expressive** (`material3` 1.5 pre-release:
+- **Jetpack Compose** from the AndroidX BOM, with **Material 3 Expressive** (`material3` 1.5:
   `MaterialExpressiveTheme`, `MotionScheme.expressive()`) and `androidx.graphics:graphics-shapes`
 - **Navigation 3** (`NavDisplay`) drawing the shared back stack
 - **Credential Manager** + `googleid` for the native Google sign in, Play services code scanner for the QR
