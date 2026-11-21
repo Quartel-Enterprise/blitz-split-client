@@ -56,7 +56,8 @@ Plugin Portal. Entries no library or plugin points at (the SDK levels) are liste
   has the Material 3 Expressive APIs. If a BOM ever lags behind them again, add the override back
   with a comment that says why.
 - **`android-compileSdk`** follows the Compose BOM: a new Compose release can require a newer
-  `compileSdk` (Compose 1.13 asked for 37.1, and the catalog takes a minor like `"37.1"`). When the
+  `compileSdk` (Compose 1.13 asked for 37.1: the catalog keeps the level in `android-compileSdk`, `"37"`, and the
+  minor release in `android-compileSdkMinor`, `"1"`, `"0"` for none, never `"37.1"` in one entry). When the
   Android build fails the AAR metadata check, bump `compileSdk` with the BOM, in the same pull
   request: it changes how the app compiles, not how it runs.
 - **`@js-joda/core`** in `webApp/package.json` is the exact version kotlinx-datetime's JS target

@@ -27,9 +27,17 @@ if (hasFirebaseConfig) {
 
 android {
     namespace = "com.quare.blitzsplit.wear"
-    compileSdk = libs.versions.android.compileSdk
-        .get()
-        .toInt()
+    compileSdk {
+        version = release(
+            libs.versions.android.compileSdk
+                .get()
+                .toInt(),
+        ) {
+            minorApiLevel = libs.versions.android.compileSdkMinor
+                .get()
+                .toInt()
+        }
+    }
     defaultConfig {
         applicationId = "com.quare.blitzsplit"
         // Why: Wear OS 3, the first with Tiles and complications as drawn here (docs/product/general.md).
