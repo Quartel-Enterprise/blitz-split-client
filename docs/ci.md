@@ -218,7 +218,10 @@ that isn't ours. Three things keep that from failing a job:
   after the mirror there). Maven Central stays as the fallback for an artifact the mirror doesn't have: a release
   published minutes ago, and a few it lacks for good (BuildKonfig 0.24.1 and `software.quare:loadable` 1.2.0 were
   404s on 2026-11-20). A repository's content filters stay where they are: the mirror only takes what reaches Maven
-  Central today.
+  Central today. The fallback is per module, not per file: Gradle downloads a module's jar from the repository that
+  had its POM, so a module the mirror holds only in part (its POM but not its jar yet) fails with `Could not find
+  <module>.jar (MavenCentralMirror)` instead of asking Maven Central. Should that happen, exclude the module from the
+  mirror (`content { excludeModule("<group>", "<name>") }` in its `maven(...)` blocks) until the mirror catches up.
 - **The retries.** `gradle.properties` raises Gradle's tries of a download that fails with a 429, a 5xx or a dropped
   connection from 3 to 6, and the first wait from 1 to 2 seconds, doubled each time: about a minute of waits in all
   before Gradle gives up, plus each try's own time, up to the 30 second socket timeout when a connection hangs. A
