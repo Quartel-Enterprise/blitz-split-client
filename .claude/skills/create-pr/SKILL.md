@@ -246,16 +246,17 @@ stops every daemon of the machine, and the other sessions' builds with them.
 
 Locally, run only what catches a mistake in a few minutes: the JVM tests and coverage, a compile of
 the shared code for each backend, and the UI the branch touches. CI runs the rest on every pull
-request, and `merge-when-green` waits for it: every module's tests on the JS target and macOS,
+request, and `merge-when-green` waits for it: every module's tests on the JS target,
 Android lint, the release APK and both schemes of the Apple app (see
-[docs/ci.md](../../../docs/ci.md)). The tests on the iOS simulator run on `main`, after the merge, and
-on a pull request that changes the version catalog. Don't run those locally to be safe: they are what made a
+[docs/ci.md](../../../docs/ci.md)). The tests on macOS run on `main`, after the merge, and on a pull
+request that changes Apple code (an Apple source set of a module, the version catalog); the ones on
+the iOS simulator only on a pull request that changes an `iosMain` or the version catalog. Don't run those locally to be safe: they are what made a
 cross-platform branch take 30 to 40 minutes here, and CI runs them anyway. Run one locally only to
 reproduce a CI failure (step 12).
 
 | Area | The branch changes | Local checks | Left to CI |
 |---|---|---|---|
-| Shared Kotlin | `core/`, `feature/`, `shared/`, or the build: `build-logic/`, `gradle/`, any `*.gradle.kts`, `gradle.properties`, `version.properties` | Tests and coverage, main and test code compiled for the iOS simulator and JS, the debug APK; the module graph for a build change | The tests on JS and macOS (on the iOS simulator, only on `main` and when the version catalog changes); the release APK; both Apple schemes |
+| Shared Kotlin | `core/`, `feature/`, `shared/`, or the build: `build-logic/`, `gradle/`, any `*.gradle.kts`, `gradle.properties`, `version.properties` | Tests and coverage, main and test code compiled for the iOS simulator and JS, the debug APK; the module graph for a build change | The tests on JS, and on macOS when the branch changes Apple code (on `main` otherwise; on the iOS simulator, only when it changes an `iosMain` or the version catalog); the release APK; both Apple schemes |
 | Android UI | `android/`, `androidApp/` | The debug APK | Android lint, the release APK |
 | Apple UI | `iosApp/` | Regenerate the Xcode project, build the scheme the Swift change reaches | The other scheme |
 | Web UI | `webApp/`, `shared/src/jsMain` | The production build of the web app | |
@@ -302,8 +303,8 @@ for each backend and takes a few minutes; that is the check working, not somethi
 
 A build change (`build-logic/`, `gradle/`, a `*.gradle.kts`, `gradle.properties`,
 `version.properties`) adds `assertModuleGraph`, which checks the module graph rules of the root
-`build.gradle.kts`, to the same call. CI then runs the tests on the JVM, JS and macOS (on the
-iOS simulator once it is on `main`, or when the version catalog changed), compiles the main code of the iOS device, and builds the Debug
+`build.gradle.kts`, to the same call. CI then runs the tests on the JVM and JS (on macOS once it is on
+`main`, or on the pull request when it changes Apple code; on the iOS simulator when it changes an `iosMain` or the version catalog), compiles the main code of the iOS and watchOS devices, and builds the Debug
 Apple apps; the Release frameworks are linked
 only when the app is archived. A version bump runs more, see the `bump-versions` skill.
 
@@ -604,7 +605,8 @@ When the loop exits, or a PR event or `<ci-monitor-event>` says the same:
     the pull request. Reproduce it with that area's step 8 check or, for a check step 8 leaves to
     CI, on the failing module or scheme alone, through `heavy-check.sh`: `:<module>:jsTest` for
     a `js-tests` shard, `:<module>:macosArm64Test` for `apple-tests` (`:<module>:iosSimulatorArm64Test` when the simulator's
-    test failed, on a pull request that changes the version catalog),
+    test failed, on a pull request that changes an `iosMain` or the version catalog), the failing `compileKotlin*` task
+    for `apple-app (macOS)`'s "Compile the device targets",
     `:android:<module>:lintDebug` for `android-lint`, `:androidApp:assembleRelease` for `android` (the
     release APK, the only build R8 runs on), the scheme's `xcodebuild` of step 8 for `apple-app`. When the failure isn't the branch's (the
     runner, the network, a cancelled run), re-run it once (`gh run rerun <run> --failed`) and wait

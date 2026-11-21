@@ -1,10 +1,10 @@
 name: apple
 
-# The Apple side of the app, on a macOS runner (free on a public repository): every module's
-# commonTest on the macOS target, and on the iOS simulator too on main, both schemes of the Apple
-# app, which link the Shared framework, and the watchOS Shared framework. create-pr leaves these to
-# CI and builds a scheme locally only when the branch changes the Swift code (see the create-pr
-# skill, step 8).
+# The Apple side of the app, on a macOS runner (free on a public repository): both schemes of the
+# Apple app, which link the Shared framework, the device targets no scheme builds, and every
+# module's commonTest on the macOS target, on main and on a pull request that changes Apple code.
+# create-pr leaves these to CI and builds a scheme locally only when the branch changes the Swift
+# code (see the create-pr skill, step 8).
 on:
   pull_request:
     # The defaults, plus a draft marked ready, which claude-review reviews then (see review-gate below).
@@ -93,22 +93,44 @@ jobs:
       actions: read
       pull-requests: read
 
-  # Says whether the change reaches the Kotlin code, on a Linux runner, which starts at once: a macOS
-  # runner is waited for, up to ten minutes when several pull requests run. A pull request that
-  # changes the Swift app alone (iosApp, with its Markdown docs and its release notes fragment)
-  # leaves every input of apple-tests as main built it, so the job would take a macOS runner for
-  # five minutes to restore its tests from the cache. apple-app still builds both schemes. Anything
-  # else, a diff that fails or no changed file at all counts as a change to the Kotlin code. So
-  # does every push to main, where this job is skipped and apple-tests reads no answer: that run
-  # also stands for the pushes it replaced in the queue (see `concurrency` above), which its own
-  # diff wouldn't list. It doesn't wait for the review gate, since it checks nothing: the answer is
-  # ready when the gate lets apple-tests ask for its runner.
+  # Says what the change reaches, on a Linux runner, which starts at once: a macOS runner is waited
+  # for, half an hour and more when several pull requests run, since only five macOS jobs run at
+  # once. It answers three questions from the changed paths, each for a job below:
+  #
+  # - `kotlin`: whether it reaches the Kotlin code at all. A pull request that changes the Swift
+  #   app alone (iosApp, with its Markdown docs and its release notes fragment) leaves every input
+  #   of a Gradle task of the Apple targets as main built it.
+  # - `tests`: whether apple-tests runs. Its suite is every module's commonTest, which jvm-tests
+  #   and js-tests of build-and-test already run on two other targets, on Linux runners nobody
+  #   waits for. What the macOS run adds is the code only an Apple target compiles, and how a
+  #   library behaves there. So it runs on a pull request that changes one of these: an appleMain,
+  #   iosMain or macosMain of a module under core/ or feature/; the version catalog (a library
+  #   publishes its code for each target apart); gradle.properties, where the kotlin.native
+  #   settings are; the build logic that sets up the Kotlin targets and their test tasks; what
+  #   runs the job itself. A watchosMain starts nothing: no suite compiles it, and the schemes and
+  #   "Compile the device targets" do. Neither do the Apple source sets of `:shared`, which has
+  #   no tests and no tested module depending on it: the schemes compile and link it. Any other
+  #   pull request leaves the suite to main's run, after the merge: in the 70 pull requests before
+  #   this rule, apple-tests never failed on a commit whose build-and-test passed.
+  # - `simulator`: whether the suite runs on the iOS simulator too. It is the macOS suite again,
+  #   over the same appleMain, with one more test binary to link per module, so it only runs for
+  #   what the two targets can take differently (an iosMain, the version catalog) and for what no
+  #   other run would try: the build logic of the simulators' test tasks, and this workflow, whose
+  #   simulator steps main never runs.
+  #
+  # A diff that fails or lists no file counts as a change to all of it. On main this job is
+  # skipped and the jobs read no answer: apple-tests runs there, on macOS, since that run also
+  # stands for the pushes it replaced in the queue (see `concurrency` above), which its own diff
+  # wouldn't list. It doesn't wait for the review gate, since it checks nothing: the answer is
+  # ready when the gate lets the jobs ask for their runners.
   changes:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       kotlin: ${{ steps.diff.outputs.kotlin }}
+      tests: ${{ steps.diff.outputs.tests }}
+      simulator: ${{ steps.diff.outputs.simulator }}
       shards: ${{ steps.diff.outputs.shards }}
     steps:
       # Two commits: GitHub's merge of the pull request with main and main itself, its first parent.
@@ -122,53 +144,78 @@ jobs:
           sparse-checkout: .github/workflows/apple.yml
           sparse-checkout-cone-mode: false
 
-      # The paths that are no input of a Gradle task of the Apple targets; Markdown is already left
-      # out of the paths that start this workflow. --no-renames lists both paths of a moved file, so
-      # one moved out of a Kotlin module still counts, and without core.quotePath a name with an
-      # accent would come quoted and match nothing.
+      # Markdown is already left out of the paths that start this workflow. --no-renames lists both
+      # paths of a moved file, so one moved out of a Kotlin module or an Apple source set still
+      # counts, and without core.quotePath a name with an accent would come quoted and match
+      # nothing.
       #
-      # `shards` is the matrix of apple-tests. A change under core/, to gradle/ (the version catalog,
-      # the wrapper) or to gradle.properties reaches nearly every module as a rule, and each one then
-      # links its test binary again: 18 to 21 minutes in one job, the last check of such a pull
-      # request to end by far. Two jobs share those links. It is a guess from the paths, on the
-      # cheap side: a core module nothing depends on splits for nothing, which costs a runner five
-      # minutes, and a change that reaches every module from elsewhere runs in one job, as before.
-      # build-logic and the root's Gradle scripts are left out: a change there gives a new key only
-      # to the tasks it configures differently (docs/ci.md, "Speed and timeouts"). The source sets no
-      # Apple target compiles and Markdown don't count, as they don't to start this workflow. A change
-      # to this workflow or to the script that lists the modules counts too, so a change to the
-      # split is seen working before it merges. Two is the only split: "Pick this shard's tasks"
-      # deals three of every five modules to the first shard and refuses a third.
-      - name: Look for a change outside the Swift app
+      # `shards` is the matrix of apple-tests, when it runs. A change under core/, to gradle/ (the
+      # version catalog, the wrapper) or to gradle.properties reaches nearly every module as a rule,
+      # and each one then links its test binary again: 18 to 21 minutes in one job. Two jobs share
+      # those links. It is a guess from the paths, on the cheap side: a core module nothing depends
+      # on splits for nothing, which costs a runner five minutes, and a change that reaches every
+      # module from elsewhere runs in one job. build-logic and the root's Gradle scripts are left
+      # out of the split: a change there gives a new key only to the tasks it configures differently
+      # (docs/ci.md, "Speed and timeouts"). Of build-logic, only the files named after what they set
+      # up for the Apple targets run the tests (the multiplatform and watchOS convention plugins,
+      # the simulators' test tasks): the store screenshots' file there changes with every language.
+      # The source sets no Apple target compiles and Markdown don't count, as they don't to start
+      # this workflow. A change to this workflow, to the Gradle action or to the script that lists
+      # the modules runs the tests, and the first and the last split them too, so a change to the
+      # job is seen working before it merges, on the simulator as well when it is this workflow that
+      # changes.
+      - name: Look at what the change reaches
         id: diff
         run: |
           kotlin=true
+          tests=true
+          simulator=true
           shards='[1]'
-          wide='^(core|gradle)/|^gradle\.properties$'
-          wide="$wide|^\.github/workflows/apple\.yml$|^scripts/modules-with-tests\.sh$"
+          own='^\.github/workflows/apple\.yml$|^scripts/modules-with-tests\.sh$'
+          apple='^(core|feature)/.*/src/(apple|ios|macos|native)[A-Za-z0-9]*/'
+          apple="$apple|^gradle/libs\.versions\.toml$|^gradle\.properties$"
+          apple="$apple|^build-logic/.*(Multiplatform|Watchos|Simulator)[A-Za-z]*\.kt$"
+          apple="$apple|^\.github/actions/gradle/action\.yml$|$own"
+          ios='^(core|feature)/.*/src/ios[A-Za-z0-9]*/|^gradle/libs\.versions\.toml$'
+          ios="$ios|^build-logic/.*Simulator[A-Za-z]*\.kt$|^\.github/workflows/apple\.yml$"
+          wide="^(core|gradle)/|^gradle\.properties$|$own"
           not_apple='\.md$|/src/(js|jvm)(Main|Test)/|/src/androidMain/'
           if files=$(git -c core.quotePath=false diff --name-only --no-renames HEAD^1 HEAD) &&
             [ -n "$files" ]; then
+            simulator=false
             if ! grep -q -v -E '^(iosApp|release-notes)/|\.md$' <<< "$files"; then
               kotlin=false
-            elif grep -v -E "$not_apple" <<< "$files" | grep -q -E "$wide"; then
-              shards='[1, 2]'
+              tests=false
+            elif ! grep -q -E "$apple" <<< "$files"; then
+              tests=false
+            else
+              if grep -q -E "$ios" <<< "$files"; then
+                simulator=true
+              fi
+              if grep -v -E "$not_apple" <<< "$files" | grep -q -E "$wide"; then
+                shards='[1, 2]'
+              fi
             fi
           fi
-          echo "kotlin=$kotlin" >> "$GITHUB_OUTPUT"
-          echo "shards=$shards" >> "$GITHUB_OUTPUT"
+          {
+            echo "kotlin=$kotlin"
+            echo "tests=$tests"
+            echo "simulator=$simulator"
+            echo "shards=$shards"
+          } >> "$GITHUB_OUTPUT"
 
-  # The tests and the app's two builds run side by side: each compiles the Kotlin/Native code on its
-  # own, and three runners finish sooner than one doing it all. apple-tests runs unless `changes`
-  # said the Kotlin code is untouched: when that job fails or is skipped (on main), its output is
-  # empty and the tests run, in one job. `changes` asks for two on a pull request whose change
-  # reaches nearly every module (see its `shards`); main never does, since no pull request waits
-  # for its run and a second job there would be one more runner the pull requests don't get.
+  # The tests, when they run, and the app's two builds run side by side: each compiles the
+  # Kotlin/Native code on its own, and runners side by side finish sooner than one doing it all.
+  # apple-tests runs unless `changes` said the pull request changes no Apple code (see its `tests`):
+  # when that job fails or is skipped (on main), its output is empty and the tests run, in one job.
+  # `changes` asks for two on a pull request whose change reaches nearly every module (see its
+  # `shards`); main never does, since no pull request waits for its run and a second job there
+  # would be one more runner the pull requests don't get.
   apple-tests:
     needs: [review-gate, changes]
     if: >-
       ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' &&
-      needs.changes.outputs.kotlin != 'false' }}
+      needs.changes.outputs.tests != 'false' }}
     strategy:
       # One shard's failure doesn't hide the other modules' results.
       fail-fast: false
@@ -183,12 +230,10 @@ jobs:
     # run and saved after it.
     timeout-minutes: 100
     steps:
-      # Two commits: on a pull request, GitHub's merge of it with main and main itself, its first
-      # parent, which "Pick the test targets" compares it with.
       - name: Checkout code
         uses: actions/checkout@v7
         with:
-          fetch-depth: 2
+          fetch-depth: 1
 
       - name: Setup Gradle
         id: gradle
@@ -197,54 +242,52 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
           kotlin-native: 'true'
 
-      # A pull request runs the suite on macOS only. The iOS simulator runs the same commonTest over
-      # the same appleMain actuals (iosMain and macosMain differ in a couple of one-line files no test
-      # reaches), and each module links one more test binary for it: the links of both targets were
-      # half of this job. The main code is still built for the simulator on every pull request:
-      # apple-app links Shared for it. main runs the simulator's suite too, after the merge, and so
-      # does a pull request that changes the version catalog: a library publishes its code for each
-      # target apart, so a bump is the change the two targets can take differently.
-      - name: Pick the test targets
-        id: targets
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-        # A diff that fails (no first parent) counts as a change: the simulator's suite runs.
-        run: |
-          if [ "$EVENT_NAME" != pull_request ] || ! git diff --quiet HEAD^1 HEAD -- gradle/libs.versions.toml; then
-            echo "simulator=iosSimulatorArm64Test" >> "$GITHUB_OUTPUT"
-          fi
-
       # The actuals of appleMain live in a few modules with few tests of their own; the tests that
-      # exercise them are the other modules', so every module's suite runs. compileKotlinIosArm64
-      # compiles the device target, which no other check builds, and compileAppleMainKotlinMetadata the
-      # appleMain shared by the Apple targets, which only a macOS host compiles.
+      # exercise them are the other modules', so every module's suite runs, on macOS. The iOS
+      # simulator runs the same commonTest over the same appleMain actuals (iosMain and macosMain
+      # differ in a couple of one-line files no test reaches), and each module links one more test
+      # binary for it: the links of both targets were half of this job. On main, where it ran on
+      # every push, a week of its failures were all the simulator's own (CoreSimulator crashing, no
+      # device listed), none a test. So the simulator's suite runs when `changes` asks for it, never
+      # on main.
       #
-      # One job runs them all by their task names, as before. Two split the modules that have a
-      # commonTest, dealt from the sorted list js-tests deals its own from
-      # (scripts/modules-with-tests.sh), so a new module joins a shard by itself. The first takes
-      # three of every five; the second takes the other two and the two compilations, about three
-      # minutes of the 18 when everything is compiled again, which leaves each shard about half of
-      # the work. Each one compiles for macOS the modules its own depend on. That leaves out a
-      # module with no tests that no tested module depends on, `:shared` today, which the one job's
-      # macosArm64Test compiled: apple-app's macOS build compiles and links it, and compiling it
-      # here would compile every module it depends on, all of them, in this shard too.
+      # main, in its one job, also builds what the pull requests' apple-app jobs read from the two
+      # entries this job alone saves, the Gradle home and ~/.konan. It links Shared for the iOS
+      # simulator, as apple-app (iOS) does: the link compiles every module's main code for it, and
+      # each library to native code on its first link (klib/cache), which the simulator's test
+      # binaries did here before. Without a simulator link in this job, a bumped library's native
+      # code would be compiled again by every apple-app (iOS) and kept by none. And it runs the
+      # compilations of apple-app (macOS)'s "Compile the device targets". A pull request leaves
+      # them to those jobs.
+      #
+      # One job of a pull request runs every suite by its task name. Two split the modules that
+      # have a commonTest, dealt in turn from the sorted list js-tests deals its own from
+      # (scripts/modules-with-tests.sh), so a new module joins a shard by itself. Each one compiles
+      # for macOS the modules its own depend on. That leaves out a module with no tests that no
+      # tested module depends on, `:shared` today, which the one job's macosArm64Test compiled:
+      # apple-app's macOS build compiles and links it, and compiling it here would compile every
+      # module it depends on, all of them, in this shard too.
       - name: Pick this shard's tasks
         id: tasks
         env:
+          EVENT_NAME: ${{ github.event_name }}
           SHARD_INDEX: ${{ strategy.job-index }}
           SHARD_TOTAL: ${{ strategy.job-total }}
-          SIMULATOR_TESTS: ${{ steps.targets.outputs.simulator }}
+          SIMULATOR: ${{ needs.changes.outputs.simulator }}
         run: |
-          compilations='compileKotlinIosArm64 compileAppleMainKotlinMetadata'
-          if [ "$SHARD_TOTAL" -gt 2 ]; then
-            echo "::error::apple-tests deals its modules to two shards, three of every five and the other two: $SHARD_TOTAL were asked for."
-            exit 1
+          simulator=''
+          if [ "$SIMULATOR" = true ]; then
+            simulator=iosSimulatorArm64Test
+          fi
+          if [ "$EVENT_NAME" != pull_request ]; then
+            tasks='macosArm64Test :shared:linkDebugFrameworkIosSimulatorArm64'
+            tasks="$tasks compileKotlinIosArm64 compileKotlinWatchosArm64 compileAppleMainKotlinMetadata"
           elif [ "$SHARD_TOTAL" -eq 1 ]; then
-            tasks="${SIMULATOR_TESTS:+$SIMULATOR_TESTS }macosArm64Test $compilations"
+            tasks="${simulator:+$simulator }macosArm64Test"
           else
             modules=$(./scripts/modules-with-tests.sh commonTest)
-            tasks=$(awk -v shard="$SHARD_INDEX" -v simulator="$SIMULATOR_TESTS" '
-              ((NR - 1) % 5 < 3 ? 0 : 1) == shard {
+            tasks=$(awk -v shard="$SHARD_INDEX" -v total="$SHARD_TOTAL" -v simulator="$simulator" '
+              (NR - 1) % total == shard {
                 gsub("/", ":")
                 printf ":%s:macosArm64Test ", $0
                 if (simulator != "") printf ":%s:%s ", $0, simulator
@@ -253,20 +296,19 @@ jobs:
               echo "::error::No module with tests falls on shard $((SHARD_INDEX + 1)) of $SHARD_TOTAL."
               exit 1
             fi
-            if [ "$SHARD_INDEX" -eq 1 ]; then
-              tasks="$tasks$compilations"
-            fi
           fi
           echo "$tasks" | tr ' ' '\n'
           echo "tasks=$tasks" >> "$GITHUB_OUTPUT"
 
       # Recompiling everything took 22 minutes on macOS alone and up to 48 with the simulator too,
-      # in one job. "finished" says Gradle ended on its own, with failed tests or without: a run this
-      # step's timeout killed may have left a library half compiled in ~/.konan, which main must not
-      # save.
+      # in one job: 60 minutes for the first and 80 for the second. main takes the 80 as well: its
+      # job also links Shared for the simulator and compiles the device targets, and a run this
+      # bound kills saves no cache for the next one to start from. "finished" says Gradle ended on
+      # its own, with failed tests or without: a run this step's timeout killed may have left a
+      # library half compiled in ~/.konan, which main must not save.
       - name: Run the tests
         id: tests
-        timeout-minutes: ${{ steps.targets.outputs.simulator && 80 || 60 }}
+        timeout-minutes: ${{ (github.event_name == 'push' || needs.changes.outputs.simulator == 'true') && 80 || 60 }}
         env:
           TASKS: ${{ steps.tasks.outputs.tasks }}
         run: |
@@ -276,9 +318,9 @@ jobs:
           echo "finished=true" >> "$GITHUB_OUTPUT"
           exit "$status"
 
-      # main also links the watchOS Shared, apple-watch's build, here rather than in a job of its own:
-      # this job's Gradle home is the one every macOS job restores, so it then holds the watchOS
-      # compilations the pull requests' apple-watch reads, and main's run keeps to two runners. Its
+      # main also links the watchOS Shared for the device (arm64_32) and the simulator, and packs the
+      # two into the XCFramework. No pull request links the device slice: apple-app (iOS) links the
+      # simulator's into the Apple Watch app, and apple-app (macOS) only compiles the device's. Its
       # first, cold run compiles every module for two more targets; the bound leaves room for that.
       - name: Build the watchOS framework
         if: github.ref == 'refs/heads/main'
@@ -344,15 +386,17 @@ jobs:
   # Gradle first, which links it again for its target (close to four minutes, even with two modules
   # to compile and the rest from the cache), then compiles the Swift app. In one job the two builds
   # ran one after the other, 14 to 16 minutes that were the last check of nearly every pull request
-  # to end.
+  # to end. `changes` is only read by "Compile the device targets": the schemes are built whatever
+  # it says, and when it fails or is skipped (on main).
   apple-app:
-    needs: review-gate
+    needs: [review-gate, changes]
     if: ${{ !cancelled() && needs.review-gate.outputs.proceed != 'false' }}
     # The Xcode 27 image (a public preview): the app uses the iOS 27 SDK's APIs, and macos-26 has
     # Xcode 26 only.
     runs-on: xcode-27
-    # A hung build would otherwise hold one of the few macOS runners for six hours.
-    timeout-minutes: 40
+    # A hung build would otherwise hold one of the few macOS runners for six hours. The macOS job
+    # also compiles the device targets after its scheme, which has a bound of its own.
+    timeout-minutes: 60
     strategy:
       # One scheme's failure doesn't hide the other's.
       fail-fast: false
@@ -418,36 +462,21 @@ jobs:
             -derivedDataPath iosApp/build/DerivedData -clonedSourcePackagesDirPath iosApp/build/SourcePackages \
             CODE_SIGNING_ALLOWED=NO build -quiet
 
-  # The watchOS Shared framework (docs/architecture/stack.md), both slices: watchosArm64, the device's
-  # arm64_32, which no other check compiles, and watchosSimulatorArm64. apple-app (iOS) links the
-  # simulator one into the Apple Watch app, which the iPhone app embeds; this job packs both. It runs on a pull request whose
-  # apple-tests runs: a change to the Swift app alone leaves it as main built it. main builds it in
-  # apple-tests instead, which saves the Gradle home this job restores with its watchOS compilations.
-  apple-watch:
-    needs: [review-gate, changes]
-    if: >-
-      ${{ !cancelled() && github.event_name == 'pull_request' &&
-      needs.review-gate.outputs.proceed != 'false' && needs.changes.outputs.kotlin != 'false' }}
-    runs-on: xcode-27
-    # A hung build would otherwise hold one of the few macOS runners for six hours. A cold build
-    # compiles every module for two targets, with no Kotlin/Native library cache for watchOS.
-    timeout-minutes: 60
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 1
-
-      - name: Setup Gradle
-        uses: ./.github/actions/gradle
-        with:
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-          kotlin-native: 'true'
-          # apple-tests saves the Gradle cache of the macOS runner, the watchOS compilations included.
-          cache-read-only: 'true'
-
-      - name: Build the watchOS framework
-        run: ./gradlew :shared:assembleSharedDebugXCFramework
+      # The device targets, which no scheme builds here: iosArm64, watchosArm64 (the watch's
+      # arm64_32) and the appleMain shared by the Apple targets, which only a macOS host compiles.
+      # They are compiled, not linked: a link is minutes per framework, and what the device slices
+      # can take differently from the simulator's (a 32-bit pointer, a platform library's API) is
+      # found by compiling. main links the watchOS ones in apple-tests. It runs after the macOS
+      # scheme, the shorter of the two builds, rather than on a runner of its own: with the
+      # watchOS framework linked in a job apart, a pull request held all five macOS runners. On a
+      # pull request only (main compiles them in apple-tests, which saves the Gradle home this job
+      # reads them from), and not on one that changes the Swift app alone.
+      - name: Compile the device targets
+        if: >-
+          ${{ matrix.platform == 'macOS' && github.event_name == 'pull_request' &&
+          needs.changes.outputs.kotlin != 'false' }}
+        timeout-minutes: 30
+        run: ./gradlew compileKotlinIosArm64 compileKotlinWatchosArm64 compileAppleMainKotlinMetadata
 
   # On main, a failed apple-tests leaves no Gradle home in the cache. setup-gradle saves the home when
   # the job ends, whatever its result, under a key that ends with the commit, and every later run
@@ -495,13 +524,13 @@ jobs:
             gh cache delete "$id"
           done
 
-  # main has no pull request to show a failure on, and a test that fails on the iOS simulator alone
-  # first fails there, after the merge, since pull requests run the suite on macOS only. So a job
-  # that failed or timed out on main opens an issue, assigned to whoever merged, or comments on the
-  # one still open. The commit it names is the one this run checked out: what broke may be any push
-  # since the last run of main that completed, the ones this run replaced in the queue included (see
-  # `concurrency` above), so the issue links those commits. A run someone cancelled reports nothing,
-  # and neither does one replaced in the queue.
+  # main has no pull request to show a failure on, and a test that fails on an Apple target alone
+  # first fails there, after the merge, since a pull request runs the suite on macOS only when it
+  # changes Apple code. So a job that failed or timed out on main opens an issue, assigned to
+  # whoever merged, or comments on the one still open. The commit it names is the one this run
+  # checked out: what broke may be any push since the last run of main that completed, the ones this
+  # run replaced in the queue included (see `concurrency` above), so the issue links those commits.
+  # A run someone cancelled reports nothing, and neither does one replaced in the queue.
   report-failure:
     needs: [apple-tests, apple-app]
     if: >-
@@ -538,7 +567,7 @@ jobs:
           fi
           body=$(printf '%s\n\n%s\n' \
             "[This run]($RUN_URL) of \`apple\` failed on \`main\` at $GITHUB_SHA: \`apple-tests\` $TESTS, \`apple-app\` $APP.$commits" \
-            "Pull requests run the Kotlin tests on macOS only, so a test that fails on the iOS simulator alone first fails here, and the pull request that fixes it can't check the fix: run \`./scripts/heavy-check.sh ./gradlew :<module>:iosSimulatorArm64Test\` on the Mac. See \"Speed and timeouts\" in docs/ci.md.")
+            "A pull request runs the Kotlin tests on macOS only when it changes Apple code, so a test that fails on an Apple target alone first fails here, and the pull request that fixes it may not run them: run \`./scripts/heavy-check.sh ./gradlew :<module>:macosArm64Test\` on the Mac. See \"Speed and timeouts\" in docs/ci.md.")
           issue=$(gh issue list --state open --limit 200 --json number,title \
             --jq "map(select(.title == \"$TITLE\"))[0].number // empty")
           if [ -n "$issue" ]; then
