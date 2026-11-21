@@ -45,8 +45,9 @@ until the server knows a watch, and `core/in_app_update`, which has no update pr
 `iosApp/project.yml`, embedded in the iPhone app) calls `embedAndSignAppleFrameworkForXcode` like the iOS app does, and
 builds for `arm64_32` only on the device (`ARCHS[sdk=watchos*]`). Its Swift calls `BlitzSplitApple` to start Koin and
 `BlitzSplitWatch` (in `shared/src/watchosMain`, so only the watch's framework has it) for its screens, its back stack
-and what the iPhone and its pushes ask of it. CI's `apple-watch` job builds the debug XCFramework, and `apple-app
-(iOS)` builds the watch app with the iPhone app that embeds it.
+and what the iPhone and its pushes ask of it. On a pull request, CI's `apple-app (iOS)` builds the watch app with the
+iPhone app that embeds it, for the simulator, and `apple-app (macOS)` compiles the device slice; `main`'s `apple-tests`
+builds the debug XCFramework ([ci.md](../ci.md#speed-and-timeouts)).
 
 Left out, and why:
 
