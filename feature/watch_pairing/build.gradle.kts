@@ -12,6 +12,7 @@ kotlin {
             implementation(project(":core:utils"))
             implementation(project(":core:watch"))
             implementation(project(":core:profile"))
+            implementation(project(":core:groups"))
             implementation(project(":core:sync"))
             implementation(project(":core:provider:analytics"))
             implementation(libs.quare.connectivity)

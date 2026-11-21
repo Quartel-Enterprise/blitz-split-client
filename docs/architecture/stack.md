@@ -41,8 +41,12 @@ until the server knows a watch, and `core/in_app_update`, which has no update pr
 ./scripts/heavy-check.sh ./gradlew :shared:assembleSharedDebugXCFramework   # shared/build/XCFrameworks/debug/Shared.xcframework
 ```
 
-`assembleSharedReleaseXCFramework` builds the release one, and an Xcode watch target can call
-`embedAndSignAppleFrameworkForXcode` like the iOS app does. CI's `apple-watch` job builds the debug XCFramework.
+`assembleSharedReleaseXCFramework` builds the release one. The Apple Watch app (`BoraRachar-watchOS` in
+`iosApp/project.yml`, embedded in the iPhone app) calls `embedAndSignAppleFrameworkForXcode` like the iOS app does, and
+builds for `arm64_32` only on the device (`ARCHS[sdk=watchos*]`). Its Swift calls `BlitzSplitApple` to start Koin and
+`BlitzSplitWatch` (in `shared/src/watchosMain`, so only the watch's framework has it) for its screens, its back stack
+and what the iPhone and its pushes ask of it. CI's `apple-watch` job builds the debug XCFramework, and `apple-app
+(iOS)` builds the watch app with the iPhone app that embeds it.
 
 Left out, and why:
 

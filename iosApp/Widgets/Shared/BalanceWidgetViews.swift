@@ -2,8 +2,8 @@ import SwiftUI
 import WidgetKit
 
 /// The balance widget's faces (board 15.8): the Home Screen's small and medium, the Lock Screen's circle and rectangle.
-/// The watch's complication and Smart Stack card draw the same accessory and small faces later, so nothing here
-/// reads the app's code: only `WidgetBalances` and the system.
+/// The watch's complications and Smart Stack card draw the same accessory faces (Watch/Widget), so nothing here reads
+/// the app's code: only `WidgetBalances` and the system.
 struct BalanceWidgetView: View {
     let balances: WidgetBalances
 
@@ -20,7 +20,9 @@ struct BalanceWidgetView: View {
         switch family {
         case .accessoryCircular: BalanceCircularView(balances: balances)
         case .accessoryRectangular: BalanceRectangularView(balances: balances)
+        #if os(iOS)
         case .systemMedium: BalanceMediumView(balances: balances)
+        #endif
         default: BalanceSmallView(balances: balances)
         }
     }

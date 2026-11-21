@@ -2,8 +2,8 @@ import Foundation
 
 /// What the balance widget draws, as the app last wrote it to the App Group (`BalanceWidgetWriter`): the widget's
 /// process has no Room and no `Shared` framework, so every amount arrives already written by the app's own formatter,
-/// in the app's language (Profile › Language), and the widget only picks the words. The watch's complication and Smart
-/// Stack card read the same file later.
+/// in the app's language (Profile › Language), and the widget only picks the words. On the Apple Watch, the watch app
+/// writes its own (`WatchWidgetWriter`), which its complications and Smart Stack card read.
 struct WidgetBalances: Codable, Equatable, Sendable {
     /// Which way the money goes: the green "to get back", the orange "you owe", or nothing open.
     enum Direction: String, Codable, Sendable {

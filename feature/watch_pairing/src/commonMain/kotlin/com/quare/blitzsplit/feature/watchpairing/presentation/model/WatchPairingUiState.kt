@@ -1,5 +1,6 @@
 package com.quare.blitzsplit.feature.watchpairing.presentation.model
 
+import com.quare.blitzsplit.core.groups.domain.model.Initials
 import com.quare.blitzsplit.core.model.AvatarColor
 
 data class WatchPairingUiState(
@@ -16,4 +17,8 @@ data class WatchPairingUiState(
     // Why: 15.10's progress, also while 15.12 waits for its code.
     val isWaiting: Boolean
         get() = step == WatchPairingStep.CONNECTING || (step == WatchPairingStep.CODE && code == null)
+
+    // Why: the letter on 15.11's face while the account has no photo, as every face of the device's user shows it.
+    val profileInitials: String
+        get() = profileName?.let(Initials::firstOf).orEmpty()
 }

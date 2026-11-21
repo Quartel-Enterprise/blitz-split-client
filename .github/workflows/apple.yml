@@ -403,7 +403,8 @@ jobs:
           key: spm-${{ runner.os }}-${{ hashFiles('iosApp/project.yml') }}
 
       # The iOS build targets the Apple silicon simulator only, since Shared has no x86_64 simulator
-      # slice. Signing is skipped: Sign in with Apple and the associated domains need a provisioning
+      # slice. It builds the Apple Watch app too, which the iPhone app embeds, for the watchOS
+      # simulator, linking the watchOS Shared. Signing is skipped: Sign in with Apple and the associated domains need a provisioning
       # profile, on the macOS app even to sign ad hoc.
       - name: Build the app
         env:
@@ -418,8 +419,8 @@ jobs:
             CODE_SIGNING_ALLOWED=NO build -quiet
 
   # The watchOS Shared framework (docs/architecture/stack.md), both slices: watchosArm64, the device's
-  # arm64_32, which no other check compiles, and watchosSimulatorArm64. No Swift app links it yet, so
-  # Gradle packs them into the XCFramework the watch app will take. It runs on a pull request whose
+  # arm64_32, which no other check compiles, and watchosSimulatorArm64. apple-app (iOS) links the
+  # simulator one into the Apple Watch app, which the iPhone app embeds; this job packs both. It runs on a pull request whose
   # apple-tests runs: a change to the Swift app alone leaves it as main built it. main builds it in
   # apple-tests instead, which saves the Gradle home this job restores with its watchOS compilations.
   apple-watch:

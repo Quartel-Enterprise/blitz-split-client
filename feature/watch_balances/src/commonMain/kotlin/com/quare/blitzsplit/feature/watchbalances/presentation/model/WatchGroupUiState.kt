@@ -26,6 +26,14 @@ data class WatchGroupUiState(
     val showsIPaid: Boolean
         get() = singleDebtToPay != null && !isRecording
 
+    // Why: with a single pair, the net's card says whom ("you owe Carla") and no row repeats it (15.4).
+    val cardDebt: WatchDebt?
+        get() = debts.singleOrNull()
+
+    // Why: the rows under the net's card, one per pair once there are two or more.
+    val rowDebts: List<WatchDebt>
+        get() = if (debts.size > 1) debts else emptyList()
+
     val areDebtsClickable: Boolean
         get() = debts.count(WatchDebt::isOwedByMe) > 1 && !isRecording
 }

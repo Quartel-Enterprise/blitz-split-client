@@ -15,6 +15,7 @@ class PushDeviceMapperImpl(
             PushPlatform.ANDROID -> "android"
             PushPlatform.IOS -> "ios"
             PushPlatform.MACOS -> "macos"
+            PushPlatform.WATCHOS -> "watchos"
             PushPlatform.WEB -> "web"
         },
         apnsEnvironment = when (device.apnsEnvironment) {

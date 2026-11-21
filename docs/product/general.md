@@ -387,8 +387,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1
     SDK (Xcode 27.1), its iPhone Duo APIs behind `#available(iOS 27.1, *)`.
   - The watch: minimum Wear OS 3 (API 30), the first with Tiles and complications as the Wear app draws them and the
-    one Google Play's Wear OS track asks of a standalone app; the Apple Watch app comes in a later phase
-    ([watch.md](watch.md)). Watches are dark only, whatever the phone's theme.
+    one Google Play's Wear OS track asks of a standalone app; on the Apple Watch, watchOS 26, for its Liquid Glass
+    controls ([watch.md](watch.md)). Watches are dark only, whatever the phone's theme.
   - The Apple app has no floating action button (Pierre's call): a screen's main button ("Split a bill", on every
     tab of a group) is a toolbar item, the bar's tinted glass item on iPhone and iPad (the bottom toolbar inside a group
     on an iPhone upright, except on an iPhone Duo, whose vertical bar takes it as its icon alone) and the window
