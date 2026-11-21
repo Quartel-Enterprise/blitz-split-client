@@ -10,13 +10,9 @@ plugins {
 android {
     namespace = "com.quare.blitzsplit.android.push"
     compileSdk {
-        // "37.1" is API level 37 with its first minor release, as androidApp reads it.
-        val (api, minor) = libs.versions.android.compileSdk
-            .get()
-            .split('.')
-            .map(String::toInt)
-            .let { it[0] to it.getOrElse(1) { 0 } }
-        version = release(api) { minorApiLevel = minor }
+        version = release(libs.versions.android.compileSdk.get().toInt()) {
+            minorApiLevel = libs.versions.android.compileSdkMinor.get().toInt()
+        }
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk

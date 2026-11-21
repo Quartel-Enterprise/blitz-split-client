@@ -12,7 +12,10 @@ kover = "0.9.11"
 
 # Android SDK levels
 android-minSdk = "26"
-android-compileSdk = "37.1"
+android-compileSdk = "37"
+# The compileSdk's minor release, 0 for none: 37 with 1 is API level 37.1, which the Compose 1.13 artifacts ask for.
+# Kept apart from the level so every module reads two whole numbers and nothing parses "37.1".
+android-compileSdkMinor = "1"
 android-targetSdk = "37"
 
 # AndroidX
