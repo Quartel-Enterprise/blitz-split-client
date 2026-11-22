@@ -15,7 +15,7 @@ name: release-production
 #        - Android: a signed AAB to the Google Play track of the `track` input, with the notes as its "What's new".
 #          On the production track `rollout` is the percentage of the users who get it. The watch's AAB (:wearApp,
 #          the phone's applicationId and versionCode + 1,000,000) then goes to the same track of Google Play's Wear
-#          OS form factor (wear:production, wear:beta, wear:alpha, wear:qa), with the same notes and rollout.
+#          OS form factor (wear:production, wear:beta, wear:alpha, wear:internal), with the same notes and rollout.
 #        - iOS and macOS: App Store Connect, signed as the betas are (the composite actions apple-build and
 #          apple-upload). With `submit_for_review`, the build is then sent to App Store review with the notes, and
 #          goes out by itself once approved.

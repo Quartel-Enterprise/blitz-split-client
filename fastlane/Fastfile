@@ -799,10 +799,10 @@ end
 # release-production.yml runs these lanes; nothing here builds.
 PLAY_TRACKS = %w[production beta alpha internal].freeze
 # The Wear OS form factor's tracks, by the phone's track they mirror: the API names a form factor's track
-# "<prefix>:<default name>", and internal testing's default name is "qa" (developers.google.com/android-publisher/tracks).
+# "<prefix>:<default name>", and internal testing's is "internal", as the Play API lists it.
 # Closed testing has no default: the watch's is the closed track named alpha, as the phone's.
 PLAY_FORM_FACTOR_TRACKS = {
-  "wear" => { "production" => "wear:production", "beta" => "wear:beta", "alpha" => "wear:alpha", "internal" => "wear:qa" },
+  "wear" => { "production" => "wear:production", "beta" => "wear:beta", "alpha" => "wear:alpha", "internal" => "wear:internal" },
 }.freeze
 # How long App Store Connect may take to process an upload before the build can be selected:
 BUILD_PROCESSING_TIMEOUT_SECONDS = 45 * 60
