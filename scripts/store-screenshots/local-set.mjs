@@ -109,8 +109,8 @@ export const listingScreens = () =>
  */
 export const WATCH_SCREENS = ["01_balances", "02_group", "03_confirm", "04_recorded"];
 
-/** The screens a device's shelf holds: the watch's four, or screens.tsv's ten. */
-export const screensOfDevice = (device, devices = PLATFORMS.ios.devices) => (devices[device]?.screens === "watch" ? WATCH_SCREENS : listingScreens());
+/** The screens a device's shelf holds: the watch's four, or screens.tsv's ten (`listing`, read once by a caller that asks often). */
+export const screensOfDevice = (device, devices = PLATFORMS.ios.devices, listing = undefined) => (devices[device]?.screens === "watch" ? WATCH_SCREENS : (listing ?? listingScreens()));
 
 /** The screen and the device a staged image is named after, `<screen>_<device>.png`; null for any other name. */
 export function stagedImage(fileName, screens) {
@@ -174,7 +174,9 @@ class Problems {
 export function checkPlatform(platform, folder, { allowMissingDevices = false } = {}) {
   const { label, devices } = PLATFORMS[platform];
   const expectedLocales = listingLocales();
-  const screens = [...listingScreens(), ...WATCH_SCREENS];
+  const listing = listingScreens();
+  const screens = [...listing, ...WATCH_SCREENS];
+  const screensOf = Object.fromEntries(Object.keys(devices).map((device) => [device, screensOfDevice(device, devices, listing)]));
   const problems = new Problems();
   const shelves = [...new Set(Object.values(devices).map((device) => device.shelf))];
   const report = { platform, folder, locales: [], files: [], bytes: 0, ignored: [], shelves: {}, missingShelves: [] };
@@ -218,8 +220,8 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
         problems.add(`${name} is not <screen>_<device>.png: no screen of screens.tsv with a device of ${Object.keys(devices).join(", ")}`, locale);
         continue;
       }
-      if (!screensOfDevice(device, devices).includes(screen)) {
-        problems.add(`${name}: ${screen} is not a screen of ${device}'s shelf (${screensOfDevice(device, devices).join(", ")})`, locale);
+      if (!screensOf[device].includes(screen)) {
+        problems.add(`${name}: ${screen} is not a screen of ${device}'s shelf (${screensOf[device].join(", ")})`, locale);
         continue;
       }
       const image = readPng(file);
@@ -262,7 +264,7 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
       }
       continue;
     }
-    const shelfScreens = screensOfDevice(Object.keys(devices).find((device) => devices[device].shelf === shelf), devices);
+    const shelfScreens = screensOf[Object.keys(devices).find((device) => devices[device].shelf === shelf)];
     for (const locale of report.locales) {
       const ofScreen = ofLocale.get(locale) ?? new Map();
       const missing = shelfScreens.filter((screen) => !ofScreen.has(screen));

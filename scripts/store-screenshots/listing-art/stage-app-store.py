@@ -46,8 +46,16 @@ def app_store_locales():
     return json.loads(output)
 
 
+def unstage_watch(store_locales, folder):
+    """Removes a locale's staged watch images, and only those: the iPhone's and the iPad's share the folder."""
+    for store_locale in store_locales:
+        for image in (folder / store_locale).glob("*_watch_ultra_3.png"):
+            image.unlink()
+
+
 def stage_watch(tag, store_locales, folder):
     """The watch's images are 0N_<screen>.png, which already are their shelf's order and the screens' names."""
+    unstage_watch(store_locales, folder)
     for number, screen in enumerate(WATCH_SCREENS, start=1):
         name = f"0{number}_{screen}"
         image = WATCH / tag / f"{name}.png"
@@ -76,8 +84,9 @@ def main():
     unknown_tags = [tag for tag in only if tag not in tags.values()]
     if unknown_tags:
         raise SystemExit(f"locales.tsv has no {', '.join(unknown_tags)}")
-    # Only the folders of the devices being staged are replaced: a Mac left out keeps the Mac set staged before.
-    staged_folders = {folder for folder in devices.values()}
+    # Only the folders of the devices being staged are replaced: a Mac left out keeps the Mac set staged before. The
+    # watch replaces its own images alone, so ART_DEVICES=watch_ultra_3 keeps the iPhone's and the iPad's it joins.
+    staged_folders = {folder for device, folder in devices.items() if device != "watch_ultra_3"}
     if not only:
         for folder in staged_folders:
             shutil.rmtree(folder, ignore_errors=True)
@@ -97,6 +106,7 @@ def main():
             if device == "watch_ultra_3":
                 if not (WATCH / tag).is_dir():
                     print(f"No Apple Watch images for {tag} (watch/generate.sh, WATCH_STORES=apple): its shelf is left out")
+                    unstage_watch(store_locales, folder)
                     continue
                 stage_watch(tag, store_locales, folder)
                 staged += len(WATCH_SCREENS) * len(store_locales)
