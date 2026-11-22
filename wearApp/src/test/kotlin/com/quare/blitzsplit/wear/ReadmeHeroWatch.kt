@@ -76,15 +76,20 @@ internal class ReadmeHeroWatch {
         }
     }
 
-    // Why: the totals the Apple Watch shows for the same trip (+$128.08 to receive, -EUR 24 you owe), written by hand.
+    /*
+     * Why: what the watch's ViewModel holds for the English sample trip (SampleTrips.tripOf("en")), as the Apple Watch
+     * shows it: Lisbon trip +$84.08 (it gets $141.81 and owes $57.73) and -EUR 24, Roommates +$64.00 and Friday soccer
+     * -$20.00, so the dollars add up to +$128.08, largest first. Written by hand since the seed lives in :shared, out of
+     * this module's reach: a change to the sample trip's amounts needs it again.
+     */
     private fun createState(): WatchBalancesUiState = WatchBalancesUiState(
         isLoaded = true,
         totals = listOf(
             WatchTotal(
                 GroupCurrency.USD,
                 netMinor = 12_808,
-                toReceiveMinor = 12_808,
-                toPayMinor = 0,
+                toReceiveMinor = 20_581,
+                toPayMinor = 7_773,
             ),
             WatchTotal(
                 GroupCurrency.EUR,
@@ -94,8 +99,10 @@ internal class ReadmeHeroWatch {
             ),
         ),
         groups = listOf(
-            WatchGroupRow("1", "Lisbon trip", "LT", AvatarColor.PEACH, null, GroupCurrency.USD, 12_808, false),
+            WatchGroupRow("1", "Lisbon trip", "LT", AvatarColor.PEACH, null, GroupCurrency.USD, 8_408, false),
+            WatchGroupRow("2", "Roommates", "R", AvatarColor.BLUE, null, GroupCurrency.USD, 6_400, false),
             WatchGroupRow("1", "Lisbon trip", "LT", AvatarColor.PEACH, null, GroupCurrency.EUR, -2_400, false),
+            WatchGroupRow("3", "Friday soccer", "FS", AvatarColor.GREEN, null, GroupCurrency.USD, -2_000, false),
         ),
         isOnline = true,
         queuedChangeCount = 0,

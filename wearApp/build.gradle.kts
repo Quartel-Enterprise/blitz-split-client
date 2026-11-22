@@ -73,7 +73,6 @@ android {
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
-            isReturnDefaultValues = true
         }
     }
     buildTypes {

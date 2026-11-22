@@ -40,9 +40,18 @@ xcrun simctl terminate "$udid" "$BUNDLE_ID" 2> /dev/null || true
 xcrun simctl uninstall "$udid" "$BUNDLE_ID" 2> /dev/null || true
 xcrun simctl install "$udid" "$app"
 xcrun simctl launch "$udid" "$BUNDLE_ID" -StoreScreenshotsLanguage en -AppleLanguages "(en)" -AppleLocale en_US > /dev/null
-# Why: the trip is seeded before the first screen, but the balances take a moment to compute and the list to settle
-sleep 8
+# Why: Kotlin starting, the seed and the balances take a few seconds, longer on a cold simulator: photograph until two
+# shots two seconds apart are the same (nothing moving any more), for at most a minute, never after a fixed wait.
 mkdir -p "$OUTPUT"
-xcrun simctl io "$udid" screenshot "$OUTPUT/watch-dark.png"
-xcrun simctl shutdown "$udid" 2> /dev/null || true
-echo "Wrote $OUTPUT/watch-dark.png"
+shot="$OUTPUT/watch-dark.png"
+previous="$OUTPUT/.watch-previous.png"
+rm -f "$previous"
+sleep 4
+for _ in $(seq 28); do
+  xcrun simctl io "$udid" screenshot "$shot" > /dev/null 2>&1
+  if [ -f "$previous" ] && cmp -s "$shot" "$previous"; then break; fi
+  cp "$shot" "$previous"
+  sleep 2
+done
+rm -f "$previous"
+echo "Wrote $shot"

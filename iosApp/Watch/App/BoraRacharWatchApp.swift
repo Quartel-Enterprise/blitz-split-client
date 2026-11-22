@@ -21,7 +21,8 @@ struct BoraRacharWatchApp: App {
         #else
         BlitzSplitWatch.shared.start()
         #endif
-        WatchWidgetWriter.shared.start()
+        // The sample trip must not reach the App Group's snapshot, which the complications read
+        if !WatchStoreScreenshots.isRun { WatchWidgetWriter.shared.start() }
         _root = State(initialValue: WatchRootModel())
     }
 
@@ -47,8 +48,20 @@ enum WatchStoreScreenshots {
 }
 #endif
 
+extension WatchStoreScreenshots {
+    /// A seeded capture run stays on its own: no iPhone link, push or background refresh may change what it shows.
+    static var isRun: Bool {
+        #if DEBUG
+        language != nil
+        #else
+        false
+        #endif
+    }
+}
+
 final class WatchAppDelegate: NSObject, WKApplicationDelegate {
     func applicationDidFinishLaunching() {
+        if WatchStoreScreenshots.isRun { return }
         PhoneLink.shared.start()
         WatchPush.shared.start()
         WatchBackgroundRefresh.schedule()

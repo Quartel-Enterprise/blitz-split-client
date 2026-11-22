@@ -5,7 +5,7 @@
 # its own native UI, side by side. Each capture is a real screen of the app, never a mockup, so running this again
 # after a UI change brings the image up to date.
 #
-#   ./scripts/readme-hero/generate.sh                           # capture all four, then draw the image
+#   ./scripts/readme-hero/generate.sh                           # capture all six, then draw the image
 #   READMEHERO_CAPTURES=android,web ./scripts/readme-hero/generate.sh   # capture again only those, keep the others
 #   READMEHERO_CAPTURES=none ./scripts/readme-hero/generate.sh          # draw the image again from the captures
 #
