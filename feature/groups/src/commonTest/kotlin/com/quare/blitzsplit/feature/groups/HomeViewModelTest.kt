@@ -6497,6 +6497,7 @@ class HomeViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: Pierre is this device's user, in a group with Ana and Bruno.

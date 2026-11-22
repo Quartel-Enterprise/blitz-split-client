@@ -290,6 +290,7 @@ class SimplifiedPairNotesTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: a bill the payer paid whole for the debtor alone, so the debtor owes the payer all of it.

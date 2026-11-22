@@ -42,4 +42,9 @@ data class GroupDto(
     @SerialName("reminder_kind") val reminderKind: String?,
     @SerialName("reminder_day") val reminderDay: Int?,
     @SerialName("reminder_minute") val reminderMinute: Int?,
+    /*
+     * Why: when the schedule last changed on this device, which the server keeps only along with a change of the
+     * schedule and never in the future; null from a server without the column, which reads as never.
+     */
+    @SerialName("reminder_updated_at") val reminderUpdatedAt: Long?,
 )

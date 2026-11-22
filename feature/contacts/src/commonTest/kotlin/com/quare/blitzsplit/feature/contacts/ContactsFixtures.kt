@@ -97,6 +97,7 @@ internal fun group(
     simplifyDebtsConflictBy = null,
     reminder = GroupReminder.Default,
     reminderDismissedAt = 0L,
+    reminderCountsFrom = 0L,
 )
 
 internal fun floripa(

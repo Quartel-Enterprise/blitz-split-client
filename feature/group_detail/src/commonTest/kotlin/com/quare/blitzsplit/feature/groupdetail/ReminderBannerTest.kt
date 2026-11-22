@@ -342,6 +342,53 @@ class ReminderBannerTest {
         assertEquals(mondayTenOnTheirClock, banner?.occurrenceAt)
     }
 
+    @Test
+    fun `GIVEN a reminder changed to the 25th on the 21st WHEN it is still the 21st THEN shows no banner`() {
+        // Given
+        val twentyFirst = millisOf("2026-11-21T21:32:00Z")
+        val group = group(
+            reminder = monthly,
+            reminderCountsFrom = millisOf("2026-11-21T09:00:00Z"),
+        )
+
+        // When
+        val banner = ReminderBanner.of(group, iOweBruno, ME, twentyFirst, TimeZone.UTC)
+
+        // Then
+        assertNull(banner)
+    }
+
+    @Test
+    fun `GIVEN a reminder changed to the 25th on the 21st WHEN the 25th at noon arrives THEN shows its banner`() {
+        // Given
+        val twentyFifthOfNovember = millisOf("2026-11-25T12:00:00Z")
+        val group = group(
+            reminder = monthly,
+            reminderCountsFrom = millisOf("2026-11-21T09:00:00Z"),
+        )
+
+        // When
+        val banner = ReminderBanner.of(group, iOweBruno, ME, twentyFifthOfNovember, TimeZone.UTC)
+
+        // Then
+        assertEquals(twentyFifthOfNovember, banner?.occurrenceAt)
+    }
+
+    @Test
+    fun `GIVEN a reminder set at the very moment it fires WHEN a debtor opens the group THEN that occurrence counts`() {
+        // Given
+        val group = group(
+            reminder = weekly,
+            reminderCountsFrom = mondayTenOclock,
+        )
+
+        // When
+        val banner = ReminderBanner.of(group, iOweBruno, ME, now, TimeZone.UTC)
+
+        // Then
+        assertEquals(mondayTenOclock, banner?.occurrenceAt)
+    }
+
     private fun millisOf(instant: String): Long = Instant.parse(instant).toEpochMilliseconds()
 
     private fun balancesOf(vararg debts: Debt): GroupBalances = GroupBalances(
@@ -353,6 +400,7 @@ class ReminderBannerTest {
     private fun group(
         reminder: GroupReminder,
         reminderDismissedAt: Long = 0L,
+        reminderCountsFrom: Long = 0L,
     ): Group = Group(
         id = "group-1",
         name = "Viagem Floripa",
@@ -384,6 +432,7 @@ class ReminderBannerTest {
         simplifyDebtsConflictBy = null,
         reminder = reminder,
         reminderDismissedAt = reminderDismissedAt,
+        reminderCountsFrom = reminderCountsFrom,
     )
 
     private companion object {

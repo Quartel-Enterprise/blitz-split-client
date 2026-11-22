@@ -659,6 +659,7 @@ class GroupDaoTest {
             reminderKind = "weekly",
             reminderDay = 1,
             reminderMinute = 600,
+            reminderUpdatedAt = null,
             updatedAt = 6L,
         )
 
@@ -702,6 +703,7 @@ class GroupDaoTest {
                 reminderKind = "weekly",
                 reminderDay = 1,
                 reminderMinute = 600,
+                reminderUpdatedAt = null,
                 updatedAt = 6L,
             )
 
@@ -735,6 +737,7 @@ class GroupDaoTest {
             reminderKind = "weekly",
             reminderDay = 1,
             reminderMinute = 600,
+            reminderUpdatedAt = null,
             updatedAt = 6L,
         )
 
@@ -1286,6 +1289,7 @@ class GroupDaoTest {
                 reminderKind = "monthly",
                 reminderDay = 25,
                 reminderMinute = 720,
+                reminderUpdatedAt = null,
                 updatedAt = 20L,
             )
 
@@ -1298,6 +1302,111 @@ class GroupDaoTest {
             assertEquals(25, group.reminderDay)
             assertTrue(group.pendingSync)
         }
+
+    @Test
+    fun `GIVEN a stored reminder stamp WHEN an edit brings a new stamp THEN stores it`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L).copy(reminderUpdatedAt = 3L))
+
+        // When
+        editReminder(
+            reminderDay = 3,
+            reminderUpdatedAt = 20L,
+        )
+
+        // Then
+        assertEquals(
+            20L,
+            dao
+                .observeGroups()
+                .first()
+                .single()
+                .reminderUpdatedAt,
+        )
+    }
+
+    @Test
+    fun `GIVEN a stored reminder stamp WHEN an edit brings no stamp THEN keeps the stored one`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L).copy(reminderUpdatedAt = 3L))
+
+        // When
+        editReminder(
+            reminderDay = 1,
+            reminderUpdatedAt = null,
+        )
+
+        // Then
+        assertEquals(
+            3L,
+            dao
+                .observeGroups()
+                .first()
+                .single()
+                .reminderUpdatedAt,
+        )
+    }
+
+    @Test
+    fun `GIVEN a local reminder stamp WHEN an older server row brings a later stamp THEN takes the later stamp`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 9L).copy(reminderUpdatedAt = 3L))
+
+            // When
+            dao.applyRemoteGroup(entity(updatedAt = 5L).copy(reminderUpdatedAt = 7L))
+
+            // Then
+            assertEquals(
+                7L,
+                dao
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .reminderUpdatedAt,
+            )
+        }
+
+    @Test
+    fun `GIVEN a later local reminder stamp WHEN a newer server row brings an earlier one THEN takes it`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L).copy(reminderUpdatedAt = 30L))
+
+        // When
+        dao.applyRemoteGroup(entity(updatedAt = 9L).copy(reminderUpdatedAt = 7L))
+
+        // Then
+        assertEquals(
+            7L,
+            dao
+                .observeGroups()
+                .first()
+                .single()
+                .reminderUpdatedAt,
+        )
+    }
+
+    private suspend fun editReminder(
+        reminderDay: Int,
+        reminderUpdatedAt: Long?,
+    ) {
+        dao.updateGroup(
+            id = "group-1",
+            name = "Viagem Floripa",
+            type = "trip",
+            color = "blue",
+            shape = null,
+            photoUrl = null,
+            pendingPhoto = null,
+            currency = "BRL",
+            reminderEnabled = true,
+            reminderKind = "weekly",
+            reminderDay = reminderDay,
+            reminderMinute = 600,
+            reminderUpdatedAt = reminderUpdatedAt,
+            updatedAt = 20L,
+        )
+    }
 
     private fun entity(
         id: String = "group-1",
@@ -1336,6 +1445,7 @@ class GroupDaoTest {
         reminderDay = 1,
         reminderMinute = 600,
         reminderDismissedAt = 0L,
+        reminderUpdatedAt = 0L,
     )
 
     private fun member(

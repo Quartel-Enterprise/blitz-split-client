@@ -1363,6 +1363,7 @@ class GroupDetailPaymentsViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: this device's user owes Ana 6.000 and Bruno 9.000.

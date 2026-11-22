@@ -75,6 +75,15 @@ class RoomGroupLocalDataSource(
         reminder: GroupReminder,
         updatedAt: Long,
     ) {
+        /*
+         * Why: compared as this version reads the stored row, so a value a newer app wrote that reads as the same
+         * schedule isn't a change; a change is stamped after the stored stamp, as updatedAt is after the row's.
+         */
+        val stored = dao.findGroup(id)
+        val reminderUpdatedAt = stored
+            ?.takeIf {
+                reminder != GroupReminder.of(it.reminderEnabled, it.reminderKind, it.reminderDay, it.reminderMinute)
+            }?.let { maxOf(updatedAt, it.reminderUpdatedAt + 1) }
         dao.updateGroup(
             id = id,
             name = name,
@@ -88,6 +97,7 @@ class RoomGroupLocalDataSource(
             reminderKind = reminder.kind.code,
             reminderDay = reminder.day,
             reminderMinute = reminder.minute,
+            reminderUpdatedAt = reminderUpdatedAt,
             updatedAt = updatedAt,
         )
     }

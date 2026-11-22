@@ -436,6 +436,7 @@ class GroupDetailReminderViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: Bruno paid 80 split in halves with this device's user, who owes him 40.

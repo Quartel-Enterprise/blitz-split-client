@@ -3505,6 +3505,7 @@ class ActivityViewModelTest {
             simplifyDebtsConflictBy = null,
             reminder = GroupReminder.Default,
             reminderDismissedAt = 0L,
+            reminderCountsFrom = 0L,
         ),
         Group(
             id = FLORIPA,
@@ -3535,6 +3536,7 @@ class ActivityViewModelTest {
             simplifyDebtsConflictBy = null,
             reminder = GroupReminder.Default,
             reminderDismissedAt = 0L,
+            reminderCountsFrom = 0L,
         ),
     )
 

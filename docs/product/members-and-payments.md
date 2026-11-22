@@ -177,7 +177,14 @@ Members, the group's Balances, Simplify debts, Record payment, group editing, De
     ("Time to settle up in this group" with the schedule, "Settle up" and "Dismiss"); dismissing hides it on this device
     only until the next occurrence, and paying everything away takes it too (`GroupDetailUiState.reminderBanner`,
     `Group.reminderDismissedAt`, never synced). The banner never shows with the reminder off or to someone who owes
-    nothing; a debt that appears after the time passed shows the latest occurrence's banner once.
+    nothing; a debt that appears after the time passed shows the latest occurrence's banner once. Only occurrences
+    after the reminder was set or last changed, and after this person's member was added to the group, count (beta
+    feedback of 2026-11-21, Pierre's call): a reminder changed on the 21st to "every 25th" shows its first banner on
+    the 25th, not the one of the month before (`Group.reminderCountsFrom`, the later of the server's
+    `groups.reminder_updated_at` and the member's `added_at`). `reminder_updated_at` moves when the schedule or the
+    switch changes: this device stamps its own edit, offline too, and the server stamps an older app's; the groups that
+    existed before it count from the update that added it. There is no time someone joined as an existing name, so
+    for them it counts from when that name was added.
     "Add to calendar" (under the section in Edit group, in New group as "Add to my calendar" and beside "You joined as…"
     after joining through a link): each platform hands a repeating event, at the next occurrence on the device's clock and
     with the schedule's recurrence (weekly on the weekday; monthly on the day, a 31st on each month's last day, a 29th

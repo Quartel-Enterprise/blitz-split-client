@@ -24,7 +24,8 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     bars stay put (see [the bars on scroll](home-and-shell.md)).
   - "Time to settle up" (the group's reminder, [members-and-payments.md](members-and-payments.md#group-reminder)): a banner on
     top of Expenses, Balances and Members, drawn only to someone who owes in the group once its reminder's time has
-    arrived or passed, with "Settle up" (the balance card's button) and "Dismiss" (until the next occurrence, this device only).
+    arrived or passed, never for a time from before the reminder was set or changed or before they were in the group,
+    with "Settle up" (the balance card's button) and "Dismiss" (until the next occurrence, this device only).
   - "See all" at the end of Expenses' first day heading ("Today … See all", drawn as Home's "See all" beside "Latest
     expenses"; on the Mac, whose table's day headings take no button, at the right over the table) opens "All
     expenses" with the group already picked in its Group filter (Pierre's call, beta feedback of 2026-11-16;

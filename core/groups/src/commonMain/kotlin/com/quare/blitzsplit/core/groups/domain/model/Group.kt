@@ -49,4 +49,9 @@ data class Group(
     val reminder: GroupReminder,
     // Why: the occurrence whose banner this device dismissed (epoch millis), 0 until one is: "Dispensar" is per device.
     val reminderDismissedAt: Long,
+    /*
+     * Why: the banner skips the reminder's occurrences before this moment (epoch millis): the schedule's last change
+     * (reminder_updated_at) or when my member was added to the group, whichever is later. 0 counts every occurrence.
+     */
+    val reminderCountsFrom: Long,
 )
