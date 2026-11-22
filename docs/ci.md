@@ -511,13 +511,21 @@ Dependabot, which only bumped the two Quartel-Enterprise actions.
   breaks on the branch (or run the `bump-versions` skill for a major that needs code changes), and add
   `merge-when-green`. A Kotlin bump that brings new npm packages fails the JS build with "Lock file was changed":
   run `./gradlew kotlinUpgradeYarnLock` on the branch and commit `kotlin-js-store/yarn.lock`. Once anyone (or
-  claude-review's fix commit) pushes to a Renovate branch, Renovate stops rebasing it, and ticking rebase on the
-  Dependency Dashboard would throw those commits away: merge `main` into it by hand instead.
-- The Dependency Dashboard issue lists every update pending, held for the schedule or failing. Tick one there to
-  have Renovate open its pull request now.
+  claude-review's fix commit) pushes to a Renovate branch, Renovate stops rebasing it: merge `main` into it by hand
+  instead, and never tick the pull request's rebase checkbox, which would throw those commits away.
+- The Dependency Dashboard issue is off (the `:disableDependencyDashboard` preset), so Renovate opens only pull
+  requests, on the schedules above. An update held by the schedule or by `prConcurrentLimit` waits for a later run,
+  with no checkbox to open it now: for a bump now, run the `bump-versions` skill. What Renovate skipped or failed is in
+  the repository's logs on the
+  [Mend Developer Platform](https://developer.mend.io/github/Quartel-Enterprise/blitz-split-client). A
+  "Maven Central rate limiting" warning there comes from Mend's servers, shared by every user of the app, and not from
+  this configuration (Renovate already follows the `mavenContent` filters of `settings.gradle.kts`): the next run looks
+  the libraries up again. Only an invalid `renovate.json` still opens an issue, "Action Required: Fix Renovate
+  Configuration", and Renovate stops until it is fixed.
 
 To check a change to `renovate.json` before it merges:
-`npx --package renovate renovate-config-validator --strict renovate.json`.
+`npx --package renovate@latest renovate-config-validator --strict renovate.json` (`@latest`, since npx may
+reuse an old cached Renovate, which reads the current options as errors).
 
 ## Code scanning
 
