@@ -24,6 +24,11 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
         #endif
     }
 
+    /// An event's push carries `content-available`: the sync starts as it arrives, so a tap finds the bill on the device.
+    func syncForPush(onDone: @escaping (Bool) -> Void = { _ in }) {
+        BlitzSplitApple.shared.syncForPush { isSynced in onDone(isSynced.boolValue) }
+    }
+
     func register(deviceToken: Data) {
         #if os(iOS)
         let isMac = false
@@ -115,6 +120,16 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         PushNotifications.shared.register(deviceToken: deviceToken)
     }
+
+    /// Woken in the background by `content-available` (the `remote-notification` background mode), or called in front.
+    /// iOS gives the app about 30 seconds and wants the handler called by then; the shared sync stops at 25.
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        PushNotifications.shared.syncForPush { isSynced in completionHandler(isSynced ? .newData : .failed) }
+    }
 }
 #else
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -130,6 +145,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ application: NSApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         PushNotifications.shared.register(deviceToken: deviceToken)
+    }
+
+    /// The Mac gets it only while the app runs, with no background limit: real time listens only in front, so a push
+    /// that arrives with the window behind another app's syncs here.
+    func application(_ application: NSApplication, didReceiveRemoteNotification userInfo: [String: Any]) {
+        PushNotifications.shared.syncForPush()
     }
 }
 #endif

@@ -21,6 +21,7 @@ import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsService
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
+import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import com.quare.blitzsplit.core.watch.domain.usecase.ApproveNearbyWatch
 import com.quare.blitzsplit.core.watch.domain.usecase.ObserveAccountSignOuts
@@ -432,6 +433,22 @@ object BlitzSplitApple : KoinComponent {
             ),
         )
     }
+
+    /*
+     * Why: an event's push carries content-available, so iOS wakes the app in the background (the Mac hands it to the
+     * running app) and the sync brings the bill before the tap: AppViewModel.openPushLink opens it only once it is on the
+     * device. onDone gets whether the sync succeeded, on the main thread, for iOS's fetch completion handler, which has
+     * to be called within about 30 seconds of the wake.
+     */
+    fun syncForPush(onDone: (Boolean) -> Unit) {
+        val syncNow = get<SyncNow>()
+        scope.launch {
+            val result = withTimeoutOrNull(pushArrivalSyncTimeout) { syncNow() }
+            onDone(result?.isSuccess == true)
+        }
+    }
+
+    private val pushArrivalSyncTimeout = 25.seconds
 
     // Why: the browser sign in opens Safari, or the browser on macOS, over the app.
     fun handleAppPaused() {

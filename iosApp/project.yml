@@ -166,6 +166,8 @@ targets:
     info:
       path: Generated/iOS-Info.plist
       properties:
+        # An event's push carries content-available: iOS wakes the app to sync, so a tap finds the bill on the device
+        UIBackgroundModes: [remote-notification]
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
