@@ -130,13 +130,14 @@ private fun WelcomeSingleColumn(
                     modifier = Modifier.padding(horizontal = 24.dp),
                 )
             } else {
-                ShapeClusterHero(modifier = Modifier.padding(horizontal = 16.dp))
+                // Why: only the logo on a phone upright, so the buttons and the legal line fit without scrolling.
+                LogoBadgeIcon(modifier = Modifier.padding(horizontal = 24.dp))
                 Text(
                     text = stringResource(R.string.welcome_title),
                     modifier = Modifier.padding(
                         start = 24.dp,
                         end = 24.dp,
-                        top = 8.dp,
+                        top = 16.dp,
                     ),
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.ExtraBold,
@@ -187,7 +188,7 @@ private fun WelcomePhoneLandscapeLayout(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            ShapeClusterHero(isCompact = true)
+            ShapeClusterHero()
             Text(
                 text = stringResource(R.string.welcome_title),
                 style = MaterialTheme.typography.headlineMedium,
