@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 private const val MAX_IDS_PER_QUERY = 500
 
 @Dao
-interface GroupDao {
+interface GroupDao : GroupReminderQueries {
     @Query("SELECT * FROM split_group ORDER BY updatedAt DESC, id")
     fun observeGroups(): Flow<List<GroupEntity>>
 
@@ -209,29 +209,6 @@ interface GroupDao {
         reminderDay: Int,
         reminderMinute: Int,
         updatedAt: Long,
-    )
-
-    /*
-     * Why: the server stamps the reminder's change apart from the row's Last-Write-Wins (an older app's change, or this
-     * device's clamped to the server's clock), so its stamp comes down whichever row wins; the later one stays.
-     */
-    @Query(
-        "UPDATE split_group SET reminderUpdatedAt = :remoteAt " +
-            "WHERE id = :id AND ownerUserId = :ownerUserId AND reminderUpdatedAt < :remoteAt",
-    )
-    suspend fun updateReminderUpdatedAtFromRemote(
-        id: String,
-        remoteAt: Long,
-        ownerUserId: String,
-    )
-
-    // Why: "Dispensar" on the group's reminder banner: this device only, so the group isn't stamped nor pending.
-    @Query(
-        "UPDATE split_group SET reminderDismissedAt = :occurrenceAt WHERE id = :id AND reminderDismissedAt < :occurrenceAt",
-    )
-    suspend fun dismissReminder(
-        id: String,
-        occurrenceAt: Long,
     )
 
     /*
