@@ -1,0 +1,43 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "android"
+      ],
+      "text": {
+        "en": "The welcome screen on phones now shows just the logo at the top, so every button fits on the screen without scrolling.",
+        "pt": "A tela de boas-vindas no celular agora mostra só a logo no topo, então todos os botões cabem na tela sem rolar.",
+        "pt-PT": "O ecrã de boas-vindas no telemóvel mostra agora só o logótipo no topo, por isso todos os botões cabem no ecrã sem teres de deslizar.",
+        "es": "La pantalla de bienvenida en el celular ahora muestra solo el logo arriba, así que todos los botones caben sin desplazarte.",
+        "fr": "Sur téléphone, l’écran d’accueil n’affiche plus que le logo en haut : tous les boutons tiennent à l’écran sans faire défiler.",
+        "de": "Der Willkommensbildschirm auf dem Handy zeigt oben jetzt nur noch das Logo, sodass alle Schaltflächen ohne Scrollen auf den Bildschirm passen.",
+        "it": "Sul telefono la schermata di benvenuto ora mostra solo il logo in alto, così tutti i pulsanti stanno sullo schermo senza scorrere.",
+        "pl": "Ekran powitalny na telefonie pokazuje teraz u góry tylko logo, więc wszystkie przyciski mieszczą się bez przewijania.",
+        "nl": "Het welkomstscherm op de telefoon toont bovenaan nu alleen het logo, zodat alle knoppen zonder scrollen op het scherm passen.",
+        "ja": "スマートフォンのようこそ画面は上部にロゴだけを表示するようになり、スクロールしなくてもすべてのボタンが画面に収まります。",
+        "tr": "Telefondaki karşılama ekranı artık üstte yalnızca logoyu gösteriyor; böylece tüm düğmeler kaydırmadan ekrana sığıyor.",
+        "id": "Layar sambutan di ponsel kini hanya menampilkan logo di bagian atas, jadi semua tombol muat di layar tanpa perlu menggulir.",
+        "ru": "На телефоне экран приветствия теперь показывает сверху только логотип, и все кнопки помещаются на экране без прокрутки.",
+        "uk": "На телефоні екран привітання тепер показує вгорі лише логотип, тож усі кнопки вміщаються на екрані без прокручування.",
+        "ko": "휴대폰의 시작 화면 상단에 이제 로고만 표시되어, 스크롤하지 않아도 모든 버튼이 화면에 들어와요.",
+        "hi": "फ़ोन पर वेलकम स्क्रीन में अब ऊपर सिर्फ़ लोगो दिखता है, इसलिए सारे बटन बिना स्क्रॉल किए स्क्रीन पर आ जाते हैं।",
+        "ar": "تعرض شاشة الترحيب على الهاتف الآن الشعار وحده في الأعلى، فتظهر كل الأزرار على الشاشة دون تمرير.",
+        "zh": "手机上的欢迎页面顶部现在只显示标志，所有按钮无需滚动即可显示在屏幕上。",
+        "he": "מסך הפתיחה בטלפון מציג עכשיו למעלה רק את הלוגו, כך שכל הכפתורים נכנסים למסך בלי לגלול.",
+        "th": "หน้าต้อนรับบนโทรศัพท์ตอนนี้แสดงเพียงโลโก้ด้านบน ปุ่มทั้งหมดจึงอยู่บนหน้าจอได้โดยไม่ต้องเลื่อน",
+        "vi": "Màn hình chào mừng trên điện thoại giờ chỉ hiện logo ở trên cùng, nên mọi nút đều vừa màn hình mà không cần cuộn.",
+        "zh-Hant": "手機上的歡迎畫面頂端現在只顯示標誌，所有按鈕不用捲動就能出現在畫面上。",
+        "sv": "Välkomstskärmen på mobilen visar nu bara logotypen högst upp, så alla knappar får plats utan att du behöver skrolla.",
+        "cs": "Uvítací obrazovka na telefonu teď nahoře ukazuje jen logo, takže se všechna tlačítka vejdou na obrazovku bez posouvání.",
+        "ro": "Ecranul de bun venit de pe telefon afișează acum doar logoul în partea de sus, așa că toate butoanele încap pe ecran fără derulare.",
+        "bn": "ফোনে স্বাগত স্ক্রিনে এখন উপরে শুধু লোগো দেখায়, তাই স্ক্রল না করেই সব বোতাম স্ক্রিনে এঁটে যায়।",
+        "ms": "Skrin alu-aluan pada telefon kini hanya menunjukkan logo di bahagian atas, jadi semua butang muat pada skrin tanpa perlu menatal.",
+        "el": "Η οθόνη καλωσορίσματος στο κινητό δείχνει πλέον μόνο το λογότυπο επάνω, έτσι όλα τα κουμπιά χωρούν στην οθόνη χωρίς κύλιση.",
+        "hr": "Zaslon dobrodošlice na mobitelu sada na vrhu prikazuje samo logo, pa svi gumbi stanu na zaslon bez pomicanja.",
+        "hu": "A telefonon az üdvözlőképernyő tetején mostantól csak a logó látható, így görgetés nélkül minden gomb elfér a képernyőn.",
+        "ur": "فون پر خوش آمدید اسکرین اب اوپر صرف لوگو دکھاتی ہے، اس لیے سارے بٹن اسکرول کیے بغیر اسکرین پر آ جاتے ہیں۔"
+      }
+    }
+  ]
+}

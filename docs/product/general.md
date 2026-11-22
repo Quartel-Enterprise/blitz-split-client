@@ -39,6 +39,11 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
       (`WelcomeUiState.showsExpiredAccountNotice`). The device asks the server first whether it deleted that
       account: a session lost for any other reason (revoked, the account deleted from another device) keeps the
       profile as before, with no alert.
+  - On a phone upright, Welcome is headed by the app's logo alone, with no decorative shapes, so its buttons and the
+    legal line fit on one screen without scrolling (Pierre's call, November 2026). Android keeps its shapes only where
+    there is room for them: the pitch panel of a tablet (upright or lying down) and of a book, and the small badge
+    beside the actions on a phone lying down. The web keeps the brand panel's corner shapes in its two columns and
+    drops them, with the space kept for them, when narrow. iOS and macOS draw the logo alone everywhere.
   - Welcome ends in one small centered line under its buttons, "By continuing, you accept the Terms of Service and
     acknowledge the Privacy Policy.", both names links to the legal texts (the app's own screens; the site's page in
     another tab on the web), with no checkbox nor step of its own (Pierre's call, #184): Analytics rests on legitimate
