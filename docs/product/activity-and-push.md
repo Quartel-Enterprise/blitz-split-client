@@ -200,7 +200,8 @@ The feed, unread state, real time and push notifications.
     once with what the device already has (beta feedback 3, item 28: waiting for a sync first left Activity on screen
     for seconds, so a tap seemed to always open Activity): the group, then the bill (Bill) when it is on the device, at
     the comment for a comment once its event is. Only what isn't there yet (a group just joined, a new bill or comment)
-    waits for a sync of up to 5 seconds, then opens over what is on top while the person stayed there; nothing opens
+    waits up to 5 seconds, for a sync or for it to reach the device by the sync its push's arrival started (a comment
+    waits for the sync, its comment coming with the event), then opens over what is on top while the person stayed there; nothing opens
     for a group or bill still missing after it. Android, iOS, macOS and the web share this (`AppViewModel.openPushLink`).
     So that wait is rare, Android, iOS and macOS sync as an event's push arrives, before any tap (Pierre's call,
     feedback of Nov 21, 2026: the tap opened the group and the bill only seconds later), with nothing new on screen:
