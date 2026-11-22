@@ -16,11 +16,10 @@ import com.quare.blitzsplit.android.push.PushPayload
 import com.quare.blitzsplit.android.push.PushTokens
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
-import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
+import com.quare.blitzsplit.shared.push.PushArrivalSync
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.android.ext.android.inject
 import kotlin.time.Duration.Companion.seconds
 import com.quare.blitzsplit.android.push.R as PushR
@@ -32,7 +31,7 @@ import com.quare.blitzsplit.android.push.R as PushR
 class BlitzSplitMessagingService : FirebaseMessagingService() {
     private val setPushDevice: SetPushDevice by inject()
     private val observePushEnabled: ObservePushEnabled by inject()
-    private val syncNow: SyncNow by inject()
+    private val pushArrivalSync: PushArrivalSync by inject()
 
     // Why: before Android 13 the notifications built here are in Profile › Language's pick, as the screens are.
     override fun attachBaseContext(newBase: Context) {
@@ -75,8 +74,7 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
             .apply { link?.let { setContentIntent(openIntent(it, tag)) } }
             .build()
         NotificationManagerCompat.from(this).notify(tag, 0, notification)
-        // Why: only an event brings something down; the reminder has none (the server leaves its event id empty).
-        if (!eventId.isNullOrEmpty()) syncForTheTap()
+        syncForTheTap(eventId)
     }
 
     /*
@@ -84,10 +82,10 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
      * sync), so the sync starts as the notification shows and the bill is usually there before the tap. After notify,
      * so the notification never waits on it. Blocking keeps the process alive (a cached process is frozen): FCM allows
      * a high-priority message about 10 seconds of work, and what a cut sync already saved stays in Room. FCM hands the
-     * messages over one at a time, so a second push right behind shows once this sync ends, a second or two later.
+     * messages over one at a time, so in a burst only the first one syncs: the rest find their event already here.
      */
-    private fun syncForTheTap() {
-        runBlocking { withTimeoutOrNull(SYNC_ON_ARRIVAL_SECONDS.seconds) { syncNow() } }
+    private fun syncForTheTap(eventId: String?) {
+        runBlocking { pushArrivalSync(eventId, SYNC_ON_ARRIVAL_SECONDS.seconds) }
     }
 
     /*

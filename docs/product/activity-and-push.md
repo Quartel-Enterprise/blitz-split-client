@@ -208,8 +208,10 @@ The feed, unread state, real time and push notifications.
     open or closed); iOS woken in the background by the alert's `content-available` (the `remote-notification`
     background mode, at most 25 of the 30 seconds iOS gives; iOS may skip a wake, and never wakes an app the person
     swiped away); the Mac while the app runs. Each is the usual sync (`SyncNow`), never the bill in the push (Pierre
-    turned that down: the payload's 4 KB, and it would repeat the sync). The reminder brings nothing to sync, and the
-    web keeps the wait above. Each device
+    turned that down: the payload's 4 KB, and it would repeat the sync). The reminder brings nothing to sync, nor does
+    a push whose event is already on the device (an earlier push of a burst synced it, or real time did with the app
+    in front), so only the first of a burst holds Android's next notification back (`PushArrivalSync`). The web keeps
+    the wait above. Each device
     registers its token for the account signed in, an anonymous one included (`PushDeviceRepository`), and removes
     it while none is or while Notifications' "Push notifications" switch is off, a sign out made offline once back
     online; a failed call is tried again after 30 seconds, 2 and 10 minutes, then waits for the next change. Android and Apple register their token at every launch

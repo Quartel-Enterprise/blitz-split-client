@@ -25,10 +25,9 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
     }
 
     /// An event's push carries `content-available`: the sync starts as it arrives, so a tap finds the bill on the device.
-    /// The reminder's brings nothing to sync, so onDone gets nil and nothing syncs.
-    func syncForPush(userInfo: [AnyHashable: Any], onDone: @escaping (Bool?) -> Void = { _ in }) {
-        guard BlitzSplitApple.shared.isEventPush(link: userInfo["link"] as? String) else { return onDone(nil) }
-        BlitzSplitApple.shared.syncForPush { isSynced in onDone(isSynced.boolValue) }
+    /// Nothing syncs for the reminder's nor for an event already on the device.
+    func syncForPush(userInfo: [AnyHashable: Any], onDone: @escaping (PushArrivalOutcome) -> Void = { _ in }) {
+        BlitzSplitApple.shared.syncForPush(link: userInfo["link"] as? String, onDone: onDone)
     }
 
     func register(deviceToken: Data) {
@@ -130,11 +129,13 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
-        PushNotifications.shared.syncForPush(userInfo: userInfo) { isSynced in
-            let result: UIBackgroundFetchResult = switch isSynced {
-            case nil: .noData
-            case true?: .newData
-            case false?: .failed
+        PushNotifications.shared.syncForPush(userInfo: userInfo) { outcome in
+            let result: UIBackgroundFetchResult = if outcome == .synced {
+                .newData
+            } else if outcome == .failed {
+                .failed
+            } else {
+                .noData
             }
             completionHandler(result)
         }
