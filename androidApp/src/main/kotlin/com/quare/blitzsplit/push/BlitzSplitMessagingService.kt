@@ -74,14 +74,16 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
             .apply { link?.let { setContentIntent(openIntent(it, tag)) } }
             .build()
         NotificationManagerCompat.from(this).notify(tag, 0, notification)
-        syncForTheTap()
+        // Why: only an event brings something down; the reminder has none (the server leaves its event id empty).
+        if (!data[PushPayload.EVENT_ID].isNullOrEmpty()) syncForTheTap()
     }
 
     /*
      * Why: the tap opens the bill only once it is on the device (AppViewModel.openPushLink waits up to 5 seconds for a
      * sync), so the sync starts as the notification shows and the bill is usually there before the tap. After notify,
-     * so the notification never waits on it. Blocking keeps the process alive: FCM allows a high-priority message
-     * about 10 seconds of work, and what a cut sync already saved stays in Room.
+     * so the notification never waits on it. Blocking keeps the process alive (a cached process is frozen): FCM allows
+     * a high-priority message about 10 seconds of work, and what a cut sync already saved stays in Room. FCM hands the
+     * messages over one at a time, so a second push right behind shows once this sync ends, a second or two later.
      */
     private fun syncForTheTap() {
         runBlocking { withTimeoutOrNull(SYNC_ON_ARRIVAL_SECONDS.seconds) { syncNow() } }
