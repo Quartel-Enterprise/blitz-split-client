@@ -2482,6 +2482,199 @@ class GroupMapperImplTest {
         assertEquals(840, dto.reminderMinute)
     }
 
+    @Test
+    fun `GIVEN I was added before the reminder changed WHEN mapping to the domain THEN counts from the change`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1").copy(reminderUpdatedAt = 5_000L))
+        val members = listOf(
+            memberEntity(
+                id = "m-1",
+                isMe = true,
+                addedAt = 2_000L,
+            ),
+        )
+
+        // When
+        val group = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
+
+        // Then
+        assertEquals(5_000L, group.reminderCountsFrom)
+    }
+
+    @Test
+    fun `GIVEN I was added after the reminder changed WHEN mapping to the domain THEN counts from my joining`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1").copy(reminderUpdatedAt = 5_000L))
+        val members = listOf(
+            memberEntity(
+                id = "m-1",
+                isMe = false,
+                addedAt = 1_000L,
+            ),
+            memberEntity(
+                id = "m-2",
+                isMe = true,
+                addedAt = 9_000L,
+            ),
+            memberEntity(
+                id = "m-3",
+                isMe = false,
+                addedAt = 12_000L,
+            ),
+        )
+
+        // When
+        val group = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
+
+        // Then
+        assertEquals(9_000L, group.reminderCountsFrom)
+    }
+
+    @Test
+    fun `GIVEN a group without my member WHEN mapping to the domain THEN counts from the reminder change alone`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1").copy(reminderUpdatedAt = 5_000L))
+        val members = listOf(
+            memberEntity(
+                id = "m-1",
+                isMe = false,
+                addedAt = 9_000L,
+            ),
+        )
+
+        // When
+        val group = mapper
+            .toDomain(
+                groups,
+                members,
+                photos = emptyList(),
+                myPhotoUrl = null,
+            ).single()
+
+        // Then
+        assertEquals(5_000L, group.reminderCountsFrom)
+    }
+
+    @Test
+    fun `GIVEN a reminder never stamped and no member of mine WHEN mapping to the domain THEN counts every one`() {
+        // Given
+        val groups = listOf(groupEntity(id = "group-1"))
+
+        // When
+        val group = toDomain(groups)
+
+        // Then
+        assertEquals(0L, group.reminderCountsFrom)
+    }
+
+    @Test
+    fun `GIVEN I joined two groups at different times WHEN mapping to the domain THEN each counts from mine`() {
+        // Given
+        val groups = listOf(
+            groupEntity(id = "group-1").copy(reminderUpdatedAt = 1_000L),
+            groupEntity(id = "group-2").copy(reminderUpdatedAt = 1_000L),
+        )
+        val members = listOf(
+            memberEntity(
+                id = "m-1",
+                groupId = "group-1",
+                isMe = true,
+                addedAt = 3_000L,
+            ),
+            memberEntity(
+                id = "m-2",
+                groupId = "group-2",
+                isMe = true,
+                addedAt = 8_000L,
+            ),
+        )
+
+        // When
+        val mapped = mapper.toDomain(
+            groups,
+            members,
+            photos = emptyList(),
+            myPhotoUrl = null,
+        )
+
+        // Then
+        assertEquals(listOf(3_000L, 8_000L), mapped.map { it.reminderCountsFrom })
+    }
+
+    @Test
+    fun `GIVEN a new group WHEN mapping it to an entity THEN its reminder is stamped at the creation time`() {
+        // Given
+        val createdAt = 42_000L
+
+        // When
+        val entity = mapper.toEntity(
+            group = newGroup,
+            createdAt = createdAt,
+            ownerUserId = "user-1",
+        )
+
+        // Then
+        assertEquals(42_000L, entity.reminderUpdatedAt)
+    }
+
+    @Test
+    fun `GIVEN a stored reminder change WHEN mapping the group to a DTO THEN sends its stamp`() {
+        // Given
+        val entity = groupEntity(id = "group-1").copy(reminderUpdatedAt = 6_000L)
+
+        // When
+        val dto = mapper.toDto(
+            entity,
+            userId = "user-1",
+            photoUrl = null,
+        )
+
+        // Then
+        assertEquals(6_000L, dto.reminderUpdatedAt)
+    }
+
+    @Test
+    fun `GIVEN a server row with the reminder stamp WHEN mapping it to an entity THEN keeps that stamp`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-2",
+        ).copy(reminderUpdatedAt = 8_000L)
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertEquals(8_000L, entity.reminderUpdatedAt)
+    }
+
+    @Test
+    fun `GIVEN a server row without the reminder stamp WHEN mapping it to an entity THEN reads it as never changed`() {
+        // Given
+        val dto = groupDto(
+            id = "group-1",
+            createdBy = "user-2",
+        )
+
+        // When
+        val entity = mapper.toEntity(dto, ownerUserId = "user-1")
+
+        // Then
+        assertEquals(0L, entity.reminderUpdatedAt)
+    }
+
     private val simplificationJson =
         """{"before":[{"from":"m-2","to":"m-1","amount":3000},{"from":"m-3","to":"m-2","amount":3000}],""" +
             """"after":[{"from":"m-3","to":"m-1","amount":3000}]}"""

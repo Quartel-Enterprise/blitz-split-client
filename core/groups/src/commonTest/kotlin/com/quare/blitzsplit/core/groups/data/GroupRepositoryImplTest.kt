@@ -764,6 +764,150 @@ class GroupRepositoryImplTest {
     }
 
     @Test
+    fun `GIVEN a server group with its reminder stamp WHEN downloading THEN the device keeps that stamp`() = runTest {
+        // Given
+        prepareScenario(
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    createdBy = "user-2",
+                ).copy(reminderUpdatedAt = 5_000L),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1").getOrThrow()
+
+        // Then
+        assertEquals(5_000L, local.group("group-1")?.reminderUpdatedAt)
+    }
+
+    @Test
+    fun `GIVEN an older server without the reminder stamp WHEN downloading a new group THEN counts it as never`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        createdBy = "user-2",
+                    ),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1").getOrThrow()
+
+            // Then
+            assertEquals(0L, local.group("group-1")?.reminderUpdatedAt)
+        }
+
+    @Test
+    fun `GIVEN a later reminder stamp on an older server row WHEN downloading THEN the device takes the stamp`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(
+                    group(
+                        id = "group-1",
+                        updatedAt = 9L,
+                    ).copy(reminderUpdatedAt = 1_000L),
+                ),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        updatedAt = 3L,
+                    ).copy(reminderUpdatedAt = 4_000L),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1").getOrThrow()
+
+            // Then
+            assertEquals(4_000L, local.group("group-1")?.reminderUpdatedAt)
+        }
+
+    @Test
+    fun `GIVEN a local reminder change after the server stamp WHEN downloading THEN the device keeps its own`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedGroups = listOf(group(id = "group-1").copy(reminderUpdatedAt = 6_000L)),
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        updatedAt = 9L,
+                    ).copy(reminderUpdatedAt = 2_000L),
+                ),
+            )
+
+            // When
+            repository.downloadGroups("user-1").getOrThrow()
+
+            // Then
+            assertEquals(6_000L, local.group("group-1")?.reminderUpdatedAt)
+        }
+
+    @Test
+    fun `GIVEN a pending group with a reminder stamp WHEN uploading THEN pushes that stamp`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(
+                    id = "group-1",
+                    pendingSync = true,
+                ).copy(reminderUpdatedAt = 7_000L),
+            ),
+        )
+
+        // When
+        repository.uploadPendingGroups("user-1").getOrThrow()
+
+        // Then
+        assertEquals(
+            7_000L,
+            remote.upsertedGroups
+                .single()
+                .single()
+                .reminderUpdatedAt,
+        )
+    }
+
+    @Test
+    fun `GIVEN I joined after the server reminder stamp WHEN observing after a download THEN counts from my joining`() =
+        runTest {
+            // Given
+            prepareScenario(
+                remoteGroups = listOf(
+                    groupDto(
+                        id = "group-1",
+                        createdBy = "user-2",
+                    ).copy(reminderUpdatedAt = 5_000L),
+                ),
+                remoteMembers = listOf(
+                    memberDto(
+                        id = "m-1",
+                        groupId = "group-1",
+                        userId = "user-2",
+                    ),
+                    memberDto(
+                        id = "m-2",
+                        groupId = "group-1",
+                        userId = "user-1",
+                    ).copy(addedAt = 9_000L),
+                ),
+            )
+            repository.downloadGroups("user-1").getOrThrow()
+
+            // When
+            val group = repository.observeGroups().first().single()
+
+            // Then
+            assertEquals(9_000L, group.reminderCountsFrom)
+        }
+
+    @Test
     fun `GIVEN members on the server WHEN downloading THEN only those with an account have joined`() = runTest {
         // Given
         prepareScenario(
@@ -7642,6 +7786,7 @@ private class FakeGroupLocalDataSource(
                         simplifyDebtsChange = current.simplifyDebtsChange,
                         simplifyDebtsPending = current.simplifyDebtsPending,
                         simplifyDebtsConflictBy = current.simplifyDebtsConflictBy,
+                        reminderUpdatedAt = current.reminderUpdatedAt,
                     ),
                 )
         }
@@ -7651,6 +7796,10 @@ private class FakeGroupLocalDataSource(
                 inviteCode = it,
             )
         }
+        // Why: like GroupDao, the reminder's stamp comes down whichever row wins, and the later one stays.
+        group(entity.id)
+            ?.takeIf { it.ownerUserId == entity.ownerUserId && it.reminderUpdatedAt < entity.reminderUpdatedAt }
+            ?.let { put(it.copy(reminderUpdatedAt = entity.reminderUpdatedAt)) }
         markGroupsOnServer(listOf(entity.id))
         val now = group(entity.id)
         if (current != null && now != null && now.ownerUserId == entity.ownerUserId &&

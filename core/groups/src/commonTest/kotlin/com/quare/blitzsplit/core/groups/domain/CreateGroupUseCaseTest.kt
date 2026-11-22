@@ -402,6 +402,18 @@ class CreateGroupUseCaseTest {
         )
     }
 
+    @Test
+    fun `GIVEN a new group WHEN creating it THEN its reminder counts only from the moment it was created`() = runTest {
+        // Given
+        prepareScenario(now = 7_000L)
+
+        // When
+        createGroup()
+
+        // Then
+        assertEquals(7_000L, repository.createdGroups.single().reminderCountsFrom)
+    }
+
     private suspend fun createGroup(
         name: String = "Viagem Floripa",
         members: List<NewGroupMember> = listOf(me),
