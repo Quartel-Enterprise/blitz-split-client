@@ -40,7 +40,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
       account: a session lost for any other reason (revoked, the account deleted from another device) keeps the
       profile as before, with no alert.
   - On a phone upright, Welcome is headed by the app's logo alone, with no decorative shapes, so its buttons and the
-    legal line fit on one screen without scrolling (Pierre's call, November 2026). Android keeps its shapes only where
+    legal line fit on one screen on a typical phone (Pierre's call, November 2026; a small phone or a large font still
+    scrolls, with the buttons in the same scroll as the pitch). Android keeps its shapes only where
     there is room for them: the pitch panel of a tablet (upright or lying down) and of a book, and the small badge
     beside the actions on a phone lying down. The web keeps the brand panel's corner shapes in its two columns and
     drops them, with the space kept for them, when narrow. iOS and macOS draw the logo alone everywhere.
