@@ -8,6 +8,13 @@ description: "Bump the libraries, plugins and tools of every platform to their n
 Updates every dependency of the monorepo to the newest release the stability rule allows, checks
 each platform still builds, and opens one `chore` pull request.
 
+Renovate already opens these bumps every week (`renovate.json`, see "Dependency updates" in
+`docs/ci.md`). Use this skill when the user asks for a bump now, or to finish a Renovate pull
+request whose bump needs code changes (a major, a deprecation turned error): then work on that
+pull request's branch instead of starting a new one. Before starting, look for an open one with
+`gh pr list --author app/renovate`, so two pull requests don't touch the same lines. When a pin
+below changes, change its rule in `renovate.json` too.
+
 ## The stability rule
 
 - A **stable** version only moves to a newer **stable** one, even when a newer pre-release exists.
@@ -67,11 +74,10 @@ Plugin Portal. Entries no library or plugin points at (the SDK levels) are liste
 - **Firebase** on Apple (`iosApp/project.yml`) and on the web (`firebase` in npm) are separate SDKs
   with separate release lines; bump each to its own newest.
 - **`Quartel-Enterprise/claude-review`** and **`Quartel-Enterprise/copied-code-check`** are bumped
-  by Dependabot (`.github/dependabot.yml`), in pull requests of their own; every other action is
-  bumped by hand, here. Leave those two out unless the user asks, and check `gh pr list --author
-  app/dependabot` for an open one first so the two pull requests don't touch the same lines. Every
-  `uses:` of claude-review must pin the same release (`claude-review-refs.yml` fails otherwise), and
-  copied-code-check's `uses:` in `duplication.yml` is also what `scripts/cpd.sh` runs.
+  by Renovate in pull requests of their own as soon as they release. Leave those two out unless the
+  user asks. Every `uses:` of claude-review must pin the same release (`claude-review-refs.yml`
+  fails otherwise), and copied-code-check's `uses:` in `duplication.yml` is also what
+  `scripts/cpd.sh` runs.
   **`quare-ktlint-rules`** in the catalog is read by `scripts/ktlint.sh`.
 - **Android SDK levels**: a new `targetSdk` changes how Android runs the app, and a new `minSdk`
   drops users. Don't bump them here (`compileSdk` is the exception, see above): report a newer API level to the user and leave it for its own

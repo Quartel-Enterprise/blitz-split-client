@@ -298,8 +298,9 @@ The review, the gate and the threads lookups are the `review`, `gate` and `threa
 [Quartel-Enterprise/claude-review](https://github.com/Quartel-Enterprise/claude-review), shared with
 bible-planner-mobile-client. Every `uses:` of them (`claude-review.yml`, `claude-review-on-request.yml`,
 `review-gate.yml`, `run-checks.yml`, `merge-when-green.yml`) pins the same exact release: a fix there ships as a release, then a bump of all
-of them here, which `claude-review-refs` checks. Dependabot opens that bump as one pull request the day after a
-release (`.github/dependabot.yml`), and the review skips it. What runs comes from that release, never from the pull request under
+of them here, which `claude-review-refs` checks. Renovate opens that bump as one pull request as soon as the release
+ships (see [Dependency updates](#dependency-updates)), and the review skips it, since it changes the review's own
+workflow. What runs comes from that release, never from the pull request under
 review, so a pull request can't change the review that judges it. How the review works, which Bash commands it may
 run and how it keeps the tokens out of its comments are in that repository's README.
 
@@ -488,6 +489,35 @@ When a workflow is added to or renamed in the pull request checks, update the `w
 not trigger one. A new workflow started by a label goes in the list of label workflows of its `Check whether every
 check passed` step instead: a run of it still queued would hold the merge, and its skipped completion would start
 nothing.
+
+## Dependency updates
+
+[Renovate](https://docs.renovatebot.com/) proposes the new releases of every platform: the Gradle catalog, the
+settings plugins and the Gradle wrapper, the npm packages of `webApp/` and `scripts/store-video/remotion/`, the Swift
+packages of `iosApp/project.yml` (its `xcodegen` manager) and the `uses:` of the workflows and actions. It runs as the
+Mend Renovate GitHub App, free, installed on this repository; `renovate.json` is its whole configuration. It replaced
+Dependabot, which only bumped the two Quartel-Enterprise actions.
+
+- Every minor and patch goes in one pull request a week, `chore: bump the libraries of every platform`, opened on
+  Monday before 9:00 (São Paulo). A major gets a pull request of its own, so its breaking changes are fixed apart from
+  the rest; the packages that must share a version (React, Tailwind, Remotion) move their major together.
+- The claude-review refs move together in one pull request, and copied-code-check in one of its own, both as soon as
+  a release ships.
+- The stability rule and the pins are those of the `bump-versions` skill: a stable release only moves to a newer
+  stable one; `@js-joda/core` follows kotlinx-datetime by hand; `androidx-lifecycle` moves only once JetBrains'
+  `lifecycle-viewmodel` has the release; the CI runtimes (`java-version`, `node-version`,
+  `ruby-version`) and the Android SDK levels change only when the build needs them.
+- Renovate never merges. Its pull requests run the checks like any other: read the release notes it links, fix what
+  breaks on the branch (or run the `bump-versions` skill for a major that needs code changes), and add
+  `merge-when-green`. A Kotlin bump that brings new npm packages fails the JS build with "Lock file was changed":
+  run `./gradlew kotlinUpgradeYarnLock` on the branch and commit `kotlin-js-store/yarn.lock`. Once anyone (or
+  claude-review's fix commit) pushes to a Renovate branch, Renovate stops rebasing it, and ticking rebase on the
+  Dependency Dashboard would throw those commits away: merge `main` into it by hand instead.
+- The Dependency Dashboard issue lists every update pending, held for the schedule or failing. Tick one there to
+  have Renovate open its pull request now.
+
+To check a change to `renovate.json` before it merges:
+`npx --package renovate renovate-config-validator --strict renovate.json`.
 
 ## Code scanning
 

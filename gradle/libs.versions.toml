@@ -189,7 +189,7 @@ qrose-encoder-matrix = { module = "io.github.alexzhirkevich:qrose-encoder-matrix
 # Quare
 quare-connectivity = { module = "software.quare:connectivity", version.ref = "quare-connectivity" }
 quare-loadable = { module = "software.quare:loadable", version.ref = "quare-loadable" }
-# Unused by Gradle; it lets Dependabot / Renovate propose new releases of the ktlint ruleset
+# Unused by Gradle; it lets Renovate propose new releases of the ktlint ruleset
 quare-ktlint-rules = { module = "software.quare:ktlint-rules", version.ref = "quare-ktlint-rules" }
 
 # Store listing screenshots
