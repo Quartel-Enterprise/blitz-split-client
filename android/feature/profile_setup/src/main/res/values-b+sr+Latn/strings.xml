@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Kako te zovu prijatelji?</string>
+    <string name="profile_setup_subtitle">Tvoje grupe i svako ko ima link do tvog profila vide tvoje ime.</string>
+    <string name="profile_setup_avatar_color">Boja avatara</string>
+    <string name="profile_setup_add_photo">Dodaj fotografiju</string>
+    <string name="profile_setup_photo_error">Ova fotografija ne može da se koristi. Probaj drugu.</string>
+    <string name="profile_setup_name_label">Tvoje ime</string>
+    <string name="profile_setup_name_placeholder">Marko Marković</string>
+    <string name="profile_setup_name_too_short">Upiši bar %d slova.</string>
+    <string name="profile_setup_name_too_long">Koristi najviše %d znakova.</string>
+    <string name="profile_setup_name_hint">Možeš to da promeniš kasnije u Profilu.</string>
+    <string name="profile_setup_saved_locally">Zasad je sačuvano samo na ovom uređaju.</string>
+    <string name="profile_setup_continue">Nastavi</string>
+</resources>

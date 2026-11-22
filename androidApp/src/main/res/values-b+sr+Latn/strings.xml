@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Nisi u ovoj grupi</string>
+    <string name="bill_link_not_in_group_message">Ovaj komentar je u grupi u kojoj nisi. Pitaj onoga ko ti je poslao link da ti pošalje pozivnicu.</string>
+    <string name="bill_link_offline_title">Nema interneta</string>
+    <string name="bill_link_offline_message">Ponovo otvori link kad se vratiš na mrežu.</string>
+    <string name="bill_link_go_home">Idi na Početnu</string>
+    <string name="discard_changes_title">Odbaciti izmene?</string>
+    <string name="discard_changes_message">Nesačuvane izmene biće izgubljene.</string>
+    <string name="discard_changes_discard">Odbaci</string>
+    <string name="discard_changes_keep_editing">Nastavi izmenu</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Sat</string>
+    <string name="watch_connected_title">%1$s: povezan sa tvojim nalogom</string>
+    <string name="watch_connected_title_unnamed">Sat je povezan sa tvojim nalogom</string>
+    <string name="watch_connected_text">Vidi tvoje grupe i sinhronizuje se samostalno. Da ga odvojiš, odjavi se na satu.</string>
+</resources>

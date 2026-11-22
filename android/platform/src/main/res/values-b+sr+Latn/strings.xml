@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · kod za oporavak</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Dozvoli kameru u Podešavanjima da bi napravio/la fotografiju.</string>
+    <string name="platform_camera_settings">Podešavanja</string>
+    <string name="platform_receipt_source_camera">Fotografiši</string>
+    <string name="platform_receipt_source_gallery">Izaberi iz galerije</string>
+    <string name="platform_receipt_source_file">Izaberi datoteku</string>
+    <string name="platform_receipt_camera_title">Skeniraj fiskalni račun</string>
+    <string name="platform_receipt_camera_close">Zatvori</string>
+    <string name="platform_receipt_camera_flash_on">Uključi blic</string>
+    <string name="platform_receipt_camera_flash_off">Isključi blic</string>
+    <string name="platform_receipt_camera_hint">Uklopi ceo fiskalni račun u okvir. Mi popunjavamo iznos, datum i opis, a ti proveriš pre čuvanja.</string>
+    <string name="platform_receipt_camera_gallery">Izaberi iz galerije</string>
+    <string name="platform_receipt_camera_shutter">Fotografiši</string>
+    <string name="platform_receipt_camera_unavailable">Kamera nije dostupna. Izaberi iz galerije fotografiju fiskalnog računa.</string>
+    <string name="platform_receipt_camera_permission">Dozvoli kameru da skeniraš fiskalni račun ili izaberi fotografiju iz galerije.</string>
+    <string name="platform_receipt_camera_allow">Dozvoli kameru</string>
+    <string name="platform_receipt_camera_settings">Otvori podešavanja</string>
+</resources>

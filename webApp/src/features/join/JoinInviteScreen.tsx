@@ -7,7 +7,8 @@ import { AvatarStack, stackOf } from '@/components/AvatarStack'
 import { Button } from '@/components/ui/button'
 import { LoadingRegion, Skeleton, SkeletonCircle, SkeletonLine } from '@/components/ui/skeleton'
 import { GroupAvatar } from '@/features/create-group/GroupAvatar'
-import { locale, t } from '@/i18n'
+import { t } from '@/i18n'
+import { uiTag } from '@/lib/currency'
 import { GROUP_SHAPE } from '@/lib/avatar'
 import { cn } from '@/lib/utils'
 
@@ -96,7 +97,7 @@ function Invite({ presenter, state }: { presenter: JoinInvitePresenter; state: J
         // Why: a sentence too long for one line beside the faces wraps under them with the whole width.
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <Faces members={state.joined} />
-          <p className="text-sm">{t(state.joinedNames.length === 1 ? 'join_alreadyInOne' : 'join_alreadyInOther', { names: new Intl.ListFormat(locale, { type: 'conjunction' }).format(state.joinedNames) })}</p>
+          <p className="text-sm">{t(state.joinedNames.length === 1 ? 'join_alreadyInOne' : 'join_alreadyInOther', { names: new Intl.ListFormat(uiTag, { type: 'conjunction' }).format(state.joinedNames) })}</p>
         </div>
       )}
       <p className="text-sm text-muted-foreground">{member != null ? t('join_personalHint', { name: member.name }) : t('join_hint')}</p>

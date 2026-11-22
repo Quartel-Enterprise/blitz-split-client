@@ -15,7 +15,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { locale, t } from '@/i18n'
+import { t } from '@/i18n'
+import { uiTag } from '@/lib/currency'
 import { copyLink, shareOrCopy } from '@/lib/share'
 import { cn } from '@/lib/utils'
 
@@ -267,7 +268,7 @@ function PendingLink({ isOnline, isFailed, onRetry }: { isOnline: boolean; isFai
 /** "Quem abrir o link escolhe quem é na lista: Ana, Bruno ou Carla", with the names in bold. */
 function WhoPicks({ names }: { names: string[] }) {
   if (names.length === 0) return <>{t('invite_anyoneJoins')}</>
-  const joined = new Intl.ListFormat(locale, { type: 'disjunction' }).format(names)
+  const joined = new Intl.ListFormat(uiTag, { type: 'disjunction' }).format(names)
   const [before, after] = t('invite_whoPicks', { names: '\u0000' }).split('\u0000')
   return (
     <>

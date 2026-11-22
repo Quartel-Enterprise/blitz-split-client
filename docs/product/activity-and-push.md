@@ -105,6 +105,10 @@ The feed, unread state, real time and push notifications.
     but before "si": a join is "je ušao/la u grupu", a photo line "je priložio/la danas u 21:10". A name is never declined,
     standing after a noun that takes the case ("je dodao/la člana Ana"), and the deleted-item notice starts with who
     deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`) rather than a "by" that would decline the name ("od Ane").
+    Serbian's past is Croatian's perfect, so it follows Croatian's rule: every Serbian verb phrase starts with "je" and
+    a past written "-o/la", the app not knowing the gender, which the user's rows turn into "si" ("Ana je podelio/la
+    trošak", "Ti si podelio/la trošak"); no reflexive "se" nor object pronoun comes before that "je", a name is never
+    declined, and the deleted-item notice starts with who deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`).
     Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".

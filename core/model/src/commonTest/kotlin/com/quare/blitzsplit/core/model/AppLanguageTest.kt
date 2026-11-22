@@ -432,6 +432,30 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Serbian tag in the Latin script WHEN reading it THEN is Serbian`() {
+        // Given
+        val tags = listOf("sr-Latn", "sr-Latn-RS", "SR-latn-me", "sr_Latn_BA")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.SERBIAN }, languages)
+    }
+
+    @Test
+    fun `GIVEN a Serbian tag in Cyrillic or with no script WHEN reading it THEN is no language the app has`() {
+        // Given
+        val tags = listOf("sr", "sr-RS", "sr-Cyrl", "sr-Cyrl-RS", "sr_ME")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.SYSTEM }, languages)
+    }
+
+    @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN is Traditional Chinese`() {
         // Given
         val tags = listOf("zh-Hant", "zh-TW", "zh_TW", "zh-Hant-TW", "zh-HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
@@ -553,6 +577,7 @@ class AppLanguageTest {
                 "HU",
                 "UR",
                 "FIL",
+                "SR",
             ),
             codes,
         )

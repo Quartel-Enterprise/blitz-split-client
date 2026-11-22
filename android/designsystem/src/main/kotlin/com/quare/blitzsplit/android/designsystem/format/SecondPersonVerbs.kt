@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import com.quare.blitzsplit.android.designsystem.R
+import java.util.Locale
 
 private const val SPANISH = "es"
 private const val PORTUGUESE = "pt"
@@ -29,6 +30,8 @@ private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
 private const val GREEK = "el"
 private const val CROATIAN = "hr"
+private const val SERBIAN = "sr"
+private const val LATIN_SCRIPT = "Latn"
 private const val URDU = "ur"
 private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
 private const val HUNGARIAN = "hu"
@@ -70,6 +73,7 @@ private val secondPersonAuxiliaries = mapOf(
     DUTCH to mapOf("heeft" to "hebt", "is" to "bent"),
     ROMANIAN to mapOf("a" to "ai"),
     CROATIAN to mapOf("je" to "si"),
+    SERBIAN to mapOf("je" to "si"),
 )
 private val turkishPast = Regex("[dt][ıiuü]$")
 private val youSubjectLanguages = setOf(
@@ -92,6 +96,7 @@ private val youSubjectLanguages = setOf(
     BENGALI,
     GREEK,
     CROATIAN,
+    SERBIAN,
     HUNGARIAN,
     URDU,
     FILIPINO,
@@ -266,8 +271,15 @@ fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages
 private fun secondPersonLanguageUi(): String {
     val locale = LocalLocale.current.platformLocale
     val isPortugal = LocalContext.current.resources.getBoolean(R.bool.designsystem_portugal_portuguese)
-    return if (locale.language == PORTUGUESE && isPortugal) PORTUGAL_PORTUGUESE else locale.language
+    return when {
+        locale.language == PORTUGUESE && isPortugal -> PORTUGAL_PORTUGUESE
+        isCyrillicSerbian(locale) -> ""
+        else -> locale.language
+    }
 }
+
+// Why: a Serbian device in Cyrillic draws the English strings, the app having the Latin resources only.
+private fun isCyrillicSerbian(locale: Locale): Boolean = locale.language == SERBIAN && locale.script != LATIN_SCRIPT
 
 // Why: only the user is "Tú"; the verb of someone else stays in the third person.
 @Composable

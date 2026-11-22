@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Beleške o izdanju</string>
+    <string name="release_notes_show_beta">Prikaži beta verzije</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Ova verzija</string>
+    <string name="release_notes_empty">Još nema beleški o izdanju.</string>
+    <string name="release_notes_empty_only_betas">Još nema stabilne verzije. Uključi beta verzije da vidiš šta se testira.</string>
+    <string name="release_notes_load_failed_title">Beleške o izdanju nisu učitane</string>
+    <string name="release_notes_load_failed_body">Proveri vezu i pokušaj ponovo.</string>
+    <string name="release_notes_retry">Pokušaj ponovo</string>
+    <string name="release_notes_open_on_github">Otvori na GitHub-u</string>
+</resources>

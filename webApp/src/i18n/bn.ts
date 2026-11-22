@@ -859,6 +859,7 @@ export const bn: Record<MessageKey, string> = {
   profile_languageHungarian: 'হাঙ্গেরীয়',
   profile_languageUrdu: 'উর্দু',
   profile_languageFilipino: 'ফিলিপিনো',
+  profile_languageSerbian: 'সার্বিয়ান',
   profile_bitcoinInSats: 'স্যাটোশিতে Bitcoin',
   profile_bitcoinInSatsDetail: 'Bitcoin-এর পরিমাণ sats-এ দেখায় ও লেখা যায় (1 ₿ = 100,000,000 sats)।',
   profile_shareUsageData: 'ব্যবহারের ডেটা শেয়ার করুন',

@@ -37,7 +37,8 @@
         "hr": "Aplikacija sada govori filipinski: odaberi „Filipino“ u Profil › Jezik ili ostavi jezik svog uređaja.",
         "hu": "Az app mostantól filippínóul is beszél: válaszd a „Filipino” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
         "ur": "اب ایپ فلپائنی میں بھی دستیاب ہے: پروفائل › زبان میں “Filipino” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
-        "fil": "Marunong na ng Filipino ang app: piliin ang \"Filipino\" sa Profile › Wika, o hayaan itong sundin ang device mo."
+        "fil": "Marunong na ng Filipino ang app: piliin ang \"Filipino\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori filipinski: izaberi „Filipino“ u Profil › Jezik ili je pusti da prati tvoj uređaj."
       }
     },
     {
@@ -77,7 +78,8 @@
         "hr": "Grupe sada mogu dijeliti u filipinskom pesu (PHP, „₱“), a grupa napravljena na Filipinima počinje u njemu.",
         "hu": "A csoportok mostantól fülöp-szigeteki pesót (PHP, „₱”) is használhatnak, és a Fülöp-szigeteken létrehozott csoport ebben indul.",
         "ur": "اب گروپ فلپائنی پیسو (PHP، “₱”) میں تقسیم کر سکتے ہیں، اور فلپائن میں بنایا گیا گروپ اسی کرنسی سے شروع ہوتا ہے۔",
-        "fil": "Puwede nang maghati ang mga grupo sa Philippine peso (PHP, \"₱\"), at ang grupong ginawa sa Pilipinas ay magsisimula rito."
+        "fil": "Puwede nang maghati ang mga grupo sa Philippine peso (PHP, \"₱\"), at ang grupong ginawa sa Pilipinas ay magsisimula rito.",
+        "sr": "Grupe sada mogu da dele u filipinskom pesu (PHP, „₱“), a grupa napravljena na Filipinima počinje u njemu."
       }
     }
   ]

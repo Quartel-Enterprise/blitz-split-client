@@ -64,6 +64,7 @@ enum SecondPerson {
         "nl": ["heeft": "hebt", "is": "bent"],
         "ro": ["a": "ai"],
         "hr": ["je": "si"],
+        "sr": ["je": "si"],
     ]
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".

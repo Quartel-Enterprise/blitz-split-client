@@ -46,6 +46,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import software.quare.loadable.toLoaded
 import java.io.File
+import java.util.Locale
 import java.util.TimeZone
 
 /**
@@ -150,9 +151,13 @@ private fun artDevicesOf(names: String?): List<PlayArtDevice> {
     }
 }
 
-/** What Robolectric's qualifiers call a locale: "pt-BR" is "pt-rBR". */
+/** What Robolectric's qualifiers call a locale: "pt-BR" is "pt-rBR", and "sr-Latn-RS" (with a script) "b+sr+Latn+RS". */
 private val StoreLocale.qualifier: String
-    get() = drawnLocale.replace("-", "-r")
+    get() = if (Locale.forLanguageTag(drawnLocale).script.isEmpty()) {
+        drawnLocale.replace("-", "-r")
+    } else {
+        "b+" + drawnLocale.replace("-", "+")
+    }
 
 // Why: "Pagar Carla", the person this device's user owes, with the made-up key the App Store's capture shows.
 @Composable

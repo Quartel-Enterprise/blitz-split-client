@@ -86,6 +86,7 @@ export const PLAY_LOCALES = {
   hu: ["hu-HU"],
   ur: ["ur"],
   fil: ["fil"],
+  sr: ["sr"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -122,6 +123,8 @@ export const APP_STORE_LOCALES = {
   ur: ["ur-PK"],
   // Apple has no Filipino listing locale: the language has a Play listing and no App Store one.
   fil: [],
+  // Apple has no Serbian listing locale either: the language has a Play listing and no App Store one.
+  sr: [],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */

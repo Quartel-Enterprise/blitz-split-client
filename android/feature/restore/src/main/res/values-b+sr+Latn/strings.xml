@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Vrati svoje grupe</string>
+    <string name="restore_subtitle">Ranije si se prijavio/la nalogom? Samo se ponovo prijavi. Ako nisi, koristi kod za oporavak ili QR kod sa starog uređaja.</string>
+    <string name="restore_no_connection_title">Nema veze</string>
+    <string name="restore_no_connection_body">Prijava nalogom ili kodom zahteva internet da bi se preuzele tvoje grupe. Ono što si upisao/la ostaje sačuvano.</string>
+    <string name="restore_code_label">Ili koristi kod za oporavak</string>
+    <string name="restore_code_hint">12 reči redom. Nalepi ih sve u jedno polje da popuniš sva polja.</string>
+    <string name="restore_scan_qr_title">Skeniraj QR kod sa starog uređaja</string>
+    <string name="restore_scan_qr_body">Tamo: Profil › Oporavak › Prikaži QR kod</string>
+    <string name="restore_recover">Oporavi</string>
+    <string name="restore_try_again">Pokušaj ponovo</string>
+    <string name="restore_start_fresh">Počni ispočetka na ovom uređaju</string>
+    <string name="restore_error_invalid_code">Kod nije pronađen. Proveri reči i njihov redosled, pa pokušaj ponovo.</string>
+    <string name="restore_error_too_many_attempts">Previše pokušaja. Sačekaj nekoliko minuta i pokušaj ponovo.</string>
+    <string name="restore_error_sign_in_failed">Prijava trenutno nije uspela. Pokušaj ponovo.</string>
+    <string name="restore_error_unknown">Nešto je pošlo naopako. Pokušaj ponovo.</string>
+</resources>

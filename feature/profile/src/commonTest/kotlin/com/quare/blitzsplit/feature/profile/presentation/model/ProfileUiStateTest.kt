@@ -49,6 +49,7 @@ class ProfileUiStateTest {
             AppLanguage.HUNGARIAN -> listOf("Magyar", "Hungarian")
             AppLanguage.URDU -> listOf("اردو", "Urdu")
             AppLanguage.FILIPINO -> listOf("Filipino", "Filipino")
+            AppLanguage.SERBIAN -> listOf("Srpski", "Serbian")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -97,6 +98,7 @@ class ProfileUiStateTest {
         AppLanguage.HUNGARIAN,
         AppLanguage.URDU,
         AppLanguage.FILIPINO,
+        AppLanguage.SERBIAN,
     )
 
     @Test
@@ -688,6 +690,7 @@ class ProfileUiStateTest {
                 AppLanguage.HUNGARIAN,
                 AppLanguage.URDU,
                 AppLanguage.FILIPINO,
+                AppLanguage.SERBIAN,
             ),
             options,
         )
@@ -738,6 +741,7 @@ class ProfileUiStateTest {
                 AppLanguage.HUNGARIAN,
                 AppLanguage.URDU,
                 AppLanguage.FILIPINO,
+                AppLanguage.SERBIAN,
             ),
             options,
         )
