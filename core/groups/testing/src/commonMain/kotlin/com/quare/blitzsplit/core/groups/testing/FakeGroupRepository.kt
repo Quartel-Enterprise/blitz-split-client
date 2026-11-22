@@ -201,6 +201,12 @@ class FakeGroupRepository(
                     photo = photo,
                     currency = currency,
                     reminder = reminder,
+                    // Why: as the device's write, a changed reminder counts from the edit.
+                    reminderCountsFrom = if (reminder != group.reminder) {
+                        maxOf(group.reminderCountsFrom, updatedAt)
+                    } else {
+                        group.reminderCountsFrom
+                    },
                     isPending = true,
                 )
             } else {

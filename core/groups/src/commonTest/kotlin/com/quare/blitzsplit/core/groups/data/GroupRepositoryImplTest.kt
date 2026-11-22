@@ -829,11 +829,16 @@ class GroupRepositoryImplTest {
         }
 
     @Test
-    fun `GIVEN a local reminder change after the server stamp WHEN downloading THEN the device keeps its own`() =
+    fun `GIVEN a newer local reminder change WHEN an older server row comes THEN the device keeps its own stamp`() =
         runTest {
             // Given
             prepareScenario(
-                storedGroups = listOf(group(id = "group-1").copy(reminderUpdatedAt = 6_000L)),
+                storedGroups = listOf(
+                    group(id = "group-1").copy(
+                        updatedAt = 20L,
+                        reminderUpdatedAt = 6_000L,
+                    ),
+                ),
                 remoteGroups = listOf(
                     groupDto(
                         id = "group-1",
@@ -848,6 +853,31 @@ class GroupRepositoryImplTest {
             // Then
             assertEquals(6_000L, local.group("group-1")?.reminderUpdatedAt)
         }
+
+    @Test
+    fun `GIVEN a later local reminder stamp WHEN a newer server row comes THEN takes the server stamp`() = runTest {
+        // Given
+        prepareScenario(
+            storedGroups = listOf(
+                group(id = "group-1").copy(
+                    updatedAt = 5L,
+                    reminderUpdatedAt = 6_000L,
+                ),
+            ),
+            remoteGroups = listOf(
+                groupDto(
+                    id = "group-1",
+                    updatedAt = 9L,
+                ).copy(reminderUpdatedAt = 2_000L),
+            ),
+        )
+
+        // When
+        repository.downloadGroups("user-1").getOrThrow()
+
+        // Then
+        assertEquals(2_000L, local.group("group-1")?.reminderUpdatedAt)
+    }
 
     @Test
     fun `GIVEN a pending group with a reminder stamp WHEN uploading THEN pushes that stamp`() = runTest {
@@ -7786,7 +7816,6 @@ private class FakeGroupLocalDataSource(
                         simplifyDebtsChange = current.simplifyDebtsChange,
                         simplifyDebtsPending = current.simplifyDebtsPending,
                         simplifyDebtsConflictBy = current.simplifyDebtsConflictBy,
-                        reminderUpdatedAt = current.reminderUpdatedAt,
                     ),
                 )
         }
@@ -7796,7 +7825,7 @@ private class FakeGroupLocalDataSource(
                 inviteCode = it,
             )
         }
-        // Why: like GroupDao, the reminder's stamp comes down whichever row wins, and the later one stays.
+        // Why: like GroupDao, a row that wins brings its stamp with its schedule; one that loses still raises the stamp.
         group(entity.id)
             ?.takeIf { it.ownerUserId == entity.ownerUserId && it.reminderUpdatedAt < entity.reminderUpdatedAt }
             ?.let { put(it.copy(reminderUpdatedAt = entity.reminderUpdatedAt)) }

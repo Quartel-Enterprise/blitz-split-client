@@ -90,6 +90,7 @@ interface GroupDao : GroupReminderQueries {
             reminderKind = entity.reminderKind,
             reminderDay = entity.reminderDay,
             reminderMinute = entity.reminderMinute,
+            reminderUpdatedAt = entity.reminderUpdatedAt,
             createdBy = entity.createdBy,
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
@@ -183,17 +184,15 @@ interface GroupDao : GroupReminderQueries {
      * Why: "Editar grupo" changes the group's own fields; who created it, its members and its invite code stay. The
      * edit is stamped after the row it changes, even when that row came from a device whose clock runs ahead, or
      * Last-Write-Wins would drop it on the next sync. A null shape keeps the stored code, so an edit that leaves the
-     * shape alone never turns a group made before shapes, or a newer app's shape, into a square. A change of the
-     * reminder's schedule or switch stamps reminderUpdatedAt, after the stored one, so its banner starts from the edit.
+     * shape alone never turns a group made before shapes, or a newer app's shape, into a square. A null
+     * reminderUpdatedAt keeps the stored stamp: the caller decides whether the reminder changed.
      */
     @Query(
         "UPDATE split_group SET name = :name, type = :type, color = :color, shape = COALESCE(:shape, shape), " +
             "photoUrl = :photoUrl, pendingPhoto = :pendingPhoto, currency = :currency, " +
             "reminderEnabled = :reminderEnabled, reminderKind = :reminderKind, reminderDay = :reminderDay, " +
             "reminderMinute = :reminderMinute, " +
-            "reminderUpdatedAt = CASE WHEN reminderEnabled != :reminderEnabled OR reminderKind != :reminderKind " +
-            "OR reminderDay != :reminderDay OR reminderMinute != :reminderMinute " +
-            "THEN MAX(:updatedAt, reminderUpdatedAt + 1) ELSE reminderUpdatedAt END, " +
+            "reminderUpdatedAt = COALESCE(:reminderUpdatedAt, reminderUpdatedAt), " +
             "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
     )
     suspend fun updateGroup(
@@ -209,6 +208,7 @@ interface GroupDao : GroupReminderQueries {
         reminderKind: String,
         reminderDay: Int,
         reminderMinute: Int,
+        reminderUpdatedAt: Long?,
         updatedAt: Long,
     )
 
@@ -432,7 +432,7 @@ interface GroupDao : GroupReminderQueries {
         "UPDATE split_group SET name = :name, type = :type, color = :color, currency = :currency, " +
             "defaultSplit = :defaultSplit, shape = :shape, photoUrl = :photoUrl, pendingPhoto = NULL, " +
             "reminderEnabled = :reminderEnabled, reminderKind = :reminderKind, reminderDay = :reminderDay, " +
-            "reminderMinute = :reminderMinute, " +
+            "reminderMinute = :reminderMinute, reminderUpdatedAt = :reminderUpdatedAt, " +
             "createdBy = :createdBy, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
             "WHERE id = :id AND ownerUserId = :ownerUserId AND updatedAt < :remoteUpdatedAt",
     )
@@ -449,6 +449,7 @@ interface GroupDao : GroupReminderQueries {
         reminderKind: String,
         reminderDay: Int,
         reminderMinute: Int,
+        reminderUpdatedAt: Long,
         createdBy: String?,
         addedAt: Long,
         remoteUpdatedAt: Long,
