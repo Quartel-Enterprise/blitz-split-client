@@ -57,7 +57,7 @@ fun ShapeClusterHero(modifier: Modifier = Modifier) {
     }
 }
 
-// Why: the logo cookie that heads the welcome on a phone upright and the tablet pitch panel.
+// Why: the logo cookie that heads the welcome on a phone upright and the pitch panel of a tablet and of a book.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LogoBadgeIcon(modifier: Modifier = Modifier) {
