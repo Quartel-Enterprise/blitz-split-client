@@ -11,7 +11,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { listingScreens } from "./local-set.mjs";
+import { listingScreens, WATCH_SCREENS, WATCH_SHELF_TYPE } from "./local-set.mjs";
 import { check, plan, shelfProblems, tidyShelf } from "./shelves.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -145,8 +145,45 @@ describe("what sorting doesn't fix", () => {
 
   test("names a file that is no staged image, and a shelf with nothing on it", () => {
     const shelf = shelfOf([...uploaded("mac"), shot("Screenshot 2026-11-18.png")], { shelf: "APP_DESKTOP" });
-    assert.deepEqual(tidyShelf(shelf).problems, ["Screenshot 2026-11-18.png is not <screen>_<device>.png, with a screen of screens.tsv"]);
+    assert.deepEqual(tidyShelf(shelf).problems, ["Screenshot 2026-11-18.png is not <screen>_<device>.png, with a screen of screens.tsv or of the watch's four"]);
     assert.deepEqual(tidyShelf(shelfOf([])).problems, ["holds no screenshot"]);
+  });
+});
+
+describe("the Apple Watch's shelf", () => {
+  const watch = () => shelfOf(WATCH_SCREENS.map((screen) => shot(fileOf(screen, "watch_ultra_3"))).toReversed(), { shelf: WATCH_SHELF_TYPE });
+
+  test("holds the watch's four screens, which is as staged once sorted", () => {
+    assert.equal(WATCH_SHELF_TYPE, "APP_WATCH_ULTRA");
+    const shelf = watch();
+    assert.deepEqual(tidyShelf(shelf).problems, []);
+    assert.deepEqual(namesOf(shelf, tidyShelf(shelf).order), WATCH_SCREENS.map((screen) => fileOf(screen, "watch_ultra_3")));
+    assert.deepEqual(check({ shelves: [sorted(shelf)] }), []);
+    assert.deepEqual(check({ shelves: [shelf] }).length, 1);
+  });
+
+  test("names the watch screen it is short of, and a listing screen it was given", () => {
+    const short = shelfOf(watch().screenshots.filter(({ fileName }) => !fileName.startsWith("03_confirm")), { shelf: WATCH_SHELF_TYPE });
+    assert.deepEqual(tidyShelf(short).problems, ["03_confirm_watch_ultra_3.png is missing"]);
+    const crossed = shelfOf([...watch().screenshots, shot("04_balances_watch_ultra_3.png")], { shelf: WATCH_SHELF_TYPE });
+    assert.deepEqual(tidyShelf(crossed).problems, ["04_balances_watch_ultra_3.png is not a screen of this shelf (01_balances, 02_group, 03_confirm, 04_recorded)"]);
+  });
+
+  test("is not asked for the iPhone's ten screens, and an iPhone shelf is not asked for the watch's", () => {
+    assert.deepEqual(shelfProblems(sorted(watch())), []);
+    const iphone = sorted(shelfOf(uploaded("iphone_6_7")));
+    assert.deepEqual(shelfProblems(iphone), []);
+    const mixed = shelfOf([...iphone.screenshots, shot("01_balances_iphone_6_7.png")]);
+    assert.deepEqual(tidyShelf(mixed).problems, [`01_balances_iphone_6_7.png is not a screen of this shelf (${SCREENS.join(", ")})`]);
+  });
+
+  test("is one more shelf every locale holds: a locale without it fails the check", () => {
+    const locales = ["en-US", "ja"];
+    const shelves = locales.flatMap((locale) => [
+      sorted(shelfOf(uploaded("iphone_6_7"), { locale })),
+      ...(locale === "en-US" ? [sorted({ ...watch(), id: "en-US-watch", locale })] : []),
+    ]);
+    assert.deepEqual(check({ locales, shelves }), [`ja / ${WATCH_SHELF_TYPE}: is not there, and other locales have it`]);
   });
 });
 

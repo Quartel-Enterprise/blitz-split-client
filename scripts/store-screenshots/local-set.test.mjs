@@ -30,6 +30,9 @@ import {
   parseArguments,
   readPng,
   resolveFolders,
+  screensOfDevice,
+  stagedImage,
+  WATCH_SCREENS,
 } from "./local-set.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -67,8 +70,8 @@ const isStaged = (screen, device) => !device.startsWith("iphone_duo") || OPEN.in
 const stage = (platform, { name = PLATFORMS[platform].folders[0], keep = () => true } = {}) => {
   const folder = join(root, name);
   for (const locale of LOCALES) {
-    for (const screen of SCREENS) {
-      for (const [device, { size }] of Object.entries(PLATFORMS[platform].devices)) {
+    for (const [device, { size }] of Object.entries(PLATFORMS[platform].devices)) {
+      for (const screen of screensOfDevice(device)) {
         if (isStaged(screen, device) && keep({ locale, screen, device })) write(folder, locale, `${screen}_${device}.png`, png(size));
       }
     }
@@ -82,8 +85,8 @@ describe("the check of a set", () => {
     const ios = checkPlatform("ios", stage("ios"));
     assert.deepEqual(ios.problems, []);
     assert.deepEqual(ios.locales, LOCALES);
-    assert.equal(ios.files.length, LOCALES.length * 50);
-    assert.equal(describeShelves(ios), 'iPhone 6.3" 10, iPhone 6.7" 10, iPad 13" 10, iPad 11" 10, iPhone Duo 10 (3 open, 7 closed)');
+    assert.equal(ios.files.length, LOCALES.length * 54);
+    assert.equal(describeShelves(ios), 'iPhone 6.3" 10, iPhone 6.7" 10, iPad 13" 10, iPad 11" 10, iPhone Duo 10 (3 open, 7 closed), Apple Watch Ultra 3 4');
     const mac = checkPlatform("mac", stage("mac"));
     assert.deepEqual(mac.problems, []);
     assert.equal(mac.files.length, LOCALES.length * 10);
@@ -168,7 +171,56 @@ describe("the check of a set", () => {
     const allowed = checkPlatform("ios", folder, { allowMissingDevices: true });
     assert.deepEqual(allowed.problems, []);
     assert.deepEqual(allowed.missingShelves, ["iphone_duo"]);
-    assert.equal(describeShelves(allowed), 'iPhone 6.3" 10, iPhone 6.7" 10, iPad 13" 10, iPad 11" 10');
+    assert.equal(describeShelves(allowed), 'iPhone 6.3" 10, iPhone 6.7" 10, iPad 13" 10, iPad 11" 10, Apple Watch Ultra 3 4');
+  });
+
+  test("takes the Apple Watch's four screens on a shelf of its own, whose absence is refused like any device's", () => {
+    assert.deepEqual(WATCH_SCREENS, ["01_balances", "02_group", "03_confirm", "04_recorded"]);
+    assert.deepEqual(problemsOf("ios", stage("ios", { name: "whole" })), []);
+    const without = stage("ios", { name: "without", keep: ({ device }) => device !== "watch_ultra_3" });
+    const refused = problemsOf("ios", without);
+    assert.equal(refused.length, 1);
+    assert.match(refused[0], /^No Apple Watch Ultra 3 image in the set: .* would empty that shelf/);
+    const allowed = checkPlatform("ios", without, { allowMissingDevices: true });
+    assert.deepEqual(allowed.problems, []);
+    assert.deepEqual(allowed.missingShelves, ["watch_ultra_3"]);
+    assert.equal(allowed.files.length, LOCALES.length * 50);
+  });
+
+  test("names the watch screens a locale lacks, and refuses a watch of another size or another shelf's screen", () => {
+    const short = stage("ios", { name: "short", keep: ({ locale, screen, device }) => !(locale === "ja" && device === "watch_ultra_3" && screen === "03_confirm") });
+    assert.deepEqual(problemsOf("ios", short), ["Apple Watch Ultra 3 has 3 of 4 screens, without 03_confirm (ja)"]);
+
+    const wrongSize = stage("ios", { name: "size" });
+    write(wrongSize, "en-US", "01_balances_watch_ultra_3.png", png([410, 502]));
+    assert.deepEqual(problemsOf("ios", wrongSize), [
+      "01_balances_watch_ultra_3.png is 410x502 and watch_ultra_3 takes 422x514 (en-US)",
+      "Apple Watch Ultra 3 has 3 of 4 screens, without 01_balances (en-US)",
+    ]);
+
+    // An iPhone screen on the watch's shelf and a watch screen on the iPhone's: no screen of the other shelf is taken.
+    const crossed = stage("ios", { name: "crossed" });
+    write(crossed, "en-US", "04_balances_watch_ultra_3.png", png([422, 514]));
+    write(crossed, "en-US", "01_balances_iphone_6_7.png", png([1290, 2796]));
+    const problems = problemsOf("ios", crossed);
+    assert.equal(problems.length, 2);
+    assert.ok(problems.some((problem) => /^04_balances_watch_ultra_3\.png: 04_balances is not a screen of watch_ultra_3's shelf/.test(problem)));
+    assert.ok(problems.some((problem) => /^01_balances_iphone_6_7\.png: 01_balances is not a screen of iphone_6_7's shelf/.test(problem)));
+  });
+
+  test("never takes a watch image for an iPhone screen, nor the reverse, by the name's start", () => {
+    const all = [...SCREENS, ...WATCH_SCREENS];
+    assert.deepEqual(stagedImage("01_balances_watch_ultra_3.png", all), { screen: "01_balances", device: "watch_ultra_3" });
+    assert.deepEqual(stagedImage("04_balances_iphone_6_7.png", all), { screen: "04_balances", device: "iphone_6_7" });
+    for (const watch of WATCH_SCREENS) assert.ok(!SCREENS.some((screen) => watch.startsWith(`${screen}_`) || screen.startsWith(`${watch}_`)), watch);
+  });
+
+  test("keeps the watch's screens the same in the generation and the staging", () => {
+    const read = (path) => readFileSync(join(REPO_ROOT, path), "utf8");
+    const generated = read("scripts/store-screenshots/watch/generate.sh").match(/^SCREENS=\(([^)]*)\)$/m)[1].split(" ");
+    assert.deepEqual(WATCH_SCREENS, generated.map((screen, index) => `0${index + 1}_${screen}`));
+    const staged = read("scripts/store-screenshots/listing-art/stage-app-store.py").match(/^WATCH_SCREENS = \[(.*)\]$/m)[1].match(/\w+/g);
+    assert.deepEqual(WATCH_SCREENS, staged.map((screen, index) => `0${index + 1}_${screen}`));
   });
 
   test("refuses a device some locales have and others lack, meant or not", () => {
@@ -183,14 +235,14 @@ describe("the check of a set", () => {
     for (const locale of LOCALES) for (const screen of OPEN) write(closed, locale, `${screen}_iphone_duo.png`, png([1398, 2034]));
     const report = checkPlatform("ios", closed);
     assert.deepEqual(report.problems, []);
-    assert.match(describeShelves(report), /iPhone Duo 10 \(0 open, 10 closed\)$/);
+    assert.match(describeShelves(report), /iPhone Duo 10 \(0 open, 10 closed\)/);
 
     // One locale's open capture failed, so its ten are closed, and the others' are split: both are whole shelves.
     const mixed = stage("ios", { name: "mixed", keep: ({ locale, device }) => !(locale === "ja" && device === "iphone_duo_open") });
     for (const screen of OPEN) write(mixed, "ja", `${screen}_iphone_duo.png`, png([1398, 2034]));
     const uneven = checkPlatform("ios", mixed);
     assert.deepEqual(uneven.problems, []);
-    assert.match(describeShelves(uneven), /iPhone Duo 10 \(open or closed, by locale\)$/);
+    assert.match(describeShelves(uneven), /iPhone Duo 10 \(open or closed, by locale\)/);
 
     const both = stage("ios", { name: "both" });
     write(both, "en-US", "01_group_iphone_duo.png", png([1398, 2034]));
@@ -326,7 +378,7 @@ describe("sending a set", () => {
     assert.match(create, /^release create store-screenshots-3\.0\.0 --draft --title App Store screenshots: 3\.0\.0 --notes /);
     assert.match(create, /\/ios\.tar \S+\/mac\.tar \S+\/SHA256SUMS$/);
     // The release's text says what the set holds, and nothing of the Mac it came from.
-    assert.match(create, /iPhone and iPad: 32 locale\(s\), 1600 image\(s\), 0 MB {3}each locale: /);
+    assert.match(create, /iPhone and iPad: 32 locale\(s\), 1728 image\(s\), 0 MB {3}each locale: /);
     assert.ok(!create.split(" --notes ")[1].split(" /")[0].includes(root));
     assert.match(stdout, /\n {2}gh workflow run app-store-screenshots\.yml --repo Quartel-Enterprise\/blitz-split-client -f set=3\.0\.0\n/);
   });

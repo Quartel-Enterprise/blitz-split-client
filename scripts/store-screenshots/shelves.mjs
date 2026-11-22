@@ -24,7 +24,7 @@
 
 import { appendFileSync, readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { listingScreens, stagedImage } from "./local-set.mjs";
+import { listingScreens, stagedImage, WATCH_SCREENS, WATCH_SHELF_TYPE } from "./local-set.mjs";
 
 /** The state of a screenshot whose image App Store Connect has: anything else is still on its way, or never came. */
 export const COMPLETE = "COMPLETE";
@@ -47,7 +47,7 @@ const byFileName = new Intl.Collator("en", { numeric: true });
  * `problems`, one line each, are what only sending the locale again fixes: a file listed more than once, a file
  * none of whose entries finished uploading, a screen of `screens` the shelf lacks, a file that is no staged image.
  */
-export function tidyShelf({ isWhole, screenshots }, screens = listingScreens()) {
+export function tidyShelf({ isWhole, screenshots, shelf }, screens = listingScreens()) {
   if (!isWhole) return { order: null, problems: ["could not be read whole, so it was not sorted: run the tidy-up again"] };
   if (screenshots.length === 0) return { order: [], problems: ["holds no screenshot"] };
   if (screenshots.some((screenshot) => !screenshot.fileName)) {
@@ -71,14 +71,17 @@ export function tidyShelf({ isWhole, screenshots }, screens = listingScreens()) 
   }
   const order = screenshots.toSorted((one, other) => byFileName.compare(one.fileName, other.fileName)).map((screenshot) => screenshot.id);
 
-  // What the shelf should hold: each screen once, from the shelf's device (the iPhone Duo's has two).
-  const named = [...entriesOf.keys()].map((fileName) => ({ fileName, parts: stagedImage(fileName, screens) }));
+  // What the shelf should hold: each screen once, from the shelf's device (the iPhone Duo's has two). The Apple
+  // Watch's shelf holds the watch's four screens, every other one screens.tsv's ten.
+  const shelfScreens = shelf === WATCH_SHELF_TYPE ? WATCH_SCREENS : screens;
+  const named = [...entriesOf.keys()].map((fileName) => ({ fileName, parts: stagedImage(fileName, [...screens, ...WATCH_SCREENS]) }));
   for (const { fileName, parts } of named) {
-    if (!parts) problems.push(`${fileName} is not <screen>_<device>.png, with a screen of screens.tsv`);
+    if (!parts) problems.push(`${fileName} is not <screen>_<device>.png, with a screen of screens.tsv or of the watch's four`);
+    else if (!shelfScreens.includes(parts.screen)) problems.push(`${fileName} is not a screen of this shelf (${shelfScreens.join(", ")})`);
   }
-  const staged = named.filter(({ parts }) => parts);
+  const staged = named.filter(({ parts }) => parts && shelfScreens.includes(parts.screen));
   const devices = [...new Set(staged.map(({ parts }) => parts.device))].sort();
-  for (const screen of screens) {
+  for (const screen of shelfScreens) {
     const files = staged.filter(({ parts }) => parts.screen === screen).map(({ fileName }) => fileName);
     if (files.length > 1) problems.push(`${screen} is there ${files.length} times (${files.join(", ")}): each screen goes up once`);
     if (files.length === 0 && devices.length > 0) problems.push(`${devices.map((device) => `${screen}_${device}.png`).join(" or ")} is missing`);

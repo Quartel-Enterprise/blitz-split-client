@@ -334,6 +334,9 @@ that started only to stop would hold one.
   all of a locale's screenshots before it uploads, so a locale that had the Duo's loses them, as it does when both
   of the Duo's captures fail. No release has uploaded them yet, and App Store Connect only requires the Duo's shelf
   from April 2027 ([store-listing-screenshots.md](store-listing-screenshots.md#what-the-images-show)).
+- **The Apple Watch's shelf is not captured by a release**, so a release with `screenshots` leaves every locale's
+  watch shelf empty, for the same reason. Its four images go up in a set sent from a Mac
+  ([store-listing-screenshots.md](store-listing-screenshots.md#the-watches-screenshots)), after such a release.
 - **Without the Mac**, nothing of the Mac's is uploaded or tidied up (`macos-screenshots` skips), so the Mac's
   listing keeps what it has. **That was nothing until a set was sent from a Mac**: the Mac app was never released,
   and `macos-submit` refuses to submit a version whose primary language has no screenshots. Leaving the Mac out
@@ -399,8 +402,9 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to A
   ([Who releases](#who-releases)). The App Store Connect key never leaves GitHub.
 - **One version alone**: `--platform mac` when sending and `-f ios=false` when dispatching, for the Mac's (or
   `--platform ios` and `-f macos=false`). deliver replaces every screenshot of a locale with what it is handed, so
-  the iPhone's version always gets the iPhone's, the iPad's and the iPhone Duo's together, and a set that leaves a
-  device out is refused unless `allow_missing_devices` says it is meant.
+  the iPhone's version always gets the iPhone's, the iPad's, the iPhone Duo's and the Apple Watch's together (the
+  watch is not a version of its own), and a set that leaves a device out is refused unless `allow_missing_devices`
+  says it is meant.
 - **A locale that failed** fails the run and keeps the set: run that locale's job again with its own re-run button,
   while the version is still editable. Dispatch the release once the run's summary says every locale landed **and
   the shelves are as staged**.

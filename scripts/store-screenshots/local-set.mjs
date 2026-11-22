@@ -64,6 +64,9 @@ export const PLATFORMS = {
       ipad_11: { shelf: "ipad_11", size: [2388, 1668] },
       iphone_duo: { shelf: "iphone_duo", size: [1398, 2034] },
       iphone_duo_open: { shelf: "iphone_duo", size: [2853, 2007] },
+      // The watch is not a version of its own: its shelf goes up with the iPhone's and the iPad's, since deliver
+      // replaces every screenshot of a locale. App Store Connect takes one watch size for every locale, and this is it.
+      watch_ultra_3: { shelf: "watch_ultra_3", size: [422, 514], screens: "watch" },
     },
   },
   mac: {
@@ -81,8 +84,11 @@ export const SHELF_LABELS = {
   ipad_13: 'iPad 13"',
   ipad_11: 'iPad 11"',
   iphone_duo: "iPhone Duo",
+  watch_ultra_3: "Apple Watch Ultra 3",
   mac: "Mac",
 };
+/** The display type App Store Connect names the Apple Watch shelf by (fastlane's APP_WATCH_ULTRA, 422x514). */
+export const WATCH_SHELF_TYPE = "APP_WATCH_ULTRA";
 
 export class SetError extends Error {}
 
@@ -95,6 +101,16 @@ export const listingScreens = () =>
     .split("\n")
     .filter((row) => row && !row.startsWith("#"))
     .map((row) => row.split("\t")[1]);
+
+/**
+ * The screens of the watch shelf, in shelf order: the names watch/generate.sh writes its images under. Each starts
+ * with a number no iPhone screen of that name has (01_balances, where the iPhone's is 04_balances), so a file name
+ * is never taken for the other shelf's screen.
+ */
+export const WATCH_SCREENS = ["01_balances", "02_group", "03_confirm", "04_recorded"];
+
+/** The screens a device's shelf holds: the watch's four, or screens.tsv's ten (`listing`, read once by a caller that asks often). */
+export const screensOfDevice = (device, devices = PLATFORMS.ios.devices, listing = undefined) => (devices[device]?.screens === "watch" ? WATCH_SCREENS : (listing ?? listingScreens()));
 
 /** The screen and the device a staged image is named after, `<screen>_<device>.png`; null for any other name. */
 export function stagedImage(fileName, screens) {
@@ -158,7 +174,9 @@ class Problems {
 export function checkPlatform(platform, folder, { allowMissingDevices = false } = {}) {
   const { label, devices } = PLATFORMS[platform];
   const expectedLocales = listingLocales();
-  const screens = listingScreens();
+  const listing = listingScreens();
+  const screens = [...listing, ...WATCH_SCREENS];
+  const screensOf = Object.fromEntries(Object.keys(devices).map((device) => [device, screensOfDevice(device, devices, listing)]));
   const problems = new Problems();
   const shelves = [...new Set(Object.values(devices).map((device) => device.shelf))];
   const report = { platform, folder, locales: [], files: [], bytes: 0, ignored: [], shelves: {}, missingShelves: [] };
@@ -199,7 +217,11 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
       }
       const { screen, device } = stagedImage(name, screens) ?? {};
       if (!screen || !Object.hasOwn(devices, device)) {
-        problems.add(`${name} is not <screen>_<device>.png: no screen of screens.tsv with a device of ${Object.keys(devices).join(", ")}`, locale);
+        problems.add(`${name} is not <screen>_<device>.png: no screen of screens.tsv or of the watch's four, with a device of ${Object.keys(devices).join(", ")}`, locale);
+        continue;
+      }
+      if (!screensOf[device].includes(screen)) {
+        problems.add(`${name}: ${screen} is not a screen of ${device}'s shelf (${screensOf[device].join(", ")})`, locale);
         continue;
       }
       const image = readPng(file);
@@ -242,13 +264,14 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
       }
       continue;
     }
+    const shelfScreens = screensOf[Object.keys(devices).find((device) => devices[device].shelf === shelf)];
     for (const locale of report.locales) {
       const ofScreen = ofLocale.get(locale) ?? new Map();
-      const missing = screens.filter((screen) => !ofScreen.has(screen));
-      if (missing.length === screens.length) {
+      const missing = shelfScreens.filter((screen) => !ofScreen.has(screen));
+      if (missing.length === shelfScreens.length) {
         problems.add(`No ${SHELF_LABELS[shelf]} image, which other locales have`, locale);
       } else if (missing.length > 0) {
-        problems.add(`${SHELF_LABELS[shelf]} has ${screens.length - missing.length} of ${screens.length} screens, without ${missing.join(", ")}`, locale);
+        problems.add(`${SHELF_LABELS[shelf]} has ${shelfScreens.length - missing.length} of ${shelfScreens.length} screens, without ${missing.join(", ")}`, locale);
       }
       // Only the iPhone Duo's shelf has two devices: ten images each way would put the first five screens up twice.
       for (const [screen, ofDevices] of ofScreen) {
