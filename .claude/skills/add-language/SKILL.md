@@ -73,9 +73,9 @@ Every translator, human or agent, reads it first; without it each one picks its 
   times smaller there). The UIs name it and write its symbol from the platform, so nothing else changes in them.
 - The store screenshots ([docs/store-listing-screenshots.md](../../../docs/store-listing-screenshots.md)): the
   language's sample trip in `SampleTripCopies.kt` and `SampleTrips.kt` (`currencies`, and a round rate in `priceOf` for a new
-  currency), its banners in `BannerCopies.kt` (one per `StoreScreen`), its `StoreLocale`, its listing locales in
-  build-logic's `StoreScreenshots.kt` (`listingLocales`, `playLocales`, `appStoreLocales`, the stores' own codes) and
-  `scripts/store-screenshots/locales.tsv`, and the count in the `Fastfile`'s description and the docs that say "in all
+  currency), its words in `scripts/store-screenshots/listing-art/copy.tsv` and `creative-assets/copy.tsv`, its `StoreLocale`, its
+  listing locales in `scripts/store-screenshots/locales.tsv` (the stores' own codes are `PLAY_LOCALES` and
+  `APP_STORE_LOCALES` of `scripts/release/store-listing.mjs`), and the count in the `Fastfile`'s description and the docs that say "in all
   N languages". The stores only get the new language's screenshots from a stable release dispatched with
   `screenshots=true`, which is off by default
   ([release-process.md](../../../docs/release-process.md#screenshots-with-a-release)), or, for Google Play alone,

@@ -127,9 +127,7 @@ App content's, in the Play Console.
 
 A language goes to one or more locales of each store (`PLAY_LOCALES` and `APP_STORE_LOCALES` of the script): Latin
 America's Spanish is `es-419` and `es-US` on Play and `es-MX` on the App Store, and Spain's is `es-ES` on both. They
-are the codes the screenshots
-use (`StoreScreenshots.kt` of `build-logic`), and the two lists stay in step, which a test of
-`store-listing.test.mjs` checks: a store attaches a locale's
+are the codes the screenshots use too (`stage-play.mjs` and `stage-app-store.py` read the same lists): a store attaches a locale's
 screenshots, and a version's "What's new", to the listing of that same locale. A locale with a listing and no
 screenshots of its own shows the default language's on Play and the primary language's on the App Store. Both tools add a locale the listing
 doesn't have yet, so uploading the text is how a new language's listing is created.

@@ -168,27 +168,43 @@ SCREENSHOT_REORDER_REFUSED_MESSAGE = "Can't Add/Remove Relationship when reorder
 # The most App Store Connect lists per page of a shelf's screenshots, which is far more than a shelf holds:
 APP_STORE_SHELF_PAGE_SIZE = 200
 
-desc "Generate the store listing screenshots of both stores in all 32 languages, then upload them"
-desc "Options: skip_upload:true only generates (store_listings/ and the fastlane folders); platform:android or"
-desc "platform:ios does one store (ios: iPhone, iPad, iPhone Duo and Mac); skip_capture:true reuses the Apple captures"
-desc "already in build/; skip_mac:true leaves the Mac out (its capture drives this Mac's screen); locale:<store code>"
-desc "uploads that locale alone (es-419, es-MX…); locales:<store code>,<store code> sends those to Google Play through"
-desc "one edit, which is one of its daily saves (platform:android), and save_quota_is_no_failure:true ends the lane"
-desc "well when Google Play refuses that save for the quota. Uploading needs PLAY_STORE_JSON_KEY_PATH (Play) and the"
-desc "APP_STORE_CONNECT_API_KEY_ID / _ISSUER_ID with KEY_PATH or APP_STORE_CONNECT_API_KEY_P8 (App Store)."
+desc "Generate the store listing's art of both stores in all 32 languages (docs/store-listing-screenshots.md), then"
+desc "upload it. Options: skip_upload:true only generates (store_listings/listing-art/ and the fastlane folders);"
+desc "platform:android or platform:ios does one store (ios: iPhone, iPad, iPhone Duo and Mac); skip_capture:true"
+desc "reuses the Apple captures already in build/; skip_mac:true leaves the Mac out (its capture drives this Mac's"
+desc "screen); locale:<store code> uploads that locale alone (es-419, es-MX…); locales:<store code>,<store code> sends"
+desc "those to Google Play through one edit, which is one of its daily saves (platform:android), and"
+desc "save_quota_is_no_failure:true ends the lane well when Google Play refuses that save for the quota. The open"
+desc "iPhone Duo is captured by hand (listing-art/capture-duo-open.py), and without it the Duo's art is left out."
+desc "Uploading needs PLAY_STORE_JSON_KEY_PATH (Play) and the APP_STORE_CONNECT_API_KEY_ID / _ISSUER_ID with KEY_PATH"
+desc "or APP_STORE_CONNECT_API_KEY_P8 (App Store)."
 lane :screenshots do |options|
   repo_root = File.expand_path("..", __dir__)
   platforms = options[:platform] ? [options[:platform].to_s] : %w[android ios]
   heavy_check = File.join(repo_root, "scripts/heavy-check.sh")
+  art = File.join(repo_root, "scripts/store-screenshots/listing-art")
+  capture_mac = File.join(repo_root, "scripts/store-screenshots/capture-mac.sh")
 
-  if platforms.include?("ios") && !options[:skip_capture]
-    sh(heavy_check, File.join(repo_root, "scripts/store-screenshots/capture-ios.sh"))
-    sh(heavy_check, File.join(repo_root, "scripts/store-screenshots/capture-mac.sh")) unless options[:skip_mac]
+  if platforms.include?("android")
+    Dir.chdir(repo_root) do
+      sh(heavy_check, "./gradlew", ":android:store_screenshots:testDebugUnitTest", "-PcreativeAssets", "--rerun", "-q")
+      sh(play_art, "node", File.join(art, "compose.mjs"))
+      sh("node", File.join(art, "stage-play.mjs"))
+    end
   end
-  stage_tasks = platforms.map { |platform| platform == "ios" ? "stageAppStoreScreenshots" : "stagePlayStoreScreenshots" }
-  collect_tasks = platforms.map { |platform| platform == "ios" ? "collectAppStoreScreenshots" : "collectPlayStoreScreenshots" }
-  Dir.chdir(repo_root) { sh(heavy_check, "./gradlew", *stage_tasks, *collect_tasks) }
-  UI.success("Generated into store_listings/ for a look, and into fastlane/ for the upload")
+  if platforms.include?("ios")
+    unless options[:skip_capture]
+      sh(heavy_check, File.join(art, "capture.sh"))
+      unless options[:skip_mac]
+        # The Mac's art tells the phones' story: the screens of screens.tsv, then "Dividir" and Brazil's "Pagar Carla".
+        sh(heavy_check, capture_mac)
+        sh({ "STORE_SCREENSHOTS_TABLE" => "art-screens", "STORE_SCREENSHOTS_SCREENS" => "splitmodes" }, heavy_check, capture_mac)
+        sh({ "STORE_SCREENSHOTS_TABLE" => "art-screens", "STORE_SCREENSHOTS_SCREENS" => "pay", "STORE_SCREENSHOTS_LOCALES" => "pt-BR" }, heavy_check, capture_mac)
+      end
+    end
+    sh(File.join(art, "frame-app-store.sh"))
+  end
+  UI.success("Generated into store_listings/listing-art/ for a look, and into fastlane/ for the upload")
   next if options[:skip_upload]
 
   upload_store_screenshots(repo_root, platforms, options)

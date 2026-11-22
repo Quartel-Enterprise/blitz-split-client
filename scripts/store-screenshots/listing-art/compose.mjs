@@ -122,6 +122,10 @@ const scaled = (kind, ratio) => ({
   ratio,
 });
 const IPAD = { title: [130, 100, 158], device: [236, 385, 2260, 26, 72], band: 1180, notch: 130, wide: true, callouts: IPAD_CALLOUTS };
+// Google Play's foldable shelf asks for the unfolded screen in 1:1 and in 4:3 and the outer screen in 10:16. The unfolded
+// capture is 1.2:1, so one capture feeds both unfolded canvases. No callouts yet.
+const FOLDABLE_WIDE = { title: [130, 100, 158], band: 1180, notch: 130, wide: true, callouts: {}, play: true };
+const FOLDABLE_OUTER = { title: [90, 190, 134], device: [350, 620, 900, 24, 168], band: 1300, notch: 110, wide: false, callouts: {}, play: true };
 const DUO_CLOSED = { width: 1398, height: 2034, slot: "iphoneduo", title: [90, 130, 116], device: [179, 610, 1040, 24, 96], band: 1120, notch: 90, wide: false, callouts: DUO_CALLOUTS };
 const DUO_OPEN = { width: 2853, height: 2007, slot: "iphoneduoopen", title: [150, 105, 158], device: [226, 385, 2400, 26, 84], band: 1120, notch: 130, wide: true, callouts: DUO_OPEN_CALLOUTS };
 
@@ -133,6 +137,9 @@ const DEVICES = {
   play_phone: () => ({ ...scaled(PHONE, 1242 / 1290), width: 1242, height: 2484, slot: "playphone", play: true, callouts: PLAY_PHONE_CALLOUTS }),
   play_tablet_10: () => ({ ...scaled(IPAD, 2560 / 2732), width: 2560, height: 1440, slot: "playtablet10", play: true, callouts: PLAY_TABLET_CALLOUTS }),
   play_tablet_7: () => ({ ...scaled(IPAD, 2560 / 2732), width: 2560, height: 1440, slot: "playtablet7", play: true, callouts: {} }),
+  play_foldable_1x1: () => ({ ...FOLDABLE_WIDE, device: [180, 400, 1800, 26, 72], width: 2160, height: 2160, slot: "playfoldable" }),
+  play_foldable_4x3: () => ({ ...FOLDABLE_WIDE, device: [416, 385, 2048, 26, 72], width: 2880, height: 2160, slot: "playfoldable" }),
+  play_foldable_outer: () => ({ ...FOLDABLE_OUTER, width: 1600, height: 2560, slot: "playfoldablefolded" }),
   mac: () => ({ title: [150, 110, 150], device: [300, 360, 2280, 0, 0], band: 1060, notch: 140, wide: true, width: 2880, height: 1800, slot: "mac", window: true, callouts: MAC_CALLOUTS }),
   iphone_duo: (screen) => (["group", "balances", "statistics"].includes(screen) ? DUO_OPEN : DUO_CLOSED),
 };

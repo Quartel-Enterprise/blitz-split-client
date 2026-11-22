@@ -6,8 +6,14 @@ The art's ten images of a device take the ten names of screens.tsv in order: the
 the art's order is kept, and the screen in a name is only a slot. The iPhone Duo's open images go as iphone_duo_open.
 
     python3 scripts/store-screenshots/listing-art/stage-app-store.py
+    ART_DEVICES=iphone_6_7,mac python3 scripts/store-screenshots/listing-art/stage-app-store.py   # some devices only
+    ART_LOCALES=en-US,pt-BR python3 scripts/store-screenshots/listing-art/stage-app-store.py      # some languages only
+
+A device left out, by ART_DEVICES or because the art was drawn for none of it, is not staged: a set without it is
+refused by local-set.mjs unless it says so, and a release uploads what its runners captured.
 """
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -35,14 +41,33 @@ def app_store_locales():
 
 def main():
     names = screen_names()
+    chosen = [device for device in os.environ.get("ART_DEVICES", "").split(",") if device]
+    unknown = [device for device in chosen if device not in DEVICES]
+    if unknown:
+        raise SystemExit(f"No device {', '.join(unknown)}: one of {', '.join(DEVICES)}")
+    devices = {device: folder for device, folder in DEVICES.items() if not chosen or device in chosen}
     tags = {line.split("\t")[1]: line.split("\t")[0] for line in (ROOT / "scripts/store-screenshots/locales.tsv").read_text().splitlines()
             if line.strip() and not line.startswith("#")}
-    for folder in (IOS, MAC):
-        shutil.rmtree(folder, ignore_errors=True)
+    # ART_LOCALES narrows it to those listing tags, and then only their folders are replaced: the others stay as staged.
+    only = [tag for tag in os.environ.get("ART_LOCALES", "").split(",") if tag]
+    unknown_tags = [tag for tag in only if tag not in tags.values()]
+    if unknown_tags:
+        raise SystemExit(f"locales.tsv has no {', '.join(unknown_tags)}")
+    # Only the folders of the devices being staged are replaced: a Mac left out keeps the Mac set staged before.
+    staged_folders = {folder for folder in devices.values()}
+    if not only:
+        for folder in staged_folders:
+            shutil.rmtree(folder, ignore_errors=True)
     staged = 0
     for language, store_locales in app_store_locales().items():
         tag = tags[language]
-        for device, folder in DEVICES.items():
+        if only and tag not in only:
+            continue
+        for store_locale in store_locales:
+            for folder in staged_folders:
+                if only:
+                    shutil.rmtree(folder / store_locale, ignore_errors=True)
+        for device, folder in devices.items():
             images = sorted((ART / device / tag).glob("*.png"))
             if len(images) != len(names):
                 raise SystemExit(f"{device} {tag} has {len(images)} images, the shelf takes {len(names)}")
