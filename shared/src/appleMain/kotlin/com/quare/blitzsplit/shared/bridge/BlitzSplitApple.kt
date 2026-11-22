@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBalanceSnapshot
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -77,6 +78,8 @@ import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewMo
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
+import com.quare.blitzsplit.shared.push.PushArrivalOutcome
+import com.quare.blitzsplit.shared.push.PushArrivalSync
 import com.quare.blitzsplit.shared.storescreenshots.DirectoryAssets
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
 import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsScreen
@@ -432,6 +435,24 @@ object BlitzSplitApple : KoinComponent {
             ),
         )
     }
+
+    /*
+     * Why: an event's push carries content-available, so iOS wakes the app in the background (the Mac hands it to the
+     * running app) and the sync brings the bill before the tap: AppViewModel.openPushLink opens it only once it is on the
+     * device. The Mac, and iOS with the app in front, hand the app every push, the reminder's too, whose link names no
+     * event. onDone gets the outcome on the main thread, for iOS's fetch completion handler, which has to be called
+     * within about 30 seconds of the wake.
+     */
+    fun syncForPush(
+        link: String?,
+        onDone: (PushArrivalOutcome) -> Unit,
+    ) {
+        val pushArrivalSync = get<PushArrivalSync>()
+        val eventId = link?.let { PushLink.of(it) }?.eventId
+        scope.launch { onDone(pushArrivalSync(eventId, pushArrivalSyncTimeout)) }
+    }
+
+    private val pushArrivalSyncTimeout = 25.seconds
 
     // Why: the browser sign in opens Safari, or the browser on macOS, over the app.
     fun handleAppPaused() {

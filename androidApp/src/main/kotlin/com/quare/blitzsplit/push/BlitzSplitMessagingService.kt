@@ -16,10 +16,12 @@ import com.quare.blitzsplit.android.push.PushPayload
 import com.quare.blitzsplit.android.push.PushTokens
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.shared.push.PushArrivalSync
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
+import kotlin.time.Duration.Companion.seconds
 import com.quare.blitzsplit.android.push.R as PushR
 
 /*
@@ -29,6 +31,7 @@ import com.quare.blitzsplit.android.push.R as PushR
 class BlitzSplitMessagingService : FirebaseMessagingService() {
     private val setPushDevice: SetPushDevice by inject()
     private val observePushEnabled: ObservePushEnabled by inject()
+    private val pushArrivalSync: PushArrivalSync by inject()
 
     // Why: before Android 13 the notifications built here are in Profile › Language's pick, as the screens are.
     override fun attachBaseContext(newBase: Context) {
@@ -57,7 +60,8 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
             R.string.app_name
         }
         val title = data[PushPayload.TITLE].orEmpty().ifEmpty { getString(fallbackTitle) }
-        val tag = data[PushPayload.EVENT_ID] ?: kind.kind
+        val eventId = data[PushPayload.EVENT_ID]
+        val tag = eventId ?: kind.kind
         val link = data[PushPayload.LINK]
         if (!canPostNotifications() || !isPushEnabled()) return
         val notification = NotificationCompat
@@ -70,6 +74,18 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
             .apply { link?.let { setContentIntent(openIntent(it, tag)) } }
             .build()
         NotificationManagerCompat.from(this).notify(tag, 0, notification)
+        syncForTheTap(eventId)
+    }
+
+    /*
+     * Why: the tap opens the bill only once it is on the device (AppViewModel.openPushLink waits up to 5 seconds for a
+     * sync), so the sync starts as the notification shows and the bill is usually there before the tap. After notify,
+     * so the notification never waits on it. Blocking keeps the process alive (a cached process is frozen): FCM allows
+     * a high-priority message about 10 seconds of work, and what a cut sync already saved stays in Room. FCM hands the
+     * messages over one at a time, so in a burst only the first one syncs: the rest find their event already here.
+     */
+    private fun syncForTheTap(eventId: String?) {
+        runBlocking { pushArrivalSync(eventId, SYNC_ON_ARRIVAL_SECONDS.seconds) }
     }
 
     /*
@@ -88,4 +104,8 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
         Intent(Intent.ACTION_VIEW, link.toUri(), this, MainActivity::class.java),
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
     )
+
+    private companion object {
+        const val SYNC_ON_ARRIVAL_SECONDS = 9
+    }
 }

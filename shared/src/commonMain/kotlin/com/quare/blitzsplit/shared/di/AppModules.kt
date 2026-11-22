@@ -65,6 +65,7 @@ import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.app.SiteTextUseCases
 import com.quare.blitzsplit.shared.app.StorePromptUseCases
 import com.quare.blitzsplit.shared.generated.SharedConfig
+import com.quare.blitzsplit.shared.push.PushArrivalSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -86,6 +87,7 @@ private val appModule = module {
     factoryOf(::DisplayPreferenceUseCases)
     factoryOf(::StorePromptUseCases)
     factoryOf(::AppViewModel)
+    factoryOf(::PushArrivalSync)
     // Why: a single that owns its scope, following the choices for the app's whole life, as SyncCoordinator does.
     single {
         AnalyticsChoices(

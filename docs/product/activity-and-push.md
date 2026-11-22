@@ -200,8 +200,19 @@ The feed, unread state, real time and push notifications.
     once with what the device already has (beta feedback 3, item 28: waiting for a sync first left Activity on screen
     for seconds, so a tap seemed to always open Activity): the group, then the bill (Bill) when it is on the device, at
     the comment for a comment once its event is. Only what isn't there yet (a group just joined, a new bill or comment)
-    waits for a sync of up to 5 seconds, then opens over what is on top while the person stayed there; nothing opens
-    for a group or bill still missing after it. Android, iOS, macOS and the web share this (`AppViewModel.openPushLink`). Each device
+    waits up to 5 seconds, for a sync or for it to reach the device by the sync its push's arrival started (a comment
+    waits for the sync, its comment coming with the event), then opens over what is on top while the person stayed there; nothing opens
+    for a group or bill still missing after it. Android, iOS, macOS and the web share this (`AppViewModel.openPushLink`).
+    So that wait is rare, Android, iOS and macOS sync as an event's push arrives, before any tap (Pierre's call,
+    feedback of Nov 21, 2026: the tap opened the group and the bill only seconds later), with nothing new on screen:
+    Android right after it shows the notification, for at most 9 seconds (FCM's data message, which reaches the app
+    open or closed); iOS woken in the background by the alert's `content-available` (the `remote-notification`
+    background mode, at most 25 of the 30 seconds iOS gives; iOS may skip a wake, and never wakes an app the person
+    swiped away); the Mac while the app runs. Each is the usual sync (`SyncNow`), never the bill in the push (Pierre
+    turned that down: the payload's 4 KB, and it would repeat the sync). The reminder brings nothing to sync, nor does
+    a push whose event is already on the device (an earlier push of a burst synced it, or real time did with the app
+    in front), so only the first of a burst holds Android's next notification back (`PushArrivalSync`). The web keeps
+    the wait above. Each device
     registers its token for the account signed in, an anonymous one included (`PushDeviceRepository`), and removes
     it while none is or while Notifications' "Push notifications" switch is off, a sign out made offline once back
     online; a failed call is tried again after 30 seconds, 2 and 10 minutes, then waits for the next change. Android and Apple register their token at every launch

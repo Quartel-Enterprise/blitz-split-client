@@ -24,6 +24,12 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
         #endif
     }
 
+    /// An event's push carries `content-available`: the sync starts as it arrives, so a tap finds the bill on the device.
+    /// Nothing syncs for the reminder's nor for an event already on the device.
+    func syncForPush(userInfo: [AnyHashable: Any], onDone: @escaping (PushArrivalOutcome) -> Void = { _ in }) {
+        BlitzSplitApple.shared.syncForPush(link: userInfo["link"] as? String, onDone: onDone)
+    }
+
     func register(deviceToken: Data) {
         #if os(iOS)
         let isMac = false
@@ -115,6 +121,25 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         PushNotifications.shared.register(deviceToken: deviceToken)
     }
+
+    /// Woken in the background by `content-available` (the `remote-notification` background mode), or called in front.
+    /// iOS gives the app about 30 seconds and wants the handler called by then; the shared sync stops at 25.
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        PushNotifications.shared.syncForPush(userInfo: userInfo) { outcome in
+            let result: UIBackgroundFetchResult = if outcome == .synced {
+                .newData
+            } else if outcome == .failed {
+                .failed
+            } else {
+                .noData
+            }
+            completionHandler(result)
+        }
+    }
 }
 #else
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -130,6 +155,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ application: NSApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         PushNotifications.shared.register(deviceToken: deviceToken)
+    }
+
+    /// The Mac gets it only while the app runs, with no background limit: real time listens only in front, so a push
+    /// that arrives with the window behind another app's syncs here.
+    func application(_ application: NSApplication, didReceiveRemoteNotification userInfo: [String: Any]) {
+        PushNotifications.shared.syncForPush(userInfo: userInfo)
     }
 }
 #endif
