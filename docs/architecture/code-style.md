@@ -339,7 +339,7 @@ check itself is shared with the other Quare apps in
 never changes, and runs the release that the `Quartel-Enterprise/copied-code-check@X.Y.Z` line of `duplication.yml` pins
 (every workflow that uses the action has to pin the same one), with the jscpd release it locks. It needs Node.js 18 or
 later, plus `curl`, `tar` and access to github.com the first time it runs a release. A change to how the check counts
-goes to that repository, then a bump of the line here (Dependabot proposes it).
+goes to that repository, then a bump of the line here (Renovate proposes it).
 
 `.jscpd-baseline.json` holds how many lines of code of each file are copied today. A file with more fails the check:
 extract the copied code into one place the callers use (a use case or coordinator under the ViewModels, a component of
