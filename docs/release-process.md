@@ -207,8 +207,8 @@ bundle needs.
 
 - **Its own tracks.** Google Play gives a form factor tracks of its own, and the API names them
   `<form factor>:<track>`: `wear-upload` runs `play_upload ... form_factor:wear`, which sends the watch's bundle to
-  the Wear OS track that mirrors the run's `track` (`wear:production`, `wear:beta`, `wear:alpha`, and `wear:qa` for
-  `internal`), with the same notes and, on production, the same `rollout`.
+  the Wear OS track of the run's `track` (`wear:production`, `wear:beta`, `wear:alpha` or `wear:internal`), with the
+  same notes and, on production, the same `rollout`.
 - **After the phone's.** Google Play drops an edit still open when another one commits, so the two bundles go one
   after the other, the phone's first, and the screenshots' jobs wait for both to be over. A failed `wear-upload` doesn't hold
   the release back: it is tagged on the phone's result, the GitHub release's Android row says `success (watch:
