@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Draws the README's opening image, docs/images/readme-hero-{dark,light}.webp: the group of the sample trip (the one the
-# store screenshots tell, docs/store-listing-screenshots.md) on Android, the iPhone, the Mac and the web, each drawn by
+# store screenshots tell, docs/store-listing-screenshots.md) on Android, the iPhone, the Mac and the web, and the two watches, each drawn by
 # its own native UI, side by side. Each capture is a real screen of the app, never a mockup, so running this again
 # after a UI change brings the image up to date.
 #
@@ -14,6 +14,8 @@
 # - ios: the store screenshots' UI test on the iPhone 17 Pro simulator (capture-ios.sh). Needs Xcode.
 # - mac: the store screenshots' Mac capture (capture-mac.sh). It takes this Mac's screen for about half a minute and
 #   needs the Screen Recording permission.
+# - wear: Robolectric draws the Wear OS watch's Balances (ReadmeHeroWatch in :wearApp), round, dark only.
+# - watch: the Apple Watch app's debug build on a watchOS simulator, seeded with the trip (capture-watch.sh), dark only.
 # - web: the dev server in a headless Chrome of its own (capture-web.mjs), which seeds the trip in an empty profile.
 # Then compose.mjs lays them out (hero.html) and photographs the page. Every heavy step waits its turn behind other
 # worktrees' builds (scripts/heavy-check.sh).
@@ -25,8 +27,9 @@ HERE="$ROOT/scripts/readme-hero"
 CAPTURES="$ROOT/build/outputs/readme-hero"
 APPLE_CAPTURES="$ROOT/build/outputs/readme-hero-apple"
 ANDROID_CAPTURES="$ROOT/build/outputs/readme-hero-android"
+WEAR_CAPTURES="$ROOT/build/outputs/readme-hero-wear"
 IMAGES="$ROOT/docs/images"
-WANTED="${READMEHERO_CAPTURES:-android,ios,mac,web}"
+WANTED="${READMEHERO_CAPTURES:-android,ios,mac,web,wear,watch}"
 HEAVY="$ROOT/scripts/heavy-check.sh"
 
 wanted() { [[ ",$WANTED," == *",$1,"* ]]; }
@@ -38,6 +41,17 @@ if wanted android; then
   "$HEAVY" "$ROOT/gradlew" -p "$ROOT" :android:store_screenshots:testDebugUnitTest -PreadmeHero --rerun -q
   # Why: the test task owns a folder of its own, which Gradle may wipe as a stale output; the other captures stay out
   cp "$ANDROID_CAPTURES/android-dark.png" "$ANDROID_CAPTURES/android-light.png" "$CAPTURES/"
+fi
+
+if wanted wear; then
+  echo "Capturing Wear OS"
+  "$HEAVY" "$ROOT/gradlew" -p "$ROOT" :wearApp:testDebugUnitTest -PreadmeHero --rerun -q
+  cp "$WEAR_CAPTURES/wear-dark.png" "$CAPTURES/"
+fi
+
+if wanted watch; then
+  echo "Capturing the Apple Watch"
+  "$HERE/capture-watch.sh" "$CAPTURES"
 fi
 
 # The store screenshots' 01_group and 10_light_theme are the group, dark and light: the README takes them as they are.
@@ -83,13 +97,11 @@ if wanted web; then
   kill "$vite" 2> /dev/null || true
 fi
 
-for platform in android ios mac web; do
-  for theme in dark light; do
-    if [ ! -s "$CAPTURES/$platform-$theme.png" ]; then
-      echo "No $platform-$theme.png in $CAPTURES: capture $platform first (READMEHERO_CAPTURES=$platform)" >&2
-      exit 1
-    fi
-  done
+for capture in android-dark android-light ios-dark ios-light mac-dark mac-light web-dark web-light wear-dark watch-dark; do
+  if [ ! -s "$CAPTURES/$capture.png" ]; then
+    echo "No $capture.png in $CAPTURES: capture ${capture%-*} first (READMEHERO_CAPTURES=${capture%-*})" >&2
+    exit 1
+  fi
 done
 
 node "$HERE/compose.mjs" "$CAPTURES" "$IMAGES"

@@ -52,11 +52,20 @@ final class WatchRootModel {
         })
     }
 
+    /// The README's capture (`-StoreScreenshotsLanguage`, debug only): the system's prompt would cover Balances.
+    private static var isStoreScreenshotsRun: Bool {
+        #if DEBUG
+        WatchStoreScreenshots.language != nil
+        #else
+        false
+        #endif
+    }
+
     private func backStackChanged(_ routes: [Route]) {
         let mapped = routes.compactMap(WatchRoute.init)
         guard let first = mapped.first else { return }
         // Connected: the system's prompt for the watch's own pushes, once
-        if first == .balances { WatchPush.shared.requestPermission() }
+        if first == .balances, !Self.isStoreScreenshotsRun { WatchPush.shared.requestPermission() }
         root = first
         pushed = Array(mapped.dropFirst())
         if path != pushed { path = pushed }

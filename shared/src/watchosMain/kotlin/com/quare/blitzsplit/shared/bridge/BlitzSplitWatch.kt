@@ -1,6 +1,9 @@
 package com.quare.blitzsplit.shared.bridge
 
+import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
+import com.quare.blitzsplit.core.model.AppLanguage
+import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
@@ -11,6 +14,7 @@ import com.quare.blitzsplit.core.profile.domain.model.PushDevice
 import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.ObserveProfile
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.sync.di.lastSyncRecordingModule
 import com.quare.blitzsplit.core.sync.domain.usecase.SyncNow
 import com.quare.blitzsplit.core.watch.domain.usecase.EndWatchSessionFromPhone
@@ -21,15 +25,23 @@ import com.quare.blitzsplit.feature.watchpairing.presentation.viewmodel.WatchPai
 import com.quare.blitzsplit.feature.watchpairing.presentation.viewmodel.WatchRootViewModel
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import com.quare.blitzsplit.shared.push.isSyncedWithin
+import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
+import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsSeed
+import com.quare.blitzsplit.shared.storescreenshots.createStoreScreenshotsDatabaseBuilder
+import com.quare.blitzsplit.shared.storescreenshots.deleteStoreScreenshotsDatabase
+import com.quare.blitzsplit.shared.storescreenshots.storeScreenshotsModuleOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlinx.coroutines.runBlocking
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module
+import kotlin.experimental.ExperimentalNativeApi
 import kotlin.time.Duration.Companion.seconds
 
 /*
@@ -43,6 +55,34 @@ object BlitzSplitWatch : KoinComponent {
     // Why: as the phone's start, plus the time of each sync that went through, the balances' "Updated at 14:32".
     fun start() {
         startBlitzSplitKoin(extraModules = listOf(lastSyncRecordingModule))
+    }
+
+    /*
+     * Why: the README's image (scripts/readme-hero): a debug build launched with `-StoreScreenshotsLanguage` holds the
+     * sample trip, as the iPhone's startForStoreScreenshots does, in a Room of its own and with no sync, so the watch
+     * opens on Balances with the trip's groups. A release framework never seeds.
+     */
+    @OptIn(ExperimentalNativeApi::class)
+    fun startForStoreScreenshots(language: String) {
+        if (!Platform.isDebugBinary) {
+            start()
+            return
+        }
+        deleteStoreScreenshotsDatabase()
+        val trip = SampleTrips.tripOf(language)
+        startBlitzSplitKoin(
+            extraModules = listOf(
+                lastSyncRecordingModule,
+                storeScreenshotsModuleOf(trip),
+                module { single<RoomDatabase.Builder<AppDatabase>> { createStoreScreenshotsDatabaseBuilder() } },
+            ),
+        )
+        runBlocking(Dispatchers.Default) {
+            StoreScreenshotsSeed(trip, assets = null).createTrip(
+                language = AppLanguage.fromTag(language),
+                theme = ThemePreference.DARK,
+            )
+        }
     }
 
     // Why: the watch's NavigationStack draws the shared back stack, as the phone's does.

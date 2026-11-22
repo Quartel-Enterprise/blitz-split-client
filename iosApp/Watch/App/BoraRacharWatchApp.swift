@@ -11,7 +11,16 @@ struct BoraRacharWatchApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        #if DEBUG
+        // The README's image (scripts/readme-hero): the sample trip instead of an account, as the iPhone's captures
+        if let language = WatchStoreScreenshots.language {
+            BlitzSplitWatch.shared.startForStoreScreenshots(language: language)
+        } else {
+            BlitzSplitWatch.shared.start()
+        }
+        #else
         BlitzSplitWatch.shared.start()
+        #endif
         WatchWidgetWriter.shared.start()
         _root = State(initialValue: WatchRootModel())
     }
@@ -30,6 +39,13 @@ struct BoraRacharWatchApp: App {
         }
     }
 }
+
+#if DEBUG
+/// The README's capture (scripts/readme-hero/capture-watch.sh) launches the debug build with `-StoreScreenshotsLanguage`.
+enum WatchStoreScreenshots {
+    static var language: String? { UserDefaults.standard.string(forKey: "StoreScreenshotsLanguage") }
+}
+#endif
 
 final class WatchAppDelegate: NSObject, WKApplicationDelegate {
     func applicationDidFinishLaunching() {

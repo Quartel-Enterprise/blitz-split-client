@@ -32,6 +32,9 @@ Look at the image first (convert it to read it: `sips -s format png docs/images/
   amount, your share, the payment tag, the row menu) and the Split a bill button.
 - **The Mac's and the web's shell around it:** the sidebar (Search, Home, Groups, Balances, Contacts, the Open groups
   with their balances, the profile at the bottom on the web) and the web's breadcrumb.
+- **The watches' Balances, dark only in both images:** the overall balance cards ("Overall balance", "to receive",
+  "you owe"), their colors and the title. The Wear OS one is drawn from a state written by hand in
+  `ReadmeHeroWatch`, so a change to the totals or groups the sample trip produces needs it updated too.
 - **What every screen inherits:** the theme's colors, type and shapes in both themes, the icons, the English copy of
   those screens, how amounts and dates are written, and the sample trip itself.
 
@@ -43,7 +46,8 @@ The code that draws it, to sort a diff by (`git diff --name-only origin/main...H
 | Android | `android/feature/group_detail`, `android/designsystem`, `android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots/GroupScreenshotContent.kt` and `ReadmeHeroScreens.kt` |
 | iPhone and Mac | `iosApp/Sources/Shared/Features/GroupDetail`, `iosApp/Sources/Shared/Features/Home` (the Mac's sidebar), `iosApp/Sources/Shared/DesignSystem`, `iosApp/Sources/Shared/App`, the English strings of `iosApp/Resources/Localizable.xcstrings` |
 | Web | `webApp/src/features/group-detail`, `webApp/src/features/balances/BalanceCard.tsx`, `webApp/src/components` (`HomeShell.tsx`, `HomeSidebar.tsx` and the pieces the group uses), the shadcn/ui components in `webApp/src/components/ui`, `webApp/src/lib/money.ts` and `dates.ts`, `webApp/src/index.css`, `webApp/src/i18n/en.ts` |
-| The captures | Android: `ReadmeHeroScreens.kt` above and `build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt`. Apple: `scripts/store-screenshots/capture-ios.sh`, `capture-mac.sh`, `assets.tsv`, `iosApp/UITests/StoreScreenshotsUITests.swift`, `iosApp/Sources/Shared/App/StoreScreenshotsRun.swift`, `shared/src/appleMain/kotlin/com/quare/blitzsplit/shared/storescreenshots/`. Web: `shared/src/jsMain/kotlin/com/quare/blitzsplit/shared/bridge/StoreScreenshotsWeb.kt`, `webApp/src/bridge/storeScreenshots.ts`, `scripts/readme-hero/capture-web.mjs`, `chrome.mjs` |
+| The watches | `wearApp/src/main/kotlin/com/quare/blitzsplit/wear/ui/balances`, `wearApp/src/main/kotlin/com/quare/blitzsplit/wear/ui/theme`, `feature/watch_balances`, `iosApp/Watch/App` (`WatchBalancesView.swift`, `WatchPalette.swift`) |
+| The captures | Android: `ReadmeHeroScreens.kt` above and `build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt`. Apple: `scripts/store-screenshots/capture-ios.sh`, `capture-mac.sh`, `assets.tsv`, `iosApp/UITests/StoreScreenshotsUITests.swift`, `iosApp/Sources/Shared/App/StoreScreenshotsRun.swift`, `shared/src/appleMain/kotlin/com/quare/blitzsplit/shared/storescreenshots/`. Watches: `wearApp/src/test/kotlin/com/quare/blitzsplit/wear/ReadmeHeroWatch.kt`, `scripts/readme-hero/capture-watch.sh`, `BlitzSplitWatch.startForStoreScreenshots` in `shared/src/watchosMain`, `iosApp/Watch/App/BoraRacharWatchApp.swift`. Web: `shared/src/jsMain/kotlin/com/quare/blitzsplit/shared/bridge/StoreScreenshotsWeb.kt`, `webApp/src/bridge/storeScreenshots.ts`, `scripts/readme-hero/capture-web.mjs`, `chrome.mjs` |
 | The image's layout | `scripts/readme-hero/` (`hero.html`, `compose.mjs`) |
 
 A change to a capture's own code may not change a pixel, but it can break the capture: run the skill for it, so a
@@ -74,14 +78,14 @@ enough: "The README's image doesn't show this change").
 
 ## 2. Capture
 
-What it needs, all on this Mac: Xcode and its iOS runtime (the iPhone capture creates its own simulator, "Store
-screenshots iphone63", an iPhone 17 Pro), Google Chrome (`CHROME` points at another binary), Node, and for the Mac
+What it needs, all on this Mac: Xcode and its iOS and watchOS runtimes (the iPhone capture creates its own simulator, "Store
+screenshots iphone63", an iPhone 17 Pro, and the Apple Watch one "Store screenshots watch", a Series 12), Google Chrome (`CHROME` points at another binary), Node, and for the Mac
 capture an unlocked screen and the Screen Recording permission for whatever runs the script. For about half a minute
 the Mac capture hides every other app's window and brings the app's to the front (`StoreScreenshotsRun.swift`), so if
 the person is at the Mac, tell them in one line before starting it. No emulator, and not the task's own simulator.
 
 The captures land in `build/outputs/readme-hero/` of the checkout, and `generate.sh` draws the image only once all
-eight (four platforms, two themes) are there. A fresh worktree has none, so capture all four, even when the change
+ten (four platforms in two themes, and the two watches) are there. A fresh worktree has none, so capture all six, even when the change
 reaches one platform: the dates then match across the four screens too. In a worktree, run the worktree's script; it
 works from its own folder.
 
@@ -100,7 +104,7 @@ may hold another task's captures from days ago, with other screens and other dat
 `main` into the branch, capture all four again.
 
 ```bash
-READMEHERO_CAPTURES=web ./scripts/readme-hero/generate.sh      # android, ios, mac, web, comma separated
+READMEHERO_CAPTURES=web ./scripts/readme-hero/generate.sh      # android, ios, mac, web, wear, watch, comma separated
 READMEHERO_CAPTURES=none ./scripts/readme-hero/generate.sh     # only hero.html and compose.mjs changed
 ```
 
@@ -114,7 +118,7 @@ system settings to get past it.
 `generate.sh` writes the two `.webp` files over the old ones. Convert both to PNG and Read them, and the captures in
 `build/outputs/readme-hero/` when something looks off. Check:
 
-- All four screens show Lisbon trip's Expenses tab with its photos and faces, not a loading skeleton, an empty group, a
+- The four screens show Lisbon trip's Expenses tab, the watches their Balances, with its photos and faces, not a loading skeleton, an empty group, a
   blank window, an error or a system dialog over the app.
 - The dark image is dark on all four, and the light one light.
 - The change of the branch is there, on each platform it reaches.
