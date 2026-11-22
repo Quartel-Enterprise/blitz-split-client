@@ -86,6 +86,7 @@
     <string name="profile_language_croatian">Hırvatça</string>
     <string name="profile_language_hungarian">Macarca</string>
     <string name="profile_language_urdu">Urduca</string>
+    <string name="profile_language_filipino">Filipince</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirimler</string>
     <plurals name="profile_notifications_active">

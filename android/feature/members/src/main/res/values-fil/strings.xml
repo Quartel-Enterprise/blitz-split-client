@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Invite link</string>
+    <string name="members_link_pending">Hindi pa nagagawa</string>
+    <string name="members_share">I-share</string>
+    <string name="members_me">%s (ikaw)</string>
+    <string name="members_status_this_device">Ang device na ito</string>
+    <string name="members_status_joined">Sumali na</string>
+    <string name="members_status_not_joined">Hindi pa sumasali</string>
+    <string name="members_options">Mga opsyon para kay %s</string>
+    <string name="members_rename">Palitan ang pangalan</string>
+    <string name="members_personal_invite">Personal na imbitasyon para kay %s</string>
+    <string name="members_personal_message">Sinumang magbukas ng link na ito ay direktang sasali bilang %s, nang hindi pumipili sa listahan. Isang beses lang ito gagana.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Sinumang magbukas ng link na ito ay direktang sasali bilang %1$s, nang hindi pumipili sa listahan, at makikita na agad ang bahagi niyang %2$s sa bill na naidagdag na. Isang beses lang ito gagana.</item>
+        <item quantity="other">Sinumang magbukas ng link na ito ay direktang sasali bilang %1$s, nang hindi pumipili sa listahan, at makikita na agad ang bahagi niyang %2$s sa %3$d na bill na naidagdag na. Isang beses lang ito gagana.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopyahin ang link</string>
+    <string name="members_personal_copied">Nakopya na</string>
+    <string name="members_personal_share">I-share kay %s</string>
+    <string name="members_personal_share_message">Sumali sa %1$s bilang %2$s sa Blitz Split: %3$s</string>
+    <string name="members_remove">Alisin sa grupo</string>
+    <string name="members_remove_joined">Sumali na si %s sa grupo</string>
+    <string name="members_remove_title">Alisin si %s sa grupo?</string>
+    <string name="members_remove_message">Hindi pa sumasali si %s. Puwede mo siyang idagdag ulit mamaya.</string>
+    <string name="members_remove_confirm">Alisin</string>
+    <string name="members_release">I-release ang pangalan</string>
+    <string name="members_release_title">I-release ang pangalan ni %s?</string>
+    <string name="members_release_message">Aalis sa grupo ang sumali bilang %1$s. Mananatili ang pangalan, kulay at mga bill ni %1$s, at puwedeng piliin ulit si %1$s gamit ang link ng grupo.</string>
+    <string name="members_release_confirm">I-release</string>
+    <string name="members_release_error">Hindi na-release ang pangalan. Tingnan ang koneksyon mo at subukan ulit.</string>
+    <string name="members_add">Magdagdag ng tao</string>
+    <string name="members_invite_instead">May app ba siya? Imbitahan gamit ang link</string>
+    <string name="members_name_label">Pangalan</string>
+    <string name="members_save">I-save</string>
+    <string name="members_cancel">Kanselahin</string>
+    <string name="members_change_error">Hindi na-save ang pagbabago. Subukan ulit.</string>
+    <string name="members_remove_open_balance">May bukas na balanse si %s</string>
+    <string name="members_balance_to_get_back">%s ang makukuha</string>
+    <string name="members_balance_owes">May utang na %s</string>
+    <string name="members_balance_settled">Bayad na</string>
+</resources>

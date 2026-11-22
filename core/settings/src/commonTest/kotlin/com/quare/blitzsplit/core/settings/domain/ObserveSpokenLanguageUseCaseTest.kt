@@ -138,6 +138,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.CROATIAN,
                 AppLanguage.HUNGARIAN,
                 AppLanguage.URDU,
+                AppLanguage.FILIPINO,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -178,6 +179,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "hr",
                     "hu",
                     "ur",
+                    "fil",
                     "zh-Hant",
                 ),
                 spoken,
@@ -233,6 +235,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "hr",
             "hu",
             "ur",
+            "fil",
             "zh-Hant",
         )
 
@@ -282,6 +285,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "hr-BA",
                 "hu-RO",
                 "ur-PK",
+                "fil-PH",
                 "zh-TW",
             )
 
@@ -324,6 +328,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "hr",
                     "hu",
                     "ur",
+                    "fil",
                     "zh-Hant",
                 ),
                 spoken,
@@ -375,7 +380,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in a language the app does not have THEN it is en`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("ca", "ca-ES", "sw", "sw-KE", "sk-SK", "am-ET", "fil", "fil-PH", "sw-TZ")
+        val devices = listOf("ca", "ca-ES", "sw", "sw-KE", "sk-SK", "am-ET", "ceb", "ceb-PH", "sw-TZ")
 
         // When
         val spoken = devices.map { spokenOn(it) }

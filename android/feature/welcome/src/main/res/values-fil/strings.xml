@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Hatiin ang bill, walang hassle</string>
+    <string name="welcome_offline_title">Gumagana offline</string>
+    <string name="welcome_offline_body">Nasa device mo ang lahat at magsi-sync mamaya.</string>
+    <string name="welcome_optional_title">Opsyonal ang account</string>
+    <string name="welcome_optional_body">Para lang hindi mawala ang lahat kapag nagpalit ka ng device ang Google o Apple.</string>
+    <string name="welcome_invite_title">Mag-imbita gamit ang link o QR code</string>
+    <string name="welcome_invite_body">Sumasali ang mga kaibigan sa grupo nang hindi gumagawa ng account.</string>
+    <string name="welcome_no_connection_title">Walang koneksyon.</string>
+    <string name="welcome_no_connection_body">Kailangan ng internet para mag-sign in gamit ang account. Gamitin muna nang walang account at kumonekta mamaya sa Profile.</string>
+    <string name="welcome_or">o</string>
+    <string name="welcome_use_without_account">Gamitin nang walang account</string>
+    <string name="welcome_used_on_another_device">Nagamit ko na ito sa ibang device</string>
+    <string name="welcome_sign_in_failed">Hindi makapag-sign in ngayon. Subukan ulit.</string>
+    <string name="welcome_legal_notice">Sa pagpapatuloy, tinatanggap mo ang %1$s at kinikilala ang %2$s.</string>
+    <string name="welcome_legal_terms">Mga Tuntunin ng Serbisyo</string>
+    <string name="welcome_legal_privacy">Patakaran sa Privacy</string>
+    <string name="welcome_no_account_note">Kapag walang account, buburahin ang data mo pagkalipas ng 30 araw na hindi nagagamit. Ikonekta ang Google o Apple para mapanatili ito.</string>
+    <string name="welcome_no_account_note_offline">Kapag walang account, buburahin ang data mo pagkalipas ng 30 araw na hindi nagagamit. Ikonekta ang Google o Apple mamaya, sa Profile, para mapanatili ito.</string>
+    <string name="welcome_expired_title">Nabura ang data mo</string>
+    <string name="welcome_expired_body">Ginamit mo ang app nang walang account at hindi mo ito binuksan sa loob ng 30 araw, kaya nabura ang data mo. Ikonekta ang Google o Apple para mapanatili ito sa susunod.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

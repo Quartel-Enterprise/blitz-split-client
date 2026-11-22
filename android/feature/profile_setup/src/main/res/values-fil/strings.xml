@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Ano ang tawag sa iyo ng mga kaibigan mo?</string>
+    <string name="profile_setup_subtitle">Nakikita ng mga grupo mo at ng sinumang may link ng profile mo ang pangalan mo.</string>
+    <string name="profile_setup_avatar_color">Kulay ng avatar</string>
+    <string name="profile_setup_add_photo">Magdagdag ng larawan</string>
+    <string name="profile_setup_photo_error">Hindi magamit ang larawang ito. Sumubok ng iba.</string>
+    <string name="profile_setup_name_label">Pangalan mo</string>
+    <string name="profile_setup_name_placeholder">Juan dela Cruz</string>
+    <string name="profile_setup_name_too_short">Mag-type ng hindi bababa sa %d letra.</string>
+    <string name="profile_setup_name_too_long">Hanggang %d character lang.</string>
+    <string name="profile_setup_name_hint">Mapapalitan mo ito mamaya sa Profile.</string>
+    <string name="profile_setup_saved_locally">Sa device na ito lang muna nase-save.</string>
+    <string name="profile_setup_continue">Magpatuloy</string>
+</resources>

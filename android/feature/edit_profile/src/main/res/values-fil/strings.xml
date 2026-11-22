@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">I-edit ang profile</string>
+    <string name="edit_profile_save">I-save</string>
+    <string name="edit_profile_change_photo">Palitan ang larawan</string>
+    <string name="edit_profile_take_photo">Kumuha ng larawan</string>
+    <string name="edit_profile_choose_photo">Pumili sa gallery</string>
+    <string name="edit_profile_use_account_photo">Gamitin ang larawan ng %1$s account</string>
+    <string name="edit_profile_remove_photo">Alisin ang larawan</string>
+    <string name="edit_profile_photo_error">Hindi magamit ang larawang ito. Sumubok ng iba.</string>
+    <string name="edit_profile_avatar_color">Kulay ng avatar</string>
+    <string name="edit_profile_avatar_color_hint">Lalabas kapag wala kang larawan.</string>
+    <string name="edit_profile_name_label">Pangalan mo</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Mag-type ng hindi bababa sa %d letra.</string>
+    <string name="edit_profile_name_too_long">Hanggang %d character lang.</string>
+    <string name="edit_profile_account_notice">Galing sa %1$s account mo ang pangalan at larawan. Ang pagpapalit dito ay sa Blitz Split lang at hindi nagbabago sa %1$s account mo.</string>
+    <string name="edit_profile_footer">Nakikita ng mga grupo mo at ng sinumang may link ng profile mo ang pangalan at larawan mo.</string>
+    <string name="profile_photo_close">Isara</string>
+    <string name="profile_photo_camera">Camera</string>
+    <string name="profile_photo_gallery">Gallery</string>
+    <string name="profile_photo_remove">Alisin</string>
+    <string name="profile_photo_title">Larawan sa profile</string>
+</resources>

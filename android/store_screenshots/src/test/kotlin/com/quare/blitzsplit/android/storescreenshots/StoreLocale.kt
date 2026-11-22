@@ -13,8 +13,8 @@ import java.util.Locale
  * code Android's values-iw answers to, Thai, drawn in th-TH for the baht, Vietnamese, drawn in vi-VN for the
  * đồng, Traditional Chinese, drawn in zh-TW for the New Taiwan dollar, Swedish, drawn in sv-SE for the krona,
  * Czech, drawn in cs-CZ for the koruna, Bengali, drawn in bn-BD for the taka, Malay, drawn in ms-MY for the
- * ringgit, Hungarian, drawn in hu-HU for the forint, and Urdu, drawn in ur-PK for the rupee. The stores' own codes
- * (es-419, es-MX…) come from the tags in scripts/release/store-listing.mjs.
+ * ringgit, Hungarian, drawn in hu-HU for the forint, Urdu, drawn in ur-PK for the rupee, and Filipino, drawn in fil-PH for the peso. The stores' own
+ * codes (es-419, es-MX…) come from the tags in scripts/release/store-listing.mjs.
  */
 internal data class StoreLocale(
     val tag: String,
@@ -194,6 +194,11 @@ internal val storeLocales = listOf(
         tag = "ur",
         language = "ur",
         drawnLocale = "ur-PK",
+    ),
+    StoreLocale(
+        tag = "fil",
+        language = "fil",
+        drawnLocale = "fil-PH",
     ),
     StoreLocale(
         tag = "ja",

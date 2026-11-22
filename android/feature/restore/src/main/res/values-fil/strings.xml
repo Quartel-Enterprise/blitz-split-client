@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Ibalik ang mga grupo mo</string>
+    <string name="restore_subtitle">Nag-sign in ka na ba dati gamit ang account? Mag-sign in lang ulit. Kung hindi, gamitin ang recovery code o ang QR code mula sa lumang device mo.</string>
+    <string name="restore_no_connection_title">Walang koneksyon</string>
+    <string name="restore_no_connection_body">Kailangan ng internet para mag-sign in gamit ang account o code at ma-download ang mga grupo mo. Mananatili ang tinype mo.</string>
+    <string name="restore_code_label">O gamitin ang recovery code</string>
+    <string name="restore_code_hint">Ang 12 salita ayon sa pagkakasunod. I-paste lahat sa iisang field para mapunan ang bawat field.</string>
+    <string name="restore_scan_qr_title">I-scan ang QR code mula sa lumang device mo</string>
+    <string name="restore_scan_qr_body">Doon: Profile › Recovery › Ipakita ang QR code</string>
+    <string name="restore_recover">Ibalik</string>
+    <string name="restore_try_again">Subukan ulit</string>
+    <string name="restore_start_fresh">Magsimula ulit sa device na ito</string>
+    <string name="restore_error_invalid_code">Hindi nakita ang code. Tingnan ang mga salita at ang pagkakasunod nila, saka subukan ulit.</string>
+    <string name="restore_error_too_many_attempts">Masyadong maraming subok. Maghintay ng ilang minuto at subukan ulit.</string>
+    <string name="restore_error_sign_in_failed">Hindi makapag-sign in ngayon. Subukan ulit.</string>
+    <string name="restore_error_unknown">May nagkamali. Subukan ulit.</string>
+</resources>

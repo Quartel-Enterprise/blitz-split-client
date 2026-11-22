@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · recovery code</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Payagan ang camera sa Settings para kumuha ng larawan.</string>
+    <string name="platform_camera_settings">Settings</string>
+    <string name="platform_receipt_source_camera">Kumuha ng larawan</string>
+    <string name="platform_receipt_source_gallery">Pumili sa gallery</string>
+    <string name="platform_receipt_source_file">Pumili ng file</string>
+    <string name="platform_receipt_camera_title">I-scan ang resibo</string>
+    <string name="platform_receipt_camera_close">Isara</string>
+    <string name="platform_receipt_camera_flash_on">I-on ang flash</string>
+    <string name="platform_receipt_camera_flash_off">I-off ang flash</string>
+    <string name="platform_receipt_camera_hint">Ilagay ang buong resibo sa frame. Kami ang magpupuno ng halaga, petsa at deskripsyon; ikaw ang titingin bago mag-save.</string>
+    <string name="platform_receipt_camera_gallery">Pumili sa gallery</string>
+    <string name="platform_receipt_camera_shutter">Kumuha ng larawan</string>
+    <string name="platform_receipt_camera_unavailable">Hindi available ang camera. Pumili ng larawan ng resibo sa gallery.</string>
+    <string name="platform_receipt_camera_permission">Payagan ang camera para i-scan ang resibo, o pumili ng larawan sa gallery.</string>
+    <string name="platform_receipt_camera_allow">Payagan ang camera</string>
+    <string name="platform_receipt_camera_settings">Buksan ang settings</string>
+</resources>

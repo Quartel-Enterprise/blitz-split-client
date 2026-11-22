@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Mga balanse</string>
+    <string name="global_balances_profile">Profile</string>
+    <string name="global_balances_offline">Offline · mga balanse ng device na ito</string>
+    <string name="global_balances_filter">Ipakita</string>
+    <string name="global_balances_filter_all">Lahat</string>
+    <string name="global_balances_filter_you_owe">May utang ka</string>
+    <string name="global_balances_filter_owes_you">May utang sa iyo</string>
+    <string name="global_balances_hint">Na-offset na sa mga grupo: isang beses lang lalabas ang bawat tao.</string>
+    <string name="global_balances_hint_empty">Isinusuma ang bawat grupo sa device na ito.</string>
+    <string name="global_balances_section_you_owe">May utang ka · %d</string>
+    <string name="global_balances_section_owes_you">May utang sa iyo · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d grupo</item>
+        <item quantity="other">%d na grupo</item>
+    </plurals>
+    <string name="global_balances_guest">%s · bisita</string>
+    <string name="global_balances_you_owe">may utang ka</string>
+    <string name="global_balances_owes_you">may utang sa iyo</string>
+    <string name="global_balances_by_group_show">Ipakita ang %s ayon sa grupo</string>
+    <string name="global_balances_by_group_hide">Itago ang %s ayon sa grupo</string>
+    <string name="global_balances_received">Natanggap</string>
+    <string name="global_balances_received_from">Natanggap mula kay %s</string>
+    <string name="global_balances_settle">Magbayaran</string>
+    <string name="global_balances_settle_with">Magbayaran kay %s</string>
+    <string name="global_balances_charge">Maningil</string>
+    <string name="global_balances_charge_person">Maningil kay %s</string>
+    <string name="global_balances_detail_pane">Balanse kay %s</string>
+    <string name="global_balances_detail_owes_you">May utang sa iyo si %s</string>
+    <string name="global_balances_detail_you_owe">May utang ka kay %s</string>
+    <string name="global_balances_detail_guest">%s · bisita na walang app</string>
+    <string name="global_balances_detail_note_owed">Na-offset na ng net ang mga grupo: ang Maningil at Natanggap ay gumagamit ng %s. Nagre-record ang app ng bayad sa bawat grupo.</string>
+    <string name="global_balances_detail_note_settle">Na-offset na ng net ang mga grupo: ang Magbayaran ay gumagamit ng %s. Nagre-record ang app ng bayad sa bawat grupo.</string>
+    <string name="global_balances_detail_note_single">Isang grupo lang ang bukas kasama si %s.</string>
+    <string name="global_balances_settled_title">Bayad na lahat</string>
+    <string name="global_balances_settled_body">Walang may utang sa iyo at wala kang utang kaninuman. Kapag may nagdagdag ng bill, lalabas dito ang balanse.</string>
+    <string name="global_balances_settled_action">Tingnan ang mga grupo</string>
+    <string name="global_balances_nothing_to_pay_title">Wala kang utang</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Bayad ka na sa lahat. May %2$s ka pang makukuha mula sa %1$d tao.</item>
+        <item quantity="other">Bayad ka na sa lahat. May %2$s ka pang makukuha mula sa %1$d na tao.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Tingnan kung sino ang may utang sa iyo</string>
+    <string name="global_balances_nothing_to_receive_title">Walang may utang sa iyo</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">May utang ka pang %2$s sa %1$d tao.</item>
+        <item quantity="other">May utang ka pang %2$s sa %1$d na tao.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Tingnan kung kanino ka may utang</string>
+    <string name="global_balances_coming_soon">Malapit na</string>
+    <string name="global_balances_change_error">Hindi na-save ang pagbabago. Subukan ulit.</string>
+    <string name="global_balances_copied">Nakopya</string>
+    <string name="global_balances_charge_title">Maningil kay %s</string>
+    <string name="global_balances_charge_owes">May utang sa iyo na %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Isara</string>
+    <string name="global_balances_charge_guest">Bisita si %s na walang app. Sa mensaheng ito lang niya malalaman, kaya sinasabi na nito kung ano ang kasama sa bill.</string>
+    <string name="global_balances_charge_message">Mensahe</string>
+    <string name="global_balances_charge_pix">Isama ang Pix key ko</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Kopyahin ang mensahe</string>
+    <string name="global_balances_charge_send">Ipadala</string>
+    <string name="global_balances_message">Hi %1$s! Ayon sa kuwenta ng Blitz Split, may utang ka sa akin na %2$s mula sa %3$s.</string>
+    <string name="global_balances_message_guest">Hi %1$s! May utang ka sa akin na %2$s mula sa %3$s: ang parte mo sa %4$s.</string>
+    <string name="global_balances_message_guest_paid">Hi %1$s! May utang ka sa akin na %2$s mula sa %3$s: ang parte mo sa %4$s, bawas ang %5$s na nabayaran mo na.</string>
+    <string name="global_balances_message_group">ang grupong %s</string>
+    <string name="global_balances_message_groups">ang mga grupong %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telepono</string>
+    <string name="global_balances_key_email">Email</string>
+    <string name="global_balances_key_random">Random na key</string>
+    <string name="global_balances_message_reroute">Pinasimple ng %1$s ang mga utang, kaya sa halip na magbayad ka kay %2$s, direkta ka nang magbabayad sa akin; hindi nagbago ang kabuuan mo.</string>
+</resources>

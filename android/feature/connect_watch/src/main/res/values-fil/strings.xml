@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Ikonekta ang relo</string>
+    <string name="connect_watch_close">Isara</string>
+    <string name="connect_watch_body">I-type ang code na ipinapakita ng relo mo. Magsa-sign in ito sa account mo at magsi-sync nang mag-isa.</string>
+    <string name="connect_watch_code_label">Code ng relo</string>
+    <string name="connect_watch_error_invalid">Mali o expired na code. Kumuha ng bago sa relo.</string>
+    <string name="connect_watch_error_too_many">Masyadong maraming maling code. Maghintay ng ilang minuto at subukan ulit.</string>
+    <string name="connect_watch_error_needs_account">Mag-connect muna ng account: nasa device na ito lang ang data mo.</string>
+    <string name="connect_watch_error_failed">Hindi maikonekta ang relo. Subukan ulit.</string>
+    <string name="connect_watch_offline">Kailangan ng internet para ikonekta ang relo.</string>
+    <string name="connect_watch_own_watch_only">Mag-type lang ng code na ipinapakita ng sarili mong relo: ang sinumang may hawak ng relong iyon ay makakapasok sa account mo.</string>
+    <string name="connect_watch_validity">Valid ang code sa loob ng 5 minuto, isang beses lang.</string>
+    <string name="connect_watch_button">Ikonekta</string>
+    <string name="connect_watch_connected_title">Nakakonekta ang relo</string>
+    <string name="connect_watch_connected_body">Nakikita nito ang mga grupo mo at nagsi-sync nang mag-isa. Para idiskonekta ito, mag-sign out sa relo.</string>
+</resources>

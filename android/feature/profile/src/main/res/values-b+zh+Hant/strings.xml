@@ -85,6 +85,7 @@
     <string name="profile_language_croatian">克羅埃西亞文</string>
     <string name="profile_language_hungarian">匈牙利文</string>
     <string name="profile_language_urdu">烏爾都文</string>
+    <string name="profile_language_filipino">菲律賓文</string>
     <string name="profile_language_system_detail">裝置語言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

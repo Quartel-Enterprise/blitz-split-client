@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Bagong Pix key</string>
+    <string name="payment_key_title_pix_edit">I-edit ang Pix key</string>
+    <string name="payment_key_title_bitcoin_new">Bagong Bitcoin key</string>
+    <string name="payment_key_title_bitcoin_edit">I-edit ang Bitcoin key</string>
+    <string name="payment_key_save">I-save</string>
+
+    <string name="payment_key_pix_intro">Makikita ng magbabayad sa iyo ang key na ito kapag nagbayaran na. Anong uri ng key?</string>
+    <string name="payment_key_pix_question">Anong uri ng key?</string>
+    <string name="payment_key_pix_explanation">Makikita ng magbabayad sa iyo ang key na ito kapag nagbayaran na.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telepono</string>
+    <string name="payment_key_type_email">Email</string>
+    <string name="payment_key_type_random">Random</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mobile number na may area code</string>
+    <string name="payment_key_label_email">Email</string>
+    <string name="payment_key_label_random">Random key</string>
+
+    <string name="payment_key_bitcoin_intro">Paano mo gustong tumanggap?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">mabilis, mababang fee</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">sa blockchain</string>
+    <string name="payment_key_label_lightning">Lightning Address o LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin address</string>
+
+    <string name="payment_key_paste">I-paste</string>
+
+    <string name="payment_key_hint_cpf">Format na 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Format na +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Format na name@domain.com</string>
+    <string name="payment_key_hint_random">32 letra at numero, gaya ng ipinapakita ng bangko mo</string>
+    <string name="payment_key_hint_lightning">Gaya ng name@wallet.com o LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainnet address na nagsisimula sa bc1q o bc1p</string>
+
+    <string name="payment_key_valid_cpf">Format na 000.000.000-00 · tugma ang mga check digit</string>
+    <string name="payment_key_valid_phone">Format na +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Format na name@domain.com</string>
+    <string name="payment_key_valid_random">Kinilala ang random key (32 character)</string>
+    <string name="payment_key_valid_lightning_address">Valid na Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Valid na LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Di-valid na CPF: hindi tugma ang mga check digit.</string>
+    <string name="payment_key_error_invalid_phone">Kulang ang mobile number: gamitin ang area code at 9 na digit, na nagsisimula sa 9.</string>
+    <string name="payment_key_error_invalid_email">Kulang ang email: wala ang domain, gaya ng .com o .com.br.</string>
+    <string name="payment_key_error_invalid_random">Kulang ang random key: 32 letra at numero ito.</string>
+    <string name="payment_key_error_invalid_lightning">Hindi ito Lightning Address (name@wallet) o LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Lightning invoice ito (lnbc…): isang beses lang nagbabayad at nag-e-expire. I-paste ang Lightning Address o LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Di-valid na address. Gumamit ng mainnet address na bc1q o bc1p.</string>
+    <string name="payment_key_error_testnet_address">Testnet address ito (tb1…). Bitcoin mainnet lang ang gumagana rito, na may mga address na bc1….</string>
+    <string name="payment_key_error_already_saved">Mayroon ka na ng key na ito.</string>
+
+    <string name="payment_key_switched_to_onchain">On-chain address ito, kaya lumipat kami sa On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Lightning Address ito, kaya lumipat kami sa Lightning.</string>
+    <string name="payment_key_cpf_notice">Makikita ng magbabayad sa iyo ang buo mong CPF. Kung ayaw mo itong ibahagi, gumamit ng telepono, email o random key.</string>
+    <string name="payment_key_held_notice">Isang Pix key lang ng ganitong uri ang puwede mong magkaroon, kaya ito ang na-save mo. Palitan ito rito kung gusto mo.</string>
+
+    <string name="payment_key_accepted_title">Tinatanggap namin</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">Default na Pix key</string>
+    <string name="payment_key_default_bitcoin_title">Default na Bitcoin key</string>
+    <string name="payment_key_default_pix_detail">Unang ipapakita kapag nagbayaran na.</string>
+    <string name="payment_key_default_bitcoin_detail">Unang ipapakita kapag may nagbayad sa BTC.</string>
+    <string name="payment_key_default_now">Ngayon: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Para palitan ito, gawing default ang ibang key.</string>
+    <string name="payment_key_default_locked_new">Ang una mong key ng ganitong uri ang default.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telepono</string>
+    <string name="payment_key_default_type_email">email</string>
+    <string name="payment_key_default_type_random">random key</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Hindi naglilipat ng pera ang Blitz Split: nagbabayad ang magbabayad sa bank app niya. Tiyaking nasa pangalan mo ang key.</string>
+    <string name="payment_key_footer_bitcoin">Kapag nagbayaran na, ipinapakita namin ang halaga sa sats ayon sa kasalukuyang rate. Pagtataya lang ito: kinukumpirma ito ng magbabayad sa wallet niya.</string>
+
+    <string name="payment_key_delete">Burahin ang key</string>
+    <string name="payment_key_delete_title">Burahin ang key na ito?</string>
+    <string name="payment_key_delete_body">Hindi na ito makikita ng mga may utang sa iyo kapag nagbayaran na.</string>
+    <string name="payment_key_delete_confirm">Burahin</string>
+</resources>

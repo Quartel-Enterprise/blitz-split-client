@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Wala ka sa grupong ito</string>
+    <string name="bill_link_not_in_group_message">Ang comment na ito ay nasa grupong hindi mo kasama. Hingin sa nagpadala ng link ang imbitasyon.</string>
+    <string name="bill_link_offline_title">Walang internet</string>
+    <string name="bill_link_offline_message">Buksan ulit ang link kapag online ka na ulit.</string>
+    <string name="bill_link_go_home">Pumunta sa Home</string>
+    <string name="discard_changes_title">Itapon ang mga pagbabago?</string>
+    <string name="discard_changes_message">Mawawala ang mga hindi pa nase-save na pagbabago.</string>
+    <string name="discard_changes_discard">Itapon</string>
+    <string name="discard_changes_keep_editing">Ituloy ang pag-edit</string>
+    <string name="watch_channel_name">Relo</string>
+    <string name="watch_connected_title">Nakakonekta ang %1$s sa account mo</string>
+    <string name="watch_connected_title_unnamed">Nakakonekta ang relo sa account mo</string>
+    <string name="watch_connected_text">Nakikita nito ang mga grupo mo at nagsi-sync nang mag-isa. Para idiskonekta ito, mag-sign out sa relo.</string>
+</resources>

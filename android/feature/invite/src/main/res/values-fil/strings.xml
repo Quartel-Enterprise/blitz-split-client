@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Isara</string>
+    <string name="invite_group_created">Nagawa na ang grupo</string>
+    <string name="invite_title">Imbitahan ang lahat sa %s</string>
+    <string name="invite_qr_description">QR code ng invite link ng grupo</string>
+    <string name="invite_copy">Kopyahin</string>
+    <string name="invite_copied">Nakopya na</string>
+    <string name="invite_who_picks">Sinumang magbukas ng link ay pipili kung sino siya sa listahan: %s. Hindi kailangan ng account.</string>
+    <string name="invite_names_or">%1$s o %2$s</string>
+    <string name="invite_anyone_joins">Sinumang magbukas ng link ay makakasali sa grupo. Hindi kailangan ng account.</string>
+    <string name="invite_pending_title">Naghihintay ang link</string>
+    <string name="invite_pending_offline">Gagawin ito pagka-online mo.</string>
+    <string name="invite_pending_online">Ginagawa ang link…</string>
+    <string name="invite_failed_title">Hindi nagawa ang link</string>
+    <string name="invite_failed_body">May nangyaring mali habang sini-sync ang grupo.</string>
+    <string name="invite_retry">Subukan ulit</string>
+    <string name="invite_share">I-share ang link</string>
+    <string name="invite_see_who_joined">Tingnan kung sino ang sumali</string>
+    <string name="invite_add_person">Magdagdag ng taong walang app</string>
+    <string name="invite_go_to_group">Pumunta sa grupo</string>
+    <string name="invite_change_link">Palitan ang link</string>
+    <string name="invite_change_link_title">Palitan ang invite link?</string>
+    <string name="invite_change_link_message">Hindi na gagana ang kasalukuyang link at QR code, pati ang mga personal na imbitasyong hindi pa nagagamit. Mananatili sa grupo ang mga sumali na.</string>
+    <string name="invite_change_link_failed">Hindi napalitan ang link. Subukan ulit.</string>
+    <string name="invite_share_message">Hatiin natin ang mga bill ng %1$s sa Blitz Split. Sumali gamit ang link na ito: %2$s</string>
+</resources>

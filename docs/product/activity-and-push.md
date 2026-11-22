@@ -105,6 +105,9 @@ The feed, unread state, real time and push notifications.
     but before "si": a join is "je ušao/la u grupu", a photo line "je priložio/la danas u 21:10". A name is never declined,
     standing after a noun that takes the case ("je dodao/la člana Ana"), and the deleted-item notice starts with who
     deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`) rather than a "by" that would decline the name ("od Ane").
+    Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
+    verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
+    starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".
     Hungarian conjugates by person, so every Hungarian verb phrase starts with a past right after the actor, the object
     after a colon with no suffix: a definite past in "-ta"/"-te" takes a "d" in the user's rows ("Ana létrehozta a
     csoportot: …", "Te létrehoztad…"), and an indefinite one is one of the few listed in the three helpers, each with its

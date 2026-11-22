@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian and Urdu: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu and Filipino: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -174,7 +174,12 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     never knows, so it does as Hindi does (Pierre's call): the masculine as the generic where a person decides it, and
     the ergative past, which agrees with the object, wherever it fits. Its past puts "نے" after the actor, apart after
     a name and after the user's "آپ" alike, so its activity sentences need no rule for the user
-    ([activity-and-push.md](activity-and-push.md)). The
+    ([activity-and-push.md](activity-and-push.md)). Filipino (Pierre's calls) is one variant for every `fil` tag
+    (the legacy Tagalog `tl` reads as it), the informal Tagalog-based Filipino friends speak, with no "po" or "opo", and
+    its everyday English loanwords kept (bill, grupo, balanse, account, QR code, link); it calls the app Blitz Split. It
+    reads left to right, writes numbers, amounts and dates with 0-9, and its plurals have one and other, "mga" standing
+    before the noun in other. Its verbs don't change with the person, so its activity sentences need no rule for the
+    user ([activity-and-push.md](activity-and-push.md)). The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
@@ -377,6 +382,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     and shows their amounts 100 times smaller until it updates, as the rupiah did (Pierre's call: accepted). The other
     six have 2 decimals, as ISO gives them, so an app version from before them shows their amounts by the raw code,
     with the right decimals. All eight keep the usual 100 million cap. Ecuador, El Salvador, Panama and Puerto Rico keep the dollar, their own.
+  - The Philippine peso (PHP) follows the Pakistani rupee (Pierre's call, with Filipino), and starts a new group in the
+    Philippines, as the won comes with Korean. It has 2 decimals, as ISO gives it, and the usual 100 million cap (about
+    US$ 1.7 million), so an app version from before it shows its amounts by the raw code, with the right decimals.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

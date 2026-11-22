@@ -32,6 +32,8 @@ private const val CROATIAN = "hr"
 private const val URDU = "ur"
 private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
 private const val HUNGARIAN = "hu"
+private const val FILIPINO = "fil"
+private const val LEGACY_TAGALOG = "tl"
 private val hungarianFirstWord = Regex("""^[^\s,:]+""")
 private val hungarianDefinitePast = Regex("""t[ae]$""")
 private val hungarianIndefinitePast = mapOf(
@@ -92,6 +94,8 @@ private val youSubjectLanguages = setOf(
     CROATIAN,
     HUNGARIAN,
     URDU,
+    FILIPINO,
+    LEGACY_TAGALOG,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -136,7 +140,8 @@ private val irregularSecondPerson = mapOf(
  * each with its own second person ("Ana felosztott", "Te felosztottál"; "kilépett", "kiléptél").
  * Bengali needs no rule: its respectful verb is the same for "আপনি" and for a name ("Ana ভাগ করেছেন", "আপনি ভাগ করেছেন"),
  * and Malay's verb doesn't change with the person. Urdu needs none either: its ergative "نے" is written apart after
- * a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ بانٹا"). Same rules as the web's and the Apple
+ * a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ بانٹا"). Filipino needs none: its "ay" and
+ * its actor-focus verb are the same for the user's "Ikaw" and for a name ("Ana ay nagbahagi", "Ikaw ay nagbahagi"). Same rules as the web's and the Apple
  * app's `verbForYou`.
  */
 fun toSecondPerson(
@@ -247,7 +252,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Czech says "Ty jsi
  * smazal(a)…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
- * ("od Ane").
+ * ("od Ane"). Filipino says "Ikaw ay nagtanggal…", its verb not changing with the person, rather than a "by you" that
+ * would need "ni" for a name and "mo" for the user.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

@@ -1,0 +1,84 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Filipino: pick \"Filipino\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala filipino: escolha \"Filipino\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora filipino: escolhe \"Filipino\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla filipino: elige \"Filipino\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais filipino : choisis « Filipino » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Filipino: Wähle „Filipino“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla filippino: scegli \"Filipino\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po filipińsku: wybierz „Filipino” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Filipijns: kies \"Filipino\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがフィリピノ語に対応しました。プロフィール › 言語で「Filipino」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Filipince konuşuyor: Profil › Dil'den \"Filipino\"yu seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Filipino: pilih \"Filipino\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на филиппинском: выбери «Filipino» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить філіппінською: обери «Filipino» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 필리핀어를 쓸 수 있어요. 프로필 › 언어에서 ‘Filipino’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप फ़िलिपीनो में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Filipino” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث الفلبينية: يمكنك اختيار «Filipino» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持菲律宾语：在“个人资料 › 语言”中选择“Filipino”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו פיליפינית: אפשר לבחור \"Filipino\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาฟิลิปปินส์แล้ว เลือก “Filipino” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Filipino: chọn “Filipino” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援菲律賓文：在「個人資料 › 語言」中選擇「Filipino」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu filippinska: välj ”Filipino” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví filipínsky: vyber „Filipino“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum filipineză: alege „Filipino” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন ফিলিপিনো ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “Filipino” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Filipina: pilih \"Filipino\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον φιλιππινέζικα: διάλεξε «Filipino» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori filipinski: odaberi „Filipino“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól filippínóul is beszél: válaszd a „Filipino” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ فلپائنی میں بھی دستیاب ہے: پروفائل › زبان میں “Filipino” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Filipino ang app: piliin ang \"Filipino\" sa Profile › Wika, o hayaan itong sundin ang device mo."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the Philippine peso (PHP, \"₱\"), and a group made in the Philippines starts in it.",
+        "pt": "Os grupos agora podem dividir em peso filipino (PHP, \"₱\"), e um grupo criado nas Filipinas já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em peso filipino (PHP, \"₱\"), e um grupo criado nas Filipinas começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en peso filipino (PHP, \"₱\"), y un grupo creado en Filipinas empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en peso philippin (PHP, « ₱ »), et un groupe créé aux Philippines démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Philippinischen Peso (PHP, „₱“) teilen, und eine auf den Philippinen erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in peso filippino (PHP, \"₱\"), e un gruppo creato nelle Filippine parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w pesos filipińskich (PHP, „₱”), a grupa założona na Filipinach startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Filipijnse peso (PHP, \"₱\"), en een groep die op de Filipijnen wordt gemaakt, start in die valuta.",
+        "ja": "グループでフィリピン・ペソ（PHP、「₱」）が使えるようになり、フィリピンで作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık Filipin pesosu (PHP, \"₱\") ile bölebiliyor; Filipinler'de açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam peso Filipina (PHP, \"₱\"), dan grup yang dibuat di Filipina langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в филиппинских песо (PHP, «₱»), а группа, созданная на Филиппинах, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати у філіппінських песо (PHP, «₱»), а група, створена на Філіппінах, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 필리핀 페소(PHP, ‘₱’)로 나눌 수 있고, 필리핀에서 만든 그룹은 페소로 시작해요.",
+        "hi": "ग्रुप अब फ़िलिपीनी पेसो (PHP, “₱”) में बांट सकते हैं, और फ़िलीपींस में बना ग्रुप इसी पेसो में शुरू होता है।",
+        "ar": "يمكن للمجموعات الآن التقسيم بالبيزو الفلبيني (PHP، «₱»)، والمجموعة التي تُنشأ في الفلبين تبدأ به.",
+        "zh": "群组现在可以使用菲律宾比索（PHP，“₱”）分摊，在菲律宾创建的群组也会默认使用比索。",
+        "he": "קבוצות יכולות עכשיו לחלק בפזו פיליפיני (PHP, \"₱\"), וקבוצה שנוצרת בפיליפינים מתחילה בו.",
+        "th": "กลุ่มหารเป็นเปโซฟิลิปปินส์ (PHP, “₱”) ได้แล้ว และกลุ่มที่สร้างในฟิลิปปินส์จะเริ่มด้วยสกุลเงินนี้",
+        "vi": "Nhóm giờ có thể chia bằng peso Philippines (PHP, “₱”), và nhóm được tạo ở Philippines sẽ bắt đầu với đồng tiền này.",
+        "zh-Hant": "群組現在可以使用菲律賓披索（PHP，「₱」）分攤，在菲律賓建立的群組也會從披索開始。",
+        "sv": "Grupper kan nu dela upp i filippinska pesos (PHP, ”₱”), och en grupp som skapas på Filippinerna börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit ve filipínském pesu (PHP, „₱“) a skupina založená na Filipínách začne v něm.",
+        "ro": "Grupurile pot împărți acum în pesos filipinezi (PHP, „₱”), iar un grup creat în Filipine pornește în această monedă.",
+        "bn": "গ্রুপে এখন ফিলিপাইন পেসো (PHP, “₱”) দিয়ে ভাগ করা যাবে, আর ফিলিপাইনে তৈরি গ্রুপ এই মুদ্রাতেই শুরু হবে।",
+        "ms": "Kumpulan kini boleh membahagi dalam peso Filipina (PHP, \"₱\"), dan kumpulan yang dibuat di Filipina bermula dengan mata wang itu.",
+        "el": "Οι ομάδες μπορούν πλέον να μοιράζουν σε πέσο Φιλιππίνων (PHP, «₱»), και μια ομάδα που δημιουργείται στις Φιλιππίνες ξεκινά σε αυτό.",
+        "hr": "Grupe sada mogu dijeliti u filipinskom pesu (PHP, „₱“), a grupa napravljena na Filipinima počinje u njemu.",
+        "hu": "A csoportok mostantól fülöp-szigeteki pesót (PHP, „₱”) is használhatnak, és a Fülöp-szigeteken létrehozott csoport ebben indul.",
+        "ur": "اب گروپ فلپائنی پیسو (PHP، “₱”) میں تقسیم کر سکتے ہیں، اور فلپائن میں بنایا گیا گروپ اسی کرنسی سے شروع ہوتا ہے۔",
+        "fil": "Puwede nang maghati ang mga grupo sa Philippine peso (PHP, \"₱\"), at ang grupong ginawa sa Pilipinas ay magsisimula rito."
+      }
+    }
+  ]
+}

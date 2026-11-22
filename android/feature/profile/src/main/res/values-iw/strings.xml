@@ -87,6 +87,7 @@
     <string name="profile_language_croatian">קרואטית</string>
     <string name="profile_language_hungarian">הונגרית</string>
     <string name="profile_language_urdu">אורדו</string>
+    <string name="profile_language_filipino">פיליפינית</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>
     <plurals name="profile_notifications_active">
