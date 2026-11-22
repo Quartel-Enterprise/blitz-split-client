@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Bagong grupo</string>
+    <string name="create_group_close">Isara</string>
+    <string name="create_group_create">Gumawa</string>
+    <string name="create_group_change_color">Palitan ang kulay ng grupo</string>
+    <string name="create_group_name_label">Pangalan ng grupo</string>
+    <string name="create_group_type_label">Uri ng grupo</string>
+    <string name="create_group_members_title">Sinu-sino ang kasali</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d tao</item>
+        <item quantity="other">%d na tao</item>
+    </plurals>
+    <string name="create_group_me">ikaw</string>
+    <string name="create_group_remove_member">Alisin si %s</string>
+    <string name="create_group_add_placeholder">Idagdag gamit ang pangalan</string>
+    <string name="create_group_add">Idagdag</string>
+    <string name="create_group_no_app_notice">Walang kailangang may app sa ngayon. Puwede ka nang magdagdag ng gastos para sa lahat at ipadala ang link mamaya.</string>
+    <string name="create_group_currency">Default na currency</string>
+    <string name="create_group_currency_caption">Sa currency na ito magsisimula ang mga bagong bill; puwedeng gumamit ng iba ang bawat bill.</string>
+    <string name="create_group_save_error">Hindi na-save ang grupo. Subukan ulit.</string>
+    <string name="create_group_photo">Larawan ng grupo</string>
+    <string name="create_group_take_photo">Kumuha ng larawan</string>
+    <string name="create_group_choose_photo">Pumili ng larawan</string>
+    <string name="create_group_remove_photo">Alisin ang larawan</string>
+    <string name="create_group_photo_error">Hindi magamit ang larawang ito. Subukan ang iba.</string>
+</resources>

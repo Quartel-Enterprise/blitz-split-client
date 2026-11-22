@@ -47,6 +47,12 @@
             "value" : "Blitz Split"
           }
         },
+        "fil" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -234,6 +240,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "fil" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -431,6 +443,12 @@
             "value" : "Para escanear el código QR de una invitación o de tu dispositivo anterior, y para tomar tu foto de perfil y fotos de gastos."
           }
         },
+        "fil" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para i-scan ang QR code ng imbitasyon o mula sa dati mong device, at para kunan ang iyong profile photo at mga larawan ng bill."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -623,6 +641,12 @@
             "value" : "Para invitar a personas de tus contactos con el enlace de un grupo. Sus números se quedan solo en este dispositivo."
           }
         },
+        "fil" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para imbitahan ang mga tao sa iyong contacts gamit ang link ng grupo. Mananatili lang sa device na ito ang kanilang mga numero."
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -813,6 +837,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para guardar las fotos de los gastos en tu biblioteca."
+          }
+        },
+        "fil" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para i-save ang mga larawan ng bill sa iyong library."
           }
         },
         "fr" : {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">I-save ang recovery code mo</string>
+    <string name="recovery_code_body">Ginagamit mo ito nang walang account. Ibabalik ng 12 salitang ito ang data mo kung magpalit ka o mawalan ng device. Isulat ang mga ito ayon sa pagkakasunod. Pagkalipas ng 30 araw na hindi nagagamit, mabubura ang data mo at hindi na gagana ang mga salita.</string>
+    <string name="recovery_code_copy">Kopyahin ang mga salita</string>
+    <string name="recovery_code_save_to_password_manager">I-save sa password manager</string>
+    <string name="recovery_code_connect_instead">Ikonekta na lang ang Google o Apple</string>
+    <string name="recovery_code_connect_instead_body">Hindi kailangan ng code</string>
+    <string name="recovery_code_sign_in_failed">Hindi makakonekta ngayon. Subukan ulit.</string>
+    <string name="recovery_code_also_in_profile">Nasa Profile › Recovery din ito.</string>
+    <string name="recovery_code_remind_later">Paalalahanan ako mamaya</string>
+    <string name="recovery_code_saved">Na-save ko na</string>
+    <string name="recovery_code_download">I-download</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · recovery code\n\n%1$s\n\nGamitin ito sa \"Nagamit ko na ito sa ibang device\" para maibalik ang data mo.\n</string>
+</resources>

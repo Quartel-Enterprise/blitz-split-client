@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Makipag-ugnayan sa support</string>
+    <string name="contact_support_description">Bubuksan namin ang email app mo na may handa nang mensahe. Ilarawan ang nangyari at ipadala: totoong tao ang nagbabasa ng bawat mensahe.</string>
+    <string name="contact_support_to">Para kay</string>
+    <string name="contact_support_diagnostics">Isasama sa email</string>
+    <string name="contact_support_app_version">Bersyon ng app</string>
+    <string name="contact_support_platform">Platform</string>
+    <string name="contact_support_language">Wika</string>
+    <string name="contact_support_account">Account</string>
+    <string name="contact_support_profile">Profile</string>
+    <string name="contact_support_language_system">System</string>
+    <string name="contact_support_account_local">Device na ito lang</string>
+    <string name="contact_support_account_anonymous">Hindi nakakonekta</string>
+    <string name="contact_support_open_email">Buksan ang email</string>
+    <string name="contact_support_copy_email">Kopyahin ang email address</string>
+    <string name="contact_support_notice_copied">Nakopya ang email address.</string>
+    <string name="contact_support_notice_no_app">Walang nakitang email app. Kinopya na lang ang address.</string>
+    <string name="contact_support_close">Isara</string>
+</resources>

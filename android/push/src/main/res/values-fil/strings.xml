@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Paalala sa pagbabayad</string>
+    <string name="push_bill_created">Idinagdag ni %1$s ang “%2$s” kasama ka</string>
+    <string name="push_bill_edited">In-edit ni %1$s ang “%2$s”</string>
+    <string name="push_bill_deleted">Binura ni %1$s ang “%2$s”</string>
+    <string name="push_comment_added">Nag-comment si %1$s sa “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">Minarkahan ni %1$s na nabayaran ka na niya</string>
+    <string name="push_payment_to_you">Minarkahan ni %1$s na nabayaran ka na ni %2$s</string>
+    <string name="push_payment_received_yours">Minarkahan ni %1$s na natanggap ang bayad mo</string>
+    <string name="push_payment_from_you">Minarkahan ni %1$s na nabayaran mo na si %2$s</string>
+    <string name="push_payment_undone">Binawi ni %1$s ang isang bayad kasama ka</string>
+    <string name="push_charge_sent">Pinadalhan ka ni %1$s ng paalala para magbayaran</string>
+    <string name="push_settle_reminder">May bukas kang balanse sa %1$s</string>
+    <string name="push_settle_reminders">May bukas kang balanse sa %1$s na grupo</string>
+    <string name="push_added_to_group">Idinagdag ka ni %1$s sa grupo</string>
+    <string name="push_member_joined">Sumali si %1$s sa grupo</string>
+    <string name="push_debts_simplified_to_you">Pinasimple ni %1$s ang mga utang. Ngayon, babayaran ka ni %2$s ng %3$s.</string>
+    <string name="push_debts_simplified_from_you">Pinasimple ni %1$s ang mga utang. Ngayon, babayaran mo si %2$s ng %3$s.</string>
+    <string name="push_debts_simplified_other">Pinasimple ni %1$s ang mga utang. Tingnan kung ano na ang sa iyo.</string>
+    <string name="push_debts_unsimplified_to_you">Pinatay ni %1$s ang Pasimplehin ang mga utang. Ngayon, babayaran ka ni %2$s ng %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">Pinatay ni %1$s ang Pasimplehin ang mga utang. Ngayon, babayaran mo si %2$s ng %3$s.</string>
+    <string name="push_debts_unsimplified_other">Pinatay ni %1$s ang Pasimplehin ang mga utang. Tingnan kung ano na ang sa iyo.</string>
+    <string name="notification_settings_bills">Mga bill</string>
+    <string name="notification_settings_bills_detail">Bago, na-edit o binurang bill na kasama ka</string>
+    <string name="notification_settings_payments">Mga bayad at pagbabayaran</string>
+    <string name="notification_settings_payments_detail">Mga bayad papunta o galing sa iyo, at pinasimpleng utang</string>
+    <string name="notification_settings_comments">Mga comment</string>
+    <string name="notification_settings_comments_detail">Sa mga bill na kasama ka at mga thread na sinulatan mo</string>
+    <string name="notification_settings_people_and_groups">Mga tao at grupo</string>
+    <string name="notification_settings_people_and_groups_detail">Sino ang sumasali o umaalis sa mga grupo mo, at ang mga nagbabago rito</string>
+    <string name="notification_settings_payment_requests">Mga paniningil</string>
+    <string name="notification_settings_payment_requests_detail">Kapag may nagpapabayad sa iyo</string>
+    <string name="notification_settings_balance_reminder">Paalala sa bukas na balanse</string>
+    <string name="notification_settings_balance_reminder_detail">Isang beses kada linggo, kung may bukas na balanse</string>
+</resources>

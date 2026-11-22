@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Bagong paraan ng pagbabayad</string>
+    <string name="paying_method_edit_title">I-edit ang paraan ng pagbabayad</string>
+    <string name="paying_method_type">Uri</string>
+    <string name="paying_method_name">Pangalan</string>
+    <string name="paying_method_name_optional">Pangalan (opsyonal)</string>
+    <string name="paying_method_color">Kulay</string>
+    <string name="paying_method_default">Default na paraan</string>
+    <string name="paying_method_default_hint">Ito ang uumpisahan ng mga bagong bill na babayaran mo.</string>
+    <string name="paying_method_delete">Burahin ang paraan ng pagbabayad</string>
+    <string name="paying_method_delete_title">Burahin ang paraan ng pagbabayad na ito?</string>
+    <string name="paying_method_delete_body">Hindi na ito ipapakita sa mga bill na minarkahan mo nito.</string>
+    <string name="paying_method_delete_confirm">Burahin</string>
+    <string name="paying_method_save">I-save</string>
+</resources>

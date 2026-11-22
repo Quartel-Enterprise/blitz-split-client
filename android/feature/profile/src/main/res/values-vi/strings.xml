@@ -85,6 +85,7 @@
     <string name="profile_language_croatian">Tiếng Croatia</string>
     <string name="profile_language_hungarian">Tiếng Hungary</string>
     <string name="profile_language_urdu">Tiếng Urdu</string>
+    <string name="profile_language_filipino">Tiếng Philippines</string>
     <string name="profile_language_system_detail">Ngôn ngữ của thiết bị</string>
     <string name="profile_notifications">Thông báo</string>
     <plurals name="profile_notifications_active">

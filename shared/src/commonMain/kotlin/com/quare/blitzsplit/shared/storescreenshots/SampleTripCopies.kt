@@ -456,5 +456,19 @@ internal object SampleTripCopies {
             court = "کورٹ کی بکنگ",
             items = listOf("پیزا مارگریٹا", "براٹا", "مشروم ریزوٹو", "تیرامیسو", "پروسیکو", "ایسپریسو"),
         ),
+        "fil" to SampleTripCopy(
+            groupName = "Biyahe sa Lisbon",
+            people = listOf("Juan", "Maria", "Jose", "Ana", "Miguel"),
+            dinner = "Hapunan sa trattoria",
+            apartment = "Apartment sa Alfama",
+            groceries = "Grocery",
+            carRental = "Rentang kotse",
+            boatTour = "Boat tour",
+            taxi = "Taxi mula sa airport",
+            roommates = "Mga roommate",
+            soccer = "Soccer tuwing Biyernes",
+            court = "Renta ng court",
+            items = listOf("Pizza margherita", "Burrata", "Mushroom risotto", "Tiramisu", "Prosecco", "Espresso"),
+        ),
     )
 }

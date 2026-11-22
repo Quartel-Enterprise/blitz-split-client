@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Mga notipikasyon</string>
+    <string name="notification_settings_denied_title">Naka-off sa Android ang mga notipikasyon ng Blitz Split.</string>
+    <string name="notification_settings_denied_body">I-on ang mga ito sa system settings para matanggap ang mga push sa ibaba. Gumagana pa rin ang bell.</string>
+    <string name="notification_settings_open_settings">Buksan ang settings</string>
+    <string name="notification_settings_refused_body">Hinahayaan ka ng Android na payagan ulit ang mga ito para matanggap ang mga push sa ibaba. Gumagana pa rin ang bell.</string>
+    <string name="notification_settings_turn_on">I-on</string>
+    <string name="notification_settings_blocked_in_android">Naka-block sa Android</string>
+    <string name="notification_settings_open_channel_settings_description">Buksan ang settings ng Android para sa %1$s</string>
+    <string name="notification_settings_push_switch">Mga push notification</string>
+    <string name="notification_settings_push_switch_detail">Sa device na ito lang</string>
+    <string name="notification_settings_section">Abisuhan ako tungkol sa</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Sa app</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Ang Push ay nagpapadala ng notipikasyon sa device na ito. Ang Sa app ay nagmamarka nito bilang bago sa bell at sa Aktibidad; kapag naka-off, makikita pa rin ito sa Aktibidad, na nabasa na.</string>
+    <string name="notification_settings_footer">Dumarating ang mga abiso kapag may internet. Para i-mute ang isang grupo, gamitin ang menu sa loob nito.</string>
+</resources>

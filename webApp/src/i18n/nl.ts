@@ -859,6 +859,7 @@ export const nl: Record<MessageKey, string> = {
   profile_languageCroatian: 'Kroatisch',
   profile_languageHungarian: 'Hongaars',
   profile_languageUrdu: 'Urdu',
+  profile_languageFilipino: 'Filipijns',
   profile_bitcoinInSats: 'Bitcoin in satoshi’s',
   profile_bitcoinInSatsDetail: 'Toont en typt bitcoinbedragen in sats (1 ₿ = 100.000.000 sats).',
   profile_shareUsageData: "Gebruiksgegevens delen",

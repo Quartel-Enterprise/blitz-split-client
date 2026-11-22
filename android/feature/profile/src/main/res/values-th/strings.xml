@@ -85,6 +85,7 @@
     <string name="profile_language_croatian">โครเอเชีย</string>
     <string name="profile_language_hungarian">ฮังการี</string>
     <string name="profile_language_urdu">อูรดู</string>
+    <string name="profile_language_filipino">ภาษาฟิลิปปินส์</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>
     <plurals name="profile_notifications_active">

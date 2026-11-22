@@ -858,6 +858,7 @@ export const sv: Record<MessageKey, string> = {
   profile_languageCroatian: 'Kroatiska',
   profile_languageHungarian: 'Ungerska',
   profile_languageUrdu: 'Urdu',
+  profile_languageFilipino: 'Filipino',
   profile_bitcoinInSats: 'Bitcoin i satoshi',
   profile_bitcoinInSatsDetail: 'Visar och skriver bitcoinbelopp i sats (1 ₿ = 100 000 000 sats).',
   profile_shareUsageData: 'Dela användningsdata',

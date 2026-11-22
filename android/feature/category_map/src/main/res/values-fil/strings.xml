@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Walang termino</string>
+    <string name="category_map_title">Mapa ng kategorya</string>
+    <string name="category_map_search">Maghanap ng termino</string>
+    <string name="category_map_add">Magdagdag ng termino</string>
+    <string name="category_map_more">Iba pang opsyon</string>
+    <string name="category_map_restore">Ibalik ang default</string>
+    <string name="category_map_back">Bumalik</string>
+    <string name="category_map_intro">Kapag may isa sa mga salitang ito ang pamagat ng bill, kusang lalabas ang kategorya nito. Ang “Uber pauwi” ay magiging Transportasyon.</string>
+    <string name="category_map_intro_offline">Gumagana ang mapa kahit offline: agad nagagamit ang mga pagbabago sa device na ito at makakarating sa iba mong device kapag online ka na ulit.</string>
+    <string name="category_map_device_only">Sa device na ito lang nananatili ang mapa mo. Para madala ito sa iba mong device, mag-sign in gamit ang Google o Apple sa Profile mo.</string>
+    <string name="category_map_open_profile">Buksan ang Profile</string>
+    <string name="category_map_longest_wins">Kapag dalawang termino ang tumugma sa isang pamagat, ang mas mahaba ang mananaig.</string>
+    <string name="category_map_no_result">Walang termino na may “%1$s”</string>
+    <string name="category_map_no_result_body">Idagdag ito at ang mga bill na may salitang ito sa pamagat ay darating na may tamang kategorya.</string>
+    <string name="category_map_add_query">Idagdag ang “%1$s”</string>
+    <string name="category_map_empty_title">Walang laman ang mapa mo</string>
+    <string name="category_map_empty_body">Kapag walang termino, hindi manggagaling sa pamagat ang kategorya: ikaw ang pipili nito sa bawat bill.</string>
+    <string name="category_map_group_category"> · kategorya ng %1$s</string>
+    <string name="category_map_only_main">%1$s lang</string>
+    <string name="category_map_only_in_group">sa %1$s lang</string>
+    <string name="category_map_no_terms_yet">Wala pang termino.</string>
+    <string name="category_map_add_in">Magdagdag ng termino sa %1$s</string>
+    <string name="category_map_tip">I-tap ang termino para palitan ang kategorya nito o alisin ito. Tumutugma ito sa buong salita, hindi alintana ang accent at laki ng letra.</string>
+    <string name="category_map_queued">naghihintay</string>
+    <string name="category_map_term_action">%1$s, %2$s. I-edit</string>
+    <string name="category_map_new_term">Bagong termino</string>
+    <string name="category_map_edit_term">I-edit ang termino</string>
+    <string name="category_map_term_label">Salita o parirala</string>
+    <string name="category_map_term_help">Tumutugma sa buong salita, hindi alintana ang accent at laki ng letra.</string>
+    <string name="category_map_term_help_app">Termino ito ng app. Ibabalik ito ng Ibalik ang default kung paano ito dumating.</string>
+    <string name="category_map_term_duplicate">Pinipili na ng “%1$s” ang %2$s. Isang kategorya lang ang bawat termino.</string>
+    <string name="category_map_term_too_short">Gumamit ng hindi bababa sa 2 letra.</string>
+    <string name="category_map_term_too_long">Gumamit ng hindi hihigit sa 30 letra.</string>
+    <string name="category_map_term_invalid">Letra, numero at espasyo lang ang gamitin.</string>
+    <string name="category_map_category">Kategorya</string>
+    <string name="category_map_category_help">Puwedeng kategorya o subkategorya.</string>
+    <string name="category_map_category_help_edit">Kapag pinalitan mo ito rito, lilipat ang termino sa ibang kategorya.</string>
+    <string name="category_map_category_help_move">Aalisin ng paglipat ang termino sa %1$s.</string>
+    <string name="category_map_example">Halimbawa</string>
+    <string name="category_map_example_move">Kapag inilipat</string>
+    <string name="category_map_remove">Alisin</string>
+    <string name="category_map_cancel">Kanselahin</string>
+    <string name="category_map_save">I-save</string>
+    <string name="category_map_move_to">Ilipat sa %1$s</string>
+    <string name="category_map_removed">Inalis ang “%1$s” sa mapa</string>
+    <string name="category_map_undo">I-undo</string>
+    <string name="category_map_restore_title">Ibalik ang default na mapa?</string>
+    <string name="category_map_restore_body">Babalik ang 60 termino ng app kung paano sila dumating, pati ang mga inalis o inilipat mo.</string>
+    <string name="category_map_restore_own_one">Mananatili ang terminong ginawa mo, ang “%1$s”.</string>
+    <string name="category_map_restore_confirm">Ibalik</string>
+    <string name="category_map_save_error">Hindi na-save ang mapa. Subukan ulit.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d termino</item>
+        <item quantity="other">%d na termino</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d subkategorya</item>
+        <item quantity="other">%d na subkategorya</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d termino na may “%2$s”</item>
+        <item quantity="other">%1$d na termino na may “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d pagbabagong naghihintay</item>
+        <item quantity="other">Offline · %d na pagbabagong naghihintay</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Mananatili ang %d terminong ginawa mo.</item>
+        <item quantity="other">Mananatili ang %d terminong ginawa mo.</item>
+    </plurals>
+    <string name="category_map_new_category">Bagong kategorya</string>
+    <string name="category_map_new_subcategory_in">Bagong subkategorya sa %s</string>
+    <string name="category_map_edit_category">I-edit ang %s</string>
+    <string name="category_map_category_group">Grupo</string>
+    <string name="category_map_change_color">Palitan ang kulay ng %1$s</string>
+    <string name="category_map_restore_color">Ibalik ang kulay</string>
+    <string name="category_map_color_done">Tapos na</string>
+</resources>

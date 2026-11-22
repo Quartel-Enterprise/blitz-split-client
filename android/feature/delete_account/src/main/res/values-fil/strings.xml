@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Burahin ang account</string>
+    <string name="delete_account_offline_title">Walang internet.</string>
+    <string name="delete_account_offline_body">Kailangan ng internet para burahin ang account mo. Kumonekta at subukan ulit.</string>
+    <string name="delete_account_heading">Burahin ang account at data mo?</string>
+    <string name="delete_account_deleted_title">Ang mabubura</string>
+    <string name="delete_account_deleted_profile">Ang profile mo (pangalan, larawan at kulay)</string>
+    <string name="delete_account_deleted_keys">Ang mga Pix at Bitcoin key mo</string>
+    <string name="delete_account_deleted_provider">Ang link sa %1$s account mo</string>
+    <string name="delete_account_deleted_recovery_code">Ang recovery code mo</string>
+    <string name="delete_account_deleted_device">Ang kopya ng data mo sa device na ito</string>
+    <string name="delete_account_kept_title">Ang mananatili sa mga grupo mo</string>
+    <string name="delete_account_kept_groups">Ang mga grupo, kasama ang mga bill at bayad, para sa ibang miyembro</string>
+    <string name="delete_account_kept_member">Ang pangalan mo sa bawat grupo, bilang miyembrong walang account</string>
+    <string name="delete_account_kept_comments">Ang mga comment mo at mga larawang idinagdag mo, sa pangalan mo</string>
+    <string name="delete_account_export">I-export muna ang data ko</string>
+    <string name="delete_account_confirm">Naiintindihan kong hindi na ito maibabalik</string>
+    <string name="delete_account_delete">Burahin ang account</string>
+    <string name="delete_account_cancel">Kanselahin</string>
+    <string name="delete_account_failed">Hindi mabura ang account mo. Subukan ulit.</string>
+</resources>

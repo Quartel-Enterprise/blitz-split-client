@@ -86,6 +86,7 @@
     <string name="profile_language_croatian">کروشیائی</string>
     <string name="profile_language_hungarian">ہنگریائی</string>
     <string name="profile_language_urdu">اردو</string>
+    <string name="profile_language_filipino">فلپائنی</string>
     <string name="profile_language_system_detail">ڈیوائس کی زبان</string>
     <string name="profile_notifications">نوٹیفکیشنز</string>
     <plurals name="profile_notifications_active">
