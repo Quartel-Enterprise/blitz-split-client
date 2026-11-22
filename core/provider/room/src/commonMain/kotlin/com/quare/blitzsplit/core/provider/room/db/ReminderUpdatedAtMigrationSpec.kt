@@ -7,7 +7,8 @@ import androidx.sqlite.async.executeSQL
 /*
  * Why: 58 to 59 added split_group.reminderUpdatedAt. Nobody knows when an existing reminder was set, so every group
  * starts from the update, as the server's migration does: no banner for an occurrence before it, which could be from
- * before the schedule was changed.
+ * before the schedule was changed. SQLite's clock, not CurrentTimeMillis: Room builds the spec itself, the stamp only
+ * needs to be about the update's time, and it runs once.
  */
 class ReminderUpdatedAtMigrationSpec : AutoMigrationSpec {
     override suspend fun onPostMigrate(connection: SQLiteConnection) {
