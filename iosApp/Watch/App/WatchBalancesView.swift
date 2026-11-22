@@ -65,6 +65,17 @@ private struct WatchBalancesScreen: View {
             }
         }
         .navigationTitle("Balances")
+        .onChange(of: state.isLoaded, initial: true) { _, isLoaded in
+            // The store capture's walk (WatchStoreScreenshots): to the group you owe in alone, in one currency (the
+            // soccer's: the trip is on the list twice), as a tap on its row
+            let rows = state.groups
+            guard isLoaded,
+                  let group = rows.first(where: { row in row.netMinor < 0 && rows.filter { $0.groupId == row.groupId }.count == 1 })
+            else { return }
+            WatchStoreScreenshots.walk("group", for: ["group", "confirm", "recorded"]) {
+                model.send(WatchBalancesUiEventOnGroupClicked(groupId: group.groupId, currency: group.currency))
+            }
+        }
         .sheet(isPresented: signOutBinding) {
             WatchSignOutQuestion(
                 confirm: { model.send(WatchBalancesUiEventOnSignOutConfirmed.shared) },

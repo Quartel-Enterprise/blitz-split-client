@@ -51,10 +51,14 @@ object BlitzSplitWatch : KoinComponent {
     /*
      * Why: the README's image (scripts/readme-hero): a debug build launched with `-StoreScreenshotsLanguage` holds the
      * sample trip, as the iPhone's startForStoreScreenshots does, in a Room of its own and with no sync, so the watch
-     * opens on Balances with the trip's groups. A release framework never seeds.
+     * opens on Balances with the trip's groups. A release framework never seeds. The store listing's capture hands over
+     * the folder of the image bank's photos (faces/, groups/) in assetsDirectory, so the people have their faces.
      */
     @OptIn(ExperimentalNativeApi::class)
-    fun startForStoreScreenshots(language: String) {
+    fun startForStoreScreenshots(
+        language: String,
+        assetsDirectory: String?,
+    ) {
         if (!Platform.isDebugBinary) {
             start()
             return
@@ -62,7 +66,7 @@ object BlitzSplitWatch : KoinComponent {
         startSeededForStoreScreenshots(
             language = language,
             theme = ThemePreference.DARK,
-            assetsDirectory = null,
+            assetsDirectory = assetsDirectory,
             extraModules = listOf(lastSyncRecordingModule),
         )
     }

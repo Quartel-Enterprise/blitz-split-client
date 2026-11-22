@@ -152,14 +152,45 @@ val readmeHeroOutput = rootProject.layout.buildDirectory
     .get()
     .asFile
 val asksForReadmeHero = providers.gradleProperty("readmeHero").isPresent
+// Why: WearStoreScreenshots draws the Play listing's watch screenshots (scripts/store-screenshots/watch), also only on request.
+val storeWatchOutput = rootProject.layout.buildDirectory
+    .dir("outputs/store-screenshots-wear")
+    .get()
+    .asFile
+val asksForStoreWatch = providers.gradleProperty("storeWatch").isPresent
 tasks.withType<Test>().configureEach {
     // Why: until the module has another test, a build without -PreadmeHero has none left to run.
     filter.isFailOnNoMatchingTests = false
-    if (asksForReadmeHero) {
-        filter.includeTestsMatching("*.ReadmeHeroWatch")
-        systemProperty("readmeHero.outputDir", readmeHeroOutput.absolutePath)
-        outputs.dir(readmeHeroOutput)
-    } else {
-        filter.excludeTestsMatching("*.ReadmeHeroWatch")
+    when {
+        asksForReadmeHero -> {
+            filter.includeTestsMatching("*.ReadmeHeroWatch")
+            filter.excludeTestsMatching("*.WearStoreScreenshots")
+            systemProperty("readmeHero.outputDir", readmeHeroOutput.absolutePath)
+            outputs.dir(readmeHeroOutput)
+        }
+
+        asksForStoreWatch -> {
+            filter.includeTestsMatching("*.WearStoreScreenshots")
+            systemProperty("storeWatch.outputDir", storeWatchOutput.absolutePath)
+            // Why: the listing languages the test checks it has a row for, when it draws them all.
+            systemProperty(
+                "storeWatch.localesTsv",
+                rootProject.file("scripts/store-screenshots/locales.tsv").absolutePath,
+            )
+            // Why: the image bank's photos (faces/, groups/) draw-wear.sh hands over, as the iPhone's captures do.
+            providers
+                .environmentVariable(
+                    "STORE_WATCH_ASSETS",
+                ).orNull
+                ?.let { systemProperty("storeWatch.assetsDir", it) }
+            // Why: the listing tags to draw (en-US,ja), as ART_LOCALES narrows the other screenshots; all when none.
+            providers.gradleProperty("storeWatchLocales").orNull?.let { systemProperty("storeWatch.locales", it) }
+            outputs.dir(storeWatchOutput)
+        }
+
+        else -> {
+            filter.excludeTestsMatching("*.ReadmeHeroWatch")
+            filter.excludeTestsMatching("*.WearStoreScreenshots")
+        }
     }
 }
