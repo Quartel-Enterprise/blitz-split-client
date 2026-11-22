@@ -75,6 +75,7 @@ interface GroupDao : GroupReminderQueries {
     // Why: a group only the server has comes down whole; one the device has follows Last-Write-Wins, in one write.
     @Transaction
     suspend fun applyRemoteGroup(entity: GroupEntity) {
+        val ownerUserId = requireNotNull(entity.ownerUserId)
         insertGroupIfAbsent(entity)
         updateGroupFromRemote(
             id = entity.id,
@@ -92,7 +93,7 @@ interface GroupDao : GroupReminderQueries {
             createdBy = entity.createdBy,
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
-            ownerUserId = requireNotNull(entity.ownerUserId),
+            ownerUserId = ownerUserId,
         )
         entity.inviteCode?.let {
             updateInviteCode(
@@ -103,7 +104,7 @@ interface GroupDao : GroupReminderQueries {
         updateReminderUpdatedAtFromRemote(
             id = entity.id,
             remoteAt = entity.reminderUpdatedAt,
-            ownerUserId = requireNotNull(entity.ownerUserId),
+            ownerUserId = ownerUserId,
         )
         markGroupRowsOnServer(listOf(entity.id))
         updateSimplifyDebtsFromRemote(
@@ -111,7 +112,7 @@ interface GroupDao : GroupReminderQueries {
             simplifyDebts = entity.simplifyDebts,
             remoteAt = entity.simplifyDebtsAt,
             by = entity.simplifyDebtsBy,
-            ownerUserId = requireNotNull(entity.ownerUserId),
+            ownerUserId = ownerUserId,
         )
         keepSimplifyDebtsPending(entity.id)
     }
