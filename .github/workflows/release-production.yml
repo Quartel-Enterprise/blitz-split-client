@@ -754,8 +754,8 @@ jobs:
   # The iPhone Duo has two, closed and open, each on a runner of its own. Both fail on a runner whose Xcode
   # has no runtime for the Duo, and the open one where the script can't press Open in Device Hub: nobody is there to
   # press it, so once its own attempt is over (up to a minute and a half) it waits half a minute more and gives up,
-  # and the job fails for having captured nothing. The Duo's shelf then takes its ten screens from the slot that was
-  # captured, and the listing goes without the Duo when neither was. The two slots stay apart, although one job could
+  # and the job fails for having captured nothing. The Duo's art needs both slots: when either fails, the listing goes
+  # without the Duo (and deliver's overwrite_screenshots clears its shelf). The two slots stay apart, although one job could
   # share their build: the open capture is the one nobody has seen work, and a run of it that breaks halfway must
   # not take the closed Duo's captures with it.
   apple-screenshots-capture:
@@ -806,7 +806,6 @@ jobs:
           # taking the group, Balances and Statistics from the open one.
           if [ "$STORE_SCREENSHOTS_SLOTS" = iphoneduoopen ]; then
             STORE_SCREENSHOTS_SCREENS=group,balances,statistics ./scripts/store-screenshots/capture-ios.sh
-            STORE_SCREENSHOTS_TABLE=art-screens STORE_SCREENSHOTS_SCREENS=splitmodes ./scripts/store-screenshots/capture-ios.sh
           else
             ART_SLOTS="$STORE_SCREENSHOTS_SLOTS" ./scripts/store-screenshots/listing-art/capture.sh
           fi

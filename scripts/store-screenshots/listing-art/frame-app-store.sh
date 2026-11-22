@@ -37,15 +37,21 @@ whole() {
 for slot in iphone63 iphone67 ipad13; do
   captured "$slot" || { echo "Error: no captures of $slot in $CAPTURES: run listing-art/capture.sh first" >&2; exit 1; }
 done
-devices=(iphone_6_7 iphone_6_3 ipad_13 ipad_11)
-if whole iphoneduo && whole iphoneduoopen; then devices+=(iphone_duo); fi
-if whole mac; then devices+=(mac); fi
-ART_DEVICES="$(IFS=,; echo "${devices[*]}")"
-export ART_DEVICES
+# One run of compose.mjs for the devices the listing can't go without, so a capture missing there stops everything, and
+# one for each optional device: a Duo or a Mac whose art can't be drawn (a screen missing from a capture, say) is left
+# out with a warning and takes nothing else with it.
+draw() { ART_DEVICES="$1" node "$ART/compose.mjs"; }
 
-# What the tickets write on them, the same for every device: drawn once.
-if [ ! -f "$ROOT/build/outputs/app-store-creative-asset-facts/facts.json" ]; then
-  "$ROOT/scripts/heavy-check.sh" "$ROOT/gradlew" -p "$ROOT" :android:store_screenshots:testDebugUnitTest -PcreativeAssets --rerun -q
+# What the tickets write on them, from the sample trip: drawn again every time, since a changed trip or language would
+# leave stale names and amounts, or a tag missing from the file.
+"$ROOT/scripts/heavy-check.sh" "$ROOT/gradlew" -p "$ROOT" :android:store_screenshots:testDebugUnitTest -PcreativeAssets --rerun -q
+
+devices=(iphone_6_7 iphone_6_3 ipad_13 ipad_11)
+draw "$(IFS=,; echo "${devices[*]}")"
+if whole iphoneduo && whole iphoneduoopen; then
+  if draw iphone_duo; then devices+=(iphone_duo); else echo "Warning: the iPhone Duo's art could not be drawn: it is left out" >&2; fi
 fi
-node "$ART/compose.mjs"
-python3 "$ART/stage-app-store.py"
+if whole mac; then
+  if draw mac; then devices+=(mac); else echo "Warning: the Mac's art could not be drawn: it is left out" >&2; fi
+fi
+ART_DEVICES="$(IFS=,; echo "${devices[*]}")" python3 "$ART/stage-app-store.py"

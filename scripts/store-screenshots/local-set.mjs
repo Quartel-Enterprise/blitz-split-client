@@ -266,7 +266,7 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
   return { ...report, problems: problems.lines(report.locales.length) };
 }
 
-/** What a locale gets on each shelf, in words: `iPhone 6.3" 10, iPhone Duo 10 (5 open, 5 closed)`. */
+/** What a locale gets on each shelf, in words: `iPhone 6.3" 10, iPhone Duo 10 (3 open, 7 closed)`. */
 export function describeShelves(report) {
   return Object.entries(report.shelves)
     .map(([shelf, counts]) => {

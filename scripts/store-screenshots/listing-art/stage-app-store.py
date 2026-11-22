@@ -53,8 +53,10 @@ def main():
     unknown_tags = [tag for tag in only if tag not in tags.values()]
     if unknown_tags:
         raise SystemExit(f"locales.tsv has no {', '.join(unknown_tags)}")
+    # Only the folders of the devices being staged are replaced: a Mac left out keeps the Mac set staged before.
+    staged_folders = {folder for folder in devices.values()}
     if not only:
-        for folder in (IOS, MAC):
+        for folder in staged_folders:
             shutil.rmtree(folder, ignore_errors=True)
     staged = 0
     for language, store_locales in app_store_locales().items():
@@ -62,7 +64,7 @@ def main():
         if only and tag not in only:
             continue
         for store_locale in store_locales:
-            for folder in (IOS, MAC):
+            for folder in staged_folders:
                 if only:
                     shutil.rmtree(folder / store_locale, ignore_errors=True)
         for device, folder in devices.items():

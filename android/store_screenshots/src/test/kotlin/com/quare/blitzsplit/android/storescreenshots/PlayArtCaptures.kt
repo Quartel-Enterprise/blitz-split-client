@@ -123,21 +123,32 @@ internal class PlayArtCaptures(
     }
 }
 
-// ART_LOCALES=en-US,ja draws those listing tags alone, as compose.mjs reads it; unset or empty, every language.
-private fun artLocalesOf(tags: String?): List<StoreLocale> = tags
-    ?.takeIf { it.isNotBlank() }
-    ?.split(',')
-    ?.map { it.trim() }
-    ?.let { wanted -> storeLocales.filter { it.tag in wanted } }
-    ?: storeLocales
+// ART_LOCALES=en-US,ja draws those listing tags alone, as compose.mjs reads it; unset or empty, every language. A tag
+// no set has is refused, as compose.mjs refuses it, instead of drawing the others and failing later.
+private fun artLocalesOf(tags: String?): List<StoreLocale> {
+    val wanted = tags
+        ?.split(',')
+        ?.map { it.trim() }
+        ?.filter { it.isNotEmpty() }
+        .orEmpty()
+    val unknown = wanted.filter { tag -> storeLocales.none { it.tag == tag } }
+    require(unknown.isEmpty()) { "ART_LOCALES names no set: ${unknown.joinToString()}" }
+    return if (wanted.isEmpty()) storeLocales else storeLocales.filter { it.tag in wanted }
+}
 
-// ART_DEVICES=play_phone,play_tablet_10 captures the devices those compose.mjs names are drawn from; unset or empty, all.
-private fun artDevicesOf(names: String?): List<PlayArtDevice> = names
-    ?.takeIf { it.isNotBlank() }
-    ?.split(',')
-    ?.map { it.trim() }
-    ?.let { wanted -> PlayArtDevice.entries.filter { device -> device.artDevices.any { it in wanted } } }
-    ?: PlayArtDevice.entries
+// ART_DEVICES=play_phone,play_tablet_10 captures the devices those compose.mjs names are drawn from; unset or empty,
+// all. Names that are no Play device's (the App Store's) draw nothing, and a run of nothing is refused.
+private fun artDevicesOf(names: String?): List<PlayArtDevice> {
+    val wanted = names
+        ?.split(',')
+        ?.map { it.trim() }
+        ?.filter { it.isNotEmpty() }
+        .orEmpty()
+    if (wanted.isEmpty()) return PlayArtDevice.entries
+    return PlayArtDevice.entries.filter { device -> device.artDevices.any { it in wanted } }.also { devices ->
+        require(devices.isNotEmpty()) { "ART_DEVICES names no Play device: ${wanted.joinToString()}" }
+    }
+}
 
 /** What Robolectric's qualifiers call a locale: "pt-BR" is "pt-rBR". */
 private val StoreLocale.qualifier: String

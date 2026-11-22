@@ -15,6 +15,7 @@ import {
   PLATFORMS,
   REPOSITORY,
   SET_NAME,
+  SHELF_LABELS,
   SetError,
   TAG_PREFIX,
   checkPlatform,
@@ -36,8 +37,10 @@ const REPO_ROOT = join(HERE, "../..");
 const SCRIPT = join(HERE, "local-set.mjs");
 const LOCALES = listingLocales();
 const SCREENS = listingScreens();
-// The iPhone Duo's shelf as it is staged: five screens open, five closed .
-const OPEN = ["01_group", "04_balances", "06_statistics", "07_home", "09_activity"];
+// The iPhone Duo's shelf as it is staged: three images open and seven closed. The art's group, Balances and Statistics
+// are its 1st, 4th and 8th images (1st, 5th and 9th in Brazil's, which has Pix second), and each takes the screens.tsv
+// name of its place on the shelf.
+const OPEN = ["01_group", "04_balances", "08_payers_and_currencies"];
 
 let root;
 beforeEach(() => {
@@ -80,7 +83,7 @@ describe("the check of a set", () => {
     assert.deepEqual(ios.problems, []);
     assert.deepEqual(ios.locales, LOCALES);
     assert.equal(ios.files.length, LOCALES.length * 50);
-    assert.equal(describeShelves(ios), 'iPhone 6.3" 10, iPhone 6.7" 10, iPad 13" 10, iPad 11" 10, iPhone Duo 10 (5 open, 5 closed)');
+    assert.equal(describeShelves(ios), 'iPhone 6.3" 10, iPhone 6.7" 10, iPad 13" 10, iPad 11" 10, iPhone Duo 10 (3 open, 7 closed)');
     const mac = checkPlatform("mac", stage("mac"));
     assert.deepEqual(mac.problems, []);
     assert.equal(mac.files.length, LOCALES.length * 10);
@@ -230,6 +233,36 @@ describe("the set's folders and options", () => {
     assert.throws(() => parseArguments(["--name"]), SetError);
     assert.throws(() => parseArguments(["--force"]), SetError);
     assert.throws(() => parseArguments(["one", "two"]), SetError);
+  });
+
+  // A device the staging gains must get its size here, or its images are refused as named after no device.
+  test("knows the devices the staging writes", () => {
+    const source = readFileSync(join(REPO_ROOT, "scripts/store-screenshots/listing-art/stage-app-store.py"), "utf8");
+    const table = source.match(/^DEVICES = \{(.*)\}$/m);
+    assert.ok(table, "no DEVICES in stage-app-store.py");
+    const staged = Object.fromEntries([...table[1].matchAll(/"(\w+)": (IOS|MAC)/g)].map(([, device, folder]) => [device, folder]));
+    const named = (platform) => Object.keys(PLATFORMS[platform].devices).filter((device) => device !== "iphone_duo_open").sort();
+    assert.deepEqual(named("ios"), Object.keys(staged).filter((device) => staged[device] === "IOS").sort());
+    assert.deepEqual(named("mac"), Object.keys(staged).filter((device) => staged[device] === "MAC").sort());
+    for (const { devices } of Object.values(PLATFORMS)) {
+      for (const { shelf } of Object.values(devices)) assert.ok(SHELF_LABELS[shelf], `${shelf} has a name`);
+    }
+  });
+
+  // The screens the iPhone Duo draws from its open display are written in four places that must agree: a capture of one
+  // the scripts never took makes compose.mjs stop a release's drawing of the Duo.
+  test("keeps the Duo's open screens the same in the art, the captures and the release", () => {
+    const read = (path) => readFileSync(join(REPO_ROOT, path), "utf8");
+    const open = read("scripts/store-screenshots/listing-art/compose.mjs").match(/iphone_duo: \(screen\) => \(\[([^\]]*)\]/);
+    assert.ok(open, "no iphone_duo in compose.mjs");
+    const screens = [...open[1].matchAll(/"(\w+)"/g)].map(([, screen]) => screen);
+    const fromOpenCapture = Object.keys(JSON.parse(read("scripts/store-screenshots/listing-art/capture-duo-open.py").match(/^SCREENS = (\{.*\})$/m)[1]));
+    assert.deepEqual(fromOpenCapture, screens);
+    assert.ok(read(".github/workflows/release-production.yml").includes(`STORE_SCREENSHOTS_SCREENS=${screens.join(",")} `));
+    const closed = read("scripts/store-screenshots/listing-art/capture.sh").match(/if \[ "\$slot" = iphoneduo \]; then screens=([\w,]+)/);
+    assert.ok(closed, "no closed Duo list in capture.sh");
+    const all = read("scripts/store-screenshots/listing-art/capture.sh").match(/screens=(group,[\w,]+)\n/)[1].split(",");
+    assert.deepEqual(closed[1].split(","), all.filter((screen) => !screens.includes(screen)));
   });
 
   test("reads a PNG's size off its header, and whether it ends as one", () => {

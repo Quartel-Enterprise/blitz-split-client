@@ -34,19 +34,20 @@ runs:
       with:
         node-version: 24
 
+    # The devices of Google Play's shelves that are staged: the foldables go up by hand, so nothing draws them here.
+    - name: Name the Play devices
+      shell: bash
+      run: echo "ART_DEVICES=play_phone,play_tablet_7,play_tablet_10" >> "$GITHUB_ENV"
+
     # The bare screens, then what the tickets write on them, then the art laid out in Chrome and staged for supply.
     - name: Draw the screens
       shell: bash
-      env:
-        ART_DEVICES: play_phone,play_tablet_7,play_tablet_10
       run: |
         ./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt --rerun -q
         ./gradlew :android:store_screenshots:testDebugUnitTest -PcreativeAssets --rerun -q
 
     - name: Make the screenshots
       shell: bash
-      env:
-        ART_DEVICES: play_phone,play_tablet_7,play_tablet_10
       run: |
         node scripts/store-screenshots/listing-art/compose.mjs
         node scripts/store-screenshots/listing-art/stage-play.mjs

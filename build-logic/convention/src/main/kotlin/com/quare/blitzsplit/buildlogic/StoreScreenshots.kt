@@ -33,6 +33,10 @@ fun Project.configureStoreScreenshots() {
         "CreativeAssetFacts" to ("creativeAssets.outputDir" to findOutputDir("outputs/app-store-creative-asset-facts")),
         "PlayArtCaptures" to ("playArt.outputDir" to findOutputDir("outputs/play-art-captures")),
     )
+    // `./gradlew build -PplayArt` or `test -PreadmeHero` must not draw inside an ordinary build: the module's debug tests
+    // have to be asked for by name, as the scripts and the lane do.
+    val modulePath = path
+    val asksForTests = gradle.startParameter.taskNames.any { it == "$modulePath:$GENERATE_TASK" }
     val asked = when {
         generatesReadmeHero -> "ReadmeHeroScreens"
         generatesCreativeAssetFacts -> "CreativeAssetFacts"
@@ -41,7 +45,7 @@ fun Project.configureStoreScreenshots() {
     }
     tasks.withType<Test>().configureEach {
         val isGenerator = name == GENERATE_TASK
-        onlyIf("the build asked for one of the store art's generators") { isGenerator && asked != null }
+        onlyIf("the build asked for one of the store art's generators") { isGenerator && asked != null && asksForTests }
         systemProperty("storeScreenshots.facesDir", facesDir.absolutePath)
         systemProperty("storeScreenshots.groupPhotosDir", groupPhotosDir.absolutePath)
         inputs.dir(facesDir)
