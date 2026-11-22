@@ -513,8 +513,10 @@ Dependabot, which only bumped the two Quartel-Enterprise actions.
   run `./gradlew kotlinUpgradeYarnLock` on the branch and commit `kotlin-js-store/yarn.lock`. Once anyone (or
   claude-review's fix commit) pushes to a Renovate branch, Renovate stops rebasing it: merge `main` into it by hand
   instead, and never tick the pull request's rebase checkbox, which would throw those commits away.
-- The Dependency Dashboard issue is off (`dependencyDashboard`), so Renovate opens only pull requests, on the
-  schedules above, and what Renovate skipped or failed is in the repository's logs on the
+- The Dependency Dashboard issue is off (the `:disableDependencyDashboard` preset), so Renovate opens only pull
+  requests, on the schedules above. An update held by the schedule or by `prConcurrentLimit` waits for a later run,
+  with no checkbox to open it now: for a bump now, run the `bump-versions` skill. What Renovate skipped or failed is in
+  the repository's logs on the
   [Mend Developer Platform](https://developer.mend.io/github/Quartel-Enterprise/blitz-split-client). A
   "Maven Central rate limiting" warning there comes from Mend's servers, shared by every user of the app, and not from
   this configuration (Renovate already follows the `mavenContent` filters of `settings.gradle.kts`): the next run looks

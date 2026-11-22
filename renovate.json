@@ -2,7 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Weekly dependency bumps of every platform, including the Swift packages of iosApp/project.yml (Renovate's xcodegen manager). The pins and the stability rule are those of .claude/skills/bump-versions/SKILL.md; docs/ci.md explains the setup.",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    ":disableDependencyDashboard"
   ],
   "ignorePresets": [
     "group:monorepos",
@@ -20,9 +21,6 @@
   "prConcurrentLimit": 10,
   "prHourlyLimit": 0,
   "rangeStrategy": "auto",
-  "dependencyDashboard": {
-    "enabled": false
-  },
   "packageRules": [
     {
       "description": "Every minor and patch of every platform in one pull request a week. group:monorepos is ignored above, since its groups would split this one; the families that must share a major are grouped below. :semanticPrefixFixDepsChoreOthers is ignored so every title starts with chore:.",
