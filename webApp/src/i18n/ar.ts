@@ -861,6 +861,7 @@ export const ar: Record<MessageKey, string> = {
   profile_languageHungarian: 'المجرية',
   profile_languageUrdu: 'الأردية',
   profile_languageFilipino: 'الفلبينية',
+  profile_languageSerbian: 'الصربية',
   profile_bitcoinInSats: 'البيتكوين بالساتوشي',
   profile_bitcoinInSatsDetail: 'عرض مبالغ البيتكوين وإدخالها بالساتوشي (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: 'مشاركة بيانات الاستخدام',

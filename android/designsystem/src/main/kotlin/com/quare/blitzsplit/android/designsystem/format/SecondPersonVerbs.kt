@@ -29,6 +29,7 @@ private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
 private const val GREEK = "el"
 private const val CROATIAN = "hr"
+private const val SERBIAN = "sr"
 private const val URDU = "ur"
 private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
 private const val HUNGARIAN = "hu"
@@ -70,6 +71,7 @@ private val secondPersonAuxiliaries = mapOf(
     DUTCH to mapOf("heeft" to "hebt", "is" to "bent"),
     ROMANIAN to mapOf("a" to "ai"),
     CROATIAN to mapOf("je" to "si"),
+    SERBIAN to mapOf("je" to "si"),
 )
 private val turkishPast = Regex("[dt][ıiuü]$")
 private val youSubjectLanguages = setOf(
@@ -92,6 +94,7 @@ private val youSubjectLanguages = setOf(
     BENGALI,
     GREEK,
     CROATIAN,
+    SERBIAN,
     HUNGARIAN,
     URDU,
     FILIPINO,

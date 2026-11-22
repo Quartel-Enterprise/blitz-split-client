@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Obaveštenja</string>
+    <string name="notification_settings_denied_title">Obaveštenja aplikacije Blitz Split su isključena na Androidu.</string>
+    <string name="notification_settings_denied_body">Uključi ih u podešavanjima sistema da bi dobijao/la push obaveštenja ispod. Zvonce i dalje radi.</string>
+    <string name="notification_settings_open_settings">Otvori podešavanja</string>
+    <string name="notification_settings_refused_body">Android ti omogućava da ih dozvoliš još jednom da bi dobijao/la push obaveštenja ispod. Zvonce i dalje radi.</string>
+    <string name="notification_settings_turn_on">Uključi</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Blokirano u Androidu</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Otvori Android podešavanja za: %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Push obaveštenja</string>
+    <string name="notification_settings_push_switch_detail">Samo na ovom uređaju</string>
+    <string name="notification_settings_section">Obaveštavaj me o</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">U aplikaciji</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push šalje obaveštenje na ovaj uređaj. U aplikaciji označava novo na zvoncu i u Aktivnosti; kad je isključeno, i dalje se prikazuje u Aktivnosti, već pročitano.</string>
+    <string name="notification_settings_footer">Obaveštenja stižu kad postoji internet. Da utišaš grupu, koristi meni unutar nje.</string>
+</resources>

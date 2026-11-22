@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Ovde koristi isti nalog kao na telefonu. Posle toga sat radi samostalno.</string>
+    <string name="pair_connect">Poveži</string>
+    <string name="pair_connecting">Preuzimam tvoj nalog sa telefona…</string>
+    <string name="pair_connected_title">Spremno, %1$s</string>
+    <string name="pair_connected_title_unnamed">Spremno</string>
+    <string name="pair_connected_body">Sat se sinhronizuje samostalno, čak i kad si daleko od telefona.</string>
+    <string name="pair_continue">Nastavi</string>
+    <string name="pair_local_only_title">Tvoji podaci su samo na telefonu</string>
+    <string name="pair_local_only_body">Na telefonu poveži nalog u Profilu i ponovo dodirni „Poveži“ ovde.</string>
+    <string name="pair_ok">U redu</string>
+    <string name="pair_far_title">Telefon je predaleko</string>
+    <string name="pair_far_body">Približi telefon ili se poveži pomoću koda.</string>
+    <string name="pair_try_again">Pokušaj ponovo</string>
+    <string name="pair_use_code">Koristi kod</string>
+    <string name="pair_code_label">Tvoj kod</string>
+    <string name="pair_code_description">Kod %1$s</string>
+    <string name="pair_code_where">Na telefonu: Profil › Poveži sat</string>
+    <string name="pair_code_validity">Važi 5 minuta</string>
+    <string name="pair_cancel">Otkaži</string>
+    <string name="pair_signed_out_title">Odjavio/la si se na telefonu</string>
+    <string name="pair_signed_out_body">Podaci su nestali i sa ovog sata.</string>
+    <string name="pair_connect_again">Poveži ponovo</string>
+    <string name="pair_error_offline">Povezivanje sata zahteva internet.</string>
+    <string name="pair_error_too_many">Previše pokušaja. Sačekaj nekoliko minuta i poveži ponovo.</string>
+    <string name="pair_error_failed">Povezivanje sata nije uspelo. Pokušaj ponovo.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Stanja</string>
+    <string name="balances_offline">Van mreže</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Van mreže · %d promena na čekanju</item>
+        <item quantity="few">Van mreže · %d promene na čekanju</item>
+        <item quantity="other">Van mreže · %d promena na čekanju</item>
+    </plurals>
+    <string name="balances_overall">Ukupno stanje</string>
+    <string name="balances_to_receive">da primiš</string>
+    <string name="balances_you_owe">duguješ</string>
+    <string name="balances_group_to_receive">%1$s da primiš</string>
+    <string name="balances_group_you_owe">%1$s duguješ</string>
+    <string name="balances_group_even">Ukupno izjednačeno</string>
+    <string name="balances_waiting">čeka slanje</string>
+    <string name="balances_updated_at">Ažurirano u %1$s</string>
+    <string name="balances_sign_out">Odjavi se</string>
+    <string name="balances_sign_out_title">Odjaviti se sa ovog sata?</string>
+    <string name="balances_sign_out_body">Podaci na satu se brišu kad se pošalje sve što čeka u redu. Telefon ostaje prijavljen.</string>
+    <string name="balances_sign_out_scheduled">Odjava je zakazana</string>
+    <string name="balances_sign_out_scheduled_detail">Odjavljuje se čim se sve otpremi</string>
+    <string name="balances_settled_title">Ništa nije otvoreno</string>
+    <string name="balances_settled_body">Ne duguješ ništa i niko ne duguje tebi. Nove grupe i računi se ovde pojavljuju sami.</string>
+    <string name="group_you_owe_person">duguješ %1$s</string>
+    <string name="group_owes_you">%1$s ti duguje</string>
+    <string name="group_former_member">Bivši član</string>
+    <string name="group_i_paid">Platio/la sam</string>
+    <string name="group_confirm_title">Platio/la si %1$s, primalac: %2$s?</string>
+    <string name="group_confirm_body">%1$s. Grupa to vidi odmah, ili kad se vrati internet.</string>
+    <string name="group_payment_recorded">Uplata je zabeležena</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Stanja</string>
+    <string name="tile_to_receive_total">da primiš ukupno</string>
+    <string name="tile_to_pay_total">da platiš ukupno</string>
+    <string name="tile_owed_to_you">Duguju ti %1$s</string>
+    <string name="tile_you_owe">Duguješ %1$s</string>
+    <string name="tile_settled_title">Sve je izmireno</string>
+    <string name="tile_settled_body">Nema ništa za plaćanje ni za primanje</string>
+    <string name="tile_open">Otvori</string>
+    <string name="complication_name">Ukupno stanje</string>
+    <string name="complication_you_owe">Duguješ %1$s</string>
+    <string name="complication_owed_to_you">Duguju ti %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Primljeno</string>
+    <string name="push_view_group">Prikaži grupu</string>
+</resources>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Nema pojmova</string>
+    <string name="category_map_title">Mapa kategorija</string>
+    <string name="category_map_search">Pretraži pojmove</string>
+    <string name="category_map_add">Dodaj pojam</string>
+    <string name="category_map_more">Više opcija</string>
+    <string name="category_map_restore">Vrati podrazumevano</string>
+    <string name="category_map_back">Nazad</string>
+    <string name="category_map_intro">Kad naslov računa sadrži neku od ovih reči, kategorija se dodeljuje sama. „Uber kući“ postaje Prevoz.</string>
+    <string name="category_map_intro_offline">Mapa radi i bez interneta: izmene važe odmah na ovom uređaju, a do tvojih ostalih uređaja stižu kad se ponovo povežeš.</string>
+    <string name="category_map_device_only">Tvoja mapa ostaje samo na ovom uređaju. Da je preneseš na ostale uređaje, prijavi se uz Google ili Apple u Profilu.</string>
+    <string name="category_map_open_profile">Otvori Profil</string>
+    <string name="category_map_longest_wins">Kad se dva pojma poklope sa naslovom, pobeđuje duži.</string>
+    <string name="category_map_no_result">Nema pojma sa „%1$s“</string>
+    <string name="category_map_no_result_body">Dodaj ga i računi sa ovom rečju u naslovu stižu sa pravom kategorijom.</string>
+    <string name="category_map_add_query">Dodaj „%1$s“</string>
+    <string name="category_map_empty_title">Tvoja mapa je prazna</string>
+    <string name="category_map_empty_body">Bez pojmova kategorija se ne uzima iz naslova: biraš je na svakom računu.</string>
+    <string name="category_map_group_category"> · kategorija: %1$s</string>
+    <string name="category_map_only_main">Samo %1$s</string>
+    <string name="category_map_only_in_group">samo u grupi %1$s</string>
+    <string name="category_map_no_terms_yet">Još nema pojmova.</string>
+    <string name="category_map_add_in">Dodaj pojam u: %1$s</string>
+    <string name="category_map_tip">Dodirni pojam da promeniš njegovu kategoriju ili ga ukloniš. Poklapa se sa celom rečju, bez obzira na akcente i velika slova.</string>
+    <string name="category_map_queued">na čekanju</string>
+    <string name="category_map_term_action">%1$s, %2$s. Izmeni</string>
+    <string name="category_map_new_term">Novi pojam</string>
+    <string name="category_map_edit_term">Izmeni pojam</string>
+    <string name="category_map_term_label">Reč ili izraz</string>
+    <string name="category_map_term_help">Poklapa se sa celom rečju, bez obzira na akcente i velika slova.</string>
+    <string name="category_map_term_help_app">Pojam aplikacije. Vrati podrazumevano vraća ga onakvog kakav je bio.</string>
+    <string name="category_map_term_duplicate">„%1$s“ već bira kategoriju %2$s. Svaki pojam ima jednu kategoriju.</string>
+    <string name="category_map_term_too_short">Koristi bar 2 slova.</string>
+    <string name="category_map_term_too_long">Koristi najviše 30 slova.</string>
+    <string name="category_map_term_invalid">Koristi samo slova, cifre i razmake.</string>
+    <string name="category_map_category">Kategorija</string>
+    <string name="category_map_category_help">To može biti kategorija ili potkategorija.</string>
+    <string name="category_map_category_help_edit">Promena ovde premešta pojam u drugu kategoriju.</string>
+    <string name="category_map_category_help_move">Premeštanje uklanja pojam iz kategorije %1$s.</string>
+    <string name="category_map_example">Primer</string>
+    <string name="category_map_example_move">Ako se premesti</string>
+    <string name="category_map_remove">Ukloni</string>
+    <string name="category_map_cancel">Otkaži</string>
+    <string name="category_map_save">Sačuvaj</string>
+    <string name="category_map_move_to">Premesti u: %1$s</string>
+    <string name="category_map_removed">„%1$s“ je uklonjen iz mape</string>
+    <string name="category_map_undo">Poništi</string>
+    <string name="category_map_restore_title">Vratiti podrazumevanu mapu?</string>
+    <string name="category_map_restore_body">60 pojmova aplikacije vraća se onakvim kakvi su bili, uključujući one koje si uklonio/la ili premestio/la.</string>
+    <string name="category_map_restore_own_one">Pojam koji si napravio/la, „%1$s“, ostaje.</string>
+    <string name="category_map_restore_confirm">Vrati</string>
+    <string name="category_map_save_error">Čuvanje mape nije uspelo. Pokušaj ponovo.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d pojam</item>
+        <item quantity="few">%d pojma</item>
+        <item quantity="other">%d pojmova</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d potkategorija</item>
+        <item quantity="few">%d potkategorije</item>
+        <item quantity="other">%d potkategorija</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d pojam sa „%2$s“</item>
+        <item quantity="few">%1$d pojma sa „%2$s“</item>
+        <item quantity="other">%1$d pojmova sa „%2$s“</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Van mreže · %d izmena na čekanju</item>
+        <item quantity="few">Van mreže · %d izmene na čekanju</item>
+        <item quantity="other">Van mreže · %d izmena na čekanju</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Tvoji pojmovi (%d) ostaju.</item>
+        <item quantity="few">Tvoji pojmovi (%d) ostaju.</item>
+        <item quantity="other">Tvoji pojmovi (%d) ostaju.</item>
+    </plurals>
+    <string name="category_map_new_category">Nova kategorija</string>
+    <string name="category_map_new_subcategory_in">Nova potkategorija u: %s</string>
+    <string name="category_map_edit_category">Izmeni: %s</string>
+    <string name="category_map_category_group">Grupa</string>
+    <string name="category_map_change_color">Promeni boju: %1$s</string>
+    <string name="category_map_restore_color">Vrati boju</string>
+    <string name="category_map_color_done">Gotovo</string>
+</resources>

@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu and Filipino: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino and Serbian (Latin script): the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -181,7 +181,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     `one` covers every count whose last digit isn't 4, 6 or 9 (1, 2, 3, 5, 7, 8, 10…), not just 1: so every `one` form
     must read correctly for several items (the count with the linker "na", or no count at all, never "isa" or the
     singular "si" before a list of names, which take a colon: "Nasa grupo na: Ana, Bruno"). Its verbs don't change with the person, so its activity sentences need no rule for the
-    user ([activity-and-push.md](activity-and-push.md)). The
+    user ([activity-and-push.md](activity-and-push.md)). Serbian (Pierre's calls) is written in the Latin script only,
+    in standard ekavian ("lepo", "podelio", "sedmica"), never Cyrillic, and its tag is `sr-Latn`: the app is one
+    variant for every Serbian tag, `sr`, `sr-RS` or `sr-Cyrl` alike, and no regional one. It speaks informally, with
+    "ti", never "Vi", and calls the app Blitz Split. It reads left to right, and its plurals have `one` (1, 21, 31…),
+    `few` (2-4, 22-24…) and `other` (0, 5-20…, and fractions), as Croatian's. Its past is Croatian's perfect, so its
+    activity sentences follow Croatian's rule ([activity-and-push.md](activity-and-push.md)). The Serbian dinar (RSD)
+    comes with it (below). Android has Latin resources only: a device set to Serbian in Cyrillic can fall back to
+    English when the app follows the system's language, since no Cyrillic resources exist to match it, while the in-app
+    picker's "Srpski" always works. The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
@@ -387,6 +395,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Philippine peso (PHP) follows the Pakistani rupee (Pierre's call, with Filipino), and starts a new group in the
     Philippines, as the won comes with Korean. It has 2 decimals, as ISO gives it, and the usual 100 million cap (about
     US$ 1.7 million), so an app version from before it shows its amounts by the raw code, with the right decimals.
+  - The Serbian dinar (RSD) comes with Serbian (Pierre's call), as the peso did with Filipino, and starts a new group
+    in Serbia. It has 2 decimals, as ISO gives it, and the usual 100 million cap, so an app version from before it
+    shows its amounts by the raw code, with the right decimals. The store screenshots' sample trip for Serbian is
+    priced in it.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

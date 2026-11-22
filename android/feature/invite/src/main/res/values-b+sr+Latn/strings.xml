@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Zatvori</string>
+    <string name="invite_group_created">Grupa je napravljena</string>
+    <string name="invite_title">Pozovi sve u grupu %s</string>
+    <string name="invite_qr_description">QR kod linka pozivnice u grupu</string>
+    <string name="invite_copy">Kopiraj</string>
+    <string name="invite_copied">Kopirano</string>
+    <string name="invite_who_picks">Ko god otvori link, bira na listi ko je: %s. Nalog nije potreban.</string>
+    <string name="invite_names_or">%1$s ili %2$s</string>
+    <string name="invite_anyone_joins">Ko god otvori link, pridružuje se grupi. Nalog nije potreban.</string>
+    <string name="invite_pending_title">Link čeka</string>
+    <string name="invite_pending_offline">Pravi se čim budeš na mreži.</string>
+    <string name="invite_pending_online">Pravljenje linka…</string>
+    <string name="invite_failed_title">Pravljenje linka nije uspelo</string>
+    <string name="invite_failed_body">Nešto nije u redu pri sinhronizaciji grupe.</string>
+    <string name="invite_retry">Pokušaj ponovo</string>
+    <string name="invite_share">Podeli link</string>
+    <string name="invite_see_who_joined">Pogledaj ko se pridružio</string>
+    <string name="invite_add_person">Dodaj nekoga bez aplikacije</string>
+    <string name="invite_go_to_group">Idi u grupu</string>
+    <string name="invite_change_link">Promeni link</string>
+    <string name="invite_change_link_title">Promeniti link pozivnice?</string>
+    <string name="invite_change_link_message">Trenutni link i QR kod prestaju da rade, uključujući neiskorišćene lične pozivnice. Ko se već pridružio, ostaje u grupi.</string>
+    <string name="invite_change_link_failed">Promena linka nije uspela. Pokušaj ponovo.</string>
+    <string name="invite_share_message">Hajde da podelimo račune grupe „%1$s“ u aplikaciji Blitz Split. Pridruži se ovim linkom: %2$s</string>
+</resources>

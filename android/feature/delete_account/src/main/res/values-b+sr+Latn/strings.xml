@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Obriši nalog</string>
+    <string name="delete_account_offline_title">Nema interneta.</string>
+    <string name="delete_account_offline_body">Brisanje naloga zahteva internet vezu. Poveži se i pokušaj ponovo.</string>
+    <string name="delete_account_heading">Obrisati tvoj nalog i tvoje podatke?</string>
+    <string name="delete_account_deleted_title">Šta se briše</string>
+    <string name="delete_account_deleted_profile">Tvoj profil (ime, fotografija i boja)</string>
+    <string name="delete_account_deleted_keys">Tvoji Pix i Bitcoin ključevi</string>
+    <string name="delete_account_deleted_provider">Veza sa tvojim nalogom %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Tvoj kod za oporavak</string>
+    <string name="delete_account_deleted_device">Kopija tvojih podataka na ovom uređaju</string>
+    <string name="delete_account_kept_title">Šta ostaje u tvojim grupama</string>
+    <string name="delete_account_kept_groups">Grupe, sa računima i uplatama, za ostale članove</string>
+    <string name="delete_account_kept_member">Tvoje ime u svakoj grupi, kao člana bez naloga</string>
+    <string name="delete_account_kept_comments">Tvoji komentari i fotografije koje si dodao/la, pod tvojim imenom</string>
+    <string name="delete_account_export">Prvo izvezi moje podatke</string>
+    <string name="delete_account_confirm">Razumem da ovo ne može da se poništi</string>
+    <string name="delete_account_delete">Obriši nalog</string>
+    <string name="delete_account_cancel">Otkaži</string>
+    <string name="delete_account_failed">Brisanje naloga nije uspelo. Pokušaj ponovo.</string>
+</resources>

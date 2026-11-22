@@ -176,8 +176,9 @@ test("the copyright line carries the current year unless it is told another", ()
 });
 
 // Robolectric draws every Play screen in a locale it gets as
-// an Android resource qualifier: the library turns "zh-TW" into "zh-rTW", and a tag with a script ("zh-Hant" would
-// become "zh-rHant") or more parts is one Robolectric refuses, which fails every frame of that device.
+// an Android resource qualifier: PlayArtCaptures turns "zh-TW" into "zh-rTW", and a script with no region ("zh-Hant"
+// would become "zh-rHant") or more parts is one Robolectric refuses, which fails every frame of that device. A
+// script with its region ("sr-Latn-RS", the one Serbian resource set there is) becomes "b+sr+Latn+RS".
 const GENERATORS = "android/store_screenshots/src/test/kotlin/com/quare/blitzsplit/android/storescreenshots";
 test("the generators draw every image in a locale Robolectric takes", () => {
   const source = readFileSync(`${GENERATORS}/StoreLocale.kt`, "utf8");
@@ -188,7 +189,7 @@ test("the generators draw every image in a locale Robolectric takes", () => {
   assert.equal(sets.length, LISTING_LANGS.length);
   const tags = sets.map(({ tag }) => tag);
   for (const { tag, drawn } of sets) {
-    assert.match(drawn ?? "", /^[a-z]{2,3}(-[A-Z]{2})?$/, `the locale ${tag} is drawn in`);
+    assert.match(drawn ?? "", /^[a-z]{2,3}(-[A-Z][a-z]{3}-[A-Z]{2}|-[A-Z]{2})?$/, `the locale ${tag} is drawn in`);
     // The library writes into a folder named after the locale it drew in, which is then moved to the set's tag:
     // one named as another set's tag would mix the two sets (moveToListingFolder refuses it, but only in a release).
     if (drawn !== tag) assert.ok(!tags.includes(drawn), `${tag} is drawn in ${drawn}, another set's folder`);

@@ -86,6 +86,7 @@
     <string name="profile_language_hungarian">Hungaria</string>
     <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_filipino">Filipino</string>
+    <string name="profile_language_serbian">Serbia</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>
     <plurals name="profile_notifications_active">

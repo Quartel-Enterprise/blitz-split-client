@@ -858,6 +858,7 @@ export const vi: Record<MessageKey, string> = {
   profile_languageHungarian: 'Tiếng Hungary',
   profile_languageUrdu: 'Tiếng Urdu',
   profile_languageFilipino: 'Tiếng Philippines',
+  profile_languageSerbian: 'Tiếng Serbia',
   profile_bitcoinInSats: 'Bitcoin tính bằng satoshi',
   profile_bitcoinInSatsDetail: 'Hiển thị và nhập số tiền bitcoin bằng sats (1 ₿ = 100.000.000 sats).',
   profile_shareUsageData: 'Chia sẻ dữ liệu sử dụng',
