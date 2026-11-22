@@ -11,8 +11,18 @@ struct BoraRacharWatchApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        #if DEBUG
+        // The README's image (scripts/readme-hero): the sample trip instead of an account, as the iPhone's captures
+        if let language = WatchStoreScreenshots.language {
+            BlitzSplitWatch.shared.startForStoreScreenshots(language: language)
+        } else {
+            BlitzSplitWatch.shared.start()
+        }
+        #else
         BlitzSplitWatch.shared.start()
-        WatchWidgetWriter.shared.start()
+        #endif
+        // The sample trip must not reach the App Group's snapshot, which the complications read
+        if !WatchStoreScreenshots.isRun { WatchWidgetWriter.shared.start() }
         _root = State(initialValue: WatchRootModel())
     }
 
@@ -31,8 +41,27 @@ struct BoraRacharWatchApp: App {
     }
 }
 
+#if DEBUG
+/// The README's capture (scripts/readme-hero/capture-watch.sh) launches the debug build with `-StoreScreenshotsLanguage`.
+enum WatchStoreScreenshots {
+    static var language: String? { UserDefaults.standard.string(forKey: "StoreScreenshotsLanguage") }
+}
+#endif
+
+extension WatchStoreScreenshots {
+    /// A seeded capture run stays on its own: no iPhone link, push or background refresh may change what it shows.
+    static var isRun: Bool {
+        #if DEBUG
+        language != nil
+        #else
+        false
+        #endif
+    }
+}
+
 final class WatchAppDelegate: NSObject, WKApplicationDelegate {
     func applicationDidFinishLaunching() {
+        if WatchStoreScreenshots.isRun { return }
         PhoneLink.shared.start()
         WatchPush.shared.start()
         WatchBackgroundRefresh.schedule()

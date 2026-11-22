@@ -1,13 +1,11 @@
 package com.quare.blitzsplit.shared.bridge
 
-import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
 import com.quare.blitzsplit.core.expenses.domain.model.BalanceSnapshot
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
 import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBalanceSnapshot
-import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
@@ -20,7 +18,6 @@ import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsService
-import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
 import com.quare.blitzsplit.core.utils.suspendRunCatching
 import com.quare.blitzsplit.core.watch.domain.usecase.ApproveNearbyWatch
@@ -80,14 +77,9 @@ import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import com.quare.blitzsplit.shared.push.PushArrivalOutcome
 import com.quare.blitzsplit.shared.push.PushArrivalSync
-import com.quare.blitzsplit.shared.storescreenshots.DirectoryAssets
-import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
 import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsScreen
 import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsScreen.Companion.openOverHome
-import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsSeed
-import com.quare.blitzsplit.shared.storescreenshots.createStoreScreenshotsDatabaseBuilder
-import com.quare.blitzsplit.shared.storescreenshots.deleteStoreScreenshotsDatabase
-import com.quare.blitzsplit.shared.storescreenshots.storeScreenshotsModuleOf
+import com.quare.blitzsplit.shared.storescreenshots.startSeededForStoreScreenshots
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
 import kotlinx.cinterop.BetaInteropApi
@@ -102,12 +94,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
-import org.koin.dsl.module
 import platform.Foundation.NSData
 import platform.Foundation.NSURL
 import platform.Foundation.create
@@ -156,24 +146,11 @@ object BlitzSplitApple : KoinComponent {
             start()
             return
         }
-        deleteStoreScreenshotsDatabase()
-        val trip = SampleTrips.tripOf(language)
-        startBlitzSplitKoin(
-            extraModules = listOf(
-                storeScreenshotsModuleOf(trip),
-                module { single<RoomDatabase.Builder<AppDatabase>> { createStoreScreenshotsDatabaseBuilder() } },
-            ),
+        val seeded = startSeededForStoreScreenshots(
+            language = language,
+            theme = if (isDark) ThemePreference.DARK else ThemePreference.LIGHT,
+            assetsDirectory = assetsDirectory,
         )
-        /*
-         * Why: blocks the launch until the trip is there, off the main thread, so a seed step that hops to Main can't
-         * wait on it.
-         */
-        val seeded = runBlocking(Dispatchers.Default) {
-            StoreScreenshotsSeed(trip, assetsDirectory?.let(::DirectoryAssets)).createTrip(
-                language = AppLanguage.fromTag(language),
-                theme = if (isDark) ThemePreference.DARK else ThemePreference.LIGHT,
-            )
-        }
         val screen = StoreScreenshotsScreen.fromCodeOrNull(screenCode)
         opensSplitOf = screen?.takeIf { it == StoreScreenshotsScreen.ITEMS || it == StoreScreenshotsScreen.SPLIT_MODES }
         val routes = screen?.routesOf(seeded).orEmpty()

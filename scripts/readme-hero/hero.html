@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  The README's opening image (scripts/readme-hero/generate.sh): the same group of the sample trip on the four native UIs,
+  The README's opening image (scripts/readme-hero/generate.sh): the same group of the sample trip on the native UIs,
   each in its device. compose.mjs fills the {{…}} slots (the theme and the captures' file URLs), writes the page next to
   the captures and
   photographs it. Transparent around the devices, so it sits on GitHub's page in either theme.
@@ -85,6 +85,21 @@
     justify-content: space-between; font: 500 11px/1 Roboto, "Helvetica Neue", sans-serif; color: var(--status);
   }
   .android-status svg { width: 34px; height: 11px; }
+
+  /* The watches: a case around each round or rounded screen, both dark only */
+  .watch { z-index: 2; gap: 10px; }
+  .watch .case {
+    position: relative; background: #0b0b0c; box-shadow: 0 0 0 1.5px #3a3a3e, 0 16px 30px rgba(0, 0, 0, 0.45);
+  }
+  .watch .case img { display: block; }
+  .watch .caption { white-space: nowrap; }
+  /* Under the Mac's caption, left of the browser */
+  .wear { left: 480px; top: 462px; width: 104px; }
+  .wear .case { padding: 5px; border-radius: 50%; }
+  .wear .case img { width: 94px; height: 94px; border-radius: 50%; }
+  .applewatch { left: 590px; top: 462px; width: 104px; }
+  .applewatch .case { padding: 5px; border-radius: 26px; }
+  .applewatch .case img { width: 94px; border-radius: 21px; }
 </style>
 </head>
 <body>
@@ -126,6 +141,16 @@
       </div>
     </div>
     <div class="caption"><b>Android</b><span>Jetpack Compose<br>Material 3 Expressive</span></div>
+  </div>
+
+  <div class="device watch wear">
+    <div class="case"><img id="wear" alt="" src="{{captures}}/wear-dark.png"></div>
+    <div class="caption"><b>Wear OS</b><span>Compose</span></div>
+  </div>
+
+  <div class="device watch applewatch">
+    <div class="case"><img id="watch" alt="" src="{{captures}}/watch-dark.png"></div>
+    <div class="caption"><b>Apple Watch</b><span>SwiftUI</span></div>
   </div>
 
 </body>

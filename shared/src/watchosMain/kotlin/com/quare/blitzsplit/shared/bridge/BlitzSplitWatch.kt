@@ -1,6 +1,7 @@
 package com.quare.blitzsplit.shared.bridge
 
 import com.quare.blitzsplit.core.activity.domain.usecase.MarkActivityRead
+import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
@@ -21,6 +22,7 @@ import com.quare.blitzsplit.feature.watchpairing.presentation.viewmodel.WatchPai
 import com.quare.blitzsplit.feature.watchpairing.presentation.viewmodel.WatchRootViewModel
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
 import com.quare.blitzsplit.shared.push.isSyncedWithin
+import com.quare.blitzsplit.shared.storescreenshots.startSeededForStoreScreenshots
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -30,6 +32,7 @@ import kotlinx.coroutines.plus
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
+import kotlin.experimental.ExperimentalNativeApi
 import kotlin.time.Duration.Companion.seconds
 
 /*
@@ -43,6 +46,25 @@ object BlitzSplitWatch : KoinComponent {
     // Why: as the phone's start, plus the time of each sync that went through, the balances' "Updated at 14:32".
     fun start() {
         startBlitzSplitKoin(extraModules = listOf(lastSyncRecordingModule))
+    }
+
+    /*
+     * Why: the README's image (scripts/readme-hero): a debug build launched with `-StoreScreenshotsLanguage` holds the
+     * sample trip, as the iPhone's startForStoreScreenshots does, in a Room of its own and with no sync, so the watch
+     * opens on Balances with the trip's groups. A release framework never seeds.
+     */
+    @OptIn(ExperimentalNativeApi::class)
+    fun startForStoreScreenshots(language: String) {
+        if (!Platform.isDebugBinary) {
+            start()
+            return
+        }
+        startSeededForStoreScreenshots(
+            language = language,
+            theme = ThemePreference.DARK,
+            assetsDirectory = null,
+            extraModules = listOf(lastSyncRecordingModule),
+        )
     }
 
     // Why: the watch's NavigationStack draws the shared back stack, as the phone's does.

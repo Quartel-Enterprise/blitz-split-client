@@ -812,12 +812,12 @@ platform:ios skip_upload:true`, then [the set is sent through GitHub](#sending-a
 ## The README's image
 
 The README opens with the same sample trip: its group, Expenses, on Android, the iPhone, the Mac and the web, side by
-side, dark or light as the reader's GitHub is (`docs/images/readme-hero-{dark,light}.webp`, versioned, unlike the store
-images). One command captures the four screens and draws it:
+side, with the two watches' Balances beside them, dark or light as the reader's GitHub is (`docs/images/readme-hero-{dark,light}.webp`, versioned, unlike the store
+images). One command captures the six screens and draws it:
 
 ```bash
-./scripts/readme-hero/generate.sh                                  # all four, then the image
-READMEHERO_CAPTURES=web ./scripts/readme-hero/generate.sh          # capture again only the web's
+./scripts/readme-hero/generate.sh                                  # all six, then the image
+READMEHERO_CAPTURES=web ./scripts/readme-hero/generate.sh          # again only the web's (android, ios, mac, web, wear, watch)
 READMEHERO_CAPTURES=none ./scripts/readme-hero/generate.sh         # the image again, from the captures in build/
 ```
 
@@ -838,7 +838,17 @@ screenshots' own tools:
   seeds the trip as the Apple apps' `startForStoreScreenshots` does, and opens the group. A production build never
   looks at it (`webApp/src/bridge/storeScreenshots.ts`). The photos go in as base64, from `assets.tsv`.
 
-`compose.mjs` then lays the four out in `hero.html` (the phones' bezels, Chrome's bar, the captions) and has the same
+- **Wear OS:** `ReadmeHeroWatch` in `:wearApp` draws the watch's own `WatchBalancesContent` under Robolectric, round
+  (a Pixel Watch 3 45mm's 456 px) on a black window. Unlike the other screens its state is written by hand, with the
+  totals the Apple Watch shows for the same trip, since the watch's ViewModel has no seed of its own. Only
+  `-PreadmeHero` runs it (`:wearApp:testDebugUnitTest`).
+- **Apple Watch:** `capture-watch.sh` builds the watch app's debug build for a watchOS simulator ("Store screenshots
+  watch", a Series 12 46mm), launches it with `-StoreScreenshotsLanguage en`, which makes `BlitzSplitWatch.startForStoreScreenshots`
+  seed the same trip into a Room of its own, with no sync and no notification prompt, and takes the screen with
+  `simctl io`. The simulator's status bar can't be overridden on a watch, so the capture shows the time it was made.
+  Both watches are dark only: one capture serves both themes.
+
+`compose.mjs` then lays the six out in `hero.html` (the phones' bezels, Chrome's bar, the captions) and has the same
 headless Chrome photograph it. Nothing to install: it drives the Chrome already on the Mac over the DevTools Protocol
 (`chrome.mjs`; `CHROME` points at another binary).
 

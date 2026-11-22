@@ -70,6 +70,11 @@ android {
             }
         }
     }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
@@ -132,4 +137,29 @@ dependencies {
     implementation(libs.compose.ui.toolingPreview)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.wear.tiles.toolingPreview)
+
+    // Why: the README's Wear OS watch (scripts/readme-hero), drawn under Robolectric by ReadmeHeroWatch.
+    testImplementation(libs.robolectric)
+    testImplementation(libs.junit)
+    testImplementation(libs.compose.ui.testJunit4)
+    debugImplementation(libs.compose.ui.testManifest)
+}
+
+// Why: ReadmeHeroWatch draws the README's watch, so it runs only when -PreadmeHero asks for it, alone, and `build` and
+// `test` skip it, as :android:store_screenshots' generators. Any other test of the module runs as usual.
+val readmeHeroOutput = rootProject.layout.buildDirectory
+    .dir("outputs/readme-hero-wear")
+    .get()
+    .asFile
+val asksForReadmeHero = providers.gradleProperty("readmeHero").isPresent
+tasks.withType<Test>().configureEach {
+    // Why: until the module has another test, a build without -PreadmeHero has none left to run.
+    filter.isFailOnNoMatchingTests = false
+    if (asksForReadmeHero) {
+        filter.includeTestsMatching("*.ReadmeHeroWatch")
+        systemProperty("readmeHero.outputDir", readmeHeroOutput.absolutePath)
+        outputs.dir(readmeHeroOutput)
+    } else {
+        filter.excludeTestsMatching("*.ReadmeHeroWatch")
+    }
 }

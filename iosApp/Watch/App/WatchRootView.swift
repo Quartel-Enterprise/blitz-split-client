@@ -56,7 +56,7 @@ final class WatchRootModel {
         let mapped = routes.compactMap(WatchRoute.init)
         guard let first = mapped.first else { return }
         // Connected: the system's prompt for the watch's own pushes, once
-        if first == .balances { WatchPush.shared.requestPermission() }
+        if first == .balances, !WatchStoreScreenshots.isRun { WatchPush.shared.requestPermission() }
         root = first
         pushed = Array(mapped.dropFirst())
         if path != pushed { path = pushed }

@@ -1,4 +1,4 @@
-// Draws the README's opening image from the four captures (scripts/readme-hero/generate.sh): hero.html lays the
+// Draws the README's opening image from the captures (scripts/readme-hero/generate.sh): hero.html lays the
 // devices out, and a headless Chrome photographs it, dark and light, as WebP with its transparency.
 //
 //   node scripts/readme-hero/compose.mjs <captures folder> <output folder>
