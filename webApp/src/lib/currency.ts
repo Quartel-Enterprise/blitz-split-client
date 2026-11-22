@@ -11,10 +11,10 @@ const appTag = supportedTag ?? locale
  * language than the UI. A bare "es", from the browser or from "Español (Latinoamérica)" picked on a browser in
  * Spain, has no region of its own and speaks "es-419", Latin America's, as the page's lang does. Arabic writes Latin
  * digits (`formattingLocale`), so every number, amount and date the app formats, and the decimal separator the shared
- * code fills the amount fields with, stay the ones the fields parse. Serbian speaks its Latin script, `sr-Latn`, since
- * a bare `sr` is Cyrillic to `Intl`.
+ * code fills the amount fields with, stay the ones the fields parse. Serbian speaks its Latin script, `sr-Latn`, with the
+ * browser's region, since a bare `sr` is Cyrillic to `Intl`.
  */
-export const uiTag = formattingLocale(appTag.toLowerCase() === 'es' ? 'es-419' : locale === 'sr' ? 'sr-Latn' : appTag)
+export const uiTag = formattingLocale(appTag.toLowerCase() === 'es' ? 'es-419' : locale === 'sr' ? new Intl.Locale(appTag, { script: 'Latn' }).toString() : appTag)
 
 // Why: the picker draws every currency on each render, and building the Intl formatters each time is costly.
 const currencyLabels = new Map<string, string>()

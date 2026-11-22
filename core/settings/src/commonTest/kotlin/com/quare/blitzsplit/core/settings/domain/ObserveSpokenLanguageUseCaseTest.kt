@@ -238,7 +238,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "hu",
             "ur",
             "fil",
-            "sr",
+            "sr-Latn",
             "zh-Hant",
         )
 
@@ -246,7 +246,7 @@ class ObserveSpokenLanguageUseCaseTest {
         val spoken = devices.map { spokenOn(it) }
 
         // Then
-        assertEquals(devices, spoken)
+        assertEquals(devices.map { if (it == "sr-Latn") "sr" else it }, spoken)
     }
 
     @Test
@@ -289,7 +289,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "hu-RO",
                 "ur-PK",
                 "fil-PH",
-                "sr-RS",
+                "sr-Latn-RS",
                 "zh-TW",
             )
 

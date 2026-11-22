@@ -183,13 +183,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     singular "si" before a list of names, which take a colon: "Nasa grupo na: Ana, Bruno"). Its verbs don't change with the person, so its activity sentences need no rule for the
     user ([activity-and-push.md](activity-and-push.md)). Serbian (Pierre's calls) is written in the Latin script only,
     in standard ekavian ("lepo", "podelio", "sedmica"), never Cyrillic, and its tag is `sr-Latn`: the app is one
-    variant for every Serbian tag, `sr`, `sr-RS` or `sr-Cyrl` alike, and no regional one. It speaks informally, with
+    variant for every Serbian tag in the Latin script (`sr-Latn`, `sr-Latn-RS`…), and no regional one. It speaks informally, with
     "ti", never "Vi", and calls the app Blitz Split. It reads left to right, and its plurals have `one` (1, 21, 31…),
     `few` (2-4, 22-24…) and `other` (0, 5-20…, and fractions), as Croatian's. Its past is Croatian's perfect, so its
     activity sentences follow Croatian's rule ([activity-and-push.md](activity-and-push.md)). The Serbian dinar (RSD)
-    comes with it (below). Android has Latin resources only: a device set to Serbian in Cyrillic can fall back to
-    English when the app follows the system's language, since no Cyrillic resources exist to match it, while the in-app
-    picker's "Srpski" always works. The
+    comes with it (below). Only the Latin script exists on Android and Apple: a
+    device set to Serbian in Cyrillic (`sr`, `sr-RS`, `sr-Cyrl`, Cyrillic by default) is a language the app doesn't have,
+    so it speaks English, the release notes and legal pages included, until "Srpski" is picked in Profile › Language.
+    The web's browser language reads any `sr` tag as the Latin Serbian. The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the

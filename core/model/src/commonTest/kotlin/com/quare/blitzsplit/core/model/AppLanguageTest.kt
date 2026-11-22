@@ -432,15 +432,27 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN any Serbian tag in Latin or Cyrillic WHEN reading it THEN is Serbian`() {
+    fun `GIVEN any Serbian tag in the Latin script WHEN reading it THEN is Serbian`() {
         // Given
-        val tags = listOf("sr", "sr-RS", "sr_ME", "SR-rs", "sr-Latn", "sr-Latn-RS", "sr-Cyrl-RS")
+        val tags = listOf("sr-Latn", "sr-Latn-RS", "SR-latn-me", "sr_Latn_BA")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)
 
         // Then
         assertEquals(List(tags.size) { AppLanguage.SERBIAN }, languages)
+    }
+
+    @Test
+    fun `GIVEN a Serbian tag in Cyrillic or with no script WHEN reading it THEN is no language the app has`() {
+        // Given
+        val tags = listOf("sr", "sr-RS", "sr-Cyrl", "sr-Cyrl-RS", "sr_ME")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.SYSTEM }, languages)
     }
 
     @Test
