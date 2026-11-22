@@ -25,7 +25,9 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
     }
 
     /// An event's push carries `content-available`: the sync starts as it arrives, so a tap finds the bill on the device.
-    func syncForPush(onDone: @escaping (Bool) -> Void = { _ in }) {
+    /// The reminder's brings nothing to sync, so onDone gets nil and nothing syncs.
+    func syncForPush(userInfo: [AnyHashable: Any], onDone: @escaping (Bool?) -> Void = { _ in }) {
+        guard BlitzSplitApple.shared.isEventPush(link: userInfo["link"] as? String) else { return onDone(nil) }
         BlitzSplitApple.shared.syncForPush { isSynced in onDone(isSynced.boolValue) }
     }
 
@@ -128,7 +130,14 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
-        PushNotifications.shared.syncForPush { isSynced in completionHandler(isSynced ? .newData : .failed) }
+        PushNotifications.shared.syncForPush(userInfo: userInfo) { isSynced in
+            let result: UIBackgroundFetchResult = switch isSynced {
+            case nil: .noData
+            case true?: .newData
+            case false?: .failed
+            }
+            completionHandler(result)
+        }
     }
 }
 #else
@@ -150,7 +159,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// The Mac gets it only while the app runs, with no background limit: real time listens only in front, so a push
     /// that arrives with the window behind another app's syncs here.
     func application(_ application: NSApplication, didReceiveRemoteNotification userInfo: [String: Any]) {
-        PushNotifications.shared.syncForPush()
+        PushNotifications.shared.syncForPush(userInfo: userInfo)
     }
 }
 #endif

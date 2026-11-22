@@ -61,7 +61,8 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
             R.string.app_name
         }
         val title = data[PushPayload.TITLE].orEmpty().ifEmpty { getString(fallbackTitle) }
-        val tag = data[PushPayload.EVENT_ID] ?: kind.kind
+        val eventId = data[PushPayload.EVENT_ID]
+        val tag = eventId ?: kind.kind
         val link = data[PushPayload.LINK]
         if (!canPostNotifications() || !isPushEnabled()) return
         val notification = NotificationCompat
@@ -75,7 +76,7 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
             .build()
         NotificationManagerCompat.from(this).notify(tag, 0, notification)
         // Why: only an event brings something down; the reminder has none (the server leaves its event id empty).
-        if (!data[PushPayload.EVENT_ID].isNullOrEmpty()) syncForTheTap()
+        if (!eventId.isNullOrEmpty()) syncForTheTap()
     }
 
     /*

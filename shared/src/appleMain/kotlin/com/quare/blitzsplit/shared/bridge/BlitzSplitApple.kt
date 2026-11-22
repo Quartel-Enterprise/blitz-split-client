@@ -10,6 +10,7 @@ import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBalanceSnapshot
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
@@ -449,6 +450,12 @@ object BlitzSplitApple : KoinComponent {
     }
 
     private val pushArrivalSyncTimeout = 25.seconds
+
+    /*
+     * Why: only an event brings something down, and its link names it; the reminder's has no event. The Mac, and iOS
+     * with the app in front, hand the app every push, the reminder's too, not only those content-available wakes.
+     */
+    fun isEventPush(link: String?): Boolean = link?.let { PushLink.of(it) }?.eventId != null
 
     // Why: the browser sign in opens Safari, or the browser on macOS, over the app.
     fun handleAppPaused() {
