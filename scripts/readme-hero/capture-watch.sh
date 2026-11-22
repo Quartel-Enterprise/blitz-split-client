@@ -73,7 +73,9 @@ rm -f "$previous"
 sleep 4
 for _ in $(seq 28); do
   xcrun simctl io "$udid" screenshot "$shot" > /dev/null 2>&1
-  if [ -f "$previous" ] && cmp -s "$shot" "$previous"; then break; fi
+  # Why: the seed runs before the first frame, so a launch screen can repeat itself: a near black frame (a few KB of
+  # PNG, where the emptiest screen, "Payment recorded", is some 17 KB) is not a screen that stopped moving
+  if [ -f "$shot" ] && [ "$(stat -f%z "$shot")" -gt 8000 ] && [ -f "$previous" ] && cmp -s "$shot" "$previous"; then break; fi
   cp "$shot" "$previous"
   sleep 2
 done

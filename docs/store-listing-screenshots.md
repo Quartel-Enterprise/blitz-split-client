@@ -429,9 +429,9 @@ show the watch screen bare too, with the art on the iPhone's screenshots alone.
   (¥19,228 on the Apple Watch, ¥19,212 on Wear OS). The names, the groups and the soccer's debt are the same.
 - **Wear OS draws the group scrolled to its end** (a swipe up before the shot): a language with taller lines (Japanese,
   Arabic) leaves a list that doesn't fit, and Wear folds the "I paid" button away until it is scrolled to.
-- **A new language** needs a row in `WearStoreScreenshots`' `listingLanguages` (its sample-trip code, the Android resource
-  qualifiers of its strings and the locale its amounts are written in) as well as in `locales.tsv`: the test stops
-  naming the languages it lacks, and `stage-play.mjs` stops without them (the `add-language` skill lists it).
+- **A new language** is drawn from its row of `locales.tsv`. Only when its Android resource qualifiers aren't its tag's
+  language code (`pt-rBR`, `in`, `iw`, `b+zh+Hans`) does it need an entry in `androidQualifiers` of
+  `WearStoreScreenshots`; without one the strings come out in the default language (the `add-language` skill lists it).
 - **The Wear OS states are written by hand** from the sample trip (`SampleTrips`): a change to its amounts or people
   needs `WearStoreScreenshots` looked at again, as `ReadmeHeroWatch` does.
 - **Google Play** also recommends a screenshot of the Tile, which these leave out.

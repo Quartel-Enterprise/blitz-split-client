@@ -92,6 +92,7 @@ android {
 dependencies {
     implementation(project(":shared"))
     implementation(project(":core:model"))
+    testImplementation(project(":core:groups"))
     implementation(project(":core:navigation"))
     implementation(project(":core:profile"))
     implementation(project(":core:expenses"))
@@ -159,12 +160,11 @@ val storeWatchOutput = rootProject.layout.buildDirectory
     .asFile
 val asksForStoreWatch = providers.gradleProperty("storeWatch").isPresent
 tasks.withType<Test>().configureEach {
-    // Why: until the module has another test, a build without -PreadmeHero has none left to run.
+    // Why: until the module has another test, a build without -PreadmeHero or -PstoreWatch has none left to run.
     filter.isFailOnNoMatchingTests = false
     when {
         asksForReadmeHero -> {
             filter.includeTestsMatching("*.ReadmeHeroWatch")
-            filter.excludeTestsMatching("*.WearStoreScreenshots")
             systemProperty("readmeHero.outputDir", readmeHeroOutput.absolutePath)
             outputs.dir(readmeHeroOutput)
         }

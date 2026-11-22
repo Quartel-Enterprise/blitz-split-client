@@ -73,10 +73,9 @@ Every translator, human or agent, reads it first; without it each one picks its 
   times smaller there). The UIs name it and write its symbol from the platform, so nothing else changes in them.
 - The store screenshots ([docs/store-listing-screenshots.md](../../../docs/store-listing-screenshots.md)): the
   language's sample trip in `SampleTripCopies.kt` and `SampleTrips.kt` (`currencies`, and a round rate in `priceOf` for a new
-  currency), its words in `scripts/store-screenshots/listing-art/copy.tsv` and `creative-assets/copy.tsv`, its `StoreLocale`, its row in `listingLanguages` of
-  `wearApp/src/test/kotlin/com/quare/blitzsplit/wear/WearStoreScreenshots.kt` (the Wear OS watch's screenshots, which
-  `stage-play.mjs` needs for every language: the sample-trip code, the Android resource qualifiers of its strings and the
-  locale of its amounts), its
+  currency), its words in `scripts/store-screenshots/listing-art/copy.tsv` and `creative-assets/copy.tsv`, its `StoreLocale`, its entry in `androidQualifiers` of
+  `wearApp/src/test/kotlin/com/quare/blitzsplit/wear/WearStoreScreenshots.kt` when the language's Android resource
+  qualifiers aren't its tag's language code (the Wear OS watch's screenshots are drawn from the row of `locales.tsv` below), its
   listing locales in `scripts/store-screenshots/locales.tsv` (the stores' own codes are `PLAY_LOCALES` and
   `APP_STORE_LOCALES` of `scripts/release/store-listing.mjs`), and the count in the `Fastfile`'s description and the docs that say "in all
   N languages". The stores only get the new language's screenshots from a stable release dispatched with

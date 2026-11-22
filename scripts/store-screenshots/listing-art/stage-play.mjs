@@ -43,13 +43,11 @@ for (const tag of wanted) {
     if (images.length !== IMAGES_PER_DEVICE) throw new Error(`${device} ${tag} has ${images.length} images, Google Play's shelf takes ${IMAGES_PER_DEVICE}: run compose.mjs`);
     plan.push({ playLocales, imageType, folder, images });
   }
-}
-// The watch's folder of a language, checked with the rest: a language drawn without it stops the run too.
-for (const tag of wanted) {
-  const folder = join(WEAR_ART, tag);
-  const images = (await readdir(folder).catch(() => [])).filter((name) => name.endsWith(".png")).sort();
-  if (images.length !== WEAR_IMAGES) throw new Error(`The Wear OS watch ${tag} has ${images.length} images, Google Play's shelf takes ${WEAR_IMAGES} here: run watch/draw-wear.sh (it draws the languages WearStoreScreenshots lists: a new language of locales.tsv needs its row there)`);
-  plan.push({ playLocales: PLAY_LOCALES[languageOf[tag]], imageType: WEAR_IMAGE_TYPE, folder, images });
+  // The watch's folder of the language, checked with the rest: a language drawn without it stops the run too.
+  const wearFolder = join(WEAR_ART, tag);
+  const wearImages = (await readdir(wearFolder).catch(() => [])).filter((name) => name.endsWith(".png")).sort();
+  if (wearImages.length !== WEAR_IMAGES) throw new Error(`The Wear OS watch ${tag} has ${wearImages.length} images, Google Play's shelf takes ${WEAR_IMAGES} here: run watch/draw-wear.sh`);
+  plan.push({ playLocales, imageType: WEAR_IMAGE_TYPE, folder: wearFolder, images: wearImages });
 }
 let staged = 0;
 for (const playLocale of new Set(plan.flatMap((entry) => entry.playLocales))) {

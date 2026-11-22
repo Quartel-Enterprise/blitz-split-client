@@ -41,9 +41,11 @@ struct BoraRacharWatchApp: App {
     }
 }
 
-#if DEBUG
 /// The README's capture (scripts/readme-hero/capture-watch.sh) launches the debug build with `-StoreScreenshotsLanguage`.
+/// The type exists in every build, since the screens ask it whether a capture is running; what reads the launch
+/// arguments is debug only.
 enum WatchStoreScreenshots {
+    #if DEBUG
     static var language: String? { UserDefaults.standard.string(forKey: "StoreScreenshotsLanguage") }
     /// The store listing's screens (scripts/store-screenshots/watch): `-StoreScreenshotsScreen` names the one the run
     /// walks to from Balances, by acting as a person would: balances, group, confirm or recorded.
@@ -53,8 +55,8 @@ enum WatchStoreScreenshots {
     static var assetsDirectory: String? { UserDefaults.standard.string(forKey: "StoreScreenshotsAssets") }
     /// Each step of the walk happens once: the screens come back (Balances after the payment) and must not repeat it.
     @MainActor static var opened: Set<String> = []
+    #endif
 }
-#endif
 
 extension WatchStoreScreenshots {
     /// The screen the store capture walks to; nil outside it.

@@ -43,6 +43,11 @@ if [[ ",$WANTED," == *",apple,"* ]]; then
   simulator="Store screenshots watch ultra 3"
   reuse=""
   failed=()
+  # capture-watch.sh leaves the simulator booted for the next capture: whatever stops this run shuts it down
+  shut_down_simulator() {
+    xcrun simctl shutdown "$(xcrun simctl list devices available | grep -F "    $simulator (" | head -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')" 2> /dev/null || true
+  }
+  trap shut_down_simulator EXIT
   for tag in "${tags[@]}"; do
     row="$(grep -v '^#' "$LOCALES_TSV" | awk -F'\t' -v tag="$tag" '$1 == tag')"
     [ -n "$row" ] || { echo "locales.tsv has no $tag" >&2; exit 1; }
@@ -73,7 +78,8 @@ if [[ ",$WANTED," == *",apple,"* ]]; then
       reuse=2
     done
   done
-  xcrun simctl shutdown "$(xcrun simctl list devices available | grep -F "    $simulator (" | head -1 | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/')" 2> /dev/null || true
+  shut_down_simulator
+  trap - EXIT
   if [ "${#failed[@]}" -gt 0 ]; then echo "Apple Watch captures that failed: ${failed[*]}" >&2; exit 1; fi
 fi
 
