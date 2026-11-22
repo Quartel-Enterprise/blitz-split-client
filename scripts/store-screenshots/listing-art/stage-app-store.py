@@ -9,7 +9,11 @@ the art's order is kept, and the screen in a name is only a slot. The iPhone Duo
     ART_DEVICES=iphone_6_7,mac python3 scripts/store-screenshots/listing-art/stage-app-store.py   # some devices only
     ART_LOCALES=en-US,pt-BR python3 scripts/store-screenshots/listing-art/stage-app-store.py      # some languages only
 
-A device left out, by ART_DEVICES or because the art was drawn for none of it, is not staged: a set without it is
+The Apple Watch's four images (store_listings/watch/app-store-ultra-3/<tag>/0N_<screen>.png, made by watch/generate.sh) go
+into the iPhone's folder as <screen>_watch_ultra_3.png, 01_balances to 04_recorded: its shelf goes up with the iPhone's and
+the iPad's, since deliver replaces every screenshot of a locale. App Store Connect takes one watch size for all of them.
+
+A device left out, by ART_DEVICES or because the art was drawn for none of it (the watch's images made for no language), is not staged: a set without it is
 refused by local-set.mjs unless it says so, and a release uploads what its runners captured.
 """
 import json
@@ -24,8 +28,11 @@ ROOT = Path(__file__).resolve().parents[3]
 ART = ROOT / "store_listings/listing-art"
 IOS = ROOT / "fastlane/screenshots"
 MAC = ROOT / "fastlane/screenshots-mac"
-DEVICES = {"iphone_6_7": IOS, "iphone_6_3": IOS, "ipad_13": IOS, "ipad_11": IOS, "iphone_duo": IOS, "mac": MAC}
+DEVICES = {"iphone_6_7": IOS, "iphone_6_3": IOS, "ipad_13": IOS, "ipad_11": IOS, "iphone_duo": IOS, "mac": MAC, "watch_ultra_3": IOS}
 DUO_OPEN_WIDTH = 2853
+WATCH = ROOT / "store_listings/watch/app-store-ultra-3"
+WATCH_SIZE = (422, 514)
+WATCH_SCREENS = ["balances", "group", "confirm", "recorded"]
 
 
 def screen_names():
@@ -37,6 +44,22 @@ def app_store_locales():
     script = "import('./scripts/release/store-listing.mjs').then((m) => console.log(JSON.stringify(m.APP_STORE_LOCALES)))"
     output = subprocess.run(["node", "-e", script], cwd=ROOT, check=True, capture_output=True, text=True).stdout
     return json.loads(output)
+
+
+def stage_watch(tag, store_locales, folder):
+    """The watch's images are 0N_<screen>.png, which already are their shelf's order and the screens' names."""
+    for number, screen in enumerate(WATCH_SCREENS, start=1):
+        name = f"0{number}_{screen}"
+        image = WATCH / tag / f"{name}.png"
+        if not image.is_file():
+            raise SystemExit(f"{image} is missing: watch/generate.sh draws it (WATCH_STORES=apple)")
+        with Image.open(image) as opened:
+            if opened.size != WATCH_SIZE:
+                raise SystemExit(f"{image} is {opened.width}x{opened.height}, the Apple Watch's shelf takes 422x514")
+        for store_locale in store_locales:
+            target = folder / store_locale
+            target.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(image, target / f"{name}_watch_ultra_3.png")
 
 
 def main():
@@ -71,6 +94,13 @@ def main():
                 if only:
                     shutil.rmtree(folder / store_locale, ignore_errors=True)
         for device, folder in devices.items():
+            if device == "watch_ultra_3":
+                if not (WATCH / tag).is_dir():
+                    print(f"No Apple Watch images for {tag} (watch/generate.sh, WATCH_STORES=apple): its shelf is left out")
+                    continue
+                stage_watch(tag, store_locales, folder)
+                staged += len(WATCH_SCREENS) * len(store_locales)
+                continue
             images = sorted((ART / device / tag).glob("*.png"))
             if len(images) != len(names):
                 raise SystemExit(f"{device} {tag} has {len(images)} images, the shelf takes {len(names)}")

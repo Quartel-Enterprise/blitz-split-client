@@ -3,7 +3,7 @@
 # The watches' store screenshots (docs/store-listing-screenshots.md#the-watches-screenshots): four screens of each
 # watch app (balances, group, confirm, recorded), in every listing language of locales.tsv, at the size its store
 # takes, written to store_listings/watch/<store>/<locale>/ to look at. Google Play's are also what stage-play.mjs
-# stages (draw-wear.sh draws those alone); nothing uploads the Apple Watch's yet.
+# stages (draw-wear.sh draws those alone); the Apple Watch's are what stage-app-store.py stages with the iPhone's.
 #
 #   ./scripts/store-screenshots/watch/generate.sh
 #   WATCH_STORES=apple ./scripts/store-screenshots/watch/generate.sh     # or wear

@@ -137,7 +137,11 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
 1. **Capture and frame** as [above](#one-command), with `skip_upload:true`: the Mac's capture takes the screen for
    half an hour, and the open iPhone Duo needs someone to press Open in Device Hub. The framed images are in
    `fastlane/screenshots/` (iPhone, iPad and iPhone Duo) and `fastlane/screenshots-mac/`, and in `store_listings/`
-   to look at. **Look at them**: a screen still loading is framed like any other
+   to look at. **The Apple Watch's four go with the iPhone's**: `WATCH_STORES=apple ./scripts/store-screenshots/watch/generate.sh`
+   makes them ([The watches' screenshots](#the-watches-screenshots), an hour or more for every language), and
+   `python3 scripts/store-screenshots/listing-art/stage-app-store.py` stages them into `fastlane/screenshots/<locale>/`
+   as `<screen>_watch_ultra_3.png` (`ART_DEVICES=watch_ultra_3` stages them alone, `ART_LOCALES` some languages),
+   left out, with a note, for a language that has none. **Look at them**: a screen still loading is framed like any other
    ([Things that bite](#things-that-bite)).
 2. **Check the set.** `local-set.mjs check` reads the two folders of the checkout, or of a folder passed to it,
    where they may also be named `fastlane-screenshots` and `fastlane-screenshots-mac` (a set kept apart, as
@@ -147,10 +151,10 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
    | It refuses | Why |
    | --- | --- |
    | A locale the App Store listing has and the set lacks, or a folder that is no locale of it | deliver uploads the locales it is handed, and App Store Connect attaches screenshots to a listing's locale |
-   | A device without one of the ten screens in a locale, or the same screen twice on the iPhone Duo's shelf | A shelf shows the ten screens of `screens.tsv`, once each; the Duo's takes each from one display, open or closed |
-   | An image whose size isn't its device's (the table of [What the images show](#what-the-images-show)) | deliver files an image on a shelf by its size, and the iPad's are framed lying down: an upright one is an old one |
+   | A device without one of its screens in a locale, or the same screen twice on the iPhone Duo's shelf, or a screen of another device's shelf | A shelf shows the ten screens of `screens.tsv`, once each, the Apple Watch's the four of `WATCH_SCREENS` (`01_balances`, `02_group`, `03_confirm`, `04_recorded`); the Duo's takes each from one display, open or closed |
+   | An image whose size isn't its device's (the table of [What the images show](#what-the-images-show)) | deliver files an image on a shelf by its size, and the iPad's are framed lying down: an upright one is an old one. The Apple Watch's is 422x514 (Ultra 3), and App Store Connect takes **one watch size for every locale**, so a locale with another is refused |
    | A file that isn't a PNG, by its name or by its bytes, or that isn't `<screen>_<device>.png` | Nothing else belongs in a staged folder. Hidden files, the Finder's `.DS_Store`, are left out and not refused |
-   | **A device the whole set leaves out** | deliver replaces every screenshot of a locale with what it is handed, so the shelf of a device left out is emptied. `--allow-missing-devices` says it is meant, as for a set without the iPhone Duo |
+   | **A device the whole set leaves out** | deliver replaces every screenshot of a locale with what it is handed, so the shelf of a device left out is emptied. `--allow-missing-devices` says it is meant, as for a set without the iPhone Duo or without the Apple Watch's four. **The watch is not a version of its own**: its shelf is one more of the iPhone's and iPad's version, in `ios.tar`, since deliver would empty it otherwise |
 
    `--platform ios` or `--platform mac` checks, and sends, one version's folder alone.
 3. **Send it.** `local-set.mjs send` checks the set again, packs each version's folder into an archive, and uploads
@@ -200,8 +204,8 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
 Every locale's job can pass and a shelf still be wrong: an upload can leave a shelf **listing one screenshot
 twice**, or short of a file ([Things that bite](#things-that-bite)). The "tidy up" job is what looks. After the
 last locale it reads every shelf of the version in full, sorts each by file name, reads the shelves again and
-**fails when one isn't as staged**, which is each of the ten screens of `screens.tsv` once, in file-name order, on
-every shelf the other locales have. **It removes nothing.** Its job's summary names each shelf and what is wrong
+**fails when one isn't as staged**, which is each of the ten screens of `screens.tsv` once (the four of the watch's on its
+shelf, `APP_WATCH_ULTRA`), in file-name order, on every shelf the other locales have. **It removes nothing.** Its job's summary names each shelf and what is wrong
 with it, as `<locale> / <shelf>: <what>`, the shelf by App Store Connect's name for the device size
 (`APP_IPHONE_67`, `APP_DESKTOP`); the run's last job says whether the shelves are as staged, and keeps the set
 while they aren't. Two inputs repair what the tidy-up names without sending the whole set again, both by an
@@ -394,9 +398,17 @@ The two watch apps' screens at the size each store takes, in all 34 languages, w
 - **Wear OS goes to Google Play with the rest**: `watch/draw-wear.sh` draws it into `build/outputs/store-screenshots-wear/`
   and `stage-play.mjs` stages it as `wearScreenshots` beside the phone's and tablets' (supply's own image type), so
   `fastlane screenshots`, the Play screenshots' action, a release and `play-store-screenshots` all send it, in the same Play edits.
-- **The Apple Watch is not staged or uploaded yet.** Its images are for looking at and for putting up by hand: deliver
-  replaces every screenshot of a locale with what it is handed, so a watch shelf has to travel in the same set as the
-  iPhone's and iPad's, which `local-set.mjs`, the shelves' tidy-up and the release's jobs don't know about yet.
+- **The Apple Watch's go to the App Store with the iPhone's and the iPad's**, as part of
+  [a set sent from a Mac](#sending-a-set-made-on-a-mac): deliver replaces every screenshot of a locale with what it is
+  handed, so a watch shelf can't be sent apart from the shelves of the same version. `listing-art/stage-app-store.py`
+  stages `store_listings/watch/app-store-ultra-3/<locale>/0N_<screen>.png` into `fastlane/screenshots/<App Store locale>/`
+  as `0N_<screen>_watch_ultra_3.png`, and `local-set.mjs` and the shelves' tidy-up take it as one more shelf of four
+  screens. The numbers keep it from colliding with the iPhone's screens (`01_balances` here, `04_balances` there:
+  a file belongs to the longest screen name it starts with). **A release's own screenshots don't make it**: they stage
+  the iPhone's and the iPad's alone, and deliver deletes a locale's shelves before it uploads, so a release run with
+  `screenshots` leaves the watch shelf empty. Send a set after it, or keep `screenshots` off.
+  **Not run against App Store Connect yet**: the checks and the tidy-up's rules are tested, and the shelf's display
+  type is fastlane's `APP_WATCH_ULTRA`, but no watch image has gone up.
 
 ```bash
 ./scripts/store-screenshots/watch/generate.sh                          # both stores, every language
@@ -520,6 +532,9 @@ Play holds 8 per device type and the App Store 10 per device size, so Play leave
 (`PLAY_STORY` of `compose.mjs`), and the iPhone Duo's two displays share their ten
 ([below](#the-iphone-duos-two-displays-share-one-shelf)). Every screen is in the dark theme except the last, on a
 blue background the art draws behind the whole row.
+
+The Apple Watch's shelf is apart from these ten: four bare screens of the watch app, 422x514
+([The watches' screenshots](#the-watches-screenshots)), which go up with the iPhone's and the iPad's.
 
 **The sample trip** (`shared/src/commonMain/.../storescreenshots/SampleTrips.kt`, its words in `SampleTripCopies.kt`) is one story told in each
 language: a trip to Lisbon among five friends, its names and descriptions in that language and its amounts in that
