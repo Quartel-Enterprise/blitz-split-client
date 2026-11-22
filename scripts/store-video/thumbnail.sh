@@ -37,10 +37,13 @@ node -e '
 cp "$ROOT/iosApp/Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png" "$PUBLIC/icon.png"
 cd "$HERE/remotion"
 [[ -d node_modules ]] || npm ci --no-audit --no-fund
+# One bundle for the three stills, instead of each still bundling the project again
+BUNDLE="$OUT/thumbnail-bundle"
+rm -rf "$BUNDLE"
+npx remotion bundle src/thumbnail-index.ts --out-dir="$BUNDLE" --public-dir="$PUBLIC" --log=error
 for size in Thumbnail:thumb-$LOCALE-16x9 ThumbnailVertical:thumb-$LOCALE-9x16 FeatureGraphic:feature-$LOCALE; do
   png="$OUT/${size#*:}.png"
-  npx remotion still src/thumbnail-index.ts "${size%%:*}" "$png" --props="$OUT/thumbnail-props.json" \
-    --public-dir="$PUBLIC" --log=error
+  npx remotion still "$BUNDLE" "${size%%:*}" "$png" --props="$OUT/thumbnail-props.json" --log=error
   ffmpeg -y -v error -i "$png" -q:v 2 "${png%.png}.jpg"
   echo "$png"
 done

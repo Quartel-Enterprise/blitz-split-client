@@ -4,7 +4,7 @@
 // file over a store's limit fails here as it does in the check.
 
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { test } from "node:test";
 import { LANGS } from "./release-notes.mjs";
 import {
@@ -235,4 +235,14 @@ test("the screens the iPhone Duo's shelf takes open are screens the captures and
   assert.deepEqual(framed, captured);
   assert.ok(open.length > 0 && open.length < framed.length, "the shelf shows the Duo both closed and open");
   assert.deepEqual(open.filter((name) => !framed.includes(name)), []);
+});
+
+test("every store video locale names its own listing language, one of Play's", () => {
+  const directory = "scripts/store-video/locales";
+  const languages = readdirSync(directory)
+    .filter((name) => name.endsWith(".json"))
+    .map((name) => [name, JSON.parse(readFileSync(`${directory}/${name}`, "utf8")).listing]);
+  for (const [name, language] of languages) assert.ok(PLAY_LOCALES[language], `${name} names ${language}`);
+  const names = languages.map(([, language]) => language);
+  assert.deepEqual(names, [...new Set(names)]);
 });

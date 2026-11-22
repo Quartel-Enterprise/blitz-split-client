@@ -27,6 +27,10 @@ For a language that has none, copy `scripts/store-video/locales/en-US.json` to `
 screenshots' locale codes (`scripts/store-screenshots/locales.tsv`). Not pt-BR's: its Pix shot, `pix` scene and Pix
 thumbnail are no other locale's. The render reads it through `props.json`, so nothing else needs registering. Then:
 
+- **`listing`**: the language of `store-listing/` the video belongs to (a key of `PLAY_LOCALES` in
+  `scripts/release/store-listing.mjs`), set right away: the copy says `en`, and two locales naming one language
+  would send their feature graphics to the same Play locales, which the lane and a test refuse.
+
 - **`lines`**: the narration, one per shot plus the end card's. Translate the meaning, not the words, in the tone of
   that language's store listing (`docs/store-listing.md`); keep each line about as long as pt-BR's, since the shots'
   lengths follow them.

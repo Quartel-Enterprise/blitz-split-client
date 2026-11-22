@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// The stores' listing text: the app's name, subtitle, keywords and description on Google Play and the App Store, and
-// the Play preview video's address, one file per language in store-listing/. docs/store-listing.md says what a file takes and how it reaches the stores.
+// The stores' listing text: the app's name, subtitle, keywords and description on Google Play and the App Store,
+// and the Play preview video's address, one file per language in store-listing/. docs/store-listing.md says what a
+// file takes and how it reaches the stores.
 //
 //   node scripts/release/store-listing.mjs check
 //       Fails on a listing a store would refuse or cut: a language missing, a field over its limit (CI, and before

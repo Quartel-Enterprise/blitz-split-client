@@ -99,7 +99,8 @@ section but `## Play video` is required.
 ## How it reaches the stores
 
 `store-listing.mjs stage --out <folder>` writes every listing in the layout fastlane uploads, a folder per store
-locale: `play/<locale>/` with `title.txt`, `short_description.txt` and `full_description.txt` for supply, and
+locale: `play/<locale>/` with `title.txt`, `short_description.txt`, `full_description.txt` and, for a language with a
+`## Play video` section, `video.txt` for supply, and
 `app-store/<locale>/` with `name.txt`, `subtitle.txt`, `keywords.txt`, `promotional_text.txt` and `description.txt`
 for deliver. `fastlane upload_listing` stages into a temporary folder and uploads it.
 
