@@ -644,6 +644,7 @@ class IncomeSplitBillViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     private val bill = Expense(

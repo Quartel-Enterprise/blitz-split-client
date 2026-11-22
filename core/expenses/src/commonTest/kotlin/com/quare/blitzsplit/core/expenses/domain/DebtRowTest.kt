@@ -122,6 +122,7 @@ class DebtRowTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: Ana owes Bruno and Bruno owes Carla the same, which simplifying turns into Ana paying Carla.

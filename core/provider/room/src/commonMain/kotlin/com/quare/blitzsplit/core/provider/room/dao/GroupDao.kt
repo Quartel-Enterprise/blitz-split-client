@@ -100,6 +100,11 @@ interface GroupDao {
                 inviteCode = it,
             )
         }
+        updateReminderUpdatedAtFromRemote(
+            id = entity.id,
+            remoteAt = entity.reminderUpdatedAt,
+            ownerUserId = requireNotNull(entity.ownerUserId),
+        )
         markGroupRowsOnServer(listOf(entity.id))
         updateSimplifyDebtsFromRemote(
             id = entity.id,
@@ -177,13 +182,17 @@ interface GroupDao {
      * Why: "Editar grupo" changes the group's own fields; who created it, its members and its invite code stay. The
      * edit is stamped after the row it changes, even when that row came from a device whose clock runs ahead, or
      * Last-Write-Wins would drop it on the next sync. A null shape keeps the stored code, so an edit that leaves the
-     * shape alone never turns a group made before shapes, or a newer app's shape, into a square.
+     * shape alone never turns a group made before shapes, or a newer app's shape, into a square. A change of the
+     * reminder's schedule or switch stamps reminderUpdatedAt, after the stored one, so its banner starts from the edit.
      */
     @Query(
         "UPDATE split_group SET name = :name, type = :type, color = :color, shape = COALESCE(:shape, shape), " +
             "photoUrl = :photoUrl, pendingPhoto = :pendingPhoto, currency = :currency, " +
             "reminderEnabled = :reminderEnabled, reminderKind = :reminderKind, reminderDay = :reminderDay, " +
             "reminderMinute = :reminderMinute, " +
+            "reminderUpdatedAt = CASE WHEN reminderEnabled != :reminderEnabled OR reminderKind != :reminderKind " +
+            "OR reminderDay != :reminderDay OR reminderMinute != :reminderMinute " +
+            "THEN MAX(:updatedAt, reminderUpdatedAt + 1) ELSE reminderUpdatedAt END, " +
             "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
     )
     suspend fun updateGroup(
@@ -200,6 +209,20 @@ interface GroupDao {
         reminderDay: Int,
         reminderMinute: Int,
         updatedAt: Long,
+    )
+
+    /*
+     * Why: the server stamps the reminder's change apart from the row's Last-Write-Wins (an older app's change, or this
+     * device's clamped to the server's clock), so its stamp comes down whichever row wins; the later one stays.
+     */
+    @Query(
+        "UPDATE split_group SET reminderUpdatedAt = :remoteAt " +
+            "WHERE id = :id AND ownerUserId = :ownerUserId AND reminderUpdatedAt < :remoteAt",
+    )
+    suspend fun updateReminderUpdatedAtFromRemote(
+        id: String,
+        remoteAt: Long,
+        ownerUserId: String,
     )
 
     // Why: "Dispensar" on the group's reminder banner: this device only, so the group isn't stamped nor pending.

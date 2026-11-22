@@ -603,6 +603,7 @@ class RoomExpenseLocalDataSourceTest {
         reminderDay = 1,
         reminderMinute = 600,
         reminderDismissedAt = 0L,
+        reminderUpdatedAt = 0L,
     )
 
     private fun member(

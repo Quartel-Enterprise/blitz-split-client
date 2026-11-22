@@ -276,6 +276,7 @@ class SaveSplitAsDefaultUseCaseTest {
             simplifyDebtsConflictBy = null,
             reminder = GroupReminder.Default,
             reminderDismissedAt = 0L,
+            reminderCountsFrom = 0L,
         )
         repository = FakeGroupRepository(listOf(group)).also {
             it.defaultSplitError = defaultSplitError

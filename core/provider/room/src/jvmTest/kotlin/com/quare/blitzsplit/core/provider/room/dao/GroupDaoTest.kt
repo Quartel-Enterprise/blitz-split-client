@@ -1299,6 +1299,134 @@ class GroupDaoTest {
             assertTrue(group.pendingSync)
         }
 
+    @Test
+    fun `GIVEN a stored reminder WHEN an edit changes its day THEN stamps the reminder with the edit`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L).copy(reminderUpdatedAt = 3L))
+
+        // When
+        editReminder(
+            reminderDay = 3,
+            updatedAt = 20L,
+        )
+
+        // Then
+        assertEquals(
+            20L,
+            dao
+                .observeGroups()
+                .first()
+                .single()
+                .reminderUpdatedAt,
+        )
+    }
+
+    @Test
+    fun `GIVEN a stored reminder WHEN an edit leaves the schedule as it is THEN keeps the reminder stamp`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L).copy(reminderUpdatedAt = 3L))
+
+        // When
+        editReminder(
+            reminderDay = 1,
+            updatedAt = 20L,
+        )
+
+        // Then
+        assertEquals(
+            3L,
+            dao
+                .observeGroups()
+                .first()
+                .single()
+                .reminderUpdatedAt,
+        )
+    }
+
+    @Test
+    fun `GIVEN a reminder stamped by a clock ahead WHEN turning it off THEN the stamp moves after it`() = runTest {
+        // Given
+        prepareScenario(stored = entity(updatedAt = 5L).copy(reminderUpdatedAt = 50L))
+
+        // When
+        editReminder(
+            reminderEnabled = false,
+            updatedAt = 20L,
+        )
+
+        // Then
+        assertEquals(
+            51L,
+            dao
+                .observeGroups()
+                .first()
+                .single()
+                .reminderUpdatedAt,
+        )
+    }
+
+    @Test
+    fun `GIVEN a local reminder stamp WHEN an older server row brings a later stamp THEN takes the later stamp`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 9L).copy(reminderUpdatedAt = 3L))
+
+            // When
+            dao.applyRemoteGroup(entity(updatedAt = 5L).copy(reminderUpdatedAt = 7L))
+
+            // Then
+            assertEquals(
+                7L,
+                dao
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .reminderUpdatedAt,
+            )
+        }
+
+    @Test
+    fun `GIVEN a later local reminder stamp WHEN a newer server row brings an earlier one THEN keeps the later`() =
+        runTest {
+            // Given
+            prepareScenario(stored = entity(updatedAt = 5L).copy(reminderUpdatedAt = 30L))
+
+            // When
+            dao.applyRemoteGroup(entity(updatedAt = 9L).copy(reminderUpdatedAt = 7L))
+
+            // Then
+            assertEquals(
+                30L,
+                dao
+                    .observeGroups()
+                    .first()
+                    .single()
+                    .reminderUpdatedAt,
+            )
+        }
+
+    private suspend fun editReminder(
+        reminderEnabled: Boolean = true,
+        reminderDay: Int = 1,
+        updatedAt: Long,
+    ) {
+        dao.updateGroup(
+            id = "group-1",
+            name = "Viagem Floripa",
+            type = "trip",
+            color = "blue",
+            shape = null,
+            photoUrl = null,
+            pendingPhoto = null,
+            currency = "BRL",
+            reminderEnabled = reminderEnabled,
+            reminderKind = "weekly",
+            reminderDay = reminderDay,
+            reminderMinute = 600,
+            updatedAt = updatedAt,
+        )
+    }
+
     private fun entity(
         id: String = "group-1",
         name: String = "Viagem Floripa",
@@ -1336,6 +1464,7 @@ class GroupDaoTest {
         reminderDay = 1,
         reminderMinute = 600,
         reminderDismissedAt = 0L,
+        reminderUpdatedAt = 0L,
     )
 
     private fun member(

@@ -453,6 +453,7 @@ class GroupMapperImplTest {
                 reminderDay = 1,
                 reminderMinute = 600,
                 reminderDismissedAt = 0L,
+                reminderUpdatedAt = createdAt,
             ),
             entity,
         )
@@ -639,6 +640,7 @@ class GroupMapperImplTest {
                 reminderKind = "weekly",
                 reminderDay = 1,
                 reminderMinute = 600,
+                reminderUpdatedAt = 0L,
             ),
             dto,
         )
@@ -717,6 +719,7 @@ class GroupMapperImplTest {
                 reminderDay = 1,
                 reminderMinute = 600,
                 reminderDismissedAt = 0L,
+                reminderUpdatedAt = 0L,
             ),
             entity,
         )
@@ -1452,6 +1455,7 @@ class GroupMapperImplTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     @Test
@@ -2513,6 +2517,7 @@ class GroupMapperImplTest {
         reminderKind = null,
         reminderDay = null,
         reminderMinute = null,
+        reminderUpdatedAt = null,
     )
 
     private fun photo(
@@ -2568,6 +2573,7 @@ class GroupMapperImplTest {
         reminderDay = 1,
         reminderMinute = 600,
         reminderDismissedAt = 0L,
+        reminderUpdatedAt = 0L,
     )
 
     private fun memberEntity(
@@ -2620,6 +2626,7 @@ class GroupMapperImplTest {
         reminderKind = null,
         reminderDay = null,
         reminderMinute = null,
+        reminderUpdatedAt = null,
     )
 
     private fun memberDto(

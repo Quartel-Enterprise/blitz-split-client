@@ -4764,6 +4764,7 @@ class GroupRepositoryImplTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     @Test
@@ -4805,7 +4806,8 @@ class GroupRepositoryImplTest {
             "default_split":{"mode":"shares","weights":[{"member_id":"m-1","weight":2}],
             "rounding":[{"category":"food","mode":"equal"}]},
             "simplify_debts":false,"simplify_debts_at":0,"simplify_debts_by":null,"simplify_debts_change":null,
-            "reminder_enabled":true,"reminder_kind":"weekly","reminder_day":1,"reminder_minute":600}
+            "reminder_enabled":true,"reminder_kind":"weekly","reminder_day":1,"reminder_minute":600,
+            "reminder_updated_at":2}
             """.trimIndent(),
         )
         prepareScenario(remoteGroups = listOf(serverRow))
@@ -7188,6 +7190,7 @@ class GroupRepositoryImplTest {
         reminderDay = 1,
         reminderMinute = 600,
         reminderDismissedAt = 0L,
+        reminderUpdatedAt = 0L,
     )
 
     private fun member(
@@ -7259,6 +7262,7 @@ class GroupRepositoryImplTest {
         reminderKind = null,
         reminderDay = null,
         reminderMinute = null,
+        reminderUpdatedAt = null,
     )
 
     private fun memberDto(

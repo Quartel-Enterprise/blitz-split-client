@@ -653,6 +653,7 @@ class InviteChangeLinkViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: a QR code that differs per text, so a case can tell which link was encoded.

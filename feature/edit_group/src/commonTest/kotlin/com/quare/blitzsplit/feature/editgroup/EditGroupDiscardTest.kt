@@ -447,6 +447,7 @@ class EditGroupDiscardTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: three people, so "Simplificar dívidas" can be turned on.

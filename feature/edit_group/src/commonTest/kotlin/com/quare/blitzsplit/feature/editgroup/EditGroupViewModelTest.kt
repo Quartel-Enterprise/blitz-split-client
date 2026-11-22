@@ -2737,6 +2737,7 @@ class EditGroupViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     private val remotePhoto = ProfilePhoto.Remote("https://example.com/group-photos/group-1/photo.jpg?v=1")

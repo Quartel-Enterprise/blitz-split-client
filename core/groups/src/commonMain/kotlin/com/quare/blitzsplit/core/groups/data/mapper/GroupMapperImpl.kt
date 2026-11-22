@@ -88,6 +88,7 @@ class GroupMapperImpl : GroupMapper {
                     minute = group.reminderMinute,
                 ),
                 reminderDismissedAt = group.reminderDismissedAt,
+                reminderCountsFrom = maxOf(group.reminderUpdatedAt, ofGroup.find { it.isMe }?.addedAt ?: 0L),
             )
         }
     }
@@ -130,6 +131,8 @@ class GroupMapperImpl : GroupMapper {
         reminderDay = group.reminder.day,
         reminderMinute = group.reminder.minute,
         reminderDismissedAt = 0L,
+        // Why: the group's reminder is set the moment it is created.
+        reminderUpdatedAt = createdAt,
     )
 
     // Why: one write can't tell the members apart by the clock, so each one's millisecond keeps the order given.
@@ -199,6 +202,7 @@ class GroupMapperImpl : GroupMapper {
         reminderKind = entity.reminderKind,
         reminderDay = entity.reminderDay,
         reminderMinute = entity.reminderMinute,
+        reminderUpdatedAt = entity.reminderUpdatedAt,
     )
 
     /*
@@ -253,6 +257,7 @@ class GroupMapperImpl : GroupMapper {
             reminderDay = reminder.day,
             reminderMinute = reminder.minute,
             reminderDismissedAt = 0L,
+            reminderUpdatedAt = dto.reminderUpdatedAt ?: 0L,
         )
     }
 

@@ -735,6 +735,7 @@ class RoomActivityLocalDataSourceTest {
         reminderDay = 1,
         reminderMinute = 600,
         reminderDismissedAt = 0L,
+        reminderUpdatedAt = 0L,
     )
 
     private fun expense(

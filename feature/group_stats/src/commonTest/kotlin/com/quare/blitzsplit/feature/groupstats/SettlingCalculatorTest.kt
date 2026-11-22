@@ -724,6 +724,7 @@ class SettlingCalculatorTest {
                 simplifyDebtsConflictBy = null,
                 reminder = GroupReminder.Default,
                 reminderDismissedAt = 0L,
+                reminderCountsFrom = 0L,
             ),
             expenses = bills,
             settlements = payments,

@@ -717,6 +717,7 @@ class GroupDetailSimplifyDebtsViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: Diego owes Bruno 40 and Bruno owes this device's user 40, which simplified is Diego owing them 40.

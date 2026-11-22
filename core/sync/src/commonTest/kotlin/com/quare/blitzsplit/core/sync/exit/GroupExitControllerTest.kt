@@ -506,6 +506,7 @@ class GroupExitControllerTest {
             simplifyDebtsConflictBy = null,
             reminder = GroupReminder.Default,
             reminderDismissedAt = 0L,
+            reminderCountsFrom = 0L,
         ),
         balances = byCurrency ?: listOf(
             CurrencyBalances(

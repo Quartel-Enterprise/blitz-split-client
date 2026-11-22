@@ -111,6 +111,7 @@ class ObserveGroupUseCaseTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
     private val home = Group(
         id = "group-2",
@@ -132,6 +133,7 @@ class ObserveGroupUseCaseTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     private fun prepareScenario(storedGroups: List<Group>) {
