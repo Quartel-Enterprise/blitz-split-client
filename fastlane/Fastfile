@@ -798,12 +798,10 @@ end
 # uploaded builds to App Store review, each with the version's "What's new" in the languages its listing has.
 # release-production.yml runs these lanes; nothing here builds.
 PLAY_TRACKS = %w[production beta alpha internal].freeze
-# The Wear OS form factor's tracks, by the phone's track they mirror: the API names a form factor's track
-# "<prefix>:<default name>", and internal testing's is "internal", as the Play API lists it.
-# Closed testing has no default: the watch's is the closed track named alpha, as the phone's.
-PLAY_FORM_FACTOR_TRACKS = {
-  "wear" => { "production" => "wear:production", "beta" => "wear:beta", "alpha" => "wear:alpha", "internal" => "wear:internal" },
-}.freeze
+# The form factors with tracks of their own: the API names each "<form factor>:<track>", after the phone's track it
+# mirrors (wear:production, wear:beta, wear:internal, as the Play API lists them). Closed testing has no default: the
+# watch's is the closed track named alpha, as the phone's.
+PLAY_FORM_FACTORS = %w[wear].freeze
 # How long App Store Connect may take to process an upload before the build can be selected:
 BUILD_PROCESSING_TIMEOUT_SECONDS = 45 * 60
 # The states of a version that was submitted already, from waiting for its review to being on the store:
@@ -828,8 +826,8 @@ lane :play_upload do |options|
   play_track = track
   form_factor = options[:form_factor].to_s
   unless form_factor.empty?
-    tracks = PLAY_FORM_FACTOR_TRACKS.fetch(form_factor) { UI.user_error!("form_factor is one of #{PLAY_FORM_FACTOR_TRACKS.keys.join(', ')}") }
-    play_track = tracks.fetch(track)
+    UI.user_error!("form_factor is one of #{PLAY_FORM_FACTORS.join(', ')}") unless PLAY_FORM_FACTORS.include?(form_factor)
+    play_track = "#{form_factor}:#{track}"
   end
   percentage = options.fetch(:rollout, 100).to_s
   UI.user_error!("rollout is a percentage of the users, from 1 to 100") unless percentage.match?(/\A\d+\z/) && (1..100).cover?(percentage.to_i)
