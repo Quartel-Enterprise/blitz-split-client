@@ -73,6 +73,19 @@ private struct WatchGroupScreen: View {
             }
         }
         .navigationTitle(Text(verbatim: state.groupName ?? ""))
+        .onChange(of: state.isLoaded, initial: true) { _, _ in
+            // The store capture's walk (WatchStoreScreenshots): "I paid", then ✓, as a person would tap them
+            guard state.isLoaded, let debt = state.singleDebtToPay else { return }
+            WatchStoreScreenshots.walk("ipaid", for: ["confirm", "recorded"]) {
+                model.send(WatchGroupUiEventOnIPaidClicked(memberId: debt.memberId))
+            }
+        }
+        .onChange(of: state.confirming != nil, initial: true) { _, isConfirming in
+            guard isConfirming else { return }
+            WatchStoreScreenshots.walk("confirmed", for: ["recorded"]) {
+                model.send(WatchGroupUiEventOnPaymentConfirmed.shared)
+            }
+        }
         .toolbar {
             if state.showsIPaid, let debt = state.singleDebtToPay {
                 ToolbarItem(placement: .bottomBar) {
@@ -258,7 +271,10 @@ private struct WatchPaymentRecordedView: View {
         .background(.black)
         .toolbar(.hidden, for: .navigationBar)
         .task {
-            WKInterfaceDevice.current().play(.success)
+            // Silent in a store capture: a simulator plays the haptic's sound through the Mac's speakers
+            if !WatchStoreScreenshots.isRun { WKInterfaceDevice.current().play(.success) }
+            // The store capture of this screen keeps it up: it photographs it once nothing moves
+            if WatchStoreScreenshots.targetScreen == "recorded" { return }
             try? await Task.sleep(for: .seconds(1.5))
             done()
         }

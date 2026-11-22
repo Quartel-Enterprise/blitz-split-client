@@ -1,7 +1,7 @@
 name: 'Draw the Google Play screenshots'
 description: >-
   Draws the Google Play listing's art of every language (Robolectric draws the real Compose screens from the sample
-  trip, and Chrome lays them out in the listing art's design, docs/store-listing-screenshots.md), stages it where
+  trip, and the Wear OS watch's screens bare, and Chrome lays them out in the listing art's design, docs/store-listing-screenshots.md), stages it where
   supply uploads from and hands it to the jobs after it as the artifact `play-store-screenshots`. For
   release-production.yml, next to its build, and play-store-screenshots.yml, which sends it alone. The calling job
   checks out the repository first and runs on the Mac runner: the art's fonts are the Mac's, and its Chrome the one
@@ -45,6 +45,11 @@ runs:
       run: |
         ./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt --rerun -q
         ./gradlew :android:store_screenshots:testDebugUnitTest -PcreativeAssets --rerun -q
+
+    # The Wear OS watch's screens (four of each language, Robolectric), which stage-play.mjs stages as wearScreenshots
+    - name: Draw the watch screens
+      shell: bash
+      run: ./scripts/store-screenshots/watch/draw-wear.sh
 
     - name: Make the screenshots
       shell: bash

@@ -48,8 +48,9 @@ Store's as they are: [Sending Google Play's alone](#sending-google-plays-alone).
 The lane runs, each step under `scripts/heavy-check.sh`:
 
 1. **Google Play:** `./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt` draws the bare screens and
-   `-PcreativeAssets` what the tickets write; `compose.mjs` lays them out and `listing-art/stage-play.mjs` copies the
-   result to `fastlane/metadata/android/<locale>/images/` where supply uploads from. Latin America's Spanish goes out
+   `-PcreativeAssets` what the tickets write; `compose.mjs` lays them out, `watch/draw-wear.sh` draws the Wear OS
+   watch's ([The watches' screenshots](#the-watches-screenshots)) and `listing-art/stage-play.mjs` copies the result to
+   `fastlane/metadata/android/<locale>/images/` where supply uploads from. Latin America's Spanish goes out
    to each regional code (`es-419` and `es-US`), and Spain's to `es-ES`, as the listing text does
    ([store-listing.md](store-listing.md)).
 2. **App Store:** `scripts/store-screenshots/listing-art/capture.sh` runs `capture-ios.sh`, which builds the
@@ -71,6 +72,7 @@ Without fastlane, the steps alone:
 ./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt --rerun       # Play's bare screens
 ./gradlew :android:store_screenshots:testDebugUnitTest -PcreativeAssets --rerun
 ART_DEVICES=play_phone,play_tablet_7,play_tablet_10 node scripts/store-screenshots/listing-art/compose.mjs
+./scripts/store-screenshots/watch/draw-wear.sh                                 # the Wear OS watch's, which stage-play needs
 node scripts/store-screenshots/listing-art/stage-play.mjs                      # fastlane/metadata/android/
 ./scripts/store-screenshots/listing-art/capture.sh && ./scripts/store-screenshots/listing-art/frame-app-store.sh   # App Store, needs a Mac
 ```
@@ -383,6 +385,56 @@ whole, one locale changed, the save refused for the quota and for another reason
 runs on a Mac, not on the runner), and the script's tests cover the rest.
 Whether an edit that is opened to read and then deleted counts as a save is assumed, from the error's name, not
 measured. Should Google Play refuse to open that edit for the quota, the group waits the same way, with a warning.
+
+## The watches' screenshots
+
+The two watch apps' screens at the size each store takes, in all 34 languages, written to
+`store_listings/watch/<store>/<locale>/` to look at (`store_listings/` is git-ignored: none of the images is versioned).
+
+- **Wear OS goes to Google Play with the rest**: `watch/draw-wear.sh` draws it into `build/outputs/store-screenshots-wear/`
+  and `stage-play.mjs` stages it as `wearScreenshots` beside the phone's and tablets' (supply's own image type), so
+  `fastlane screenshots`, the Play screenshots' action, a release and `play-store-screenshots` all send it, in the same Play edits.
+- **The Apple Watch is not staged or uploaded yet.** Its images are for looking at and for putting up by hand: deliver
+  replaces every screenshot of a locale with what it is handed, so a watch shelf has to travel in the same set as the
+  iPhone's and iPad's, which `local-set.mjs`, the shelves' tidy-up and the release's jobs don't know about yet.
+
+```bash
+./scripts/store-screenshots/watch/generate.sh                          # both stores, every language
+WATCH_STORES=apple ./scripts/store-screenshots/watch/generate.sh        # or wear
+ART_LOCALES=en-US,ja ./scripts/store-screenshots/watch/generate.sh     # a few languages
+```
+
+Four screens per watch, bare: the app's own screen and nothing around it (no frame, no phrase, no background). Google
+Play requires that of Wear OS; Apple's pages say nothing against a frame, but the listings looked at (Strava, Things 3)
+show the watch screen bare too, with the art on the iPhone's screenshots alone.
+
+| # | Screen | Shows |
+| --- | --- | --- |
+| 1 | `01_balances` | Overall balance per currency and the groups |
+| 2 | `02_group` | Friday soccer: "you owe Liam" and "I paid" |
+| 3 | `03_confirm` | "Paid $20 to Liam?" |
+| 4 | `04_recorded` | "Payment recorded" |
+
+| Store | Size | Count the store takes | How it is made |
+| --- | --- | --- | --- |
+| App Store (Apple Watch) | 422x514, the Ultra 3's. One size for every language | 1 to 10 per size | The debug watch app on an "Apple Watch Ultra 3" simulator, seeded with the sample trip and the image bank's photos, walks to each screen by tapping as a person would (`-StoreScreenshotsScreen`, `WatchStoreScreenshots` in `BoraRacharWatchApp.swift`), and `simctl io` photographs it (`scripts/readme-hero/capture-watch.sh`). About half a minute a screen, so every language takes an hour or more |
+| Google Play (Wear OS) | Square, 384 px at least: 456x456 here, a Pixel Watch 3 45mm | 1 to 8 | `WearStoreScreenshots` in `:wearApp` (`-PstoreWatch`, by `watch/draw-wear.sh`) draws the app's own composables under Robolectric, from the language's sample trip and strings, in one run |
+
+- **The dialogs** of the Wear OS watch ("Paid $20 to Liam?", "Payment recorded") are drawn as the content of the dialog
+  (`AlertDialogContent`, `SuccessConfirmationDialogContent`): Robolectric can't capture a dialog's own window.
+- **The Apple Watch shows the time the capture was made**, since a watchOS simulator's status bar can't be overridden.
+- **The two watches' numbers differ a little outside English.** The Apple Watch's are the seed's own, worked out by
+  the app. The Wear OS ones are the English trip's amounts scaled to the language's currency by the ratio of the soccer
+  court's price, since the seed's conversion is private to `:shared`: Balances' totals can differ by a few units
+  (¥19,228 on the Apple Watch, ¥19,212 on Wear OS). The names, the groups and the soccer's debt are the same.
+- **Wear OS draws the group scrolled to its end** (a swipe up before the shot): a language with taller lines (Japanese,
+  Arabic) leaves a list that doesn't fit, and Wear folds the "I paid" button away until it is scrolled to.
+- **A new language** is drawn from its row of `locales.tsv`. Only when its Android resource qualifiers aren't its tag's
+  language code (`pt-rBR`, `in`, `iw`, `b+zh+Hans`) does it need an entry in `androidQualifiers` of
+  `WearStoreScreenshots`; without one the strings come out in the default language (the `add-language` skill lists it).
+- **The Wear OS states are written by hand** from the sample trip (`SampleTrips`): a change to its amounts or people
+  needs `WearStoreScreenshots` looked at again, as `ReadmeHeroWatch` does.
+- **Google Play** also recommends a screenshot of the Tile, which these leave out.
 
 ## The App Store's creative assets
 

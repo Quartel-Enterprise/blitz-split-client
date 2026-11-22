@@ -65,6 +65,18 @@ private struct WatchBalancesScreen: View {
             }
         }
         .navigationTitle("Balances")
+        // The rows count too: the groups can come after the balances are loaded, and the walk must see them
+        .onChange(of: state.isLoaded ? state.groups.count : 0, initial: true) { _, _ in
+            // The store capture's walk (WatchStoreScreenshots): to the group you owe in alone, in one currency (the
+            // soccer's: the trip is on the list twice), as a tap on its row
+            let rows = state.groups
+            guard state.isLoaded,
+                  let group = rows.first(where: { row in row.netMinor < 0 && rows.filter { $0.groupId == row.groupId }.count == 1 })
+            else { return }
+            WatchStoreScreenshots.walk("group", for: ["group", "confirm", "recorded"]) {
+                model.send(WatchBalancesUiEventOnGroupClicked(groupId: group.groupId, currency: group.currency))
+            }
+        }
         .sheet(isPresented: signOutBinding) {
             WatchSignOutQuestion(
                 confirm: { model.send(WatchBalancesUiEventOnSignOutConfirmed.shared) },

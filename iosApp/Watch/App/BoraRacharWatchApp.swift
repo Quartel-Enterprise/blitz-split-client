@@ -14,7 +14,7 @@ struct BoraRacharWatchApp: App {
         #if DEBUG
         // The README's image (scripts/readme-hero): the sample trip instead of an account, as the iPhone's captures
         if let language = WatchStoreScreenshots.language {
-            BlitzSplitWatch.shared.startForStoreScreenshots(language: language)
+            BlitzSplitWatch.shared.startForStoreScreenshots(language: language, assetsDirectory: WatchStoreScreenshots.assetsDirectory)
         } else {
             BlitzSplitWatch.shared.start()
         }
@@ -41,14 +41,42 @@ struct BoraRacharWatchApp: App {
     }
 }
 
-#if DEBUG
 /// The README's capture (scripts/readme-hero/capture-watch.sh) launches the debug build with `-StoreScreenshotsLanguage`.
+/// The type exists in every build, since the screens ask it whether a capture is running; what reads the launch
+/// arguments is debug only.
 enum WatchStoreScreenshots {
+    #if DEBUG
     static var language: String? { UserDefaults.standard.string(forKey: "StoreScreenshotsLanguage") }
+    /// The store listing's screens (scripts/store-screenshots/watch): `-StoreScreenshotsScreen` names the one the run
+    /// walks to from Balances, by acting as a person would: balances, group, confirm or recorded.
+    static var screen: String? { UserDefaults.standard.string(forKey: "StoreScreenshotsScreen") }
+    /// The folder of the image bank's photos (faces/, groups/) the store capture hands over, a path of this Mac, which
+    /// the simulator's app reads as any other.
+    static var assetsDirectory: String? { UserDefaults.standard.string(forKey: "StoreScreenshotsAssets") }
+    /// Each step of the walk happens once: the screens come back (Balances after the payment) and must not repeat it.
+    @MainActor static var opened: Set<String> = []
+    #endif
 }
-#endif
 
 extension WatchStoreScreenshots {
+    /// The screen the store capture walks to; nil outside it.
+    static var targetScreen: String? {
+        #if DEBUG
+        screen
+        #else
+        nil
+        #endif
+    }
+
+    /// Runs `step` once per run, when a store capture is walking to one of `screens`.
+    @MainActor static func walk(_ step: String, for screens: Set<String>, _ action: () -> Void) {
+        #if DEBUG
+        guard let screen = targetScreen, screens.contains(screen), !opened.contains(step) else { return }
+        opened.insert(step)
+        action()
+        #endif
+    }
+
     /// A seeded capture run stays on its own: no iPhone link, push or background refresh may change what it shows.
     static var isRun: Bool {
         #if DEBUG
