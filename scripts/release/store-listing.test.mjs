@@ -54,6 +54,32 @@ test("a listing has every section, in order", () => {
   assert.throws(() => parseListing("f.md", "# English\n", "en"), ListingError);
 });
 
+test("the Play video is optional, and a YouTube watch address when there", () => {
+  const video = "https://www.youtube.com/watch?v=KFw2MIloaSw";
+  assert.equal(parse({ playVideo: video }).playVideo, video);
+  assert.equal(parse().playVideo, undefined);
+  refuses({ playVideo: "https://youtu.be/KFw2MIloaSw" }, /Play video is a YouTube watch address/);
+  refuses({ playVideo: "https://www.youtube.com/shorts/KFw2MIloaSw" }, /Play video is a YouTube watch address/);
+});
+
+test("the Play video stays in its place among the sections", () => {
+  const video = "## Play video\n\nhttps://www.youtube.com/watch?v=KFw2MIloaSw\n";
+  const misplaced = fileWith().replace("## Play title", `${video}\n## Play title`);
+  assert.throws(
+    () => parseListing("store-listing/en.md", misplaced, "en"),
+    (error) => error instanceof ListingError && /Play video \(optional\)/.test(error.message),
+  );
+});
+
+test("staging writes a language's Play video under each of its Play locales, and none for a language without one", () => {
+  const video = "https://www.youtube.com/watch?v=r4r01HHdK4U";
+  const staged = stagedFiles({ es: { ...FIELD_TEXT, playVideo: video }, en: FIELD_TEXT });
+  assert.equal(staged["play/es-419/video.txt"], video);
+  assert.equal(staged["play/es-US/video.txt"], video);
+  assert.equal(staged["play/en-US/video.txt"], undefined);
+  assert.equal(staged["app-store/es-MX/video.txt"], undefined);
+});
+
 test("an empty field is refused", () => {
   refuses({ playShortDescription: "   " }, /Play short description is empty/);
 });

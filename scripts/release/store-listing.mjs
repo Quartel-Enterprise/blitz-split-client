@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// The stores' listing text: the app's name, subtitle, keywords and description on Google Play and the App Store, one
-// file per language in store-listing/. docs/store-listing.md says what a file takes and how it reaches the stores.
+// The stores' listing text: the app's name, subtitle, keywords and description on Google Play and the App Store, and
+// the Play preview video's address, one file per language in store-listing/. docs/store-listing.md says what a file takes and how it reaches the stores.
 //
 //   node scripts/release/store-listing.mjs check
 //       Fails on a listing a store would refuse or cut: a language missing, a field over its limit (CI, and before
@@ -31,11 +31,14 @@ export const LISTING_LANGS = LANGS.flatMap((lang) => (lang === "es" ? ["es", "es
 
 /**
  * A listing's fields, in the order its file has them: the heading that starts each one, the most characters its
- * store takes, and whether it is one line. The description is one text for both stores.
+ * store takes, and whether it is one line. The description is one text for both stores. An optional field may be
+ * left out: the Play video is the language's store preview video on YouTube (docs/store-video.md), and a language
+ * without one keeps whatever video its Play listing has.
  */
 export const FIELDS = [
   { key: "playTitle", heading: "Play title", limit: 30, isLine: true },
   { key: "playShortDescription", heading: "Play short description", limit: 80, isLine: true },
+  { key: "playVideo", heading: "Play video", limit: 100, isLine: true, isOptional: true },
   { key: "appStoreName", heading: "App Store name", limit: 30, isLine: true },
   { key: "appStoreSubtitle", heading: "App Store subtitle", limit: 30, isLine: true },
   { key: "appStoreKeywords", heading: "App Store keywords", limit: 100, isLine: true },
@@ -124,7 +127,14 @@ const HEADING = /^## (.+)$/;
 /** A word of a script written without spaces: kanji, hiragana, katakana or Thai. */
 const UNSPACED = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}]/u;
 /** What each file fastlane reads is called, by field. */
-const PLAY_FILES = { playTitle: "title.txt", playShortDescription: "short_description.txt", description: "full_description.txt" };
+const PLAY_FILES = {
+  playTitle: "title.txt",
+  playShortDescription: "short_description.txt",
+  playVideo: "video.txt",
+  description: "full_description.txt",
+};
+/** The address Play takes for a preview video: a YouTube video's watch page. */
+const YOUTUBE_WATCH = /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}$/;
 const APP_STORE_FILES = {
   appStoreName: "name.txt",
   appStoreSubtitle: "subtitle.txt",
@@ -176,12 +186,14 @@ export function parseListing(file, source, lang) {
     else if (sections.length > 0) sections.at(-1).lines.push(line);
   }
   const headings = sections.map((section) => section.heading);
-  const expected = FIELDS.map((field) => field.heading);
+  const fields = FIELDS.filter((field) => !field.isOptional || headings.includes(field.heading));
+  const expected = fields.map((field) => field.heading);
   if (headings.join("\n") !== expected.join("\n")) {
-    fail(file, `takes the sections ${expected.join(", ")}, in that order, and has ${headings.join(", ") || "none"}`);
+    const all = FIELDS.map((field) => (field.isOptional ? `${field.heading} (optional)` : field.heading));
+    fail(file, `takes the sections ${all.join(", ")}, in that order, and has ${headings.join(", ") || "none"}`);
   }
   const listing = {};
-  FIELDS.forEach((field, index) => {
+  fields.forEach((field, index) => {
     const text = sections[index].lines.join("\n").trim();
     if (text === "") fail(file, `${field.heading} is empty`);
     if (field.isLine && text.includes("\n")) fail(file, `${field.heading} is one line`);
@@ -189,6 +201,9 @@ export function parseListing(file, source, lang) {
     if (length > field.limit) fail(file, `${field.heading} has ${length} characters, and its store takes ${field.limit}`);
     listing[field.key] = text;
   });
+  if (listing.playVideo !== undefined && !YOUTUBE_WATCH.test(listing.playVideo)) {
+    fail(file, `Play video is a YouTube watch address, https://www.youtube.com/watch?v=<id>, not ${listing.playVideo}`);
+  }
   checkBrand(file, listing, lang);
   checkKeywords(file, listing);
   return listing;
@@ -247,7 +262,9 @@ export function stagedFiles(listings, year) {
   const stageStore = (store, locales, files, same = {}) => {
     for (const [lang, listing] of Object.entries(listings)) {
       for (const locale of locales[lang]) {
-        for (const [key, name] of Object.entries(files)) staged[join(store, locale, name)] = listing[key];
+        for (const [key, name] of Object.entries(files)) {
+          if (listing[key] !== undefined) staged[join(store, locale, name)] = listing[key];
+        }
         for (const [name, text] of Object.entries(same)) staged[join(store, locale, name)] = text;
       }
     }

@@ -84,5 +84,7 @@ Mac (a busy emulator stalls the app and the scrolls stutter). Afterwards, before
 
 ## 5. Publish
 
-Uploading is Pierre's: YouTube, unlisted, monetization off, then the URL in Play Console's listing of that language
-(docs/store-video.md). Never upload or paste it for him unless he asks in this conversation.
+Uploading is Pierre's: YouTube, monetization off, a vertical thumbnail (Pierre drags the video into YouTube Studio
+himself, so nothing is recompressed). Then, only when he asks in this conversation: the watch address in the
+`## Play video` section of the language's `store-listing/<language>.md` (the store listing workflow sends it), the
+JSON's `listing` language set, and `fastlane upload_feature_graphics` for the feature graphic (docs/store-video.md).

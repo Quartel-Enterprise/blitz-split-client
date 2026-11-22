@@ -60,13 +60,15 @@ this order:
 | --- | --- | --- | --- |
 | `## Play title` | Google Play | 30 | The app's name on Play. Starts with the app's name |
 | `## Play short description` | Google Play | 80 | The line under the name, and the first thing searched |
+| `## Play video` | Google Play | | Optional: the language's store preview video, a `https://www.youtube.com/watch?v=<id>` address ([store-video.md](store-video.md)). Staged as `video.txt` for every Play locale of the language; a language without it keeps the video its listing has |
 | `## App Store name` | App Store | 30 | The app's name. Starts with the app's name |
 | `## App Store subtitle` | App Store | 30 | The line under the name |
 | `## App Store keywords` | App Store | 100 | Search terms split by commas, never shown |
 | `## App Store promotional text` | App Store | 170 | The lines over the description, which change without a new version |
 | `## Description` | Both | 4000 | Play's full description and the App Store's description, the same text |
 
-The limits are in characters, as the stores count them. Every field but the description is one line.
+The limits are in characters, as the stores count them. Every field but the description is one line, and every
+section but `## Play video` is required.
 
 ## Writing one
 

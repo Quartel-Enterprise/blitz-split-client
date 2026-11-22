@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# The YouTube thumbnails of one locale's store video (docs/store-video.md), from its recording's stills:
+# The YouTube thumbnails and the Play feature graphic of one locale's store video (docs/store-video.md), from its
+# recording's stills:
 #
 #   scripts/store-video/thumbnail.sh <locale>
 #
 # writes build/store-video/<locale>/thumb-<locale>-16x9.{png,jpg} (1280x720) and -9x16 (1080x1920, the one YouTube
-# shows for a vertical video). The words and stills are the locale JSON's `thumbnail`; the name, and the chips unless
-# `thumbnail.chips` gives others, are its end card's.
+# shows for a vertical video), and feature-<locale>.{png,jpg} (1024x500, Play's feature graphic, which
+# `fastlane upload_feature_graphics` uploads as the JPEG: Play refuses a PNG with an alpha channel). The words and
+# stills are the locale JSON's `thumbnail`; the name, and the chips unless `thumbnail.chips` gives others, are its
+# end card's.
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -34,8 +37,8 @@ node -e '
 cp "$ROOT/iosApp/Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png" "$PUBLIC/icon.png"
 cd "$HERE/remotion"
 [[ -d node_modules ]] || npm ci --no-audit --no-fund
-for size in Thumbnail:16x9 ThumbnailVertical:9x16; do
-  png="$OUT/thumb-$LOCALE-${size#*:}.png"
+for size in Thumbnail:thumb-$LOCALE-16x9 ThumbnailVertical:thumb-$LOCALE-9x16 FeatureGraphic:feature-$LOCALE; do
+  png="$OUT/${size#*:}.png"
   npx remotion still src/thumbnail-index.ts "${size%%:*}" "$png" --props="$OUT/thumbnail-props.json" \
     --public-dir="$PUBLIC" --log=error
   ffmpeg -y -v error -i "$png" -q:v 2 "${png%.png}.jpg"
