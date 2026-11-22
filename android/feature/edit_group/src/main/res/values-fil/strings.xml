@@ -30,8 +30,8 @@
     <string name="default_split_offline_note">Walang internet: naka-save na ang bagong hati sa device na ito at makakarating sa iba kapag nakakonekta ka na ulit.</string>
     <string name="default_split_save_error">Hindi na-save ang hati. Subukan ulit.</string>
     <plurals name="default_split_joined">
-        <item quantity="one">Sumali sa grupo si %s</item>
-        <item quantity="other">Sumali sa grupo sina %s</item>
+        <item quantity="one">Sumali sa grupo: %s</item>
+        <item quantity="other">Sumali sa grupo: %s</item>
     </plurals>
     <string name="default_split_start_equal_one">Kasama na siya sa hati</string>
     <string name="default_split_start_equal_other">Kasama na sila sa hati</string>
@@ -148,7 +148,7 @@
     <string name="simplify_queued_you_paid">nagbayad ka kay %1$s ng %2$s</string>
     <string name="simplify_queued_paid">Nagbayad si %1$s kay %3$s ng %2$s</string>
     <plurals name="simplify_queued_several">
-        <item quantity="one">May %d kang bayad na naghihintay. Binibilang ito ng pagpapasimple; kapag nagbago ito, kusang mag-a-adjust ang mga iminumungkahing bayad.</item>
+        <item quantity="one">May %d kang bayad na naghihintay. Binibilang ang mga ito ng pagpapasimple; kapag nagbago ang mga ito, kusang mag-a-adjust ang mga iminumungkahing bayad.</item>
         <item quantity="other">May %d kang bayad na naghihintay. Binibilang ang mga ito ng pagpapasimple; kapag nagbago ang mga ito, kusang mag-a-adjust ang mga iminumungkahing bayad.</item>
     </plurals>
     <string name="simplify_confirm_foot_on">Makikita ito ng lahat sa Aktibidad. Ang sinumang magbabayad o tatanggap na ngayon mula sa iba ay makakatanggap ng notipikasyon. Puwede mo itong i-off anumang oras.</string>

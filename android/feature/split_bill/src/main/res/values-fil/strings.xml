@@ -37,8 +37,8 @@
     </plurals>
     <string name="split_bill_each">%s bawat isa</string>
     <plurals name="split_bill_excluded">
-        <item quantity="one">Hindi kasama si %s</item>
-        <item quantity="other">Hindi kasama sina %s</item>
+        <item quantity="one">Hindi kasama: %s</item>
+        <item quantity="other">Hindi kasama: %s</item>
     </plurals>
     <string name="split_bill_excluded_me">Hindi ka kasama</string>
     <string name="split_bill_sentence">%s.</string>
@@ -68,8 +68,8 @@
     <string name="split_bill_status_amount_closed">Tugma ang kabuuan: %s</string>
     <string name="split_bill_status_amount_progress">%1$s sa %2$s sa ngayon.</string>
     <plurals name="split_bill_status_without_value">
-        <item quantity="one">Walang halaga si %s.</item>
-        <item quantity="other">Walang halaga sina %s.</item>
+        <item quantity="one">Walang halaga: %s.</item>
+        <item quantity="other">Walang halaga: %s.</item>
     </plurals>
     <string name="split_bill_status_without_value_me">Wala kang halaga.</string>
     <string name="split_bill_status_amount_closed_message">Tugma sa kabuuan ang mga bahagi.</string>
@@ -230,8 +230,8 @@
         <item quantity="other">%d na piraso ang natitira</item>
     </plurals>
     <plurals name="split_bill_item_units_left_sub">
-        <item quantity="one">%1$d sa %2$d ang naka-check. Sabihin kung sino ang kumuha ng isa pa.</item>
-        <item quantity="other">%1$d sa %2$d ang naka-check. Sabihin kung sino ang kumuha ng iba pa.</item>
+        <item quantity="one">%1$d sa %2$d ang naka-check. Sabihin kung sino ang kumuha ng natitira.</item>
+        <item quantity="other">%1$d sa %2$d ang naka-check. Sabihin kung sino ang kumuha ng natitira.</item>
     </plurals>
     <plurals name="split_bill_item_units_over">
         <item quantity="one">%d piraso ang sobra</item>

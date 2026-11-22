@@ -12,7 +12,7 @@
     <string name="members_personal_invite">Personal na imbitasyon para kay %s</string>
     <string name="members_personal_message">Sinumang magbukas ng link na ito ay direktang sasali bilang %s, nang hindi pumipili sa listahan. Isang beses lang ito gagana.</string>
     <plurals name="members_personal_message_bills">
-        <item quantity="one">Sinumang magbukas ng link na ito ay direktang sasali bilang %1$s, nang hindi pumipili sa listahan, at makikita na agad ang bahagi niyang %2$s sa bill na naidagdag na. Isang beses lang ito gagana.</item>
+        <item quantity="one">Sinumang magbukas ng link na ito ay direktang sasali bilang %1$s, nang hindi pumipili sa listahan, at makikita na agad ang bahagi niyang %2$s sa %3$d na bill na naidagdag na. Isang beses lang ito gagana.</item>
         <item quantity="other">Sinumang magbukas ng link na ito ay direktang sasali bilang %1$s, nang hindi pumipili sa listahan, at makikita na agad ang bahagi niyang %2$s sa %3$d na bill na naidagdag na. Isang beses lang ito gagana.</item>
     </plurals>
     <string name="members_personal_copy">Kopyahin ang link</string>

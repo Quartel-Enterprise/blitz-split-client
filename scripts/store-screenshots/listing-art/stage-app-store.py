@@ -63,6 +63,9 @@ def main():
         tag = tags[language]
         if only and tag not in only:
             continue
+        # Why: a language with no App Store listing locale (Filipino) has nothing to stage, art or not.
+        if not store_locales:
+            continue
         for store_locale in store_locales:
             for folder in staged_folders:
                 if only:

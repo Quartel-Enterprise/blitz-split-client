@@ -71,7 +71,7 @@
     <string name="designsystem_group_exit_leave_blocked_message">May bukas ka pang balanse sa “%s”. Kapag umalis ka ngayon, mananatili itong hindi bayad para sa iba.</string>
     <string name="designsystem_group_exit_leave_title">Umalis sa “%s”?</string>
     <plurals name="designsystem_group_exit_leave_message">
-        <item quantity="one">Bayad na ang balanse mo. Aalis ang grupo sa device na ito at mananatili ang pangalan mo sa mga gastos para sa isa pang miyembro. Para bumalik, kailangan kang imbitahan ulit ng isang miyembro.</item>
+        <item quantity="one">Bayad na ang balanse mo. Aalis ang grupo sa device na ito at mananatili ang pangalan mo sa mga gastos para sa iba pang %d miyembro. Para bumalik, kailangan kang imbitahan ulit ng isang miyembro.</item>
         <item quantity="other">Bayad na ang balanse mo. Aalis ang grupo sa device na ito at mananatili ang pangalan mo sa mga gastos para sa iba pang %d miyembro. Para bumalik, kailangan kang imbitahan ulit ng isang miyembro.</item>
     </plurals>
     <string name="designsystem_group_exit_leave_message_alone">Bayad na ang balanse mo. Wala pang ibang sumali sa grupo, kaya buburahin ito nang tuluyan.</string>

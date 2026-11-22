@@ -252,7 +252,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Czech says "Ty jsi
  * smazal(a)…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
- * ("od Ane"). Filipino says "Ikaw ay nagtanggal…", its verb not changing with the person, rather than a "by you" that
+ * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user.
  */
 @Composable

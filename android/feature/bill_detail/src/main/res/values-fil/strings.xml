@@ -139,16 +139,16 @@
     <string name="bill_detail_photo_file_name">blitz-split-photo-%d.jpg</string>
     <string name="bill_detail_receipt_file_name">blitz-split-receipt.jpg</string>
     <plurals name="bill_detail_history_photos_added">
-        <item quantity="one">ay naglakip ng larawan</item>
+        <item quantity="one">ay naglakip ng %d na larawan</item>
         <item quantity="other">ay naglakip ng %d na larawan</item>
     </plurals>
     <plurals name="bill_detail_owe_you_each">
-        <item quantity="one">May utang si %1$s sa iyo na %2$s.</item>
-        <item quantity="other">May utang sina %1$s sa iyo na tig-%2$s.</item>
+        <item quantity="one">May utang sa iyo na %2$s ang bawat isa: %1$s.</item>
+        <item quantity="other">May utang sa iyo na %2$s ang bawat isa: %1$s.</item>
     </plurals>
     <plurals name="bill_detail_owe_you_total">
-        <item quantity="one">May utang si %1$s sa iyo na %2$s.</item>
-        <item quantity="other">May utang sina %1$s sa iyo na %2$s sa kabuuan.</item>
+        <item quantity="one">May utang sa iyo na %2$s sa kabuuan: %1$s.</item>
+        <item quantity="other">May utang sa iyo na %2$s sa kabuuan: %1$s.</item>
     </plurals>
     <plurals name="bill_detail_mode_equal">
         <item quantity="one">Pantay na hati sa %d</item>
@@ -185,8 +185,8 @@
     <string name="share_bill_who_can_open">Sino ang puwedeng magbukas</string>
     <string name="share_bill_members">Mga kasama lang sa bill</string>
     <plurals name="share_bill_members_named">
-        <item quantity="one">Bubuksan ito ni %s gamit ang sarili niyang account para makita at makapag-comment.</item>
-        <item quantity="other">Bubuksan ito nina %s gamit ang sarili nilang account para makita at makapag-comment.</item>
+        <item quantity="one">Bubuksan ito gamit ang sarili nilang account para makita at makapag-comment: %s.</item>
+        <item quantity="other">Bubuksan ito gamit ang sarili nilang account para makita at makapag-comment: %s.</item>
     </plurals>
     <string name="share_bill_members_anyone_in_group">Sinumang kasama sa grupo ay bubuksan ito gamit ang sarili niyang account para makita at makapag-comment.</string>
     <string name="share_bill_anyone">Sinumang may link</string>

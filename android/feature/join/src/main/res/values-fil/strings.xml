@@ -10,8 +10,8 @@
     </plurals>
     <string name="join_summary_creator">%1$s · ginawa ni %2$s</string>
     <plurals name="join_already_in">
-        <item quantity="one">Nasa grupo na si %s</item>
-        <item quantity="other">Nasa grupo na sina %s</item>
+        <item quantity="one">Nasa grupo na: %s</item>
+        <item quantity="other">Nasa grupo na: %s</item>
     </plurals>
     <string name="join_names_last_separator">" at "</string>
     <string name="join_hint">Hindi kailangan ng account. Sa susunod na screen, pipiliin mo kung sino ka.</string>

@@ -177,8 +177,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     ([activity-and-push.md](activity-and-push.md)). Filipino (Pierre's calls) is one variant for every `fil` tag
     (the legacy Tagalog `tl` reads as it), the informal Tagalog-based Filipino friends speak, with no "po" or "opo", and
     its everyday English loanwords kept (bill, grupo, balanse, account, QR code, link); it calls the app Blitz Split. It
-    reads left to right, writes numbers, amounts and dates with 0-9, and its plurals have one and other, "mga" standing
-    before the noun in other. Its verbs don't change with the person, so its activity sentences need no rule for the
+    reads left to right, writes numbers, amounts and dates with 0-9, and its plurals have only one and other, but CLDR's
+    `one` covers every count whose last digit isn't 4, 6 or 9 (1, 2, 3, 5, 7, 8, 10…), not just 1: so every `one` form
+    must read correctly for several items (the count with the linker "na", or no count at all, never "isa" or the
+    singular "si" before a list of names, which take a colon: "Nasa grupo na: Ana, Bruno"). Its verbs don't change with the person, so its activity sentences need no rule for the
     user ([activity-and-push.md](activity-and-push.md)). The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
