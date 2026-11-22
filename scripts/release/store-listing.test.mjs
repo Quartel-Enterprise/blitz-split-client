@@ -4,7 +4,7 @@
 // file over a store's limit fails here as it does in the check.
 
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { test } from "node:test";
 import { LANGS } from "./release-notes.mjs";
 import {
@@ -52,6 +52,32 @@ test("a listing's fields come back trimmed, the description with its paragraphs"
 test("a listing has every section, in order", () => {
   refuses({ appStoreSubtitle: undefined }, /takes the sections Play title, .* in that order/);
   assert.throws(() => parseListing("f.md", "# English\n", "en"), ListingError);
+});
+
+test("the Play video is optional, and a YouTube watch address when there", () => {
+  const video = "https://www.youtube.com/watch?v=KFw2MIloaSw";
+  assert.equal(parse({ playVideo: video }).playVideo, video);
+  assert.equal(parse().playVideo, undefined);
+  refuses({ playVideo: "https://youtu.be/KFw2MIloaSw" }, /Play video is a YouTube watch address/);
+  refuses({ playVideo: "https://www.youtube.com/shorts/KFw2MIloaSw" }, /Play video is a YouTube watch address/);
+});
+
+test("the Play video stays in its place among the sections", () => {
+  const video = "## Play video\n\nhttps://www.youtube.com/watch?v=KFw2MIloaSw\n";
+  const misplaced = fileWith().replace("## Play title", `${video}\n## Play title`);
+  assert.throws(
+    () => parseListing("store-listing/en.md", misplaced, "en"),
+    (error) => error instanceof ListingError && /Play video \(optional\)/.test(error.message),
+  );
+});
+
+test("staging writes a language's Play video under each of its Play locales, and none for a language without one", () => {
+  const video = "https://www.youtube.com/watch?v=r4r01HHdK4U";
+  const staged = stagedFiles({ es: { ...FIELD_TEXT, playVideo: video }, en: FIELD_TEXT });
+  assert.equal(staged["play/es-419/video.txt"], video);
+  assert.equal(staged["play/es-US/video.txt"], video);
+  assert.equal(staged["play/en-US/video.txt"], undefined);
+  assert.equal(staged["app-store/es-MX/video.txt"], undefined);
 });
 
 test("an empty field is refused", () => {
@@ -209,4 +235,14 @@ test("the screens the iPhone Duo's shelf takes open are screens the captures and
   assert.deepEqual(framed, captured);
   assert.ok(open.length > 0 && open.length < framed.length, "the shelf shows the Duo both closed and open");
   assert.deepEqual(open.filter((name) => !framed.includes(name)), []);
+});
+
+test("every store video locale names its own listing language, one of Play's", () => {
+  const directory = "scripts/store-video/locales";
+  const languages = readdirSync(directory)
+    .filter((name) => name.endsWith(".json"))
+    .map((name) => [name, JSON.parse(readFileSync(`${directory}/${name}`, "utf8")).listing]);
+  for (const [name, language] of languages) assert.ok(PLAY_LOCALES[language], `${name} names ${language}`);
+  const names = languages.map(([, language]) => language);
+  assert.deepEqual(names, [...new Set(names)]);
 });

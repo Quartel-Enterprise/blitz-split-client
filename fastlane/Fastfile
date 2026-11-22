@@ -276,7 +276,8 @@ lane :finish_app_store_screenshots do |options|
 end
 
 desc "Upload the stores' listing text, the files of store-listing/ (docs/store-listing.md): the name, the"
-desc "descriptions and, on the App Store, the subtitle, the keywords and the promotional text, in every language,"
+desc "descriptions, on Play the preview video of a language that names one, and, on the App Store, the subtitle,"
+desc "the keywords and the promotional text, in every language,"
 desc "with the App Store's support, marketing and privacy policy addresses in every locale and the version's"
 desc "copyright line."
 desc "Options: platform (android|ios|mac; all three when left out). Needs PLAY_STORE_JSON_KEY_PATH (Play) and the"
@@ -305,16 +306,62 @@ lane :upload_listing do |options|
   end
 end
 
+desc "Upload the Play feature graphic of every store video locale (docs/store-video.md): the 1024x500 image"
+desc "scripts/store-video/thumbnail.sh <locale> renders, to each Play locale of the locale JSON's `listing` language"
+desc "(store-listing.mjs's PLAY_LOCALES). Run thumbnail.sh for each first: a locale without its graphic fails the lane"
+desc "before anything is sent. Other Play locales keep the graphic they have. Needs PLAY_STORE_JSON_KEY_PATH;"
+desc "version_code names the production release supply reads when the track holds more than one (a staged rollout);"
+desc "VALIDATE_ONLY=true, or validate_only:true, only asks Play whether it would take them. It commits a Play edit of"
+desc "its own, so never run it while a release or a Play workflow (store-listing, play-store-screenshots) runs: a"
+desc "second edit drops the one still open. Its edit also takes to review whatever waits in Publishing overview."
+lane :upload_feature_graphics do |options|
+  require "json"
+  require "open3"
+  require "tmpdir"
+  require "supply"
+
+  repo_root = File.expand_path("..", __dir__)
+  # stdout alone: a warning Node prints on stderr must not reach the JSON
+  out, status = Open3.capture2(
+    "node", "--input-type=module", "-e",
+    'import { PLAY_LOCALES } from "./scripts/release/store-listing.mjs"; console.log(JSON.stringify(PLAY_LOCALES))',
+    chdir: repo_root,
+  )
+  UI.user_error!("Could not read PLAY_LOCALES from store-listing.mjs") unless status.success?
+  play_locales = JSON.parse(out)
+  claimed = {}
+  Dir.mktmpdir("feature-graphics-") do |dir|
+    Dir.glob(File.join(repo_root, "scripts/store-video/locales/*.json")).sort.each do |json|
+      locale = File.basename(json, ".json")
+      language = JSON.parse(File.read(json))["listing"]
+      targets = play_locales[language]
+      UI.user_error!("#{locale}.json names no listing language of store-listing.mjs (#{language.inspect})") unless targets
+      # Two locales of one language would write the same Play locales' graphic, and the last would win unseen
+      UI.user_error!("#{locale}.json and #{claimed[language]}.json both name the listing language #{language}") if claimed[language]
+      claimed[language] = locale
+      graphic = File.join(repo_root, "build/store-video", locale, "feature-#{locale}.jpg")
+      UI.user_error!("No #{graphic}: run scripts/store-video/thumbnail.sh #{locale} first") unless File.exist?(graphic)
+      targets.each do |target|
+        images = File.join(dir, target, Supply::IMAGES_FOLDER_NAME)
+        FileUtils.mkdir_p(images)
+        FileUtils.cp(graphic, File.join(images, "featureGraphic.jpg"))
+      end
+    end
+    upload_play_listing(dir, options[:version_code], validate_only?(options[:validate_only]), images: true)
+  end
+end
+
 # VALIDATE_ONLY=true in the environment, or a lane's validate_only:true, asks Play whether it would take the upload
 # and changes nothing.
 def validate_only?(option = nil)
   [ENV["VALIDATE_ONLY"], option].any? { |value| value.to_s.strip.downcase == "true" }
 end
 
-# The listing's text only: no bundle, no track, no images. supply adds the listing of a locale Play doesn't have yet.
+# The listing's text only, or with images: true its images only (the feature graphics): no bundle, no track, no
+# screenshots. supply adds the listing of a locale Play doesn't have yet.
 # It reads the production track's release on the way, and stops when the track holds more than one unless it is
 # told which, by its versionCode.
-def upload_play_listing(metadata_path, version_code, validates_only)
+def upload_play_listing(metadata_path, version_code, validates_only, images: false)
   release = version_code.to_s.empty? ? {} : { version_code: version_code.to_s.to_i }
   retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
     upload_to_play_store(
@@ -324,9 +371,9 @@ def upload_play_listing(metadata_path, version_code, validates_only)
       metadata_path: metadata_path,
       skip_upload_aab: true,
       skip_upload_apk: true,
-      skip_upload_metadata: false,
+      skip_upload_metadata: images,
       skip_upload_changelogs: true,
-      skip_upload_images: true,
+      skip_upload_images: !images,
       skip_upload_screenshots: true,
       validate_only: validates_only,
     )

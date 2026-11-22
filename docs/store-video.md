@@ -13,7 +13,8 @@ live in `build/store-video/<locale>/`, and the video goes to YouTube.
 scripts/store-video/generate.sh pt-BR          # records, voices, composes: build/store-video/pt-BR/store-video-pt-BR.mp4
 scripts/store-video/generate.sh pt-BR --skip-record        # compose again from the recordings already made
 scripts/store-video/generate.sh pt-BR group bal            # record only these scenes again, then compose
-scripts/store-video/thumbnail.sh pt-BR         # the YouTube thumbnails, from the recording's stills
+scripts/store-video/thumbnail.sh pt-BR         # the YouTube thumbnails and Play's feature graphic
+fastlane upload_feature_graphics               # every locale's feature graphic, to its Play locales
 ```
 
 ## Play's rules the video follows
@@ -27,8 +28,9 @@ From [Add preview assets](https://support.google.com/googleplay/android-develope
 - **Works muted**: the narration's words are on screen.
 - **No call to action, ranking or price**: no "Download now", "Best", "#1", "New", "Free" or "Sale". "Funciona
   offline" and "Sem precisar de conta" are features, not prices.
-- **Ads off and embeddable**: upload it to YouTube as unlisted, monetization off, then paste its URL into Play
-  Console's Main store listing (Grow users > Store presence > Main store listing > Preview video), per language.
+- **Ads off and embeddable**: upload it to YouTube, monetization off, then put its watch address in the
+  `## Play video` section of the language's `store-listing/<language>.md`, which the store listing workflow sends
+  to every Play locale of that language ([store-listing.md](store-listing.md)).
 
 ## What runs
 
@@ -40,7 +42,7 @@ From [Add preview assets](https://support.google.com/googleplay/android-develope
 | [`elevenlabs.py`](../scripts/store-video/elevenlabs.py) | The narration's takes and the music from ElevenLabs, then the chosen take and the music for the render |
 | [`remotion/`](../scripts/store-video/remotion/src/StoreVideo.tsx) | The composition, with [Remotion](https://www.remotion.dev): the phone, the camera, the pushes, the freezes and their cards, the titles, the end card, the sound |
 | [`generate.sh`](../scripts/store-video/generate.sh) | All of it in order, then the loudness YouTube expects (-14 LUFS) |
-| [`thumbnail.sh`](../scripts/store-video/thumbnail.sh) | The YouTube thumbnails, drawn by [`Thumbnail.tsx`](../scripts/store-video/remotion/src/Thumbnail.tsx) from the locale's `thumbnail` and two of its stills |
+| [`thumbnail.sh`](../scripts/store-video/thumbnail.sh) | The YouTube thumbnails and Play's feature graphic, drawn by [`Thumbnail.tsx`](../scripts/store-video/remotion/src/Thumbnail.tsx) from the locale's `thumbnail` and two of its stills |
 
 ### Recording on the emulator
 
@@ -94,12 +96,21 @@ Spain and Latin America get one video each: the app has Spain's own words (`valu
 "Hecho"), the sample trip has Spain's names, and the narration says "A dividir los gastos" and "importe" in es-ES,
 "A dividir la cuenta" and "monto" in es. Each one's title and Settle up card follow.
 
-### The YouTube thumbnail
+### The YouTube thumbnails and the feature graphic
 
-`thumbnail.sh <locale>` draws two, after `generate.sh` has recorded the stills: 1280x720 (`thumb-<locale>-16x9`,
-kept for marketing) and 1080x1920 (`-9x16`), the one YouTube shows for these vertical videos (Shorts) and the one
-uploaded. The locale JSON's `thumbnail` gives the headline, its accent words and the two stills (`back`, `front`);
-the name and the chips are the end card's, unless `thumbnail.chips` gives others (pt-BR's names Pix copia e cola).
+`thumbnail.sh <locale>` draws three, after `generate.sh` has recorded the stills: 1280x720 (`thumb-<locale>-16x9`,
+kept for marketing), 1080x1920 (`-9x16`), the one YouTube shows for these vertical videos (Shorts) and the one
+uploaded, and Play's 1024x500 feature graphic (`feature-<locale>`), which is also the cover of the listing's video.
+The locale JSON's `thumbnail` gives the headline, its accent words and the two stills (`back`, `front`); the name and
+the chips are the end card's, unless `thumbnail.chips` gives others (pt-BR's names Pix copia e cola).
+
+The feature graphic keeps its words on the left and the phones on the right, since Play draws its play button over
+the middle and crops the edges in some places. `fastlane upload_feature_graphics` sends each locale's JPEG (Play
+refuses a PNG with an alpha channel) to the Play locales of the JSON's `listing` language, the `PLAY_LOCALES` of
+`store-listing.mjs`, so `es` reaches es-419 and es-US. It runs on this Mac, where the stills are, with
+`PLAY_STORE_JSON_KEY_PATH` set to the Play service account's key; Play locales of other languages keep their graphic.
+It commits a Play edit of its own: never run it while a release or a Play workflow runs (a second edit drops the one
+still open), and know that it takes to review whatever waits in Publishing overview.
 
 ## ElevenLabs
 
