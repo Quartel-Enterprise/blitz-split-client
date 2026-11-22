@@ -1,9 +1,11 @@
 name: 'Draw the Google Play screenshots'
 description: >-
-  Draws the Google Play listing's screenshots of every language (Robolectric draws the real Compose screens from the
-  sample trip, docs/store-listing-screenshots.md), stages them where supply uploads from and hands them to the jobs
-  after it as the artifact `play-store-screenshots`. For release-production.yml, next to its build, and
-  play-store-screenshots.yml, which sends them alone. The calling job checks out the repository first.
+  Draws the Google Play listing's art of every language (Robolectric draws the real Compose screens from the sample
+  trip, and Chrome lays them out in the listing art's design, docs/store-listing-screenshots.md), stages it where
+  supply uploads from and hands it to the jobs after it as the artifact `play-store-screenshots`. For
+  release-production.yml, next to its build, and play-store-screenshots.yml, which sends it alone. The calling job
+  checks out the repository first and runs on the Mac runner: the art's fonts are the Mac's, and its Chrome the one
+  scripts/readme-hero/chrome.mjs drives.
 
 inputs:
   cache-encryption-key:
@@ -27,9 +29,28 @@ runs:
         cache-encryption-key: ${{ inputs.cache-encryption-key }}
         cache-read-only: 'true'
 
+    - name: Setup Node
+      uses: actions/setup-node@v7
+      with:
+        node-version: 24
+
+    # The devices of Google Play's shelves that are staged: the foldables go up by hand, so nothing draws them here.
+    - name: Name the Play devices
+      shell: bash
+      run: echo "ART_DEVICES=play_phone,play_tablet_7,play_tablet_10" >> "$GITHUB_ENV"
+
+    # The bare screens, then what the tickets write on them, then the art laid out in Chrome and staged for supply.
+    - name: Draw the screens
+      shell: bash
+      run: |
+        ./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt --rerun -q
+        ./gradlew :android:store_screenshots:testDebugUnitTest -PcreativeAssets --rerun -q
+
     - name: Make the screenshots
       shell: bash
-      run: ./gradlew stagePlayStoreScreenshots
+      run: |
+        node scripts/store-screenshots/listing-art/compose.mjs
+        node scripts/store-screenshots/listing-art/stage-play.mjs
 
     # The upload jobs' matrix, read off what was staged: the list of languages lives in the generators alone. Read
     # into a variable first, so a script that fails stops the step: inside the echo it would read as nothing staged.

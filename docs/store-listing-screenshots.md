@@ -1,18 +1,22 @@
 # Store listing screenshots
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
-showing a sample trip among five friends, inside a device frame with a title and description, in all 32 languages
-of the listings. The frames come from the [store-screenshots](https://github.com/lucianosantosdev/store-screenshots)
-library, as in Bible Planner. None of the images is versioned: every run rebuilds them from source.
+showing a sample trip among five friends, laid out in the listing art's design: a blue background, one phrase, the
+device, a part of the screen drawn larger and, on some, a ticket or a receipt, in all 32 languages of the listings.
+None of the images is versioned: every run rebuilds them from source. Words, colors and the placement of each image
+are `scripts/store-screenshots/listing-art/` (`compose.mjs`, `copy.tsv`); there is no other drawing of them.
 
-The two stores draw the screen differently, because the app has a native UI on each:
+The two stores get their screens differently, because the app has a native UI on each:
 
-- **Google Play.** Robolectric renders the real Jetpack Compose screen inside the frame, from `UiState`s built from
-  the sample trip. Any machine can do it.
+- **Google Play.** Robolectric draws the bare Jetpack Compose screens from `UiState`s built from the sample trip
+  (`PlayArtCaptures`, `-PplayArt`), with no frame and no banner: any machine can do this half, and the Mac does the layout.
 - **App Store.** The UI is SwiftUI, which Robolectric can't draw, so the screens are **captured on the iOS
   simulator** by an XCUITest target. It launches a debug build seeded with the same sample trip and writes each whole
-  screen to a PNG. The Mac app's window is photographed on the Mac itself, by a script. Robolectric then puts each
-  PNG into its device's frame, with the same banner. This half **needs a Mac with Xcode**.
+  screen to a PNG. The Mac app's window is photographed on the Mac itself, by a script. This half **needs a Mac with
+  Xcode**.
+
+`compose.mjs` then lays every capture out in Chrome, on a Mac: the art's fonts are the Mac's and its Chrome the one
+`scripts/readme-hero/chrome.mjs` drives, so a release draws Play's art on a Mac runner too.
 
 ## One command
 
@@ -20,15 +24,15 @@ The two stores draw the screen differently, because the app has a native UI on e
 fastlane screenshots                                 # everything, then upload
 fastlane screenshots skip_upload:true                # generate only, nothing reaches a store
 fastlane screenshots platform:android skip_upload:true
-fastlane screenshots platform:ios skip_capture:true  # frame the iOS captures already in build/ again
+fastlane screenshots platform:ios skip_capture:true  # draw the iOS captures already in build/ again
 fastlane upload_screenshots locale:es-419            # upload what is staged, one locale
 fastlane upload_screenshots platform:android locales:es-419,es-US   # some of Play's locales, through one Play edit
 fastlane upload_screenshots platform:mac             # upload the Mac's alone
 ```
 
 A stable release dispatched with `screenshots` on runs the same steps in CI, in jobs of `release-production`: the
-capture on one runner per slot, the frames, and the upload to each store, one job per locale on the App Store and a
-few locales per job on Google Play ([release-process.md](release-process.md#screenshots-with-a-release)). The input is off unless asked for, so a
+capture on one runner per slot, the art, and the upload to each store, one job per locale on the App Store and a
+few locales per job on Google Play ([release-process.md](release-process.md#screenshots-with-a-release)). The input is off unless asked, so a
 release after a new language or a changed screen has to pass `screenshots=true`. That captures the iPhone's and the
 iPad's slots (`iphone63`, `iphone67`, `ipad13`). The iPhone Duo's two (`iphoneduo`, `iphoneduoopen`) and the Mac's
 are captured only with `screenshots_iphone_duo=true` and `screenshots_mac=true`, off unless asked for, since all
@@ -43,35 +47,36 @@ Store's as they are: [Sending Google Play's alone](#sending-google-plays-alone).
 
 The lane runs, each step under `scripts/heavy-check.sh`:
 
-1. `scripts/store-screenshots/capture-ios.sh`: builds the `BoraRachar-iOS-StoreScreenshots` UI tests once and runs
-   them on one simulator per App Store slot (the iPhone Duo's two slots, closed and open, share theirs), one
-   language at a time, saying which one it is on and how long each took
-   ([One language at a time](#one-language-at-a-time)). They write
-   `build/outputs/apple-screenshot-captures/<slot>/<locale>/`.
-   Then `scripts/store-screenshots/capture-mac.sh` builds the Mac app and photographs its window itself, with no
-   UI test ([why](#how-the-mac-capture-works)). **It takes this Mac's own screen for about half an hour**, so leave
-   the keyboard and mouse alone, or pass `skip_mac:true` to leave the Mac listing as it is. Whatever runs it needs
-   the Screen Recording permission (System Settings › Privacy & Security).
-   `STORE_SCREENSHOTS_BUILD_SETTINGS` adds build settings to the Mac build, which the release's runner uses to sign
-   the app to run locally, having no signing account.
-2. `./gradlew stagePlayStoreScreenshots stageAppStoreScreenshots collect…`: the generators (the unit tests of
-   `:android:store_screenshots`) draw every image. The tasks then copy the images to `store_listings/` to look at, and
-   to the folders fastlane uploads from. Latin America's Spanish goes out to each store's regional codes (`es-419` and
-   `es-US` on Play, `es-MX` on the App Store), and Spain's to `es-ES`, as the listing text does
+1. **Google Play:** `./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt` draws the bare screens and
+   `-PcreativeAssets` what the tickets write; `compose.mjs` lays them out and `listing-art/stage-play.mjs` copies the
+   result to `fastlane/metadata/android/<locale>/images/` where supply uploads from. Latin America's Spanish goes out
+   to each regional code (`es-419` and `es-US`), and Spain's to `es-ES`, as the listing text does
    ([store-listing.md](store-listing.md)).
+2. **App Store:** `scripts/store-screenshots/listing-art/capture.sh` runs `capture-ios.sh`, which builds the
+   `BoraRachar-iOS-StoreScreenshots` UI tests once and runs them on one simulator per slot, one language at a time
+   ([One language at a time](#one-language-at-a-time)), for the screens of `screens.tsv` and `art-screens.tsv`. They
+   write `build/outputs/apple-screenshot-captures/<slot>/<locale>/`. Then `capture-mac.sh` builds the Mac app and
+   photographs its window itself ([why](#how-the-mac-capture-works)). **It takes this Mac's own screen for about half
+   an hour**, so leave the keyboard and mouse alone, or pass `skip_mac:true` to leave the Mac listing as it is.
+   Whatever runs it needs the Screen Recording permission (System Settings › Privacy & Security).
+   `STORE_SCREENSHOTS_BUILD_SETTINGS` adds build settings to the Mac build, which the release's runner uses to sign
+   the app to run locally, having no signing account. `listing-art/frame-app-store.sh` then draws every device that was
+   captured and `stage-app-store.py` stages the result in `fastlane/screenshots/` and `fastlane/screenshots-mac/`.
 3. Unless `skip_upload:true` is passed, the upload: `supply` for Play and `deliver` for the App Store, listing
    images only.
 
-Without fastlane, the Gradle tasks alone:
+Without fastlane, the steps alone:
 
 ```bash
-./gradlew collectPlayStoreScreenshots    # Play, any machine: store_listings/android/<locale>/<device>/
-./scripts/store-screenshots/capture-ios.sh && ./gradlew collectAppStoreScreenshots   # App Store, needs a Mac
-./gradlew collectStoreScreenshots        # both (the iOS captures must be there)
+./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt --rerun       # Play's bare screens
+./gradlew :android:store_screenshots:testDebugUnitTest -PcreativeAssets --rerun
+ART_DEVICES=play_phone,play_tablet_7,play_tablet_10 node scripts/store-screenshots/listing-art/compose.mjs
+node scripts/store-screenshots/listing-art/stage-play.mjs                      # fastlane/metadata/android/
+./scripts/store-screenshots/listing-art/capture.sh && ./scripts/store-screenshots/listing-art/frame-app-store.sh   # App Store, needs a Mac
 ```
 
-A quick look at a few iOS shots:
-`STORE_SCREENSHOTS_SLOTS=iphone67 STORE_SCREENSHOTS_LOCALES=en-US,ja STORE_SCREENSHOTS_SCREENS=group,items ./scripts/store-screenshots/capture-ios.sh`.
+A quick look at a few of them: `ART_LOCALES=en-US,ja` narrows the captures (`PlayArtCaptures` and `capture.sh`), the drawing
+and the staging, and `ART_DEVICES` the drawing, which writes `store_listings/listing-art/<device>/<locale>/`.
 `store_listings/`, `fastlane/screenshots/` and `fastlane/metadata/android/*/images/` are git-ignored.
 
 ### Uploading
@@ -255,8 +260,8 @@ over two pages and one whose lists disagree; it has not talked to App Store Conn
 
 ## Sending Google Play's alone
 
-Robolectric draws Play's images, so nothing is captured and any machine makes the same ones: a runner's are as good
-as a Mac's, and they need no set sent from one. The [`play-store-screenshots`](../.github/workflows/play-store-screenshots.yml)
+Robolectric draws Play's screens, so nothing is captured on a device and they need no set sent from a Mac. Chrome
+lays them out in the art's design with the Mac's fonts, so the run draws them on a Mac runner, as a release does. The [`play-store-screenshots`](../.github/workflows/play-store-screenshots.yml)
 workflow draws them and sends them, with no release and without touching the App Store's:
 
 ```bash
@@ -268,8 +273,8 @@ gh workflow run play-store-screenshots.yml                         # draw them a
 second command is the whole publication. Dispatch it, an administrator, on `main`, once no release and no listing
 is going:
 
-1. **"Draw the screenshots"** checks who dispatched the run and from where, then runs
-   `./gradlew stagePlayStoreScreenshots` on the runner, as a release does (the
+1. **"Draw the screenshots"** checks who dispatched the run and from where, then draws the art on the runner (the
+   bare screens, `compose.mjs` and `stage-play.mjs`), as a release does (the
    [`play-screenshots-draw`](../.github/actions/play-screenshots-draw/action.yml) action). The images of every
    locale are the run's artifact `play-store-screenshots`, kept seven days, and the run's summary lists the locales.
 2. **"Google Play / send 1 of 5: \<locales\>"** uploads them, **a few locales per job, one job after the other**:
@@ -286,7 +291,7 @@ is going:
 hands them over as the artifact and only asks Google Play whether it would take the images of the locales that
 differ from what it holds, which changes nothing (a locale it already holds as drawn is left out, as when sending,
 and a group with none left asks nothing). Download the artifact (`gh run download <run> -n play-store-screenshots`) and look, or draw them on any
-machine with `./gradlew collectPlayStoreScreenshots` and look at `store_listings/android/`. The run that sends
+machine with the Play steps of [One command](#one-command) and look at `store_listings/listing-art/`. The run that sends
 draws them again, from `main` as it is when that run starts: a screen changed by a pull request merged in between
 comes out changed. A run with `validate_only` holds releases and listings off as any run of the workflow does, so
 wait for it to end before dispatching either.
@@ -412,12 +417,12 @@ show changes** (the group, Bill items, Statistics and Home, the `iphone67` captu
 up by hand in App Store Connect, on the version open for editing, with that language picked at the top of Product Page
 Information. Latin America's Spanish (`es`) goes on Spanish (Mexico). Check the page's **Preview** before submitting.
 
-## The listing art (new design, not uploaded yet)
+## The listing art
 
-A second set of store images, drawn in the ticket design approved in November 2026, sits beside the framed one above
-and replaces nothing until someone uploads it: ten images a device on the App Store, eight on Google Play, the words
-in [`listing-art/copy.tsv`](../scripts/store-screenshots/listing-art/copy.tsv), and the Brazilian listing with Pix
-second ("Pagar Carla", from a made-up key the sample trip gives the person you owe in reais).
+The listing's images are drawn in the ticket design approved in November 2026: ten images a device on the App Store,
+eight on Google Play, the words in [`listing-art/copy.tsv`](../scripts/store-screenshots/listing-art/copy.tsv), and
+the Brazilian listing with Pix second ("Pagar Carla", from a made-up key the sample trip gives the person you owe in
+reais). It is the only drawing of them: the framed screenshots with a banner that came before it are gone.
 
 ```bash
 ./scripts/store-screenshots/listing-art/capture.sh            # iPhone 6.7" and 6.3", iPad 13", closed iPhone Duo
@@ -430,27 +435,39 @@ node scripts/store-screenshots/listing-art/compose.mjs        # every device and
 `ART_DEVICES` and `ART_LOCALES` narrow the last step. A callout (the part of a screen drawn larger) is placed by its
 coordinates in `compose.mjs`, and for the cards whose height moves with a language's words, found in the capture by
 color. Right-to-left languages get the callout from the mirrored side. Google Play's 7" tablet has no callouts: its
-screens lay out differently enough that fixed coordinates miss. The Mac's art (`ART_DEVICES=mac`) draws its window as captured, with no device around it, in the phones' ten images (`STORE_SCREENSHOTS_TABLE=art-screens ./scripts/store-screenshots/capture-mac.sh` captures "Dividir" and Brazil's "Pagar Carla"), with no callouts in Arabic and Hebrew, since the window mirrors only part of its layout. `listing-art/stage-app-store.py` stages the App Store's art where `local-set.mjs` checks and sends it, each image under the screens.tsv name of its place on the shelf.
+screens lay out differently enough that fixed coordinates miss. The Mac's art (`ART_DEVICES=mac`) draws its window as captured, with no device around it, in the phones' ten images (`STORE_SCREENSHOTS_TABLE=art-screens ./scripts/store-screenshots/capture-mac.sh` captures "Dividir" and Brazil's "Pagar Carla"), with no callouts in Arabic and Hebrew, since the window mirrors only part of its layout. `listing-art/stage-app-store.py` stages the App Store's art where `local-set.mjs` checks and sends it, each image under the screens.tsv name of its place on the shelf; `frame-app-store.sh` runs the drawing and the staging for the devices that were captured.
+
+**The foldables.** Google Play's console takes 3 to 8 foldable screenshots: one of the unfolded screen in 1:1, one
+unfolded in 4:3 and one of the outer screen folded in 10:16 (each side 960 to 3840 px, PNG or JPEG, up to 8 MB), then
+any of 4:3, 3:4, 16:10, 10:16, 1:1, 16:9 and 9:16. `PlayArtDevice` captures two screens of them, a Pixel Fold's
+unfolded one (864x720 dp) and its outer one (412x800 dp), and `compose.mjs` draws three devices from them, the same
+eight images each: `play_foldable_1x1` (2160x2160) and `play_foldable_4x3` (2880x2160) from the unfolded capture, and
+`play_foldable_outer` (1600x2560) from the outer one. They have no callouts yet. **They are not staged**: supply has no
+image type for them, so they go up by hand in the Play Console, from `store_listings/listing-art/play_foldable_*/`.
+Whether the Play API takes them has not been checked.
 
 ## What the images show
 
-| # | Screen | Play | App Store | Shows |
-| --- | --- | --- | --- | --- |
-| 01 | The group, Expenses | ✓ | ✓ | Who paid what, your balance on top |
-| 02 | Split by items | ✓ | ✓ | "Bill items" of the trattoria dinner, everyone marked |
-| 03 | Receipt read | ✓ | ✓ | A new bill filled in from the receipt's photo, "6 items" |
-| 04 | Balances | ✓ | ✓ | The group's Balances tab, who owes whom |
-| 05 | Invite | ✓ | ✓ | The link and its QR code |
-| 06 | Statistics | ✓ | ✓ | Total, the days, by category |
-| 07 | Home | ✓ | ✓ | Balances with people, the three pinned groups |
-| 08 | Several payers, another currency | ✓ | ✓ | The boat tour: two people paid it, in euros (dollars for a euro group) |
-| 09 | Activity | | ✓ | The feed: who added what, who paid you |
-| 10 | Light theme | | ✓ | The group again, light: "light or dark, it follows you" |
+| # | Phrase (`copy.tsv`) | Screen | Play | App Store | Shows |
+| --- | --- | --- | --- | --- | --- |
+| 01 | `promise` | The group, Expenses | ✓ | ✓ | "Split the bill. Keep the friends.", the card with your balance drawn larger, two tickets with each person's part |
+| 02 | `pix` | "Pagar Carla" | pt-BR | pt-BR | Brazil's listing only: paying with Pix, from a made-up key |
+| 03 | `receipt` | Receipt read | ✓ | ✓ | A new bill filled in from the receipt's photo, with the receipt beside it |
+| 04 | `items` | Split by items | ✓ | ✓ | "Bill items" of the trattoria dinner, one row drawn larger |
+| 05 | `balances` | Balances | ✓ | ✓ | The group's Balances tab, who owes whom |
+| 06 | `invite` | Invite | ✓ | ✓ | The link and its QR code, with "no account" and "works offline" pills |
+| 07 | `split` | "Dividir" | | ✓ | The ways to split a bill, drawn larger, with two tickets |
+| 08 | `currencies` | Several payers, another currency | ✓ | ✓ | The boat tour: two people paid it, in euros (dollars for a euro group) |
+| 09 | `statistics` | Statistics | ✓ | ✓ | Total, the days, by category |
+| 10 | `home` | Home | ✓ | ✓ | Balances with people, the three pinned groups (not in Brazil's, which has Pix instead) |
+| 11 | `offline` | The group, light | | ✓ | "light or dark, it follows you" |
 
-The file prefix is the **shelf order**: both stores sort by file name, and only the first two or three show
-without swiping. Play holds 8 per device type and the App Store 10 per device size, so 09 and 10 are App Store only
-(`StoreScreen.isAppStoreOnly`), and the iPhone Duo's two displays share their ten
-([below](#what-the-images-show)). Every shot is in the dark theme except 10, on the logo's blue dimmed to `#0E2433`.
+A listing has ten (the App Store) or eight (Google Play) of them, in this order, and Brazil's swaps Home for Pix, second (so the numbers above are the order without it). The file
+prefix is the **shelf order**: both stores sort by file name, and only the first two or three show without swiping.
+Play holds 8 per device type and the App Store 10 per device size, so Play leaves out "Dividir" and the light one
+(`PLAY_STORY` of `compose.mjs`), and the iPhone Duo's two displays share their ten
+([below](#the-iphone-duos-two-displays-share-one-shelf)). Every screen is in the dark theme except the last, on a
+blue background the art draws behind the whole row.
 
 **The sample trip** (`shared/src/commonMain/.../storescreenshots/SampleTrips.kt`, its words in `SampleTripCopies.kt`) is one story told in each
 language: a trip to Lisbon among five friends, its names and descriptions in that language and its amounts in that
@@ -464,9 +481,9 @@ photos than the screenshots use, to pick from.
 | Device | Play | App Store (Apple's screenshot specifications, November 2026) |
 | --- | --- | --- |
 | Phone | `phoneScreenshots`, 1242x2484 | **Dynamic Island (medium), 1206x2622, the one App Store Connect requires**, from an iPhone 17 Pro. Dynamic Island (large), 1290x2796, from an iPhone 16 Plus. Face ID (large) is only a fallback for the large size, so it isn't made |
-| Foldable | | iPhone Duo, from the Duo simulator (on the runtime that has it): closed, as it boots, its outer display at 1398x2034, and open, its inner display lying down at 2853x2007 (XCTest hands the capture as 2852x2006, which the frame draws on the display's own canvas). Optional until April 2027, when apps built with the iOS 27.1 SDK must have it |
+| Foldable | The foldable shelf, by hand in the Play Console ([the foldables](#the-listing-art)): unfolded 1:1 at 2160x2160 and 4:3 at 2880x2160, from a 864x720 dp screen, and the outer screen 10:16 at 1600x2560, from a 412x800 dp one | iPhone Duo, from the Duo simulator (on the runtime that has it): closed, as it boots, its outer display at 1398x2034, and open, its inner display lying down at 2853x2007 (XCTest hands the capture as 2852x2006, which the art draws on the display's own canvas). Optional until April 2027, when apps built with the iOS 27.1 SDK must have it |
 | Tablet | `sevenInchScreenshots` and `tenInchScreenshots`, both lying down at 2560x1440: a 960x600 dp tablet on the 7" shelf, a 1280x800 dp one on the 10" ([why lying down](#the-play-tablets-are-drawn-lying-down)) | 13", lying down at 2732x2048, from an iPad Air 13", and 11" framing the same capture on that slot's own canvas, 2388x1668 ([why lying down](#the-ipad-is-captured-lying-down)) |
-| Mac | | The Mac app's window at 1440x900 points, framed on 2880x1800 (16:10) |
+| Mac | | The Mac app's window at 1440x900 points, drawn on 2880x1800 (16:10) |
 
 **The Duo open needs Device Hub.** The simulator boots closed, and its hinge moves only from Device Hub: its Open
 button, in the bar under the device, sends the simulator a HID event that neither `simctl`, `devicectl` nor XCUITest
@@ -499,25 +516,17 @@ So a release captures neither Duo slot unless it passes `screenshots_iphone_duo=
 ([release-process.md](release-process.md#the-devices-the-app-stores-captures-run-on)): nothing but a release runs
 those jobs, so the marker is also how a fix is tried.
 
-**The Duo's two displays share one shelf.** App Store Connect has one iPhone Duo device size for both displays, outer
+**The iPhone Duo's two displays share one shelf.** App Store Connect has one iPhone Duo device size for both displays, outer
 (1398x2034) and inner (2853x2007), and takes ten screenshots per device size
 ([Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/)).
 deliver (fastlane 2.241.2) files both sizes under `APP_IPHONE_DUO` and skips whatever comes after the tenth by file
-name, so twenty images would put the first five screens up twice and leave the other five out. Each screen
-therefore goes up once, closed or open:
-
-| Open (the inner display) | Closed (the outer display) |
-| --- | --- |
-| 01 The group, 04 Balances, 06 Statistics, 07 Home, 09 Activity | 02 Split by items, 03 Receipt read, 05 Invite, 08 Several payers, 10 Light theme |
-
-Open are the screens that use the inner display's width: the group and Home in two columns, Statistics, Activity's
-feed beside the item picked. Closed are the bill's sheets, which open are a sheet over the screen behind, Invite, and
-the light theme, so the group shows both ways. The shelf keeps the file names' order, so it starts open, on the
-group. The list is `duoScreensStagedOpen` in `build-logic/.../StoreScreenshots.kt`, one line to change, then the table
-above. Which screens go up open is Pierre's call (November 2026: he kept these five). A display that wasn't
-captured gives its screens to the other one, so a release whose open capture failed uploads the ten closed, as
-before. `collectAppStoreScreenshots` still frames both whole, into `store_listings/ios/<locale>/iphone_duo/` and
-`iphone_duo_open/`.
+name, so twenty images would put the first five screens up twice and leave the other five out. Each image of the
+story therefore goes up once, from one display: the art draws the group, Balances and Statistics from the open
+display (`DUO_OPEN` in `compose.mjs`, which uses the inner display's width: the group in two columns, Statistics
+beside its chart) and every other image from the closed one (`DUO_CLOSED`). The shelf keeps the file names' order. To
+change which go up open, edit `iphone_duo`'s choice in `compose.mjs`, and capture the screen on that display
+(`listing-art/capture.sh` captures the closed one's, `capture-duo-open.py` the open one's). The art of the Duo needs
+both displays' captures: `frame-app-store.sh` leaves the device out when one is missing.
 
 Not checked yet, since no Duo screenshot has gone to App Store Connect: that it files both sizes on that one shelf,
 upright and lying down side by side. Apple's page lists the four sizes under the one device and fastlane's change
@@ -531,11 +540,6 @@ listed as failed and the release goes on
 **The iPad runs in full-screen apps.** iPadOS 26 opens apps in windows by default, which would leave the app short
 of the screen. On an iPad slot, the UI test first switches Settings › Multitasking & Gestures to full-screen apps.
 
-store-screenshots has no frame for the Duo or the Mac, and its iPad and tablet frames only stand upright. The Duo
-and the Mac get a plain rounded bezel and a window shadow, the iPad lying down a bezel drawn from the library's own
-measures of an iPad Air 13", and the Play tablets the library's own tablet mockup, which does turn
-(`CustomBezels.kt`), with the same banner as the other shots.
-
 ### The Play tablets are drawn lying down
 
 A tablet lying down is where the app has the most to show: every screen in two columns, beside the navigation rail
@@ -543,13 +547,10 @@ where the screen has one ([responsive-layouts.md](architecture/responsive-layout
 screen as one centered column. So both shelves are drawn lying down, as the iPad's is (Pierre's call, November
 2026). The phone's shelf stays upright.
 
-- **The frame.** `PlayTabletLandscapeSurface` draws the library's `DeviceMockup` with
-  `MockupOrientation.Landscape`: the same neutral Android tablet its upright frame drew, turned, with the status bar
-  along the top. The mockup measures the screen at the tablet's own size lying down and tells it so (the window's
-  size and the configuration's orientation), which is what `rememberFoldLayout()` reads: 960x600 dp on the 7"
-  shelf and 1280x800 dp on the 10" are both a tablet lying down (`FormFactor.TabletLandscape`, 600 dp or more on
-  the short side and 960 or more on the long one). Nothing in a `…ScreenshotContent` changed: each screen picked its
-  layout by itself.
+- **The capture.** `PlayArtDevice` gives Robolectric the tablet's own size lying down (`w960dp-h600dp-land` and
+  `w1280dp-h800dp-land`), so each screen picks its layout by itself and `rememberFoldLayout()` reads a tablet lying
+  down (`FormFactor.TabletLandscape`, 600 dp or more on the short side and 960 or more on the long one). Nothing in a
+  `…ScreenshotContent` changed.
 - **The sizes** (Google's [Add preview assets to showcase your app](https://support.google.com/googleplay/android-developer/answer/9866151),
   read on 18 November 2026). Every screenshot: JPEG or 24-bit PNG without alpha, each side from 320 to 3840 px, the
   long side at most twice the short one. For tablets and Chromebooks it asks for 1080 to 7680 px and **16:9 lying
@@ -557,13 +558,11 @@ screen as one centered column. So both shelves are drawn lying down, as the iPad
   canvases are **2560x1440**: 16:9, within every limit, and the library flattens the PNG to 24 bits. The page gives
   the 7" and the 10" shelves no sizes of their own, and the upright images before these were 10:16 (1200x1920 and
   1600x2560), which Google Play took.
-- **One canvas, two tablets.** At the library's 2 px per dp the canvas is 1280x720 dp. The banner stays on top, at
-  40 sp and 20 sp so its description fits in one line in every language, and the tablet takes the height left:
-  about seven tenths of the image's, and a little under two thirds of its width. The 7" tablet is drawn larger than life to fill
-  it and the 10" one smaller, so the 7" shelf shows each screen bigger and the 10" one shows more of it.
-- **Changing the size** is the canvas of `PlayTabletStoreScreenshots` in `StoreScreenshots.kt`, in pixels a whole
-  number of dp at that density. A canvas taller for its width (16:10) gives the tablet more of the image, and leaves the 16:9 Google
-  asks for.
+- **One canvas, two tablets.** Both canvases are 2560x1440 (`play_tablet_7` and `play_tablet_10` of `compose.mjs`): the
+  phrase on top, in one line, and the capture in the art's bezel under it. The 7" tablet is drawn larger than life to
+  fill it and the 10" one smaller, so the 7" shelf shows each screen bigger and the 10" one shows more of it.
+- **Changing the size** is the canvas of those two devices in `compose.mjs`. A canvas taller for its width (16:10)
+  gives the tablet more of the image, and leaves the 16:9 Google asks for.
 
 ### The iPad is captured lying down
 
@@ -579,31 +578,27 @@ at its widest: the sidebar beside a screen in two columns.
   upright. The PNG is 2732x2048. Every other slot stays upright.
 - **Which side.** `landscapeLeft`: the top of the device to the left, which puts the long edge with an iPad Air's
   front camera on top, as on a keyboard. The screen reads the same on either side; the side only decides where the
-  frame draws the camera and the buttons (the camera above the screen, the volume buttons on the top edge by the left
-  corner, the top button on the left edge).
+  device's camera and buttons sit in the capture.
 - **The sizes.** App Store Connect takes a 13" screenshot lying down at 2752x2064 or 2732x2048, and an 11" one at
   2420x1668, 2388x1668, 2360x1640, 2316x1512 or 2266x1488
   ([Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/),
-  read in November 2026). The 13" frame is 2732x2048, the capture's own size, and the 11" one 2388x1668, the size its
-  upright frame had, turned. deliver files them by those sizes, as it did the upright ones.
-- **The frame.** The banner stays on top, as on the Mac's wide canvas, and the iPad takes the height left, about four
-  fifths of the image's. A banner beside the device would make the iPad narrower and wrap its text. The title and
-  the description are larger than under the library's other custom frames (`BannerFontSizes`), and the description
-  fits in one line.
-- **The 11" slot frames the 13" capture**, as it did upright: the same iPad Air 13" on the 11" slot's canvas, which
+  read in November 2026). The 13" art is 2732x2048, the capture's own size, and the 11" one 2388x1668. deliver files them by those sizes, as it did the upright ones.
+- **The art.** The phrase stays on top, as on the Mac's wide canvas, and the iPad takes the height left, about four
+  fifths of the image's, in the art's bezel (`IPAD` of `compose.mjs`). A phrase beside the device would make the iPad
+  narrower and wrap its text.
+- **The 11" slot draws the 13" capture**, as it did upright: the same iPad Air 13" on the 11" slot's canvas, which
   is wider for its height (1.43 against 1.33), so the device is a little smaller in it. No 11" simulator is
   captured.
-- **An upright capture doesn't fit the frame.** One left in `build/outputs/apple-screenshot-captures/ipad13/` from
-  before this (a release's `apple-captures-ipad13` artifact, a folder kept from an earlier run) would be drawn
-  stretched into the lying-down bezel, so the frame stops at it, by name (`AppleScreenshotSlot.isWide`): capture the
-  slot again, which a whole run of the script starts by deleting.
+- **An upright capture doesn't fit the art.** One left in `build/outputs/apple-screenshot-captures/ipad13/` from
+  before this (a release's `apple-captures-ipad13` artifact, a folder kept from an earlier run) would be laid out
+  wrong in the lying-down bezel: capture the slot again, which a whole run of the script starts by deleting.
 
 ## Where to edit
 
 ```
 shared/src/commonMain/.../storescreenshots/   # the sample trip, its seed and the screen each capture opens
 shared/src/appleMain/.../storescreenshots/    # the Apple captures' Room file and photos folder
-android/store_screenshots/src/test/.../        # the Play screens' UiStates, banner copy, the frames
+android/store_screenshots/src/test/.../        # Google Play's bare screens: their UiStates, devices and locales
 iosApp/UITests/StoreScreenshotsUITests.swift   # the iOS capture
 scripts/store-screenshots/capture-ios.sh       # its simulators, the run per language and its progress
 shared/src/jsMain/.../StoreScreenshotsWeb.kt   # the web's seed, for the README's image
@@ -611,7 +606,8 @@ scripts/readme-hero/                           # the README's image
 scripts/store-screenshots/capture-mac.sh       # the Mac capture
 scripts/store-screenshots/*.tsv                # the languages, screens and photos both captures read
 scripts/store-screenshots/tables.sh            # how both capture scripts read and narrow those tables
-build-logic/.../StoreScreenshots.kt            # the collect and stage tasks, the stores' locale codes
+build-logic/.../StoreScreenshots.kt            # which generator a build runs (-PplayArt, -PcreativeAssets, -PreadmeHero)
+scripts/store-screenshots/listing-art/         # the art: its words (copy.tsv), its drawing, its staging for both stores
 fastlane/Fastfile                              # the screenshots and upload lanes
 scripts/store-screenshots/local-set.mjs        # the check of a set made on a Mac, its devices' sizes, and its way to GitHub
 .github/workflows/app-store-screenshots*.yml   # the upload of such a set, and the jobs a release shares with it
@@ -619,28 +615,27 @@ scripts/store-screenshots/local-set.mjs        # the check of a set made on a Ma
 .github/actions/play-screenshots-draw/         # the drawing of Google Play's on a runner, a release's and its own
 ```
 
-- **Banner copy:** `BannerCopies.kt`, per screen and language. The frame wraps the description to two lines, so keep it
-  short.
-- **A new device size:** its frame, its entry in `appleDevices` (`StoreScreenshots.kt`), and its size and shelf in
-  `PLATFORMS` of `local-set.mjs`, which a test holds to that list: a set with a device the check doesn't know is
-  refused.
-- **A new screen:** an entry in `StoreScreen` with its file name, a `@Test` in `StoreScreenshots` and its
-  `…ScreenshotContent` (the Play screen), an entry in `StoreScreenshotsScreen` (its routes on Apple's) and a row
-  of `scripts/store-screenshots/screens.tsv`. The file names must match on both sides. It goes on the iPhone Duo's
-  shelf closed unless `duoScreensStagedOpen` (`StoreScreenshots.kt`) names it; a test of `store-listing.test.mjs`
-  holds that list, `StoreScreen` and `screens.tsv` to the same file names.
+- **The words:** `listing-art/copy.tsv`, one row per language. A phrase too long for its place is drawn smaller, and a
+  warning says what still doesn't fit.
+- **A new device size:** its device in `compose.mjs` (`DEVICES`), its entry in `DEVICES` of `stage-app-store.py` (or
+  `IMAGE_TYPES` of `stage-play.mjs`), and its size and shelf in `PLATFORMS` of `local-set.mjs`: a set with a device
+  the check doesn't know is refused.
+- **A new screen:** a `…ScreenshotContent` (the Play screen) and an entry in `PlayArtScreen`, an entry in
+  `StoreScreenshotsScreen` (its routes on Apple's), a row of `scripts/store-screenshots/screens.tsv` (or
+  `art-screens.tsv`), and its place in the story of `compose.mjs` with its words in `copy.tsv`. The file names must
+  match on both sides.
 - **A new language:** `storeLocales` (its `drawnLocale` is its tag, unless the tag carries a script or needs a region
-  to write amounts and dates in: [the rules](#the-locale-every-image-is-drawn-in)), `bannerCopies`, `SampleTripCopies` (its words), `SampleTrips` (its currency), a row of
-  `scripts/store-screenshots/locales.tsv`, and `listingLocales` and the two store maps in `StoreScreenshots.kt`. Its `language` is the app language's code,
-  which keys the banner copy and the trip. Portugal's Portuguese goes by its whole tag, `pt-PT`, since `pt` is
-  Brazil's: its own banners and trip (in euros, "tu", Blitz Split), over the app's `pt-PT` strings. Spain's Spanish
-  goes by `es-ES` the same way, since `es` is Latin America's: its own banners and trip ("ha pagado", "coche",
-  "ticket"), over the app's `es-ES` strings.
+  to write amounts and dates in: [the rules](#the-locale-every-image-is-drawn-in)), a row of `listing-art/copy.tsv` and
+  of `creative-assets/copy.tsv`, `SampleTripCopies` (its words), `SampleTrips` (its currency), a row of
+  `scripts/store-screenshots/locales.tsv`, and its stores' codes in `scripts/release/store-listing.mjs`
+  (`PLAY_LOCALES`, `APP_STORE_LOCALES`). Its `language` is the app language's code, which keys the trip. Portugal's
+  Portuguese goes by its whole tag, `pt-PT`, since `pt` is Brazil's: its own words and trip (in euros, "tu",
+  Blitz Split), over the app's `pt-PT` strings. Spain's Spanish goes by `es-ES` the same way, since `es` is Latin
+  America's: its own words and trip ("ha pagado", "coche", "ticket"), over the app's `es-ES` strings.
 
 ## The locale every image is drawn in
 
-Robolectric draws every image in its set's `StoreLocale.drawnLocale` (`StoreLocale.kt`), the Play screens and the
-banner over an Apple capture alike: the language the resources are read in and the region the amounts, dates and
+Robolectric draws every Play screen in its set's `StoreLocale.drawnLocale` (`StoreLocale.kt`): the language the resources are read in and the region the amounts, dates and
 hours are written in. It is the set's own tag for most sets. Chinese (`zh-CN`), Traditional Chinese (`zh-TW`, since
 its tag, `zh-Hant`, carries a script), Hebrew (`iw-IL`), Thai (`th-TH`), Vietnamese (`vi-VN`), Swedish (`sv-SE`),
 Czech (`cs-CZ`), Bengali (`bn-BD`), Malay (`ms-MY`), Hungarian (`hu-HU`) and Urdu (`ur-PK`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
@@ -655,8 +650,8 @@ Apple's don't always agree on a region (in the United States', Apple writes the 
   in front in `es_GQ` by itself, with a 24-hour clock and the day before the month: "€84,08", "US$120", "21:00",
   "15 nov", and "19–23 oct" for Statistics' range, as iOS writes them. Nothing is taught to the JVM.
 - **The strings stay Latin America's.** `es-GQ` reads `values-es` ("Agregar"), never `values-es-rES` ("Añadir").
-- **The folder stays `es`.** The library names an image's folder after the locale it drew it in, so the generator
-  moves `es-GQ/` to `es/` (`moveToListingFolder`), where the collect and stage tasks look.
+- **The folder stays `es`.** The capture writes into the set's tag (`es`), not the locale it drew in, where
+  `compose.mjs` and the staging look.
 - **One value still differs: the thousands separator.** The App Store's set writes the trip's total as "€1145,80",
   and Play's as "€1.145,80". Spanish only groups from five digits on ("12.345,60"), a rule iOS follows and
   `java.text.NumberFormat`, which the Android app writes amounts with, doesn't: not the JVM's, which draws the
@@ -665,10 +660,9 @@ Apple's don't always agree on a region (in the United States', Apple writes the 
   changes it: the bare `es` wrote "1.145,80 €", and Spain's set has the same difference ("1.145,80 €" on Play,
   "1145,80 €" on the App Store), as have Polish and Portugal's Portuguese. Whether the Android app should follow the
   rule is a choice about the app, not about its screenshots.
-- **A `drawnLocale` is a language with at most a region** (`zh-TW`, never `zh-Hant`). Robolectric draws every image
-  in it, the banner over an Apple capture too, and gets it as a resource qualifier: a script or a third part makes
-  one it refuses, and every frame of that device fails (the first release's frames did, on `zh-Hant`, while the
-  Apple slots were still drawn in the listing's tag). A test of `store-listing.test.mjs` holds both.
+- **A `drawnLocale` is a language with at most a region** (`zh-TW`, never `zh-Hant`). Robolectric draws every Play
+  screen in it and gets it as a resource qualifier: a script or a third part makes one it refuses, and every capture
+  of that device fails. A test of `store-listing.test.mjs` holds it.
 - **No `-u-` extension in a `drawnLocale`.** The library turns the tag into a resource qualifier (`es-rGQ`), which
   has no room for one.
 
@@ -695,7 +689,7 @@ The trade-off: Equatorial Guinea's separators are Spain's, a decimal comma and n
 the boat tour's dollars are "US$120" where the United States' wrote "$120", and a compact amount from 1000 up puts
 the symbol after ("1 mil €"). The trip's Statistics stays under it: its most expensive day is €678, so the chart's
 value lines stop at "€750". Changing the region is that one line of `locales.tsv` for the App Store's set, and
-`LATIN_AMERICAN_DRAWN_LOCALE` for Play's and the frames' banners, which nothing changes by itself
+`LATIN_AMERICAN_DRAWN_LOCALE` for Play's and Play's drawing, which nothing changes by itself
 ([the locale every image is drawn in](#the-locale-every-image-is-drawn-in)).
 
 The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's
@@ -717,9 +711,7 @@ usual). That entry point:
    changes with the screen's height (below the screen on the iPhone Duo closed), and the Mac's capture has
    nothing that taps.
 
-Each simulator's status bar is set to 9:41 with a full battery, and the frame draws no status bar over the capture.
-The capture's points must match the frame's screen (`AppleScreenshotSlot`), or the PNG is stretched. Check them
-after a library upgrade.
+Each simulator's status bar is set to 9:41 with a full battery, and the art draws no status bar over the capture.
 
 ### One language at a time
 
@@ -759,12 +751,11 @@ language's fault. When it fails again:
   The App Store captures failed for iphone63 (ja): the frame takes a slot only with every language
   ```
 
-What the frame does with such a slot: `stageAppStoreScreenshots` frames a slot only with every language. Without
-one of the iPhone's or the iPad's it stops, naming the slot and the language ("No iOS captures of iphone67 (ar)"),
-so nothing is staged and no listing gets a shelf short of a screen. A Duo's or the Mac's slot that misses a language
-isn't framed, with a warning: the Mac's listing then gets no screenshots, and the Duo's shelf takes that display's
-screens from the other one. The languages that did work are still in `build/outputs/`, so on a Mac only the failed
-one is taken again, then everything is framed:
+What the art does with such a slot: `compose.mjs` stops at a language with no capture ("No capture at …: run
+capture.sh"), so nothing is staged and no listing gets a shelf short of a screen, and `frame-app-store.sh` refuses
+to start without a folder for the iPhone's two sizes and the iPad. A Duo or Mac slot with no folder at all is left out
+of the run. The languages that did work are still in `build/outputs/`, so on a Mac only the failed one is taken
+again, then everything is drawn:
 
 ```bash
 STORE_SCREENSHOTS_SLOTS=iphone67 STORE_SCREENSHOTS_LOCALES=ar ./scripts/store-screenshots/capture-ios.sh
@@ -860,8 +851,8 @@ headless Chrome photograph it. Nothing to install: it drives the Chrome already 
   one day
   ([Google Play's daily save quota](#google-plays-daily-save-quota)).
 - **The generators run only when asked for.** They are the unit tests of `:android:store_screenshots`, but a
-  `./gradlew build` or `test` skips them. Only a `*StoreScreenshots` task, or
-  `:android:store_screenshots:testDebugUnitTest` asked for by name, draws the images.
+  `./gradlew build` or `test` skips them. Only `:android:store_screenshots:testDebugUnitTest` asked for by name with
+  `-PplayArt`, `-PcreativeAssets` or `-PreadmeHero` runs one, alone.
 - **Robolectric has no SDK 37**: the library pins SDK 35 for the generators.
 - **The Play tablets** render the screens' own layouts for a tablet lying down, at the tablet's size and not the
   canvas's, and the iPad capture is the iPad's real layout. Home on the 7" tablet (960 dp wide) is as tight as the
@@ -869,10 +860,8 @@ headless Chrome photograph it. Nothing to install: it drives the Chrome already 
   runs off the edge, where it scrolls.
 - **Robolectric lays every locale out left to right**, Arabic and Hebrew too: the library hands it the language,
   never a direction. A Play screen is therefore drawn in its set's own direction (`StoreLocale.layoutDirection`,
-  provided in `StoreScreenshots.shot`), or the Arabic listing shows Arabic words in a left-to-right layout, the back
-  arrow on the left, as every Play image was drawn until November 2026. Only the screen is turned: the device around it and the frame's status bar, its clock on the left,
-  stay as the library draws them, since a device isn't mirrored and the library's phone frame can't be told. An
-  Apple capture was taken in its language's direction on the simulator.
+  provided in `PlayArtCaptures`), or the Arabic listing shows Arabic words in a left-to-right layout, the back
+  arrow on the left. An Apple capture was taken in its language's direction on the simulator.
 - **Faces and group photos on Play** come through Coil's preview handler (`SamplePhotosComponent`), which answers at
   once. A real load would still be running when Robolectric captures.
 - **`ItemsEditorContent` is public** so the generator can draw "Bill items" without the ViewModel.

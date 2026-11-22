@@ -47,8 +47,8 @@ export const CHECKSUMS = "SHA256SUMS";
 export const MAX_ASSET_BYTES = 2 * 1024 ** 3;
 
 /**
- * The devices of each App Store version, by the suffix their images' file names end in (`appleDevices` and
- * `macDevices` of build-logic's StoreScreenshots.kt, which a test holds these to), with the size the frames draw
+ * The devices of each App Store version, by the suffix their images' file names end in (listing-art/stage-app-store.py
+ * writes them), with the size the listing art draws
  * each at (docs/store-listing-screenshots.md#what-the-images-show) and the shelf it goes on. The iPhone Duo's two
  * displays share one shelf of ten: App Store Connect has one device size for both.
  */
@@ -266,7 +266,7 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
   return { ...report, problems: problems.lines(report.locales.length) };
 }
 
-/** What a locale gets on each shelf, in words: `iPhone 6.3" 10, iPhone Duo 10 (5 open, 5 closed)`. */
+/** What a locale gets on each shelf, in words: `iPhone 6.3" 10, iPhone Duo 10 (3 open, 7 closed)`. */
 export function describeShelves(report) {
   return Object.entries(report.shelves)
     .map(([shelf, counts]) => {

@@ -10,7 +10,7 @@
 #   STORE_SCREENSHOTS_SLOTS=iphone63 STORE_SCREENSHOTS_LOCALES=en-US,ja STORE_SCREENSHOTS_SCREENS=group,items \
 #     ./scripts/store-screenshots/capture-ios.sh                # a quick look at a few
 #
-# Each slot's simulator is the one whose screen matches what the frame draws (AppleScreenshotSlot): Dynamic Island
+# Each slot's simulator is the one whose screen matches what the art draws (PLATFORMS of local-set.mjs): Dynamic Island
 # (medium), the size App Store Connect requires, from an iPhone 17 Pro (1206x2622); Dynamic Island (large) from an
 # iPhone 16 Plus (1290x2796); the 13" iPad from an iPad Air 13" lying down (2732x2048), which the test turns and
 # switches to full-screen apps: upright, the sidebar the iPad opens with covers the screen; the iPhone Duo, on the
@@ -36,8 +36,7 @@
 # (STORE_SCREENSHOTS_SLOTS and STORE_SCREENSHOTS_LOCALES, which keep the others' PNGs). A third failed language ends
 # the slot, though: by then it is the slot that fails, and a failure that hangs for minutes, twice per language,
 # would use up a release job's time. The script then fails at the end, naming every slot and language that failed.
-# The frame (`./gradlew stageAppStoreScreenshots`) takes a slot only with every language: it stops without one of
-# the iPhone's or the iPad's, and doesn't frame an iPhone Duo's or the Mac's slot that misses one.
+# The art (listing-art/compose.mjs) stops at a language with no capture, so nothing is staged with a shelf short of one.
 
 set -eo pipefail
 

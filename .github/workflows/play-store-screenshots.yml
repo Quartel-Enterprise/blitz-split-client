@@ -58,7 +58,7 @@ jobs:
   # No environment here: this job reaches no store and reads no store's secret, and its own step checks the branch.
   draw:
     name: Draw the screenshots
-    runs-on: ubuntu-latest
+    runs-on: xcode-27
     timeout-minutes: 60
     permissions:
       contents: read
