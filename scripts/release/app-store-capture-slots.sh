@@ -12,8 +12,8 @@
 #     they are part of;
 #   - the Mac's with `screenshots_mac`, in a run that releases macOS;
 #   - the iPhone's two sizes and the iPad's whenever anything of the App Store's is made, with no marker: they are
-#     the iOS listing's own, and the frames of every device, the Mac's too, can't be drawn without them
-#     (stageAppStoreScreenshots fails).
+#     the iOS listing's own, and the art of every device, the Mac's too, can't be drawn without them
+#     (listing-art/frame-app-store.sh refuses).
 #
 # Prints nothing when no slot is captured, a run of the Mac alone without its marker: an empty array would fail the
 # matrix, and the job skips on an empty answer.

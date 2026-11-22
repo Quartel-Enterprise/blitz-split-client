@@ -47,8 +47,8 @@ export const CHECKSUMS = "SHA256SUMS";
 export const MAX_ASSET_BYTES = 2 * 1024 ** 3;
 
 /**
- * The devices of each App Store version, by the suffix their images' file names end in (`appleDevices` and
- * `macDevices` of build-logic's StoreScreenshots.kt, which a test holds these to), with the size the frames draw
+ * The devices of each App Store version, by the suffix their images' file names end in (listing-art/stage-app-store.py
+ * writes them), with the size the listing art draws
  * each at (docs/store-listing-screenshots.md#what-the-images-show) and the shelf it goes on. The iPhone Duo's two
  * displays share one shelf of ten: App Store Connect has one device size for both.
  */

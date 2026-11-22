@@ -212,7 +212,7 @@ doesn't go unnoticed. Google Play has no such warning: a run of Android alone sa
 With `screenshots` on, a run that releases makes the listings' screenshots again
 ([store-listing-screenshots.md](store-listing-screenshots.md)), as Bible Planner's releases do:
 
-- **Google Play**, after the bundle reached the production track: `android-screenshots-render` draws them next to
+- **Google Play**, after the bundle reached the production track: `android-screenshots-render` draws them, on a Mac runner, next to
   the build (the [`play-screenshots-draw`](../.github/actions/play-screenshots-draw/action.yml) action), and
   `android-screenshots` uploads the ones that changed, a few locales per "send 1 of 5: \<locales\>" job (the jobs
   of [`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml), which also send
@@ -222,8 +222,8 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
 - **App Store**, before the submission, since a version in review can't take them, and only in a run that submits:
   `app-store-versions` creates the version (as it does in every run that submits, so the previous version's
   screenshots are copied into it long before anything looks at them), `apple-screenshots-capture` runs the UI tests on one simulator per slot
-  and, for the Mac, photographs the app's window on the runner's own screen, `apple-screenshots-frame` frames the
-  captures, and `ios-screenshots` and `macos-screenshots` upload them, one "send \<locale\>" job each, then
+  and, for the Mac, photographs the app's window on the runner's own screen, `apple-screenshots-frame` draws the
+  listing art from the captures (on a Mac runner, with Chrome), and `ios-screenshots` and `macos-screenshots` upload them, one "send \<locale\>" job each, then
   "tidy up", which sorts every shelf and fails, naming it, on a shelf that doesn't hold every screen once
   ([Repairing shelves](store-listing-screenshots.md#repairing-shelves)), without stopping the release (the jobs of
   [`app-store-screenshots-upload.yml`](../.github/workflows/app-store-screenshots-upload.yml), which a set made on
@@ -288,8 +288,8 @@ says them in the run summary
 `apple-screenshots-capture` is one job per slot of that list: a device left out starts no Mac runner, where a job
 that started only to stop would hold one.
 
-- **The iPhone's two sizes and the iPad's have no marker.** The frames of every device, the Mac's too, can't be
-  drawn without them (`stageAppStoreScreenshots` fails), so a run without one of them would frame and upload
+- **The iPhone's two sizes and the iPad's have no marker.** The art of every device, the Mac's too, can't be
+  drawn without them (`frame-app-store.sh` refuses), so a run without one of them would draw and upload
   nothing.
 - **A marker does nothing without `screenshots`**, which stays the switch for all of it: `plan` warns about a run
   that turns one on with `screenshots` off, and so does `release-production.sh`.
@@ -387,7 +387,7 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to A
 
 ### Google Play's screenshots alone
 
-Google Play's screenshots are drawn by Robolectric, on any machine, and Google Play shows them to everyone the
+Google Play's screenshots are drawn from Robolectric's screens by Chrome, on a Mac runner, and Google Play shows them to everyone the
 moment they change, whatever release is out. So they don't need a release, and the
 [`play-store-screenshots`](../.github/workflows/play-store-screenshots.yml) workflow sends them without one
 ([Sending Google Play's alone](store-listing-screenshots.md#sending-google-plays-alone)):

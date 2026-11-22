@@ -113,8 +113,8 @@ internal class PlayArtCaptures(
 
         @JvmStatic
         @ParameterizedRobolectricTestRunner.Parameters(name = "{0} {1} {2}")
-        fun cases(): List<Array<Any>> = PlayArtDevice.entries.flatMap { device ->
-            storeLocales.flatMap { locale ->
+        fun cases(): List<Array<Any>> = artDevicesOf(System.getenv("ART_DEVICES")).flatMap { device ->
+            artLocalesOf(System.getenv("ART_LOCALES")).flatMap { locale ->
                 PlayArtScreen.entries
                     .filter { it != PlayArtScreen.PAY || locale.tag == BRAZIL }
                     .map { screen -> arrayOf(device, locale, screen) }
@@ -122,6 +122,22 @@ internal class PlayArtCaptures(
         }
     }
 }
+
+// ART_LOCALES=en-US,ja draws those listing tags alone, as compose.mjs reads it; unset or empty, every language.
+private fun artLocalesOf(tags: String?): List<StoreLocale> = tags
+    ?.takeIf { it.isNotBlank() }
+    ?.split(',')
+    ?.map { it.trim() }
+    ?.let { wanted -> storeLocales.filter { it.tag in wanted } }
+    ?: storeLocales
+
+// ART_DEVICES=play_phone,play_tablet_10 captures the devices those compose.mjs names are drawn from; unset or empty, all.
+private fun artDevicesOf(names: String?): List<PlayArtDevice> = names
+    ?.takeIf { it.isNotBlank() }
+    ?.split(',')
+    ?.map { it.trim() }
+    ?.let { wanted -> PlayArtDevice.entries.filter { device -> device.artDevices.any { it in wanted } } }
+    ?: PlayArtDevice.entries
 
 /** What Robolectric's qualifiers call a locale: "pt-BR" is "pt-rBR". */
 private val StoreLocale.qualifier: String

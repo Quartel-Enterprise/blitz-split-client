@@ -552,7 +552,7 @@ jobs:
     name: Android, draw the store listing screenshots
     needs: plan
     if: ${{ inputs.screenshots && inputs.android && inputs.track == 'production' }}
-    runs-on: ubuntu-latest
+    runs-on: xcode-27
     timeout-minutes: 60
     outputs:
       locales: ${{ steps.draw.outputs.locales }}
@@ -720,7 +720,16 @@ jobs:
         env:
           STORE_SCREENSHOTS_SLOTS: ${{ matrix.slot }}
           STORE_SCREENSHOTS_OPEN_TIMEOUT: 30
-        run: ./scripts/store-screenshots/capture-ios.sh
+        run: |
+          # The art's screens: the nine of screens.tsv, then "Dividir" and, in Brazil's listing, "Pagar Carla".
+          # The iPhone Duo's two displays are captured as the listing's own list says (capture-ios.sh), the art
+          # taking the group, Balances and Statistics from the open one.
+          if [ "$STORE_SCREENSHOTS_SLOTS" = iphoneduoopen ]; then
+            STORE_SCREENSHOTS_SCREENS=group,balances,statistics ./scripts/store-screenshots/capture-ios.sh
+            STORE_SCREENSHOTS_TABLE=art-screens STORE_SCREENSHOTS_SCREENS=splitmodes ./scripts/store-screenshots/capture-ios.sh
+          else
+            ART_SLOTS="$STORE_SCREENSHOTS_SLOTS" ./scripts/store-screenshots/listing-art/capture.sh
+          fi
 
       # The runner has no signing account, so the app is signed to run locally and without its entitlements, which
       # only a provisioning profile could grant. The script fails where it isn't allowed to record the screen, and
@@ -731,7 +740,10 @@ jobs:
         if: ${{ matrix.slot == 'mac' }}
         env:
           STORE_SCREENSHOTS_BUILD_SETTINGS: CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER= CODE_SIGN_ENTITLEMENTS=
-        run: ./scripts/store-screenshots/capture-mac.sh
+        run: |
+          ./scripts/store-screenshots/capture-mac.sh
+          STORE_SCREENSHOTS_TABLE=art-screens STORE_SCREENSHOTS_SCREENS=splitmodes ./scripts/store-screenshots/capture-mac.sh
+          STORE_SCREENSHOTS_TABLE=art-screens STORE_SCREENSHOTS_SCREENS=pay STORE_SCREENSHOTS_LOCALES=pt-BR ./scripts/store-screenshots/capture-mac.sh
 
       # Also when the simulator's capture failed on a language, with the languages it did capture: the frame takes
       # none of a slot that misses one, but they are there to download, so a person who captures the missing language
@@ -749,15 +761,15 @@ jobs:
           if-no-files-found: ${{ steps.simulator.outcome == 'failure' && 'ignore' || 'error' }}
           overwrite: true
 
-  # Robolectric puts each capture into its device's frame, with the banner (any machine does it). The Gradle task
-  # fails without the iPhone's and the iPad's captures; the iPhone Duo's and the Mac's are framed when they are there,
-  # so a device the run left out, like one whose capture failed, only leaves its own images out: with no Mac capture
-  # `mac_locales` is empty, and the Mac's upload and tidy-up jobs skip.
+  # Chrome lays each capture out in the listing art's design (listing-art/compose.mjs), on a Mac runner, whose fonts
+  # and Chrome the art is drawn with. The script fails without the iPhone's and the iPad's captures; the iPhone Duo's
+  # and the Mac's are drawn when they are there, so a device the run left out, like one whose capture failed, only
+  # leaves its own images out: with no Mac capture `mac_locales` is empty, and the Mac's upload and tidy-up jobs skip.
   apple-screenshots-frame:
     name: App Store, frame the screenshots
     needs: [plan, apple-screenshots-capture]
     if: ${{ !cancelled() && needs.apple-screenshots-capture.result != 'skipped' }}
-    runs-on: ubuntu-latest
+    runs-on: xcode-27
     timeout-minutes: 60
     continue-on-error: true
     outputs:
@@ -789,8 +801,21 @@ jobs:
           merge-multiple: true
           path: build/outputs/apple-screenshot-captures
 
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      # In a virtual environment of its own, which the runner's Python allows whatever its pip: the system's refuses
+      # installs, and --break-system-packages doesn't exist on an older pip.
+      - name: Install Pillow
+        run: |
+          python3 -m venv "$RUNNER_TEMP/art-venv"
+          "$RUNNER_TEMP/art-venv/bin/pip" install pillow
+          echo "$RUNNER_TEMP/art-venv/bin" >> "$GITHUB_PATH"
+
       - name: Frame the screenshots
-        run: ./gradlew stageAppStoreScreenshots
+        run: ./scripts/store-screenshots/listing-art/frame-app-store.sh
 
       # The upload jobs' matrices, read off what was staged: empty for a store with nothing to send. Set last, so only
       # a job that framed them says so. Read into variables first, so a script that fails stops the step.

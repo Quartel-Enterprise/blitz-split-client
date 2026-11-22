@@ -15,7 +15,6 @@ import {
   PLATFORMS,
   REPOSITORY,
   SET_NAME,
-  SHELF_LABELS,
   SetError,
   TAG_PREFIX,
   checkPlatform,
@@ -37,7 +36,7 @@ const REPO_ROOT = join(HERE, "../..");
 const SCRIPT = join(HERE, "local-set.mjs");
 const LOCALES = listingLocales();
 const SCREENS = listingScreens();
-// The iPhone Duo's shelf as it is staged: five screens open, five closed (duoScreensStagedOpen).
+// The iPhone Duo's shelf as it is staged: five screens open, five closed .
 const OPEN = ["01_group", "04_balances", "06_statistics", "07_home", "09_activity"];
 
 let root;
@@ -231,23 +230,6 @@ describe("the set's folders and options", () => {
     assert.throws(() => parseArguments(["--name"]), SetError);
     assert.throws(() => parseArguments(["--force"]), SetError);
     assert.throws(() => parseArguments(["one", "two"]), SetError);
-  });
-
-  // A device the frames gain must get its size here, or its images are refused as named after no device.
-  test("knows the devices the frames are staged under", () => {
-    const source = readFileSync(join(REPO_ROOT, "build-logic/convention/src/main/kotlin/com/quare/blitzsplit/buildlogic/StoreScreenshots.kt"), "utf8");
-    const constants = Object.fromEntries([...source.matchAll(/private const val (\w+) = "([^"]+)"/g)].map(([, name, value]) => [name, value]));
-    const stagedAs = (name) => {
-      const map = source.match(new RegExp(`private val ${name} = mapOf\\(([\\s\\S]*?)\\)\\n`));
-      assert.ok(map, `no ${name} in StoreScreenshots.kt`);
-      return [...map[1].matchAll(/to "([^"]+)"/g)].map(([, device]) => device).sort();
-    };
-    assert.ok(constants.DUO_OPEN, "the constants of StoreScreenshots.kt are read");
-    assert.deepEqual(Object.keys(PLATFORMS.ios.devices).sort(), stagedAs("appleDevices"));
-    assert.deepEqual(Object.keys(PLATFORMS.mac.devices).sort(), stagedAs("macDevices"));
-    for (const { devices } of Object.values(PLATFORMS)) {
-      for (const { shelf } of Object.values(devices)) assert.ok(SHELF_LABELS[shelf], `${shelf} has a name`);
-    }
   });
 
   test("reads a PNG's size off its header, and whether it ends as one", () => {

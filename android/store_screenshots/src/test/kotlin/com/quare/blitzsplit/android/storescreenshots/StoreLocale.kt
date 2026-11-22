@@ -5,17 +5,15 @@ import com.quare.blitzsplit.android.designsystem.format.isRightToLeft
 import java.util.Locale
 
 /**
- * A language of the listings. [tag] names the generated folder; [language] picks the sample trip and the banner copy:
+ * A language of the listings. [tag] names the generated folder; [language] picks the sample trip:
  * the app language's code, Portugal's Portuguese by its whole tag (pt-PT), since "pt" is Brazil's, and Spain's Spanish
- * by its own (es-ES), since "es" is Latin America's. [drawnLocale] is what Robolectric draws in, the Play screens and
- * the banner over an Apple capture alike, so it is always a language with at most a region, never a script: the
+ * by its own (es-ES), since "es" is Latin America's. [drawnLocale] is what Robolectric draws the Play screens in, so it is always a language with at most a region, never a script: the
  * resources' language and the region the amounts, dates and hours are written in, the tag itself for every set but
  * Latin America's Spanish, Chinese, drawn in zh-CN for mainland China's yuan, Hebrew, drawn in iw-IL, the legacy
  * code Android's values-iw answers to, Thai, drawn in th-TH for the baht, Vietnamese, drawn in vi-VN for the
  * đồng, Traditional Chinese, drawn in zh-TW for the New Taiwan dollar, Swedish, drawn in sv-SE for the krona,
  * Czech, drawn in cs-CZ for the koruna, Bengali, drawn in bn-BD for the taka, and Malay, drawn in ms-MY for the
- * ringgit. The stores' own codes (es-419, es-MX…) come from the tags in the staging tasks of build-logic's
- * StoreScreenshots.kt.
+ * ringgit. The stores' own codes (es-419, es-MX…) come from the tags in scripts/release/store-listing.mjs.
  */
 internal data class StoreLocale(
     val tag: String,
@@ -26,7 +24,7 @@ internal data class StoreLocale(
 /**
  * The way the set's language is read: right to left for Arabic and Hebrew, by the app's own rule, the one its arrows
  * turn by. Robolectric draws every locale left to right unless told otherwise, so a Play screen is handed this
- * (StoreScreenshots).
+ * (PlayArtCaptures).
  */
 internal val StoreLocale.layoutDirection: LayoutDirection
     get() = if (Locale.forLanguageTag(drawnLocale).isRightToLeft()) LayoutDirection.Rtl else LayoutDirection.Ltr

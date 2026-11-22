@@ -5,8 +5,8 @@ plugins {
 }
 
 // The store listing screenshots (docs/store-listing-screenshots.md). Nothing ships from here: the generators are
-// the unit tests, which draw the real Compose screens from the sample trip inside the store-screenshots frames
-// under Robolectric (Google Play), and frame the screens the iOS UI tests captured on the simulator (App Store).
+// the unit tests, which draw the bare Compose screens from the sample trip under Robolectric (Google Play's art), what
+// the App Store's tickets write and the README's Android phone. scripts/store-screenshots/listing-art lays them out.
 android {
     testOptions {
         unitTests {

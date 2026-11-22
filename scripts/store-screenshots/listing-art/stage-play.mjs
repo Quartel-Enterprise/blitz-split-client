@@ -1,0 +1,47 @@
+// Stages Google Play's listing art (store_listings/listing-art/play_*) where supply uploads it from:
+// fastlane/metadata/android/<Play locale>/images/<image type>/, each image under the name compose.mjs gave it (the
+// stores sort a shelf by file name, so the art's order is kept). Latin America's Spanish goes to each of Play's
+// regional codes, as the listing text does (scripts/release/store-listing.mjs).
+//
+//   node scripts/store-screenshots/listing-art/stage-play.mjs
+//
+// The foldable art (play_foldable_*) is not staged: supply has no image type for it, so it goes up by hand in the
+// Play Console, from store_listings/listing-art/.
+import { copyFile, mkdir, readdir, readFile, rm } from "node:fs/promises";
+import { join } from "node:path";
+import { PLAY_LOCALES } from "../../release/store-listing.mjs";
+
+const ROOT = join(import.meta.dirname, "../../..");
+const ART = join(ROOT, "store_listings/listing-art");
+const METADATA = join(ROOT, "fastlane/metadata/android");
+const IMAGE_TYPES = { play_phone: "phoneScreenshots", play_tablet_7: "sevenInchScreenshots", play_tablet_10: "tenInchScreenshots" };
+const IMAGES_PER_DEVICE = 8;
+
+const rows = (await readFile(join(ROOT, "scripts/store-screenshots/locales.tsv"), "utf8")).split("\n").filter((row) => row.trim() && !row.startsWith("#"));
+const languageOf = Object.fromEntries(rows.map((row) => row.split("\t")).map(([tag, language]) => [tag, language]));
+
+// The locales to stage: ART_LOCALES's, or every one the art was drawn in. A language with no art is left as it is.
+const wanted = process.env.ART_LOCALES ? process.env.ART_LOCALES.split(",") : Object.keys(languageOf);
+const unknown = wanted.filter((tag) => !languageOf[tag]);
+if (unknown.length) throw new Error(`locales.tsv has no ${unknown.join(", ")}`);
+
+let staged = 0;
+for (const tag of wanted) {
+  const playLocales = PLAY_LOCALES[languageOf[tag]];
+  if (!playLocales) throw new Error(`store-listing.mjs has no Play locale for ${tag}`);
+  for (const playLocale of playLocales) await rm(join(METADATA, playLocale, "images"), { recursive: true, force: true });
+  for (const [device, imageType] of Object.entries(IMAGE_TYPES)) {
+    const folder = join(ART, device, tag);
+    const images = (await readdir(folder).catch(() => [])).filter((name) => name.endsWith(".png")).sort();
+    if (images.length !== IMAGES_PER_DEVICE) throw new Error(`${device} ${tag} has ${images.length} images, Google Play's shelf takes ${IMAGES_PER_DEVICE}: run compose.mjs`);
+    for (const playLocale of playLocales) {
+      const target = join(METADATA, playLocale, "images", imageType);
+      await mkdir(target, { recursive: true });
+      for (const image of images) {
+        await copyFile(join(folder, image), join(target, image));
+        staged++;
+      }
+    }
+  }
+}
+console.log(`Staged ${staged} images into ${METADATA}`);

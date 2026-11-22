@@ -1,5 +1,5 @@
 # The listing screens the Apple captures open: the code the app opens it by, the file it is written to (its shelf
-# order, the same names as StoreScreen in :android:store_screenshots) and its theme.
+# order, the names the art's captures are read under) and its theme.
 # code	fileName	theme
 group	01_group	dark
 items	02_split_by_items	dark
