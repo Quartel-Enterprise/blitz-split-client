@@ -13,6 +13,7 @@ A stable version's:
 | Platform | Channel |
 | --- | --- |
 | Android | Google Play, the track of the run ([What the stores and the web get](#what-the-stores-and-the-web-get)) |
+| Wear OS | Google Play, the same track of the Wear OS form factor ([The watch on Google Play](#the-watch-on-google-play)) |
 | iOS and macOS | The App Store, after Apple's review |
 | Web | Cloudflare Pages, project `blitz-split`: https://app.blitzsplit.com ([The production web app](#the-production-web-app)) |
 
@@ -116,8 +117,11 @@ version: `plan` warns about it at once, in the run summary, while the web job st
    where each platform goes and the notes.
 2. Each platform builds and publishes, in jobs of its own, so **Re-run failed jobs** sends a failed upload again
    without building a second time. The bundle, the IPA and the package are kept as build artifacts for a week.
-   - `android-build` signs an AAB (`:androidApp:bundleRelease`) and prints its certificate, and `android-upload`
-     sends it to the track with the notes ([What the stores and the web get](#what-the-stores-and-the-web-get)).
+   - `android-build` signs two AABs, the phone's and the watch's (`:androidApp:bundleRelease
+     :wearApp:bundleRelease`), checks both carry the release key and prints its certificate. `android-upload`
+     sends the phone's to the track with the notes ([What the stores and the web get](#what-the-stores-and-the-web-get)),
+     then `wear-upload` sends the watch's to the same track of the Wear OS form factor
+     ([The watch on Google Play](#the-watch-on-google-play)).
    - `ios-build` and `ios-upload`, `macos-build` and `macos-upload` are the betas' jobs: the build lands on
      TestFlight. `ios-submit` and `macos-submit` then send it for review, with `submit_for_review`.
    - `web` builds the web app at the stable version and deploys it to the Pages project `blitz-split`, with the
@@ -193,6 +197,34 @@ read them ([Secrets](#secrets)).
   its production branch isn't `main`, which would make the deployment a preview no domain serves. It warns when the
   project doesn't serve the domain yet ([The production web app](#the-production-web-app)).
 
+#### The watch on Google Play
+
+The Wear OS app (`:wearApp`, [product/watch.md](product/watch.md)) ships with every stable version that has
+`android` on, at the phone's version: one listing, one applicationId (`com.quare.blitzsplit`), one key, since Wear
+OS's Data Layer only links the phone's and the watch's apps when both match. Its `versionCode` is the phone's +
+1,000,000 (`wearVersionCodeOffset` in `wearApp/build.gradle.kts`), so the watch's never takes a code a later phone
+bundle needs.
+
+- **Its own tracks.** Google Play gives a form factor tracks of its own, and the API names them
+  `<form factor>:<track>`: `wear-upload` runs `play_upload ... form_factor:wear`, which sends the watch's bundle to
+  the Wear OS track that mirrors the run's `track` (`wear:production`, `wear:beta`, `wear:alpha`, and `wear:qa` for
+  `internal`), with the same notes and, on production, the same `rollout`.
+- **After the phone's.** Google Play drops an edit still open when another one commits, so the two bundles go one
+  after the other, the phone's first, and the screenshots' jobs wait for both to be over. A failed `wear-upload` doesn't hold
+  the release back: it is tagged on the phone's result, the GitHub release's Android row says `success (watch:
+  failure)`, and the run's Google Play screenshots still go, since they only need the phone's bundle to have landed.
+  **Re-run failed jobs** then sends only the watch's bundle again.
+- **Firebase.** `wearApp/google-services.json` is not committed either: `android-build` writes the phone's
+  (`GOOGLE_SERVICES_JSON`) there too, since the Firebase Android app is chosen by the package name, which the watch
+  shares. No secret of its own.
+- **Betas** don't build the watch: Firebase App Distribution installs on phones, and a watch app gets to testers
+  through Play's Wear OS testing tracks (a stable run with `track` `internal`, `alpha` or `beta` and `web` off).
+- **Once, in the Play Console**: add the Wear OS form factor (Test and release › Advanced settings › Form factors ›
+  Add form factor › Wear OS), which creates its tracks, and make the closed testing track of the Wear OS form factor
+  named `alpha` if the watch should follow the phone's `alpha` runs. Then the listing needs its Wear OS screenshots
+  and Play's Wear OS review (the app quality guidelines) before the watch's production release goes out. Until the
+  form factor exists, `wear-upload` fails, and the phone's release and its screenshots go on.
+
 ### Screenshots with a release
 
 **For the App Store, leave it off today and send the screenshots from a Mac first**
@@ -217,7 +249,7 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   `android-screenshots` uploads the ones that changed, a few locales per "send 1 of 5: \<locales\>" job (the jobs
   of [`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml), which also send
   them without a release). Play shows a listing's screenshots to everyone at once, so a testing track brings none.
-  **The bundle always goes first**: `android-screenshots` needs `android-upload`, so the bundle is never the save
+  **The bundles always go first**: `android-screenshots` needs `android-upload` to have landed and `wear-upload` to be over, so a bundle is never the save
   the run's own screenshots left without quota ([Google Play's daily save quota](#google-plays-daily-save-quota)).
 - **App Store**, before the submission, since a version in review can't take them, and only in a run that submits:
   `app-store-versions` creates the version (as it does in every run that submits, so the previous version's
@@ -231,9 +263,9 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   iPhone's and the iPad's, plus the iPhone Duo's and the Mac's when the run asks for them
   ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)).
 
-**The captures say which language they are on.** A slot's job captures its 29 languages one after the other, each
+**The captures say which language they are on.** A slot's job captures its 31 languages one after the other, each
 a run of the UI test of its own, about an hour and a half in all. Open the job's "Capture on the simulator" step:
-every language has a "Capturing <slot>: <language> (2 of 29)" line there, folded over xcodebuild's output for it,
+every language has a "Capturing <slot>: <language> (2 of 31)" line there, folded over xcodebuild's output for it,
 and a "Captured" one once it is done, with the time it took and about how many minutes the slot still takes. When
 the job ends, its summary on the run's page has the table of the languages, each with its result and its time. A
 language that fails is tried once more; failing again, the job goes on with the others (a third failed language
@@ -245,8 +277,8 @@ the language and the screen it stops at.
 
 **The uploads are split into jobs**, one after the other, on each store (Bible Planner's releases lost a whole
 upload to one image Google Play answered with a server error): what a store refused is all that failed, and the
-rest is up. On the App Store a job sends one locale, which adds up over its 29 (not timed yet). On Google Play a
-job sends a few, six unless the caller says otherwise, through one Play edit: six jobs for its 31 locales, since
+rest is up. On the App Store a job sends one locale, which adds up over its 31 (not timed yet). On Google Play a
+job sends a few, six unless the caller says otherwise, through one Play edit: six jobs for its 33 locales, since
 each edit Google Play saves counts against [a daily quota](#google-plays-daily-save-quota) that one job per locale
 ran out of (27 saves a set, about two minutes a locale, in the first release that ran them, 3.0.0). The submission
 waits for the App Store's, and the next release or beta for them all, since they share the `release` group.
@@ -405,7 +437,7 @@ gh workflow run play-store-screenshots.yml                         # draw them a
   ([`no-run-going`](../.github/actions/no-run-going/action.yml)): the workflow refuses to start while a stable
   release or a run of `store-listing` is in progress or waiting, each of its upload jobs checks again, and a stable
   release refuses to start while a run of it isn't over, whatever its platforms, `plan` failing however the release
-  was dispatched and `release-production.sh` saying so first. Six jobs for Play's 31 locales, not timed yet (one
+  was dispatched and `release-production.sh` saying so first. Six jobs for Play's 33 locales, not timed yet (one
   job per locale took about an hour).
 - **After the release when both happen on one day**: each job that changes something is a save of
   [Google Play's daily save quota](#google-plays-daily-save-quota), and so is the release's bundle, which must not
@@ -509,7 +541,7 @@ Repository secrets and variables (**Settings → Secrets and variables → Actio
 | --- | --- |
 | `ANDROID_KEYSTORE_BASE64` | The release keystore, `base64 -i release.jks`. The same key every beta, or testers cannot update, and Google sign in is registered for its SHA-1. Google Play takes a stable version's bundle only when this is the app's **upload key** (Play Console › Test and release › App integrity › App signing): `android-build` prints the certificate's SHA-1 to compare. If it isn't, put the upload key's keystore here or ask Play to reset the upload key to this one |
 | `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | Its store password, alias and key password |
-| `GOOGLE_SERVICES_JSON` | `androidApp/google-services.json`, `base64 -i` encoded: the file is not committed |
+| `GOOGLE_SERVICES_JSON` | `androidApp/google-services.json`, `base64 -i` encoded: the file is not committed. The `android-build` action writes it to `wearApp/` too, since the watch has the phone's package name |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | A service account key (JSON) with the **Firebase App Distribution Admin** role on `blitz-split` |
 | `PLAY_STORE_SERVICE_ACCOUNT_JSON` | For the stable versions: the key (the JSON itself, not base64) of a Google Cloud service account that the Play Console knows ([Google Play access](#google-play-access)) |
 | `GOOGLE_SERVICE_INFO_PLIST` | `iosApp/Resources/GoogleService-Info.plist`, `base64 -i` encoded |
@@ -590,8 +622,10 @@ The iOS and macOS betas sign with the team's **Apple Distribution** certificate 
 `com.quare.blitzsplit`, which [fastlane match](https://docs.fastlane.tools/actions/match/) keeps encrypted in the
 private repository `Quartel-Enterprise/bible-planner-certs`, shared with Bible Planner (same team, `TTV2A365LG`). The
 `apple_signing` lane of [`fastlane/Fastfile`](../fastlane/Fastfile) fetches them read-only into a temporary keychain,
-switches the app target's Release configuration to manual signing (the committed `project.yml` keeps automatic
-signing for local builds), sets `aps-environment` to `production`, and writes the export options. The macOS package
+switches the Release configuration of the app target and what it embeds (the iPhone's balance widget,
+`com.quare.blitzsplit.BalanceWidget`, the Apple Watch app, `com.quare.blitzsplit.watchkitapp`, and its complications,
+`com.quare.blitzsplit.watchkitapp.BalanceWidget`, each with profiles of its own) to manual signing (the committed `project.yml`
+keeps automatic signing for local builds), sets `aps-environment` to `production`, and writes the export options. The macOS package
 also needs the team's **Mac Installer Distribution** certificate, which the repository holds.
 
 Why not Xcode's cloud-managed certificate, which the betas used first: the certificate's name is "Apple
@@ -605,13 +639,47 @@ Store profiles of `com.quare.blitzsplit` and the iOS ad hoc one (match reuses th
 repository). The iOS job fetches the ad hoc profile too, so without it the iOS beta fails, TestFlight included:
 
 ```bash
-fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match appstore --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget,com.quare.blitzsplit.watchkitapp,com.quare.blitzsplit.watchkitapp.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 fastlane match appstore --platform macos --additional_cert_types mac_installer_distribution --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
-fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget,com.quare.blitzsplit.watchkitapp,com.quare.blitzsplit.watchkitapp.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 ```
 
 A capability added to the App ID later (Sign in with Apple, push, associated domains) needs the profiles made again:
 the same commands with `--force`.
+
+The balance widget reads the file the iPhone app writes to the App Group `group.com.quare.blitzsplit`, so before the
+first iOS beta that has it, once, on developer.apple.com › Certificates, Identifiers & Profiles: create the App Group
+`group.com.quare.blitzsplit`, register the App ID `com.quare.blitzsplit.BalanceWidget`, turn App Groups on for it and
+for `com.quare.blitzsplit` with that group, then make the iOS profiles again (the two iOS commands above with
+`--force`). Until then match finds no profile for the widget and the iOS beta fails; the macOS one, which has no
+widget, doesn't change.
+
+### The Apple Watch app
+
+The iPhone app's archive carries the Apple Watch app (`BoraRachar-watchOS`, in its `Watch/` folder) and the watch app
+carries its complications (`BalanceWidget-watchOS`): App Store Connect ships them together, and the watch's App Store
+installs the watch app on its own too (`WKRunsIndependentlyOfCompanionApp`). So before the first iOS beta that has
+them, once, on developer.apple.com › Certificates, Identifiers & Profiles (nothing else changes on the account):
+
+1. Register the App ID `com.quare.blitzsplit.watchkitapp` (an iOS App ID; App Store Connect has no watchOS platform of
+   its own) with **App Groups** (`group.com.quare.blitzsplit`) and **Push Notifications**: the watch gets its own pushes
+   ([watch.md](product/watch.md#notifications)).
+2. Register the App ID `com.quare.blitzsplit.watchkitapp.BalanceWidget` with **App Groups** (`group.com.quare.blitzsplit`).
+   A watch's App Group is its own container, so the same group id shares nothing with the iPhone.
+3. Make the iOS profiles again, App Store and ad hoc: the two iOS commands above with `--force` (their identifiers
+   already list the watch's two).
+4. The APNs key the server uses already covers every app of the team, but the server sends each push with its app's
+   bundle id as the topic: the watch's tokens (`push_devices.platform = 'watchos'`) need the `push` edge function to
+   send them with `com.quare.blitzsplit.watchkitapp` (blitz-split-api).
+
+Until then match finds no profile for the watch's ids and the iOS beta fails at signing; the macOS one doesn't change.
+A local build signs automatically, so Xcode registers the two ids itself on the team the first time it builds the
+watch app for a device.
+
+The Shared framework has no `arm64` watchOS slice yet, only `arm64_32` (docs/architecture/stack.md#watchos), and the
+watch app's Release build leaves `arm64` out (`ARCHS[sdk=watchos*]`). Before the first watch release, check in App
+Store Connect that the upload is accepted: if Apple asks for the 64-bit slice, the watch app waits for
+`watchosDeviceArm64` (lifecycle-viewmodel and supabase-kt) or ships in a later version.
 
 ## iOS on Firebase App Distribution
 
@@ -631,7 +699,7 @@ To add a tester's iPhone:
 3. Make the ad hoc profile again with the new device, from a Mac with the passphrase:
 
    ```bash
-   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
+   fastlane match adhoc --platform ios --force_for_new_devices --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget,com.quare.blitzsplit.watchkitapp,com.quare.blitzsplit.watchkitapp.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
    ```
 
 4. Add the tester to the group: `firebase appdistribution:testers:add --group-alias ios-beta --project blitz-split <email>`.

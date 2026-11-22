@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">نوٹیفکیشنز</string>
+    <string name="notification_settings_denied_title">Android پر Blitz Split کے نوٹیفکیشنز بند ہیں۔</string>
+    <string name="notification_settings_denied_body">نیچے دیے گئے پُش پانے کے لیے سسٹم ترتیبات میں انہیں آن کریں۔ گھنٹی کام کرتی رہے گی۔</string>
+    <string name="notification_settings_open_settings">ترتیبات کھولیں</string>
+    <string name="notification_settings_refused_body">نیچے دیے گئے پُش پانے کے لیے Android آپ کو انہیں ایک بار اور اجازت دینے دیتا ہے۔ گھنٹی کام کرتی رہے گی۔</string>
+    <string name="notification_settings_turn_on">آن کریں</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Android میں بلاک ہے</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">%1$s کے لیے Android ترتیبات کھولیں</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">پُش نوٹیفکیشنز</string>
+    <string name="notification_settings_push_switch_detail">صرف اس ڈیوائس پر</string>
+    <string name="notification_settings_section">مجھے ان کے بارے میں بتائیں</string>
+    <string name="notification_settings_push">پُش</string>
+    <string name="notification_settings_in_app">ایپ میں</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s، %2$s</string>
+    <string name="notification_settings_legend">پُش اس ڈیوائس پر نوٹیفکیشن بھیجتا ہے۔ ایپ میں اسے گھنٹی اور سرگرمی میں نیا دکھاتا ہے؛ بند ہونے پر بھی یہ سرگرمی میں پڑھا ہوا دکھائی دیتا ہے۔</string>
+    <string name="notification_settings_footer">اطلاعات انٹرنیٹ ہونے پر آتی ہیں۔ کسی گروپ کو میوٹ کرنے کے لیے اس کے اندر کا مینو استعمال کریں۔</string>
+</resources>

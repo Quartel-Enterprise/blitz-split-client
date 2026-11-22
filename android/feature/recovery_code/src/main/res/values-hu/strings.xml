@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Mentsd el a helyreállító kódodat</string>
+    <string name="recovery_code_body">Fiók nélkül használod az alkalmazást. Ez a 12 szó visszahozza az adataidat, ha eszközt váltasz vagy elveszíted az eszközödet. Írd le őket sorrendben. 30 nap használaton kívüli idő után az adataid törlődnek, és a szavak már nem működnek.</string>
+    <string name="recovery_code_copy">Szavak másolása</string>
+    <string name="recovery_code_save_to_password_manager">Mentés a jelszókezelőbe</string>
+    <string name="recovery_code_connect_instead">Inkább Google- vagy Apple-fiók összekapcsolása</string>
+    <string name="recovery_code_connect_instead_body">Nem kell kód</string>
+    <string name="recovery_code_sign_in_failed">Most nem sikerült csatlakozni. Próbáld újra.</string>
+    <string name="recovery_code_also_in_profile">Itt is megtalálod: Profil › Helyreállítás.</string>
+    <string name="recovery_code_remind_later">Emlékeztess később</string>
+    <string name="recovery_code_saved">Elmentettem</string>
+    <string name="recovery_code_download">Letöltés</string>
+    <string name="recovery_code_file_name">blitz-split-helyreallito-kod.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · helyreállító kód\n\n%1$s\n\nHasználd a „Már használtam egy másik eszközön” lehetőségnél, hogy visszakapd az adataidat.\n</string>
+</resources>

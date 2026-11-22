@@ -16,3 +16,14 @@ data class PeopleTotal(
     val toReceiveCount: Int,
     val toPayCount: Int,
 )
+
+// Why: Início's big amount and the balance widget's: the first currency with a net, else the first one; null with no group.
+fun List<PeopleTotal>.findMain(): PeopleTotal? = firstOrNull { it.netMinor != 0L } ?: firstOrNull()
+
+/*
+ * Why: "Te devem" and "Você deve", on Início and the widget, in the first currency with something either way, so
+ * neither says R$ 0,00 while another currency has some.
+ */
+fun List<PeopleTotal>.findToReceive(): PeopleTotal? = firstOrNull { it.toReceiveMinor > 0 }
+
+fun List<PeopleTotal>.findToPay(): PeopleTotal? = firstOrNull { it.toPayMinor > 0 }

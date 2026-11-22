@@ -1,28 +1,28 @@
 package com.quare.blitzsplit.push
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.quare.blitzsplit.MainActivity
 import com.quare.blitzsplit.R
-import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
+import com.quare.blitzsplit.android.push.PushMessage
+import com.quare.blitzsplit.android.push.PushPayload
+import com.quare.blitzsplit.android.push.PushTokens
 import com.quare.blitzsplit.core.profile.domain.usecase.ObservePushEnabled
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
+import com.quare.blitzsplit.shared.push.PushArrivalSync
 import com.quare.blitzsplit.shared.settings.LegacyAppLocale
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import org.json.JSONArray
 import org.koin.android.ext.android.inject
+import kotlin.time.Duration.Companion.seconds
+import com.quare.blitzsplit.android.push.R as PushR
 
 /*
  * Why: FCM sends data messages, which reach the app open or closed, so the app words and shows each notification
@@ -31,6 +31,7 @@ import org.koin.android.ext.android.inject
 class BlitzSplitMessagingService : FirebaseMessagingService() {
     private val setPushDevice: SetPushDevice by inject()
     private val observePushEnabled: ObservePushEnabled by inject()
+    private val pushArrivalSync: PushArrivalSync by inject()
 
     // Why: before Android 13 the notifications built here are in Profile › Language's pick, as the screens are.
     override fun attachBaseContext(newBase: Context) {
@@ -43,27 +44,28 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
      */
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onNewToken(token: String) {
-        PushSetup.handOver(setPushDevice, token)
+        PushTokens.handOver(setPushDevice, token)
     }
 
-    @SuppressLint("MissingPermission") // Why: canNotify() checks it, on the versions that have it.
+    @SuppressLint("MissingPermission") // Why: canPostNotifications() checks it, on the versions that have it.
     override fun onMessageReceived(message: RemoteMessage) {
         val data = message.data
-        val kind = PushMessage.ofKind(data[KIND]) ?: return
+        val kind = PushMessage.ofKind(data[PushPayload.KIND]) ?: return
         // Why: words that don't fit this version's sentence (a newer server's) drop the notification, never the app.
-        val text = runCatching { buildText(kind, data[ARGS]) }.getOrNull() ?: return
+        val text = kind.toText(this, data[PushPayload.ARGS]) ?: return
         // Why: only a reminder comes without a group to name; anything else missing one still names the app.
-        val fallbackTitle = if (kind.channel == PushChannel.SETTLE_REMINDERS) {
-            R.string.push_reminder_title
+        val fallbackTitle = if (kind.isReminder) {
+            PushR.string.push_reminder_title
         } else {
             R.string.app_name
         }
-        val title = data[TITLE].orEmpty().ifEmpty { getString(fallbackTitle) }
-        val tag = data[EVENT_ID] ?: kind.kind
-        val link = data[LINK]
-        if (!canNotify() || !isPushEnabled()) return
+        val title = data[PushPayload.TITLE].orEmpty().ifEmpty { getString(fallbackTitle) }
+        val eventId = data[PushPayload.EVENT_ID]
+        val tag = eventId ?: kind.kind
+        val link = data[PushPayload.LINK]
+        if (!canPostNotifications() || !isPushEnabled()) return
         val notification = NotificationCompat
-            .Builder(this, kind.channel.id)
+            .Builder(this, kind.channelId)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(text)
@@ -72,6 +74,18 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
             .apply { link?.let { setContentIntent(openIntent(it, tag)) } }
             .build()
         NotificationManagerCompat.from(this).notify(tag, 0, notification)
+        syncForTheTap(eventId)
+    }
+
+    /*
+     * Why: the tap opens the bill only once it is on the device (AppViewModel.openPushLink waits up to 5 seconds for a
+     * sync), so the sync starts as the notification shows and the bill is usually there before the tap. After notify,
+     * so the notification never waits on it. Blocking keeps the process alive (a cached process is frozen): FCM allows
+     * a high-priority message about 10 seconds of work, and what a cut sync already saved stays in Room. FCM hands the
+     * messages over one at a time, so in a burst only the first one syncs: the rest find their event already here.
+     */
+    private fun syncForTheTap(eventId: String?) {
+        runBlocking { pushArrivalSync(eventId, SYNC_ON_ARRIVAL_SECONDS.seconds) }
     }
 
     /*
@@ -80,19 +94,6 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
      * and the read is one Room row.
      */
     private fun isPushEnabled(): Boolean = runBlocking { observePushEnabled().first() }
-
-    // Why: before Android 13 the permission doesn't exist and notifications are on until the settings turn them off.
-    private fun canNotify(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-        ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-        PackageManager.PERMISSION_GRANTED
-
-    private fun buildText(
-        kind: PushMessage,
-        args: String?,
-    ): String {
-        val words = args?.let(::JSONArray)?.let { array -> List(array.length()) { array.getString(it) } }.orEmpty()
-        return getString(kind.textRes, *words.toTypedArray())
-    }
 
     private fun openIntent(
         link: String,
@@ -105,10 +106,6 @@ class BlitzSplitMessagingService : FirebaseMessagingService() {
     )
 
     private companion object {
-        const val KIND = "kind"
-        const val TITLE = "title"
-        const val ARGS = "args"
-        const val LINK = "link"
-        const val EVENT_ID = "event_id"
+        const val SYNC_ON_ARRIVAL_SECONDS = 9
     }
 }

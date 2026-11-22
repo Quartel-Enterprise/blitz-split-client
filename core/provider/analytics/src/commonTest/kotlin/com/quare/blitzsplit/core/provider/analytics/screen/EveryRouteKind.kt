@@ -127,4 +127,11 @@ internal val everyRouteKind: List<Route> = listOf(
         anchor = "secret-anchor",
     ),
     Route.ReleaseNotes,
+    Route.ConnectWatch,
+    Route.WatchConnect,
+    Route.WatchBalances,
+    Route.WatchGroup(
+        groupId = "secret-group",
+        currency = GroupCurrency.BRL,
+    ),
 )

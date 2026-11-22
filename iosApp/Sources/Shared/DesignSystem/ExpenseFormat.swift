@@ -49,7 +49,7 @@ final class ClockFormat {
     }
 
     /// `base` on `timeFormat`'s hour cycle, whatever was picked: Profile's examples of each option. Latin digits in
-    /// Arabic and Bengali, as every amount and date (`AppNumbers`).
+    /// Arabic, Bengali and Urdu, as every amount and date (`AppNumbers`).
     func locale(from base: Locale, as timeFormat: TimeFormatPreference) -> Locale {
         let hourCycle: Locale.HourCycle? = switch timeFormat {
         case .twentyFourHour: .zeroToTwentyThree
@@ -79,6 +79,23 @@ extension GroupCurrency {
     /// and the amount are isolated together in a right-to-left language.
     func formatSigned(_ minor: Int64) -> String {
         RightToLeft.isolated(Self.signed(minor, unisolated(minor == .min ? .max : abs(minor))))
+    }
+
+    /// "+186", "−1,2 mil" or "+456K", whole and with no symbol: where only a few characters fit (the Lock Screen's circular
+    /// widget). An amount under one unit (bitcoin) keeps its decimals, as `formatSignedPlain` writes it.
+    func formatSignedCompact(_ minor: Int64) -> String {
+        let magnitude = minor == .min ? Decimal(Int64.max) : Decimal(abs(minor))
+        let major = magnitude / pow(Decimal(10), typedDigits)
+        guard major >= 1 else { return formatSignedPlain(minor) }
+        // Whole units under a thousand ("186"), two significant digits up to a hundred thousand ("1,2 mil", "12K") and
+        // three past it ("456K", "1,23 mi"), so a large amount keeps the digits that tell it apart
+        let compact = major < 1000
+            ? major.formatted(.number.precision(.fractionLength(0)).rounded(rule: .towardZero).locale(AppNumbers.locale))
+            : major.formatted(
+                .number.notation(.compactName).precision(.significantDigits(1 ... (major < 100_000 ? 2 : 3)))
+                    .rounded(rule: .towardZero).locale(AppNumbers.locale),
+            )
+        return RightToLeft.isolated(Self.signed(minor, compact))
     }
 
     /// "+214,90" or "−98", with no symbol: a balance whose currency is the line's own (the Mac sidebar's net).

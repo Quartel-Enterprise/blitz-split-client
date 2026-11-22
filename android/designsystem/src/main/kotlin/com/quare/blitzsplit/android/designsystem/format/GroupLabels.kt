@@ -8,7 +8,6 @@ import com.quare.blitzsplit.android.designsystem.R
 import com.quare.blitzsplit.core.model.DefaultSplitMode
 import com.quare.blitzsplit.core.model.GroupCurrency
 import com.quare.blitzsplit.core.model.GroupType
-import java.util.Currency
 import java.util.Locale
 
 // Why: "Novo grupo" and "Editar grupo" name the group's type and currency alike.
@@ -41,10 +40,13 @@ fun groupCurrencyLabel(
         GroupCurrency.ETH -> stringResource(R.string.designsystem_currency_ether) to "Ξ"
 
         else -> remember(currency, locale) {
-            val platform = Currency.getInstance(currency.code)
-            platform.getDisplayName(locale).replaceFirstChar { it.titlecase(locale) } to platform.getSymbol(locale)
+            currency.toPlatformCurrencyOrNull()?.let { platform ->
+                platform.getDisplayName(locale).replaceFirstChar { it.titlecase(locale) } to platform.getSymbol(locale)
+            }
         }
     }
+    // Why: a code the device's ICU data doesn't name (VES on Android 8 and 9) reads "VES", never "VES (VES)".
+    if (label == null || label.first == currency.code) return currency.code
     // Why: Arabic's "US$" would come apart ("$US") in a right to left label without an isolate of its own.
     return stringResource(
         R.string.designsystem_currency_value,

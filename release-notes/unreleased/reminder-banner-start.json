@@ -1,0 +1,43 @@
+{
+  "notes": [
+    {
+      "kind": "fixed",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The group's \"Time to settle up\" banner no longer shows a reminder date from before the reminder was set or changed: a reminder changed to the 25th waits for the 25th.",
+        "pt": "O aviso \"Hora de acertar as contas\" do grupo não mostra mais uma data de lembrete de antes de o lembrete ser definido ou alterado: um lembrete mudado para o dia 25 espera o dia 25.",
+        "pt-PT": "O aviso \"Hora de acertar as contas\" do grupo já não mostra uma data de lembrete anterior a teres definido ou alterado o lembrete: um lembrete mudado para o dia 25 espera pelo dia 25.",
+        "es": "El aviso \"Es hora de saldar cuentas\" del grupo ya no muestra una fecha del recordatorio anterior a cuando se configuró o cambió: un recordatorio cambiado al día 25 espera al día 25.",
+        "fr": "La bannière « C’est l’heure de régler les comptes » du groupe n’affiche plus une date de rappel antérieure à sa création ou à sa modification : un rappel passé au 25 attend le 25.",
+        "de": "Das Banner „Zeit zum Abrechnen“ der Gruppe zeigt keinen Erinnerungstermin mehr, der vor dem Einrichten oder Ändern der Erinnerung lag: Eine auf den 25. geänderte Erinnerung wartet bis zum 25.",
+        "it": "Il banner \"È ora di saldare i conti\" del gruppo non mostra più una data del promemoria precedente alla sua impostazione o modifica: un promemoria spostato al 25 aspetta il 25.",
+        "pl": "Baner „Czas na rozliczenie” w grupie nie pokazuje już terminu przypomnienia sprzed jego ustawienia lub zmiany: przypomnienie zmienione na 25. czeka do 25.",
+        "nl": "De banner \"Tijd om af te rekenen\" van de groep toont geen herinneringsdatum meer van vóór het instellen of wijzigen van de herinnering: een herinnering die naar de 25e is verzet, wacht tot de 25e.",
+        "ja": "グループの「精算の時間です」バナーに、リマインダーを設定・変更する前の日付が表示されなくなりました。25日に変更したリマインダーは25日まで待ちます。",
+        "tr": "Grubun \"Hesaplaşma zamanı\" bandı artık hatırlatıcı ayarlanmadan veya değiştirilmeden önceki bir tarihi göstermiyor: ayın 25'ine alınan bir hatırlatıcı 25'ini bekliyor.",
+        "id": "Banner \"Saatnya melunasi\" di grup tidak lagi menampilkan tanggal pengingat dari sebelum pengingat diatur atau diubah: pengingat yang diubah ke tanggal 25 menunggu tanggal 25.",
+        "ru": "Баннер «Пора рассчитаться» в группе больше не показывает дату напоминания, которая была до его настройки или изменения: напоминание, перенесённое на 25-е, ждёт 25-го.",
+        "uk": "Банер «Час розрахуватися» в групі більше не показує дату нагадування, що була до його налаштування чи зміни: нагадування, перенесене на 25-те, чекає 25-го.",
+        "ko": "그룹의 \"정산할 시간이에요\" 배너가 더 이상 알림을 설정하거나 바꾸기 전의 날짜를 보여 주지 않아요. 25일로 바꾼 알림은 25일까지 기다려요.",
+        "hi": "ग्रुप का \"हिसाब चुकाने का समय\" बैनर अब रिमाइंडर सेट या बदलने से पहले की तारीख नहीं दिखाता: 25 तारीख पर बदला गया रिमाइंडर 25 तारीख का इंतज़ार करता है।",
+        "ar": "لم يعد شريط \"حان وقت التسوية\" في المجموعة يعرض موعد تذكير سابقًا لضبط التذكير أو تغييره: التذكير الذي تغيّر إلى يوم 25 ينتظر يوم 25.",
+        "zh": "群组的“该结清了”横幅不再显示设置或修改提醒之前的提醒日期：改到 25 日的提醒会等到 25 日。",
+        "he": "הבאנר \"הגיע הזמן לסגור חשבון\" בקבוצה כבר לא מציג מועד תזכורת מלפני שהתזכורת הוגדרה או שונתה: תזכורת ששונתה ל־25 מחכה ל־25.",
+        "th": "แบนเนอร์ \"ได้เวลาเคลียร์ยอด\" ของกลุ่มไม่แสดงวันที่เตือนก่อนที่จะตั้งหรือเปลี่ยนการเตือนอีกต่อไป การเตือนที่เปลี่ยนเป็นวันที่ 25 จะรอถึงวันที่ 25",
+        "vi": "Biểu ngữ \"Đã đến lúc thanh toán nợ\" của nhóm không còn hiện ngày nhắc trước thời điểm đặt hoặc đổi lời nhắc: lời nhắc đổi sang ngày 25 sẽ đợi đến ngày 25.",
+        "zh-Hant": "群組的「該結清了」橫幅不再顯示設定或修改提醒之前的提醒日期：改到 25 日的提醒會等到 25 日。",
+        "sv": "Gruppens banner \"Dags att göra upp\" visar inte längre ett påminnelsedatum från innan påminnelsen ställdes in eller ändrades: en påminnelse som flyttats till den 25:e väntar till den 25:e.",
+        "cs": "Banner „Čas se vyrovnat“ ve skupině už neukazuje termín připomenutí z doby před jeho nastavením nebo změnou: připomenutí změněné na 25. počká do 25.",
+        "ro": "Bannerul „E timpul să achiți” al grupului nu mai arată o dată de memento dinainte ca mementoul să fie setat sau schimbat: un memento mutat pe 25 așteaptă ziua de 25.",
+        "bn": "গ্রুপের \"হিসাব মেটানোর সময় হয়েছে\" ব্যানার আর রিমাইন্ডার সেট বা বদলানোর আগের তারিখ দেখায় না: ২৫ তারিখে বদলানো রিমাইন্ডার ২৫ তারিখের অপেক্ষা করে।",
+        "ms": "Sepanduk \"Masa untuk menyelesaikan hutang\" kumpulan tidak lagi menunjukkan tarikh peringatan sebelum peringatan ditetapkan atau ditukar: peringatan yang ditukar ke 25 haribulan menunggu 25 haribulan.",
+        "el": "Το banner «Ώρα για εξόφληση» της ομάδας δεν δείχνει πλέον ημερομηνία υπενθύμισης πριν από τη ρύθμιση ή την αλλαγή της: μια υπενθύμιση που άλλαξε στις 25 περιμένει την 25η.",
+        "hr": "Natpis „Vrijeme je za podmirenje” u grupi više ne prikazuje datum podsjetnika od prije nego što je podsjetnik postavljen ili promijenjen: podsjetnik promijenjen na 25. čeka 25.",
+        "hu": "A csoport „Ideje elszámolni” sávja már nem mutat olyan emlékeztető-időpontot, amely az emlékeztető beállítása vagy módosítása előtt volt: a 25-ére állított emlékeztető 25-éig vár.",
+        "ur": "گروپ کا \"حساب برابر کرنے کا وقت\" بینر اب یاد دہانی سیٹ یا تبدیل کرنے سے پہلے کی تاریخ نہیں دکھاتا: 25 تاریخ پر بدلی گئی یاد دہانی 25 تاریخ کا انتظار کرتی ہے۔"
+      }
+    }
+  ]
+}

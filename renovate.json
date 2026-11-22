@@ -1,0 +1,152 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Weekly dependency bumps of every platform, including the Swift packages of iosApp/project.yml (Renovate's xcodegen manager). The pins and the stability rule are those of .claude/skills/bump-versions/SKILL.md; docs/ci.md explains the setup.",
+  "extends": [
+    "config:recommended",
+    ":disableDependencyDashboard"
+  ],
+  "ignorePresets": [
+    "group:monorepos",
+    ":semanticPrefixFixDepsChoreOthers"
+  ],
+  "timezone": "America/Sao_Paulo",
+  "schedule": [
+    "before 9am on monday"
+  ],
+  "semanticCommits": "enabled",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": null,
+  "commitMessageAction": "bump",
+  "ignoreUnstable": true,
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 0,
+  "rangeStrategy": "auto",
+  "packageRules": [
+    {
+      "description": "Every minor and patch of every platform in one pull request a week. group:monorepos is ignored above, since its groups would split this one; the families that must share a major are grouped below. :semanticPrefixFixDepsChoreOthers is ignored so every title starts with chore:.",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "groupName": "the libraries of every platform",
+      "groupSlug": "libraries"
+    },
+    {
+      "description": "A major gets a pull request of its own, so its breaking changes are read and fixed apart from the rest.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "groupName": null
+    },
+    {
+      "description": "The react packages must share a version: their major moves in one pull request.",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "groupName": "react major",
+      "groupSlug": "react-major"
+    },
+    {
+      "description": "The tailwind packages must share a version: their major moves in one pull request.",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "matchPackageNames": [
+        "tailwindcss",
+        "@tailwindcss/**"
+      ],
+      "groupName": "tailwind major",
+      "groupSlug": "tailwind-major"
+    },
+    {
+      "description": "The remotion packages must share a version: their major moves in one pull request.",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "matchPackageNames": [
+        "remotion",
+        "@remotion/**"
+      ],
+      "groupName": "remotion major",
+      "groupSlug": "remotion-major"
+    },
+    {
+      "description": "Every uses: of claude-review must pin the same release (claude-review-refs.yml), so they move together, as soon as a release ships.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "Quartel-Enterprise/claude-review{/,}**"
+      ],
+      "groupName": "claude-review",
+      "groupSlug": "claude-review",
+      "schedule": [
+        "at any time"
+      ]
+    },
+    {
+      "description": "copied-code-check's uses: in duplication.yml is also what scripts/cpd.sh runs: a pull request of its own, as soon as a release ships.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "Quartel-Enterprise/copied-code-check"
+      ],
+      "groupName": null,
+      "schedule": [
+        "at any time"
+      ]
+    },
+    {
+      "description": "@js-joda/core is the exact version kotlinx-datetime's JS target depends on (kotlin-js-store/yarn.lock): bumped by hand with kotlinx-datetime, never to npm's latest.",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchPackageNames": [
+        "@js-joda/core"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "The CI runtimes (java-version, node-version, ruby-version) follow the project's toolchain, not the newest release: changed by hand when the build needs it.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchDepTypes": [
+        "uses-with"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "kotlinx-datetime publishes -0.6.x-compat builds for libraries still on the old API: never ours.",
+      "matchPackageNames": [
+        "org.jetbrains.kotlinx:kotlinx-datetime"
+      ],
+      "allowedVersions": "!/-compat$/"
+    },
+    {
+      "description": "androidx-lifecycle is shared with JetBrains' multiplatform lifecycle-viewmodel, which ships later: the JetBrains artifact decides when the shared version moves, so both groups have the release.",
+      "matchPackageNames": [
+        "androidx.lifecycle:**"
+      ],
+      "enabled": false
+    }
+  ]
+}

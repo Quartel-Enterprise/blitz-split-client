@@ -27,6 +27,7 @@ import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material.icons.outlined.SupportAgent
 import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material.icons.outlined.Translate
+import androidx.compose.material.icons.outlined.Watch
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -122,6 +123,23 @@ internal fun PreferencesSection(
                 )
             },
         )
+        // Why: "Connect watch" (15.14), the code a watch shows when its phone is out of reach; only with an account.
+        if (state.showsConnectWatch) {
+            HorizontalDivider()
+            SectionRow(
+                icon = Icons.Outlined.Watch,
+                headline = stringResource(R.string.profile_connect_watch),
+                modifier = Modifier.clickable { onEvent(ProfileUiEvent.OnConnectWatchClicked) },
+                supporting = stringResource(R.string.profile_connect_watch_detail),
+                trailing = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+            )
+        }
         HorizontalDivider()
         // Why: every bitcoin amount shown and typed in whole sats on this device, groups in bitcoin or not yet.
         SectionRow(

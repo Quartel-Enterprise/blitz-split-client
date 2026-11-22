@@ -802,6 +802,7 @@ class GroupsRowActionsTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: Pierre and Bruno each owe Ana R$ 100,00.

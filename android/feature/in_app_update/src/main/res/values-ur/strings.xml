@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">اپ ڈیٹ ڈاؤن لوڈ ہو رہی ہے…</string>
+    <string name="in_app_update_download_failed">اپ ڈیٹ ڈاؤن لوڈ نہیں ہو سکی۔ بعد میں دوبارہ کوشش کریں۔</string>
+</resources>

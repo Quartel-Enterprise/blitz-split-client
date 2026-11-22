@@ -1,0 +1,134 @@
+{
+  "listing": "es",
+  "appLanguage": "es",
+  "theme": "dark",
+  "launchWaitFor": "Tus grupos",
+  "voice": {
+    "id": "spPXlKT5a4JMfbhPRAzA",
+    "name": "Camila - Inviting, Rich and Warm",
+    "model": "eleven_v4",
+    "languageCode": "es",
+    "stability": 0.5,
+    "similarity": 0.75,
+    "takes": 3,
+    "take": 3
+  },
+  "music": {
+    "prompt": "Light, warm, upbeat acoustic pop instrumental for a friendly mobile app commercial about splitting bills with friends on a trip. Ukulele and clean guitar plucks, soft claps, gentle bass, light percussion, bright and positive, mid tempo around 105 BPM. Sits under a voiceover: sparse arrangement, no lead melody fighting the voice. Clean ending with a final soft hit at the end.",
+    "seconds": 32
+  },
+  "lines": [
+    "¿Viaje con amigos? A dividir la cuenta.",
+    "Anota quién pagó y divide como quieras.",
+    "Hasta plato por plato, en la cuenta del restaurante.",
+    "Al final, la app muestra quién le debe cuánto a quién.",
+    "Y para saldar cuentas, registra el pago con el monto exacto.",
+    "Funciona sin conexión, sin necesidad de cuenta."
+  ],
+  "endCard": { "name": ["Blitz", "Split"], "chips": ["Funciona sin conexión", "Sin necesidad de cuenta"] },
+  "thumbnail": {
+    "headline": ["Divide las cuentas", "con tus amigos"],
+    "accent": ["Divide"],
+    "back": "bal_35.png",
+    "front": "settle_101.png"
+  },
+  "scenes": [
+    { "record": "home", "swipe": [540, 1900, 1000, 30000], "retime": [1.0, 1.7, 0.8, 150, 2120] },
+    { "tap": { "descStarts": "Viaje a Lisboa," }, "waitFor": "Gastos" },
+    { "record": "group", "swipe": [600, 1630, 730, 30000], "retime": [1.0, 1.6, 0.8, 250, 2300] },
+    { "tap": { "text": "Cena en la trattoria" }, "waitFor": "Tu parte" },
+    { "record": "detail", "swipe": [700, 1560, 960, 24000], "retime": [0.8, 0.9, 0.6, 220, 2130] },
+    { "tap": { "desc": "Editar" }, "waitFor": "Editar gasto" },
+    { "still": "edit" },
+    { "tap": { "text": "Por artículos entre 5" }, "waitFor": "Artículos del gasto" },
+    { "record": "items", "swipe": [300, 1075, 375, 28000], "retime": [0.8, 1.4, 0.6, 220, 2330] },
+    { "backUntil": "Saldos" },
+    { "scrollUpUntil": "Tu saldo en este grupo" },
+    { "tap": { "text": "Saldos" }, "waitFor": "Contigo" },
+    { "record": "bal", "swipe": [700, 1298, 548, 30000], "retime": [0.8, 1.7, 0.6, 250, 2300] },
+    { "scrollUpUntil": "Tu saldo en este grupo" },
+    {
+      "record": "settle",
+      "tap": { "text": "Saldar cuentas" },
+      "shows": "Monto pagado",
+      "after": 2.5,
+      "trim": [0.6, 3.6]
+    }
+  ],
+  "shots": [
+    {
+      "title": [{ "text": "¿Viaje con amigos?" }, { "text": "A dividir la cuenta.", "accent": ["dividir"] }],
+      "whip": false,
+      "steps": [
+        { "kind": "play", "clip": "home", "from": 0.2, "to": 3.1 },
+        { "kind": "play", "clip": "group", "from": 0.6, "to": 2.4, "enter": "push" }
+      ]
+    },
+    {
+      "title": [{ "text": "Anota quién pagó" }, { "text": "y divide a tu manera", "accent": ["divide"] }],
+      "whip": false,
+      "steps": [
+        { "kind": "play", "clip": "detail", "from": 0, "to": 0.5, "enter": "push" },
+        {
+          "kind": "freeze",
+          "seconds": 2.0,
+          "fy": 0.39,
+          "cards": [{ "x": 42, "y": 800, "w": 996, "h": 296, "delay": 0.4, "radius": 36, "tilt": -2.5 }]
+        },
+        { "kind": "play", "clip": "detail", "from": 0.5, "to": 1.7 },
+        { "kind": "still", "img": "edit.png", "seconds": 0.8, "enter": "push" }
+      ]
+    },
+    {
+      "title": [{ "text": "Hasta plato por plato" }, { "text": "del restaurante", "accent": ["plato", "por"] }],
+      "whip": false,
+      "steps": [
+        { "kind": "play", "clip": "items", "from": 0, "to": 0.5, "enter": "push" },
+        {
+          "kind": "freeze",
+          "seconds": 2.2,
+          "fy": 0.37,
+          "cards": [
+            { "x": 42, "y": 806, "w": 280, "h": 158, "delay": 0.4, "radius": 36, "tilt": -3 },
+            { "x": 346, "y": 806, "w": 278, "h": 158, "delay": 0.53, "radius": 36, "tilt": 0 },
+            { "x": 650, "y": 806, "w": 276, "h": 158, "delay": 0.66, "radius": 36, "tilt": 3 }
+          ]
+        },
+        { "kind": "play", "clip": "items", "from": 0.5, "to": 2.1 }
+      ]
+    },
+    {
+      "title": [{ "text": "Quién debe a quién", "accent": ["debe"] }],
+      "whip": true,
+      "steps": [
+        { "kind": "play", "clip": "bal", "from": 0, "to": 0.6 },
+        {
+          "kind": "freeze",
+          "seconds": 2.6,
+          "fy": 0.64,
+          "cards": [
+            { "x": 42, "y": 1350, "w": 996, "h": 186, "delay": 0.45, "radius": 30, "tilt": -2 },
+            { "x": 42, "y": 1541, "w": 996, "h": 190, "delay": 0.62, "radius": 30, "tilt": 2 }
+          ]
+        },
+        { "kind": "play", "clip": "bal", "from": 0.6, "to": 2.6 }
+      ]
+    },
+    {
+      "title": [{ "text": "Saldar cuentas", "accent": ["Saldar"] }],
+      "subtitle": "con el monto exacto",
+      "whip": true,
+      "steps": [
+        { "kind": "play", "clip": "settle", "from": 0, "to": 1.7 },
+        {
+          "kind": "freeze",
+          "seconds": 2.2,
+          "fy": 0.5,
+          "cards": [{ "x": 63, "y": 1030, "w": 954, "h": 330, "delay": 0.35, "radius": 48, "tilt": -2 }]
+        },
+        { "kind": "play", "clip": "settle", "from": 1.7, "to": 2.8 }
+      ]
+    }
+  ],
+  "endSeconds": 3.9
+}

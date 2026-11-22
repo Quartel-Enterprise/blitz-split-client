@@ -83,6 +83,9 @@
     <string name="profile_language_bengali">Βεγγαλικά</string>
     <string name="profile_language_malay">Μαλαϊκά</string>
     <string name="profile_language_greek">Ελληνικά</string>
+    <string name="profile_language_croatian">Κροατικά</string>
+    <string name="profile_language_hungarian">Ουγγρικά</string>
+    <string name="profile_language_urdu">Ουρντού</string>
     <string name="profile_language_system_detail">Γλώσσα συσκευής</string>
     <string name="profile_notifications">Ειδοποιήσεις</string>
     <plurals name="profile_notifications_active">
@@ -146,6 +149,8 @@
     <string name="profile_bitcoin_in_sats_detail">Εμφανίζει και καταχωρεί τα ποσά bitcoin σε sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Χάρτης κατηγοριών</string>
     <string name="profile_category_map_detail">Οι λέξεις που επιλέγουν την κατηγορία ενός εξόδου</string>
+    <string name="profile_connect_watch">Σύνδεση ρολογιού</string>
+    <string name="profile_connect_watch_detail">Με τον κωδικό που δείχνει το ρολόι σου</string>
     <string name="profile_photo_open">Προβολή φωτογραφίας</string>
     <string name="profile_share">Κοινοποίηση προφίλ</string>
     <string name="profile_share_message">Αυτό είναι το προφίλ μου στο Blitz Split: %1$s</string>

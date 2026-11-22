@@ -919,6 +919,7 @@ class RegisterPaymentSimplifyDebtsViewModelTest {
             simplifyDebtsConflictBy = null,
             reminder = GroupReminder.Default,
             reminderDismissedAt = 0L,
+            reminderCountsFrom = 0L,
         )
         groups = FakeGroupRepository(initialGroups = listOf(trip))
         expenses = FakeExpenseRepository(initialExpenses = storedExpenses)

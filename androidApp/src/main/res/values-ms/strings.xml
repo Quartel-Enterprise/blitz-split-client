@@ -1,27 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Blitz Split</string>
-    <string name="push_reminder_title">Peringatan penyelesaian</string>
-    <string name="push_bill_created">%1$s menambah “%2$s” bersama anda</string>
-    <string name="push_bill_edited">%1$s mengedit “%2$s”</string>
-    <string name="push_bill_deleted">%1$s memadam “%2$s”</string>
-    <string name="push_comment_added">%1$s memberi komen pada “%2$s”: %3$s</string>
-    <string name="push_payment_paid_you">%1$s menandakan bahawa dia telah membayar anda</string>
-    <string name="push_payment_to_you">%1$s menandakan bahawa %2$s telah membayar anda</string>
-    <string name="push_payment_received_yours">%1$s menandakan bayaran anda sebagai diterima</string>
-    <string name="push_payment_from_you">%1$s menandakan bahawa anda telah membayar %2$s</string>
-    <string name="push_payment_undone">%1$s membatalkan bayaran dengan anda</string>
-    <string name="push_charge_sent">%1$s menghantar peringatan kepada anda untuk menyelesaikan hutang</string>
-    <string name="push_settle_reminder">Anda mempunyai baki belum selesai dalam %1$s</string>
-    <string name="push_settle_reminders">Anda mempunyai baki belum selesai dalam %1$s kumpulan</string>
-    <string name="push_added_to_group">%1$s menambah anda ke dalam kumpulan</string>
-    <string name="push_member_joined">%1$s menyertai kumpulan</string>
-    <string name="push_debts_simplified_to_you">%1$s mempermudahkan hutang. Kini %2$s membayar %3$s kepada anda.</string>
-    <string name="push_debts_simplified_from_you">%1$s mempermudahkan hutang. Kini anda membayar %3$s kepada %2$s.</string>
-    <string name="push_debts_simplified_other">%1$s mempermudahkan hutang. Lihat kesannya kepada anda.</string>
-    <string name="push_debts_unsimplified_to_you">%1$s mematikan Permudahkan hutang. Kini %2$s membayar %3$s kepada anda.</string>
-    <string name="push_debts_unsimplified_from_you">%1$s mematikan Permudahkan hutang. Kini anda membayar %3$s kepada %2$s.</string>
-    <string name="push_debts_unsimplified_other">%1$s mematikan Permudahkan hutang. Lihat kesannya kepada anda.</string>
     <string name="bill_link_not_in_group_title">Anda bukan ahli kumpulan ini</string>
     <string name="bill_link_not_in_group_message">Komen ini berada dalam kumpulan yang anda tidak sertai. Minta jemputan daripada orang yang menghantar pautan ini.</string>
     <string name="bill_link_offline_title">Tiada internet</string>
@@ -31,4 +10,9 @@
     <string name="discard_changes_message">Perubahan yang belum disimpan akan hilang.</string>
     <string name="discard_changes_discard">Buang</string>
     <string name="discard_changes_keep_editing">Teruskan mengedit</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Jam tangan</string>
+    <string name="watch_connected_title">%1$s disambungkan ke akaun anda</string>
+    <string name="watch_connected_title_unnamed">Jam tangan disambungkan ke akaun anda</string>
+    <string name="watch_connected_text">Jam tangan melihat kumpulan anda dan menyegerak sendiri. Untuk memutuskannya, log keluar pada jam tangan.</string>
 </resources>

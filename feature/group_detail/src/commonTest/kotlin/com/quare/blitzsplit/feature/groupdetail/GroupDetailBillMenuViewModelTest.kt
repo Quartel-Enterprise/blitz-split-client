@@ -907,6 +907,7 @@ class GroupDetailBillMenuViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: Ana paid 120.00 and this device's user owes her half of it.

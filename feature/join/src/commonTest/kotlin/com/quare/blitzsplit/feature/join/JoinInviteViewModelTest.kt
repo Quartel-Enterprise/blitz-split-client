@@ -1828,6 +1828,7 @@ class JoinInviteViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: the reader opened from the home, which skips no invite.

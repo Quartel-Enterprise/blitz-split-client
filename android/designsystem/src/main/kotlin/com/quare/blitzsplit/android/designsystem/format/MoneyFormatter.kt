@@ -22,6 +22,13 @@ import java.util.Locale
 // Why: one per locale, as every currency's formatter of a list asks for the same mark.
 private val signMarks = java.util.concurrent.ConcurrentHashMap<Locale, String>()
 
+/*
+ * Why: a code newer than the device's ICU data (VES, 2018, on Android 8 and 9) may have no platform currency: null,
+ * never a crash, and the raw code stands in for its name and symbol.
+ */
+internal fun GroupCurrency.toPlatformCurrencyOrNull(): Currency? =
+    runCatching { Currency.getInstance(code) }.getOrNull()
+
 // Why: Preferências' "Bitcoin em satoshis", which every bitcoin amount drawn follows, provided at the app's root.
 val LocalShowsBitcoinInSats = staticCompositionLocalOf { false }
 
@@ -46,8 +53,12 @@ class MoneyFormatter(
     // Why: each amount isolated from a right to left sentence around it; a left to right language's text is untouched.
     private val isolates: Boolean = locale.isRightToLeft()
 
-    // Why: bitcoin, ether and a code this version doesn't know have no platform currency: the symbol is written by hand.
-    private val writesOwnSymbol: Boolean = currency.isCrypto || !currency.isKnown
+    // Why: bitcoin, ether and a code this version doesn't know have no platform currency.
+    private val platformCurrency: Currency? =
+        currency.takeUnless { it.isCrypto || !it.isKnown }?.toPlatformCurrencyOrNull()
+
+    // Why: with no platform currency, the symbol is written by hand.
+    private val writesOwnSymbol: Boolean = platformCurrency == null
 
     private val isSats: Boolean = currency == GroupCurrency.BTC && showsSats
 
@@ -63,10 +74,8 @@ class MoneyFormatter(
 
         currency == GroupCurrency.ETH -> ETHER_SYMBOL
 
-        // Why: a code this version doesn't know has no symbol: the raw code stands in its place ("XYZ 12,50").
-        !currency.isKnown -> currency.code
-
-        else -> Currency.getInstance(currency.code).getSymbol(formatLocale)
+        // Why: a code this version or the device doesn't know has no symbol: the raw code stands in it ("XYZ 12,50").
+        else -> platformCurrency?.getSymbol(formatLocale) ?: currency.code
     }
 
     // Why: the symbol a field shows before what is typed in it, whole in a right to left language ("US$", not "$US").
@@ -161,7 +170,7 @@ class MoneyFormatter(
 
     private fun createCurrencyFormat(fractionDigits: Int): NumberFormat =
         NumberFormat.getCurrencyInstance(formatLocale).apply {
-            if (!writesOwnSymbol) currency = Currency.getInstance(this@MoneyFormatter.currency.code)
+            platformCurrency?.let { currency = it }
             /*
              * Why: bitcoin's, ether's or a raw code's symbol written by hand; and in a right to left language every
              * symbol in an isolate of its own, since Arabic writes "0 US$" and the "$" would drift to "$US 0".

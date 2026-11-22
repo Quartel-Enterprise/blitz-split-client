@@ -202,6 +202,7 @@ class GroupExitUseCaseTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     private fun TestScope.prepareScenario(
@@ -246,6 +247,7 @@ class GroupExitUseCaseTest {
             appForeground = AppForeground(),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
             crashReporter = CrashReporter {},
+            lastSyncRecorder = {},
             scope = backgroundScope,
         )
         leaveGroup = LeaveGroupUseCase(

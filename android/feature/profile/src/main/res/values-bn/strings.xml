@@ -83,6 +83,9 @@
     <string name="profile_language_bengali">বাংলা</string>
     <string name="profile_language_malay">মালয়</string>
     <string name="profile_language_greek">গ্রিক</string>
+    <string name="profile_language_croatian">ক্রোয়েশীয়</string>
+    <string name="profile_language_hungarian">হাঙ্গেরীয়</string>
+    <string name="profile_language_urdu">উর্দু</string>
     <string name="profile_language_system_detail">ডিভাইসের ভাষা</string>
     <string name="profile_notifications">নোটিফিকেশন</string>
     <plurals name="profile_notifications_active">
@@ -146,6 +149,8 @@
     <string name="profile_bitcoin_in_sats_detail">Bitcoin-এর পরিমাণ sats-এ দেখায় ও লেখা যায় (1 ₿ = 100,000,000 sats)।</string>
     <string name="profile_category_map">ক্যাটাগরি ম্যাপ</string>
     <string name="profile_category_map_detail">যেসব শব্দ বিলের ক্যাটাগরি ঠিক করে</string>
+    <string name="profile_connect_watch">ঘড়ি সংযুক্ত করুন</string>
+    <string name="profile_connect_watch_detail">আপনার ঘড়িতে দেখানো কোড দিয়ে</string>
     <string name="profile_photo_open">ছবি দেখুন</string>
     <string name="profile_share">প্রোফাইল শেয়ার করুন</string>
     <string name="profile_share_message">Blitz Split-এ এটি আমার প্রোফাইল: %1$s</string>

@@ -8,6 +8,10 @@ Blitz Split: Bills & Expenses
 
 Split bills with friends: scan the receipt, see who owes whom and settle up.
 
+## Play video
+
+https://www.youtube.com/watch?v=KFw2MIloaSw
+
 ## App Store name
 
 Blitz Split: Split Bills

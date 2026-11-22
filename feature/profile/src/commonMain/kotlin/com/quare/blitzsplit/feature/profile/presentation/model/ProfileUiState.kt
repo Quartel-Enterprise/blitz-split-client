@@ -187,6 +187,14 @@ data class ProfileUiState(
      * server deletes it. A local only profile has nothing there, and "Erase profile and sign out" already erases it.
      */
     val showsDeleteAccount: Boolean
+        get() = hasServerAccount
+
+    // Why: "Connect watch" (15.14) needs an account on the server for the watch to sign in to, anonymous included.
+    val showsConnectWatch: Boolean
+        get() = hasServerAccount
+
+    // Why: the server keeps this account (anonymous, Google or Apple), once the profile is read.
+    private val hasServerAccount: Boolean
         get() = isLoaded && !isLocalOnly
 
     // Why: a local only user has no ID on the server yet, so the account row can't call it anonymous.

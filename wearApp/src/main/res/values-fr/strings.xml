@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Utilise ici le même compte que sur ton téléphone. Ensuite, la montre fonctionne seule.</string>
+    <string name="pair_connect">Connecter</string>
+    <string name="pair_connecting">Récupération de ton compte sur le téléphone…</string>
+    <string name="pair_connected_title">C’est prêt, %1$s</string>
+    <string name="pair_connected_title_unnamed">C’est prêt</string>
+    <string name="pair_connected_body">La montre se synchronise seule, même loin du téléphone.</string>
+    <string name="pair_continue">Continuer</string>
+    <string name="pair_local_only_title">Tes données sont seulement sur ton téléphone</string>
+    <string name="pair_local_only_body">Sur ton téléphone, connecte un compte dans Profil et touche à nouveau Connecter ici.</string>
+    <string name="pair_ok">OK</string>
+    <string name="pair_far_title">Téléphone hors de portée</string>
+    <string name="pair_far_body">Rapproche ton téléphone, ou connecte-toi avec un code.</string>
+    <string name="pair_try_again">Réessayer</string>
+    <string name="pair_use_code">Utiliser un code</string>
+    <string name="pair_code_label">Ton code</string>
+    <string name="pair_code_description">Code %1$s</string>
+    <string name="pair_code_where">Sur ton téléphone : Profil › Connecter la montre</string>
+    <string name="pair_code_validity">Valable 5 minutes</string>
+    <string name="pair_cancel">Annuler</string>
+    <string name="pair_signed_out_title">Session fermée sur ton téléphone</string>
+    <string name="pair_signed_out_body">Les données ont aussi quitté cette montre.</string>
+    <string name="pair_connect_again">Reconnecter</string>
+    <string name="pair_error_offline">Connecter la montre nécessite internet.</string>
+    <string name="pair_error_too_many">Trop d’essais. Attends quelques minutes et reconnecte.</string>
+    <string name="pair_error_failed">Impossible de connecter la montre. Réessaie.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Soldes</string>
+    <string name="balances_offline">Hors ligne</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Hors ligne · %d modification en attente</item>
+        <item quantity="many">Hors ligne · %d modifications en attente</item>
+        <item quantity="other">Hors ligne · %d modifications en attente</item>
+    </plurals>
+    <string name="balances_overall">Solde global</string>
+    <string name="balances_to_receive">à récupérer</string>
+    <string name="balances_you_owe">tu dois</string>
+    <string name="balances_group_to_receive">%1$s à récupérer</string>
+    <string name="balances_group_you_owe">tu dois %1$s</string>
+    <string name="balances_group_even">Équilibré au total</string>
+    <string name="balances_waiting">en attente d’envoi</string>
+    <string name="balances_updated_at">Mis à jour à %1$s</string>
+    <string name="balances_sign_out">Se déconnecter</string>
+    <string name="balances_sign_out_title">Se déconnecter de cette montre ?</string>
+    <string name="balances_sign_out_body">Ses données sont effacées une fois ses modifications en attente envoyées. Ton téléphone reste connecté.</string>
+    <string name="balances_sign_out_scheduled">Déconnexion programmée</string>
+    <string name="balances_sign_out_scheduled_detail">Te déconnecte dès que tout est envoyé</string>
+    <string name="balances_settled_title">Rien en cours</string>
+    <string name="balances_settled_body">Tu ne dois rien et personne ne te doit rien. Les nouveaux groupes et dépenses apparaissent ici tout seuls.</string>
+    <string name="group_you_owe_person">tu dois à %1$s</string>
+    <string name="group_owes_you">%1$s te doit</string>
+    <string name="group_former_member">Ancien membre</string>
+    <string name="group_i_paid">J’ai payé</string>
+    <string name="group_confirm_title">Tu as payé %1$s à %2$s ?</string>
+    <string name="group_confirm_body">%1$s. Le groupe le voit tout de suite, ou au retour d’internet.</string>
+    <string name="group_payment_recorded">Paiement enregistré</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Soldes</string>
+    <string name="tile_to_receive_total">à récupérer au total</string>
+    <string name="tile_to_pay_total">à payer au total</string>
+    <string name="tile_owed_to_you">On te doit %1$s</string>
+    <string name="tile_you_owe">Tu dois %1$s</string>
+    <string name="tile_settled_title">Tout est réglé</string>
+    <string name="tile_settled_body">Rien à payer ni à récupérer</string>
+    <string name="tile_open">Ouvrir</string>
+    <string name="complication_name">Solde global</string>
+    <string name="complication_you_owe">Tu dois %1$s</string>
+    <string name="complication_owed_to_you">On te doit %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Reçu</string>
+    <string name="push_view_group">Voir le groupe</string>
+</resources>

@@ -4206,6 +4206,7 @@ class MembersViewModelTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     private val pierreWithCode = pierre.copy(inviteCode = "p1Er2e")

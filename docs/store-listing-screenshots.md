@@ -2,7 +2,7 @@
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
 showing a sample trip among five friends, laid out in the listing art's design: a blue background, one phrase, the
-device, a part of the screen drawn larger and, on some, a ticket or a receipt, in all 29 languages of the listings.
+device, a part of the screen drawn larger and, on some, a ticket or a receipt, in all 32 languages of the listings.
 None of the images is versioned: every run rebuilds them from source. Words, colors and the placement of each image
 are `scripts/store-screenshots/listing-art/` (`compose.mjs`, `copy.tsv`); there is no other drawing of them.
 
@@ -338,7 +338,7 @@ and `upload_play_screenshots` of the [Fastfile](../fastlane/Fastfile), with the 
 [`play-screenshot-groups.mjs`](../scripts/release/play-screenshot-groups.mjs), which has tests):
 
 - **A few locales per save.** The locales go up in groups, `group_size` to a job (6 unless the run says), each
-  group through one edit: six saves for Play's 31 locales, where one job per locale was 31.
+  group through one edit: six saves for Play's 33 locales, where one job per locale was 33.
 - **No save for what didn't change.** Before it opens an edit to write, the lane reads what Google Play holds
   (through an edit it deletes, which is no save) and leaves out every locale whose staged images are the ones
   already there, shelf by shelf and in order. A group with no locale left opens no edit. supply's
@@ -350,8 +350,9 @@ and `upload_play_screenshots` of the [Fastfile](../fastlane/Fastfile), with the 
   error from Google Play fails the job as it always did. The lane ends well only for a caller that passes
   `save_quota_is_no_failure:true` and reads its outputs, as these jobs do: anywhere else (`fastlane
   upload_screenshots` on a Mac, another workflow) it stops with an error that says the quota ran out.
-- **In a release, the bundle goes first**: `android-screenshots` only starts once `android-upload` sent the
-  bundle, so the bundle is never the save its own run's screenshots left without quota.
+- **In a release, the bundles go first**: `android-screenshots` only starts once `android-upload` sent the
+  phone's bundle and `wear-upload` the watch's, so a bundle is never the save its own run's screenshots left
+  without quota.
 
 **Sending what didn't go**, once Google Play takes saves again. Either way costs a save only for the groups that
 still have something to send:
@@ -387,7 +388,7 @@ measured. Should Google Play refuse to open that edit for the quota, the group w
 
 Besides the screenshots, an App Store product page takes two images of its own, under **Product Page Information ›
 Header and Search Results** in App Store Connect. They appear on iOS and iPadOS 27 and later, and are generated like
-the screenshots, in all 29 languages:
+the screenshots, in all 32 languages:
 
 ```bash
 ./scripts/store-screenshots/creative-assets/generate.sh                               # capture, then draw
@@ -637,7 +638,7 @@ scripts/store-screenshots/local-set.mjs        # the check of a set made on a Ma
 Robolectric draws every Play screen in its set's `StoreLocale.drawnLocale` (`StoreLocale.kt`): the language the resources are read in and the region the amounts, dates and
 hours are written in. It is the set's own tag for most sets. Chinese (`zh-CN`), Traditional Chinese (`zh-TW`, since
 its tag, `zh-Hant`, carries a script), Hebrew (`iw-IL`), Thai (`th-TH`), Vietnamese (`vi-VN`), Swedish (`sv-SE`),
-Czech (`cs-CZ`), Bengali (`bn-BD`) and Malay (`ms-MY`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
+Czech (`cs-CZ`), Bengali (`bn-BD`), Malay (`ms-MY`), Hungarian (`hu-HU`) and Urdu (`ur-PK`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
 tag, `es`, has no region: a bare `es` writes the symbol after the amount, as Spain does
 ("84,08 €", "120 US$"), while the same listing's App Store set, captured in Equatorial Guinea's region, writes
 "€84,08" and "US$120". So that set is drawn in **`es-GQ`** (`LATIN_AMERICAN_DRAWN_LOCALE`), **the region of the `es`
@@ -688,7 +689,7 @@ The trade-off: Equatorial Guinea's separators are Spain's, a decimal comma and n
 the boat tour's dollars are "US$120" where the United States' wrote "$120", and a compact amount from 1000 up puts
 the symbol after ("1 mil €"). The trip's Statistics stays under it: its most expensive day is €678, so the chart's
 value lines stop at "€750". Changing the region is that one line of `locales.tsv` for the App Store's set, and
-`LATIN_AMERICAN_DRAWN_LOCALE` for Play's and the frames' banners, which nothing changes by itself
+`LATIN_AMERICAN_DRAWN_LOCALE` for Play's and Play's drawing, which nothing changes by itself
 ([the locale every image is drawn in](#the-locale-every-image-is-drawn-in)).
 
 The faces, the groups' photos and the receipt's photo go in the launch environment as base64, since the Mac app's

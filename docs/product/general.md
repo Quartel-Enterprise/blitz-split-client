@@ -39,13 +39,19 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
       (`WelcomeUiState.showsExpiredAccountNotice`). The device asks the server first whether it deleted that
       account: a session lost for any other reason (revoked, the account deleted from another device) keeps the
       profile as before, with no alert.
+  - On a phone upright, Welcome is headed by the app's logo alone, with no decorative shapes, so its buttons and the
+    legal line fit on one screen on a typical phone (Pierre's call, November 2026; a small phone or a large font still
+    scrolls, with the buttons in the same scroll as the pitch). Android keeps its shapes only where
+    there is room for them: the pitch panel of a tablet (upright or lying down) and of a book, and the small badge
+    beside the actions on a phone lying down. The web keeps the brand panel's corner shapes in its two columns and
+    drops them, with the space kept for them, when narrow. iOS and macOS draw the logo alone everywhere.
   - Welcome ends in one small centered line under its buttons, "By continuing, you accept the Terms of Service and
     acknowledge the Privacy Policy.", both names links to the legal texts (the app's own screens; the site's page in
     another tab on the web), with no checkbox nor step of its own (Pierre's call, #184): Analytics rests on legitimate
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay and Greek: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian and Urdu: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -145,7 +151,30 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     digits. Only "-কে" is ever joined to a name the app fills in, since it doesn't follow the name's sound, and its plurals
     have one and other. Malay is Malaysia's, talks to the user as "anda", doesn't change its verbs with the person, and
     its plurals have one form. Greek talks to the user in the informal singular, "εσύ", and its plurals have one and
-    other. The
+    other. Croatian (Pierre's call, issue #486; the rest taken without him, after Czech) is one variant for every tag of
+    its, calls the app Blitz Split and talks to the user in the informal singular, "ti". Its past participle says a
+    gender the app doesn't know, so it is written "-o/la" ("podijelio/la"), every verb phrase after the actor starting
+    with the auxiliary "je", which the user's rows turn into "si" ("Ana je podijelio/la…", "Ti si podijelio/la…"). A
+    name the app fills in is never declined: it stays in the nominative after a noun that takes the case ("je dodao/la
+    člana Ana") or a colon, and the deleted-item notice starts with who deleted it (`youSubjectLanguages`), not "by Ana"
+    ("od Ane"). Its plurals have one, few and other, 21 taking one ("21 grupa", "2 grupe", "5 grupa"). A bill is
+    "trošak", since "račun" is the receipt and the account.
+    Hungarian (Pierre's calls, issue #490) is one variant for every tag of it, calls the app Blitz Split and
+    talks to the user in the informal "te". Its case suffixes follow the sound of the word before them (-nak/-nek,
+    -val/-vel, a → á), so none is ever glued to a value the app fills in, as Turkish and Korean do: a name, a group, a
+    bill or an amount stands alone, after a colon or as the subject ("Tartozol neki: Ana", never "Anának"), and no
+    "a"/"az" goes right before one either. Its plurals have one and other, the noun staying singular after a number
+    ("5 tag"), and it starts Android's deleted-item notice with who deleted it (`youSubjectLanguages`). Urdu (Pierre's call, issue #492) is one variant for every `ur` tag, Pakistan's, in its Perso-Arabic script,
+    and talks to the user as "آپ" (as Hindi's "आप", the norm in Pakistani apps, even among friends: کریں, never کرو), in
+    the plain Urdu Pakistani apps write, English loanwords included (گروپ, بیلنس, اکاؤنٹ); it calls the app Blitz Split.
+    It reads right to left as Arabic does, with the same mirrored layouts, and writes numbers, amounts and dates with
+    0-9, never its own Eastern Arabic digits (Pierre's call). It ends a sentence with "۔" (`fullStopUi`,
+    `WordGap.fullStop`, `fullStop`) and joins two clauses with "،" (the web's `clauseBreak`, as its Android strings
+    write it), and its plurals have one and other. Its verbs and adjectives say a gender the app
+    never knows, so it does as Hindi does (Pierre's call): the masculine as the generic where a person decides it, and
+    the ergative past, which agrees with the object, wherever it fits. Its past puts "نے" after the actor, apart after
+    a name and after the user's "آپ" alike, so its activity sentences need no rule for the user
+    ([activity-and-push.md](activity-and-push.md)). The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
@@ -329,7 +358,25 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
   - The Bangladeshi taka (BDT) and the Malaysian ringgit (MYR) follow the Romanian leu, in that order (Pierre's calls,
     with Bengali and Malay), and start a new group in Bangladesh and Malaysia. Each has 2 decimals, as ISO gives it, and
     the usual 100 million cap, so an app version from before them shows their amounts by the raw code, with the right
-    decimals. Greek brings no currency, the euro covering Greece.
+    decimals. Greek brings no currency, the euro covering Greece, nor does Croatian, the euro covering Croatia since
+    2023.
+  - The Hungarian forint (HUF) follows the Malaysian ringgit (Pierre's call, with Hungarian), and starts a new group in
+    Hungary. It has no decimals, as the rupiah and the New Taiwan dollar (Pierre's call): ISO gives it 2, but the
+    fillér is long gone and no price or receipt in Hungary shows one. Its cap is the usual 100 million (about
+    US$ 280,000). An app version from before it reads HUF as an unknown code with two decimals and shows its amounts
+    100 times smaller until it updates, as the rupiah did (Pierre's call: accepted, as with IDR, KRW and TWD).
+  - The Pakistani rupee (PKR) follows the Hungarian forint (Pierre's call, with Urdu), and starts a new group in
+    Pakistan. It has 2 decimals, as ISO gives it, and the usual 100 million cap (about US$ 360,000), so an app version
+    from before it shows its amounts by the raw code, with the right decimals.
+  - The boliviano (BOB), the bolívar (VES), the Costa Rican colón (CRC), the quetzal (GTQ), the lempira (HNL), the
+    córdoba (NIO), the Dominican peso (DOP) and the Cuban peso (CUP) follow the guaraní, in that order (Pierre's call:
+    every Latin American country's own currency), and start a new group in Bolivia, Venezuela, Costa Rica, Guatemala,
+    Honduras, Nicaragua, the Dominican Republic and Cuba, which split in dollars before. The colón and the Cuban peso
+    have no decimals, as the forint (Pierre's call): ISO gives each 2, but no price or receipt in Costa Rica or Cuba
+    shows céntimos or centavos. An app version from before them reads CRC and CUP as unknown codes with two decimals
+    and shows their amounts 100 times smaller until it updates, as the rupiah did (Pierre's call: accepted). The other
+    six have 2 decimals, as ISO gives them, so an app version from before them shows their amounts by the raw code,
+    with the right decimals. All eight keep the usual 100 million cap. Ecuador, El Salvador, Panama and Puerto Rico keep the dollar, their own.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
@@ -345,6 +392,9 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     them), and Home's shortcut opens such a bill without the camera; the reader refuses them too.
   - Minimum iOS 26 and macOS 26, so Liquid Glass is native with no fallbacks. The Apple app builds with the iOS 27.1
     SDK (Xcode 27.1), its iPhone Duo APIs behind `#available(iOS 27.1, *)`.
+  - The watch: minimum Wear OS 3 (API 30), the first with Tiles and complications as the Wear app draws them and the
+    one Google Play's Wear OS track asks of a standalone app; on the Apple Watch, watchOS 26, for its Liquid Glass
+    controls ([watch.md](watch.md)). Watches are dark only, whatever the phone's theme.
   - The Apple app has no floating action button (Pierre's call): a screen's main button ("Split a bill", on every
     tab of a group) is a toolbar item, the bar's tinted glass item on iPhone and iPad (the bottom toolbar inside a group
     on an iPhone upright, except on an iPhone Duo, whose vertical bar takes it as its icon alone) and the window

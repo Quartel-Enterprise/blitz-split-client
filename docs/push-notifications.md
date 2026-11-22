@@ -27,6 +27,11 @@ notices as soon as the device is back.
 | iOS, macOS | APNs, `PushNotifications.swift` | The system, from `push.<kind>` in `Localizable.xcstrings` | `userInfo["link"]` to `handleDeepLink` |
 | Web | Web Push, `src/push/webPush.ts` | `public/push-sw.js`, from the words the page leaves it | An open tab gets the link; else a new tab opens it |
 
+Android, iOS and macOS also sync as an event's push arrives, so a tap finds the bill on the device
+([activity-and-push.md](product/activity-and-push.md)): Android in `BlitzSplitMessagingService` after it shows the
+notification, iOS and macOS in the app delegate's `didReceiveRemoteNotification`, which the server's
+`content-available` on the alert brings (iOS needs the `remote-notification` background mode of `project.yml`).
+
 ## What stays off until it is set up
 
 Nothing breaks without these: each platform simply gets no notifications.

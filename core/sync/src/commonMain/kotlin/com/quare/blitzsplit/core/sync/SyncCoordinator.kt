@@ -67,6 +67,7 @@ class SyncCoordinator(
     private val firstDownload: FirstDownload,
     private val connectivityObserver: NetworkConnectivityObserver,
     private val scope: CoroutineScope,
+    lastSyncRecorder: LastSyncRecorder,
     crashReporter: CrashReporter,
     remoteChangeRepository: RemoteChangeRepository,
     appForeground: AppForeground,
@@ -108,7 +109,7 @@ class SyncCoordinator(
 
     // Why: counts the syncs waiting on the lock too, so the state stays SYNCING between two queued ones.
     private val requestedSyncs = MutableStateFlow(0)
-    private val outcomes = SyncOutcomes(firstDownload, crashReporter, connectivityObserver, scope)
+    private val outcomes = SyncOutcomes(firstDownload, crashReporter, connectivityObserver, lastSyncRecorder, scope)
 
     /*
      * Why: how many syncs began reading the groups, the bills and the rest real time tells of, so a channel that joined
@@ -419,13 +420,15 @@ class SyncCoordinator(
     }
 
     /*
-     * Why: only a Google or Apple account schedules it, and the profile comes back only with that account.
-     * The schedule is read last, right before the session ends, so a cancel up to then still keeps it.
+     * Why: the phone schedules it only for a Google or Apple account, whose profile comes back with it; a watch also for
+     * an anonymous one, which it connects again from the phone. A Google or Apple one that comes back anonymous drops
+     * its schedule (AccountRepositoryImpl), so the phone never signs out of an anonymous account. The schedule is read last, right before the session
+     * ends, so a cancel up to then still keeps it.
      */
     private suspend fun signOutIfScheduledAndSynced() {
         if (observeHasPendingChanges().first()) return
         val account = accountRepository.observeAccount().first()
-        if (account.signOutWhenSynced && account.status is AccountStatus.Connected) clearSession()
+        if (account.signOutWhenSynced && account.status != AccountStatus.LocalOnly) clearSession()
     }
 
     /*
@@ -555,17 +558,17 @@ class SyncCoordinator(
 
     /*
      * Why: under the sync lock, like any download, so a sync's writes and the pull's never interleave. It doesn't count
-     * as a sync for the badge, which only asks for attention. What only the full sync drops, and a pull that failed, go to
-     * the full sync, which tries again and reports it.
+     * as a sync for the badge, which only asks for attention, but moves the time of the last sync ("Updated at"). What
+     * only the full sync drops, and a pull that failed, go to the full sync, which tries again and reports it.
      */
     private suspend fun pullRemoteChanges(
         userId: String,
         changes: List<RemoteChange>,
     ) {
-        val isPulled = syncLock.withLock {
+        val isPulled: Boolean? = syncLock.withLock {
             suspendRunCatching {
-                // Why: a sign out, an erased profile or another user may have taken the lock first.
-                if (!isSignedInWithProfile(userId)) return@suspendRunCatching true
+                // Why: a sign out, an erased profile or another user may have taken the lock first: nothing pulled.
+                if (!isSignedInWithProfile(userId)) return@suspendRunCatching null
                 val pull = RemotePull.of(
                     changes = changes,
                     userId = userId,
@@ -574,7 +577,7 @@ class SyncCoordinator(
                 !pull.isFullSync
             }.getOrDefault(false)
         }
-        if (!isPulled) scope.launch { syncUntilSettled() }
+        isPulled?.let { if (it) outcomes.onPulled() else scope.launch { syncUntilSettled() } }
     }
 
     private suspend fun isSignedInWithProfile(userId: String): Boolean =

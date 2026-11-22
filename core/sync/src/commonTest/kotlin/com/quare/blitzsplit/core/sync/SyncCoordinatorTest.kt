@@ -115,6 +115,7 @@ class SyncCoordinatorTest {
     private val firstDownloadProgress = mutableListOf<FirstDownloadProgress?>()
     private val pendingAtGroupsFullDownload = mutableListOf<Boolean>()
     private val reportedFailures = mutableListOf<Throwable>()
+    private var recordedSyncCount = 0
 
     @Test
     fun `GIVEN no profile WHEN syncing THEN does not register with the server`() = runTest {
@@ -966,6 +967,31 @@ class SyncCoordinatorTest {
 
         // Then
         assertEquals(emptyList(), reportedFailures)
+    }
+
+    @Test
+    fun `GIVEN online WHEN a sync succeeds THEN its time is recorded`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(1, recordedSyncCount)
+    }
+
+    @Test
+    fun `GIVEN the pull gets no answer WHEN syncing THEN no sync time is recorded`() = runTest {
+        // Given
+        prepareScenario(storedProfile = pierre)
+        profile.pullError = noAnswer
+
+        // When
+        coordinator.syncNow()
+
+        // Then
+        assertEquals(0, recordedSyncCount)
     }
 
     @Test
@@ -1952,7 +1978,7 @@ class SyncCoordinatorTest {
     }
 
     @Test
-    fun `GIVEN an anonymous account with a queued change WHEN signing out once synced THEN pushes it and stays`() =
+    fun `GIVEN an anonymous watch with a queued change WHEN signing out once synced THEN pushes it then signs out`() =
         runTest {
             // Given
             prepareScenario(
@@ -1967,9 +1993,8 @@ class SyncCoordinatorTest {
 
             // Then
             assertEquals(listOf(FakeAccountRepository.ANONYMOUS_USER_ID), profile.uploadedUserIds)
-            assertEquals(0, account.signOutCount)
-            assertEquals(anonymous, account.status)
-            assertEquals(pierre, profile.profile.value)
+            assertEquals(1, account.signOutCount)
+            assertNull(profile.profile.value)
         }
 
     @Test
@@ -2108,6 +2133,26 @@ class SyncCoordinatorTest {
 
             // Then
             assertEquals(2, profile.uploadedUserIds.size)
+            assertEquals(1, account.signOutCount)
+            assertNull(profile.profile.value)
+        }
+
+    @Test
+    fun `GIVEN an anonymous watch that scheduled its sign out WHEN the app starts online THEN pushes and signs out`() =
+        runTest {
+            // Given
+            prepareScenario(
+                storedProfile = pierre,
+                status = anonymous,
+                pendingChanges = true,
+                signOutScheduled = true,
+            )
+
+            // When
+            coordinator.start()
+            runCurrent()
+
+            // Then
             assertEquals(1, account.signOutCount)
             assertNull(profile.profile.value)
         }
@@ -7529,6 +7574,7 @@ class SyncCoordinatorTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     private fun comment(id: String): BillComment = BillComment(
@@ -7735,6 +7781,7 @@ class SyncCoordinatorTest {
             appForeground = appForeground,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             crashReporter = CrashReporter { reportedFailures += it },
+            lastSyncRecorder = { recordedSyncCount++ },
             scope = backgroundScope,
         )
     }

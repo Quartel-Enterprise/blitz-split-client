@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">نیا گروپ</string>
+    <string name="create_group_close">بند کریں</string>
+    <string name="create_group_create">بنائیں</string>
+    <string name="create_group_change_color">گروپ کا رنگ بدلیں</string>
+    <string name="create_group_name_label">گروپ کا نام</string>
+    <string name="create_group_type_label">گروپ کی قسم</string>
+    <string name="create_group_members_title">کون شامل ہے</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d شخص</item>
+        <item quantity="other">%d لوگ</item>
+    </plurals>
+    <string name="create_group_me">آپ</string>
+    <string name="create_group_remove_member">%s کو ہٹائیں</string>
+    <string name="create_group_add_placeholder">نام سے شامل کریں</string>
+    <string name="create_group_add">شامل کریں</string>
+    <string name="create_group_no_app_notice">ابھی کسی کو ایپ کی ضرورت نہیں۔ آپ ابھی سے سب کے لیے خرچ شامل کر سکتے ہیں اور لنک بعد میں بھیج سکتے ہیں۔</string>
+    <string name="create_group_currency">ڈیفالٹ کرنسی</string>
+    <string name="create_group_currency_caption">نئے خرچ اسی کرنسی میں شروع ہوتے ہیں؛ ہر خرچ کوئی دوسری کرنسی بھی استعمال کر سکتا ہے۔</string>
+    <string name="create_group_save_error">گروپ محفوظ نہیں ہو سکا۔ دوبارہ کوشش کریں۔</string>
+    <string name="create_group_photo">گروپ کی تصویر</string>
+    <string name="create_group_take_photo">تصویر لیں</string>
+    <string name="create_group_choose_photo">تصویر منتخب کریں</string>
+    <string name="create_group_remove_photo">تصویر ہٹائیں</string>
+    <string name="create_group_photo_error">یہ تصویر استعمال نہیں ہو سکی۔ کوئی اور آزمائیں۔</string>
+</resources>

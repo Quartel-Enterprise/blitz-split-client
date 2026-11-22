@@ -49,6 +49,11 @@ struct BoraRacharApp: App {
         #endif
         FirebaseSetup.attachAnalytics()
         _app = State(initialValue: AppModel())
+        #if os(iOS)
+        BalanceWidgetWriter.shared.start()
+        // A watch's pairing code may be what woke the app
+        WatchPairingRelay.shared.start()
+        #endif
     }
 
     var body: some Scene {
@@ -81,6 +86,9 @@ struct BoraRacharApp: App {
         }
         .onChange(of: scenePhase, initial: true) { _, phase in
             BlitzSplitApple.shared.setAppForeground(isForeground: phase != .background)
+            #if os(iOS)
+            if phase == .background { BalanceWidgetWriter.shared.refresh() }
+            #endif
         }
         #if os(macOS)
         .defaultSize(width: 960, height: 680)

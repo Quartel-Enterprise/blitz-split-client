@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">精算のリマインダー</string>
+    <string name="push_bill_created">%1$sがあなたを含む「%2$s」を追加しました</string>
+    <string name="push_bill_edited">%1$sが「%2$s」を編集しました</string>
+    <string name="push_bill_deleted">%1$sが「%2$s」を削除しました</string>
+    <string name="push_comment_added">%1$sが「%2$s」にコメントしました：%3$s</string>
+    <string name="push_payment_paid_you">%1$sがあなたに支払ったと記録しました</string>
+    <string name="push_payment_to_you">%1$sが、%2$sがあなたに支払ったと記録しました</string>
+    <string name="push_payment_received_yours">%1$sがあなたの支払いを受け取り済みにしました</string>
+    <string name="push_payment_from_you">%1$sが、あなたが%2$sに支払ったと記録しました</string>
+    <string name="push_payment_undone">%1$sがあなたとの支払いを取り消しました</string>
+    <string name="push_charge_sent">%1$sから精算のリマインダーが届きました</string>
+    <string name="push_settle_reminder">%1$sに未精算の残高があります</string>
+    <string name="push_settle_reminders">%1$s個のグループに未精算の残高があります</string>
+    <string name="push_added_to_group">%1$sがあなたをグループに追加しました</string>
+    <string name="push_member_joined">%1$sがグループに参加しました</string>
+    <string name="push_debts_simplified_to_you">%1$sが精算をシンプルにしました。%2$sがあなたに%3$sを支払います。</string>
+    <string name="push_debts_simplified_from_you">%1$sが精算をシンプルにしました。あなたが%2$sに%3$sを支払います。</string>
+    <string name="push_debts_simplified_other">%1$sが精算をシンプルにしました。あなたへの影響を確認してください。</string>
+    <string name="push_debts_unsimplified_to_you">%1$sが「精算をシンプルに」をオフにしました。%2$sがあなたに%3$sを支払います。</string>
+    <string name="push_debts_unsimplified_from_you">%1$sが「精算をシンプルに」をオフにしました。あなたが%2$sに%3$sを支払います。</string>
+    <string name="push_debts_unsimplified_other">%1$sが「精算をシンプルに」をオフにしました。あなたへの影響を確認してください。</string>
+    <string name="notification_settings_bills">支出</string>
+    <string name="notification_settings_bills_detail">自分が含まれる支出の追加、編集、削除</string>
+    <string name="notification_settings_payments">支払いと精算</string>
+    <string name="notification_settings_payments_detail">自分への支払いや自分からの支払い、精算のシンプル化</string>
+    <string name="notification_settings_comments">コメント</string>
+    <string name="notification_settings_comments_detail">自分が含まれる支出や、自分が書き込んだスレッドへのコメント</string>
+    <string name="notification_settings_people_and_groups">メンバーとグループ</string>
+    <string name="notification_settings_people_and_groups_detail">グループへの参加や退出、グループ内の変更</string>
+    <string name="notification_settings_payment_requests">支払いの依頼</string>
+    <string name="notification_settings_payment_requests_detail">誰かから支払いを依頼されたとき</string>
+    <string name="notification_settings_balance_reminder">未精算の残高のリマインダー</string>
+    <string name="notification_settings_balance_reminder_detail">未精算の残高がある場合、週に1回</string>
+</resources>

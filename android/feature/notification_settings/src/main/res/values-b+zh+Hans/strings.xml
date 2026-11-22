@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s，%2$s</string>
     <string name="notification_settings_legend">“推送”会向此设备发送通知。“应用内”会在铃铛和动态中标记为新消息；关闭后，它仍会显示在动态中，但已标为已读。</string>
-    <string name="notification_settings_bills">账单</string>
-    <string name="notification_settings_bills_detail">与你相关的账单被新建、编辑或删除</string>
-    <string name="notification_settings_payments">付款和结清</string>
-    <string name="notification_settings_payments_detail">你收到或付出的款项，以及简化后的债务</string>
-    <string name="notification_settings_comments">评论</string>
-    <string name="notification_settings_comments_detail">与你相关的账单和你参与过的讨论</string>
-    <string name="notification_settings_people_and_groups">成员和群组</string>
-    <string name="notification_settings_people_and_groups_detail">谁加入或退出了你的群组，以及群组中的变化</string>
-    <string name="notification_settings_payment_requests">付款请求</string>
-    <string name="notification_settings_payment_requests_detail">有人请求你付款时</string>
-    <string name="notification_settings_balance_reminder">未结清余额提醒</string>
-    <string name="notification_settings_balance_reminder_detail">每周一次，如有未结清的余额</string>
     <string name="notification_settings_footer">有网络时才会收到通知。要将某个群组设为免打扰，请使用群组内的菜单。</string>
 </resources>

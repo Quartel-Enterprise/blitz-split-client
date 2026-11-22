@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">वॉच कनेक्ट करें</string>
+    <string name="connect_watch_close">बंद करें</string>
+    <string name="connect_watch_body">अपनी वॉच पर दिख रहा कोड डालें। वॉच आपके अकाउंट में साइन इन करेगी और फिर अपने आप सिंक होगी।</string>
+    <string name="connect_watch_code_label">वॉच का कोड</string>
+    <string name="connect_watch_error_invalid">कोड ग़लत है या उसकी मियाद ख़त्म हो गई है। वॉच पर नया कोड बनाएं।</string>
+    <string name="connect_watch_error_too_many">बहुत ज़्यादा ग़लत कोड। कुछ मिनट रुकें और फिर से कोशिश करें।</string>
+    <string name="connect_watch_error_needs_account">पहले कोई अकाउंट कनेक्ट करें: आपका डेटा सिर्फ़ इस डिवाइस पर है।</string>
+    <string name="connect_watch_error_failed">वॉच कनेक्ट नहीं हो सकी। फिर से कोशिश करें।</string>
+    <string name="connect_watch_offline">वॉच कनेक्ट करने के लिए इंटरनेट चाहिए।</string>
+    <string name="connect_watch_own_watch_only">सिर्फ़ अपनी ही वॉच पर दिख रहा कोड डालें: जिसके पास वह वॉच है, वह आपके अकाउंट में आ जाएगा।</string>
+    <string name="connect_watch_validity">कोड 5 मिनट तक और सिर्फ़ एक बार मान्य है।</string>
+    <string name="connect_watch_button">कनेक्ट करें</string>
+    <string name="connect_watch_connected_title">वॉच कनेक्ट हो गई</string>
+    <string name="connect_watch_connected_body">यह आपके ग्रुप देखती है और अपने आप सिंक होती है। डिस्कनेक्ट करने के लिए वॉच पर साइन आउट करें।</string>
+</resources>

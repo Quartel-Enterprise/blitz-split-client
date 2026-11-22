@@ -13,11 +13,26 @@ PROJECT = File.expand_path("../iosApp/BoraRachar.xcodeproj", __dir__)
 # The scheme and its app target share a name; match and the entitlements key by platform
 PLATFORMS = { "BoraRachar-iOS" => "ios", "BoraRachar-macOS" => "macos" }.freeze
 KEYCHAIN = "fastlane_tmp_keychain".freeze
+# The app extensions and watch app each platform embeds, by target, with their own App ID and profiles: the iPhone's
+# balance widget, the Apple Watch app and the watch's complications (iosApp/project.yml). Each is signed as the app is;
+# App Store Connect's profiles for the watch's ids are iOS ones, so one match of the ios platform fetches them all.
+EXTENSIONS = {
+  "ios" => {
+    "BalanceWidget" => "com.quare.blitzsplit.BalanceWidget",
+    "BoraRachar-watchOS" => "com.quare.blitzsplit.watchkitapp",
+    "BalanceWidget-watchOS" => "com.quare.blitzsplit.watchkitapp.BalanceWidget",
+  },
+  "macos" => {},
+}.freeze
 # XcodeGen writes these with "development", which an App Store profile refuses under manual signing. PlistBuddy's
 # Set fails when the file or the key is gone, so a change in project.yml stops the lane instead of shipping development
 APS_ENVIRONMENT = {
-  "ios" => ["iosApp/Generated/iOS.entitlements", "aps-environment"],
-  "macos" => ["iosApp/Generated/macOS.entitlements", "com.apple.developer.aps-environment"],
+  "ios" => [
+    ["iosApp/Generated/iOS.entitlements", "aps-environment"],
+    # The watch's own pushes (docs/product/watch.md#notifications)
+    ["iosApp/Generated/watchOS.entitlements", "aps-environment"],
+  ],
+  "macos" => [["iosApp/Generated/macOS.entitlements", "com.apple.developer.aps-environment"]],
 }.freeze
 
 # No fastlane/README.md written into the checkout after each run
@@ -29,6 +44,9 @@ desc "adhoc_export_options (iOS only: path of the ad hoc plist, for Firebase App
 lane :apple_signing do |options|
   target = options.fetch(:scheme)
   platform = PLATFORMS.fetch(target)
+  # Each target to sign with the bundle id its profile is for: the app's, then its extensions'
+  signed_targets = { target => BUNDLE_ID }.merge(EXTENSIONS.fetch(platform))
+  identifiers = signed_targets.values
   repo_root = File.expand_path("..", __dir__)
 
   # A temporary keychain on CI, so the certificate never lands in the login one; nothing outside CI. setup_ci locks
@@ -48,14 +66,14 @@ lane :apple_signing do |options|
     type: "appstore",
     readonly: true,
     platform: platform,
-    app_identifier: BUNDLE_ID,
+    app_identifier: identifiers,
     team_id: TEAM_ID,
     storage_mode: "git",
     git_url: CERTS_REPO,
     api_key: api_key,
     additional_cert_types: platform == "macos" ? ["mac_installer_distribution"] : [],
   )
-  profile = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].fetch(BUNDLE_ID)
+  profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].slice(*identifiers)
 
   # The ad hoc profile lists the iPhones registered on the team, which are the only ones the Firebase App
   # Distribution build installs on. A new tester's iPhone needs registering and the profile made again
@@ -65,47 +83,50 @@ lane :apple_signing do |options|
   UI.user_error!("adhoc_export_options is iOS only") if adhoc_export_options && platform != "ios"
   # Best effort: a missing or broken ad hoc profile only costs the Firebase build. The App Store signing goes on, so
   # TestFlight still gets its build, and no ad hoc plist is written, which skips the ad hoc export.
-  adhoc_profile = nil
+  adhoc_profiles = nil
   if adhoc_export_options
     begin
       match(
         type: "adhoc",
         readonly: true,
         platform: platform,
-        app_identifier: BUNDLE_ID,
+        app_identifier: identifiers,
         team_id: TEAM_ID,
         storage_mode: "git",
         git_url: CERTS_REPO,
         api_key: api_key,
       )
-      adhoc_profile = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].fetch(BUNDLE_ID)
+      adhoc_profiles = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING].slice(*identifiers)
     rescue StandardError => e
       UI.error("No ad hoc profile, so no Firebase App Distribution build: #{e.message}")
     end
   end
 
-  # Only the app target and only Release: the Swift packages' frameworks take no profile, and the committed
-  # project.yml keeps automatic signing for local builds
-  update_code_signing_settings(
-    use_automatic_signing: false,
-    path: PROJECT,
-    team_id: TEAM_ID,
-    targets: [target],
-    code_sign_identity: "Apple Distribution",
-    profile_name: profile,
-    build_configurations: ["Release"],
-  )
+  # Only the app and its extensions, and only Release: the Swift packages' frameworks take no profile, and the
+  # committed project.yml keeps automatic signing for local builds
+  signed_targets.each do |signed_target, identifier|
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: PROJECT,
+      team_id: TEAM_ID,
+      targets: [signed_target],
+      code_sign_identity: "Apple Distribution",
+      profile_name: profiles.fetch(identifier),
+      build_configurations: ["Release"],
+    )
+  end
 
-  entitlements, key = APS_ENVIRONMENT.fetch(platform)
   # PlistBuddy, not plutil: plutil reads the dots of com.apple.developer.aps-environment as a key path
-  sh("/usr/libexec/PlistBuddy", "-c", "Set :#{key} production", File.join(repo_root, entitlements))
+  APS_ENVIRONMENT.fetch(platform).each do |entitlements, key|
+    sh("/usr/libexec/PlistBuddy", "-c", "Set :#{key} production", File.join(repo_root, entitlements))
+  end
 
   export_options = {
     "method" => "app-store-connect",
     "teamID" => TEAM_ID,
     "signingStyle" => "manual",
     "signingCertificate" => "Apple Distribution",
-    "provisioningProfiles" => { BUNDLE_ID => profile },
+    "provisioningProfiles" => profiles,
     "destination" => "export",
     "uploadSymbols" => true,
     # The workflow sets the build number itself, from version.properties
@@ -115,13 +136,13 @@ lane :apple_signing do |options|
   File.write(options.fetch(:export_options), Plist::Emit.dump(export_options))
 
   # Only the keys a release-testing export takes, not the App Store ones
-  if adhoc_profile
+  if adhoc_profiles
     File.write(adhoc_export_options, Plist::Emit.dump({
       "method" => "release-testing",
       "teamID" => TEAM_ID,
       "signingStyle" => "manual",
       "signingCertificate" => "Apple Distribution",
-      "provisioningProfiles" => { BUNDLE_ID => adhoc_profile },
+      "provisioningProfiles" => adhoc_profiles,
     }))
   end
 end
@@ -147,7 +168,7 @@ SCREENSHOT_REORDER_REFUSED_MESSAGE = "Can't Add/Remove Relationship when reorder
 # The most App Store Connect lists per page of a shelf's screenshots, which is far more than a shelf holds:
 APP_STORE_SHELF_PAGE_SIZE = 200
 
-desc "Generate the store listing's art of both stores in all 29 languages (docs/store-listing-screenshots.md), then"
+desc "Generate the store listing's art of both stores in all 32 languages (docs/store-listing-screenshots.md), then"
 desc "upload it. Options: skip_upload:true only generates (store_listings/listing-art/ and the fastlane folders);"
 desc "platform:android or platform:ios does one store (ios: iPhone, iPad, iPhone Duo and Mac); skip_capture:true"
 desc "reuses the Apple captures already in build/; skip_mac:true leaves the Mac out (its capture drives this Mac's"
@@ -272,7 +293,8 @@ lane :finish_app_store_screenshots do |options|
 end
 
 desc "Upload the stores' listing text, the files of store-listing/ (docs/store-listing.md): the name, the"
-desc "descriptions and, on the App Store, the subtitle, the keywords and the promotional text, in every language,"
+desc "descriptions, on Play the preview video of a language that names one, and, on the App Store, the subtitle,"
+desc "the keywords and the promotional text, in every language,"
 desc "with the App Store's support, marketing and privacy policy addresses in every locale and the version's"
 desc "copyright line."
 desc "Options: platform (android|ios|mac; all three when left out). Needs PLAY_STORE_JSON_KEY_PATH (Play) and the"
@@ -301,16 +323,62 @@ lane :upload_listing do |options|
   end
 end
 
+desc "Upload the Play feature graphic of every store video locale (docs/store-video.md): the 1024x500 image"
+desc "scripts/store-video/thumbnail.sh <locale> renders, to each Play locale of the locale JSON's `listing` language"
+desc "(store-listing.mjs's PLAY_LOCALES). Run thumbnail.sh for each first: a locale without its graphic fails the lane"
+desc "before anything is sent. Other Play locales keep the graphic they have. Needs PLAY_STORE_JSON_KEY_PATH;"
+desc "version_code names the production release supply reads when the track holds more than one (a staged rollout);"
+desc "VALIDATE_ONLY=true, or validate_only:true, only asks Play whether it would take them. It commits a Play edit of"
+desc "its own, so never run it while a release or a Play workflow (store-listing, play-store-screenshots) runs: a"
+desc "second edit drops the one still open. Its edit also takes to review whatever waits in Publishing overview."
+lane :upload_feature_graphics do |options|
+  require "json"
+  require "open3"
+  require "tmpdir"
+  require "supply"
+
+  repo_root = File.expand_path("..", __dir__)
+  # stdout alone: a warning Node prints on stderr must not reach the JSON
+  out, status = Open3.capture2(
+    "node", "--input-type=module", "-e",
+    'import { PLAY_LOCALES } from "./scripts/release/store-listing.mjs"; console.log(JSON.stringify(PLAY_LOCALES))',
+    chdir: repo_root,
+  )
+  UI.user_error!("Could not read PLAY_LOCALES from store-listing.mjs") unless status.success?
+  play_locales = JSON.parse(out)
+  claimed = {}
+  Dir.mktmpdir("feature-graphics-") do |dir|
+    Dir.glob(File.join(repo_root, "scripts/store-video/locales/*.json")).sort.each do |json|
+      locale = File.basename(json, ".json")
+      language = JSON.parse(File.read(json))["listing"]
+      targets = play_locales[language]
+      UI.user_error!("#{locale}.json names no listing language of store-listing.mjs (#{language.inspect})") unless targets
+      # Two locales of one language would write the same Play locales' graphic, and the last would win unseen
+      UI.user_error!("#{locale}.json and #{claimed[language]}.json both name the listing language #{language}") if claimed[language]
+      claimed[language] = locale
+      graphic = File.join(repo_root, "build/store-video", locale, "feature-#{locale}.jpg")
+      UI.user_error!("No #{graphic}: run scripts/store-video/thumbnail.sh #{locale} first") unless File.exist?(graphic)
+      targets.each do |target|
+        images = File.join(dir, target, Supply::IMAGES_FOLDER_NAME)
+        FileUtils.mkdir_p(images)
+        FileUtils.cp(graphic, File.join(images, "featureGraphic.jpg"))
+      end
+    end
+    upload_play_listing(dir, options[:version_code], validate_only?(options[:validate_only]), images: true)
+  end
+end
+
 # VALIDATE_ONLY=true in the environment, or a lane's validate_only:true, asks Play whether it would take the upload
 # and changes nothing.
 def validate_only?(option = nil)
   [ENV["VALIDATE_ONLY"], option].any? { |value| value.to_s.strip.downcase == "true" }
 end
 
-# The listing's text only: no bundle, no track, no images. supply adds the listing of a locale Play doesn't have yet.
+# The listing's text only, or with images: true its images only (the feature graphics): no bundle, no track, no
+# screenshots. supply adds the listing of a locale Play doesn't have yet.
 # It reads the production track's release on the way, and stops when the track holds more than one unless it is
 # told which, by its versionCode.
-def upload_play_listing(metadata_path, version_code, validates_only)
+def upload_play_listing(metadata_path, version_code, validates_only, images: false)
   release = version_code.to_s.empty? ? {} : { version_code: version_code.to_s.to_i }
   retrying_on(PLAY_SERVER_ERROR_MESSAGE, attempts: PLAY_SERVER_ERROR_ATTEMPTS, wait_seconds: PLAY_SERVER_ERROR_WAIT_SECONDS) do
     upload_to_play_store(
@@ -320,9 +388,9 @@ def upload_play_listing(metadata_path, version_code, validates_only)
       metadata_path: metadata_path,
       skip_upload_aab: true,
       skip_upload_apk: true,
-      skip_upload_metadata: false,
+      skip_upload_metadata: images,
       skip_upload_changelogs: true,
-      skip_upload_images: true,
+      skip_upload_images: !images,
       skip_upload_screenshots: true,
       validate_only: validates_only,
     )
@@ -729,6 +797,12 @@ end
 # uploaded builds to App Store review, each with the version's "What's new" in the languages its listing has.
 # release-production.yml runs these lanes; nothing here builds.
 PLAY_TRACKS = %w[production beta alpha internal].freeze
+# The Wear OS form factor's tracks, by the phone's track they mirror: the API names a form factor's track
+# "<prefix>:<default name>", and internal testing's default name is "qa" (developers.google.com/android-publisher/tracks).
+# Closed testing has no default: the watch's is the closed track named alpha, as the phone's.
+PLAY_FORM_FACTOR_TRACKS = {
+  "wear" => { "production" => "wear:production", "beta" => "wear:beta", "alpha" => "wear:alpha", "internal" => "wear:qa" },
+}.freeze
 # How long App Store Connect may take to process an upload before the build can be selected:
 BUILD_PROCESSING_TIMEOUT_SECONDS = 45 * 60
 # The states of a version that was submitted already, from waiting for its review to being on the store:
@@ -741,13 +815,21 @@ PLAY_VERSION_CODE_USED_MESSAGE = "has already been used".freeze
 
 desc "Upload a signed AAB to a Google Play track with the version's \"What's new\""
 desc "Options: aab (its path, or a pattern that finds it alone); track (production|beta|alpha|internal); rollout (the percentage of the users who get"
-desc "it, 1 to 100: a staged rollout, production only); notes (the folder of <language>.txt that release-notes.mjs"
+desc "it, 1 to 100: a staged rollout, production only); form_factor (wear: the same track of the Wear OS form factor, for the"
+desc "watch's bundle; omitted: the phone's); notes (the folder of <language>.txt that release-notes.mjs"
 desc "collect --out writes as stores/play); version_code (the bundle's, which lets a retry after a server error"
 desc "tell that the release landed). Needs PLAY_STORE_JSON_KEY_PATH."
 lane :play_upload do |options|
   repo_root = File.expand_path("..", __dir__)
   track = options.fetch(:track).to_s
   UI.user_error!("track is one of #{PLAY_TRACKS.join(', ')}") unless PLAY_TRACKS.include?(track)
+  # Staged or not by the track it mirrors, then sent to the form factor's own
+  play_track = track
+  form_factor = options[:form_factor].to_s
+  unless form_factor.empty?
+    tracks = PLAY_FORM_FACTOR_TRACKS.fetch(form_factor) { UI.user_error!("form_factor is one of #{PLAY_FORM_FACTOR_TRACKS.keys.join(', ')}") }
+    play_track = tracks.fetch(track)
+  end
   percentage = options.fetch(:rollout, 100).to_s
   UI.user_error!("rollout is a percentage of the users, from 1 to 100") unless percentage.match?(/\A\d+\z/) && (1..100).cover?(percentage.to_i)
   # Only production is rolled out in stages: a testing track gets the release whole
@@ -773,7 +855,7 @@ lane :play_upload do |options|
           package_name: ANDROID_PACKAGE,
           json_key: json_key,
           aab: aabs.first,
-          track: track,
+          track: play_track,
           **release,
           metadata_path: changelogs,
           skip_upload_changelogs: false,
@@ -784,10 +866,10 @@ lane :play_upload do |options|
           skip_upload_screenshots: true,
         )
       rescue => e
-        landed = attempt > 1 && e.message.include?(PLAY_VERSION_CODE_USED_MESSAGE) && play_track_has?(track, options[:version_code], json_key)
+        landed = attempt > 1 && e.message.include?(PLAY_VERSION_CODE_USED_MESSAGE) && play_track_has?(play_track, options[:version_code], json_key)
         raise unless landed
 
-        UI.important("The #{track} track already lists this versionCode: the attempt Google Play answered with a server error had landed")
+        UI.important("The #{play_track} track already lists this versionCode: the attempt Google Play answered with a server error had landed")
       end
     end
   end

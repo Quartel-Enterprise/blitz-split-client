@@ -75,6 +75,8 @@ class JsProfileState(
     val isSigningOut: Boolean,
     val hasSignOutFailed: Boolean,
     val showsDeleteAccount: Boolean,
+    // Why: "Connect watch" (15.14), only with an account on the server.
+    val showsConnectWatch: Boolean,
     // Why: "Rate the app", which on the web opens the page that leads to the phone app's store.
     val showsRateApp: Boolean,
     // Why: Pix first, each method's default first; null while they load (shimmer), never "no key" before it.
@@ -163,6 +165,7 @@ class ProfilePresenter {
                 isSigningOut = state.isSigningOut,
                 hasSignOutFailed = state.hasSignOutFailed,
                 showsDeleteAccount = state.showsDeleteAccount,
+                showsConnectWatch = state.showsConnectWatch,
                 showsRateApp = state.showsRateApp,
                 appInviteStatus = state.appInvite?.status?.name,
                 appInviteLink = state.appInvite?.link,
@@ -279,6 +282,10 @@ class ProfilePresenter {
 
     fun deleteAccount() {
         viewModel.onEvent(ProfileUiEvent.OnDeleteAccountClicked)
+    }
+
+    fun connectWatch() {
+        viewModel.onEvent(ProfileUiEvent.OnConnectWatchClicked)
     }
 
     fun contactSupport() {

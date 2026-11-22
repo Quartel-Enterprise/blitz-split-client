@@ -13,7 +13,13 @@ import SwiftUI
 /// phrases all start with "ने", which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Romanian swaps its
 /// perfect's auxiliary as French does ("Ana a împărțit", "Tu ai împărțit"), and Czech adds one before the past ("Ana
 /// rozdělil(a)", "Ty jsi rozdělil(a)"). Greek ends its aorist in "-ε" for someone else and "-ες" for the user ("Ana
-/// μοίρασε", "Εσύ μοίρασες"). Bengali's respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
+/// μοίρασε", "Εσύ μοίρασες"). Croatian swaps its "je" for "si" before a past written "-o/la", the app not knowing the
+/// gender ("Ana je podijelio/la", "Ti si podijelio/la"). Hungarian starts each verb phrase with a past: a definite one
+/// in "-ta"/"-te" takes a "d" for the user ("Ana létrehozta", "Te létrehoztad"), an indefinite one is one of a short
+/// list a translation may start with, each with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's
+/// respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
+/// Urdu writes its ergative "نے" apart after a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ
+/// بانٹا"), so its verb stays as it is.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -39,6 +45,17 @@ enum SecondPerson {
     /// The object pronoun Spanish puts before the verb ("lo adjuntó"), which stays as the verb changes ("lo adjuntaste").
     private static let spanishObjectPronouns: Set = ["lo", "la", "los", "las", "le", "les"]
 
+    /// The indefinite pasts Hungarian's verb phrases start with, with their second person.
+    private static let hungarianIndefinitePast = [
+        "felosztott": "felosztottál", "szerkesztett": "szerkesztettél", "törölt": "töröltél",
+        "rögzített": "rögzítettél", "visszavont": "visszavontál", "hozzáadott": "hozzáadtál",
+        "csatlakozott": "csatlakoztál", "kilépett": "kiléptél", "eltávolított": "eltávolítottál",
+        "átnevezett": "átneveztél", "hozzászólt": "hozzászóltál", "csatolt": "csatoltál", "kért": "kértél",
+        "küldött": "küldtél", "létrehozott": "létrehoztál", "módosított": "módosítottál",
+        "megváltoztatott": "megváltoztattál", "elolvasott": "elolvastál", "bekapcsolt": "bekapcsoltál",
+        "kikapcsolt": "kikapcsoltál", "fizetett": "fizettél",
+    ]
+
     /// Each language's perfect auxiliary in the third person, with its second person.
     private static let auxiliaries = [
         "fr": ["a": "as", "l’a": "l’as", "l'a": "l'as"],
@@ -46,20 +63,24 @@ enum SecondPerson {
         "it": ["ha": "hai", "l’ha": "l’hai", "l'ha": "l'hai"],
         "nl": ["heeft": "hebt", "is": "bent"],
         "ro": ["a": "ai"],
+        "hr": ["je": "si"],
     ]
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
-    /// French, German, Italian, Dutch and Romanian: every verb phrase is a perfect that starts with its auxiliary, so
-    /// "a divisé" → "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten", "ha diviso" →
-    /// "hai diviso", "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden", "a împărțit" → "ai
-    /// împărțit". Czech: the second person's past takes the auxiliary "jsi" the third person has none of, so
-    /// "rozdělil(a)" → "jsi rozdělil(a)"; a phrase that doesn't start with that past stays as it is.
+    /// French, German, Italian, Dutch, Romanian and Croatian: every verb phrase is a perfect that starts with its
+    /// auxiliary, so "a divisé" → "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten",
+    /// "ha diviso" → "hai diviso", "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden", "a
+    /// împărțit" → "ai împărțit", "je podijelio/la" → "si podijelio/la". Czech: the second person's past takes the
+    /// auxiliary "jsi" the third person has none of, so "rozdělil(a)" → "jsi rozdělil(a)"; a phrase that doesn't start
+    /// with that past stays as it is.
     /// Portugal's Portuguese: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste".
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
     /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
     /// "böldün:". Korean: every verb phrase starts with "님이" after the actor, which the user's drops, since the user's
     /// subject word ("내가") holds its own particle, so "님이 나눴어요" → "나눴어요". Hindi: the same with "ने", the user's
-    /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Another language keeps the verb as it is.
+    /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Greek: the aorist takes an "ς", so "μοίρασε" → "μοίρασες".
+    /// Hungarian: the past the phrase starts with takes a "d" in "-ta"/"-te" ("létrehozta" → "létrehoztad"), or its
+    /// listed second person ("felosztott" → "felosztottál"). Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
@@ -75,6 +96,13 @@ enum SecondPerson {
             guard let past = verb.range(of: #"^((το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)"#, options: .regularExpression)
             else { return verb }
             return verb.replacingCharacters(in: past, with: verb[past] + "ς")
+        case "hu":
+            // Why: the past may be followed by a comma or a colon ("csatolta ma, 21:10").
+            guard let past = verb.range(of: #"^[^\s,:]+"#, options: .regularExpression) else { return verb }
+            let word = String(verb[past])
+            if let known = hungarianIndefinitePast[word] { return verb.replacingCharacters(in: past, with: known) }
+            guard word.hasSuffix("ta") || word.hasSuffix("te") else { return verb }
+            return verb.replacingCharacters(in: past, with: word + "d")
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }

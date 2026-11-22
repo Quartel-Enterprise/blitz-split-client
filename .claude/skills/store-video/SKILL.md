@@ -23,9 +23,13 @@ code and the docs stay in English, the narration and titles in the video's langu
 
 ## 1. The language's JSON
 
-For a language that has none, copy `scripts/store-video/locales/pt-BR.json` to `<locale>.json` (the store
-screenshots' locale codes, `scripts/store-screenshots/locales.tsv`); the render reads it through `props.json`, so
-nothing else needs registering. Then:
+For a language that has none, copy `scripts/store-video/locales/en-US.json` to `<locale>.json`, named with the store
+screenshots' locale codes (`scripts/store-screenshots/locales.tsv`). Not pt-BR's: its Pix shot, `pix` scene and Pix
+thumbnail are no other locale's. The render reads it through `props.json`, so nothing else needs registering. Then:
+
+- **`listing`**: the language of `store-listing/` the video belongs to (a key of `PLAY_LOCALES` in
+  `scripts/release/store-listing.mjs`), set right away: the copy says `en`, and two locales naming one language
+  would send their feature graphics to the same Play locales, which the lane and a test refuse.
 
 - **`lines`**: the narration, one per shot plus the end card's. Translate the meaning, not the words, in the tone of
   that language's store listing (`docs/store-listing.md`); keep each line about as long as pt-BR's, since the shots'
@@ -76,10 +80,15 @@ Mac (a busy emulator stalls the app and the scrolls stutter). Afterwards, before
   frames.
 - **The words**: Whisper on the video's audio transcribes every line as written, each inside its shot.
 - **Under 30 s**, and the titles never touch the phone (a contact sheet at 1 fps).
-- Send the video with SendUserFile and wait for Pierre's approval; what he dislikes goes back to the JSON or to
+- **The thumbnails**: fill the JSON's `thumbnail` (a short headline in the listing's tone, its accent words, a
+  Balances still behind a payment still), run `scripts/store-video/thumbnail.sh <locale>` and look at both sizes:
+  the vertical one's words never touch its edges.
+- Send the video and the thumbnails with SendUserFile and wait for Pierre's approval; what he dislikes goes back to the JSON or to
   `StoreVideo.tsx`, and what he decided goes into docs/store-video.md.
 
 ## 5. Publish
 
-Uploading is Pierre's: YouTube, unlisted, monetization off, then the URL in Play Console's listing of that language
-(docs/store-video.md). Never upload or paste it for him unless he asks in this conversation.
+Uploading is Pierre's: YouTube, monetization off, a vertical thumbnail (Pierre drags the video into YouTube Studio
+himself, so nothing is recompressed). Then, only when he asks in this conversation: the watch address in the
+`## Play video` section of the language's `store-listing/<language>.md` (the store listing workflow sends it), the
+JSON's `listing` language set, and `fastlane upload_feature_graphics` for the feature graphic (docs/store-video.md).

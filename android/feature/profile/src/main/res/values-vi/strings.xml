@@ -82,6 +82,9 @@
     <string name="profile_language_bengali">Tiếng Bengal</string>
     <string name="profile_language_malay">Tiếng Mã Lai</string>
     <string name="profile_language_greek">Tiếng Hy Lạp</string>
+    <string name="profile_language_croatian">Tiếng Croatia</string>
+    <string name="profile_language_hungarian">Tiếng Hungary</string>
+    <string name="profile_language_urdu">Tiếng Urdu</string>
     <string name="profile_language_system_detail">Ngôn ngữ của thiết bị</string>
     <string name="profile_notifications">Thông báo</string>
     <plurals name="profile_notifications_active">
@@ -142,6 +145,8 @@
     <string name="profile_bitcoin_in_sats_detail">Hiển thị và nhập số tiền bitcoin theo sats (1 ₿ = 100.000.000 sats).</string>
     <string name="profile_category_map">Bản đồ danh mục</string>
     <string name="profile_category_map_detail">Các từ dùng để chọn danh mục cho khoản chi</string>
+    <string name="profile_connect_watch">Kết nối đồng hồ</string>
+    <string name="profile_connect_watch_detail">Bằng mã hiển thị trên đồng hồ</string>
     <string name="profile_photo_open">Xem ảnh</string>
     <string name="profile_share">Chia sẻ hồ sơ</string>
     <string name="profile_share_message">Đây là hồ sơ của tôi trên Blitz Split: %1$s</string>

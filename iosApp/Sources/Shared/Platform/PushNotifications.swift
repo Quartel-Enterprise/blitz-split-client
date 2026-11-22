@@ -24,48 +24,23 @@ final class PushNotifications: NSObject, UNUserNotificationCenterDelegate {
         #endif
     }
 
+    /// An event's push carries `content-available`: the sync starts as it arrives, so a tap finds the bill on the device.
+    /// Nothing syncs for the reminder's nor for an event already on the device.
+    func syncForPush(userInfo: [AnyHashable: Any], onDone: @escaping (PushArrivalOutcome) -> Void = { _ in }) {
+        BlitzSplitApple.shared.syncForPush(link: userInfo["link"] as? String, onDone: onDone)
+    }
+
     func register(deviceToken: Data) {
-        let token = deviceToken.map { String(format: "%02x", $0) }.joined()
         #if os(iOS)
         let isMac = false
         #else
         let isMac = true
         #endif
-        BlitzSplitApple.shared.setPushToken(token: token, isMac: isMac, isSandbox: Self.isSandbox)
-    }
-
-    /// The APNs environment the build was signed for, as its provisioning profile says, since a Release build signed
-    /// for development gets a sandbox token. A build with no profile (from the App Store, or the simulator) goes by
-    /// its configuration: production for a release, the sandbox for a debug build.
-    private static var isSandbox: Bool {
-        #if os(iOS)
-        let profileURL = Bundle.main.url(forResource: "embedded", withExtension: "mobileprovision")
-        let key = "aps-environment"
-        #else
-        let profileURL: URL? = Bundle.main.bundleURL.appendingPathComponent("Contents/embedded.provisionprofile")
-        let key = "com.apple.developer.aps-environment"
-        #endif
-        if let environment = profileURL.flatMap({ apsEnvironment(inProfileAt: $0, key: key) }) {
-            return environment == "development"
-        }
-        #if DEBUG
-        return true
-        #else
-        return false
-        #endif
-    }
-
-    /// The profile is a signed envelope around a plist, read here without checking the signature.
-    private static func apsEnvironment(inProfileAt url: URL, key: String) -> String? {
-        guard let data = try? Data(contentsOf: url),
-              let start = data.range(of: Data("<?xml".utf8)),
-              let end = data.range(of: Data("</plist>".utf8), in: start.lowerBound..<data.endIndex),
-              let plist = try? PropertyListSerialization.propertyList(
-                  from: data.subdata(in: start.lowerBound..<end.upperBound),
-                  format: nil
-              ) as? [String: Any],
-              let entitlements = plist["Entitlements"] as? [String: Any] else { return nil }
-        return entitlements[key] as? String
+        BlitzSplitApple.shared.setPushToken(
+            token: ApnsToken.hex(deviceToken),
+            isMac: isMac,
+            isSandbox: ApnsToken.isSandbox,
+        )
     }
 
     /// The permission as the shared code takes it: provisional delivers quietly, where the full prompt can still ask;
@@ -146,6 +121,25 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         PushNotifications.shared.register(deviceToken: deviceToken)
     }
+
+    /// Woken in the background by `content-available` (the `remote-notification` background mode), or called in front.
+    /// iOS gives the app about 30 seconds and wants the handler called by then; the shared sync stops at 25.
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        PushNotifications.shared.syncForPush(userInfo: userInfo) { outcome in
+            let result: UIBackgroundFetchResult = if outcome == .synced {
+                .newData
+            } else if outcome == .failed {
+                .failed
+            } else {
+                .noData
+            }
+            completionHandler(result)
+        }
+    }
 }
 #else
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -161,6 +155,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func application(_ application: NSApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         PushNotifications.shared.register(deviceToken: deviceToken)
+    }
+
+    /// The Mac gets it only while the app runs, with no background limit: real time listens only in front, so a push
+    /// that arrives with the window behind another app's syncs here.
+    func application(_ application: NSApplication, didReceiveRemoteNotification userInfo: [String: Any]) {
+        PushNotifications.shared.syncForPush(userInfo: userInfo)
     }
 }
 #endif

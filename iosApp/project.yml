@@ -7,13 +7,14 @@ options:
   # English is the source language and the fallback of every language but Portuguese (pt-BR, pt-PT), Spanish (es, es-ES), French (fr),
   # German (de), Italian (it), Polish (pl), Dutch (nl), Japanese (ja), Turkish (tr), Indonesian (id), Russian (ru),
   # Ukrainian (uk), Korean (ko), Hindi (hi), Arabic (ar), Simplified Chinese (zh-Hans), Hebrew (he), Thai (th), Vietnamese (vi), Traditional Chinese (zh-Hant), Swedish
-  # (sv), Czech (cs), Romanian (ro), Bengali (bn), Malay (ms) and Greek (el)
+  # (sv), Czech (cs), Romanian (ro), Bengali (bn), Malay (ms), Greek (el), Croatian (hr), Hungarian (hu) and Urdu (ur)
   developmentLanguage: en
   createIntermediateGroups: true
   deploymentTarget:
     # Liquid Glass (glassEffect, the glass tab bar and sheets) starts at iOS 26 and macOS 26
     iOS: "26.0"
     macOS: "26.0"
+    watchOS: "26.0"
 
 # Crashlytics and Analytics (docs/crash-reporting.md, docs/analytics/README.md): the app starts Firebase only when
 # Resources/GoogleService-Info.plist is there
@@ -44,7 +45,7 @@ settings:
     # Firebase's Objective-C categories, as its setup asks.
     FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
     OTHER_LDFLAGS: [-framework, Shared, -lsqlite3, -ObjC]
-    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR, pt-PT, es, es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms and el)
+    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR, pt-PT, es, es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms, el, hr, hu and ur)
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
     GENERATE_INFOPLIST_FILE: YES
@@ -63,6 +64,8 @@ targetTemplates:
     type: application
     sources:
       - path: Sources/Shared
+      # What the app and its widget share: the color tokens, the locale's direction
+      - path: Sources/Common
       - path: Resources
     preBuildScripts:
       - name: Build the Shared framework
@@ -146,9 +149,25 @@ targets:
     platform: iOS
     sources:
       - path: Sources/iOS
+      # The balance widget's file and faces: the app writes the file, and compiling the faces here extracts their
+      # words into Localizable.xcstrings
+      - path: Widgets/Shared
+      # The widget's file from the shared code's snapshot, which the watch app writes too
+      - path: Sources/WidgetSnapshot
+    dependencies:
+      - target: BalanceWidget
+        embed: true
+        codeSign: true
+      # The Apple Watch app ships inside the iPhone app's bundle (Watch/), as App Store Connect delivers a companion
+      # watch app, and installs on its own from the watch's App Store too (WKRunsIndependentlyOfCompanionApp)
+      - target: BoraRachar-watchOS
+        embed: true
+        codeSign: true
     info:
       path: Generated/iOS-Info.plist
       properties:
+        # An event's push carries content-available: iOS wakes the app to sync, so a tap finds the bill on the device
+        UIBackgroundModes: [remote-notification]
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
@@ -175,6 +194,179 @@ targets:
         # Atividade's push notifications. Xcode's automatic signing adds Push Notifications to the App ID; the betas'
         # signing lane (fastlane/Fastfile) sets production
         aps-environment: development
+        # The balance widget reads the file the app writes there (Widgets/Shared/WidgetBalances.swift)
+        com.apple.security.application-groups: [group.com.quare.blitzsplit]
+
+  # The iPhone's balance widget (board 15.8): the Home Screen's small and medium, the Lock Screen's circle and
+  # rectangle. It reads only the file the app writes to the App Group, never Room nor the Shared framework. Its
+  # accessory faces (Widgets/Shared) are what the watch's complications and Smart Stack card draw (BalanceWidget-watchOS).
+  BalanceWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widgets/Shared
+      - path: Widgets/Extension
+      - path: Sources/Common
+      # The faces' words, which the app's build extracts into the catalog
+      - path: Resources/Localizable.xcstrings
+    settings:
+      base:
+        PRODUCT_NAME: BalanceWidget
+        PRODUCT_MODULE_NAME: BalanceWidget
+        PRODUCT_BUNDLE_IDENTIFIER: com.quare.blitzsplit.BalanceWidget
+        TARGETED_DEVICE_FAMILY: "1,2"
+        # Only the app links the Shared framework and Firebase
+        OTHER_LDFLAGS: []
+        FRAMEWORK_SEARCH_PATHS: []
+        # The app's build already extracts the faces' words; a second extraction would mark them twice
+        SWIFT_EMIT_LOC_STRINGS: NO
+        # WidgetKit calls the timeline provider off the main actor
+        SWIFT_DEFAULT_ACTOR_ISOLATION: nonisolated
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
+        INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
+    postBuildScripts:
+      # As the app's: the widget draws in the app's language, es-ES and pt-PT included, whose tables hold only the
+      # words Spain and Portugal say differently until this fills them with es's and pt-BR's
+      - name: Fill the regional tables with their language's
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/merge-regional-strings.py" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH" "$SRCROOT/Resources"
+    info:
+      path: Generated/BalanceWidget-Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Generated/BalanceWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.quare.blitzsplit]
+
+  # The Apple Watch app (canvas page 15, docs/product/watch.md): its own Supabase session, Room and sync once
+  # connected, drawing the shared ViewModels of :feature:watch_pairing and :feature:watch_balances. Dark only. It links
+  # the watchOS Shared framework (its arm64_32 device slice only: docs/architecture/stack.md#watchos) and compiles the
+  # few app files it needs (amounts, times, the language), never the iPhone's screens.
+  BoraRachar-watchOS:
+    type: application
+    platform: watchOS
+    sources:
+      - path: Watch/App
+      - path: Watch/Assets.xcassets
+      - path: Sources/Common
+      - path: Widgets/Shared
+      - path: Sources/WidgetSnapshot
+      - path: Sources/Shared/Bridge/WatchBag.swift
+      - path: Sources/Shared/DesignSystem/ExpenseFormat.swift
+      - path: Sources/Shared/DesignSystem/RightToLeft.swift
+      - path: Sources/Shared/App/AppLocale.swift
+      - path: Resources/Localizable.xcstrings
+      - path: Resources/InfoPlist.xcstrings
+      - path: Resources/PrivacyInfo.xcprivacy
+    dependencies:
+      - target: BalanceWidget-watchOS
+        embed: true
+        codeSign: true
+      # The shared code's crash reporting (crashkios) calls Crashlytics, so the watch links it; Firebase starts only
+      # with a GoogleService-Info.plist, which the watch app has none of yet
+      - package: Firebase
+        product: FirebaseCrashlytics
+    settings:
+      base:
+        PRODUCT_NAME: BoraRachar
+        PRODUCT_MODULE_NAME: BoraRacharWatch
+        PRODUCT_BUNDLE_IDENTIFIER: com.quare.blitzsplit.watchkitapp
+        TARGETED_DEVICE_FAMILY: "4"
+        # Kotlin/Native builds Shared for arm64_32 only on the device (watchosDeviceArm64 waits for lifecycle-viewmodel
+        # and supabase-kt), so the app leaves out the arm64 slice Xcode adds for Series 9 and later, which run arm64_32
+        ARCHS[sdk=watchos*]: arm64_32
+        # Shared has no x86_64 simulator slice either: Apple silicon simulators only
+        ARCHS[sdk=watchsimulator*]: arm64
+        OTHER_LDFLAGS: [-framework, Shared, -lsqlite3, -ObjC]
+        INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
+        INFOPLIST_KEY_WKApplication: YES
+        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: com.quare.blitzsplit
+        INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    preBuildScripts:
+      - name: Build the Shared framework
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ "YES" = "$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED" ]; then
+            echo "Skipping the Gradle build: OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED is YES"
+            exit 0
+          fi
+          cd "$SRCROOT/.."
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+    postCompileScripts:
+      - name: Check the localized keys
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/check-localized-keys.py" "$OBJECT_FILE_DIR_normal"
+      - name: Check the prominent labels
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/check-prominent-labels.py" "$SRCROOT/Watch"
+      - name: Check the localized bundle
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/check-localized-bundle.py" "$SRCROOT/Watch"
+    postBuildScripts:
+      - name: Fill the regional tables with their language's
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/merge-regional-strings.py" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH" "$SRCROOT/Resources"
+    info:
+      path: Generated/watchOS-Info.plist
+      properties:
+        BlitzSplitVersionName: ${BLITZSPLIT_DISPLAY_VERSION}
+    entitlements:
+      path: Generated/watchOS.entitlements
+      properties:
+        # The watch's own pushes of Activity (15.7). Xcode's automatic signing adds Push Notifications to the App ID
+        aps-environment: development
+        # The complication and the Smart Stack card read the file the watch app writes there. A watch's App Group is
+        # its own container: nothing is shared with the iPhone through it
+        com.apple.security.application-groups: [group.com.quare.blitzsplit]
+
+  # The watch's complications (15.2: the circle "+186" and the rectangle) and its Smart Stack card (15.1), the
+  # iPhone widget's accessory faces (Widgets/Shared) over the file the watch app writes.
+  BalanceWidget-watchOS:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - path: Widgets/Shared
+      - path: Watch/Widget
+      - path: Widgets/Extension/Assets.xcassets
+      - path: Sources/Common
+      - path: Resources/Localizable.xcstrings
+    settings:
+      base:
+        PRODUCT_NAME: BalanceWidget
+        PRODUCT_MODULE_NAME: BalanceWidget
+        PRODUCT_BUNDLE_IDENTIFIER: com.quare.blitzsplit.watchkitapp.BalanceWidget
+        TARGETED_DEVICE_FAMILY: "4"
+        OTHER_LDFLAGS: []
+        FRAMEWORK_SEARCH_PATHS: []
+        SWIFT_EMIT_LOC_STRINGS: NO
+        SWIFT_DEFAULT_ACTOR_ISOLATION: nonisolated
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
+        INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
+    postBuildScripts:
+      - name: Fill the regional tables with their language's
+        basedOnDependencyAnalysis: false
+        script: |
+          /usr/bin/python3 -I "$SRCROOT/merge-regional-strings.py" "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH" "$SRCROOT/Resources"
+    info:
+      path: Generated/BalanceWidget-watchOS-Info.plist
+      properties:
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Generated/BalanceWidget-watchOS.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.quare.blitzsplit]
 
   # The App Store screenshots (docs/store-listing-screenshots.md): launches the debug app seeded with the sample trip
   # and captures each listing screen. Run by scripts/store-screenshots/capture-ios.sh, never by CI's build. The Mac
@@ -234,6 +426,12 @@ schemes:
     build:
       targets:
         BoraRachar-macOS: all
+    run:
+      config: Debug
+  BoraRachar-watchOS:
+    build:
+      targets:
+        BoraRachar-watchOS: all
     run:
       config: Debug
   BoraRachar-iOS-StoreScreenshots:

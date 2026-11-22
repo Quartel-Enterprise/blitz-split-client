@@ -8,6 +8,10 @@ Blitz Split: Dividir Gastos
 
 Divide gastos con amigos: escanea el recibo, mira quién debe a quién y salda.
 
+## Play video
+
+https://www.youtube.com/watch?v=r4r01HHdK4U
+
 ## App Store name
 
 Blitz Split: Dividir Gastos

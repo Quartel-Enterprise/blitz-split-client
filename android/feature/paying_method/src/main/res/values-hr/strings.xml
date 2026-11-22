@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Novi način plaćanja</string>
+    <string name="paying_method_edit_title">Uredi način plaćanja</string>
+    <string name="paying_method_type">Vrsta</string>
+    <string name="paying_method_name">Naziv</string>
+    <string name="paying_method_name_optional">Naziv (neobavezno)</string>
+    <string name="paying_method_color">Boja</string>
+    <string name="paying_method_default">Zadani način</string>
+    <string name="paying_method_default_hint">Novi troškovi koje platiš počinju s njim.</string>
+    <string name="paying_method_delete">Izbriši način plaćanja</string>
+    <string name="paying_method_delete_title">Izbrisati ovaj način plaćanja?</string>
+    <string name="paying_method_delete_body">Troškovi koje si njime označio/la više ga neće prikazivati.</string>
+    <string name="paying_method_delete_confirm">Izbriši</string>
+    <string name="paying_method_save">Spremi</string>
+</resources>

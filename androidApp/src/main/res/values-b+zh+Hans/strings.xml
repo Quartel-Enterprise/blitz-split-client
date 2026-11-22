@@ -1,28 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Blitz Split</string>
-    <!-- Atividade's push notifications, worded from the server's kind and words -->
-    <string name="push_reminder_title">结清提醒</string>
-    <string name="push_bill_created">%1$s添加了与你有关的“%2$s”</string>
-    <string name="push_bill_edited">%1$s编辑了“%2$s”</string>
-    <string name="push_bill_deleted">%1$s删除了“%2$s”</string>
-    <string name="push_comment_added">%1$s评论了“%2$s”：%3$s</string>
-    <string name="push_payment_paid_you">%1$s标记了已付款给你</string>
-    <string name="push_payment_to_you">%1$s标记了%2$s已付款给你</string>
-    <string name="push_payment_received_yours">%1$s将你的付款标记为已收款</string>
-    <string name="push_payment_from_you">%1$s标记了你已付款给%2$s</string>
-    <string name="push_payment_undone">%1$s撤销了一笔与你相关的付款</string>
-    <string name="push_charge_sent">%1$s提醒你去结清</string>
-    <string name="push_settle_reminder">你在“%1$s”中有未结清的余额</string>
-    <string name="push_settle_reminders">你在%1$s个群组中有未结清的余额</string>
-    <string name="push_added_to_group">%1$s将你添加到了群组</string>
-    <string name="push_member_joined">%1$s加入了群组</string>
-    <string name="push_debts_simplified_to_you">%1$s简化了债务。现在%2$s付给你%3$s。</string>
-    <string name="push_debts_simplified_from_you">%1$s简化了债务。现在你付给%2$s %3$s。</string>
-    <string name="push_debts_simplified_other">%1$s简化了债务。看看对你有什么影响。</string>
-    <string name="push_debts_unsimplified_to_you">%1$s关闭了简化债务。现在%2$s付给你%3$s。</string>
-    <string name="push_debts_unsimplified_from_you">%1$s关闭了简化债务。现在你付给%2$s %3$s。</string>
-    <string name="push_debts_unsimplified_other">%1$s关闭了“简化债务”。看看对你有什么影响。</string>
     <!-- A comment's link that opened nothing -->
     <string name="bill_link_not_in_group_title">你不在这个群组中</string>
     <string name="bill_link_not_in_group_message">这条评论所在的群组你没有加入。请向发链接给你的人索要邀请。</string>
@@ -33,4 +11,9 @@
     <string name="discard_changes_message">未保存的更改将会丢失。</string>
     <string name="discard_changes_discard">放弃</string>
     <string name="discard_changes_keep_editing">继续编辑</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">手表</string>
+    <string name="watch_connected_title">%1$s 已连接到你的账号</string>
+    <string name="watch_connected_title_unnamed">手表已连接到你的账号</string>
+    <string name="watch_connected_text">手表可以查看你的群组并自动同步。如需断开连接，请在手表上退出登录。</string>
 </resources>

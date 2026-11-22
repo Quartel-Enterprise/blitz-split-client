@@ -88,6 +88,13 @@ data class GroupEntity(
     @ColumnInfo(defaultValue = "600")
     val reminderMinute: Int,
     /*
+     * Why: when the reminder last changed (reminder_updated_at, epoch millis), so the banner skips the occurrences
+     * before it. Stamped here when "Edit group" changes the schedule or its switch, and by the server for an older
+     * app's change; the later of the two stays.
+     */
+    @ColumnInfo(defaultValue = "0")
+    val reminderUpdatedAt: Long,
+    /*
      * Why: the occurrence (epoch millis) whose banner this device dismissed: never synced, since each member decides for
      * their own, so the banner comes back for the next occurrence. 0 until one is dismissed.
      */

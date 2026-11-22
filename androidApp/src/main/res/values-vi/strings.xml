@@ -1,28 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Blitz Split</string>
-    <!-- Atividade's push notifications, worded from the server's kind and words -->
-    <string name="push_reminder_title">Nhắc thanh toán nợ</string>
-    <string name="push_bill_created">%1$s đã thêm “%2$s” có bạn tham gia</string>
-    <string name="push_bill_edited">%1$s đã sửa “%2$s”</string>
-    <string name="push_bill_deleted">%1$s đã xóa “%2$s”</string>
-    <string name="push_comment_added">%1$s đã bình luận về “%2$s”: %3$s</string>
-    <string name="push_payment_paid_you">%1$s đã đánh dấu là đã trả bạn</string>
-    <string name="push_payment_to_you">%1$s đã đánh dấu là %2$s đã trả bạn</string>
-    <string name="push_payment_received_yours">%1$s đã đánh dấu khoản thanh toán của bạn là đã nhận</string>
-    <string name="push_payment_from_you">%1$s đã đánh dấu là bạn đã trả %2$s</string>
-    <string name="push_payment_undone">%1$s đã hoàn tác một khoản thanh toán với bạn</string>
-    <string name="push_charge_sent">%1$s đã gửi bạn lời nhắc thanh toán nợ</string>
-    <string name="push_settle_reminder">Bạn còn số dư chưa thanh toán trong %1$s</string>
-    <string name="push_settle_reminders">Bạn còn số dư chưa thanh toán trong %1$s nhóm</string>
-    <string name="push_added_to_group">%1$s đã thêm bạn vào nhóm</string>
-    <string name="push_member_joined">%1$s đã tham gia nhóm</string>
-    <string name="push_debts_simplified_to_you">%1$s đã đơn giản hóa nợ. Giờ %2$s trả bạn %3$s.</string>
-    <string name="push_debts_simplified_from_you">%1$s đã đơn giản hóa nợ. Giờ bạn trả %2$s %3$s.</string>
-    <string name="push_debts_simplified_other">%1$s đã đơn giản hóa nợ. Xem thay đổi với bạn thế nào.</string>
-    <string name="push_debts_unsimplified_to_you">%1$s đã tắt Đơn giản hóa nợ. Giờ %2$s trả bạn %3$s.</string>
-    <string name="push_debts_unsimplified_from_you">%1$s đã tắt Đơn giản hóa nợ. Giờ bạn trả %2$s %3$s.</string>
-    <string name="push_debts_unsimplified_other">%1$s đã tắt Đơn giản hóa nợ. Xem thay đổi với bạn thế nào.</string>
     <!-- A comment's link that opened nothing -->
     <string name="bill_link_not_in_group_title">Bạn không ở trong nhóm này</string>
     <string name="bill_link_not_in_group_message">Bình luận này thuộc một nhóm bạn không tham gia. Hãy xin lời mời từ người đã gửi liên kết cho bạn.</string>
@@ -33,4 +11,9 @@
     <string name="discard_changes_message">Các thay đổi chưa lưu sẽ bị mất.</string>
     <string name="discard_changes_discard">Bỏ</string>
     <string name="discard_changes_keep_editing">Tiếp tục sửa</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Đồng hồ</string>
+    <string name="watch_connected_title">%1$s đã kết nối với tài khoản của bạn</string>
+    <string name="watch_connected_title_unnamed">Đồng hồ đã kết nối với tài khoản của bạn</string>
+    <string name="watch_connected_text">Đồng hồ thấy các nhóm của bạn và tự đồng bộ. Để ngắt kết nối, hãy đăng xuất trên đồng hồ.</string>
 </resources>

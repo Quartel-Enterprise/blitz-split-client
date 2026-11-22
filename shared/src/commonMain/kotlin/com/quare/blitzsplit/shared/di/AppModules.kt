@@ -25,10 +25,12 @@ import com.quare.blitzsplit.core.utils.RandomCode
 import com.quare.blitzsplit.core.utils.SecureRandomCode
 import com.quare.blitzsplit.core.utils.SystemCurrentTimeMillis
 import com.quare.blitzsplit.core.utils.SystemMinuteTicks
+import com.quare.blitzsplit.core.watch.di.watchModule
 import com.quare.blitzsplit.feature.activity.di.activityFeatureModule
 import com.quare.blitzsplit.feature.appdownload.di.appDownloadModule
 import com.quare.blitzsplit.feature.billdetail.di.billDetailModule
 import com.quare.blitzsplit.feature.categorymap.di.categoryMapModule
+import com.quare.blitzsplit.feature.connectwatch.di.connectWatchModule
 import com.quare.blitzsplit.feature.contacts.di.contactsModule
 import com.quare.blitzsplit.feature.contactsupport.di.contactSupportModule
 import com.quare.blitzsplit.feature.creategroup.di.createGroupModule
@@ -53,6 +55,8 @@ import com.quare.blitzsplit.feature.registerpayment.di.registerPaymentModule
 import com.quare.blitzsplit.feature.releasenotes.di.releaseNotesFeatureModule
 import com.quare.blitzsplit.feature.restore.di.restoreModule
 import com.quare.blitzsplit.feature.splitbill.di.splitBillModule
+import com.quare.blitzsplit.feature.watchbalances.di.watchBalancesModule
+import com.quare.blitzsplit.feature.watchpairing.di.watchPairingModule
 import com.quare.blitzsplit.feature.welcome.di.welcomeModule
 import com.quare.blitzsplit.shared.app.AnalyticsChoices
 import com.quare.blitzsplit.shared.app.AppViewModel
@@ -61,6 +65,7 @@ import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.app.SiteTextUseCases
 import com.quare.blitzsplit.shared.app.StorePromptUseCases
 import com.quare.blitzsplit.shared.generated.SharedConfig
+import com.quare.blitzsplit.shared.push.PushArrivalSync
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -68,7 +73,6 @@ import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import software.quare.connectivity.connectivityModule
 import com.quare.blitzsplit.feature.profile.di.profileModule as profileScreenModule
@@ -82,7 +86,8 @@ private val appModule = module {
     factoryOf(::SiteTextUseCases)
     factoryOf(::DisplayPreferenceUseCases)
     factoryOf(::StorePromptUseCases)
-    viewModelOf(::AppViewModel)
+    factoryOf(::AppViewModel)
+    factoryOf(::PushArrivalSync)
     // Why: a single that owns its scope, following the choices for the app's whole life, as SyncCoordinator does.
     single {
         AnalyticsChoices(
@@ -110,6 +115,7 @@ val sharedModules: List<Module> = listOf(
     activityModule,
     contactModule,
     syncModule,
+    watchModule,
     settingsModule,
     inAppUpdateModule,
     legalModule,
@@ -138,6 +144,9 @@ val sharedModules: List<Module> = listOf(
     editGroupModule,
     registerPaymentModule,
     globalBalancesModule,
+    connectWatchModule,
+    watchPairingModule,
+    watchBalancesModule,
     groupStatsModule,
     activityFeatureModule,
     contactsModule,

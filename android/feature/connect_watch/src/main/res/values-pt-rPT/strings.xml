@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Ligar relógio</string>
+    <string name="connect_watch_body">Escreve o código que aparece no relógio. Ele entra na tua conta e passa a sincronizar sozinho.</string>
+    <string name="connect_watch_error_invalid">Código errado ou expirado. Gera outro no relógio.</string>
+    <string name="connect_watch_error_too_many">Demasiados códigos errados. Aguarda alguns minutos e tenta novamente.</string>
+    <string name="connect_watch_error_needs_account">Liga primeiro uma conta: os teus dados estão só neste aparelho.</string>
+    <string name="connect_watch_error_failed">Não foi possível ligar o relógio. Tenta de novo.</string>
+    <string name="connect_watch_offline">Ligar o relógio precisa de internet.</string>
+    <string name="connect_watch_own_watch_only">Escreve só um código que apareça no teu próprio relógio: quem tiver esse relógio entra na tua conta.</string>
+    <string name="connect_watch_validity">O código é válido durante 5 minutos e só uma vez.</string>
+    <string name="connect_watch_button">Ligar</string>
+    <string name="connect_watch_connected_title">Relógio ligado</string>
+    <string name="connect_watch_connected_body">Ele vê os teus grupos e sincroniza sozinho. Para o desligar, termina sessão no relógio.</string>
+</resources>

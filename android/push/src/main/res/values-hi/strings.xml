@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">हिसाब चुकाने का रिमाइंडर</string>
+    <string name="push_bill_created">%1$s ने आपके साथ ‘%2$s’ खर्च जोड़ा</string>
+    <string name="push_bill_edited">%1$s ने ‘%2$s’ खर्च बदला</string>
+    <string name="push_bill_deleted">%1$s ने ‘%2$s’ खर्च हटाया</string>
+    <string name="push_comment_added">%1$s ने ‘%2$s’ पर टिप्पणी की: %3$s</string>
+    <string name="push_payment_paid_you">%1$s ने दर्ज किया कि उन्होंने आपको भुगतान किया</string>
+    <string name="push_payment_to_you">%1$s ने दर्ज किया कि %2$s ने आपको भुगतान किया</string>
+    <string name="push_payment_received_yours">%1$s ने आपका भुगतान मिला हुआ दर्ज किया</string>
+    <string name="push_payment_from_you">%1$s ने दर्ज किया कि आपने %2$s को भुगतान किया</string>
+    <string name="push_payment_undone">%1$s ने आपके साथ का एक भुगतान रद्द किया</string>
+    <string name="push_charge_sent">%1$s ने आपको हिसाब चुकाने का रिमाइंडर भेजा</string>
+    <string name="push_settle_reminder">%1$s में आपका बैलेंस अभी बाकी है</string>
+    <string name="push_settle_reminders">%1$s ग्रुप में आपका बैलेंस अभी बाकी है</string>
+    <string name="push_added_to_group">%1$s ने आपको ग्रुप में जोड़ा</string>
+    <string name="push_member_joined">%1$s ने ग्रुप जॉइन किया</string>
+    <string name="push_debts_simplified_to_you">%1$s ने कर्ज़ सरल किए। अब %2$s आपको %3$s देंगे।</string>
+    <string name="push_debts_simplified_from_you">%1$s ने कर्ज़ सरल किए। अब आप %2$s को %3$s देंगे।</string>
+    <string name="push_debts_simplified_other">%1$s ने कर्ज़ सरल किए। देखें कि आपके लिए क्या बदला।</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ने “कर्ज़ सरल करें” बंद किया। अब %2$s आपको %3$s देंगे।</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ने “कर्ज़ सरल करें” बंद किया। अब आप %2$s को %3$s देंगे।</string>
+    <string name="push_debts_unsimplified_other">%1$s ने “कर्ज़ सरल करें” बंद किया। देखें कि आपके लिए क्या बदला।</string>
+    <string name="notification_settings_bills">खर्च</string>
+    <string name="notification_settings_bills_detail">जिन खर्चों में आप शामिल हैं, उनका जुड़ना, बदलना या हटना</string>
+    <string name="notification_settings_payments">भुगतान और हिसाब</string>
+    <string name="notification_settings_payments_detail">आपको या आपसे होने वाले भुगतान, और सरल किए गए कर्ज़</string>
+    <string name="notification_settings_comments">टिप्पणियां</string>
+    <string name="notification_settings_comments_detail">जिन खर्चों में आप शामिल हैं और जिन बातचीत में आपने लिखा है, उन पर</string>
+    <string name="notification_settings_people_and_groups">लोग और ग्रुप</string>
+    <string name="notification_settings_people_and_groups_detail">कौन आपके ग्रुप से जुड़ता या उन्हें छोड़ता है, और उनमें क्या बदलता है</string>
+    <string name="notification_settings_payment_requests">भुगतान अनुरोध</string>
+    <string name="notification_settings_payment_requests_detail">जब कोई आपसे भुगतान करने को कहे</string>
+    <string name="notification_settings_balance_reminder">बाकी बैलेंस का रिमाइंडर</string>
+    <string name="notification_settings_balance_reminder_detail">हफ़्ते में एक बार, अगर कोई बैलेंस बाकी हो</string>
+</resources>

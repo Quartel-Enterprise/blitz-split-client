@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Értesítések</string>
+    <string name="notification_settings_denied_title">A Blitz Split értesítései ki vannak kapcsolva az Androidon.</string>
+    <string name="notification_settings_denied_body">Kapcsold be őket a rendszerbeállításokban, hogy megkapd az alábbi push-értesítéseket. A csengő továbbra is működik.</string>
+    <string name="notification_settings_open_settings">Beállítások megnyitása</string>
+    <string name="notification_settings_refused_body">Az Android még egyszer engedi, hogy engedélyezd őket, így megkaphatod az alábbi push-értesítéseket. A csengő továbbra is működik.</string>
+    <string name="notification_settings_turn_on">Bekapcsolás</string>
+    <string name="notification_settings_blocked_in_android">Letiltva az Androidon</string>
+    <string name="notification_settings_open_channel_settings_description">Android-beállítások megnyitása: %1$s</string>
+    <string name="notification_settings_push_switch">Push-értesítések</string>
+    <string name="notification_settings_push_switch_detail">Csak ezen az eszközön</string>
+    <string name="notification_settings_section">Értesítést kérek ezekről</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Alkalmazásban</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">A Push értesítést küld erre az eszközre. Az Alkalmazásban újként jelöli a csengőn és a Tevékenységben; kikapcsolva is megjelenik a Tevékenységben, már olvasottként.</string>
+    <string name="notification_settings_footer">Az értesítések akkor érkeznek, amikor van internet. Egy csoport némításához használd a csoporton belüli menüt.</string>
+</resources>

@@ -623,6 +623,7 @@ class EditGroupReminderTest {
         simplifyDebtsConflictBy = null,
         reminder = reminder,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     private fun TestScope.prepareScenario(

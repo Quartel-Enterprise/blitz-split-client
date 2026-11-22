@@ -69,6 +69,7 @@ import com.quare.blitzsplit.feature.notificationsettings.presentation.model.Noti
 import software.quare.loadable.Loadable
 import software.quare.loadable.toLoaded
 import com.quare.blitzsplit.android.designsystem.R as DesignR
+import com.quare.blitzsplit.android.push.R as PushR
 
 private val singleColumnMaxWidth = 592.dp
 private val cellWidth = 48.dp
@@ -427,23 +428,23 @@ private fun createRowShape(
 @get:StringRes
 private val NotificationType.titleRes: Int
     get() = when (this) {
-        NotificationType.BILLS -> R.string.notification_settings_bills
-        NotificationType.PAYMENTS -> R.string.notification_settings_payments
-        NotificationType.COMMENTS -> R.string.notification_settings_comments
-        NotificationType.PEOPLE_AND_GROUPS -> R.string.notification_settings_people_and_groups
-        NotificationType.PAYMENT_REQUESTS -> R.string.notification_settings_payment_requests
-        NotificationType.BALANCE_REMINDER -> R.string.notification_settings_balance_reminder
+        NotificationType.BILLS -> PushR.string.notification_settings_bills
+        NotificationType.PAYMENTS -> PushR.string.notification_settings_payments
+        NotificationType.COMMENTS -> PushR.string.notification_settings_comments
+        NotificationType.PEOPLE_AND_GROUPS -> PushR.string.notification_settings_people_and_groups
+        NotificationType.PAYMENT_REQUESTS -> PushR.string.notification_settings_payment_requests
+        NotificationType.BALANCE_REMINDER -> PushR.string.notification_settings_balance_reminder
     }
 
 @get:StringRes
 private val NotificationType.detailRes: Int
     get() = when (this) {
-        NotificationType.BILLS -> R.string.notification_settings_bills_detail
-        NotificationType.PAYMENTS -> R.string.notification_settings_payments_detail
-        NotificationType.COMMENTS -> R.string.notification_settings_comments_detail
-        NotificationType.PEOPLE_AND_GROUPS -> R.string.notification_settings_people_and_groups_detail
-        NotificationType.PAYMENT_REQUESTS -> R.string.notification_settings_payment_requests_detail
-        NotificationType.BALANCE_REMINDER -> R.string.notification_settings_balance_reminder_detail
+        NotificationType.BILLS -> PushR.string.notification_settings_bills_detail
+        NotificationType.PAYMENTS -> PushR.string.notification_settings_payments_detail
+        NotificationType.COMMENTS -> PushR.string.notification_settings_comments_detail
+        NotificationType.PEOPLE_AND_GROUPS -> PushR.string.notification_settings_people_and_groups_detail
+        NotificationType.PAYMENT_REQUESTS -> PushR.string.notification_settings_payment_requests_detail
+        NotificationType.BALANCE_REMINDER -> PushR.string.notification_settings_balance_reminder_detail
     }
 
 @get:StringRes

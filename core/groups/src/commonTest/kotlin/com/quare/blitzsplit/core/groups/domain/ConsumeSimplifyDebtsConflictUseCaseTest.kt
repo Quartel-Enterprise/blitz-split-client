@@ -35,6 +35,7 @@ class ConsumeSimplifyDebtsConflictUseCaseTest {
         simplifyDebtsConflictBy = "user-2",
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
     private val repository = FakeGroupRepository(listOf(lostSwitch))
     private val useCase = ConsumeSimplifyDebtsConflictUseCase(repository)

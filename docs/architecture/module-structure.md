@@ -37,6 +37,7 @@ feature/                # Presentation only: ViewModel, UiState, UiEvent, UiActi
 android/
 ├── designsystem/       # BlitzSplitTheme, DeviceLayout, FoldLayout, DevicePreviews, shared composables
 ├── platform/           # Credential Manager (Google), password manager, QR scanner
+├── push/               # Activity's push kinds, their sentences and channel ids, shared by the phone and the watch
 └── feature/            # The Compose UI of each feature: XScreen + XContent
     ├── welcome/
     ├── profile_setup/
@@ -45,6 +46,7 @@ android/
     ├── groups/
     └── create_group/
 androidApp/             # Application, MainActivity, AppNavDisplay
+wearApp/                # The Wear OS app: WearRoot over the shared back stack, the Tile, the complication, its pushes
 iosApp/                 # XcodeGen project: Sources/Shared (both platforms), Sources/iOS, Sources/macOS
 webApp/                 # Vite + React app: src/app, src/bridge, src/features, src/components, src/sqlite
 build-logic/            # Convention plugins
@@ -55,6 +57,7 @@ build-logic/            # Convention plugins
 | Plugin | Applied to | What it sets up |
 | --- | --- | --- |
 | `blitzsplit.kotlin.multiplatform` | `:core:*`, `:feature:*`, `:shared` | `android` (`com.android.kotlin.multiplatform.library`), `iosArm64`, `iosSimulatorArm64`, `macosArm64`, `js` (browser, ES modules), `jvm`; the default hierarchy (`appleMain` for the three Apple targets); opt-ins for `ExperimentalTime`, `ExperimentalUuidApi`, `ExperimentalJsExport` and `ExperimentalCoroutinesApi`; `kotlin("test")` in `commonTest`; Kover (except on `:testing` modules); a shared build service that runs the `iosSimulatorArm64Test` suites one module at a time, each on the device it hands them, and on CI waits for a simulator that lists none |
+| `blitzsplit.kotlin.multiplatform.watchos` | `:core:*`, `:feature:*`, `:shared` | On top of the one above: `watchosArm64` and `watchosSimulatorArm64`, under `appleMain`, and the `watchosSimulatorArm64Test` suites run like the iOS simulator's, one module at a time on the device the build service hands them, skipped on a Mac with no watchOS runtime. Every module `:shared` depends on needs it, since `:shared` links the watch's framework; only a module outside that graph may leave it out. The targets and the tier 3 one left out: [stack.md](stack.md#watchos) |
 | `blitzsplit.android.compose` | `:android:*` | `com.android.library` + the Compose compiler, the Compose BOM, Material 3, lifecycle Compose, `koin-compose-viewmodel`, and `:android:designsystem` on every module but itself |
 
 `:androidApp` applies `com.android.application` directly. Both plugins name the module with `createNamespace()`:
@@ -139,7 +142,7 @@ src/commonMain/kotlin/com/quare/blitzsplit/core/<name>/
 
 ```
 src/commonMain/kotlin/com/quare/blitzsplit/feature/<name>/
-├── di/                  # One Koin module: viewModelOf(::XViewModel)
+├── di/                  # One Koin module: factoryOf(::XViewModel)
 └── presentation/
     ├── model/           # XUiState, XUiEvent, XUiAction, XError and other UI enums
     ├── mapper/          # Throwable → UI error, input parsing (if needed)

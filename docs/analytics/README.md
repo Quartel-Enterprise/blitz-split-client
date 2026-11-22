@@ -366,6 +366,23 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `charge_share_clicked` | none | Request's "Send", while Request is open | `:feature:global_balances` |
 | `charge_copy_clicked` | none | Request's "Copy message", while Request is open | `:feature:global_balances` |
 | `balances_empty_action_clicked` | none | The empty state's button ("See who owes you", "See who you owe", "See groups") | `:feature:global_balances` |
+| `connect_watch_clicked` | `result` (`connected`, `invalid_or_expired`, `too_many_attempts`, `needs_account`, `failed`) | Connect watch's "Connect", once the server answered | `:feature:connect_watch` |
+| `connect_watch_closed` | none | Connect watch's ✕, or Close once connected | `:feature:connect_watch` |
+| `watch_connect_clicked` | none | The watch's first launch "Connect" (15.9) | `:feature:watch_pairing` |
+| `watch_connect_again_clicked` | none | The watch's "Connect again" after the phone signed out (15.13) | `:feature:watch_pairing` |
+| `watch_connect_try_again_clicked` | none | The watch's "Try again" with the phone out of reach (15.11c) | `:feature:watch_pairing` |
+| `watch_use_code_clicked` | none | The watch's "Use code" with the phone out of reach (15.11c) | `:feature:watch_pairing` |
+| `watch_code_cancelled` | none | "Cancel" under the code on the watch (15.12) | `:feature:watch_pairing` |
+| `watch_local_only_acknowledged` | none | "OK" on the watch when the phone's profile is local only (15.11b) | `:feature:watch_pairing` |
+| `watch_connected_continue_clicked` | none | "Continue" on the watch once connected (15.11) | `:feature:watch_pairing` |
+| `watch_group_opened` | none | A group's row on the watch's Balances (15.3) | `:feature:watch_balances` |
+| `watch_sign_out_clicked` | none | "Sign out" at the end of the watch's Balances | `:feature:watch_balances` |
+| `watch_sign_out_confirmed` | none | ✓ on the watch's "Sign out of this watch?" | `:feature:watch_balances` |
+| `watch_sign_out_cancelled` | none | ✕ on the watch's "Sign out of this watch?" | `:feature:watch_balances` |
+| `watch_sign_out_scheduled_cancelled` | none | Cancel on the watch's "Sign out scheduled" | `:feature:watch_balances` |
+| `watch_i_paid_clicked` | none | "I paid" on a group on the watch (15.4) | `:feature:watch_balances` |
+| `watch_i_paid_cancelled` | none | ✕ on the watch's "Paid … to …?" (15.5) | `:feature:watch_balances` |
+| `watch_payment_recorded` | `is_online` | ✓ on the watch's "Paid … to …?", once the payment is saved on the watch (15.6) | `:feature:watch_balances` |
 | `payment_key_type_selected` | `type` | Another type for the key (CPF, Phone, Email, Random…) | `:feature:payment_key` |
 | `payment_key_paste_clicked` | none | The key's Paste, also with an empty clipboard or one the browser won't read | `:feature:payment_key` |
 | `payment_key_default_toggled` | `is_default` | "Default Pix key" or "Default Bitcoin key", while it can change (not the only key of its method) | `:feature:payment_key` |
@@ -547,6 +564,7 @@ event with no row and on a row no feature declares. Screen views are [above](#sc
 | `profile_recovery_code_clicked` | none | "Recovery code" | `:feature:profile` |
 | `bitcoin_in_sats_toggled` | `is_on` | "Bitcoin in satoshis" | `:feature:profile` |
 | `profile_notifications_clicked` | none | "Notifications" (Android and iOS) | `:feature:profile` |
+| `profile_connect_watch_clicked` | none | Profile's "Connect watch" | `:feature:profile` |
 | `privacy_policy_clicked` | `source` (`profile`, `welcome`) | "Privacy Policy", in Profile's footer or Welcome's notice under the buttons | `:feature:profile`, `:feature:welcome` |
 | `terms_clicked` | `source` (`profile`, `welcome`) | "Terms of Service", in Profile's footer or Welcome's notice under the buttons | `:feature:profile`, `:feature:welcome` |
 | `legal_document_retry_clicked` | none | "Try again" on a legal text that couldn't be downloaded (Android, iOS, macOS) | `:feature:legal` |

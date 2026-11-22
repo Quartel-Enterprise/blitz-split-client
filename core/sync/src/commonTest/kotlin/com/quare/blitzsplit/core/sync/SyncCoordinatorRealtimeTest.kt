@@ -63,6 +63,7 @@ class SyncCoordinatorRealtimeTest {
     private lateinit var coordinator: SyncCoordinator
     private val syncGate = CompletableDeferred<Unit>()
     private val states = mutableListOf<SyncState>()
+    private var recordedSyncCount = 0
 
     @Test
     fun `GIVEN online with an account and a profile WHEN the app comes to the front THEN listens`() = runTest {
@@ -285,6 +286,25 @@ class SyncCoordinatorRealtimeTest {
         assertTrue(groups.downloadedUserIds.isEmpty())
         assertTrue(expenses.downloadedUserIds.isEmpty())
         assertTrue(profile.downloadedUserIds.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN listening WHEN a bill edited in a group is pulled THEN its time is recorded`() = runTest {
+        // Given
+        prepareScenario()
+        val recordedBefore = recordedSyncCount
+
+        // When
+        remoteChanges.changes.emit(
+            event(
+                kind = ActivityKind.BILL_EDITED,
+            ),
+        )
+        advanceTimeBy(BATCH_WAIT)
+        runCurrent()
+
+        // Then
+        assertEquals(recordedBefore + 1, recordedSyncCount)
     }
 
     @Test
@@ -805,6 +825,7 @@ class SyncCoordinatorRealtimeTest {
             appForeground = appForeground,
             connectivityObserver = NetworkConnectivityObserver { isOnline },
             crashReporter = CrashReporter {},
+            lastSyncRecorder = { recordedSyncCount++ },
             scope = backgroundScope,
         )
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {

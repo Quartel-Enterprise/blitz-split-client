@@ -147,11 +147,7 @@ class GroupsViewModel(
     private var groupsWithMoney = emptyList<GroupWithMoney>()
 
     // Why: whom "A pagar" settles up with straight away, as the global Saldos has them.
-    private var peopleBalances = PeopleBalances(
-        people = emptyList(),
-        totals = emptyList(),
-        me = null,
-    )
+    private var peopleBalances = PeopleBalances.NONE
 
     private val notices = RecordedPaymentNotices(consumeRecordedPayment, deleteSettlement)
 

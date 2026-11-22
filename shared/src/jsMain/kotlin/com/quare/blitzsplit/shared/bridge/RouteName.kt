@@ -96,4 +96,12 @@ internal fun toRouteName(route: Route): String = when (route) {
     is Route.PaymentKey -> "payment-key"
 
     is Route.PayingMethod -> "paying-method"
+
+    Route.ConnectWatch -> "connect-watch"
+
+    Route.WatchConnect -> "watch-connect"
+
+    Route.WatchBalances -> "watch-balances"
+
+    is Route.WatchGroup -> "watch-group"
 }

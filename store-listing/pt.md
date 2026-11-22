@@ -8,6 +8,10 @@ Bora Rachar: Dividir Contas
 
 Divida contas com amigos: escaneie a nota, veja quem deve a quem e acerte.
 
+## Play video
+
+https://www.youtube.com/watch?v=6XkX-2qMZaw
+
 ## App Store name
 
 Bora Rachar: Dividir Contas

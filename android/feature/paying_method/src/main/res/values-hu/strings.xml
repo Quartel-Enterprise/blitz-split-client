@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Új fizetési mód</string>
+    <string name="paying_method_edit_title">Fizetési mód szerkesztése</string>
+    <string name="paying_method_type">Típus</string>
+    <string name="paying_method_name">Név</string>
+    <string name="paying_method_name_optional">Név (nem kötelező)</string>
+    <string name="paying_method_color">Szín</string>
+    <string name="paying_method_default">Alapértelmezett mód</string>
+    <string name="paying_method_default_hint">Az általad fizetett új számlák ezzel indulnak.</string>
+    <string name="paying_method_delete">Fizetési mód törlése</string>
+    <string name="paying_method_delete_title">Törlöd ezt a fizetési módot?</string>
+    <string name="paying_method_delete_body">Azokon a számlákon, amelyeket ezzel jelöltél, már nem fog megjelenni.</string>
+    <string name="paying_method_delete_confirm">Törlés</string>
+    <string name="paying_method_save">Mentés</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">워치 연결</string>
+    <string name="connect_watch_close">닫기</string>
+    <string name="connect_watch_body">워치에 표시된 코드를 입력하세요. 워치가 계정에 로그인하고 이후에는 알아서 동기화돼요.</string>
+    <string name="connect_watch_code_label">워치 코드</string>
+    <string name="connect_watch_error_invalid">코드가 틀렸거나 만료됐어요. 워치에서 새 코드를 받으세요.</string>
+    <string name="connect_watch_error_too_many">틀린 코드를 너무 많이 입력했어요. 몇 분 후에 다시 시도해 주세요.</string>
+    <string name="connect_watch_error_needs_account">먼저 계정을 연결하세요. 지금은 데이터가 이 기기에만 있어요.</string>
+    <string name="connect_watch_error_failed">워치를 연결하지 못했어요. 다시 시도해 주세요.</string>
+    <string name="connect_watch_offline">워치를 연결하려면 인터넷이 필요해요.</string>
+    <string name="connect_watch_own_watch_only">내 워치에 표시된 코드만 입력하세요. 그 워치를 가진 사람이 내 계정에 들어오게 돼요.</string>
+    <string name="connect_watch_validity">코드는 5분 동안 한 번만 쓸 수 있어요.</string>
+    <string name="connect_watch_button">연결</string>
+    <string name="connect_watch_connected_title">워치가 연결됐어요</string>
+    <string name="connect_watch_connected_body">그룹을 보고 알아서 동기화해요. 연결을 해제하려면 워치에서 로그아웃하세요.</string>
+</resources>

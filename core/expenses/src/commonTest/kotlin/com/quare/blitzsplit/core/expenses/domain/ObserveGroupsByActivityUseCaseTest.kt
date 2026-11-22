@@ -119,6 +119,7 @@ class ObserveGroupsByActivityUseCaseTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: saved later than it was spent, which is what counts.

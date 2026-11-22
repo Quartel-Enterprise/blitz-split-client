@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Hubungkan jam tangan</string>
+    <string name="connect_watch_close">Tutup</string>
+    <string name="connect_watch_body">Ketik kode yang muncul di jam tanganmu. Jam tangan akan masuk ke akunmu lalu menyinkronkan sendiri.</string>
+    <string name="connect_watch_code_label">Kode jam tangan</string>
+    <string name="connect_watch_error_invalid">Kode salah atau kedaluwarsa. Buat kode baru di jam tangan.</string>
+    <string name="connect_watch_error_too_many">Terlalu banyak kode yang salah. Tunggu beberapa menit dan coba lagi.</string>
+    <string name="connect_watch_error_needs_account">Hubungkan akun dulu: datamu hanya ada di perangkat ini.</string>
+    <string name="connect_watch_error_failed">Tidak dapat menghubungkan jam tangan. Coba lagi.</string>
+    <string name="connect_watch_offline">Menghubungkan jam tangan memerlukan internet.</string>
+    <string name="connect_watch_own_watch_only">Ketik hanya kode yang muncul di jam tanganmu sendiri: siapa pun yang memegang jam tangan itu bisa masuk ke akunmu.</string>
+    <string name="connect_watch_validity">Kode berlaku selama 5 menit dan hanya sekali.</string>
+    <string name="connect_watch_button">Hubungkan</string>
+    <string name="connect_watch_connected_title">Jam tangan terhubung</string>
+    <string name="connect_watch_connected_body">Jam tangan melihat grupmu dan menyinkronkan sendiri. Untuk memutuskannya, keluar dari akun di jam tangan.</string>
+</resources>

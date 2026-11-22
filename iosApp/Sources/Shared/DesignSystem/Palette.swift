@@ -12,8 +12,8 @@ enum Palette {
     static let accent = Color("AccentColor")
     static let onAccent = Color(light: 0xFFFFFF, dark: 0x00344E)
     /// What comes back to the device's user: a positive net, "owes you", "to get back".
-    static let positive = Color(light: 0x006C4C, dark: 0x6EDBAA)
-    static let negative = Color(light: 0x8E4D31, dark: 0xFFB599)
+    static let positive = Color(ColorToken.positive)
+    static let negative = Color(ColorToken.negative)
     /// The label of a button filled with the negative color ("Delete account"): white reads at 1.7:1 on the dark one.
     static let onNegative = Color(light: 0xFFFFFF, dark: 0x552108)
     /// What is saved here and not on the server yet (the queue's dot, "Waiting to send"): an amber that reads as text
@@ -49,7 +49,7 @@ enum Palette {
 
     #if os(iOS)
     static let groupedBackground = Color(uiColor: .systemGroupedBackground)
-    static let card = Color(uiColor: .secondarySystemGroupedBackground)
+    static let card = Color.card
     #else
     static let groupedBackground = Color(nsColor: .windowBackgroundColor)
     // The grouped cards of a Mac window: a quiet fill that reads on both appearances
@@ -259,44 +259,3 @@ extension CategoryColor {
         }
     }
 }
-
-extension Color {
-    /// A color that follows the light and dark appearance. Nonisolated: SwiftUI resolves colors off the
-    /// main thread while it renders.
-    nonisolated init(light: UInt32, dark: UInt32) {
-        #if os(iOS)
-        self.init(uiColor: UIColor { @Sendable traits in
-            UIColor(rgb: traits.userInterfaceStyle == .dark ? dark : light)
-        })
-        #else
-        self.init(nsColor: NSColor(name: nil) { @Sendable appearance in
-            let isDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-            return NSColor(rgb: isDark ? dark : light)
-        })
-        #endif
-    }
-}
-
-#if os(iOS)
-private extension UIColor {
-    nonisolated convenience init(rgb: UInt32) {
-        self.init(
-            red: CGFloat((rgb >> 16) & 0xFF) / 255,
-            green: CGFloat((rgb >> 8) & 0xFF) / 255,
-            blue: CGFloat(rgb & 0xFF) / 255,
-            alpha: 1,
-        )
-    }
-}
-#else
-private extension NSColor {
-    nonisolated convenience init(rgb: UInt32) {
-        self.init(
-            srgbRed: CGFloat((rgb >> 16) & 0xFF) / 255,
-            green: CGFloat((rgb >> 8) & 0xFF) / 255,
-            blue: CGFloat(rgb & 0xFF) / 255,
-            alpha: 1,
-        )
-    }
-}
-#endif

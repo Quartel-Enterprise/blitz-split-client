@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">بند کریں</string>
+    <string name="invite_group_created">گروپ بن گیا</string>
+    <string name="invite_title">سب کو %s میں مدعو کریں</string>
+    <string name="invite_qr_description">گروپ کے دعوت کے لنک کا QR کوڈ</string>
+    <string name="invite_copy">کاپی کریں</string>
+    <string name="invite_copied">کاپی ہو گیا</string>
+    <string name="invite_who_picks">جو بھی لنک کھولے گا، وہ فہرست میں سے چنے گا کہ وہ کون ہے: %s۔ اکاؤنٹ کی ضرورت نہیں۔</string>
+    <string name="invite_names_or">%1$s یا %2$s</string>
+    <string name="invite_anyone_joins">جو بھی لنک کھولے گا، وہ گروپ میں شامل ہو جائے گا۔ اکاؤنٹ کی ضرورت نہیں۔</string>
+    <string name="invite_pending_title">لنک باقی ہے</string>
+    <string name="invite_pending_offline">آپ کے آن لائن ہوتے ہی یہ بن جائے گا۔</string>
+    <string name="invite_pending_online">لنک بنایا جا رہا ہے…</string>
+    <string name="invite_failed_title">لنک نہیں بن سکا</string>
+    <string name="invite_failed_body">گروپ سنک کرتے وقت کچھ گڑبڑ ہو گئی۔</string>
+    <string name="invite_retry">دوبارہ کوشش کریں</string>
+    <string name="invite_share">لنک شیئر کریں</string>
+    <string name="invite_see_who_joined">دیکھیں کون شامل ہوا</string>
+    <string name="invite_add_person">ایپ کے بغیر کسی کو شامل کریں</string>
+    <string name="invite_go_to_group">گروپ پر جائیں</string>
+    <string name="invite_change_link">لنک بدلیں</string>
+    <string name="invite_change_link_title">دعوت کا لنک بدلیں؟</string>
+    <string name="invite_change_link_message">موجودہ لنک اور QR کوڈ کام کرنا بند کر دیں گے، غیر استعمال شدہ ذاتی دعوتیں بھی۔ جو پہلے سے شامل ہو چکے ہیں، وہ گروپ میں رہیں گے۔</string>
+    <string name="invite_change_link_failed">لنک نہیں بدل سکا۔ دوبارہ کوشش کریں۔</string>
+    <string name="invite_share_message">آئیں، Blitz Split پر %1$s کے خرچ بانٹیں۔ اس لنک سے شامل ہوں: %2$s</string>
+</resources>

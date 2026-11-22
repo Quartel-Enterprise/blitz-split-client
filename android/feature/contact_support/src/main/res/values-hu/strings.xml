@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Kapcsolatfelvétel a támogatással</string>
+    <string name="contact_support_description">Megnyitjuk az e-mail-alkalmazásodat egy kész üzenettel. Írd le, mi történt, és küldd el: minden üzenetet valódi emberek olvasnak.</string>
+    <string name="contact_support_to">Címzett</string>
+    <string name="contact_support_diagnostics">Az e-mailbe ez is bekerül</string>
+    <string name="contact_support_app_version">Alkalmazás verziója</string>
+    <string name="contact_support_platform">Platform</string>
+    <string name="contact_support_language">Nyelv</string>
+    <string name="contact_support_account">Fiók</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Rendszer</string>
+    <string name="contact_support_account_local">Csak ez az eszköz</string>
+    <string name="contact_support_account_anonymous">Nincs csatlakoztatva</string>
+    <string name="contact_support_open_email">E-mail megnyitása</string>
+    <string name="contact_support_copy_email">E-mail-cím másolása</string>
+    <string name="contact_support_notice_copied">E-mail-cím másolva.</string>
+    <string name="contact_support_notice_no_app">Nem található e-mail-alkalmazás. Helyette kimásoltuk a címet.</string>
+    <string name="contact_support_close">Bezárás</string>
+</resources>

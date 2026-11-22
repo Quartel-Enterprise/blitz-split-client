@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">تذكير بالتسوية</string>
+    <string name="push_bill_created">%1$s: إضافة «%2$s» معك</string>
+    <string name="push_bill_edited">%1$s: تعديل «%2$s»</string>
+    <string name="push_bill_deleted">%1$s: حذف «%2$s»</string>
+    <string name="push_comment_added">%1$s: تعليق على «%2$s»: %3$s</string>
+    <string name="push_payment_paid_you">%1$s: تسجيل دفعة لك</string>
+    <string name="push_payment_to_you">%1$s: تسجيل دفع %2$s لك</string>
+    <string name="push_payment_received_yours">%1$s: تأكيد استلام دفعتك</string>
+    <string name="push_payment_from_you">%1$s: تسجيل دفعك إلى %2$s</string>
+    <string name="push_payment_undone">%1$s: التراجع عن دفعة معك</string>
+    <string name="push_charge_sent">%1$s: إرسال تذكير لك بالتسوية</string>
+    <string name="push_settle_reminder">لديك رصيد مفتوح في %1$s</string>
+    <string name="push_settle_reminders">لديك أرصدة مفتوحة في مجموعات عددها %1$s</string>
+    <string name="push_added_to_group">%1$s: إضافتك إلى المجموعة</string>
+    <string name="push_member_joined">%1$s: الانضمام إلى المجموعة</string>
+    <string name="push_debts_simplified_to_you">%1$s: تبسيط الديون. الآن على %2$s لك %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s: تبسيط الديون. الآن عليك لـ %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s: تبسيط الديون. يمكن الاطلاع على وضعك.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s: إيقاف تبسيط الديون. الآن على %2$s لك %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s: إيقاف تبسيط الديون. الآن عليك لـ %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s: إيقاف تبسيط الديون. يمكن الاطلاع على وضعك.</string>
+    <string name="notification_settings_bills">الفواتير</string>
+    <string name="notification_settings_bills_detail">الفواتير الجديدة أو المعدّلة أو المحذوفة التي تشملك</string>
+    <string name="notification_settings_payments">الدفعات والتسويات</string>
+    <string name="notification_settings_payments_detail">الدفعات منك أو إليك، والديون المبسّطة</string>
+    <string name="notification_settings_comments">التعليقات</string>
+    <string name="notification_settings_comments_detail">على الفواتير التي تشملك والمحادثات التي شاركت فيها</string>
+    <string name="notification_settings_people_and_groups">الأشخاص والمجموعات</string>
+    <string name="notification_settings_people_and_groups_detail">من ينضم إلى مجموعاتك أو يغادرها، وما يتغير فيها</string>
+    <string name="notification_settings_payment_requests">طلبات الدفع</string>
+    <string name="notification_settings_payment_requests_detail">عندما يطلب منك شخص ما الدفع</string>
+    <string name="notification_settings_balance_reminder">تذكير بالرصيد المفتوح</string>
+    <string name="notification_settings_balance_reminder_detail">مرة في الأسبوع، إذا وُجد رصيد مفتوح</string>
+</resources>

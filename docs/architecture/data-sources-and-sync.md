@@ -343,6 +343,17 @@ through `RetrySync`, which runs in the coordinator's scope so it outlives the sc
     keeps the group pending while this device's newer switch still waits (`keepSimplifyDebtsPending`), and records
     the server's account in `simplifyDebtsConflictBy` when its later change beat one still waiting here: the conflict
     of 13.1e, which the first screen of the group on top shows and clears (`ConsumeSimplifyDebtsConflict`).
+  - **The reminder's stamp** (`reminderUpdatedAt`, the server's `groups.reminder_updated_at`): when the group's
+    reminder schedule or switch last changed, which the "Time to settle up" banner starts from
+    (`Group.reminderCountsFrom`). `RoomGroupLocalDataSource.updateGroup` compares the edit with the stored schedule as
+    this version reads it (`GroupReminder.of`, so a value a newer app wrote that reads the same is no change) and only
+    then stamps it in the same write (`GroupDao.updateGroup`), after the stored stamp; a new group starts with its
+    creation time. It goes up with the row, and the server's `stamp_group_reminder` keeps it only along with a schedule
+    change, newer than the stored one and never in the future, or else stamps the change with its own clock. A server
+    row that wins Last-Write-Wins brings its stamp with its schedule (`updateGroupFromRemote`); one that loses still
+    raises the stamp, never lowers it (`GroupReminderQueries.updateReminderUpdatedAtFromRemote`). Room 59
+    (`ReminderUpdatedAtMigrationSpec`) stamped the groups already on the device with the update's time, as the server's
+    migration did.
   - **Changing the invite link** ("Trocar link"): only the group's creator, online, through the `rotate_invite_code`
     RPC, which makes the new code on the server and answers with it. `SyncCoordinator.rotateInviteCode` first syncs
     only when the group is not on the server yet (`GroupRepository.isOnServer`), so a group created here is up before

@@ -2115,6 +2115,7 @@ class ActivityItemsTest {
         simplifyDebtsConflictBy = null,
         reminder = GroupReminder.Default,
         reminderDismissedAt = 0L,
+        reminderCountsFrom = 0L,
     )
 
     // Why: the app's categories only, for the cases that don't name one.

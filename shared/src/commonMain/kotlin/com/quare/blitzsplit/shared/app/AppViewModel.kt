@@ -23,6 +23,7 @@ import com.quare.blitzsplit.core.navigation.Navigator
 import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
 import com.quare.blitzsplit.core.navigation.SharedBillLeftForSignIn
+import com.quare.blitzsplit.core.navigation.WidgetLink
 import com.quare.blitzsplit.core.navigation.openActivity
 import com.quare.blitzsplit.core.navigation.openHomeTab
 import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
@@ -43,11 +44,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.dropWhile
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -277,6 +282,7 @@ class AppViewModel(
                 uiState.first { it == AppUiState.READY }
                 linkInbox.take(url)
                 PushLink.of(url)?.let { link -> return@onEach openPushLink(link) }
+                WidgetLink.routeOf(url)?.let { route -> return@onEach navigator.openHomeTab(route) }
                 SharedBillLink.codeOf(url)?.let { code ->
                     return@onEach openSharedBill(code, SharedBillLink.commentIdOf(url))
                 }
@@ -401,10 +407,37 @@ class AppViewModel(
             val openedCount = openPushRoutes(link, routes, isSynced = false) ?: return@launch
             if (openedCount == routes.size) return@launch
             val top = navigator.backStack.value
-            withTimeoutOrNull(PUSH_LINK_SYNC_SECONDS.seconds) { syncNow() }
+            val missing = routes.drop(openedCount)
+            withTimeoutOrNull(PUSH_LINK_SYNC_SECONDS.seconds) { awaitPushRoutes(link, missing) }
             if (navigator.backStack.value != top) return@launch
-            openPushRoutes(link, routes.drop(openedCount), isSynced = true)
+            openPushRoutes(link, missing, isSynced = true)
         }
+    }
+
+    /*
+     * Why: the push's arrival already started a sync (PushArrivalSync), and a tap during it would queue a second full
+     * sync behind it on the sync lock: the bill could land while the 5 seconds ran out waiting for the second one. So
+     * the wait also ends once what the routes show is in Room. A comment's bill waits for the sync, since its comment
+     * comes with the event.
+     */
+    private suspend fun awaitPushRoutes(
+        link: PushLink,
+        routes: List<Route>,
+    ) {
+        val synced = flow { emit(syncNow()) }.map { true }
+        val onDevice = if (link.isComment) emptyFlow() else observeRoutesOnDevice(routes).filter { it }
+        merge(synced, onDevice).first()
+    }
+
+    private fun observeRoutesOnDevice(routes: List<Route>): Flow<Boolean> {
+        val checks = routes.mapNotNull { route ->
+            when (route) {
+                is Route.GroupDetail -> observeGroup(route.groupId).map { it != null }
+                is Route.BillDetail -> observeExpense(route.expenseId).map { it != null }
+                else -> null
+            }
+        }
+        return if (checks.isEmpty()) flowOf(true) else combine(checks) { found -> found.all { it } }
     }
 
     /*

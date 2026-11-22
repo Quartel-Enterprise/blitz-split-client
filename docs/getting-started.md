@@ -8,6 +8,9 @@
   Xcode with the iOS 27.1 SDK or newer, Xcode 27.1 at the least, for the iOS, iPadOS and macOS app. That SDK has the
   iPhone Duo APIs (`reservedRegions(kind: .division)`), which the app uses behind `#available(iOS 27.1, *)` while
   still running on iOS 26, and its Xcode the iPhone Duo simulator
+- For the Apple Watch app, which the iPhone app embeds, so the iOS scheme builds it too: Xcode's watchOS platform
+  (Xcode › Settings › Components, or `xcodebuild -downloadPlatform watchOS`), whose simulator a watch paired to an
+  iPhone simulator runs it on
 - Node.js 24.12 or newer with npm, for the web app (the `firebase` package needs it)
 
 ## Local configuration

@@ -265,6 +265,7 @@ class ClaimGuestAsMeUseCaseTest {
             appForeground = AppForeground(),
             connectivityObserver = NetworkConnectivityObserver { MutableStateFlow(true) },
             crashReporter = CrashReporter {},
+            lastSyncRecorder = {},
             scope = backgroundScope,
         )
         claimGuestAsMe = ClaimGuestAsMeUseCase(

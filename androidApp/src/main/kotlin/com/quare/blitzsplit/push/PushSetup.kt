@@ -1,11 +1,14 @@
 package com.quare.blitzsplit.push
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.quare.blitzsplit.BuildConfig
-import com.quare.blitzsplit.android.feature.notificationsettings.PushChannel
-import com.quare.blitzsplit.core.profile.domain.model.PushDevice
-import com.quare.blitzsplit.core.profile.domain.model.PushPlatform
+import com.quare.blitzsplit.android.push.PushChannel
+import com.quare.blitzsplit.android.push.PushTokens
 import com.quare.blitzsplit.core.profile.domain.usecase.SetPushDevice
 
 /*
@@ -26,22 +29,14 @@ object PushSetup {
         // Why: see BlitzSplitMessagingService.onNewToken; the token stays until push moves to registration ids.
         @Suppress("DEPRECATION")
         val token = FirebaseMessaging.getInstance().token
-        token.addOnSuccessListener { value -> handOver(setPushDevice, value) }
-    }
-
-    // Why: the one place an FCM token becomes this device's PushDevice, at launch and when FCM renews it.
-    fun handOver(
-        setPushDevice: SetPushDevice,
-        token: String,
-    ) {
-        setPushDevice(
-            PushDevice(
-                token = token,
-                platform = PushPlatform.ANDROID,
-                apnsEnvironment = null,
-                webP256dh = null,
-                webAuth = null,
-            ),
-        )
+        token.addOnSuccessListener { value -> PushTokens.handOver(setPushDevice, value) }
     }
 }
+
+/*
+ * Why: whether a notification the app posts itself (a push, the watch's notice) shows. Before Android 13 the permission
+ * doesn't exist and notifications are on until the settings turn them off.
+ */
+internal fun Context.canPostNotifications(): Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+    ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+    PackageManager.PERMISSION_GRANTED

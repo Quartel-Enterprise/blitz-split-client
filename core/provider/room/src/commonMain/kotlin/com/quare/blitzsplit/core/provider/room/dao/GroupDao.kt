@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 private const val MAX_IDS_PER_QUERY = 500
 
 @Dao
-interface GroupDao {
+interface GroupDao : GroupReminderQueries {
     @Query("SELECT * FROM split_group ORDER BY updatedAt DESC, id")
     fun observeGroups(): Flow<List<GroupEntity>>
 
@@ -75,6 +75,7 @@ interface GroupDao {
     // Why: a group only the server has comes down whole; one the device has follows Last-Write-Wins, in one write.
     @Transaction
     suspend fun applyRemoteGroup(entity: GroupEntity) {
+        val ownerUserId = requireNotNull(entity.ownerUserId)
         insertGroupIfAbsent(entity)
         updateGroupFromRemote(
             id = entity.id,
@@ -89,10 +90,11 @@ interface GroupDao {
             reminderKind = entity.reminderKind,
             reminderDay = entity.reminderDay,
             reminderMinute = entity.reminderMinute,
+            reminderUpdatedAt = entity.reminderUpdatedAt,
             createdBy = entity.createdBy,
             addedAt = entity.addedAt,
             remoteUpdatedAt = entity.updatedAt,
-            ownerUserId = requireNotNull(entity.ownerUserId),
+            ownerUserId = ownerUserId,
         )
         entity.inviteCode?.let {
             updateInviteCode(
@@ -100,13 +102,18 @@ interface GroupDao {
                 inviteCode = it,
             )
         }
+        updateReminderUpdatedAtFromRemote(
+            id = entity.id,
+            remoteAt = entity.reminderUpdatedAt,
+            ownerUserId = ownerUserId,
+        )
         markGroupRowsOnServer(listOf(entity.id))
         updateSimplifyDebtsFromRemote(
             id = entity.id,
             simplifyDebts = entity.simplifyDebts,
             remoteAt = entity.simplifyDebtsAt,
             by = entity.simplifyDebtsBy,
-            ownerUserId = requireNotNull(entity.ownerUserId),
+            ownerUserId = ownerUserId,
         )
         keepSimplifyDebtsPending(entity.id)
     }
@@ -177,13 +184,15 @@ interface GroupDao {
      * Why: "Editar grupo" changes the group's own fields; who created it, its members and its invite code stay. The
      * edit is stamped after the row it changes, even when that row came from a device whose clock runs ahead, or
      * Last-Write-Wins would drop it on the next sync. A null shape keeps the stored code, so an edit that leaves the
-     * shape alone never turns a group made before shapes, or a newer app's shape, into a square.
+     * shape alone never turns a group made before shapes, or a newer app's shape, into a square. A null
+     * reminderUpdatedAt keeps the stored stamp: the caller decides whether the reminder changed.
      */
     @Query(
         "UPDATE split_group SET name = :name, type = :type, color = :color, shape = COALESCE(:shape, shape), " +
             "photoUrl = :photoUrl, pendingPhoto = :pendingPhoto, currency = :currency, " +
             "reminderEnabled = :reminderEnabled, reminderKind = :reminderKind, reminderDay = :reminderDay, " +
             "reminderMinute = :reminderMinute, " +
+            "reminderUpdatedAt = COALESCE(:reminderUpdatedAt, reminderUpdatedAt), " +
             "updatedAt = MAX(:updatedAt, updatedAt + 1), pendingSync = 1 WHERE id = :id",
     )
     suspend fun updateGroup(
@@ -199,16 +208,8 @@ interface GroupDao {
         reminderKind: String,
         reminderDay: Int,
         reminderMinute: Int,
+        reminderUpdatedAt: Long?,
         updatedAt: Long,
-    )
-
-    // Why: "Dispensar" on the group's reminder banner: this device only, so the group isn't stamped nor pending.
-    @Query(
-        "UPDATE split_group SET reminderDismissedAt = :occurrenceAt WHERE id = :id AND reminderDismissedAt < :occurrenceAt",
-    )
-    suspend fun dismissReminder(
-        id: String,
-        occurrenceAt: Long,
     )
 
     /*
@@ -431,7 +432,7 @@ interface GroupDao {
         "UPDATE split_group SET name = :name, type = :type, color = :color, currency = :currency, " +
             "defaultSplit = :defaultSplit, shape = :shape, photoUrl = :photoUrl, pendingPhoto = NULL, " +
             "reminderEnabled = :reminderEnabled, reminderKind = :reminderKind, reminderDay = :reminderDay, " +
-            "reminderMinute = :reminderMinute, " +
+            "reminderMinute = :reminderMinute, reminderUpdatedAt = :reminderUpdatedAt, " +
             "createdBy = :createdBy, addedAt = :addedAt, updatedAt = :remoteUpdatedAt, pendingSync = 0 " +
             "WHERE id = :id AND ownerUserId = :ownerUserId AND updatedAt < :remoteUpdatedAt",
     )
@@ -448,6 +449,7 @@ interface GroupDao {
         reminderKind: String,
         reminderDay: Int,
         reminderMinute: Int,
+        reminderUpdatedAt: Long,
         createdBy: String?,
         addedAt: Long,
         remoteUpdatedAt: Long,

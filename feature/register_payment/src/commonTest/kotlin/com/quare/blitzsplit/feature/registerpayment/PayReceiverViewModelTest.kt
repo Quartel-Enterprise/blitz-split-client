@@ -1199,6 +1199,7 @@ class PayReceiverViewModelTest {
             simplifyDebtsConflictBy = null,
             reminder = GroupReminder.Default,
             reminderDismissedAt = 0L,
+            reminderCountsFrom = 0L,
         )
         firstDownload = MutableStateFlow(downloading)
         paymentKeys = FakePaymentKeyRepository().also {

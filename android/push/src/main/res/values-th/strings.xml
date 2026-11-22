@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">แจ้งเตือนให้เคลียร์ยอด</string>
+    <string name="push_bill_created">%1$s เพิ่มบิล “%2$s” ที่มีคุณร่วมด้วย</string>
+    <string name="push_bill_edited">%1$s แก้ไขบิล “%2$s”</string>
+    <string name="push_bill_deleted">%1$s ลบบิล “%2$s”</string>
+    <string name="push_comment_added">%1$s แสดงความคิดเห็นใน “%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s บันทึกว่าจ่ายเงินให้คุณแล้ว</string>
+    <string name="push_payment_to_you">%1$s บันทึกว่า %2$s จ่ายเงินให้คุณแล้ว</string>
+    <string name="push_payment_received_yours">%1$s บันทึกว่าได้รับเงินจากคุณแล้ว</string>
+    <string name="push_payment_from_you">%1$s บันทึกว่าคุณจ่ายเงินให้ %2$s แล้ว</string>
+    <string name="push_payment_undone">%1$s เลิกทำการจ่ายเงินที่เกี่ยวกับคุณ</string>
+    <string name="push_charge_sent">%1$s ส่งคำเตือนให้คุณเคลียร์ยอด</string>
+    <string name="push_settle_reminder">คุณมียอดค้างอยู่ใน %1$s</string>
+    <string name="push_settle_reminders">คุณมียอดค้างอยู่ใน %1$s กลุ่ม</string>
+    <string name="push_added_to_group">%1$s เพิ่มคุณเข้ากลุ่ม</string>
+    <string name="push_member_joined">%1$s เข้าร่วมกลุ่ม</string>
+    <string name="push_debts_simplified_to_you">%1$s ลดความซับซ้อนของหนี้ ตอนนี้ %2$s จ่ายให้คุณ %3$s</string>
+    <string name="push_debts_simplified_from_you">%1$s ลดความซับซ้อนของหนี้ ตอนนี้คุณจ่ายให้ %2$s %3$s</string>
+    <string name="push_debts_simplified_other">%1$s ลดความซับซ้อนของหนี้ ดูว่าคุณได้รับผลอย่างไร</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ปิดลดความซับซ้อนของหนี้ ตอนนี้ %2$s จ่ายให้คุณ %3$s</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ปิดลดความซับซ้อนของหนี้ ตอนนี้คุณจ่ายให้ %2$s %3$s</string>
+    <string name="push_debts_unsimplified_other">%1$s ปิดลดความซับซ้อนของหนี้ ดูว่าคุณได้รับผลอย่างไร</string>
+    <string name="notification_settings_bills">บิล</string>
+    <string name="notification_settings_bills_detail">บิลที่คุณอยู่ซึ่งถูกสร้าง แก้ไข หรือลบ</string>
+    <string name="notification_settings_payments">การจ่ายเงินและการเคลียร์ยอด</string>
+    <string name="notification_settings_payments_detail">การจ่ายเงินถึงคุณหรือจากคุณ และหนี้ที่ลดความซับซ้อนแล้ว</string>
+    <string name="notification_settings_comments">ความคิดเห็น</string>
+    <string name="notification_settings_comments_detail">ในบิลที่คุณอยู่และเธรดที่คุณเคยเขียน</string>
+    <string name="notification_settings_people_and_groups">คนและกลุ่ม</string>
+    <string name="notification_settings_people_and_groups_detail">ใครเข้าร่วมหรือออกจากกลุ่มของคุณ และสิ่งที่เปลี่ยนแปลงในกลุ่ม</string>
+    <string name="notification_settings_payment_requests">คำขอเงิน</string>
+    <string name="notification_settings_payment_requests_detail">เมื่อมีคนขอให้คุณจ่ายเงิน</string>
+    <string name="notification_settings_balance_reminder">การเตือนยอดค้าง</string>
+    <string name="notification_settings_balance_reminder_detail">สัปดาห์ละครั้ง หากมียอดค้าง</string>
+</resources>

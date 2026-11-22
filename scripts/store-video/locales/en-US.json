@@ -1,4 +1,5 @@
 {
+  "listing": "en",
   "appLanguage": "en",
   "theme": "dark",
   "launchWaitFor": "Your groups",
@@ -25,6 +26,7 @@
     "Works offline, no account needed."
   ],
   "endCard": { "name": ["Blitz", "Split"], "chips": ["Works offline", "No account needed"] },
+  "thumbnail": { "headline": ["Split bills", "with friends"], "accent": ["Split"], "back": "bal_35.png", "front": "settle_101.png" },
   "scenes": [
     { "record": "home", "swipe": [540, 1900, 1000, 30000], "retime": [1.0, 1.7, 0.8, 150, 2120] },
     { "tap": { "descStarts": "Lisbon trip," }, "waitFor": "Expenses" },

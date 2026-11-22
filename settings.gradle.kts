@@ -13,6 +13,14 @@ pluginManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
+        // Google's mirror of Maven Central, then Maven Central itself for what the mirror doesn't have
+        // (yet). Maven Central answers CI's shared runner IPs with 429s (docs/ci.md, "Downloads").
+        maven("https://maven-central.storage-download.googleapis.com/maven2/") {
+            name = "MavenCentralMirror"
+            // A mirror that keeps failing is disabled, and without this the lookup stops there instead of
+            // asking Maven Central, which serves the same artifacts.
+            allowInsecureContinueWhenDisabled = true
+        }
         mavenCentral()
         gradlePluginPortal()
     }
@@ -26,6 +34,14 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.android")
                 includeGroupAndSubgroups("com.google")
             }
+        }
+        // Google's mirror of Maven Central, then Maven Central itself for what the mirror doesn't have
+        // (yet). Maven Central answers CI's shared runner IPs with 429s (docs/ci.md, "Downloads").
+        maven("https://maven-central.storage-download.googleapis.com/maven2/") {
+            name = "MavenCentralMirror"
+            // A mirror that keeps failing is disabled, and without this the lookup stops there instead of
+            // asking Maven Central, which serves the same artifacts.
+            allowInsecureContinueWhenDisabled = true
         }
         mavenCentral()
     }
@@ -56,6 +72,7 @@ include(":core:activity:testing")
 include(":core:contacts")
 include(":core:contacts:testing")
 include(":core:sync")
+include(":core:watch")
 include(":core:settings")
 include(":core:in_app_update")
 include(":core:legal")
@@ -69,6 +86,9 @@ include(":core:provider:analytics")
 
 // Features: presentation (ViewModel, UiState, UiEvent, UiAction) shared by every UI
 include(":feature:welcome")
+include(":feature:watch_pairing")
+include(":feature:watch_balances")
+include(":feature:connect_watch")
 include(":feature:profile_setup")
 include(":feature:restore")
 include(":feature:recovery_code")
@@ -101,8 +121,10 @@ include(":feature:app_download")
 
 // Android: the native Jetpack Compose UI of each feature
 include(":androidApp")
+include(":wearApp")
 include(":android:designsystem")
 include(":android:platform")
+include(":android:push")
 include(":android:feature:welcome")
 include(":android:feature:profile_setup")
 include(":android:feature:restore")
@@ -113,6 +135,7 @@ include(":android:feature:edit_profile")
 include(":android:feature:payment_key")
 include(":android:feature:paying_method")
 include(":android:feature:delete_account")
+include(":android:feature:connect_watch")
 include(":android:feature:contact_support")
 include(":android:feature:notification_settings")
 include(":android:feature:legal")

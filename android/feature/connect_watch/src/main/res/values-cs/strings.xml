@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Připojit hodinky</string>
+    <string name="connect_watch_close">Zavřít</string>
+    <string name="connect_watch_body">Zadej kód, který ukazují hodinky. Přihlásí se k tvému účtu a pak se budou synchronizovat samy.</string>
+    <string name="connect_watch_code_label">Kód z hodinek</string>
+    <string name="connect_watch_error_invalid">Špatný nebo prošlý kód. Vygeneruj na hodinkách nový.</string>
+    <string name="connect_watch_error_too_many">Příliš mnoho špatných kódů. Počkej pár minut a zkus to znovu.</string>
+    <string name="connect_watch_error_needs_account">Nejdřív připoj účet: tvoje data jsou jen v tomto zařízení.</string>
+    <string name="connect_watch_error_failed">Hodinky se nepodařilo připojit. Zkus to znovu.</string>
+    <string name="connect_watch_offline">K připojení hodinek potřebuješ internet.</string>
+    <string name="connect_watch_own_watch_only">Zadávej jen kód, který ukazují tvoje vlastní hodinky: kdo má ty hodinky, dostane se do tvého účtu.</string>
+    <string name="connect_watch_validity">Kód platí 5 minut a jen jednou.</string>
+    <string name="connect_watch_button">Připojit</string>
+    <string name="connect_watch_connected_title">Hodinky připojeny</string>
+    <string name="connect_watch_connected_body">Vidí tvoje skupiny a synchronizují se samy. Pokud je chceš odpojit, odhlas se na hodinkách.</string>
+</resources>

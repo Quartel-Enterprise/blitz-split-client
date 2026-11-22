@@ -15,7 +15,13 @@ final class AppModel {
     /// Profile › Language, which every window draws its strings in (`AppLocale`).
     private(set) var language: AppLanguage {
         willSet { AppLocale.apply(newValue) }
-        didSet { redrawMainWindowIfFree() }
+        didSet {
+            redrawMainWindowIfFree()
+            #if os(iOS)
+            // The widget draws its words in the app's language too
+            BalanceWidgetWriter.shared.refresh()
+            #endif
+        }
     }
     /// The language the main window was last drawn again in. A pick made while something being filled in is open in it
     /// (a sheet or cover, the Mac's bill inspector or invite popover, beside Ajustes) waits for it to close, so what was

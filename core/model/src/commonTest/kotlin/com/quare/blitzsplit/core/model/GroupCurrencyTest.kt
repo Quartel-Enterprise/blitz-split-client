@@ -166,6 +166,42 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN the rest of Latin America WHEN picking their currencies THEN each has its own with its decimals`() {
+        // Given
+        val regions = listOf("BO", "VE", "CR", "GT", "HN", "NI", "DO", "CU")
+
+        // When
+        val currencies = regions.map { GroupCurrency.ofRegion(it) }
+
+        // Then
+        assertEquals(
+            listOf(
+                GroupCurrency.BOB to 2,
+                GroupCurrency.VES to 2,
+                GroupCurrency.CRC to 0,
+                GroupCurrency.GTQ to 2,
+                GroupCurrency.HNL to 2,
+                GroupCurrency.NIO to 2,
+                GroupCurrency.DOP to 2,
+                GroupCurrency.CUP to 0,
+            ),
+            currencies.map { it to it.fractionDigits },
+        )
+    }
+
+    @Test
+    fun `GIVEN the Latin American regions that use the dollar WHEN picking their currency THEN it is the dollar`() {
+        // Given
+        val regions = listOf("EC", "SV", "PA", "PR")
+
+        // When
+        val currencies = regions.map { GroupCurrency.ofRegion(it) }
+
+        // Then
+        assertEquals(List(regions.size) { GroupCurrency.USD }, currencies)
+    }
+
+    @Test
     fun `GIVEN Poland Turkey and Indonesia WHEN picking their currency THEN it is the zloty lira and rupiah`() {
         // Given
         val regions = listOf("PL", "TR", "ID")
@@ -346,6 +382,30 @@ class GroupCurrencyTest {
 
         // Then
         assertEquals(GroupCurrency.MYR to 2, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Hungary WHEN picking its currency THEN it is the forint without decimals though ISO gives it 2`() {
+        // Given
+        val region = "HU"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.HUF to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
+    fun `GIVEN Pakistan WHEN picking its currency THEN it is the Pakistani rupee`() {
+        // Given
+        val region = "PK"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.PKR to 2, currency to currency.fractionDigits)
     }
 
     @Test

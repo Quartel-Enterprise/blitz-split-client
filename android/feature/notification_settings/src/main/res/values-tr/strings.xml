@@ -19,17 +19,5 @@
     <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
     <string name="notification_settings_toggle_description">%1$s, %2$s</string>
     <string name="notification_settings_legend">Anlık, bu cihaza bir bildirim gönderir. Uygulamada, zilde ve Etkinlik\'te yeni olarak işaretler; kapalıyken yine Etkinlik\'te, okunmuş olarak görünür.</string>
-    <string name="notification_settings_bills">Harcamalar</string>
-    <string name="notification_settings_bills_detail">İçinde olduğun yeni, düzenlenen ya da silinen harcamalar</string>
-    <string name="notification_settings_payments">Ödemeler ve hesaplaşmalar</string>
-    <string name="notification_settings_payments_detail">Sana ya da senden ödemeler ve sadeleştirilen borçlar</string>
-    <string name="notification_settings_comments">Yorumlar</string>
-    <string name="notification_settings_comments_detail">İçinde olduğun harcamalarda ve yazdığın konuşmalarda</string>
-    <string name="notification_settings_people_and_groups">Kişiler ve gruplar</string>
-    <string name="notification_settings_people_and_groups_detail">Gruplarına kimin katıldığı ya da ayrıldığı ve onlarda neyin değiştiği</string>
-    <string name="notification_settings_payment_requests">Ödeme istekleri</string>
-    <string name="notification_settings_payment_requests_detail">Biri senden ödeme istediğinde</string>
-    <string name="notification_settings_balance_reminder">Açık bakiye hatırlatıcısı</string>
-    <string name="notification_settings_balance_reminder_detail">Açık bir bakiye varsa haftada bir</string>
     <string name="notification_settings_footer">Bildirimler internet olduğunda gelir. Bir grubu sessize almak için grubun içindeki menüyü kullan.</string>
 </resources>

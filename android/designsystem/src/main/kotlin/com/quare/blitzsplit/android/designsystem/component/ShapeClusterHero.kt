@@ -2,8 +2,6 @@ package com.quare.blitzsplit.android.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -18,67 +16,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 
-/*
- * Why: the decorative cluster of expressive shapes at the top of the welcome screen. Compact, it is
- * the small badge that heads the pitch lying down and the tablet panel.
- */
-@Composable
-fun ShapeClusterHero(
-    modifier: Modifier = Modifier,
-    isCompact: Boolean = false,
-) {
-    if (isCompact) CompactShapeClusterHero(modifier) else FullShapeClusterHero(modifier)
-}
-
+// Why: the small badge of expressive shapes that heads the welcome's pitch on a phone lying down.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-private fun FullShapeClusterHero(modifier: Modifier) {
-    val colors = MaterialTheme.colorScheme
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(176.dp)
-            .clearAndSetSemantics { },
-    ) {
-        Box(
-            Modifier
-                .offset(20.dp, 26.dp)
-                .size(110.dp)
-                .background(colors.primaryContainer, MaterialShapes.Cookie9Sided.toShape()),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = logoIcon(),
-                contentDescription = null,
-                modifier = Modifier.size(44.dp),
-                tint = colors.onPrimaryContainer,
-            )
-        }
-        Box(
-            Modifier
-                .offset(122.dp, 6.dp)
-                .size(88.dp)
-                .rotate(14f)
-                .background(colors.errorContainer, MaterialShapes.Cookie4Sided.toShape()),
-        )
-        Box(
-            Modifier
-                .offset(172.dp, 78.dp)
-                .size(96.dp)
-                .background(colors.tertiaryContainer, MaterialShapes.Clover4Leaf.toShape()),
-        )
-        Box(
-            Modifier
-                .offset(82.dp, 108.dp)
-                .size(64.dp)
-                .background(colors.primary, MaterialShapes.Circle.toShape()),
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun CompactShapeClusterHero(modifier: Modifier) {
+fun ShapeClusterHero(modifier: Modifier = Modifier) {
     val colors = MaterialTheme.colorScheme
     Box(
         modifier = modifier
@@ -116,7 +57,7 @@ private fun CompactShapeClusterHero(modifier: Modifier) {
     }
 }
 
-// Why: the logo cookie that heads the tablet pitch panel, whose own color would hide the cluster.
+// Why: the logo cookie that heads the welcome on a phone upright and the pitch panel of a tablet and of a book.
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LogoBadgeIcon(modifier: Modifier = Modifier) {

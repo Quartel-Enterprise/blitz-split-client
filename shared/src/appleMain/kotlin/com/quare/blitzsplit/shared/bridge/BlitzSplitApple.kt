@@ -4,11 +4,15 @@ import androidx.room3.RoomDatabase
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppPaused
 import com.quare.blitzsplit.core.account.domain.usecase.HandleAppResumed
 import com.quare.blitzsplit.core.account.domain.usecase.HandleBrowserCallback
+import com.quare.blitzsplit.core.expenses.domain.model.BalanceSnapshot
 import com.quare.blitzsplit.core.expenses.domain.model.SplitMode
+import com.quare.blitzsplit.core.expenses.domain.usecase.ObserveBalanceSnapshot
 import com.quare.blitzsplit.core.model.AppLanguage
 import com.quare.blitzsplit.core.model.ThemePreference
 import com.quare.blitzsplit.core.navigation.Navigator
+import com.quare.blitzsplit.core.navigation.PushLink
 import com.quare.blitzsplit.core.navigation.Route
+import com.quare.blitzsplit.core.presentation.bridge.FlowWatcher
 import com.quare.blitzsplit.core.presentation.bridge.ViewModelHolder
 import com.quare.blitzsplit.core.profile.domain.model.ApnsEnvironment
 import com.quare.blitzsplit.core.profile.domain.model.PushDevice
@@ -18,12 +22,17 @@ import com.quare.blitzsplit.core.provider.analytics.AnalyticsHub
 import com.quare.blitzsplit.core.provider.analytics.AnalyticsService
 import com.quare.blitzsplit.core.provider.room.db.AppDatabase
 import com.quare.blitzsplit.core.sync.domain.usecase.ReportAppForeground
+import com.quare.blitzsplit.core.utils.suspendRunCatching
+import com.quare.blitzsplit.core.watch.domain.usecase.ApproveNearbyWatch
+import com.quare.blitzsplit.core.watch.domain.usecase.ObserveAccountSignOuts
+import com.quare.blitzsplit.core.watch.link.WatchLink
 import com.quare.blitzsplit.feature.activity.presentation.viewmodel.ActivityViewModel
 import com.quare.blitzsplit.feature.appdownload.presentation.viewmodel.AppDownloadViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.BillDetailViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.ShareBillViewModel
 import com.quare.blitzsplit.feature.billdetail.presentation.viewmodel.SharedBillViewModel
 import com.quare.blitzsplit.feature.categorymap.presentation.viewmodel.CategoryMapViewModel
+import com.quare.blitzsplit.feature.connectwatch.presentation.viewmodel.ConnectWatchViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.AgendaViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactInviteViewModel
 import com.quare.blitzsplit.feature.contacts.presentation.viewmodel.ContactProfileViewModel
@@ -69,6 +78,8 @@ import com.quare.blitzsplit.feature.welcome.presentation.viewmodel.WelcomeViewMo
 import com.quare.blitzsplit.shared.app.AppViewModel
 import com.quare.blitzsplit.shared.app.LinkInbox
 import com.quare.blitzsplit.shared.di.startBlitzSplitKoin
+import com.quare.blitzsplit.shared.push.PushArrivalOutcome
+import com.quare.blitzsplit.shared.push.PushArrivalSync
 import com.quare.blitzsplit.shared.storescreenshots.DirectoryAssets
 import com.quare.blitzsplit.shared.storescreenshots.SampleTrips
 import com.quare.blitzsplit.shared.storescreenshots.StoreScreenshotsScreen
@@ -81,14 +92,18 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.handleDeeplinks
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.parameter.parametersOf
@@ -99,6 +114,7 @@ import platform.Foundation.create
 import platform.posix.memcpy
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.Platform
+import kotlin.time.Duration.Companion.seconds
 import com.quare.blitzsplit.core.provider.crashlytics.startCrashReporting as startCrashlytics
 
 /*
@@ -175,6 +191,14 @@ object BlitzSplitApple : KoinComponent {
         get<AnalyticsHub>().attach(service)
     }
 
+    /*
+     * Why: the iPhone's balance widget reads a snapshot the app writes to the App Group, since the widget's process has
+     * no Room; the app writes it again on each change (docs/product/balances-and-contacts.md). It runs for the app's
+     * whole life, whatever screen is open, so the balances are worked out off the main thread.
+     */
+    fun createBalanceSnapshotWatcher(): FlowWatcher<BalanceSnapshot> =
+        FlowWatcher(get<ObserveBalanceSnapshot>()().flowOn(Dispatchers.Default))
+
     fun createAppViewModel(): ViewModelHolder<AppViewModel> = ViewModelHolder(AppViewModel::class) { get() }
 
     fun createWelcomeViewModel(): ViewModelHolder<WelcomeViewModel> = ViewModelHolder(WelcomeViewModel::class) { get() }
@@ -228,6 +252,34 @@ object BlitzSplitApple : KoinComponent {
 
     fun createContactSupportViewModel(): ViewModelHolder<ContactSupportViewModel> =
         ViewModelHolder(ContactSupportViewModel::class) { get() }
+
+    // Why: Profile › Connect watch (15.14), Settings' sheet on the Mac.
+    fun createConnectWatchViewModel(): ViewModelHolder<ConnectWatchViewModel> =
+        ViewModelHolder(ConnectWatchViewModel::class) { get() }
+
+    /*
+     * Why: the iPhone's side of nearby pairing (15.10): the paired watch hands its code over WatchConnectivity and the
+     * iPhone approves it with its own session, with no confirmation, as Android's WatchPairingListenerService does.
+     * onReply gets one of WatchLink's REPLY_ values, on the main thread. A server that never answers is a failure, as
+     * on Android's listener, and sooner than its 30 seconds: iOS gives an app woken in the background about that long,
+     * and the reply has to reach the watch before the app is suspended.
+     */
+    fun approveNearbyWatch(
+        code: String,
+        onReply: (String) -> Unit,
+    ) {
+        val approve = get<ApproveNearbyWatch>()
+        scope.launch {
+            // Why: anything thrown instead of a Result would end the app on Kotlin/Native and leave the watch unanswered.
+            val reply = suspendRunCatching { withTimeoutOrNull(nearbyApprovalTimeout) { approve(code) } }.getOrNull()
+            onReply(reply ?: WatchLink.REPLY_FAILED)
+        }
+    }
+
+    private val nearbyApprovalTimeout = 20.seconds
+
+    // Why: the user id of each sign out (or deleted account) on the iPhone, which it tells its watch (15.13).
+    fun createAccountSignOutsWatcher(): FlowWatcher<String> = FlowWatcher(get<ObserveAccountSignOuts>()())
 
     fun createNotificationSettingsViewModel(): ViewModelHolder<NotificationSettingsViewModel> =
         ViewModelHolder(NotificationSettingsViewModel::class) { get() }
@@ -384,6 +436,24 @@ object BlitzSplitApple : KoinComponent {
         )
     }
 
+    /*
+     * Why: an event's push carries content-available, so iOS wakes the app in the background (the Mac hands it to the
+     * running app) and the sync brings the bill before the tap: AppViewModel.openPushLink opens it only once it is on the
+     * device. The Mac, and iOS with the app in front, hand the app every push, the reminder's too, whose link names no
+     * event. onDone gets the outcome on the main thread, for iOS's fetch completion handler, which has to be called
+     * within about 30 seconds of the wake.
+     */
+    fun syncForPush(
+        link: String?,
+        onDone: (PushArrivalOutcome) -> Unit,
+    ) {
+        val pushArrivalSync = get<PushArrivalSync>()
+        val eventId = link?.let { PushLink.of(it) }?.eventId
+        scope.launch { onDone(pushArrivalSync(eventId, pushArrivalSyncTimeout)) }
+    }
+
+    private val pushArrivalSyncTimeout = 25.seconds
+
     // Why: the browser sign in opens Safari, or the browser on macOS, over the app.
     fun handleAppPaused() {
         get<HandleAppPaused>().invoke()
@@ -399,21 +469,27 @@ object BlitzSplitApple : KoinComponent {
         get<ReportAppForeground>().invoke(isForeground)
     }
 
-    // Why: a picked photo is megabytes, and filling a KotlinByteArray from Swift goes one byte per call.
-    @OptIn(ExperimentalForeignApi::class)
+    /*
+     * Why: a picked photo is megabytes, and filling a KotlinByteArray from Swift goes one byte per call. NSUInteger and
+     * size_t are 32 bits on the Apple Watch's arm64_32, the same width as each other on every target.
+     */
+    @OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
     fun toByteArray(data: NSData): ByteArray = ByteArray(data.length.toInt()).apply {
         if (isNotEmpty()) usePinned { pinned -> memcpy(pinned.addressOf(0), data.bytes, data.length) }
     }
 
-    // Why: a photo added offline reaches Swift as a KotlinByteArray, and reading it from Swift goes one byte per call.
-    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+    /*
+     * Why: a photo added offline reaches Swift as a KotlinByteArray, and reading it from Swift goes one byte per call.
+     * NSUInteger is 32 bits on the Apple Watch's arm64_32, so the length converts to each target's width.
+     */
+    @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class, UnsafeNumber::class)
     fun toData(bytes: ByteArray): NSData = if (bytes.isEmpty()) {
         NSData()
     } else {
         bytes.usePinned { pinned ->
             NSData.create(
                 bytes = pinned.addressOf(0),
-                length = bytes.size.toULong(),
+                length = bytes.size.convert(),
             )
         }
     }

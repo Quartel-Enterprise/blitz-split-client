@@ -146,6 +146,7 @@ internal fun group(
     simplifyDebtsConflictBy = null,
     reminder = GroupReminder.Default,
     reminderDismissedAt = 0L,
+    reminderCountsFrom = 0L,
 )
 
 // Why: a bill only one member paid, all of it on another, so the second owes the first that much.

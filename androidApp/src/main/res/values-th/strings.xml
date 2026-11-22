@@ -1,28 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Blitz Split</string>
-    <!-- Atividade's push notifications, worded from the server's kind and words -->
-    <string name="push_reminder_title">แจ้งเตือนให้เคลียร์ยอด</string>
-    <string name="push_bill_created">%1$s เพิ่มบิล “%2$s” ที่มีคุณร่วมด้วย</string>
-    <string name="push_bill_edited">%1$s แก้ไขบิล “%2$s”</string>
-    <string name="push_bill_deleted">%1$s ลบบิล “%2$s”</string>
-    <string name="push_comment_added">%1$s แสดงความคิดเห็นใน “%2$s”: %3$s</string>
-    <string name="push_payment_paid_you">%1$s บันทึกว่าจ่ายเงินให้คุณแล้ว</string>
-    <string name="push_payment_to_you">%1$s บันทึกว่า %2$s จ่ายเงินให้คุณแล้ว</string>
-    <string name="push_payment_received_yours">%1$s บันทึกว่าได้รับเงินจากคุณแล้ว</string>
-    <string name="push_payment_from_you">%1$s บันทึกว่าคุณจ่ายเงินให้ %2$s แล้ว</string>
-    <string name="push_payment_undone">%1$s เลิกทำการจ่ายเงินที่เกี่ยวกับคุณ</string>
-    <string name="push_charge_sent">%1$s ส่งคำเตือนให้คุณเคลียร์ยอด</string>
-    <string name="push_settle_reminder">คุณมียอดค้างอยู่ใน %1$s</string>
-    <string name="push_settle_reminders">คุณมียอดค้างอยู่ใน %1$s กลุ่ม</string>
-    <string name="push_added_to_group">%1$s เพิ่มคุณเข้ากลุ่ม</string>
-    <string name="push_member_joined">%1$s เข้าร่วมกลุ่ม</string>
-    <string name="push_debts_simplified_to_you">%1$s ลดความซับซ้อนของหนี้ ตอนนี้ %2$s จ่ายให้คุณ %3$s</string>
-    <string name="push_debts_simplified_from_you">%1$s ลดความซับซ้อนของหนี้ ตอนนี้คุณจ่ายให้ %2$s %3$s</string>
-    <string name="push_debts_simplified_other">%1$s ลดความซับซ้อนของหนี้ ดูว่าคุณได้รับผลอย่างไร</string>
-    <string name="push_debts_unsimplified_to_you">%1$s ปิดลดความซับซ้อนของหนี้ ตอนนี้ %2$s จ่ายให้คุณ %3$s</string>
-    <string name="push_debts_unsimplified_from_you">%1$s ปิดลดความซับซ้อนของหนี้ ตอนนี้คุณจ่ายให้ %2$s %3$s</string>
-    <string name="push_debts_unsimplified_other">%1$s ปิดลดความซับซ้อนของหนี้ ดูว่าคุณได้รับผลอย่างไร</string>
     <!-- A comment's link that opened nothing -->
     <string name="bill_link_not_in_group_title">คุณไม่ได้อยู่ในกลุ่มนี้</string>
     <string name="bill_link_not_in_group_message">ความคิดเห็นนี้อยู่ในกลุ่มที่คุณไม่ได้เป็นสมาชิก ขอคำเชิญจากคนที่ส่งลิงก์มาให้</string>
@@ -33,4 +11,9 @@
     <string name="discard_changes_message">การเปลี่ยนแปลงที่ยังไม่ได้บันทึกจะหายไป</string>
     <string name="discard_changes_discard">ทิ้ง</string>
     <string name="discard_changes_keep_editing">แก้ไขต่อ</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">นาฬิกา</string>
+    <string name="watch_connected_title">เชื่อมต่อ %1$s กับบัญชีของคุณแล้ว</string>
+    <string name="watch_connected_title_unnamed">เชื่อมต่อนาฬิกากับบัญชีของคุณแล้ว</string>
+    <string name="watch_connected_text">นาฬิกาจะเห็นกลุ่มของคุณและซิงค์เอง หากต้องการยกเลิกการเชื่อมต่อ ให้ออกจากระบบบนนาฬิกา</string>
 </resources>

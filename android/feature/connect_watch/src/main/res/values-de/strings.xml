@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Uhr verbinden</string>
+    <string name="connect_watch_close">Schließen</string>
+    <string name="connect_watch_body">Gib den Code ein, den deine Uhr anzeigt. Sie meldet sich bei deinem Konto an und synchronisiert dann von selbst.</string>
+    <string name="connect_watch_code_label">Code der Uhr</string>
+    <string name="connect_watch_error_invalid">Falscher oder abgelaufener Code. Erzeuge auf der Uhr einen neuen.</string>
+    <string name="connect_watch_error_too_many">Zu viele falsche Codes. Warte ein paar Minuten und versuch es noch einmal.</string>
+    <string name="connect_watch_error_needs_account">Verbinde zuerst ein Konto: Deine Daten sind nur auf diesem Gerät.</string>
+    <string name="connect_watch_error_failed">Die Uhr konnte nicht verbunden werden. Versuch es noch einmal.</string>
+    <string name="connect_watch_offline">Zum Verbinden der Uhr brauchst du Internet.</string>
+    <string name="connect_watch_own_watch_only">Gib nur einen Code ein, den deine eigene Uhr anzeigt: Wer diese Uhr hat, kommt in dein Konto.</string>
+    <string name="connect_watch_validity">Der Code gilt 5 Minuten und nur einmal.</string>
+    <string name="connect_watch_button">Verbinden</string>
+    <string name="connect_watch_connected_title">Uhr verbunden</string>
+    <string name="connect_watch_connected_body">Sie sieht deine Gruppen und synchronisiert von selbst. Zum Trennen meldest du dich auf der Uhr ab.</string>
+</resources>

@@ -13,7 +13,9 @@ name: release-production
 #   2. Each platform builds and publishes, in jobs of its own, because "Re-run failed jobs" repeats whole jobs: an
 #      upload that failed is sent again without building a second time.
 #        - Android: a signed AAB to the Google Play track of the `track` input, with the notes as its "What's new".
-#          On the production track `rollout` is the percentage of the users who get it.
+#          On the production track `rollout` is the percentage of the users who get it. The watch's AAB (:wearApp,
+#          the phone's applicationId and versionCode + 1,000,000) then goes to the same track of Google Play's Wear
+#          OS form factor (wear:production, wear:beta, wear:alpha, wear:qa), with the same notes and rollout.
 #        - iOS and macOS: App Store Connect, signed as the betas are (the composite actions apple-build and
 #          apple-upload). With `submit_for_review`, the build is then sent to App Store review with the notes, and
 #          goes out by itself once approved.
@@ -313,6 +315,7 @@ jobs:
             if [ "$TRACK" = production ]; then
               android="$android, $ROLLOUT% of the users"
             fi
+            android="$android; the watch to the same Wear OS track"
           fi
           app_store="TestFlight only"
           if [ "$SUBMIT" = true ]; then
@@ -416,7 +419,7 @@ jobs:
   # Android
   # ---------------------------------------------------------------------------------------------
   android-build:
-    name: Android, build the AAB
+    name: Android, build the AABs
     needs: plan
     if: ${{ inputs.android }}
     runs-on: ubuntu-latest
@@ -433,10 +436,11 @@ jobs:
         with:
           token: ${{ github.token }}
 
-      - name: Build the signed AAB
+      # The phone's and the watch's, in one Gradle run: one version, one key, one applicationId.
+      - name: Build the signed AABs
         uses: ./.github/actions/android-build
         with:
-          task: ':androidApp:bundleRelease'
+          task: ':androidApp:bundleRelease :wearApp:bundleRelease'
           version: ${{ needs.plan.outputs.version }}
           version-code: ${{ needs.plan.outputs.version_code }}
           keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -458,11 +462,15 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           shopt -s nullglob
-          aabs=(androidApp/build/outputs/bundle/release/*.aab)
-          if [ "${#aabs[@]}" -ne 1 ]; then
-            echo "::error::Expected one release AAB, found ${#aabs[@]}."
-            exit 1
-          fi
+          aabs=()
+          for app in androidApp wearApp; do
+            found=("$app"/build/outputs/bundle/release/*.aab)
+            if [ "${#found[@]}" -ne 1 ]; then
+              echo "::error::Expected one release AAB of $app, found ${#found[@]}."
+              exit 1
+            fi
+            aabs+=("${found[0]}")
+          done
           if ! keystore="$(keytool -list -v -keystore "$RUNNER_TEMP/release.jks" -alias "$ANDROID_KEY_ALIAS" \
             -storepass "$ANDROID_KEYSTORE_PASSWORD" 2>&1)"; then
             echo "$keystore"
@@ -477,11 +485,14 @@ jobs:
             echo "::error::keytool printed no SHA-1 or SHA-256 for the release key."
             exit 1
           fi
-          if ! bundle="$(keytool -printcert -jarfile "${aabs[0]}" 2>&1)" || [ "$(digest SHA256 "$bundle")" != "$sha256" ]; then
-            echo "$bundle"
-            echo "::error::The release AAB is not signed with the release keystore's certificate (SHA-256 $sha256)."
-            exit 1
-          fi
+          # The watch's too: the Data Layer only links the phone's and the watch's apps signed by one key.
+          for aab in "${aabs[@]}"; do
+            if ! bundle="$(keytool -printcert -jarfile "$aab" 2>&1)" || [ "$(digest SHA256 "$bundle")" != "$sha256" ]; then
+              echo "$bundle"
+              echo "::error::$aab is not signed with the release keystore's certificate (SHA-256 $sha256)."
+              exit 1
+            fi
+          done
           echo "::notice title=AAB signing SHA-1::$sha1"
           {
             echo "### AAB signing certificate"
@@ -490,7 +501,7 @@ jobs:
             echo ""
             echo "SHA-256: \`$sha256\`"
             echo ""
-            echo "Google Play takes the bundle only when this is its upload key certificate (Play Console > Test and release > App integrity)."
+            echo "Google Play takes the bundles, the phone's and the watch's, only when this is their upload key certificate (Play Console > Test and release > App integrity)."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload the AAB as a build artifact
@@ -499,6 +510,14 @@ jobs:
           name: android-aab
           path: androidApp/build/outputs/bundle/release/*.aab
           # A week, for the "Re-run failed jobs" of the upload: a bundle installs nowhere before Google Play signs it.
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Upload the watch's AAB as a build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: wear-aab
+          path: wearApp/build/outputs/bundle/release/*.aab
           retention-days: 7
           if-no-files-found: error
 
@@ -541,6 +560,62 @@ jobs:
           lane: >-
             play_upload aab:aab/*.aab track:${{ inputs.track }} rollout:${{ inputs.rollout }}
             version_code:${{ needs.plan.outputs.version_code }} notes:release-notes/stores/play
+          service-account-json: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+
+  # The watch's bundle, to the Wear OS form factor's track of the same name (the lane's form_factor:wear), after the
+  # phone's: Google Play drops an edit that is still open when another one commits, so the two never go at once. A job
+  # of its own, so "Re-run failed jobs" sends only the watch's again once the phone's landed. Its versionCode is the
+  # phone's + 1,000,000 (wearVersionCodeOffset in wearApp/build.gradle.kts).
+  wear-upload:
+    name: Wear OS, send to Google Play
+    needs: [plan, android-build, android-upload]
+    runs-on: ubuntu-latest
+    environment: Production
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+          fetch-depth: 1
+
+      - name: Check who releases
+        uses: ./.github/actions/release-admin
+        with:
+          token: ${{ github.token }}
+
+      - name: Download the watch's AAB build artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: wear-aab
+          path: wear-aab
+
+      - name: Download the release notes
+        uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: release-notes
+
+      # The offset read from wearApp/build.gradle.kts, its one place, so the code the lane checks after a 5xx is the
+      # bundle's.
+      - name: The watch's versionCode
+        id: code
+        env:
+          VERSION_CODE: ${{ needs.plan.outputs.version_code }}
+        run: |
+          offset="$(sed -n 's/^val wearVersionCodeOffset = \([0-9_]*\)$/\1/p' wearApp/build.gradle.kts | tr -d _)"
+          if [ -z "$offset" ]; then
+            echo "::error::No wearVersionCodeOffset in wearApp/build.gradle.kts."
+            exit 1
+          fi
+          echo "version_code=$((VERSION_CODE + offset))" >> "$GITHUB_OUTPUT"
+
+      - name: Send the watch's AAB to Google Play
+        uses: ./.github/actions/play-store-lane
+        with:
+          lane: >-
+            play_upload aab:wear-aab/*.aab form_factor:wear track:${{ inputs.track }} rollout:${{ inputs.rollout }}
+            version_code:${{ steps.code.outputs.version_code }} notes:release-notes/stores/play
           service-account-json: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
 
   # Google Play shows a listing's screenshots to everyone the moment they change, whatever track the bundle went to:
@@ -591,8 +666,13 @@ jobs:
   # (docs/store-listing-screenshots.md#google-plays-daily-save-quota).
   android-screenshots:
     name: Android, Google Play screenshots
-    needs: [plan, android-upload, android-screenshots-render]
-    if: ${{ needs.android-screenshots-render.outputs.locales != '' }}
+    # After the watch's bundle too, whatever became of it: an edit of theirs that committed first would drop the
+    # watch's still open. Only the phone's has to have landed, so a watch that failed (no Wear OS form factor yet)
+    # costs the listing nothing; a phone that failed or was skipped skips them, as before.
+    needs: [plan, android-upload, wear-upload, android-screenshots-render]
+    if: >-
+      ${{ !cancelled() && needs.android-upload.result == 'success' &&
+      needs.android-screenshots-render.outputs.locales != '' }}
     permissions:
       contents: read
       # Each upload job looks for a listing or Google Play's screenshots going up alone, and for a group before
@@ -1201,6 +1281,7 @@ jobs:
       - plan
       - android-build
       - android-upload
+      - wear-upload
       - ios-build
       - ios-upload
       - ios-submit
@@ -1260,6 +1341,7 @@ jobs:
           ROLLOUT: ${{ inputs.rollout }}
           SUBMIT: ${{ inputs.submit_for_review }}
           ANDROID: ${{ needs.android-upload.result }}
+          WEAR: ${{ needs.wear-upload.result }}
           IOS_UPLOAD: ${{ needs.ios-upload.result }}
           IOS_SUBMIT: ${{ needs.ios-submit.result }}
           MACOS_UPLOAD: ${{ needs.macos-upload.result }}
@@ -1293,6 +1375,11 @@ jobs:
 
           android_channel="Google Play, \`$TRACK\` track"
           if [ "$TRACK" = production ]; then android_channel="$android_channel, $ROLLOUT% of the users"; fi
+          # The watch's part only when its upload ran: a phone that failed never sent it.
+          if [ "$WEAR" != skipped ]; then android_channel="$android_channel, the watch on Wear OS's"; fi
+          # The phone's result decides the release; the watch's, sent after it, is told next to it when it differs.
+          android="$ANDROID"
+          if [ "$ANDROID" = success ] && [ "$WEAR" != success ]; then android="success (watch: $WEAR)"; fi
           if [ "$SUBMIT" = true ]; then
             apple_channel="App Store, sent for review"
             ios="$IOS_SUBMIT"
@@ -1319,7 +1406,7 @@ jobs:
             # success a later deployment that failed didn't undo: the site still serves the one that worked. A
             # release from before the web was part of a stable version has no Web row: it goes after macOS's.
             jq -r '.body // ""' <<< "$release" | tr -d '\r' | awk \
-              -v code="$code" -v android="$ANDROID" -v ios="$ios" -v macos="$macos" \
+              -v code="$code" -v android="$android" -v ios="$ios" -v macos="$macos" \
               -v android_channel="$android_channel" -v apple_channel="$apple_channel" \
               -v track="$TRACK" -v submit="$SUBMIT" -v web="$WEB" -v web_channel="$web_channel" '
               function left_out(result) { return result == "skipped" || result == "cancelled" }
@@ -1355,7 +1442,7 @@ jobs:
             echo
             echo "| Platform | Channel | Result |"
             echo "| --- | --- | --- |"
-            echo "| Android | $android_channel | $ANDROID |"
+            echo "| Android | $android_channel | $android |"
             echo "| iOS | $apple_channel | $ios |"
             echo "| macOS | $apple_channel | $macos |"
             echo "| Web | $web_channel | $WEB |"

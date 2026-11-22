@@ -67,6 +67,34 @@ class PushDeviceMapperImplTest {
     }
 
     @Test
+    fun `GIVEN a release Apple Watch token WHEN mapping THEN sends watchos in the production environment`() {
+        // Given
+        val device = PushDevice(
+            token = "apns-watch",
+            platform = PushPlatform.WATCHOS,
+            apnsEnvironment = ApnsEnvironment.PRODUCTION,
+            webP256dh = null,
+            webAuth = null,
+        )
+
+        // When
+        val params = mapper.toParams(device)
+
+        // Then
+        assertEquals(
+            RegisterPushDeviceParamsDto(
+                token = "apns-watch",
+                platform = "watchos",
+                apnsEnvironment = "production",
+                webP256dh = null,
+                webAuth = null,
+                timeZone = "Asia/Tokyo",
+            ),
+            params,
+        )
+    }
+
+    @Test
     fun `GIVEN a release Mac token WHEN mapping to the params THEN sends macos in the production environment`() {
         // Given
         val device = PushDevice(

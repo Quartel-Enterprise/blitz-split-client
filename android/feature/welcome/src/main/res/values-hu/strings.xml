@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Oszd fel a számlát, gond nélkül</string>
+    <string name="welcome_offline_title">Offline is működik</string>
+    <string name="welcome_offline_body">Minden az eszközödön marad, és később szinkronizálódik.</string>
+    <string name="welcome_optional_title">A fiók nem kötelező</string>
+    <string name="welcome_optional_body">A Google vagy az Apple csak azt biztosítja, hogy semmit ne veszíts el, amikor eszközt váltasz.</string>
+    <string name="welcome_invite_title">Meghívás linkkel vagy QR-kóddal</string>
+    <string name="welcome_invite_body">A barátok fiók létrehozása nélkül csatlakoznak a csoporthoz.</string>
+    <string name="welcome_no_connection_title">Nincs kapcsolat.</string>
+    <string name="welcome_no_connection_body">A fiókos bejelentkezéshez internet kell. Használd most fiók nélkül, és csatlakoztasd később a Profilban.</string>
+    <string name="welcome_or">vagy</string>
+    <string name="welcome_use_without_account">Használat fiók nélkül</string>
+    <string name="welcome_used_on_another_device">Már használtam egy másik eszközön</string>
+    <string name="welcome_sign_in_failed">Most nem sikerült bejelentkezni. Próbáld újra.</string>
+    <string name="welcome_legal_notice">A folytatással elfogadod: %1$s, és tudomásul veszed: %2$s.</string>
+    <string name="welcome_legal_terms">Felhasználási feltételek</string>
+    <string name="welcome_legal_privacy">Adatvédelmi irányelvek</string>
+    <string name="welcome_no_account_note">Fiók nélkül az adataid 30 nap használaton kívüli idő után törlődnek. Megőrzésükhöz kapcsold össze Google- vagy Apple-fiókkal.</string>
+    <string name="welcome_no_account_note_offline">Fiók nélkül az adataid 30 nap használaton kívüli idő után törlődnek. Megőrzésükhöz később kapcsold össze Google- vagy Apple-fiókkal a Profilban.</string>
+    <string name="welcome_expired_title">Az adataid törlődtek</string>
+    <string name="welcome_expired_body">Fiók nélkül használtad az alkalmazást, és 30 napig nem nyitottad meg, ezért az adataid törlődtek. Hogy legközelebb megmaradjanak, kapcsold össze Google- vagy Apple-fiókkal.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

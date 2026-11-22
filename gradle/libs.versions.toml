@@ -1,9 +1,9 @@
 [versions]
 # Build tooling (kept in step with the Bible Planner, which already builds with this set)
-agp = "9.5.1"
+agp = "9.5.2"
 kotlin = "2.4.21"
 ksp = "2.3.12"
-buildkonfig = "0.24.0"
+buildkonfig = "0.24.1"
 # Read by scripts/ktlint.sh: the ruleset, its runner and the ktlint CLI all come from this release
 # (github.com/Quartel-Enterprise/ktlint-rules)
 quare-ktlint-rules = "1.2.0"
@@ -13,15 +13,18 @@ kover = "0.9.11"
 # Android SDK levels
 android-minSdk = "26"
 android-compileSdk = "37"
+# The compileSdk's minor release, 0 for none: 37 with 1 is API level 37.1, which the Compose 1.13 artifacts ask for.
+# Kept apart from the level so every module reads two whole numbers and nothing parses "37.1".
+android-compileSdkMinor = "1"
 android-targetSdk = "37"
 
 # AndroidX
 androidx-activity = "1.13.0"
-androidx-camera = "1.6.2"
+androidx-camera = "1.7.0"
 androidx-core = "1.19.1"
 androidx-credentials = "1.6.0"
 androidx-lifecycle = "2.11.0"
-navigation3 = "1.2.1"
+navigation3 = "1.2.2"
 room = "3.0.3"
 sqlite = "2.7.1"
 
@@ -33,16 +36,21 @@ kotlinx-datetime = "0.8.0"
 
 # Compose: only the Android app draws with Compose, so it takes the AndroidX artifacts straight
 # from their BOM.
-androidx-compose-bom = "2026.09.00"
-# The BOM pins the stable 1.4.0, which lacks the Material 3 Expressive APIs (MaterialExpressiveTheme,
-# MaterialShapes); they ship on the 1.5 pre-releases only.
-androidx-compose-material3 = "1.5.0-rc01"
+androidx-compose-bom = "2026.11.01"
 androidx-graphics-shapes = "1.1.0"
 
 # Third party
 coil = "3.6.3"
 googleid = "1.2.1"
 play-services-code-scanner = "16.1.0"
+play-services-wearable = "20.0.1"
+wear-compose = "1.7.2"
+wear-tiles = "1.6.2"
+wear-protolayout = "1.4.2"
+wear-complications = "1.3.0"
+wear-tooling-preview = "1.0.0"
+androidx-concurrent = "1.3.0"
+androidx-annotation = "1.11.0"
 firebase-bom = "35.2.0"
 firebase-crashlytics-plugin = "3.0.8"
 google-services = "4.6.0"
@@ -53,8 +61,8 @@ play-app-update = "2.1.0"
 play-review = "2.0.2"
 koin = "4.2.2"
 ktor = "3.6.1"
-quare-connectivity = "1.2.0"
-quare-loadable = "1.1.0"
+quare-connectivity = "1.3.0"
+quare-loadable = "1.2.0"
 qrose = "1.3.1"
 supabase = "3.9.0"
 # Store listing screenshots: frames the screens under Robolectric (docs/store-listing-screenshots.md)
@@ -89,6 +97,21 @@ androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", versi
 # Google Play's in-app updates: the flexible flow that downloads the new version while the app is in use
 play-app-update = { module = "com.google.android.play:app-update", version.ref = "play-app-update" }
 play-review = { module = "com.google.android.play:review", version.ref = "play-review" }
+play-services-wearable = { module = "com.google.android.gms:play-services-wearable", version.ref = "play-services-wearable" }
+kotlinx-coroutines-playServices = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
+wear-compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "wear-compose" }
+wear-compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "wear-compose" }
+wear-compose-navigation3 = { module = "androidx.wear.compose:compose-navigation3", version.ref = "wear-compose" }
+wear-compose-uiTooling = { module = "androidx.wear.compose:compose-ui-tooling", version.ref = "wear-compose" }
+wear-tiles = { module = "androidx.wear.tiles:tiles", version.ref = "wear-tiles" }
+wear-tiles-toolingPreview = { module = "androidx.wear.tiles:tiles-tooling-preview", version.ref = "wear-tiles" }
+wear-protolayout = { module = "androidx.wear.protolayout:protolayout", version.ref = "wear-protolayout" }
+wear-protolayout-material3 = { module = "androidx.wear.protolayout:protolayout-material3", version.ref = "wear-protolayout" }
+wear-protolayout-expression = { module = "androidx.wear.protolayout:protolayout-expression", version.ref = "wear-protolayout" }
+wear-complications-dataSourceKtx = { module = "androidx.wear.watchface:watchface-complications-data-source-ktx", version.ref = "wear-complications" }
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
+androidx-concurrent-futuresKtx = { module = "androidx.concurrent:concurrent-futures-ktx", version.ref = "androidx-concurrent" }
+wear-toolingPreview = { module = "androidx.wear:wear-tooling-preview", version.ref = "wear-tooling-preview" }
 play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "play-services-code-scanner" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
@@ -122,7 +145,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 # Compose (Android UI only)
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
 compose-foundation = { module = "androidx.compose.foundation:foundation" }
-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-compose-material3" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
 # The list and detail of the home on a wide window: the window's size class and hinge, and Navigation 3's scene.
 compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive" }
 compose-material3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout" }
@@ -138,7 +161,6 @@ koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
 koin-core = { module = "io.insert-koin:koin-core" }
-koin-core-viewmodel = { module = "io.insert-koin:koin-core-viewmodel" }
 koin-test = { module = "io.insert-koin:koin-test" }
 
 # Ktor (HTTP engines of the Supabase client)
@@ -167,7 +189,7 @@ qrose-encoder-matrix = { module = "io.github.alexzhirkevich:qrose-encoder-matrix
 # Quare
 quare-connectivity = { module = "software.quare:connectivity", version.ref = "quare-connectivity" }
 quare-loadable = { module = "software.quare:loadable", version.ref = "quare-loadable" }
-# Unused by Gradle; it lets Dependabot / Renovate propose new releases of the ktlint ruleset
+# Unused by Gradle; it lets Renovate propose new releases of the ktlint ruleset
 quare-ktlint-rules = { module = "software.quare:ktlint-rules", version.ref = "quare-ktlint-rules" }
 
 # Store listing screenshots
@@ -195,4 +217,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 blitzsplit-kotlin-multiplatform = { id = "blitzsplit.kotlin.multiplatform" }
+blitzsplit-kotlin-multiplatform-watchos = { id = "blitzsplit.kotlin.multiplatform.watchos" }
 blitzsplit-android-compose = { id = "blitzsplit.android.compose" }
