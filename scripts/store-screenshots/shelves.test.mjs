@@ -145,7 +145,7 @@ describe("what sorting doesn't fix", () => {
 
   test("names a file that is no staged image, and a shelf with nothing on it", () => {
     const shelf = shelfOf([...uploaded("mac"), shot("Screenshot 2026-11-18.png")], { shelf: "APP_DESKTOP" });
-    assert.deepEqual(tidyShelf(shelf).problems, ["Screenshot 2026-11-18.png is not <screen>_<device>.png, with a screen of screens.tsv"]);
+    assert.deepEqual(tidyShelf(shelf).problems, ["Screenshot 2026-11-18.png is not <screen>_<device>.png, with a screen of screens.tsv or of the watch's four"]);
     assert.deepEqual(tidyShelf(shelfOf([])).problems, ["holds no screenshot"]);
   });
 });

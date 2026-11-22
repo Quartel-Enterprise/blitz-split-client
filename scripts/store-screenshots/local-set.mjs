@@ -217,7 +217,7 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
       }
       const { screen, device } = stagedImage(name, screens) ?? {};
       if (!screen || !Object.hasOwn(devices, device)) {
-        problems.add(`${name} is not <screen>_<device>.png: no screen of screens.tsv with a device of ${Object.keys(devices).join(", ")}`, locale);
+        problems.add(`${name} is not <screen>_<device>.png: no screen of screens.tsv or of the watch's four, with a device of ${Object.keys(devices).join(", ")}`, locale);
         continue;
       }
       if (!screensOf[device].includes(screen)) {

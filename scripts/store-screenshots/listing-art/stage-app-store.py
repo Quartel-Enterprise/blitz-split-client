@@ -104,8 +104,10 @@ def main():
                     shutil.rmtree(folder / store_locale, ignore_errors=True)
         for device, folder in devices.items():
             if device == "watch_ultra_3":
-                if not (WATCH / tag).is_dir():
-                    print(f"No Apple Watch images for {tag} (watch/generate.sh, WATCH_STORES=apple): its shelf is left out")
+                # Why: generate.sh makes the folder before it captures, so one that failed halfway holds some images
+                # and is no shelf: left out like a missing one, not an error that stops the staging half done.
+                if not all((WATCH / tag / f"0{number}_{screen}.png").is_file() for number, screen in enumerate(WATCH_SCREENS, start=1)):
+                    print(f"No whole set of Apple Watch images for {tag} (watch/generate.sh, WATCH_STORES=apple): its shelf is left out")
                     unstage_watch(store_locales, folder)
                     continue
                 stage_watch(tag, store_locales, folder)

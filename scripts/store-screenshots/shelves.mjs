@@ -76,7 +76,7 @@ export function tidyShelf({ isWhole, screenshots, shelf }, screens = listingScre
   const shelfScreens = shelf === WATCH_SHELF_TYPE ? WATCH_SCREENS : screens;
   const named = [...entriesOf.keys()].map((fileName) => ({ fileName, parts: stagedImage(fileName, [...screens, ...WATCH_SCREENS]) }));
   for (const { fileName, parts } of named) {
-    if (!parts) problems.push(`${fileName} is not <screen>_<device>.png, with a screen of screens.tsv`);
+    if (!parts) problems.push(`${fileName} is not <screen>_<device>.png, with a screen of screens.tsv or of the watch's four`);
     else if (!shelfScreens.includes(parts.screen)) problems.push(`${fileName} is not a screen of this shelf (${shelfScreens.join(", ")})`);
   }
   const staged = named.filter(({ parts }) => parts && shelfScreens.includes(parts.screen));

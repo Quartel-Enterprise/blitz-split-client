@@ -29,6 +29,8 @@ on:
       # The check of a set of App Store screenshots made on a Mac, its tests, and the workflows the tests hold it to
       - 'scripts/store-screenshots/local-set.mjs'
       - 'scripts/store-screenshots/local-set.test.mjs'
+      - 'scripts/store-screenshots/listing-art/stage-app-store.py'
+      - 'scripts/store-screenshots/watch/generate.sh'
       - '.github/workflows/app-store-screenshots.yml'
       - '.github/workflows/app-store-screenshots-upload.yml'
       # What the tidy-up of the App Store's shelves removes and sorts, its tests, and the lane a test holds it to
