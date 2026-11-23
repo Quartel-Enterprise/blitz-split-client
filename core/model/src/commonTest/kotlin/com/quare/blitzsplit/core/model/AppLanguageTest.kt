@@ -456,7 +456,7 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN any Norwegian tag, Bokmål, Nynorsk or the macrolanguage WHEN reading it THEN is Norwegian Bokmål`() {
+    fun `GIVEN any Norwegian tag of Bokmal or Nynorsk or the macrolanguage WHEN reading it THEN is Norwegian Bokmal`() {
         // Given
         val tags = listOf("nb", "nb-NO", "NB_no", "no", "no-NO", "nn", "nn-NO", "nb-SJ")
 
