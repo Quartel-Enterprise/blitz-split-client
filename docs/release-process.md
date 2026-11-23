@@ -658,7 +658,8 @@ first iOS beta that has it, once, on developer.apple.com › Certificates, Ident
 `group.com.quare.blitzsplit`, register the App ID `com.quare.blitzsplit.BalanceWidget`, turn App Groups on for it and
 for `com.quare.blitzsplit` with that group, then make every profile again (the three commands above with `--force`:
 turning App Groups on for `com.quare.blitzsplit` invalidates its macOS profile as well). Until then match finds no
-profile for the widget and the iOS beta fails, and the macOS one fails on its invalid profile.
+profile for the widget and the iOS beta fails (`No matching provisioning profiles found for
+'AppStore_com.quare.blitzsplit.BalanceWidget.mobileprovision'`), and the macOS one fails on its invalid profile.
 
 ### The Apple Watch app
 
@@ -679,8 +680,8 @@ them, once, on developer.apple.com › Certificates, Identifiers & Profiles (not
    send them with `com.quare.blitzsplit.watchkitapp` (blitz-split-api).
 
 Until then match finds no profile for the watch's ids and the iOS beta fails at signing (`No matching provisioning
-profiles found for 'AppStore_com.quare.blitzsplit.BalanceWidget.mobileprovision'`); registering the watch's App IDs
-leaves the macOS profile valid. Both setups were done on 2026-11-23.
+profiles found for 'AppStore_com.quare.blitzsplit.watchkitapp.mobileprovision'`); registering the watch's App IDs
+leaves the macOS profile valid. The balance widget's setup and this one were both done on 2026-11-23.
 A local build signs automatically, so Xcode registers the two ids itself on the team the first time it builds the
 watch app for a device.
 
