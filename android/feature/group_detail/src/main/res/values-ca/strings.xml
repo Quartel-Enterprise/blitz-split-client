@@ -28,10 +28,12 @@
     <string name="group_detail_export_balance">Saldo</string>
     <plurals name="group_detail_member_count">
         <item quantity="one">%d membre</item>
+        <item quantity="many">%d membres</item>
         <item quantity="other">%d membres</item>
     </plurals>
     <plurals name="group_detail_not_joined">
         <item quantity="one">%d encara no hi ha entrat</item>
+        <item quantity="many">%d encara no hi han entrat</item>
         <item quantity="other">%d encara no hi han entrat</item>
     </plurals>
     <string name="group_detail_see_members">Veure els membres</string>
@@ -62,6 +64,7 @@
     <string name="group_detail_balances_hint_owe">deus %s</string>
     <plurals name="group_detail_balances_settle_count">
         <item quantity="one">%d per liquidar</item>
+        <item quantity="many">%d per liquidar</item>
         <item quantity="other">%d per liquidar</item>
     </plurals>
     <string name="group_detail_balances_settle">Liquidar comptes</string>
@@ -90,6 +93,7 @@
     <string name="group_detail_protect_message">Has entrat sense compte. Desa el codi o connecta Google o Apple.</string>
     <plurals name="group_detail_simplified_text">
         <item quantity="one">%1$d pagament en lloc de %2$d. Pot ser que paguis o cobris d’algú amb qui mai no has dividit cap despesa.</item>
+        <item quantity="many">%1$d pagaments en lloc de %2$d. Pot ser que paguis o cobris d’algú amb qui mai no has dividit cap despesa.</item>
         <item quantity="other">%1$d pagaments en lloc de %2$d. Pot ser que paguis o cobris d’algú amb qui mai no has dividit cap despesa.</item>
     </plurals>
     <string name="group_detail_simplified_minimal">Ja és el mínim de pagaments. Les properes despeses arriben simplificades.</string>

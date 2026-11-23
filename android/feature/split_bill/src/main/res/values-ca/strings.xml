@@ -21,23 +21,28 @@
     <string name="split_bill_split">Divisió</string>
     <plurals name="split_bill_mode_equal_among">
         <item quantity="one">A parts iguals entre %d</item>
+        <item quantity="many">A parts iguals entre %d</item>
         <item quantity="other">A parts iguals entre %d</item>
     </plurals>
     <plurals name="split_bill_mode_amount_among">
         <item quantity="one">Per imports entre %d</item>
+        <item quantity="many">Per imports entre %d</item>
         <item quantity="other">Per imports entre %d</item>
     </plurals>
     <plurals name="split_bill_mode_percent_among">
         <item quantity="one">Per percentatge entre %d</item>
+        <item quantity="many">Per percentatge entre %d</item>
         <item quantity="other">Per percentatge entre %d</item>
     </plurals>
     <plurals name="split_bill_mode_shares_among">
         <item quantity="one">Per parts entre %d</item>
+        <item quantity="many">Per parts entre %d</item>
         <item quantity="other">Per parts entre %d</item>
     </plurals>
     <string name="split_bill_each">%s cadascú</string>
     <plurals name="split_bill_excluded">
         <item quantity="one">%s no hi participa</item>
+        <item quantity="many">%s no hi participen</item>
         <item quantity="other">%s no hi participen</item>
     </plurals>
     <string name="split_bill_excluded_me">No hi participes</string>
@@ -58,6 +63,7 @@
     <string name="split_bill_status_each">%s cadascú</string>
     <plurals name="split_bill_status_among">
         <item quantity="one">%1$s per a %2$d persona.</item>
+        <item quantity="many">%1$s entre %2$d persones.</item>
         <item quantity="other">%1$s entre %2$d persones.</item>
     </plurals>
     <string name="split_bill_status_nobody">Encara no hi ha ningú</string>
@@ -69,6 +75,7 @@
     <string name="split_bill_status_amount_progress">%1$s de %2$s de moment.</string>
     <plurals name="split_bill_status_without_value">
         <item quantity="one">%s no té import.</item>
+        <item quantity="many">%s no tenen import.</item>
         <item quantity="other">%s no tenen import.</item>
     </plurals>
     <string name="split_bill_status_without_value_me">No tens import.</string>
@@ -78,14 +85,17 @@
     <string name="split_bill_status_percent_over">Sobren %d%%</string>
     <plurals name="split_bill_status_parts">
         <item quantity="one">%1$d part de %2$s</item>
+        <item quantity="many">%1$d parts de %2$s</item>
         <item quantity="other">%1$d parts de %2$s</item>
     </plurals>
     <plurals name="split_bill_status_person_parts">
         <item quantity="one">%1$s té %2$d part.</item>
+        <item quantity="many">%1$s té %2$d parts.</item>
         <item quantity="other">%1$s té %2$d parts.</item>
     </plurals>
     <plurals name="split_bill_status_my_parts">
         <item quantity="one">Tens %d part.</item>
+        <item quantity="many">Tens %d parts.</item>
         <item quantity="other">Tens %d parts.</item>
     </plurals>
     <string name="split_bill_hint_equal">Quan no es pot dividir exactament, els cèntims que sobren són per a qui ha pagat.</string>
@@ -136,6 +146,7 @@
     <string name="split_bill_group_open">Obrir el grup</string>
     <plurals name="split_bill_group_people">
         <item quantity="one">%d persona</item>
+        <item quantity="many">%d persones</item>
         <item quantity="other">%d persones</item>
     </plurals>
     <string name="split_bill_group_default">Per defecte del grup</string>
@@ -159,14 +170,17 @@
     <string name="split_bill_mode_items">Articles</string>
     <plurals name="split_bill_mode_items_among">
         <item quantity="one">Per articles per a %d</item>
+        <item quantity="many">Per articles entre %d</item>
         <item quantity="other">Per articles entre %d</item>
     </plurals>
     <plurals name="split_bill_fact_items">
         <item quantity="one">%d article</item>
+        <item quantity="many">%d articles</item>
         <item quantity="other">%d articles</item>
     </plurals>
     <plurals name="split_bill_items_loose">
         <item quantity="one">%d article sense ningú</item>
+        <item quantity="many">%d articles sense ningú</item>
         <item quantity="other">%d articles sense ningú</item>
     </plurals>
     <string name="split_bill_items_title">Articles de la despesa</string>
@@ -188,6 +202,7 @@
     <string name="split_bill_items_row_sub">%1$d × %2$s · %3$s</string>
     <plurals name="split_bill_items_row_equal">
         <item quantity="one">Igual per a %d</item>
+        <item quantity="many">Igual entre %d</item>
         <item quantity="other">Igual entre %d</item>
     </plurals>
     <string name="split_bill_items_row_units">Per unitats</string>
@@ -198,6 +213,7 @@
     <string name="split_bill_items_loose_all">Toca cada article i marca qui l’ha consumit. Fet es desbloqueja quan tots els articles tenen algú.</string>
     <plurals name="split_bill_items_loose_some">
         <item quantity="one">%1$s encara no té ningú: %2$s fora de la divisió.</item>
+        <item quantity="many">%1$s encara no tenen ningú: %2$s fora de la divisió.</item>
         <item quantity="other">%1$s encara no tenen ningú: %2$s fora de la divisió.</item>
     </plurals>
     <string name="split_bill_items_sum_receipt">Els articles, el servei i el cobert sumen %1$s, però el tiquet diu %2$s.</string>
@@ -223,28 +239,34 @@
     <string name="split_bill_item_nobody_sub">Marca qui ha consumit aquest article. Fet es desbloqueja quan té algú.</string>
     <plurals name="split_bill_item_units_closed">
         <item quantity="one">%1$d de %2$d unitat</item>
+        <item quantity="many">%1$d de %2$d unitats</item>
         <item quantity="other">%1$d de %2$d unitats</item>
     </plurals>
     <string name="split_bill_item_units_price">Cada unitat costa %s.</string>
     <plurals name="split_bill_item_units_left">
         <item quantity="one">Falta %d unitat</item>
+        <item quantity="many">Falten %d unitats</item>
         <item quantity="other">Falten %d unitats</item>
     </plurals>
     <plurals name="split_bill_item_units_left_sub">
         <item quantity="one">%1$d de %2$d marcades. Digues qui ha consumit l’altra.</item>
+        <item quantity="many">%1$d de %2$d marcades. Digues qui ha consumit les altres.</item>
         <item quantity="other">%1$d de %2$d marcades. Digues qui ha consumit les altres.</item>
     </plurals>
     <plurals name="split_bill_item_units_over">
         <item quantity="one">Sobra %d unitat</item>
+        <item quantity="many">Sobren %d unitats</item>
         <item quantity="other">Sobren %d unitats</item>
     </plurals>
     <string name="split_bill_item_units_marked">%1$d de %2$d marcades.</string>
     <plurals name="split_bill_item_person_parts">
         <item quantity="one">%1$s ha tingut %2$d part.</item>
+        <item quantity="many">%1$s ha tingut %2$d parts.</item>
         <item quantity="other">%1$s ha tingut %2$d parts.</item>
     </plurals>
     <plurals name="split_bill_item_my_parts">
         <item quantity="one">Has tingut %d part.</item>
+        <item quantity="many">Has tingut %d parts.</item>
         <item quantity="other">Has tingut %d parts.</item>
     </plurals>
     <string name="split_bill_item_amount_closed">Les parts sumen el total de l’article.</string>
@@ -306,10 +328,12 @@
     <string name="split_bill_default_exception_title">Excepció del grup per a %1$s: %2$s</string>
     <plurals name="split_bill_category_subcategories">
         <item quantity="one">%d subcategoria</item>
+        <item quantity="many">%d subcategories</item>
         <item quantity="other">%d subcategories</item>
     </plurals>
     <plurals name="split_bill_category_results">
         <item quantity="one">%d resultat</item>
+        <item quantity="many">%d resultats</item>
         <item quantity="other">%d resultats</item>
     </plurals>
     <string name="split_bill_category_map">Mapa de categories</string>
@@ -323,6 +347,7 @@
     <string name="split_bill_receipt_read">Llegit del tiquet</string>
     <plurals name="split_bill_receipt_items">
         <item quantity="one">%d article</item>
+        <item quantity="many">%d articles</item>
         <item quantity="other">%d articles</item>
     </plurals>
     <string name="split_bill_receipt_photo">Foto del tiquet</string>
@@ -344,6 +369,7 @@
     <string name="split_bill_mode_income">Per ingressos</string>
     <plurals name="split_bill_mode_income_among">
         <item quantity="one">Per ingressos entre %d</item>
+        <item quantity="many">Per ingressos entre %d</item>
         <item quantity="other">Per ingressos entre %d</item>
     </plurals>
     <string name="split_bill_hint_income">La part de cadascú segueix els seus ingressos. Els ingressos són del grup; si els canvies aquí, només compta per a aquesta despesa. Introdueix els ingressos nets de cadascú, després d’impostos.</string>

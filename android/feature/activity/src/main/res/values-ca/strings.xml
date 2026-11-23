@@ -110,28 +110,34 @@
     <string name="activity_empty_value">—</string>
     <plurals name="activity_new_count">
         <item quantity="one">%d novetat</item>
+        <item quantity="many">%d novetats</item>
         <item quantity="other">%d novetats</item>
     </plurals>
     <plurals name="activity_offline_queued">
         <item quantity="one">Sense connexió · %d canvi a la cua</item>
+        <item quantity="many">Sense connexió · %d canvis a la cua</item>
         <item quantity="other">Sense connexió · %d canvis a la cua</item>
     </plurals>
     <plurals name="activity_show_results">
         <item quantity="one">Mostrar %d resultat</item>
+        <item quantity="many">Mostrar %d resultats</item>
         <item quantity="other">Mostrar %d resultats</item>
     </plurals>
     <plurals name="activity_more_changes">
         <item quantity="one">%d canvi més</item>
+        <item quantity="many">%d canvis més</item>
         <item quantity="other">%d canvis més</item>
     </plurals>
     <plurals name="activity_types_count">
         <item quantity="one">%d tipus</item>
+        <item quantity="many">%d tipus</item>
         <item quantity="other">%d tipus</item>
     </plurals>
     <string name="activity_kind_simplify_on">%1$s ha activat Simplificar deutes al grup «%2$s»</string>
     <string name="activity_kind_simplify_off">%1$s ha desactivat Simplificar deutes al grup «%2$s»</string>
     <plurals name="activity_detail_simplify_counts">
         <item quantity="one">%1$d pagament ha passat a %2$d.</item>
+        <item quantity="many">%1$d pagaments han passat a %2$d.</item>
         <item quantity="other">%1$d pagaments han passat a %2$d.</item>
     </plurals>
     <string name="activity_detail_simplify_pays_you">Ara %1$s et paga %2$s</string>

@@ -9411,7 +9411,7 @@
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ha fet que l’enllaç sigui només per a la gent de la despesa"
+            "value" : "%@ ha deixat l’enllaç només per a qui és a la despesa"
           }
         },
         "cs" : {
@@ -12071,6 +12071,12 @@
                   "value" : "%lld dia de mitjana"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dies de mitjana"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -12851,6 +12857,12 @@
           "variations" : {
             "plural" : {
               "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld m’agrada"
+                }
+              },
+              "many" : {
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld m’agrada"
@@ -47161,6 +47173,12 @@
                   "value" : "%lld grup · deus"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld grups · deus"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -57818,6 +57836,12 @@
                   "value" : "%lld dia"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dies"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -58601,6 +58625,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "fa %lld dia"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "fa %lld dies"
                 }
               },
               "other" : {
@@ -77299,6 +77329,12 @@
                   "value" : "%lld canvi més"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld canvis més"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -78315,6 +78351,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld nou"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld nous"
                 }
               },
               "other" : {
@@ -85672,6 +85714,12 @@
                   "value" : "%lld resultat"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld resultats"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -87399,6 +87447,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld liquidat"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld liquidats"
                 }
               },
               "other" : {
@@ -96117,6 +96171,12 @@
                   "value" : "%lld tipus"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld tipus"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -99506,6 +99566,12 @@
                   "value" : "%lld setmana"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld setmanes"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -100289,6 +100355,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "fa %lld setmana"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "fa %lld setmanes"
                 }
               },
               "other" : {
@@ -150608,6 +150680,12 @@
                   "value" : "el seu %lld membre"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "tots els %lld membres"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -151429,6 +151507,12 @@
                     "stringUnit" : {
                       "state" : "translated",
                       "value" : "%arg persona"
+                    }
+                  },
+                  "many" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg persones"
                     }
                   },
                   "other" : {
@@ -163606,6 +163690,12 @@
                   "value" : "a %lld grup"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "a %lld grups"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -164628,6 +164718,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "la seva %lld despesa"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "les seves %lld despeses"
                 }
               },
               "other" : {
@@ -170111,6 +170207,12 @@
                   "value" : "Queda %lld pagament:"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Queden %lld pagaments:"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -173866,6 +173968,12 @@
                   "value" : "Contacte · %lld grup"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Contacte · %lld grups"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -175371,6 +175479,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "Sense connexió · %lld canvi en cua"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Sense connexió · %lld canvis en cua"
                 }
               },
               "other" : {
@@ -192918,6 +193032,12 @@
                   "value" : "El teu saldo està liquidat. El grup surt d’aquest dispositiu i les teves despeses conserven el teu nom per a l’altre membre. Per tornar, algú t’ha de tornar a convidar."
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El teu saldo està liquidat. El grup surt d’aquest dispositiu i les teves despeses conserven el teu nom per als altres %lld membres. Per tornar, algú t’ha de tornar a convidar."
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -196563,6 +196683,12 @@
                   "value" : "%lld activa"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld actives"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -197345,6 +197471,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld canvi encara no s’ha pujat"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld canvis encara no s’han pujat"
                 }
               },
               "other" : {
@@ -198149,6 +198281,12 @@
                   "value" : "%lld canvi encara no s’ha pujat i es perdrà."
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld canvis encara no s’han pujat i es perdran."
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -198951,6 +199089,12 @@
                   "value" : "%lld canvi a la cua"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld canvis a la cua"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -199734,6 +199878,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld encara no hi ha entrat"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld encara no hi han entrat"
                 }
               },
               "other" : {
@@ -200521,6 +200671,12 @@
                   "value" : "%lld membre"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld membres"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -201304,6 +201460,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld persona"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld persones"
                 }
               },
               "other" : {
@@ -202127,6 +202289,12 @@
                     "stringUnit" : {
                       "state" : "translated",
                       "value" : "%arg part"
+                    }
+                  },
+                  "many" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg parts"
                     }
                   },
                   "other" : {
@@ -335443,6 +335611,12 @@
                   "value" : "%lld per liquidar"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld per liquidar"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -341885,6 +342059,12 @@
                   "value" : "%lld grup"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld grups"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -348077,6 +348257,12 @@
                   "value" : "Has liquidat comptes amb tothom. Encara has de cobrar %1$@ de %2$lld persona."
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Has liquidat comptes amb tothom. Encara has de cobrar %1$@ de %2$lld persones."
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -348878,6 +349064,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "Encara deus %1$@ a %2$lld persona."
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Encara deus %1$@ a %2$lld persones."
                 }
               },
               "other" : {
@@ -370785,6 +370977,12 @@
                   "value" : "%lld despesa"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld despeses"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -381701,6 +381899,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "Fa servir Blitz Split · %lld grup en comú"
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Fa servir Blitz Split · %lld grups en comú"
                 }
               },
               "other" : {
@@ -406339,6 +406543,12 @@
                   "value" : "%lld article"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld articles"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -411726,6 +411936,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "Qui obri aquest enllaç entra directament com a %1$@, sense triar de la llista, i ja veu la seva part de %2$@ a la despesa afegida fins ara. Funciona una sola vegada."
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Qui obri aquest enllaç entra directament com a %1$@, sense triar de la llista, i ja veu la seva part de %2$@ a les %3$lld despeses afegides fins ara. Funciona una sola vegada."
                 }
               },
               "other" : {
@@ -423047,6 +423263,12 @@
                   "value" : "%lld pagament"
                 }
               },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pagaments"
+                }
+              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -431149,6 +431371,12 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld persona més canvia."
+                }
+              },
+              "many" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld persones més canvien."
                 }
               },
               "other" : {
@@ -448526,6 +448754,12 @@
                     "stringUnit" : {
                       "state" : "translated",
                       "value" : "%arg pagament ha passat a"
+                    }
+                  },
+                  "many" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg pagaments han passat a"
                     }
                   },
                   "other" : {

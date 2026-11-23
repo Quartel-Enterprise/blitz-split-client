@@ -18,6 +18,7 @@
     <string name="groups_no_expenses">cap despesa</string>
     <plurals name="groups_member_count">
         <item quantity="one">%d membre</item>
+        <item quantity="many">%d membres</item>
         <item quantity="other">%d membres</item>
     </plurals>
     <string name="groups_deleted_by">%1$s ha suprimit el grup «%2$s».</string>
@@ -26,16 +27,19 @@
     <string name="groups_delete_failed">No s’ha pogut suprimir el grup «%s». Comprova la connexió i torna-ho a provar.</string>
     <plurals name="groups_sync_offline_queued">
         <item quantity="one">Sense connexió · %d canvi a la cua</item>
+        <item quantity="many">Sense connexió · %d canvis a la cua</item>
         <item quantity="other">Sense connexió · %d canvis a la cua</item>
     </plurals>
     <plurals name="groups_sync_syncing_groups">
         <item quantity="one">Sincronitzant… %1$d de %2$d grup</item>
+        <item quantity="many">Sincronitzant… %1$d de %2$d grups</item>
         <item quantity="other">Sincronitzant… %1$d de %2$d grups</item>
     </plurals>
     <string name="groups_first_download_title">Portant els teus grups</string>
     <string name="groups_first_download_hint">Mentrestant pots fer servir l’app: el que ja ha arribat es mostra a sota.</string>
     <plurals name="groups_first_download_count_hint">
         <item quantity="one">%1$d de %2$d grup. Mentrestant pots fer servir l’app: el que ja ha arribat es mostra a sota.</item>
+        <item quantity="many">%1$d de %2$d grups. Mentrestant pots fer servir l’app: el que ja ha arribat es mostra a sota.</item>
         <item quantity="other">%1$d de %2$d grups. Mentrestant pots fer servir l’app: el que ja ha arribat es mostra a sota.</item>
     </plurals>
     <string name="groups_open_count">Oberts · %d</string>
@@ -63,10 +67,12 @@
     <string name="groups_activity_yesterday">ahir</string>
     <plurals name="groups_activity_days">
         <item quantity="one">%d dia</item>
+        <item quantity="many">%d dies</item>
         <item quantity="other">%d dies</item>
     </plurals>
     <plurals name="groups_activity_weeks">
         <item quantity="one">%d setmana</item>
+        <item quantity="many">%d setmanes</item>
         <item quantity="other">%d setmanes</item>
     </plurals>
     <string name="groups_row_more">Més accions: %s</string>
@@ -105,6 +111,7 @@
     <string name="groups_search_suggestion">Volies dir «%s»?</string>
     <plurals name="groups_search_contact_meta">
         <item quantity="one">Contacte · %d grup</item>
+        <item quantity="many">Contacte · %d grups</item>
         <item quantity="other">Contacte · %d grups</item>
     </plurals>
     <string name="groups_search_none_title">Res per a «%s»</string>
@@ -114,10 +121,12 @@
     <string name="groups_cover_offline">Sense connexió</string>
     <plurals name="groups_cover_to_receive">
         <item quantity="one">per cobrar en %d grup</item>
+        <item quantity="many">per cobrar en %d grups</item>
         <item quantity="other">per cobrar en %d grups</item>
     </plurals>
     <plurals name="groups_cover_to_pay">
         <item quantity="one">per pagar en %d grup</item>
+        <item quantity="many">per pagar en %d grups</item>
         <item quantity="other">per pagar en %d grups</item>
     </plurals>
     <string name="groups_cover_last_activity">Activitat recent</string>

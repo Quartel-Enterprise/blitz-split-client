@@ -34,6 +34,7 @@
     <string name="register_payment_pay_group">%s · deus</string>
     <plurals name="register_payment_pay_groups">
         <item quantity="one">%d grup · deus</item>
+        <item quantity="many">%d grups · deus</item>
         <item quantity="other">%d grups · deus</item>
     </plurals>
     <string name="register_payment_pay_method_pix">Pix</string>

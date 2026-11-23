@@ -13,6 +13,7 @@
     <string name="members_personal_message">Qui obri aquest enllaç entra directament com a %s, sense triar de la llista. Funciona un sol cop.</string>
     <plurals name="members_personal_message_bills">
         <item quantity="one">Qui obri aquest enllaç entra directament com a %1$s, sense triar de la llista, i ja veu la seva part de %2$s a la despesa afegida fins ara. Funciona un sol cop.</item>
+        <item quantity="many">Qui obri aquest enllaç entra directament com a %1$s, sense triar de la llista, i ja veu la seva part de %2$s a les %3$d despeses afegides fins ara. Funciona un sol cop.</item>
         <item quantity="other">Qui obri aquest enllaç entra directament com a %1$s, sense triar de la llista, i ja veu la seva part de %2$s a les %3$d despeses afegides fins ara. Funciona un sol cop.</item>
     </plurals>
     <string name="members_personal_copy">Copiar l’enllaç</string>

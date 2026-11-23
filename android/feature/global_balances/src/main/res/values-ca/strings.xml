@@ -13,6 +13,7 @@
     <string name="global_balances_section_owes_you">Et deuen · %d</string>
     <plurals name="global_balances_groups">
         <item quantity="one">%d grup</item>
+        <item quantity="many">%d grups</item>
         <item quantity="other">%d grups</item>
     </plurals>
     <string name="global_balances_guest">%s · convidat</string>
@@ -39,12 +40,14 @@
     <string name="global_balances_nothing_to_pay_title">No deus res</string>
     <plurals name="global_balances_nothing_to_pay_body">
         <item quantity="one">Tens els comptes liquidats amb tothom. Encara tens %2$s per cobrar de %1$d persona.</item>
+        <item quantity="many">Tens els comptes liquidats amb tothom. Encara tens %2$s per cobrar de %1$d persones.</item>
         <item quantity="other">Tens els comptes liquidats amb tothom. Encara tens %2$s per cobrar de %1$d persones.</item>
     </plurals>
     <string name="global_balances_nothing_to_pay_action">Veure qui et deu</string>
     <string name="global_balances_nothing_to_receive_title">Ningú no et deu res</string>
     <plurals name="global_balances_nothing_to_receive_body">
         <item quantity="one">Encara deus %2$s a %1$d persona.</item>
+        <item quantity="many">Encara deus %2$s a %1$d persones.</item>
         <item quantity="other">Encara deus %2$s a %1$d persones.</item>
     </plurals>
     <string name="global_balances_nothing_to_receive_action">Veure a qui deus</string>

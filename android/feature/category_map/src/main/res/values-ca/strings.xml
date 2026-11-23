@@ -54,22 +54,27 @@
     <string name="category_map_path">%1$s › %2$s</string>
     <plurals name="category_map_term_count">
         <item quantity="one">%d terme</item>
+        <item quantity="many">%d termes</item>
         <item quantity="other">%d termes</item>
     </plurals>
     <plurals name="category_map_subcategory_count">
         <item quantity="one">%d subcategoria</item>
+        <item quantity="many">%d subcategories</item>
         <item quantity="other">%d subcategories</item>
     </plurals>
     <plurals name="category_map_results">
         <item quantity="one">%1$d terme amb «%2$s»</item>
+        <item quantity="many">%1$d termes amb «%2$s»</item>
         <item quantity="other">%1$d termes amb «%2$s»</item>
     </plurals>
     <plurals name="category_map_offline_queue">
         <item quantity="one">Sense connexió · %d canvi a la cua</item>
+        <item quantity="many">Sense connexió · %d canvis a la cua</item>
         <item quantity="other">Sense connexió · %d canvis a la cua</item>
     </plurals>
     <plurals name="category_map_restore_own_many">
         <item quantity="one">Els %d termes que vas crear es mantenen.</item>
+        <item quantity="many">Els %d termes que vas crear es mantenen.</item>
         <item quantity="other">Els %d termes que vas crear es mantenen.</item>
     </plurals>
     <string name="category_map_new_category">Categoria nova</string>

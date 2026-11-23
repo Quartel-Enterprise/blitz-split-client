@@ -50,6 +50,7 @@
     <string name="bill_detail_unlike">Ja no m’agrada</string>
     <plurals name="bill_detail_like_count">
         <item quantity="one">%d m’agrada</item>
+        <item quantity="many">%d m’agrada</item>
         <item quantity="other">%d m’agrada</item>
     </plurals>
     <string name="bill_detail_likes_title">M’agrada</string>
@@ -140,38 +141,47 @@
     <string name="bill_detail_receipt_file_name">blitz-split-tiquet.jpg</string>
     <plurals name="bill_detail_history_photos_added">
         <item quantity="one">ha adjuntat una foto</item>
+        <item quantity="many">ha adjuntat %d fotos</item>
         <item quantity="other">ha adjuntat %d fotos</item>
     </plurals>
     <plurals name="bill_detail_owe_you_each">
         <item quantity="one">%1$s et deu %2$s.</item>
+        <item quantity="many">%1$s et deuen %2$s per cap.</item>
         <item quantity="other">%1$s et deuen %2$s per cap.</item>
     </plurals>
     <plurals name="bill_detail_owe_you_total">
         <item quantity="one">%1$s et deu %2$s.</item>
+        <item quantity="many">%1$s et deuen %2$s en total.</item>
         <item quantity="other">%1$s et deuen %2$s en total.</item>
     </plurals>
     <plurals name="bill_detail_mode_equal">
         <item quantity="one">A parts iguals entre %d</item>
+        <item quantity="many">A parts iguals entre %d</item>
         <item quantity="other">A parts iguals entre %d</item>
     </plurals>
     <plurals name="bill_detail_mode_items">
         <item quantity="one">Per articles entre %d</item>
+        <item quantity="many">Per articles entre %d</item>
         <item quantity="other">Per articles entre %d</item>
     </plurals>
     <plurals name="bill_detail_mode_amount">
         <item quantity="one">Per import entre %d</item>
+        <item quantity="many">Per import entre %d</item>
         <item quantity="other">Per import entre %d</item>
     </plurals>
     <plurals name="bill_detail_mode_percent">
         <item quantity="one">Per %% entre %d</item>
+        <item quantity="many">Per %% entre %d</item>
         <item quantity="other">Per %% entre %d</item>
     </plurals>
     <plurals name="bill_detail_mode_shares">
         <item quantity="one">Per parts entre %d</item>
+        <item quantity="many">Per parts entre %d</item>
         <item quantity="other">Per parts entre %d</item>
     </plurals>
     <plurals name="bill_detail_attachments_count">
         <item quantity="one">%1$d de %2$d foto</item>
+        <item quantity="many">%1$d de %2$d fotos</item>
         <item quantity="other">%1$d de %2$d fotos</item>
     </plurals>
     <string name="bill_detail_share">Compartir</string>
@@ -186,6 +196,7 @@
     <string name="share_bill_members">Només qui és a la despesa</string>
     <plurals name="share_bill_members_named">
         <item quantity="one">%s l’obre amb el seu propi compte per veure-la i comentar.</item>
+        <item quantity="many">%s l’obren amb el seu propi compte per veure-la i comentar.</item>
         <item quantity="other">%s l’obren amb el seu propi compte per veure-la i comentar.</item>
     </plurals>
     <string name="share_bill_members_anyone_in_group">Qui sigui al grup l’obre amb el seu propi compte per veure-la i comentar.</string>

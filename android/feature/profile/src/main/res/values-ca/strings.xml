@@ -20,6 +20,7 @@
     <string name="profile_sync">Sincronització</string>
     <plurals name="profile_sync_waiting">
         <item quantity="one">%d canvi a la cua</item>
+        <item quantity="many">%d canvis a la cua</item>
         <item quantity="other">%d canvis a la cua</item>
     </plurals>
     <string name="profile_sync_waiting_empty">Pendent de sincronitzar</string>
@@ -99,6 +100,7 @@
     <string name="profile_notifications">Notificacions</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d activa</item>
+        <item quantity="many">%d actives</item>
         <item quantity="other">%d actives</item>
     </plurals>
     <string name="profile_theme_system">Sistema</string>
@@ -131,6 +133,7 @@
     <string name="profile_sign_out_body">Tot està sincronitzat amb el teu compte de %1$s. Quan tanquis la sessió, esborrarem la còpia d’aquest dispositiu. Els teus grups tornaran quan tornis a iniciar la sessió.</string>
     <plurals name="profile_sign_out_pending_title">
         <item quantity="one">%d canvi encara no s’ha pujat</item>
+        <item quantity="many">%d canvis encara no s’han pujat</item>
         <item quantity="other">%d canvis encara no s’han pujat</item>
     </plurals>
     <string name="profile_sign_out_pending_body_offline">No tens connexió. Les teves dades es queden en aquest dispositiu fins que acabi la sincronització. Quan s’hagi pujat tot, tancarem la sessió i esborrarem la còpia local.</string>
@@ -147,6 +150,7 @@
     <string name="profile_erase_confirm">Esborrar i tancar la sessió</string>
     <plurals name="profile_erase_pending_warning">
         <item quantity="one">%d canvi encara no s’ha pujat i es perdrà.</item>
+        <item quantity="many">%d canvis encara no s’han pujat i es perdran.</item>
         <item quantity="other">%d canvis encara no s’han pujat i es perdran.</item>
     </plurals>
     <string name="profile_copy_code">Copiar les paraules</string>

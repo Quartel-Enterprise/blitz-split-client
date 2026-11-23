@@ -32,6 +32,7 @@
     <string name="balances_offline">Sense connexió</string>
     <plurals name="balances_offline_queued">
         <item quantity="one">Sense connexió · %d canvi en cua</item>
+        <item quantity="many">Sense connexió · %d canvis en cua</item>
         <item quantity="other">Sense connexió · %d canvis en cua</item>
     </plurals>
     <string name="balances_overall">Saldo total</string>

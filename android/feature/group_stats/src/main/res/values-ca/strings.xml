@@ -69,10 +69,12 @@
     <string name="group_stats_see_whole_period">Veure des del principi</string>
     <plurals name="group_stats_expenses">
         <item quantity="one">%d despesa</item>
+        <item quantity="many">%d despeses</item>
         <item quantity="other">%d despeses</item>
     </plurals>
     <plurals name="group_stats_expenses_queued">
         <item quantity="one">%1$d despesa, %2$d a la cua</item>
+        <item quantity="many">%1$d despeses, %2$d a la cua</item>
         <item quantity="other">%1$d despeses, %2$d a la cua</item>
     </plurals>
     <string name="group_stats_by_category">Per categoria</string>
@@ -86,6 +88,7 @@
     <string name="group_stats_settles_slowest">Liquida més a poc a poc</string>
     <plurals name="group_stats_settling_days">
         <item quantity="one">%d dia de mitjana</item>
+        <item quantity="many">%d dies de mitjana</item>
         <item quantity="other">%d dies de mitjana</item>
     </plurals>
     <string name="group_stats_settling_same_day">el mateix dia de mitjana</string>

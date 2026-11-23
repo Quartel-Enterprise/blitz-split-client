@@ -10,6 +10,7 @@
     <string name="contacts_people_loading">Persones dels teus grups</string>
     <plurals name="contacts_groups_in_common">
         <item quantity="one">%d grup en comú</item>
+        <item quantity="many">%d grups en comú</item>
         <item quantity="other">%d grups en comú</item>
     </plurals>
     <string name="contacts_guest_meta">%s · convidat sense l’app</string>
@@ -58,6 +59,7 @@
     <string name="contacts_balance_settled">Teniu els comptes liquidats</string>
     <plurals name="contacts_balance_offset">
         <item quantity="one">Ja compensat en %d grup</item>
+        <item quantity="many">Ja compensat en %d grups</item>
         <item quantity="other">Ja compensat en %d grups</item>
     </plurals>
     <string name="contacts_balance_nothing">No hi ha res pendent en cap grup</string>
@@ -72,6 +74,7 @@
     <string name="contacts_history_paid_by">%1$s ha pagat %2$s</string>
     <plurals name="contacts_history_payers">
         <item quantity="one">%d persona ha pagat</item>
+        <item quantity="many">%d persones han pagat</item>
         <item quantity="other">%d persones han pagat</item>
     </plurals>
     <string name="contacts_history_meta">%1$s · %2$s · %3$s</string>
@@ -90,6 +93,7 @@
     <string name="contacts_add_title">Afegir %s a un grup</string>
     <plurals name="contacts_add_members">
         <item quantity="one">%d membre</item>
+        <item quantity="many">%d membres</item>
         <item quantity="other">%d membres</item>
     </plurals>
     <string name="contacts_add_already_in">Ja és al grup</string>

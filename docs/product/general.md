@@ -248,7 +248,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     the euro is already in the app, and Google Play has a Bulgarian listing while the App Store has no Bulgarian
     locale. Catalan (Pierre's calls, issue #554) is one variant for every Catalan tag, written in the central standard,
     which also answers Valencian (`ca-ES-valencia`); it speaks informally, with "tu", never "vostè", and calls the app
-    Blitz Split. Its plurals have `one` and `other`, its apostrophe is the typographic ’ on every platform, and nothing
+    Blitz Split. Its plurals have `one` and `other`, plus the `many` CLDR gives it for millions, which repeats `other`, as Spanish's, French's and Italian's; its apostrophe is the typographic ’ on every platform, and nothing
     is glued to a value the app fills in: no "l’" or "d’" contraction before a name, which stands after a noun
     ("el grup «Lisboa»", "el membre Anna") or as the subject. Its activity sentences swap the perfect's auxiliary, as
     French's ([activity-and-push.md](activity-and-push.md)). Catalonia, Andorra and Valencia pay in euros, already in

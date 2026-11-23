@@ -6,11 +6,13 @@
     <string name="join_title_no_creator">Tens una invitació a %s</string>
     <plurals name="join_member_count">
         <item quantity="one">%d membre</item>
+        <item quantity="many">%d membres</item>
         <item quantity="other">%d membres</item>
     </plurals>
     <string name="join_summary_creator">%1$s · creat per %2$s</string>
     <plurals name="join_already_in">
         <item quantity="one">%s ja és al grup</item>
+        <item quantity="many">%s ja són al grup</item>
         <item quantity="other">%s ja són al grup</item>
     </plurals>
     <string name="join_names_last_separator">" i "</string>

@@ -63,6 +63,7 @@
     <string name="designsystem_paid_by_several">%s han pagat</string>
     <plurals name="designsystem_payers_count">
         <item quantity="one">%d persona</item>
+        <item quantity="many">%d persones</item>
         <item quantity="other">%d persones</item>
     </plurals>
     <string name="designsystem_group_exit_not_now">Ara no</string>
@@ -72,6 +73,7 @@
     <string name="designsystem_group_exit_leave_title">Vols sortir de «%s»?</string>
     <plurals name="designsystem_group_exit_leave_message">
         <item quantity="one" tools:ignore="ImpliedQuantity">El teu saldo està liquidat. El grup desapareix d’aquest dispositiu i les teves despeses mantenen el teu nom per a l’altre membre. Per tornar, algú t’hi haurà de tornar a convidar.</item>
+        <item quantity="many">El teu saldo està liquidat. El grup desapareix d’aquest dispositiu i les teves despeses mantenen el teu nom per als altres %d membres. Per tornar, algú t’hi haurà de tornar a convidar.</item>
         <item quantity="other">El teu saldo està liquidat. El grup desapareix d’aquest dispositiu i les teves despeses mantenen el teu nom per als altres %d membres. Per tornar, algú t’hi haurà de tornar a convidar.</item>
     </plurals>
     <string name="designsystem_group_exit_leave_message_alone">El teu saldo està liquidat. Ningú més ha entrat al grup, així que se suprimeix per sempre.</string>
@@ -79,6 +81,7 @@
     <string name="designsystem_group_exit_delete_blocked_title">Encara hi ha saldos pendents</string>
     <plurals name="designsystem_group_exit_delete_blocked_message">
         <item quantity="one">«%1$s» només es pot suprimir quan tothom hagi liquidat comptes. Queda %2$d pagament:</item>
+        <item quantity="many">«%1$s» només es pot suprimir quan tothom hagi liquidat comptes. Queden %2$d pagaments:</item>
         <item quantity="other">«%1$s» només es pot suprimir quan tothom hagi liquidat comptes. Queden %2$d pagaments:</item>
     </plurals>
     <string name="designsystem_group_exit_delete_blocked_message_short">«%s» només es pot suprimir quan tothom hagi liquidat comptes.</string>
@@ -87,10 +90,12 @@
     <string name="designsystem_group_exit_delete_message_no_bills">El grup desapareix per a %s. Això no es pot desfer.</string>
     <plurals name="designsystem_group_exit_delete_bills">
         <item quantity="one" tools:ignore="ImpliedQuantity">l’única despesa</item>
+        <item quantity="many">les %d despeses</item>
         <item quantity="other">les %d despeses</item>
     </plurals>
     <plurals name="designsystem_group_exit_delete_members">
         <item quantity="one" tools:ignore="ImpliedQuantity">l’únic membre</item>
+        <item quantity="many">tots els %d membres</item>
         <item quantity="other">tots els %d membres</item>
     </plurals>
     <string name="designsystem_group_exit_delete_confirm">Suprimir per a tothom</string>
@@ -200,6 +205,7 @@
     <string name="designsystem_category_path">%1$s › %2$s</string>
     <plurals name="designsystem_activity_unread">
         <item quantity="one">%d sense llegir</item>
+        <item quantity="many">%d sense llegir</item>
         <item quantity="other">%d sense llegir</item>
     </plurals>
     <!-- "Ajustar foto", the editor a picked photo opens in. -->
@@ -218,14 +224,17 @@
     <string name="designsystem_waiting_for_internet">Sense internet. Les teves dades apareixeran quan tornis a tenir connexió.</string>
     <plurals name="designsystem_category_delete_text">
         <item quantity="one">%1$d despesa amb %2$s passa a %3$s. La categoria desapareix per a tot el grup %4$s.</item>
+        <item quantity="many">Les %1$d despeses amb %2$s passen a %3$s. La categoria desapareix per a tot el grup %4$s.</item>
         <item quantity="other">Les %1$d despeses amb %2$s passen a %3$s. La categoria desapareix per a tot el grup %4$s.</item>
     </plurals>
     <plurals name="designsystem_category_edit_note">
         <item quantity="one">Canviar el nom o la ubicació afecta tot el grup %1$s i %2$d despesa que ja fa servir %3$s.</item>
+        <item quantity="many">Canviar el nom o la ubicació afecta tot el grup %1$s i les %2$d despeses que ja fan servir %3$s.</item>
         <item quantity="other">Canviar el nom o la ubicació afecta tot el grup %1$s i les %2$d despeses que ja fan servir %3$s.</item>
     </plurals>
     <plurals name="designsystem_category_used_in">
         <item quantity="one">utilitzada en %d despesa</item>
+        <item quantity="many">utilitzada en %d despeses</item>
         <item quantity="other">utilitzada en %d despeses</item>
     </plurals>
     <string name="designsystem_category_created_by">Creada per %s</string>

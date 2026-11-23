@@ -77,7 +77,7 @@ enum SecondPerson {
     ]
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
-    /// French, German, Italian, Dutch, Romanian and Croatian: every verb phrase is a perfect that starts with its
+    /// French, German, Italian, Dutch, Romanian, Croatian and Catalan ("ha dividit" → "has dividit"): every verb phrase is a perfect that starts with its
     /// auxiliary, so "a divisé" → "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten",
     /// "ha diviso" → "hai diviso", "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden", "a
     /// împărțit" → "ai împărțit", "je podijelio/la" → "si podijelio/la". Czech: the second person's past takes the
