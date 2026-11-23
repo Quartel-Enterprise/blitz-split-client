@@ -866,6 +866,7 @@ export const th: Record<MessageKey, string> = {
   profile_languageTamil: 'ทมิฬ',
   profile_languageNorwegian: 'นอร์เวย์ (บุคมอล)',
   profile_languageTelugu: 'เตลูกู',
+  profile_languageBulgarian: 'ภาษาบัลแกเรีย',
   profile_languageSwahili: 'ภาษาสวาฮีลี',
   profile_bitcoinInSats: 'Bitcoin เป็นซาโตชิ',
   profile_bitcoinInSatsDetail: 'แสดงและพิมพ์จำนวนบิตคอยน์เป็น sats (1 ₿ = 100,000,000 sats)',

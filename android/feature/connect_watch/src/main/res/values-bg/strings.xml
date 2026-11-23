@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Свържи часовник</string>
+    <string name="connect_watch_close">Затвори</string>
+    <string name="connect_watch_body">Въведи кода, който показва часовникът ти. Той влиза в акаунта ти и после се синхронизира сам.</string>
+    <string name="connect_watch_code_label">Код от часовника</string>
+    <string name="connect_watch_error_invalid">Грешен или изтекъл код. Вземи нов от часовника.</string>
+    <string name="connect_watch_error_too_many">Твърде много грешни кодове. Изчакай няколко минути и опитай отново.</string>
+    <string name="connect_watch_error_needs_account">Първо свържи акаунт: данните ти са само на това устройство.</string>
+    <string name="connect_watch_error_failed">Часовникът не можа да се свърже. Опитай отново.</string>
+    <string name="connect_watch_offline">За свързване на часовника е нужен интернет.</string>
+    <string name="connect_watch_own_watch_only">Въвеждай само код, показан на твоя собствен часовник: който държи този часовник, влиза в акаунта ти.</string>
+    <string name="connect_watch_validity">Кодът е валиден 5 минути и само веднъж.</string>
+    <string name="connect_watch_button">Свържи</string>
+    <string name="connect_watch_connected_title">Часовникът е свързан</string>
+    <string name="connect_watch_connected_body">Вижда групите ти и се синхронизира сам. За да го изключиш, излез от акаунта на часовника.</string>
+</resources>

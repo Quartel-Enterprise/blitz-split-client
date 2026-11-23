@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Известия</string>
+    <string name="notification_settings_denied_title">Известията на Blitz Split са изключени в Android.</string>
+    <string name="notification_settings_denied_body">Включи ги в системните настройки, за да получаваш push известията по-долу. Звънчето продължава да работи.</string>
+    <string name="notification_settings_open_settings">Отвори настройките</string>
+    <string name="notification_settings_refused_body">Android ти позволява да ги разрешиш още веднъж, за да получаваш push известията по-долу. Звънчето продължава да работи.</string>
+    <string name="notification_settings_turn_on">Включи</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Блокирано в Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Отвори настройките на Android за %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Push известия</string>
+    <string name="notification_settings_push_switch_detail">Само на това устройство</string>
+    <string name="notification_settings_section">Известявай ме за</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">В приложението</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push изпраща известие до това устройство. „В приложението“ го отбелязва като ново на звънчето и в Активност; ако е изключено, пак се показва в Активност, вече прочетено.</string>
+    <string name="notification_settings_footer">Известията пристигат, когато има интернет. За да заглушиш група, използвай менюто в нея.</string>
+</resources>

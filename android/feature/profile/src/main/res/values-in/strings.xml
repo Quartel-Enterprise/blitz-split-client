@@ -92,6 +92,7 @@
     <string name="profile_language_tamil">Tamil</string>
     <string name="profile_language_norwegian">Norwegia (Bokmål)</string>
     <string name="profile_language_telugu">Telugu</string>
+    <string name="profile_language_bulgarian">Bahasa Bulgaria</string>
     <string name="profile_language_swahili">Swahili</string>
     <string name="profile_language_system_detail">Bahasa perangkat</string>
     <string name="profile_notifications">Notifikasi</string>

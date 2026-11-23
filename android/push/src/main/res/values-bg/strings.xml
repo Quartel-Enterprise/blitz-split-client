@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Напомняне за уреждане на сметките</string>
+    <string name="push_bill_created">%1$s добави „%2$s“ с теб</string>
+    <string name="push_bill_edited">%1$s редактира „%2$s“</string>
+    <string name="push_bill_deleted">%1$s изтри „%2$s“</string>
+    <string name="push_comment_added">%1$s коментира „%2$s“: %3$s</string>
+    <string name="push_payment_paid_you">%1$s отбеляза, че ти е платил(а)</string>
+    <string name="push_payment_to_you">%1$s отбеляза, че %2$s ти е платил(а)</string>
+    <string name="push_payment_received_yours">%1$s отбеляза плащането ти като получено</string>
+    <string name="push_payment_from_you">%1$s отбеляза, че си платил(а) на %2$s</string>
+    <string name="push_payment_undone">%1$s отмени плащане с теб</string>
+    <string name="push_charge_sent">%1$s ти изпрати напомняне да уредиш сметките</string>
+    <string name="push_settle_reminder">Имаш открит баланс в %1$s</string>
+    <string name="push_settle_reminders">Имаш открити баланси в %1$s групи</string>
+    <string name="push_added_to_group">%1$s те добави в групата</string>
+    <string name="push_member_joined">%1$s се присъедини към групата</string>
+    <string name="push_debts_simplified_to_you">%1$s опрости дълговете. Сега %2$s ти плаща %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s опрости дълговете. Сега ти плащаш на %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s опрости дълговете. Виж как е при теб.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s изключи „Опростяване на дълговете“. Сега %2$s ти плаща %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s изключи „Опростяване на дълговете“. Сега ти плащаш на %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s изключи „Опростяване на дълговете“. Виж как е при теб.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">Разходи</string>
+    <string name="notification_settings_bills_detail">Нови, редактирани или изтрити разходи, в които участваш</string>
+    <string name="notification_settings_payments">Плащания и уреждане на сметки</string>
+    <string name="notification_settings_payments_detail">Плащания към теб или от теб и опростени дългове</string>
+    <string name="notification_settings_comments">Коментари</string>
+    <string name="notification_settings_comments_detail">В разходи, в които участваш, и в нишки, в които си писал(а)</string>
+    <string name="notification_settings_people_and_groups">Хора и групи</string>
+    <string name="notification_settings_people_and_groups_detail">Кой се присъединява към групите ти или ги напуска и какво се променя в тях</string>
+    <string name="notification_settings_payment_requests">Искания за плащане</string>
+    <string name="notification_settings_payment_requests_detail">Когато някой те помоли да платиш</string>
+    <string name="notification_settings_balance_reminder">Напомняне за открит баланс</string>
+    <string name="notification_settings_balance_reminder_detail">Веднъж седмично, ако има открит баланс</string>
+</resources>

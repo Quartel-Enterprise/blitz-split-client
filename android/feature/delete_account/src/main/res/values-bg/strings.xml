@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Изтрий акаунта</string>
+    <string name="delete_account_offline_title">Няма интернет.</string>
+    <string name="delete_account_offline_body">За изтриване на акаунта е нужна интернет връзка. Свържи се и опитай отново.</string>
+    <string name="delete_account_heading">Да се изтрият ли акаунтът и данните ти?</string>
+    <string name="delete_account_deleted_title">Какво се изтрива</string>
+    <string name="delete_account_deleted_profile">Профилът ти (име, снимка и цвят)</string>
+    <string name="delete_account_deleted_keys">Pix и Bitcoin ключовете ти</string>
+    <string name="delete_account_deleted_provider">Връзката с акаунта ти в %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Кодът ти за възстановяване</string>
+    <string name="delete_account_deleted_device">Копието на данните ти на това устройство</string>
+    <string name="delete_account_kept_title">Какво остава в групите ти</string>
+    <string name="delete_account_kept_groups">Групите, с разходите и плащанията им, за останалите членове</string>
+    <string name="delete_account_kept_member">Името ти във всяка група, като член без акаунт</string>
+    <string name="delete_account_kept_comments">Коментарите ти и добавените от теб снимки, под твоето име</string>
+    <string name="delete_account_export">Първо експортирай данните ми</string>
+    <string name="delete_account_confirm">Разбирам, че това не може да се отмени</string>
+    <string name="delete_account_delete">Изтрий акаунта</string>
+    <string name="delete_account_cancel">Отказ</string>
+    <string name="delete_account_failed">Акаунтът ти не можа да се изтрие. Опитай отново.</string>
+</resources>

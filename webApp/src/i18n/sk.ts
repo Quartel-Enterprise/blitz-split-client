@@ -867,6 +867,7 @@ export const sk: Record<MessageKey, string> = {
   profile_languageTamil: 'Tamilčina',
   profile_languageNorwegian: 'Nórčina (bokmål)',
   profile_languageTelugu: 'Telugčina',
+  profile_languageBulgarian: 'Bulharčina',
   profile_languageSwahili: 'Svahilčina',
   profile_bitcoinInSats: 'Bitcoin v satoshi',
   profile_bitcoinInSatsDetail: 'Zobrazuje a zadáva sumy v bitcoinoch v satoshi (1 ₿ = 100 000 000 sats).',

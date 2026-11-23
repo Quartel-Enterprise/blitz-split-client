@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · код за възстановяване</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Разреши камерата в Настройки, за да направиш снимка.</string>
+    <string name="platform_camera_settings">Настройки</string>
+    <string name="platform_receipt_source_camera">Направи снимка</string>
+    <string name="platform_receipt_source_gallery">Избери от галерията</string>
+    <string name="platform_receipt_source_file">Избери файл</string>
+    <string name="platform_receipt_camera_title">Сканирай касова бележка</string>
+    <string name="platform_receipt_camera_close">Затвори</string>
+    <string name="platform_receipt_camera_flash_on">Включи светкавицата</string>
+    <string name="platform_receipt_camera_flash_off">Изключи светкавицата</string>
+    <string name="platform_receipt_camera_hint">Побери цялата касова бележка в рамката. Попълваме сумата, датата и описанието, а ти проверяваш преди запазване.</string>
+    <string name="platform_receipt_camera_gallery">Избери от галерията</string>
+    <string name="platform_receipt_camera_shutter">Направи снимка</string>
+    <string name="platform_receipt_camera_unavailable">Камерата не е достъпна. Избери снимка на касовата бележка от галерията.</string>
+    <string name="platform_receipt_camera_permission">Разреши камерата, за да сканираш касовата бележка, или избери снимка от галерията.</string>
+    <string name="platform_receipt_camera_allow">Разреши камерата</string>
+    <string name="platform_receipt_camera_settings">Отвори настройките</string>
+</resources>
