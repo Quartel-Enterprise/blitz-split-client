@@ -23,21 +23,43 @@ export async function launchChrome() {
       '--disable-extensions',
       'about:blank',
     ],
-    { stdio: 'ignore' },
+    // Why: a process group of its own, so stop() can end Chrome's helpers (renderer, GPU, utility) with it. Killing
+    // the browser alone left them writing in the profile while it was being deleted.
+    { stdio: 'ignore', detached: true },
   )
+  // Why: detached, Chrome no longer gets the terminal's Ctrl+C, nor dies with a script that throws: end its group
+  // when Node exits, whatever the reason.
+  const killGroup = () => {
+    try {
+      process.kill(-chrome.pid, 'SIGTERM')
+    } catch {
+      // The group is already gone
+    }
+  }
+  process.once('exit', killGroup)
   // Why: a binary that isn't there fails the spawn with an 'error' event, which would end Node unhandled.
   let spawnError = null
   chrome.once('error', (error) => {
     spawnError = error
   })
   const stop = async () => {
+    process.off('exit', killGroup)
     if (chrome.exitCode === null && chrome.signalCode === null && spawnError === null) {
       // Why: a Chrome that already ended (a crash) sends no 'exit' again, which would wait forever.
       const exited = new Promise((resolve) => chrome.once('exit', resolve))
-      chrome.kill()
+      killGroup()
       await exited
+    } else if (spawnError === null) {
+      killGroup()
     }
-    await rm(profile, { recursive: true, force: true })
+    // Why: a helper can take a moment longer than the browser to end and still write in the profile (ENOTEMPTY),
+    // which failed a whole run of drawn images at its very end. A short retry covers that; a folder that still won't
+    // go is left behind with a warning rather than failing the run.
+    try {
+      await rm(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 })
+    } catch (error) {
+      console.warn(`Left Chrome's temporary profile ${profile} behind (${error.code}): ${error.message}`)
+    }
   }
   let socket
   const pending = new Map()
