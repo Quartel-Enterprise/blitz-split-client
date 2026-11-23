@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Invitationslink</string>
+    <string name="members_link_pending">Ikke oprettet endnu</string>
+    <string name="members_share">Del</string>
+    <string name="members_me">%s (dig)</string>
+    <string name="members_status_this_device">Denne enhed</string>
+    <string name="members_status_joined">Blevet medlem</string>
+    <string name="members_status_not_joined">Ikke blevet medlem endnu</string>
+    <string name="members_options">Muligheder for %s</string>
+    <string name="members_rename">Omdøb</string>
+    <string name="members_personal_invite">Personlig invitation til %s</string>
+    <string name="members_personal_message">Den, der åbner dette link, bliver medlem direkte som %s uden at vælge fra listen. Det virker én gang.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Den, der åbner dette link, bliver medlem direkte som %1$s uden at vælge fra listen og ser allerede sin andel på %2$s i den udgift, der er tilføjet indtil nu. Det virker én gang.</item>
+        <item quantity="other">Den, der åbner dette link, bliver medlem direkte som %1$s uden at vælge fra listen og ser allerede sin andel på %2$s i de %3$d udgifter, der er tilføjet indtil nu. Det virker én gang.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopiér link</string>
+    <string name="members_personal_copied">Kopieret</string>
+    <string name="members_personal_share">Del med %s</string>
+    <string name="members_personal_share_message">Bliv medlem af %1$s som %2$s i Blitz Split: %3$s</string>
+    <string name="members_remove">Fjern fra gruppen</string>
+    <string name="members_remove_joined">%s er allerede blevet medlem af gruppen</string>
+    <string name="members_remove_title">Fjern %s fra gruppen?</string>
+    <string name="members_remove_message">%s er ikke blevet medlem endnu. Du kan tilføje vedkommende igen senere.</string>
+    <string name="members_remove_confirm">Fjern</string>
+    <string name="members_release">Frigiv navn</string>
+    <string name="members_release_title">Frigiv navnet %s?</string>
+    <string name="members_release_message">Den, der blev medlem som %1$s, forlader gruppen. Navnet, farven og udgifterne for %1$s bliver, og %1$s kan vælges igen via gruppens link.</string>
+    <string name="members_release_confirm">Frigiv</string>
+    <string name="members_release_error">Navnet kunne ikke frigives. Tjek din forbindelse, og prøv igen.</string>
+    <string name="members_add">Tilføj person</string>
+    <string name="members_invite_instead">Har vedkommende appen? Invitér med linket</string>
+    <string name="members_name_label">Navn</string>
+    <string name="members_save">Gem</string>
+    <string name="members_cancel">Annuller</string>
+    <string name="members_change_error">Ændringen kunne ikke gemmes. Prøv igen.</string>
+    <string name="members_remove_open_balance">%s har en åben saldo</string>
+    <string name="members_balance_to_get_back">%s til gode</string>
+    <string name="members_balance_owes">skylder %s</string>
+    <string name="members_balance_settled">Gjort op</string>
+</resources>

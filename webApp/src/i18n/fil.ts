@@ -870,6 +870,7 @@ export const fil: Record<MessageKey, string> = {
   profile_languageMarathi: 'Marathi',
   profile_languageSwahili: 'Swahili',
   profile_languageCatalan: 'Catalan',
+  profile_languageDanish: 'Danish',
   profile_bitcoinInSats: 'Bitcoin sa satoshi',
   profile_bitcoinInSatsDetail: 'Ipinapakita at tina-type ang halaga ng bitcoin sa sats (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: 'Ibahagi ang data ng paggamit',

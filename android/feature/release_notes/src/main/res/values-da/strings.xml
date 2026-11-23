@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Nyheder i versionen</string>
+    <string name="release_notes_show_beta">Vis betaversioner</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Denne version</string>
+    <string name="release_notes_empty">Ingen nyheder endnu.</string>
+    <string name="release_notes_empty_only_betas">Der er ingen stabil version endnu. Slå betaversioner til for at se, hvad der bliver testet.</string>
+    <string name="release_notes_load_failed_title">Nyhederne i versionen kunne ikke indlæses</string>
+    <string name="release_notes_load_failed_body">Tjek din forbindelse, og prøv igen.</string>
+    <string name="release_notes_retry">Prøv igen</string>
+    <string name="release_notes_open_on_github">Åbn på GitHub</string>
+</resources>

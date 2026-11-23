@@ -100,6 +100,7 @@
     <string name="profile_language_marathi">Marathi</string>
     <string name="profile_language_swahili">Swahili</string>
     <string name="profile_language_catalan">Catalan</string>
+    <string name="profile_language_danish">Danish</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English</string>
@@ -145,6 +146,7 @@
     <string name="profile_language_native_marathi" translatable="false">मराठी</string>
     <string name="profile_language_native_swahili" translatable="false">Kiswahili</string>
     <string name="profile_language_native_catalan" translatable="false">Català</string>
+    <string name="profile_language_native_danish" translatable="false">Dansk</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>

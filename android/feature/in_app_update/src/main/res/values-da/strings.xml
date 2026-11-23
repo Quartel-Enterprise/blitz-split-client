@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">Downloader opdatering…</string>
+    <string name="in_app_update_download_failed">Opdateringen kunne ikke downloades. Prøv igen senere.</string>
+</resources>

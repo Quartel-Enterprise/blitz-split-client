@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Ingen termer</string>
+    <string name="category_map_title">Kategorikort</string>
+    <string name="category_map_search">Søg i termer</string>
+    <string name="category_map_add">Tilføj term</string>
+    <string name="category_map_more">Flere muligheder</string>
+    <string name="category_map_restore">Gendan standard</string>
+    <string name="category_map_back">Tilbage</string>
+    <string name="category_map_intro">Når en udgifts titel indeholder et af disse ord, får den sin kategori af sig selv. »Uber hjem« bliver til Transport.</string>
+    <string name="category_map_intro_offline">Kortet virker offline: ændringer gælder med det samme på denne enhed og når dine andre enheder, når du er online igen.</string>
+    <string name="category_map_device_only">Dit kort findes kun på denne enhed. Log ind med Google eller Apple under din Profil for at tage det med til dine andre enheder.</string>
+    <string name="category_map_open_profile">Åbn Profil</string>
+    <string name="category_map_longest_wins">Når to termer passer til en titel, vinder den længste.</string>
+    <string name="category_map_no_result">Ingen term med »%1$s«</string>
+    <string name="category_map_no_result_body">Tilføj den, så får udgifter med dette ord i titlen den rigtige kategori.</string>
+    <string name="category_map_add_query">Tilføj »%1$s«</string>
+    <string name="category_map_empty_title">Dit kort er tomt</string>
+    <string name="category_map_empty_body">Uden termer kommer kategorien ikke fra titlen: du vælger den på hver udgift.</string>
+    <string name="category_map_group_category"> · kategori i %1$s</string>
+    <string name="category_map_only_main">Kun %1$s</string>
+    <string name="category_map_only_in_group">kun i %1$s</string>
+    <string name="category_map_no_terms_yet">Ingen termer endnu.</string>
+    <string name="category_map_add_in">Tilføj term i %1$s</string>
+    <string name="category_map_tip">Tryk på en term for at ændre dens kategori eller fjerne den. Den matcher hele ordet og ser bort fra accenter og store/små bogstaver.</string>
+    <string name="category_map_queued">i kø</string>
+    <string name="category_map_term_action">%1$s, %2$s. Redigér</string>
+    <string name="category_map_new_term">Ny term</string>
+    <string name="category_map_edit_term">Redigér term</string>
+    <string name="category_map_term_label">Ord eller udtryk</string>
+    <string name="category_map_term_help">Matcher hele ordet og ser bort fra accenter og store/små bogstaver.</string>
+    <string name="category_map_term_help_app">En term fra appen. Gendan standard bringer den tilbage, som den var.</string>
+    <string name="category_map_term_duplicate">»%1$s« vælger allerede %2$s. Hver term har én kategori.</string>
+    <string name="category_map_term_too_short">Brug mindst 2 bogstaver.</string>
+    <string name="category_map_term_too_long">Brug højst 30 bogstaver.</string>
+    <string name="category_map_term_invalid">Brug kun bogstaver, tal og mellemrum.</string>
+    <string name="category_map_category">Kategori</string>
+    <string name="category_map_category_help">Det kan være kategorien eller en underkategori.</string>
+    <string name="category_map_category_help_edit">Ændrer du den her, flyttes termen til en anden kategori.</string>
+    <string name="category_map_category_help_move">Flytningen tager termen ud af %1$s.</string>
+    <string name="category_map_example">Eksempel</string>
+    <string name="category_map_example_move">Hvis den flyttes</string>
+    <string name="category_map_remove">Fjern</string>
+    <string name="category_map_cancel">Annuller</string>
+    <string name="category_map_save">Gem</string>
+    <string name="category_map_move_to">Flyt til %1$s</string>
+    <string name="category_map_removed">»%1$s« er fjernet fra kortet</string>
+    <string name="category_map_undo">Fortryd</string>
+    <string name="category_map_restore_title">Gendan standardkortet?</string>
+    <string name="category_map_restore_body">Appens 60 termer kommer tilbage, som de var, også dem du har fjernet eller flyttet.</string>
+    <string name="category_map_restore_own_one">Termen, du selv har oprettet, »%1$s«, bliver.</string>
+    <string name="category_map_restore_confirm">Gendan</string>
+    <string name="category_map_save_error">Kortet kunne ikke gemmes. Prøv igen.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d term</item>
+        <item quantity="other">%d termer</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d underkategori</item>
+        <item quantity="other">%d underkategorier</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d term med »%2$s«</item>
+        <item quantity="other">%1$d termer med »%2$s«</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline · %d ændring i kø</item>
+        <item quantity="other">Offline · %d ændringer i kø</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">De %d termer, du selv har oprettet, bliver.</item>
+        <item quantity="other">De %d termer, du selv har oprettet, bliver.</item>
+    </plurals>
+    <string name="category_map_new_category">Ny kategori</string>
+    <string name="category_map_new_subcategory_in">Ny underkategori i %s</string>
+    <string name="category_map_edit_category">Redigér %s</string>
+    <string name="category_map_category_group">Gruppe</string>
+    <string name="category_map_change_color">Skift farve på %1$s</string>
+    <string name="category_map_restore_color">Gendan farve</string>
+    <string name="category_map_color_done">Færdig</string>
+</resources>

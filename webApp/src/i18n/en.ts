@@ -867,6 +867,7 @@ export const en = {
   profile_languageMarathi: 'Marathi',
   profile_languageSwahili: 'Swahili',
   profile_languageCatalan: 'Catalan',
+  profile_languageDanish: 'Danish',
   profile_bitcoinInSats: 'Bitcoin in satoshis',
   profile_bitcoinInSatsDetail: 'Shows and types bitcoin amounts in sats (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: "Share usage data",

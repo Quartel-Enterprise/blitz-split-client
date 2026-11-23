@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Kontakt support</string>
+    <string name="contact_support_description">Vi åbner din mailapp med en besked, der er klar til at blive sendt. Beskriv, hvad der skete, og send den: rigtige mennesker læser hver besked.</string>
+    <string name="contact_support_to">Til</string>
+    <string name="contact_support_diagnostics">Kommer med i mailen</string>
+    <string name="contact_support_app_version">Appversion</string>
+    <string name="contact_support_platform">Platform</string>
+    <string name="contact_support_language">Sprog</string>
+    <string name="contact_support_account">Konto</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">System</string>
+    <string name="contact_support_account_local">Kun denne enhed</string>
+    <string name="contact_support_account_anonymous">Ikke forbundet</string>
+    <string name="contact_support_open_email">Åbn mail</string>
+    <string name="contact_support_copy_email">Kopiér mailadresse</string>
+    <string name="contact_support_notice_copied">Mailadresse kopieret.</string>
+    <string name="contact_support_notice_no_app">Ingen mailapp fundet. Adressen blev kopieret i stedet.</string>
+    <string name="contact_support_close">Luk</string>
+</resources>

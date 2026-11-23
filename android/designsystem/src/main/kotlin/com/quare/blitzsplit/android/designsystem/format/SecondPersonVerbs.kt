@@ -30,6 +30,7 @@ private const val SLOVAK = "sk"
 private const val SLOVAK_SECOND_PERSON_AUXILIARY = "si"
 private const val BULGARIAN = "bg"
 private const val CATALAN = "ca"
+private const val DANISH = "da"
 private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
 private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
@@ -119,6 +120,7 @@ private val youSubjectLanguages = setOf(
     NORWEGIAN,
     BULGARIAN,
     CATALAN,
+    DANISH,
     HUNGARIAN,
     URDU,
     PERSIAN,
@@ -309,7 +311,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…", Norwegian "Du slettet…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
+ * Swedish "Du raderade…", Norwegian "Du slettet…", Danish "Du slettede…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
  * حذف کردید…", with its verb rule. Czech says "Ty jsi
  * smazal(a)…", Slovak "Ty si vymazal(a)…", Bulgarian "Ти изтри…", Catalan "Tu has suprimit…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"

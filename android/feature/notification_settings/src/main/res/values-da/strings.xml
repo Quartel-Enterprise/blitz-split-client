@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Notifikationer</string>
+    <string name="notification_settings_denied_title">Notifikationer fra Blitz Split er slået fra i Android.</string>
+    <string name="notification_settings_denied_body">Slå dem til i systemindstillingerne for at få push-notifikationerne nedenfor. Klokken virker stadig.</string>
+    <string name="notification_settings_open_settings">Åbn indstillinger</string>
+    <string name="notification_settings_refused_body">Android lader dig tillade dem én gang til for at få push-notifikationerne nedenfor. Klokken virker stadig.</string>
+    <string name="notification_settings_turn_on">Slå til</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Blokeret i Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Åbn Android-indstillinger for %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Push-notifikationer</string>
+    <string name="notification_settings_push_switch_detail">Kun på denne enhed</string>
+    <string name="notification_settings_section">Giv mig besked om</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">I appen</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push sender en notifikation til denne enhed. I appen markerer den som ny ved klokken og under Aktivitet; slået fra vises den stadig under Aktivitet, allerede læst.</string>
+    <string name="notification_settings_footer">Beskeder kommer, når der er internet. Brug menuen inde i en gruppe for at slå lyden fra for den.</string>
+</resources>

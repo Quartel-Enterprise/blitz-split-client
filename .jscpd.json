@@ -15,7 +15,9 @@
     "**/*Tests.swift",
     "**/*.test.ts",
     "**/*.test.tsx",
-    "core/*/testing/**"
+    "core/*/testing/**",
+    "webApp/src/i18n/[!i]*.ts",
+    "webApp/src/i18n/i[!n]*.ts"
   ],
   "gitignore": true,
   "silent": true

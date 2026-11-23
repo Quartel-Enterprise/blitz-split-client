@@ -7,7 +7,7 @@ options:
   # English is the source language and the fallback of every language but Portuguese (pt-BR, pt-PT), Spanish (es, es-ES), French (fr),
   # German (de), Italian (it), Polish (pl), Dutch (nl), Japanese (ja), Turkish (tr), Indonesian (id), Russian (ru),
   # Ukrainian (uk), Korean (ko), Hindi (hi), Arabic (ar), Simplified Chinese (zh-Hans), Hebrew (he), Thai (th), Vietnamese (vi), Traditional Chinese (zh-Hant), Swedish
-  # (sv), Czech (cs), Romanian (ro), Bengali (bn), Malay (ms), Greek (el), Croatian (hr), Hungarian (hu), Urdu (ur), Filipino (fil), Serbian (sr-Latn) and Slovak (sk), Persian (fa), Tamil (ta), Norwegian (nb), Telugu (te), Bulgarian (bg), Marathi (mr), Swahili (sw) and Catalan (ca)
+  # (sv), Czech (cs), Romanian (ro), Bengali (bn), Malay (ms), Greek (el), Croatian (hr), Hungarian (hu), Urdu (ur), Filipino (fil), Serbian (sr-Latn) and Slovak (sk), Persian (fa), Tamil (ta), Norwegian (nb), Telugu (te), Bulgarian (bg), Marathi (mr), Swahili (sw), Catalan (ca) and Danish (da)
   developmentLanguage: en
   createIntermediateGroups: true
   deploymentTarget:

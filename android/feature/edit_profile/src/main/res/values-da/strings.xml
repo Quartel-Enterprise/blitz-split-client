@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Redigér profil</string>
+    <string name="edit_profile_save">Gem</string>
+    <string name="edit_profile_change_photo">Skift billede</string>
+    <string name="edit_profile_take_photo">Tag billede</string>
+    <string name="edit_profile_choose_photo">Vælg fra galleri</string>
+    <string name="edit_profile_use_account_photo">Brug billedet fra din %1$s-konto</string>
+    <string name="edit_profile_remove_photo">Fjern billede</string>
+    <string name="edit_profile_photo_error">Dette billede kunne ikke bruges. Prøv et andet.</string>
+    <string name="edit_profile_avatar_color">Avatarfarve</string>
+    <string name="edit_profile_avatar_color_hint">Vises, når du ikke har et billede.</string>
+    <string name="edit_profile_name_label">Dit navn</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Skriv mindst %d bogstaver.</string>
+    <string name="edit_profile_name_too_long">Brug højst %d tegn.</string>
+    <string name="edit_profile_account_notice">Navn og billede kom fra din %1$s-konto. Ændrer du dem her, gælder det kun i Blitz Split og ændrer ikke din %1$s-konto.</string>
+    <string name="edit_profile_footer">Dine grupper og alle med dit profillink kan se dit navn og billede.</string>
+    <string name="profile_photo_close">Luk</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galleri</string>
+    <string name="profile_photo_remove">Fjern</string>
+    <string name="profile_photo_title">Profilbillede</string>
+</resources>

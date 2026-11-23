@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Slet konto</string>
+    <string name="delete_account_offline_title">Intet internet.</string>
+    <string name="delete_account_offline_body">Det kræver en internetforbindelse at slette din konto. Gå online, og prøv igen.</string>
+    <string name="delete_account_heading">Slet din konto og dine data?</string>
+    <string name="delete_account_deleted_title">Det bliver slettet</string>
+    <string name="delete_account_deleted_profile">Din profil (navn, billede og farve)</string>
+    <string name="delete_account_deleted_keys">Dine Pix- og Bitcoin-nøgler</string>
+    <string name="delete_account_deleted_provider">Forbindelsen til din %1$s-konto</string>
+    <string name="delete_account_deleted_recovery_code">Din gendannelseskode</string>
+    <string name="delete_account_deleted_device">Kopien af dine data på denne enhed</string>
+    <string name="delete_account_kept_title">Det bliver i dine grupper</string>
+    <string name="delete_account_kept_groups">Grupperne med deres udgifter og betalinger, for de andre medlemmer</string>
+    <string name="delete_account_kept_member">Dit navn i hver gruppe, som et medlem uden konto</string>
+    <string name="delete_account_kept_comments">Dine kommentarer og de billeder, du har tilføjet, under dit navn</string>
+    <string name="delete_account_export">Eksportér mine data først</string>
+    <string name="delete_account_confirm">Jeg forstår, at det ikke kan fortrydes</string>
+    <string name="delete_account_delete">Slet konto</string>
+    <string name="delete_account_cancel">Annuller</string>
+    <string name="delete_account_failed">Din konto kunne ikke slettes. Prøv igen.</string>
+</resources>

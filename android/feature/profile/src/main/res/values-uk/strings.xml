@@ -99,6 +99,7 @@
     <string name="profile_language_marathi">Маратхі</string>
     <string name="profile_language_swahili">Суахілі</string>
     <string name="profile_language_catalan">Каталонська</string>
+    <string name="profile_language_danish">Данська</string>
     <string name="profile_language_system_detail">Мова пристрою</string>
     <string name="profile_notifications">Сповіщення</string>
     <plurals name="profile_notifications_active">

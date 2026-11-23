@@ -97,6 +97,7 @@
     <string name="profile_language_marathi">Marathi</string>
     <string name="profile_language_swahili">Swahili</string>
     <string name="profile_language_catalan">Catalaans</string>
+    <string name="profile_language_danish">Deens</string>
     <string name="profile_language_system_detail">Taal van het apparaat</string>
     <string name="profile_notifications">Meldingen</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Ny Pix-nøgle</string>
+    <string name="payment_key_title_pix_edit">Redigér Pix-nøgle</string>
+    <string name="payment_key_title_bitcoin_new">Ny Bitcoin-nøgle</string>
+    <string name="payment_key_title_bitcoin_edit">Redigér Bitcoin-nøgle</string>
+    <string name="payment_key_save">Gem</string>
+
+    <string name="payment_key_pix_intro">Den, der betaler dig, ser denne nøgle, når I gør op. Hvilken type nøgle?</string>
+    <string name="payment_key_pix_question">Hvilken type nøgle?</string>
+    <string name="payment_key_pix_explanation">Den, der betaler dig, ser denne nøgle, når I gør op.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefon</string>
+    <string name="payment_key_type_email">E-mail</string>
+    <string name="payment_key_type_random">Tilfældig</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mobilnummer med områdenummer</string>
+    <string name="payment_key_label_email">E-mail</string>
+    <string name="payment_key_label_random">Tilfældig nøgle</string>
+
+    <string name="payment_key_bitcoin_intro">Hvordan vil du modtage?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">hurtig, lavt gebyr</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">på blockchainen</string>
+    <string name="payment_key_label_lightning">Lightning Address eller LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin-adresse</string>
+
+    <string name="payment_key_paste">Indsæt</string>
+
+    <string name="payment_key_hint_cpf">Format 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Format navn@domæne.com</string>
+    <string name="payment_key_hint_random">32 bogstaver og tal, som din bank viser den</string>
+    <string name="payment_key_hint_lightning">Som navn@wallet.com eller LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainnet-adresse, der starter med bc1q eller bc1p</string>
+
+    <string name="payment_key_valid_cpf">Format 000.000.000-00 · kontrolcifrene passer</string>
+    <string name="payment_key_valid_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Format navn@domæne.com</string>
+    <string name="payment_key_valid_random">Tilfældig nøgle genkendt (32 tegn)</string>
+    <string name="payment_key_valid_lightning_address">Gyldig Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Gyldig LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Ugyldigt CPF: kontrolcifrene passer ikke.</string>
+    <string name="payment_key_error_invalid_phone">Ufuldstændigt mobilnummer: brug områdenummeret og 9 cifre, der starter med 9.</string>
+    <string name="payment_key_error_invalid_email">Ufuldstændig e-mail: domænet mangler, f.eks. .com eller .com.br.</string>
+    <string name="payment_key_error_invalid_random">Ufuldstændig tilfældig nøgle: den har 32 bogstaver og tal.</string>
+    <string name="payment_key_error_invalid_lightning">Dette er hverken en Lightning Address (navn@wallet) eller en LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Dette er en Lightning-faktura (lnbc…): den betaler én gang og udløber. Indsæt en Lightning Address eller en LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Ugyldig adresse. Brug en mainnet-adresse med bc1q eller bc1p.</string>
+    <string name="payment_key_error_testnet_address">Dette er en testnet-adresse (tb1…). Kun Bitcoin mainnet virker her, med bc1…-adresser.</string>
+    <string name="payment_key_error_already_saved">Du har allerede denne nøgle.</string>
+
+    <string name="payment_key_switched_to_onchain">Dette er en on-chain-adresse, så vi skiftede til On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Dette er en Lightning Address, så vi skiftede til Lightning.</string>
+    <string name="payment_key_cpf_notice">Den, der betaler dig, ser hele dit CPF. Hvis du helst ikke vil dele det, så brug telefon, e-mail eller en tilfældig nøgle.</string>
+    <string name="payment_key_held_notice">Du kan kun have én Pix-nøgle af denne type, så det er den, du har gemt. Skift den her, hvis du vil.</string>
+
+    <string name="payment_key_accepted_title">Vi accepterer</string>
+    <string name="payment_key_accepted_lightning_address_sample">navn@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">Standard-Pix-nøgle</string>
+    <string name="payment_key_default_bitcoin_title">Standard-Bitcoin-nøgle</string>
+    <string name="payment_key_default_pix_detail">Vises først, når I gør op.</string>
+    <string name="payment_key_default_bitcoin_detail">Vises først, når nogen betaler i BTC.</string>
+    <string name="payment_key_default_now">Nu: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Gør en anden nøgle til standard for at ændre den.</string>
+    <string name="payment_key_default_locked_new">Din første nøgle af denne type er standard.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefon</string>
+    <string name="payment_key_default_type_email">e-mail</string>
+    <string name="payment_key_default_type_random">tilfældig nøgle</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split flytter ikke penge: betaleren betaler i sin bankapp. Tjek, at nøglen står i dit navn.</string>
+    <string name="payment_key_footer_bitcoin">Når I gør op, viser vi beløbet i sats til den aktuelle kurs. Det er kun et overslag: betaleren bekræfter det i sin wallet.</string>
+
+    <string name="payment_key_delete">Slet nøgle</string>
+    <string name="payment_key_delete_title">Slet denne nøgle?</string>
+    <string name="payment_key_delete_body">Personer, der skylder dig, ser den ikke længere, når I gør op.</string>
+    <string name="payment_key_delete_confirm">Slet</string>
+</resources>

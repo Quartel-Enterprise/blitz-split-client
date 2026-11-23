@@ -97,6 +97,7 @@
     <string name="profile_language_marathi">Marati</string>
     <string name="profile_language_swahili">Suaíli</string>
     <string name="profile_language_catalan">Catalão</string>
+    <string name="profile_language_danish">Dinamarquês</string>
     <string name="profile_language_system_detail">Idioma do aparelho</string>
     <string name="profile_notifications">Notificações</string>
     <plurals name="profile_notifications_active">

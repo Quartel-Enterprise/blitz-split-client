@@ -96,6 +96,7 @@
     <string name="profile_language_marathi">马拉地语</string>
     <string name="profile_language_swahili">斯瓦希里语</string>
     <string name="profile_language_catalan">加泰罗尼亚语</string>
+    <string name="profile_language_danish">丹麦语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

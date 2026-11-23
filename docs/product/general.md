@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili and Catalan: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan and Danish: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -269,7 +269,11 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     is glued to a value the app fills in: no "l’" or "d’" contraction before a name, which stands after a noun
     ("el grup «Lisboa»", "el membre Anna") or as the subject. Its activity sentences swap the perfect's auxiliary, as
     French's ([activity-and-push.md](activity-and-push.md)). Catalonia, Andorra and Valencia pay in euros, already in
-    the app, so no currency comes with it, and both stores have a Catalan listing. The
+    the app, so no currency comes with it, and both stores have a Catalan listing. Danish (Pierre's calls, issue
+    #551) is one variant for every `da` tag, talks to the user in the informal "du", as Swedish and Norwegian do, and
+    calls the app Blitz Split. Its verbs don't change with the person ("Ana delte…", "Du delte…"), its deleted-item
+    notice starting with who deleted it (`youSubjectLanguages`), and its plurals have one and other. The picker names
+    it "Dansk", and its chip reads "DA". The Danish krone (DKK) comes with it (below). The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
@@ -498,6 +502,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     the dong's (about US$ 6,000 and 4,000), which were raised. An app version from before it reads TZS as an unknown code
     with two decimals and shows its amounts 100 times smaller until it updates, as with HUF. The store screenshots'
     sample trip for Swahili is priced in Kenyan shillings (Pierre's call).
+  - The Danish krone (DKK) comes with Danish (Pierre's call), as the Norwegian krone did with Norwegian, and starts a
+    new group in Denmark, Greenland and the Faroe Islands. It has 2 decimals, as ISO gives it, and the usual 100 million
+    cap, so an app version from before it shows its amounts by the raw code, with the right decimals. The store
+    screenshots' sample trip for Danish is priced in it.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
