@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · کد بازیابی</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">برای گرفتن عکس، در تنظیمات به دوربین اجازه دهید.</string>
+    <string name="platform_camera_settings">تنظیمات</string>
+    <string name="platform_receipt_source_camera">گرفتن عکس</string>
+    <string name="platform_receipt_source_gallery">انتخاب از گالری</string>
+    <string name="platform_receipt_source_file">انتخاب فایل</string>
+    <string name="platform_receipt_camera_title">اسکن رسید</string>
+    <string name="platform_receipt_camera_close">بستن</string>
+    <string name="platform_receipt_camera_flash_on">روشن کردن فلاش</string>
+    <string name="platform_receipt_camera_flash_off">خاموش کردن فلاش</string>
+    <string name="platform_receipt_camera_hint">کل رسید را در کادر قرار دهید. ما مبلغ، تاریخ و توضیحات را پر می‌کنیم؛ شما پیش از ذخیره بررسی می‌کنید.</string>
+    <string name="platform_receipt_camera_gallery">انتخاب از گالری</string>
+    <string name="platform_receipt_camera_shutter">گرفتن عکس</string>
+    <string name="platform_receipt_camera_unavailable">دوربین در دسترس نیست. عکسی از رسید را از گالری انتخاب کنید.</string>
+    <string name="platform_receipt_camera_permission">برای اسکن رسید به دوربین اجازه دهید، یا عکسی را از گالری انتخاب کنید.</string>
+    <string name="platform_receipt_camera_allow">اجازه به دوربین</string>
+    <string name="platform_receipt_camera_settings">باز کردن تنظیمات</string>
+</resources>

@@ -862,6 +862,7 @@ export const hi: Record<MessageKey, string> = {
   profile_languageFilipino: 'फ़िलिपीनो',
   profile_languageSerbian: 'सर्बियाई',
   profile_languageSlovak: 'स्लोवाक',
+  profile_languagePersian: 'फ़ारसी',
   profile_languageBulgarian: 'बल्गेरियाई',
   profile_bitcoinInSats: 'सातोशी में Bitcoin',
   profile_bitcoinInSatsDetail: 'बिटकॉइन की रकम sats में दिखाता और लिखता है (1 ₿ = 100,000,000 sats)।',

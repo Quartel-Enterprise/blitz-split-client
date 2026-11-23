@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak and Bulgarian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian and Bulgarian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -197,7 +197,23 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     `other` (0, 5 and up), as Czech's. Its activity sentences follow Czech's rule with "si" for "jsi"
     ([activity-and-push.md](activity-and-push.md)). No suffix is ever glued to a value the app fills in, and a name
     is never declined: it stands after a noun or a colon ("pridal(a) člena Ana", "Zaplatiť: Ana"). Slovakia's
-    currency, the euro, is already in the app. Bulgarian (Pierre's calls, issue #554) is one variant for every
+    currency, the euro, is already in the app. Persian (Pierre's calls, issue #552) is one
+    variant, Iran's, for every `fa` tag (`fa-AF` included), and calls the app Blitz Split. It talks to the user as the
+    respectful "شما" with the respectful verb forms (as Hindi's "आप" and Urdu's "آپ"), and writes Persian's own "ی" and
+    "ک", never the Arabic letters, with the zero-width non-joiner where Persian joins a prefix or suffix ("می‌", "‌ها").
+    It reads right to left as Arabic, Hebrew and Urdu do, with the same mirrored layouts, and writes numbers, amounts
+    and dates with 0-9, never its own digits (۰-۹), and in the Gregorian calendar as every other language: Android
+    and the web write the Gregorian year, not ICU's and `Intl`'s Solar Hijri default (1405 for 2026;
+    `withGregorianCalendar`, `LegacyAppLocale`, which also gives Thai `DateUtils`' ranges the Gregorian year,
+    `formattingLocale`), while the Apple apps follow the device's own
+    calendar setting, as for Thai. It ends a sentence with "." and joins two
+    clauses with "،" (the web's `clauseBreak`). No suffix or particle is ever glued to a value the app fills in: a name
+    stands alone, after a colon or as the subject. Its verb comes last and changes with the person, so its activity
+    sentences take Turkish's shape, the object after a colon, and the user's add "ید" to the past ("Ana هزینه‌ای را
+    تقسیم کرد: …", "شما هزینه‌ای را تقسیم کردید: …", [activity-and-push.md](activity-and-push.md)); it starts
+    Android's deleted-item notice with who deleted it (`youSubjectLanguages`). Its plurals have one and other, the noun
+    staying singular after a number. The Iranian rial (IRR) comes with it (below).
+    Bulgarian (Pierre's calls, issue #554) is one variant for every
     Bulgarian tag, written in Cyrillic, speaks informally, with "ти", never "Вие", and calls the app Blitz Split. Its
     plurals have `one` and `other`. Its activity sentences start every verb phrase with an aorist, whose second and
     third person singular are the same, so a row reads right for a name and for the user with no rule
@@ -415,11 +431,17 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     in Serbia. It has 2 decimals, as ISO gives it, and the usual 100 million cap, so an app version from before it
     shows its amounts by the raw code, with the right decimals. The store screenshots' sample trip for Serbian is
     priced in it.
+  - The Iranian rial (IRR) comes with Persian (Pierre's call), and starts a new group in Iran. It has no decimals, as
+    the rupiah and the forint: ISO gives it 2, but no price in Iran shows a fraction of a rial. 100 million rials is
+    less than US$ 100 (about a million rials a dollar in 2026), so its cap is 5 trillion rials (about US$ 5 million),
+    as the rupiah's and the dong's are raised (`ExpenseRules.maxAmountMinorFor`, and the API's). An app version from
+    before it reads IRR as an unknown code with two decimals and shows its amounts 100 times smaller until it updates,
+    as the rupiah did. The store screenshots' sample trip for Persian is in rials, at a round million a dollar.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
     bill or a payment by each coin's supply: 21 million bitcoin and 90 million ether (the most the web's numbers
-    count to the unit), every other currency keeping 100 million but the rupiah and the dong (above)
+    count to the unit), every other currency keeping 100 million but the rupiah, the dong and the rial (above)
     (`ExpenseRules.maxAmountMinorFor`, the API's `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts
     a symbol and only the decimals the amount needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8
     ("0,00000001"). Profile › Preferences' "Bitcoin in satoshis" (always shown, Settings on the Mac), kept per

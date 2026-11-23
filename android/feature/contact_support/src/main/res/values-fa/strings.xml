@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">تماس با پشتیبانی</string>
+    <string name="contact_support_description">برنامه ایمیل شما را با پیامی آماده باز می‌کنیم. آنچه اتفاق افتاده را شرح دهید و بفرستید: همه پیام‌ها را آدم‌های واقعی می‌خوانند.</string>
+    <string name="contact_support_to">به</string>
+    <string name="contact_support_diagnostics">در ایمیل گنجانده می‌شود</string>
+    <string name="contact_support_app_version">نسخه برنامه</string>
+    <string name="contact_support_platform">پلتفرم</string>
+    <string name="contact_support_language">زبان</string>
+    <string name="contact_support_account">حساب کاربری</string>
+    <string name="contact_support_profile">پروفایل</string>
+    <string name="contact_support_language_system">سیستم</string>
+    <string name="contact_support_account_local">فقط این دستگاه</string>
+    <string name="contact_support_account_anonymous">متصل نیست</string>
+    <string name="contact_support_open_email">باز کردن ایمیل</string>
+    <string name="contact_support_copy_email">کپی نشانی ایمیل</string>
+    <string name="contact_support_notice_copied">نشانی ایمیل کپی شد.</string>
+    <string name="contact_support_notice_no_app">برنامه ایمیلی پیدا نشد. به‌جای آن، نشانی کپی شد.</string>
+    <string name="contact_support_close">بستن</string>
+</resources>
