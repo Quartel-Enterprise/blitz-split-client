@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">वॉच कनेक्ट करा</string>
+    <string name="connect_watch_close">बंद करा</string>
+    <string name="connect_watch_body">तुमच्या वॉचवर दिसणारा कोड टाइप करा. ते तुमच्या अकाउंटमध्ये साइन इन करते आणि मग आपोआप सिंक होते.</string>
+    <string name="connect_watch_code_label">वॉच कोड</string>
+    <string name="connect_watch_error_invalid">चुकीचा किंवा कालबाह्य कोड. वॉचवर नवीन कोड मिळवा.</string>
+    <string name="connect_watch_error_too_many">खूप वेळा चुकीचे कोड टाकले. काही मिनिटे थांबा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="connect_watch_error_needs_account">आधी अकाउंट कनेक्ट करा: तुमचा डेटा फक्त या डिव्हाइसवर आहे.</string>
+    <string name="connect_watch_error_failed">वॉच कनेक्ट करता आले नाही. पुन्हा प्रयत्न करा.</string>
+    <string name="connect_watch_offline">वॉच कनेक्ट करण्यासाठी इंटरनेट हवे.</string>
+    <string name="connect_watch_own_watch_only">फक्त तुमच्या स्वतःच्या वॉचवर दिसणारा कोड टाइप करा: ज्याच्याकडे ते वॉच असेल त्याला तुमच्या अकाउंटचा ॲक्सेस मिळतो.</string>
+    <string name="connect_watch_validity">कोड 5 मिनिटे आणि एकदाच वैध असतो.</string>
+    <string name="connect_watch_button">कनेक्ट करा</string>
+    <string name="connect_watch_connected_title">वॉच कनेक्ट झाले</string>
+    <string name="connect_watch_connected_body">त्याला तुमचे ग्रुप दिसतात आणि ते आपोआप सिंक होते. ते डिस्कनेक्ट करण्यासाठी वॉचवर साइन आउट करा.</string>
+</resources>

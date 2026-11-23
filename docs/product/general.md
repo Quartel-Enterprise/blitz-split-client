@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian and Swahili: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi and Swahili: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -246,7 +246,17 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     someone the app can't tell, "-л(а)" where it can't be avoided). No suffix, the definite article included, is ever
     glued to a value the app fills in. Bulgaria joined the euro on 2026-01-01, so the lev (BGN) doesn't come with it:
     the euro is already in the app, and Google Play has a Bulgarian listing while the App Store has no Bulgarian
-    locale. Swahili (Pierre's calls) is standard Swahili
+    locale. Marathi (Pierre's calls, issue #553) is one variant for
+    every `mr` tag, in Devanagari, and talks to the user with the respectful "तुम्ही" and its plural verb forms, in the
+    plain everyday Marathi Indian apps write, English loanwords included where natural (ग्रुप, बॅलन्स, अकाउंट, लिंक); it
+    calls the app Blitz Split, ends a sentence with "." (Marathi writes the full stop, not Hindi's danda), and its
+    plurals have one and other. Its default digits are Devanagari, so the code writes its numbers, amounts and dates
+    with 0-9, as Bengali's ("nu-latn": `latinDigitLanguages`, `AppNumbers`, the web's `formattingKeys`). Its case
+    endings join the word and change it (अनाला), so none is ever glued to a value the app fills in: a person's name
+    takes the respectful pronoun written apart, "यांनी", "यांना", "यांचे" ("Ana यांना"), as official Marathi writes
+    "श्री. पाटील यांनी", and any other value stands after a colon or before a noun that carries the ending. Its past
+    puts that "यांनी" after the actor but none after the user's "तुम्ही", so its activity sentences follow Hindi's rule
+    with "यांनी" ([activity-and-push.md](activity-and-push.md)). It uses INR. Swahili (Pierre's calls) is standard Swahili
     (Kiswahili sanifu), one variant for every `sw` tag, Kenya's and Tanzania's alike, and no regional one. It speaks
     informally, with "wewe", never the plural, and calls the app Blitz Split. It reads left to right, and its plurals
     have `one` and `other`, as English's. Its verbs carry the subject's prefix, so its activity sentences turn the

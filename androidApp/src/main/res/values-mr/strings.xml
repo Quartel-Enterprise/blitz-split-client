@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">तुम्ही या ग्रुपमध्ये नाही</string>
+    <string name="bill_link_not_in_group_message">ही कमेंट अशा ग्रुपमध्ये आहे ज्यात तुम्ही नाही. ज्यांनी तुम्हाला लिंक पाठवली त्यांच्याकडे आमंत्रण मागा.</string>
+    <string name="bill_link_offline_title">इंटरनेट नाही</string>
+    <string name="bill_link_offline_message">पुन्हा ऑनलाइन आल्यावर लिंक परत उघडा.</string>
+    <string name="bill_link_go_home">होमवर जा</string>
+    <string name="discard_changes_title">बदल रद्द करायचे?</string>
+    <string name="discard_changes_message">सेव्ह न केलेले बदल हरवतील.</string>
+    <string name="discard_changes_discard">रद्द करा</string>
+    <string name="discard_changes_keep_editing">संपादन सुरू ठेवा</string>
+    <string name="watch_channel_name">वॉच</string>
+    <string name="watch_connected_title">%1$s तुमच्या अकाउंटशी कनेक्ट झाले</string>
+    <string name="watch_connected_title_unnamed">वॉच तुमच्या अकाउंटशी कनेक्ट झाले</string>
+    <string name="watch_connected_text">ते तुमचे ग्रुप पाहते आणि आपोआप सिंक होते. ते डिस्कनेक्ट करण्यासाठी वॉचवर साइन आउट करा.</string>
+</resources>

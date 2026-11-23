@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">बॅलन्स</string>
+    <string name="global_balances_profile">प्रोफाइल</string>
+    <string name="global_balances_offline">ऑफलाइन · या डिव्हाइसवरील बॅलन्स</string>
+    <string name="global_balances_filter">दाखवा</string>
+    <string name="global_balances_filter_all">सर्व</string>
+    <string name="global_balances_filter_you_owe">तुम्हाला द्यायचे आहेत</string>
+    <string name="global_balances_filter_owes_you">तुम्हाला येणे आहे</string>
+    <string name="global_balances_hint">सर्व ग्रुपचा हिशोब आधीच जुळवलेला आहे: प्रत्येक व्यक्ती एकदाच दिसते.</string>
+    <string name="global_balances_hint_empty">या डिव्हाइसवरील सर्व ग्रुपची बेरीज करत आहे.</string>
+    <string name="global_balances_section_you_owe">तुम्हाला द्यायचे आहेत · %d</string>
+    <string name="global_balances_section_owes_you">तुम्हाला येणे आहे · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d ग्रुप</item>
+        <item quantity="other">%d ग्रुप</item>
+    </plurals>
+    <string name="global_balances_guest">%s · पाहुणे</string>
+    <string name="global_balances_you_owe">तुम्हाला द्यायचे आहेत</string>
+    <string name="global_balances_owes_you">तुम्हाला येणे आहे</string>
+    <string name="global_balances_by_group_show">ग्रुपनुसार दाखवा: %s</string>
+    <string name="global_balances_by_group_hide">ग्रुपनुसार लपवा: %s</string>
+    <string name="global_balances_received">पैसे मिळाले</string>
+    <string name="global_balances_received_from">%s यांच्याकडून पैसे मिळाले</string>
+    <string name="global_balances_settle">हिशोब पूर्ण करा</string>
+    <string name="global_balances_settle_with">%s यांच्यासोबत हिशोब पूर्ण करा</string>
+    <string name="global_balances_charge">पैसे मागा</string>
+    <string name="global_balances_charge_person">%s यांच्याकडे पैसे मागा</string>
+    <string name="global_balances_detail_pane">%s यांच्यासोबत बॅलन्स</string>
+    <string name="global_balances_detail_owes_you">%s यांच्याकडून तुम्हाला येणे आहे</string>
+    <string name="global_balances_detail_you_owe">तुम्हाला द्यायचे आहेत: %s</string>
+    <string name="global_balances_detail_guest">%s · ॲप नसलेले पाहुणे</string>
+    <string name="global_balances_detail_note_owed">एकूण रकमेत सर्व ग्रुपचा हिशोब आधीच जुळवलेला आहे: “पैसे मागा” आणि “पैसे मिळाले” साठी रक्कम: %s. ॲप प्रत्येक ग्रुपमध्ये एक पेमेंट नोंदवते.</string>
+    <string name="global_balances_detail_note_settle">एकूण रकमेत सर्व ग्रुपचा हिशोब आधीच जुळवलेला आहे: “हिशोब पूर्ण करा” साठी रक्कम: %s. ॲप प्रत्येक ग्रुपमध्ये एक पेमेंट नोंदवते.</string>
+    <string name="global_balances_detail_note_single">%s यांच्यासोबत फक्त एकच ग्रुप बाकी आहे.</string>
+    <string name="global_balances_settled_title">सर्व हिशोब पूर्ण झाला</string>
+    <string name="global_balances_settled_body">तुम्हाला कोणाकडून येणे नाही आणि तुम्हाला कोणालाही द्यायचे नाही. कोणी खर्च जोडल्यावर बॅलन्स इथे दिसेल.</string>
+    <string name="global_balances_settled_action">ग्रुप पाहा</string>
+    <string name="global_balances_nothing_to_pay_title">तुम्हाला काहीही द्यायचे नाही</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">तुम्ही सर्वांसोबत हिशोब पूर्ण केला आहे. तुम्हाला अजून %1$d व्यक्तीकडून %2$s येणे आहे.</item>
+        <item quantity="other">तुम्ही सर्वांसोबत हिशोब पूर्ण केला आहे. तुम्हाला अजून %1$d लोकांकडून %2$s येणे आहे.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">तुम्हाला कोणाकडून येणे आहे ते पाहा</string>
+    <string name="global_balances_nothing_to_receive_title">तुम्हाला कोणाकडून येणे नाही</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">तुम्हाला अजून %1$d व्यक्तीला %2$s द्यायचे आहेत.</item>
+        <item quantity="other">तुम्हाला अजून %1$d लोकांना %2$s द्यायचे आहेत.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">तुम्हाला कोणाला द्यायचे आहेत ते पाहा</string>
+    <string name="global_balances_coming_soon">लवकरच येत आहे</string>
+    <string name="global_balances_change_error">बदल सेव्ह करता आला नाही. पुन्हा प्रयत्न करा.</string>
+    <string name="global_balances_copied">कॉपी केले</string>
+    <string name="global_balances_charge_title">%s यांच्याकडे पैसे मागा</string>
+    <string name="global_balances_charge_owes">तुम्हाला येणे आहे: %1$s · %2$s</string>
+    <string name="global_balances_charge_close">बंद करा</string>
+    <string name="global_balances_charge_guest">%s हे ॲप नसलेले पाहुणे आहेत. त्यांना याबद्दल फक्त या मेसेजमधून कळेल, म्हणून खर्चात काय काय होते ते त्यात आधीच लिहिलेले आहे.</string>
+    <string name="global_balances_charge_message">मेसेज</string>
+    <string name="global_balances_charge_pix">माझी Pix की जोडा</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">मेसेज कॉपी करा</string>
+    <string name="global_balances_charge_send">पाठवा</string>
+    <string name="global_balances_message">नमस्कार %1$s! Blitz Split च्या हिशोबानुसार तुम्हाला मला %2$s द्यायचे आहेत (%3$s).</string>
+    <string name="global_balances_message_guest">नमस्कार %1$s! तुम्हाला मला %2$s द्यायचे आहेत (%3$s). हा तुमचा वाटा आहे: %4$s.</string>
+    <string name="global_balances_message_guest_paid">नमस्कार %1$s! तुम्हाला मला %2$s द्यायचे आहेत (%3$s). हा तुमचा वाटा आहे: %4$s. तुम्ही आधीच दिलेले पैसे वजा केले आहेत: %5$s.</string>
+    <string name="global_balances_message_group">‘%s’ ग्रुप</string>
+    <string name="global_balances_message_groups">‘%s’ ग्रुप</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">फोन</string>
+    <string name="global_balances_key_email">ईमेल</string>
+    <string name="global_balances_key_random">रँडम की</string>
+    <string name="global_balances_message_reroute">‘%1$s’ ग्रुपमध्ये कर्जे सोपी केली गेली, त्यामुळे पैसे या व्यक्तीला न देता (%2$s) थेट मला द्या; तुमची एकूण रक्कम बदललेली नाही.</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">तुमचे ग्रुप परत आणा</string>
+    <string name="restore_subtitle">आधी अकाउंटने साइन इन केले होते? फक्त पुन्हा साइन इन करा. नसल्यास, रिकव्हरी कोड किंवा तुमच्या जुन्या डिव्हाइसवरील QR कोड वापरा.</string>
+    <string name="restore_no_connection_title">कनेक्शन नाही</string>
+    <string name="restore_no_connection_body">अकाउंट किंवा कोडने साइन इन करताना तुमचे ग्रुप डाउनलोड करण्यासाठी इंटरनेट लागते. तुम्ही टाइप केलेले तसेच राहील.</string>
+    <string name="restore_code_label">किंवा रिकव्हरी कोड वापरा</string>
+    <string name="restore_code_hint">12 शब्द, क्रमाने. सर्व फील्ड भरण्यासाठी सगळे शब्द एकाच फील्डमध्ये पेस्ट करा.</string>
+    <string name="restore_scan_qr_title">तुमच्या जुन्या डिव्हाइसवरील QR कोड स्कॅन करा</string>
+    <string name="restore_scan_qr_body">तिथे: प्रोफाइल › रिकव्हरी › QR कोड दाखवा</string>
+    <string name="restore_recover">परत आणा</string>
+    <string name="restore_try_again">पुन्हा प्रयत्न करा</string>
+    <string name="restore_start_fresh">या डिव्हाइसवर नव्याने सुरुवात करा</string>
+    <string name="restore_error_invalid_code">कोड सापडला नाही. शब्द आणि त्यांचा क्रम तपासा, मग पुन्हा प्रयत्न करा.</string>
+    <string name="restore_error_too_many_attempts">खूप जास्त प्रयत्न झाले. काही मिनिटे थांबा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="restore_error_sign_in_failed">आत्ता साइन इन करता आले नाही. पुन्हा प्रयत्न करा.</string>
+    <string name="restore_error_unknown">काहीतरी चुकले. पुन्हा प्रयत्न करा.</string>
+</resources>

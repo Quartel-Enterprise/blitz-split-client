@@ -865,6 +865,7 @@ export const id: Record<MessageKey, string> = {
   profile_languageNorwegian: 'Norwegia (Bokmål)',
   profile_languageTelugu: 'Telugu',
   profile_languageBulgarian: 'Bahasa Bulgaria',
+  profile_languageMarathi: 'Marathi',
   profile_languageSwahili: 'Swahili',
   profile_bitcoinInSats: 'Bitcoin dalam satoshi',
   profile_bitcoinInSatsDetail: 'Menampilkan dan mengetik nominal bitcoin dalam sats (1 ₿ = 100.000.000 sats).',

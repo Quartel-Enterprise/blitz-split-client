@@ -146,6 +146,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.NORWEGIAN,
                 AppLanguage.TELUGU,
                 AppLanguage.BULGARIAN,
+                AppLanguage.MARATHI,
                 AppLanguage.SWAHILI,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
@@ -195,6 +196,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "nb",
                     "te",
                     "bg",
+                    "mr",
                     "sw",
                     "zh-Hant",
                 ),
@@ -259,6 +261,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "nb",
             "te",
             "bg",
+            "mr",
             "sw",
             "zh-Hant",
         )
@@ -317,6 +320,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "nb-NO",
                 "te-IN",
                 "bg-BG",
+                "mr-IN",
                 "sw-KE",
                 "zh-TW",
             )
@@ -368,6 +372,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "nb",
                     "te",
                     "bg",
+                    "mr",
                     "sw",
                     "zh-Hant",
                 ),

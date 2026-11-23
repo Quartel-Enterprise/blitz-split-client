@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">हिशोब पूर्ण करण्याचा रिमाइंडर</string>
+    <string name="push_bill_created">%1$s यांनी तुमच्यासोबत ‘%2$s’ खर्च जोडला</string>
+    <string name="push_bill_edited">%1$s यांनी ‘%2$s’ खर्च संपादित केला</string>
+    <string name="push_bill_deleted">%1$s यांनी ‘%2$s’ खर्च हटवला</string>
+    <string name="push_comment_added">%1$s यांनी ‘%2$s’ खर्चावर कमेंट केली: %3$s</string>
+    <string name="push_payment_paid_you">%1$s यांनी नोंदवले की त्यांनी तुम्हाला पैसे दिले</string>
+    <string name="push_payment_to_you">%1$s यांनी नोंदवले की %2$s यांनी तुम्हाला पैसे दिले</string>
+    <string name="push_payment_received_yours">%1$s यांनी तुमचे पेमेंट मिळाल्याचे नोंदवले</string>
+    <string name="push_payment_from_you">%1$s यांनी नोंदवले की तुम्ही %2$s यांना पैसे दिले</string>
+    <string name="push_payment_undone">%1$s यांनी तुमच्यासोबतचे एक पेमेंट रद्द केले</string>
+    <string name="push_charge_sent">%1$s यांनी तुम्हाला हिशोब पूर्ण करण्याचा रिमाइंडर पाठवला</string>
+    <string name="push_settle_reminder">‘%1$s’ ग्रुपमध्ये तुमचा बॅलन्स अजून बाकी आहे</string>
+    <string name="push_settle_reminders">%1$s ग्रुपमध्ये तुमचे बॅलन्स अजून बाकी आहेत</string>
+    <string name="push_added_to_group">%1$s यांनी तुम्हाला ग्रुपमध्ये जोडले</string>
+    <string name="push_member_joined">%1$s यांनी ग्रुप जॉइन केला</string>
+    <string name="push_debts_simplified_to_you">%1$s यांनी कर्जे सोपी केली. आता %2$s तुम्हाला %3$s देतील.</string>
+    <string name="push_debts_simplified_from_you">%1$s यांनी कर्जे सोपी केली. आता तुम्ही %2$s यांना %3$s द्याल.</string>
+    <string name="push_debts_simplified_other">%1$s यांनी कर्जे सोपी केली. तुमच्यासाठी काय बदलले ते पाहा.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s यांनी “कर्जे सोपी करा” बंद केले. आता %2$s तुम्हाला %3$s देतील.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s यांनी “कर्जे सोपी करा” बंद केले. आता तुम्ही %2$s यांना %3$s द्याल.</string>
+    <string name="push_debts_unsimplified_other">%1$s यांनी “कर्जे सोपी करा” बंद केले. तुमच्यासाठी काय बदलले ते पाहा.</string>
+    <string name="notification_settings_bills">खर्च</string>
+    <string name="notification_settings_bills_detail">तुम्ही सहभागी असलेले नवीन, संपादित किंवा हटवलेले खर्च</string>
+    <string name="notification_settings_payments">पेमेंट आणि हिशोब</string>
+    <string name="notification_settings_payments_detail">तुम्हाला मिळालेली किंवा तुम्ही केलेली पेमेंट, आणि सोपी केलेली कर्जे</string>
+    <string name="notification_settings_comments">कमेंट</string>
+    <string name="notification_settings_comments_detail">तुम्ही सहभागी असलेल्या खर्चांवर आणि तुम्ही लिहिलेल्या चर्चांमध्ये</string>
+    <string name="notification_settings_people_and_groups">लोक आणि ग्रुप</string>
+    <string name="notification_settings_people_and_groups_detail">तुमच्या ग्रुपमध्ये कोण सामील होते किंवा ते सोडते, आणि त्यांच्यात काय बदलते</string>
+    <string name="notification_settings_payment_requests">पैसे मागण्याच्या विनंत्या</string>
+    <string name="notification_settings_payment_requests_detail">कोणी तुमच्याकडे पैसे मागते तेव्हा</string>
+    <string name="notification_settings_balance_reminder">बाकी बॅलन्सचा रिमाइंडर</string>
+    <string name="notification_settings_balance_reminder_detail">आठवड्यातून एकदा, बॅलन्स बाकी असल्यास</string>
+</resources>
