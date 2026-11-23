@@ -76,10 +76,10 @@
     <string name="activity_detail_charge">%s · besked sendt</string>
     <string name="activity_detail_comment">»%s«</string>
     <string name="activity_detail_change">%1$s %2$s → %3$s</string>
-    <string name="activity_deleted_notice_bill">%2$s slettede %1$s %3$s. Hændelsen bliver stående i Aktivitet, men udgiften kan ikke længere åbnes.</string>
-    <string name="activity_deleted_notice_group">%2$s slettede %1$s %3$s. Hændelsen bliver stående i Aktivitet, men gruppen kan ikke længere åbnes.</string>
-    <string name="activity_deleted_notice_bill_unknown">%s blev slettet. Hændelsen bliver stående i Aktivitet, men udgiften kan ikke længere åbnes.</string>
-    <string name="activity_deleted_notice_group_unknown">%s blev slettet. Hændelsen bliver stående i Aktivitet, men gruppen kan ikke længere åbnes.</string>
+    <string name="activity_deleted_notice_bill">%2$s slettede %1$s %3$s. Posten bliver i Aktivitet, men udgiften kan ikke længere åbnes.</string>
+    <string name="activity_deleted_notice_group">%2$s slettede %1$s %3$s. Posten bliver i Aktivitet, men gruppen kan ikke længere åbnes.</string>
+    <string name="activity_deleted_notice_bill_unknown">%s blev slettet. Posten bliver i Aktivitet, men udgiften kan ikke længere åbnes.</string>
+    <string name="activity_deleted_notice_group_unknown">%s blev slettet. Posten bliver i Aktivitet, men gruppen kan ikke længere åbnes.</string>
     <string name="activity_this_bill">Denne udgift</string>
     <string name="activity_this_group">Denne gruppe</string>
     <string name="activity_you_lowercase">du</string>

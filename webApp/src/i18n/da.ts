@@ -8,7 +8,6 @@ import type { MessageKey } from './en'
 export const da: Record<MessageKey, string> = {
   appName: 'Blitz Split',
 
-
   common_back: 'Tilbage',
   common_continueWithGoogle: 'Fortsæt med Google',
   common_continueWithApple: 'Fortsæt med Apple',
@@ -1681,8 +1680,8 @@ export const da: Record<MessageKey, string> = {
   activity_groupDeletedPassive: '{subject} blev slettet',
   activity_thisBill: 'denne udgift',
   activity_thisGroup: 'denne gruppe',
-  activity_deletedBillTail: 'Registreringen bliver i Aktivitet, men udgiften kan ikke længere åbnes.',
-  activity_deletedGroupTail: 'Registreringen bliver i Aktivitet, men gruppen kan ikke længere åbnes.',
+  activity_deletedBillTail: 'Posten bliver i Aktivitet, men udgiften kan ikke længere åbnes.',
+  activity_deletedGroupTail: 'Posten bliver i Aktivitet, men gruppen kan ikke længere åbnes.',
   activity_onToday: 'i dag',
   activity_onYesterday: 'i går',
   activity_onDayFeminine: '{day}',
@@ -2294,7 +2293,7 @@ export const da: Record<MessageKey, string> = {
   simplifyConfirm_footOffNone: 'Alle kan se det under Aktivitet.',
   simplifyConfirm_footMinimal: 'Alle kan se det under Aktivitet. Du kan slå det fra når som helst.',
   simplifyConfirm_notNow: 'Ikke nu',
-  simplifyConfirm_simplify: 'Forenkle',
+  simplifyConfirm_simplify: 'Forenkl',
   simplifyConfirm_turnOnAnyway: 'Slå til alligevel',
   simplifyConfirm_turnOff: 'Slå fra',
   simplifyConflict_on: '{name} slog det til efter dig. Den seneste ændring gælder: Forenkle gæld er slået til.',
