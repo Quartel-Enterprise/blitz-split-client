@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">பேலன்ஸ்கள்</string>
+    <string name="global_balances_profile">சுயவிவரம்</string>
+    <string name="global_balances_offline">ஆஃப்லைன் · இந்தச் சாதனத்தின் பேலன்ஸ்கள்</string>
+    <string name="global_balances_filter">காட்டு</string>
+    <string name="global_balances_filter_all">அனைத்தும்</string>
+    <string name="global_balances_filter_you_owe">நீங்கள் தர வேண்டும்</string>
+    <string name="global_balances_filter_owes_you">உங்களுக்கு வர வேண்டும்</string>
+    <string name="global_balances_hint">குழுக்களுக்கு இடையே ஏற்கெனவே ஈடுசெய்யப்பட்டது: ஒவ்வொரு நபரும் ஒருமுறை மட்டுமே காட்டப்படுவார்.</string>
+    <string name="global_balances_hint_empty">இந்தச் சாதனத்தில் உள்ள எல்லாக் குழுக்களையும் கூட்டுகிறது.</string>
+    <string name="global_balances_section_you_owe">நீங்கள் தர வேண்டும் · %d</string>
+    <string name="global_balances_section_owes_you">உங்களுக்கு வர வேண்டும் · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d குழு</item>
+        <item quantity="other">%d குழுக்கள்</item>
+    </plurals>
+    <string name="global_balances_guest">%s · விருந்தினர்</string>
+    <string name="global_balances_you_owe">நீங்கள் தர வேண்டும்</string>
+    <string name="global_balances_owes_you">உங்களுக்கு வர வேண்டும்</string>
+    <string name="global_balances_by_group_show">குழுவாரியாகக் காட்டு: %s</string>
+    <string name="global_balances_by_group_hide">குழுவாரியாக மறை: %s</string>
+    <string name="global_balances_received">பணம் கிடைத்தது</string>
+    <string name="global_balances_received_from">பணம் கிடைத்தது: %s</string>
+    <string name="global_balances_settle">கணக்கைத் தீர்க்கவும்</string>
+    <string name="global_balances_settle_with">கணக்கைத் தீர்க்கவும்: %s</string>
+    <string name="global_balances_charge">பணம் கேட்கவும்</string>
+    <string name="global_balances_charge_person">பணம் கேட்கவும்: %s</string>
+    <string name="global_balances_detail_pane">பேலன்ஸ்: %s</string>
+    <string name="global_balances_detail_owes_you">%s உங்களுக்குத் தர வேண்டும்</string>
+    <string name="global_balances_detail_you_owe">நீங்கள் தர வேண்டும்: %s</string>
+    <string name="global_balances_detail_guest">%s · ஆப் இல்லாத விருந்தினர்</string>
+    <string name="global_balances_detail_note_owed">நிகரத் தொகை ஏற்கெனவே குழுக்களை ஈடுசெய்கிறது: பணம் கேட்கவும், பணம் கிடைத்தது ஆகிய இரண்டும் %s தொகையைப் பயன்படுத்தும். ஆப் ஒவ்வொரு குழுவிலும் ஒரு பேமெண்ட்டைப் பதிவு செய்யும்.</string>
+    <string name="global_balances_detail_note_settle">நிகரத் தொகை ஏற்கெனவே குழுக்களை ஈடுசெய்கிறது: கணக்கைத் தீர்க்கவும் %s தொகையைப் பயன்படுத்தும். ஆப் ஒவ்வொரு குழுவிலும் ஒரு பேமெண்ட்டைப் பதிவு செய்யும்.</string>
+    <string name="global_balances_detail_note_single">இவருடன் ஒரே ஒரு குழு மட்டுமே திறந்துள்ளது: %s.</string>
+    <string name="global_balances_settled_title">எல்லாம் தீர்ந்தது</string>
+    <string name="global_balances_settled_body">யாரும் உங்களுக்குத் தர வேண்டியதில்லை, நீங்களும் யாருக்கும் தர வேண்டியதில்லை. யாராவது ஒரு செலவைச் சேர்க்கும்போது, பேலன்ஸ் இங்கே தோன்றும்.</string>
+    <string name="global_balances_settled_action">குழுக்களைப் பார்க்கவும்</string>
+    <string name="global_balances_nothing_to_pay_title">நீங்கள் எதுவும் தர வேண்டியதில்லை</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">நீங்கள் அனைவருடனும் கணக்கைத் தீர்த்துவிட்டீர்கள். %1$d நபரிடமிருந்து உங்களுக்கு இன்னும் %2$s வர வேண்டும்.</item>
+        <item quantity="other">நீங்கள் அனைவருடனும் கணக்கைத் தீர்த்துவிட்டீர்கள். %1$d பேரிடமிருந்து உங்களுக்கு இன்னும் %2$s வர வேண்டும்.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">உங்களுக்கு யார் தர வேண்டும் என்று பார்க்கவும்</string>
+    <string name="global_balances_nothing_to_receive_title">யாரும் உங்களுக்குத் தர வேண்டியதில்லை</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">நீங்கள் இன்னும் %1$d நபருக்கு %2$s தர வேண்டும்.</item>
+        <item quantity="other">நீங்கள் இன்னும் %1$d பேருக்கு %2$s தர வேண்டும்.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">நீங்கள் யாருக்குத் தர வேண்டும் என்று பார்க்கவும்</string>
+    <string name="global_balances_coming_soon">விரைவில் வருகிறது</string>
+    <string name="global_balances_change_error">மாற்றத்தைச் சேமிக்க முடியவில்லை. மீண்டும் முயலுங்கள்.</string>
+    <string name="global_balances_copied">நகலெடுக்கப்பட்டது</string>
+    <string name="global_balances_charge_title">பணம் கேட்கவும்: %s</string>
+    <string name="global_balances_charge_owes">உங்களுக்கு %1$s வர வேண்டும் · %2$s</string>
+    <string name="global_balances_charge_close">மூடவும்</string>
+    <string name="global_balances_charge_guest">%s ஆப் இல்லாத விருந்தினர். இந்தச் செய்தியிலிருந்து மட்டுமே அவர் இதைப் பற்றி அறிவார், எனவே செலவில் என்ன சேர்ந்தது என்பதை இது ஏற்கெனவே சொல்கிறது.</string>
+    <string name="global_balances_charge_message">செய்தி</string>
+    <string name="global_balances_charge_pix">என் Pix கீயைச் சேர்க்கவும்</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">செய்தியை நகலெடுக்கவும்</string>
+    <string name="global_balances_charge_send">அனுப்பவும்</string>
+    <string name="global_balances_message">வணக்கம் %1$s! Blitz Split கணக்குப்படி, நீங்கள் எனக்கு %2$s தர வேண்டும் (%3$s).</string>
+    <string name="global_balances_message_guest">வணக்கம் %1$s! நீங்கள் எனக்கு %2$s தர வேண்டும் (%3$s). இது உங்கள் பங்கு: %4$s.</string>
+    <string name="global_balances_message_guest_paid">வணக்கம் %1$s! நீங்கள் எனக்கு %2$s தர வேண்டும் (%3$s). இது உங்கள் பங்கு: %4$s, நீங்கள் ஏற்கெனவே செலுத்தியதைக் கழித்து (%5$s).</string>
+    <string name="global_balances_message_group">குழு %s</string>
+    <string name="global_balances_message_groups">குழுக்கள் %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">தொலைபேசி</string>
+    <string name="global_balances_key_email">மின்னஞ்சல்</string>
+    <string name="global_balances_key_random">ரேண்டம் கீ</string>
+    <string name="global_balances_message_reroute">%1$s குழு அதன் கடன்களை எளிதாக்கியது, எனவே இவருக்குச் செலுத்துவதற்குப் பதிலாக (%2$s) நீங்கள் எனக்கு நேரடியாகச் செலுத்துங்கள்; உங்கள் மொத்தம் மாறவில்லை.</string>
+</resources>

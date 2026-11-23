@@ -863,6 +863,7 @@ export const bg: Record<MessageKey, string> = {
   profile_languageSerbian: 'Сръбски',
   profile_languageSlovak: 'Словашки',
   profile_languagePersian: 'Персийски',
+  profile_languageTamil: 'Тамилски',
   profile_languageBulgarian: 'Български',
   profile_bitcoinInSats: 'Биткойн в сатоши',
   profile_bitcoinInSatsDetail: 'Показва и въвежда сумите в биткойн в сатоши (1 ₿ = 100 000 000 sats).',

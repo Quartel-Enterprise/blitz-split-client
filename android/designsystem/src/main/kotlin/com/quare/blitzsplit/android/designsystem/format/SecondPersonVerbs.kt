@@ -82,6 +82,10 @@ private val secondPersonAuxiliaries = mapOf(
 private val turkishPast = Regex("[dt][ıiuü]$")
 private val persianPast = Regex("[دت]$")
 private const val PERSIAN_SECOND_PERSON_ENDING = "ید"
+private const val TAMIL = "ta"
+private const val TAMIL_THIRD_PERSON_PAST = "ார்"
+private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
+private const val TAMIL_SECOND_PERSON_PAST = "ீர்கள்"
 private val youSubjectLanguages = setOf(
     SPANISH,
     PORTUGAL_PORTUGUESE,
@@ -110,6 +114,7 @@ private val youSubjectLanguages = setOf(
     PERSIAN,
     FILIPINO,
     LEGACY_TAGALOG,
+    TAMIL,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -157,8 +162,10 @@ private val irregularSecondPerson = mapOf(
  * and Malay's verb doesn't change with the person. Urdu needs none either: its ergative "نے" is written apart after
  * a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ بانٹا"). Bulgarian needs none either: its aorist, which every Bulgarian verb phrase
  * starts with, is the same for the user's "Ти" and for a name ("Ana раздели", "Ти раздели"). Filipino needs none: its "ay" and
- * its actor-focus verb are the same for the user's "Ikaw" and for a name ("Ana ay nagbahagi", "Ikaw ay nagbahagi"). Same rules as the web's and the Apple
- * app's `verbForYou`.
+ * its actor-focus verb are the same for the user's "Ikaw" and for a name ("Ana ay nagbahagi", "Ikaw ay nagbahagi").
+ * Tamil puts its verb last too, ending every verb phrase, before the colon that leads to the object, with a
+ * respectful past in "-ார்", which the user's turns into "-ீர்கள்" ("Ana ஒரு செலவைப் பிரித்தார்", "நீங்கள் ஒரு
+ * செலவைப் பிரித்தீர்கள்"). Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -179,6 +186,8 @@ fun toSecondPerson(
     TURKISH -> toVerbLastSecondPerson(verb, turkishPast, "n")
 
     PERSIAN -> toVerbLastSecondPerson(verb, persianPast, PERSIAN_SECOND_PERSON_ENDING)
+
+    TAMIL -> toVerbLastSecondPerson(verb, tamilPast, TAMIL_SECOND_PERSON_PAST, dropped = TAMIL_THIRD_PERSON_PAST)
 
     KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
 
@@ -214,16 +223,18 @@ private fun replaceFirstWord(
  * colon that leads to the object if there is one ("bir harcamayı böldü:", "هزینه‌ای را تقسیم کرد:"), and the second
  * person adds its ending to it: Turkish an "n" whatever the vowel ("böldü" → "böldün", "katıldı" → "katıldın"),
  * Persian, whose past stem ends in "د" or "ت", the respectful "ید" ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید").
- * A phrase whose clause doesn't end in that past stays as it is.
+ * Tamil's respectful past drops its "-ார்" for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"): `dropped`. A
+ * phrase whose clause doesn't end in that past stays as it is.
  */
 private fun toVerbLastSecondPerson(
     verb: String,
     past: Regex,
     ending: String,
+    dropped: String = "",
 ): String {
     val clause = verb.substringBefore(':').trimEnd()
     if (!past.containsMatchIn(clause)) return verb
-    return clause + ending + verb.substring(clause.length)
+    return clause.removeSuffix(dropped) + ending + verb.substring(clause.length)
 }
 
 /*
@@ -280,7 +291,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * smazal(a)…", Slovak "Ty si vymazal(a)…", Bulgarian "Ти изтри…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
- * would need "ni" for a name and "mo" for the user.
+ * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

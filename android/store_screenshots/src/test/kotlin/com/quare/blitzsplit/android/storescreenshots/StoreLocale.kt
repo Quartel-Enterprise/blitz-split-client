@@ -217,6 +217,11 @@ internal val storeLocales = listOf(
         drawnLocale = "fa-IR",
     ),
     StoreLocale(
+        tag = "ta",
+        language = "ta",
+        drawnLocale = "ta",
+    ),
+    StoreLocale(
         tag = "bg",
         language = "bg",
         drawnLocale = "bg",

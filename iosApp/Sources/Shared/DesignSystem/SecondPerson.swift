@@ -95,6 +95,7 @@ enum SecondPerson {
         case "pt-PT": return portugueseVerbForYou(verb)
         case "tr": return turkishVerbForYou(verb)
         case "fa": return verbLastForYou(verb, past: "[دت]$", ending: "ید")
+        case "ta": return verbLastForYou(verb, past: "ார்$", ending: "ீர்கள்", dropped: "ார்")
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case let .some(code) where pastAuxiliaries[code] != nil:
@@ -149,16 +150,22 @@ enum SecondPerson {
 
     /// A language that puts its verb last (Turkish, Persian): the clause before the colon that leads to the object, if
     /// any, ends with a simple past matching `past`, which takes `ending` for the user. Persian's past stem ends in "د"
-    /// or "ت" and takes the respectful "ید" ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید"). A phrase whose clause
+    /// or "ت" and takes the respectful "ید" ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید"). Tamil's respectful past
+    /// drops its "-ார்" (`dropped`) for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"). A phrase whose clause
     /// doesn't end in that past stays as it is.
-    private static func verbLastForYou(_ verb: String, past: String, ending: String) -> String {
+    private static func verbLastForYou(_ verb: String, past: String, ending: String, dropped: String = "") -> String {
         var end = verb.firstIndex(of: ":") ?? verb.endIndex
         while end > verb.startIndex, verb[verb.index(before: end)].isWhitespace {
             end = verb.index(before: end)
         }
         let clause = verb[..<end]
         guard clause.range(of: past, options: .regularExpression) != nil else { return verb }
-        return String(clause) + ending + String(verb[end...])
+        // Why: the Unicode scalars, since Swift's Character groups a vowel sign ("ா") with the consonant before it.
+        var stem = String.UnicodeScalarView(clause.unicodeScalars)
+        if stem.reversed().starts(with: dropped.unicodeScalars.reversed()) {
+            stem.removeLast(dropped.unicodeScalars.count)
+        }
+        return String(stem) + ending + String(verb[end...])
     }
 
     private static func portugueseVerbForYou(_ verb: String) -> String {

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">சொற்கள் இல்லை</string>
+    <string name="category_map_title">வகை வரைபடம்</string>
+    <string name="category_map_search">சொற்களைத் தேடவும்</string>
+    <string name="category_map_add">சொல்லைச் சேர்க்கவும்</string>
+    <string name="category_map_more">மேலும் விருப்பங்கள்</string>
+    <string name="category_map_restore">இயல்புநிலைக்கு மீட்டமைக்கவும்</string>
+    <string name="category_map_back">பின்செல்</string>
+    <string name="category_map_intro">ஒரு செலவின் தலைப்பில் இவற்றில் ஏதேனும் ஒரு சொல் இருந்தால், அதன் வகை தானாகவே வரும். “Uber வீடு” போக்குவரத்து வகையாகிவிடும்.</string>
+    <string name="category_map_intro_offline">வரைபடம் ஆஃப்லைனிலும் வேலை செய்யும்: மாற்றங்கள் இந்தச் சாதனத்தில் உடனே செயல்படும், மீண்டும் ஆன்லைனுக்கு வந்ததும் உங்கள் மற்ற சாதனங்களையும் சென்றடையும்.</string>
+    <string name="category_map_device_only">உங்கள் வரைபடம் இந்தச் சாதனத்தில் மட்டுமே இருக்கும். அதை உங்கள் மற்ற சாதனங்களுக்கும் கொண்டுசெல்ல, சுயவிவரத்தில் Google அல்லது Apple மூலம் உள்நுழையுங்கள்.</string>
+    <string name="category_map_open_profile">சுயவிவரத்தைத் திறக்கவும்</string>
+    <string name="category_map_longest_wins">இரண்டு சொற்கள் ஒரு தலைப்புடன் பொருந்தினால், நீளமான சொல்லே தேர்வாகும்.</string>
+    <string name="category_map_no_result">இந்தச் சொல் இல்லை: “%1$s”</string>
+    <string name="category_map_no_result_body">இதைச் சேர்த்தால், தலைப்பில் இந்தச் சொல் உள்ள செலவுகள் சரியான வகையுடன் வரும்.</string>
+    <string name="category_map_add_query">சேர்க்கவும்: “%1$s”</string>
+    <string name="category_map_empty_title">உங்கள் வரைபடம் காலியாக உள்ளது</string>
+    <string name="category_map_empty_body">சொற்கள் இல்லாமல், வகை தலைப்பிலிருந்து வராது: ஒவ்வொரு செலவிலும் நீங்களே அதைத் தேர்ந்தெடுக்க வேண்டும்.</string>
+    <string name="category_map_group_category"> · ‘%1$s’ குழுவின் வகை</string>
+    <string name="category_map_only_main">%1$s மட்டும்</string>
+    <string name="category_map_only_in_group">‘%1$s’ குழுவில் மட்டும்</string>
+    <string name="category_map_no_terms_yet">இன்னும் சொற்கள் இல்லை.</string>
+    <string name="category_map_add_in">சொல்லைச் சேர்க்கவும்: %1$s</string>
+    <string name="category_map_tip">ஒரு சொல்லின் வகையை மாற்ற அல்லது அதை அகற்ற, அதைத் தட்டுங்கள். அது முழுச் சொல்லுடன் பொருந்தும், உச்சரிப்புக் குறிகளையும் பெரிய/சிறிய எழுத்துகளையும் பொருட்படுத்தாது.</string>
+    <string name="category_map_queued">வரிசையில்</string>
+    <string name="category_map_term_action">%1$s, %2$s. திருத்தவும்</string>
+    <string name="category_map_new_term">புதிய சொல்</string>
+    <string name="category_map_edit_term">சொல்லைத் திருத்தவும்</string>
+    <string name="category_map_term_label">சொல் அல்லது சொற்றொடர்</string>
+    <string name="category_map_term_help">முழுச் சொல்லுடன் பொருந்தும், உச்சரிப்புக் குறிகளையும் பெரிய/சிறிய எழுத்துகளையும் பொருட்படுத்தாது.</string>
+    <string name="category_map_term_help_app">ஆப்பின் சொல். இயல்புநிலைக்கு மீட்டமைத்தால் அது முதலில் இருந்தபடியே திரும்ப வரும்.</string>
+    <string name="category_map_term_duplicate">“%1$s” ஏற்கெனவே இந்த வகையைத் தேர்ந்தெடுக்கிறது: %2$s. ஒவ்வொரு சொல்லுக்கும் ஒரே ஒரு வகைதான்.</string>
+    <string name="category_map_term_too_short">குறைந்தது 2 எழுத்துகளைப் பயன்படுத்துங்கள்.</string>
+    <string name="category_map_term_too_long">அதிகபட்சம் 30 எழுத்துகளைப் பயன்படுத்துங்கள்.</string>
+    <string name="category_map_term_invalid">எழுத்துகள், எண்கள், இடைவெளிகளை மட்டுமே பயன்படுத்துங்கள்.</string>
+    <string name="category_map_category">வகை</string>
+    <string name="category_map_category_help">இது ஒரு வகையாகவோ துணை வகையாகவோ இருக்கலாம்.</string>
+    <string name="category_map_category_help_edit">இங்கே மாற்றினால், சொல் வேறொரு வகைக்கு நகரும்.</string>
+    <string name="category_map_category_help_move">நகர்த்தினால், சொல் இந்த வகையிலிருந்து நீங்கும்: %1$s.</string>
+    <string name="category_map_example">எடுத்துக்காட்டு</string>
+    <string name="category_map_example_move">நகர்த்தினால்</string>
+    <string name="category_map_remove">அகற்றவும்</string>
+    <string name="category_map_cancel">ரத்துசெய்</string>
+    <string name="category_map_save">சேமிக்கவும்</string>
+    <string name="category_map_move_to">இங்கே நகர்த்தவும்: %1$s</string>
+    <string name="category_map_removed">“%1$s” வரைபடத்திலிருந்து நீக்கப்பட்டது</string>
+    <string name="category_map_undo">செயல்தவிர்</string>
+    <string name="category_map_restore_title">இயல்பு வரைபடத்தை மீட்டமைக்கவா?</string>
+    <string name="category_map_restore_body">ஆப்பின் 60 சொற்களும் முதலில் இருந்தபடியே திரும்ப வரும், நீங்கள் அகற்றியவை அல்லது நகர்த்தியவை உட்பட.</string>
+    <string name="category_map_restore_own_one">நீங்கள் உருவாக்கிய சொல் “%1$s” அப்படியே இருக்கும்.</string>
+    <string name="category_map_restore_confirm">மீட்டமைக்கவும்</string>
+    <string name="category_map_save_error">வரைபடத்தைச் சேமிக்க முடியவில்லை. மீண்டும் முயலுங்கள்.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d சொல்</item>
+        <item quantity="other">%d சொற்கள்</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d துணை வகை</item>
+        <item quantity="other">%d துணை வகைகள்</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d சொல்: “%2$s”</item>
+        <item quantity="other">%1$d சொற்கள்: “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">ஆஃப்லைன் · %d மாற்றம் வரிசையில்</item>
+        <item quantity="other">ஆஃப்லைன் · %d மாற்றங்கள் வரிசையில்</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">நீங்கள் உருவாக்கிய %d சொல் அப்படியே இருக்கும்.</item>
+        <item quantity="other">நீங்கள் உருவாக்கிய %d சொற்கள் அப்படியே இருக்கும்.</item>
+    </plurals>
+    <string name="category_map_new_category">புதிய வகை</string>
+    <string name="category_map_new_subcategory_in">புதிய துணை வகை: %s</string>
+    <string name="category_map_edit_category">திருத்தவும்: %s</string>
+    <string name="category_map_category_group">குழு</string>
+    <string name="category_map_change_color">நிறத்தை மாற்றவும்: %1$s</string>
+    <string name="category_map_restore_color">நிறத்தை மீட்டமைக்கவும்</string>
+    <string name="category_map_color_done">முடிந்தது</string>
+</resources>
