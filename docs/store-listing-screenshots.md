@@ -344,7 +344,7 @@ and `upload_play_screenshots` of the [Fastfile](../fastlane/Fastfile), with the 
 [`play-screenshot-groups.mjs`](../scripts/release/play-screenshot-groups.mjs), which has tests):
 
 - **A few locales per save.** The locales go up in groups, `group_size` to a job (6 unless the run says), each
-  group through one edit: eight saves for Play's 46 locales, where one job per locale was 45.
+  group through one edit: eight saves for Play's 46 locales, where one job per locale was 46.
 - **No save for what didn't change.** Before it opens an edit to write, the lane reads what Google Play holds
   (through an edit it deletes, which is no save) and leaves out every locale whose staged images are the ones
   already there, shelf by shelf and in order. A group with no locale left opens no edit. supply's

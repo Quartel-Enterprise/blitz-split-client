@@ -82,7 +82,7 @@
     <string name="activity_deleted_notice_group_unknown">%s blev slettet. Hændelsen bliver stående i Aktivitet, men gruppen kan ikke længere åbnes.</string>
     <string name="activity_this_bill">Denne udgift</string>
     <string name="activity_this_group">Denne gruppe</string>
-    <string name="activity_you_lowercase">dig</string>
+    <string name="activity_you_lowercase">du</string>
     <string name="activity_field_amount">Beløb</string>
     <string name="activity_field_description">Beskrivelse</string>
     <string name="activity_field_spent_at">Hvornår</string>
