@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">گروه جدید</string>
+    <string name="create_group_close">بستن</string>
+    <string name="create_group_create">ایجاد</string>
+    <string name="create_group_change_color">تغییر رنگ گروه</string>
+    <string name="create_group_name_label">نام گروه</string>
+    <string name="create_group_type_label">نوع گروه</string>
+    <string name="create_group_members_title">چه کسانی هستند</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d نفر</item>
+        <item quantity="other">%d نفر</item>
+    </plurals>
+    <string name="create_group_me">شما</string>
+    <string name="create_group_remove_member">حذف %s</string>
+    <string name="create_group_add_placeholder">افزودن با نام</string>
+    <string name="create_group_add">افزودن</string>
+    <string name="create_group_no_app_notice">فعلاً کسی به برنامه نیاز ندارد. همین حالا می‌توانید برای همه هزینه اضافه کنید و لینک را بعداً بفرستید.</string>
+    <string name="create_group_currency">ارز پیش‌فرض</string>
+    <string name="create_group_currency_caption">هزینه‌های جدید با این ارز شروع می‌شوند؛ هر هزینه می‌تواند ارز دیگری داشته باشد.</string>
+    <string name="create_group_save_error">گروه ذخیره نشد. دوباره تلاش کنید.</string>
+    <string name="create_group_photo">عکس گروه</string>
+    <string name="create_group_take_photo">گرفتن عکس</string>
+    <string name="create_group_choose_photo">انتخاب عکس</string>
+    <string name="create_group_remove_photo">حذف عکس</string>
+    <string name="create_group_photo_error">از این عکس نمی‌شود استفاده کرد. عکس دیگری را امتحان کنید.</string>
+</resources>

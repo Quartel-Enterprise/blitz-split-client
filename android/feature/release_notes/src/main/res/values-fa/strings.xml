@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">تازه‌ها</string>
+    <string name="release_notes_show_beta">نمایش نسخه‌های بتا</string>
+    <string name="release_notes_beta_badge">بتا %1$d</string>
+    <string name="release_notes_installed_badge">این نسخه</string>
+    <string name="release_notes_empty">هنوز تازه‌ای وجود ندارد.</string>
+    <string name="release_notes_empty_only_betas">هنوز نسخه پایداری وجود ندارد. نسخه‌های بتا را روشن کنید تا ببینید چه چیزی در حال آزمایش است.</string>
+    <string name="release_notes_load_failed_title">تازه‌ها بارگذاری نشد</string>
+    <string name="release_notes_load_failed_body">اتصال خود را بررسی کنید و دوباره تلاش کنید.</string>
+    <string name="release_notes_retry">تلاش دوباره</string>
+    <string name="release_notes_open_on_github">باز کردن در GitHub</string>
+</resources>

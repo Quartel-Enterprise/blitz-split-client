@@ -87,6 +87,7 @@
     <string name="profile_language_urdu">우르두어</string>
     <string name="profile_language_filipino">필리핀어</string>
     <string name="profile_language_serbian">세르비아어</string>
+    <string name="profile_language_persian">페르시아어</string>
     <string name="profile_language_system_detail">기기 언어</string>
     <string name="profile_notifications">알림</string>
     <plurals name="profile_notifications_active">
