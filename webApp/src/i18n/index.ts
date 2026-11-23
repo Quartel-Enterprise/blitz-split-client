@@ -381,9 +381,9 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * Filipino's "ay" and actor-focus verb are the same for "Ikaw" and for a name, so its verb stays as it is too.
  * Persian puts the verb last as Turkish does, so its verb phrases end with a simple past, which takes the respectful
  * "ید" of "شما": "تقسیم کرد" becomes "تقسیم کردید".
- * Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is.
  * Tamil ones end, before the colon that leads to the object, with a respectful past in "-ார்", which becomes the user's
  * "-ீர்கள்": "பிரித்தார்" becomes "பிரித்தீர்கள்".
+ * Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is.
  * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste". Same
  * rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
