@@ -648,15 +648,17 @@ fastlane match appstore --platform macos --additional_cert_types mac_installer_d
 fastlane match adhoc --platform ios --app_identifier com.quare.blitzsplit,com.quare.blitzsplit.BalanceWidget,com.quare.blitzsplit.watchkitapp,com.quare.blitzsplit.watchkitapp.BalanceWidget --team_id TTV2A365LG --git_url git@github.com:Quartel-Enterprise/bible-planner-certs.git
 ```
 
-A capability added to the App ID later (Sign in with Apple, push, associated domains) needs the profiles made again:
-the same commands with `--force`.
+A capability added to the App ID later (Sign in with Apple, push, associated domains, App Groups) needs the profiles
+made again: the same three commands with `--force`. The iPhone, the iPad and the Mac share the App ID
+`com.quare.blitzsplit`, so a change to it invalidates the macOS profile too, even when the capability is only the
+iPhone's.
 
 The balance widget reads the file the iPhone app writes to the App Group `group.com.quare.blitzsplit`, so before the
 first iOS beta that has it, once, on developer.apple.com › Certificates, Identifiers & Profiles: create the App Group
 `group.com.quare.blitzsplit`, register the App ID `com.quare.blitzsplit.BalanceWidget`, turn App Groups on for it and
-for `com.quare.blitzsplit` with that group, then make the iOS profiles again (the two iOS commands above with
-`--force`). Until then match finds no profile for the widget and the iOS beta fails; the macOS one, which has no
-widget, doesn't change.
+for `com.quare.blitzsplit` with that group, then make every profile again (the three commands above with `--force`:
+turning App Groups on for `com.quare.blitzsplit` invalidates its macOS profile as well). Until then match finds no
+profile for the widget and the iOS beta fails, and the macOS one fails on its invalid profile.
 
 ### The Apple Watch app
 
@@ -676,7 +678,9 @@ them, once, on developer.apple.com › Certificates, Identifiers & Profiles (not
    bundle id as the topic: the watch's tokens (`push_devices.platform = 'watchos'`) need the `push` edge function to
    send them with `com.quare.blitzsplit.watchkitapp` (blitz-split-api).
 
-Until then match finds no profile for the watch's ids and the iOS beta fails at signing; the macOS one doesn't change.
+Until then match finds no profile for the watch's ids and the iOS beta fails at signing (`No matching provisioning
+profiles found for 'AppStore_com.quare.blitzsplit.BalanceWidget.mobileprovision'`); registering the watch's App IDs
+leaves the macOS profile valid. Both setups were done on 2026-11-23.
 A local build signs automatically, so Xcode registers the two ids itself on the team the first time it builds the
 watch app for a device.
 
