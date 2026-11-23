@@ -433,6 +433,18 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Iran WHEN picking its currency THEN it is the Iranian rial without decimals`() {
+        // Given
+        val region = "IR"
+
+        // When
+        val currency = GroupCurrency.ofRegion(region)
+
+        // Then
+        assertEquals(GroupCurrency.IRR to 0, currency to currency.fractionDigits)
+    }
+
+    @Test
     fun `GIVEN Norway Svalbard or Bouvet Island WHEN picking its currency THEN it is the Norwegian krone`() {
         // Given
         val regions = listOf("NO", "SJ", "BV")

@@ -18,6 +18,12 @@ object ExpenseRules {
      */
     private const val MAX_DONG = 100_000_000_000L
 
+    /*
+     * Why: 100 million rials is less than US$ 100 (about a million rials a dollar in 2026), not even a dinner out in
+     * Tehran; this is about US$ 5 million, and keeps room as the rial falls.
+     */
+    private const val MAX_RIAL = 5_000_000_000_000L
+
     // Why: never more bitcoin than will ever exist.
     private const val MAX_BITCOIN = 21_000_000L
 
@@ -29,6 +35,7 @@ object ExpenseRules {
         GroupCurrency.ETH -> MAX_ETHER
         GroupCurrency.IDR -> MAX_RUPIAH
         GroupCurrency.VND -> MAX_DONG
+        GroupCurrency.IRR -> MAX_RIAL
         else -> MAX_AMOUNT_MAJOR
     } * minorPerMajorFor(currency)
 

@@ -75,6 +75,7 @@ object SampleTrips {
         "fil" to GroupCurrency.PHP,
         "sr" to GroupCurrency.RSD,
         "sk" to GroupCurrency.EUR,
+        "fa" to GroupCurrency.IRR,
         "nb" to GroupCurrency.NOK,
     )
 
@@ -272,6 +273,7 @@ object SampleTrips {
             GroupCurrency.PKR -> 280.0 to 1_000L
             GroupCurrency.PHP -> 56.0 to 500L
             GroupCurrency.RSD -> 117.0 to 1_000L
+            GroupCurrency.IRR -> 1_000_000.0 to 100_000L
             GroupCurrency.NOK -> 11.0 to 100L
             else -> 1.0 to 50L
         }

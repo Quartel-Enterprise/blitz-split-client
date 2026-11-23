@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">بستن</string>
+    <string name="invite_group_created">گروه ایجاد شد</string>
+    <string name="invite_title">همه را به %s دعوت کنید</string>
+    <string name="invite_qr_description">کد QR لینک دعوت گروه</string>
+    <string name="invite_copy">کپی</string>
+    <string name="invite_copied">کپی شد</string>
+    <string name="invite_who_picks">هر کس لینک را باز کند، خودش را از فهرست انتخاب می‌کند: %s. حساب کاربری لازم نیست.</string>
+    <string name="invite_names_or">%1$s یا %2$s</string>
+    <string name="invite_anyone_joins">هر کس لینک را باز کند، به گروه می‌پیوندد. حساب کاربری لازم نیست.</string>
+    <string name="invite_pending_title">لینک در انتظار</string>
+    <string name="invite_pending_offline">به‌محض آنلاین شدن شما ایجاد می‌شود.</string>
+    <string name="invite_pending_online">در حال ایجاد لینک…</string>
+    <string name="invite_failed_title">لینک ایجاد نشد</string>
+    <string name="invite_failed_body">هنگام همگام‌سازی گروه مشکلی پیش آمد.</string>
+    <string name="invite_retry">تلاش دوباره</string>
+    <string name="invite_share">اشتراک‌گذاری لینک</string>
+    <string name="invite_see_who_joined">دیدن افراد پیوسته</string>
+    <string name="invite_add_person">افزودن فردی بدون برنامه</string>
+    <string name="invite_go_to_group">رفتن به گروه</string>
+    <string name="invite_change_link">تغییر لینک</string>
+    <string name="invite_change_link_title">لینک دعوت تغییر کند؟</string>
+    <string name="invite_change_link_message">لینک و کد QR فعلی دیگر کار نمی‌کنند، از جمله دعوت‌های شخصی استفاده‌نشده. کسانی که قبلاً پیوسته‌اند در گروه می‌مانند.</string>
+    <string name="invite_change_link_failed">لینک تغییر نکرد. دوباره تلاش کنید.</string>
+    <string name="invite_share_message">بیایید هزینه‌های %1$s را در Blitz Split تقسیم کنیم. با این لینک بپیوندید: %2$s</string>
+</resources>

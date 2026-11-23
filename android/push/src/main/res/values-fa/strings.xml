@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">یادآوری تسویه حساب</string>
+    <string name="push_bill_created">%1$s هزینه «%2$s» را با شما اضافه کرد</string>
+    <string name="push_bill_edited">%1$s هزینه «%2$s» را ویرایش کرد</string>
+    <string name="push_bill_deleted">%1$s هزینه «%2$s» را حذف کرد</string>
+    <string name="push_comment_added">%1$s روی «%2$s» نظر داد: %3$s</string>
+    <string name="push_payment_paid_you">%1$s اعلام کرد که به شما پرداخت کرده است</string>
+    <string name="push_payment_to_you">%1$s اعلام کرد که %2$s به شما پرداخت کرده است</string>
+    <string name="push_payment_received_yours">%1$s پرداخت شما را دریافت‌شده علامت زد</string>
+    <string name="push_payment_from_you">%1$s اعلام کرد که شما به %2$s پرداخت کرده‌اید</string>
+    <string name="push_payment_undone">%1$s یک پرداخت با شما را لغو کرد</string>
+    <string name="push_charge_sent">%1$s برای تسویه حساب به شما یادآوری فرستاد</string>
+    <string name="push_settle_reminder">در %1$s یک تراز باز دارید</string>
+    <string name="push_settle_reminders">در %1$s گروه تراز باز دارید</string>
+    <string name="push_added_to_group">%1$s شما را به گروه اضافه کرد</string>
+    <string name="push_member_joined">%1$s به گروه پیوست</string>
+    <string name="push_debts_simplified_to_you">%1$s بدهی‌ها را ساده کرد. اکنون %2$s مبلغ %3$s را به شما پرداخت می‌کند.</string>
+    <string name="push_debts_simplified_from_you">%1$s بدهی‌ها را ساده کرد. اکنون شما مبلغ %3$s را به %2$s پرداخت می‌کنید.</string>
+    <string name="push_debts_simplified_other">%1$s بدهی‌ها را ساده کرد. ببینید برای شما چه تغییری کرده است.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s «ساده‌سازی بدهی‌ها» را خاموش کرد. اکنون %2$s مبلغ %3$s را به شما پرداخت می‌کند.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s «ساده‌سازی بدهی‌ها» را خاموش کرد. اکنون شما مبلغ %3$s را به %2$s پرداخت می‌کنید.</string>
+    <string name="push_debts_unsimplified_other">%1$s «ساده‌سازی بدهی‌ها» را خاموش کرد. ببینید برای شما چه تغییری کرده است.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">هزینه‌ها</string>
+    <string name="notification_settings_bills_detail">هزینه‌های جدید، ویرایش‌شده یا حذف‌شده‌ای که در آن‌ها هستید</string>
+    <string name="notification_settings_payments">پرداخت‌ها و تسویه‌ها</string>
+    <string name="notification_settings_payments_detail">پرداخت‌ها به شما یا از طرف شما، و بدهی‌های ساده‌شده</string>
+    <string name="notification_settings_comments">نظرها</string>
+    <string name="notification_settings_comments_detail">روی هزینه‌هایی که در آن‌ها هستید و گفتگوهایی که در آن‌ها نوشته‌اید</string>
+    <string name="notification_settings_people_and_groups">افراد و گروه‌ها</string>
+    <string name="notification_settings_people_and_groups_detail">چه کسی به گروه‌های شما می‌پیوندد یا آن‌ها را ترک می‌کند، و چه چیزی در آن‌ها تغییر می‌کند</string>
+    <string name="notification_settings_payment_requests">درخواست‌های پرداخت</string>
+    <string name="notification_settings_payment_requests_detail">وقتی کسی از شما درخواست پرداخت می‌کند</string>
+    <string name="notification_settings_balance_reminder">یادآوری تراز باز</string>
+    <string name="notification_settings_balance_reminder_detail">هفته‌ای یک بار، اگر تراز بازی وجود داشته باشد</string>
+</resources>

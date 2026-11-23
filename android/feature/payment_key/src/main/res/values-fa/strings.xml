@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">کلید Pix جدید</string>
+    <string name="payment_key_title_pix_edit">ویرایش کلید Pix</string>
+    <string name="payment_key_title_bitcoin_new">کلید Bitcoin جدید</string>
+    <string name="payment_key_title_bitcoin_edit">ویرایش کلید Bitcoin</string>
+    <string name="payment_key_save">ذخیره</string>
+
+    <string name="payment_key_pix_intro">کسی که به شما پرداخت می‌کند، هنگام تسویه حساب این کلید را می‌بیند. چه نوع کلیدی؟</string>
+    <string name="payment_key_pix_question">چه نوع کلیدی؟</string>
+    <string name="payment_key_pix_explanation">کسی که به شما پرداخت می‌کند، هنگام تسویه حساب این کلید را می‌بیند.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">تلفن</string>
+    <string name="payment_key_type_email">ایمیل</string>
+    <string name="payment_key_type_random">تصادفی</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">شماره موبایل با کد منطقه</string>
+    <string name="payment_key_label_email">ایمیل</string>
+    <string name="payment_key_label_random">کلید تصادفی</string>
+
+    <string name="payment_key_bitcoin_intro">چطور می‌خواهید دریافت کنید؟</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">سریع، کارمزد کم</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">روی بلاک‌چین</string>
+    <string name="payment_key_label_lightning">Lightning Address یا LNURL</string>
+    <string name="payment_key_label_onchain">آدرس Bitcoin</string>
+
+    <string name="payment_key_paste">جای‌گذاری</string>
+
+    <string name="payment_key_hint_cpf">قالب 000.000.000-00</string>
+    <string name="payment_key_hint_phone">قالب +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">قالب name@domain.com</string>
+    <string name="payment_key_hint_random">32 حرف و عدد، همان‌طور که بانک شما نشان می‌دهد</string>
+    <string name="payment_key_hint_lightning">مثل name@wallet.com یا LNURL1…</string>
+    <string name="payment_key_hint_onchain">آدرس mainnet که با bc1q یا bc1p شروع می‌شود</string>
+
+    <string name="payment_key_valid_cpf">قالب 000.000.000-00 · ارقام کنترلی مطابقت دارند</string>
+    <string name="payment_key_valid_phone">قالب +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">قالب name@domain.com</string>
+    <string name="payment_key_valid_random">کلید تصادفی شناسایی شد (32 نویسه)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address معتبر</string>
+    <string name="payment_key_valid_lnurl">LNURL معتبر</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF نامعتبر: ارقام کنترلی مطابقت ندارند.</string>
+    <string name="payment_key_error_invalid_phone">شماره موبایل ناقص: کد منطقه و 9 رقم را وارد کنید که با 9 شروع شود.</string>
+    <string name="payment_key_error_invalid_email">ایمیل ناقص: دامنه وجود ندارد، مثل .com یا .com.br.</string>
+    <string name="payment_key_error_invalid_random">کلید تصادفی ناقص: باید 32 حرف و عدد داشته باشد.</string>
+    <string name="payment_key_error_invalid_lightning">این یک Lightning Address (name@wallet) یا LNURL نیست.</string>
+    <string name="payment_key_error_lightning_invoice">این یک صورت‌حساب Lightning (lnbc…) است: یک بار پرداخت می‌شود و منقضی می‌شود. یک Lightning Address یا LNURL جای‌گذاری کنید.</string>
+    <string name="payment_key_error_invalid_onchain">آدرس نامعتبر. از یک آدرس mainnet با bc1q یا bc1p استفاده کنید.</string>
+    <string name="payment_key_error_testnet_address">این یک آدرس testnet (tb1…) است. اینجا فقط Bitcoin mainnet با آدرس‌های bc1… کار می‌کند.</string>
+    <string name="payment_key_error_already_saved">شما این کلید را از قبل دارید.</string>
+
+    <string name="payment_key_switched_to_onchain">این یک آدرس on-chain است، بنابراین به On-chain تغییر دادیم.</string>
+    <string name="payment_key_switched_to_lightning">این یک Lightning Address است، بنابراین به Lightning تغییر دادیم.</string>
+    <string name="payment_key_cpf_notice">کسی که به شما پرداخت می‌کند CPF کامل شما را می‌بیند. اگر نمی‌خواهید آن را به اشتراک بگذارید، از کلید تلفن، ایمیل یا تصادفی استفاده کنید.</string>
+    <string name="payment_key_held_notice">از هر نوع فقط یک کلید Pix می‌توانید داشته باشید، پس این همان کلیدی است که ذخیره کرده‌اید. اگر بخواهید، اینجا تغییرش دهید.</string>
+
+    <string name="payment_key_accepted_title">می‌پذیریم</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">کلید Pix پیش‌فرض</string>
+    <string name="payment_key_default_bitcoin_title">کلید Bitcoin پیش‌فرض</string>
+    <string name="payment_key_default_pix_detail">هنگام تسویه حساب اول نشان داده می‌شود.</string>
+    <string name="payment_key_default_bitcoin_detail">وقتی کسی با BTC پرداخت می‌کند، اول نشان داده می‌شود.</string>
+    <string name="payment_key_default_now">اکنون: %1$s.</string>
+    <string name="payment_key_default_locked_editing">برای تغییر آن، کلید دیگری را پیش‌فرض کنید.</string>
+    <string name="payment_key_default_locked_new">اولین کلید شما از این نوع، پیش‌فرض است.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">تلفن</string>
+    <string name="payment_key_default_type_email">ایمیل</string>
+    <string name="payment_key_default_type_random">کلید تصادفی</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split پولی جابه‌جا نمی‌کند: پرداخت‌کننده در اپ بانکی خود پرداخت می‌کند. بررسی کنید که کلید به نام شما باشد.</string>
+    <string name="payment_key_footer_bitcoin">هنگام تسویه حساب، مبلغ را به sats و با نرخ فعلی نشان می‌دهیم. این فقط یک تخمین است: پرداخت‌کننده آن را در کیف پول خود تأیید می‌کند.</string>
+
+    <string name="payment_key_delete">حذف کلید</string>
+    <string name="payment_key_delete_title">این کلید حذف شود؟</string>
+    <string name="payment_key_delete_body">کسانی که به شما بدهکارند دیگر هنگام تسویه حساب آن را نمی‌بینند.</string>
+    <string name="payment_key_delete_confirm">حذف</string>
+</resources>

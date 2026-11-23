@@ -141,6 +141,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.FILIPINO,
                 AppLanguage.SERBIAN,
                 AppLanguage.SLOVAK,
+                AppLanguage.PERSIAN,
                 AppLanguage.NORWEGIAN,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
@@ -185,6 +186,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "fil",
                     "sr",
                     "sk",
+                    "fa",
                     "nb",
                     "zh-Hant",
                 ),
@@ -244,6 +246,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "fil",
             "sr-Latn",
             "sk",
+            "fa",
             "nb",
             "zh-Hant",
         )
@@ -297,6 +300,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "fil-PH",
                 "sr-Latn-RS",
                 "sk-SK",
+                "fa-AF",
                 "nb-NO",
                 "zh-TW",
             )
@@ -343,6 +347,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "fil",
                     "sr",
                     "sk",
+                    "fa",
                     "nb",
                     "zh-Hant",
                 ),

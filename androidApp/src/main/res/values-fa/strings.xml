@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">شما در این گروه نیستید</string>
+    <string name="bill_link_not_in_group_message">این نظر در گروهی است که شما در آن نیستید. از کسی که لینک را برایتان فرستاده، دعوت‌نامه را بخواهید.</string>
+    <string name="bill_link_offline_title">اینترنت وصل نیست</string>
+    <string name="bill_link_offline_message">وقتی دوباره آنلاین شدید، لینک را باز کنید.</string>
+    <string name="bill_link_go_home">رفتن به خانه</string>
+    <string name="discard_changes_title">تغییرات کنار گذاشته شود؟</string>
+    <string name="discard_changes_message">تغییرات ذخیره‌نشده از بین می‌رود.</string>
+    <string name="discard_changes_discard">کنار گذاشتن</string>
+    <string name="discard_changes_keep_editing">ادامه ویرایش</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">ساعت هوشمند</string>
+    <string name="watch_connected_title">%1$s به حساب کاربری شما وصل شد</string>
+    <string name="watch_connected_title_unnamed">ساعت هوشمند به حساب کاربری شما وصل شد</string>
+    <string name="watch_connected_text">گروه‌های شما را می‌بیند و خودش همگام‌سازی می‌کند. برای قطع اتصال، در ساعت از حساب خارج شوید.</string>
+</resources>
