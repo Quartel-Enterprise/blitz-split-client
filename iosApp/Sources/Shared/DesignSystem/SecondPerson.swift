@@ -11,7 +11,7 @@ import SwiftUI
 /// own particle, so its verb phrases all start with "님이", which the user's drops ("Ana 님이 나눴어요", "내가 나눴어요"). Hindi's
 /// past puts the ergative "ने" after the actor, apart after a name and one word with the user's "आपने", so its verb
 /// phrases all start with "ने", which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Romanian swaps its
-/// perfect's auxiliary as French does ("Ana a împărțit", "Tu ai împărțit"), and Czech adds one before the past ("Ana
+/// perfect's auxiliary as French does ("Ana a împărțit", "Tu ai împărțit"), as Catalan does ("Anna ha dividit", "Tu has dividit"), and Czech adds one before the past ("Ana
 /// rozdělil(a)", "Ty jsi rozdělil(a)"), as Slovak does with "si" ("Ana rozdelil(a)", "Ty si rozdelil(a)"). Greek ends its aorist in "-ε" for someone else and "-ες" for the user ("Ana
 /// μοίρασε", "Εσύ μοίρασες"). Croatian swaps its "je" for "si" before a past written "-o/la", the app not knowing the
 /// gender ("Ana je podijelio/la", "Ti si podijelio/la"). Hungarian starts each verb phrase with a past: a definite one
@@ -75,10 +75,11 @@ enum SecondPerson {
         "ro": ["a": "ai"],
         "hr": ["je": "si"],
         "sr": ["je": "si"],
+        "ca": ["ha": "has", "l’ha": "l’has", "l'ha": "l'has"],
     ]
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
-    /// French, German, Italian, Dutch, Romanian and Croatian: every verb phrase is a perfect that starts with its
+    /// French, German, Italian, Dutch, Romanian, Croatian and Catalan ("ha dividit" → "has dividit"): every verb phrase is a perfect that starts with its
     /// auxiliary, so "a divisé" → "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten",
     /// "ha diviso" → "hai diviso", "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden", "a
     /// împărțit" → "ai împărțit", "je podijelio/la" → "si podijelio/la". Czech: the second person's past takes the

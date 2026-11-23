@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Editar el perfil</string>
+    <string name="edit_profile_save">Desar</string>
+    <string name="edit_profile_change_photo">Canviar la foto</string>
+    <string name="edit_profile_take_photo">Fer una foto</string>
+    <string name="edit_profile_choose_photo">Triar de la galeria</string>
+    <string name="edit_profile_use_account_photo">Fer servir la foto del compte de %1$s</string>
+    <string name="edit_profile_remove_photo">Treure la foto</string>
+    <string name="edit_profile_photo_error">No s’ha pogut fer servir aquesta foto. Prova’n una altra.</string>
+    <string name="edit_profile_avatar_color">Color de l’avatar</string>
+    <string name="edit_profile_avatar_color_hint">Es mostra quan no tens foto.</string>
+    <string name="edit_profile_name_label">El teu nom</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Escriu com a mínim %d lletres.</string>
+    <string name="edit_profile_name_too_long">Fes servir com a màxim %d caràcters.</string>
+    <string name="edit_profile_account_notice">El nom i la foto venen del teu compte de %1$s. Si els canvies aquí, només s’aplica a Blitz Split i no canvia el teu compte de %1$s.</string>
+    <string name="edit_profile_footer">Els teus grups i qualsevol persona amb l’enllaç del teu perfil veuen el teu nom i la teva foto.</string>
+    <string name="profile_photo_close">Tancar</string>
+    <string name="profile_photo_camera">Càmera</string>
+    <string name="profile_photo_gallery">Galeria</string>
+    <string name="profile_photo_remove">Treure</string>
+    <string name="profile_photo_title">Foto del perfil</string>
+</resources>

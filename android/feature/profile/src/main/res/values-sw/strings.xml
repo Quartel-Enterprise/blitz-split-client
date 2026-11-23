@@ -96,6 +96,7 @@
     <string name="profile_language_bulgarian">Kibulgaria</string>
     <string name="profile_language_marathi">Kimarathi</string>
     <string name="profile_language_swahili">Kiswahili</string>
+    <string name="profile_language_catalan">Kikatalani</string>
     <string name="profile_language_system_detail">Lugha ya kifaa</string>
     <string name="profile_notifications">Arifa</string>
     <plurals name="profile_notifications_active">

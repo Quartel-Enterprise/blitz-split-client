@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Tancar</string>
+    <string name="invite_group_created">Grup creat</string>
+    <string name="invite_title">Convida tothom a %s</string>
+    <string name="invite_qr_description">Codi QR de l’enllaç d’invitació del grup</string>
+    <string name="invite_copy">Copiar</string>
+    <string name="invite_copied">Copiat</string>
+    <string name="invite_who_picks">Qui obri l’enllaç tria qui és a la llista: %s. No cal cap compte.</string>
+    <string name="invite_names_or">%1$s o %2$s</string>
+    <string name="invite_anyone_joins">Qui obri l’enllaç entra al grup. No cal cap compte.</string>
+    <string name="invite_pending_title">Enllaç pendent</string>
+    <string name="invite_pending_offline">Es crearà tan bon punt estiguis en línia.</string>
+    <string name="invite_pending_online">S’està creant l’enllaç…</string>
+    <string name="invite_failed_title">No s’ha pogut crear l’enllaç</string>
+    <string name="invite_failed_body">Alguna cosa ha fallat en sincronitzar el grup.</string>
+    <string name="invite_retry">Torna-ho a provar</string>
+    <string name="invite_share">Compartir l’enllaç</string>
+    <string name="invite_see_who_joined">Veure qui hi ha entrat</string>
+    <string name="invite_add_person">Afegir algú sense l’app</string>
+    <string name="invite_go_to_group">Anar al grup</string>
+    <string name="invite_change_link">Canviar l’enllaç</string>
+    <string name="invite_change_link_title">Vols canviar l’enllaç d’invitació?</string>
+    <string name="invite_change_link_message">L’enllaç i el codi QR actuals deixen de funcionar, incloses les invitacions personals no utilitzades. Qui ja hi ha entrat es queda al grup.</string>
+    <string name="invite_change_link_failed">No s’ha pogut canviar l’enllaç. Torna-ho a provar.</string>
+    <string name="invite_share_message">Dividim les despeses de %1$s a Blitz Split. Entra amb aquest enllaç: %2$s</string>
+</resources>

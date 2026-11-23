@@ -1,0 +1,54 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Catalan: pick \"Català\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala catalão: escolha \"Català\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora catalão: escolhe \"Català\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla catalán: elige \"Català\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais catalan : choisis « Català » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Katalanisch: Wähle „Català“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla catalano: scegli \"Català\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po katalońsku: wybierz „Català” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Catalaans: kies \"Català\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがカタルーニャ語に対応しました。プロフィール › 言語で「Català」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Katalanca konuşuyor: Profil › Dil'den \"Català\"yı seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Katalan: pilih \"Català\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на каталанском: выбери «Català» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить каталанською: обери «Català» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 카탈루냐어를 쓸 수 있어요. 프로필 › 언어에서 ‘Català’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप कैटलन में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Català” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث الكتالونية: يمكنك اختيار «Català» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持加泰罗尼亚语：在“个人资料 › 语言”中选择“Català”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו קטלאנית: אפשר לבחור \"Català\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษากาตาลันแล้ว เลือก “Català” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Catalan: chọn “Català” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援加泰隆尼亞文：在「個人資料 › 語言」中選擇「Català」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu katalanska: välj ”Català” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví katalánsky: vyber „Català“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum catalană: alege „Català” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন কাতালান ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “Català” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Catalan: pilih \"Català\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον καταλανικά: διάλεξε «Català» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori katalonski: odaberi „Català“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól katalánul is beszél: válaszd a „Català” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ کاتالان میں بھی دستیاب ہے: پروفائل › زبان میں “Català” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Catalan ang app: piliin ang \"Català\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori katalonski: izaberi „Català“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "sk": "Aplikácia teraz hovorí po katalánsky: vyber „Català“ v Profil › Jazyk, alebo nechaj jazyk zariadenia.",
+        "fa": "برنامه حالا کاتالان صحبت می‌کند: «Català» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند.",
+        "ta": "ஆப் இப்போது கேட்டலான் மொழியில் கிடைக்கிறது: சுயவிவரம் › மொழி என்பதில் \"Català\" என்பதைத் தேர்ந்தெடுங்கள், அல்லது உங்கள் சாதனத்தின் மொழியைப் பின்பற்ற விடுங்கள்.",
+        "nb": "Appen snakker nå katalansk: velg «Català» i Profil › Språk, eller la den følge enheten din.",
+        "te": "యాప్ ఇప్పుడు కాటలాన్‌లో అందుబాటులో ఉంది: ప్రొఫైల్ › భాషలో \"Català\" ఎంచుకోండి, లేదా మీ పరికరం భాషను అనుసరించనివ్వండి.",
+        "bg": "Приложението вече говори каталонски: избери „Català“ в Профил › Език или го остави да следва устройството ти.",
+        "mr": "ॲप आता कॅटलानमध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"Català\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
+        "sw": "Programu sasa inazungumza Kikatalani: chagua \"Català\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
+        "ca": "L’app ara parla català: tria «Català» a Perfil › Idioma, o deixa que segueixi el teu dispositiu."
+      }
+    }
+  ]
+}

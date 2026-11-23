@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Divideix les despeses sense complicacions</string>
+    <string name="welcome_offline_title">Funciona sense connexió</string>
+    <string name="welcome_offline_body">Tot es queda al teu dispositiu i se sincronitza després.</string>
+    <string name="welcome_optional_title">El compte és opcional</string>
+    <string name="welcome_optional_body">Google o Apple només serveixen perquè no perdis res quan canviïs de dispositiu.</string>
+    <string name="welcome_invite_title">Convida amb un enllaç o un codi QR</string>
+    <string name="welcome_invite_body">Els amics entren al grup sense crear cap compte.</string>
+    <string name="welcome_no_connection_title">Sense connexió.</string>
+    <string name="welcome_no_connection_body">Per iniciar la sessió amb un compte cal internet. Fes servir l’app sense compte ara i connecta’n un més tard a Perfil.</string>
+    <string name="welcome_or">o</string>
+    <string name="welcome_use_without_account">Fer servir sense compte</string>
+    <string name="welcome_used_on_another_device">L’he fet servir en un altre dispositiu</string>
+    <string name="welcome_sign_in_failed">No s’ha pogut iniciar la sessió ara mateix. Torna-ho a provar.</string>
+    <string name="welcome_legal_notice">Si continues, acceptes les %1$s i reconeixes la %2$s.</string>
+    <string name="welcome_legal_terms">Condicions d’ús</string>
+    <string name="welcome_legal_privacy">Política de privadesa</string>
+    <string name="welcome_no_account_note">Sense compte, les teves dades s’esborren després de 30 dies sense ús. Connecta Google o Apple per conservar-les.</string>
+    <string name="welcome_no_account_note_offline">Sense compte, les teves dades s’esborren després de 30 dies sense ús. Connecta Google o Apple més tard, a Perfil, per conservar-les.</string>
+    <string name="welcome_expired_title">S’han esborrat les teves dades</string>
+    <string name="welcome_expired_body">Feies servir l’app sense compte i no l’has oberta en 30 dies, així que s’han esborrat les teves dades. Connecta Google o Apple per conservar-les la pròxima vegada.</string>
+    <string name="welcome_expired_ok">D’acord</string>
+</resources>

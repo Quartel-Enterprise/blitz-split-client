@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Notes de la versió</string>
+    <string name="release_notes_show_beta">Mostrar les versions beta</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Aquesta versió</string>
+    <string name="release_notes_empty">Encara no hi ha notes de la versió.</string>
+    <string name="release_notes_empty_only_betas">Encara no hi ha cap versió estable. Activa les versions beta per veure què s’està provant.</string>
+    <string name="release_notes_load_failed_title">No s’han pogut carregar les notes de la versió</string>
+    <string name="release_notes_load_failed_body">Comprova la connexió i torna-ho a provar.</string>
+    <string name="release_notes_retry">Torna-ho a provar</string>
+    <string name="release_notes_open_on_github">Obrir a GitHub</string>
+</resources>

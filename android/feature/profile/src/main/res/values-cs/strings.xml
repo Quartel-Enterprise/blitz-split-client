@@ -98,6 +98,7 @@
     <string name="profile_language_bulgarian">Bulharština</string>
     <string name="profile_language_marathi">Maráthština</string>
     <string name="profile_language_swahili">Svahilština</string>
+    <string name="profile_language_catalan">Katalánština</string>
     <string name="profile_language_system_detail">Jazyk zařízení</string>
     <string name="profile_notifications">Oznámení</string>
     <plurals name="profile_notifications_active">

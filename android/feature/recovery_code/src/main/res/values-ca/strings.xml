@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Desa el codi de recuperació</string>
+    <string name="recovery_code_body">Fas servir l’app sense compte. Aquestes 12 paraules recuperen les teves dades si canvies de dispositiu o el perds. Anota-les en ordre. Després de 30 dies sense ús, les teves dades s’esborren i les paraules deixen de funcionar.</string>
+    <string name="recovery_code_copy">Copiar les paraules</string>
+    <string name="recovery_code_save_to_password_manager">Desar al gestor de contrasenyes</string>
+    <string name="recovery_code_connect_instead">Connectar Google o Apple en lloc d’això</string>
+    <string name="recovery_code_connect_instead_body">No cal cap codi</string>
+    <string name="recovery_code_sign_in_failed">No s’ha pogut connectar ara mateix. Torna-ho a provar.</string>
+    <string name="recovery_code_also_in_profile">També és a Perfil › Recuperació.</string>
+    <string name="recovery_code_remind_later">Recordar-m’ho més tard</string>
+    <string name="recovery_code_saved">Ja l’he desat</string>
+    <string name="recovery_code_download">Baixar</string>
+    <string name="recovery_code_file_name">blitz-split-codi-recuperacio.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · codi de recuperació\n\n%1$s\n\nFes-lo servir a «L’he fet servir en un altre dispositiu» per recuperar les teves dades.\n</string>
+</resources>

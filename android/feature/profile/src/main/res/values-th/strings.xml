@@ -95,6 +95,7 @@
     <string name="profile_language_bulgarian">ภาษาบัลแกเรีย</string>
     <string name="profile_language_marathi">มราฐี</string>
     <string name="profile_language_swahili">ภาษาสวาฮีลี</string>
+    <string name="profile_language_catalan">ภาษากาตาลัน</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>
     <plurals name="profile_notifications_active">

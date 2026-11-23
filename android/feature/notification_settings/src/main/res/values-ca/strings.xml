@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Notificacions</string>
+    <string name="notification_settings_denied_title">Les notificacions de Blitz Split estan desactivades a Android.</string>
+    <string name="notification_settings_denied_body">Activa-les a la configuració del sistema per rebre les notificacions push de sota. La campaneta continua funcionant.</string>
+    <string name="notification_settings_open_settings">Obrir la configuració</string>
+    <string name="notification_settings_refused_body">Android et deixa permetre-les una vegada més per rebre les notificacions push de sota. La campaneta continua funcionant.</string>
+    <string name="notification_settings_turn_on">Activar</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Bloquejat a Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Obrir la configuració d’Android per a %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Notificacions push</string>
+    <string name="notification_settings_push_switch_detail">Només en aquest dispositiu</string>
+    <string name="notification_settings_section">Avisa’m de</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">A l’app</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push envia una notificació a aquest dispositiu. A l’app la marca com a nova a la campaneta i a Activitat; si està desactivat, continua apareixent a Activitat, ja llegida.</string>
+    <string name="notification_settings_footer">Els avisos arriben quan hi ha internet. Per silenciar un grup, fes servir el menú de dins del grup.</string>
+</resources>

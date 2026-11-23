@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Contactar amb el suport</string>
+    <string name="contact_support_description">Obrirem la teva app de correu amb un missatge a punt. Descriu què ha passat i envia’l: persones reals llegeixen cada missatge.</string>
+    <string name="contact_support_to">Per a</string>
+    <string name="contact_support_diagnostics">S’inclourà al correu</string>
+    <string name="contact_support_app_version">Versió de l’app</string>
+    <string name="contact_support_platform">Plataforma</string>
+    <string name="contact_support_language">Idioma</string>
+    <string name="contact_support_account">Compte</string>
+    <string name="contact_support_profile">Perfil</string>
+    <string name="contact_support_language_system">Sistema</string>
+    <string name="contact_support_account_local">Només aquest dispositiu</string>
+    <string name="contact_support_account_anonymous">No connectat</string>
+    <string name="contact_support_open_email">Obrir el correu</string>
+    <string name="contact_support_copy_email">Copiar l’adreça de correu</string>
+    <string name="contact_support_notice_copied">S’ha copiat l’adreça de correu.</string>
+    <string name="contact_support_notice_no_app">No s’ha trobat cap app de correu. En lloc d’això, s’ha copiat l’adreça.</string>
+    <string name="contact_support_close">Tancar</string>
+</resources>

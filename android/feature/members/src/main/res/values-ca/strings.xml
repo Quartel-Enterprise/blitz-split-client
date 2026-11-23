@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Enllaç d’invitació</string>
+    <string name="members_link_pending">Encara no s’ha creat</string>
+    <string name="members_share">Compartir</string>
+    <string name="members_me">%s (tu)</string>
+    <string name="members_status_this_device">Aquest dispositiu</string>
+    <string name="members_status_joined">Hi ha entrat</string>
+    <string name="members_status_not_joined">Encara no hi ha entrat</string>
+    <string name="members_options">Opcions de %s</string>
+    <string name="members_rename">Canviar el nom</string>
+    <string name="members_personal_invite">Invitació personal per a %s</string>
+    <string name="members_personal_message">Qui obri aquest enllaç entra directament com a %s, sense triar de la llista. Funciona un sol cop.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Qui obri aquest enllaç entra directament com a %1$s, sense triar de la llista, i ja veu la seva part de %2$s a la despesa afegida fins ara. Funciona un sol cop.</item>
+        <item quantity="many">Qui obri aquest enllaç entra directament com a %1$s, sense triar de la llista, i ja veu la seva part de %2$s a les %3$d despeses afegides fins ara. Funciona un sol cop.</item>
+        <item quantity="other">Qui obri aquest enllaç entra directament com a %1$s, sense triar de la llista, i ja veu la seva part de %2$s a les %3$d despeses afegides fins ara. Funciona un sol cop.</item>
+    </plurals>
+    <string name="members_personal_copy">Copiar l’enllaç</string>
+    <string name="members_personal_copied">Copiat</string>
+    <string name="members_personal_share">Compartir amb %s</string>
+    <string name="members_personal_share_message">Entra a %1$s com a %2$s a Blitz Split: %3$s</string>
+    <string name="members_remove">Treure del grup</string>
+    <string name="members_remove_joined">%s ja ha entrat al grup</string>
+    <string name="members_remove_title">Vols treure %s del grup?</string>
+    <string name="members_remove_message">%s encara no hi ha entrat. El pots tornar a afegir més endavant.</string>
+    <string name="members_remove_confirm">Treure</string>
+    <string name="members_release">Alliberar el nom</string>
+    <string name="members_release_title">Vols alliberar el nom de %s?</string>
+    <string name="members_release_message">Qui ha entrat com a %1$s surt del grup. El nom, el color i les despeses de %1$s es mantenen, i %1$s es pot tornar a triar amb l’enllaç del grup.</string>
+    <string name="members_release_confirm">Alliberar</string>
+    <string name="members_release_error">No s’ha pogut alliberar el nom. Comprova la connexió i torna-ho a provar.</string>
+    <string name="members_add">Afegir una persona</string>
+    <string name="members_invite_instead">Té l’app? Convida-la amb l’enllaç</string>
+    <string name="members_name_label">Nom</string>
+    <string name="members_save">Desar</string>
+    <string name="members_cancel">Cancel·lar</string>
+    <string name="members_change_error">No s’ha pogut desar el canvi. Torna-ho a provar.</string>
+    <string name="members_remove_open_balance">%s té un saldo obert</string>
+    <string name="members_balance_to_get_back">%s per cobrar</string>
+    <string name="members_balance_owes">%s deu</string>
+    <string name="members_balance_settled">Comptes liquidats</string>
+</resources>

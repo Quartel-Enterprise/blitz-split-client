@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · codi de recuperació</string>
+    <string name="platform_export_file_name">blitz-split-dades-%1$s.json</string>
+    <string name="platform_camera_denied">Permet la càmera a la Configuració per fer una foto.</string>
+    <string name="platform_camera_settings">Configuració</string>
+    <string name="platform_receipt_source_camera">Fer una foto</string>
+    <string name="platform_receipt_source_gallery">Triar de la galeria</string>
+    <string name="platform_receipt_source_file">Triar un fitxer</string>
+    <string name="platform_receipt_camera_title">Escanejar el tiquet</string>
+    <string name="platform_receipt_camera_close">Tancar</string>
+    <string name="platform_receipt_camera_flash_on">Activar el flaix</string>
+    <string name="platform_receipt_camera_flash_off">Desactivar el flaix</string>
+    <string name="platform_receipt_camera_hint">Enquadra tot el tiquet. Omplim l’import, la data i la descripció; tu ho revises abans de desar.</string>
+    <string name="platform_receipt_camera_gallery">Triar de la galeria</string>
+    <string name="platform_receipt_camera_shutter">Fer una foto</string>
+    <string name="platform_receipt_camera_unavailable">La càmera no està disponible. Tria una foto del tiquet de la galeria.</string>
+    <string name="platform_receipt_camera_permission">Permet la càmera per escanejar el tiquet o tria una foto de la galeria.</string>
+    <string name="platform_receipt_camera_allow">Permetre la càmera</string>
+    <string name="platform_receipt_camera_settings">Obrir la configuració</string>
+</resources>

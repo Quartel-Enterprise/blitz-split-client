@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Nou mètode de pagament</string>
+    <string name="paying_method_edit_title">Editar el mètode de pagament</string>
+    <string name="paying_method_type">Tipus</string>
+    <string name="paying_method_name">Nom</string>
+    <string name="paying_method_name_optional">Nom (opcional)</string>
+    <string name="paying_method_color">Color</string>
+    <string name="paying_method_default">Mètode per defecte</string>
+    <string name="paying_method_default_hint">Les noves despeses que paguis començaran amb aquest mètode.</string>
+    <string name="paying_method_delete">Suprimir el mètode de pagament</string>
+    <string name="paying_method_delete_title">Vols suprimir aquest mètode de pagament?</string>
+    <string name="paying_method_delete_body">Les despeses que hi hagis marcat ja no el mostraran.</string>
+    <string name="paying_method_delete_confirm">Suprimir</string>
+    <string name="paying_method_save">Desar</string>
+</resources>

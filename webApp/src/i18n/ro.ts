@@ -870,6 +870,7 @@ export const ro: Record<MessageKey, string> = {
   profile_languageBulgarian: 'Bulgară',
   profile_languageMarathi: 'Marathi',
   profile_languageSwahili: 'Swahili',
+  profile_languageCatalan: 'Catalană',
   profile_bitcoinInSats: 'Bitcoin în satoshi',
   profile_bitcoinInSatsDetail: 'Afișează și introduce sumele în bitcoin în sats (1 ₿ = 100.000.000 sats).',
   profile_shareUsageData: 'Trimite date de utilizare',
