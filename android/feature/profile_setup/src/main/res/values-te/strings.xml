@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">మీ స్నేహితులు మిమ్మల్ని ఏమని పిలుస్తారు?</string>
+    <string name="profile_setup_subtitle">మీ గ్రూప్‌లు, మీ ప్రొఫైల్ లింక్ ఉన్న ఎవరైనా మీ పేరును చూస్తారు.</string>
+    <string name="profile_setup_avatar_color">అవతార్ రంగు</string>
+    <string name="profile_setup_add_photo">ఫోటో జోడించండి</string>
+    <string name="profile_setup_photo_error">ఈ ఫోటోను ఉపయోగించలేకపోయాము. వేరే ఫోటోను ప్రయత్నించండి.</string>
+    <string name="profile_setup_name_label">మీ పేరు</string>
+    <string name="profile_setup_name_placeholder">రాజేష్ కుమార్</string>
+    <string name="profile_setup_name_too_short">కనీసం %d అక్షరాలు టైప్ చేయండి.</string>
+    <string name="profile_setup_name_too_long">గరిష్టంగా %d అక్షరాలు ఉపయోగించండి.</string>
+    <string name="profile_setup_name_hint">దీన్ని తర్వాత ప్రొఫైల్‌లో మార్చుకోవచ్చు.</string>
+    <string name="profile_setup_saved_locally">ప్రస్తుతానికి ఈ పరికరంలో మాత్రమే సేవ్ అయింది.</string>
+    <string name="profile_setup_continue">కొనసాగించండి</string>
+</resources>

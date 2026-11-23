@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">మీ గ్రూప్‌లను తిరిగి తెచ్చుకోండి</string>
+    <string name="restore_subtitle">ఇంతకు ముందు అకౌంట్‌తో సైన్ ఇన్ చేశారా? మళ్లీ సైన్ ఇన్ చేస్తే చాలు. లేకపోతే, రికవరీ కోడ్‌ను లేదా మీ పాత పరికరంలోని QR కోడ్‌ను ఉపయోగించండి.</string>
+    <string name="restore_no_connection_title">కనెక్షన్ లేదు</string>
+    <string name="restore_no_connection_body">అకౌంట్‌తో లేదా కోడ్‌తో సైన్ ఇన్ చేయడానికి, మీ గ్రూప్‌లను డౌన్‌లోడ్ చేయడానికి ఇంటర్నెట్ అవసరం. మీరు టైప్ చేసింది అలాగే ఉంటుంది.</string>
+    <string name="restore_code_label">లేదా రికవరీ కోడ్‌ను ఉపయోగించండి</string>
+    <string name="restore_code_hint">12 పదాలు, క్రమంలో. అన్ని ఫీల్డ్‌లు నిండాలంటే, అన్నింటినీ ఒకే ఫీల్డ్‌లో పేస్ట్ చేయండి.</string>
+    <string name="restore_scan_qr_title">మీ పాత పరికరంలోని QR కోడ్‌ను స్కాన్ చేయండి</string>
+    <string name="restore_scan_qr_body">అక్కడ: ప్రొఫైల్ › రికవరీ › QR కోడ్ చూపించండి</string>
+    <string name="restore_recover">రికవర్ చేయండి</string>
+    <string name="restore_try_again">మళ్లీ ప్రయత్నించండి</string>
+    <string name="restore_start_fresh">ఈ పరికరంలో కొత్తగా ప్రారంభించండి</string>
+    <string name="restore_error_invalid_code">కోడ్ కనబడలేదు. పదాలను, వాటి క్రమాన్ని తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.</string>
+    <string name="restore_error_too_many_attempts">చాలా ఎక్కువ ప్రయత్నాలు. కొన్ని నిమిషాలు ఆగి మళ్లీ ప్రయత్నించండి.</string>
+    <string name="restore_error_sign_in_failed">ఇప్పుడు సైన్ ఇన్ చేయలేకపోయాము. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="restore_error_unknown">ఏదో తప్పు జరిగింది. మళ్లీ ప్రయత్నించండి.</string>
+</resources>

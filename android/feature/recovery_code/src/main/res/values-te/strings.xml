@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">మీ రికవరీ కోడ్‌ను సేవ్ చేయండి</string>
+    <string name="recovery_code_body">మీరు అకౌంట్ లేకుండా ఉపయోగిస్తున్నారు. మీరు పరికరం మార్చినా లేదా పోగొట్టుకున్నా, ఈ 12 పదాలు మీ డేటాను తిరిగి తెస్తాయి. వాటిని క్రమంలో రాసి పెట్టుకోండి. 30 రోజులు ఉపయోగించకపోతే, మీ డేటా తొలగించబడుతుంది, ఈ పదాలు ఇక పనిచేయవు.</string>
+    <string name="recovery_code_copy">పదాలను కాపీ చేయండి</string>
+    <string name="recovery_code_save_to_password_manager">పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ చేయండి</string>
+    <string name="recovery_code_connect_instead">బదులుగా Google లేదా Apple కనెక్ట్ చేయండి</string>
+    <string name="recovery_code_connect_instead_body">కోడ్ అవసరం లేదు</string>
+    <string name="recovery_code_sign_in_failed">ఇప్పుడు కనెక్ట్ చేయలేకపోయాము. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="recovery_code_also_in_profile">ఇది ప్రొఫైల్ › రికవరీ విభాగంలో కూడా ఉంది.</string>
+    <string name="recovery_code_remind_later">తర్వాత గుర్తు చేయండి</string>
+    <string name="recovery_code_saved">సేవ్ చేశాను</string>
+    <string name="recovery_code_download">డౌన్‌లోడ్ చేయండి</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · రికవరీ కోడ్\n\n%1$s\n\nమీ డేటాను తిరిగి తెచ్చుకోవడానికి, \"నేను దీన్ని వేరే పరికరంలో ఉపయోగించాను\" ఎంపికలో దీన్ని ఉపయోగించండి.\n</string>
+</resources>

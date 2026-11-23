@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">కొత్త చెల్లింపు పద్ధతి</string>
+    <string name="paying_method_edit_title">చెల్లింపు పద్ధతిని ఎడిట్ చేయండి</string>
+    <string name="paying_method_type">రకం</string>
+    <string name="paying_method_name">పేరు</string>
+    <string name="paying_method_name_optional">పేరు (ఐచ్ఛికం)</string>
+    <string name="paying_method_color">రంగు</string>
+    <string name="paying_method_default">డిఫాల్ట్ పద్ధతి</string>
+    <string name="paying_method_default_hint">మీరు చెల్లించే కొత్త ఖర్చులు దీనితో మొదలవుతాయి.</string>
+    <string name="paying_method_delete">చెల్లింపు పద్ధతిని తొలగించండి</string>
+    <string name="paying_method_delete_title">ఈ చెల్లింపు పద్ధతిని తొలగించాలా?</string>
+    <string name="paying_method_delete_body">దీనితో మీరు గుర్తించిన ఖర్చులలో ఇది ఇక కనిపించదు.</string>
+    <string name="paying_method_delete_confirm">తొలగించండి</string>
+    <string name="paying_method_save">సేవ్ చేయండి</string>
+</resources>

@@ -1,0 +1,49 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Telugu: pick \"తెలుగు\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala télugo: escolha \"తెలుగు\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora telugu: escolhe \"తెలుగు\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla telugu: elige \"తెలుగు\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais télougou : choisis « తెలుగు » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Telugu: Wähle „తెలుగు“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla telugu: scegli \"తెలుగు\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz w języku telugu: wybierz „తెలుగు” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Telugu: kies \"తెలుగు\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがテルグ語に対応しました。プロフィール › 言語で「తెలుగు」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Telugu dilinde konuşuyor: Profil › Dil'den \"తెలుగు\" seçeneğini seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Telugu: pilih \"తెలుగు\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на телугу: выбери «తెలుగు» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить мовою телугу: обери «తెలుగు» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 텔루구어를 쓸 수 있어요. 프로필 › 언어에서 ‘తెలుగు’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप तेलुगु में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “తెలుగు” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث التيلوجو: يمكنك اختيار «తెలుగు» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持泰卢固语：在“个人资料 › 语言”中选择“తెలుగు”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו טלוגו: אפשר לבחור \"తెలుగు\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาเตลูกูแล้ว เลือก “తెలుగు” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Telugu: chọn “తెలుగు” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援泰盧固文：在「個人資料 › 語言」中選擇「తెలుగు」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu telugu: välj ”తెలుగు” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví telugsky: vyber „తెలుగు“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum telugu: alege „తెలుగు” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন তেলুগু ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “తెలుగు” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Telugu: pilih \"తెలుగు\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον τελούγκου: διάλεξε «తెలుగు» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori teluški: odaberi „తెలుగు“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól telugu nyelven is beszél: válaszd a „తెలుగు” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ تیلگو میں بھی دستیاب ہے: پروفائل › زبان میں “తెలుగు” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Telugu ang app: piliin ang \"తెలుగు\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori telugu: izaberi „తెలుగు“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "ta": "ஆப் இப்போது தெலுங்கில் கிடைக்கிறது: சுயவிவரம் › மொழி என்பதில் \"తెలుగు\" என்பதைத் தேர்ந்தெடுங்கள், அல்லது உங்கள் சாதனத்தின் மொழியைப் பின்பற்ற விடுங்கள்.",
+        "sk": "Aplikácia teraz hovorí po telugsky: vyber „తెలుగు“ v Profil › Jazyk alebo ju nechaj nasledovať tvoje zariadenie.",
+        "fa": "برنامه حالا تلوگو صحبت می‌کند: «తెలుగు» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند.",
+        "te": "యాప్ ఇప్పుడు తెలుగులో అందుబాటులో ఉంది: ప్రొఫైల్ › భాషలో \"తెలుగు\" ఎంచుకోండి, లేదా మీ పరికరం భాషను అనుసరించనివ్వండి."
+      }
+    }
+  ]
+}

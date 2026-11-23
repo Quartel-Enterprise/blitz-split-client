@@ -91,6 +91,7 @@
     <string name="profile_language_slovak">Szlovák</string>
     <string name="profile_language_persian">Perzsa</string>
     <string name="profile_language_tamil">Tamil</string>
+    <string name="profile_language_telugu">Telugu</string>
     <string name="profile_language_system_detail">Az eszköz nyelve</string>
     <string name="profile_notifications">Értesítések</string>
     <plurals name="profile_notifications_active">
