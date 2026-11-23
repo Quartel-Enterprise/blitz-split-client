@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Muokkaa profiilia</string>
+    <string name="edit_profile_save">Tallenna</string>
+    <string name="edit_profile_change_photo">Vaihda kuva</string>
+    <string name="edit_profile_take_photo">Ota kuva</string>
+    <string name="edit_profile_choose_photo">Valitse galleriasta</string>
+    <string name="edit_profile_use_account_photo">Käytä tilin kuvaa (%1$s)</string>
+    <string name="edit_profile_remove_photo">Poista kuva</string>
+    <string name="edit_profile_photo_error">Tätä kuvaa ei voitu käyttää. Kokeile toista.</string>
+    <string name="edit_profile_avatar_color">Avatarin väri</string>
+    <string name="edit_profile_avatar_color_hint">Näkyy, kun sinulla ei ole kuvaa.</string>
+    <string name="edit_profile_name_label">Nimesi</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Kirjoita vähintään %d kirjainta.</string>
+    <string name="edit_profile_name_too_long">Käytä enintään %d merkkiä.</string>
+    <string name="edit_profile_account_notice">Nimi ja kuva tulivat tililtäsi (%1$s). Niiden muuttaminen täällä koskee vain Blitz Split -sovellusta eikä muuta tiliäsi (%1$s).</string>
+    <string name="edit_profile_footer">Ryhmäsi ja kaikki, joilla on profiililinkkisi, näkevät nimesi ja kuvasi.</string>
+    <string name="profile_photo_close">Sulje</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galleria</string>
+    <string name="profile_photo_remove">Poista</string>
+    <string name="profile_photo_title">Profiilikuva</string>
+</resources>

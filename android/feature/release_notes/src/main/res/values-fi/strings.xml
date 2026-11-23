@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Julkaisutiedot</string>
+    <string name="release_notes_show_beta">Näytä beetaversiot</string>
+    <string name="release_notes_beta_badge">Beeta %1$d</string>
+    <string name="release_notes_installed_badge">Tämä versio</string>
+    <string name="release_notes_empty">Ei vielä julkaisutietoja.</string>
+    <string name="release_notes_empty_only_betas">Vakaata versiota ei ole vielä. Ota beetaversiot käyttöön nähdäksesi, mitä testataan.</string>
+    <string name="release_notes_load_failed_title">Julkaisutietoja ei voitu ladata</string>
+    <string name="release_notes_load_failed_body">Tarkista yhteys ja yritä uudelleen.</string>
+    <string name="release_notes_retry">Yritä uudelleen</string>
+    <string name="release_notes_open_on_github">Avaa GitHubissa</string>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Tasausmuistutus</string>
+    <string name="push_bill_created">%1$s on lisännyt kulun ”%2$s”, jossa olet mukana</string>
+    <string name="push_bill_edited">%1$s on muokannut kulua ”%2$s”</string>
+    <string name="push_bill_deleted">%1$s on poistanut kulun ”%2$s”</string>
+    <string name="push_comment_added">%1$s on kommentoinut kulua ”%2$s”: %3$s</string>
+    <string name="push_payment_paid_you">%1$s on merkinnyt maksaneensa sinulle</string>
+    <string name="push_payment_to_you">%1$s on merkinnyt, että %2$s on maksanut sinulle</string>
+    <string name="push_payment_received_yours">%1$s on merkinnyt maksusi vastaanotetuksi</string>
+    <string name="push_payment_from_you">%1$s on merkinnyt, että olet maksanut henkilölle %2$s</string>
+    <string name="push_payment_undone">%1$s on kumonnut sinua koskevan maksun</string>
+    <string name="push_charge_sent">%1$s on muistuttanut sinua tasaamaan velat</string>
+    <string name="push_settle_reminder">Sinulla on avoin saldo ryhmässä %1$s</string>
+    <string name="push_settle_reminders">Sinulla on avoimia saldoja %1$s ryhmässä</string>
+    <string name="push_added_to_group">%1$s on lisännyt sinut ryhmään</string>
+    <string name="push_member_joined">%1$s on liittynyt ryhmään</string>
+    <string name="push_debts_simplified_to_you">%1$s on yksinkertaistanut velat. Nyt %2$s maksaa sinulle %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s on yksinkertaistanut velat. Nyt maksat %3$s henkilölle %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s on yksinkertaistanut velat. Katso, miten se vaikuttaa sinuun.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s on poistanut käytöstä toiminnon Yksinkertaista velat. Nyt %2$s maksaa sinulle %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s on poistanut käytöstä toiminnon Yksinkertaista velat. Nyt maksat %3$s henkilölle %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s on poistanut käytöstä toiminnon Yksinkertaista velat. Katso, miten se vaikuttaa sinuun.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">Kulut</string>
+    <string name="notification_settings_bills_detail">Uudet, muokatut tai poistetut kulut, joissa olet mukana</string>
+    <string name="notification_settings_payments">Maksut ja tasaukset</string>
+    <string name="notification_settings_payments_detail">Maksut sinulle tai sinulta sekä yksinkertaistetut velat</string>
+    <string name="notification_settings_comments">Kommentit</string>
+    <string name="notification_settings_comments_detail">Kuluissa, joissa olet mukana, ja keskusteluissa, joihin olet kirjoittanut</string>
+    <string name="notification_settings_people_and_groups">Ihmiset ja ryhmät</string>
+    <string name="notification_settings_people_and_groups_detail">Kuka liittyy ryhmiisi tai poistuu niistä ja mitä niissä muuttuu</string>
+    <string name="notification_settings_payment_requests">Maksupyynnöt</string>
+    <string name="notification_settings_payment_requests_detail">Kun joku pyytää sinua maksamaan</string>
+    <string name="notification_settings_balance_reminder">Avoimen saldon muistutus</string>
+    <string name="notification_settings_balance_reminder_detail">Kerran viikossa, jos saldo on avoinna</string>
+</resources>

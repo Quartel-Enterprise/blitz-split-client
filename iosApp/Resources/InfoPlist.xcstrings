@@ -71,6 +71,12 @@
             "value" : "Blitz Split"
           }
         },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -330,6 +336,12 @@
           }
         },
         "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "fi" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -599,6 +611,12 @@
             "value" : "برای اسکن کد QR یک دعوت یا دستگاه قبلی شما، و گرفتن عکس پروفایل و عکس هزینه‌ها."
           }
         },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kutsun tai vanhan laitteesi QR-koodin skannaamiseen sekä profiilikuvasi ja kulujen kuvien ottamiseen."
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -863,6 +881,12 @@
             "value" : "برای دعوت افراد از مخاطبان شما با لینک گروه. شماره‌های آن‌ها فقط روی همین دستگاه می‌ماند."
           }
         },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ihmisten kutsumiseen yhteystiedoistasi ryhmän linkillä. Heidän numeronsa pysyvät tässä laitteessa."
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1125,6 +1149,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "برای ذخیره عکس‌های یک هزینه در کتابخانه عکس‌های شما."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kulun kuvien tallentamiseen kuvakirjastoosi."
           }
         },
         "fil" : {

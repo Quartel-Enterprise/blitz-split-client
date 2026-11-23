@@ -27,7 +27,7 @@ import { readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
-/** How many locales go through one Play edit unless the caller says: 46 locales are eight saves. */
+/** How many locales go through one Play edit unless the caller says: 47 locales are eight saves. */
 export const DEFAULT_GROUP_SIZE = 6;
 /** Where the docs explain the quota and what to do on a day it runs out. */
 export const QUOTA_DOC = "docs/store-listing-screenshots.md#google-plays-daily-save-quota";

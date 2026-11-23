@@ -62,13 +62,13 @@ class AppLanguageTest {
     @Test
     fun `GIVEN tags of languages the app has or lacks WHEN reading their language THEN it is the lower case code`() {
         // Given
-        val tags = listOf("pt-BR", "PT_br", "zh-Hans-CN", "in-ID", "fi", null)
+        val tags = listOf("pt-BR", "PT_br", "zh-Hans-CN", "in-ID", "eu", null)
 
         // When
         val languages = tags.map(AppLanguage::languageOf)
 
         // Then
-        assertEquals(listOf("pt", "pt", "zh", "id", "fi", null), languages)
+        assertEquals(listOf("pt", "pt", "zh", "id", "eu", null), languages)
     }
 
     @Test
@@ -86,7 +86,7 @@ class AppLanguageTest {
     @Test
     fun `GIVEN no tag or a language the app does not have WHEN reading it THEN follows the device`() {
         // Given
-        val tags = listOf(null, "", "fi", "fi-FI")
+        val tags = listOf(null, "", "eu", "eu-ES")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)
@@ -576,6 +576,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Finnish tag WHEN reading it THEN is Finnish`() {
+        // Given
+        val tags = listOf("fi", "fi-FI", "FI_fi", "fi-SE")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.FINNISH }, languages)
+    }
+
+    @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN is Traditional Chinese`() {
         // Given
         val tags = listOf("zh-Hant", "zh-TW", "zh_TW", "zh-Hant-TW", "zh-HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
@@ -708,6 +720,7 @@ class AppLanguageTest {
                 "SW",
                 "CA",
                 "DA",
+                "FI",
             ),
             codes,
         )

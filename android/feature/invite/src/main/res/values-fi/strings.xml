@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Sulje</string>
+    <string name="invite_group_created">Ryhmä luotu</string>
+    <string name="invite_title">Kutsu kaikki ryhmään %s</string>
+    <string name="invite_qr_description">Ryhmän kutsulinkin QR-koodi</string>
+    <string name="invite_copy">Kopioi</string>
+    <string name="invite_copied">Kopioitu</string>
+    <string name="invite_who_picks">Linkin avaaja valitsee listasta, kuka on: %s. Tiliä ei tarvita.</string>
+    <string name="invite_names_or">%1$s tai %2$s</string>
+    <string name="invite_anyone_joins">Linkin avaaja liittyy ryhmään. Tiliä ei tarvita.</string>
+    <string name="invite_pending_title">Linkki odottaa</string>
+    <string name="invite_pending_offline">Se luodaan heti, kun olet verkossa.</string>
+    <string name="invite_pending_online">Luodaan linkkiä…</string>
+    <string name="invite_failed_title">Linkin luominen epäonnistui</string>
+    <string name="invite_failed_body">Jokin meni vikaan ryhmää synkronoitaessa.</string>
+    <string name="invite_retry">Yritä uudelleen</string>
+    <string name="invite_share">Jaa linkki</string>
+    <string name="invite_see_who_joined">Näytä, ketkä liittyivät</string>
+    <string name="invite_add_person">Lisää joku ilman sovellusta</string>
+    <string name="invite_go_to_group">Siirry ryhmään</string>
+    <string name="invite_change_link">Vaihda linkki</string>
+    <string name="invite_change_link_title">Vaihdetaanko kutsulinkki?</string>
+    <string name="invite_change_link_message">Nykyinen linkki ja QR-koodi lakkaavat toimimasta, myös käyttämättömät henkilökohtaiset kutsut. Jo liittyneet pysyvät ryhmässä.</string>
+    <string name="invite_change_link_failed">Linkin vaihtaminen epäonnistui. Yritä uudelleen.</string>
+    <string name="invite_share_message">Jaetaan ryhmän %1$s kulut sovelluksessa Blitz Split. Liity tällä linkillä: %2$s</string>
+</resources>

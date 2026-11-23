@@ -48,7 +48,8 @@
         "mr": "ॲप आता नॉर्वेजियनमध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"Norsk bokmål\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
         "sw": "Programu sasa inazungumza Kinorwe: chagua \"Norsk bokmål\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
         "ca": "L’app ara parla noruec: tria «Norsk bokmål» a Perfil › Idioma, o deixa que segueixi el teu dispositiu.",
-        "da": "Appen taler nu norsk: vælg »Norsk bokmål« i Profil › Sprog, eller lad den følge din enhed."
+        "da": "Appen taler nu norsk: vælg »Norsk bokmål« i Profil › Sprog, eller lad den følge din enhed.",
+        "fi": "Sovellus puhuu nyt norjaa: valitse ”Norsk bokmål” kohdassa Profiili › Kieli tai anna sen seurata laitteesi kieltä."
       }
     },
     {
@@ -99,7 +100,8 @@
         "mr": "ग्रुप आता नॉर्वेजियन क्रोन (NOK) मध्ये खर्च वाटू शकतात, आणि नॉर्वेमध्ये तयार केलेला ग्रुप त्यातच सुरू होतो.",
         "sw": "Vikundi sasa vinaweza kugawanya kwa krone ya Norwe (NOK), na kikundi kilichoundwa nchini Norwe kinaanza nayo.",
         "ca": "Els grups ara poden dividir en corona noruega (NOK), i un grup creat a Noruega comença en aquesta moneda.",
-        "da": "Grupper kan nu dele i norske kroner (NOK), og en gruppe, der oprettes i Norge, starter i den valuta."
+        "da": "Grupper kan nu dele i norske kroner (NOK), og en gruppe, der oprettes i Norge, starter i den valuta.",
+        "fi": "Ryhmät voivat nyt jakaa kulut Norjan kruunuina (NOK), ja Norjassa luotu ryhmä käyttää sitä alusta alkaen."
       }
     }
   ]

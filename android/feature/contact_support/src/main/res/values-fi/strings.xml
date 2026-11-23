@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Ota yhteyttä tukeen</string>
+    <string name="contact_support_description">Avaamme sähköpostisovelluksesi valmiin viestin kanssa. Kerro, mitä tapahtui, ja lähetä viesti: oikeat ihmiset lukevat jokaisen viestin.</string>
+    <string name="contact_support_to">Vastaanottaja</string>
+    <string name="contact_support_diagnostics">Liitetään sähköpostiin</string>
+    <string name="contact_support_app_version">Sovelluksen versio</string>
+    <string name="contact_support_platform">Alusta</string>
+    <string name="contact_support_language">Kieli</string>
+    <string name="contact_support_account">Tili</string>
+    <string name="contact_support_profile">Profiili</string>
+    <string name="contact_support_language_system">Järjestelmä</string>
+    <string name="contact_support_account_local">Vain tämä laite</string>
+    <string name="contact_support_account_anonymous">Ei yhdistetty</string>
+    <string name="contact_support_open_email">Avaa sähköposti</string>
+    <string name="contact_support_copy_email">Kopioi sähköpostiosoite</string>
+    <string name="contact_support_notice_copied">Sähköpostiosoite kopioitu.</string>
+    <string name="contact_support_notice_no_app">Sähköpostisovellusta ei löytynyt. Osoite kopioitiin sen sijaan.</string>
+    <string name="contact_support_close">Sulje</string>
+</resources>

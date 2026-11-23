@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Et ole tässä ryhmässä</string>
+    <string name="bill_link_not_in_group_message">Tämä kommentti on ryhmässä, johon et kuulu. Pyydä kutsua siltä, joka lähetti sinulle linkin.</string>
+    <string name="bill_link_offline_title">Ei internetyhteyttä</string>
+    <string name="bill_link_offline_message">Avaa linkki uudelleen, kun olet taas verkossa.</string>
+    <string name="bill_link_go_home">Siirry Kotiin</string>
+    <string name="discard_changes_title">Hylätäänkö muutokset?</string>
+    <string name="discard_changes_message">Tallentamattomat muutokset menetetään.</string>
+    <string name="discard_changes_discard">Hylkää</string>
+    <string name="discard_changes_keep_editing">Jatka muokkausta</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Kello</string>
+    <string name="watch_connected_title">%1$s on yhdistetty tiliisi</string>
+    <string name="watch_connected_title_unnamed">Kello yhdistetty tiliisi</string>
+    <string name="watch_connected_text">Se näkee ryhmäsi ja synkronoituu itsestään. Irrota se kirjautumalla ulos kellossa.</string>
+</resources>

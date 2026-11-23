@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Jaa kulut vaivatta</string>
+    <string name="welcome_offline_title">Toimii offline-tilassa</string>
+    <string name="welcome_offline_body">Kaikki pysyy laitteellasi ja synkronoituu myöhemmin.</string>
+    <string name="welcome_optional_title">Tili on vapaaehtoinen</string>
+    <string name="welcome_optional_body">Google tai Apple vain varmistaa, ettet menetä mitään, kun vaihdat laitetta.</string>
+    <string name="welcome_invite_title">Kutsu linkillä tai QR-koodilla</string>
+    <string name="welcome_invite_body">Ystävät liittyvät ryhmään luomatta tiliä.</string>
+    <string name="welcome_no_connection_title">Ei yhteyttä.</string>
+    <string name="welcome_no_connection_body">Tilillä kirjautuminen vaatii internetyhteyden. Käytä nyt ilman tiliä ja yhdistä myöhemmin Profiilissa.</string>
+    <string name="welcome_or">tai</string>
+    <string name="welcome_use_without_account">Käytä ilman tiliä</string>
+    <string name="welcome_used_on_another_device">Olen käyttänyt sovellusta toisella laitteella</string>
+    <string name="welcome_sign_in_failed">Kirjautuminen ei onnistunut juuri nyt. Yritä uudelleen.</string>
+    <string name="welcome_legal_notice">Jatkamalla hyväksyt asiakirjan %1$s ja vahvistat tutustuneesi asiakirjaan %2$s.</string>
+    <string name="welcome_legal_terms">Käyttöehdot</string>
+    <string name="welcome_legal_privacy">Tietosuojaseloste</string>
+    <string name="welcome_no_account_note">Ilman tiliä tietosi poistetaan, kun sovellusta ei ole käytetty 30 päivään. Säilytä ne yhdistämällä Google tai Apple.</string>
+    <string name="welcome_no_account_note_offline">Ilman tiliä tietosi poistetaan, kun sovellusta ei ole käytetty 30 päivään. Säilytä ne yhdistämällä myöhemmin Google tai Apple Profiilissa.</string>
+    <string name="welcome_expired_title">Tietosi poistettiin</string>
+    <string name="welcome_expired_body">Käytit sovellusta ilman tiliä etkä avannut sitä 30 päivään, joten tietosi poistettiin. Yhdistä Google tai Apple, niin ne säilyvät ensi kerralla.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

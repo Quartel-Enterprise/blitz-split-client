@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Ilmoitukset</string>
+    <string name="notification_settings_denied_title">Blitz Split -ilmoitukset on poistettu käytöstä Androidissa.</string>
+    <string name="notification_settings_denied_body">Ota ne käyttöön järjestelmän asetuksissa, niin saat alla olevat push-ilmoitukset. Kello toimii edelleen.</string>
+    <string name="notification_settings_open_settings">Avaa asetukset</string>
+    <string name="notification_settings_refused_body">Android antaa sinun sallia ne vielä kerran, jotta saat alla olevat push-ilmoitukset. Kello toimii edelleen.</string>
+    <string name="notification_settings_turn_on">Ota käyttöön</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Estetty Androidissa</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Avaa Androidin asetukset: %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Push-ilmoitukset</string>
+    <string name="notification_settings_push_switch_detail">Vain tällä laitteella</string>
+    <string name="notification_settings_section">Ilmoita minulle</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Sovelluksessa</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push lähettää ilmoituksen tälle laitteelle. Sovelluksessa merkitsee sen uudeksi kelloon ja Toimintaan; pois päältä se näkyy silti Toiminnassa valmiiksi luettuna.</string>
+    <string name="notification_settings_footer">Ilmoitukset saapuvat, kun internetyhteys on käytössä. Voit mykistää ryhmän sen sisällä olevasta valikosta.</string>
+</resources>

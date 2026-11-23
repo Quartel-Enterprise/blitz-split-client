@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Tallenna palautuskoodisi</string>
+    <string name="recovery_code_body">Käytät sovellusta ilman tiliä. Nämä 12 sanaa palauttavat tietosi, jos vaihdat tai kadotat laitteesi. Kirjoita ne muistiin järjestyksessä. Kun sovellusta ei ole käytetty 30 päivään, tietosi poistetaan ja sanat lakkaavat toimimasta.</string>
+    <string name="recovery_code_copy">Kopioi sanat</string>
+    <string name="recovery_code_save_to_password_manager">Tallenna salasanojen hallintaan</string>
+    <string name="recovery_code_connect_instead">Yhdistä mieluummin Google tai Apple</string>
+    <string name="recovery_code_connect_instead_body">Koodia ei tarvita</string>
+    <string name="recovery_code_sign_in_failed">Yhdistäminen ei onnistunut juuri nyt. Yritä uudelleen.</string>
+    <string name="recovery_code_also_in_profile">Se löytyy myös kohdasta Profiili › Palautus.</string>
+    <string name="recovery_code_remind_later">Muistuta myöhemmin</string>
+    <string name="recovery_code_saved">Olen tallentanut sen</string>
+    <string name="recovery_code_download">Lataa</string>
+    <string name="recovery_code_file_name">blitz-split-palautuskoodi.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · palautuskoodi\n\n%1$s\n\nKäytä sitä kohdassa \"Olen käyttänyt sovellusta toisella laitteella\" palauttaaksesi tietosi.\n</string>
+</resources>

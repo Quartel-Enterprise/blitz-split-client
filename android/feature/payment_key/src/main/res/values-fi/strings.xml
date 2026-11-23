@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Uusi Pix-avain</string>
+    <string name="payment_key_title_pix_edit">Muokkaa Pix-avainta</string>
+    <string name="payment_key_title_bitcoin_new">Uusi Bitcoin-avain</string>
+    <string name="payment_key_title_bitcoin_edit">Muokkaa Bitcoin-avainta</string>
+    <string name="payment_key_save">Tallenna</string>
+
+    <string name="payment_key_pix_intro">Sinulle maksava näkee tämän avaimen tasatessaan. Minkä tyyppinen avain?</string>
+    <string name="payment_key_pix_question">Minkä tyyppinen avain?</string>
+    <string name="payment_key_pix_explanation">Sinulle maksava näkee tämän avaimen tasatessaan.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Puhelin</string>
+    <string name="payment_key_type_email">Sähköposti</string>
+    <string name="payment_key_type_random">Satunnainen</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Matkapuhelinnumero suuntanumeroineen</string>
+    <string name="payment_key_label_email">Sähköposti</string>
+    <string name="payment_key_label_random">Satunnainen avain</string>
+
+    <string name="payment_key_bitcoin_intro">Miten haluat vastaanottaa?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">nopea, pieni palkkio</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">lohkoketjussa</string>
+    <string name="payment_key_label_lightning">Lightning Address tai LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin-osoite</string>
+
+    <string name="payment_key_paste">Liitä</string>
+
+    <string name="payment_key_hint_cpf">Muoto 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Muoto +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Muoto nimi@verkkotunnus.com</string>
+    <string name="payment_key_hint_random">32 kirjainta ja numeroa, kuten pankkisi näyttää sen</string>
+    <string name="payment_key_hint_lightning">Esim. nimi@lompakko.com tai LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainnet-osoite, joka alkaa merkeillä bc1q tai bc1p</string>
+
+    <string name="payment_key_valid_cpf">Muoto 000.000.000-00 · tarkistusnumerot täsmäävät</string>
+    <string name="payment_key_valid_phone">Muoto +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Muoto nimi@verkkotunnus.com</string>
+    <string name="payment_key_valid_random">Satunnainen avain tunnistettu (32 merkkiä)</string>
+    <string name="payment_key_valid_lightning_address">Kelvollinen Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Kelvollinen LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Virheellinen CPF: tarkistusnumerot eivät täsmää.</string>
+    <string name="payment_key_error_invalid_phone">Puutteellinen matkapuhelinnumero: käytä suuntanumeroa ja 9 numeroa, joista ensimmäinen on 9.</string>
+    <string name="payment_key_error_invalid_email">Puutteellinen sähköpostiosoite: verkkotunnus puuttuu, esim. .com tai .com.br.</string>
+    <string name="payment_key_error_invalid_random">Puutteellinen satunnainen avain: siinä on 32 kirjainta ja numeroa.</string>
+    <string name="payment_key_error_invalid_lightning">Tämä ei ole Lightning Address (nimi@lompakko) eikä LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Tämä on Lightning-lasku (lnbc…): sillä maksetaan kerran, ja se vanhenee. Liitä Lightning Address tai LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Virheellinen osoite. Käytä mainnet-osoitetta, joka alkaa bc1q tai bc1p.</string>
+    <string name="payment_key_error_testnet_address">Tämä on testnet-osoite (tb1…). Täällä toimii vain Bitcoinin mainnet ja bc1…-osoitteet.</string>
+    <string name="payment_key_error_already_saved">Sinulla on jo tämä avain.</string>
+
+    <string name="payment_key_switched_to_onchain">Tämä on on-chain-osoite, joten vaihdoimme tilaan On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Tämä on Lightning Address, joten vaihdoimme tilaan Lightning.</string>
+    <string name="payment_key_cpf_notice">Sinulle maksava näkee koko CPF-tunnuksesi. Jos et halua jakaa sitä, käytä puhelinnumeroa, sähköpostia tai satunnaista avainta.</string>
+    <string name="payment_key_held_notice">Sinulla voi olla vain yksi tämän tyyppinen Pix-avain, joten tämä on tallentamasi avain. Voit muuttaa sitä tässä.</string>
+
+    <string name="payment_key_accepted_title">Hyväksymme</string>
+    <string name="payment_key_accepted_lightning_address_sample">nimi@lompakko.app</string>
+
+    <string name="payment_key_default_pix_title">Oletus-Pix-avain</string>
+    <string name="payment_key_default_bitcoin_title">Oletus-Bitcoin-avain</string>
+    <string name="payment_key_default_pix_detail">Näytetään ensimmäisenä tasattaessa.</string>
+    <string name="payment_key_default_bitcoin_detail">Näytetään ensimmäisenä, kun joku maksaa BTC:nä.</string>
+    <string name="payment_key_default_now">Nyt: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Jos haluat muuttaa sitä, tee toisesta avaimesta oletus.</string>
+    <string name="payment_key_default_locked_new">Ensimmäinen tämän tyyppinen avaimesi on oletus.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">puhelin</string>
+    <string name="payment_key_default_type_email">sähköposti</string>
+    <string name="payment_key_default_type_random">satunnainen avain</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split ei siirrä rahaa: maksaja maksaa pankkisovelluksessaan. Tarkista, että avain on sinun nimissäsi.</string>
+    <string name="payment_key_footer_bitcoin">Tasattaessa näytämme summan satseina nykyisellä kurssilla. Se on vain arvio: maksaja vahvistaa sen lompakossaan.</string>
+
+    <string name="payment_key_delete">Poista avain</string>
+    <string name="payment_key_delete_title">Poistetaanko tämä avain?</string>
+    <string name="payment_key_delete_body">Sinulle velkaa olevat eivät enää näe sitä tasatessaan.</string>
+    <string name="payment_key_delete_confirm">Poista</string>
+</resources>

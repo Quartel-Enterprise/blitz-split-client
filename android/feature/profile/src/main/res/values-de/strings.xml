@@ -98,6 +98,7 @@
     <string name="profile_language_swahili">Suaheli</string>
     <string name="profile_language_catalan">Katalanisch</string>
     <string name="profile_language_danish">Dänisch</string>
+    <string name="profile_language_finnish">Finnisch</string>
     <string name="profile_language_system_detail">Sprache des Geräts</string>
     <string name="profile_notifications">Mitteilungen</string>
     <plurals name="profile_notifications_active">

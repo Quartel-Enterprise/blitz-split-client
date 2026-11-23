@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Käytä tässä samaa tiliä kuin puhelimessasi. Sen jälkeen kello toimii itsenäisesti.</string>
+    <string name="pair_connect">Yhdistä</string>
+    <string name="pair_connecting">Haetaan tiliäsi puhelimesta…</string>
+    <string name="pair_connected_title">Valmista, %1$s</string>
+    <string name="pair_connected_title_unnamed">Valmista</string>
+    <string name="pair_connected_body">Kello synkronoituu itsestään, myös kaukana puhelimesta.</string>
+    <string name="pair_continue">Jatka</string>
+    <string name="pair_local_only_title">Tietosi ovat vain puhelimessasi</string>
+    <string name="pair_local_only_body">Yhdistä puhelimessa tili Profiilissa ja napauta täällä uudelleen Yhdistä.</string>
+    <string name="pair_ok">OK</string>
+    <string name="pair_far_title">Puhelin liian kaukana</string>
+    <string name="pair_far_body">Tuo puhelin lähemmäs tai yhdistä koodilla.</string>
+    <string name="pair_try_again">Yritä uudelleen</string>
+    <string name="pair_use_code">Käytä koodia</string>
+    <string name="pair_code_label">Koodisi</string>
+    <string name="pair_code_description">Koodi %1$s</string>
+    <string name="pair_code_where">Puhelimessa: Profiili › Yhdistä kello</string>
+    <string name="pair_code_validity">Voimassa 5 minuuttia</string>
+    <string name="pair_cancel">Peruuta</string>
+    <string name="pair_signed_out_title">Kirjauduit ulos puhelimessa</string>
+    <string name="pair_signed_out_body">Tiedot poistettiin myös tästä kellosta.</string>
+    <string name="pair_connect_again">Yhdistä uudelleen</string>
+    <string name="pair_error_offline">Kellon yhdistäminen vaatii internetyhteyden.</string>
+    <string name="pair_error_too_many">Liian monta yritystä. Odota muutama minuutti ja yhdistä uudelleen.</string>
+    <string name="pair_error_failed">Kellon yhdistäminen epäonnistui. Yritä uudelleen.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Saldot</string>
+    <string name="balances_offline">Offline-tilassa</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Offline-tilassa · %d muutos jonossa</item>
+        <item quantity="other">Offline-tilassa · %d muutosta jonossa</item>
+    </plurals>
+    <string name="balances_overall">Kokonaissaldo</string>
+    <string name="balances_to_receive">saatavaa</string>
+    <string name="balances_you_owe">olet velkaa</string>
+    <string name="balances_group_to_receive">Saatavaa %1$s</string>
+    <string name="balances_group_you_owe">Olet velkaa %1$s</string>
+    <string name="balances_group_even">Kokonaisuutena tasan</string>
+    <string name="balances_waiting">odottaa lähetystä</string>
+    <string name="balances_updated_at">Päivitetty klo %1$s</string>
+    <string name="balances_sign_out">Kirjaudu ulos</string>
+    <string name="balances_sign_out_title">Kirjaudutaanko ulos tästä kellosta?</string>
+    <string name="balances_sign_out_body">Kellon tiedot poistetaan, kun jonossa olevat muutokset on lähetetty. Puhelimesi pysyy kirjautuneena.</string>
+    <string name="balances_sign_out_scheduled">Uloskirjautuminen ajastettu</string>
+    <string name="balances_sign_out_scheduled_detail">Kirjautuu ulos heti, kun kaikki on lähetetty</string>
+    <string name="balances_settled_title">Ei avoimia saldoja</string>
+    <string name="balances_settled_body">Et ole kenellekään velkaa, eikä kukaan ole sinulle velkaa. Uudet ryhmät ja kulut näkyvät täällä itsestään.</string>
+    <string name="group_you_owe_person">olet velkaa henkilölle %1$s</string>
+    <string name="group_owes_you">%1$s on sinulle velkaa</string>
+    <string name="group_former_member">Entinen jäsen</string>
+    <string name="group_i_paid">Maksoin</string>
+    <string name="group_confirm_title">Maksoitko %1$s henkilölle %2$s?</string>
+    <string name="group_confirm_body">%1$s. Ryhmä näkee sen heti tai kun internetyhteys palaa.</string>
+    <string name="group_payment_recorded">Maksu kirjattu</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Saldot</string>
+    <string name="tile_to_receive_total">saatavaa yhteensä</string>
+    <string name="tile_to_pay_total">maksettavaa yhteensä</string>
+    <string name="tile_owed_to_you">Saatavasi %1$s</string>
+    <string name="tile_you_owe">Olet velkaa %1$s</string>
+    <string name="tile_settled_title">Kaikki tasattu</string>
+    <string name="tile_settled_body">Ei mitään maksettavaa tai saatavaa</string>
+    <string name="tile_open">Avaa</string>
+    <string name="complication_name">Kokonaissaldo</string>
+    <string name="complication_you_owe">Olet velkaa %1$s</string>
+    <string name="complication_owed_to_you">Saatavasi %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Vastaanotettu</string>
+    <string name="push_view_group">Näytä ryhmä</string>
+</resources>
