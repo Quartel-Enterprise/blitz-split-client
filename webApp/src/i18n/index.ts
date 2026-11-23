@@ -34,6 +34,7 @@ import { ur } from './ur'
 import { fil } from './fil'
 import { sr } from './sr'
 import { sk } from './sk'
+import { bg } from './bg'
 
 export type { MessageKey }
 /**
@@ -41,12 +42,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'bg'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, bg }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'bg']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -72,10 +73,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr` or `sk` tag
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk` or `bg` tag
  * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN,
- * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script) or Slovak, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, bg-BG…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak or Bulgarian, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, any `en` tag is English, and English when none
  * matches.
  */
@@ -175,6 +176,7 @@ const documentLanguages: Record<Locale, string> = {
   fil: 'fil',
   sr: 'sr-Latn',
   sk: 'sk',
+  bg: 'bg',
 }
 
 const documentLanguage = documentLanguages[locale]

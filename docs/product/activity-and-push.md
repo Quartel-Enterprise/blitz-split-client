@@ -114,6 +114,9 @@ The feed, unread state, real time and push notifications.
     výdavok…"). No reflexive "sa" nor pronoun comes right after that past, which would read "si pridal(a) sa": a join
     is "vstúpil(a) do skupiny". A name is never declined, standing after a noun ("pridal(a) člena Ana"), and the
     deleted-item notice starts with who deleted it ("Ty si vymazal(a)…", `youSubjectLanguages`).
+    Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
+    are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
+    deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).
     Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".

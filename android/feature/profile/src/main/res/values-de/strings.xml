@@ -89,6 +89,7 @@
     <string name="profile_language_filipino">Filipino</string>
     <string name="profile_language_serbian">Serbisch</string>
     <string name="profile_language_slovak">Slowakisch</string>
+    <string name="profile_language_bulgarian">Bulgarisch</string>
     <string name="profile_language_system_detail">Sprache des Geräts</string>
     <string name="profile_notifications">Mitteilungen</string>
     <plurals name="profile_notifications_active">

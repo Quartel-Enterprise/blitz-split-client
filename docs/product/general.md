@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script) and Slovak: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak and Bulgarian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -197,7 +197,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     `other` (0, 5 and up), as Czech's. Its activity sentences follow Czech's rule with "si" for "jsi"
     ([activity-and-push.md](activity-and-push.md)). No suffix is ever glued to a value the app fills in, and a name
     is never declined: it stands after a noun or a colon ("pridal(a) člena Ana", "Zaplatiť: Ana"). Slovakia's
-    currency, the euro, is already in the app. The
+    currency, the euro, is already in the app. Bulgarian (Pierre's calls, issue #554) is one variant for every
+    Bulgarian tag, written in Cyrillic, speaks informally, with "ти", never "Вие", and calls the app Blitz Split. Its
+    plurals have `one` and `other`. Its activity sentences start every verb phrase with an aorist, whose second and
+    third person singular are the same, so a row reads right for a name and for the user with no rule
+    ([activity-and-push.md](activity-and-push.md)); a person's gender is never assumed (no "-л"/"-ла" past for
+    someone the app can't tell, "-л(а)" where it can't be avoided). No suffix, the definite article included, is ever
+    glued to a value the app fills in. Bulgaria joined the euro on 2026-01-01, so the lev (BGN) doesn't come with it:
+    the euro is already in the app, and Google Play has a Bulgarian listing while the App Store has no Bulgarian
+    locale. The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the

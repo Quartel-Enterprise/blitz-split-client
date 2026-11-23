@@ -1,0 +1,47 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Bulgarian: pick \"Български\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala búlgaro: escolha \"Български\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora búlgaro: escolhe \"Български\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla búlgaro: elige \"Български\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais bulgare : choisis « Български » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Bulgarisch: Wähle „Български“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla bulgaro: scegli \"Български\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po bułgarsku: wybierz „Български” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Bulgaars: kies \"Български\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがブルガリア語に対応しました。プロフィール › 言語で「Български」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Bulgarca konuşuyor: Profil › Dil'den \"Български\"yi seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Bulgaria: pilih \"Български\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на болгарском: выбери «Български» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить болгарською: обери «Български» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 불가리아어를 쓸 수 있어요. 프로필 › 언어에서 ‘Български’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप बल्गेरियाई में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Български” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث البلغارية: يمكنك اختيار «Български» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持保加利亚语：在“个人资料 › 语言”中选择“Български”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו בולגרית: אפשר לבחור \"Български\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาบัลแกเรียแล้ว เลือก “Български” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Bulgaria: chọn “Български” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援保加利亞文：在「個人資料 › 語言」中選擇「Български」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu bulgariska: välj ”Български” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví bulharsky: vyber „Български“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum bulgară: alege „Български” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন বুলগেরীয় ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “Български” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Bulgaria: pilih \"Български\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον βουλγαρικά: διάλεξε «Български» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori bugarski: odaberi „Български“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól bolgárul is beszél: válaszd a „Български” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ بلغاری میں بھی دستیاب ہے: پروفائل › زبان میں “Български” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Bulgarian ang app: piliin ang \"Български\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori bugarski: izaberi „Български“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "sk": "Aplikácia teraz hovorí po bulharsky: vyber „Български“ v Profil › Jazyk, alebo nechaj jazyk zariadenia.",
+        "bg": "Приложението вече говори български: избери „Български“ в Профил › Език или остави езика на устройството."
+      }
+    }
+  ]
+}

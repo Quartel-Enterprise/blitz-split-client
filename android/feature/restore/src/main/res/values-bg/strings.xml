@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Върни групите си</string>
+    <string name="restore_subtitle">Влизал(а) си с акаунт преди? Просто влез отново. Ако не, използвай кода за възстановяване или QR кода от старото си устройство.</string>
+    <string name="restore_no_connection_title">Няма връзка</string>
+    <string name="restore_no_connection_body">За вход с акаунт или код е нужен интернет, за да се изтеглят групите ти. Въведеното се запазва.</string>
+    <string name="restore_code_label">Или използвай кода за възстановяване</string>
+    <string name="restore_code_hint">12-те думи по ред. Постави ги всички в едно поле, за да се попълнят всички полета.</string>
+    <string name="restore_scan_qr_title">Сканирай QR кода от старото си устройство</string>
+    <string name="restore_scan_qr_body">Там: Профил › Възстановяване › Покажи QR кода</string>
+    <string name="restore_recover">Възстанови</string>
+    <string name="restore_try_again">Опитай отново</string>
+    <string name="restore_start_fresh">Започни наново на това устройство</string>
+    <string name="restore_error_invalid_code">Кодът не е намерен. Провери думите и реда им, после опитай отново.</string>
+    <string name="restore_error_too_many_attempts">Твърде много опити. Изчакай няколко минути и опитай отново.</string>
+    <string name="restore_error_sign_in_failed">Входът не успя в момента. Опитай отново.</string>
+    <string name="restore_error_unknown">Нещо се обърка. Опитай отново.</string>
+</resources>
