@@ -38,8 +38,8 @@ concurrency:
 jobs:
   review:
     # GitHub withholds secrets from pull requests opened from forks, so the review can't run there.
-    # Renovate's pull requests are branches of this repository, so they get the review like any other,
-    # except the ones that change a review workflow, which claude-code-action skips.
+    # Renovate's pull requests are branches of this repository, so they get the review like any other
+    # (allowed-bots below), except the ones that change a review workflow, which claude-code-action skips.
     if: >-
       !github.event.pull_request.draft &&
       github.event.pull_request.head.repo.full_name == github.repository
@@ -63,7 +63,9 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - uses: Quartel-Enterprise/claude-review/review@1.4.0
+      - uses: Quartel-Enterprise/claude-review/review@1.5.0
         with:
           oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           fix: 'true'
+          # claude-code-action refuses a run a bot started unless it is listed here.
+          allowed-bots: renovate
