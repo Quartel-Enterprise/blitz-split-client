@@ -1680,7 +1680,7 @@ export const fi: Record<MessageKey, string> = {
   activity_moreIn: 'Lisää: {subject}',
   activity_metaPending: 'odottaa lähetystä',
   activity_deletedBy: '{name} on poistanut: {subject}',
-  activity_deletedByMe: 'Olet poistanut: {subject}',
+  activity_deletedByMe: 'Sinä olet poistanut: {subject}',
   activity_billDeletedPassive: '{subject} on poistettu',
   activity_groupDeletedPassive: '{subject} on poistettu',
   activity_thisBill: 'tämä kulu',

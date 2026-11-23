@@ -86,7 +86,7 @@ class AppLanguageTest {
     @Test
     fun `GIVEN no tag or a language the app does not have WHEN reading it THEN follows the device`() {
         // Given
-        val tags = listOf(null, "", "fi", "fi-FI")
+        val tags = listOf(null, "", "eu", "eu-ES")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)

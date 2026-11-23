@@ -76,10 +76,10 @@
     <string name="activity_detail_charge">%s · viesti lähetetty</string>
     <string name="activity_detail_comment">”%s”</string>
     <string name="activity_detail_change">%1$s %2$s → %3$s</string>
-    <string name="activity_deleted_notice_bill">%2$s on poistanut kohteen %1$s %3$s. Merkintä jää syötteeseen, mutta kulua ei voi enää avata.</string>
-    <string name="activity_deleted_notice_group">%2$s on poistanut kohteen %1$s %3$s. Merkintä jää syötteeseen, mutta ryhmää ei voi enää avata.</string>
-    <string name="activity_deleted_notice_bill_unknown">Kohde %s on poistettu. Merkintä jää syötteeseen, mutta kulua ei voi enää avata.</string>
-    <string name="activity_deleted_notice_group_unknown">Kohde %s on poistettu. Merkintä jää syötteeseen, mutta ryhmää ei voi enää avata.</string>
+    <string name="activity_deleted_notice_bill">%2$s on poistanut kohteen %1$s %3$s. Merkintä pysyy Toiminnassa, mutta kulua ei voi enää avata.</string>
+    <string name="activity_deleted_notice_group">%2$s on poistanut kohteen %1$s %3$s. Merkintä pysyy Toiminnassa, mutta ryhmää ei voi enää avata.</string>
+    <string name="activity_deleted_notice_bill_unknown">Kohde %s on poistettu. Merkintä pysyy Toiminnassa, mutta kulua ei voi enää avata.</string>
+    <string name="activity_deleted_notice_group_unknown">Kohde %s on poistettu. Merkintä pysyy Toiminnassa, mutta ryhmää ei voi enää avata.</string>
     <string name="activity_this_bill">Tämä kulu</string>
     <string name="activity_this_group">Tämä ryhmä</string>
     <string name="activity_you_lowercase">sinä</string>

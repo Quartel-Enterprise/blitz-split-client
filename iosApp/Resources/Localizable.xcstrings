@@ -102313,7 +102313,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Merkintä säilyy Toiminnassa, mutta kulu ei enää aukea."
+            "value" : "Merkintä pysyy Toiminnassa, mutta kulua ei voi enää avata."
           }
         },
         "fil" : {
@@ -102576,7 +102576,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Merkintä säilyy Toiminnassa, mutta ryhmä ei enää aukea."
+            "value" : "Merkintä pysyy Toiminnassa, mutta ryhmää ei voi enää avata."
           }
         },
         "fil" : {
@@ -468802,7 +468802,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kuka tahansa ryhmässä voi muuttaa nimeä, kuvaketta, tyyppiä ja velkojen yksinkertaistusta. Toiminta näyttää, kuka muutti."
+            "value" : "Kuka tahansa ryhmässä voi muuttaa nimeä, kuvaketta, tyyppiä ja asetusta Yksinkertaista velat. Toiminta näyttää, kuka sen muutti."
           }
         },
         "fil" : {
@@ -469316,7 +469316,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Poistetaanko velkojen yksinkertaistus käytöstä?"
+            "value" : "Poistetaanko Yksinkertaista velat käytöstä?"
           }
         },
         "fil" : {
@@ -477208,7 +477208,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ otti sen käyttöön jälkeesi. Viimeisin muutos ratkaisee: velkojen yksinkertaistus on käytössä."
+            "value" : "%@ on ottanut sen käyttöön sinun jälkeesi. Viimeisin muutos ratkaisee: Yksinkertaista velat on päällä."
           }
         },
         "fil" : {
@@ -477471,7 +477471,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ poisti sen käytöstä jälkeesi. Viimeisin muutos ratkaisee: velkojen yksinkertaistus on pois käytöstä."
+            "value" : "%@ on poistanut sen käytöstä sinun jälkeesi. Viimeisin muutos ratkaisee: Yksinkertaista velat on pois päältä."
           }
         },
         "fil" : {
@@ -480334,7 +480334,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ poisti juuri velkojen yksinkertaistuksen käytöstä. Et ole enää velkaa henkilölle %@ ryhmässä %@."
+            "value" : "%@ poisti juuri asetuksen Yksinkertaista velat käytöstä. Et ole enää velkaa henkilölle %@ ryhmässä %@."
           }
         },
         "fil" : {
@@ -488359,7 +488359,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ on ottanut velkojen yksinkertaistuksen käyttöön ryhmässä %@"
+            "value" : "%@ on ottanut käyttöön asetuksen Yksinkertaista velat ryhmässä %@"
           }
         },
         "fil" : {
@@ -488616,7 +488616,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ on poistanut velkojen yksinkertaistuksen käytöstä ryhmässä %@"
+            "value" : "%@ on poistanut käytöstä asetuksen Yksinkertaista velat ryhmässä %@"
           }
         },
         "fil" : {
@@ -493079,7 +493079,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ poisti velkojen yksinkertaistuksen käytöstä. Nyt %2$@ maksaa sinulle %3$@."
+            "value" : "%1$@ poisti asetuksen Yksinkertaista velat käytöstä. Nyt %2$@ maksaa sinulle %3$@."
           }
         },
         "fil" : {
@@ -493349,7 +493349,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ poisti velkojen yksinkertaistuksen käytöstä. Nyt maksat henkilölle %2$@: %3$@."
+            "value" : "%1$@ poisti asetuksen Yksinkertaista velat käytöstä. Nyt maksat henkilölle %2$@: %3$@."
           }
         },
         "fil" : {
@@ -493619,7 +493619,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ poisti velkojen yksinkertaistuksen käytöstä. Katso, mitä se tarkoittaa sinulle."
+            "value" : "%1$@ poisti asetuksen Yksinkertaista velat käytöstä. Katso, mitä se tarkoittaa sinulle."
           }
         },
         "fil" : {
@@ -543859,7 +543859,7 @@
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Velkojen yksinkertaistus ei ole käytettävissä alle 3 henkilön ryhmässä. Se tulee käyttöön, kun ryhmässä on vähintään 3 henkilöä."
+            "value" : "Yksinkertaista velat ei ole käytettävissä alle 3 henkilön ryhmässä. Se tulee käyttöön, kun ryhmässä on vähintään 3 henkilöä."
           }
         },
         "fil" : {
