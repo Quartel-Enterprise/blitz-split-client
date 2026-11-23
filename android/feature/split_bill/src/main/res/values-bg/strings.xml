@@ -249,7 +249,7 @@
     </plurals>
     <string name="split_bill_item_amount_closed">Частите правят сумата на артикула.</string>
     <string name="split_bill_item_percent_progress">Засега %1$d%% от 100%%.</string>
-    <string name="split_bill_item_list_equal">Кой го сподели</string>
+    <string name="split_bill_item_list_equal">Кой го дели</string>
     <string name="split_bill_item_list_units">Колко бройки е консумирал всеки</string>
     <string name="split_bill_item_list_shares">Дяловете на всеки</string>
     <string name="split_bill_item_list_amount">Колко е консумирал всеки</string>

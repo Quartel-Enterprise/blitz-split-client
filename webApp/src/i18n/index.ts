@@ -370,7 +370,8 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * becomes "létrehoztad"), an indefinite one is one of a short list a translation may start with ("felosztott" becomes
  * "felosztottál"). Bengali's respectful verb is the same for a name and for "আপনি", and Malay's never changes.
  * Urdu writes its ergative "نے" apart after a name and after the user's "آپ" alike, so its verb stays as it is.
- * Filipino's "ay" and actor-focus verb are the same for "Ikaw" and for a name, so its verb stays as it is too.
+ * Filipino's "ay" and actor-focus verb are the same for "Ikaw" and for a name, so its verb stays as it is too, and so
+ * does Bulgarian's aorist, the same for "Ти" and for a name ("раздели").
  * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste". Same
  * rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */

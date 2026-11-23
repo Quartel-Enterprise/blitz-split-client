@@ -19,7 +19,8 @@ import SwiftUI
 /// list a translation may start with, each with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's
 /// respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
 /// Urdu writes its ergative "نے" apart after a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ
-/// بانٹا"), so its verb stays as it is.
+/// بانٹا"), so its verb stays as it is. Bulgarian's aorist is the same for a name and for "Ти" ("Ana раздели", "Ти
+/// раздели"), so its verb stays as it is too.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
