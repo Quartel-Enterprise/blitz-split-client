@@ -40,7 +40,7 @@
         <item quantity="one">%s hayumo</item>
         <item quantity="other">%s hawamo</item>
     </plurals>
-    <string name="split_bill_excluded_me">Wewe humo</string>
+    <string name="split_bill_excluded_me">Uko nje</string>
     <string name="split_bill_sentence">%s.</string>
     <string name="split_bill_offline">Hakuna intaneti: gharama imehifadhiwa kwenye kifaa hiki na inahesabika kwenye salio sasa. Itasawazishwa ukiunganishwa tena.</string>
     <string name="split_bill_save_error">Imeshindwa kuhifadhi gharama. Jaribu tena.</string>

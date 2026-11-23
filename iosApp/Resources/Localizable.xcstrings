@@ -3748,7 +3748,7 @@
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ tayari ina tofauti."
+            "value" : "%@ tayari ina kighairi."
           }
         },
         "th" : {
@@ -86970,7 +86970,7 @@
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ongeza tofauti"
+            "value" : "Ongeza kighairi"
           }
         },
         "th" : {
@@ -113707,7 +113707,7 @@
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chagua aina kwa ajili ya tofauti."
+            "value" : "Chagua aina kwa ajili ya kighairi."
           }
         },
         "th" : {
@@ -114704,7 +114704,7 @@
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ondoa tofauti"
+            "value" : "Ondoa kighairi"
           }
         },
         "th" : {
@@ -116316,7 +116316,7 @@
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hifadhi tofauti"
+            "value" : "Hifadhi kighairi"
           }
         },
         "th" : {
@@ -273674,7 +273674,7 @@
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tayari imelipwa"
+            "value" : "Nimeshalipa"
           }
         },
         "th" : {
@@ -276286,7 +276286,7 @@
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Madeni ya kila jozi tayari yamefidiana: ikiwa Ana anadaiwa na wewe na wewe unadaiwa naye, tofauti tu ndiyo inaonekana. “Nimelipwa” na “Tayari imelipwa” zinarekodi malipo yaliyofanywa nje ya programu (Pix, pesa taslimu, uhamisho)."
+            "value" : "Madeni ya kila jozi tayari yamefidiana: ikiwa Ana anadaiwa na wewe na wewe unadaiwa naye, tofauti tu ndiyo inaonekana. “Nimelipwa” na “Nimeshalipa” zinarekodi malipo yaliyofanywa nje ya programu (Pix, pesa taslimu, uhamisho)."
           }
         },
         "th" : {
@@ -374670,7 +374670,7 @@
         "sw" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Madeni yakirahisishwa, programu inapendekeza malipo machache zaidi. “Nimelipwa” na “Tayari imelipwa” zinarekodi malipo yaliyofanywa nje ya programu (Pix, pesa taslimu, uhamisho)."
+            "value" : "Madeni yakirahisishwa, programu inapendekeza malipo machache zaidi. “Nimelipwa” na “Nimeshalipa” zinarekodi malipo yaliyofanywa nje ya programu (Pix, pesa taslimu, uhamisho)."
           }
         },
         "th" : {

@@ -20,8 +20,8 @@
     <string name="global_balances_owes_you">anadaiwa na wewe</string>
     <string name="global_balances_by_group_show">Onyesha %s kwa kikundi</string>
     <string name="global_balances_by_group_hide">Ficha %s kwa kikundi</string>
-    <string name="global_balances_received">Imepokelewa</string>
-    <string name="global_balances_received_from">Imepokelewa kutoka kwa %s</string>
+    <string name="global_balances_received">Nimepokea</string>
+    <string name="global_balances_received_from">Nimepokea kutoka kwa %s</string>
     <string name="global_balances_settle">Lipa deni</string>
     <string name="global_balances_settle_with">Lipa deni kwa %s</string>
     <string name="global_balances_charge">Omba malipo</string>
@@ -30,7 +30,7 @@
     <string name="global_balances_detail_owes_you">%s anadaiwa na wewe</string>
     <string name="global_balances_detail_you_owe">Unadaiwa na %s</string>
     <string name="global_balances_detail_guest">%s · mgeni bila programu</string>
-    <string name="global_balances_detail_note_owed">Salio halisi tayari linafidia vikundi: Omba malipo na Imepokelewa vinatumia %s. Programu inarekodi malipo katika kila kikundi.</string>
+    <string name="global_balances_detail_note_owed">Salio halisi tayari linafidia vikundi: Omba malipo na Nimepokea vinatumia %s. Programu inarekodi malipo katika kila kikundi.</string>
     <string name="global_balances_detail_note_settle">Salio halisi tayari linafidia vikundi: Lipa deni inatumia %s. Programu inarekodi malipo katika kila kikundi.</string>
     <string name="global_balances_detail_note_single">Kikundi kimoja tu kilicho wazi na %s.</string>
     <string name="global_balances_settled_title">Hakuna deni</string>
