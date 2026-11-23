@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">సపోర్ట్‌ను సంప్రదించండి</string>
+    <string name="contact_support_description">మేము మీ ఈమెయిల్ యాప్‌ను సిద్ధంగా ఉన్న సందేశంతో తెరుస్తాము. ఏమి జరిగిందో వివరించి పంపండి: ప్రతి సందేశాన్ని నిజమైన వ్యక్తులు చదువుతారు.</string>
+    <string name="contact_support_to">వీరికి</string>
+    <string name="contact_support_diagnostics">ఈమెయిల్‌లో చేర్చబడేవి</string>
+    <string name="contact_support_app_version">యాప్ వెర్షన్</string>
+    <string name="contact_support_platform">ప్లాట్‌ఫామ్</string>
+    <string name="contact_support_language">భాష</string>
+    <string name="contact_support_account">అకౌంట్</string>
+    <string name="contact_support_profile">ప్రొఫైల్</string>
+    <string name="contact_support_language_system">సిస్టమ్</string>
+    <string name="contact_support_account_local">ఈ పరికరం మాత్రమే</string>
+    <string name="contact_support_account_anonymous">కనెక్ట్ కాలేదు</string>
+    <string name="contact_support_open_email">ఈమెయిల్ తెరవండి</string>
+    <string name="contact_support_copy_email">ఈమెయిల్ చిరునామాను కాపీ చేయండి</string>
+    <string name="contact_support_notice_copied">ఈమెయిల్ చిరునామా కాపీ అయింది.</string>
+    <string name="contact_support_notice_no_app">ఈమెయిల్ యాప్ కనిపించలేదు. బదులుగా చిరునామా కాపీ అయింది.</string>
+    <string name="contact_support_close">మూసివేయండి</string>
+</resources>

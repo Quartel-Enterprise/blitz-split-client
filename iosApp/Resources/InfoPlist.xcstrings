@@ -191,6 +191,12 @@
             "value" : "Blitz Split"
           }
         },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -420,6 +426,12 @@
           }
         },
         "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "te" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -659,6 +671,12 @@
             "value" : "அழைப்பின் அல்லது உங்கள் பழைய சாதனத்தின் QR குறியீட்டை ஸ்கேன் செய்யவும், உங்கள் சுயவிவரப் புகைப்படத்தையும் செலவுகளின் புகைப்படங்களையும் எடுக்கவும்."
           }
         },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఆహ్వానం లేదా మీ పాత పరికరం QR కోడ్‌ను స్కాన్ చేయడానికి, మీ ప్రొఫైల్ ఫోటో మరియు ఖర్చుల ఫోటోలు తీయడానికి."
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -893,6 +911,12 @@
             "value" : "குழுவின் லிங்க் மூலம் உங்கள் தொடர்புகளில் உள்ளவர்களை அழைக்க. அவர்களின் எண்கள் இந்தச் சாதனத்திலேயே இருக்கும்."
           }
         },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "గ్రూప్ లింక్‌తో మీ కాంటాక్ట్‌లలోని వ్యక్తులను ఆహ్వానించడానికి. వారి నంబర్లు ఈ పరికరంలోనే ఉంటాయి."
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1125,6 +1149,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "செலவின் புகைப்படங்களை உங்கள் லைப்ரரியில் சேமிக்க."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఖర్చు ఫోటోలను మీ లైబ్రరీలో సేవ్ చేయడానికి."
           }
         },
         "th" : {

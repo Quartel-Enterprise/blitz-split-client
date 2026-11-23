@@ -24,6 +24,8 @@ import SwiftUI
 /// Bulgarian's aorist is the same for a name and for "Ти" ("Ana раздели", "Ти
 /// раздели"), so its verb stays as it is too.
 ///
+/// Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is.
+///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
 enum SecondPerson {

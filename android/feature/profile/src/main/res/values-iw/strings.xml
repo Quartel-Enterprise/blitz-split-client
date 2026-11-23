@@ -93,6 +93,7 @@
     <string name="profile_language_persian">פרסית</string>
     <string name="profile_language_tamil">טמילית</string>
     <string name="profile_language_norwegian">נורווגית (בוקמול)</string>
+    <string name="profile_language_telugu">טלוגו</string>
     <string name="profile_language_bulgarian">בולגרית</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>

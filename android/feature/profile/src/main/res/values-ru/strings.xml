@@ -94,6 +94,7 @@
     <string name="profile_language_persian">Персидский</string>
     <string name="profile_language_tamil">Тамильский</string>
     <string name="profile_language_norwegian">Норвежский (букмол)</string>
+    <string name="profile_language_telugu">Телугу</string>
     <string name="profile_language_bulgarian">Болгарский</string>
     <string name="profile_language_system_detail">Язык устройства</string>
     <!-- Each language in its own language, the same in every locale -->

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">నోటిఫికేషన్‌లు</string>
+    <string name="notification_settings_denied_title">Android లో Blitz Split నోటిఫికేషన్‌లు ఆఫ్ చేయబడ్డాయి.</string>
+    <string name="notification_settings_denied_body">కింది పుష్ నోటిఫికేషన్‌లు పొందడానికి సిస్టమ్ సెట్టింగ్‌లలో వాటిని ఆన్ చేయండి. బెల్ పనిచేస్తూనే ఉంటుంది.</string>
+    <string name="notification_settings_open_settings">సెట్టింగ్‌లను తెరవండి</string>
+    <string name="notification_settings_refused_body">కింది పుష్ నోటిఫికేషన్‌లు పొందడానికి Android వాటిని మరోసారి అనుమతించే అవకాశం ఇస్తుంది. బెల్ పనిచేస్తూనే ఉంటుంది.</string>
+    <string name="notification_settings_turn_on">ఆన్ చేయండి</string>
+    <string name="notification_settings_blocked_in_android">Android లో బ్లాక్ చేయబడింది</string>
+    <string name="notification_settings_open_channel_settings_description">Android సెట్టింగ్‌లను తెరవండి: %1$s</string>
+    <string name="notification_settings_push_switch">పుష్ నోటిఫికేషన్‌లు</string>
+    <string name="notification_settings_push_switch_detail">ఈ పరికరంలో మాత్రమే</string>
+    <string name="notification_settings_section">వీటి గురించి నాకు తెలియజేయండి</string>
+    <string name="notification_settings_push">పుష్</string>
+    <string name="notification_settings_in_app">యాప్‌లో</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">‘పుష్’ ఈ పరికరానికి నోటిఫికేషన్ పంపుతుంది. ‘యాప్‌లో’ దాన్ని బెల్‌లో మరియు యాక్టివిటీలో కొత్తదిగా గుర్తిస్తుంది; ఆఫ్ చేస్తే, అది యాక్టివిటీలో ఇప్పటికే చదివినదిగా కనిపిస్తుంది.</string>
+    <string name="notification_settings_footer">ఇంటర్నెట్ ఉన్నప్పుడు నోటిఫికేషన్‌లు వస్తాయి. ఒక గ్రూప్‌ను మ్యూట్ చేయడానికి, దాని లోపలి మెనూను ఉపయోగించండి.</string>
+</resources>

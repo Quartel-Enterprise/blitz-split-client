@@ -95,6 +95,7 @@
     <string name="profile_language_persian">Persian</string>
     <string name="profile_language_tamil">Tamil</string>
     <string name="profile_language_norwegian">Norwegian Bokmål</string>
+    <string name="profile_language_telugu">Telugu</string>
     <string name="profile_language_bulgarian">Bulgarian</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
@@ -136,6 +137,7 @@
     <string name="profile_language_native_persian" translatable="false">فارسی</string>
     <string name="profile_language_native_tamil" translatable="false">தமிழ்</string>
     <string name="profile_language_native_norwegian" translatable="false">Norsk bokmål</string>
+    <string name="profile_language_native_telugu" translatable="false">తెలుగు</string>
     <string name="profile_language_native_bulgarian" translatable="false">Български</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">

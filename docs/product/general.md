@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script) and Slovak, Persian, Tamil, Norwegian and Bulgarian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script) and Slovak, Persian, Tamil, Norwegian, Telugu and Bulgarian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -230,7 +230,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     informal "du", as Swedish does, calls the app Blitz Split, and its verbs don't change with the person ("Ana
     delte…", "Du delte…"), its deleted-item notice starting with who deleted it (`youSubjectLanguages`). Its plurals
     have one and other. The picker names it "Norsk bokmål", "Norwegian Bokmål" in English, and its chip reads "NB".
-    The Norwegian krone (NOK) comes with it (below).
+    The Norwegian krone (NOK) comes with it (below). Telugu
+    (Pierre's calls, issue #553) is one variant for every `te` tag, in the Telugu script, and talks to the user with the
+    respectful "మీరు", in the plain everyday Telugu Indian apps write, English loanwords included where natural (గ్రూప్,
+    బ్యాలెన్స్, అకౌంట్, లింక్); it calls the app Blitz Split, writes numbers, amounts and dates with 0-9, never the Telugu
+    digits, ends a sentence with ".", and its plurals have one and other. As Tamil's, its case endings follow the sound
+    of the word before them, so none is ever glued to a value the app fills in. Its respectful past "-ారు" is the same
+    for a name and for "మీరు", so, as Bengali's, its activity sentences need no rule for the user
+    ([activity-and-push.md](activity-and-push.md)). It uses INR.
     Bulgarian (Pierre's calls, issue #554) is one variant for every
     Bulgarian tag, written in Cyrillic, speaks informally, with "ти", never "Вие", and calls the app Blitz Split. Its
     plurals have `one` and `other`. Its activity sentences start every verb phrase with an aorist, whose second and

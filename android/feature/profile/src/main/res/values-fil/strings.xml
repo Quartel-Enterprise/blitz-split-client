@@ -92,6 +92,7 @@
     <string name="profile_language_persian">Persian</string>
     <string name="profile_language_tamil">Tamil</string>
     <string name="profile_language_norwegian">Norwegian Bokmål</string>
+    <string name="profile_language_telugu">Telugu</string>
     <string name="profile_language_bulgarian">Bulgarian</string>
     <string name="profile_language_system_detail">Wika ng device</string>
     <string name="profile_notifications">Mga notipikasyon</string>
