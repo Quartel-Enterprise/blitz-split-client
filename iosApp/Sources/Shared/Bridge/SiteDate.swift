@@ -5,5 +5,5 @@ import Foundation
 func longSiteDate(year: Int32, month: Int32, day: Int32) -> String {
     let components = DateComponents(year: Int(year), month: Int(month), day: Int(day))
     guard let date = Calendar(identifier: .gregorian).date(from: components) else { return "" }
-    return date.formatted(Date.FormatStyle(date: .long, time: .omitted, locale: AppNumbers.locale))
+    return date.formatted(Date.FormatStyle(date: .long, time: .omitted, locale: AppNumbers.locale, calendar: AppNumbers.calendar))
 }

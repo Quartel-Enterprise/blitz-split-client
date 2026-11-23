@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Invitasjonslenke</string>
+    <string name="members_link_pending">Ikke opprettet ennå</string>
+    <string name="members_share">Del</string>
+    <string name="members_me">%s (du)</string>
+    <string name="members_status_this_device">Denne enheten</string>
+    <string name="members_status_joined">Med</string>
+    <string name="members_status_not_joined">Har ikke blitt med ennå</string>
+    <string name="members_options">Valg for %s</string>
+    <string name="members_rename">Gi nytt navn</string>
+    <string name="members_personal_invite">Personlig invitasjon til %s</string>
+    <string name="members_personal_message">Den som åpner denne lenken, blir med direkte som %s, uten å velge fra listen. Den fungerer én gang.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Den som åpner denne lenken, blir med direkte som %1$s, uten å velge fra listen, og ser allerede andelen sin på %2$s i utgiften som er lagt til så langt. Den fungerer én gang.</item>
+        <item quantity="other">Den som åpner denne lenken, blir med direkte som %1$s, uten å velge fra listen, og ser allerede andelen sin på %2$s i de %3$d utgiftene som er lagt til så langt. Den fungerer én gang.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopier lenken</string>
+    <string name="members_personal_copied">Kopiert</string>
+    <string name="members_personal_share">Del med %s</string>
+    <string name="members_personal_share_message">Bli med i %1$s som %2$s på Blitz Split: %3$s</string>
+    <string name="members_remove">Fjern fra gruppen</string>
+    <string name="members_remove_joined">%s har allerede blitt med i gruppen</string>
+    <string name="members_remove_title">Fjerne %s fra gruppen?</string>
+    <string name="members_remove_message">%s har ikke blitt med ennå. Du kan legge til personen igjen senere.</string>
+    <string name="members_remove_confirm">Fjern</string>
+    <string name="members_release">Frigi navnet</string>
+    <string name="members_release_title">Frigi navnet til %s?</string>
+    <string name="members_release_message">Den som ble med som %1$s, forlater gruppen. Navnet, fargen og utgiftene til %1$s blir værende, og %1$s kan velges igjen via lenken til gruppen.</string>
+    <string name="members_release_confirm">Frigi</string>
+    <string name="members_release_error">Kunne ikke frigi navnet. Sjekk tilkoblingen og prøv igjen.</string>
+    <string name="members_add">Legg til person</string>
+    <string name="members_invite_instead">Har personen appen? Inviter med lenken</string>
+    <string name="members_name_label">Navn</string>
+    <string name="members_save">Lagre</string>
+    <string name="members_cancel">Avbryt</string>
+    <string name="members_change_error">Kunne ikke lagre endringen. Prøv igjen.</string>
+    <string name="members_remove_open_balance">%s har en åpen saldo</string>
+    <string name="members_balance_to_get_back">%s å få tilbake</string>
+    <string name="members_balance_owes">skylder %s</string>
+    <string name="members_balance_settled">Gjort opp</string>
+</resources>

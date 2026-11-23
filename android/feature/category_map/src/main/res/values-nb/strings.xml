@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Ingen ord</string>
+    <string name="category_map_title">Kategorikart</string>
+    <string name="category_map_search">Søk i ord</string>
+    <string name="category_map_add">Legg til ord</string>
+    <string name="category_map_more">Flere valg</string>
+    <string name="category_map_restore">Gjenopprett standard</string>
+    <string name="category_map_back">Tilbake</string>
+    <string name="category_map_intro">Når tittelen på en utgift har ett av disse ordene, kommer kategorien av seg selv. «Uber hjem» blir Transport.</string>
+    <string name="category_map_intro_offline">Kartet fungerer uten nett: endringene gjelder med en gang på denne enheten og når de andre enhetene dine når du er på nett igjen.</string>
+    <string name="category_map_device_only">Kartet ditt blir bare på denne enheten. For å ta det med til de andre enhetene dine, logg inn med Google eller Apple i Profil.</string>
+    <string name="category_map_open_profile">Åpne Profil</string>
+    <string name="category_map_longest_wins">Når to ord passer til en tittel, vinner det lengste.</string>
+    <string name="category_map_no_result">Ingen ord med «%1$s»</string>
+    <string name="category_map_no_result_body">Legg det til, så får utgifter med dette ordet i tittelen riktig kategori.</string>
+    <string name="category_map_add_query">Legg til «%1$s»</string>
+    <string name="category_map_empty_title">Kartet ditt er tomt</string>
+    <string name="category_map_empty_body">Uten ord kommer ikke kategorien fra tittelen: du velger den på hver utgift.</string>
+    <string name="category_map_group_category"> · kategorien til %1$s</string>
+    <string name="category_map_only_main">Bare %1$s</string>
+    <string name="category_map_only_in_group">bare i %1$s</string>
+    <string name="category_map_no_terms_yet">Ingen ord ennå.</string>
+    <string name="category_map_add_in">Legg til ord i %1$s</string>
+    <string name="category_map_tip">Trykk på et ord for å endre kategorien eller fjerne det. Det passer med hele ordet, uavhengig av aksenter og store eller små bokstaver.</string>
+    <string name="category_map_queued">i kø</string>
+    <string name="category_map_term_action">%1$s, %2$s. Rediger</string>
+    <string name="category_map_new_term">Nytt ord</string>
+    <string name="category_map_edit_term">Rediger ord</string>
+    <string name="category_map_term_label">Ord eller frase</string>
+    <string name="category_map_term_help">Passer med hele ordet, uavhengig av aksenter og store eller små bokstaver.</string>
+    <string name="category_map_term_help_app">Et ord fra appen. Gjenopprett standard henter det tilbake slik det var.</string>
+    <string name="category_map_term_duplicate">«%1$s» velger allerede %2$s. Hvert ord har én kategori.</string>
+    <string name="category_map_term_too_short">Bruk minst 2 bokstaver.</string>
+    <string name="category_map_term_too_long">Bruk høyst 30 bokstaver.</string>
+    <string name="category_map_term_invalid">Bruk bare bokstaver, sifre og mellomrom.</string>
+    <string name="category_map_category">Kategori</string>
+    <string name="category_map_category_help">Det kan være kategorien eller en underkategori.</string>
+    <string name="category_map_category_help_edit">Hvis du endrer den her, flyttes ordet til en annen kategori.</string>
+    <string name="category_map_category_help_move">Når du flytter, forsvinner ordet fra %1$s.</string>
+    <string name="category_map_example">Eksempel</string>
+    <string name="category_map_example_move">Hvis flyttet</string>
+    <string name="category_map_remove">Fjern</string>
+    <string name="category_map_cancel">Avbryt</string>
+    <string name="category_map_save">Lagre</string>
+    <string name="category_map_move_to">Flytt til %1$s</string>
+    <string name="category_map_removed">«%1$s» ble fjernet fra kartet</string>
+    <string name="category_map_undo">Angre</string>
+    <string name="category_map_restore_title">Gjenopprette standardkartet?</string>
+    <string name="category_map_restore_body">De 60 ordene fra appen kommer tilbake slik de var, også de du fjernet eller flyttet.</string>
+    <string name="category_map_restore_own_one">Ordet du opprettet, «%1$s», blir værende.</string>
+    <string name="category_map_restore_confirm">Gjenopprett</string>
+    <string name="category_map_save_error">Kunne ikke lagre kartet. Prøv igjen.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d ord</item>
+        <item quantity="other">%d ord</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d underkategori</item>
+        <item quantity="other">%d underkategorier</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d ord med «%2$s»</item>
+        <item quantity="other">%1$d ord med «%2$s»</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Uten nett · %d endring i kø</item>
+        <item quantity="other">Uten nett · %d endringer i kø</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">De %d ordene du opprettet, blir værende.</item>
+        <item quantity="other">De %d ordene du opprettet, blir værende.</item>
+    </plurals>
+    <string name="category_map_new_category">Ny kategori</string>
+    <string name="category_map_new_subcategory_in">Ny underkategori i %s</string>
+    <string name="category_map_edit_category">Rediger %s</string>
+    <string name="category_map_category_group">Gruppe</string>
+    <string name="category_map_change_color">Endre fargen på %1$s</string>
+    <string name="category_map_restore_color">Gjenopprett farge</string>
+    <string name="category_map_color_done">Ferdig</string>
+</resources>

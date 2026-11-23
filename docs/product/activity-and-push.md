@@ -123,6 +123,8 @@ The feed, unread state, real time and push notifications.
     ஒரு செலவைப் பிரித்தார்: டின்னர்", "நீங்கள் ஒரு செலவைப் பிரித்தீர்கள்: டின்னர்"); the object after the colon also
     keeps every name free of case endings. Its deleted-item notice starts with who deleted it ("நீங்கள்
     நீக்கினீர்கள்: …", `youSubjectLanguages`), and "You" is "நீங்கள்" everywhere.
+    Norwegian verbs don't change with the person, as Swedish's ("Ana delte…", "Du delte…"), its notice starting with
+    who deleted it too ("Du slettet…", `youSubjectLanguages`).
     Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
     are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
     deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).

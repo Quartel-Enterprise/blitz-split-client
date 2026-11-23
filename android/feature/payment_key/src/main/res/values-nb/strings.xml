@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Ny Pix-nøkkel</string>
+    <string name="payment_key_title_pix_edit">Rediger Pix-nøkkel</string>
+    <string name="payment_key_title_bitcoin_new">Ny Bitcoin-nøkkel</string>
+    <string name="payment_key_title_bitcoin_edit">Rediger Bitcoin-nøkkel</string>
+    <string name="payment_key_save">Lagre</string>
+
+    <string name="payment_key_pix_intro">Den som betaler deg, ser denne nøkkelen når dere gjør opp. Hvilken type nøkkel?</string>
+    <string name="payment_key_pix_question">Hvilken type nøkkel?</string>
+    <string name="payment_key_pix_explanation">Den som betaler deg, ser denne nøkkelen når dere gjør opp.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefon</string>
+    <string name="payment_key_type_email">E-post</string>
+    <string name="payment_key_type_random">Tilfeldig</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mobilnummer med retningsnummer</string>
+    <string name="payment_key_label_email">E-post</string>
+    <string name="payment_key_label_random">Tilfeldig nøkkel</string>
+
+    <string name="payment_key_bitcoin_intro">Hvordan vil du motta?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">raskt, lav avgift</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">på blokkjeden</string>
+    <string name="payment_key_label_lightning">Lightning-adresse eller LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin-adresse</string>
+
+    <string name="payment_key_paste">Lim inn</string>
+
+    <string name="payment_key_hint_cpf">Format 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Format navn@domene.com</string>
+    <string name="payment_key_hint_random">32 bokstaver og tall, slik banken din viser den</string>
+    <string name="payment_key_hint_lightning">Som navn@lommebok.com eller LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainnet-adresse som begynner med bc1q eller bc1p</string>
+
+    <string name="payment_key_valid_cpf">Format 000.000.000-00 · kontrollsifrene stemmer</string>
+    <string name="payment_key_valid_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Format navn@domene.com</string>
+    <string name="payment_key_valid_random">Tilfeldig nøkkel gjenkjent (32 tegn)</string>
+    <string name="payment_key_valid_lightning_address">Gyldig Lightning-adresse</string>
+    <string name="payment_key_valid_lnurl">Gyldig LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Ugyldig CPF: kontrollsifrene stemmer ikke.</string>
+    <string name="payment_key_error_invalid_phone">Ufullstendig mobilnummer: bruk retningsnummeret og 9 sifre, som begynner med 9.</string>
+    <string name="payment_key_error_invalid_email">Ufullstendig e-postadresse: domenet mangler, som .com eller .com.br.</string>
+    <string name="payment_key_error_invalid_random">Ufullstendig tilfeldig nøkkel: den har 32 bokstaver og tall.</string>
+    <string name="payment_key_error_invalid_lightning">Dette er ikke en Lightning-adresse (navn@lommebok) eller en LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Dette er en Lightning-faktura (lnbc…): den betaler én gang og utløper. Lim inn en Lightning-adresse eller en LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Ugyldig adresse. Bruk en mainnet-adresse med bc1q eller bc1p.</string>
+    <string name="payment_key_error_testnet_address">Dette er en testnet-adresse (tb1…). Bare Bitcoin mainnet fungerer her, med bc1…-adresser.</string>
+    <string name="payment_key_error_already_saved">Du har allerede denne nøkkelen.</string>
+
+    <string name="payment_key_switched_to_onchain">Dette er en on-chain-adresse, så vi byttet til On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Dette er en Lightning-adresse, så vi byttet til Lightning.</string>
+    <string name="payment_key_cpf_notice">Den som betaler deg, ser hele CPF-en din. Hvis du helst ikke vil dele den, bruk en telefon-, e-post- eller tilfeldig nøkkel.</string>
+    <string name="payment_key_held_notice">Du kan bare ha én Pix-nøkkel av denne typen, så dette er den du lagret. Endre den her hvis du vil.</string>
+
+    <string name="payment_key_accepted_title">Vi godtar</string>
+    <string name="payment_key_accepted_lightning_address_sample">navn@lommebok.app</string>
+
+    <string name="payment_key_default_pix_title">Standard Pix-nøkkel</string>
+    <string name="payment_key_default_bitcoin_title">Standard Bitcoin-nøkkel</string>
+    <string name="payment_key_default_pix_detail">Vises først når dere gjør opp.</string>
+    <string name="payment_key_default_bitcoin_detail">Vises først når noen betaler i BTC.</string>
+    <string name="payment_key_default_now">Nå: %1$s.</string>
+    <string name="payment_key_default_locked_editing">For å endre den, gjør en annen nøkkel til standard.</string>
+    <string name="payment_key_default_locked_new">Den første nøkkelen din av denne typen er standard.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefon</string>
+    <string name="payment_key_default_type_email">e-post</string>
+    <string name="payment_key_default_type_random">tilfeldig nøkkel</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split flytter ikke penger: betaleren betaler i bankappen sin. Sjekk at nøkkelen står i ditt navn.</string>
+    <string name="payment_key_footer_bitcoin">Når dere gjør opp, viser vi beløpet i sats til dagens kurs. Det er bare et anslag: betaleren bekrefter det i lommeboken sin.</string>
+
+    <string name="payment_key_delete">Slett nøkkel</string>
+    <string name="payment_key_delete_title">Slette denne nøkkelen?</string>
+    <string name="payment_key_delete_body">De som skylder deg, ser den ikke lenger når dere gjør opp.</string>
+    <string name="payment_key_delete_confirm">Slett</string>
+</resources>

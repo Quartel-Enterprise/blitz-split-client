@@ -83,6 +83,7 @@ const nativeLanguageNames: Record<string, string> = {
   sk: 'Slovenčina',
   fa: 'فارسی',
   ta: 'தமிழ்',
+  nb: 'Norsk bokmål',
   bg: 'Български',
 }
 
@@ -125,6 +126,7 @@ const languageNames: Record<string, MessageKey> = {
   sk: 'profile_languageSlovak',
   fa: 'profile_languagePersian',
   ta: 'profile_languageTamil',
+  nb: 'profile_languageNorwegian',
   bg: 'profile_languageBulgarian',
 }
 

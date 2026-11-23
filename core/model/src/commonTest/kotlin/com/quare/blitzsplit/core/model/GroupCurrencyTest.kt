@@ -445,6 +445,18 @@ class GroupCurrencyTest {
     }
 
     @Test
+    fun `GIVEN Norway Svalbard or Bouvet Island WHEN picking its currency THEN it is the Norwegian krone`() {
+        // Given
+        val regions = listOf("NO", "SJ", "BV")
+
+        // When
+        val currencies = regions.map(GroupCurrency::ofRegion)
+
+        // Then
+        assertEquals(List(regions.size) { GroupCurrency.NOK to 2 }, currencies.map { it to it.fractionDigits })
+    }
+
+    @Test
     fun `GIVEN the rupiah WHEN picking the digits to type THEN it types none though ISO gives it 2`() {
         // Given
         val currency = GroupCurrency.IDR

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Versjonsmerknader</string>
+    <string name="release_notes_show_beta">Vis betaversjoner</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Denne versjonen</string>
+    <string name="release_notes_empty">Ingen versjonsmerknader ennå.</string>
+    <string name="release_notes_empty_only_betas">Det finnes ingen stabil versjon ennå. Slå på betaversjoner for å se hva som testes.</string>
+    <string name="release_notes_load_failed_title">Kunne ikke laste versjonsmerknadene</string>
+    <string name="release_notes_load_failed_body">Sjekk tilkoblingen og prøv igjen.</string>
+    <string name="release_notes_retry">Prøv igjen</string>
+    <string name="release_notes_open_on_github">Åpne på GitHub</string>
+</resources>

@@ -92,6 +92,7 @@
     <string name="profile_language_slovak">Slovaque</string>
     <string name="profile_language_persian">Persan</string>
     <string name="profile_language_tamil">Tamoul</string>
+    <string name="profile_language_norwegian">Norvégien (bokmål)</string>
     <string name="profile_language_bulgarian">Bulgare</string>
     <string name="profile_language_system_detail">Langue de l’appareil</string>
     <string name="profile_notifications">Notifications</string>
