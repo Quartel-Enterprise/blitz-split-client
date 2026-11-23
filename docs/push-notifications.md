@@ -69,7 +69,9 @@ Until it is there, the app never starts Firebase nor asks for the notification p
 
 The entitlements already ask for push (`aps-environment`, `com.apple.developer.aps-environment` in
 `iosApp/project.yml`). Xcode's automatic signing adds Push Notifications to the App ID `com.quare.blitzsplit` the
-first time it signs a build with them; if it doesn't, turn it on in Apple Developer › Identifiers. A build signed
+first time it signs a build with them; if it doesn't, turn it on in Apple Developer › Identifiers. Any capability
+change to that App ID invalidates the release's match profiles, the macOS one included: make them again with `--force`
+([Apple signing](release-process.md#apple-signing)). A build signed
 for development registers its token for APNs' sandbox and any other for production, as its provisioning profile says
 (a build without one, from the App Store or the simulator, by its configuration), which the server tells apart.
 
