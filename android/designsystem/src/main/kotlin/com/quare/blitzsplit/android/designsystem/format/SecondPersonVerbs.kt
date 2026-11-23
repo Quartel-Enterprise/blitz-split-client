@@ -267,14 +267,17 @@ fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages
 
 /*
  * Why: the language alone, but Portugal's Portuguese is told from Brazil's by the strings Android drew: its resources
- * also answer pt-AO, pt-MZ and the like, which no country check would catch.
+ * also answer pt-AO, pt-MZ and the like, which no country check would catch. Norwegian is told by them too, since a
+ * Nynorsk device ("nn") reaching values-nb through its fallback languages draws Bokmål.
  */
 @Composable
 private fun secondPersonLanguageUi(): String {
     val locale = LocalLocale.current.platformLocale
-    val isPortugal = LocalContext.current.resources.getBoolean(R.bool.designsystem_portugal_portuguese)
+    val resources = LocalContext.current.resources
+    val isPortugal = resources.getBoolean(R.bool.designsystem_portugal_portuguese)
     return when {
         locale.language == PORTUGUESE && isPortugal -> PORTUGAL_PORTUGUESE
+        resources.getBoolean(R.bool.designsystem_norwegian) -> NORWEGIAN
         isCyrillicSerbian(locale) -> ""
         else -> locale.language
     }

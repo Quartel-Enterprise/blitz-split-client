@@ -263,9 +263,9 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
   iPhone's and the iPad's, plus the iPhone Duo's and the Mac's when the run asks for them
   ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)).
 
-**The captures say which language they are on.** A slot's job captures its 31 languages one after the other, each
+**The captures say which language they are on.** A slot's job captures its 35 languages one after the other, each
 a run of the UI test of its own, about an hour and a half in all. Open the job's "Capture on the simulator" step:
-every language has a "Capturing <slot>: <language> (2 of 31)" line there, folded over xcodebuild's output for it,
+every language has a "Capturing <slot>: <language> (2 of 35)" line there, folded over xcodebuild's output for it,
 and a "Captured" one once it is done, with the time it took and about how many minutes the slot still takes. When
 the job ends, its summary on the run's page has the table of the languages, each with its result and its time. A
 language that fails is tried once more; failing again, the job goes on with the others (a third failed language

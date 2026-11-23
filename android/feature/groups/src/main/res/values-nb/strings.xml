@@ -6,7 +6,7 @@
     <string name="groups_sync_syncing">Synkroniserer…</string>
     <string name="groups_sync_failed">Ingen svar fra serveren · prøv igjen</string>
     <string name="groups_empty_title">Ingen grupper ennå</string>
-    <string name="groups_empty_body">Opprett en gruppe for turen, huset eller grillfesten. Du kan begynne selv uten internett.</string>
+    <string name="groups_empty_body">Opprett en gruppe for turen, huset eller grillfesten. Du kan begynne selv uten nett.</string>
     <string name="groups_no_group_open_title">Ingen gruppe åpen</string>
     <string name="groups_no_group_open_body">Når du oppretter eller blir med i en gruppe, vises utgiftene og saldoene her, ved siden av listen.</string>
     <string name="groups_create">Opprett gruppe</string>
@@ -101,7 +101,7 @@
     <string name="groups_search_group_meta">%1$s · %2$s</string>
     <string name="groups_search_settled_bill">Gjort opp · utgiften «%s»</string>
     <string name="groups_search_bill_meta">%1$s · %2$s</string>
-    <string name="groups_search_hint">Søker i gruppene, personene og utgiftene på denne enheten, også gjorte opp grupper, selv uten internett.</string>
+    <string name="groups_search_hint">Søker i gruppene, personene og utgiftene på denne enheten, også gjorte opp grupper, selv uten nett.</string>
     <string name="groups_search_suggestion">Mente du «%s»?</string>
     <plurals name="groups_search_contact_meta">
         <item quantity="one">Kontakt · %d gruppe</item>
@@ -171,11 +171,11 @@
     <string name="groups_home_see_all_bills">Se alle</string>
     <string name="groups_home_today">I dag</string>
     <string name="groups_home_yesterday">I går</string>
-    <string name="groups_home_first_use_body">Opprett en gruppe for å dele din første utgift, eller bli med i en via lenken eller QR-koden noen har sendt deg. Alt lagres på denne enheten, selv uten internett.</string>
+    <string name="groups_home_first_use_body">Opprett en gruppe for å dele din første utgift, eller bli med i en via lenken eller QR-koden noen har sendt deg. Alt lagres på denne enheten, selv uten nett.</string>
     <string name="groups_home_cover_title">Blitz Split · Hjem</string>
     <string name="groups_home_cover_totals">du har til gode %1$s · du skylder %2$s</string>
     <string name="groups_home_cover_hint">Åpne telefonen for å se alt</string>
-    <string name="groups_waiting_for_internet">Ingen internett. Gruppene dine vises når du er på nett igjen.</string>
+    <string name="groups_waiting_for_internet">Ingen nett. Gruppene dine vises når du er på nett igjen.</string>
     <string name="groups_all_expenses_title">Alle utgifter</string>
     <string name="groups_all_expenses_empty_title">Ingen utgifter ennå</string>
     <string name="groups_all_expenses_empty_body">Utgifter du har betalt eller deltar i, i alle grupper, vises her.</string>

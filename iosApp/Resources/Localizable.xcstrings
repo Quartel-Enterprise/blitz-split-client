@@ -42467,7 +42467,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen internett"
+            "value" : "Ingen nett"
           }
         },
         "nl" : {
@@ -42664,7 +42664,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen internett. Dataene dine vises når du er på nett igjen."
+            "value" : "Ingen nett. Dataene dine vises når du er på nett igjen."
           }
         },
         "nl" : {
@@ -42867,7 +42867,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen internett. Gruppene dine vises når du er på nett igjen."
+            "value" : "Ingen nett. Gruppene dine vises når du er på nett igjen."
           }
         },
         "nl" : {
@@ -132206,7 +132206,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opprett en gruppe for å dele den første utgiften, eller bli med i en via lenken eller QR-koden noen sendte deg. Alt lagres på denne %@, også uten internett."
+            "value" : "Opprett en gruppe for å dele den første utgiften, eller bli med i en via lenken eller QR-koden noen sendte deg. Alt lagres på denne %@, også uten nett."
           }
         },
         "nl" : {
@@ -142681,7 +142681,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen internett: endringen lagres på denne %@ nå og når de andre når den kobler til igjen. Et nytt bilde lastes opp sammen med den."
+            "value" : "Ingen nett: endringen lagres på denne %@ nå og når de andre når den kobler til igjen. Et nytt bilde lastes opp sammen med den."
           }
         },
         "nl" : {
@@ -151607,7 +151607,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Søker i gruppene, personene og utgiftene på denne %@, også grupper som er gjort opp, selv uten internett."
+            "value" : "Søker i gruppene, personene og utgiftene på denne %@, også grupper som er gjort opp, selv uten nett."
           }
         },
         "nl" : {
@@ -173205,7 +173205,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "En ny utgift i gruppen. Fungerer uten internett."
+            "value" : "En ny utgift i gruppen. Fungerer uten nett."
           }
         },
         "nl" : {
@@ -191628,7 +191628,7 @@
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opprett en gruppe for turen, huset eller grillfesten. Du kan starte selv uten internett."
+            "value" : "Opprett en gruppe for turen, huset eller grillfesten. Du kan starte selv uten nett."
           }
         },
         "nl" : {

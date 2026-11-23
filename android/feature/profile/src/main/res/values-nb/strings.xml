@@ -4,7 +4,7 @@
     <string name="profile_edit_subtitle">Navn, bilde og avatarfarge</string>
     <string name="profile_edit">Rediger profil</string>
     <string name="profile_pending">Endret · venter på opplasting</string>
-    <string name="profile_offline_title">Ingen internett.</string>
+    <string name="profile_offline_title">Ingen nett.</string>
     <string name="profile_offline_body">Rediger i vei: det lagres på denne enheten og lastes opp når tilkoblingen er tilbake.</string>
     <string name="profile_section_account">Konto og synkronisering</string>
     <string name="profile_email_info">Om e-postadressen din</string>

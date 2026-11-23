@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="delete_account_title">Slett konto</string>
-    <string name="delete_account_offline_title">Ingen internett.</string>
+    <string name="delete_account_offline_title">Ingen nett.</string>
     <string name="delete_account_offline_body">Det trengs en internettforbindelse for å slette kontoen din. Koble til og prøv igjen.</string>
     <string name="delete_account_heading">Slette kontoen og dataene dine?</string>
     <string name="delete_account_deleted_title">Dette slettes</string>

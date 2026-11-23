@@ -28,7 +28,7 @@
     <string name="join_invalid_personal_message">Noen har allerede blitt med via denne lenken, eller den ble endret. Be den som sendte den, om en ny.</string>
     <string name="join_go_home">Gå til Hjem</string>
     <string name="join_scan_another">Skann en annen QR-kode</string>
-    <string name="join_offline_title">Ingen internett for å åpne invitasjonen</string>
+    <string name="join_offline_title">Ingen nett for å åpne invitasjonen</string>
     <string name="join_offline_message">Vi beholdt lenken. Så snart enheten er tilkoblet, åpnes invitasjonen av seg selv.</string>
     <string name="join_failed_title">Kunne ikke åpne invitasjonen</string>
     <string name="join_failed_message">Prøv igjen.</string>

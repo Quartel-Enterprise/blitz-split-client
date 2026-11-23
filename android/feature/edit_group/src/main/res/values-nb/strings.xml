@@ -18,7 +18,7 @@
     <string name="edit_group_currency">Standardvaluta</string>
     <string name="edit_group_currency_caption">Nye utgifter starter i denne valutaen; hver utgift kan bruke en annen.</string>
     <string name="edit_group_note">Alle i gruppen kan endre navn, ikon, type og Forenkle gjeld. Aktivitet viser hvem som endret det.</string>
-    <string name="edit_group_offline_note">Uten internett: endringen lagres på denne enheten nå og når de andre så snart du er tilkoblet igjen. Et nytt bilde lastes opp samtidig.</string>
+    <string name="edit_group_offline_note">Uten nett: endringen lagres på denne enheten nå og når de andre så snart du er tilkoblet igjen. Et nytt bilde lastes opp samtidig.</string>
     <string name="edit_group_save_error">Kunne ikke lagre gruppen. Prøv igjen.</string>
     <string name="edit_group_default_split">Standarddeling</string>
     <string name="edit_group_default_split_help">Hvordan nye utgifter deles</string>
@@ -27,7 +27,7 @@
     <string name="default_split_back">Tilbake til Rediger gruppe</string>
     <string name="default_split_cancel">Avbryt</string>
     <string name="default_split_note">Gjelder for nye utgifter. Hver utgift kan endre den på stedet. Utgifter som allerede er lagt til, endres ikke.</string>
-    <string name="default_split_offline_note">Uten internett: den nye delingen lagres på denne enheten nå og når de andre så snart du er tilkoblet igjen.</string>
+    <string name="default_split_offline_note">Uten nett: den nye delingen lagres på denne enheten nå og når de andre så snart du er tilkoblet igjen.</string>
     <string name="default_split_save_error">Kunne ikke lagre delingen. Prøv igjen.</string>
     <plurals name="default_split_joined">
         <item quantity="one">%s ble med i gruppen</item>
@@ -114,7 +114,7 @@
     <string name="simplify_status_needs_third">Med 2 personer er det allerede én enkelt betaling. Tilgjengelig når en tredje person blir med.</string>
     <string name="simplify_unavailable_snackbar">Forenkle gjeld er ikke tilgjengelig med færre enn 3 personer. Det blir tilgjengelig når gruppen har minst 3 personer.</string>
     <string name="simplify_how_it_works">Slik fungerer det</string>
-    <string name="simplify_offline_note">Uten internett: de foreslåtte betalingene er allerede endret på denne enheten. Gruppen ser det når du er tilkoblet igjen.</string>
+    <string name="simplify_offline_note">Uten nett: de foreslåtte betalingene er allerede endret på denne enheten. Gruppen ser det når du er tilkoblet igjen.</string>
     <string name="simplify_confirm_title_on">Forenkle gjeld?</string>
     <string name="simplify_confirm_title_off">Slå av Forenkle gjeld?</string>
     <plurals name="simplify_payments_label">

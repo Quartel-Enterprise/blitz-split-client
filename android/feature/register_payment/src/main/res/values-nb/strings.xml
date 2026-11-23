@@ -15,7 +15,7 @@
     <string name="register_payment_method">Hvordan det ble betalt</string>
     <string name="register_payment_info">Det blir en betaling i gruppen: den vises i Utgifter og kan angres.</string>
     <string name="register_payment_for_others">Du registrerer dette for %1$s og %2$s.</string>
-    <string name="register_payment_offline_title">Ingen internett:</string>
+    <string name="register_payment_offline_title">Ingen nett:</string>
     <string name="register_payment_offline_message">det lagres på denne enheten og synkroniseres når du er tilkoblet igjen.</string>
     <string name="register_payment_confirm_received">Bekreft mottatt</string>
     <string name="register_payment_confirm_paid">Bekreft betaling</string>
