@@ -582,7 +582,9 @@ this was set up once, by hand, in the Cloudflare account of `CLOUDFLARE_ACCOUNT_
   `blitz-split.pages.dev`.
 - **Its custom domain** `web.blitzsplit.com` (Workers & Pages › `blitz-split` › Custom domains), active, with its
   certificate.
-- **The DNS record** in the zone `blitzsplit.com`: a proxied CNAME, `web`, pointing at `blitz-split.pages.dev`. The old `app` record is gone: `app.blitzsplit.com` is a Custom Domain of the redirect Worker of blitz-split-site, which sends it to `web.blitzsplit.com`.
+- **The DNS record** in the zone `blitzsplit.com`: a proxied CNAME, `web`, pointing at `blitz-split.pages.dev`. The
+  old `app` record is gone: `app.blitzsplit.com` is a Custom Domain of the redirect Worker of blitz-split-site, which
+  sends it to `web.blitzsplit.com`.
 
 The domain answers 522 until the project has a deployment: the first run of the `web` job is what puts the app
 there.
