@@ -1,7 +1,7 @@
 name: 'Build and deploy the web app'
 description: >-
   Builds the web app at a version and deploys it to a Cloudflare Pages project: the beta's (release-beta.yml) or the
-  production one, served at app.blitzsplit.com (release-production.yml), which differ only in these inputs. The
+  production one, served at web.blitzsplit.com (release-production.yml), which differ only in these inputs. The
   calling job checks out the repository first, since the steps run its scripts.
 
 inputs:

@@ -15,7 +15,7 @@ A stable version's:
 | Android | Google Play, the track of the run ([What the stores and the web get](#what-the-stores-and-the-web-get)) |
 | Wear OS | Google Play, the same track of the Wear OS form factor ([The watch on Google Play](#the-watch-on-google-play)) |
 | iOS and macOS | The App Store, after Apple's review |
-| Web | Cloudflare Pages, project `blitz-split`: https://app.blitzsplit.com ([The production web app](#the-production-web-app)) |
+| Web | Cloudflare Pages, project `blitz-split`: https://web.blitzsplit.com ([The production web app](#the-production-web-app)) |
 
 A beta's:
 
@@ -103,7 +103,7 @@ dispatched behind a waiting one cancels it without a word.
 
 **A run with nothing changed publishes to everyone, and nothing waits for an approval** (Pierre's calls, as in
 Bible Planner): the production track at 100%, a submission for review that goes out by itself once Apple approves
-it, and the web app at app.blitzsplit.com. The dispatch is the one gate ([Who releases](#who-releases)), so read the
+it, and the web app at web.blitzsplit.com. The dispatch is the one gate ([Who releases](#who-releases)), so read the
 inputs before it: cancelling a run stops what hasn't started, not what a store or the web already took
 ([Re-runs and what a run leaves](#re-runs-and-what-a-run-leaves)). For a run that reaches
 no user, choose the `internal` track and turn `submit_for_review` and `web` off: the bundle goes to Play's internal
@@ -160,7 +160,7 @@ is built:
   [`play-store-screenshots`](../.github/workflows/play-store-screenshots.yml), which sends Google Play's alone
   ([Google Play's screenshots alone](#google-plays-screenshots-alone)).
 - **On `main`**: a run dispatched on another branch would take that branch's copy of the workflow, and fails.
-- **The `Production` environment only lets `main` deploy.** The jobs that reach a store or app.blitzsplit.com (the
+- **The `Production` environment only lets `main` deploy.** The jobs that reach a store or web.blitzsplit.com (the
   uploads, the submissions, the creation of the App Store version, the screenshots' uploads, the web) name the
   GitHub Environment `Production`, which has no required reviewer and a deployment branch policy with the branch
   `main` alone. GitHub makes an environment a job names and
@@ -483,7 +483,7 @@ documents neither the number nor when the count starts over: roughly 50 saves in
   builds do. A job cancelled while it was uploading may have reached its store, and nothing says which:
   - An upload to a store counts for the `versionCode`, which is merged back all the same, since it only has to
     grow, and never for the tag: look at the Play Console or App Store Connect for what is there.
-  - The web job is one step from built to live: look at https://app.blitzsplit.com. A deployment that landed in a
+  - The web job is one step from built to live: look at https://web.blitzsplit.com. A deployment that landed in a
     run that tagged nothing is recorded by dispatching the web alone, with the same `version` typed.
 
   **Re-run failed jobs** on a cancelled run runs every job that was cancelled, the web's too: dispatch a new run for
@@ -574,15 +574,17 @@ not who reads the secrets.
 ### The production web app
 
 A stable version deploys the web app to the Cloudflare Pages project `blitz-split` (`CLOUDFLARE_PAGES_PROJECT` in
-`release-production.yml`), served at https://app.blitzsplit.com. The workflow never creates a project or a domain:
+`release-production.yml`), served at https://web.blitzsplit.com. The workflow never creates a project or a domain:
 this was set up once, by hand, in the Cloudflare account of `CLOUDFLARE_ACCOUNT_ID`, the one that has
 `blitz-split-beta` and the zone `blitzsplit.com`, and the token and the account id of the secrets reach it:
 
 - **The Pages project** `blitz-split`, with `main` as its production branch, the branch the workflow deploys to, at
   `blitz-split.pages.dev`.
-- **Its custom domain** `app.blitzsplit.com` (Workers & Pages › `blitz-split` › Custom domains), active, with its
+- **Its custom domain** `web.blitzsplit.com` (Workers & Pages › `blitz-split` › Custom domains), active, with its
   certificate.
-- **The DNS record** in the zone `blitzsplit.com`: a proxied CNAME, `app`, pointing at `blitz-split.pages.dev`.
+- **The DNS record** in the zone `blitzsplit.com`: a proxied CNAME, `web`, pointing at `blitz-split.pages.dev`. The
+  old `app` record is gone: `app.blitzsplit.com` is a Custom Domain of the redirect Worker of blitz-split-site, which
+  sends it to `web.blitzsplit.com`.
 
 The domain answers 522 until the project has a deployment: the first run of the `web` job is what puts the app
 there.
@@ -596,16 +598,19 @@ with that account's `CLOUDFLARE_ACCOUNT_ID` and a `CLOUDFLARE_API_TOKEN` exporte
 
 What the production web app needs outside this repository, or its sign in fails:
 
-- `https://app.blitzsplit.com` in the redirect URLs of the Supabase project (`docs/auth.md` of `blitz-split-api`).
+- `https://web.blitzsplit.com` in the redirect URLs of the Supabase project (`docs/auth.md` of `blitz-split-api`).
 - The same origin in the Google OAuth web client's authorized JavaScript origins and redirect URIs.
-- `app.blitzsplit.com` in the domains of the Apple Services ID, for Sign in with Apple on the web.
+- `web.blitzsplit.com` in the domains of the Apple Services ID, for Sign in with Apple on the web.
+
+The `app.blitzsplit.com` entries of those three don't cover the new host: add `web.blitzsplit.com` next to them, and remove the old
+ones once the old host only redirects.
 
 Two changes in `blitz-split-site` wait for the first production deploy, and are not this workflow's:
 
 - The invite links blitzsplit.com redirects to a web app still go to the beta's
-  ([Joining and foldables](product/joining-and-folds.md)), until they point at app.blitzsplit.com.
+  ([Joining and foldables](product/joining-and-folds.md)), until they point at web.blitzsplit.com.
 - The site only offers the web app once `webAppLive` is on in its `public/stores.js`, next to the `webAppUrl` that
-  already names https://app.blitzsplit.com.
+  already names https://web.blitzsplit.com.
 
 ### Google Play access
 
