@@ -28,6 +28,7 @@ private const val CZECH = "cs"
 private const val CZECH_SECOND_PERSON_AUXILIARY = "jsi"
 private const val SLOVAK = "sk"
 private const val SLOVAK_SECOND_PERSON_AUXILIARY = "si"
+private const val BULGARIAN = "bg"
 private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
 private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
@@ -112,6 +113,7 @@ private val youSubjectLanguages = setOf(
     SERBIAN,
     SLOVAK,
     NORWEGIAN,
+    BULGARIAN,
     HUNGARIAN,
     URDU,
     PERSIAN,
@@ -165,7 +167,8 @@ private val irregularSecondPerson = mapOf(
  * each with its own second person ("Ana felosztott", "Te felosztottál"; "kilépett", "kiléptél").
  * Bengali needs no rule: its respectful verb is the same for "আপনি" and for a name ("Ana ভাগ করেছেন", "আপনি ভাগ করেছেন"),
  * and Malay's verb doesn't change with the person. Urdu needs none either: its ergative "نے" is written apart after
- * a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ بانٹا"). Filipino needs none: its "ay" and
+ * a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ بانٹا"). Bulgarian needs none either: its aorist, which every Bulgarian verb phrase
+ * starts with, is the same for the user's "Ти" and for a name ("Ana раздели", "Ти раздели"). Filipino needs none: its "ay" and
  * its actor-focus verb are the same for the user's "Ikaw" and for a name ("Ana ay nagbahagi", "Ikaw ay nagbahagi").
  * Tamil puts its verb last too, ending every verb phrase, before the colon that leads to the object, with a
  * respectful past in "-ார்", which the user's turns into "-ீர்கள்" ("Ana ஒரு செலவைப் பிரித்தார்", "நீங்கள் ஒரு
@@ -297,7 +300,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
  * Swedish "Du raderade…", Norwegian "Du slettet…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
  * حذف کردید…", with its verb rule. Czech says "Ty jsi
- * smazal(a)…", Slovak "Ty si vymazal(a)…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
+ * smazal(a)…", Slovak "Ty si vymazal(a)…", Bulgarian "Ти изтри…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and

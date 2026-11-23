@@ -129,6 +129,9 @@ The feed, unread state, real time and push notifications.
     past "-ారు" is the same for a name and for "మీరు" ("Ana ఒక ఖర్చును పంచారు: డిన్నర్", "మీరు ఒక ఖర్చును పంచారు: డిన్నర్"),
     and the object after a colon keeps every name free of case endings, as Tamil's. Its deleted-item notice starts with
     who deleted it ("మీరు తొలగించారు: …", `youSubjectLanguages`), and "You" is "మీరు" everywhere.
+    Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
+    are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
+    deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).
     Marathi follows Hindi's rule with its respectful agent "यांनी", written apart after a name, which the user's "तुम्ही"
     doesn't take: every Marathi verb phrase starts with "यांनी", which the user's rows drop ("Ana यांनी ‘डिनर’ खर्च
     वाटला", "तुम्ही ‘डिनर’ खर्च वाटला"), a join or a leave being said with a transitive verb too ("यांनी ‘गोवा ट्रिप’

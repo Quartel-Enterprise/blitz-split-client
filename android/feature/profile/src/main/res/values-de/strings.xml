@@ -93,6 +93,7 @@
     <string name="profile_language_tamil">Tamil</string>
     <string name="profile_language_norwegian">Norwegisch (Bokmål)</string>
     <string name="profile_language_telugu">Telugu</string>
+    <string name="profile_language_bulgarian">Bulgarisch</string>
     <string name="profile_language_marathi">Marathi</string>
     <string name="profile_language_system_detail">Sprache des Geräts</string>
     <string name="profile_notifications">Mitteilungen</string>

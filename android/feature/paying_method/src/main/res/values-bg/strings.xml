@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Нов начин на плащане</string>
+    <string name="paying_method_edit_title">Редактирай начина на плащане</string>
+    <string name="paying_method_type">Вид</string>
+    <string name="paying_method_name">Име</string>
+    <string name="paying_method_name_optional">Име (по избор)</string>
+    <string name="paying_method_color">Цвят</string>
+    <string name="paying_method_default">Начин по подразбиране</string>
+    <string name="paying_method_default_hint">Новите разходи, които плащаш, започват с него.</string>
+    <string name="paying_method_delete">Изтрий начина на плащане</string>
+    <string name="paying_method_delete_title">Да се изтрие ли този начин на плащане?</string>
+    <string name="paying_method_delete_body">Разходите, които си отбелязал(а) с него, вече няма да го показват.</string>
+    <string name="paying_method_delete_confirm">Изтрий</string>
+    <string name="paying_method_save">Запази</string>
+</resources>

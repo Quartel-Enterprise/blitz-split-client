@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Затвори</string>
+    <string name="invite_group_created">Групата е създадена</string>
+    <string name="invite_title">Покани всички в %s</string>
+    <string name="invite_qr_description">QR код на линка за покана в групата</string>
+    <string name="invite_copy">Копирай</string>
+    <string name="invite_copied">Копирано</string>
+    <string name="invite_who_picks">Който отвори линка, избира кой е от списъка: %s. Не е нужен акаунт.</string>
+    <string name="invite_names_or">%1$s или %2$s</string>
+    <string name="invite_anyone_joins">Който отвори линка, влиза в групата. Не е нужен акаунт.</string>
+    <string name="invite_pending_title">Линкът предстои</string>
+    <string name="invite_pending_offline">Ще се създаде веднага щом си онлайн.</string>
+    <string name="invite_pending_online">Създава се линкът…</string>
+    <string name="invite_failed_title">Линкът не можа да се създаде</string>
+    <string name="invite_failed_body">Нещо се обърка при синхронизирането на групата.</string>
+    <string name="invite_retry">Опитай отново</string>
+    <string name="invite_share">Сподели линка</string>
+    <string name="invite_see_who_joined">Виж кой влезе</string>
+    <string name="invite_add_person">Добави някого без приложението</string>
+    <string name="invite_go_to_group">Към групата</string>
+    <string name="invite_change_link">Смени линка</string>
+    <string name="invite_change_link_title">Да се смени ли линкът за покана?</string>
+    <string name="invite_change_link_message">Текущият линк и QR кодът спират да работят, включително неизползваните лични покани. Влезлите вече остават в групата.</string>
+    <string name="invite_change_link_failed">Линкът не можа да се смени. Опитай отново.</string>
+    <string name="invite_share_message">Хайде да разделим разходите на %1$s в Blitz Split. Присъедини се с този линк: %2$s</string>
+</resources>

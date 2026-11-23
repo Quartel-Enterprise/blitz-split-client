@@ -21,6 +21,8 @@ import SwiftUI
 /// Urdu writes its ergative "نے" apart after a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ
 /// بانٹا"), so its verb stays as it is. Persian puts its simple past last as Turkish does, and the user's respectful
 /// "شما" adds "ید" to it ("Ana هزینه‌ای را تقسیم کرد", "شما هزینه‌ای را تقسیم کردید").
+/// Bulgarian's aorist is the same for a name and for "Ти" ("Ana раздели", "Ти
+/// раздели"), so its verb stays as it is too.
 ///
 /// Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is. Marathi does as
 /// Hindi with its respectful agent "यांनी", which the user's "तुम्ही" doesn't take, so its verb phrases all start with

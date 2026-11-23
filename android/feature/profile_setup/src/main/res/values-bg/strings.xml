@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Как те наричат приятелите ти?</string>
+    <string name="profile_setup_subtitle">Групите ти и всеки с линка към профила ти виждат името ти.</string>
+    <string name="profile_setup_avatar_color">Цвят на аватара</string>
+    <string name="profile_setup_add_photo">Добави снимка</string>
+    <string name="profile_setup_photo_error">Тази снимка не можа да се използва. Опитай с друга.</string>
+    <string name="profile_setup_name_label">Твоето име</string>
+    <string name="profile_setup_name_placeholder">Иван Иванов</string>
+    <string name="profile_setup_name_too_short">Въведи поне %d букви.</string>
+    <string name="profile_setup_name_too_long">Използвай до %d знака.</string>
+    <string name="profile_setup_name_hint">Можеш да го смениш по-късно в Профил.</string>
+    <string name="profile_setup_saved_locally">Засега е запазено само на това устройство.</string>
+    <string name="profile_setup_continue">Продължи</string>
+</resources>

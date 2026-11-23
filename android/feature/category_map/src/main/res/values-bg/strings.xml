@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Няма термини</string>
+    <string name="category_map_title">Карта на категориите</string>
+    <string name="category_map_search">Търси термини</string>
+    <string name="category_map_add">Добави термин</string>
+    <string name="category_map_more">Още опции</string>
+    <string name="category_map_restore">Възстанови по подразбиране</string>
+    <string name="category_map_back">Назад</string>
+    <string name="category_map_intro">Когато заглавието на разход съдържа някоя от тези думи, категорията се попълва сама. „Uber до вкъщи“ става Транспорт.</string>
+    <string name="category_map_intro_offline">Картата работи офлайн: промените важат веднага на това устройство и стигат до другите ти, щом отново си онлайн.</string>
+    <string name="category_map_device_only">Картата ти остава само на това устройство. За да я пренесеш на другите си устройства, влез с Google или Apple в Профил.</string>
+    <string name="category_map_open_profile">Отвори Профил</string>
+    <string name="category_map_longest_wins">Когато два термина съвпадат със заглавие, печели по-дългият.</string>
+    <string name="category_map_no_result">Няма термин с „%1$s“</string>
+    <string name="category_map_no_result_body">Добави го и разходите с тази дума в заглавието ще идват с правилната категория.</string>
+    <string name="category_map_add_query">Добави „%1$s“</string>
+    <string name="category_map_empty_title">Картата ти е празна</string>
+    <string name="category_map_empty_body">Без термини категорията не идва от заглавието: избираш я при всеки разход.</string>
+    <string name="category_map_group_category"> · категория на %1$s</string>
+    <string name="category_map_only_main">Само %1$s</string>
+    <string name="category_map_only_in_group">само в %1$s</string>
+    <string name="category_map_no_terms_yet">Още няма термини.</string>
+    <string name="category_map_add_in">Добави термин в %1$s</string>
+    <string name="category_map_tip">Докосни термин, за да смениш категорията му или да го премахнеш. Съвпада с цялата дума, без значение от ударения и главни букви.</string>
+    <string name="category_map_queued">на опашка</string>
+    <string name="category_map_term_action">%1$s, %2$s. Редактирай</string>
+    <string name="category_map_new_term">Нов термин</string>
+    <string name="category_map_edit_term">Редактирай термина</string>
+    <string name="category_map_term_label">Дума или фраза</string>
+    <string name="category_map_term_help">Съвпада с цялата дума, без значение от ударения и главни букви.</string>
+    <string name="category_map_term_help_app">Термин на приложението. „Възстанови по подразбиране“ го връща такъв, какъвто беше.</string>
+    <string name="category_map_term_duplicate">„%1$s“ вече избира %2$s. Всеки термин има една категория.</string>
+    <string name="category_map_term_too_short">Използвай поне 2 букви.</string>
+    <string name="category_map_term_too_long">Използвай най-много 30 букви.</string>
+    <string name="category_map_term_invalid">Използвай само букви, цифри и интервали.</string>
+    <string name="category_map_category">Категория</string>
+    <string name="category_map_category_help">Може да е категорията или подкатегория.</string>
+    <string name="category_map_category_help_edit">Ако я смениш тук, терминът се премества в друга категория.</string>
+    <string name="category_map_category_help_move">Преместването изважда термина от %1$s.</string>
+    <string name="category_map_example">Пример</string>
+    <string name="category_map_example_move">Ако се премести</string>
+    <string name="category_map_remove">Премахни</string>
+    <string name="category_map_cancel">Отказ</string>
+    <string name="category_map_save">Запази</string>
+    <string name="category_map_move_to">Премести в %1$s</string>
+    <string name="category_map_removed">„%1$s“ излезе от картата</string>
+    <string name="category_map_undo">Отмени</string>
+    <string name="category_map_restore_title">Да се възстанови ли картата по подразбиране?</string>
+    <string name="category_map_restore_body">60-те термина на приложението се връщат такива, каквито бяха, включително премахнатите или преместените от теб.</string>
+    <string name="category_map_restore_own_one">Терминът, който създаде, „%1$s“, остава.</string>
+    <string name="category_map_restore_confirm">Възстанови</string>
+    <string name="category_map_save_error">Картата не можа да се запази. Опитай отново.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d термин</item>
+        <item quantity="other">%d термина</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d подкатегория</item>
+        <item quantity="other">%d подкатегории</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d термин с „%2$s“</item>
+        <item quantity="other">%1$d термина с „%2$s“</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Офлайн · %d промяна на опашка</item>
+        <item quantity="other">Офлайн · %d промени на опашка</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Създаденият от теб термин (%d) остава.</item>
+        <item quantity="other">Създадените от теб термини (%d) остават.</item>
+    </plurals>
+    <string name="category_map_new_category">Нова категория</string>
+    <string name="category_map_new_subcategory_in">Нова подкатегория в %s</string>
+    <string name="category_map_edit_category">Редактирай %s</string>
+    <string name="category_map_category_group">Група</string>
+    <string name="category_map_change_color">Смени цвета на %1$s</string>
+    <string name="category_map_restore_color">Възстанови цвета</string>
+    <string name="category_map_color_done">Готово</string>
+</resources>

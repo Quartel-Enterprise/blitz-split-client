@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Политика за поверителност</string>
+    <string name="legal_terms">Условия за ползване</string>
+    <string name="legal_updated_privacy_policy">Обновена на %1$s</string>
+    <string name="legal_updated_terms">Обновени на %1$s</string>
+    <string name="legal_load_failed_title">Страницата не можа да се зареди</string>
+    <string name="legal_load_failed_body">Провери връзката си и опитай отново.</string>
+    <string name="legal_retry">Опитай отново</string>
+</resources>

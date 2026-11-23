@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Баланси</string>
+    <string name="global_balances_profile">Профил</string>
+    <string name="global_balances_offline">Офлайн · балансите на това устройство</string>
+    <string name="global_balances_filter">Покажи</string>
+    <string name="global_balances_filter_all">Всички</string>
+    <string name="global_balances_filter_you_owe">Дължиш</string>
+    <string name="global_balances_filter_owes_you">Дължат ти</string>
+    <string name="global_balances_hint">Вече компенсирано между групите: всеки човек се показва веднъж.</string>
+    <string name="global_balances_hint_empty">Сумират се всички групи на това устройство.</string>
+    <string name="global_balances_section_you_owe">Дължиш · %d</string>
+    <string name="global_balances_section_owes_you">Дължат ти · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d група</item>
+        <item quantity="other">%d групи</item>
+    </plurals>
+    <string name="global_balances_guest">%s · гост</string>
+    <string name="global_balances_you_owe">дължиш</string>
+    <string name="global_balances_owes_you">ти дължи</string>
+    <string name="global_balances_by_group_show">Покажи %s по групи</string>
+    <string name="global_balances_by_group_hide">Скрий %s по групи</string>
+    <string name="global_balances_received">Получено</string>
+    <string name="global_balances_received_from">Получено от %s</string>
+    <string name="global_balances_settle">Уреди сметките</string>
+    <string name="global_balances_settle_with">Уреди сметките с %s</string>
+    <string name="global_balances_charge">Поискай</string>
+    <string name="global_balances_charge_person">Поискай от %s</string>
+    <string name="global_balances_detail_pane">Баланс с %s</string>
+    <string name="global_balances_detail_owes_you">%s ти дължи</string>
+    <string name="global_balances_detail_you_owe">Дължиш на %s</string>
+    <string name="global_balances_detail_guest">%s · гост без приложението</string>
+    <string name="global_balances_detail_note_owed">Нетната сума вече компенсира групите: „Поискай“ и „Получено“ използват %s. Приложението записва по едно плащане във всяка група.</string>
+    <string name="global_balances_detail_note_settle">Нетната сума вече компенсира групите: „Уреди сметките“ използва %s. Приложението записва по едно плащане във всяка група.</string>
+    <string name="global_balances_detail_note_single">Само една отворена група с %s.</string>
+    <string name="global_balances_settled_title">Всичко е уредено</string>
+    <string name="global_balances_settled_body">Никой не ти дължи и ти не дължиш на никого. Когато някой добави разход, балансът ще се появи тук.</string>
+    <string name="global_balances_settled_action">Виж групите</string>
+    <string name="global_balances_nothing_to_pay_title">Не дължиш нищо</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Сметките ти с всички са уредени. Още имаш да получиш %2$s от %1$d човек.</item>
+        <item quantity="other">Сметките ти с всички са уредени. Още имаш да получиш %2$s от %1$d души.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Виж кой ти дължи</string>
+    <string name="global_balances_nothing_to_receive_title">Никой не ти дължи</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Още дължиш %2$s на %1$d човек.</item>
+        <item quantity="other">Още дължиш %2$s на %1$d души.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Виж на кого дължиш</string>
+    <string name="global_balances_coming_soon">Очаквай скоро</string>
+    <string name="global_balances_change_error">Промяната не можа да се запази. Опитай отново.</string>
+    <string name="global_balances_copied">Копирано</string>
+    <string name="global_balances_charge_title">Поискай от %s</string>
+    <string name="global_balances_charge_owes">Дължи ти %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Затвори</string>
+    <string name="global_balances_charge_guest">%s е гост без приложението. Ще научи за това само от това съобщение, затова в него вече пише какво е влязло в разхода.</string>
+    <string name="global_balances_charge_message">Съобщение</string>
+    <string name="global_balances_charge_pix">Добави моя Pix ключ</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Копирай съобщението</string>
+    <string name="global_balances_charge_send">Изпрати</string>
+    <string name="global_balances_message">Здравей, %1$s! По сметката на Blitz Split ми дължиш %2$s от %3$s.</string>
+    <string name="global_balances_message_guest">Здравей, %1$s! Дължиш ми %2$s от %3$s: твоята част от %4$s.</string>
+    <string name="global_balances_message_guest_paid">Здравей, %1$s! Дължиш ми %2$s от %3$s: твоята част от %4$s, минус %5$s, които вече плати.</string>
+    <string name="global_balances_message_group">групата „%s“</string>
+    <string name="global_balances_message_groups">групите %s</string>
+    <string name="global_balances_message_pix">Pix (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Телефон</string>
+    <string name="global_balances_key_email">Имейл</string>
+    <string name="global_balances_key_random">Случаен ключ</string>
+    <string name="global_balances_message_reroute">%1$s опрости дълговете си, затова вместо да плащаш на %2$s, плащаш директно на мен; общата ти сума не се промени.</string>
+</resources>
