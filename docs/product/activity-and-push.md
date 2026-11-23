@@ -132,6 +132,11 @@ The feed, unread state, real time and push notifications.
     Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
     are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
     deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).
+    Marathi follows Hindi's rule with its respectful agent "यांनी", written apart after a name, which the user's "तुम्ही"
+    doesn't take: every Marathi verb phrase starts with "यांनी", which the user's rows drop ("Ana यांनी ‘डिनर’ खर्च
+    वाटला", "तुम्ही ‘डिनर’ खर्च वाटला"), a join or a leave being said with a transitive verb too ("यांनी ‘गोवा ट्रिप’
+    ग्रुप जॉइन केला"), whose past agrees with the object, not with who did it. Its deleted-item notice starts with who
+    deleted it ("तुम्ही …", `youSubjectLanguages`), and "You" is "तुम्ही" everywhere.
     Catalan swaps its perfect's auxiliary as French does: every Catalan verb phrase starts with "ha", or "l’ha" with a
     third-person object pronoun, which the user's rows turn into "has" / "l’has" ("Anna ha dividit la despesa…", "Tu
     has dividit la despesa…"). No reflexive verb comes after the actor, since its "s’ha" would need "t’has": a join is

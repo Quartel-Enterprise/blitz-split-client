@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">तुमचा रिकव्हरी कोड सेव्ह करा</string>
+    <string name="recovery_code_body">तुम्ही अकाउंटशिवाय ॲप वापरत आहात. तुम्ही डिव्हाइस बदलल्यास किंवा ते हरवल्यास हे 12 शब्द तुमचा डेटा परत आणतात. ते क्रमाने लिहून ठेवा. 30 दिवस वापर न झाल्यास तुमचा डेटा हटवला जातो आणि हे शब्द काम करणे बंद करतात.</string>
+    <string name="recovery_code_copy">शब्द कॉपी करा</string>
+    <string name="recovery_code_save_to_password_manager">पासवर्ड मॅनेजरमध्ये सेव्ह करा</string>
+    <string name="recovery_code_connect_instead">त्याऐवजी Google किंवा Apple कनेक्ट करा</string>
+    <string name="recovery_code_connect_instead_body">कोडची गरज नाही</string>
+    <string name="recovery_code_sign_in_failed">आत्ता कनेक्ट करता आले नाही. पुन्हा प्रयत्न करा.</string>
+    <string name="recovery_code_also_in_profile">हा प्रोफाइल › रिकव्हरी मध्येही आहे.</string>
+    <string name="recovery_code_remind_later">नंतर आठवण करून द्या</string>
+    <string name="recovery_code_saved">मी तो सेव्ह केला आहे</string>
+    <string name="recovery_code_download">डाउनलोड करा</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · रिकव्हरी कोड\n\n%1$s\n\nतुमचा डेटा परत आणण्यासाठी हा कोड \"मी हे दुसऱ्या डिव्हाइसवर वापरले आहे\" मध्ये वापरा.\n</string>
+</resources>

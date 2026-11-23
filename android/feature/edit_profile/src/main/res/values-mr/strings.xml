@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">प्रोफाइल संपादित करा</string>
+    <string name="edit_profile_save">सेव्ह करा</string>
+    <string name="edit_profile_change_photo">फोटो बदला</string>
+    <string name="edit_profile_take_photo">फोटो काढा</string>
+    <string name="edit_profile_choose_photo">गॅलरीमधून निवडा</string>
+    <string name="edit_profile_use_account_photo">%1$s अकाउंटचा फोटो वापरा</string>
+    <string name="edit_profile_remove_photo">फोटो काढा</string>
+    <string name="edit_profile_photo_error">हा फोटो वापरता आला नाही. दुसरा फोटो वापरून पाहा.</string>
+    <string name="edit_profile_avatar_color">अवतारचा रंग</string>
+    <string name="edit_profile_avatar_color_hint">तुमचा फोटो नसताना दिसतो.</string>
+    <string name="edit_profile_name_label">तुमचे नाव</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">किमान %d अक्षरे टाइप करा.</string>
+    <string name="edit_profile_name_too_long">जास्तीत जास्त %d अक्षरे वापरा.</string>
+    <string name="edit_profile_account_notice">नाव आणि फोटो तुमच्या %1$s अकाउंटमधून आले आहेत. येथे ते बदलल्यास फक्त Blitz Split मध्ये बदलतात, तुमचे %1$s अकाउंट बदलत नाही.</string>
+    <string name="edit_profile_footer">तुमचे ग्रुप आणि तुमची प्रोफाइल लिंक असलेल्या कोणालाही तुमचे नाव आणि फोटो दिसतात.</string>
+    <string name="profile_photo_close">बंद करा</string>
+    <string name="profile_photo_camera">कॅमेरा</string>
+    <string name="profile_photo_gallery">गॅलरी</string>
+    <string name="profile_photo_remove">काढा</string>
+    <string name="profile_photo_title">प्रोफाइल फोटो</string>
+</resources>

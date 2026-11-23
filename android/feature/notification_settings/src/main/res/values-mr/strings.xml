@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">सूचना</string>
+    <string name="notification_settings_denied_title">Android वर Blitz Split च्या सूचना बंद आहेत.</string>
+    <string name="notification_settings_denied_body">खालील पुश सूचना मिळवण्यासाठी त्या सिस्टम सेटिंग्जमध्ये चालू करा. बेल काम करत राहते.</string>
+    <string name="notification_settings_open_settings">सेटिंग्ज उघडा</string>
+    <string name="notification_settings_refused_body">खालील पुश सूचना मिळवण्यासाठी Android तुम्हाला त्या आणखी एकदा अनुमती देऊ देते. बेल काम करत राहते.</string>
+    <string name="notification_settings_turn_on">चालू करा</string>
+    <string name="notification_settings_blocked_in_android">Android मध्ये ब्लॉक केले</string>
+    <string name="notification_settings_open_channel_settings_description">Android सेटिंग्ज उघडा: %1$s</string>
+    <string name="notification_settings_push_switch">पुश सूचना</string>
+    <string name="notification_settings_push_switch_detail">फक्त या डिव्हाइसवर</string>
+    <string name="notification_settings_section">मला याबद्दल कळवा</string>
+    <string name="notification_settings_push">पुश</string>
+    <string name="notification_settings_in_app">ॲपमध्ये</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">पुश या डिव्हाइसवर सूचना पाठवते. ॲपमध्ये ती बेलवर आणि ॲक्टिव्हिटीमध्ये नवीन म्हणून दाखवते; बंद केल्यास ती ॲक्टिव्हिटीमध्ये तरीही दिसते, आधीच वाचलेली म्हणून.</string>
+    <string name="notification_settings_footer">इंटरनेट असताना सूचना येतात. एखादा ग्रुप म्यूट करण्यासाठी, त्यातील मेनू वापरा.</string>
+</resources>

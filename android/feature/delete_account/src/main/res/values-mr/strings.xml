@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">अकाउंट हटवा</string>
+    <string name="delete_account_offline_title">इंटरनेट नाही.</string>
+    <string name="delete_account_offline_body">तुमचे अकाउंट हटवण्यासाठी इंटरनेट कनेक्शन हवे. कनेक्ट करा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="delete_account_heading">तुमचे अकाउंट आणि तुमचा डेटा हटवायचा?</string>
+    <string name="delete_account_deleted_title">काय हटवले जाईल</string>
+    <string name="delete_account_deleted_profile">तुमचे प्रोफाइल (नाव, फोटो आणि रंग)</string>
+    <string name="delete_account_deleted_keys">तुमच्या Pix आणि Bitcoin की</string>
+    <string name="delete_account_deleted_provider">तुमच्या %1$s अकाउंटशी असलेला दुवा</string>
+    <string name="delete_account_deleted_recovery_code">तुमचा रिकव्हरी कोड</string>
+    <string name="delete_account_deleted_device">या डिव्हाइसवरील तुमच्या डेटाची प्रत</string>
+    <string name="delete_account_kept_title">तुमच्या ग्रुपमध्ये काय राहील</string>
+    <string name="delete_account_kept_groups">इतर सदस्यांसाठी ग्रुप, त्यांच्या खर्चांसह आणि पेमेंटसह</string>
+    <string name="delete_account_kept_member">प्रत्येक ग्रुपमधील तुमचे नाव, अकाउंट नसलेला सदस्य म्हणून</string>
+    <string name="delete_account_kept_comments">तुमच्या कमेंट आणि तुम्ही जोडलेले फोटो, तुमच्या नावाखाली</string>
+    <string name="delete_account_export">आधी माझा डेटा एक्सपोर्ट करा</string>
+    <string name="delete_account_confirm">हे पूर्ववत करता येणार नाही हे मला समजले आहे</string>
+    <string name="delete_account_delete">अकाउंट हटवा</string>
+    <string name="delete_account_cancel">रद्द करा</string>
+    <string name="delete_account_failed">तुमचे अकाउंट हटवता आले नाही. पुन्हा प्रयत्न करा.</string>
+</resources>

@@ -93,6 +93,7 @@ export const PLAY_LOCALES = {
   nb: ["no-NO"],
   te: ["te-IN"],
   bg: ["bg"],
+  mr: ["mr-IN"],
   ca: ["ca"],
 };
 export const APP_STORE_LOCALES = {
@@ -140,6 +141,7 @@ export const APP_STORE_LOCALES = {
   te: ["te-IN"],
   // Apple has no Bulgarian listing locale either: the language has a Play listing and no App Store one.
   bg: [],
+  mr: ["mr-IN"],
   ca: ["ca"],
 };
 

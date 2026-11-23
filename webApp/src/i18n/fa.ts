@@ -841,6 +841,7 @@ export const fa: Record<MessageKey, string> = {
   profile_languageNorwegian: 'نروژی (بوکمل)',
   profile_languageTelugu: 'تلوگو',
   profile_languageBulgarian: 'بلغاری',
+  profile_languageMarathi: 'مراتی',
   profile_languageCatalan: 'کاتالان',
   profile_bitcoinInSats: 'بیت‌کوین به ساتوشی',
   profile_bitcoinInSatsDetail: 'مبلغ‌های بیت‌کوین را به sats نمایش می‌دهد و وارد می‌کند (1 ₿ = 100,000,000 sats).',

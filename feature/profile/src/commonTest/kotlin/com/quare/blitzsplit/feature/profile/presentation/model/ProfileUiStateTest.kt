@@ -56,6 +56,7 @@ class ProfileUiStateTest {
             AppLanguage.NORWEGIAN -> listOf("Norsk bokmål", "Norwegian Bokmål")
             AppLanguage.TELUGU -> listOf("తెలుగు", "Telugu")
             AppLanguage.BULGARIAN -> listOf("Български", "Bulgarian")
+            AppLanguage.MARATHI -> listOf("मराठी", "Marathi")
             AppLanguage.CATALAN -> listOf("Català", "Catalan")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
@@ -112,6 +113,7 @@ class ProfileUiStateTest {
         AppLanguage.NORWEGIAN,
         AppLanguage.TELUGU,
         AppLanguage.BULGARIAN,
+        AppLanguage.MARATHI,
         AppLanguage.CATALAN,
     )
 
@@ -711,6 +713,7 @@ class ProfileUiStateTest {
                 AppLanguage.NORWEGIAN,
                 AppLanguage.TELUGU,
                 AppLanguage.BULGARIAN,
+                AppLanguage.MARATHI,
                 AppLanguage.CATALAN,
             ),
             options,
@@ -769,6 +772,7 @@ class ProfileUiStateTest {
                 AppLanguage.NORWEGIAN,
                 AppLanguage.TELUGU,
                 AppLanguage.BULGARIAN,
+                AppLanguage.MARATHI,
                 AppLanguage.CATALAN,
             ),
             options,
