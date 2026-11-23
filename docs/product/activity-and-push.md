@@ -109,6 +109,11 @@ The feed, unread state, real time and push notifications.
     a past written "-o/la", the app not knowing the gender, which the user's rows turn into "si" ("Ana je podelio/la
     trošak", "Ti si podelio/la trošak"); no reflexive "se" nor object pronoun comes before that "je", a name is never
     declined, and the deleted-item notice starts with who deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`).
+    Slovak follows Czech's rule with its own auxiliary: every Slovak verb phrase starts with a past in "-l(a)", the
+    app not knowing the gender, and the user's rows put "si" before it ("Ana rozdelil(a) výdavok…", "Ty si rozdelil(a)
+    výdavok…"). No reflexive "sa" nor pronoun comes right after that past, which would read "si pridal(a) sa": a join
+    is "vstúpil(a) do skupiny". A name is never declined, standing after a noun ("pridal(a) člena Ana"), and the
+    deleted-item notice starts with who deleted it ("Ty si vymazal(a)…", `youSubjectLanguages`).
     Tamil puts its verb last, as Turkish does, and says the person with it, so every Tamil verb phrase ends, before the
     colon that leads to the object, with a respectful past in "-ார்", which the user's rows turn into "-ீர்கள்" ("Ana
     ஒரு செலவைப் பிரித்தார்: டின்னர்", "நீங்கள் ஒரு செலவைப் பிரித்தீர்கள்: டின்னர்"); the object after the colon also

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Kontaktovať podporu</string>
+    <string name="contact_support_description">Otvoríme tvoju e-mailovú aplikáciu s pripravenou správou. Opíš, čo sa stalo, a odošli ju: každú správu číta skutočný človek.</string>
+    <string name="contact_support_to">Komu</string>
+    <string name="contact_support_diagnostics">Bude zahrnuté v e-maile</string>
+    <string name="contact_support_app_version">Verzia aplikácie</string>
+    <string name="contact_support_platform">Platforma</string>
+    <string name="contact_support_language">Jazyk</string>
+    <string name="contact_support_account">Účet</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">Systém</string>
+    <string name="contact_support_account_local">Iba toto zariadenie</string>
+    <string name="contact_support_account_anonymous">Nepripojené</string>
+    <string name="contact_support_open_email">Otvoriť e-mail</string>
+    <string name="contact_support_copy_email">Kopírovať e-mailovú adresu</string>
+    <string name="contact_support_notice_copied">E-mailová adresa skopírovaná.</string>
+    <string name="contact_support_notice_no_app">Nenašla sa e-mailová aplikácia. Adresa sa namiesto toho skopírovala.</string>
+    <string name="contact_support_close">Zavrieť</string>
+</resources>

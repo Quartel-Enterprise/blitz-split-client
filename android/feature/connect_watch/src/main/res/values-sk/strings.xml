@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Pripojiť hodinky</string>
+    <string name="connect_watch_close">Zavrieť</string>
+    <string name="connect_watch_body">Zadaj kód, ktorý zobrazujú tvoje hodinky. Prihlásia sa do tvojho účtu a potom sa synchronizujú samy.</string>
+    <string name="connect_watch_code_label">Kód hodiniek</string>
+    <string name="connect_watch_error_invalid">Nesprávny alebo vypršaný kód. Získaj nový na hodinkách.</string>
+    <string name="connect_watch_error_too_many">Príliš veľa nesprávnych kódov. Počkaj pár minút a skús znova.</string>
+    <string name="connect_watch_error_needs_account">Najprv pripoj účet: tvoje údaje sú len v tomto zariadení.</string>
+    <string name="connect_watch_error_failed">Hodinky sa nepodarilo pripojiť. Skús znova.</string>
+    <string name="connect_watch_offline">Pripojenie hodiniek vyžaduje internet.</string>
+    <string name="connect_watch_own_watch_only">Zadaj len kód zobrazený na tvojich vlastných hodinkách: kto má tie hodinky, dostane sa do tvojho účtu.</string>
+    <string name="connect_watch_validity">Kód platí 5 minút a len raz.</string>
+    <string name="connect_watch_button">Pripojiť</string>
+    <string name="connect_watch_connected_title">Hodinky pripojené</string>
+    <string name="connect_watch_connected_body">Vidia tvoje skupiny a synchronizujú sa samy. Ak ich chceš odpojiť, odhlás sa na hodinkách.</string>
+</resources>
