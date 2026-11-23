@@ -1,0 +1,48 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "ios",
+        "mac"
+      ],
+      "text": {
+        "en": "On iPhone, iPad and Mac, dates in Thai and Persian now show the Gregorian year, as on Android and the web, whatever calendar the device uses.",
+        "pt": "No iPhone, iPad e Mac, as datas em tailandês e persa agora mostram o ano gregoriano, como no Android e na web, seja qual for o calendário do aparelho.",
+        "pt-PT": "No iPhone, iPad e Mac, as datas em tailandês e persa mostram agora o ano gregoriano, como no Android e na web, seja qual for o calendário do dispositivo.",
+        "es": "En iPhone, iPad y Mac, las fechas en tailandés y persa ahora muestran el año gregoriano, como en Android y la web, sea cual sea el calendario del dispositivo.",
+        "fr": "Sur iPhone, iPad et Mac, les dates en thaï et en persan affichent désormais l’année grégorienne, comme sur Android et le web, quel que soit le calendrier de l’appareil.",
+        "de": "Auf iPhone, iPad und Mac zeigen Daten auf Thailändisch und Persisch jetzt das gregorianische Jahr, wie auf Android und im Web, egal welchen Kalender das Gerät nutzt.",
+        "it": "Su iPhone, iPad e Mac, le date in thailandese e persiano ora mostrano l’anno gregoriano, come su Android e sul web, qualunque sia il calendario del dispositivo.",
+        "pl": "Na iPhonie, iPadzie i Macu daty po tajsku i persku pokazują teraz rok gregoriański, jak na Androidzie i w sieci, niezależnie od kalendarza urządzenia.",
+        "nl": "Op iPhone, iPad en Mac tonen datums in het Thai en Perzisch nu het gregoriaanse jaar, zoals op Android en het web, welke kalender het toestel ook gebruikt.",
+        "ja": "iPhone、iPad、Macで、タイ語とペルシア語の日付が端末のカレンダーにかかわらず、AndroidやWebと同じく西暦で表示されるようになりました。",
+        "tr": "iPhone, iPad ve Mac'te Tayca ve Farsça tarihler artık cihazın takvimi ne olursa olsun Android ve web'deki gibi Miladi yılı gösteriyor.",
+        "id": "Di iPhone, iPad, dan Mac, tanggal dalam bahasa Thai dan Persia kini menampilkan tahun Masehi, seperti di Android dan web, apa pun kalender perangkatnya.",
+        "ru": "На iPhone, iPad и Mac даты на тайском и персидском теперь показывают григорианский год, как на Android и в вебе, какой бы календарь ни стоял на устройстве.",
+        "uk": "На iPhone, iPad і Mac дати тайською та перською тепер показують григоріанський рік, як на Android і у вебі, хоч який календар на пристрої.",
+        "ko": "iPhone, iPad, Mac에서 태국어와 페르시아어 날짜가 기기의 달력과 관계없이 Android와 웹처럼 서기 연도로 표시돼요.",
+        "hi": "iPhone, iPad और Mac पर थाई और फ़ारसी में तारीखें अब डिवाइस का कैलेंडर कुछ भी हो, Android और वेब की तरह ग्रेगोरियन वर्ष दिखाती हैं।",
+        "ar": "على iPhone وiPad وMac، تعرض التواريخ بالتايلاندية والفارسية الآن السنة الميلادية، كما على Android والويب، أيًا كان تقويم الجهاز.",
+        "zh": "在 iPhone、iPad 和 Mac 上，泰语和波斯语的日期现在显示公历年份，与 Android 和网页版一致，无论设备使用哪种日历。",
+        "he": "ב-iPhone, ב-iPad וב-Mac, תאריכים בתאית ובפרסית מציגים עכשיו את השנה הגרגוריאנית, כמו ב-Android ובאינטרנט, בכל לוח שנה של המכשיר.",
+        "th": "บน iPhone, iPad และ Mac วันที่ในภาษาไทยและเปอร์เซียจะแสดงปีคริสต์ศักราชแล้ว เหมือนบน Android และเว็บ ไม่ว่าอุปกรณ์จะใช้ปฏิทินแบบใด",
+        "vi": "Trên iPhone, iPad và Mac, ngày tháng bằng tiếng Thái và tiếng Ba Tư giờ hiển thị năm dương lịch, như trên Android và web, dù thiết bị dùng lịch nào.",
+        "zh-Hant": "在 iPhone、iPad 和 Mac 上，泰文和波斯文的日期現在顯示西元年份，與 Android 和網頁版一致，不論裝置使用哪種日曆。",
+        "sv": "På iPhone, iPad och Mac visar datum på thailändska och persiska nu det gregorianska året, som på Android och webben, oavsett enhetens kalender.",
+        "cs": "Na iPhonu, iPadu a Macu teď data v thajštině a perštině ukazují gregoriánský rok, jako na Androidu a na webu, ať zařízení používá jakýkoli kalendář.",
+        "ro": "Pe iPhone, iPad și Mac, datele în thailandeză și persană arată acum anul gregorian, ca pe Android și pe web, indiferent de calendarul dispozitivului.",
+        "bn": "iPhone, iPad ও Mac-এ থাই ও ফারসিতে তারিখ এখন ডিভাইসের ক্যালেন্ডার যা-ই হোক, Android ও ওয়েবের মতো গ্রেগরীয় বছর দেখায়।",
+        "ms": "Pada iPhone, iPad dan Mac, tarikh dalam bahasa Thai dan Parsi kini memaparkan tahun Masihi, seperti pada Android dan web, apa pun kalendar peranti.",
+        "el": "Σε iPhone, iPad και Mac, οι ημερομηνίες στα ταϊλανδικά και τα περσικά δείχνουν πλέον το γρηγοριανό έτος, όπως σε Android και web, όποιο ημερολόγιο κι αν έχει η συσκευή.",
+        "hr": "Na iPhoneu, iPadu i Macu datumi na tajlandskom i perzijskom sad prikazuju gregorijansku godinu, kao na Androidu i webu, bez obzira na kalendar uređaja.",
+        "hu": "iPhone-on, iPaden és Macen a thai és perzsa dátumok mostantól a Gergely-naptári évet mutatják, mint Androidon és a weben, bármilyen naptárat használ az eszköz.",
+        "ur": "iPhone، iPad اور Mac پر تھائی اور فارسی میں تاریخیں اب ڈیوائس کا کیلنڈر کچھ بھی ہو، Android اور ویب کی طرح عیسوی سال دکھاتی ہیں۔",
+        "fil": "Sa iPhone, iPad at Mac, ipinapakita na ng mga petsa sa Thai at Persian ang taong Gregorian, gaya sa Android at web, anuman ang kalendaryo ng device.",
+        "sr": "Na iPhoneu, iPadu i Macu datumi na tajlandskom i persijskom sada prikazuju gregorijansku godinu, kao na Androidu i vebu, bez obzira na kalendar uređaja.",
+        "sk": "Na iPhone, iPade a Macu teraz dátumy v thajčine a perzštine ukazujú gregoriánsky rok, ako na Androide a na webe, nech zariadenie používa akýkoľvek kalendár.",
+        "fa": "در iPhone، iPad و Mac، تاریخ‌ها به تایلندی و فارسی حالا سال میلادی را نشان می‌دهند، مثل Android و وب، با هر تقویمی که دستگاه داشته باشد."
+      }
+    }
+  ]
+}
