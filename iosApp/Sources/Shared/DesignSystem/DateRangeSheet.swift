@@ -20,6 +20,7 @@ struct DateRangeSheet: View {
                 DatePicker("From", selection: $start, in: ...Date.now, displayedComponents: .date)
                 DatePicker("To", selection: $end, in: ...Date.now, displayedComponents: .date)
             }
+            .appCalendar()
             .formStyle(.grouped)
             .navigationTitle("Pick dates")
             #if os(iOS)

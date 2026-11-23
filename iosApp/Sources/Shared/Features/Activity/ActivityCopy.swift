@@ -254,7 +254,7 @@ enum ActivityCopy {
         case .today: String(localized: "Today", bundle: .appLanguage)
         case .yesterday: String(localized: "Yesterday", bundle: .appLanguage)
         default: ExpenseFormat.date(of: day.dayStartMillis)
-            .formatted(.dateTime.weekday(.wide).day().month(.wide).locale(AppNumbers.locale))
+            .formatted(.dateTime.weekday(.wide).day().month(.wide).appLocale())
         }
     }
 
@@ -487,7 +487,7 @@ enum ActivityCopy {
     static func deleted(_ deletion: ActivityDeletion) -> String {
         let subject = deletion.subject ?? "—"
         let date = deletion.atMillis.map {
-            ExpenseFormat.date(of: $0.int64Value).formatted(.dateTime.day().month(.wide).locale(AppNumbers.locale))
+            ExpenseFormat.date(of: $0.int64Value).formatted(.dateTime.day().month(.wide).appLocale())
         }
         let who: String? = deletion.byMe ? String(localized: "You, who did it", bundle: .appLanguage, comment: "The user as the one who did something, before its verb") : deletion.byName
         let first: String = if let who, let date {

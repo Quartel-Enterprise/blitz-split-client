@@ -38,8 +38,23 @@ enum RightToLeft {
 }
 
 /// The locale amounts, numbers and dates are written in: the device's, with Latin digits (0-9) in Arabic, Bengali, Urdu and
-/// Persian, so an amount reads as the amount fields type and parse it.
+/// Persian, so an amount reads as the amount fields type and parse it, and the calendar dates are written in.
 enum AppNumbers {
+    private static let gregorianCodes: Set = ["fa", "th"]
+
+    /// The device's calendar, but the Gregorian one in Persian and Thai, whose devices default to the Solar Hijri
+    /// calendar (1405 for 2026) and the Buddhist era (2569): a group is shared across platforms, so an iPhone shows the
+    /// year Android and the web show (Pierre's call).
+    static var calendar: Calendar {
+        guard let code = Locale.autoupdatingCurrent.language.languageCode?.identifier, gregorianCodes.contains(code)
+        else { return .autoupdatingCurrent }
+        var gregorian = Calendar(identifier: .gregorian)
+        gregorian.locale = locale
+        gregorian.timeZone = .autoupdatingCurrent
+        gregorian.firstWeekday = Calendar.autoupdatingCurrent.firstWeekday
+        return gregorian
+    }
+
     /// The device's locale, on Latin digits when it would write Arabic, Bengali, Urdu or Persian ones.
     static var locale: Locale { latin(.autoupdatingCurrent) }
 
@@ -52,5 +67,31 @@ enum AppNumbers {
         var components = Locale.Components(locale: base)
         components.numberingSystem = Locale.NumberingSystem("latn")
         return Locale(components: components)
+    }
+}
+
+extension Date.FormatStyle {
+    /// In the app's locale (`AppNumbers.locale`) and calendar (`AppNumbers.calendar`): 0-9, and the Gregorian year in
+    /// Persian and Thai.
+    func appLocale() -> Date.FormatStyle {
+        var style = locale(AppNumbers.locale)
+        style.calendar = AppNumbers.calendar
+        return style
+    }
+}
+
+extension Date.IntervalFormatStyle {
+    /// In the app's locale and calendar, as `Date.FormatStyle.appLocale()`.
+    func appLocale() -> Date.IntervalFormatStyle {
+        var style = locale(AppNumbers.locale)
+        style.calendar = AppNumbers.calendar
+        return style
+    }
+}
+
+extension View {
+    /// A date picker in the app's calendar: the Gregorian one in Persian and Thai, as every date the app writes.
+    func appCalendar() -> some View {
+        environment(\.calendar, AppNumbers.calendar)
     }
 }
