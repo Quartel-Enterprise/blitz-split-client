@@ -11,8 +11,9 @@ class GroupCurrency private constructor(
     private val regions: Set<String>,
     /*
      * Why: the digits of the minor unit, as ISO 4217 has them, so an amount is stored as a whole number of it. The
-     * rupiah, the New Taiwan dollar, the forint, the Costa Rican colón and the Cuban peso are the exceptions: ISO gives
-     * each 2, but no price or receipt in Indonesia, Taiwan, Hungary, Costa Rica or Cuba shows cents, so they have none.
+     * rupiah, the New Taiwan dollar, the forint, the Costa Rican colón, the Cuban peso and the Tanzanian shilling are the
+     * exceptions: ISO gives each 2, but no price or receipt in Indonesia, Taiwan, Hungary, Costa Rica, Cuba or Tanzania
+     * shows cents, so they have none.
      */
     val fractionDigits: Int = 2,
     // Why: "Criptomoedas" in the picker, and shown with only the decimals an amount needs.
@@ -135,7 +136,6 @@ class GroupCurrency private constructor(
         val RSD = GroupCurrency("RSD", setOf("RS"))
         val KES = GroupCurrency("KES", setOf("KE"))
 
-        // Why: ISO gives it 2 decimals, but no price or receipt in Tanzania shows senti.
         val TZS = GroupCurrency("TZS", setOf("TZ"), fractionDigits = 0)
 
         // Why: 8 decimals, a satoshi each, which typing or reading "Bitcoin em satoshis" shows as whole sats.

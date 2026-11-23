@@ -38,7 +38,7 @@ private const val HUNGARIAN = "hu"
 private const val FILIPINO = "fil"
 private const val LEGACY_TAGALOG = "tl"
 private const val SWAHILI = "sw"
-private val swahiliThirdPersonPast = Regex("""^a(?=(?:me|li)\S)""")
+private val swahiliThirdPersonPrefix = Regex("""^a(?=(?:me|li)\S)""")
 private val hungarianFirstWord = Regex("""^[^\s,:]+""")
 private val hungarianDefinitePast = Regex("""t[ae]$""")
 private val hungarianIndefinitePast = mapOf(
@@ -182,7 +182,7 @@ fun toSecondPerson(
 
     HUNGARIAN -> hungarianFirstWord.replace(verb) { match -> toHungarianSecondPerson(match.value) }
 
-    SWAHILI -> swahiliThirdPersonPast.replace(verb, "u")
+    SWAHILI -> swahiliThirdPersonPrefix.replace(verb, "u")
 
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
@@ -265,7 +265,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * smazal(a)…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
- * would need "ni" for a name and "mo" for the user. Swahili says "Wewe umefuta…", with its verb rule.
+ * would need "ni" for a name and "mo" for the user. Swahili says "Wewe ulifuta…", with its verb rule.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

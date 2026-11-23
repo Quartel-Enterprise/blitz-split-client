@@ -76,10 +76,10 @@
     <string name="activity_detail_charge">%s · ujumbe umetumwa</string>
     <string name="activity_detail_comment">“%s”</string>
     <string name="activity_detail_change">%1$s %2$s → %3$s</string>
-    <string name="activity_deleted_notice_bill">%2$s amefuta %1$s mnamo %3$s. Rekodi inabaki kwenye orodha, lakini gharama haifunguki tena.</string>
-    <string name="activity_deleted_notice_group">%2$s amefuta %1$s mnamo %3$s. Rekodi inabaki kwenye orodha, lakini kikundi hakifunguki tena.</string>
+    <string name="activity_deleted_notice_bill">%2$s alifuta %1$s tarehe %3$s. Rekodi inabaki kwenye orodha, lakini gharama haifunguki tena.</string>
+    <string name="activity_deleted_notice_group">%2$s alifuta %1$s tarehe %3$s. Rekodi inabaki kwenye orodha, lakini kikundi hakifunguki tena.</string>
     <string name="activity_deleted_notice_bill_unknown">%s imefutwa. Rekodi inabaki kwenye orodha, lakini gharama haifunguki tena.</string>
-    <string name="activity_deleted_notice_group_unknown">%s imefutwa. Rekodi inabaki kwenye orodha, lakini kikundi hakifunguki tena.</string>
+    <string name="activity_deleted_notice_group_unknown">%s kimefutwa. Rekodi inabaki kwenye orodha, lakini kikundi hakifunguki tena.</string>
     <string name="activity_this_bill">Gharama hii</string>
     <string name="activity_this_group">Kikundi hiki</string>
     <string name="activity_you_lowercase">wewe</string>

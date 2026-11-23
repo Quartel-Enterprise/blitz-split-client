@@ -81,7 +81,9 @@ enum SecondPerson {
     /// subject word ("내가") holds its own particle, so "님이 나눴어요" → "나눴어요". Hindi: the same with "ने", the user's
     /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Greek: the aorist takes an "ς", so "μοίρασε" → "μοίρασες".
     /// Hungarian: the past the phrase starts with takes a "d" in "-ta"/"-te" ("létrehozta" → "létrehoztad"), or its
-    /// listed second person ("felosztott" → "felosztottál"). Another language keeps the verb as it is.
+    /// listed second person ("felosztott" → "felosztottál"). Swahili: the third person's "a" of the perfect or past the
+/// phrase starts with turns into "u", so "amegawanya" → "umegawanya", "alifuta" → "ulifuta". Another language keeps
+/// the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
