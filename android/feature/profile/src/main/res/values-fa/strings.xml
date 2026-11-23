@@ -98,6 +98,7 @@
     <string name="profile_language_swahili">سواحیلی</string>
     <string name="profile_language_catalan">کاتالان</string>
     <string name="profile_language_danish">دانمارکی</string>
+    <string name="profile_language_finnish">فنلاندی</string>
     <string name="profile_language_system_detail">زبان دستگاه</string>
     <string name="profile_notifications">اعلان‌ها</string>
     <plurals name="profile_notifications_active">

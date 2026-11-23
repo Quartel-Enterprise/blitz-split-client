@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Ei termejä</string>
+    <string name="category_map_title">Luokkakartta</string>
+    <string name="category_map_search">Hae termejä</string>
+    <string name="category_map_add">Lisää termi</string>
+    <string name="category_map_more">Lisää vaihtoehtoja</string>
+    <string name="category_map_restore">Palauta oletus</string>
+    <string name="category_map_back">Takaisin</string>
+    <string name="category_map_intro">Kun kulun nimessä on jokin näistä sanoista, sen luokka valitaan itsestään. ”Uber kotiin” saa luokan Liikenne.</string>
+    <string name="category_map_intro_offline">Kartta toimii offline-tilassa: muutokset tulevat voimaan heti tällä laitteella ja siirtyvät muille laitteillesi, kun olet taas verkossa.</string>
+    <string name="category_map_device_only">Karttasi pysyy vain tällä laitteella. Jos haluat sen muillekin laitteillesi, kirjaudu sisään Googlella tai Applella Profiilissa.</string>
+    <string name="category_map_open_profile">Avaa Profiili</string>
+    <string name="category_map_longest_wins">Kun kaksi termiä sopii nimeen, pisin voittaa.</string>
+    <string name="category_map_no_result">Ei termejä haulla ”%1$s”</string>
+    <string name="category_map_no_result_body">Lisää se, niin kulut, joiden nimessä on tämä sana, saavat oikean luokan.</string>
+    <string name="category_map_add_query">Lisää ”%1$s”</string>
+    <string name="category_map_empty_title">Karttasi on tyhjä</string>
+    <string name="category_map_empty_body">Ilman termejä luokkaa ei päätellä nimestä: valitset sen itse jokaiselle kululle.</string>
+    <string name="category_map_group_category"> · luokka ryhmässä %1$s</string>
+    <string name="category_map_only_main">Vain %1$s</string>
+    <string name="category_map_only_in_group">vain ryhmässä %1$s</string>
+    <string name="category_map_no_terms_yet">Ei vielä termejä.</string>
+    <string name="category_map_add_in">Lisää termi luokkaan %1$s</string>
+    <string name="category_map_tip">Napauta termiä vaihtaaksesi sen luokan tai poistaaksesi sen. Termi vastaa koko sanaa, eikä aksenteilla tai kirjainkoolla ole väliä.</string>
+    <string name="category_map_queued">jonossa</string>
+    <string name="category_map_term_action">%1$s, %2$s. Muokkaa</string>
+    <string name="category_map_new_term">Uusi termi</string>
+    <string name="category_map_edit_term">Muokkaa termiä</string>
+    <string name="category_map_term_label">Sana tai ilmaus</string>
+    <string name="category_map_term_help">Vastaa koko sanaa, aksenteista ja kirjainkoosta riippumatta.</string>
+    <string name="category_map_term_help_app">Sovelluksen termi. Palauta oletus tuo sen takaisin alkuperäisenä.</string>
+    <string name="category_map_term_duplicate">”%1$s” valitsee jo luokan %2$s. Jokaisella termillä on yksi luokka.</string>
+    <string name="category_map_term_too_short">Käytä vähintään 2 kirjainta.</string>
+    <string name="category_map_term_too_long">Käytä enintään 30 kirjainta.</string>
+    <string name="category_map_term_invalid">Käytä vain kirjaimia, numeroita ja välilyöntejä.</string>
+    <string name="category_map_category">Luokka</string>
+    <string name="category_map_category_help">Se voi olla luokka tai alaluokka.</string>
+    <string name="category_map_category_help_edit">Kun muutat sen tässä, termi siirtyy toiseen luokkaan.</string>
+    <string name="category_map_category_help_move">Siirto poistaa termin luokasta %1$s.</string>
+    <string name="category_map_example">Esimerkki</string>
+    <string name="category_map_example_move">Jos siirretään</string>
+    <string name="category_map_remove">Poista</string>
+    <string name="category_map_cancel">Peruuta</string>
+    <string name="category_map_save">Tallenna</string>
+    <string name="category_map_move_to">Siirrä luokkaan %1$s</string>
+    <string name="category_map_removed">”%1$s” poistettiin kartasta</string>
+    <string name="category_map_undo">Kumoa</string>
+    <string name="category_map_restore_title">Palautetaanko oletuskartta?</string>
+    <string name="category_map_restore_body">Sovelluksen 60 termiä palaavat alkuperäisinä, myös ne, jotka poistit tai siirsit.</string>
+    <string name="category_map_restore_own_one">Luomasi termi ”%1$s” säilyy.</string>
+    <string name="category_map_restore_confirm">Palauta</string>
+    <string name="category_map_save_error">Kartan tallentaminen epäonnistui. Yritä uudelleen.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d termi</item>
+        <item quantity="other">%d termiä</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d alaluokka</item>
+        <item quantity="other">%d alaluokkaa</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d termi haulla ”%2$s”</item>
+        <item quantity="other">%1$d termiä haulla ”%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Offline-tilassa · %d muutos jonossa</item>
+        <item quantity="other">Offline-tilassa · %d muutosta jonossa</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Luomasi %d termi säilyy.</item>
+        <item quantity="other">Luomasi %d termiä säilyy.</item>
+    </plurals>
+    <string name="category_map_new_category">Uusi luokka</string>
+    <string name="category_map_new_subcategory_in">Uusi alaluokka luokkaan %s</string>
+    <string name="category_map_edit_category">Muokkaa luokkaa %s</string>
+    <string name="category_map_category_group">Ryhmä</string>
+    <string name="category_map_change_color">Vaihda luokan %1$s väri</string>
+    <string name="category_map_restore_color">Palauta väri</string>
+    <string name="category_map_color_done">Valmis</string>
+</resources>

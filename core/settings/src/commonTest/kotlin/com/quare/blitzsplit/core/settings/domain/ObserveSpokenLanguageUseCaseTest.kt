@@ -150,6 +150,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.SWAHILI,
                 AppLanguage.CATALAN,
                 AppLanguage.DANISH,
+                AppLanguage.FINNISH,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -202,6 +203,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "sw",
                     "ca",
                     "da",
+                    "fi",
                     "zh-Hant",
                 ),
                 spoken,
@@ -269,6 +271,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "sw",
             "ca",
             "da",
+            "fi",
             "zh-Hant",
         )
 
@@ -330,6 +333,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "sw-KE",
                 "ca-ES",
                 "da-DK",
+                "fi-FI",
                 "zh-TW",
             )
 
@@ -384,6 +388,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "sw",
                     "ca",
                     "da",
+                    "fi",
                     "zh-Hant",
                 ),
                 spoken,

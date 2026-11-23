@@ -167,5 +167,19 @@ internal object LaterSampleTripCopies {
             court = "Baneleje",
             items = listOf("Pizza margherita", "Burrata", "Risotto med svampe", "Tiramisu", "Prosecco", "Espresso"),
         ),
+        "fi" to SampleTripCopy(
+            groupName = "Lissabonin matka",
+            people = listOf("Aino", "Eetu", "Helmi", "Onni", "Venla"),
+            dinner = "Illallinen trattoriassa",
+            apartment = "Asunto Alfamassa",
+            groceries = "Ruokaostokset",
+            carRental = "Vuokra-auto",
+            boatTour = "Veneretki",
+            taxi = "Taksi lentokentältä",
+            roommates = "Kämppikset",
+            soccer = "Perjantaifutis",
+            court = "Kentän vuokra",
+            items = listOf("Pizza margherita", "Burrata", "Sienirisotto", "Tiramisu", "Prosecco", "Espresso"),
+        ),
     )
 }

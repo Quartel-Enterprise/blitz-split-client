@@ -125,7 +125,11 @@ The feed, unread state, real time and push notifications.
     நீக்கினீர்கள்: …", `youSubjectLanguages`), and "You" is "நீங்கள்" everywhere.
     Norwegian verbs don't change with the person, as Swedish's ("Ana delte…", "Du delte…"), its notice starting with
     who deleted it too ("Du slettet…", `youSubjectLanguages`). Danish follows the same rule ("Ana delte…", "Du
-    delte…", "Du slettede…").
+    delte…", "Du slettede…"). Finnish swaps its perfect's auxiliary as Romanian does: every Finnish verb phrase
+    starts with "on", which the user's rows turn into "olet" ("Ana on jakanut kulun…", "Sinä olet jakanut kulun…"),
+    the bill's history rows too, and the deleted-item notice starts with who deleted it ("Sinä olet poistanut…",
+    `youSubjectLanguages`). A name is never inflected: it stands after a noun that carries the case ("on lisännyt
+    jäsenen Ana").
     Telugu needs no rule: its respectful
     past "-ారు" is the same for a name and for "మీరు" ("Ana ఒక ఖర్చును పంచారు: డిన్నర్", "మీరు ఒక ఖర్చును పంచారు: డిన్నర్"),
     and the object after a colon keeps every name free of case endings, as Tamil's. Its deleted-item notice starts with

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Millä nimellä ystäväsi kutsuvat sinua?</string>
+    <string name="profile_setup_subtitle">Ryhmäsi ja kaikki, joilla on profiililinkkisi, näkevät nimesi.</string>
+    <string name="profile_setup_avatar_color">Avatarin väri</string>
+    <string name="profile_setup_add_photo">Lisää kuva</string>
+    <string name="profile_setup_photo_error">Tätä kuvaa ei voitu käyttää. Kokeile toista.</string>
+    <string name="profile_setup_name_label">Nimesi</string>
+    <string name="profile_setup_name_placeholder">Matti Meikäläinen</string>
+    <string name="profile_setup_name_too_short">Kirjoita vähintään %d kirjainta.</string>
+    <string name="profile_setup_name_too_long">Käytä enintään %d merkkiä.</string>
+    <string name="profile_setup_name_hint">Voit muuttaa sitä myöhemmin Profiilissa.</string>
+    <string name="profile_setup_saved_locally">Tallennettu toistaiseksi vain tälle laitteelle.</string>
+    <string name="profile_setup_continue">Jatka</string>
+</resources>

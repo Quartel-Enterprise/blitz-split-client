@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Kutsulinkki</string>
+    <string name="members_link_pending">Ei vielä luotu</string>
+    <string name="members_share">Jaa</string>
+    <string name="members_me">%s (sinä)</string>
+    <string name="members_status_this_device">Tämä laite</string>
+    <string name="members_status_joined">Liittynyt</string>
+    <string name="members_status_not_joined">Ei ole vielä liittynyt</string>
+    <string name="members_options">Jäsenen %s valinnat</string>
+    <string name="members_rename">Nimeä uudelleen</string>
+    <string name="members_personal_invite">Henkilökohtainen kutsu jäsenelle %s</string>
+    <string name="members_personal_message">Linkin avaaja liittyy suoraan nimellä %s valitsematta listasta. Linkki toimii kerran.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Linkin avaaja liittyy suoraan nimellä %1$s valitsematta listasta ja näkee heti osuutensa (%2$s) tähän mennessä lisätyssä kulussa. Linkki toimii kerran.</item>
+        <item quantity="other">Linkin avaaja liittyy suoraan nimellä %1$s valitsematta listasta ja näkee heti osuutensa (%2$s) tähän mennessä lisätyissä kuluissa (%3$d). Linkki toimii kerran.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopioi linkki</string>
+    <string name="members_personal_copied">Kopioitu</string>
+    <string name="members_personal_share">Jaa jäsenelle %s</string>
+    <string name="members_personal_share_message">Liity ryhmään %1$s nimellä %2$s sovelluksessa Blitz Split: %3$s</string>
+    <string name="members_remove">Poista ryhmästä</string>
+    <string name="members_remove_joined">%s on jo liittynyt ryhmään</string>
+    <string name="members_remove_title">Poistetaanko jäsen %s ryhmästä?</string>
+    <string name="members_remove_message">%s ei ole vielä liittynyt. Voit lisätä hänet myöhemmin uudelleen.</string>
+    <string name="members_remove_confirm">Poista</string>
+    <string name="members_release">Vapauta nimi</string>
+    <string name="members_release_title">Vapautetaanko nimi %s?</string>
+    <string name="members_release_message">Nimellä %1$s liittynyt henkilö poistuu ryhmästä. Nimi %1$s, sen väri ja kulut säilyvät, ja nimen %1$s voi valita uudelleen ryhmän linkin kautta.</string>
+    <string name="members_release_confirm">Vapauta</string>
+    <string name="members_release_error">Nimen vapauttaminen epäonnistui. Tarkista yhteys ja yritä uudelleen.</string>
+    <string name="members_add">Lisää henkilö</string>
+    <string name="members_invite_instead">Onko hänellä sovellus? Kutsu linkillä</string>
+    <string name="members_name_label">Nimi</string>
+    <string name="members_save">Tallenna</string>
+    <string name="members_cancel">Peruuta</string>
+    <string name="members_change_error">Muutoksen tallentaminen epäonnistui. Yritä uudelleen.</string>
+    <string name="members_remove_open_balance">Jäsenellä %s on avoin saldo</string>
+    <string name="members_balance_to_get_back">Saatavaa %s</string>
+    <string name="members_balance_owes">Velkaa %s</string>
+    <string name="members_balance_settled">Tasattu</string>
+</resources>

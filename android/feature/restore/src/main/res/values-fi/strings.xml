@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Palauta ryhmäsi</string>
+    <string name="restore_subtitle">Kirjauduitko aiemmin tilillä? Kirjaudu vain uudelleen. Jos et, käytä palautuskoodia tai vanhan laitteesi QR-koodia.</string>
+    <string name="restore_no_connection_title">Ei yhteyttä</string>
+    <string name="restore_no_connection_body">Kirjautuminen tilillä tai koodilla vaatii internetyhteyden ryhmiesi lataamiseen. Kirjoittamasi tiedot säilyvät.</string>
+    <string name="restore_code_label">Tai käytä palautuskoodia</string>
+    <string name="restore_code_hint">12 sanaa järjestyksessä. Liitä ne kaikki yhteen kenttään, niin kaikki kentät täyttyvät.</string>
+    <string name="restore_scan_qr_title">Skannaa vanhan laitteesi QR-koodi</string>
+    <string name="restore_scan_qr_body">Siellä: Profiili › Palautus › Näytä QR-koodi</string>
+    <string name="restore_recover">Palauta</string>
+    <string name="restore_try_again">Yritä uudelleen</string>
+    <string name="restore_start_fresh">Aloita alusta tällä laitteella</string>
+    <string name="restore_error_invalid_code">Koodia ei löytynyt. Tarkista sanat ja niiden järjestys ja yritä uudelleen.</string>
+    <string name="restore_error_too_many_attempts">Liian monta yritystä. Odota muutama minuutti ja yritä uudelleen.</string>
+    <string name="restore_error_sign_in_failed">Kirjautuminen ei onnistunut juuri nyt. Yritä uudelleen.</string>
+    <string name="restore_error_unknown">Jokin meni vikaan. Yritä uudelleen.</string>
+</resources>

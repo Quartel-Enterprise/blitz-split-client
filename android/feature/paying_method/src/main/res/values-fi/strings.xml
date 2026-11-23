@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Uusi maksutapa</string>
+    <string name="paying_method_edit_title">Muokkaa maksutapaa</string>
+    <string name="paying_method_type">Tyyppi</string>
+    <string name="paying_method_name">Nimi</string>
+    <string name="paying_method_name_optional">Nimi (valinnainen)</string>
+    <string name="paying_method_color">Väri</string>
+    <string name="paying_method_default">Oletusmaksutapa</string>
+    <string name="paying_method_default_hint">Uudet maksamasi kulut alkavat tällä maksutavalla.</string>
+    <string name="paying_method_delete">Poista maksutapa</string>
+    <string name="paying_method_delete_title">Poistetaanko tämä maksutapa?</string>
+    <string name="paying_method_delete_body">Kulut, joihin merkitsit sen, eivät enää näytä sitä.</string>
+    <string name="paying_method_delete_confirm">Poista</string>
+    <string name="paying_method_save">Tallenna</string>
+</resources>

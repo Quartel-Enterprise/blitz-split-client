@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldot</string>
+    <string name="global_balances_profile">Profiili</string>
+    <string name="global_balances_offline">Offline-tilassa · tämän laitteen saldot</string>
+    <string name="global_balances_filter">Näytä</string>
+    <string name="global_balances_filter_all">Kaikki</string>
+    <string name="global_balances_filter_you_owe">Olet velkaa</string>
+    <string name="global_balances_filter_owes_you">Velkaa sinulle</string>
+    <string name="global_balances_hint">Ryhmien väliset velat on jo kuitattu: kukin henkilö näkyy kerran.</string>
+    <string name="global_balances_hint_empty">Lasketaan yhteen kaikki tämän laitteen ryhmät.</string>
+    <string name="global_balances_section_you_owe">Olet velkaa · %d</string>
+    <string name="global_balances_section_owes_you">Velkaa sinulle · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d ryhmä</item>
+        <item quantity="other">%d ryhmää</item>
+    </plurals>
+    <string name="global_balances_guest">%s · vieras</string>
+    <string name="global_balances_you_owe">olet velkaa</string>
+    <string name="global_balances_owes_you">on sinulle velkaa</string>
+    <string name="global_balances_by_group_show">Näytä henkilön %s saldo ryhmittäin</string>
+    <string name="global_balances_by_group_hide">Piilota henkilön %s saldo ryhmittäin</string>
+    <string name="global_balances_received">Vastaanotettu</string>
+    <string name="global_balances_received_from">Maksu vastaanotettu henkilöltä %s</string>
+    <string name="global_balances_settle">Tasaa</string>
+    <string name="global_balances_settle_with">Tasaa henkilön %s kanssa</string>
+    <string name="global_balances_charge">Pyydä maksua</string>
+    <string name="global_balances_charge_person">Pyydä maksua henkilöltä %s</string>
+    <string name="global_balances_detail_pane">Saldo henkilön %s kanssa</string>
+    <string name="global_balances_detail_owes_you">%s on sinulle velkaa</string>
+    <string name="global_balances_detail_you_owe">Olet velkaa henkilölle %s</string>
+    <string name="global_balances_detail_guest">%s · vieras ilman sovellusta</string>
+    <string name="global_balances_detail_note_owed">Nettosaldossa ryhmät on jo kuitattu keskenään: Pyydä maksua ja Vastaanotettu käyttävät summaa %s. Sovellus kirjaa maksun kuhunkin ryhmään.</string>
+    <string name="global_balances_detail_note_settle">Nettosaldossa ryhmät on jo kuitattu keskenään: Tasaa käyttää summaa %s. Sovellus kirjaa maksun kuhunkin ryhmään.</string>
+    <string name="global_balances_detail_note_single">Vain yksi avoin ryhmä henkilön %s kanssa.</string>
+    <string name="global_balances_settled_title">Kaikki tasattu</string>
+    <string name="global_balances_settled_body">Kukaan ei ole sinulle velkaa, etkä sinä ole velkaa kenellekään. Kun joku lisää kulun, saldo näkyy täällä.</string>
+    <string name="global_balances_settled_action">Näytä ryhmät</string>
+    <string name="global_balances_nothing_to_pay_title">Et ole velkaa mitään</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Olet tasannut kaikkien kanssa. Sinulla on vielä saatavaa %2$s, velallisena %1$d henkilö.</item>
+        <item quantity="other">Olet tasannut kaikkien kanssa. Sinulla on vielä saatavaa %2$s, velallisina %1$d henkilöä.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Näytä, ketkä ovat sinulle velkaa</string>
+    <string name="global_balances_nothing_to_receive_title">Kukaan ei ole sinulle velkaa</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Olet vielä velkaa %2$s, velkojana %1$d henkilö.</item>
+        <item quantity="other">Olet vielä velkaa %2$s, velkojina %1$d henkilöä.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Näytä, kenelle olet velkaa</string>
+    <string name="global_balances_coming_soon">Tulossa pian</string>
+    <string name="global_balances_change_error">Muutoksen tallentaminen epäonnistui. Yritä uudelleen.</string>
+    <string name="global_balances_copied">Kopioitu</string>
+    <string name="global_balances_charge_title">Pyydä maksua henkilöltä %s</string>
+    <string name="global_balances_charge_owes">Velkaa sinulle %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Sulje</string>
+    <string name="global_balances_charge_guest">%s on vieras ilman sovellusta. Hän kuulee asiasta vain tästä viestistä, joten siinä kerrotaan jo, mitä kuluun sisältyi.</string>
+    <string name="global_balances_charge_message">Viesti</string>
+    <string name="global_balances_charge_pix">Liitä mukaan Pix-avaimeni</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Kopioi viesti</string>
+    <string name="global_balances_charge_send">Lähetä</string>
+    <string name="global_balances_message">Hei %1$s! Sovelluksen Blitz Split laskelman mukaan olet minulle velkaa %2$s %3$s.</string>
+    <string name="global_balances_message_guest">Hei %1$s! Olet minulle velkaa %2$s %3$s: osuutesi seuraavista: %4$s.</string>
+    <string name="global_balances_message_guest_paid">Hei %1$s! Olet minulle velkaa %2$s %3$s: osuutesi seuraavista: %4$s, kun jo maksamasi %5$s on vähennetty.</string>
+    <string name="global_balances_message_group">ryhmästä %s</string>
+    <string name="global_balances_message_groups">ryhmistä %s</string>
+    <string name="global_balances_message_pix">Pix (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Puhelin</string>
+    <string name="global_balances_key_email">Sähköposti</string>
+    <string name="global_balances_key_random">Satunnainen avain</string>
+    <string name="global_balances_message_reroute">Ryhmä %1$s on yksinkertaistanut velkansa, joten maksat suoraan minulle etkä henkilölle %2$s; kokonaissummasi ei muuttunut.</string>
+</resources>

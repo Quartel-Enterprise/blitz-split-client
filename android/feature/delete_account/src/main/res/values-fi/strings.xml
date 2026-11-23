@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Poista tili</string>
+    <string name="delete_account_offline_title">Ei internetyhteyttä.</string>
+    <string name="delete_account_offline_body">Tilin poistaminen vaatii internetyhteyden. Muodosta yhteys ja yritä uudelleen.</string>
+    <string name="delete_account_heading">Poistetaanko tilisi ja tietosi?</string>
+    <string name="delete_account_deleted_title">Mitä poistetaan</string>
+    <string name="delete_account_deleted_profile">Profiilisi (nimi, kuva ja väri)</string>
+    <string name="delete_account_deleted_keys">Pix- ja Bitcoin-avaimesi</string>
+    <string name="delete_account_deleted_provider">Yhteys tiliisi (%1$s)</string>
+    <string name="delete_account_deleted_recovery_code">Palautuskoodisi</string>
+    <string name="delete_account_deleted_device">Tietojesi kopio tällä laitteella</string>
+    <string name="delete_account_kept_title">Mitä ryhmiisi jää</string>
+    <string name="delete_account_kept_groups">Ryhmät kuluineen ja maksuineen muille jäsenille</string>
+    <string name="delete_account_kept_member">Nimesi kussakin ryhmässä jäsenenä ilman tiliä</string>
+    <string name="delete_account_kept_comments">Kommenttisi ja lisäämäsi kuvat nimelläsi</string>
+    <string name="delete_account_export">Vie tietoni ensin</string>
+    <string name="delete_account_confirm">Ymmärrän, ettei tätä voi kumota</string>
+    <string name="delete_account_delete">Poista tili</string>
+    <string name="delete_account_cancel">Peruuta</string>
+    <string name="delete_account_failed">Tilin poistaminen epäonnistui. Yritä uudelleen.</string>
+</resources>

@@ -48,7 +48,8 @@
         "mr": "ॲप आता डॅनिशमध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"Dansk\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
         "sw": "Programu sasa inazungumza Kideni: chagua \"Dansk\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
         "ca": "L’app ara parla danès: tria «Dansk» a Perfil › Idioma, o deixa que segueixi el teu dispositiu.",
-        "da": "Appen taler nu dansk: vælg »Dansk« i Profil › Sprog, eller lad den følge din enhed."
+        "da": "Appen taler nu dansk: vælg »Dansk« i Profil › Sprog, eller lad den følge din enhed.",
+        "fi": "Sovellus puhuu nyt tanskaa: valitse ”Dansk” kohdassa Profiili › Kieli tai anna sen seurata laitteesi kieltä."
       }
     },
     {
@@ -99,7 +100,8 @@
         "mr": "ग्रुप आता डॅनिश क्रोन (DKK) मध्ये खर्च वाटू शकतात, आणि डेन्मार्क, ग्रीनलँड किंवा फॅरो बेटांमध्ये तयार केलेला ग्रुप त्यातच सुरू होतो.",
         "sw": "Vikundi sasa vinaweza kugawanya kwa krone ya Denmaki (DKK), na kikundi kilichoundwa nchini Denmaki, Greenland au Visiwa vya Faroe kinaanza nayo.",
         "ca": "Els grups ara poden dividir en corona danesa (DKK), i un grup creat a Dinamarca, Groenlàndia o les illes Fèroe comença en aquesta moneda.",
-        "da": "Grupper kan nu dele i danske kroner (DKK), og en gruppe, der oprettes i Danmark, Grønland eller på Færøerne, starter i den valuta."
+        "da": "Grupper kan nu dele i danske kroner (DKK), og en gruppe, der oprettes i Danmark, Grønland eller på Færøerne, starter i den valuta.",
+        "fi": "Ryhmät voivat nyt jakaa kulut Tanskan kruunuina (DKK), ja Tanskassa, Grönlannissa tai Färsaarilla luotu ryhmä käyttää sitä alusta alkaen."
       }
     }
   ]

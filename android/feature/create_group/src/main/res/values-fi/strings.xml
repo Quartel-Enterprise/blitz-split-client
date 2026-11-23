@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Uusi ryhmä</string>
+    <string name="create_group_close">Sulje</string>
+    <string name="create_group_create">Luo</string>
+    <string name="create_group_change_color">Vaihda ryhmän väri</string>
+    <string name="create_group_name_label">Ryhmän nimi</string>
+    <string name="create_group_type_label">Ryhmän tyyppi</string>
+    <string name="create_group_members_title">Ketkä ovat mukana</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d henkilö</item>
+        <item quantity="other">%d henkilöä</item>
+    </plurals>
+    <string name="create_group_me">sinä</string>
+    <string name="create_group_remove_member">Poista %s</string>
+    <string name="create_group_add_placeholder">Lisää nimellä</string>
+    <string name="create_group_add">Lisää</string>
+    <string name="create_group_no_app_notice">Kukaan ei tarvitse sovellusta juuri nyt. Voit jo lisätä kuluja kaikille ja lähettää linkin myöhemmin.</string>
+    <string name="create_group_currency">Oletusvaluutta</string>
+    <string name="create_group_currency_caption">Uudet kulut alkavat tässä valuutassa; kukin kulu voi käyttää toista.</string>
+    <string name="create_group_save_error">Ryhmän tallentaminen epäonnistui. Yritä uudelleen.</string>
+    <string name="create_group_photo">Ryhmän kuva</string>
+    <string name="create_group_take_photo">Ota kuva</string>
+    <string name="create_group_choose_photo">Valitse kuva</string>
+    <string name="create_group_remove_photo">Poista kuva</string>
+    <string name="create_group_photo_error">Tätä kuvaa ei voitu käyttää. Kokeile toista.</string>
+</resources>

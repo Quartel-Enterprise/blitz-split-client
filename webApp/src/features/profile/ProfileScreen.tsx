@@ -90,6 +90,7 @@ const nativeLanguageNames: Record<string, string> = {
   sw: 'Kiswahili',
   ca: 'Català',
   da: 'Dansk',
+  fi: 'Suomi',
 }
 
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
@@ -138,6 +139,7 @@ const languageNames: Record<string, MessageKey> = {
   sw: 'profile_languageSwahili',
   ca: 'profile_languageCatalan',
   da: 'profile_languageDanish',
+  fi: 'profile_languageFinnish',
 }
 
 /**

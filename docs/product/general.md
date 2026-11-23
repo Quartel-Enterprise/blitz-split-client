@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan and Danish: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish and Finnish: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -273,7 +273,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     #551) is one variant for every `da` tag, talks to the user in the informal "du", as Swedish and Norwegian do, and
     calls the app Blitz Split. Its verbs don't change with the person ("Ana delte…", "Du delte…"), its deleted-item
     notice starting with who deleted it (`youSubjectLanguages`), and its plurals have one and other. The picker names
-    it "Dansk", and its chip reads "DA". The Danish krone (DKK) comes with it (below). The
+    it "Dansk", and its chip reads "DA". The Danish krone (DKK) comes with it (below). Finnish (Pierre's calls, issue #551) is one variant for every `fi`
+    tag, talks to the user in the informal "sinä" and calls the app Blitz Split, never inflected. Its case endings
+    follow the sound of the word before them, so none is ever glued to a value the app fills in, as Turkish, Korean and
+    Hungarian do: a name, a group, a bill or an amount stands alone, after a colon ("Maksaja: Ana"), as the subject, or
+    after a noun that carries the case ("ryhmässä Lissabonin matka"). Every activity verb phrase is a perfect that
+    starts with "on", which the user's rows turn into "olet" ("Ana on jakanut…", "Sinä olet jakanut…"), and its
+    deleted-item notice starts with who deleted it (`youSubjectLanguages`). Its plurals have one and other. The picker
+    names it "Suomi", and its chip reads "FI". It brings no currency, the euro covering Finland. The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
