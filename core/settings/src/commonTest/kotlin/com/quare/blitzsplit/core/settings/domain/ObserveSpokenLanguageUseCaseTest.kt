@@ -390,7 +390,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in a language the app does not have THEN it is en`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("ca", "ca-ES", "sw", "sw-KE", "sk-SK", "am-ET", "ceb", "ceb-PH", "sw-TZ")
+        val devices = listOf("ca", "ca-ES", "zu", "zu-ZA", "sk-SK", "am-ET", "ceb", "ceb-PH", "yo-NG")
 
         // When
         val spoken = devices.map { spokenOn(it) }
@@ -544,7 +544,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System on a device with no language the app has WHEN observing THEN it is en`() = runTest {
         // Given
         prepareScenario()
-        deviceLanguages = listOf("ca-ES", "sw-KE")
+        deviceLanguages = listOf("ca-ES", "zu-ZA")
 
         // When
         val language = observeSpokenLanguage().first()

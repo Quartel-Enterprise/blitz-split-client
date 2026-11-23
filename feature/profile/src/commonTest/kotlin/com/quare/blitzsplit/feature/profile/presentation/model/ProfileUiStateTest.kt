@@ -694,7 +694,6 @@ class ProfileUiStateTest {
                 AppLanguage.FILIPINO,
                 AppLanguage.SERBIAN,
                 AppLanguage.SWAHILI,
-        AppLanguage.SWAHILI,
             ),
             options,
         )
@@ -747,7 +746,6 @@ class ProfileUiStateTest {
                 AppLanguage.FILIPINO,
                 AppLanguage.SERBIAN,
                 AppLanguage.SWAHILI,
-        AppLanguage.SWAHILI,
             ),
             options,
         )
