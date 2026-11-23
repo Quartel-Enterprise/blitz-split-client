@@ -119,6 +119,12 @@
             "value" : "Blitz Split"
           }
         },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
@@ -354,6 +360,12 @@
           }
         },
         "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "mr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -599,6 +611,12 @@
             "value" : "초대나 이전 기기의 QR 코드를 스캔하고, 프로필 사진과 지출 사진을 찍기 위해 사용해요."
           }
         },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आमंत्रणाचा किंवा तुमच्या जुन्या डिव्हाइसचा QR कोड स्कॅन करण्यासाठी, आणि तुमचा प्रोफाइल फोटो व खर्चांचे फोटो काढण्यासाठी."
+          }
+        },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
@@ -839,6 +857,12 @@
             "value" : "그룹 링크로 연락처의 사람들을 초대하기 위해 사용해요. 전화번호는 이 기기에만 남아 있어요."
           }
         },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ग्रुपच्या लिंकने तुमच्या संपर्कांमधील लोकांना आमंत्रित करण्यासाठी. त्यांचे नंबर याच डिव्हाइसवर राहतात."
+          }
+        },
         "ms" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1077,6 +1101,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "지출 사진을 사진 보관함에 저장하기 위해 사용해요."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "खर्चाचे फोटो तुमच्या लायब्ररीत सेव्ह करण्यासाठी."
           }
         },
         "ms" : {

@@ -39,6 +39,7 @@ import { ta } from './ta'
 import { nb } from './nb'
 import { te } from './te'
 import { bg } from './bg'
+import { mr } from './mr'
 
 export type { MessageKey }
 /**
@@ -46,12 +47,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta' | 'nb' | 'te' | 'bg'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta' | 'nb' | 'te' | 'bg' | 'mr'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg, mr }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta', 'nb', 'te', 'bg']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta', 'nb', 'te', 'bg', 'mr']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -77,10 +78,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta` , `nb` (or Norwegian's `no` and Nynorsk's `nn`) `te` or `bg` tag
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta` , `nb` (or Norwegian's `no` and Nynorsk's `nn`) `te` , `bg` or `mr` tag
  * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN,
- * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil , Norwegian (Bokmål, whichever of the three) Telugu or Bulgarian, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil , Norwegian (Bokmål, whichever of the three) Telugu, Bulgarian or Marathi, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, any `en` tag is English, and English when none
  * matches.
  */
@@ -185,6 +186,7 @@ const documentLanguages: Record<Locale, string> = {
   nb: 'nb',
   te: 'te',
   bg: 'bg',
+  mr: 'mr',
 }
 
 const documentLanguage = documentLanguages[locale]
@@ -213,7 +215,7 @@ export function isolated(text: string): string {
 }
 
 /**
- * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali, Urdu, Persian, Tamil and Telugu,
+ * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali, Urdu, Persian, Tamil, Telugu and Marathi,
  * whose own ("١٢٫٥٠", "๑๒.๕๐", "১২.৫০", "۱۲٫۵۰", "௧௨.௫௦") the amount fields can't parse, and the Gregorian calendar for Thai,
  * whose default is the Buddhist era (2569 for 2026), and Persian, whose default is the Solar Hijri one (1405 for 2026),
  * so the web writes the year Android writes.
@@ -225,6 +227,7 @@ const formattingKeys: Readonly<Record<string, Readonly<Record<string, string>>>>
   fa: { nu: 'latn', ca: 'gregory' },
   ta: { nu: 'latn' },
   te: { nu: 'latn' },
+  mr: { nu: 'latn' },
   th: { nu: 'latn', ca: 'gregory' },
 }
 
@@ -388,7 +391,8 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * "ید" of "شما": "تقسیم کرد" becomes "تقسیم کردید".
  * Tamil ones end, before the colon that leads to the object, with a respectful past in "-ார்", which becomes the user's
  * "-ீர்கள்": "பிரித்தார்" becomes "பிரித்தீர்கள்".
- * Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is.
+ * Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is. Marathi does as
+ * Hindi with its respectful agent "यांनी", the user's "तुम्ही" taking none: "यांनी खर्च वाटला" becomes "खर्च वाटला".
  * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste". Same
  * rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
@@ -404,6 +408,7 @@ export function verbForYou(verb: string): string {
   if (locale === 'ta') return tamilVerbForYou(verb)
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
+  if (locale === 'mr') return verb.replace(/^यांनी(?: |$)/, '')
   if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
   const pastAuxiliary = pastAuxiliaries[locale]
   if (pastAuxiliary) return /^\S*l\(a\)(?=[\s,:]|$)/.test(verb) ? `${pastAuxiliary} ${verb}` : verb

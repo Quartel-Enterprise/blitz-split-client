@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">आमंत्रण लिंक</string>
+    <string name="members_link_pending">अजून तयार झाली नाही</string>
+    <string name="members_share">शेअर करा</string>
+    <string name="members_me">%s (तुम्ही)</string>
+    <string name="members_status_this_device">हे डिव्हाइस</string>
+    <string name="members_status_joined">जॉइन केले</string>
+    <string name="members_status_not_joined">अजून जॉइन केले नाही</string>
+    <string name="members_options">पर्याय: %s</string>
+    <string name="members_rename">नाव बदला</string>
+    <string name="members_personal_invite">वैयक्तिक आमंत्रण: %s</string>
+    <string name="members_personal_message">जे ही लिंक उघडतील, ते यादीतून न निवडता थेट या नावाने जॉइन होतील: %s. ही लिंक फक्त एकदाच काम करते.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">जे ही लिंक उघडतील, ते यादीतून न निवडता थेट या नावाने जॉइन होतील: %1$s. आतापर्यंत जोडलेल्या खर्चातील त्यांचा वाटा त्यांना लगेच दिसेल: %2$s. ही लिंक फक्त एकदाच काम करते.</item>
+        <item quantity="other">जे ही लिंक उघडतील, ते यादीतून न निवडता थेट या नावाने जॉइन होतील: %1$s. आतापर्यंत जोडलेल्या %3$d खर्चांमधील त्यांचा वाटा त्यांना लगेच दिसेल: %2$s. ही लिंक फक्त एकदाच काम करते.</item>
+    </plurals>
+    <string name="members_personal_copy">लिंक कॉपी करा</string>
+    <string name="members_personal_copied">कॉपी केले</string>
+    <string name="members_personal_share">%s यांच्यासोबत शेअर करा</string>
+    <string name="members_personal_share_message">Blitz Split वर ‘%1$s’ ग्रुप जॉइन करा. तुमचे नाव: %2$s. लिंक: %3$s</string>
+    <string name="members_remove">ग्रुपमधून काढा</string>
+    <string name="members_remove_joined">%s यांनी आधीच ग्रुप जॉइन केला आहे</string>
+    <string name="members_remove_title">%s यांना ग्रुपमधून काढायचे?</string>
+    <string name="members_remove_message">%s यांनी अजून जॉइन केलेले नाही. तुम्ही त्यांना नंतर पुन्हा जोडू शकता.</string>
+    <string name="members_remove_confirm">काढा</string>
+    <string name="members_release">नाव मोकळे करा</string>
+    <string name="members_release_title">%s यांचे नाव मोकळे करायचे?</string>
+    <string name="members_release_message">जे या नावाने जॉइन झाले होते ते ग्रुपमधून बाहेर पडतील: %1$s. %1$s यांचे नाव, रंग आणि खर्च तसेच राहतील आणि ग्रुपच्या लिंकद्वारे %1$s हे नाव पुन्हा निवडता येईल.</string>
+    <string name="members_release_confirm">मोकळे करा</string>
+    <string name="members_release_error">नाव मोकळे करता आले नाही. तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="members_add">व्यक्ती जोडा</string>
+    <string name="members_invite_instead">ॲप आहे? लिंकने आमंत्रित करा</string>
+    <string name="members_name_label">नाव</string>
+    <string name="members_save">सेव्ह करा</string>
+    <string name="members_cancel">रद्द करा</string>
+    <string name="members_change_error">बदल सेव्ह करता आला नाही. पुन्हा प्रयत्न करा.</string>
+    <string name="members_remove_open_balance">%s यांचा बॅलन्स बाकी आहे</string>
+    <string name="members_balance_to_get_back">%s येणे आहे</string>
+    <string name="members_balance_owes">%s देणे आहे</string>
+    <string name="members_balance_settled">हिशोब पूर्ण झाला</string>
+</resources>

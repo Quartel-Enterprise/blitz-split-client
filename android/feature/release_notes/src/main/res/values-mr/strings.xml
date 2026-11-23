@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">रिलीज नोट्स</string>
+    <string name="release_notes_show_beta">बीटा व्हर्जन दाखवा</string>
+    <string name="release_notes_beta_badge">बीटा %1$d</string>
+    <string name="release_notes_installed_badge">हे व्हर्जन</string>
+    <string name="release_notes_empty">अजून कोणत्याही रिलीज नोट्स नाहीत.</string>
+    <string name="release_notes_empty_only_betas">अजून कोणतेही स्टेबल व्हर्जन नाही. काय टेस्ट होत आहे ते पाहण्यासाठी बीटा व्हर्जन सुरू करा.</string>
+    <string name="release_notes_load_failed_title">रिलीज नोट्स लोड करता आल्या नाहीत</string>
+    <string name="release_notes_load_failed_body">तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="release_notes_retry">पुन्हा प्रयत्न करा</string>
+    <string name="release_notes_open_on_github">GitHub वर उघडा</string>
+</resources>

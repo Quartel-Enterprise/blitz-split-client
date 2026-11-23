@@ -94,6 +94,7 @@
     <string name="profile_language_norwegian">Norvég (bokmål)</string>
     <string name="profile_language_telugu">Telugu</string>
     <string name="profile_language_bulgarian">Bolgár</string>
+    <string name="profile_language_marathi">Maráthi</string>
     <string name="profile_language_system_detail">Az eszköz nyelve</string>
     <string name="profile_notifications">Értesítések</string>
     <plurals name="profile_notifications_active">

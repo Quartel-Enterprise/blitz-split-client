@@ -24,7 +24,9 @@ import SwiftUI
 /// Bulgarian's aorist is the same for a name and for "Ти" ("Ana раздели", "Ти
 /// раздели"), so its verb stays as it is too.
 ///
-/// Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is.
+/// Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is. Marathi does as
+/// Hindi with its respectful agent "यांनी", which the user's "तुम्ही" doesn't take, so its verb phrases all start with
+/// "यांनी", which the user's drops ("Ana यांनी खर्च वाटला", "तुम्ही खर्च वाटला").
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -100,6 +102,7 @@ enum SecondPerson {
         case "ta": return verbLastForYou(verb, past: "ார்$", ending: "ீர்கள்", dropped: "ார்")
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
+        case "mr": return verbWithoutSubjectParticle(verb, particle: "यांनी")
         case let .some(code) where pastAuxiliaries[code] != nil:
             // Why: the past may be followed by a comma or a colon ("změnil(a), kdo platil").
             guard verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil,

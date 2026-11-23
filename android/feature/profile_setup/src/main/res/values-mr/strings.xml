@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">तुमचे मित्र तुम्हाला काय म्हणतात?</string>
+    <string name="profile_setup_subtitle">तुमचे ग्रुप आणि तुमची प्रोफाइल लिंक असलेले कोणीही तुमचे नाव पाहू शकतात.</string>
+    <string name="profile_setup_avatar_color">अवतारचा रंग</string>
+    <string name="profile_setup_add_photo">फोटो जोडा</string>
+    <string name="profile_setup_photo_error">हा फोटो वापरता आला नाही. दुसरा वापरून पाहा.</string>
+    <string name="profile_setup_name_label">तुमचे नाव</string>
+    <string name="profile_setup_name_placeholder">राहुल पाटील</string>
+    <string name="profile_setup_name_too_short">किमान %d अक्षरे टाइप करा.</string>
+    <string name="profile_setup_name_too_long">जास्तीत जास्त %d कॅरेक्टर वापरा.</string>
+    <string name="profile_setup_name_hint">तुम्ही ते नंतर प्रोफाइलमध्ये बदलू शकता.</string>
+    <string name="profile_setup_saved_locally">सध्या फक्त या डिव्हाइसवर सेव्ह केले आहे.</string>
+    <string name="profile_setup_continue">सुरू ठेवा</string>
+</resources>
