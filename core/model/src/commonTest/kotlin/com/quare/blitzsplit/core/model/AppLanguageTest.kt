@@ -62,13 +62,13 @@ class AppLanguageTest {
     @Test
     fun `GIVEN tags of languages the app has or lacks WHEN reading their language THEN it is the lower case code`() {
         // Given
-        val tags = listOf("pt-BR", "PT_br", "zh-Hans-CN", "in-ID", "fi", null)
+        val tags = listOf("pt-BR", "PT_br", "zh-Hans-CN", "in-ID", "eu", null)
 
         // When
         val languages = tags.map(AppLanguage::languageOf)
 
         // Then
-        assertEquals(listOf("pt", "pt", "zh", "id", "fi", null), languages)
+        assertEquals(listOf("pt", "pt", "zh", "id", "eu", null), languages)
     }
 
     @Test
