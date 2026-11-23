@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">అకౌంట్‌ను తొలగించండి</string>
+    <string name="delete_account_offline_title">ఇంటర్నెట్ లేదు.</string>
+    <string name="delete_account_offline_body">మీ అకౌంట్‌ను తొలగించడానికి ఇంటర్నెట్ కనెక్షన్ అవసరం. కనెక్ట్ చేసి మళ్లీ ప్రయత్నించండి.</string>
+    <string name="delete_account_heading">మీ అకౌంట్‌ను, మీ డేటాను తొలగించాలా?</string>
+    <string name="delete_account_deleted_title">ఏమి తొలగించబడుతుంది</string>
+    <string name="delete_account_deleted_profile">మీ ప్రొఫైల్ (పేరు, ఫోటో, రంగు)</string>
+    <string name="delete_account_deleted_keys">మీ Pix, Bitcoin కీలు</string>
+    <string name="delete_account_deleted_provider">మీ అకౌంట్‌తో ఉన్న లింక్: %1$s</string>
+    <string name="delete_account_deleted_recovery_code">మీ రికవరీ కోడ్</string>
+    <string name="delete_account_deleted_device">ఈ పరికరంలో ఉన్న మీ డేటా కాపీ</string>
+    <string name="delete_account_kept_title">మీ గ్రూప్‌లలో ఏమి మిగిలి ఉంటుంది</string>
+    <string name="delete_account_kept_groups">గ్రూప్‌లు, వాటి ఖర్చులు, చెల్లింపులతో సహా, ఇతర సభ్యుల కోసం</string>
+    <string name="delete_account_kept_member">ప్రతి గ్రూప్‌లో మీ పేరు, అకౌంట్ లేని సభ్యులుగా</string>
+    <string name="delete_account_kept_comments">మీ కామెంట్‌లు, మీరు జోడించిన ఫోటోలు, మీ పేరుతో</string>
+    <string name="delete_account_export">ముందుగా నా డేటాను ఎక్స్‌పోర్ట్ చేయండి</string>
+    <string name="delete_account_confirm">దీన్ని వెనక్కి తీసుకోలేరని నాకు అర్థమైంది</string>
+    <string name="delete_account_delete">అకౌంట్‌ను తొలగించండి</string>
+    <string name="delete_account_cancel">రద్దు చేయండి</string>
+    <string name="delete_account_failed">మీ అకౌంట్‌ను తొలగించలేకపోయాము. మళ్లీ ప్రయత్నించండి.</string>
+</resources>

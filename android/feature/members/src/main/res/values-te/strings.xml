@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">ఆహ్వాన లింక్</string>
+    <string name="members_link_pending">ఇంకా సృష్టించలేదు</string>
+    <string name="members_share">షేర్ చేయండి</string>
+    <string name="members_me">%s (మీరు)</string>
+    <string name="members_status_this_device">ఈ పరికరం</string>
+    <string name="members_status_joined">చేరారు</string>
+    <string name="members_status_not_joined">ఇంకా చేరలేదు</string>
+    <string name="members_options">ఎంపికలు: %s</string>
+    <string name="members_rename">పేరు మార్చండి</string>
+    <string name="members_personal_invite">వ్యక్తిగత ఆహ్వానం: %s</string>
+    <string name="members_personal_message">ఈ లింక్ తెరిచినవారు, జాబితా నుండి ఎంచుకోకుండా, నేరుగా ఈ పేరుతో చేరతారు: %s. ఇది ఒక్కసారి మాత్రమే పనిచేస్తుంది.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">ఈ లింక్ తెరిచినవారు, జాబితా నుండి ఎంచుకోకుండా, నేరుగా ఈ పేరుతో చేరతారు: %1$s. ఇప్పటివరకు జోడించిన ఖర్చులో తమ వాటాను కూడా వెంటనే చూస్తారు: %2$s. ఇది ఒక్కసారి మాత్రమే పనిచేస్తుంది.</item>
+        <item quantity="other">ఈ లింక్ తెరిచినవారు, జాబితా నుండి ఎంచుకోకుండా, నేరుగా ఈ పేరుతో చేరతారు: %1$s. ఇప్పటివరకు జోడించిన %3$d ఖర్చులలో తమ వాటాను కూడా వెంటనే చూస్తారు: %2$s. ఇది ఒక్కసారి మాత్రమే పనిచేస్తుంది.</item>
+    </plurals>
+    <string name="members_personal_copy">లింక్‌ను కాపీ చేయండి</string>
+    <string name="members_personal_copied">కాపీ అయింది</string>
+    <string name="members_personal_share">వీరితో షేర్ చేయండి: %s</string>
+    <string name="members_personal_share_message">Blitz Split లో గ్రూప్‌లో చేరండి: %1$s. మీ పేరు: %2$s. లింక్: %3$s</string>
+    <string name="members_remove">గ్రూప్ నుండి తీసివేయండి</string>
+    <string name="members_remove_joined">%s ఇప్పటికే గ్రూప్‌లో చేరారు</string>
+    <string name="members_remove_title">గ్రూప్ నుండి తీసివేయాలా: %s?</string>
+    <string name="members_remove_message">%s ఇంకా చేరలేదు. మీరు వారిని తర్వాత మళ్లీ జోడించవచ్చు.</string>
+    <string name="members_remove_confirm">తీసివేయండి</string>
+    <string name="members_release">పేరును విడుదల చేయండి</string>
+    <string name="members_release_title">ఈ పేరును విడుదల చేయాలా: %s?</string>
+    <string name="members_release_message">ఈ పేరుతో చేరినవారు గ్రూప్ నుండి నిష్క్రమిస్తారు: %1$s. ‘%1$s’ పేరు, రంగు మరియు ఖర్చులు అలాగే ఉంటాయి, గ్రూప్ లింక్ ద్వారా ‘%1$s’ పేరును మళ్లీ ఎంచుకోవచ్చు.</string>
+    <string name="members_release_confirm">విడుదల చేయండి</string>
+    <string name="members_release_error">పేరును విడుదల చేయలేకపోయాం. మీ కనెక్షన్‌ను చెక్ చేసి మళ్లీ ప్రయత్నించండి.</string>
+    <string name="members_add">వ్యక్తిని జోడించండి</string>
+    <string name="members_invite_instead">యాప్ ఉందా? లింక్‌తో ఆహ్వానించండి</string>
+    <string name="members_name_label">పేరు</string>
+    <string name="members_save">సేవ్ చేయండి</string>
+    <string name="members_cancel">రద్దు చేయండి</string>
+    <string name="members_change_error">మార్పును సేవ్ చేయలేకపోయాం. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="members_remove_open_balance">తెరిచి ఉన్న బ్యాలెన్స్ ఉంది: %s</string>
+    <string name="members_balance_to_get_back">%s రావాలి</string>
+    <string name="members_balance_owes">%s ఇవ్వాలి</string>
+    <string name="members_balance_settled">లెక్క సెటిల్ అయింది</string>
+</resources>

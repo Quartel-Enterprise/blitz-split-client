@@ -83,6 +83,7 @@ private val turkishPast = Regex("[dt][ıiuü]$")
 private val persianPast = Regex("[دت]$")
 private const val PERSIAN_SECOND_PERSON_ENDING = "ید"
 private const val TAMIL = "ta"
+private const val TELUGU = "te"
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
@@ -117,6 +118,7 @@ private val youSubjectLanguages = setOf(
     FILIPINO,
     LEGACY_TAGALOG,
     TAMIL,
+    TELUGU,
     SWAHILI,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
@@ -167,9 +169,10 @@ private val irregularSecondPerson = mapOf(
  * its actor-focus verb are the same for the user's "Ikaw" and for a name ("Ana ay nagbahagi", "Ikaw ay nagbahagi").
  * Tamil puts its verb last too, ending every verb phrase, before the colon that leads to the object, with a
  * respectful past in "-ார்", which the user's turns into "-ீர்கள்" ("Ana ஒரு செலவைப் பிரித்தார்", "நீங்கள் ஒரு
- * செலவைப் பிரித்தீர்கள்"). Swahili's verb carries the subject's prefix, so every Swahili verb phrase starts with a
- * perfect "a-me-" or a past "a-li-", whose "a" the user's turns into "u": "Ana amegawanya", "Wewe umegawanya". Same rules
- * as the web's and the Apple app's `verbForYou`.
+ * செலவைப் பிரித்தீர்கள்"). Telugu needs no rule: its respectful past "-ారు" is the same for "మీరు" and for a name
+ * ("Ana ఒక ఖర్చును పంచారు", "మీరు ఒక ఖర్చును పంచారు"). Swahili's verb carries the subject's prefix, so every Swahili
+ * verb phrase starts with a perfect "a-me-" or a past "a-li-", whose "a" the user's turns into "u": "Ana amegawanya",
+ * "Wewe umegawanya". Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -298,7 +301,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
- * Swahili "Wewe ulifuta…", with its own.
+ * Telugu "మీరు తొలగించారు: …", its verb not changing with the person,
+ * and Swahili "Wewe ulifuta…", with its verb rule.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

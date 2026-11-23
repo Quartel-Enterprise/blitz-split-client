@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">రిలీజ్ నోట్స్</string>
+    <string name="release_notes_show_beta">బీటా వెర్షన్‌లను చూపించండి</string>
+    <string name="release_notes_beta_badge">బీటా %1$d</string>
+    <string name="release_notes_installed_badge">ఈ వెర్షన్</string>
+    <string name="release_notes_empty">ఇంకా రిలీజ్ నోట్స్ లేవు.</string>
+    <string name="release_notes_empty_only_betas">ఇంకా స్టేబుల్ వెర్షన్ లేదు. ఏవి టెస్ట్ అవుతున్నాయో చూడటానికి బీటా వెర్షన్‌లను ఆన్ చేయండి.</string>
+    <string name="release_notes_load_failed_title">రిలీజ్ నోట్స్‌ను లోడ్ చేయలేకపోయాము</string>
+    <string name="release_notes_load_failed_body">మీ కనెక్షన్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.</string>
+    <string name="release_notes_retry">మళ్లీ ప్రయత్నించండి</string>
+    <string name="release_notes_open_on_github">GitHubలో తెరవండి</string>
+</resources>

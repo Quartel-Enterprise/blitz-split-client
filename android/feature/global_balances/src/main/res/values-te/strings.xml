@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">బ్యాలెన్స్‌లు</string>
+    <string name="global_balances_profile">ప్రొఫైల్</string>
+    <string name="global_balances_offline">ఆఫ్‌లైన్ · ఈ పరికరంలోని బ్యాలెన్స్‌లు</string>
+    <string name="global_balances_filter">చూపించు</string>
+    <string name="global_balances_filter_all">అన్నీ</string>
+    <string name="global_balances_filter_you_owe">మీరు ఇవ్వాలి</string>
+    <string name="global_balances_filter_owes_you">మీకు రావాలి</string>
+    <string name="global_balances_hint">గ్రూప్‌ల మధ్య ఇప్పటికే సర్దుబాటు చేయబడింది: ప్రతి వ్యక్తి ఒక్కసారే కనిపిస్తారు.</string>
+    <string name="global_balances_hint_empty">ఈ పరికరంలోని ప్రతి గ్రూప్‌ను కలుపుతోంది.</string>
+    <string name="global_balances_section_you_owe">మీరు ఇవ్వాలి · %d</string>
+    <string name="global_balances_section_owes_you">మీకు రావాలి · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d గ్రూప్</item>
+        <item quantity="other">%d గ్రూప్‌లు</item>
+    </plurals>
+    <string name="global_balances_guest">%s · అతిథి</string>
+    <string name="global_balances_you_owe">మీరు ఇవ్వాలి</string>
+    <string name="global_balances_owes_you">మీకు రావాలి</string>
+    <string name="global_balances_by_group_show">గ్రూప్ వారీగా చూపించు: %s</string>
+    <string name="global_balances_by_group_hide">గ్రూప్ వారీగా దాచు: %s</string>
+    <string name="global_balances_received">డబ్బు అందింది</string>
+    <string name="global_balances_received_from">డబ్బు అందింది: %s</string>
+    <string name="global_balances_settle">లెక్క సెటిల్ చేయండి</string>
+    <string name="global_balances_settle_with">లెక్క సెటిల్ చేయండి: %s</string>
+    <string name="global_balances_charge">చెల్లించమని అడగండి</string>
+    <string name="global_balances_charge_person">చెల్లించమని అడగండి: %s</string>
+    <string name="global_balances_detail_pane">బ్యాలెన్స్: %s</string>
+    <string name="global_balances_detail_owes_you">%s మీకు ఇవ్వాలి</string>
+    <string name="global_balances_detail_you_owe">మీరు ఇవ్వాల్సింది: %s</string>
+    <string name="global_balances_detail_guest">%s · యాప్ లేని అతిథి</string>
+    <string name="global_balances_detail_note_owed">నికర మొత్తం ఇప్పటికే గ్రూప్‌లను సర్దుబాటు చేస్తుంది: ‘చెల్లించమని అడగండి’ మరియు ‘డబ్బు అందింది’ ఈ మొత్తాన్ని ఉపయోగిస్తాయి: %s. యాప్ ప్రతి గ్రూప్‌లో ఒక చెల్లింపును నమోదు చేస్తుంది.</string>
+    <string name="global_balances_detail_note_settle">నికర మొత్తం ఇప్పటికే గ్రూప్‌లను సర్దుబాటు చేస్తుంది: ‘లెక్క సెటిల్ చేయండి’ ఈ మొత్తాన్ని ఉపయోగిస్తుంది: %s. యాప్ ప్రతి గ్రూప్‌లో ఒక చెల్లింపును నమోదు చేస్తుంది.</string>
+    <string name="global_balances_detail_note_single">వీరితో ఒకే ఒక గ్రూప్ తెరిచి ఉంది: %s.</string>
+    <string name="global_balances_settled_title">అన్నీ సెటిల్ అయ్యాయి</string>
+    <string name="global_balances_settled_body">మీకు ఎవరూ ఇవ్వాల్సింది లేదు, మీరు ఎవరికీ ఇవ్వాల్సింది లేదు. ఎవరైనా ఖర్చును జోడించినప్పుడు, బ్యాలెన్స్ ఇక్కడ కనిపిస్తుంది.</string>
+    <string name="global_balances_settled_action">గ్రూప్‌లను చూడండి</string>
+    <string name="global_balances_nothing_to_pay_title">మీరు ఎవరికీ ఇవ్వాల్సింది లేదు</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">మీరు అందరితో లెక్క సెటిల్ చేశారు. %1$d వ్యక్తి నుండి మీకు ఇంకా %2$s రావాలి.</item>
+        <item quantity="other">మీరు అందరితో లెక్క సెటిల్ చేశారు. %1$d మంది నుండి మీకు ఇంకా %2$s రావాలి.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">మీకు ఎవరు ఇవ్వాలో చూడండి</string>
+    <string name="global_balances_nothing_to_receive_title">మీకు ఎవరూ ఇవ్వాల్సింది లేదు</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">మీరు ఇంకా %1$d వ్యక్తికి %2$s ఇవ్వాలి.</item>
+        <item quantity="other">మీరు ఇంకా %1$d మందికి %2$s ఇవ్వాలి.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">మీరు ఎవరికి ఇవ్వాలో చూడండి</string>
+    <string name="global_balances_coming_soon">త్వరలో వస్తుంది</string>
+    <string name="global_balances_change_error">మార్పును సేవ్ చేయలేకపోయాం. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="global_balances_copied">కాపీ అయింది</string>
+    <string name="global_balances_charge_title">చెల్లించమని అడగండి: %s</string>
+    <string name="global_balances_charge_owes">మీకు %1$s రావాలి · %2$s</string>
+    <string name="global_balances_charge_close">మూసివేయండి</string>
+    <string name="global_balances_charge_guest">%s యాప్ లేని అతిథి. ఈ మెసేజ్ ద్వారా మాత్రమే వారికి దీని గురించి తెలుస్తుంది, కాబట్టి ఖర్చులో ఏమి ఉందో ఇది ఇప్పటికే చెబుతుంది.</string>
+    <string name="global_balances_charge_message">మెసేజ్</string>
+    <string name="global_balances_charge_pix">నా Pix కీని చేర్చండి</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">మెసేజ్‌ను కాపీ చేయండి</string>
+    <string name="global_balances_charge_send">పంపండి</string>
+    <string name="global_balances_message">హాయ్ %1$s! Blitz Split లెక్క ప్రకారం, మీరు నాకు %2$s ఇవ్వాలి (%3$s).</string>
+    <string name="global_balances_message_guest">హాయ్ %1$s! మీరు నాకు %2$s ఇవ్వాలి (%3$s). ఇది మీ భాగం: %4$s.</string>
+    <string name="global_balances_message_guest_paid">హాయ్ %1$s! మీరు నాకు %2$s ఇవ్వాలి (%3$s). ఇది మీ భాగం: %4$s, మీరు ఇప్పటికే చెల్లించిన మొత్తం (%5$s) తీసివేసిన తర్వాత.</string>
+    <string name="global_balances_message_group">గ్రూప్ %s</string>
+    <string name="global_balances_message_groups">గ్రూప్‌లు %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">ఫోన్</string>
+    <string name="global_balances_key_email">ఈమెయిల్</string>
+    <string name="global_balances_key_random">రాండమ్ కీ</string>
+    <string name="global_balances_message_reroute">‘%1$s’ గ్రూప్ తన అప్పులను సరళం చేసింది, కాబట్టి వీరికి చెల్లించే బదులు (%2$s) మీరు నేరుగా నాకు చెల్లించండి; మీ మొత్తం మారలేదు.</string>
+</resources>
