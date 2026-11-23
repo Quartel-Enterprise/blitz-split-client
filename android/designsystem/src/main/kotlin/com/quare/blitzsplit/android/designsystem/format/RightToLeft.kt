@@ -12,11 +12,11 @@ import java.util.Locale
 
 /*
  * Why: the right to left languages (Hebrew under its current code and the legacy one Java still hands out, "iw"), and
- * the ones whose own digits the app writes as 0-9 (Arabic, Thai, Bengali and Urdu; Persian would join once the app
+ * the ones whose own digits the app writes as 0-9 (Arabic, Thai, Bengali, Urdu and Tamil; Persian would join once the app
  * speaks it).
  */
 private val rightToLeftLanguages = setOf("ar", "fa", "he", "iw", "ur")
-private val latinDigitLanguages = setOf("ar", "th", "bn", "ur")
+private val latinDigitLanguages = setOf("ar", "th", "bn", "ur", "ta")
 private const val THAI = "th"
 private const val FIRST_STRONG_ISOLATE = '\u2068'
 private const val POP_DIRECTIONAL_ISOLATE = '\u2069'

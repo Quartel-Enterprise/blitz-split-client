@@ -37,15 +37,15 @@ enum RightToLeft {
     }
 }
 
-/// The locale amounts, numbers and dates are written in: the device's, with Latin digits (0-9) in Arabic, Bengali and Urdu, so an amount
+/// The locale amounts, numbers and dates are written in: the device's, with Latin digits (0-9) in Arabic, Bengali, Urdu and Tamil, so an amount
 /// reads as the amount fields type and parse it.
 enum AppNumbers {
-    /// The device's locale, on Latin digits when it would write Arabic, Bengali or Urdu ones.
+    /// The device's locale, on Latin digits when it would write Arabic, Bengali, Urdu or Tamil ones.
     static var locale: Locale { latin(.autoupdatingCurrent) }
 
-    /// `base` on Latin digits in Arabic, Bengali and Urdu; `base` itself in every other language.
+    /// `base` on Latin digits in Arabic, Bengali, Urdu and Tamil; `base` itself in every other language.
     static func latin(_ base: Locale) -> Locale {
-        guard let code = base.language.languageCode?.identifier, ["ar", "bn", "ur"].contains(code),
+        guard let code = base.language.languageCode?.identifier, ["ar", "bn", "ur", "ta"].contains(code),
               base.numberingSystem.identifier != "latn" else { return base }
         var components = Locale.Components(locale: base)
         components.numberingSystem = Locale.NumberingSystem("latn")

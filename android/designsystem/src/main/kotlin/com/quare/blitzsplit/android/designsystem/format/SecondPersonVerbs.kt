@@ -207,10 +207,8 @@ private fun replaceFirstWord(
  * leads to the object if there is one ("bir harcamayı böldü:"), and the second person adds an "n" to it whatever the
  * vowel ("böldü" → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
  */
-private fun toTurkishSecondPerson(verb: String): String {
-    val clause = verb.substringBefore(':').trimEnd()
-    if (!turkishPast.containsMatchIn(clause)) return verb
-    return clause + "n" + verb.substring(clause.length)
+private fun toTurkishSecondPerson(verb: String): String = replaceClauseBeforeColon(verb) { clause ->
+    if (turkishPast.containsMatchIn(clause)) clause + "n" else null
 }
 
 /*
@@ -218,10 +216,25 @@ private fun toTurkishSecondPerson(verb: String): String {
  * that leads to the object if there is one ("ஒரு செலவைப் பிரித்தார்:"), and the second person's ends in "-ீர்கள்"
  * ("பிரித்தார்" → "பிரித்தீர்கள்", "சேர்ந்தார்" → "சேர்ந்தீர்கள்"). A phrase whose clause doesn't end in that past stays.
  */
-private fun toTamilSecondPerson(verb: String): String {
+private fun toTamilSecondPerson(verb: String): String = replaceClauseBeforeColon(verb) { clause ->
+    if (clause.endsWith(TAMIL_THIRD_PERSON_PAST)) {
+        clause.removeSuffix(TAMIL_THIRD_PERSON_PAST) + TAMIL_SECOND_PERSON_PAST
+    } else {
+        null
+    }
+}
+
+/*
+ * Why: a verb-last language (Turkish, Tamil) ends the clause before the colon that leads to the object with its verb,
+ * so the phrase with that clause, trailing spaces left out, replaced, or as it is when `replacement` has none.
+ */
+private fun replaceClauseBeforeColon(
+    verb: String,
+    replacement: (String) -> String?,
+): String {
     val clause = verb.substringBefore(':').trimEnd()
-    if (!clause.endsWith(TAMIL_THIRD_PERSON_PAST)) return verb
-    return clause.removeSuffix(TAMIL_THIRD_PERSON_PAST) + TAMIL_SECOND_PERSON_PAST + verb.substring(clause.length)
+    val replaced = replacement(clause) ?: return verb
+    return replaced + verb.substring(clause.length)
 }
 
 /*

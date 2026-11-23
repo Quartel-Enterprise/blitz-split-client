@@ -203,14 +203,15 @@ export function isolated(text: string): string {
 }
 
 /**
- * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali and Urdu, whose own
- * ("١٢٫٥٠", "๑๒.๕๐", "১২.৫০", "۱۲٫۵۰") the amount fields can't parse, and the Gregorian calendar for Thai, whose default is the
+ * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali, Urdu and Tamil, whose own
+ * ("١٢٫٥٠", "๑๒.๕๐", "১২.৫০", "۱۲٫۵۰", "௧௨.௫௦") the amount fields can't parse, and the Gregorian calendar for Thai, whose default is the
  * Buddhist era (2569 for 2026), so the web writes the year Android writes.
  */
 const formattingKeys: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   ar: { nu: 'latn' },
   bn: { nu: 'latn' },
   ur: { nu: 'latn' },
+  ta: { nu: 'latn' },
   th: { nu: 'latn', ca: 'gregory' },
 }
 
@@ -378,7 +379,7 @@ export function verbForYou(verb: string): string {
     return Object.hasOwn(auxiliary, first) ? [auxiliary[first], ...rest].join(' ') : verb
   }
   if (locale === 'tr') return turkishVerbForYou(verb)
-  if (locale === 'ta') return verb.replace(/^([^:]*?)ார்(\s*(?::|$))/u, '$1ீர்கள்$2')
+  if (locale === 'ta') return tamilVerbForYou(verb)
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
   if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
@@ -424,7 +425,24 @@ export function sayToActor(text: string, name: string): string {
  * → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
  */
 function turkishVerbForYou(verb: string): string {
-  return verb.replace(/^([^:]*?[dt][ıiuü])(\s*(?::|$))/u, '$1n$2')
+  return verb.replace(verbBeforeColon('[dt][ıiuü]'), '$1$2n$3')
+}
+
+/**
+ * Tamil puts the verb last too, so every Tamil verb phrase ends, before the colon that leads to the object, with a
+ * respectful past in "-ார்", which the second person ends in "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்", "சேர்ந்தார்" →
+ * "சேர்ந்தீர்கள்"). A phrase whose clause doesn't end in that past stays as it is.
+ */
+function tamilVerbForYou(verb: string): string {
+  return verb.replace(verbBeforeColon('ார்'), '$1ீர்கள்$3')
+}
+
+/**
+ * A verb-last language's phrase split around its verb: the words before it ($1), the verb's `ending` ($2), and what
+ * follows up to the colon that leads to the object or the end ($3), for Turkish and Tamil.
+ */
+function verbBeforeColon(ending: string): RegExp {
+  return new RegExp(`^([^:]*?)(${ending})(\\s*(?::|$))`, 'u')
 }
 
 /** The page's language, direction and title: Bora Rachar only in Brazil's Portuguese, Blitz Split everywhere else. */

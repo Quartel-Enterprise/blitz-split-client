@@ -139,32 +139,38 @@ enum SecondPerson {
     /// the object if there is one ("bir harcamayı böldü:"), and the second person adds an "n" to it whatever the vowel
     /// ("böldü" → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
     private static func turkishVerbForYou(_ verb: String) -> String {
-        var end = verb.firstIndex(of: ":") ?? verb.endIndex
-        while end > verb.startIndex, verb[verb.index(before: end)].isWhitespace {
-            end = verb.index(before: end)
+        replacingClauseBeforeColon(of: verb) { clause in
+            clause.range(of: "[dt][ıiuü]$", options: .regularExpression) != nil ? clause + "n" : nil
         }
-        let clause = verb[..<end]
-        guard clause.range(of: "[dt][ıiuü]$", options: .regularExpression) != nil else { return verb }
-        return String(clause) + "n" + String(verb[end...])
     }
 
     /// Tamil puts the verb last, so every Tamil verb phrase ends with a respectful past in "-ார்", before the colon that
     /// leads to the object if there is one ("ஒரு செலவைப் பிரித்தார்:"), and the second person's ends in "-ீர்கள்"
     /// ("பிரித்தார்" → "பிரித்தீர்கள்"). A phrase whose clause doesn't end in that past stays as it is.
     private static func tamilVerbForYou(_ verb: String) -> String {
-        // Why: the Unicode scalars, since Swift's Character groups the vowel sign "ா" with the consonant before it.
-        let scalars = Array(verb.unicodeScalars)
-        let past = Array("ார்".unicodeScalars)
-        var end = scalars.firstIndex(of: ":") ?? scalars.endIndex
-        while end > 0, scalars[end - 1].properties.isWhitespace {
-            end -= 1
+        replacingClauseBeforeColon(of: verb) { clause in
+            // Why: the Unicode scalars, since Swift's Character groups the vowel sign "ா" with the consonant before it.
+            let past = Array("ார்".unicodeScalars)
+            let scalars = Array(clause.unicodeScalars)
+            guard scalars.count >= past.count, Array(scalars.suffix(past.count)) == past else { return nil }
+            var view = String.UnicodeScalarView()
+            view.append(contentsOf: scalars.dropLast(past.count))
+            view.append(contentsOf: "ீர்கள்".unicodeScalars)
+            return String(view)
         }
-        guard end >= past.count, Array(scalars[(end - past.count)..<end]) == past else { return verb }
-        var view = String.UnicodeScalarView()
-        view.append(contentsOf: scalars[..<(end - past.count)])
-        view.append(contentsOf: "ீர்கள்".unicodeScalars)
-        view.append(contentsOf: scalars[end...])
-        return String(view)
+    }
+
+    /// A verb-last language (Turkish, Tamil) ends the clause before the colon that leads to the object with its verb:
+    /// the phrase with that clause, trailing spaces left out, replaced, or as it is when `replacement` has none.
+    private static func replacingClauseBeforeColon(of verb: String, with replacement: (String) -> String?) -> String {
+        var end = verb.unicodeScalars.firstIndex(of: ":") ?? verb.unicodeScalars.endIndex
+        while end > verb.unicodeScalars.startIndex,
+              verb.unicodeScalars[verb.unicodeScalars.index(before: end)].properties.isWhitespace {
+            end = verb.unicodeScalars.index(before: end)
+        }
+        let clause = String(verb.unicodeScalars[..<end])
+        guard let replaced = replacement(clause) else { return verb }
+        return replaced + String(verb.unicodeScalars[end...])
     }
 
     private static func portugueseVerbForYou(_ verb: String) -> String {
