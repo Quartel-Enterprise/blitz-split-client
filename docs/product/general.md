@@ -247,7 +247,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     takes the respectful pronoun written apart, "यांनी", "यांना", "यांचे" ("Ana यांना"), as official Marathi writes
     "श्री. पाटील यांनी", and any other value stands after a colon or before a noun that carries the ending. Its past
     puts that "यांनी" after the actor but none after the user's "तुम्ही", so its activity sentences follow Hindi's rule
-    with "यांनी" ([activity-and-push.md](activity-and-push.md)). It uses INR. T The
+    with "यांनी" ([activity-and-push.md](activity-and-push.md)). It uses INR. The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
