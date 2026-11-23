@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">Pripomienka vyrovnania</string>
+    <string name="push_bill_created">%1$s pridal(a) s tebou výdavok „%2$s“</string>
+    <string name="push_bill_edited">%1$s upravil(a) výdavok „%2$s“</string>
+    <string name="push_bill_deleted">%1$s odstránil(a) výdavok „%2$s“</string>
+    <string name="push_comment_added">%1$s okomentoval(a) výdavok „%2$s“: %3$s</string>
+    <string name="push_payment_paid_you">%1$s označil(a), že ti zaplatil(a)</string>
+    <string name="push_payment_to_you">%1$s označil(a), že ti osoba %2$s zaplatila</string>
+    <string name="push_payment_received_yours">%1$s označil(a) tvoju platbu ako prijatú</string>
+    <string name="push_payment_from_you">%1$s označil(a), že si zaplatil(a) osobe %2$s</string>
+    <string name="push_payment_undone">%1$s vrátil(a) späť platbu s tebou</string>
+    <string name="push_charge_sent">%1$s ti poslal(a) pripomienku na vyrovnanie</string>
+    <string name="push_settle_reminder">Máš otvorený zostatok v skupine %1$s</string>
+    <string name="push_settle_reminders">Máš otvorené zostatky v %1$s skupinách</string>
+    <string name="push_added_to_group">%1$s ťa pridal(a) do skupiny</string>
+    <string name="push_member_joined">%1$s vstúpil(a) do skupiny</string>
+    <string name="push_debts_simplified_to_you">%1$s zjednodušil(a) dlhy. Teraz ti %2$s platí %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s zjednodušil(a) dlhy. Teraz platíš osobe %2$s sumu %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s zjednodušil(a) dlhy. Pozri, ako to vyzerá pre teba.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s deaktivoval(a) Zjednodušiť dlhy. Teraz ti %2$s platí %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s deaktivoval(a) Zjednodušiť dlhy. Teraz platíš osobe %2$s sumu %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s deaktivoval(a) Zjednodušiť dlhy. Pozri, ako to vyzerá pre teba.</string>
+    <string name="notification_settings_bills">Výdavky</string>
+    <string name="notification_settings_bills_detail">Nové, upravené alebo odstránené výdavky, v ktorých si</string>
+    <string name="notification_settings_payments">Platby a vyrovnania</string>
+    <string name="notification_settings_payments_detail">Platby tebe alebo od teba a zjednodušené dlhy</string>
+    <string name="notification_settings_comments">Komentáre</string>
+    <string name="notification_settings_comments_detail">Pri výdavkoch, v ktorých si, a vo vláknach, kde si písal(a)</string>
+    <string name="notification_settings_people_and_groups">Ľudia a skupiny</string>
+    <string name="notification_settings_people_and_groups_detail">Kto vstúpi do tvojich skupín alebo ich opustí a čo sa v nich mení</string>
+    <string name="notification_settings_payment_requests">Žiadosti o platbu</string>
+    <string name="notification_settings_payment_requests_detail">Keď ťa niekto požiada o platbu</string>
+    <string name="notification_settings_balance_reminder">Pripomienka otvoreného zostatku</string>
+    <string name="notification_settings_balance_reminder_detail">Raz týždenne, ak je zostatok otvorený</string>
+</resources>

@@ -861,6 +861,7 @@ export const sr: Record<MessageKey, string> = {
   profile_languageUrdu: 'Urdu',
   profile_languageFilipino: 'Filipinski',
   profile_languageSerbian: 'Srpski',
+  profile_languageSlovak: 'Slovački',
   profile_languageSwahili: 'Svahili',
   profile_bitcoinInSats: 'Bitcoin u sats',
   profile_bitcoinInSatsDetail: 'Prikazuje i unosi iznose bitcoina u sats (1 ₿ = 100.000.000 sats).',
