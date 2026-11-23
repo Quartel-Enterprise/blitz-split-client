@@ -128,7 +128,13 @@ The feed, unread state, real time and push notifications.
     Telugu needs no rule: its respectful
     past "-ారు" is the same for a name and for "మీరు" ("Ana ఒక ఖర్చును పంచారు: డిన్నర్", "మీరు ఒక ఖర్చును పంచారు: డిన్నర్"),
     and the object after a colon keeps every name free of case endings, as Tamil's. Its deleted-item notice starts with
-    who deleted it ("మీరు తొలగించారు: …", `youSubjectLanguages`), and "You" is "మీరు" everywhere.    Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
+    who deleted it ("మీరు తొలగించారు: …", `youSubjectLanguages`), and "You" is "మీరు" everywhere.
+    Marathi follows Hindi's rule with its respectful agent "यांनी", written apart after a name, which the user's "तुम्ही"
+    doesn't take: every Marathi verb phrase starts with "यांनी", which the user's rows drop ("Ana यांनी ‘डिनर’ खर्च
+    वाटला", "तुम्ही ‘डिनर’ खर्च वाटला"), a join or a leave being said with a transitive verb too ("यांनी ‘गोवा ट्रिप’
+    ग्रुप जॉइन केला"), whose past agrees with the object, not with who did it. Its deleted-item notice starts with who
+    deleted it ("तुम्ही …", `youSubjectLanguages`), and "You" is "तुम्ही" everywhere.
+    Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".
     Hungarian conjugates by person, so every Hungarian verb phrase starts with a past right after the actor, the object

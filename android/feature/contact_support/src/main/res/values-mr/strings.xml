@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">सपोर्टशी संपर्क साधा</string>
+    <string name="contact_support_description">आम्ही तुमचे ईमेल ॲप तयार मेसेजसह उघडू. काय झाले ते लिहा आणि पाठवा: प्रत्येक मेसेज खरी माणसे वाचतात.</string>
+    <string name="contact_support_to">प्रति</string>
+    <string name="contact_support_diagnostics">ईमेलमध्ये समाविष्ट केले जाईल</string>
+    <string name="contact_support_app_version">ॲपची आवृत्ती</string>
+    <string name="contact_support_platform">प्लॅटफॉर्म</string>
+    <string name="contact_support_language">भाषा</string>
+    <string name="contact_support_account">अकाउंट</string>
+    <string name="contact_support_profile">प्रोफाइल</string>
+    <string name="contact_support_language_system">सिस्टम</string>
+    <string name="contact_support_account_local">फक्त हे डिव्हाइस</string>
+    <string name="contact_support_account_anonymous">कनेक्ट केलेले नाही</string>
+    <string name="contact_support_open_email">ईमेल उघडा</string>
+    <string name="contact_support_copy_email">ईमेल पत्ता कॉपी करा</string>
+    <string name="contact_support_notice_copied">ईमेल पत्ता कॉपी झाला.</string>
+    <string name="contact_support_notice_no_app">कोणतेही ईमेल ॲप सापडले नाही. त्याऐवजी पत्ता कॉपी केला.</string>
+    <string name="contact_support_close">बंद करा</string>
+</resources>

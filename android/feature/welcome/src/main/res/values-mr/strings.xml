@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">खर्च वाटा, कोणत्याही कटकटीशिवाय</string>
+    <string name="welcome_offline_title">ऑफलाइन चालते</string>
+    <string name="welcome_offline_body">सगळे तुमच्या डिव्हाइसवर राहते आणि नंतर सिंक होते.</string>
+    <string name="welcome_optional_title">अकाउंट ऐच्छिक आहे</string>
+    <string name="welcome_optional_body">Google किंवा Apple फक्त एवढ्यासाठी, की डिव्हाइस बदलल्यावर तुमचे काहीही हरवू नये.</string>
+    <string name="welcome_invite_title">लिंक किंवा QR कोडने आमंत्रित करा</string>
+    <string name="welcome_invite_body">मित्र अकाउंट न बनवता ग्रुपमध्ये सामील होतात.</string>
+    <string name="welcome_no_connection_title">कनेक्शन नाही.</string>
+    <string name="welcome_no_connection_body">अकाउंटने साइन इन करण्यासाठी इंटरनेट लागते. आत्ता अकाउंटशिवाय वापरा आणि नंतर प्रोफाइलमध्ये कनेक्ट करा.</string>
+    <string name="welcome_or">किंवा</string>
+    <string name="welcome_use_without_account">अकाउंटशिवाय वापरा</string>
+    <string name="welcome_used_on_another_device">मी हे दुसऱ्या डिव्हाइसवर वापरले आहे</string>
+    <string name="welcome_sign_in_failed">आत्ता साइन इन करता आले नाही. पुन्हा प्रयत्न करा.</string>
+    <string name="welcome_legal_notice">पुढे जाऊन, तुम्ही %1$s स्वीकारता आणि %2$s मान्य करता.</string>
+    <string name="welcome_legal_terms">सेवेच्या अटी</string>
+    <string name="welcome_legal_privacy">गोपनीयता धोरण</string>
+    <string name="welcome_no_account_note">अकाउंटशिवाय, 30 दिवस वापर न झाल्यास तुमचा डेटा हटवला जातो. तो जपून ठेवण्यासाठी Google किंवा Apple कनेक्ट करा.</string>
+    <string name="welcome_no_account_note_offline">अकाउंटशिवाय, 30 दिवस वापर न झाल्यास तुमचा डेटा हटवला जातो. तो जपून ठेवण्यासाठी नंतर प्रोफाइलमध्ये Google किंवा Apple कनेक्ट करा.</string>
+    <string name="welcome_expired_title">तुमचा डेटा हटवला गेला</string>
+    <string name="welcome_expired_body">तुम्ही अकाउंटशिवाय ॲप वापरत होता आणि 30 दिवस ते उघडले नाही, म्हणून तुमचा डेटा हटवला गेला. पुढच्या वेळी तो जपून ठेवण्यासाठी Google किंवा Apple कनेक्ट करा.</string>
+    <string name="welcome_expired_ok">ठीक आहे</string>
+</resources>

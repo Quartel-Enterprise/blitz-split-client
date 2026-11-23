@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">नवीन पेमेंट पद्धत</string>
+    <string name="paying_method_edit_title">पेमेंट पद्धत संपादित करा</string>
+    <string name="paying_method_type">प्रकार</string>
+    <string name="paying_method_name">नाव</string>
+    <string name="paying_method_name_optional">नाव (पर्यायी)</string>
+    <string name="paying_method_color">रंग</string>
+    <string name="paying_method_default">डीफॉल्ट पद्धत</string>
+    <string name="paying_method_default_hint">तुम्ही पैसे देता ते नवीन खर्च हिनेच सुरू होतात.</string>
+    <string name="paying_method_delete">पेमेंट पद्धत हटवा</string>
+    <string name="paying_method_delete_title">ही पेमेंट पद्धत हटवायची?</string>
+    <string name="paying_method_delete_body">तुम्ही हिने चिन्हांकित केलेल्या खर्चांवर ती यापुढे दिसणार नाही.</string>
+    <string name="paying_method_delete_confirm">हटवा</string>
+    <string name="paying_method_save">सेव्ह करा</string>
+</resources>

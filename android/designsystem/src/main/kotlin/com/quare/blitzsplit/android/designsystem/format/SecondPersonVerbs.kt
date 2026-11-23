@@ -84,6 +84,8 @@ private val persianPast = Regex("[دت]$")
 private const val PERSIAN_SECOND_PERSON_ENDING = "ید"
 private const val TAMIL = "ta"
 private const val TELUGU = "te"
+private const val MARATHI = "mr"
+private const val MARATHI_RESPECTFUL_AGENT = "यांनी"
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val TAMIL_SECOND_PERSON_PAST = "ீர்கள்"
@@ -117,6 +119,7 @@ private val youSubjectLanguages = setOf(
     LEGACY_TAGALOG,
     TAMIL,
     TELUGU,
+    MARATHI,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -167,7 +170,9 @@ private val irregularSecondPerson = mapOf(
  * Tamil puts its verb last too, ending every verb phrase, before the colon that leads to the object, with a
  * respectful past in "-ார்", which the user's turns into "-ீர்கள்" ("Ana ஒரு செலவைப் பிரித்தார்", "நீங்கள் ஒரு
  * செலவைப் பிரித்தீர்கள்"). Telugu needs no rule: its respectful past "-ారు" is the same for "మీరు" and for a name
- * ("Ana ఒక ఖర్చును పంచారు", "మీరు ఒక ఖర్చును పంచారు"). Same rules as the web's and the Apple app's `verbForYou`.
+ * ("Ana ఒక ఖర్చును పంచారు", "మీరు ఒక ఖర్చును పంచారు"). Marathi does as Hindi with the respectful agent "यांनी", written
+ * apart after a name, which the user's "तुम्ही" doesn't take: every Marathi verb phrase starts with "यांनी", which the
+ * user's drops ("Ana यांनी खर्च वाटला", "तुम्ही खर्च वाटला"). Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -194,6 +199,8 @@ fun toSecondPerson(
     KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
 
     HINDI -> dropSubjectParticle(verb, HINDI_ERGATIVE)
+
+    MARATHI -> dropSubjectParticle(verb, MARATHI_RESPECTFUL_AGENT)
 
     CZECH -> if (czechPast.containsMatchIn(verb)) "$CZECH_SECOND_PERSON_AUXILIARY $verb" else verb
 
@@ -294,7 +301,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
- * Telugu "మీరు తొలగించారు: …", its verb not changing with the person.
+ * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, and Marathi "तुम्ही … हटवला", with its rule.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

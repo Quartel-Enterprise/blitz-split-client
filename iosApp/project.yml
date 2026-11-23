@@ -7,7 +7,7 @@ options:
   # English is the source language and the fallback of every language but Portuguese (pt-BR, pt-PT), Spanish (es, es-ES), French (fr),
   # German (de), Italian (it), Polish (pl), Dutch (nl), Japanese (ja), Turkish (tr), Indonesian (id), Russian (ru),
   # Ukrainian (uk), Korean (ko), Hindi (hi), Arabic (ar), Simplified Chinese (zh-Hans), Hebrew (he), Thai (th), Vietnamese (vi), Traditional Chinese (zh-Hant), Swedish
-  # (sv), Czech (cs), Romanian (ro), Bengali (bn), Malay (ms), Greek (el), Croatian (hr), Hungarian (hu), Urdu (ur), Filipino (fil), Serbian (sr-Latn) and Slovak (sk), Persian (fa), Tamil (ta), Norwegian (nb) and Telugu (te)
+  # (sv), Czech (cs), Romanian (ro), Bengali (bn), Malay (ms), Greek (el), Croatian (hr), Hungarian (hu), Urdu (ur), Filipino (fil), Serbian (sr-Latn) and Slovak (sk), Persian (fa), Tamil (ta), Norwegian (nb), Telugu (te) and Marathi (mr)
   developmentLanguage: en
   createIntermediateGroups: true
   deploymentTarget:
@@ -45,7 +45,7 @@ settings:
     # Firebase's Objective-C categories, as its setup asks.
     FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
     OTHER_LDFLAGS: [-framework, Shared, -lsqlite3, -ObjC]
-    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR, pt-PT, es, es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr-Latn and sk, fa, ta, nb and te)
+    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR, pt-PT, es, es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr-Latn and sk, fa, ta, nb, te and mr)
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
     GENERATE_INFOPLIST_FILE: YES

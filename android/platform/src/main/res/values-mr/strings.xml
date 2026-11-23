@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · रिकव्हरी कोड</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">फोटो घेण्यासाठी सेटिंग्जमध्ये कॅमेऱ्याला परवानगी द्या.</string>
+    <string name="platform_camera_settings">सेटिंग्ज</string>
+    <string name="platform_receipt_source_camera">फोटो घ्या</string>
+    <string name="platform_receipt_source_gallery">गॅलरीमधून निवडा</string>
+    <string name="platform_receipt_source_file">फाइल निवडा</string>
+    <string name="platform_receipt_camera_title">पावती स्कॅन करा</string>
+    <string name="platform_receipt_camera_close">बंद करा</string>
+    <string name="platform_receipt_camera_flash_on">फ्लॅश सुरू करा</string>
+    <string name="platform_receipt_camera_flash_off">फ्लॅश बंद करा</string>
+    <string name="platform_receipt_camera_hint">संपूर्ण पावती फ्रेममध्ये बसवा. रक्कम, तारीख आणि वर्णन आम्ही भरतो; सेव्ह करण्यापूर्वी तुम्ही तपासा.</string>
+    <string name="platform_receipt_camera_gallery">गॅलरीमधून निवडा</string>
+    <string name="platform_receipt_camera_shutter">फोटो घ्या</string>
+    <string name="platform_receipt_camera_unavailable">कॅमेरा उपलब्ध नाही. गॅलरीमधून पावतीचा फोटो निवडा.</string>
+    <string name="platform_receipt_camera_permission">पावती स्कॅन करण्यासाठी कॅमेऱ्याला परवानगी द्या, किंवा गॅलरीमधून फोटो निवडा.</string>
+    <string name="platform_receipt_camera_allow">कॅमेऱ्याला परवानगी द्या</string>
+    <string name="platform_receipt_camera_settings">सेटिंग्ज उघडा</string>
+</resources>

@@ -57,7 +57,7 @@ each platform.
       `res/values-hr/strings.xml` (one, few and other), in Hungarian in
       `res/values-hu/strings.xml` (no case suffix glued to a placeholder), in Urdu in `res/values-ur/strings.xml`, in
       Filipino in `res/values-fil/strings.xml`, in Serbian in `res/values-b+sr+Latn/strings.xml` (one, few and other) and in Slovak in `res/values-sk/strings.xml` (one, few, many and other), in Persian in `res/values-fa/strings.xml`, in Tamil in
-      `res/values-ta/strings.xml` (no case ending glued to a placeholder), in Norwegian in `res/values-nb/strings.xml` and in Telugu in `res/values-te/strings.xml`
+      `res/values-ta/strings.xml` (no case ending glued to a placeholder), in Norwegian in `res/values-nb/strings.xml`, in Telugu in `res/values-te/strings.xml` and in Marathi in `res/values-mr/strings.xml`
       (no case ending glued to a placeholder)
 - [ ] Any resource of a `values-pt-rPT` or `values-es-rES` (a string, a bool) also in `values-pt` or `values-es`:
       Android 7 and later fall back to a child of the language when its bare folder lacks a resource, so a pt-BR

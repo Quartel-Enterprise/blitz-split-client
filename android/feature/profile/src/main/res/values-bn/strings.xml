@@ -93,6 +93,7 @@
     <string name="profile_language_tamil">তামিল</string>
     <string name="profile_language_norwegian">নরওয়েজিয়ান (বোকমাল)</string>
     <string name="profile_language_telugu">তেলুগু</string>
+    <string name="profile_language_marathi">মারাঠি</string>
     <string name="profile_language_system_detail">ডিভাইসের ভাষা</string>
     <string name="profile_notifications">নোটিফিকেশন</string>
     <plurals name="profile_notifications_active">

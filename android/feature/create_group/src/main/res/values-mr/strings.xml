@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">नवीन ग्रुप</string>
+    <string name="create_group_close">बंद करा</string>
+    <string name="create_group_create">तयार करा</string>
+    <string name="create_group_change_color">ग्रुपचा रंग बदला</string>
+    <string name="create_group_name_label">ग्रुपचे नाव</string>
+    <string name="create_group_type_label">ग्रुपचा प्रकार</string>
+    <string name="create_group_members_title">कोण कोण आहे</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d व्यक्ती</item>
+        <item quantity="other">%d लोक</item>
+    </plurals>
+    <string name="create_group_me">तुम्ही</string>
+    <string name="create_group_remove_member">काढा: %s</string>
+    <string name="create_group_add_placeholder">नावाने जोडा</string>
+    <string name="create_group_add">जोडा</string>
+    <string name="create_group_no_app_notice">आत्ता कोणालाही ॲपची गरज नाही. तुम्ही आताच सर्वांसाठी खर्च जोडू शकता आणि लिंक नंतर पाठवू शकता.</string>
+    <string name="create_group_currency">डीफॉल्ट चलन</string>
+    <string name="create_group_currency_caption">नवीन खर्च या चलनात सुरू होतात; प्रत्येक खर्च दुसरे चलन वापरू शकतो.</string>
+    <string name="create_group_save_error">ग्रुप सेव्ह करता आला नाही. पुन्हा प्रयत्न करा.</string>
+    <string name="create_group_photo">ग्रुपचा फोटो</string>
+    <string name="create_group_take_photo">फोटो काढा</string>
+    <string name="create_group_choose_photo">फोटो निवडा</string>
+    <string name="create_group_remove_photo">फोटो काढून टाका</string>
+    <string name="create_group_photo_error">हा फोटो वापरता आला नाही. दुसरा वापरून पाहा.</string>
+</resources>
