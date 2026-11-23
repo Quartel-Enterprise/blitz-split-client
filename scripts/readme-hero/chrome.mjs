@@ -37,7 +37,14 @@ export async function launchChrome() {
       chrome.kill()
       await exited
     }
-    await rm(profile, { recursive: true, force: true })
+    // Why: Chrome's helper processes can outlive the browser for a moment and still write in the profile, so a
+    // first rm finds a folder filled again (ENOTEMPTY) and failed a whole run of drawn images at its very end. Retry
+    // a few times, then leave a temporary folder behind rather than fail.
+    try {
+      await rm(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 })
+    } catch (error) {
+      console.warn(`Left Chrome's temporary profile ${profile} behind: ${error.message}`)
+    }
   }
   let socket
   const pending = new Map()
