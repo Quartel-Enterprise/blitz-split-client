@@ -11,6 +11,12 @@
             "value" : "Blitz Split"
           }
         },
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -240,6 +246,12 @@
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "bg" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -479,6 +491,12 @@
             "value" : "لمسح رمز QR الخاص بدعوة أو من جهازك القديم، ولالتقاط صورة ملفك الشخصي وصور الفواتير."
           }
         },
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За да сканираш QR кода на покана или от старото си устройство и да направиш профилната си снимка и снимки на разходите."
+          }
+        },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -713,6 +731,12 @@
             "value" : "لدعوة أشخاص من جهات اتصالك برابط مجموعة. تبقى أرقامهم على هذا الجهاز."
           }
         },
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За да каниш хора от контактите си с линка на група. Номерата им остават на това устройство."
+          }
+        },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -945,6 +969,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "لحفظ صور الفاتورة في مكتبتك."
+          }
+        },
+        "bg" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "За да запазваш снимките на разход в галерията си."
           }
         },
         "bn" : {

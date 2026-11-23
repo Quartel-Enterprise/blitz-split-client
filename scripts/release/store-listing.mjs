@@ -92,6 +92,7 @@ export const PLAY_LOCALES = {
   ta: ["ta-IN"],
   nb: ["no-NO"],
   te: ["te-IN"],
+  bg: ["bg"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -136,6 +137,8 @@ export const APP_STORE_LOCALES = {
   ta: ["ta-IN"],
   nb: ["no"],
   te: ["te-IN"],
+  // Apple has no Bulgarian listing locale either: the language has a Play listing and no App Store one.
+  bg: [],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */

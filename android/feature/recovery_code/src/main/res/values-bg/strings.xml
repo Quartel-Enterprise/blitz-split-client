@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Запази кода си за възстановяване</string>
+    <string name="recovery_code_body">Използваш приложението без акаунт. Тези 12 думи връщат данните ти, ако смениш или загубиш устройството си. Запиши ги по ред. След 30 дни без използване данните ти се изтриват и думите спират да работят.</string>
+    <string name="recovery_code_copy">Копирай думите</string>
+    <string name="recovery_code_save_to_password_manager">Запази в мениджъра на пароли</string>
+    <string name="recovery_code_connect_instead">Вместо това свържи Google или Apple</string>
+    <string name="recovery_code_connect_instead_body">Не е нужен код</string>
+    <string name="recovery_code_sign_in_failed">Свързването не успя в момента. Опитай отново.</string>
+    <string name="recovery_code_also_in_profile">Има го и в Профил › Възстановяване.</string>
+    <string name="recovery_code_remind_later">Напомни ми по-късно</string>
+    <string name="recovery_code_saved">Запазих го</string>
+    <string name="recovery_code_download">Изтегли</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · код за възстановяване\n\n%1$s\n\nИзползвай го в „Използвал(а) съм го на друго устройство“, за да върнеш данните си.\n</string>
+</resources>

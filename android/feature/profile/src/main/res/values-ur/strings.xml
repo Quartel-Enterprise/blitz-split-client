@@ -93,6 +93,7 @@
     <string name="profile_language_tamil">تامل</string>
     <string name="profile_language_norwegian">نارویجن (بوکمال)</string>
     <string name="profile_language_telugu">تیلگو</string>
+    <string name="profile_language_bulgarian">بلغاری</string>
     <string name="profile_language_system_detail">ڈیوائس کی زبان</string>
     <string name="profile_notifications">نوٹیفکیشنز</string>
     <plurals name="profile_notifications_active">

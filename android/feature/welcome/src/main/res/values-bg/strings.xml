@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Раздели сметката без главоболия</string>
+    <string name="welcome_offline_title">Работи офлайн</string>
+    <string name="welcome_offline_body">Всичко остава на устройството ти и се синхронизира по-късно.</string>
+    <string name="welcome_optional_title">Акаунтът не е задължителен</string>
+    <string name="welcome_optional_body">Google или Apple само те пазят да не загубиш нищо, когато смениш устройството.</string>
+    <string name="welcome_invite_title">Покани с линк или QR код</string>
+    <string name="welcome_invite_body">Приятелите се присъединяват към групата, без да създават акаунт.</string>
+    <string name="welcome_no_connection_title">Няма връзка.</string>
+    <string name="welcome_no_connection_body">За вход с акаунт е нужен интернет. Използвай приложението без акаунт сега и се свържи по-късно в Профил.</string>
+    <string name="welcome_or">или</string>
+    <string name="welcome_use_without_account">Използвай без акаунт</string>
+    <string name="welcome_used_on_another_device">Използвал(а) съм го на друго устройство</string>
+    <string name="welcome_sign_in_failed">Входът не успя в момента. Опитай отново.</string>
+    <string name="welcome_legal_notice">Продължавайки, приемаш %1$s и потвърждаваш, че си се запознал(а) с %2$s.</string>
+    <string name="welcome_legal_terms">Условията за ползване</string>
+    <string name="welcome_legal_privacy">Политиката за поверителност</string>
+    <string name="welcome_no_account_note">Без акаунт данните ти се изтриват след 30 дни без използване. Свържи Google или Apple, за да ги запазиш.</string>
+    <string name="welcome_no_account_note_offline">Без акаунт данните ти се изтриват след 30 дни без използване. Свържи Google или Apple по-късно в Профил, за да ги запазиш.</string>
+    <string name="welcome_expired_title">Данните ти бяха изтрити</string>
+    <string name="welcome_expired_body">Използваше приложението без акаунт и не го отвори 30 дни, затова данните ти бяха изтрити. Свържи Google или Apple, за да ги запазиш следващия път.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

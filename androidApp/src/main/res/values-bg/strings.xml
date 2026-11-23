@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Не си в тази група</string>
+    <string name="bill_link_not_in_group_message">Този коментар е в група, в която не си. Поискай покана от този, който ти изпрати линка.</string>
+    <string name="bill_link_offline_title">Няма интернет</string>
+    <string name="bill_link_offline_message">Отвори линка отново, щом връзката се възстанови.</string>
+    <string name="bill_link_go_home">Към Начало</string>
+    <string name="discard_changes_title">Да се отхвърлят ли промените?</string>
+    <string name="discard_changes_message">Незапазените промени ще бъдат загубени.</string>
+    <string name="discard_changes_discard">Отхвърли</string>
+    <string name="discard_changes_keep_editing">Продължи редакцията</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Часовник</string>
+    <string name="watch_connected_title">%1$s е свързан с акаунта ти</string>
+    <string name="watch_connected_title_unnamed">Часовникът е свързан с акаунта ти</string>
+    <string name="watch_connected_text">Вижда групите ти и се синхронизира сам. За да го изключиш, излез от акаунта на часовника.</string>
+</resources>

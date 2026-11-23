@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Свържи се с поддръжката</string>
+    <string name="contact_support_description">Ще отворим имейл приложението ти с готово съобщение. Опиши какво се случи и го изпрати: истински хора четат всяко съобщение.</string>
+    <string name="contact_support_to">До</string>
+    <string name="contact_support_diagnostics">Ще бъде включено в имейла</string>
+    <string name="contact_support_app_version">Версия на приложението</string>
+    <string name="contact_support_platform">Платформа</string>
+    <string name="contact_support_language">Език</string>
+    <string name="contact_support_account">Акаунт</string>
+    <string name="contact_support_profile">Профил</string>
+    <string name="contact_support_language_system">Системен</string>
+    <string name="contact_support_account_local">Само това устройство</string>
+    <string name="contact_support_account_anonymous">Не е свързан</string>
+    <string name="contact_support_open_email">Отвори имейла</string>
+    <string name="contact_support_copy_email">Копирай имейл адреса</string>
+    <string name="contact_support_notice_copied">Имейл адресът е копиран.</string>
+    <string name="contact_support_notice_no_app">Не е намерено имейл приложение. Вместо това адресът беше копиран.</string>
+    <string name="contact_support_close">Затвори</string>
+</resources>

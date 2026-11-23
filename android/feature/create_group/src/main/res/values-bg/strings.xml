@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Нова група</string>
+    <string name="create_group_close">Затвори</string>
+    <string name="create_group_create">Създай</string>
+    <string name="create_group_change_color">Смени цвета на групата</string>
+    <string name="create_group_name_label">Име на групата</string>
+    <string name="create_group_type_label">Тип група</string>
+    <string name="create_group_members_title">Кой участва</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d човек</item>
+        <item quantity="other">%d души</item>
+    </plurals>
+    <string name="create_group_me">ти</string>
+    <string name="create_group_remove_member">Премахни %s</string>
+    <string name="create_group_add_placeholder">Добави по име</string>
+    <string name="create_group_add">Добави</string>
+    <string name="create_group_no_app_notice">Засега никой не се нуждае от приложението. Вече можеш да добавяш разходи за всички и да изпратиш линка по-късно.</string>
+    <string name="create_group_currency">Валута по подразбиране</string>
+    <string name="create_group_currency_caption">Новите разходи започват в тази валута; всеки разход може да използва друга.</string>
+    <string name="create_group_save_error">Групата не можа да се запази. Опитай отново.</string>
+    <string name="create_group_photo">Снимка на групата</string>
+    <string name="create_group_take_photo">Направи снимка</string>
+    <string name="create_group_choose_photo">Избери снимка</string>
+    <string name="create_group_remove_photo">Премахни снимката</string>
+    <string name="create_group_photo_error">Тази снимка не може да се използва. Опитай с друга.</string>
+</resources>

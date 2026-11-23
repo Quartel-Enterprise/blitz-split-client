@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Редактирай профила</string>
+    <string name="edit_profile_save">Запази</string>
+    <string name="edit_profile_change_photo">Смени снимката</string>
+    <string name="edit_profile_take_photo">Направи снимка</string>
+    <string name="edit_profile_choose_photo">Избери от галерията</string>
+    <string name="edit_profile_use_account_photo">Използвай снимката от акаунта в %1$s</string>
+    <string name="edit_profile_remove_photo">Премахни снимката</string>
+    <string name="edit_profile_photo_error">Тази снимка не може да се използва. Опитай с друга.</string>
+    <string name="edit_profile_avatar_color">Цвят на аватара</string>
+    <string name="edit_profile_avatar_color_hint">Показва се, когато нямаш снимка.</string>
+    <string name="edit_profile_name_label">Твоето име</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Въведи поне %d букви.</string>
+    <string name="edit_profile_name_too_long">Използвай най-много %d знака.</string>
+    <string name="edit_profile_account_notice">Името и снимката дойдоха от акаунта ти в %1$s. Промяната им тук важи само за Blitz Split и не променя акаунта ти в %1$s.</string>
+    <string name="edit_profile_footer">Групите ти и всеки с линка към профила ти виждат името и снимката ти.</string>
+    <string name="profile_photo_close">Затвори</string>
+    <string name="profile_photo_camera">Камера</string>
+    <string name="profile_photo_gallery">Галерия</string>
+    <string name="profile_photo_remove">Премахни</string>
+    <string name="profile_photo_title">Снимка на профила</string>
+</resources>

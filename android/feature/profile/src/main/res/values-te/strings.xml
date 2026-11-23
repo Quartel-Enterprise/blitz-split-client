@@ -93,6 +93,7 @@
     <string name="profile_language_tamil">తమిళం</string>
     <string name="profile_language_norwegian">నార్వేజియన్ బోక్‌మాల్</string>
     <string name="profile_language_telugu">తెలుగు</string>
+    <string name="profile_language_bulgarian">బల్గేరియన్</string>
     <string name="profile_language_system_detail">పరికరం భాష</string>
     <string name="profile_notifications">నోటిఫికేషన్‌లు</string>
     <plurals name="profile_notifications_active">
