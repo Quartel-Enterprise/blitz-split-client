@@ -145,7 +145,7 @@ private struct AppDownloadContent: View {
     /// "Oct 12", the day the account first signed in on a phone app.
     static func day(_ millis: KotlinLong) -> String {
         Date(timeIntervalSince1970: Double(millis.int64Value) / 1000)
-            .formatted(.dateTime.day().month(.abbreviated).appLocale())
+            .formatted(.dateTime.day().month(.abbreviated).appDateFormat())
     }
 }
 

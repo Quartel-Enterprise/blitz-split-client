@@ -71,7 +71,7 @@ struct AllExpensesFilterBar: View {
     private var periodText: String {
         if filters.period == .custom, let start = filters.customStartMillis, let end = filters.customEndMillis {
             let range = ExpenseFormat.date(of: start.int64Value)..<ExpenseFormat.date(of: end.int64Value)
-            return range.formatted(.interval.day().month(.abbreviated).year().appLocale())
+            return range.formatted(.interval.day().month(.abbreviated).year().appDateFormat())
         }
         return switch filters.period {
         case .thisYear: String(localized: "This year", bundle: .appLanguage)

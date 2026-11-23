@@ -44,10 +44,14 @@ enum AppNumbers {
 
     /// The device's calendar, but the Gregorian one in Persian and Thai, whose devices default to the Solar Hijri
     /// calendar (1405 for 2026) and the Buddhist era (2569): a group is shared across platforms, so an iPhone shows the
-    /// year Android and the web show (Pierre's call).
-    static var calendar: Calendar {
-        guard let code = Locale.autoupdatingCurrent.language.languageCode?.identifier, gregorianCodes.contains(code)
-        else { return .autoupdatingCurrent }
+    /// year Android and the web show (Pierre's call). Persian or Thai is the app's language (Profile › Language, which
+    /// may not have relaunched the app yet) or the device's.
+    static var calendar: Calendar { calendar(locale: locale) }
+
+    /// `calendar` with its locale already built, as a date style that also needs the locale builds it once.
+    static func calendar(locale: Locale) -> Calendar {
+        let codes = [Bundle.appLanguageCode, Locale.autoupdatingCurrent.language.languageCode?.identifier]
+        guard codes.contains(where: { $0.map(gregorianCodes.contains) ?? false }) else { return .autoupdatingCurrent }
         var gregorian = Calendar(identifier: .gregorian)
         gregorian.locale = locale
         gregorian.timeZone = .autoupdatingCurrent
@@ -73,18 +77,20 @@ enum AppNumbers {
 extension Date.FormatStyle {
     /// In the app's locale (`AppNumbers.locale`) and calendar (`AppNumbers.calendar`): 0-9, and the Gregorian year in
     /// Persian and Thai.
-    func appLocale() -> Date.FormatStyle {
-        var style = locale(AppNumbers.locale)
-        style.calendar = AppNumbers.calendar
+    func appDateFormat() -> Date.FormatStyle {
+        let appLocale = AppNumbers.locale
+        var style = locale(appLocale)
+        style.calendar = AppNumbers.calendar(locale: appLocale)
         return style
     }
 }
 
 extension Date.IntervalFormatStyle {
-    /// In the app's locale and calendar, as `Date.FormatStyle.appLocale()`.
-    func appLocale() -> Date.IntervalFormatStyle {
-        var style = locale(AppNumbers.locale)
-        style.calendar = AppNumbers.calendar
+    /// In the app's locale and calendar, as `Date.FormatStyle.appDateFormat()`.
+    func appDateFormat() -> Date.IntervalFormatStyle {
+        let appLocale = AppNumbers.locale
+        var style = locale(appLocale)
+        style.calendar = AppNumbers.calendar(locale: appLocale)
         return style
     }
 }
