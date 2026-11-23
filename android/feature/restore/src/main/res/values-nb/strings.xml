@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Hent gruppene dine tilbake</string>
+    <string name="restore_subtitle">Logget du inn med en konto før? Logg bare inn igjen. Hvis ikke, bruk gjenopprettingskoden eller QR-koden fra den gamle enheten.</string>
+    <string name="restore_no_connection_title">Ingen tilkobling</string>
+    <string name="restore_no_connection_body">Det trengs internett for å logge inn med en konto eller en kode og laste ned gruppene dine. Det du skrev inn, beholdes.</string>
+    <string name="restore_code_label">Eller bruk gjenopprettingskoden</string>
+    <string name="restore_code_hint">De 12 ordene i rekkefølge. Lim dem alle inn i ett felt for å fylle ut alle feltene.</string>
+    <string name="restore_scan_qr_title">Skann QR-koden fra den gamle enheten</string>
+    <string name="restore_scan_qr_body">Der: Profil › Gjenoppretting › Vis QR-kode</string>
+    <string name="restore_recover">Gjenopprett</string>
+    <string name="restore_try_again">Prøv igjen</string>
+    <string name="restore_start_fresh">Start på nytt på denne enheten</string>
+    <string name="restore_error_invalid_code">Fant ikke koden. Sjekk ordene og rekkefølgen, og prøv igjen.</string>
+    <string name="restore_error_too_many_attempts">For mange forsøk. Vent noen minutter og prøv igjen.</string>
+    <string name="restore_error_sign_in_failed">Kunne ikke logge inn akkurat nå. Prøv igjen.</string>
+    <string name="restore_error_unknown">Noe gikk galt. Prøv igjen.</string>
+</resources>

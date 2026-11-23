@@ -142,6 +142,6 @@ enum GroupsCopy {
 
     /// "Oct 3" or "3 de out.".
     private static func shortDate(_ millis: Int64) -> String {
-        ExpenseFormat.date(of: millis).formatted(.dateTime.day().month(.abbreviated).locale(AppNumbers.locale))
+        ExpenseFormat.date(of: millis).formatted(.dateTime.day().month(.abbreviated).appDateFormat())
     }
 }

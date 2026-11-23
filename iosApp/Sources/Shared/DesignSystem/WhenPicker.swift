@@ -27,6 +27,7 @@ struct WhenPickerRows: View {
             .datePickerStyle(.graphical)
             .labelsHidden()
             .clockHourCycle()
+            .appCalendar()
         }
     }
 }
@@ -53,6 +54,7 @@ struct BillWhenPickerRows: View {
             DatePicker("When", selection: $day, in: ...latest, displayedComponents: [.date])
                 .datePickerStyle(.graphical)
                 .labelsHidden()
+                .appCalendar()
         }
         // The time picker has no upper bound: `latest` only moves when the calendar opens, and the ViewModel turns a
         // later time today into now.
@@ -121,6 +123,7 @@ struct MacWhenField: View {
                     )
                     .datePickerStyle(.graphical)
                     .labelsHidden()
+                    .appCalendar()
                     DatePicker(
                         "Time",
                         selection: $selection,
@@ -163,6 +166,7 @@ struct MacBillWhenField: View {
                     DatePicker("When", selection: $day, in: ...latest, displayedComponents: [.date])
                         .datePickerStyle(.graphical)
                         .labelsHidden()
+                        .appCalendar()
                         .padding()
                 }
                 DatePicker("Time", selection: $time, displayedComponents: [.hourAndMinute])

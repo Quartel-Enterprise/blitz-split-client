@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Slett konto</string>
+    <string name="delete_account_offline_title">Ingen nett.</string>
+    <string name="delete_account_offline_body">Det trengs en internettforbindelse for å slette kontoen din. Koble til og prøv igjen.</string>
+    <string name="delete_account_heading">Slette kontoen og dataene dine?</string>
+    <string name="delete_account_deleted_title">Dette slettes</string>
+    <string name="delete_account_deleted_profile">Profilen din (navn, bilde og farge)</string>
+    <string name="delete_account_deleted_keys">Pix- og Bitcoin-nøklene dine</string>
+    <string name="delete_account_deleted_provider">Koblingen til %1$s-kontoen din</string>
+    <string name="delete_account_deleted_recovery_code">Gjenopprettingskoden din</string>
+    <string name="delete_account_deleted_device">Kopien av dataene dine på denne enheten</string>
+    <string name="delete_account_kept_title">Dette blir værende i gruppene dine</string>
+    <string name="delete_account_kept_groups">Gruppene, med utgifter og betalinger, for de andre medlemmene</string>
+    <string name="delete_account_kept_member">Navnet ditt i hver gruppe, som medlem uten konto</string>
+    <string name="delete_account_kept_comments">Kommentarene dine og bildene du la til, under navnet ditt</string>
+    <string name="delete_account_export">Eksporter dataene mine først</string>
+    <string name="delete_account_confirm">Jeg forstår at dette ikke kan angres</string>
+    <string name="delete_account_delete">Slett konto</string>
+    <string name="delete_account_cancel">Avbryt</string>
+    <string name="delete_account_failed">Kunne ikke slette kontoen din. Prøv igjen.</string>
+</resources>

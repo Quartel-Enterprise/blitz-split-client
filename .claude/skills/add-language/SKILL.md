@@ -66,6 +66,11 @@ Every translator, human or agent, reads it first; without it each one picks its 
   (`WordSpacing.kt`), `WordGap.swift` and the web's `wordGap`, `fullStop` and `clauseBreak` in `i18n/index.ts`. A
   language that parts its phrases with a space but has no full stop or comma (Thai) keeps the word gap and changes only
   `fullStopUi`, `WordGap.fullStop` and the web's `fullStop` and `clauseBreak`.
+- A language whose default calendar isn't the Gregorian one (Thai's Buddhist era, Persian's Solar Hijri): every
+  platform writes the Gregorian year (Pierre's call, so a group shows the same dates everywhere), so add it to
+  `ownCalendarLanguages` (`RightToLeft.kt`) and `gregorianLanguages` (`LegacyAppLocale`) on Android, `formattingKeys`
+  (`ca: 'gregory'`) on the web and `gregorianCodes` (`AppNumbers`) on Apple, and to `latinDigitLanguages` and their
+  peers when its digits aren't 0-9.
 - A currency that comes with the language (Pierre's call, step 1): its `GroupCurrency` (code, regions, `fractionDigits`
   when it has none, as the yen, rupiah and won) after the last one in `entries`, a `GroupCurrencyTest` for its region,
   `ExpenseRules.maxAmountMinorFor` when 100 million of it is too little (the rupiah), and its paragraph in

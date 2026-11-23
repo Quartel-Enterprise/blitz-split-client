@@ -861,6 +861,7 @@ export const te: Record<MessageKey, string> = {
   profile_languageSlovak: 'స్లోవాక్',
   profile_languagePersian: 'పర్షియన్',
   profile_languageTamil: 'తమిళం',
+  profile_languageNorwegian: 'నార్వేజియన్ బోక్‌మాల్',
   profile_languageTelugu: 'తెలుగు',
   profile_bitcoinInSats: 'బిట్‌కాయిన్ satoshisలో',
   profile_bitcoinInSatsDetail: 'బిట్‌కాయిన్ మొత్తాలను satsలో చూపిస్తుంది, టైప్ చేయిస్తుంది (1 ₿ = 100,000,000 sats).',

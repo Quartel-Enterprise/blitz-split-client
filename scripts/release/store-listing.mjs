@@ -90,6 +90,7 @@ export const PLAY_LOCALES = {
   sk: ["sk"],
   fa: ["fa"],
   ta: ["ta-IN"],
+  nb: ["no-NO"],
   te: ["te-IN"],
 };
 export const APP_STORE_LOCALES = {
@@ -133,6 +134,7 @@ export const APP_STORE_LOCALES = {
   // Apple has no Persian listing locale either: the language has a Play listing and no App Store one.
   fa: [],
   ta: ["ta-IN"],
+  nb: ["no"],
   te: ["te-IN"],
 };
 

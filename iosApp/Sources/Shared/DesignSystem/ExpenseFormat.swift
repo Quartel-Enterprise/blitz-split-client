@@ -266,12 +266,12 @@ enum ExpenseFormat {
 
     /// "Oct 28" or "28 de out.".
     static func shortDate(_ millis: Int64) -> String {
-        date(of: millis).formatted(.dateTime.day().month(.abbreviated).locale(AppNumbers.locale))
+        date(of: millis).formatted(.dateTime.day().month(.abbreviated).appDateFormat())
     }
 
     /// "Fri, Oct 24" or "sex., 24 de out.".
     private static func weekdayDate(_ millis: Int64) -> String {
-        date(of: millis).formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated).locale(AppNumbers.locale))
+        date(of: millis).formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated).appDateFormat())
     }
 
     /// "Diego", "Diego and Elisa" or "Ana, Diego and Elisa", in the device's language.
