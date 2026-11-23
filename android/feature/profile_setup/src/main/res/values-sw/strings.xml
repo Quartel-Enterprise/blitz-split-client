@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Marafiki zako wanakuitaje?</string>
+    <string name="profile_setup_subtitle">Vikundi vyako na yeyote mwenye kiungo cha wasifu wako wanaona jina lako.</string>
+    <string name="profile_setup_avatar_color">Rangi ya avatar</string>
+    <string name="profile_setup_add_photo">Ongeza picha</string>
+    <string name="profile_setup_photo_error">Imeshindwa kutumia picha hii. Jaribu nyingine.</string>
+    <string name="profile_setup_name_label">Jina lako</string>
+    <string name="profile_setup_name_placeholder">Juma Hassani</string>
+    <string name="profile_setup_name_too_short">Andika angalau herufi %d.</string>
+    <string name="profile_setup_name_too_long">Tumia hadi herufi %d.</string>
+    <string name="profile_setup_name_hint">Unaweza kulibadilisha baadaye kwenye Wasifu.</string>
+    <string name="profile_setup_saved_locally">Imehifadhiwa kwenye kifaa hiki tu kwa sasa.</string>
+    <string name="profile_setup_continue">Endelea</string>
+</resources>

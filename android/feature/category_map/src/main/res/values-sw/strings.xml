@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Hakuna maneno</string>
+    <string name="category_map_title">Ramani ya aina</string>
+    <string name="category_map_search">Tafuta maneno</string>
+    <string name="category_map_add">Ongeza neno</string>
+    <string name="category_map_more">Chaguo zaidi</string>
+    <string name="category_map_restore">Rejesha chaguomsingi</string>
+    <string name="category_map_back">Rudi</string>
+    <string name="category_map_intro">Jina la gharama likiwa na mojawapo ya maneno haya, aina yake inakuja yenyewe. “Uber nyumbani” inakuwa Usafiri.</string>
+    <string name="category_map_intro_offline">Ramani inafanya kazi nje ya mtandao: mabadiliko yanahesabika mara moja kwenye kifaa hiki na yanafika kwenye vifaa vyako vingine ukirudi mtandaoni.</string>
+    <string name="category_map_device_only">Ramani yako inabaki kwenye kifaa hiki tu. Ili kuipeleka kwenye vifaa vyako vingine, ingia kwa Google au Apple kwenye Wasifu wako.</string>
+    <string name="category_map_open_profile">Fungua Wasifu</string>
+    <string name="category_map_longest_wins">Maneno mawili yakilingana na jina, lililo refu zaidi linashinda.</string>
+    <string name="category_map_no_result">Hakuna neno lenye “%1$s”</string>
+    <string name="category_map_no_result_body">Liongeze na gharama zenye neno hili kwenye jina zitakuja na aina sahihi.</string>
+    <string name="category_map_add_query">Ongeza “%1$s”</string>
+    <string name="category_map_empty_title">Ramani yako ni tupu</string>
+    <string name="category_map_empty_body">Bila maneno, aina haitokani na jina: unaichagua kwenye kila gharama.</string>
+    <string name="category_map_group_category"> · aina ya kikundi %1$s</string>
+    <string name="category_map_only_main">%1$s tu</string>
+    <string name="category_map_only_in_group">kwenye %1$s tu</string>
+    <string name="category_map_no_terms_yet">Bado hakuna maneno.</string>
+    <string name="category_map_add_in">Ongeza neno kwenye: %1$s</string>
+    <string name="category_map_tip">Gusa neno ili kubadilisha aina yake au kuliondoa. Linalingana na neno zima, bila kujali lafudhi wala herufi kubwa au ndogo.</string>
+    <string name="category_map_queued">kwenye foleni</string>
+    <string name="category_map_term_action">%1$s, %2$s. Hariri</string>
+    <string name="category_map_new_term">Neno jipya</string>
+    <string name="category_map_edit_term">Hariri neno</string>
+    <string name="category_map_term_label">Neno au kirai</string>
+    <string name="category_map_term_help">Linalingana na neno zima, bila kujali lafudhi wala herufi kubwa au ndogo.</string>
+    <string name="category_map_term_help_app">Neno la programu. Rejesha chaguomsingi inalirudisha kama lilivyokuja.</string>
+    <string name="category_map_term_duplicate">“%1$s” tayari linachagua %2$s. Kila neno lina aina moja.</string>
+    <string name="category_map_term_too_short">Tumia angalau herufi 2.</string>
+    <string name="category_map_term_too_long">Tumia herufi 30 au chache zaidi.</string>
+    <string name="category_map_term_invalid">Tumia herufi, tarakimu na nafasi tu.</string>
+    <string name="category_map_category">Aina</string>
+    <string name="category_map_category_help">Inaweza kuwa aina au aina ndogo.</string>
+    <string name="category_map_category_help_edit">Kuibadilisha hapa kunahamisha neno kwenda aina nyingine.</string>
+    <string name="category_map_category_help_move">Kuhamisha kunaondoa neno kwenye: %1$s.</string>
+    <string name="category_map_example">Mfano</string>
+    <string name="category_map_example_move">Likihamishwa</string>
+    <string name="category_map_remove">Ondoa</string>
+    <string name="category_map_cancel">Ghairi</string>
+    <string name="category_map_save">Hifadhi</string>
+    <string name="category_map_move_to">Hamishia: %1$s</string>
+    <string name="category_map_removed">“%1$s” limeondolewa kwenye ramani</string>
+    <string name="category_map_undo">Tendua</string>
+    <string name="category_map_restore_title">Urejeshe ramani chaguomsingi?</string>
+    <string name="category_map_restore_body">Maneno 60 ya programu yanarudi kama yalivyokuja, pamoja na yale uliyoondoa au kuhamisha.</string>
+    <string name="category_map_restore_own_one">Neno uliloliunda, “%1$s”, linabaki.</string>
+    <string name="category_map_restore_confirm">Rejesha</string>
+    <string name="category_map_save_error">Imeshindwa kuhifadhi ramani. Jaribu tena.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">neno %d</item>
+        <item quantity="other">maneno %d</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">aina ndogo %d</item>
+        <item quantity="other">aina ndogo %d</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">neno %1$d lenye “%2$s”</item>
+        <item quantity="other">maneno %1$d yenye “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Nje ya mtandao · badiliko %d kwenye foleni</item>
+        <item quantity="other">Nje ya mtandao · mabadiliko %d kwenye foleni</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Maneno %d uliyoyaunda yanabaki.</item>
+        <item quantity="other">Maneno %d uliyoyaunda yanabaki.</item>
+    </plurals>
+    <string name="category_map_new_category">Aina mpya</string>
+    <string name="category_map_new_subcategory_in">Aina ndogo mpya kwenye: %s</string>
+    <string name="category_map_edit_category">Hariri: %s</string>
+    <string name="category_map_category_group">Kikundi</string>
+    <string name="category_map_change_color">Badilisha rangi ya %1$s</string>
+    <string name="category_map_restore_color">Rejesha rangi</string>
+    <string name="category_map_color_done">Sawa</string>
+</resources>

@@ -87,6 +87,7 @@ const nativeLanguageNames: Record<string, string> = {
   te: 'తెలుగు',
   bg: 'Български',
   mr: 'मराठी',
+  sw: 'Kiswahili',
   ca: 'Català',
 }
 
@@ -133,6 +134,7 @@ const languageNames: Record<string, MessageKey> = {
   te: 'profile_languageTelugu',
   bg: 'profile_languageBulgarian',
   mr: 'profile_languageMarathi',
+  sw: 'profile_languageSwahili',
   ca: 'profile_languageCatalan',
 }
 

@@ -866,6 +866,7 @@ export const nb: Record<MessageKey, string> = {
   profile_languageTelugu: 'Telugu',
   profile_languageBulgarian: 'Bulgarsk',
   profile_languageMarathi: 'Marathi',
+  profile_languageSwahili: 'Swahili',
   profile_languageCatalan: 'Katalansk',
   profile_bitcoinInSats: 'Bitcoin i satoshi',
   profile_bitcoinInSatsDetail: 'Viser og skriver inn bitcoin-beløp i sats (1 ₿ = 100 000 000 sats).',

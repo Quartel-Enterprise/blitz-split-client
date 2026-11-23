@@ -141,6 +141,6 @@ version.
 Write `store-listing/<language>.md`, add the language to `LANGS` (the release notes need it too:
 [release-notes.md](release-notes.md)) and its locales to `PLAY_LOCALES` and `APP_STORE_LOCALES`. A regional
 listing of a language the release notes already have, as Spain's Spanish, goes in `LISTING_LANGS` alone, and takes
-its locale from its language's list. A language one store has no locale for, as Filipino, Serbian, Persian and Bulgarian on the App Store, have
-an empty list there (`fil: []`, `sr: []`, `fa: []`, `bg: []`): its listing goes to the other store alone. The check then
+its locale from its language's list. A language one store has no locale for, as Filipino, Serbian, Persian, Bulgarian and Swahili on the App Store, have
+an empty list there (`fil: []`, `sr: []`, `fa: []`, `bg: []`, `sw: []`): its listing goes to the other store alone. The check then
 passes, and the next `upload_listing` creates the listing in that locale. The `add-language` skill lists the rest.

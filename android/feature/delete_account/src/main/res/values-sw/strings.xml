@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Futa akaunti</string>
+    <string name="delete_account_offline_title">Hakuna intaneti.</string>
+    <string name="delete_account_offline_body">Kufuta akaunti yako kunahitaji muunganisho wa intaneti. Unganisha kisha ujaribu tena.</string>
+    <string name="delete_account_heading">Futa akaunti yako na data yako?</string>
+    <string name="delete_account_deleted_title">Kinachofutwa</string>
+    <string name="delete_account_deleted_profile">Wasifu wako (jina, picha na rangi)</string>
+    <string name="delete_account_deleted_keys">Funguo zako za Pix na Bitcoin</string>
+    <string name="delete_account_deleted_provider">Muunganisho na akaunti yako ya %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Msimbo wako wa kurejesha</string>
+    <string name="delete_account_deleted_device">Nakala ya data yako kwenye kifaa hiki</string>
+    <string name="delete_account_kept_title">Kinachobaki kwenye vikundi vyako</string>
+    <string name="delete_account_kept_groups">Vikundi, pamoja na gharama na malipo yake, kwa washiriki wengine</string>
+    <string name="delete_account_kept_member">Jina lako katika kila kikundi, kama mshiriki bila akaunti</string>
+    <string name="delete_account_kept_comments">Maoni yako na picha ulizoongeza, chini ya jina lako</string>
+    <string name="delete_account_export">Hamisha data yangu kwanza</string>
+    <string name="delete_account_confirm">Ninaelewa kuwa hili haliwezi kutenduliwa</string>
+    <string name="delete_account_delete">Futa akaunti</string>
+    <string name="delete_account_cancel">Ghairi</string>
+    <string name="delete_account_failed">Imeshindwa kufuta akaunti yako. Jaribu tena.</string>
+</resources>

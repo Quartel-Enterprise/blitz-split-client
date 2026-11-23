@@ -147,6 +147,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.TELUGU,
                 AppLanguage.BULGARIAN,
                 AppLanguage.MARATHI,
+                AppLanguage.SWAHILI,
                 AppLanguage.CATALAN,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
@@ -197,6 +198,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "te",
                     "bg",
                     "mr",
+                    "sw",
                     "ca",
                     "zh-Hant",
                 ),
@@ -262,6 +264,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "te",
             "bg",
             "mr",
+            "sw",
             "ca",
             "zh-Hant",
         )
@@ -321,6 +324,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "te-IN",
                 "bg-BG",
                 "mr-IN",
+                "sw-KE",
                 "ca-ES",
                 "zh-TW",
             )
@@ -373,6 +377,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "te",
                     "bg",
                     "mr",
+                    "sw",
                     "ca",
                     "zh-Hant",
                 ),
@@ -425,7 +430,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in a language the app does not have THEN it is en`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("eu", "eu-ES", "sw", "sw-KE", "am", "am-ET", "ceb", "ceb-PH", "sw-TZ")
+        val devices = listOf("eu", "eu-ES", "zu", "zu-ZA", "am", "am-ET", "ceb", "ceb-PH", "yo-NG")
 
         // When
         val spoken = devices.map { spokenOn(it) }
@@ -579,7 +584,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System on a device with no language the app has WHEN observing THEN it is en`() = runTest {
         // Given
         prepareScenario()
-        deviceLanguages = listOf("eu-ES", "sw-KE")
+        deviceLanguages = listOf("eu-ES", "zu-ZA")
 
         // When
         val language = observeSpokenLanguage().first()

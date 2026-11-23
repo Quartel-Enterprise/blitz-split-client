@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Wasiliana na usaidizi</string>
+    <string name="contact_support_description">Tutafungua programu yako ya barua pepe ikiwa na ujumbe tayari. Eleza kilichotokea kisha uutume: watu halisi wanasoma kila ujumbe.</string>
+    <string name="contact_support_to">Kwa</string>
+    <string name="contact_support_diagnostics">Vitajumuishwa kwenye barua pepe</string>
+    <string name="contact_support_app_version">Toleo la programu</string>
+    <string name="contact_support_platform">Jukwaa</string>
+    <string name="contact_support_language">Lugha</string>
+    <string name="contact_support_account">Akaunti</string>
+    <string name="contact_support_profile">Wasifu</string>
+    <string name="contact_support_language_system">Mfumo</string>
+    <string name="contact_support_account_local">Kifaa hiki tu</string>
+    <string name="contact_support_account_anonymous">Haijaunganishwa</string>
+    <string name="contact_support_open_email">Fungua barua pepe</string>
+    <string name="contact_support_copy_email">Nakili anwani ya barua pepe</string>
+    <string name="contact_support_notice_copied">Anwani ya barua pepe imenakiliwa.</string>
+    <string name="contact_support_notice_no_app">Hakuna programu ya barua pepe iliyopatikana. Badala yake anwani imenakiliwa.</string>
+    <string name="contact_support_close">Funga</string>
+</resources>

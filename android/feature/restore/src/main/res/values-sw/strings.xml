@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Rejesha vikundi vyako</string>
+    <string name="restore_subtitle">Uliingia kwa akaunti hapo awali? Ingia tena tu. Kama sivyo, tumia msimbo wa kurejesha au msimbo wa QR kutoka kwenye kifaa chako cha zamani.</string>
+    <string name="restore_no_connection_title">Hakuna muunganisho</string>
+    <string name="restore_no_connection_body">Kuingia kwa akaunti au msimbo kunahitaji intaneti ili kupakua vikundi vyako. Ulichoandika kimehifadhiwa.</string>
+    <string name="restore_code_label">Au tumia msimbo wa kurejesha</string>
+    <string name="restore_code_hint">Maneno 12 kwa mpangilio. Yabandike yote kwenye sehemu moja ili kujaza kila sehemu.</string>
+    <string name="restore_scan_qr_title">Changanua msimbo wa QR kutoka kwenye kifaa chako cha zamani</string>
+    <string name="restore_scan_qr_body">Huko: Wasifu › Urejeshaji › Onyesha msimbo wa QR</string>
+    <string name="restore_recover">Rejesha</string>
+    <string name="restore_try_again">Jaribu tena</string>
+    <string name="restore_start_fresh">Anza upya kwenye kifaa hiki</string>
+    <string name="restore_error_invalid_code">Msimbo haujapatikana. Angalia maneno na mpangilio wake, kisha ujaribu tena.</string>
+    <string name="restore_error_too_many_attempts">Majaribio mengi mno. Subiri dakika chache kisha ujaribu tena.</string>
+    <string name="restore_error_sign_in_failed">Imeshindwa kuingia kwa sasa. Jaribu tena.</string>
+    <string name="restore_error_unknown">Hitilafu imetokea. Jaribu tena.</string>
+</resources>

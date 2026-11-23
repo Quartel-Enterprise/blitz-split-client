@@ -22,12 +22,13 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     group, a removed member) shows the brand's card, the same image blitzsplit.com's home page shows in a preview. A
     messenger keeps a preview it already fetched: changing the link doesn't change the previews already posted.
     A crawler says nothing of who reads the preview, so the group's currency picks its language: BRL Portuguese ("Bora
-    Rachar"), ARS, CLP, COP, MXN, PEN, UYU, PYG, BOB, VES, CRC, GTQ, HNL, NIO, DOP and CUP Spanish, JPY Japanese, TRY Turkish, IDR Indonesian, PLN Polish, RUB Russian, UAH Ukrainian, KRW Korean, INR Hindi, SAR and EGP Arabic, CNY Simplified Chinese, ILS Hebrew, THB Thai, VND Vietnamese, TWD Traditional Chinese, SEK Swedish, CZK Czech, RON Romanian, BDT Bengali, MYR Malay, HUF Hungarian, PKR Urdu, PHP Filipino, RSD Serbian, IRR Persian, NOK Norwegian,
+    Rachar"), ARS, CLP, COP, MXN, PEN, UYU, PYG, BOB, VES, CRC, GTQ, HNL, NIO, DOP and CUP Spanish, JPY Japanese, TRY Turkish, IDR Indonesian, PLN Polish, RUB Russian, UAH Ukrainian, KRW Korean, INR Hindi, SAR and EGP Arabic, CNY Simplified Chinese, ILS Hebrew, THB Thai, VND Vietnamese, TWD Traditional Chinese, SEK Swedish, CZK Czech, RON Romanian, BDT Bengali, MYR Malay, HUF Hungarian, PKR Urdu, PHP Filipino, RSD Serbian, IRR Persian, NOK Norwegian, KES and TZS Swahili,
     any other English. No currency picks French, German, Italian, Dutch, Greek, Croatian, Slovak, Bulgarian or Catalan, since the euro, the Swiss franc and the
     Canadian dollar are each spoken in more than one language, and a USD or EUR group of Spanish speakers gets English
     too: an accepted trade-off. The UAE dirham and the Moroccan dirham pick none either, English and French being as
     common there as Arabic. The picking happens in the `blitz-split-api` repository (a separate one), so a PHP group's preview speaks Filipino, an RSD group's Serbian,
-    an IRR group's Persian and a NOK group's Norwegian only once that side maps the peso, the dinar, the rial and the krone to them.
+    an IRR group's Persian and a NOK group's Norwegian and a KES or TZS group's Swahili only once that side maps the peso, the dinar, the rial, the
+    krone and the shillings to them.
   - Every other link the apps share has a preview of its own too, from the same Worker and edge function. A bill's
     link (`/c/<code>`, "Share bill") that "Anyone with the link" opens reads "<bill> · <amount>" with who paid, among
     how many it is split and the group, and an image of the category's icon, the bill's name, its amount and "<payer>
