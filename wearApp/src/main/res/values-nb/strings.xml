@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Bruk den samme kontoen som på telefonen din her. Da fungerer klokken på egen hånd.</string>
+    <string name="pair_connect">Koble til</string>
+    <string name="pair_connecting">Henter kontoen din fra telefonen…</string>
+    <string name="pair_connected_title">Klar, %1$s</string>
+    <string name="pair_connected_title_unnamed">Klar</string>
+    <string name="pair_connected_body">Klokken synkroniserer på egen hånd, selv når du er borte fra telefonen.</string>
+    <string name="pair_continue">Fortsett</string>
+    <string name="pair_local_only_title">Dataene dine er bare på telefonen</string>
+    <string name="pair_local_only_body">Koble til en konto i Profil på telefonen, og trykk på Koble til her igjen.</string>
+    <string name="pair_ok">OK</string>
+    <string name="pair_far_title">Telefonen er utenfor rekkevidde</string>
+    <string name="pair_far_body">Ta telefonen nærmere, eller koble til med en kode.</string>
+    <string name="pair_try_again">Prøv igjen</string>
+    <string name="pair_use_code">Bruk kode</string>
+    <string name="pair_code_label">Koden din</string>
+    <string name="pair_code_description">Kode %1$s</string>
+    <string name="pair_code_where">På telefonen: Profil › Koble til klokke</string>
+    <string name="pair_code_validity">Gyldig i 5 minutter</string>
+    <string name="pair_cancel">Avbryt</string>
+    <string name="pair_signed_out_title">Du logget ut på telefonen</string>
+    <string name="pair_signed_out_body">Dataene forsvant fra klokken også.</string>
+    <string name="pair_connect_again">Koble til igjen</string>
+    <string name="pair_error_offline">Det trengs internett for å koble til klokken.</string>
+    <string name="pair_error_too_many">For mange forsøk. Vent noen minutter og koble til igjen.</string>
+    <string name="pair_error_failed">Kunne ikke koble til klokken. Prøv igjen.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Saldoer</string>
+    <string name="balances_offline">Uten nett</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Uten nett · %d endring i kø</item>
+        <item quantity="other">Uten nett · %d endringer i kø</item>
+    </plurals>
+    <string name="balances_overall">Samlet saldo</string>
+    <string name="balances_to_receive">å få</string>
+    <string name="balances_you_owe">du skylder</string>
+    <string name="balances_group_to_receive">%1$s å få</string>
+    <string name="balances_group_you_owe">%1$s du skylder</string>
+    <string name="balances_group_even">Likt samlet</string>
+    <string name="balances_waiting">venter på å sendes</string>
+    <string name="balances_updated_at">Oppdatert kl. %1$s</string>
+    <string name="balances_sign_out">Logg ut</string>
+    <string name="balances_sign_out_title">Logge ut av denne klokken?</string>
+    <string name="balances_sign_out_body">Dataene slettes når det som ligger i kø er sendt. Telefonen din forblir innlogget.</string>
+    <string name="balances_sign_out_scheduled">Utlogging planlagt</string>
+    <string name="balances_sign_out_scheduled_detail">Logger ut så snart alt er lastet opp</string>
+    <string name="balances_settled_title">Ingenting åpent</string>
+    <string name="balances_settled_body">Du skylder ingenting, og ingen skylder deg. Nye grupper og utgifter dukker opp her av seg selv.</string>
+    <string name="group_you_owe_person">du skylder %1$s</string>
+    <string name="group_owes_you">%1$s skylder deg</string>
+    <string name="group_former_member">Tidligere medlem</string>
+    <string name="group_i_paid">Jeg har betalt</string>
+    <string name="group_confirm_title">Betalte du %1$s til %2$s?</string>
+    <string name="group_confirm_body">%1$s. Gruppen ser det med en gang, eller når nettet er tilbake.</string>
+    <string name="group_payment_recorded">Betaling registrert</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Saldoer</string>
+    <string name="tile_to_receive_total">å få totalt</string>
+    <string name="tile_to_pay_total">å betale totalt</string>
+    <string name="tile_owed_to_you">Du får %1$s</string>
+    <string name="tile_you_owe">Du skylder %1$s</string>
+    <string name="tile_settled_title">Alt er gjort opp</string>
+    <string name="tile_settled_body">Ingenting å betale eller få</string>
+    <string name="tile_open">Åpne</string>
+    <string name="complication_name">Samlet saldo</string>
+    <string name="complication_you_owe">Du skylder %1$s</string>
+    <string name="complication_owed_to_you">Du får %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Mottatt</string>
+    <string name="push_view_group">Se gruppen</string>
+</resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Lukk</string>
+    <string name="invite_group_created">Gruppen er opprettet</string>
+    <string name="invite_title">Inviter alle til %s</string>
+    <string name="invite_qr_description">QR-kode for invitasjonslenken til gruppen</string>
+    <string name="invite_copy">Kopier</string>
+    <string name="invite_copied">Kopiert</string>
+    <string name="invite_who_picks">Den som åpner lenken, velger hvem de er på listen: %s. Du trenger ikke konto.</string>
+    <string name="invite_names_or">%1$s eller %2$s</string>
+    <string name="invite_anyone_joins">Den som åpner lenken, blir med i gruppen. Du trenger ikke konto.</string>
+    <string name="invite_pending_title">Lenken venter</string>
+    <string name="invite_pending_offline">Den opprettes så snart du er på nett.</string>
+    <string name="invite_pending_online">Oppretter lenken…</string>
+    <string name="invite_failed_title">Kunne ikke opprette lenken</string>
+    <string name="invite_failed_body">Noe gikk galt under synkroniseringen av gruppen.</string>
+    <string name="invite_retry">Prøv igjen</string>
+    <string name="invite_share">Del lenken</string>
+    <string name="invite_see_who_joined">Se hvem som har blitt med</string>
+    <string name="invite_add_person">Legg til noen uten appen</string>
+    <string name="invite_go_to_group">Gå til gruppen</string>
+    <string name="invite_change_link">Endre lenken</string>
+    <string name="invite_change_link_title">Endre invitasjonslenken?</string>
+    <string name="invite_change_link_message">Den nåværende lenken og QR-koden slutter å fungere, også ubrukte personlige invitasjoner. De som allerede har blitt med, blir værende i gruppen.</string>
+    <string name="invite_change_link_failed">Kunne ikke endre lenken. Prøv igjen.</string>
+    <string name="invite_share_message">La oss dele utgiftene fra %1$s i Blitz Split. Bli med via denne lenken: %2$s</string>
+</resources>

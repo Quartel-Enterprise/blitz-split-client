@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Varsler</string>
+    <string name="notification_settings_denied_title">Blitz Split-varsler er slått av i Android.</string>
+    <string name="notification_settings_denied_body">Slå dem på i systeminnstillingene for å få pushvarslene nedenfor. Bjellen fortsetter å fungere.</string>
+    <string name="notification_settings_open_settings">Åpne innstillinger</string>
+    <string name="notification_settings_refused_body">Android lar deg tillate dem én gang til for å få pushvarslene nedenfor. Bjellen fortsetter å fungere.</string>
+    <string name="notification_settings_turn_on">Slå på</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Blokkert i Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Åpne Android-innstillinger for %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Pushvarsler</string>
+    <string name="notification_settings_push_switch_detail">Bare på denne enheten</string>
+    <string name="notification_settings_section">Varsle meg om</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">I appen</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push sender et varsel til denne enheten. I appen merker det som nytt på bjellen og i Aktivitet; hvis det er slått av, vises det fortsatt i Aktivitet, allerede lest.</string>
+    <string name="notification_settings_footer">Varsler kommer når det er internett. For å dempe en gruppe, bruk menyen inne i den.</string>
+</resources>

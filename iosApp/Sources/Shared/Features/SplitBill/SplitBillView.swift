@@ -93,7 +93,7 @@ final class SplitBillModel {
         )
     }
 
-    /// The day of "When" in the device's calendar; another one keeps the bill's time.
+    /// The day of "When" in the app's calendar (`AppNumbers.calendar`); another one keeps the bill's time.
     var spentDay: Binding<Date> {
         Binding(
             get: { ExpenseFormat.date(of: self.state.spentAt) },

@@ -65,7 +65,7 @@ enum ContactsCopy {
 
     /// "Oct 30" or "30 de out.", the day of something in the history.
     static func shortDate(_ millis: Int64) -> String {
-        ExpenseFormat.date(of: millis).formatted(.dateTime.day().month(.abbreviated).locale(AppNumbers.locale))
+        ExpenseFormat.date(of: millis).formatted(.dateTime.day().month(.abbreviated).appDateFormat())
     }
 
     /// A bill in the history: "Apê 302 · Oct 28 · Carla paid R$ 196,00".

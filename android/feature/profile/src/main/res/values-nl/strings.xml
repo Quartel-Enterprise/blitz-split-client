@@ -91,6 +91,7 @@
     <string name="profile_language_slovak">Slowaaks</string>
     <string name="profile_language_persian">Perzisch</string>
     <string name="profile_language_tamil">Tamil</string>
+    <string name="profile_language_norwegian">Noors (Bokmål)</string>
     <string name="profile_language_swahili">Swahili</string>
     <string name="profile_language_system_detail">Taal van het apparaat</string>
     <string name="profile_notifications">Meldingen</string>

@@ -91,6 +91,7 @@
     <string name="profile_language_slovak">Slovakiska</string>
     <string name="profile_language_persian">Persiska</string>
     <string name="profile_language_tamil">Tamil</string>
+    <string name="profile_language_norwegian">Norskt bokmål</string>
     <string name="profile_language_swahili">Swahili</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Aviseringar</string>
