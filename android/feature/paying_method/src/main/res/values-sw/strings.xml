@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Njia mpya ya malipo</string>
+    <string name="paying_method_edit_title">Hariri njia ya malipo</string>
+    <string name="paying_method_type">Aina</string>
+    <string name="paying_method_name">Jina</string>
+    <string name="paying_method_name_optional">Jina (si lazima)</string>
+    <string name="paying_method_color">Rangi</string>
+    <string name="paying_method_default">Njia chaguomsingi</string>
+    <string name="paying_method_default_hint">Gharama mpya unazolipa zinaanza nayo.</string>
+    <string name="paying_method_delete">Futa njia ya malipo</string>
+    <string name="paying_method_delete_title">Futa njia hii ya malipo?</string>
+    <string name="paying_method_delete_body">Gharama ulizoziwekea alama nayo hazitaionyesha tena.</string>
+    <string name="paying_method_delete_confirm">Futa</string>
+    <string name="paying_method_save">Hifadhi</string>
+</resources>

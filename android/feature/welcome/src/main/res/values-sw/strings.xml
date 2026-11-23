@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="welcome_title">Gawanya bili, bila usumbufu</string>
+    <string name="welcome_title">Gawanya gharama, bila usumbufu</string>
     <string name="welcome_offline_title">Inafanya kazi nje ya mtandao</string>
     <string name="welcome_offline_body">Kila kitu kinabaki kwenye kifaa chako na kinasawazisha baadaye.</string>
     <string name="welcome_optional_title">Akaunti si lazima</string>
