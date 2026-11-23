@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Unganisha saa mahiri</string>
+    <string name="connect_watch_close">Funga</string>
+    <string name="connect_watch_body">Andika msimbo unaoonyeshwa na saa yako mahiri. Inaingia kwenye akaunti yako kisha inasawazisha yenyewe.</string>
+    <string name="connect_watch_code_label">Msimbo wa saa mahiri</string>
+    <string name="connect_watch_error_invalid">Msimbo si sahihi au umeisha muda. Pata mpya kwenye saa mahiri.</string>
+    <string name="connect_watch_error_too_many">Misimbo mingi mno isiyo sahihi. Subiri dakika chache kisha ujaribu tena.</string>
+    <string name="connect_watch_error_needs_account">Unganisha akaunti kwanza: data yako iko kwenye kifaa hiki tu.</string>
+    <string name="connect_watch_error_failed">Imeshindwa kuunganisha saa mahiri. Jaribu tena.</string>
+    <string name="connect_watch_offline">Kuunganisha saa mahiri kunahitaji intaneti.</string>
+    <string name="connect_watch_own_watch_only">Andika tu msimbo unaoonyeshwa kwenye saa yako mahiri: yeyote mwenye saa hiyo anaingia kwenye akaunti yako.</string>
+    <string name="connect_watch_validity">Msimbo unatumika kwa dakika 5, mara moja.</string>
+    <string name="connect_watch_button">Unganisha</string>
+    <string name="connect_watch_connected_title">Saa mahiri imeunganishwa</string>
+    <string name="connect_watch_connected_body">Inaona vikundi vyako na inasawazisha yenyewe. Ili kuitenganisha, toka kwenye saa mahiri.</string>
+</resources>

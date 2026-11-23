@@ -95,6 +95,7 @@
     <string name="profile_language_telugu">তেলুগু</string>
     <string name="profile_language_bulgarian">বুলগেরীয়</string>
     <string name="profile_language_marathi">মারাঠি</string>
+    <string name="profile_language_swahili">সোয়াহিলি</string>
     <string name="profile_language_system_detail">ডিভাইসের ভাষা</string>
     <string name="profile_notifications">নোটিফিকেশন</string>
     <plurals name="profile_notifications_active">

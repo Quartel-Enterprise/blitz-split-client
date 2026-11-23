@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Tumia akaunti ileile ya simu yako hapa. Kisha saa mahiri inafanya kazi yenyewe.</string>
+    <string name="pair_connect">Unganisha</string>
+    <string name="pair_connecting">Inachukua akaunti yako kutoka kwenye simu yako…</string>
+    <string name="pair_connected_title">Tayari, %1$s</string>
+    <string name="pair_connected_title_unnamed">Tayari</string>
+    <string name="pair_connected_body">Saa mahiri inasawazisha yenyewe, hata ikiwa mbali na simu yako.</string>
+    <string name="pair_continue">Endelea</string>
+    <string name="pair_local_only_title">Data yako iko kwenye simu yako tu</string>
+    <string name="pair_local_only_body">Kwenye simu yako, unganisha akaunti katika Wasifu kisha uguse Unganisha hapa tena.</string>
+    <string name="pair_ok">Sawa</string>
+    <string name="pair_far_title">Simu iko mbali</string>
+    <string name="pair_far_body">Sogeza simu yako karibu, au unganisha kwa msimbo.</string>
+    <string name="pair_try_again">Jaribu tena</string>
+    <string name="pair_use_code">Tumia msimbo</string>
+    <string name="pair_code_label">Msimbo wako</string>
+    <string name="pair_code_description">Msimbo %1$s</string>
+    <string name="pair_code_where">Kwenye simu yako: Wasifu › Unganisha saa mahiri</string>
+    <string name="pair_code_validity">Unatumika kwa dakika 5</string>
+    <string name="pair_cancel">Ghairi</string>
+    <string name="pair_signed_out_title">Umetoka kwenye simu yako</string>
+    <string name="pair_signed_out_body">Data imeondoka kwenye saa hii pia.</string>
+    <string name="pair_connect_again">Unganisha tena</string>
+    <string name="pair_error_offline">Kuunganisha saa mahiri kunahitaji intaneti.</string>
+    <string name="pair_error_too_many">Majaribio mengi mno. Subiri dakika chache kisha uunganishe tena.</string>
+    <string name="pair_error_failed">Imeshindwa kuunganisha saa mahiri. Jaribu tena.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Salio</string>
+    <string name="balances_offline">Nje ya mtandao</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Nje ya mtandao · badiliko %d linasubiri</item>
+        <item quantity="other">Nje ya mtandao · mabadiliko %d yanasubiri</item>
+    </plurals>
+    <string name="balances_overall">Salio la jumla</string>
+    <string name="balances_to_receive">unadai</string>
+    <string name="balances_you_owe">unadaiwa</string>
+    <string name="balances_group_to_receive">unadai %1$s</string>
+    <string name="balances_group_you_owe">unadaiwa %1$s</string>
+    <string name="balances_group_even">Hakuna deni kwa jumla</string>
+    <string name="balances_waiting">inasubiri kutumwa</string>
+    <string name="balances_updated_at">Imesasishwa saa %1$s</string>
+    <string name="balances_sign_out">Toka</string>
+    <string name="balances_sign_out_title">Toka kwenye saa hii?</string>
+    <string name="balances_sign_out_body">Data yake inafutwa baada ya kilichokuwa kwenye foleni kutumwa. Simu yako inabaki imeingia.</string>
+    <string name="balances_sign_out_scheduled">Kutoka kumepangwa</string>
+    <string name="balances_sign_out_scheduled_detail">Itatoka mara kila kitu kitakapopakiwa</string>
+    <string name="balances_settled_title">Hakuna kilicho wazi</string>
+    <string name="balances_settled_body">Hudaiwi chochote na hakuna anayedaiwa na wewe. Vikundi na gharama mpya vinaonekana hapa vyenyewe.</string>
+    <string name="group_you_owe_person">unadaiwa na %1$s</string>
+    <string name="group_owes_you">%1$s anadaiwa na wewe</string>
+    <string name="group_former_member">Mshiriki wa zamani</string>
+    <string name="group_i_paid">Nimelipa</string>
+    <string name="group_confirm_title">Umemlipa %2$s %1$s?</string>
+    <string name="group_confirm_body">%1$s. Kikundi kinaona hili mara moja, au intaneti ikirudi.</string>
+    <string name="group_payment_recorded">Malipo yamerekodiwa</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Salio</string>
+    <string name="tile_to_receive_total">unadai kwa jumla</string>
+    <string name="tile_to_pay_total">unadaiwa kwa jumla</string>
+    <string name="tile_owed_to_you">Unadai %1$s</string>
+    <string name="tile_you_owe">Unadaiwa %1$s</string>
+    <string name="tile_settled_title">Hakuna deni</string>
+    <string name="tile_settled_body">Hakuna cha kulipa wala kupokea</string>
+    <string name="tile_open">Fungua</string>
+    <string name="complication_name">Salio la jumla</string>
+    <string name="complication_you_owe">Unadaiwa %1$s</string>
+    <string name="complication_owed_to_you">Unadai %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Imepokelewa</string>
+    <string name="push_view_group">Ona kikundi</string>
+</resources>

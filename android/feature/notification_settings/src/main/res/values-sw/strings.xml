@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Arifa</string>
+    <string name="notification_settings_denied_title">Arifa za Blitz Split zimezimwa kwenye Android.</string>
+    <string name="notification_settings_denied_body">Ziwashe kwenye mipangilio ya mfumo ili kupata arifa zilizo hapa chini. Kengele inaendelea kufanya kazi.</string>
+    <string name="notification_settings_open_settings">Fungua mipangilio</string>
+    <string name="notification_settings_refused_body">Android inakuruhusu kuziruhusu mara moja zaidi ili kupata arifa zilizo hapa chini. Kengele inaendelea kufanya kazi.</string>
+    <string name="notification_settings_turn_on">Washa</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Zimezuiwa kwenye Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Fungua mipangilio ya Android ya %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Arifa za push</string>
+    <string name="notification_settings_push_switch_detail">Kwenye kifaa hiki tu</string>
+    <string name="notification_settings_section">Niarifu kuhusu</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Ndani ya programu</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push inatuma arifa kwenye kifaa hiki. Ndani ya programu inaiweka kama mpya kwenye kengele na kwenye Shughuli; ikizimwa, bado inaonekana kwenye Shughuli, ikiwa imeshasomwa.</string>
+    <string name="notification_settings_footer">Arifa zinafika kukiwa na intaneti. Ili kunyamazisha kikundi, tumia menyu iliyo ndani yake.</string>
+</resources>

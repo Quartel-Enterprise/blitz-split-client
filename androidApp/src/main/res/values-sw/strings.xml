@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Hauko kwenye kikundi hiki</string>
+    <string name="bill_link_not_in_group_message">Maoni haya yako kwenye kikundi ambacho hauko. Muombe aliyekutumia kiungo mwaliko.</string>
+    <string name="bill_link_offline_title">Hakuna intaneti</string>
+    <string name="bill_link_offline_message">Fungua kiungo tena ukirudi mtandaoni.</string>
+    <string name="bill_link_go_home">Nenda Mwanzo</string>
+    <string name="discard_changes_title">Tupa mabadiliko?</string>
+    <string name="discard_changes_message">Mabadiliko ambayo hayajahifadhiwa yatapotea.</string>
+    <string name="discard_changes_discard">Tupa</string>
+    <string name="discard_changes_keep_editing">Endelea kuhariri</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Saa mahiri</string>
+    <string name="watch_connected_title">%1$s imeunganishwa na akaunti yako</string>
+    <string name="watch_connected_title_unnamed">Saa mahiri imeunganishwa na akaunti yako</string>
+    <string name="watch_connected_text">Inaona vikundi vyako na inasawazisha yenyewe. Ili kuitenganisha, toka kwenye saa mahiri.</string>
+</resources>

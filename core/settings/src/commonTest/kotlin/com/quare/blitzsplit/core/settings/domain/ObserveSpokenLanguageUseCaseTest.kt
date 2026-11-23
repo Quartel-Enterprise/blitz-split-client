@@ -147,6 +147,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.TELUGU,
                 AppLanguage.BULGARIAN,
                 AppLanguage.MARATHI,
+                AppLanguage.SWAHILI,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -196,6 +197,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "te",
                     "bg",
                     "mr",
+                    "sw",
                     "zh-Hant",
                 ),
                 spoken,
@@ -260,6 +262,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "te",
             "bg",
             "mr",
+            "sw",
             "zh-Hant",
         )
 
@@ -318,6 +321,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "te-IN",
                 "bg-BG",
                 "mr-IN",
+                "sw-KE",
                 "zh-TW",
             )
 
@@ -369,6 +373,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "te",
                     "bg",
                     "mr",
+                    "sw",
                     "zh-Hant",
                 ),
                 spoken,
@@ -420,7 +425,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in a language the app does not have THEN it is en`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("ca", "ca-ES", "sw", "sw-KE", "am", "am-ET", "ceb", "ceb-PH", "sw-TZ")
+        val devices = listOf("ca", "ca-ES", "zu", "zu-ZA", "am", "am-ET", "ceb", "ceb-PH", "yo-NG")
 
         // When
         val spoken = devices.map { spokenOn(it) }
@@ -574,7 +579,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System on a device with no language the app has WHEN observing THEN it is en`() = runTest {
         // Given
         prepareScenario()
-        deviceLanguages = listOf("ca-ES", "sw-KE")
+        deviceLanguages = listOf("ca-ES", "zu-ZA")
 
         // When
         val language = observeSpokenLanguage().first()

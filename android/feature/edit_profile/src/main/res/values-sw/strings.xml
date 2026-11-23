@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Hariri wasifu</string>
+    <string name="edit_profile_save">Hifadhi</string>
+    <string name="edit_profile_change_photo">Badilisha picha</string>
+    <string name="edit_profile_take_photo">Piga picha</string>
+    <string name="edit_profile_choose_photo">Chagua kutoka matunzio</string>
+    <string name="edit_profile_use_account_photo">Tumia picha ya akaunti ya %1$s</string>
+    <string name="edit_profile_remove_photo">Ondoa picha</string>
+    <string name="edit_profile_photo_error">Imeshindwa kutumia picha hii. Jaribu nyingine.</string>
+    <string name="edit_profile_avatar_color">Rangi ya avatar</string>
+    <string name="edit_profile_avatar_color_hint">Inaonekana usipokuwa na picha.</string>
+    <string name="edit_profile_name_label">Jina lako</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Andika angalau herufi %d.</string>
+    <string name="edit_profile_name_too_long">Tumia hadi herufi %d.</string>
+    <string name="edit_profile_account_notice">Jina na picha vimetoka kwenye akaunti yako ya %1$s. Kuvibadilisha hapa kunahusu Blitz Split tu na hakubadilishi akaunti yako ya %1$s.</string>
+    <string name="edit_profile_footer">Vikundi vyako na yeyote mwenye kiungo cha wasifu wako wanaona jina na picha yako.</string>
+    <string name="profile_photo_close">Funga</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Matunzio</string>
+    <string name="profile_photo_remove">Ondoa</string>
+    <string name="profile_photo_title">Picha ya wasifu</string>
+</resources>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · msimbo wa kurejesha</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Ruhusu kamera kwenye Mipangilio ili kupiga picha.</string>
+    <string name="platform_camera_settings">Mipangilio</string>
+    <string name="platform_receipt_source_camera">Piga picha</string>
+    <string name="platform_receipt_source_gallery">Chagua kutoka matunzio</string>
+    <string name="platform_receipt_source_file">Chagua faili</string>
+    <string name="platform_receipt_camera_title">Changanua risiti</string>
+    <string name="platform_receipt_camera_close">Funga</string>
+    <string name="platform_receipt_camera_flash_on">Washa mweko</string>
+    <string name="platform_receipt_camera_flash_off">Zima mweko</string>
+    <string name="platform_receipt_camera_hint">Weka risiti nzima ndani ya fremu. Tunajaza kiasi, tarehe na maelezo; wewe unakagua kabla ya kuhifadhi.</string>
+    <string name="platform_receipt_camera_gallery">Chagua kutoka matunzio</string>
+    <string name="platform_receipt_camera_shutter">Piga picha</string>
+    <string name="platform_receipt_camera_unavailable">Kamera haipatikani. Chagua picha ya risiti kutoka matunzio.</string>
+    <string name="platform_receipt_camera_permission">Ruhusu kamera ili kuchanganua risiti, au chagua picha kutoka matunzio.</string>
+    <string name="platform_receipt_camera_allow">Ruhusu kamera</string>
+    <string name="platform_receipt_camera_settings">Fungua mipangilio</string>
+</resources>

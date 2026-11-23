@@ -57,6 +57,7 @@ class ProfileUiStateTest {
             AppLanguage.TELUGU -> listOf("తెలుగు", "Telugu")
             AppLanguage.BULGARIAN -> listOf("Български", "Bulgarian")
             AppLanguage.MARATHI -> listOf("मराठी", "Marathi")
+            AppLanguage.SWAHILI -> listOf("Kiswahili", "Swahili")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -113,6 +114,7 @@ class ProfileUiStateTest {
         AppLanguage.TELUGU,
         AppLanguage.BULGARIAN,
         AppLanguage.MARATHI,
+        AppLanguage.SWAHILI,
     )
 
     @Test
@@ -712,6 +714,7 @@ class ProfileUiStateTest {
                 AppLanguage.TELUGU,
                 AppLanguage.BULGARIAN,
                 AppLanguage.MARATHI,
+                AppLanguage.SWAHILI,
             ),
             options,
         )
@@ -770,6 +773,7 @@ class ProfileUiStateTest {
                 AppLanguage.TELUGU,
                 AppLanguage.BULGARIAN,
                 AppLanguage.MARATHI,
+                AppLanguage.SWAHILI,
             ),
             options,
         )

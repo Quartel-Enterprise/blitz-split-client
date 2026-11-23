@@ -99,6 +99,7 @@
     <string name="profile_language_telugu">التيلوجو</string>
     <string name="profile_language_bulgarian">البلغارية</string>
     <string name="profile_language_marathi">الماراثية</string>
+    <string name="profile_language_swahili">السواحيلية</string>
     <string name="profile_language_system_detail">لغة الجهاز</string>
     <string name="profile_notifications">الإشعارات</string>
     <plurals name="profile_notifications_active">

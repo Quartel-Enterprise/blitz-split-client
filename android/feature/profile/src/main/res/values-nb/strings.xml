@@ -95,6 +95,7 @@
     <string name="profile_language_telugu">Telugu</string>
     <string name="profile_language_bulgarian">Bulgarsk</string>
     <string name="profile_language_marathi">Marathi</string>
+    <string name="profile_language_swahili">Swahili</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Varsler</string>
     <plurals name="profile_notifications_active">

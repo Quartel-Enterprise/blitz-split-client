@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Hifadhi msimbo wako wa kurejesha</string>
+    <string name="recovery_code_body">Unaitumia bila akaunti. Maneno haya 12 yanarejesha data yako ukibadilisha au ukipoteza kifaa chako. Yaandike kwa mpangilio. Baada ya siku 30 bila kutumika, data yako inafutwa na maneno yanaacha kufanya kazi.</string>
+    <string name="recovery_code_copy">Nakili maneno</string>
+    <string name="recovery_code_save_to_password_manager">Hifadhi kwenye kidhibiti cha manenosiri</string>
+    <string name="recovery_code_connect_instead">Unganisha Google au Apple badala yake</string>
+    <string name="recovery_code_connect_instead_body">Hakuna haja ya msimbo</string>
+    <string name="recovery_code_sign_in_failed">Imeshindwa kuunganisha kwa sasa. Jaribu tena.</string>
+    <string name="recovery_code_also_in_profile">Pia uko kwenye Wasifu › Urejeshaji.</string>
+    <string name="recovery_code_remind_later">Nikumbushe baadaye</string>
+    <string name="recovery_code_saved">Nimeuhifadhi</string>
+    <string name="recovery_code_download">Pakua</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · msimbo wa kurejesha\n\n%1$s\n\nUtumie kwenye \"Nimeitumia kwenye kifaa kingine\" ili kurejesha data yako.\n</string>
+</resources>

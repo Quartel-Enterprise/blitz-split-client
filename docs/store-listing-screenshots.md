@@ -2,7 +2,7 @@
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
 showing a sample trip among five friends, laid out in the listing art's design: a blue background, one phrase, the
-device, a part of the screen drawn larger and, on some, a ticket or a receipt, in all 41 languages of the listings.
+device, a part of the screen drawn larger and, on some, a ticket or a receipt, in all 42 languages of the listings.
 None of the images is versioned: every run rebuilds them from source. Words, colors and the placement of each image
 are `scripts/store-screenshots/listing-art/` (`compose.mjs`, `copy.tsv`); there is no other drawing of them.
 
@@ -287,7 +287,7 @@ is going:
    the jobs a release runs for the same images
    ([`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml)), after "group
    the locales" split them, six to a job unless the run's `group_size` says otherwise. A job's locales go through
-   one Play edit, so a whole set is six saves of
+   one Play edit, so a whole set is eight saves of
    [Google Play's daily save quota](#google-plays-daily-save-quota). Only the images whose content changed go up,
    the phone's too when they did, and a locale Google Play already holds as drawn is left out of its job's edit:
    each job's summary says which went and which were already there. One job per locale took about two minutes a
@@ -344,7 +344,7 @@ and `upload_play_screenshots` of the [Fastfile](../fastlane/Fastfile), with the 
 [`play-screenshot-groups.mjs`](../scripts/release/play-screenshot-groups.mjs), which has tests):
 
 - **A few locales per save.** The locales go up in groups, `group_size` to a job (6 unless the run says), each
-  group through one edit: eight saves for Play's 43 locales, where one job per locale was 43.
+  group through one edit: eight saves for Play's 44 locales, where one job per locale was 44.
 - **No save for what didn't change.** Before it opens an edit to write, the lane reads what Google Play holds
   (through an edit it deletes, which is no save) and leaves out every locale whose staged images are the ones
   already there, shelf by shelf and in order. A group with no locale left opens no edit. supply's
@@ -380,7 +380,7 @@ still have something to send:
    screenshots are each at least one save, and a set whose every locale changed is five. Spread them when the day
    already had many. A run with `validate_only` commits nothing, so as far as the error's name says it is no save.
 3. **A second set on the same day is cheap only when little changed**: what Google Play already holds costs
-   nothing, and a frame or a screen that changed in every language is six saves again.
+   nothing, and a frame or a screen that changed in every language is eight saves again.
 
 **What no run has shown yet** (November 2026): the groups, the check of what Google Play holds and the quota's path
 have not run against Google Play. The lane's tests run it against a stand-in for supply's client (a group held
@@ -392,7 +392,7 @@ measured. Should Google Play refuse to open that edit for the quota, the group w
 
 ## The watches' screenshots
 
-The two watch apps' screens at the size each store takes, in all 41 languages, written to
+The two watch apps' screens at the size each store takes, in all 42 languages, written to
 `store_listings/watch/<store>/<locale>/` to look at (`store_listings/` is git-ignored: none of the images is versioned).
 
 - **Wear OS goes to Google Play with the rest**: `watch/draw-wear.sh` draws it into `build/outputs/store-screenshots-wear/`
@@ -452,7 +452,7 @@ show the watch screen bare too, with the art on the iPhone's screenshots alone.
 
 Besides the screenshots, an App Store product page takes two images of its own, under **Product Page Information ›
 Header and Search Results** in App Store Connect. They appear on iOS and iPadOS 27 and later, and are generated like
-the screenshots, in all 41 languages:
+the screenshots, in all 42 languages:
 
 ```bash
 ./scripts/store-screenshots/creative-assets/generate.sh                               # capture, then draw
@@ -705,7 +705,7 @@ scripts/store-screenshots/local-set.mjs        # the check of a set made on a Ma
 Robolectric draws every Play screen in its set's `StoreLocale.drawnLocale` (`StoreLocale.kt`): the language the resources are read in and the region the amounts, dates and
 hours are written in. It is the set's own tag for most sets. Chinese (`zh-CN`), Traditional Chinese (`zh-TW`, since
 its tag, `zh-Hant`, carries a script), Hebrew (`iw-IL`), Thai (`th-TH`), Vietnamese (`vi-VN`), Swedish (`sv-SE`),
-Czech (`cs-CZ`), Bengali (`bn-BD`), Malay (`ms-MY`), Hungarian (`hu-HU`), Urdu (`ur-PK`), Filipino (`fil-PH`), Persian (`fa-IR`), Serbian (`sr-Latn-RS`, whose tag, `sr`, carries no script but whose only resources are the Latin ones, read as `b+sr+Latn+RS`) and Norwegian (`nb-NO`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
+Czech (`cs-CZ`), Bengali (`bn-BD`), Malay (`ms-MY`), Hungarian (`hu-HU`), Urdu (`ur-PK`), Filipino (`fil-PH`), Persian (`fa-IR`), Serbian (`sr-Latn-RS`, whose tag, `sr`, carries no script but whose only resources are the Latin ones, read as `b+sr+Latn+RS`), Norwegian and Swahili (`nb-NO`) are drawn in the locale `StoreLocale.kt` gives each, and so is Latin America's Spanish, whose
 tag, `es`, has no region: a bare `es` writes the symbol after the amount, as Spain does
 ("84,08 €", "120 US$"), while the same listing's App Store set, captured in Equatorial Guinea's region, writes
 "€84,08" and "US$120". So that set is drawn in **`es-GQ`** (`LATIN_AMERICAN_DRAWN_LOCALE`), **the region of the `es`
