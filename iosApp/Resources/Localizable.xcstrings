@@ -4679,7 +4679,7 @@
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ha adjuntat la foto el %@ a les %@"
+            "value" : "%@ l’ha adjuntada el %@ a les %@"
           }
         },
         "cs" : {
@@ -4887,7 +4887,7 @@
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ha adjuntat la foto avui a les %@"
+            "value" : "%@ l’ha adjuntada avui a les %@"
           }
         },
         "cs" : {
@@ -5095,7 +5095,7 @@
         "ca" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ha adjuntat la foto ahir a les %@"
+            "value" : "%@ l’ha adjuntada ahir a les %@"
           }
         },
         "cs" : {
