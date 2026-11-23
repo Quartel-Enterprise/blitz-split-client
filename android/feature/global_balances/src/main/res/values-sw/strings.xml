@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Salio</string>
+    <string name="global_balances_profile">Wasifu</string>
+    <string name="global_balances_offline">Nje ya mtandao · salio la kifaa hiki</string>
+    <string name="global_balances_filter">Onyesha</string>
+    <string name="global_balances_filter_all">Zote</string>
+    <string name="global_balances_filter_you_owe">Unadaiwa</string>
+    <string name="global_balances_filter_owes_you">Wanaodaiwa na wewe</string>
+    <string name="global_balances_hint">Tayari yamefidiwa kati ya vikundi: kila mtu anaonekana mara moja.</string>
+    <string name="global_balances_hint_empty">Inajumlisha kila kikundi kwenye kifaa hiki.</string>
+    <string name="global_balances_section_you_owe">Unadaiwa · %d</string>
+    <string name="global_balances_section_owes_you">Wanaodaiwa na wewe · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">Kikundi %d</item>
+        <item quantity="other">Vikundi %d</item>
+    </plurals>
+    <string name="global_balances_guest">%s · mgeni</string>
+    <string name="global_balances_you_owe">unadaiwa</string>
+    <string name="global_balances_owes_you">anadaiwa na wewe</string>
+    <string name="global_balances_by_group_show">Onyesha %s kwa kikundi</string>
+    <string name="global_balances_by_group_hide">Ficha %s kwa kikundi</string>
+    <string name="global_balances_received">Imepokelewa</string>
+    <string name="global_balances_received_from">Imepokelewa kutoka kwa %s</string>
+    <string name="global_balances_settle">Lipa deni</string>
+    <string name="global_balances_settle_with">Lipa deni kwa %s</string>
+    <string name="global_balances_charge">Omba malipo</string>
+    <string name="global_balances_charge_person">Omba malipo kutoka kwa %s</string>
+    <string name="global_balances_detail_pane">Salio na %s</string>
+    <string name="global_balances_detail_owes_you">%s anadaiwa na wewe</string>
+    <string name="global_balances_detail_you_owe">Unadaiwa na %s</string>
+    <string name="global_balances_detail_guest">%s · mgeni bila programu</string>
+    <string name="global_balances_detail_note_owed">Salio halisi tayari linafidia vikundi: Omba malipo na Imepokelewa vinatumia %s. Programu inarekodi malipo katika kila kikundi.</string>
+    <string name="global_balances_detail_note_settle">Salio halisi tayari linafidia vikundi: Lipa deni inatumia %s. Programu inarekodi malipo katika kila kikundi.</string>
+    <string name="global_balances_detail_note_single">Kikundi kimoja tu kilicho wazi na %s.</string>
+    <string name="global_balances_settled_title">Hakuna deni</string>
+    <string name="global_balances_settled_body">Hakuna anayedaiwa na wewe na hudaiwi na mtu yeyote. Mtu akiongeza gharama, salio linaonekana hapa.</string>
+    <string name="global_balances_settled_action">Ona vikundi</string>
+    <string name="global_balances_nothing_to_pay_title">Hudaiwi chochote</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Umelipa madeni yako kwa kila mtu. Bado unadai %2$s kutoka kwa mtu %1$d.</item>
+        <item quantity="other">Umelipa madeni yako kwa kila mtu. Bado unadai %2$s kutoka kwa watu %1$d.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Ona wanaodaiwa na wewe</string>
+    <string name="global_balances_nothing_to_receive_title">Hakuna anayedaiwa na wewe</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Bado unadaiwa %2$s na mtu %1$d.</item>
+        <item quantity="other">Bado unadaiwa %2$s na watu %1$d.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Ona unaodaiwa nao</string>
+    <string name="global_balances_coming_soon">Inakuja hivi karibuni</string>
+    <string name="global_balances_change_error">Imeshindwa kuhifadhi badiliko. Jaribu tena.</string>
+    <string name="global_balances_copied">Imenakiliwa</string>
+    <string name="global_balances_charge_title">Omba malipo kutoka kwa %s</string>
+    <string name="global_balances_charge_owes">Anadaiwa na wewe %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Funga</string>
+    <string name="global_balances_charge_guest">%s ni mgeni bila programu. Atajua kuhusu hili kupitia ujumbe huu tu, kwa hivyo tayari unaeleza kilichoingia kwenye gharama.</string>
+    <string name="global_balances_charge_message">Ujumbe</string>
+    <string name="global_balances_charge_pix">Weka ufunguo wangu wa Pix</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Nakili ujumbe</string>
+    <string name="global_balances_charge_send">Tuma</string>
+    <string name="global_balances_message">Habari %1$s! Kwa hesabu ya Blitz Split, unadaiwa na mimi %2$s kutoka kwenye %3$s.</string>
+    <string name="global_balances_message_guest">Habari %1$s! Unadaiwa na mimi %2$s kutoka kwenye %3$s: sehemu yako ya %4$s.</string>
+    <string name="global_balances_message_guest_paid">Habari %1$s! Unadaiwa na mimi %2$s kutoka kwenye %3$s: sehemu yako ya %4$s, ukiondoa %5$s ambazo tayari umelipa.</string>
+    <string name="global_balances_message_group">kikundi %s</string>
+    <string name="global_balances_message_groups">vikundi %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Simu</string>
+    <string name="global_balances_key_email">Barua pepe</string>
+    <string name="global_balances_key_random">Ufunguo nasibu</string>
+    <string name="global_balances_message_reroute">Kikundi %1$s kimerahisisha madeni yake, kwa hivyo badala ya kumlipa %2$s unanilipa mimi moja kwa moja; jumla yako haijabadilika.</string>
+</resources>

@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino and Serbian (Latin script): the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script) and Swahili: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -190,7 +190,13 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     comes with it (below). Only the Latin script exists on Android and Apple: a
     device set to Serbian in Cyrillic (`sr`, `sr-RS`, `sr-Cyrl`, Cyrillic by default) is a language the app doesn't have,
     so it speaks English, the release notes and legal pages included, until "Srpski" is picked in Profile › Language.
-    The web's browser language reads any `sr` tag as the Latin Serbian. The
+    The web's browser language reads any `sr` tag as the Latin Serbian. Swahili (Pierre's calls) is standard Swahili
+    (Kiswahili sanifu), one variant for every `sw` tag, Kenya's and Tanzania's alike, and no regional one. It speaks
+    informally, with "wewe", never the plural, and calls the app Blitz Split. It reads left to right, and its plurals
+    have `one` and `other`, as English's. Its verbs carry the subject's prefix, so its activity sentences turn the
+    user's verb into the second person ([activity-and-push.md](activity-and-push.md)). No prefix or suffix is ever
+    glued to a value the app fills in: a name, a group or an amount stands alone ("Aliyelipa: Ana", "kwa Ana"), the
+    subject and object markers staying on the verb. The Kenyan and Tanzanian shillings come with it (below). The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
@@ -400,6 +406,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     in Serbia. It has 2 decimals, as ISO gives it, and the usual 100 million cap, so an app version from before it
     shows its amounts by the raw code, with the right decimals. The store screenshots' sample trip for Serbian is
     priced in it.
+  - The Kenyan shilling (KES) and the Tanzanian shilling (TZS) come with Swahili (Pierre's call), in that order after the
+    dinar, and start a new group in Kenya and Tanzania. The Kenyan shilling has 2 decimals, as ISO gives it, and the
+    usual 100 million cap (about US$ 775,000), so an app version from before it shows its amounts by the raw code, with
+    the right decimals. The Tanzanian shilling has no decimals, as the forint (Pierre's call): ISO gives it 2, but no
+    price or receipt in Tanzania shows senti. Its cap is the usual 100 million, about US$ 40,000 at 2,500 shillings a
+    dollar: less than the won's (about US$ 70,000), but still far above a bill among friends, unlike the rupiah's and
+    the dong's (about US$ 6,000 and 4,000), which were raised. An app version from before it reads TZS as an unknown code
+    with two decimals and shows its amounts 100 times smaller until it updates, as with HUF. The store screenshots'
+    sample trip for Swahili is priced in Kenyan shillings (Pierre's call).
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

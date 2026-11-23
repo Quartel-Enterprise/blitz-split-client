@@ -104,6 +104,10 @@ enum SecondPerson {
             if let known = hungarianIndefinitePast[word] { return verb.replacingCharacters(in: past, with: known) }
             guard word.hasSuffix("ta") || word.hasSuffix("te") else { return verb }
             return verb.replacingCharacters(in: past, with: word + "d")
+        case "sw":
+            // Why: "amegawanya" → "umegawanya", "alilipa" → "ulilipa": only the subject prefix changes.
+            guard verb.range(of: #"^a(?=(me|li)\S)"#, options: .regularExpression) != nil else { return verb }
+            return "u" + verb.dropFirst()
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }

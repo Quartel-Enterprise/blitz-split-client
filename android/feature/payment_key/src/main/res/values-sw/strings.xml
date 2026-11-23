@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Ufunguo mpya wa Pix</string>
+    <string name="payment_key_title_pix_edit">Hariri ufunguo wa Pix</string>
+    <string name="payment_key_title_bitcoin_new">Ufunguo mpya wa Bitcoin</string>
+    <string name="payment_key_title_bitcoin_edit">Hariri ufunguo wa Bitcoin</string>
+    <string name="payment_key_save">Hifadhi</string>
+
+    <string name="payment_key_pix_intro">Anayekulipa anaona ufunguo huu wakati wa kulipa deni. Ufunguo wa aina gani?</string>
+    <string name="payment_key_pix_question">Ufunguo wa aina gani?</string>
+    <string name="payment_key_pix_explanation">Anayekulipa anaona ufunguo huu wakati wa kulipa deni.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Simu</string>
+    <string name="payment_key_type_email">Barua pepe</string>
+    <string name="payment_key_type_random">Nasibu</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Namba ya simu pamoja na msimbo wa eneo</string>
+    <string name="payment_key_label_email">Barua pepe</string>
+    <string name="payment_key_label_random">Ufunguo nasibu</string>
+
+    <string name="payment_key_bitcoin_intro">Ungependa kupokea vipi?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">haraka, ada ndogo</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">kwenye blockchain</string>
+    <string name="payment_key_label_lightning">Lightning Address au LNURL</string>
+    <string name="payment_key_label_onchain">Anwani ya Bitcoin</string>
+
+    <string name="payment_key_paste">Bandika</string>
+
+    <string name="payment_key_hint_cpf">Muundo 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Muundo +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Muundo jina@kikoa.com</string>
+    <string name="payment_key_hint_random">Herufi na namba 32, kama benki yako inavyouonyesha</string>
+    <string name="payment_key_hint_lightning">Kama jina@pochi.com au LNURL1…</string>
+    <string name="payment_key_hint_onchain">Anwani ya mainnet inayoanza na bc1q au bc1p</string>
+
+    <string name="payment_key_valid_cpf">Muundo 000.000.000-00 · tarakimu za uthibitisho zinalingana</string>
+    <string name="payment_key_valid_phone">Muundo +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Muundo jina@kikoa.com</string>
+    <string name="payment_key_valid_random">Ufunguo nasibu umetambuliwa (herufi 32)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address sahihi</string>
+    <string name="payment_key_valid_lnurl">LNURL sahihi</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF si sahihi: tarakimu za uthibitisho hazilingani.</string>
+    <string name="payment_key_error_invalid_phone">Namba ya simu haijakamilika: tumia msimbo wa eneo na tarakimu 9, ikianza na 9.</string>
+    <string name="payment_key_error_invalid_email">Barua pepe haijakamilika: kikoa kinakosekana, kama .com au .com.br.</string>
+    <string name="payment_key_error_invalid_random">Ufunguo nasibu haujakamilika: una herufi na namba 32.</string>
+    <string name="payment_key_error_invalid_lightning">Hii si Lightning Address (jina@pochi) wala LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Hii ni ankara ya Lightning (lnbc…): inalipa mara moja na kuisha muda. Bandika Lightning Address au LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Anwani si sahihi. Tumia anwani ya mainnet ya bc1q au bc1p.</string>
+    <string name="payment_key_error_testnet_address">Hii ni anwani ya testnet (tb1…). Bitcoin mainnet pekee inafanya kazi hapa, kwa anwani za bc1….</string>
+    <string name="payment_key_error_already_saved">Tayari una ufunguo huu.</string>
+
+    <string name="payment_key_switched_to_onchain">Hii ni anwani ya on-chain, kwa hivyo tumebadilisha kuwa On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Hii ni Lightning Address, kwa hivyo tumebadilisha kuwa Lightning.</string>
+    <string name="payment_key_cpf_notice">Anayekulipa anaona CPF yako kamili. Kama hupendi kuishiriki, tumia simu, barua pepe au ufunguo nasibu.</string>
+    <string name="payment_key_held_notice">Unaweza kuwa na ufunguo mmoja tu wa Pix wa aina hii, kwa hivyo huu ndio uliouhifadhi. Ubadilishe hapa ukitaka.</string>
+
+    <string name="payment_key_accepted_title">Tunakubali</string>
+    <string name="payment_key_accepted_lightning_address_sample">jina@pochi.app</string>
+
+    <string name="payment_key_default_pix_title">Ufunguo chaguomsingi wa Pix</string>
+    <string name="payment_key_default_bitcoin_title">Ufunguo chaguomsingi wa Bitcoin</string>
+    <string name="payment_key_default_pix_detail">Unaonyeshwa kwanza wakati wa kulipa deni.</string>
+    <string name="payment_key_default_bitcoin_detail">Unaonyeshwa kwanza mtu anapolipa kwa BTC.</string>
+    <string name="payment_key_default_now">Sasa: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Ili kuubadilisha, fanya ufunguo mwingine kuwa chaguomsingi.</string>
+    <string name="payment_key_default_locked_new">Ufunguo wako wa kwanza wa aina hii ndio chaguomsingi.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">simu</string>
+    <string name="payment_key_default_type_email">barua pepe</string>
+    <string name="payment_key_default_type_random">ufunguo nasibu</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split haihamishi pesa: anayelipa analipa kwenye programu ya benki yake. Hakikisha ufunguo uko kwa jina lako.</string>
+    <string name="payment_key_footer_bitcoin">Wakati wa kulipa deni, tunaonyesha kiasi kwa sats kwa kiwango cha sasa. Ni makadirio tu: anayelipa anakithibitisha kwenye pochi yake.</string>
+
+    <string name="payment_key_delete">Futa ufunguo</string>
+    <string name="payment_key_delete_title">Futa ufunguo huu?</string>
+    <string name="payment_key_delete_body">Watu wanaodaiwa na wewe hawatauona tena wakati wa kulipa deni.</string>
+    <string name="payment_key_delete_confirm">Futa</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Gawanya bili, bila usumbufu</string>
+    <string name="welcome_offline_title">Inafanya kazi nje ya mtandao</string>
+    <string name="welcome_offline_body">Kila kitu kinabaki kwenye kifaa chako na kinasawazisha baadaye.</string>
+    <string name="welcome_optional_title">Akaunti si lazima</string>
+    <string name="welcome_optional_body">Google au Apple zinakusaidia tu usipoteze chochote unapobadilisha kifaa.</string>
+    <string name="welcome_invite_title">Alika kwa kiungo au msimbo wa QR</string>
+    <string name="welcome_invite_body">Marafiki wanajiunga na kikundi bila kufungua akaunti.</string>
+    <string name="welcome_no_connection_title">Hakuna muunganisho.</string>
+    <string name="welcome_no_connection_body">Kuingia kwa akaunti kunahitaji intaneti. Itumie bila akaunti sasa na uunganishe baadaye kwenye Wasifu.</string>
+    <string name="welcome_or">au</string>
+    <string name="welcome_use_without_account">Tumia bila akaunti</string>
+    <string name="welcome_used_on_another_device">Nimeitumia kwenye kifaa kingine</string>
+    <string name="welcome_sign_in_failed">Imeshindwa kuingia kwa sasa. Jaribu tena.</string>
+    <string name="welcome_legal_notice">Kwa kuendelea, unakubali %1$s na unakiri %2$s.</string>
+    <string name="welcome_legal_terms">Masharti ya Huduma</string>
+    <string name="welcome_legal_privacy">Sera ya Faragha</string>
+    <string name="welcome_no_account_note">Bila akaunti, data yako inafutwa baada ya siku 30 bila kutumika. Unganisha Google au Apple ili kuihifadhi.</string>
+    <string name="welcome_no_account_note_offline">Bila akaunti, data yako inafutwa baada ya siku 30 bila kutumika. Unganisha Google au Apple baadaye, kwenye Wasifu, ili kuihifadhi.</string>
+    <string name="welcome_expired_title">Data yako imefutwa</string>
+    <string name="welcome_expired_body">Ulikuwa ukitumia programu bila akaunti na hukuifungua kwa siku 30, kwa hivyo data yako imefutwa. Unganisha Google au Apple ili kuihifadhi wakati ujao.</string>
+    <string name="welcome_expired_ok">Sawa</string>
+</resources>

@@ -161,6 +161,12 @@
             "value" : "Blitz Split"
           }
         },
+        "sw" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -360,6 +366,12 @@
           }
         },
         "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "sw" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -569,6 +581,12 @@
             "value" : "För att skanna QR-koden i en inbjudan eller från din gamla enhet, och för att ta ditt profilfoto och foton av utgifter."
           }
         },
+        "sw" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ili kuchanganua msimbo wa QR wa mwaliko au kutoka kwenye kifaa chako cha zamani, na kupiga picha yako ya wasifu na picha za gharama."
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -773,6 +791,12 @@
             "value" : "För att bjuda in personer från dina kontakter med en grupps länk. Deras nummer stannar på den här enheten."
           }
         },
+        "sw" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ili kuwaalika watu kutoka kwa waasiliani wako kwa kiungo cha kikundi. Namba zao zinabaki kwenye kifaa hiki."
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -975,6 +999,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "För att spara en utgifts foton i ditt bildbibliotek."
+          }
+        },
+        "sw" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ili kuhifadhi picha za gharama kwenye maktaba yako ya picha."
           }
         },
         "th" : {

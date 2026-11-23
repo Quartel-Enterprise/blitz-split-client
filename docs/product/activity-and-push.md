@@ -112,6 +112,11 @@ The feed, unread state, real time and push notifications.
     Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".
+    Swahili's verb carries the subject's prefix, so every Swahili verb phrase starts with a perfect "a-me-" (or, before
+    a time, a past "a-li-") in the third person, whose "a" the user's rows turn into "u" ("Ana amegawanya gharama",
+    "Wewe umegawanya gharama"; "alilipa", "ulilipa"); nothing comes between the actor and that verb, an object marker
+    stays inside it ("amemwongeza", "umemwongeza"), and the deleted-item notice starts with who deleted it ("Wewe
+    umefuta…", `youSubjectLanguages`). Every "You" is "Wewe".
     Hungarian conjugates by person, so every Hungarian verb phrase starts with a past right after the actor, the object
     after a colon with no suffix: a definite past in "-ta"/"-te" takes a "d" in the user's rows ("Ana létrehozta a
     csoportot: …", "Te létrehoztad…"), and an indefinite one is one of the few listed in the three helpers, each with its

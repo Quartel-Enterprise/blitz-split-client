@@ -37,6 +37,8 @@ private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τ
 private const val HUNGARIAN = "hu"
 private const val FILIPINO = "fil"
 private const val LEGACY_TAGALOG = "tl"
+private const val SWAHILI = "sw"
+private val swahiliThirdPersonPast = Regex("""^a(?=(?:me|li)\S)""")
 private val hungarianFirstWord = Regex("""^[^\s,:]+""")
 private val hungarianDefinitePast = Regex("""t[ae]$""")
 private val hungarianIndefinitePast = mapOf(
@@ -101,6 +103,7 @@ private val youSubjectLanguages = setOf(
     URDU,
     FILIPINO,
     LEGACY_TAGALOG,
+    SWAHILI,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -146,7 +149,9 @@ private val irregularSecondPerson = mapOf(
  * Bengali needs no rule: its respectful verb is the same for "আপনি" and for a name ("Ana ভাগ করেছেন", "আপনি ভাগ করেছেন"),
  * and Malay's verb doesn't change with the person. Urdu needs none either: its ergative "نے" is written apart after
  * a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ بانٹا"). Filipino needs none: its "ay" and
- * its actor-focus verb are the same for the user's "Ikaw" and for a name ("Ana ay nagbahagi", "Ikaw ay nagbahagi"). Same rules as the web's and the Apple
+ * its actor-focus verb are the same for the user's "Ikaw" and for a name ("Ana ay nagbahagi", "Ikaw ay nagbahagi").
+ * Swahili's verb carries the subject's prefix, so every Swahili verb phrase starts with a perfect "a-me-" or a past
+ * "a-li-", whose "a" the user's turns into "u": "Ana amegawanya", "Wewe umegawanya". Same rules as the web's and the Apple
  * app's `verbForYou`.
  */
 fun toSecondPerson(
@@ -176,6 +181,8 @@ fun toSecondPerson(
     GREEK -> greekPast.replace(verb) { match -> match.value + "ς" }
 
     HUNGARIAN -> hungarianFirstWord.replace(verb) { match -> toHungarianSecondPerson(match.value) }
+
+    SWAHILI -> swahiliThirdPersonPast.replace(verb, "u")
 
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
@@ -258,7 +265,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * smazal(a)…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
- * would need "ni" for a name and "mo" for the user.
+ * would need "ni" for a name and "mo" for the user. Swahili says "Wewe umefuta…", with its verb rule.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

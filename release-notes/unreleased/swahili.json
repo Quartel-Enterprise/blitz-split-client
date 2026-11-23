@@ -1,0 +1,46 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Swahili: pick \"Kiswahili\" in Profile › Language, or let it follow your device. New groups in Kenya and Tanzania start in the Kenyan or Tanzanian shilling.",
+        "pt": "O app agora fala suaíli: escolha \"Kiswahili\" em Perfil › Idioma, ou deixe seguir o aparelho. Grupos novos no Quênia e na Tanzânia já começam no xelim queniano ou tanzaniano.",
+        "pt-PT": "A app fala agora suaíli: escolhe \"Kiswahili\" em Perfil › Idioma, ou deixa seguir o telemóvel. Os grupos novos no Quénia e na Tanzânia começam logo no xelim queniano ou tanzaniano.",
+        "es": "La app ahora habla suajili: elige \"Kiswahili\" en Perfil › Idioma, o deja que siga a tu dispositivo. Los grupos nuevos en Kenia y Tanzania empiezan en el chelín keniano o tanzano.",
+        "fr": "L’app parle désormais swahili : choisis « Kiswahili » dans Profil › Langue, ou laisse-la suivre ton appareil. Les nouveaux groupes au Kenya et en Tanzanie démarrent en shilling kényan ou tanzanien.",
+        "de": "Die App spricht jetzt Swahili: Wähle „Kiswahili“ unter Profil › Sprache oder lass sie deinem Gerät folgen. Neue Gruppen in Kenia und Tansania starten im Kenia- bzw. Tansania-Schilling.",
+        "it": "L’app ora parla swahili: scegli \"Kiswahili\" in Profilo › Lingua, oppure lascia che segua il dispositivo. I nuovi gruppi in Kenya e Tanzania partono nello scellino keniota o tanzaniano.",
+        "pl": "Aplikacja mówi teraz w suahili: wybierz „Kiswahili” w Profil › Język albo zostaw język urządzenia. Nowe grupy w Kenii i Tanzanii startują w szylingu kenijskim lub tanzańskim.",
+        "nl": "De app spreekt nu Swahili: kies \"Kiswahili\" in Profiel › Taal, of laat hem je toestel volgen. Nieuwe groepen in Kenia en Tanzania starten in de Keniaanse of Tanzaniaanse shilling.",
+        "ja": "アプリがスワヒリ語に対応しました。プロフィール › 言語で「Kiswahili」を選ぶか、端末の言語に合わせられます。ケニアとタンザニアで作る新しいグループは、ケニア・シリングまたはタンザニア・シリングで始まります。",
+        "tr": "Uygulama artık Svahili konuşuyor: Profil › Dil'den \"Kiswahili\"yi seç veya cihazının dilini izlesin. Kenya ve Tanzanya'da açılan yeni gruplar Kenya veya Tanzanya şilini ile başlıyor.",
+        "id": "Aplikasi kini berbahasa Swahili: pilih \"Kiswahili\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu. Grup baru di Kenya dan Tanzania langsung memakai shilling Kenya atau Tanzania.",
+        "ru": "Приложение теперь говорит на суахили: выбери «Kiswahili» в «Профиль › Язык» или оставь язык устройства. Новые группы в Кении и Танзании сразу начинают в кенийском или танзанийском шиллинге.",
+        "uk": "Застосунок тепер говорить суахілі: обери «Kiswahili» в «Профіль › Мова» або залиш мову пристрою. Нові групи в Кенії й Танзанії одразу починають у кенійському або танзанійському шилінгу.",
+        "ko": "이제 앱에서 스와힐리어를 쓸 수 있어요. 프로필 › 언어에서 ‘Kiswahili’를 고르거나 기기 언어를 따르게 하세요. 케냐와 탄자니아에서 만든 새 그룹은 케냐 실링이나 탄자니아 실링으로 시작해요.",
+        "hi": "अब ऐप स्वाहिली में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Kiswahili” चुनें, या इसे डिवाइस की भाषा पर रहने दें। केन्या और तंज़ानिया में बने नए ग्रुप केन्याई या तंज़ानियाई शिलिंग में शुरू होते हैं।",
+        "ar": "أصبح التطبيق يتحدث السواحيلية: يمكنك اختيار «Kiswahili» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك. والمجموعات الجديدة في كينيا وتنزانيا تبدأ بالشلن الكيني أو التنزاني.",
+        "zh": "应用现已支持斯瓦希里语：在“个人资料 › 语言”中选择“Kiswahili”，或让它跟随你的设备。在肯尼亚和坦桑尼亚新建的群组会默认使用肯尼亚先令或坦桑尼亚先令。",
+        "he": "האפליקציה מדברת עכשיו סווהילית: אפשר לבחור \"Kiswahili\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר. קבוצות חדשות בקניה ובטנזניה מתחילות בשילינג קנייתי או טנזני.",
+        "th": "แอปรองรับภาษาสวาฮีลีแล้ว เลือก “Kiswahili” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์ กลุ่มใหม่ในเคนยาและแทนซาเนียจะเริ่มด้วยชิลลิงเคนยาหรือชิลลิงแทนซาเนีย",
+        "vi": "Ứng dụng giờ đã có tiếng Swahili: chọn “Kiswahili” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị. Nhóm mới ở Kenya và Tanzania sẽ bắt đầu với đồng shilling Kenya hoặc Tanzania.",
+        "zh-Hant": "App現已支援斯瓦希里文：在「個人資料 › 語言」中選擇「Kiswahili」，或讓它跟隨你的裝置。在肯亞和坦尚尼亞建立的新群組會從肯亞先令或坦尚尼亞先令開始。",
+        "sv": "Appen talar nu swahili: välj ”Kiswahili” i Profil › Språk, eller låt den följa din enhet. Nya grupper i Kenya och Tanzania börjar i kenyansk eller tanzanisk shilling.",
+        "cs": "Aplikace teď mluví svahilsky: vyber „Kiswahili“ v Profil › Jazyk, nebo nech jazyk zařízení. Nové skupiny v Keni a Tanzanii začnou v keňském nebo tanzanském šilinku.",
+        "ro": "Aplicația vorbește acum swahili: alege „Kiswahili” în Profil › Limbă sau las-o să urmeze dispozitivul tău. Grupurile noi din Kenya și Tanzania pornesc în șiling kenyan sau tanzanian.",
+        "bn": "অ্যাপটি এখন সোয়াহিলি ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “Kiswahili” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন। কেনিয়া ও তানজানিয়ায় তৈরি নতুন গ্রুপ কেনিয়ান বা তানজানিয়ান শিলিংয়ে শুরু হবে।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Swahili: pilih \"Kiswahili\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda. Kumpulan baharu di Kenya dan Tanzania bermula dengan syiling Kenya atau Tanzania.",
+        "el": "Η εφαρμογή μιλάει πλέον σουαχίλι: διάλεξε «Kiswahili» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου. Οι νέες ομάδες στην Κένυα και την Τανζανία ξεκινούν σε σελίνι Κένυας ή Τανζανίας.",
+        "hr": "Aplikacija sada govori svahili: odaberi „Kiswahili“ u Profil › Jezik ili ostavi jezik svog uređaja. Nove grupe u Keniji i Tanzaniji počinju u kenijskom ili tanzanijskom šilingu.",
+        "hu": "Az app mostantól szuahéliül is beszél: válaszd a „Kiswahili” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse. A Kenyában és Tanzániában létrehozott új csoportok kenyai vagy tanzániai shillingben indulnak.",
+        "ur": "اب ایپ سواحلی میں بھی دستیاب ہے: پروفائل › زبان میں “Kiswahili” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔ کینیا اور تنزانیہ میں بنائے گئے نئے گروپ کینیائی یا تنزانیائی شلنگ سے شروع ہوتے ہیں۔",
+        "fil": "Marunong na ng Swahili ang app: piliin ang \"Kiswahili\" sa Profile › Wika, o hayaan itong sundin ang device mo. Ang mga bagong grupo sa Kenya at Tanzania ay magsisimula sa Kenyan o Tanzanian shilling.",
+        "sr": "Aplikacija sada govori svahili: izaberi „Kiswahili“ u Profil › Jezik ili je pusti da prati tvoj uređaj. Nove grupe u Keniji i Tanzaniji počinju u kenijskom ili tanzanijskom šilingu.",
+        "sw": "Programu sasa inazungumza Kiswahili: chagua \"Kiswahili\" katika Wasifu › Lugha, au iache ifuate kifaa chako. Vikundi vipya nchini Kenya na Tanzania vinaanza kwa shilingi ya Kenya au ya Tanzania."
+      }
+    }
+  ]
+}

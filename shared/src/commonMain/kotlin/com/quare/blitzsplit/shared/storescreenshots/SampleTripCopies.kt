@@ -484,5 +484,19 @@ internal object SampleTripCopies {
             court = "Zakup terena",
             items = listOf("Pizza margherita", "Burrata", "Rižoto sa pečurkama", "Tiramisu", "Prosecco", "Espresso"),
         ),
+        "sw" to SampleTripCopy(
+            groupName = "Safari ya Lisbon",
+            people = listOf("Amani", "Neema", "Baraka", "Zawadi", "Juma"),
+            dinner = "Chakula cha jioni kwenye trattoria",
+            apartment = "Nyumba huko Alfama",
+            groceries = "Mahitaji ya nyumbani",
+            carRental = "Kukodi gari",
+            boatTour = "Safari ya mashua",
+            taxi = "Teksi kutoka uwanja wa ndege",
+            roommates = "Wapangaji wenzangu",
+            soccer = "Mpira wa Ijumaa",
+            court = "Kukodi uwanja",
+            items = listOf("Pizza margherita", "Burrata", "Risotto ya uyoga", "Tiramisu", "Prosecco", "Espresso"),
+        ),
     )
 }
