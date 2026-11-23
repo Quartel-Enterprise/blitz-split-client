@@ -92,6 +92,7 @@
     <string name="profile_language_persian">Περσικά</string>
     <string name="profile_language_tamil">Ταμιλικά</string>
     <string name="profile_language_norwegian">Νορβηγικά (Μπούκμολ)</string>
+    <string name="profile_language_telugu">Τελούγκου</string>
     <string name="profile_language_system_detail">Γλώσσα συσκευής</string>
     <string name="profile_notifications">Ειδοποιήσεις</string>
     <plurals name="profile_notifications_active">

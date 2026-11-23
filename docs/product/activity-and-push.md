@@ -125,7 +125,10 @@ The feed, unread state, real time and push notifications.
     நீக்கினீர்கள்: …", `youSubjectLanguages`), and "You" is "நீங்கள்" everywhere.
     Norwegian verbs don't change with the person, as Swedish's ("Ana delte…", "Du delte…"), its notice starting with
     who deleted it too ("Du slettet…", `youSubjectLanguages`).
-    Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
+    Telugu needs no rule: its respectful
+    past "-ారు" is the same for a name and for "మీరు" ("Ana ఒక ఖర్చును పంచారు: డిన్నర్", "మీరు ఒక ఖర్చును పంచారు: డిన్నర్"),
+    and the object after a colon keeps every name free of case endings, as Tamil's. Its deleted-item notice starts with
+    who deleted it ("మీరు తొలగించారు: …", `youSubjectLanguages`), and "You" is "మీరు" everywhere.    Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".
     Hungarian conjugates by person, so every Hungarian verb phrase starts with a past right after the actor, the object

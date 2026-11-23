@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">మూసివేయండి</string>
+    <string name="invite_group_created">గ్రూప్ సృష్టించబడింది</string>
+    <string name="invite_title">అందరినీ ఆహ్వానించండి: %s</string>
+    <string name="invite_qr_description">గ్రూప్ ఆహ్వాన లింక్ యొక్క QR కోడ్</string>
+    <string name="invite_copy">కాపీ చేయండి</string>
+    <string name="invite_copied">కాపీ అయింది</string>
+    <string name="invite_who_picks">లింక్ తెరిచినవారు జాబితాలో తాము ఎవరో ఎంచుకుంటారు: %s. అకౌంట్ అవసరం లేదు.</string>
+    <string name="invite_names_or">%1$s లేదా %2$s</string>
+    <string name="invite_anyone_joins">లింక్ తెరిచినవారు గ్రూప్‌లో చేరతారు. అకౌంట్ అవసరం లేదు.</string>
+    <string name="invite_pending_title">లింక్ పెండింగ్‌లో ఉంది</string>
+    <string name="invite_pending_offline">మీరు ఆన్‌లైన్‌కి రాగానే ఇది సృష్టించబడుతుంది.</string>
+    <string name="invite_pending_online">లింక్‌ను సృష్టిస్తోంది…</string>
+    <string name="invite_failed_title">లింక్‌ను సృష్టించలేకపోయాం</string>
+    <string name="invite_failed_body">గ్రూప్‌ను సింక్ చేస్తున్నప్పుడు ఏదో తప్పు జరిగింది.</string>
+    <string name="invite_retry">మళ్లీ ప్రయత్నించండి</string>
+    <string name="invite_share">లింక్‌ను షేర్ చేయండి</string>
+    <string name="invite_see_who_joined">ఎవరు చేరారో చూడండి</string>
+    <string name="invite_add_person">యాప్ లేని వ్యక్తిని జోడించండి</string>
+    <string name="invite_go_to_group">గ్రూప్‌కు వెళ్లండి</string>
+    <string name="invite_change_link">లింక్‌ను మార్చండి</string>
+    <string name="invite_change_link_title">ఆహ్వాన లింక్‌ను మార్చాలా?</string>
+    <string name="invite_change_link_message">ప్రస్తుత లింక్ మరియు QR కోడ్ పనిచేయడం ఆగిపోతాయి, ఉపయోగించని వ్యక్తిగత ఆహ్వానాలతో సహా. ఇప్పటికే చేరినవారు గ్రూప్‌లోనే ఉంటారు.</string>
+    <string name="invite_change_link_failed">లింక్‌ను మార్చలేకపోయాం. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="invite_share_message">Blitz Split లో ఖర్చులను పంచుకుందాం: %1$s. ఈ లింక్‌తో చేరండి: %2$s</string>
+</resources>

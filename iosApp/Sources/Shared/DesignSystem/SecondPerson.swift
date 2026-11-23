@@ -22,6 +22,8 @@ import SwiftUI
 /// بانٹا"), so its verb stays as it is. Persian puts its simple past last as Turkish does, and the user's respectful
 /// "شما" adds "ید" to it ("Ana هزینه‌ای را تقسیم کرد", "شما هزینه‌ای را تقسیم کردید").
 ///
+/// Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is.
+///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
 enum SecondPerson {

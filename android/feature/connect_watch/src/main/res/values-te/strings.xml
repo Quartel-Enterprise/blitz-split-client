@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">వాచ్‌ను కనెక్ట్ చేయండి</string>
+    <string name="connect_watch_close">మూసివేయండి</string>
+    <string name="connect_watch_body">మీ వాచ్ చూపే కోడ్‌ను టైప్ చేయండి. అది మీ అకౌంట్‌లోకి సైన్ ఇన్ చేసి, తర్వాత దానంతట అదే సింక్ అవుతుంది.</string>
+    <string name="connect_watch_code_label">వాచ్ కోడ్</string>
+    <string name="connect_watch_error_invalid">కోడ్ తప్పు లేదా గడువు ముగిసింది. వాచ్‌లో కొత్త కోడ్ పొందండి.</string>
+    <string name="connect_watch_error_too_many">చాలా తప్పు కోడ్‌లు. కొన్ని నిమిషాలు ఆగి మళ్లీ ప్రయత్నించండి.</string>
+    <string name="connect_watch_error_needs_account">ముందుగా ఒక అకౌంట్‌ను కనెక్ట్ చేయండి: మీ డేటా ఈ పరికరంలో మాత్రమే ఉంది.</string>
+    <string name="connect_watch_error_failed">వాచ్‌ను కనెక్ట్ చేయలేకపోయాము. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="connect_watch_offline">వాచ్‌ను కనెక్ట్ చేయడానికి ఇంటర్నెట్ అవసరం.</string>
+    <string name="connect_watch_own_watch_only">మీ సొంత వాచ్‌లో కనిపించే కోడ్‌ను మాత్రమే టైప్ చేయండి: ఆ వాచ్ ఎవరి దగ్గర ఉంటే వారు మీ అకౌంట్‌లోకి ప్రవేశిస్తారు.</string>
+    <string name="connect_watch_validity">కోడ్ 5 నిమిషాల పాటు, ఒక్కసారి మాత్రమే చెల్లుతుంది.</string>
+    <string name="connect_watch_button">కనెక్ట్ చేయండి</string>
+    <string name="connect_watch_connected_title">వాచ్ కనెక్ట్ అయింది</string>
+    <string name="connect_watch_connected_body">ఇది మీ గ్రూప్‌లను చూస్తుంది, దానంతట అదే సింక్ అవుతుంది. డిస్‌కనెక్ట్ చేయడానికి, వాచ్‌లో సైన్ అవుట్ చేయండి.</string>
+</resources>

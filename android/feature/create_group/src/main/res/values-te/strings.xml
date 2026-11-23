@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">కొత్త గ్రూప్</string>
+    <string name="create_group_close">మూసివేయండి</string>
+    <string name="create_group_create">సృష్టించండి</string>
+    <string name="create_group_change_color">గ్రూప్ రంగును మార్చండి</string>
+    <string name="create_group_name_label">గ్రూప్ పేరు</string>
+    <string name="create_group_type_label">గ్రూప్ రకం</string>
+    <string name="create_group_members_title">ఎవరెవరు ఉన్నారు</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d వ్యక్తి</item>
+        <item quantity="other">%d వ్యక్తులు</item>
+    </plurals>
+    <string name="create_group_me">మీరు</string>
+    <string name="create_group_remove_member">తీసివేయండి: %s</string>
+    <string name="create_group_add_placeholder">పేరుతో జోడించండి</string>
+    <string name="create_group_add">జోడించండి</string>
+    <string name="create_group_no_app_notice">ప్రస్తుతం ఎవరికీ యాప్ అవసరం లేదు. మీరు ఇప్పటికే అందరి కోసం ఖర్చులను జోడించవచ్చు, లింక్‌ను తర్వాత పంపవచ్చు.</string>
+    <string name="create_group_currency">డిఫాల్ట్ కరెన్సీ</string>
+    <string name="create_group_currency_caption">కొత్త ఖర్చులు ఈ కరెన్సీలో మొదలవుతాయి; ప్రతి ఖర్చు వేరే కరెన్సీని ఉపయోగించవచ్చు.</string>
+    <string name="create_group_save_error">గ్రూప్‌ను సేవ్ చేయలేకపోయాము. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="create_group_photo">గ్రూప్ ఫోటో</string>
+    <string name="create_group_take_photo">ఫోటో తీయండి</string>
+    <string name="create_group_choose_photo">ఫోటోను ఎంచుకోండి</string>
+    <string name="create_group_remove_photo">ఫోటోను తీసివేయండి</string>
+    <string name="create_group_photo_error">ఈ ఫోటోను ఉపయోగించలేకపోయాము. వేరేది ప్రయత్నించండి.</string>
+</resources>

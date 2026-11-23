@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">లెక్క సెటిల్ రిమైండర్</string>
+    <string name="push_bill_created">%1$s మీతో కలిపి ఒక ఖర్చును జోడించారు: “%2$s”</string>
+    <string name="push_bill_edited">%1$s ఒక ఖర్చును ఎడిట్ చేశారు: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s ఒక ఖర్చును తొలగించారు: “%2$s”</string>
+    <string name="push_comment_added">%1$s కామెంట్ చేశారు (“%2$s”): %3$s</string>
+    <string name="push_payment_paid_you">%1$s మీకు చెల్లించినట్లు గుర్తించారు</string>
+    <string name="push_payment_to_you">%1$s గుర్తించారు: %2$s మీకు చెల్లించారు</string>
+    <string name="push_payment_received_yours">%1$s మీ చెల్లింపు అందినట్లు గుర్తించారు</string>
+    <string name="push_payment_from_you">%1$s గుర్తించారు: మీరు చెల్లించారు, అందుకున్నవారు: %2$s</string>
+    <string name="push_payment_undone">%1$s మీతో ఉన్న ఒక చెల్లింపును రద్దు చేశారు</string>
+    <string name="push_charge_sent">%1$s లెక్క సెటిల్ చేయమని మీకు రిమైండర్ పంపారు</string>
+    <string name="push_settle_reminder">‘%1$s’ గ్రూప్‌లో మీకు సెటిల్ కాని బ్యాలెన్స్ ఉంది</string>
+    <string name="push_settle_reminders">%1$s గ్రూప్‌లలో మీకు సెటిల్ కాని బ్యాలెన్స్‌లు ఉన్నాయి</string>
+    <string name="push_added_to_group">%1$s మిమ్మల్ని గ్రూప్‌లో చేర్చారు</string>
+    <string name="push_member_joined">%1$s గ్రూప్‌లో చేరారు</string>
+    <string name="push_debts_simplified_to_you">%1$s అప్పులను సరళం చేశారు. ఇప్పుడు %2$s మీకు %3$s చెల్లిస్తారు.</string>
+    <string name="push_debts_simplified_from_you">%1$s అప్పులను సరళం చేశారు. ఇప్పుడు మీరు %3$s చెల్లించాలి, అందుకునేవారు: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s అప్పులను సరళం చేశారు. మీకు ఏం మారిందో చూడండి.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ‘అప్పులను సరళం చేయండి’ ఆఫ్ చేశారు. ఇప్పుడు %2$s మీకు %3$s చెల్లిస్తారు.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ‘అప్పులను సరళం చేయండి’ ఆఫ్ చేశారు. ఇప్పుడు మీరు %3$s చెల్లించాలి, అందుకునేవారు: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s ‘అప్పులను సరళం చేయండి’ ఆఫ్ చేశారు. మీకు ఏం మారిందో చూడండి.</string>
+    <string name="notification_settings_bills">ఖర్చులు</string>
+    <string name="notification_settings_bills_detail">మీరు ఉన్న కొత్త, ఎడిట్ చేసిన లేదా తొలగించిన ఖర్చులు</string>
+    <string name="notification_settings_payments">చెల్లింపులు, సెటిల్‌మెంట్‌లు</string>
+    <string name="notification_settings_payments_detail">మీకు లేదా మీ నుండి చెల్లింపులు, సరళం చేసిన అప్పులు</string>
+    <string name="notification_settings_comments">కామెంట్‌లు</string>
+    <string name="notification_settings_comments_detail">మీరు ఉన్న ఖర్చులపై, మీరు రాసిన థ్రెడ్‌లలో</string>
+    <string name="notification_settings_people_and_groups">వ్యక్తులు, గ్రూప్‌లు</string>
+    <string name="notification_settings_people_and_groups_detail">మీ గ్రూప్‌లలో ఎవరు చేరుతారు లేదా వెళ్లిపోతారు, వాటిలో ఏం మారుతుంది</string>
+    <string name="notification_settings_payment_requests">చెల్లింపు అభ్యర్థనలు</string>
+    <string name="notification_settings_payment_requests_detail">ఎవరైనా మిమ్మల్ని చెల్లించమని అడిగినప్పుడు</string>
+    <string name="notification_settings_balance_reminder">సెటిల్ కాని బ్యాలెన్స్ రిమైండర్</string>
+    <string name="notification_settings_balance_reminder_detail">వారానికి ఒకసారి, సెటిల్ కాని బ్యాలెన్స్ ఉంటే</string>
+</resources>
