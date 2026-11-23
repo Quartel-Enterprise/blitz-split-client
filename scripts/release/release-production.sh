@@ -5,7 +5,7 @@
 #
 # Nothing waits for an approval: the run starts at once, and only an administrator of the repository may dispatch
 # it. With no input it publishes to everyone: the production track at 100%, a submission for App Store review and
-# the web app at app.blitzsplit.com. See docs/release-process.md#releasing-a-stable-version for the inputs.
+# the web app at web.blitzsplit.com. See docs/release-process.md#releasing-a-stable-version for the inputs.
 #
 # Requires the GitHub CLI (gh), installed and authenticated: https://cli.github.com
 #

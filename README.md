@@ -14,7 +14,7 @@ every group, bill and payment on your device first and syncs when the internet i
 
 One codebase up to the ViewModel, a native UI on each platform: Jetpack Compose with Material 3 Expressive on Android,
 SwiftUI with Liquid Glass on iOS, iPadOS and macOS 26, and React on the web, at
-[app.blitzsplit.com](https://app.blitzsplit.com). Two watch apps, Wear OS (Compose) and the Apple Watch (SwiftUI,
+[web.blitzsplit.com](https://web.blitzsplit.com). Two watch apps, Wear OS (Compose) and the Apple Watch (SwiftUI,
 watchOS 26), show your balances and record a payment on their own. The image above is the same group on each of them, and the balances on the two watches, captured from the
 real apps by [`scripts/readme-hero/generate.sh`](scripts/readme-hero/generate.sh).
 

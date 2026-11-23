@@ -5,7 +5,7 @@ Blitz Split keeps people's groups, bills, payments and Pix keys, so we take repo
 ## Supported versions
 
 Only the newest version of each app gets security fixes: the Android app on Google Play, the iPhone, iPad and Mac app
-on the App Store, and the web app at [app.blitzsplit.com](https://app.blitzsplit.com). The `main` branch of this repository is
+on the App Store, and the web app at [web.blitzsplit.com](https://web.blitzsplit.com). The `main` branch of this repository is
 what the next release ships.
 
 ## Reporting a vulnerability

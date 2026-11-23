@@ -1,7 +1,7 @@
 name: release-production
 
 # Ships a stable version of Bora Rachar: Android to Google Play, iOS and macOS to the App Store, and the web app to
-# https://app.blitzsplit.com.
+# https://web.blitzsplit.com.
 #
 # Run it with ./scripts/release/release-production.sh, or from the Actions tab
 # (docs/release-process.md#releasing-a-stable-version):
@@ -19,7 +19,7 @@ name: release-production
 #        - iOS and macOS: App Store Connect, signed as the betas are (the composite actions apple-build and
 #          apple-upload). With `submit_for_review`, the build is then sent to App Store review with the notes, and
 #          goes out by itself once approved.
-#        - Web: Cloudflare Pages, the project of CLOUDFLARE_PAGES_PROJECT, which app.blitzsplit.com serves. The
+#        - Web: Cloudflare Pages, the project of CLOUDFLARE_PAGES_PROJECT, which web.blitzsplit.com serves. The
 #          beta's build and deploy, at the stable version (the composite action web-deploy).
 #        - With `screenshots`, the listings' screenshots are made again and uploaded, one job per language on
 #          the App Store and a few languages per job on Google Play, so that what a store refused is all that is
@@ -71,7 +71,7 @@ on:
         type: boolean
         default: true
       web:
-        description: "Web, app.blitzsplit.com"
+        description: "Web, web.blitzsplit.com"
         type: boolean
         default: true
       track:
@@ -132,7 +132,7 @@ env:
   # account, and the domain it is served at. Both were set up by hand, never by this workflow
   # (docs/release-process.md#the-production-web-app).
   CLOUDFLARE_PAGES_PROJECT: blitz-split
-  WEB_URL: https://app.blitzsplit.com
+  WEB_URL: https://web.blitzsplit.com
 
 jobs:
   plan:

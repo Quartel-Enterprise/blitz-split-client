@@ -6,7 +6,7 @@ Invite links, joining, cameras, foldables and the iPhone Duo.
     through Android App Links and Apple Universal Links, before any browser asks for them. Anywhere else the browser
     asks blitzsplit.com, which is meant to answer `/g/…`, `/b/…` and `/c/…` (a bill's link, which the apps leave to the
     browser) with a 302 to the same path and query of the web app, which opens the invite, the comment or the bill
-    (beta feedback 3, item 24): the beta, https://blitz-split-beta.pages.dev, until app.blitzsplit.com serves it. That
+    (beta feedback 3, item 24): the beta, https://blitz-split-beta.pages.dev, until web.blitzsplit.com serves it. That
     302 is paused until the beta web app is deployed (`blitz-split-site` #13): meanwhile blitzsplit.com answers them
     with its home page and a note to open the invite on a phone with the app. `/.well-known/*` is never redirected.
     Android opens the links in the app only for a build whose signing key's SHA-256 is in blitzsplit.com's
