@@ -76,6 +76,7 @@ object SampleTrips {
         "sr" to GroupCurrency.RSD,
         "sk" to GroupCurrency.EUR,
         "fa" to GroupCurrency.IRR,
+        "ta" to GroupCurrency.INR,
         "nb" to GroupCurrency.NOK,
     )
 
