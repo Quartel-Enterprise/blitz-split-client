@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">உங்கள் மீட்புக் குறியீட்டைச் சேமியுங்கள்</string>
+    <string name="recovery_code_body">நீங்கள் அக்கவுண்ட் இல்லாமல் பயன்படுத்துகிறீர்கள். சாதனத்தை மாற்றினாலோ தொலைத்தாலோ, இந்த 12 சொற்கள் உங்கள் தரவைத் திரும்பக் கொண்டுவரும். அவற்றை வரிசைப்படி எழுதி வையுங்கள். 30 நாட்கள் பயன்படுத்தாவிட்டால், உங்கள் தரவு நீக்கப்படும், சொற்கள் வேலை செய்யாது.</string>
+    <string name="recovery_code_copy">சொற்களை நகலெடுக்கவும்</string>
+    <string name="recovery_code_save_to_password_manager">பாஸ்வேர்டு மேனேஜரில் சேமிக்கவும்</string>
+    <string name="recovery_code_connect_instead">அதற்குப் பதிலாக Google அல்லது Apple-ஐ இணைக்கவும்</string>
+    <string name="recovery_code_connect_instead_body">குறியீடு தேவையில்லை</string>
+    <string name="recovery_code_sign_in_failed">இப்போது இணைக்க முடியவில்லை. மீண்டும் முயலுங்கள்.</string>
+    <string name="recovery_code_also_in_profile">இது சுயவிவரம் › மீட்பு பகுதியிலும் உள்ளது.</string>
+    <string name="recovery_code_remind_later">பிறகு நினைவூட்டவும்</string>
+    <string name="recovery_code_saved">சேமித்துவிட்டேன்</string>
+    <string name="recovery_code_download">பதிவிறக்கவும்</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · மீட்புக் குறியீடு\n\n%1$s\n\nஉங்கள் தரவைத் திரும்பக் கொண்டுவர, \"வேறொரு சாதனத்தில் பயன்படுத்தியிருக்கிறேன்\" என்பதில் இதைப் பயன்படுத்துங்கள்.\n</string>
+</resources>

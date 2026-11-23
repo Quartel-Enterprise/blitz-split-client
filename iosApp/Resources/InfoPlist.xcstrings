@@ -173,6 +173,12 @@
             "value" : "Blitz Split"
           }
         },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -384,6 +390,12 @@
           }
         },
         "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "ta" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -605,6 +617,12 @@
             "value" : "För att skanna QR-koden i en inbjudan eller från din gamla enhet, och för att ta ditt profilfoto och foton av utgifter."
           }
         },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "அழைப்பின் அல்லது உங்கள் பழைய சாதனத்தின் QR குறியீட்டை ஸ்கேன் செய்யவும், உங்கள் சுயவிவரப் புகைப்படத்தையும் செலவுகளின் புகைப்படங்களையும் எடுக்கவும்."
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -821,6 +839,12 @@
             "value" : "För att bjuda in personer från dina kontakter med en grupps länk. Deras nummer stannar på den här enheten."
           }
         },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "குழுவின் லிங்க் மூலம் உங்கள் தொடர்புகளில் உள்ளவர்களை அழைக்க. அவர்களின் எண்கள் இந்தச் சாதனத்திலேயே இருக்கும்."
+          }
+        },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1035,6 +1059,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "För att spara en utgifts foton i ditt bildbibliotek."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "செலவின் புகைப்படங்களை உங்கள் லைப்ரரியில் சேமிக்க."
           }
         },
         "th" : {

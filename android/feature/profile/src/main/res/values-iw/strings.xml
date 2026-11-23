@@ -91,6 +91,7 @@
     <string name="profile_language_serbian">סרבית</string>
     <string name="profile_language_slovak">סלובקית</string>
     <string name="profile_language_persian">פרסית</string>
+    <string name="profile_language_tamil">טמילית</string>
     <string name="profile_language_system_detail">שפת המכשיר</string>
     <string name="profile_notifications">התראות</string>
     <plurals name="profile_notifications_active">
