@@ -172,6 +172,30 @@ class ExpenseRulesTest {
     }
 
     @Test
+    fun `GIVEN exactly 5 trillion rials WHEN checking it THEN it is valid`() {
+        // Given
+        val amountMinor = 5_000_000_000_000L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.IRR)
+
+        // Then
+        assertTrue(isValid)
+    }
+
+    @Test
+    fun `GIVEN one rial over 5 trillion WHEN checking it THEN it is invalid`() {
+        // Given
+        val amountMinor = 5_000_000_000_001L
+
+        // When
+        val isValid = ExpenseRules.isAmountValid(amountMinor, GroupCurrency.IRR)
+
+        // Then
+        assertFalse(isValid)
+    }
+
+    @Test
     fun `GIVEN currencies with and without cents WHEN reading the limit THEN it is 100 million major units`() {
         // Given
         val currencies = listOf(GroupCurrency.BRL, GroupCurrency.USD, GroupCurrency.PYG, GroupCurrency.JPY)

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">هزینه را بی‌دردسر تقسیم کنید</string>
+    <string name="welcome_offline_title">آفلاین کار می‌کند</string>
+    <string name="welcome_offline_body">همه‌چیز روی دستگاه شما می‌ماند و بعداً همگام‌سازی می‌شود.</string>
+    <string name="welcome_optional_title">حساب کاربری اختیاری است</string>
+    <string name="welcome_optional_body">Google یا Apple فقط باعث می‌شوند هنگام تعویض دستگاه چیزی از دست ندهید.</string>
+    <string name="welcome_invite_title">دعوت با لینک یا کد QR</string>
+    <string name="welcome_invite_body">دوستان بدون ایجاد حساب کاربری به گروه می‌پیوندند.</string>
+    <string name="welcome_no_connection_title">اتصال برقرار نیست.</string>
+    <string name="welcome_no_connection_body">ورود با حساب کاربری به اینترنت نیاز دارد. فعلاً بدون حساب استفاده کنید و بعداً در پروفایل وصل شوید.</string>
+    <string name="welcome_or">یا</string>
+    <string name="welcome_use_without_account">استفاده بدون حساب کاربری</string>
+    <string name="welcome_used_on_another_device">قبلاً در دستگاه دیگری استفاده کرده‌ام</string>
+    <string name="welcome_sign_in_failed">الان امکان ورود نیست. دوباره تلاش کنید.</string>
+    <string name="welcome_legal_notice">با ادامه دادن، %1$s را می‌پذیرید و از %2$s آگاه هستید.</string>
+    <string name="welcome_legal_terms">شرایط استفاده</string>
+    <string name="welcome_legal_privacy">سیاست حفظ حریم خصوصی</string>
+    <string name="welcome_no_account_note">بدون حساب کاربری، داده‌های شما پس از 30 روز استفاده‌نکردن حذف می‌شود. برای نگه داشتن آن‌ها Google یا Apple را وصل کنید.</string>
+    <string name="welcome_no_account_note_offline">بدون حساب کاربری، داده‌های شما پس از 30 روز استفاده‌نکردن حذف می‌شود. برای نگه داشتن آن‌ها، بعداً در پروفایل Google یا Apple را وصل کنید.</string>
+    <string name="welcome_expired_title">داده‌های شما حذف شد</string>
+    <string name="welcome_expired_body">شما بدون حساب کاربری از برنامه استفاده می‌کردید و 30 روز آن را باز نکردید، برای همین داده‌هایتان حذف شد. دفعه بعد برای نگه داشتن آن‌ها Google یا Apple را وصل کنید.</string>
+    <string name="welcome_expired_ok">تأیید</string>
+</resources>

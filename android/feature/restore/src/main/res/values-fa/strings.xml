@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">گروه‌هایتان را برگردانید</string>
+    <string name="restore_subtitle">قبلاً با حساب کاربری وارد شده بودید؟ فقط دوباره وارد شوید. اگر نه، از کد بازیابی یا کد QR دستگاه قبلی‌تان استفاده کنید.</string>
+    <string name="restore_no_connection_title">اتصال برقرار نیست</string>
+    <string name="restore_no_connection_body">ورود با حساب کاربری یا کد برای دانلود گروه‌هایتان به اینترنت نیاز دارد. آنچه نوشته‌اید حفظ می‌شود.</string>
+    <string name="restore_code_label">یا از کد بازیابی استفاده کنید</string>
+    <string name="restore_code_hint">12 کلمه به ترتیب. همه را در یک کادر بچسبانید تا همه کادرها پر شوند.</string>
+    <string name="restore_scan_qr_title">کد QR دستگاه قبلی‌تان را اسکن کنید</string>
+    <string name="restore_scan_qr_body">آنجا: پروفایل › بازیابی › نمایش کد QR</string>
+    <string name="restore_recover">بازیابی</string>
+    <string name="restore_try_again">تلاش دوباره</string>
+    <string name="restore_start_fresh">شروع از نو در این دستگاه</string>
+    <string name="restore_error_invalid_code">کد پیدا نشد. کلمه‌ها و ترتیبشان را بررسی کنید و دوباره تلاش کنید.</string>
+    <string name="restore_error_too_many_attempts">تلاش‌های بیش از حد. چند دقیقه صبر کنید و دوباره تلاش کنید.</string>
+    <string name="restore_error_sign_in_failed">الان امکان ورود نیست. دوباره تلاش کنید.</string>
+    <string name="restore_error_unknown">مشکلی پیش آمد. دوباره تلاش کنید.</string>
+</resources>

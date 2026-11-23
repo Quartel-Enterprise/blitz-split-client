@@ -34,6 +34,7 @@ import { ur } from './ur'
 import { fil } from './fil'
 import { sr } from './sr'
 import { sk } from './sk'
+import { fa } from './fa'
 import { ta } from './ta'
 
 export type { MessageKey }
@@ -42,12 +43,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'ta'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, ta }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'ta']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -73,10 +74,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk` or `ta` tag
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa` or `ta` tag
  * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN,
- * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, ta-LK…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak or Tamil, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too) or Tamil, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, any `en` tag is English, and English when none
  * matches.
  */
@@ -134,10 +135,10 @@ export const fullStop = isUnspaced ? '。' : (ownFullStops[locale] ?? '.')
 
 /**
  * Between two clauses of one sentence the code joins ("…pays you $64, and Ana no longer owes you"): Japanese ends the
- * first sentence instead ("…払います。…なくなりました"), Chinese takes its own comma ("…，Ana不再欠你"), Urdu its "،", as its
- * Android strings write it, and Thai, which has no comma, a space.
+ * first sentence instead ("…払います。…なくなりました"), Chinese takes its own comma ("…，Ana不再欠你"), Urdu and Persian their "،",
+ * as their Android strings write it, and Thai, which has no comma, a space.
  */
-const ownClauseBreaks: Partial<Record<Locale, string>> = { ja: '。', zh: '，', 'zh-Hant': '，', ur: '، ', th: ' ' }
+const ownClauseBreaks: Partial<Record<Locale, string>> = { ja: '。', zh: '，', 'zh-Hant': '，', ur: '، ', fa: '، ', th: ' ' }
 export const clauseBreak = ownClauseBreaks[locale] ?? ', '
 
 const documentLanguages: Record<Locale, string> = {
@@ -176,20 +177,21 @@ const documentLanguages: Record<Locale, string> = {
   fil: 'fil',
   sr: 'sr-Latn',
   sk: 'sk',
+  fa: 'fa',
   ta: 'ta',
 }
 
 const documentLanguage = documentLanguages[locale]
 
 // Why: the languages written right to left; "iw" is Hebrew's legacy code, which older browsers still send.
-const rightToLeftLanguages: ReadonlySet<string> = new Set(['ar', 'he', 'iw', 'ur'])
+const rightToLeftLanguages: ReadonlySet<string> = new Set(['ar', 'fa', 'he', 'iw', 'ur'])
 
-/** Whether `tag` ("ar", "he-IL", "ar_EG", "ur-PK") is a language written right to left. */
+/** Whether `tag` ("ar", "he-IL", "ar_EG", "ur-PK", "fa-IR") is a language written right to left. */
 export function isRightToLeft(tag: string): boolean {
   return rightToLeftLanguages.has(tag.toLowerCase().split(/[-_]/)[0])
 }
 
-/** The page's direction, from the app's language: `rtl` for Arabic, Hebrew and Urdu, `ltr` for the others. */
+/** The page's direction, from the app's language: `rtl` for Arabic, Hebrew, Urdu and Persian, `ltr` for the others. */
 export const direction: 'ltr' | 'rtl' = isRightToLeft(documentLanguage) ? 'rtl' : 'ltr'
 
 /** "→", the arrow that points the way a line reads: "←" in a right-to-left language, where arrows don't mirror. */
@@ -197,7 +199,7 @@ export const forwardArrow = direction === 'rtl' ? '←' : '→'
 
 /**
  * `text` kept in one piece inside a right-to-left sentence: wrapped in FIRST STRONG ISOLATE … POP DIRECTIONAL
- * ISOLATE, so "−R$ 118,50" or a symbol's "US$" keeps its order among Arabic, Hebrew or Urdu words. A left-to-right language
+ * ISOLATE, so "−R$ 118,50" or a symbol's "US$" keeps its order among Arabic, Hebrew, Urdu or Persian words. A left-to-right language
  * gets `text` unchanged.
  */
 export function isolated(text: string): string {
@@ -205,22 +207,24 @@ export function isolated(text: string): string {
 }
 
 /**
- * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali, Urdu and Tamil, whose own
- * ("١٢٫٥٠", "๑๒.๕๐", "১২.৫০", "۱۲٫۵۰", "௧௨.௫௦") the amount fields can't parse, and the Gregorian calendar for Thai, whose default is the
- * Buddhist era (2569 for 2026), so the web writes the year Android writes.
+ * The Unicode extension keys a language's `Intl` formatting needs: Latin digits for Arabic, Thai, Bengali, Urdu, Persian and Tamil,
+ * whose own ("١٢٫٥٠", "๑๒.๕๐", "১২.৫০", "۱۲٫۵۰", "௧௨.௫௦") the amount fields can't parse, and the Gregorian calendar for Thai,
+ * whose default is the Buddhist era (2569 for 2026), and Persian, whose default is the Solar Hijri one (1405 for 2026),
+ * so the web writes the year Android writes.
  */
 const formattingKeys: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   ar: { nu: 'latn' },
   bn: { nu: 'latn' },
   ur: { nu: 'latn' },
+  fa: { nu: 'latn', ca: 'gregory' },
   ta: { nu: 'latn' },
   th: { nu: 'latn', ca: 'gregory' },
 }
 
 /**
  * The tag to hand `Intl` for numbers, amounts and dates: `tag` itself, but with Latin digits (`-u-nu-latn`) for
- * Arabic, Thai, Bengali and Urdu, so an amount reads "12.50" as the amount fields type it, and the Gregorian calendar
- * (`-u-ca-gregory`) for Thai. Every other language gets `tag` unchanged.
+ * Arabic, Thai, Bengali, Urdu and Persian, so an amount reads "12.50" as the amount fields type it, and the Gregorian
+ * calendar (`-u-ca-gregory`) for Thai and Persian. Every other language gets `tag` unchanged.
  */
 export function formattingLocale(tag: string): string {
   const wanted = formattingKeys[tag.toLowerCase().split(/[-_]/)[0]]
@@ -372,6 +376,8 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * "felosztottál"). Bengali's respectful verb is the same for a name and for "আপনি", and Malay's never changes.
  * Urdu writes its ergative "نے" apart after a name and after the user's "آپ" alike, so its verb stays as it is.
  * Filipino's "ay" and actor-focus verb are the same for "Ikaw" and for a name, so its verb stays as it is too.
+ * Persian puts the verb last as Turkish does, so its verb phrases end with a simple past, which takes the respectful
+ * "ید" of "شما": "تقسیم کرد" becomes "تقسیم کردید".
  * Tamil ones end, before the colon that leads to the object, with a respectful past in "-ார்", which becomes the user's
  * "-ீர்கள்": "பிரித்தார்" becomes "பிரித்தீர்கள்".
  * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste". Same
@@ -385,6 +391,7 @@ export function verbForYou(verb: string): string {
     return Object.hasOwn(auxiliary, first) ? [auxiliary[first], ...rest].join(' ') : verb
   }
   if (locale === 'tr') return turkishVerbForYou(verb)
+  if (locale === 'fa') return persianVerbForYou(verb)
   if (locale === 'ta') return tamilVerbForYou(verb)
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
@@ -432,24 +439,35 @@ export function sayToActor(text: string, name: string): string {
  * → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
  */
 function turkishVerbForYou(verb: string): string {
-  return verb.replace(verbBeforeColon('[dt][ıiuü]'), '$1$2n$3')
+  return verbLastForYou(verb, '[dt][ıiuü]', 'n')
+}
+
+/**
+ * A language that puts its verb last (Turkish, Persian): the clause before the colon that leads to the object, if any,
+ * ends with a simple past matching `past`, which takes `ending` for the user. Same rule as Android's
+ * `toVerbLastSecondPerson` and the Apple app's `verbLastForYou`.
+ */
+function verbLastForYou(verb: string, past: string, ending: string, dropsPast = false): string {
+  const kept = dropsPast ? `([^:]*?)(?:${past})` : `([^:]*?${past})`
+  return verb.replace(new RegExp(`^${kept}(\\s*(?::|$))`, 'u'), `$1${ending}$2`)
 }
 
 /**
  * Tamil puts the verb last too, so every Tamil verb phrase ends, before the colon that leads to the object, with a
- * respectful past in "-ார்", which the second person ends in "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்", "சேர்ந்தார்" →
- * "சேர்ந்தீர்கள்"). A phrase whose clause doesn't end in that past stays as it is.
+ * respectful past in "-ார்", which the second person drops for "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்").
  */
 function tamilVerbForYou(verb: string): string {
-  return verb.replace(verbBeforeColon('ார்'), '$1ீர்கள்$3')
+  return verbLastForYou(verb, 'ார்', 'ீர்கள்', true)
 }
 
 /**
- * A verb-last language's phrase split around its verb: the words before it ($1), the verb's `ending` ($2), and what
- * follows up to the colon that leads to the object or the end ($3), for Turkish and Tamil.
+ * Persian puts the verb last, so every Persian verb phrase ends with its simple past in the third person singular, its
+ * past stem, which ends in "د" or "ت", before the colon that leads to the object if there is one ("هزینه‌ای را تقسیم
+ * کرد:"), and the user's respectful "شما" adds "ید" to it ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید"). A phrase
+ * whose clause doesn't end in that past stays as it is.
  */
-function verbBeforeColon(ending: string): RegExp {
-  return new RegExp(`^([^:]*?)(${ending})(\\s*(?::|$))`, 'u')
+function persianVerbForYou(verb: string): string {
+  return verbLastForYou(verb, '[دت]', 'ید')
 }
 
 /** The page's language, direction and title: Bora Rachar only in Brazil's Portuguese, Blitz Split everywhere else. */
