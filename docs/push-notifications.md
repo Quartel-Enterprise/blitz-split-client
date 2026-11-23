@@ -71,9 +71,9 @@ The entitlements already ask for push (`aps-environment`, `com.apple.developer.a
 `iosApp/project.yml`). Xcode's automatic signing adds Push Notifications to the App ID `com.quare.blitzsplit` the
 first time it signs a build with them; if it doesn't, turn it on in Apple Developer › Identifiers. Any capability
 change to that App ID invalidates the release's match profiles, the macOS one included: make them again with `--force`
-([Apple signing](release-process.md#apple-signing)). A build signed
-for development registers its token for APNs' sandbox and any other for production, as its provisioning profile says
-(a build without one, from the App Store or the simulator, by its configuration), which the server tells apart.
+([Apple signing](release-process.md#apple-signing)). A build signed for development registers its token for APNs'
+sandbox and any other for production, as its provisioning profile says (a build without one, from the App Store or the
+simulator, by its configuration), which the server tells apart.
 
 ### Web
 
