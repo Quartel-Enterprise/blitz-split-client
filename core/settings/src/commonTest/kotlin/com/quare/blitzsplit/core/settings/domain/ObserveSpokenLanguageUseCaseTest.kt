@@ -143,6 +143,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.SLOVAK,
                 AppLanguage.PERSIAN,
                 AppLanguage.TAMIL,
+                AppLanguage.NORWEGIAN,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -188,6 +189,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "sk",
                     "fa",
                     "ta",
+                    "nb",
                     "zh-Hant",
                 ),
                 spoken,
@@ -248,6 +250,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "sk",
             "fa",
             "ta",
+            "nb",
             "zh-Hant",
         )
 
@@ -302,6 +305,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "sk-SK",
                 "fa-AF",
                 "ta-IN",
+                "nb-NO",
                 "zh-TW",
             )
 
@@ -349,6 +353,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "sk",
                     "fa",
                     "ta",
+                    "nb",
                     "zh-Hant",
                 ),
                 spoken,

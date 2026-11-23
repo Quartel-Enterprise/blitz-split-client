@@ -2,4 +2,6 @@
 <resources>
     <!-- True only in values-pt-rPT: the strings drawn are Portugal's Portuguese, whichever locale picked them -->
     <bool name="designsystem_portugal_portuguese">false</bool>
+    <!-- True only in values-nb: the strings drawn are Norwegian, a Nynorsk device reaching them through its fallbacks -->
+    <bool name="designsystem_norwegian">false</bool>
 </resources>

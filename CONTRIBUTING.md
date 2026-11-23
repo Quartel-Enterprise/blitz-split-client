@@ -52,7 +52,7 @@ Start with:
 
 2. Write code, comments, docs and commit messages in **English**. Only the text a person sees in the app is
    translated: add every new string in English and in each translated language (Portuguese of Brazil and Portugal,
-   Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian, Slovak, Persian and Tamil), in each
+   Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian, Slovak, Persian, Tamil and Norwegian), in each
    platform's own place for them. Never send UI copy from Kotlin.
 3. Add or update unit tests for the logic you change in `core/*` and `feature/*`.
 4. If people will notice the change, add a release notes fragment, as [Release notes](docs/release-notes.md) explains.

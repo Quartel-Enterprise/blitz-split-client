@@ -119,6 +119,12 @@
             "value" : "Blitz Split"
           }
         },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -336,6 +342,12 @@
           }
         },
         "ms" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "nb" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -563,6 +575,12 @@
             "value" : "Untuk mengimbas kod QR jemputan atau daripada peranti lama anda, serta mengambil foto profil dan foto bil anda."
           }
         },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For å skanne QR-koden i en invitasjon eller fra den gamle enheten din, og for å ta profilbildet ditt og bilder av utgifter."
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -785,6 +803,12 @@
             "value" : "Untuk menjemput orang daripada kenalan anda dengan pautan kumpulan. Nombor mereka kekal pada peranti ini."
           }
         },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For å invitere folk fra kontaktene dine med lenken til en gruppe. Numrene deres blir på denne enheten."
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1005,6 +1029,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Untuk menyimpan foto bil ke pustaka anda."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For å lagre bildene til en utgift i bildebiblioteket ditt."
           }
         },
         "nl" : {

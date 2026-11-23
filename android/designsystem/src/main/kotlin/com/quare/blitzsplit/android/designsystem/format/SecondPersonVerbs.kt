@@ -23,6 +23,7 @@ private const val HINDI = "hi"
 private const val HINDI_ERGATIVE = "ने"
 private const val VIETNAMESE = "vi"
 private const val SWEDISH = "sv"
+private const val NORWEGIAN = "nb"
 private const val CZECH = "cs"
 private const val CZECH_SECOND_PERSON_AUXILIARY = "jsi"
 private const val SLOVAK = "sk"
@@ -107,6 +108,7 @@ private val youSubjectLanguages = setOf(
     CROATIAN,
     SERBIAN,
     SLOVAK,
+    NORWEGIAN,
     HUNGARIAN,
     URDU,
     PERSIAN,
@@ -283,7 +285,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
+ * Swedish "Du raderade…", Norwegian "Du slettet…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
  * حذف کردید…", with its verb rule. Czech says "Ty jsi
  * smazal(a)…", Slovak "Ty si vymazal(a)…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
@@ -295,14 +297,17 @@ fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages
 
 /*
  * Why: the language alone, but Portugal's Portuguese is told from Brazil's by the strings Android drew: its resources
- * also answer pt-AO, pt-MZ and the like, which no country check would catch.
+ * also answer pt-AO, pt-MZ and the like, which no country check would catch. Norwegian is told by them too, since a
+ * Nynorsk device ("nn") reaching values-nb through its fallback languages draws Bokmål.
  */
 @Composable
 private fun secondPersonLanguageUi(): String {
     val locale = LocalLocale.current.platformLocale
-    val isPortugal = LocalContext.current.resources.getBoolean(R.bool.designsystem_portugal_portuguese)
+    val resources = LocalContext.current.resources
+    val isPortugal = resources.getBoolean(R.bool.designsystem_portugal_portuguese)
     return when {
         locale.language == PORTUGUESE && isPortugal -> PORTUGAL_PORTUGUESE
+        resources.getBoolean(R.bool.designsystem_norwegian) -> NORWEGIAN
         isCyrillicSerbian(locale) -> ""
         else -> locale.language
     }

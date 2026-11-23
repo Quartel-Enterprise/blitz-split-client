@@ -90,6 +90,7 @@ export const PLAY_LOCALES = {
   sk: ["sk"],
   fa: ["fa"],
   ta: ["ta-IN"],
+  nb: ["no-NO"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -132,6 +133,7 @@ export const APP_STORE_LOCALES = {
   // Apple has no Persian listing locale either: the language has a Play listing and no App Store one.
   fa: [],
   ta: ["ta-IN"],
+  nb: ["no"],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */
