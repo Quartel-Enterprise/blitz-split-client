@@ -12,7 +12,7 @@ import SwiftUI
 /// past puts the ergative "ने" after the actor, apart after a name and one word with the user's "आपने", so its verb
 /// phrases all start with "ने", which the user's drops ("Ana ने खर्च बांटा", "आपने खर्च बांटा"). Romanian swaps its
 /// perfect's auxiliary as French does ("Ana a împărțit", "Tu ai împărțit"), and Czech adds one before the past ("Ana
-/// rozdělil(a)", "Ty jsi rozdělil(a)"). Greek ends its aorist in "-ε" for someone else and "-ες" for the user ("Ana
+/// rozdělil(a)", "Ty jsi rozdělil(a)"), as Slovak does with "si" ("Ana rozdelil(a)", "Ty si rozdelil(a)"). Greek ends its aorist in "-ε" for someone else and "-ες" for the user ("Ana
 /// μοίρασε", "Εσύ μοίρασες"). Croatian swaps its "je" for "si" before a past written "-o/la", the app not knowing the
 /// gender ("Ana je podijelio/la", "Ti si podijelio/la"). Hungarian starts each verb phrase with a past: a definite one
 /// in "-ta"/"-te" takes a "d" for the user ("Ana létrehozta", "Te létrehoztad"), an indefinite one is one of a short
@@ -73,7 +73,7 @@ enum SecondPerson {
     /// "ha diviso" → "hai diviso", "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden", "a
     /// împărțit" → "ai împărțit", "je podijelio/la" → "si podijelio/la". Czech: the second person's past takes the
     /// auxiliary "jsi" the third person has none of, so "rozdělil(a)" → "jsi rozdělil(a)"; a phrase that doesn't start
-    /// with that past stays as it is.
+    /// with that past stays as it is. Slovak likewise with "si": "rozdelil(a)" → "si rozdelil(a)".
     /// Portugal's Portuguese: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste".
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
     /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
@@ -92,6 +92,8 @@ enum SecondPerson {
         case "cs":
             // Why: the past may be followed by a comma or a colon ("změnil(a), kdo platil").
             return verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil ? "jsi " + verb : verb
+        case "sk":
+            return verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil ? "si " + verb : verb
         case "el":
             // Why: an object pronoun stays before the verb ("το επισύναψε"), which a comma or a colon may follow.
             guard let past = verb.range(of: #"^((το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)"#, options: .regularExpression)

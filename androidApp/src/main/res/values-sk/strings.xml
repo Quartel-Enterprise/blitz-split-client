@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Nie si v tejto skupine</string>
+    <string name="bill_link_not_in_group_message">Tento komentár je v skupine, v ktorej nie si. Požiadaj toho, kto ti poslal odkaz, o pozvánku.</string>
+    <string name="bill_link_offline_title">Žiadny internet</string>
+    <string name="bill_link_offline_message">Otvor odkaz znova, keď budeš opäť online.</string>
+    <string name="bill_link_go_home">Prejsť na Domov</string>
+    <string name="discard_changes_title">Zahodiť zmeny?</string>
+    <string name="discard_changes_message">Neuložené zmeny sa stratia.</string>
+    <string name="discard_changes_discard">Zahodiť</string>
+    <string name="discard_changes_keep_editing">Pokračovať v úpravách</string>
+    <string name="watch_channel_name">Hodinky</string>
+    <string name="watch_connected_title">%1$s pripojené k tvojmu účtu</string>
+    <string name="watch_connected_title_unnamed">Hodinky pripojené k tvojmu účtu</string>
+    <string name="watch_connected_text">Vidia tvoje skupiny a synchronizujú sa samy. Ak ich chceš odpojiť, odhlás sa na hodinkách.</string>
+</resources>

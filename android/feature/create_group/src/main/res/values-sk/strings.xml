@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Nová skupina</string>
+    <string name="create_group_close">Zavrieť</string>
+    <string name="create_group_create">Vytvoriť</string>
+    <string name="create_group_change_color">Zmeniť farbu skupiny</string>
+    <string name="create_group_name_label">Názov skupiny</string>
+    <string name="create_group_type_label">Typ skupiny</string>
+    <string name="create_group_members_title">Kto je v skupine</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d osoba</item>
+        <item quantity="few">%d osoby</item>
+        <item quantity="many">%d osoby</item>
+        <item quantity="other">%d osôb</item>
+    </plurals>
+    <string name="create_group_me">ty</string>
+    <string name="create_group_remove_member">Odobrať osobu %s</string>
+    <string name="create_group_add_placeholder">Pridať podľa mena</string>
+    <string name="create_group_add">Pridať</string>
+    <string name="create_group_no_app_notice">Momentálne nikto nepotrebuje aplikáciu. Výdavky môžeš pridávať za všetkých už teraz a odkaz poslať neskôr.</string>
+    <string name="create_group_currency">Predvolená mena</string>
+    <string name="create_group_currency_caption">Nové výdavky začínajú v tejto mene; každý výdavok môže mať inú.</string>
+    <string name="create_group_save_error">Skupinu sa nepodarilo uložiť. Skús to znova.</string>
+    <string name="create_group_photo">Fotka skupiny</string>
+    <string name="create_group_take_photo">Odfotiť</string>
+    <string name="create_group_choose_photo">Vybrať fotku</string>
+    <string name="create_group_remove_photo">Odstrániť fotku</string>
+    <string name="create_group_photo_error">Túto fotku sa nepodarilo použiť. Skús inú.</string>
+</resources>
