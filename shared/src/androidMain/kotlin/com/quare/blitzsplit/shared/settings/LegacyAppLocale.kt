@@ -15,7 +15,7 @@ object LegacyAppLocale {
     private const val KEY_TAG = "tag"
 
     private val latinDigitLanguages = setOf("ar", "bn", "ur", "fa")
-    private val gregorianLanguages = setOf("fa")
+    private val gregorianLanguages = setOf("th", "fa")
     private const val NUMBERING_SYSTEM = "nu"
     private const val LATIN_DIGITS = "latn"
     private const val CALENDAR = "ca"
@@ -34,7 +34,8 @@ object LegacyAppLocale {
      * Why: Arabic, Bengali, Urdu and Persian write their numbers, amounts and dates with Latin digits (docs/product/general.md), so the
      * amount fields read what the number keyboard types. Every "%d" of a string resource, a date and a count follow the
      * context's locale, so an Arabic, Bengali, Urdu or Persian one, picked or the device's, gets the "nu-latn" extension once here.
-     * Persian also gets "ca-gregory": ICU dates a Persian locale (DateUtils' ranges) in Iran's Solar Hijri calendar.
+     * Thai and Persian also get "ca-gregory": ICU dates a Thai locale (DateUtils' ranges) in the Buddhist era and a
+     * Persian one in Iran's Solar Hijri calendar, where every other date of the app says the Gregorian year.
      */
     private fun withLatinDigits(context: Context): Context {
         val locale = context.resources.configuration.locales[0]

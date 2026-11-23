@@ -197,7 +197,8 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     It reads right to left as Arabic, Hebrew and Urdu do, with the same mirrored layouts, and writes numbers, amounts
     and dates with 0-9, never its own digits (۰-۹), and in the Gregorian calendar as every other language: Android
     and the web write the Gregorian year, not ICU's and `Intl`'s Solar Hijri default (1405 for 2026;
-    `withGregorianCalendar`, `LegacyAppLocale`, `formattingLocale`), while the Apple apps follow the device's own
+    `withGregorianCalendar`, `LegacyAppLocale`, which also gives Thai `DateUtils`' ranges the Gregorian year,
+    `formattingLocale`), while the Apple apps follow the device's own
     calendar setting, as for Thai. It ends a sentence with "." and joins two
     clauses with "،" (the web's `clauseBreak`). No suffix or particle is ever glued to a value the app fills in: a name
     stands alone, after a colon or as the subject. Its verb comes last and changes with the person, so its activity
@@ -424,7 +425,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
     bill or a payment by each coin's supply: 21 million bitcoin and 90 million ether (the most the web's numbers
-    count to the unit), every other currency keeping 100 million but the rupiah and the dong (above)
+    count to the unit), every other currency keeping 100 million but the rupiah, the dong and the rial (above)
     (`ExpenseRules.maxAmountMinorFor`, the API's `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts
     a symbol and only the decimals the amount needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8
     ("0,00000001"). Profile › Preferences' "Bitcoin in satoshis" (always shown, Settings on the Mac), kept per

@@ -426,7 +426,16 @@ export function sayToActor(text: string, name: string): string {
  * → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
  */
 function turkishVerbForYou(verb: string): string {
-  return verb.replace(/^([^:]*?[dt][ıiuü])(\s*(?::|$))/u, '$1n$2')
+  return verbLastForYou(verb, '[dt][ıiuü]', 'n')
+}
+
+/**
+ * A language that puts its verb last (Turkish, Persian): the clause before the colon that leads to the object, if any,
+ * ends with a simple past matching `past`, which takes `ending` for the user. Same rule as Android's
+ * `toVerbLastSecondPerson` and the Apple app's `verbLastForYou`.
+ */
+function verbLastForYou(verb: string, past: string, ending: string): string {
+  return verb.replace(new RegExp(`^([^:]*?${past})(\\s*(?::|$))`, 'u'), `$1${ending}$2`)
 }
 
 /**
@@ -436,7 +445,7 @@ function turkishVerbForYou(verb: string): string {
  * whose clause doesn't end in that past stays as it is.
  */
 function persianVerbForYou(verb: string): string {
-  return verb.replace(/^([^:]*?[دت])(\s*(?::|$))/u, '$1ید$2')
+  return verbLastForYou(verb, '[دت]', 'ید')
 }
 
 /** The page's language, direction and title: Bora Rachar only in Brazil's Portuguese, Blitz Split everywhere else. */

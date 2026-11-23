@@ -56,7 +56,7 @@ each platform.
       `res/values-ms/strings.xml`, in Greek in `res/values-el/strings.xml`, in Croatian in
       `res/values-hr/strings.xml` (one, few and other), in Hungarian in
       `res/values-hu/strings.xml` (no case suffix glued to a placeholder), in Urdu in `res/values-ur/strings.xml`, in
-      Filipino in `res/values-fil/strings.xml` in Serbian in `res/values-b+sr+Latn/strings.xml` (one, few and other) and in Persian in `res/values-fa/strings.xml`
+      Filipino in `res/values-fil/strings.xml`, in Serbian in `res/values-b+sr+Latn/strings.xml` (one, few and other) and in Persian in `res/values-fa/strings.xml`
 - [ ] Any resource of a `values-pt-rPT` or `values-es-rES` (a string, a bool) also in `values-pt` or `values-es`:
       Android 7 and later fall back to a child of the language when its bare folder lacks a resource, so a pt-BR
       device read Portugal's `designsystem_portugal_portuguese` and wrote "Você criaste a conta"
