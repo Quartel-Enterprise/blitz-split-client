@@ -87,6 +87,7 @@
     <string name="profile_language_urdu">Bahasa Urdu</string>
     <string name="profile_language_filipino">Bahasa Filipina</string>
     <string name="profile_language_serbian">Bahasa Serbia</string>
+    <string name="profile_language_tamil">Bahasa Tamil</string>
     <string name="profile_language_system_detail">Bahasa peranti</string>
     <string name="profile_notifications">Pemberitahuan</string>
     <plurals name="profile_notifications_active">

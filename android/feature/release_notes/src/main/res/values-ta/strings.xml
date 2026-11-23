@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">வெளியீட்டுக் குறிப்புகள்</string>
+    <string name="release_notes_show_beta">பீட்டா பதிப்புகளைக் காட்டு</string>
+    <string name="release_notes_beta_badge">பீட்டா %1$d</string>
+    <string name="release_notes_installed_badge">இந்தப் பதிப்பு</string>
+    <string name="release_notes_empty">இன்னும் வெளியீட்டுக் குறிப்புகள் இல்லை.</string>
+    <string name="release_notes_empty_only_betas">இன்னும் நிலையான பதிப்பு எதுவும் இல்லை. சோதிக்கப்படுவதைப் பார்க்க பீட்டா பதிப்புகளை இயக்குங்கள்.</string>
+    <string name="release_notes_load_failed_title">வெளியீட்டுக் குறிப்புகளை ஏற்ற முடியவில்லை</string>
+    <string name="release_notes_load_failed_body">உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயலுங்கள்.</string>
+    <string name="release_notes_retry">மீண்டும் முயலவும்</string>
+    <string name="release_notes_open_on_github">GitHub-இல் திறக்கவும்</string>
+</resources>

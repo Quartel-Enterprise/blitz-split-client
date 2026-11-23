@@ -109,6 +109,11 @@ The feed, unread state, real time and push notifications.
     a past written "-o/la", the app not knowing the gender, which the user's rows turn into "si" ("Ana je podelio/la
     trošak", "Ti si podelio/la trošak"); no reflexive "se" nor object pronoun comes before that "je", a name is never
     declined, and the deleted-item notice starts with who deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`).
+    Tamil puts its verb last, as Turkish does, and says the person with it, so every Tamil verb phrase ends, before the
+    colon that leads to the object, with a respectful past in "-ார்", which the user's rows turn into "-ீர்கள்" ("Ana
+    ஒரு செலவைப் பிரித்தார்: டின்னர்", "நீங்கள் ஒரு செலவைப் பிரித்தீர்கள்: டின்னர்"); the object after the colon also
+    keeps every name free of case endings. Its deleted-item notice starts with who deleted it ("நீங்கள்
+    நீக்கினீர்கள்: …", `youSubjectLanguages`), and "You" is "நீங்கள்" everywhere.
     Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".

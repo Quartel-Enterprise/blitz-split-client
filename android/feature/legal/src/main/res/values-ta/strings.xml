@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">தனியுரிமைக் கொள்கை</string>
+    <string name="legal_terms">சேவை விதிமுறைகள்</string>
+    <string name="legal_updated_privacy_policy">புதுப்பிக்கப்பட்டது: %1$s</string>
+    <string name="legal_updated_terms">புதுப்பிக்கப்பட்டது: %1$s</string>
+    <string name="legal_load_failed_title">இந்தப் பக்கத்தை ஏற்ற முடியவில்லை</string>
+    <string name="legal_load_failed_body">உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயலுங்கள்.</string>
+    <string name="legal_retry">மீண்டும் முயலவும்</string>
+</resources>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">கணக்கைத் தீர்க்க நினைவூட்டல்</string>
+    <string name="push_bill_created">%1$s உங்களுடன் ஒரு செலவைச் சேர்த்தார்: ‘%2$s’</string>
+    <string name="push_bill_edited">%1$s ஒரு செலவைத் திருத்தினார்: ‘%2$s’</string>
+    <string name="push_bill_deleted">%1$s ஒரு செலவை நீக்கினார்: ‘%2$s’</string>
+    <string name="push_comment_added">%1$s கருத்து தெரிவித்தார் (‘%2$s’): %3$s</string>
+    <string name="push_payment_paid_you">%1$s உங்களுக்குச் செலுத்தியதாகக் குறித்தார்</string>
+    <string name="push_payment_to_you">%1$s குறித்தார்: %2$s உங்களுக்குச் செலுத்தினார்</string>
+    <string name="push_payment_received_yours">%1$s உங்கள் பேமெண்ட்டைப் பெறப்பட்டதாகக் குறித்தார்</string>
+    <string name="push_payment_from_you">%1$s குறித்தார்: நீங்கள் செலுத்தினீர்கள், பெற்றவர்: %2$s</string>
+    <string name="push_payment_undone">%1$s உங்களுடனான ஒரு பேமெண்ட்டைச் செயல்தவிர்த்தார்</string>
+    <string name="push_charge_sent">%1$s கணக்கைத் தீர்க்க உங்களுக்கு நினைவூட்டல் அனுப்பினார்</string>
+    <string name="push_settle_reminder">உங்களுக்குத் தீர்க்கப்படாத பேலன்ஸ் உள்ளது: %1$s</string>
+    <string name="push_settle_reminders">%1$s குழுக்களில் உங்களுக்குத் தீர்க்கப்படாத பேலன்ஸ்கள் உள்ளன</string>
+    <string name="push_added_to_group">%1$s உங்களைக் குழுவில் சேர்த்தார்</string>
+    <string name="push_member_joined">%1$s குழுவில் சேர்ந்தார்</string>
+    <string name="push_debts_simplified_to_you">%1$s கடன்களை எளிதாக்கினார். இப்போது %2$s உங்களுக்கு %3$s செலுத்துவார்.</string>
+    <string name="push_debts_simplified_from_you">%1$s கடன்களை எளிதாக்கினார். இப்போது நீங்கள் %3$s செலுத்த வேண்டும், பெறுபவர்: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s கடன்களை எளிதாக்கினார். உங்களுக்கு என்ன மாறியது என்று பாருங்கள்.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ‘கடன்களை எளிதாக்கு’ அம்சத்தை அணைத்தார். இப்போது %2$s உங்களுக்கு %3$s செலுத்துவார்.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ‘கடன்களை எளிதாக்கு’ அம்சத்தை அணைத்தார். இப்போது நீங்கள் %3$s செலுத்த வேண்டும், பெறுபவர்: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s ‘கடன்களை எளிதாக்கு’ அம்சத்தை அணைத்தார். உங்களுக்கு என்ன மாறியது என்று பாருங்கள்.</string>
+    <string name="notification_settings_bills">செலவுகள்</string>
+    <string name="notification_settings_bills_detail">நீங்கள் உள்ள செலவுகள் சேர்க்கப்படும்போது, திருத்தப்படும்போது அல்லது நீக்கப்படும்போது</string>
+    <string name="notification_settings_payments">பேமெண்ட்கள் மற்றும் கணக்குத் தீர்ப்புகள்</string>
+    <string name="notification_settings_payments_detail">உங்களுக்கு வரும் அல்லது நீங்கள் செய்யும் பேமெண்ட்கள், எளிதாக்கப்பட்ட கடன்கள்</string>
+    <string name="notification_settings_comments">கருத்துகள்</string>
+    <string name="notification_settings_comments_detail">நீங்கள் உள்ள செலவுகளிலும், நீங்கள் எழுதிய உரையாடல்களிலும்</string>
+    <string name="notification_settings_people_and_groups">நபர்கள் மற்றும் குழுக்கள்</string>
+    <string name="notification_settings_people_and_groups_detail">உங்கள் குழுக்களில் யார் சேருகிறார்கள் அல்லது வெளியேறுகிறார்கள், அவற்றில் என்ன மாறுகிறது</string>
+    <string name="notification_settings_payment_requests">பேமெண்ட் கோரிக்கைகள்</string>
+    <string name="notification_settings_payment_requests_detail">யாராவது உங்களைச் செலுத்தச் சொல்லும்போது</string>
+    <string name="notification_settings_balance_reminder">தீர்க்கப்படாத பேலன்ஸ் நினைவூட்டல்</string>
+    <string name="notification_settings_balance_reminder_detail">தீர்க்கப்படாத பேலன்ஸ் இருந்தால், வாரத்துக்கு ஒருமுறை</string>
+</resources>

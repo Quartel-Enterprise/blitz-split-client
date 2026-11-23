@@ -19,7 +19,9 @@ import SwiftUI
 /// list a translation may start with, each with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's
 /// respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
 /// Urdu writes its ergative "نے" apart after a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ
-/// بانٹا"), so its verb stays as it is.
+/// بانٹا"), so its verb stays as it is. Tamil puts its verb last, as Turkish does: every Tamil verb phrase ends, before the
+/// colon that leads to the object, with a respectful past in "-ார்", which the user's turns into "-ீர்கள்" ("Ana ஒரு
+/// செலவைப் பிரித்தார்", "நீங்கள் ஒரு செலவைப் பிரித்தீர்கள்").
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -81,12 +83,15 @@ enum SecondPerson {
     /// subject word ("내가") holds its own particle, so "님이 나눴어요" → "나눴어요". Hindi: the same with "ने", the user's
     /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Greek: the aorist takes an "ς", so "μοίρασε" → "μοίρασες".
     /// Hungarian: the past the phrase starts with takes a "d" in "-ta"/"-te" ("létrehozta" → "létrehoztad"), or its
-    /// listed second person ("felosztott" → "felosztottál"). Another language keeps the verb as it is.
+    /// listed second person ("felosztott" → "felosztottál"). Tamil: every verb phrase ends with a respectful past in
+    /// "-ார்", before the colon that leads to the object, which becomes "-ீர்கள்", so "பிரித்தார்:" → "பிரித்தீர்கள்:".
+    /// Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
         case "pt-PT": return portugueseVerbForYou(verb)
         case "tr": return turkishVerbForYou(verb)
+        case "ta": return tamilVerbForYou(verb)
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case "cs":
@@ -141,6 +146,25 @@ enum SecondPerson {
         let clause = verb[..<end]
         guard clause.range(of: "[dt][ıiuü]$", options: .regularExpression) != nil else { return verb }
         return String(clause) + "n" + String(verb[end...])
+    }
+
+    /// Tamil puts the verb last, so every Tamil verb phrase ends with a respectful past in "-ார்", before the colon that
+    /// leads to the object if there is one ("ஒரு செலவைப் பிரித்தார்:"), and the second person's ends in "-ீர்கள்"
+    /// ("பிரித்தார்" → "பிரித்தீர்கள்"). A phrase whose clause doesn't end in that past stays as it is.
+    private static func tamilVerbForYou(_ verb: String) -> String {
+        // Why: the Unicode scalars, since Swift's Character groups the vowel sign "ா" with the consonant before it.
+        let scalars = Array(verb.unicodeScalars)
+        let past = Array("ார்".unicodeScalars)
+        var end = scalars.firstIndex(of: ":") ?? scalars.endIndex
+        while end > 0, scalars[end - 1].properties.isWhitespace {
+            end -= 1
+        }
+        guard end >= past.count, Array(scalars[(end - past.count)..<end]) == past else { return verb }
+        var view = String.UnicodeScalarView()
+        view.append(contentsOf: scalars[..<(end - past.count)])
+        view.append(contentsOf: "ீர்கள்".unicodeScalars)
+        view.append(contentsOf: scalars[end...])
+        return String(view)
     }
 
     private static func portugueseVerbForYou(_ verb: String) -> String {
