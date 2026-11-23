@@ -155,6 +155,12 @@
             "value" : "Blitz Split"
           }
         },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "sr-Latn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -360,6 +366,12 @@
           }
         },
         "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "sk" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -575,6 +587,12 @@
             "value" : "Чтобы сканировать QR-код приглашения или со старого устройства, а также фотографировать себя для профиля и снимать счета."
           }
         },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na skenovanie QR kódu pozvánky alebo zo starého zariadenia a na fotenie tvojej profilovej fotky a fotiek výdavkov."
+          }
+        },
         "sr-Latn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -785,6 +803,12 @@
             "value" : "Чтобы приглашать людей из контактов по ссылке группы. Их номера остаются на этом устройстве."
           }
         },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na pozývanie ľudí z tvojich kontaktov odkazom do skupiny. Ich čísla zostávajú v tomto zariadení."
+          }
+        },
         "sr-Latn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -993,6 +1017,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Чтобы сохранять фото счетов в твою медиатеку."
+          }
+        },
+        "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na uloženie fotiek výdavku do tvojej knižnice."
           }
         },
         "sr-Latn" : {

@@ -74,6 +74,7 @@ object SampleTrips {
         "ur" to GroupCurrency.PKR,
         "fil" to GroupCurrency.PHP,
         "sr" to GroupCurrency.RSD,
+        "sk" to GroupCurrency.EUR,
         "fa" to GroupCurrency.IRR,
     )
 

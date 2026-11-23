@@ -113,6 +113,11 @@ The feed, unread state, real time and push notifications.
     a past written "-o/la", the app not knowing the gender, which the user's rows turn into "si" ("Ana je podelio/la
     trošak", "Ti si podelio/la trošak"); no reflexive "se" nor object pronoun comes before that "je", a name is never
     declined, and the deleted-item notice starts with who deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`).
+    Slovak follows Czech's rule with its own auxiliary: every Slovak verb phrase starts with a past in "-l(a)", the
+    app not knowing the gender, and the user's rows put "si" before it ("Ana rozdelil(a) výdavok…", "Ty si rozdelil(a)
+    výdavok…"). No reflexive "sa" nor pronoun comes right after that past, which would read "si pridal(a) sa": a join
+    is "vstúpil(a) do skupiny". A name is never declined, standing after a noun ("pridal(a) člena Ana"), and the
+    deleted-item notice starts with who deleted it ("Ty si vymazal(a)…", `youSubjectLanguages`).
     Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".

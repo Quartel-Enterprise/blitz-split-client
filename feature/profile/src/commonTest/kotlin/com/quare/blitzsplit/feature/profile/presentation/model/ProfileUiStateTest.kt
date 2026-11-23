@@ -50,6 +50,7 @@ class ProfileUiStateTest {
             AppLanguage.URDU -> listOf("اردو", "Urdu")
             AppLanguage.FILIPINO -> listOf("Filipino", "Filipino")
             AppLanguage.SERBIAN -> listOf("Srpski", "Serbian")
+            AppLanguage.SLOVAK -> listOf("Slovenčina", "Slovak")
             AppLanguage.PERSIAN -> listOf("فارسی", "Persian")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
@@ -100,6 +101,7 @@ class ProfileUiStateTest {
         AppLanguage.URDU,
         AppLanguage.FILIPINO,
         AppLanguage.SERBIAN,
+        AppLanguage.SLOVAK,
         AppLanguage.PERSIAN,
     )
 
@@ -693,6 +695,7 @@ class ProfileUiStateTest {
                 AppLanguage.URDU,
                 AppLanguage.FILIPINO,
                 AppLanguage.SERBIAN,
+                AppLanguage.SLOVAK,
                 AppLanguage.PERSIAN,
             ),
             options,
@@ -745,6 +748,7 @@ class ProfileUiStateTest {
                 AppLanguage.URDU,
                 AppLanguage.FILIPINO,
                 AppLanguage.SERBIAN,
+                AppLanguage.SLOVAK,
                 AppLanguage.PERSIAN,
             ),
             options,
@@ -881,7 +885,13 @@ class ProfileUiStateTest {
 
         // Then
         assertEquals(
-            listOf(AppLanguage.ENGLISH, AppLanguage.FRENCH, AppLanguage.SWEDISH, AppLanguage.BENGALI),
+            listOf(
+                AppLanguage.ENGLISH,
+                AppLanguage.FRENCH,
+                AppLanguage.SWEDISH,
+                AppLanguage.BENGALI,
+                AppLanguage.SLOVAK,
+            ),
             options,
         )
     }

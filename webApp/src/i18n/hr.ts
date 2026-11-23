@@ -863,6 +863,7 @@ export const hr: Record<MessageKey, string> = {
   profile_languageUrdu: 'Urdski',
   profile_languageFilipino: 'Filipinski',
   profile_languageSerbian: 'Srpski',
+  profile_languageSlovak: 'Slovački',
   profile_languagePersian: 'Perzijski',
   profile_bitcoinInSats: 'Bitcoin u satoshijima',
   profile_bitcoinInSatsDetail: 'Prikazuje i unosi iznose u bitcoinu u satsima (1 ₿ = 100.000.000 satsa).',
