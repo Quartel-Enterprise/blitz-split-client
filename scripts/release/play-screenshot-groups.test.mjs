@@ -237,6 +237,8 @@ describe("the jobs that send Google Play's screenshots", () => {
   test("are a few locales each, grouped by the script from the size the caller names", () => {
     assert.match(upload, /node scripts\/release\/play-screenshot-groups\.mjs groups "\$LOCALES" --size="\$GROUP_SIZE"/);
     assert.match(upload, /group_size:\n(?:\s+\w+: .*\n)*?\s+default: 6\n/);
+    // A dispatch hands its number input over as text, which the called workflow's number input refuses.
+    assert.match(job(alone, "send"), /\n\s+group_size: \$\{\{ fromJSON\(inputs\.group_size\) \}\}\n/);
     assert.match(job(upload, "send"), /matrix:\n\s+group: \$\{\{ fromJSON\(needs\.groups\.outputs\.groups\) \}\}\n/);
     assert.match(job(upload, "send"), /max-parallel: 1\n/);
     assert.match(job(upload, "send"), /fail-fast: false\n/);
