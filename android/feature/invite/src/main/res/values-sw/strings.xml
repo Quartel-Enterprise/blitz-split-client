@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Funga</string>
+    <string name="invite_group_created">Kikundi kimeundwa</string>
+    <string name="invite_title">Alika kila mtu kwenye: %s</string>
+    <string name="invite_qr_description">Msimbo wa QR wa kiungo cha mwaliko cha kikundi</string>
+    <string name="invite_copy">Nakili</string>
+    <string name="invite_copied">Imenakiliwa</string>
+    <string name="invite_who_picks">Anayefungua kiungo anachagua yeye ni nani kwenye orodha: %s. Hakuna haja ya akaunti.</string>
+    <string name="invite_names_or">%1$s au %2$s</string>
+    <string name="invite_anyone_joins">Anayefungua kiungo anajiunga na kikundi. Hakuna haja ya akaunti.</string>
+    <string name="invite_pending_title">Kiungo kinasubiri</string>
+    <string name="invite_pending_offline">Kitaundwa mara tu utakapokuwa mtandaoni.</string>
+    <string name="invite_pending_online">Inaunda kiungo…</string>
+    <string name="invite_failed_title">Imeshindwa kuunda kiungo</string>
+    <string name="invite_failed_body">Hitilafu imetokea wakati wa kusawazisha kikundi.</string>
+    <string name="invite_retry">Jaribu tena</string>
+    <string name="invite_share">Shiriki kiungo</string>
+    <string name="invite_see_who_joined">Ona waliojiunga</string>
+    <string name="invite_add_person">Ongeza mtu asiye na programu</string>
+    <string name="invite_go_to_group">Nenda kwenye kikundi</string>
+    <string name="invite_change_link">Badilisha kiungo</string>
+    <string name="invite_change_link_title">Ubadilishe kiungo cha mwaliko?</string>
+    <string name="invite_change_link_message">Kiungo cha sasa na msimbo wa QR vitaacha kufanya kazi, pamoja na mialiko binafsi ambayo haijatumika. Waliokwisha jiunga wanabaki kwenye kikundi.</string>
+    <string name="invite_change_link_failed">Imeshindwa kubadilisha kiungo. Jaribu tena.</string>
+    <string name="invite_share_message">Tugawanye gharama za kikundi %1$s kwenye Blitz Split. Jiunge kwa kiungo hiki: %2$s</string>
+</resources>

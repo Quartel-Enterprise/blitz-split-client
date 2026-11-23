@@ -91,6 +91,7 @@
     <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_filipino">Filipino</string>
     <string name="profile_language_serbian">Serbian</string>
+    <string name="profile_language_swahili">Swahili</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English</string>
@@ -127,6 +128,7 @@
     <string name="profile_language_native_urdu" translatable="false">اردو</string>
     <string name="profile_language_native_filipino" translatable="false">Filipino</string>
     <string name="profile_language_native_serbian" translatable="false">Srpski</string>
+    <string name="profile_language_native_swahili" translatable="false">Kiswahili</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>

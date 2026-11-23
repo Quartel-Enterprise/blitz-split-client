@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Kiungo cha mwaliko</string>
+    <string name="members_link_pending">Bado hakijaundwa</string>
+    <string name="members_share">Shiriki</string>
+    <string name="members_me">%s (wewe)</string>
+    <string name="members_status_this_device">Kifaa hiki</string>
+    <string name="members_status_joined">Amejiunga</string>
+    <string name="members_status_not_joined">Bado hajajiunga</string>
+    <string name="members_options">Chaguo za: %s</string>
+    <string name="members_rename">Badilisha jina</string>
+    <string name="members_personal_invite">Mwaliko binafsi kwa %s</string>
+    <string name="members_personal_message">Anayefungua kiungo hiki anajiunga moja kwa moja kama %s, bila kuchagua kwenye orodha. Kinafanya kazi mara moja.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Anayefungua kiungo hiki anajiunga moja kwa moja kama %1$s, bila kuchagua kwenye orodha, na tayari anaona sehemu yake ya %2$s kwenye gharama iliyoongezwa hadi sasa. Kinafanya kazi mara moja.</item>
+        <item quantity="other">Anayefungua kiungo hiki anajiunga moja kwa moja kama %1$s, bila kuchagua kwenye orodha, na tayari anaona sehemu yake ya %2$s kwenye gharama %3$d zilizoongezwa hadi sasa. Kinafanya kazi mara moja.</item>
+    </plurals>
+    <string name="members_personal_copy">Nakili kiungo</string>
+    <string name="members_personal_copied">Imenakiliwa</string>
+    <string name="members_personal_share">Shiriki na %s</string>
+    <string name="members_personal_share_message">Jiunga na kikundi %1$s kama %2$s kwenye Blitz Split: %3$s</string>
+    <string name="members_remove">Ondoa kwenye kikundi</string>
+    <string name="members_remove_joined">%s tayari amejiunga na kikundi</string>
+    <string name="members_remove_title">Umwondoe %s kwenye kikundi?</string>
+    <string name="members_remove_message">%s bado hajajiunga. Unaweza kumwongeza tena baadaye.</string>
+    <string name="members_remove_confirm">Ondoa</string>
+    <string name="members_release">Achilia jina</string>
+    <string name="members_release_title">Uachilie jina la %s?</string>
+    <string name="members_release_message">Aliyejiunga kama %1$s anaondoka kwenye kikundi. Jina, rangi na gharama za %1$s zinabaki, na %1$s anaweza kuchaguliwa tena kupitia kiungo cha kikundi.</string>
+    <string name="members_release_confirm">Achilia</string>
+    <string name="members_release_error">Imeshindwa kuachilia jina. Angalia muunganisho wako na ujaribu tena.</string>
+    <string name="members_add">Ongeza mtu</string>
+    <string name="members_invite_instead">Ana programu? Mwalike kwa kiungo</string>
+    <string name="members_name_label">Jina</string>
+    <string name="members_save">Hifadhi</string>
+    <string name="members_cancel">Ghairi</string>
+    <string name="members_change_error">Imeshindwa kuhifadhi badiliko. Jaribu tena.</string>
+    <string name="members_remove_open_balance">%s ana salio lililo wazi</string>
+    <string name="members_balance_to_get_back">anadai %s</string>
+    <string name="members_balance_owes">anadaiwa %s</string>
+    <string name="members_balance_settled">Hakuna deni</string>
+</resources>
