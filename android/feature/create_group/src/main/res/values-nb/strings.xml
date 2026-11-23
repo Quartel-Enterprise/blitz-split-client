@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Ny gruppe</string>
+    <string name="create_group_close">Lukk</string>
+    <string name="create_group_create">Opprett</string>
+    <string name="create_group_change_color">Endre fargen på gruppen</string>
+    <string name="create_group_name_label">Gruppenavn</string>
+    <string name="create_group_type_label">Gruppetype</string>
+    <string name="create_group_members_title">Hvem er med</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d personer</item>
+    </plurals>
+    <string name="create_group_me">deg</string>
+    <string name="create_group_remove_member">Fjern %s</string>
+    <string name="create_group_add_placeholder">Legg til med navn</string>
+    <string name="create_group_add">Legg til</string>
+    <string name="create_group_no_app_notice">Ingen trenger appen akkurat nå. Du kan allerede legge til utgifter for alle og sende lenken senere.</string>
+    <string name="create_group_currency">Standardvaluta</string>
+    <string name="create_group_currency_caption">Nye utgifter starter i denne valutaen; hver utgift kan bruke en annen.</string>
+    <string name="create_group_save_error">Kunne ikke lagre gruppen. Prøv igjen.</string>
+    <string name="create_group_photo">Gruppebilde</string>
+    <string name="create_group_take_photo">Ta bilde</string>
+    <string name="create_group_choose_photo">Velg bilde</string>
+    <string name="create_group_remove_photo">Fjern bildet</string>
+    <string name="create_group_photo_error">Kunne ikke bruke dette bildet. Prøv et annet.</string>
+</resources>

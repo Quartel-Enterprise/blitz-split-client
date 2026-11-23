@@ -88,6 +88,7 @@
     <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_filipino">Filippínó</string>
     <string name="profile_language_serbian">Szerb</string>
+    <string name="profile_language_norwegian">Norvég (bokmål)</string>
     <string name="profile_language_system_detail">Az eszköz nyelve</string>
     <string name="profile_notifications">Értesítések</string>
     <plurals name="profile_notifications_active">

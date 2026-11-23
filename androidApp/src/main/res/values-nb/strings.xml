@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Du er ikke med i denne gruppen</string>
+    <string name="bill_link_not_in_group_message">Denne kommentaren er i en gruppe du ikke er med i. Be den som sendte deg lenken om en invitasjon.</string>
+    <string name="bill_link_offline_title">Ingen nett</string>
+    <string name="bill_link_offline_message">Åpne lenken på nytt når du er tilbake på nett.</string>
+    <string name="bill_link_go_home">Gå til Hjem</string>
+    <string name="discard_changes_title">Forkaste endringene?</string>
+    <string name="discard_changes_message">Endringer som ikke er lagret, går tapt.</string>
+    <string name="discard_changes_discard">Forkast</string>
+    <string name="discard_changes_keep_editing">Fortsett å redigere</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Klokke</string>
+    <string name="watch_connected_title">%1$s er koblet til kontoen din</string>
+    <string name="watch_connected_title_unnamed">Klokken er koblet til kontoen din</string>
+    <string name="watch_connected_text">Den ser gruppene dine og synkroniserer av seg selv. For å koble den fra, logg ut på klokken.</string>
+</resources>

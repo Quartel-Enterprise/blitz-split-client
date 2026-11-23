@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino and Serbian (Latin script): the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian and Norwegian (Latin script): the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -190,7 +190,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     comes with it (below). Only the Latin script exists on Android and Apple: a
     device set to Serbian in Cyrillic (`sr`, `sr-RS`, `sr-Cyrl`, Cyrillic by default) is a language the app doesn't have,
     so it speaks English, the release notes and legal pages included, until "Srpski" is picked in Profile › Language.
-    The web's browser language reads any `sr` tag as the Latin Serbian. The
+    The web's browser language reads any `sr` tag as the Latin Serbian. Norwegian (Pierre's calls, issue #551) is
+    Bokmål, one variant that answers every Norwegian tag: Bokmål's `nb`, the macrolanguage's `no` and Nynorsk's `nn`
+    (`AppLanguage.fromTag`, the web's `pickLocale`), with no regional one; Android's resources are `values-nb`, which
+    a device set to Nynorsk only reaches through its own fallback languages. It talks to the user in the informal
+    "du", as Swedish does, calls the app Blitz Split, and its verbs don't change with the person ("Ana delte…", "Du
+    delte…"), its deleted-item notice starting with who deleted it (`youSubjectLanguages`). Its plurals have one and
+    other. The picker names it "Norsk bokmål", "Norwegian Bokmål" in English, and its chip reads "NB". The Norwegian
+    krone (NOK) comes with it (below). The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the
@@ -400,6 +407,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     in Serbia. It has 2 decimals, as ISO gives it, and the usual 100 million cap, so an app version from before it
     shows its amounts by the raw code, with the right decimals. The store screenshots' sample trip for Serbian is
     priced in it.
+  - The Norwegian krone (NOK) comes with Norwegian (Pierre's call), as the dinar did with Serbian, and starts a new
+    group in Norway, Svalbard and Bouvet Island. It has 2 decimals, as ISO gives it, and the usual 100 million cap, so
+    an app version from before it shows its amounts by the raw code, with the right decimals. The store screenshots'
+    sample trip for Norwegian is priced in it.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a

@@ -87,6 +87,7 @@
     <string name="profile_language_urdu">乌尔都语</string>
     <string name="profile_language_filipino">菲律宾语</string>
     <string name="profile_language_serbian">塞尔维亚语</string>
+    <string name="profile_language_norwegian">挪威语（书面挪威语）</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

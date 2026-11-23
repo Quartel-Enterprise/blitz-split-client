@@ -88,6 +88,7 @@
     <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_filipino">Filipino</string>
     <string name="profile_language_serbian">Serbiska</string>
+    <string name="profile_language_norwegian">Norskt bokmål</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Aviseringar</string>
     <plurals name="profile_notifications_active">

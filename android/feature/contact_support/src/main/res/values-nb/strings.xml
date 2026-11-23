@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Kontakt kundestøtte</string>
+    <string name="contact_support_description">Vi åpner e-postappen din med en melding klar. Beskriv hva som skjedde og send den: ekte mennesker leser hver eneste melding.</string>
+    <string name="contact_support_to">Til</string>
+    <string name="contact_support_diagnostics">Tas med i e-posten</string>
+    <string name="contact_support_app_version">Appversjon</string>
+    <string name="contact_support_platform">Plattform</string>
+    <string name="contact_support_language">Språk</string>
+    <string name="contact_support_account">Konto</string>
+    <string name="contact_support_profile">Profil</string>
+    <string name="contact_support_language_system">System</string>
+    <string name="contact_support_account_local">Bare denne enheten</string>
+    <string name="contact_support_account_anonymous">Ikke tilkoblet</string>
+    <string name="contact_support_open_email">Åpne e-post</string>
+    <string name="contact_support_copy_email">Kopier e-postadressen</string>
+    <string name="contact_support_notice_copied">E-postadressen er kopiert.</string>
+    <string name="contact_support_notice_no_app">Fant ingen e-postapp. Adressen ble kopiert i stedet.</string>
+    <string name="contact_support_close">Lukk</string>
+</resources>

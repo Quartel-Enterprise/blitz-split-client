@@ -133,6 +133,7 @@ class GroupCurrency private constructor(
         val PKR = GroupCurrency("PKR", setOf("PK"))
         val PHP = GroupCurrency("PHP", setOf("PH"))
         val RSD = GroupCurrency("RSD", setOf("RS"))
+        val NOK = GroupCurrency("NOK", setOf("NO", "SJ", "BV"))
 
         // Why: 8 decimals, a satoshi each, which typing or reading "Bitcoin em satoshis" shows as whole sats.
         val BTC = GroupCurrency(
@@ -200,6 +201,7 @@ class GroupCurrency private constructor(
             PKR,
             PHP,
             RSD,
+            NOK,
             BTC,
             ETH,
         )

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Lagre gjenopprettingskoden</string>
+    <string name="recovery_code_body">Du bruker appen uten konto. Disse 12 ordene henter dataene dine tilbake hvis du bytter eller mister enheten. Skriv dem ned i rekkefølge. Etter 30 dager uten bruk slettes dataene dine, og ordene slutter å fungere.</string>
+    <string name="recovery_code_copy">Kopier ordene</string>
+    <string name="recovery_code_save_to_password_manager">Lagre i passordbehandleren</string>
+    <string name="recovery_code_connect_instead">Koble til Google eller Apple i stedet</string>
+    <string name="recovery_code_connect_instead_body">Ingen kode nødvendig</string>
+    <string name="recovery_code_sign_in_failed">Kunne ikke koble til akkurat nå. Prøv igjen.</string>
+    <string name="recovery_code_also_in_profile">Den finnes også i Profil › Gjenoppretting.</string>
+    <string name="recovery_code_remind_later">Påminn meg senere</string>
+    <string name="recovery_code_saved">Jeg har lagret den</string>
+    <string name="recovery_code_download">Last ned</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · gjenopprettingskode\n\n%1$s\n\nBruk den under «Jeg har brukt den på en annen enhet» for å hente dataene dine tilbake.\n</string>
+</resources>

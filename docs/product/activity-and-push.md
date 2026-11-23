@@ -109,6 +109,8 @@ The feed, unread state, real time and push notifications.
     a past written "-o/la", the app not knowing the gender, which the user's rows turn into "si" ("Ana je podelio/la
     trošak", "Ti si podelio/la trošak"); no reflexive "se" nor object pronoun comes before that "je", a name is never
     declined, and the deleted-item notice starts with who deleted it ("Ti si izbrisao/la…", `youSubjectLanguages`).
+    Norwegian verbs don't change with the person, as Swedish's ("Ana delte…", "Du delte…"), its notice starting with
+    who deleted it too ("Du slettet…", `youSubjectLanguages`).
     Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Ny betalingsmåte</string>
+    <string name="paying_method_edit_title">Rediger betalingsmåte</string>
+    <string name="paying_method_type">Type</string>
+    <string name="paying_method_name">Navn</string>
+    <string name="paying_method_name_optional">Navn (valgfritt)</string>
+    <string name="paying_method_color">Farge</string>
+    <string name="paying_method_default">Standardmåte</string>
+    <string name="paying_method_default_hint">Nye utgifter du betaler, starter med den.</string>
+    <string name="paying_method_delete">Slett betalingsmåte</string>
+    <string name="paying_method_delete_title">Slette denne betalingsmåten?</string>
+    <string name="paying_method_delete_body">Utgifter du merket med den, viser den ikke lenger.</string>
+    <string name="paying_method_delete_confirm">Slett</string>
+    <string name="paying_method_save">Lagre</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Koble til klokke</string>
+    <string name="connect_watch_close">Lukk</string>
+    <string name="connect_watch_body">Skriv inn koden klokken viser. Den logger inn på kontoen din og synkroniserer deretter på egen hånd.</string>
+    <string name="connect_watch_code_label">Klokkekode</string>
+    <string name="connect_watch_error_invalid">Feil eller utløpt kode. Hent en ny på klokken.</string>
+    <string name="connect_watch_error_too_many">For mange feil koder. Vent noen minutter og prøv igjen.</string>
+    <string name="connect_watch_error_needs_account">Koble til en konto først: dataene dine er bare på denne enheten.</string>
+    <string name="connect_watch_error_failed">Kunne ikke koble til klokken. Prøv igjen.</string>
+    <string name="connect_watch_offline">Det trengs internett for å koble til klokken.</string>
+    <string name="connect_watch_own_watch_only">Skriv bare inn en kode som vises på din egen klokke: den som har den klokken, kommer inn på kontoen din.</string>
+    <string name="connect_watch_validity">Koden er gyldig i 5 minutter, én gang.</string>
+    <string name="connect_watch_button">Koble til</string>
+    <string name="connect_watch_connected_title">Klokken er koblet til</string>
+    <string name="connect_watch_connected_body">Den ser gruppene dine og synkroniserer på egen hånd. For å koble den fra, logg ut på klokken.</string>
+</resources>
