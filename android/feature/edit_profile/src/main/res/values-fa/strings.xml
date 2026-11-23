@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">ویرایش پروفایل</string>
+    <string name="edit_profile_save">ذخیره</string>
+    <string name="edit_profile_change_photo">تغییر عکس</string>
+    <string name="edit_profile_take_photo">گرفتن عکس</string>
+    <string name="edit_profile_choose_photo">انتخاب از گالری</string>
+    <string name="edit_profile_use_account_photo">استفاده از عکس حساب %1$s</string>
+    <string name="edit_profile_remove_photo">حذف عکس</string>
+    <string name="edit_profile_photo_error">از این عکس نمی‌شود استفاده کرد. عکس دیگری را امتحان کنید.</string>
+    <string name="edit_profile_avatar_color">رنگ آواتار</string>
+    <string name="edit_profile_avatar_color_hint">وقتی عکس ندارید نمایش داده می‌شود.</string>
+    <string name="edit_profile_name_label">نام شما</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">دست‌کم %d حرف بنویسید.</string>
+    <string name="edit_profile_name_too_long">حداکثر %d نویسه استفاده کنید.</string>
+    <string name="edit_profile_account_notice">نام و عکس از حساب %1$s شما آمده است. تغییر آن‌ها در اینجا فقط روی Blitz Split اثر دارد و حساب %1$s شما را تغییر نمی‌دهد.</string>
+    <string name="edit_profile_footer">گروه‌های شما و هر کسی که لینک پروفایلتان را دارد، نام و عکس شما را می‌بیند.</string>
+    <string name="profile_photo_close">بستن</string>
+    <string name="profile_photo_camera">دوربین</string>
+    <string name="profile_photo_gallery">گالری</string>
+    <string name="profile_photo_remove">حذف</string>
+    <string name="profile_photo_title">عکس پروفایل</string>
+</resources>

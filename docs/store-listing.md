@@ -80,7 +80,7 @@ section but `## Play video` is required.
   and the web", not the name of a phone. The one exception is "Sign in with Google or Apple", the names of the two
   buttons the app shows on every platform. No competitor's name anywhere, keywords included: both stores remove
   listings for it.
-- **No number that changes by itself**, such as how many languages the app is in: nothing would update it in thirty-seven
+- **No number that changes by itself**, such as how many languages the app is in: nothing would update it in forty
   files.
 - **Free, with no ads** is true today and written in every listing ([general.md](product/general.md)): when the app
   gains something paid, the listings change in the same pull request.
@@ -141,6 +141,6 @@ version.
 Write `store-listing/<language>.md`, add the language to `LANGS` (the release notes need it too:
 [release-notes.md](release-notes.md)) and its locales to `PLAY_LOCALES` and `APP_STORE_LOCALES`. A regional
 listing of a language the release notes already have, as Spain's Spanish, goes in `LISTING_LANGS` alone, and takes
-its locale from its language's list. A language one store has no locale for, as Filipino, Serbian and Bulgarian on the App Store, have
-an empty list there (`fil: []`, `sr: []`, `bg: []`): its listing goes to the other store alone. The check then
+its locale from its language's list. A language one store has no locale for, as Filipino, Serbian, Persian and Bulgarian on the App Store, have
+an empty list there (`fil: []`, `sr: []`, `fa: []`, `bg: []`): its listing goes to the other store alone. The check then
 passes, and the next `upload_listing` creates the listing in that locale. The `add-language` skill lists the rest.

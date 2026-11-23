@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">செலவைப் பிரியுங்கள், சிரமமின்றி</string>
+    <string name="welcome_offline_title">ஆஃப்லைனிலும் வேலை செய்யும்</string>
+    <string name="welcome_offline_body">எல்லாமே உங்கள் சாதனத்தில் இருக்கும், பிறகு ஒத்திசைக்கப்படும்.</string>
+    <string name="welcome_optional_title">அக்கவுண்ட் கட்டாயமில்லை</string>
+    <string name="welcome_optional_body">சாதனத்தை மாற்றும்போது எதையும் இழக்காமல் இருக்க மட்டுமே Google அல்லது Apple உதவும்.</string>
+    <string name="welcome_invite_title">லிங்க் அல்லது QR குறியீடு மூலம் அழைக்கவும்</string>
+    <string name="welcome_invite_body">நண்பர்கள் அக்கவுண்ட் உருவாக்காமலேயே குழுவில் சேரலாம்.</string>
+    <string name="welcome_no_connection_title">இணைப்பு இல்லை.</string>
+    <string name="welcome_no_connection_body">அக்கவுண்ட் மூலம் உள்நுழைய இணையம் தேவை. இப்போது அக்கவுண்ட் இல்லாமல் பயன்படுத்துங்கள், பிறகு சுயவிவரத்தில் இணையுங்கள்.</string>
+    <string name="welcome_or">அல்லது</string>
+    <string name="welcome_use_without_account">அக்கவுண்ட் இல்லாமல் பயன்படுத்தவும்</string>
+    <string name="welcome_used_on_another_device">வேறொரு சாதனத்தில் பயன்படுத்தியிருக்கிறேன்</string>
+    <string name="welcome_sign_in_failed">இப்போது உள்நுழைய முடியவில்லை. மீண்டும் முயலுங்கள்.</string>
+    <string name="welcome_legal_notice">தொடர்வதன் மூலம், இவற்றை ஏற்கிறீர்கள்: %1$s. இதையும் அறிந்துகொண்டீர்கள்: %2$s.</string>
+    <string name="welcome_legal_terms">சேவை விதிமுறைகள்</string>
+    <string name="welcome_legal_privacy">தனியுரிமைக் கொள்கை</string>
+    <string name="welcome_no_account_note">அக்கவுண்ட் இல்லாமல், 30 நாட்கள் பயன்படுத்தாவிட்டால் உங்கள் தரவு நீக்கப்படும். அதை வைத்திருக்க Google அல்லது Apple-ஐ இணையுங்கள்.</string>
+    <string name="welcome_no_account_note_offline">அக்கவுண்ட் இல்லாமல், 30 நாட்கள் பயன்படுத்தாவிட்டால் உங்கள் தரவு நீக்கப்படும். அதை வைத்திருக்க, பிறகு சுயவிவரத்தில் Google அல்லது Apple-ஐ இணையுங்கள்.</string>
+    <string name="welcome_expired_title">உங்கள் தரவு நீக்கப்பட்டது</string>
+    <string name="welcome_expired_body">நீங்கள் அக்கவுண்ட் இல்லாமல் ஆப்பைப் பயன்படுத்தினீர்கள், 30 நாட்கள் அதைத் திறக்கவில்லை, எனவே உங்கள் தரவு நீக்கப்பட்டது. அடுத்த முறை அதை வைத்திருக்க Google அல்லது Apple-ஐ இணையுங்கள்.</string>
+    <string name="welcome_expired_ok">சரி</string>
+</resources>

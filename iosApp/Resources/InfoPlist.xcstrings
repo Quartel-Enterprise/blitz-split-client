@@ -59,6 +59,12 @@
             "value" : "Blitz Split"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -125,6 +131,12 @@
             "value" : "Blitz Split"
           }
         },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -174,6 +186,18 @@
           }
         },
         "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "te" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -281,6 +305,12 @@
             "value" : "Blitz Split"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -347,6 +377,12 @@
             "value" : "Blitz Split"
           }
         },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -396,6 +432,18 @@
           }
         },
         "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "te" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -503,6 +551,12 @@
             "value" : "Para escanear el código QR de una invitación o de tu dispositivo anterior, y para tomar tu foto de perfil y fotos de gastos."
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای اسکن کد QR یک دعوت یا دستگاه قبلی شما، و گرفتن عکس پروفایل و عکس هزینه‌ها."
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -569,6 +623,12 @@
             "value" : "Untuk mengimbas kod QR jemputan atau daripada peranti lama anda, serta mengambil foto profil dan foto bil anda."
           }
         },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For å skanne QR-koden i en invitasjon eller fra den gamle enheten din, og for å ta profilbildet ditt og bilder av utgifter."
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -621,6 +681,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "För att skanna QR-koden i en inbjudan eller från din gamla enhet, och för att ta ditt profilfoto och foton av utgifter."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "அழைப்பின் அல்லது உங்கள் பழைய சாதனத்தின் QR குறியீட்டை ஸ்கேன் செய்யவும், உங்கள் சுயவிவரப் புகைப்படத்தையும் செலவுகளின் புகைப்படங்களையும் எடுக்கவும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఆహ్వానం లేదా మీ పాత పరికరం QR కోడ్‌ను స్కాన్ చేయడానికి, మీ ప్రొఫైల్ ఫోటో మరియు ఖర్చుల ఫోటోలు తీయడానికి."
           }
         },
         "th" : {
@@ -725,6 +797,12 @@
             "value" : "Para invitar a personas de tus contactos con el enlace de un grupo. Sus números se quedan solo en este dispositivo."
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای دعوت افراد از مخاطبان شما با لینک گروه. شماره‌های آن‌ها فقط روی همین دستگاه می‌ماند."
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -791,6 +869,12 @@
             "value" : "Untuk menjemput orang daripada kenalan anda dengan pautan kumpulan. Nombor mereka kekal pada peranti ini."
           }
         },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For å invitere folk fra kontaktene dine med lenken til en gruppe. Numrene deres blir på denne enheten."
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -843,6 +927,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "För att bjuda in personer från dina kontakter med en grupps länk. Deras nummer stannar på den här enheten."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "குழுவின் லிங்க் மூலம் உங்கள் தொடர்புகளில் உள்ளவர்களை அழைக்க. அவர்களின் எண்கள் இந்தச் சாதனத்திலேயே இருக்கும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "గ్రూప్ లింక్‌తో మీ కాంటాక్ట్‌లలోని వ్యక్తులను ఆహ్వానించడానికి. వారి నంబర్లు ఈ పరికరంలోనే ఉంటాయి."
           }
         },
         "th" : {
@@ -947,6 +1043,12 @@
             "value" : "Para guardar las fotos de los gastos en tu biblioteca."
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای ذخیره عکس‌های یک هزینه در کتابخانه عکس‌های شما."
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1013,6 +1115,12 @@
             "value" : "Untuk menyimpan foto bil ke pustaka anda."
           }
         },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For å lagre bildene til en utgift i bildebiblioteket ditt."
+          }
+        },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1065,6 +1173,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "För att spara en utgifts foton i ditt bildbibliotek."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "செலவின் புகைப்படங்களை உங்கள் லைப்ரரியில் சேமிக்க."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఖర్చు ఫోటోలను మీ లైబ్రరీలో సేవ్ చేయడానికి."
           }
         },
         "th" : {

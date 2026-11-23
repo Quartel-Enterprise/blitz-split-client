@@ -51,6 +51,10 @@ class ProfileUiStateTest {
             AppLanguage.FILIPINO -> listOf("Filipino", "Filipino")
             AppLanguage.SERBIAN -> listOf("Srpski", "Serbian")
             AppLanguage.SLOVAK -> listOf("Slovenčina", "Slovak")
+            AppLanguage.PERSIAN -> listOf("فارسی", "Persian")
+            AppLanguage.TAMIL -> listOf("தமிழ்", "Tamil")
+            AppLanguage.NORWEGIAN -> listOf("Norsk bokmål", "Norwegian Bokmål")
+            AppLanguage.TELUGU -> listOf("తెలుగు", "Telugu")
             AppLanguage.BULGARIAN -> listOf("Български", "Bulgarian")
             AppLanguage.CATALAN -> listOf("Català", "Catalan")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
@@ -103,6 +107,10 @@ class ProfileUiStateTest {
         AppLanguage.FILIPINO,
         AppLanguage.SERBIAN,
         AppLanguage.SLOVAK,
+        AppLanguage.PERSIAN,
+        AppLanguage.TAMIL,
+        AppLanguage.NORWEGIAN,
+        AppLanguage.TELUGU,
         AppLanguage.BULGARIAN,
         AppLanguage.CATALAN,
     )
@@ -698,6 +706,10 @@ class ProfileUiStateTest {
                 AppLanguage.FILIPINO,
                 AppLanguage.SERBIAN,
                 AppLanguage.SLOVAK,
+                AppLanguage.PERSIAN,
+                AppLanguage.TAMIL,
+                AppLanguage.NORWEGIAN,
+                AppLanguage.TELUGU,
                 AppLanguage.BULGARIAN,
                 AppLanguage.CATALAN,
             ),
@@ -752,6 +764,10 @@ class ProfileUiStateTest {
                 AppLanguage.FILIPINO,
                 AppLanguage.SERBIAN,
                 AppLanguage.SLOVAK,
+                AppLanguage.PERSIAN,
+                AppLanguage.TAMIL,
+                AppLanguage.NORWEGIAN,
+                AppLanguage.TELUGU,
                 AppLanguage.BULGARIAN,
                 AppLanguage.CATALAN,
             ),

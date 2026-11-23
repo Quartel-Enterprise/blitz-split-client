@@ -23,6 +23,7 @@ private const val HINDI = "hi"
 private const val HINDI_ERGATIVE = "ने"
 private const val VIETNAMESE = "vi"
 private const val SWEDISH = "sv"
+private const val NORWEGIAN = "nb"
 private const val CZECH = "cs"
 private const val CZECH_SECOND_PERSON_AUXILIARY = "jsi"
 private const val SLOVAK = "sk"
@@ -37,6 +38,7 @@ private const val CROATIAN = "hr"
 private const val SERBIAN = "sr"
 private const val LATIN_SCRIPT = "Latn"
 private const val URDU = "ur"
+private const val PERSIAN = "fa"
 private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
 private const val HUNGARIAN = "hu"
 private const val FILIPINO = "fil"
@@ -81,6 +83,13 @@ private val secondPersonAuxiliaries = mapOf(
     CATALAN to mapOf("ha" to "has", "l’ha" to "l’has", "l'ha" to "l'has"),
 )
 private val turkishPast = Regex("[dt][ıiuü]$")
+private val persianPast = Regex("[دت]$")
+private const val PERSIAN_SECOND_PERSON_ENDING = "ید"
+private const val TAMIL = "ta"
+private const val TELUGU = "te"
+private const val TAMIL_THIRD_PERSON_PAST = "ார்"
+private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
+private const val TAMIL_SECOND_PERSON_PAST = "ீர்கள்"
 private val youSubjectLanguages = setOf(
     SPANISH,
     PORTUGAL_PORTUGUESE,
@@ -103,12 +112,16 @@ private val youSubjectLanguages = setOf(
     CROATIAN,
     SERBIAN,
     SLOVAK,
+    NORWEGIAN,
     BULGARIAN,
     CATALAN,
     HUNGARIAN,
     URDU,
+    PERSIAN,
     FILIPINO,
     LEGACY_TAGALOG,
+    TAMIL,
+    TELUGU,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -139,7 +152,8 @@ private val irregularSecondPerson = mapOf(
  * the gender: "Ana je podijelio/la", "Ti si podijelio/la".
  * Czech says the person with an auxiliary before its past, which the third person has none of: "Ana rozdělil(a)", "Ty
  * jsi rozdělil(a)", and Slovak likewise with "si": "Ana rozdelil(a)", "Ty si rozdelil(a)". Polish's past says the gender, which the app doesn't know, so its verb phrases start with a past in
- * "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü", "Sen böldün".
+ * "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü", "Sen böldün",
+ * and Persian too, with the respectful "ید" of "شما": "Ana هزینه‌ای را تقسیم کرد", "شما هزینه‌ای را تقسیم کردید".
  * Portugal's Portuguese (pt-PT, "tu") ends the verb's preterite in "-aste", "-este" or "-iste": "Ana dividiu", "Tu
  * dividiste". Any other language keeps the verb as it is, Brazil's Portuguese too ("Você dividiu"), and Russian and
  * Ukrainian, whose past says the gender but not the person ("Ана разделил(а)", "Ты разделил(а)"). Korean doesn't
@@ -156,8 +170,11 @@ private val irregularSecondPerson = mapOf(
  * and Malay's verb doesn't change with the person. Urdu needs none either: its ergative "نے" is written apart after
  * a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ بانٹا"). Bulgarian needs none either: its aorist, which every Bulgarian verb phrase
  * starts with, is the same for the user's "Ти" and for a name ("Ana раздели", "Ти раздели"). Filipino needs none: its "ay" and
- * its actor-focus verb are the same for the user's "Ikaw" and for a name ("Ana ay nagbahagi", "Ikaw ay nagbahagi"). Same rules as the web's and the Apple
- * app's `verbForYou`.
+ * its actor-focus verb are the same for the user's "Ikaw" and for a name ("Ana ay nagbahagi", "Ikaw ay nagbahagi").
+ * Tamil puts its verb last too, ending every verb phrase, before the colon that leads to the object, with a
+ * respectful past in "-ார்", which the user's turns into "-ீர்கள்" ("Ana ஒரு செலவைப் பிரித்தார்", "நீங்கள் ஒரு
+ * செலவைப் பிரித்தீர்கள்"). Telugu needs no rule: its respectful past "-ారు" is the same for "మీరు" and for a name
+ * ("Ana ఒక ఖర్చును పంచారు", "మీరు ఒక ఖర్చును పంచారు"). Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -175,7 +192,11 @@ fun toSecondPerson(
         }
     }
 
-    TURKISH -> toTurkishSecondPerson(verb)
+    TURKISH -> toVerbLastSecondPerson(verb, turkishPast, "n")
+
+    PERSIAN -> toVerbLastSecondPerson(verb, persianPast, PERSIAN_SECOND_PERSON_ENDING)
+
+    TAMIL -> toVerbLastSecondPerson(verb, tamilPast, TAMIL_SECOND_PERSON_PAST, dropped = TAMIL_THIRD_PERSON_PAST)
 
     KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
 
@@ -207,14 +228,22 @@ private fun replaceFirstWord(
 }
 
 /*
- * Why: Turkish puts the verb last, so every Turkish verb phrase ends with its simple past, before the colon that
- * leads to the object if there is one ("bir harcamayı böldü:"), and the second person adds an "n" to it whatever the
- * vowel ("böldü" → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
+ * Why: Turkish and Persian put the verb last, so every verb phrase of theirs ends with its simple past, before the
+ * colon that leads to the object if there is one ("bir harcamayı böldü:", "هزینه‌ای را تقسیم کرد:"), and the second
+ * person adds its ending to it: Turkish an "n" whatever the vowel ("böldü" → "böldün", "katıldı" → "katıldın"),
+ * Persian, whose past stem ends in "د" or "ت", the respectful "ید" ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید").
+ * Tamil's respectful past drops its "-ார்" for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"): `dropped`. A
+ * phrase whose clause doesn't end in that past stays as it is.
  */
-private fun toTurkishSecondPerson(verb: String): String {
+private fun toVerbLastSecondPerson(
+    verb: String,
+    past: Regex,
+    ending: String,
+    dropped: String = "",
+): String {
     val clause = verb.substringBefore(':').trimEnd()
-    if (!turkishPast.containsMatchIn(clause)) return verb
-    return clause + "n" + verb.substring(clause.length)
+    if (!past.containsMatchIn(clause)) return verb
+    return clause.removeSuffix(dropped) + ending + verb.substring(clause.length)
 }
 
 /*
@@ -266,25 +295,30 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Czech says "Ty jsi
+ * Swedish "Du raderade…", Norwegian "Du slettet…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
+ * حذف کردید…", with its verb rule. Czech says "Ty jsi
  * smazal(a)…", Slovak "Ty si vymazal(a)…", Bulgarian "Ти изтри…", Catalan "Tu has suprimit…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
- * would need "ni" for a name and "mo" for the user.
+ * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
+ * Telugu "మీరు తొలగించారు: …", its verb not changing with the person.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages
 
 /*
  * Why: the language alone, but Portugal's Portuguese is told from Brazil's by the strings Android drew: its resources
- * also answer pt-AO, pt-MZ and the like, which no country check would catch.
+ * also answer pt-AO, pt-MZ and the like, which no country check would catch. Norwegian is told by them too, since a
+ * Nynorsk device ("nn") reaching values-nb through its fallback languages draws Bokmål.
  */
 @Composable
 private fun secondPersonLanguageUi(): String {
     val locale = LocalLocale.current.platformLocale
-    val isPortugal = LocalContext.current.resources.getBoolean(R.bool.designsystem_portugal_portuguese)
+    val resources = LocalContext.current.resources
+    val isPortugal = resources.getBoolean(R.bool.designsystem_portugal_portuguese)
     return when {
         locale.language == PORTUGUESE && isPortugal -> PORTUGAL_PORTUGUESE
+        resources.getBoolean(R.bool.designsystem_norwegian) -> NORWEGIAN
         isCyrillicSerbian(locale) -> ""
         else -> locale.language
     }

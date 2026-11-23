@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · రికవరీ కోడ్</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">ఫోటో తీయడానికి సెట్టింగ్‌లలో కెమెరాను అనుమతించండి.</string>
+    <string name="platform_camera_settings">సెట్టింగ్‌లు</string>
+    <string name="platform_receipt_source_camera">ఫోటో తీయండి</string>
+    <string name="platform_receipt_source_gallery">గ్యాలరీ నుండి ఎంచుకోండి</string>
+    <string name="platform_receipt_source_file">ఫైల్ ఎంచుకోండి</string>
+    <string name="platform_receipt_camera_title">రసీదును స్కాన్ చేయండి</string>
+    <string name="platform_receipt_camera_close">మూసివేయండి</string>
+    <string name="platform_receipt_camera_flash_on">ఫ్లాష్ ఆన్ చేయండి</string>
+    <string name="platform_receipt_camera_flash_off">ఫ్లాష్ ఆఫ్ చేయండి</string>
+    <string name="platform_receipt_camera_hint">రసీదు మొత్తం ఫ్రేమ్‌లో వచ్చేలా పెట్టండి. మొత్తం, తేదీ, వివరణను మేము నింపుతాము; సేవ్ చేసే ముందు మీరు తనిఖీ చేయండి.</string>
+    <string name="platform_receipt_camera_gallery">గ్యాలరీ నుండి ఎంచుకోండి</string>
+    <string name="platform_receipt_camera_shutter">ఫోటో తీయండి</string>
+    <string name="platform_receipt_camera_unavailable">కెమెరా అందుబాటులో లేదు. గ్యాలరీ నుండి రసీదు ఫోటోను ఎంచుకోండి.</string>
+    <string name="platform_receipt_camera_permission">రసీదును స్కాన్ చేయడానికి కెమెరాను అనుమతించండి, లేదా గ్యాలరీ నుండి ఒక ఫోటోను ఎంచుకోండి.</string>
+    <string name="platform_receipt_camera_allow">కెమెరాను అనుమతించండి</string>
+    <string name="platform_receipt_camera_settings">సెట్టింగ్‌లు తెరవండి</string>
+</resources>

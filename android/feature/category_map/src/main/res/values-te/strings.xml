@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">పదాలు లేవు</string>
+    <string name="category_map_title">కేటగిరీ మ్యాప్</string>
+    <string name="category_map_search">పదాలను వెతకండి</string>
+    <string name="category_map_add">పదాన్ని జోడించండి</string>
+    <string name="category_map_more">మరిన్ని ఎంపికలు</string>
+    <string name="category_map_restore">డిఫాల్ట్‌ను పునరుద్ధరించండి</string>
+    <string name="category_map_back">వెనుకకు</string>
+    <string name="category_map_intro">ఖర్చు శీర్షికలో వీటిలో ఏదైనా పదం ఉంటే, దాని కేటగిరీ దానంతట అదే వస్తుంది. “Uber home” రవాణా అవుతుంది.</string>
+    <string name="category_map_intro_offline">మ్యాప్ ఆఫ్‌లైన్‌లో పని చేస్తుంది: మార్పులు ఈ పరికరంలో వెంటనే అమలవుతాయి, మళ్లీ ఆన్‌లైన్‌కు వచ్చాక మీ ఇతర పరికరాలకు చేరతాయి.</string>
+    <string name="category_map_device_only">మీ మ్యాప్ ఈ పరికరంలో మాత్రమే ఉంటుంది. దాన్ని మీ ఇతర పరికరాలకు తీసుకెళ్లడానికి, మీ ప్రొఫైల్‌లో Google లేదా Appleతో సైన్ ఇన్ చేయండి.</string>
+    <string name="category_map_open_profile">ప్రొఫైల్‌ను తెరవండి</string>
+    <string name="category_map_longest_wins">రెండు పదాలు ఒక శీర్షికకు సరిపోలితే, పొడవైన పదమే గెలుస్తుంది.</string>
+    <string name="category_map_no_result">ఈ పదం లేదు: “%1$s”</string>
+    <string name="category_map_no_result_body">దీన్ని జోడిస్తే, శీర్షికలో ఈ పదం ఉన్న ఖర్చులు సరైన కేటగిరీతో వస్తాయి.</string>
+    <string name="category_map_add_query">జోడించండి: “%1$s”</string>
+    <string name="category_map_empty_title">మీ మ్యాప్ ఖాళీగా ఉంది</string>
+    <string name="category_map_empty_body">పదాలు లేకపోతే, కేటగిరీ శీర్షిక నుండి రాదు: ప్రతి ఖర్చులో మీరే దాన్ని ఎంచుకోవాలి.</string>
+    <string name="category_map_group_category"> · ‘%1$s’ గ్రూప్ కేటగిరీ</string>
+    <string name="category_map_only_main">%1$s మాత్రమే</string>
+    <string name="category_map_only_in_group">‘%1$s’ గ్రూప్‌లో మాత్రమే</string>
+    <string name="category_map_no_terms_yet">ఇంకా పదాలు లేవు.</string>
+    <string name="category_map_add_in">పదాన్ని జోడించండి: %1$s</string>
+    <string name="category_map_tip">ఒక పదం కేటగిరీని మార్చడానికి లేదా దాన్ని తీసివేయడానికి దానిపై నొక్కండి. యాసలు, పెద్ద-చిన్న అక్షరాలను పట్టించుకోకుండా ఇది పూర్తి పదానికి సరిపోలుతుంది.</string>
+    <string name="category_map_queued">వరుసలో ఉంది</string>
+    <string name="category_map_term_action">%1$s, %2$s. ఎడిట్ చేయండి</string>
+    <string name="category_map_new_term">కొత్త పదం</string>
+    <string name="category_map_edit_term">పదాన్ని ఎడిట్ చేయండి</string>
+    <string name="category_map_term_label">పదం లేదా పదబంధం</string>
+    <string name="category_map_term_help">యాసలు, పెద్ద-చిన్న అక్షరాలను పట్టించుకోకుండా పూర్తి పదానికి సరిపోలుతుంది.</string>
+    <string name="category_map_term_help_app">యాప్ అందించిన పదం. “డిఫాల్ట్‌ను పునరుద్ధరించండి” దీన్ని మొదట ఉన్నట్లుగా తిరిగి తెస్తుంది.</string>
+    <string name="category_map_term_duplicate">“%1$s” ఇప్పటికే ఈ కేటగిరీని ఎంచుకుంటుంది: %2$s. ప్రతి పదానికి ఒకే కేటగిరీ ఉంటుంది.</string>
+    <string name="category_map_term_too_short">కనీసం 2 అక్షరాలు ఉపయోగించండి.</string>
+    <string name="category_map_term_too_long">గరిష్ఠంగా 30 అక్షరాలు ఉపయోగించండి.</string>
+    <string name="category_map_term_invalid">అక్షరాలు, అంకెలు, ఖాళీలు మాత్రమే ఉపయోగించండి.</string>
+    <string name="category_map_category">కేటగిరీ</string>
+    <string name="category_map_category_help">ఇది కేటగిరీ కావచ్చు లేదా ఉపకేటగిరీ కావచ్చు.</string>
+    <string name="category_map_category_help_edit">ఇక్కడ మార్చితే పదం వేరే కేటగిరీకి మారుతుంది.</string>
+    <string name="category_map_category_help_move">తరలిస్తే, పదం ఈ కేటగిరీ నుండి తొలగిపోతుంది: %1$s.</string>
+    <string name="category_map_example">ఉదాహరణ</string>
+    <string name="category_map_example_move">తరలిస్తే</string>
+    <string name="category_map_remove">తీసివేయండి</string>
+    <string name="category_map_cancel">రద్దు చేయండి</string>
+    <string name="category_map_save">సేవ్ చేయండి</string>
+    <string name="category_map_move_to">ఇక్కడికి తరలించండి: %1$s</string>
+    <string name="category_map_removed">“%1$s” మ్యాప్ నుండి తొలగిపోయింది</string>
+    <string name="category_map_undo">అన్‌డూ</string>
+    <string name="category_map_restore_title">డిఫాల్ట్ మ్యాప్‌ను పునరుద్ధరించాలా?</string>
+    <string name="category_map_restore_body">యాప్‌లోని 60 పదాలు మొదట ఉన్నట్లుగా తిరిగి వస్తాయి, మీరు తీసివేసినవి లేదా తరలించినవి కూడా.</string>
+    <string name="category_map_restore_own_one">మీరు సృష్టించిన పదం “%1$s” అలాగే ఉంటుంది.</string>
+    <string name="category_map_restore_confirm">పునరుద్ధరించండి</string>
+    <string name="category_map_save_error">మ్యాప్‌ను సేవ్ చేయలేకపోయాము. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d పదం</item>
+        <item quantity="other">%d పదాలు</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ఉపకేటగిరీ</item>
+        <item quantity="other">%d ఉపకేటగిరీలు</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d పదం: “%2$s”</item>
+        <item quantity="other">%1$d పదాలు: “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">ఆఫ్‌లైన్ · %d మార్పు వరుసలో ఉంది</item>
+        <item quantity="other">ఆఫ్‌లైన్ · %d మార్పులు వరుసలో ఉన్నాయి</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">మీరు సృష్టించిన %d పదం అలాగే ఉంటుంది.</item>
+        <item quantity="other">మీరు సృష్టించిన %d పదాలు అలాగే ఉంటాయి.</item>
+    </plurals>
+    <string name="category_map_new_category">కొత్త కేటగిరీ</string>
+    <string name="category_map_new_subcategory_in">కొత్త ఉపకేటగిరీ: %s</string>
+    <string name="category_map_edit_category">ఎడిట్ చేయండి: %s</string>
+    <string name="category_map_category_group">గ్రూప్</string>
+    <string name="category_map_change_color">రంగు మార్చండి: %1$s</string>
+    <string name="category_map_restore_color">రంగును పునరుద్ధరించండి</string>
+    <string name="category_map_color_done">పూర్తయింది</string>
+</resources>

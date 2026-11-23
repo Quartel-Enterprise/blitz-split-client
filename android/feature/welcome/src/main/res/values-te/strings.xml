@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">ఖర్చును పంచుకోండి, ఏ ఇబ్బందీ లేకుండా</string>
+    <string name="welcome_offline_title">ఆఫ్‌లైన్‌లో పనిచేస్తుంది</string>
+    <string name="welcome_offline_body">అంతా మీ పరికరంలోనే ఉంటుంది, తర్వాత సింక్ అవుతుంది.</string>
+    <string name="welcome_optional_title">అకౌంట్ ఐచ్ఛికం</string>
+    <string name="welcome_optional_body">Google లేదా Apple కేవలం మీరు పరికరం మార్చినప్పుడు ఏదీ పోకుండా చూస్తాయి.</string>
+    <string name="welcome_invite_title">లింక్ లేదా QR కోడ్‌తో ఆహ్వానించండి</string>
+    <string name="welcome_invite_body">స్నేహితులు అకౌంట్ సృష్టించకుండానే గ్రూప్‌లో చేరతారు.</string>
+    <string name="welcome_no_connection_title">కనెక్షన్ లేదు.</string>
+    <string name="welcome_no_connection_body">అకౌంట్‌తో సైన్ ఇన్ చేయడానికి ఇంటర్నెట్ అవసరం. ఇప్పుడు అకౌంట్ లేకుండా ఉపయోగించండి, తర్వాత ప్రొఫైల్‌లో కనెక్ట్ చేయండి.</string>
+    <string name="welcome_or">లేదా</string>
+    <string name="welcome_use_without_account">అకౌంట్ లేకుండా ఉపయోగించండి</string>
+    <string name="welcome_used_on_another_device">నేను దీన్ని వేరే పరికరంలో ఉపయోగించాను</string>
+    <string name="welcome_sign_in_failed">ఇప్పుడు సైన్ ఇన్ చేయలేకపోయాము. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="welcome_legal_notice">కొనసాగించడం ద్వారా, మీరు వీటిని అంగీకరిస్తున్నారు: %1$s. దీన్ని కూడా గమనించారు: %2$s.</string>
+    <string name="welcome_legal_terms">సేవా నిబంధనలు</string>
+    <string name="welcome_legal_privacy">గోప్యతా విధానం</string>
+    <string name="welcome_no_account_note">అకౌంట్ లేకపోతే, 30 రోజులు ఉపయోగించకపోతే మీ డేటా తొలగించబడుతుంది. దాన్ని ఉంచుకోవడానికి Google లేదా Apple కనెక్ట్ చేయండి.</string>
+    <string name="welcome_no_account_note_offline">అకౌంట్ లేకపోతే, 30 రోజులు ఉపయోగించకపోతే మీ డేటా తొలగించబడుతుంది. దాన్ని ఉంచుకోవడానికి, తర్వాత ప్రొఫైల్‌లో Google లేదా Apple కనెక్ట్ చేయండి.</string>
+    <string name="welcome_expired_title">మీ డేటా తొలగించబడింది</string>
+    <string name="welcome_expired_body">మీరు అకౌంట్ లేకుండా యాప్‌ను ఉపయోగిస్తున్నారు, 30 రోజులు దాన్ని తెరవలేదు, అందుకే మీ డేటా తొలగించబడింది. వచ్చేసారి దాన్ని ఉంచుకోవడానికి Google లేదా Apple కనెక్ట్ చేయండి.</string>
+    <string name="welcome_expired_ok">సరే</string>
+</resources>

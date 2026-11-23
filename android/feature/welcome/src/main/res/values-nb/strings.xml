@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Del utgiftene, uten styr</string>
+    <string name="welcome_offline_title">Fungerer uten nett</string>
+    <string name="welcome_offline_body">Alt blir på enheten din og synkroniseres senere.</string>
+    <string name="welcome_optional_title">Konto er valgfritt</string>
+    <string name="welcome_optional_body">Google eller Apple sørger bare for at du ikke mister noe når du bytter enhet.</string>
+    <string name="welcome_invite_title">Inviter med en lenke eller QR-kode</string>
+    <string name="welcome_invite_body">Venner blir med i gruppen uten å opprette en konto.</string>
+    <string name="welcome_no_connection_title">Ingen tilkobling.</string>
+    <string name="welcome_no_connection_body">Det trengs internett for å logge inn med en konto. Bruk appen uten konto nå, og koble til senere i Profil.</string>
+    <string name="welcome_or">eller</string>
+    <string name="welcome_use_without_account">Bruk uten konto</string>
+    <string name="welcome_used_on_another_device">Jeg har brukt den på en annen enhet</string>
+    <string name="welcome_sign_in_failed">Kunne ikke logge inn akkurat nå. Prøv igjen.</string>
+    <string name="welcome_legal_notice">Når du fortsetter, godtar du %1$s og bekrefter at du har lest %2$s.</string>
+    <string name="welcome_legal_terms">vilkårene for bruk</string>
+    <string name="welcome_legal_privacy">personvernerklæringen</string>
+    <string name="welcome_no_account_note">Uten konto slettes dataene dine etter 30 dager uten bruk. Koble til Google eller Apple for å beholde dem.</string>
+    <string name="welcome_no_account_note_offline">Uten konto slettes dataene dine etter 30 dager uten bruk. Koble til Google eller Apple senere, i Profil, for å beholde dem.</string>
+    <string name="welcome_expired_title">Dataene dine ble slettet</string>
+    <string name="welcome_expired_body">Du brukte appen uten konto og åpnet den ikke på 30 dager, så dataene dine ble slettet. Koble til Google eller Apple for å beholde dem neste gang.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

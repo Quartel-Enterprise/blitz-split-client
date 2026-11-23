@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">புதிய Pix கீ</string>
+    <string name="payment_key_title_pix_edit">Pix கீயைத் திருத்தவும்</string>
+    <string name="payment_key_title_bitcoin_new">புதிய Bitcoin கீ</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin கீயைத் திருத்தவும்</string>
+    <string name="payment_key_save">சேமிக்கவும்</string>
+
+    <string name="payment_key_pix_intro">உங்களுக்குப் பணம் செலுத்துபவர் கணக்கைத் தீர்க்கும்போது இந்தக் கீயைப் பார்ப்பார். எந்த வகை கீ?</string>
+    <string name="payment_key_pix_question">எந்த வகை கீ?</string>
+    <string name="payment_key_pix_explanation">உங்களுக்குப் பணம் செலுத்துபவர் கணக்கைத் தீர்க்கும்போது இந்தக் கீயைப் பார்ப்பார்.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">ஃபோன்</string>
+    <string name="payment_key_type_email">மின்னஞ்சல்</string>
+    <string name="payment_key_type_random">ரேண்டம்</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">ஏரியா கோடுடன் மொபைல் எண்</string>
+    <string name="payment_key_label_email">மின்னஞ்சல்</string>
+    <string name="payment_key_label_random">ரேண்டம் கீ</string>
+
+    <string name="payment_key_bitcoin_intro">எப்படிப் பெற விரும்புகிறீர்கள்?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">வேகமானது, குறைந்த கட்டணம்</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">பிளாக்செயினில்</string>
+    <string name="payment_key_label_lightning">Lightning Address அல்லது LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin முகவரி</string>
+
+    <string name="payment_key_paste">ஒட்டவும்</string>
+
+    <string name="payment_key_hint_cpf">வடிவம் 000.000.000-00</string>
+    <string name="payment_key_hint_phone">வடிவம் +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">வடிவம் name@domain.com</string>
+    <string name="payment_key_hint_random">உங்கள் வங்கி காட்டுவது போல 32 எழுத்துகளும் எண்களும்</string>
+    <string name="payment_key_hint_lightning">name@wallet.com அல்லது LNURL1… போல</string>
+    <string name="payment_key_hint_onchain">bc1q அல்லது bc1p என்று தொடங்கும் mainnet முகவரி</string>
+
+    <string name="payment_key_valid_cpf">வடிவம் 000.000.000-00 · சரிபார்ப்பு இலக்கங்கள் பொருந்துகின்றன</string>
+    <string name="payment_key_valid_phone">வடிவம் +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">வடிவம் name@domain.com</string>
+    <string name="payment_key_valid_random">ரேண்டம் கீ அடையாளம் காணப்பட்டது (32 எழுத்துகள்)</string>
+    <string name="payment_key_valid_lightning_address">சரியான Lightning Address</string>
+    <string name="payment_key_valid_lnurl">சரியான LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">தவறான CPF: சரிபார்ப்பு இலக்கங்கள் பொருந்தவில்லை.</string>
+    <string name="payment_key_error_invalid_phone">மொபைல் எண் முழுமையாக இல்லை: ஏரியா கோடையும், 9 என்று தொடங்கும் 9 இலக்கங்களையும் பயன்படுத்துங்கள்.</string>
+    <string name="payment_key_error_invalid_email">மின்னஞ்சல் முழுமையாக இல்லை: .com அல்லது .com.br போன்ற டொமைன் இல்லை.</string>
+    <string name="payment_key_error_invalid_random">ரேண்டம் கீ முழுமையாக இல்லை: அதில் 32 எழுத்துகளும் எண்களும் இருக்கும்.</string>
+    <string name="payment_key_error_invalid_lightning">இது Lightning Address (name@wallet) அல்லது LNURL அல்ல.</string>
+    <string name="payment_key_error_lightning_invoice">இது ஒரு Lightning இன்வாய்ஸ் (lnbc…): இது ஒருமுறை மட்டுமே செலுத்தப்படும், பிறகு காலாவதியாகும். Lightning Address அல்லது LNURL ஒன்றை ஒட்டுங்கள்.</string>
+    <string name="payment_key_error_invalid_onchain">தவறான முகவரி. mainnet bc1q அல்லது bc1p முகவரியைப் பயன்படுத்துங்கள்.</string>
+    <string name="payment_key_error_testnet_address">இது ஒரு testnet முகவரி (tb1…). இங்கே bc1… முகவரிகளுடன் Bitcoin mainnet மட்டுமே வேலை செய்யும்.</string>
+    <string name="payment_key_error_already_saved">இந்தக் கீ ஏற்கனவே உங்களிடம் உள்ளது.</string>
+
+    <string name="payment_key_switched_to_onchain">இது ஒரு on-chain முகவரி, எனவே On-chain-க்கு மாற்றினோம்.</string>
+    <string name="payment_key_switched_to_lightning">இது ஒரு Lightning Address, எனவே Lightning-க்கு மாற்றினோம்.</string>
+    <string name="payment_key_cpf_notice">உங்களுக்குப் பணம் செலுத்துபவர் உங்கள் முழு CPF-ஐப் பார்ப்பார். அதைப் பகிர விரும்பவில்லை என்றால், ஃபோன், மின்னஞ்சல் அல்லது ரேண்டம் கீயைப் பயன்படுத்துங்கள்.</string>
+    <string name="payment_key_held_notice">இந்த வகையில் ஒரு Pix கீ மட்டுமே வைத்திருக்க முடியும், எனவே நீங்கள் சேமித்த கீ இதுதான். விரும்பினால் இங்கே மாற்றுங்கள்.</string>
+
+    <string name="payment_key_accepted_title">நாங்கள் ஏற்பவை</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">இயல்பு Pix கீ</string>
+    <string name="payment_key_default_bitcoin_title">இயல்பு Bitcoin கீ</string>
+    <string name="payment_key_default_pix_detail">கணக்கைத் தீர்க்கும்போது முதலில் காட்டப்படும்.</string>
+    <string name="payment_key_default_bitcoin_detail">யாராவது BTC-யில் செலுத்தும்போது முதலில் காட்டப்படும்.</string>
+    <string name="payment_key_default_now">இப்போது: %1$s.</string>
+    <string name="payment_key_default_locked_editing">இதை மாற்ற, வேறொரு கீயை இயல்பாக்குங்கள்.</string>
+    <string name="payment_key_default_locked_new">இந்த வகையில் உங்கள் முதல் கீதான் இயல்பு.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">ஃபோன்</string>
+    <string name="payment_key_default_type_email">மின்னஞ்சல்</string>
+    <string name="payment_key_default_type_random">ரேண்டம் கீ</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split பணத்தை நகர்த்துவதில்லை: செலுத்துபவர் தன் வங்கி ஆப்பில் செலுத்துவார். கீ உங்கள் பெயரில் உள்ளதா எனச் சரிபாருங்கள்.</string>
+    <string name="payment_key_footer_bitcoin">கணக்கைத் தீர்க்கும்போது, தற்போதைய விகிதத்தில் தொகையை sats-இல் காட்டுகிறோம். இது ஒரு மதிப்பீடு மட்டுமே: செலுத்துபவர் அதைத் தன் வாலட்டில் உறுதிசெய்வார்.</string>
+
+    <string name="payment_key_delete">கீயை நீக்கவும்</string>
+    <string name="payment_key_delete_title">இந்தக் கீயை நீக்கவா?</string>
+    <string name="payment_key_delete_body">உங்களுக்குத் தர வேண்டியவர்கள் கணக்கைத் தீர்க்கும்போது இனி இதைப் பார்க்க மாட்டார்கள்.</string>
+    <string name="payment_key_delete_confirm">நீக்கவும்</string>
+</resources>

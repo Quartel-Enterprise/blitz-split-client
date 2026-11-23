@@ -56,7 +56,9 @@ each platform.
       `res/values-ms/strings.xml`, in Greek in `res/values-el/strings.xml`, in Croatian in
       `res/values-hr/strings.xml` (one, few and other), in Hungarian in
       `res/values-hu/strings.xml` (no case suffix glued to a placeholder), in Urdu in `res/values-ur/strings.xml`, in
-      Filipino in `res/values-fil/strings.xml`, in Serbian in `res/values-b+sr+Latn/strings.xml` (one, few and other), in Slovak in `res/values-sk/strings.xml` (one, few, many and other) , in Bulgarian in `res/values-bg/strings.xml` (one and other, no suffix or article glued to a placeholder) and in Catalan in `res/values-ca/strings.xml` (the typographic ’, no apostrophe contraction before a placeholder)
+      Filipino in `res/values-fil/strings.xml`, in Serbian in `res/values-b+sr+Latn/strings.xml` (one, few and other) and in Slovak in `res/values-sk/strings.xml` (one, few, many and other), in Persian in `res/values-fa/strings.xml`, in Tamil in
+      `res/values-ta/strings.xml` (no case ending glued to a placeholder), in Norwegian in `res/values-nb/strings.xml`, in Telugu in `res/values-te/strings.xml`
+      (no case ending glued to a placeholder), in Bulgarian in `res/values-bg/strings.xml` (one and other, no suffix or article glued to a placeholder) and in Catalan in `res/values-ca/strings.xml` (the typographic ’, no apostrophe contraction before a placeholder)
 - [ ] Any resource of a `values-pt-rPT` or `values-es-rES` (a string, a bool) also in `values-pt` or `values-es`:
       Android 7 and later fall back to a child of the language when its bare folder lacks a resource, so a pt-BR
       device read Portugal's `designsystem_portugal_portuguese` and wrote "Você criaste a conta"

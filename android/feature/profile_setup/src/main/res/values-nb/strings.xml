@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Hva kaller vennene dine deg?</string>
+    <string name="profile_setup_subtitle">Gruppene dine og alle som har profillenken din, ser navnet ditt.</string>
+    <string name="profile_setup_avatar_color">Avatarfarge</string>
+    <string name="profile_setup_add_photo">Legg til bilde</string>
+    <string name="profile_setup_photo_error">Kunne ikke bruke dette bildet. Prøv et annet.</string>
+    <string name="profile_setup_name_label">Navnet ditt</string>
+    <string name="profile_setup_name_placeholder">Ola Nordmann</string>
+    <string name="profile_setup_name_too_short">Skriv minst %d bokstaver.</string>
+    <string name="profile_setup_name_too_long">Bruk opptil %d tegn.</string>
+    <string name="profile_setup_name_hint">Du kan endre det senere i Profil.</string>
+    <string name="profile_setup_saved_locally">Lagres foreløpig bare på denne enheten.</string>
+    <string name="profile_setup_continue">Fortsett</string>
+</resources>

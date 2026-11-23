@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">உதவியைத் தொடர்புகொள்ளவும்</string>
+    <string name="contact_support_description">அனுப்பத் தயாரான செய்தியுடன் உங்கள் மின்னஞ்சல் ஆப்பைத் திறப்போம். என்ன நடந்தது என்று விவரித்து அனுப்புங்கள்: ஒவ்வொரு செய்தியையும் உண்மையான நபர்கள் படிக்கிறார்கள்.</string>
+    <string name="contact_support_to">பெறுநர்</string>
+    <string name="contact_support_diagnostics">மின்னஞ்சலில் சேர்க்கப்படும்</string>
+    <string name="contact_support_app_version">ஆப் பதிப்பு</string>
+    <string name="contact_support_platform">தளம்</string>
+    <string name="contact_support_language">மொழி</string>
+    <string name="contact_support_account">அக்கவுண்ட்</string>
+    <string name="contact_support_profile">சுயவிவரம்</string>
+    <string name="contact_support_language_system">சிஸ்டம்</string>
+    <string name="contact_support_account_local">இந்தச் சாதனம் மட்டும்</string>
+    <string name="contact_support_account_anonymous">இணைக்கப்படவில்லை</string>
+    <string name="contact_support_open_email">மின்னஞ்சலைத் திறக்கவும்</string>
+    <string name="contact_support_copy_email">மின்னஞ்சல் முகவரியை நகலெடுக்கவும்</string>
+    <string name="contact_support_notice_copied">மின்னஞ்சல் முகவரி நகலெடுக்கப்பட்டது.</string>
+    <string name="contact_support_notice_no_app">மின்னஞ்சல் ஆப் எதுவும் இல்லை. அதற்குப் பதிலாக முகவரி நகலெடுக்கப்பட்டது.</string>
+    <string name="contact_support_close">மூடவும்</string>
+</resources>

@@ -73,7 +73,11 @@ The feed, unread state, real time and push notifications.
     the colon that leads to the object ("Ana bir harcamayı böldü: Akşam yemeği"), and the user's rows add an "n" to
     that past ("Sen bir harcamayı böldün: …", "Sen gruba katıldın: …"); its deleted-item notice starts with who deleted
     it too ("Sen sildin: …"). A line that names the user without a verb rule (a photo's "added by") is impersonal in
-    Turkish ("Sen · bugün, 09:12 eklendi"). Indonesian verbs don't change with the person, so its rows need no rule
+    Turkish ("Sen · bugün, 09:12 eklendi"). Persian puts the verb last too and takes Turkish's shape: every Persian
+    verb phrase ends with its simple past, the past stem ending in "د" or "ت", before the colon that leads to the
+    object ("Ana هزینه‌ای را تقسیم کرد: شام"), and the user's rows add the respectful "ید" of "شما" to that past ("شما
+    هزینه‌ای را تقسیم کردید: …", "شما به گروه پیوستید: …"); its deleted-item notice starts with who deleted it too
+    ("شما حذف کردید: …", `youSubjectLanguages`). Indonesian verbs don't change with the person, so its rows need no rule
     ("Ana membagi Makan malam", "Kamu membagi…"). Neither do Russian's and Ukrainian's: their past says the gender, not
     the person, so a verb phrase written for both genders, as Polish's, serves the user as it is ("Ана разделил(а)…",
     "Ты разделил(а)…"; "Ти розділив(-ла)…"), and the name it follows is never declined. Their deleted-item notice starts
@@ -114,6 +118,17 @@ The feed, unread state, real time and push notifications.
     výdavok…"). No reflexive "sa" nor pronoun comes right after that past, which would read "si pridal(a) sa": a join
     is "vstúpil(a) do skupiny". A name is never declined, standing after a noun ("pridal(a) člena Ana"), and the
     deleted-item notice starts with who deleted it ("Ty si vymazal(a)…", `youSubjectLanguages`).
+    Tamil puts its verb last, as Turkish does, and says the person with it, so every Tamil verb phrase ends, before the
+    colon that leads to the object, with a respectful past in "-ார்", which the user's rows turn into "-ீர்கள்" ("Ana
+    ஒரு செலவைப் பிரித்தார்: டின்னர்", "நீங்கள் ஒரு செலவைப் பிரித்தீர்கள்: டின்னர்"); the object after the colon also
+    keeps every name free of case endings. Its deleted-item notice starts with who deleted it ("நீங்கள்
+    நீக்கினீர்கள்: …", `youSubjectLanguages`), and "You" is "நீங்கள்" everywhere.
+    Norwegian verbs don't change with the person, as Swedish's ("Ana delte…", "Du delte…"), its notice starting with
+    who deleted it too ("Du slettet…", `youSubjectLanguages`).
+    Telugu needs no rule: its respectful
+    past "-ారు" is the same for a name and for "మీరు" ("Ana ఒక ఖర్చును పంచారు: డిన్నర్", "మీరు ఒక ఖర్చును పంచారు: డిన్నర్"),
+    and the object after a colon keeps every name free of case endings, as Tamil's. Its deleted-item notice starts with
+    who deleted it ("మీరు తొలగించారు: …", `youSubjectLanguages`), and "You" is "మీరు" everywhere.
     Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
     are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
     deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).

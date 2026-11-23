@@ -88,6 +88,10 @@
     <string name="profile_language_filipino">菲律賓文</string>
     <string name="profile_language_serbian">塞爾維亞文</string>
     <string name="profile_language_slovak">斯洛伐克文</string>
+    <string name="profile_language_persian">波斯文</string>
+    <string name="profile_language_tamil">泰米爾文</string>
+    <string name="profile_language_norwegian">挪威文（巴克摩）</string>
+    <string name="profile_language_telugu">泰盧固文</string>
     <string name="profile_language_bulgarian">保加利亞文</string>
     <string name="profile_language_catalan">加泰隆尼亞文</string>
     <string name="profile_language_system_detail">裝置語言</string>

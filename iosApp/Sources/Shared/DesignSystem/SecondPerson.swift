@@ -19,7 +19,12 @@ import SwiftUI
 /// list a translation may start with, each with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's
 /// respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
 /// Urdu writes its ergative "نے" apart after a name and after the user's "آپ" alike ("Ana نے خرچ بانٹا", "آپ نے خرچ
-/// بانٹا"), so its verb stays as it is.
+/// بانٹا"), so its verb stays as it is. Persian puts its simple past last as Turkish does, and the user's respectful
+/// "شما" adds "ید" to it ("Ana هزینه‌ای را تقسیم کرد", "شما هزینه‌ای را تقسیم کردید").
+/// Bulgarian's aorist is the same for a name and for "Ти" ("Ana раздели", "Ти
+/// раздели"), so its verb stays as it is too.
+///
+/// Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is.
 ///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
@@ -81,7 +86,8 @@ enum SecondPerson {
     /// Portugal's Portuguese: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste".
     /// Polish: every verb phrase starts with a past in "ł(a)", the app not knowing the gender, so "podzielił(a)" →
     /// "podzieliłeś(-aś)". Turkish: every verb phrase ends with its simple past, which takes an "n", so "böldü:" →
-    /// "böldün:". Korean: every verb phrase starts with "님이" after the actor, which the user's drops, since the user's
+    /// "böldün:". Persian: every verb phrase ends with its simple past, which takes the respectful "ید" of "شما", so
+    /// "تقسیم کرد:" → "تقسیم کردید:". Korean: every verb phrase starts with "님이" after the actor, which the user's drops, since the user's
     /// subject word ("내가") holds its own particle, so "님이 나눴어요" → "나눴어요". Hindi: the same with "ने", the user's
     /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Greek: the aorist takes an "ς", so "μοίρασε" → "μοίρασες".
     /// Hungarian: the past the phrase starts with takes a "d" in "-ta"/"-te" ("létrehozta" → "létrehoztad"), or its
@@ -91,6 +97,8 @@ enum SecondPerson {
         case "es": return spanishVerbForYou(verb)
         case "pt-PT": return portugueseVerbForYou(verb)
         case "tr": return turkishVerbForYou(verb)
+        case "fa": return verbLastForYou(verb, past: "[دت]$", ending: "ید")
+        case "ta": return verbLastForYou(verb, past: "ார்$", ending: "ீர்கள்", dropped: "ார்")
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case let .some(code) where pastAuxiliaries[code] != nil:
@@ -140,13 +148,27 @@ enum SecondPerson {
     /// the object if there is one ("bir harcamayı böldü:"), and the second person adds an "n" to it whatever the vowel
     /// ("böldü" → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
     private static func turkishVerbForYou(_ verb: String) -> String {
+        verbLastForYou(verb, past: "[dt][ıiuü]$", ending: "n")
+    }
+
+    /// A language that puts its verb last (Turkish, Persian): the clause before the colon that leads to the object, if
+    /// any, ends with a simple past matching `past`, which takes `ending` for the user. Persian's past stem ends in "د"
+    /// or "ت" and takes the respectful "ید" ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید"). Tamil's respectful past
+    /// drops its "-ார்" (`dropped`) for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"). A phrase whose clause
+    /// doesn't end in that past stays as it is.
+    private static func verbLastForYou(_ verb: String, past: String, ending: String, dropped: String = "") -> String {
         var end = verb.firstIndex(of: ":") ?? verb.endIndex
         while end > verb.startIndex, verb[verb.index(before: end)].isWhitespace {
             end = verb.index(before: end)
         }
         let clause = verb[..<end]
-        guard clause.range(of: "[dt][ıiuü]$", options: .regularExpression) != nil else { return verb }
-        return String(clause) + "n" + String(verb[end...])
+        guard clause.range(of: past, options: .regularExpression) != nil else { return verb }
+        // Why: the Unicode scalars, since Swift's Character groups a vowel sign ("ா") with the consonant before it.
+        var stem = String.UnicodeScalarView(clause.unicodeScalars)
+        if stem.reversed().starts(with: dropped.unicodeScalars.reversed()) {
+            stem.removeLast(dropped.unicodeScalars.count)
+        }
+        return String(stem) + ending + String(verb[end...])
     }
 
     private static func portugueseVerbForYou(_ verb: String) -> String {

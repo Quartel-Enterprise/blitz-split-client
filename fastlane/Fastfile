@@ -168,7 +168,7 @@ SCREENSHOT_REORDER_REFUSED_MESSAGE = "Can't Add/Remove Relationship when reorder
 # The most App Store Connect lists per page of a shelf's screenshots, which is far more than a shelf holds:
 APP_STORE_SHELF_PAGE_SIZE = 200
 
-desc "Generate the store listing's art of both stores in all 37 languages (docs/store-listing-screenshots.md), then"
+desc "Generate the store listing's art of both stores in all 41 languages (docs/store-listing-screenshots.md), then"
 desc "upload it. Options: skip_upload:true only generates (store_listings/listing-art/ and the fastlane folders);"
 desc "platform:android or platform:ios does one store (ios: iPhone, iPad, iPhone Duo and Mac); skip_capture:true"
 desc "reuses the Apple captures already in build/; skip_mac:true leaves the Mac out (its capture drives this Mac's"

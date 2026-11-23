@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Bulgarian and Catalan: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script) and Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian and Catalan: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -132,9 +132,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     name, an amount or a Latin word, and uses no full stop: a sentence the code finishes ends with nothing and two of
     them are parted by the word gap's space, two clauses on the web by a space too (`fullStopUi`, `WordGap.fullStop`,
     `fullStop`, `clauseBreak`). Its plurals have one form, and its numbers are 0-9, as Arabic's, never Thai's own digits. Its dates are
-    written with the Gregorian year on Android and the web (`withGregorianCalendar`, the web's `ca-gregory`), since
-    Thai's default is the Buddhist era (2569 for 2026), while the Apple apps follow the device's own calendar setting,
-    Buddhist on a Thai iPhone unless its owner changed it (a call taken without Pierre). Vietnamese (Pierre's call, issue #448) is one variant for every
+    written with the Gregorian year on every platform (`withGregorianCalendar` and `LegacyAppLocale` on Android, the
+    web's `ca-gregory`, `AppNumbers.calendar` on Apple, its date pickers included), since Thai's default is the
+    Buddhist era (2569 for 2026): a group is shared across platforms, so a Thai iPhone shows the year Android and the
+    web show, whatever calendar its owner set (Pierre's call, November 2026, which replaced following the device's). Vietnamese (Pierre's call, issue #448) is one variant for every
     `vi` tag and talks to the user as "bạn" (friends splitting a bill), "Bạn" as the subject of an activity row,
     which Android's deleted-item notice starts with as it does in Spanish (`youSubjectLanguages`); its verbs don't
     change with the person. It calls the app Blitz Split, writes its tone marks in the modern places ("hóa đơn"), and
@@ -197,7 +198,47 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     `other` (0, 5 and up), as Czech's. Its activity sentences follow Czech's rule with "si" for "jsi"
     ([activity-and-push.md](activity-and-push.md)). No suffix is ever glued to a value the app fills in, and a name
     is never declined: it stands after a noun or a colon ("pridal(a) člena Ana", "Zaplatiť: Ana"). Slovakia's
-    currency, the euro, is already in the app. Bulgarian (Pierre's calls, issue #554) is one variant for every
+    currency, the euro, is already in the app. Persian (Pierre's calls, issue #552) is one
+    variant, Iran's, for every `fa` tag (`fa-AF` included), and calls the app Blitz Split. It talks to the user as the
+    respectful "شما" with the respectful verb forms (as Hindi's "आप" and Urdu's "آپ"), and writes Persian's own "ی" and
+    "ک", never the Arabic letters, with the zero-width non-joiner where Persian joins a prefix or suffix ("می‌", "‌ها").
+    It reads right to left as Arabic, Hebrew and Urdu do, with the same mirrored layouts, and writes numbers, amounts
+    and dates with 0-9, never its own digits (۰-۹), and in the Gregorian calendar on every platform, as Thai, not
+    its own Solar Hijri one (1405 for 2026), which ICU, `Intl` and an Iranian iPhone default to: a group is shared
+    across platforms, so every device shows the same year (Pierre's call; `withGregorianCalendar` and
+    `LegacyAppLocale` on Android, `formattingLocale` on the web, `AppNumbers.calendar` and the date pickers on Apple). It ends a sentence with "." and joins two
+    clauses with "،" (the web's `clauseBreak`). No suffix or particle is ever glued to a value the app fills in: a name
+    stands alone, after a colon or as the subject. Its verb comes last and changes with the person, so its activity
+    sentences take Turkish's shape, the object after a colon, and the user's add "ید" to the past ("Ana هزینه‌ای را
+    تقسیم کرد: …", "شما هزینه‌ای را تقسیم کردید: …", [activity-and-push.md](activity-and-push.md)); it starts
+    Android's deleted-item notice with who deleted it (`youSubjectLanguages`). Its plurals have one and other, the noun
+    staying singular after a number. The Iranian rial (IRR) comes with it (below). Tamil (Pierre's calls, issue #553) is one
+    variant for every `ta` tag (India's, Sri Lanka's, Singapore's), in the Tamil script, and talks to the user with the
+    respectful "நீங்கள்" (as Hindi's "आप" and Bengali's "আপনি"), in the plain everyday Tamil Indian apps write, English
+    loanwords included where natural (பேலன்ஸ், அக்கவுண்ட், லிங்க்) and "குழு" for a group, as WhatsApp and Google
+    write it; it calls the app Blitz Split, writes numbers, amounts and dates with 0-9, never the Tamil digits, ends a
+    sentence with ".", and its plurals have one and other. Its case endings follow the sound of the word before them,
+    so none is ever glued to a value the app fills in, as Hungarian does: a name, a group, a bill or an amount stands
+    alone, as the subject, after a colon or before a noun that carries the ending ("‘%1$s’ குழுவில்"). Its verb says
+    the person, the respectful "-ார்" of a name differing from the "-ீர்கள்" of "நீங்கள்", so its activity sentences
+    follow a rule like Turkish's ([activity-and-push.md](activity-and-push.md)). It uses INR, already supported.
+    Norwegian (Pierre's calls, issue #551) is Bokmål, one variant that answers every Norwegian tag: Bokmål's `nb`, the
+    macrolanguage's `no` and Nynorsk's `nn` (`AppLanguage.fromTag`, the web's `pickLocale`), with no regional one;
+    Android's resources are `values-nb`, which a device set to Nynorsk only reaches through its own fallback
+    languages: one with none shows the English strings, while the release notes, the legal pages and the shared links
+    speak Norwegian, as Bokmål answers `nn` (an accepted trade-off of Pierre's call). It talks to the user in the
+    informal "du", as Swedish does, calls the app Blitz Split, and its verbs don't change with the person ("Ana
+    delte…", "Du delte…"), its deleted-item notice starting with who deleted it (`youSubjectLanguages`). Its plurals
+    have one and other. The picker names it "Norsk bokmål", "Norwegian Bokmål" in English, and its chip reads "NB".
+    The Norwegian krone (NOK) comes with it (below). Telugu
+    (Pierre's calls, issue #553) is one variant for every `te` tag, in the Telugu script, and talks to the user with the
+    respectful "మీరు", in the plain everyday Telugu Indian apps write, English loanwords included where natural (గ్రూప్,
+    బ్యాలెన్స్, అకౌంట్, లింక్); it calls the app Blitz Split, writes numbers, amounts and dates with 0-9, never the Telugu
+    digits, ends a sentence with ".", and its plurals have one and other. As Tamil's, its case endings follow the sound
+    of the word before them, so none is ever glued to a value the app fills in. Its respectful past "-ారు" is the same
+    for a name and for "మీరు", so, as Bengali's, its activity sentences need no rule for the user
+    ([activity-and-push.md](activity-and-push.md)). It uses INR.
+    Bulgarian (Pierre's calls, issue #554) is one variant for every
     Bulgarian tag, written in Cyrillic, speaks informally, with "ти", never "Вие", and calls the app Blitz Split. Its
     plurals have `one` and `other`. Its activity sentences start every verb phrase with an aorist, whose second and
     third person singular are the same, so a row reads right for a name and for the user with no rule
@@ -421,11 +462,21 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     in Serbia. It has 2 decimals, as ISO gives it, and the usual 100 million cap, so an app version from before it
     shows its amounts by the raw code, with the right decimals. The store screenshots' sample trip for Serbian is
     priced in it.
+  - The Iranian rial (IRR) comes with Persian (Pierre's call), and starts a new group in Iran. It has no decimals, as
+    the rupiah and the forint: ISO gives it 2, but no price in Iran shows a fraction of a rial. 100 million rials is
+    less than US$ 100 (about a million rials a dollar in 2026), so its cap is 5 trillion rials (about US$ 5 million),
+    as the rupiah's and the dong's are raised (`ExpenseRules.maxAmountMinorFor`, and the API's). An app version from
+    before it reads IRR as an unknown code with two decimals and shows its amounts 100 times smaller until it updates,
+    as the rupiah did. The store screenshots' sample trip for Persian is in rials, at a round million a dollar.
+  - The Norwegian krone (NOK) comes with Norwegian (Pierre's call), as the dinar did with Serbian, and starts a new
+    group in Norway, Svalbard and Bouvet Island. It has 2 decimals, as ISO gives it, and the usual 100 million cap, so
+    an app version from before it shows its amounts by the raw code, with the right decimals. The store screenshots'
+    sample trip for Norwegian is priced in it.
   - Bitcoin and Ether (Pierre's calls, beta feedback 7): "Default currency" (New group, Edit group) lists BTC and ETH last,
     under their own "Cryptocurrencies" header, as "Bitcoin (₿)" and "Ethereum (Ξ)", and no region starts a group in them.
     Both have 8 decimals (a satoshi; ether's 18 wouldn't fit a Long of the minor unit past about 9 ether), and cap a
     bill or a payment by each coin's supply: 21 million bitcoin and 90 million ether (the most the web's numbers
-    count to the unit), every other currency keeping 100 million but the rupiah and the dong (above)
+    count to the unit), every other currency keeping 100 million but the rupiah, the dong and the rial (above)
     (`ExpenseRules.maxAmountMinorFor`, the API's `max_amount_minor`). Shown, they take ₿ and Ξ where the language puts
     a symbol and only the decimals the amount needs ("₿ 0,00125", "Ξ 0,5", "₿ 1"); fields type all 8
     ("0,00000001"). Profile › Preferences' "Bitcoin in satoshis" (always shown, Settings on the Mac), kept per

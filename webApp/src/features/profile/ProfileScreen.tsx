@@ -81,6 +81,10 @@ const nativeLanguageNames: Record<string, string> = {
   fil: 'Filipino',
   'sr-Latn': 'Srpski',
   sk: 'Slovenčina',
+  fa: 'فارسی',
+  ta: 'தமிழ்',
+  nb: 'Norsk bokmål',
+  te: 'తెలుగు',
   bg: 'Български',
   ca: 'Català',
 }
@@ -122,6 +126,10 @@ const languageNames: Record<string, MessageKey> = {
   fil: 'profile_languageFilipino',
   'sr-Latn': 'profile_languageSerbian',
   sk: 'profile_languageSlovak',
+  fa: 'profile_languagePersian',
+  ta: 'profile_languageTamil',
+  nb: 'profile_languageNorwegian',
+  te: 'profile_languageTelugu',
   bg: 'profile_languageBulgarian',
   ca: 'profile_languageCatalan',
 }

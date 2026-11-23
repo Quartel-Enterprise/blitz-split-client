@@ -12,12 +12,11 @@ import java.util.Locale
 
 /*
  * Why: the right to left languages (Hebrew under its current code and the legacy one Java still hands out, "iw"), and
- * the ones whose own digits the app writes as 0-9 (Arabic, Thai, Bengali and Urdu; Persian would join once the app
- * speaks it).
+ * the ones whose own digits the app writes as 0-9 (Arabic, Thai, Bengali, Urdu, Persian, Tamil and Telugu).
  */
 private val rightToLeftLanguages = setOf("ar", "fa", "he", "iw", "ur")
-private val latinDigitLanguages = setOf("ar", "th", "bn", "ur")
-private const val THAI = "th"
+private val latinDigitLanguages = setOf("ar", "th", "bn", "ur", "fa", "ta", "te")
+private val ownCalendarLanguages = setOf("th", "fa")
 private const val FIRST_STRONG_ISOLATE = '\u2068'
 private const val POP_DIRECTIONAL_ISOLATE = '\u2069'
 
@@ -25,10 +24,11 @@ fun Locale.isRightToLeft(): Boolean = language in rightToLeftLanguages
 
 /*
  * Why: dates are written with the Gregorian year in every language, as java.time writes them, though Thai's own
- * calendar is the Buddhist era (2569 for 2026), which ICU would pick for a Thai locale.
+ * calendar is the Buddhist era (2569 for 2026), which ICU would pick for a Thai locale, and Persian's the Solar Hijri one
+ * (1405 for 2026), which ICU picks for a Persian locale.
  */
 fun Locale.withGregorianCalendar(): Locale {
-    if (language != THAI) return this
+    if (language !in ownCalendarLanguages) return this
     return try {
         Locale
             .Builder()
@@ -42,8 +42,8 @@ fun Locale.withGregorianCalendar(): Locale {
 
 /*
  * Why: amounts, dates and counts are written with 0-9 in every language, so what a field shows is what it parses and
- * an amount reads the same as the one typed on the number keyboard. Arabic's, Thai's, Bengali's and Urdu's own digits
- * stay for their words only.
+ * an amount reads the same as the one typed on the number keyboard. Arabic's, Thai's, Bengali's, Urdu's and Persian's
+ * own digits stay for their words only.
  */
 fun Locale.withLatinDigits(): Locale {
     if (language !in latinDigitLanguages) return this

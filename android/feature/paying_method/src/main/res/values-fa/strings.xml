@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">روش پرداخت جدید</string>
+    <string name="paying_method_edit_title">ویرایش روش پرداخت</string>
+    <string name="paying_method_type">نوع</string>
+    <string name="paying_method_name">نام</string>
+    <string name="paying_method_name_optional">نام (اختیاری)</string>
+    <string name="paying_method_color">رنگ</string>
+    <string name="paying_method_default">روش پیش‌فرض</string>
+    <string name="paying_method_default_hint">هزینه‌های جدیدی که پرداخت می‌کنید با این روش شروع می‌شوند.</string>
+    <string name="paying_method_delete">حذف روش پرداخت</string>
+    <string name="paying_method_delete_title">این روش پرداخت حذف شود؟</string>
+    <string name="paying_method_delete_body">هزینه‌هایی که با آن علامت زده‌اید، دیگر آن را نشان نمی‌دهند.</string>
+    <string name="paying_method_delete_confirm">حذف</string>
+    <string name="paying_method_save">ذخیره</string>
+</resources>

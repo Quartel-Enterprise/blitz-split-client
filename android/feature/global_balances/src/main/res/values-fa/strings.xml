@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">ترازها</string>
+    <string name="global_balances_profile">پروفایل</string>
+    <string name="global_balances_offline">آفلاین · ترازهای این دستگاه</string>
+    <string name="global_balances_filter">نمایش</string>
+    <string name="global_balances_filter_all">همه</string>
+    <string name="global_balances_filter_you_owe">شما بدهکارید</string>
+    <string name="global_balances_filter_owes_you">بدهکار به شما</string>
+    <string name="global_balances_hint">حساب همه گروه‌ها از قبل روی هم محاسبه شده است: هر نفر فقط یک بار نشان داده می‌شود.</string>
+    <string name="global_balances_hint_empty">در حال جمع زدن همه گروه‌های این دستگاه.</string>
+    <string name="global_balances_section_you_owe">شما بدهکارید · %d</string>
+    <string name="global_balances_section_owes_you">بدهکار به شما · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d گروه</item>
+        <item quantity="other">%d گروه</item>
+    </plurals>
+    <string name="global_balances_guest">%s · مهمان</string>
+    <string name="global_balances_you_owe">شما بدهکارید</string>
+    <string name="global_balances_owes_you">به شما بدهکار است</string>
+    <string name="global_balances_by_group_show">نمایش به تفکیک گروه: %s</string>
+    <string name="global_balances_by_group_hide">پنهان کردن تفکیک گروه: %s</string>
+    <string name="global_balances_received">دریافت شد</string>
+    <string name="global_balances_received_from">دریافت از %s</string>
+    <string name="global_balances_settle">تسویه حساب</string>
+    <string name="global_balances_settle_with">تسویه حساب با %s</string>
+    <string name="global_balances_charge">درخواست پرداخت</string>
+    <string name="global_balances_charge_person">درخواست پرداخت از %s</string>
+    <string name="global_balances_detail_pane">تراز با %s</string>
+    <string name="global_balances_detail_owes_you">%s به شما بدهکار است</string>
+    <string name="global_balances_detail_you_owe">شما به %s بدهکارید</string>
+    <string name="global_balances_detail_guest">%s · مهمان بدون برنامه</string>
+    <string name="global_balances_detail_note_owed">مبلغ خالص، حساب گروه‌ها را از قبل روی هم محاسبه کرده است: «درخواست پرداخت» و «دریافت شد» از %s استفاده می‌کنند. برنامه در هر گروه یک پرداخت ثبت می‌کند.</string>
+    <string name="global_balances_detail_note_settle">مبلغ خالص، حساب گروه‌ها را از قبل روی هم محاسبه کرده است: «تسویه حساب» از %s استفاده می‌کند. برنامه در هر گروه یک پرداخت ثبت می‌کند.</string>
+    <string name="global_balances_detail_note_single">فقط یک گروه باز با %s.</string>
+    <string name="global_balances_settled_title">همه تسویه شد</string>
+    <string name="global_balances_settled_body">نه کسی به شما بدهکار است و نه شما به کسی. وقتی کسی هزینه‌ای اضافه کند، تراز اینجا نمایش داده می‌شود.</string>
+    <string name="global_balances_settled_action">دیدن گروه‌ها</string>
+    <string name="global_balances_nothing_to_pay_title">شما بدهی‌ای ندارید</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">با همه تسویه کرده‌اید. هنوز %2$s از %1$d نفر طلب دارید.</item>
+        <item quantity="other">با همه تسویه کرده‌اید. هنوز %2$s از %1$d نفر طلب دارید.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">دیدن بدهکاران به شما</string>
+    <string name="global_balances_nothing_to_receive_title">کسی به شما بدهکار نیست</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">هنوز %2$s به %1$d نفر بدهکارید.</item>
+        <item quantity="other">هنوز %2$s به %1$d نفر بدهکارید.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">دیدن طلبکاران شما</string>
+    <string name="global_balances_coming_soon">به‌زودی</string>
+    <string name="global_balances_change_error">تغییر ذخیره نشد. دوباره تلاش کنید.</string>
+    <string name="global_balances_copied">کپی شد</string>
+    <string name="global_balances_charge_title">درخواست پرداخت از %s</string>
+    <string name="global_balances_charge_owes">بدهی به شما: %1$s · %2$s</string>
+    <string name="global_balances_charge_close">بستن</string>
+    <string name="global_balances_charge_guest">%s مهمان است و برنامه را ندارد. فقط از همین پیام باخبر می‌شود، برای همین پیام از قبل می‌گوید چه چیزهایی در هزینه بوده است.</string>
+    <string name="global_balances_charge_message">پیام</string>
+    <string name="global_balances_charge_pix">افزودن کلید Pix من</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">کپی پیام</string>
+    <string name="global_balances_charge_send">ارسال</string>
+    <string name="global_balances_message">سلام %1$s! طبق حساب Blitz Split، شما بابت %3$s مبلغ %2$s به من بدهکارید.</string>
+    <string name="global_balances_message_guest">سلام %1$s! شما بابت %3$s مبلغ %2$s به من بدهکارید: سهم شما از %4$s.</string>
+    <string name="global_balances_message_guest_paid">سلام %1$s! شما بابت %3$s مبلغ %2$s به من بدهکارید: سهم شما از %4$s، منهای %5$s که قبلاً پرداخت کرده‌اید.</string>
+    <string name="global_balances_message_group">گروه %s</string>
+    <string name="global_balances_message_groups">گروه‌های %s</string>
+    <string name="global_balances_message_pix">کلید Pix (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">تلفن</string>
+    <string name="global_balances_key_email">ایمیل</string>
+    <string name="global_balances_key_random">کلید تصادفی</string>
+    <string name="global_balances_message_reroute">در گروه %1$s بدهی‌ها ساده‌سازی شد، پس به‌جای پرداخت به %2$s، مستقیم به من پرداخت می‌کنید؛ مجموع شما تغییری نکرد.</string>
+</resources>

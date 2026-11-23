@@ -7,7 +7,7 @@ import { describePng, withoutAlpha } from "./png.mjs";
 export const ROOT = resolve(import.meta.dirname, "../../..");
 export const FACTS = join(ROOT, "build/outputs/app-store-creative-asset-facts/facts.json");
 export const FACES = join(ROOT, "scripts/store-screenshots/faces");
-export const RIGHT_TO_LEFT = new Set(["ar", "he", "ur"]);
+export const RIGHT_TO_LEFT = new Set(["ar", "he", "ur", "fa"]);
 
 export const isRightToLeft = (tag) => RIGHT_TO_LEFT.has(tag.split("-")[0]);
 

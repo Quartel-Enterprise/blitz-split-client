@@ -91,6 +91,10 @@
     <string name="profile_language_filipino">Filipiński</string>
     <string name="profile_language_serbian">Serbski</string>
     <string name="profile_language_slovak">Słowacki</string>
+    <string name="profile_language_persian">Perski</string>
+    <string name="profile_language_tamil">Tamilski</string>
+    <string name="profile_language_norwegian">Norweski (bokmål)</string>
+    <string name="profile_language_telugu">Telugu</string>
     <string name="profile_language_bulgarian">Bułgarski</string>
     <string name="profile_language_catalan">Kataloński</string>
     <string name="profile_language_system_detail">Język urządzenia</string>

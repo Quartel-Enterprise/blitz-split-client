@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">మీరు ఈ గ్రూప్‌లో లేరు</string>
+    <string name="bill_link_not_in_group_message">ఈ కామెంట్ మీరు లేని ఒక గ్రూప్‌లో ఉంది. మీకు లింక్ పంపినవారిని ఆహ్వానం కోసం అడగండి.</string>
+    <string name="bill_link_offline_title">ఇంటర్నెట్ లేదు</string>
+    <string name="bill_link_offline_message">మీరు మళ్లీ ఆన్‌లైన్‌కి వచ్చాక లింక్‌ను మళ్లీ తెరవండి.</string>
+    <string name="bill_link_go_home">హోమ్‌కి వెళ్లండి</string>
+    <string name="discard_changes_title">మార్పులను వదిలేయాలా?</string>
+    <string name="discard_changes_message">సేవ్ చేయని మార్పులు పోతాయి.</string>
+    <string name="discard_changes_discard">వదిలేయండి</string>
+    <string name="discard_changes_keep_editing">ఎడిట్ చేస్తూ ఉండండి</string>
+    <string name="watch_channel_name">వాచ్</string>
+    <string name="watch_connected_title">మీ అకౌంట్‌కి కనెక్ట్ అయింది: %1$s</string>
+    <string name="watch_connected_title_unnamed">వాచ్ మీ అకౌంట్‌కి కనెక్ట్ అయింది</string>
+    <string name="watch_connected_text">ఇది మీ గ్రూప్‌లను చూస్తుంది, దానంతట అదే సింక్ అవుతుంది. దీన్ని డిస్‌కనెక్ట్ చేయడానికి, వాచ్‌లో సైన్ అవుట్ చేయండి.</string>
+</resources>

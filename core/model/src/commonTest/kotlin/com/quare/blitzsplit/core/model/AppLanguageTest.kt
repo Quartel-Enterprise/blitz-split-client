@@ -468,6 +468,54 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Persian tag WHEN reading it THEN is Persian`() {
+        // Given
+        val tags = listOf("fa", "fa-IR", "fa_AF", "FA-ir", "fa-Arab-IR")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.PERSIAN }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Tamil tag WHEN reading it THEN is Tamil`() {
+        // Given
+        val tags = listOf("ta", "ta-IN", "TA-lk", "ta_SG")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.TAMIL }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Norwegian tag of Bokmal or Nynorsk or the macrolanguage WHEN reading it THEN is Norwegian Bokmal`() {
+        // Given
+        val tags = listOf("nb", "nb-NO", "NB_no", "no", "no-NO", "nn", "nn-NO", "nb-SJ")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.NORWEGIAN }, languages)
+    }
+
+    @Test
+    fun `GIVEN any Telugu tag WHEN reading it THEN is Telugu`() {
+        // Given
+        val tags = listOf("te", "te-IN", "TE-in", "te_IN")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.TELUGU }, languages)
+    }
+
+    @Test
     fun `GIVEN any Bulgarian tag WHEN reading it THEN is Bulgarian`() {
         // Given
         val tags = listOf("bg", "bg-BG", "bg_BG", "BG-bg")
@@ -615,6 +663,10 @@ class AppLanguageTest {
                 "FIL",
                 "SR",
                 "SK",
+                "FA",
+                "TA",
+                "NB",
+                "TE",
                 "BG",
                 "CA",
             ),

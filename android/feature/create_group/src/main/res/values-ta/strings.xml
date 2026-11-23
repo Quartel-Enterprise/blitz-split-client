@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">புதிய குழு</string>
+    <string name="create_group_close">மூடவும்</string>
+    <string name="create_group_create">உருவாக்கவும்</string>
+    <string name="create_group_change_color">குழுவின் நிறத்தை மாற்றவும்</string>
+    <string name="create_group_name_label">குழுவின் பெயர்</string>
+    <string name="create_group_type_label">குழு வகை</string>
+    <string name="create_group_members_title">யார் யார் இருக்கிறார்கள்</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d நபர்</item>
+        <item quantity="other">%d நபர்கள்</item>
+    </plurals>
+    <string name="create_group_me">நீங்கள்</string>
+    <string name="create_group_remove_member">அகற்றவும்: %s</string>
+    <string name="create_group_add_placeholder">பெயரால் சேர்க்கவும்</string>
+    <string name="create_group_add">சேர்க்கவும்</string>
+    <string name="create_group_no_app_notice">இப்போது யாருக்கும் ஆப் தேவையில்லை. நீங்கள் இப்போதே எல்லோருக்குமான செலவுகளைச் சேர்த்து, லிங்க்கைப் பிறகு அனுப்பலாம்.</string>
+    <string name="create_group_currency">இயல்பு நாணயம்</string>
+    <string name="create_group_currency_caption">புதிய செலவுகள் இந்த நாணயத்தில் தொடங்கும்; ஒவ்வொரு செலவும் வேறு நாணயத்தைப் பயன்படுத்தலாம்.</string>
+    <string name="create_group_save_error">குழுவைச் சேமிக்க முடியவில்லை. மீண்டும் முயலுங்கள்.</string>
+    <string name="create_group_photo">குழுப் புகைப்படம்</string>
+    <string name="create_group_take_photo">புகைப்படம் எடுக்கவும்</string>
+    <string name="create_group_choose_photo">புகைப்படத்தைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="create_group_remove_photo">புகைப்படத்தை அகற்றவும்</string>
+    <string name="create_group_photo_error">இந்தப் புகைப்படத்தைப் பயன்படுத்த முடியவில்லை. வேறொன்றை முயலுங்கள்.</string>
+</resources>

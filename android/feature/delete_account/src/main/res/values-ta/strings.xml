@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">அக்கவுண்ட்டை நீக்கவும்</string>
+    <string name="delete_account_offline_title">இணைய இணைப்பு இல்லை.</string>
+    <string name="delete_account_offline_body">உங்கள் அக்கவுண்ட்டை நீக்க இணைய இணைப்பு தேவை. இணைத்துவிட்டு மீண்டும் முயலுங்கள்.</string>
+    <string name="delete_account_heading">உங்கள் அக்கவுண்ட்டையும் தரவையும் நீக்கவா?</string>
+    <string name="delete_account_deleted_title">என்னென்ன நீக்கப்படும்</string>
+    <string name="delete_account_deleted_profile">உங்கள் சுயவிவரம் (பெயர், புகைப்படம், நிறம்)</string>
+    <string name="delete_account_deleted_keys">உங்கள் Pix மற்றும் Bitcoin கீகள்</string>
+    <string name="delete_account_deleted_provider">உங்கள் அக்கவுண்ட்டுடனான இணைப்பு: %1$s</string>
+    <string name="delete_account_deleted_recovery_code">உங்கள் மீட்புக் குறியீடு</string>
+    <string name="delete_account_deleted_device">இந்தச் சாதனத்தில் உள்ள உங்கள் தரவின் நகல்</string>
+    <string name="delete_account_kept_title">உங்கள் குழுக்களில் என்ன இருக்கும்</string>
+    <string name="delete_account_kept_groups">குழுக்கள், அவற்றின் செலவுகள் மற்றும் பேமெண்ட்களுடன், மற்ற உறுப்பினர்களுக்காக</string>
+    <string name="delete_account_kept_member">ஒவ்வொரு குழுவிலும் உங்கள் பெயர், அக்கவுண்ட் இல்லாத உறுப்பினராக</string>
+    <string name="delete_account_kept_comments">உங்கள் கருத்துகளும் நீங்கள் சேர்த்த புகைப்படங்களும், உங்கள் பெயரில்</string>
+    <string name="delete_account_export">முதலில் என் தரவை ஏற்றுமதி செய்யவும்</string>
+    <string name="delete_account_confirm">இதைச் செயல்தவிர்க்க முடியாது என்பது எனக்குப் புரிகிறது</string>
+    <string name="delete_account_delete">அக்கவுண்ட்டை நீக்கவும்</string>
+    <string name="delete_account_cancel">ரத்துசெய்</string>
+    <string name="delete_account_failed">உங்கள் அக்கவுண்ட்டை நீக்க முடியவில்லை. மீண்டும் முயலுங்கள்.</string>
+</resources>
