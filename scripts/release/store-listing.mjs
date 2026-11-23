@@ -96,6 +96,7 @@ export const PLAY_LOCALES = {
   mr: ["mr-IN"],
   sw: ["sw"],
   ca: ["ca"],
+  da: ["da-DK"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -146,6 +147,7 @@ export const APP_STORE_LOCALES = {
   // Apple has no Swahili listing locale either: the language has a Play listing and no App Store one.
   sw: [],
   ca: ["ca"],
+  da: ["da"],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */

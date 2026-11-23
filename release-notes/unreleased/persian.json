@@ -47,7 +47,8 @@
         "bg": "Приложението вече говори персийски: избери „فارسی“ в Профил › Език или го остави да следва устройството ти.",
         "mr": "ॲप आता फारसीमध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"فارسی\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
         "sw": "Programu sasa inazungumza Kiajemi: chagua \"فارسی\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
-        "ca": "L’app ara parla persa: tria «فارسی» a Perfil › Idioma, o deixa que segueixi el teu dispositiu."
+        "ca": "L’app ara parla persa: tria «فارسی» a Perfil › Idioma, o deixa que segueixi el teu dispositiu.",
+        "da": "Appen taler nu persisk: vælg »فارسی« i Profil › Sprog, eller lad den følge din enhed."
       }
     },
     {
@@ -97,7 +98,8 @@
         "bg": "Групите вече могат да делят в ирански риал (IRR), а група, създадена в Иран, започва в него.",
         "mr": "ग्रुप आता इराणी रियाल (IRR) मध्ये खर्च वाटू शकतात, आणि इराणमध्ये तयार केलेला ग्रुप त्यातच सुरू होतो.",
         "sw": "Vikundi sasa vinaweza kugawanya kwa riali ya Iran (IRR), na kikundi kilichoundwa nchini Iran kinaanza nayo.",
-        "ca": "Els grups ara poden dividir en rial iranià (IRR), i un grup creat a l’Iran comença en aquesta moneda."
+        "ca": "Els grups ara poden dividir en rial iranià (IRR), i un grup creat a l’Iran comença en aquesta moneda.",
+        "da": "Grupper kan nu dele i iranske rial (IRR), og en gruppe, der oprettes i Iran, starter i den valuta."
       }
     }
   ]

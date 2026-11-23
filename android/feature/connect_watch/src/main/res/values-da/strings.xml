@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Forbind ur</string>
+    <string name="connect_watch_close">Luk</string>
+    <string name="connect_watch_body">Skriv den kode, dit ur viser. Det logger ind på din konto og synkroniserer derefter af sig selv.</string>
+    <string name="connect_watch_code_label">Urets kode</string>
+    <string name="connect_watch_error_invalid">Forkert eller udløbet kode. Hent en ny på uret.</string>
+    <string name="connect_watch_error_too_many">For mange forkerte koder. Vent et par minutter, og prøv igen.</string>
+    <string name="connect_watch_error_needs_account">Forbind en konto først: dine data findes kun på denne enhed.</string>
+    <string name="connect_watch_error_failed">Uret kunne ikke forbindes. Prøv igen.</string>
+    <string name="connect_watch_offline">Det kræver internet at forbinde uret.</string>
+    <string name="connect_watch_own_watch_only">Skriv kun en kode, der vises på dit eget ur: den, der har det ur, får adgang til din konto.</string>
+    <string name="connect_watch_validity">Koden er gyldig i 5 minutter og kun én gang.</string>
+    <string name="connect_watch_button">Forbind</string>
+    <string name="connect_watch_connected_title">Uret er forbundet</string>
+    <string name="connect_watch_connected_body">Det ser dine grupper og synkroniserer af sig selv. Log ud på uret for at afbryde forbindelsen.</string>
+</resources>

@@ -96,6 +96,7 @@
     <string name="profile_language_marathi">Bahasa Marathi</string>
     <string name="profile_language_swahili">Bahasa Swahili</string>
     <string name="profile_language_catalan">Bahasa Catalonia</string>
+    <string name="profile_language_danish">Bahasa Denmark</string>
     <string name="profile_language_system_detail">Bahasa peranti</string>
     <string name="profile_notifications">Pemberitahuan</string>
     <plurals name="profile_notifications_active">

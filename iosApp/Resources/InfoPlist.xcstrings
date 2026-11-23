@@ -35,6 +35,12 @@
             "value" : "Blitz Split"
           }
         },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -288,6 +294,12 @@
           }
         },
         "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "da" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -551,6 +563,12 @@
             "value" : "Ke skenování QR kódu pozvánky nebo ze starého zařízení a k pořízení profilové fotky a fotek výdajů."
           }
         },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Til at scanne QR-koden fra en invitation eller fra din gamle enhed og til at tage dit profilbillede og billeder af udgifter."
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -809,6 +827,12 @@
             "value" : "K pozvání lidí z tvých kontaktů odkazem na skupinu. Jejich čísla zůstanou v tomto zařízení."
           }
         },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Til at invitere folk fra dine kontakter med en gruppes link. Deres numre bliver på denne enhed."
+          }
+        },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1065,6 +1089,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "K uložení fotek výdajů do tvé knihovny."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Til at gemme billeder fra en udgift i dit fotobibliotek."
           }
         },
         "de" : {

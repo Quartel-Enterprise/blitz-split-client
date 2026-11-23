@@ -98,6 +98,7 @@
     <string name="profile_language_marathi">Marathi</string>
     <string name="profile_language_swahili">Swahili</string>
     <string name="profile_language_catalan">Catalano</string>
+    <string name="profile_language_danish">Danese</string>
     <string name="profile_language_system_detail">Lingua del dispositivo</string>
     <string name="profile_notifications">Notifiche</string>
     <plurals name="profile_notifications_active">

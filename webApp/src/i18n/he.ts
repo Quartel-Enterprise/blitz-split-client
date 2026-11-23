@@ -868,6 +868,7 @@ export const he: Record<MessageKey, string> = {
   profile_languageMarathi: 'מראטהית',
   profile_languageSwahili: 'סווהילית',
   profile_languageCatalan: 'קטלאנית',
+  profile_languageDanish: 'דנית',
   profile_bitcoinInSats: 'ביטקוין בסאטושי',
   profile_bitcoinInSatsDetail: 'הצגה והזנה של סכומי ביטקוין ב-sats (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: 'שיתוף נתוני שימוש',

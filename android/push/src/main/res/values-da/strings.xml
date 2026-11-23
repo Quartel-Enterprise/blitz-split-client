@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Påmindelse om at gøre op</string>
+    <string name="push_bill_created">%1$s tilføjede »%2$s« med dig</string>
+    <string name="push_bill_edited">%1$s redigerede »%2$s«</string>
+    <string name="push_bill_deleted">%1$s slettede »%2$s«</string>
+    <string name="push_comment_added">%1$s kommenterede »%2$s«: %3$s</string>
+    <string name="push_payment_paid_you">%1$s markerede, at vedkommende har betalt dig</string>
+    <string name="push_payment_to_you">%1$s markerede, at %2$s har betalt dig</string>
+    <string name="push_payment_received_yours">%1$s markerede din betaling som modtaget</string>
+    <string name="push_payment_from_you">%1$s markerede, at du har betalt %2$s</string>
+    <string name="push_payment_undone">%1$s fortrød en betaling med dig</string>
+    <string name="push_charge_sent">%1$s sendte dig en påmindelse om at gøre op</string>
+    <string name="push_settle_reminder">Du har en åben saldo i %1$s</string>
+    <string name="push_settle_reminders">Du har åbne saldi i %1$s grupper</string>
+    <string name="push_added_to_group">%1$s tilføjede dig til gruppen</string>
+    <string name="push_member_joined">%1$s blev medlem af gruppen</string>
+    <string name="push_debts_simplified_to_you">%1$s forenklede gælden. Nu betaler %2$s dig %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s forenklede gælden. Nu betaler du %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s forenklede gælden. Se, hvad det betyder for dig.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s slog Forenkle gæld fra. Nu betaler %2$s dig %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s slog Forenkle gæld fra. Nu betaler du %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s slog Forenkle gæld fra. Se, hvad det betyder for dig.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">Udgifter</string>
+    <string name="notification_settings_bills_detail">Nye, redigerede eller slettede udgifter, du er med i</string>
+    <string name="notification_settings_payments">Betalinger og opgørelser</string>
+    <string name="notification_settings_payments_detail">Betalinger til eller fra dig og forenklet gæld</string>
+    <string name="notification_settings_comments">Kommentarer</string>
+    <string name="notification_settings_comments_detail">På udgifter, du er med i, og tråde, du har skrevet i</string>
+    <string name="notification_settings_people_and_groups">Personer og grupper</string>
+    <string name="notification_settings_people_and_groups_detail">Hvem der bliver medlem af eller forlader dine grupper, og hvad der ændres i dem</string>
+    <string name="notification_settings_payment_requests">Betalingsanmodninger</string>
+    <string name="notification_settings_payment_requests_detail">Når nogen beder dig om at betale</string>
+    <string name="notification_settings_balance_reminder">Påmindelse om åben saldo</string>
+    <string name="notification_settings_balance_reminder_detail">En gang om ugen, hvis der er en åben saldo</string>
+</resources>

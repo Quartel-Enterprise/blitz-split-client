@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Ny gruppe</string>
+    <string name="create_group_close">Luk</string>
+    <string name="create_group_create">Opret</string>
+    <string name="create_group_change_color">Skift gruppens farve</string>
+    <string name="create_group_name_label">Gruppens navn</string>
+    <string name="create_group_type_label">Gruppetype</string>
+    <string name="create_group_members_title">Hvem er med</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d person</item>
+        <item quantity="other">%d personer</item>
+    </plurals>
+    <string name="create_group_me">dig</string>
+    <string name="create_group_remove_member">Fjern %s</string>
+    <string name="create_group_add_placeholder">Tilføj med navn</string>
+    <string name="create_group_add">Tilføj</string>
+    <string name="create_group_no_app_notice">Ingen behøver appen lige nu. Du kan allerede tilføje udgifter for alle og sende linket senere.</string>
+    <string name="create_group_currency">Standardvaluta</string>
+    <string name="create_group_currency_caption">Nye udgifter starter i denne valuta; hver udgift kan bruge en anden.</string>
+    <string name="create_group_save_error">Gruppen kunne ikke gemmes. Prøv igen.</string>
+    <string name="create_group_photo">Gruppebillede</string>
+    <string name="create_group_take_photo">Tag billede</string>
+    <string name="create_group_choose_photo">Vælg billede</string>
+    <string name="create_group_remove_photo">Fjern billede</string>
+    <string name="create_group_photo_error">Dette billede kunne ikke bruges. Prøv et andet.</string>
+</resources>

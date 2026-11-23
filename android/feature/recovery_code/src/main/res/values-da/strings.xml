@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Gem din gendannelseskode</string>
+    <string name="recovery_code_body">Du bruger appen uden konto. Disse 12 ord henter dine data tilbage, hvis du skifter eller mister din enhed. Skriv dem ned i rækkefølge. Efter 30 dage uden brug slettes dine data, og ordene holder op med at virke.</string>
+    <string name="recovery_code_copy">Kopiér ord</string>
+    <string name="recovery_code_save_to_password_manager">Gem i adgangskodeadministrator</string>
+    <string name="recovery_code_connect_instead">Forbind Google eller Apple i stedet</string>
+    <string name="recovery_code_connect_instead_body">Ingen kode nødvendig</string>
+    <string name="recovery_code_sign_in_failed">Kunne ikke forbinde lige nu. Prøv igen.</string>
+    <string name="recovery_code_also_in_profile">Den findes også under Profil › Gendannelse.</string>
+    <string name="recovery_code_remind_later">Mind mig om det senere</string>
+    <string name="recovery_code_saved">Jeg har gemt den</string>
+    <string name="recovery_code_download">Download</string>
+    <string name="recovery_code_file_name">blitz-split-gendannelseskode.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · gendannelseskode\n\n%1$s\n\nBrug den under \"Jeg har brugt appen på en anden enhed\" for at hente dine data tilbage.\n</string>
+</resources>

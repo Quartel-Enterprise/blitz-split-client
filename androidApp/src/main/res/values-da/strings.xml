@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Du er ikke med i denne gruppe</string>
+    <string name="bill_link_not_in_group_message">Denne kommentar er i en gruppe, du ikke er med i. Bed den, der sendte dig linket, om en invitation.</string>
+    <string name="bill_link_offline_title">Intet internet</string>
+    <string name="bill_link_offline_message">Åbn linket igen, når du er online igen.</string>
+    <string name="bill_link_go_home">Gå til Hjem</string>
+    <string name="discard_changes_title">Kassér ændringer?</string>
+    <string name="discard_changes_message">Ændringer, der ikke er gemt, går tabt.</string>
+    <string name="discard_changes_discard">Kassér</string>
+    <string name="discard_changes_keep_editing">Fortsæt redigering</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Ur</string>
+    <string name="watch_connected_title">%1$s er forbundet til din konto</string>
+    <string name="watch_connected_title_unnamed">Ur forbundet til din konto</string>
+    <string name="watch_connected_text">Det ser dine grupper og synkroniserer af sig selv. For at afbryde forbindelsen skal du logge ud på uret.</string>
+</resources>

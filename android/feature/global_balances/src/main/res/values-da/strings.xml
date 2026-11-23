@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldi</string>
+    <string name="global_balances_profile">Profil</string>
+    <string name="global_balances_offline">Offline · denne enheds saldi</string>
+    <string name="global_balances_filter">Vis</string>
+    <string name="global_balances_filter_all">Alle</string>
+    <string name="global_balances_filter_you_owe">Du skylder</string>
+    <string name="global_balances_filter_owes_you">Skylder dig</string>
+    <string name="global_balances_hint">Allerede modregnet på tværs af grupper: hver person vises én gang.</string>
+    <string name="global_balances_hint_empty">Lægger alle grupper på denne enhed sammen.</string>
+    <string name="global_balances_section_you_owe">Du skylder · %d</string>
+    <string name="global_balances_section_owes_you">Skylder dig · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d gruppe</item>
+        <item quantity="other">%d grupper</item>
+    </plurals>
+    <string name="global_balances_guest">%s · gæst</string>
+    <string name="global_balances_you_owe">du skylder</string>
+    <string name="global_balances_owes_you">skylder dig</string>
+    <string name="global_balances_by_group_show">Vis %s pr. gruppe</string>
+    <string name="global_balances_by_group_hide">Skjul %s pr. gruppe</string>
+    <string name="global_balances_received">Modtaget</string>
+    <string name="global_balances_received_from">Modtaget fra %s</string>
+    <string name="global_balances_settle">Gør op</string>
+    <string name="global_balances_settle_with">Gør op med %s</string>
+    <string name="global_balances_charge">Bed om betaling</string>
+    <string name="global_balances_charge_person">Bed %s om betaling</string>
+    <string name="global_balances_detail_pane">Saldo med %s</string>
+    <string name="global_balances_detail_owes_you">%s skylder dig</string>
+    <string name="global_balances_detail_you_owe">Du skylder %s</string>
+    <string name="global_balances_detail_guest">%s · gæst uden appen</string>
+    <string name="global_balances_detail_note_owed">Nettobeløbet modregner allerede grupperne: Bed om betaling og Modtaget bruger %s. Appen registrerer en betaling i hver gruppe.</string>
+    <string name="global_balances_detail_note_settle">Nettobeløbet modregner allerede grupperne: Gør op bruger %s. Appen registrerer en betaling i hver gruppe.</string>
+    <string name="global_balances_detail_note_single">Kun én åben gruppe med %s.</string>
+    <string name="global_balances_settled_title">Alt er gjort op</string>
+    <string name="global_balances_settled_body">Ingen skylder dig, og du skylder ingen. Når nogen tilføjer en udgift, vises saldoen her.</string>
+    <string name="global_balances_settled_action">Se grupper</string>
+    <string name="global_balances_nothing_to_pay_title">Du skylder ingenting</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Du har gjort op med alle. Du har stadig %2$s til gode hos %1$d person.</item>
+        <item quantity="other">Du har gjort op med alle. Du har stadig %2$s til gode hos %1$d personer.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Se, hvem der skylder dig</string>
+    <string name="global_balances_nothing_to_receive_title">Ingen skylder dig</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Du skylder stadig %2$s til %1$d person.</item>
+        <item quantity="other">Du skylder stadig %2$s til %1$d personer.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Se, hvem du skylder</string>
+    <string name="global_balances_coming_soon">Kommer snart</string>
+    <string name="global_balances_change_error">Ændringen kunne ikke gemmes. Prøv igen.</string>
+    <string name="global_balances_copied">Kopieret</string>
+    <string name="global_balances_charge_title">Bed %s om betaling</string>
+    <string name="global_balances_charge_owes">Skylder dig %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Luk</string>
+    <string name="global_balances_charge_guest">%s er gæst uden appen. Vedkommende hører kun om det gennem denne besked, så den siger allerede, hvad der indgik i udgiften.</string>
+    <string name="global_balances_charge_message">Besked</string>
+    <string name="global_balances_charge_pix">Medtag min Pix-nøgle</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Kopiér besked</string>
+    <string name="global_balances_charge_send">Send</string>
+    <string name="global_balances_message">Hej %1$s! Ifølge Blitz Split skylder du mig %2$s fra %3$s.</string>
+    <string name="global_balances_message_guest">Hej %1$s! Du skylder mig %2$s fra %3$s: din del af %4$s.</string>
+    <string name="global_balances_message_guest_paid">Hej %1$s! Du skylder mig %2$s fra %3$s: din del af %4$s minus de %5$s, du allerede har betalt.</string>
+    <string name="global_balances_message_group">gruppen %s</string>
+    <string name="global_balances_message_groups">grupperne %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefon</string>
+    <string name="global_balances_key_email">E-mail</string>
+    <string name="global_balances_key_random">Tilfældig nøgle</string>
+    <string name="global_balances_message_reroute">%1$s har forenklet sin gæld, så i stedet for at betale %2$s betaler du mig direkte; dit samlede beløb er ikke ændret.</string>
+</resources>

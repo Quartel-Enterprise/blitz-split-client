@@ -285,7 +285,7 @@ No linter runs on Swift yet; follow what the app already does.
 - `///` doc comments explain a type's role and the why, as the Kotlin `// Why:` does; inline `//` comments only
   for a reason.
 - User-facing text is an English literal in `Text`, `Label`, `Tab` or `.navigationTitle`, with its pt-BR,
-  (where Portugal differs) pt-PT, es, (where Spain differs) es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr-Latn and sk, fa, ta, nb, te, bg, mr, sw and ca translations in `Localizable.xcstrings` (the development language is English).
+  (where Portugal differs) pt-PT, es, (where Spain differs) es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr-Latn and sk, fa, ta, nb, te, bg, mr, sw, ca and da translations in `Localizable.xcstrings` (the development language is English).
   Never copy an es word into es-ES, nor a pt-BR word into pt-PT: Xcode compiles `es-ES.lproj` and `pt-PT.lproj` with
   only Spain's and Portugal's words, and the build's "Fill the regional tables with their language's" phase
   (`iosApp/merge-regional-strings.py`) fills them with the rest of `es` and `pt-BR`, since an es-ES or pt-PT app
@@ -332,7 +332,9 @@ the apps: clones of 70 tokens or more with at least 5 lines of code in each copy
 ./scripts/cpd.sh --update-baseline --allow-new  # also take more copied code in, only when the copy is on purpose
 ```
 
-`.jscpd.json` says what it scans: no tests, fakes, Gradle scripts nor generated code. jscpd only compares files of the
+`.jscpd.json` says what it scans: no tests, fakes, Gradle scripts nor generated code, nor the web's translation
+dictionaries (`webApp/src/i18n/<lang>.ts`, every one but `index.ts`): they are data, like Android's strings and the
+Apple catalog, which aren't scanned either, and two close languages may name the same things alike. jscpd only compares files of the
 same language (`.ts` and `.tsx` count as one), so a screen drawn by Compose, SwiftUI and React is never a clone. The
 check itself is shared with the other Quare apps in
 [copied-code-check](https://github.com/Quartel-Enterprise/copied-code-check): `scripts/cpd.sh` is its wrapper, which
