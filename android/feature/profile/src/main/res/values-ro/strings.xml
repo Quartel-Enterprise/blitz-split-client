@@ -91,6 +91,7 @@
     <string name="profile_language_serbian">Sârbă</string>
     <string name="profile_language_slovak">Slovacă</string>
     <string name="profile_language_persian">Persană</string>
+    <string name="profile_language_tamil">Tamilă</string>
     <string name="profile_language_system_detail">Limba dispozitivului</string>
     <string name="profile_notifications">Notificări</string>
     <plurals name="profile_notifications_active">

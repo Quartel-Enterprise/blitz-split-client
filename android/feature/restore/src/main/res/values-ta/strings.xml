@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">உங்கள் குழுக்களைத் திரும்பப் பெறுங்கள்</string>
+    <string name="restore_subtitle">முன்பு அக்கவுண்ட் மூலம் உள்நுழைந்தீர்களா? மீண்டும் உள்நுழைந்தால் போதும். இல்லையென்றால், மீட்புக் குறியீட்டையோ பழைய சாதனத்தில் உள்ள QR குறியீட்டையோ பயன்படுத்துங்கள்.</string>
+    <string name="restore_no_connection_title">இணைப்பு இல்லை</string>
+    <string name="restore_no_connection_body">அக்கவுண்ட் அல்லது குறியீடு மூலம் உள்நுழைய, உங்கள் குழுக்களைப் பதிவிறக்க இணையம் தேவை. நீங்கள் தட்டச்சு செய்தது வைக்கப்பட்டிருக்கும்.</string>
+    <string name="restore_code_label">அல்லது மீட்புக் குறியீட்டைப் பயன்படுத்தவும்</string>
+    <string name="restore_code_hint">12 சொற்களும் வரிசைப்படி. எல்லாப் புலங்களையும் நிரப்ப, அனைத்தையும் ஒரே புலத்தில் ஒட்டுங்கள்.</string>
+    <string name="restore_scan_qr_title">பழைய சாதனத்தில் உள்ள QR குறியீட்டை ஸ்கேன் செய்யுங்கள்</string>
+    <string name="restore_scan_qr_body">அங்கே: சுயவிவரம் › மீட்பு › QR குறியீட்டைக் காட்டு</string>
+    <string name="restore_recover">மீட்கவும்</string>
+    <string name="restore_try_again">மீண்டும் முயலவும்</string>
+    <string name="restore_start_fresh">இந்தச் சாதனத்தில் புதிதாகத் தொடங்கவும்</string>
+    <string name="restore_error_invalid_code">குறியீடு கிடைக்கவில்லை. சொற்களையும் அவற்றின் வரிசையையும் சரிபார்த்து, மீண்டும் முயலுங்கள்.</string>
+    <string name="restore_error_too_many_attempts">பல முறை முயன்றுவிட்டீர்கள். சில நிமிடங்கள் காத்திருந்து மீண்டும் முயலுங்கள்.</string>
+    <string name="restore_error_sign_in_failed">இப்போது உள்நுழைய முடியவில்லை. மீண்டும் முயலுங்கள்.</string>
+    <string name="restore_error_unknown">ஏதோ தவறு நடந்தது. மீண்டும் முயலுங்கள்.</string>
+</resources>

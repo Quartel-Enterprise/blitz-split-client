@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">வாட்சை இணைக்கவும்</string>
+    <string name="connect_watch_close">மூடவும்</string>
+    <string name="connect_watch_body">உங்கள் வாட்ச் காட்டும் குறியீட்டை உள்ளிடுங்கள். அது உங்கள் அக்கவுண்ட்டில் உள்நுழைந்து, பிறகு தானாகவே ஒத்திசைக்கும்.</string>
+    <string name="connect_watch_code_label">வாட்ச் குறியீடு</string>
+    <string name="connect_watch_error_invalid">தவறான அல்லது காலாவதியான குறியீடு. வாட்சில் புதிய குறியீட்டைப் பெறுங்கள்.</string>
+    <string name="connect_watch_error_too_many">பல முறை தவறான குறியீடுகள். சில நிமிடங்கள் காத்திருந்து மீண்டும் முயலுங்கள்.</string>
+    <string name="connect_watch_error_needs_account">முதலில் ஒரு அக்கவுண்ட்டை இணையுங்கள்: உங்கள் தரவு இந்தச் சாதனத்தில் மட்டுமே உள்ளது.</string>
+    <string name="connect_watch_error_failed">வாட்சை இணைக்க முடியவில்லை. மீண்டும் முயலுங்கள்.</string>
+    <string name="connect_watch_offline">வாட்சை இணைக்க இணைய இணைப்பு தேவை.</string>
+    <string name="connect_watch_own_watch_only">உங்கள் சொந்த வாட்சில் காட்டப்படும் குறியீட்டை மட்டுமே உள்ளிடுங்கள்: அந்த வாட்ச் யாரிடம் இருக்கிறதோ அவர் உங்கள் அக்கவுண்ட்டில் நுழைந்துவிடுவார்.</string>
+    <string name="connect_watch_validity">இந்தக் குறியீடு 5 நிமிடங்களுக்கு, ஒரு முறை மட்டுமே செல்லும்.</string>
+    <string name="connect_watch_button">இணைக்கவும்</string>
+    <string name="connect_watch_connected_title">வாட்ச் இணைக்கப்பட்டது</string>
+    <string name="connect_watch_connected_body">அது உங்கள் குழுக்களைப் பார்க்கும், தானாகவே ஒத்திசைக்கும். அதைத் துண்டிக்க, வாட்சில் வெளியேறுங்கள்.</string>
+</resources>

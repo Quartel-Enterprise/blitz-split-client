@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">புதிய பேமெண்ட் முறை</string>
+    <string name="paying_method_edit_title">பேமெண்ட் முறையைத் திருத்தவும்</string>
+    <string name="paying_method_type">வகை</string>
+    <string name="paying_method_name">பெயர்</string>
+    <string name="paying_method_name_optional">பெயர் (விருப்பத்தேர்வு)</string>
+    <string name="paying_method_color">நிறம்</string>
+    <string name="paying_method_default">இயல்பு முறை</string>
+    <string name="paying_method_default_hint">நீங்கள் செலுத்தும் புதிய செலவுகள் இதனுடன் தொடங்கும்.</string>
+    <string name="paying_method_delete">பேமெண்ட் முறையை நீக்கவும்</string>
+    <string name="paying_method_delete_title">இந்தப் பேமெண்ட் முறையை நீக்கவா?</string>
+    <string name="paying_method_delete_body">இதனுடன் நீங்கள் குறித்த செலவுகளில் இனி இது காட்டப்படாது.</string>
+    <string name="paying_method_delete_confirm">நீக்கவும்</string>
+    <string name="paying_method_save">சேமிக்கவும்</string>
+</resources>

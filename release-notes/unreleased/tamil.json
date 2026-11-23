@@ -1,0 +1,48 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Tamil: pick \"தமிழ்\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala tâmil: escolha \"தமிழ்\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora tâmil: escolhe \"தமிழ்\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla tamil: elige \"தமிழ்\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais tamoul : choisis « தமிழ் » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Tamil: Wähle „தமிழ்“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla tamil: scegli \"தமிழ்\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po tamilsku: wybierz „தமிழ்” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Tamil: kies \"தமிழ்\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがタミル語に対応しました。プロフィール › 言語で「தமிழ்」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Tamilce konuşuyor: Profil › Dil'den \"தமிழ்\" seçeneğini seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Tamil: pilih \"தமிழ்\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на тамильском: выбери «தமிழ்» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить тамільською: обери «தமிழ்» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 타밀어를 쓸 수 있어요. 프로필 › 언어에서 ‘தமிழ்’을 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप तमिल में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “தமிழ்” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث التاميلية: يمكنك اختيار «தமிழ்» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持泰米尔语：在“个人资料 › 语言”中选择“தமிழ்”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו טמילית: אפשר לבחור \"தமிழ்\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาทมิฬแล้ว เลือก “தமிழ்” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Tamil: chọn “தமிழ்” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援泰米爾文：在「個人資料 › 語言」中選擇「தமிழ்」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu tamil: välj ”தமிழ்” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví tamilsky: vyber „தமிழ்“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum tamilă: alege „தமிழ்” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন তামিল ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “தமிழ்” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Tamil: pilih \"தமிழ்\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον ταμιλικά: διάλεξε «தமிழ்» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori tamilski: odaberi „தமிழ்“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól tamilul is beszél: válaszd a „தமிழ்” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ تامل میں بھی دستیاب ہے: پروفائل › زبان میں “தமிழ்” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Tamil ang app: piliin ang \"தமிழ்\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori tamilski: izaberi „தமிழ்“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "ta": "ஆப் இப்போது தமிழில் கிடைக்கிறது: சுயவிவரம் › மொழி என்பதில் \"தமிழ்\" என்பதைத் தேர்ந்தெடுங்கள், அல்லது உங்கள் சாதனத்தின் மொழியைப் பின்பற்ற விடுங்கள்.",
+        "sk": "Aplikácia teraz hovorí po tamilsky: vyber „தமிழ்“ v Profil › Jazyk alebo ju nechaj nasledovať tvoje zariadenie.",
+        "fa": "برنامه حالا تامیلی صحبت می‌کند: «தமிழ்» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند."
+      }
+    }
+  ]
+}

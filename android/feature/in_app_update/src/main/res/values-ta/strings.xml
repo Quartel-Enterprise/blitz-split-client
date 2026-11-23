@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">அப்டேட் பதிவிறக்கப்படுகிறது…</string>
+    <string name="in_app_update_download_failed">அப்டேட்டைப் பதிவிறக்க முடியவில்லை. பிறகு மீண்டும் முயலுங்கள்.</string>
+</resources>

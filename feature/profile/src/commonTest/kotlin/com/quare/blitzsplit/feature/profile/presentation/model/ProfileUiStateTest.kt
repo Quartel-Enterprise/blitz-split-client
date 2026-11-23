@@ -52,6 +52,7 @@ class ProfileUiStateTest {
             AppLanguage.SERBIAN -> listOf("Srpski", "Serbian")
             AppLanguage.SLOVAK -> listOf("Slovenčina", "Slovak")
             AppLanguage.PERSIAN -> listOf("فارسی", "Persian")
+            AppLanguage.TAMIL -> listOf("தமிழ்", "Tamil")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -103,6 +104,7 @@ class ProfileUiStateTest {
         AppLanguage.SERBIAN,
         AppLanguage.SLOVAK,
         AppLanguage.PERSIAN,
+        AppLanguage.TAMIL,
     )
 
     @Test
@@ -697,6 +699,7 @@ class ProfileUiStateTest {
                 AppLanguage.SERBIAN,
                 AppLanguage.SLOVAK,
                 AppLanguage.PERSIAN,
+                AppLanguage.TAMIL,
             ),
             options,
         )
@@ -750,6 +753,7 @@ class ProfileUiStateTest {
                 AppLanguage.SERBIAN,
                 AppLanguage.SLOVAK,
                 AppLanguage.PERSIAN,
+                AppLanguage.TAMIL,
             ),
             options,
         )

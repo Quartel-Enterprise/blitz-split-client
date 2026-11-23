@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">மூடவும்</string>
+    <string name="invite_group_created">குழு உருவாக்கப்பட்டது</string>
+    <string name="invite_title">அனைவரையும் அழைக்கவும்: %s</string>
+    <string name="invite_qr_description">குழுவின் அழைப்பு லிங்க்கின் QR குறியீடு</string>
+    <string name="invite_copy">நகலெடுக்கவும்</string>
+    <string name="invite_copied">நகலெடுக்கப்பட்டது</string>
+    <string name="invite_who_picks">லிங்க்கைத் திறப்பவர் பட்டியலில் தான் யார் என்பதைத் தேர்ந்தெடுப்பார்: %s. அக்கவுண்ட் தேவையில்லை.</string>
+    <string name="invite_names_or">%1$s அல்லது %2$s</string>
+    <string name="invite_anyone_joins">லிங்க்கைத் திறப்பவர் குழுவில் சேருவார். அக்கவுண்ட் தேவையில்லை.</string>
+    <string name="invite_pending_title">லிங்க் நிலுவையில் உள்ளது</string>
+    <string name="invite_pending_offline">நீங்கள் ஆன்லைனுக்கு வந்ததும் இது உருவாக்கப்படும்.</string>
+    <string name="invite_pending_online">லிங்க் உருவாக்கப்படுகிறது…</string>
+    <string name="invite_failed_title">லிங்க்கை உருவாக்க முடியவில்லை</string>
+    <string name="invite_failed_body">குழுவை ஒத்திசைக்கும்போது ஏதோ தவறு நடந்தது.</string>
+    <string name="invite_retry">மீண்டும் முயலவும்</string>
+    <string name="invite_share">லிங்க்கைப் பகிரவும்</string>
+    <string name="invite_see_who_joined">யார் சேர்ந்தார்கள் என்று பார்க்கவும்</string>
+    <string name="invite_add_person">ஆப் இல்லாத ஒருவரைச் சேர்க்கவும்</string>
+    <string name="invite_go_to_group">குழுவுக்குச் செல்லவும்</string>
+    <string name="invite_change_link">லிங்க்கை மாற்றவும்</string>
+    <string name="invite_change_link_title">அழைப்பு லிங்க்கை மாற்றவா?</string>
+    <string name="invite_change_link_message">தற்போதைய லிங்க்கும் QR குறியீடும் வேலை செய்வதை நிறுத்தும், பயன்படுத்தப்படாத தனிப்பட்ட அழைப்புகள் உட்பட. ஏற்கெனவே சேர்ந்தவர்கள் குழுவிலேயே இருப்பார்கள்.</string>
+    <string name="invite_change_link_failed">லிங்க்கை மாற்ற முடியவில்லை. மீண்டும் முயலுங்கள்.</string>
+    <string name="invite_share_message">Blitz Split ஆப்பில் செலவுகளைப் பிரிப்போம்: %1$s. இந்த லிங்க் மூலம் சேருங்கள்: %2$s</string>
+</resources>
