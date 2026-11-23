@@ -1,0 +1,92 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Persian: pick \"فارسی\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala persa: escolha \"فارسی\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora persa: escolhe \"فارسی\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla persa: elige \"فارسی\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais persan : choisis « فارسی » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Persisch: Wähle „فارسی“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla persiano: scegli \"فارسی\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po persku: wybierz „فارسی” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Perzisch: kies \"فارسی\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがペルシア語に対応しました。プロフィール › 言語で「فارسی」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Farsça konuşuyor: Profil › Dil'den \"فارسی\" seçeneğini seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Persia: pilih \"فارسی\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на персидском: выбери «فارسی» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить перською: обери «فارسی» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 페르시아어를 쓸 수 있어요. 프로필 › 언어에서 ‘فارسی’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप फ़ारसी में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “فارسی” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث الفارسية: يمكنك اختيار «فارسی» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持波斯语：在“个人资料 › 语言”中选择“فارسی”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו פרסית: אפשר לבחור \"فارسی\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาเปอร์เซียแล้ว เลือก “فارسی” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Ba Tư: chọn “فارسی” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援波斯文：在「個人資料 › 語言」中選擇「فارسی」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu persiska: välj ”فارسی” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví persky: vyber „فارسی“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum persană: alege „فارسی” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন ফারসি ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “فارسی” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Parsi: pilih \"فارسی\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον περσικά: διάλεξε «فارسی» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori perzijski: odaberi „فارسی“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól perzsául is beszél: válaszd a „فارسی” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ فارسی میں بھی دستیاب ہے: پروفائل › زبان میں “فارسی” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Persian ang app: piliin ang \"فارسی\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori persijski: izaberi „فارسی“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "sk": "Aplikácia teraz hovorí po perzsky: vyber „فارسی“ v Profil › Jazyk, alebo nechaj jazyk zariadenia.",
+        "fa": "برنامه حالا فارسی صحبت می‌کند: «فارسی» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند.",
+        "sw": "Programu sasa inazungumza Kiajemi: chagua \"فارسی\" katika Wasifu › Lugha, au iache ifuate kifaa chako."
+      }
+    },
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "Groups can now split in the Iranian rial (IRR), and a group made in Iran starts in it.",
+        "pt": "Os grupos agora podem dividir em rial iraniano (IRR), e um grupo criado no Irã já começa nessa moeda.",
+        "pt-PT": "Os grupos podem agora dividir em rial iraniano (IRR), e um grupo criado no Irão começa logo nessa moeda.",
+        "es": "Los grupos ya pueden dividir en rial iraní (IRR), y un grupo creado en Irán empieza en esa moneda.",
+        "fr": "Les groupes peuvent maintenant partager en rial iranien (IRR), et un groupe créé en Iran démarre dans cette devise.",
+        "de": "Gruppen können jetzt in Iranischen Rial (IRR) teilen, und eine im Iran erstellte Gruppe startet in dieser Währung.",
+        "it": "I gruppi ora possono dividere in rial iraniano (IRR), e un gruppo creato in Iran parte in questa valuta.",
+        "pl": "Grupy mogą teraz dzielić w rialach irańskich (IRR), a grupa założona w Iranie startuje w tej walucie.",
+        "nl": "Groepen kunnen nu verdelen in Iraanse rial (IRR), en een groep die in Iran wordt gemaakt, start in die valuta.",
+        "ja": "グループでイラン・リアル（IRR）が使えるようになり、イランで作ったグループはその通貨で始まります。",
+        "tr": "Gruplar artık İran riyali (IRR) ile bölebiliyor; İran'da açılan bir grup bu para birimiyle başlıyor.",
+        "id": "Grup kini bisa membagi dalam rial Iran (IRR), dan grup yang dibuat di Iran langsung memakai mata uang itu.",
+        "ru": "Группы теперь могут делить расходы в иранских риалах (IRR), а группа, созданная в Иране, сразу начинает в этой валюте.",
+        "uk": "Групи тепер можуть ділити витрати в іранських ріалах (IRR), а група, створена в Ірані, одразу починає в цій валюті.",
+        "ko": "이제 그룹에서 이란 리알(IRR)로 나눌 수 있고, 이란에서 만든 그룹은 리알로 시작해요.",
+        "hi": "ग्रुप अब ईरानी रियाल (IRR) में बांट सकते हैं, और ईरान में बना ग्रुप इसी रियाल में शुरू होता है।",
+        "ar": "يمكن للمجموعات الآن التقسيم بالريال الإيراني (IRR)، والمجموعة التي تُنشأ في إيران تبدأ به.",
+        "zh": "群组现在可以使用伊朗里亚尔（IRR）分摊，在伊朗创建的群组也会默认使用里亚尔。",
+        "he": "קבוצות יכולות עכשיו לחלק בריאל איראני (IRR), וקבוצה שנוצרת באיראן מתחילה בו.",
+        "th": "กลุ่มหารเป็นเรียลอิหร่าน (IRR) ได้แล้ว และกลุ่มที่สร้างในอิหร่านจะเริ่มด้วยสกุลเงินนี้",
+        "vi": "Nhóm giờ có thể chia bằng rial Iran (IRR), và nhóm được tạo ở Iran sẽ bắt đầu với đồng tiền này.",
+        "zh-Hant": "群組現在可以使用伊朗里亞爾（IRR）分攤，在伊朗建立的群組也會從里亞爾開始。",
+        "sv": "Grupper kan nu dela upp i iranska rial (IRR), och en grupp som skapas i Iran börjar i den valutan.",
+        "cs": "Skupiny teď můžou dělit v íránském riálu (IRR) a skupina založená v Íránu začne v něm.",
+        "ro": "Grupurile pot împărți acum în riali iranieni (IRR), iar un grup creat în Iran pornește în această monedă.",
+        "bn": "গ্রুপে এখন ইরানি রিয়াল (IRR) দিয়ে ভাগ করা যাবে, আর ইরানে তৈরি গ্রুপ এই মুদ্রাতেই শুরু হবে।",
+        "ms": "Kumpulan kini boleh membahagi dalam rial Iran (IRR), dan kumpulan yang dibuat di Iran bermula dengan mata wang itu.",
+        "el": "Οι ομάδες μπορούν πλέον να μοιράζουν σε ιρανικό ριάλ (IRR), και μια ομάδα που δημιουργείται στο Ιράν ξεκινά σε αυτό.",
+        "hr": "Grupe sada mogu dijeliti u iranskom rijalu (IRR), a grupa napravljena u Iranu počinje u njemu.",
+        "hu": "A csoportok mostantól iráni riált (IRR) is használhatnak, és az Iránban létrehozott csoport ebben indul.",
+        "ur": "اب گروپ ایرانی ریال (IRR) میں تقسیم کر سکتے ہیں، اور ایران میں بنایا گیا گروپ اسی کرنسی سے شروع ہوتا ہے۔",
+        "fil": "Puwede nang maghati ang mga grupo sa Iranian rial (IRR), at ang grupong ginawa sa Iran ay magsisimula rito.",
+        "sr": "Grupe sada mogu da dele u iranskom rijalu (IRR), a grupa napravljena u Iranu počinje u njemu.",
+        "sk": "Skupiny teraz môžu deliť v iránskom riáli (IRR) a skupina vytvorená v Iráne v ňom začína.",
+        "fa": "گروه‌ها حالا می‌توانند هزینه‌ها را به ریال ایران (IRR) تقسیم کنند، و گروهی که در ایران ساخته شود با همین ارز شروع می‌شود.",
+        "sw": "Vikundi sasa vinaweza kugawanya kwa riali ya Iran (IRR), na kikundi kilichoundwa nchini Iran kinaanza nayo."
+      }
+    }
+  ]
+}

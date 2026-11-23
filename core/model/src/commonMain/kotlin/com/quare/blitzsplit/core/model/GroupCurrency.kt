@@ -138,6 +138,9 @@ class GroupCurrency private constructor(
 
         val TZS = GroupCurrency("TZS", setOf("TZ"), fractionDigits = 0)
 
+        // Why: no decimals, as the rupiah: ISO gives it 2, but no price in Iran shows a fraction of a rial.
+        val IRR = GroupCurrency("IRR", setOf("IR"), fractionDigits = 0)
+
         // Why: 8 decimals, a satoshi each, which typing or reading "Bitcoin em satoshis" shows as whole sats.
         val BTC = GroupCurrency(
             "BTC",
@@ -204,6 +207,7 @@ class GroupCurrency private constructor(
             PKR,
             PHP,
             RSD,
+            IRR,
             KES,
             TZS,
             BTC,

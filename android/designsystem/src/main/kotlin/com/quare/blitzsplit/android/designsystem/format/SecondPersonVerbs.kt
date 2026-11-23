@@ -35,6 +35,7 @@ private const val CROATIAN = "hr"
 private const val SERBIAN = "sr"
 private const val LATIN_SCRIPT = "Latn"
 private const val URDU = "ur"
+private const val PERSIAN = "fa"
 private val greekPast = Regex("""^(?:(?:το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)""")
 private const val HUNGARIAN = "hu"
 private const val FILIPINO = "fil"
@@ -80,6 +81,8 @@ private val secondPersonAuxiliaries = mapOf(
     SERBIAN to mapOf("je" to "si"),
 )
 private val turkishPast = Regex("[dt][ıiuü]$")
+private val persianPast = Regex("[دت]$")
+private const val PERSIAN_SECOND_PERSON_ENDING = "ید"
 private val youSubjectLanguages = setOf(
     SPANISH,
     PORTUGAL_PORTUGUESE,
@@ -104,6 +107,7 @@ private val youSubjectLanguages = setOf(
     SLOVAK,
     HUNGARIAN,
     URDU,
+    PERSIAN,
     FILIPINO,
     LEGACY_TAGALOG,
     SWAHILI,
@@ -136,7 +140,8 @@ private val irregularSecondPerson = mapOf(
  * the gender: "Ana je podijelio/la", "Ti si podijelio/la".
  * Czech says the person with an auxiliary before its past, which the third person has none of: "Ana rozdělil(a)", "Ty
  * jsi rozdělil(a)", and Slovak likewise with "si": "Ana rozdelil(a)", "Ty si rozdelil(a)". Polish's past says the gender, which the app doesn't know, so its verb phrases start with a past in
- * "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü", "Sen böldün".
+ * "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü", "Sen böldün",
+ * and Persian too, with the respectful "ید" of "شما": "Ana هزینه‌ای را تقسیم کرد", "شما هزینه‌ای را تقسیم کردید".
  * Portugal's Portuguese (pt-PT, "tu") ends the verb's preterite in "-aste", "-este" or "-iste": "Ana dividiu", "Tu
  * dividiste". Any other language keeps the verb as it is, Brazil's Portuguese too ("Você dividiu"), and Russian and
  * Ukrainian, whose past says the gender but not the person ("Ана разделил(а)", "Ты разделил(а)"). Korean doesn't
@@ -173,7 +178,9 @@ fun toSecondPerson(
         }
     }
 
-    TURKISH -> toTurkishSecondPerson(verb)
+    TURKISH -> toVerbLastSecondPerson(verb, turkishPast, "n")
+
+    PERSIAN -> toVerbLastSecondPerson(verb, persianPast, PERSIAN_SECOND_PERSON_ENDING)
 
     KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
 
@@ -207,14 +214,20 @@ private fun replaceFirstWord(
 }
 
 /*
- * Why: Turkish puts the verb last, so every Turkish verb phrase ends with its simple past, before the colon that
- * leads to the object if there is one ("bir harcamayı böldü:"), and the second person adds an "n" to it whatever the
- * vowel ("böldü" → "böldün", "katıldı" → "katıldın"). A phrase whose clause doesn't end in that past stays as it is.
+ * Why: Turkish and Persian put the verb last, so every verb phrase of theirs ends with its simple past, before the
+ * colon that leads to the object if there is one ("bir harcamayı böldü:", "هزینه‌ای را تقسیم کرد:"), and the second
+ * person adds its ending to it: Turkish an "n" whatever the vowel ("böldü" → "böldün", "katıldı" → "katıldın"),
+ * Persian, whose past stem ends in "د" or "ت", the respectful "ید" ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید").
+ * A phrase whose clause doesn't end in that past stays as it is.
  */
-private fun toTurkishSecondPerson(verb: String): String {
+private fun toVerbLastSecondPerson(
+    verb: String,
+    past: Regex,
+    ending: String,
+): String {
     val clause = verb.substringBefore(':').trimEnd()
-    if (!turkishPast.containsMatchIn(clause)) return verb
-    return clause + "n" + verb.substring(clause.length)
+    if (!past.containsMatchIn(clause)) return verb
+    return clause + ending + verb.substring(clause.length)
 }
 
 /*
@@ -266,7 +279,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Czech says "Ty jsi
+ * Swedish "Du raderade…", Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
+ * حذف کردید…", with its verb rule. Czech says "Ty jsi
  * smazal(a)…", Slovak "Ty si vymazal(a)…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that

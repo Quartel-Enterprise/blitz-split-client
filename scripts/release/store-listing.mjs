@@ -88,6 +88,7 @@ export const PLAY_LOCALES = {
   fil: ["fil"],
   sr: ["sr"],
   sk: ["sk"],
+  fa: ["fa"],
   sw: ["sw"],
 };
 export const APP_STORE_LOCALES = {
@@ -128,6 +129,8 @@ export const APP_STORE_LOCALES = {
   // Apple has no Serbian listing locale either: the language has a Play listing and no App Store one.
   sr: [],
   sk: ["sk"],
+  // Apple has no Persian listing locale either: the language has a Play listing and no App Store one.
+  fa: [],
   // Apple has no Swahili listing locale either: the language has a Play listing and no App Store one.
   sw: [],
 };

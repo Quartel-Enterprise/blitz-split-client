@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">بدون عبارت</string>
+    <string name="category_map_title">نقشه دسته‌بندی</string>
+    <string name="category_map_search">جستجوی عبارت‌ها</string>
+    <string name="category_map_add">افزودن عبارت</string>
+    <string name="category_map_more">گزینه‌های بیشتر</string>
+    <string name="category_map_restore">بازیابی پیش‌فرض</string>
+    <string name="category_map_back">بازگشت</string>
+    <string name="category_map_intro">وقتی عنوان یک هزینه یکی از این کلمه‌ها را داشته باشد، دسته‌بندی‌اش خودبه‌خود انتخاب می‌شود. «Uber تا خانه» می‌شود حمل‌ونقل.</string>
+    <string name="category_map_intro_offline">نقشه آفلاین هم کار می‌کند: تغییرات بلافاصله روی این دستگاه اعمال می‌شوند و وقتی دوباره آنلاین شوید به دستگاه‌های دیگرتان می‌رسند.</string>
+    <string name="category_map_device_only">نقشه شما فقط روی این دستگاه می‌ماند. برای بردن آن به دستگاه‌های دیگر، در پروفایل با Google یا Apple وارد شوید.</string>
+    <string name="category_map_open_profile">باز کردن پروفایل</string>
+    <string name="category_map_longest_wins">وقتی دو عبارت با یک عنوان مطابقت داشته باشند، طولانی‌ترین برنده است.</string>
+    <string name="category_map_no_result">هیچ عبارتی با «%1$s» نیست</string>
+    <string name="category_map_no_result_body">آن را اضافه کنید تا هزینه‌هایی که این کلمه در عنوانشان است، با دسته‌بندی درست بیایند.</string>
+    <string name="category_map_add_query">افزودن «%1$s»</string>
+    <string name="category_map_empty_title">نقشه شما خالی است</string>
+    <string name="category_map_empty_body">بدون عبارت، دسته‌بندی از عنوان تعیین نمی‌شود: آن را در هر هزینه خودتان انتخاب می‌کنید.</string>
+    <string name="category_map_group_category"> · دسته‌بندی %1$s</string>
+    <string name="category_map_only_main">فقط %1$s</string>
+    <string name="category_map_only_in_group">فقط در %1$s</string>
+    <string name="category_map_no_terms_yet">هنوز عبارتی نیست.</string>
+    <string name="category_map_add_in">افزودن عبارت در %1$s</string>
+    <string name="category_map_tip">روی یک عبارت بزنید تا دسته‌بندی‌اش را تغییر دهید یا حذفش کنید. با کل کلمه مطابقت دارد و اعراب و بزرگی و کوچکی حروف را نادیده می‌گیرد.</string>
+    <string name="category_map_queued">در صف</string>
+    <string name="category_map_term_action">%1$s، %2$s. ویرایش</string>
+    <string name="category_map_new_term">عبارت جدید</string>
+    <string name="category_map_edit_term">ویرایش عبارت</string>
+    <string name="category_map_term_label">کلمه یا عبارت</string>
+    <string name="category_map_term_help">با کل کلمه مطابقت دارد و اعراب و بزرگی و کوچکی حروف را نادیده می‌گیرد.</string>
+    <string name="category_map_term_help_app">عبارتی از خود اپ. «بازیابی پیش‌فرض» آن را به حالت اول برمی‌گرداند.</string>
+    <string name="category_map_term_duplicate">«%1$s» از قبل %2$s را انتخاب می‌کند. هر عبارت یک دسته‌بندی دارد.</string>
+    <string name="category_map_term_too_short">حداقل 2 حرف وارد کنید.</string>
+    <string name="category_map_term_too_long">حداکثر 30 حرف وارد کنید.</string>
+    <string name="category_map_term_invalid">فقط از حروف، اعداد و فاصله استفاده کنید.</string>
+    <string name="category_map_category">دسته‌بندی</string>
+    <string name="category_map_category_help">می‌تواند دسته‌بندی یا زیردسته باشد.</string>
+    <string name="category_map_category_help_edit">تغییر آن در اینجا، عبارت را به دسته‌بندی دیگری منتقل می‌کند.</string>
+    <string name="category_map_category_help_move">انتقال، عبارت را از %1$s خارج می‌کند.</string>
+    <string name="category_map_example">مثال</string>
+    <string name="category_map_example_move">در صورت انتقال</string>
+    <string name="category_map_remove">حذف</string>
+    <string name="category_map_cancel">لغو</string>
+    <string name="category_map_save">ذخیره</string>
+    <string name="category_map_move_to">انتقال به %1$s</string>
+    <string name="category_map_removed">«%1$s» از نقشه حذف شد</string>
+    <string name="category_map_undo">برگرداندن</string>
+    <string name="category_map_restore_title">نقشه پیش‌فرض بازیابی شود؟</string>
+    <string name="category_map_restore_body">60 عبارت اپ به حالت اول برمی‌گردند، از جمله آن‌هایی که حذف یا منتقل کرده‌اید.</string>
+    <string name="category_map_restore_own_one">عبارتی که خودتان ساختید، «%1$s»، می‌ماند.</string>
+    <string name="category_map_restore_confirm">بازیابی</string>
+    <string name="category_map_save_error">نقشه ذخیره نشد. دوباره تلاش کنید.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d عبارت</item>
+        <item quantity="other">%d عبارت</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d زیردسته</item>
+        <item quantity="other">%d زیردسته</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d عبارت با «%2$s»</item>
+        <item quantity="other">%1$d عبارت با «%2$s»</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">آفلاین · %d تغییر در صف</item>
+        <item quantity="other">آفلاین · %d تغییر در صف</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d عبارتی که خودتان ساختید می‌ماند.</item>
+        <item quantity="other">%d عبارتی که خودتان ساختید می‌مانند.</item>
+    </plurals>
+    <string name="category_map_new_category">دسته‌بندی جدید</string>
+    <string name="category_map_new_subcategory_in">زیردسته جدید در %s</string>
+    <string name="category_map_edit_category">ویرایش %s</string>
+    <string name="category_map_category_group">گروه</string>
+    <string name="category_map_change_color">تغییر رنگ %1$s</string>
+    <string name="category_map_restore_color">بازیابی رنگ</string>
+    <string name="category_map_color_done">انجام شد</string>
+</resources>

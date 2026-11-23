@@ -73,7 +73,11 @@ The feed, unread state, real time and push notifications.
     the colon that leads to the object ("Ana bir harcamayı böldü: Akşam yemeği"), and the user's rows add an "n" to
     that past ("Sen bir harcamayı böldün: …", "Sen gruba katıldın: …"); its deleted-item notice starts with who deleted
     it too ("Sen sildin: …"). A line that names the user without a verb rule (a photo's "added by") is impersonal in
-    Turkish ("Sen · bugün, 09:12 eklendi"). Indonesian verbs don't change with the person, so its rows need no rule
+    Turkish ("Sen · bugün, 09:12 eklendi"). Persian puts the verb last too and takes Turkish's shape: every Persian
+    verb phrase ends with its simple past, the past stem ending in "د" or "ت", before the colon that leads to the
+    object ("Ana هزینه‌ای را تقسیم کرد: شام"), and the user's rows add the respectful "ید" of "شما" to that past ("شما
+    هزینه‌ای را تقسیم کردید: …", "شما به گروه پیوستید: …"); its deleted-item notice starts with who deleted it too
+    ("شما حذف کردید: …", `youSubjectLanguages`). Indonesian verbs don't change with the person, so its rows need no rule
     ("Ana membagi Makan malam", "Kamu membagi…"). Neither do Russian's and Ukrainian's: their past says the gender, not
     the person, so a verb phrase written for both genders, as Polish's, serves the user as it is ("Ана разделил(а)…",
     "Ты разделил(а)…"; "Ти розділив(-ла)…"), and the name it follows is never declined. Their deleted-item notice starts
