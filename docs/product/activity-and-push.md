@@ -118,6 +118,11 @@ The feed, unread state, real time and push notifications.
     výdavok…"). No reflexive "sa" nor pronoun comes right after that past, which would read "si pridal(a) sa": a join
     is "vstúpil(a) do skupiny". A name is never declined, standing after a noun ("pridal(a) člena Ana"), and the
     deleted-item notice starts with who deleted it ("Ty si vymazal(a)…", `youSubjectLanguages`).
+    Tamil puts its verb last, as Turkish does, and says the person with it, so every Tamil verb phrase ends, before the
+    colon that leads to the object, with a respectful past in "-ார்", which the user's rows turn into "-ீர்கள்" ("Ana
+    ஒரு செலவைப் பிரித்தார்: டின்னர்", "நீங்கள் ஒரு செலவைப் பிரித்தீர்கள்: டின்னர்"); the object after the colon also
+    keeps every name free of case endings. Its deleted-item notice starts with who deleted it ("நீங்கள்
+    நீக்கினீர்கள்: …", `youSubjectLanguages`), and "You" is "நீங்கள்" everywhere.
     Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".

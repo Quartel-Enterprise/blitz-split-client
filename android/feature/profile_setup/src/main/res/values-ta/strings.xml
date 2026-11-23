@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">உங்கள் நண்பர்கள் உங்களை எப்படி அழைப்பார்கள்?</string>
+    <string name="profile_setup_subtitle">உங்கள் குழுக்களும், உங்கள் சுயவிவர லிங்க் உள்ள எவரும் உங்கள் பெயரைப் பார்ப்பார்கள்.</string>
+    <string name="profile_setup_avatar_color">அவதார் நிறம்</string>
+    <string name="profile_setup_add_photo">புகைப்படம் சேர்க்கவும்</string>
+    <string name="profile_setup_photo_error">இந்தப் புகைப்படத்தைப் பயன்படுத்த முடியவில்லை. வேறொன்றை முயலுங்கள்.</string>
+    <string name="profile_setup_name_label">உங்கள் பெயர்</string>
+    <string name="profile_setup_name_placeholder">முருகன் செல்வம்</string>
+    <string name="profile_setup_name_too_short">குறைந்தது %d எழுத்துகளைத் தட்டச்சு செய்யுங்கள்.</string>
+    <string name="profile_setup_name_too_long">அதிகபட்சம் %d எழுத்துகளைப் பயன்படுத்துங்கள்.</string>
+    <string name="profile_setup_name_hint">இதைப் பிறகு சுயவிவரத்தில் மாற்றலாம்.</string>
+    <string name="profile_setup_saved_locally">இப்போதைக்கு இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டது.</string>
+    <string name="profile_setup_continue">தொடரவும்</string>
+</resources>

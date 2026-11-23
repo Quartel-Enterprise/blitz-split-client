@@ -507,6 +507,8 @@ Dependabot, which only bumped the two Quartel-Enterprise actions.
   stable one; `@js-joda/core` follows kotlinx-datetime by hand; `androidx-lifecycle` moves only once JetBrains'
   `lifecycle-viewmodel` has the release; the CI runtimes (`java-version`, `node-version`,
   `ruby-version`) and the Android SDK levels change only when the build needs them.
+- Renovate's pull requests get claude-review like a person's: `claude-review.yml` lists `renovate` in the action's
+  `allowed-bots`, without which claude-code-action refuses a run a bot started and the `review` job fails.
 - Renovate never merges. Its pull requests run the checks like any other: read the release notes it links, fix what
   breaks on the branch (or run the `bump-versions` skill for a major that needs code changes), and add
   `merge-when-green`. A Kotlin bump that brings new npm packages fails the JS build with "Lock file was changed":

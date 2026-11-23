@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">சுயவிவரத்தைத் திருத்தவும்</string>
+    <string name="edit_profile_save">சேமிக்கவும்</string>
+    <string name="edit_profile_change_photo">புகைப்படத்தை மாற்றவும்</string>
+    <string name="edit_profile_take_photo">புகைப்படம் எடுக்கவும்</string>
+    <string name="edit_profile_choose_photo">கேலரியிலிருந்து தேர்ந்தெடுக்கவும்</string>
+    <string name="edit_profile_use_account_photo">%1$s அக்கவுண்ட் புகைப்படத்தைப் பயன்படுத்தவும்</string>
+    <string name="edit_profile_remove_photo">புகைப்படத்தை நீக்கவும்</string>
+    <string name="edit_profile_photo_error">இந்தப் புகைப்படத்தைப் பயன்படுத்த முடியவில்லை. வேறொன்றை முயலுங்கள்.</string>
+    <string name="edit_profile_avatar_color">அவதார் நிறம்</string>
+    <string name="edit_profile_avatar_color_hint">உங்களுக்குப் புகைப்படம் இல்லாதபோது காட்டப்படும்.</string>
+    <string name="edit_profile_name_label">உங்கள் பெயர்</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">குறைந்தது %d எழுத்துகளை உள்ளிடுங்கள்.</string>
+    <string name="edit_profile_name_too_long">அதிகபட்சம் %d எழுத்துகளைப் பயன்படுத்துங்கள்.</string>
+    <string name="edit_profile_account_notice">பெயரும் புகைப்படமும் உங்கள் %1$s அக்கவுண்ட்டிலிருந்து வந்தவை. இங்கே அவற்றை மாற்றுவது Blitz Split ஆப்பில் மட்டுமே பொருந்தும், உங்கள் %1$s அக்கவுண்ட்டை மாற்றாது.</string>
+    <string name="edit_profile_footer">உங்கள் குழுக்களும் உங்கள் சுயவிவர லிங்க் உள்ள எவரும் உங்கள் பெயரையும் புகைப்படத்தையும் பார்ப்பார்கள்.</string>
+    <string name="profile_photo_close">மூடவும்</string>
+    <string name="profile_photo_camera">கேமரா</string>
+    <string name="profile_photo_gallery">கேலரி</string>
+    <string name="profile_photo_remove">நீக்கவும்</string>
+    <string name="profile_photo_title">சுயவிவரப் புகைப்படம்</string>
+</resources>

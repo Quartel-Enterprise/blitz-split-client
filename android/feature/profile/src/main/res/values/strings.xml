@@ -93,6 +93,7 @@
     <string name="profile_language_serbian">Serbian</string>
     <string name="profile_language_slovak">Slovak</string>
     <string name="profile_language_persian">Persian</string>
+    <string name="profile_language_tamil">Tamil</string>
     <string name="profile_language_swahili">Swahili</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
@@ -132,6 +133,7 @@
     <string name="profile_language_native_serbian" translatable="false">Srpski</string>
     <string name="profile_language_native_slovak" translatable="false">Slovenčina</string>
     <string name="profile_language_native_persian" translatable="false">فارسی</string>
+    <string name="profile_language_native_tamil" translatable="false">தமிழ்</string>
     <string name="profile_language_native_swahili" translatable="false">Kiswahili</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
