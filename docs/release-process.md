@@ -602,6 +602,9 @@ What the production web app needs outside this repository, or its sign in fails:
 - The same origin in the Google OAuth web client's authorized JavaScript origins and redirect URIs.
 - `web.blitzsplit.com` in the domains of the Apple Services ID, for Sign in with Apple on the web.
 
+The `app.blitzsplit.com` entries of those three don't cover the new host: add `web.blitzsplit.com` next to them, and remove the old
+ones once the old host only redirects.
+
 Two changes in `blitz-split-site` wait for the first production deploy, and are not this workflow's:
 
 - The invite links blitzsplit.com redirects to a web app still go to the beta's
