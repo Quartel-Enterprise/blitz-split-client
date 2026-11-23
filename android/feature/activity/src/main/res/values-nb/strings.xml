@@ -62,8 +62,8 @@
     <string name="activity_kind_member_left">%1$s forlot %2$s</string>
     <string name="activity_kind_member_removed">%1$s fjernet %2$s</string>
     <string name="activity_kind_member_released">%1$s frigjorde navnet %2$s</string>
-    <string name="activity_kind_member_renamed">%1$s ga %2$s nytt navn</string>
-    <string name="activity_kind_charge_sent">%1$s ba %2$s om å betale</string>
+    <string name="activity_kind_member_renamed">%1$s endret navnet på %2$s</string>
+    <string name="activity_kind_charge_sent">%1$s ba %2$s om betaling</string>
     <string name="activity_kind_comment_added">%1$s kommenterte %2$s</string>
     <string name="activity_kind_comment_deleted">%1$s slettet en kommentar på %2$s</string>
     <string name="activity_detail_amount_split">%1$s · %2$s</string>
