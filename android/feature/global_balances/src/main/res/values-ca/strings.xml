@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldos</string>
+    <string name="global_balances_profile">Perfil</string>
+    <string name="global_balances_offline">Sense connexió · saldos d’aquest dispositiu</string>
+    <string name="global_balances_filter">Mostrar</string>
+    <string name="global_balances_filter_all">Tots</string>
+    <string name="global_balances_filter_you_owe">Deus</string>
+    <string name="global_balances_filter_owes_you">Et deuen</string>
+    <string name="global_balances_hint">Ja compensat entre grups: cada persona apareix un sol cop.</string>
+    <string name="global_balances_hint_empty">Sumant tots els grups d’aquest dispositiu.</string>
+    <string name="global_balances_section_you_owe">Deus · %d</string>
+    <string name="global_balances_section_owes_you">Et deuen · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d grup</item>
+        <item quantity="other">%d grups</item>
+    </plurals>
+    <string name="global_balances_guest">%s · convidat</string>
+    <string name="global_balances_you_owe">deus</string>
+    <string name="global_balances_owes_you">et deu</string>
+    <string name="global_balances_by_group_show">Mostrar %s per grup</string>
+    <string name="global_balances_by_group_hide">Amagar %s per grup</string>
+    <string name="global_balances_received">Rebut</string>
+    <string name="global_balances_received_from">Rebut de %s</string>
+    <string name="global_balances_settle">Liquidar comptes</string>
+    <string name="global_balances_settle_with">Liquidar comptes amb %s</string>
+    <string name="global_balances_charge">Reclamar</string>
+    <string name="global_balances_charge_person">Reclamar a %s</string>
+    <string name="global_balances_detail_pane">Saldo amb %s</string>
+    <string name="global_balances_detail_owes_you">%s et deu</string>
+    <string name="global_balances_detail_you_owe">Deus a %s</string>
+    <string name="global_balances_detail_guest">%s · convidat sense l’app</string>
+    <string name="global_balances_detail_note_owed">El net ja compensa els grups: Reclamar i Rebut fan servir %s. L’app registra un pagament a cada grup.</string>
+    <string name="global_balances_detail_note_settle">El net ja compensa els grups: Liquidar comptes fa servir %s. L’app registra un pagament a cada grup.</string>
+    <string name="global_balances_detail_note_single">Només hi ha un grup obert amb %s.</string>
+    <string name="global_balances_settled_title">Tot liquidat</string>
+    <string name="global_balances_settled_body">Ningú no et deu res i tu no deus res a ningú. Quan algú afegeixi una despesa, el saldo apareixerà aquí.</string>
+    <string name="global_balances_settled_action">Veure els grups</string>
+    <string name="global_balances_nothing_to_pay_title">No deus res</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Tens els comptes liquidats amb tothom. Encara tens %2$s per cobrar de %1$d persona.</item>
+        <item quantity="other">Tens els comptes liquidats amb tothom. Encara tens %2$s per cobrar de %1$d persones.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Veure qui et deu</string>
+    <string name="global_balances_nothing_to_receive_title">Ningú no et deu res</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Encara deus %2$s a %1$d persona.</item>
+        <item quantity="other">Encara deus %2$s a %1$d persones.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Veure a qui deus</string>
+    <string name="global_balances_coming_soon">Aviat</string>
+    <string name="global_balances_change_error">No s’ha pogut desar el canvi. Torna-ho a provar.</string>
+    <string name="global_balances_copied">Copiat</string>
+    <string name="global_balances_charge_title">Reclamar a %s</string>
+    <string name="global_balances_charge_owes">Et deu %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Tancar</string>
+    <string name="global_balances_charge_guest">%s és un convidat sense l’app. Només se n’assabentarà per aquest missatge, així que ja diu què va entrar a la despesa.</string>
+    <string name="global_balances_charge_message">Missatge</string>
+    <string name="global_balances_charge_pix">Incloure la meva clau Pix</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Copiar el missatge</string>
+    <string name="global_balances_charge_send">Enviar</string>
+    <string name="global_balances_message">Hola, %1$s! Segons els comptes de Blitz Split, em deus %2$s %3$s.</string>
+    <string name="global_balances_message_guest">Hola, %1$s! Em deus %2$s %3$s: la teva part de %4$s.</string>
+    <string name="global_balances_message_guest_paid">Hola, %1$s! Em deus %2$s %3$s: la teva part de %4$s, menys els %5$s que ja has pagat.</string>
+    <string name="global_balances_message_group">al grup %s</string>
+    <string name="global_balances_message_groups">als grups %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telèfon</string>
+    <string name="global_balances_key_email">Correu</string>
+    <string name="global_balances_key_random">Clau aleatòria</string>
+    <string name="global_balances_message_reroute">El grup %1$s ha simplificat els deutes, així que en lloc de pagar a %2$s em pagues directament a mi; el teu total no ha canviat.</string>
+</resources>

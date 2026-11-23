@@ -117,6 +117,11 @@ The feed, unread state, real time and push notifications.
     Bulgarian needs no rule: every Bulgarian verb phrase starts with an aorist, whose second and third person singular
     are the same ("Ana раздели разхода…", "Ти раздели разхода…"), and which says nothing of the gender either. Its
     deleted-item notice starts with who deleted it too ("Ти изтри…", `youSubjectLanguages`).
+    Catalan swaps its perfect's auxiliary as French does: every Catalan verb phrase starts with "ha", or "l’ha" with a
+    third-person object pronoun, which the user's rows turn into "has" / "l’has" ("Anna ha dividit la despesa…", "Tu
+    has dividit la despesa…"). No reflexive verb comes after the actor, since its "s’ha" would need "t’has": a join is
+    "ha entrat al grup", a leave "ha sortit del grup". Its deleted-item notice starts with who deleted it too ("Tu has
+    suprimit…", `youSubjectLanguages`).
     Filipino verbs don't change with the person either, so every Filipino verb phrase starts with "ay" and the
     verb, after the actor ("Ana ay nagbahagi ng gastos", "Ikaw ay nagbahagi ng gastos"), and the deleted-item notice
     starts with who deleted it too ("Ikaw ay nagbura ng …", `youSubjectLanguages`); every other "You" is "Ikaw".

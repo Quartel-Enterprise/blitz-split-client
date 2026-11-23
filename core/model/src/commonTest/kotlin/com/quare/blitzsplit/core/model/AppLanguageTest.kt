@@ -480,6 +480,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Catalan tag Valencian included WHEN reading it THEN is Catalan`() {
+        // Given
+        val tags = listOf("ca", "ca-ES", "ca_AD", "CA-es", "ca-ES-valencia")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.CATALAN }, languages)
+    }
+
+    @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN is Traditional Chinese`() {
         // Given
         val tags = listOf("zh-Hant", "zh-TW", "zh_TW", "zh-Hant-TW", "zh-HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
@@ -604,6 +616,7 @@ class AppLanguageTest {
                 "SR",
                 "SK",
                 "BG",
+                "CA",
             ),
             codes,
         )

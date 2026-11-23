@@ -863,6 +863,7 @@ export const zhHant: Record<MessageKey, string> = {
   profile_languageSerbian: '塞爾維亞文',
   profile_languageSlovak: '斯洛伐克文',
   profile_languageBulgarian: '保加利亞文',
+  profile_languageCatalan: '加泰隆尼亞文',
   profile_bitcoinInSats: '以聰為單位顯示比特幣',
   profile_bitcoinInSatsDetail: '以聰（sats）為單位顯示和輸入比特幣金額（1 ₿ = 100,000,000 sats）。',
   profile_shareUsageData: '分享使用資料',

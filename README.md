@@ -39,7 +39,7 @@ it in the stores.
   work on their own once connected, with a Tile, complications and their own pushes.
 - **Every screen size.** Phones, tablets, foldables (book and tabletop postures), the iPhone Duo, the web and the Mac,
   each drawn by its own native UI.
-- **English, Portuguese** (Brazil and Portugal), **Spanish** (Latin American and Spain), **French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian, Slovak and Bulgarian**, English for any
+- **English, Portuguese** (Brazil and Portugal), **Spanish** (Latin American and Spain), **French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian, Slovak, Bulgarian and Catalan**, English for any
   other language.
 
 ## 🧱 One codebase, three native UIs

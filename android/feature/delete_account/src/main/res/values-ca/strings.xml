@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Suprimir el compte</string>
+    <string name="delete_account_offline_title">Sense internet.</string>
+    <string name="delete_account_offline_body">Per suprimir el compte cal connexió a internet. Connecta’t i torna-ho a provar.</string>
+    <string name="delete_account_heading">Vols suprimir el teu compte i les teves dades?</string>
+    <string name="delete_account_deleted_title">Què se suprimeix</string>
+    <string name="delete_account_deleted_profile">El teu perfil (nom, foto i color)</string>
+    <string name="delete_account_deleted_keys">Les teves claus Pix i Bitcoin</string>
+    <string name="delete_account_deleted_provider">La vinculació amb el teu compte de %1$s</string>
+    <string name="delete_account_deleted_recovery_code">El teu codi de recuperació</string>
+    <string name="delete_account_deleted_device">La còpia de les teves dades en aquest dispositiu</string>
+    <string name="delete_account_kept_title">Què es queda als teus grups</string>
+    <string name="delete_account_kept_groups">Els grups, amb les seves despeses i pagaments, per als altres membres</string>
+    <string name="delete_account_kept_member">El teu nom a cada grup, com a membre sense compte</string>
+    <string name="delete_account_kept_comments">Els teus comentaris i les fotos que hi vas afegir, amb el teu nom</string>
+    <string name="delete_account_export">Exportar primer les meves dades</string>
+    <string name="delete_account_confirm">Entenc que això no es pot desfer</string>
+    <string name="delete_account_delete">Suprimir el compte</string>
+    <string name="delete_account_cancel">Cancel·lar</string>
+    <string name="delete_account_failed">No s’ha pogut suprimir el teu compte. Torna-ho a provar.</string>
+</resources>

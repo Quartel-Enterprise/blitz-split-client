@@ -23,6 +23,12 @@
             "value" : "Blitz Split"
           }
         },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -234,6 +240,12 @@
           }
         },
         "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "ca" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -455,6 +467,12 @@
             "value" : "আমন্ত্রণের বা আপনার পুরোনো ডিভাইসের QR কোড স্ক্যান করতে এবং আপনার প্রোফাইল ছবি ও বিলের ছবি তুলতে।"
           }
         },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per escanejar el codi QR d’una invitació o del teu dispositiu antic, i per fer la teva foto de perfil i fotos de les despeses."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -671,6 +689,12 @@
             "value" : "গ্রুপের লিংক দিয়ে আপনার কন্টাক্ট থেকে লোকজনকে আমন্ত্রণ জানাতে। তাঁদের নম্বর এই ডিভাইসেই থাকে।"
           }
         },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per convidar persones dels teus contactes amb l’enllaç d’un grup. Els seus números es queden en aquest dispositiu."
+          }
+        },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
@@ -885,6 +909,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "বিলের ছবি আপনার লাইব্রেরিতে সংরক্ষণ করতে।"
+          }
+        },
+        "ca" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per desar les fotos d’una despesa a la teva fototeca."
           }
         },
         "cs" : {

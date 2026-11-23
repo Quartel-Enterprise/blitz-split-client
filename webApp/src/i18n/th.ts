@@ -863,6 +863,7 @@ export const th: Record<MessageKey, string> = {
   profile_languageSerbian: 'ภาษาเซอร์เบีย',
   profile_languageSlovak: 'ภาษาสโลวัก',
   profile_languageBulgarian: 'ภาษาบัลแกเรีย',
+  profile_languageCatalan: 'ภาษากาตาลัน',
   profile_bitcoinInSats: 'Bitcoin เป็นซาโตชิ',
   profile_bitcoinInSatsDetail: 'แสดงและพิมพ์จำนวนบิตคอยน์เป็น sats (1 ₿ = 100,000,000 sats)',
   profile_shareUsageData: 'แชร์ข้อมูลการใช้งาน',

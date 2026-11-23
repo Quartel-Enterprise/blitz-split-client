@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Recordatori per liquidar comptes</string>
+    <string name="push_bill_created">%1$s ha afegit «%2$s» amb tu</string>
+    <string name="push_bill_edited">%1$s ha editat «%2$s»</string>
+    <string name="push_bill_deleted">%1$s ha suprimit «%2$s»</string>
+    <string name="push_comment_added">%1$s ha comentat «%2$s»: %3$s</string>
+    <string name="push_payment_paid_you">%1$s ha marcat que t’ha pagat</string>
+    <string name="push_payment_to_you">%1$s ha marcat que %2$s t’ha pagat</string>
+    <string name="push_payment_received_yours">%1$s ha marcat el teu pagament com a rebut</string>
+    <string name="push_payment_from_you">%1$s ha marcat que has pagat a %2$s</string>
+    <string name="push_payment_undone">%1$s ha desfet un pagament amb tu</string>
+    <string name="push_charge_sent">%1$s t’ha enviat un recordatori per liquidar comptes</string>
+    <string name="push_settle_reminder">Tens un saldo pendent a %1$s</string>
+    <string name="push_settle_reminders">Tens saldos pendents en %1$s grups</string>
+    <string name="push_added_to_group">%1$s t’ha afegit al grup</string>
+    <string name="push_member_joined">%1$s ha entrat al grup</string>
+    <string name="push_debts_simplified_to_you">%1$s ha simplificat els deutes. Ara %2$s et paga %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s ha simplificat els deutes. Ara tu pagues %3$s a %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s ha simplificat els deutes. Mira com et queda.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ha desactivat Simplificar deutes. Ara %2$s et paga %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ha desactivat Simplificar deutes. Ara tu pagues %3$s a %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s ha desactivat Simplificar deutes. Mira com et queda.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">Despeses</string>
+    <string name="notification_settings_bills_detail">Despeses noves, editades o suprimides en què participes</string>
+    <string name="notification_settings_payments">Pagaments i liquidacions</string>
+    <string name="notification_settings_payments_detail">Pagaments que fas o reps, i deutes simplificats</string>
+    <string name="notification_settings_comments">Comentaris</string>
+    <string name="notification_settings_comments_detail">A despeses en què participes i a converses on has escrit</string>
+    <string name="notification_settings_people_and_groups">Persones i grups</string>
+    <string name="notification_settings_people_and_groups_detail">Qui entra o surt dels teus grups, i què hi canvia</string>
+    <string name="notification_settings_payment_requests">Sol·licituds de pagament</string>
+    <string name="notification_settings_payment_requests_detail">Quan algú et demana que paguis</string>
+    <string name="notification_settings_balance_reminder">Recordatori de saldo pendent</string>
+    <string name="notification_settings_balance_reminder_detail">Un cop per setmana, si hi ha un saldo pendent</string>
+</resources>

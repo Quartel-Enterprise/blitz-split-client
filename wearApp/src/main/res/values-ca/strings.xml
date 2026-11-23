@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Fes servir aquí el mateix compte que al telèfon. Després el rellotge funciona tot sol.</string>
+    <string name="pair_connect">Connectar</string>
+    <string name="pair_connecting">S’està obtenint el teu compte del telèfon…</string>
+    <string name="pair_connected_title">A punt, %1$s</string>
+    <string name="pair_connected_title_unnamed">A punt</string>
+    <string name="pair_connected_body">El rellotge se sincronitza tot sol, fins i tot lluny del telèfon.</string>
+    <string name="pair_continue">Continuar</string>
+    <string name="pair_local_only_title">Les teves dades només són al telèfon</string>
+    <string name="pair_local_only_body">Al telèfon, connecta un compte a Perfil i torna a tocar Connectar aquí.</string>
+    <string name="pair_ok">D’acord</string>
+    <string name="pair_far_title">Telèfon fora d’abast</string>
+    <string name="pair_far_body">Acosta el telèfon o connecta amb un codi.</string>
+    <string name="pair_try_again">Torna-ho a provar</string>
+    <string name="pair_use_code">Fer servir un codi</string>
+    <string name="pair_code_label">El teu codi</string>
+    <string name="pair_code_description">Codi %1$s</string>
+    <string name="pair_code_where">Al telèfon: Perfil › Connectar el rellotge</string>
+    <string name="pair_code_validity">Vàlid durant 5 minuts</string>
+    <string name="pair_cancel">Cancel·lar</string>
+    <string name="pair_signed_out_title">Has tancat la sessió al telèfon</string>
+    <string name="pair_signed_out_body">Les dades també s’han esborrat d’aquest rellotge.</string>
+    <string name="pair_connect_again">Tornar a connectar</string>
+    <string name="pair_error_offline">Per connectar el rellotge cal internet.</string>
+    <string name="pair_error_too_many">Massa intents. Espera uns minuts i torna a connectar.</string>
+    <string name="pair_error_failed">No s’ha pogut connectar el rellotge. Torna-ho a provar.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Saldos</string>
+    <string name="balances_offline">Sense connexió</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Sense connexió · %d canvi en cua</item>
+        <item quantity="other">Sense connexió · %d canvis en cua</item>
+    </plurals>
+    <string name="balances_overall">Saldo total</string>
+    <string name="balances_to_receive">per cobrar</string>
+    <string name="balances_you_owe">deus</string>
+    <string name="balances_group_to_receive">%1$s per cobrar</string>
+    <string name="balances_group_you_owe">%1$s deus</string>
+    <string name="balances_group_even">Tot quadrat</string>
+    <string name="balances_waiting">pendent d’enviar</string>
+    <string name="balances_updated_at">Actualitzat a les %1$s</string>
+    <string name="balances_sign_out">Tancar la sessió</string>
+    <string name="balances_sign_out_title">Vols tancar la sessió en aquest rellotge?</string>
+    <string name="balances_sign_out_body">Les dades s’esborren quan s’hagi enviat el que tenia en cua. El telèfon continua amb la sessió iniciada.</string>
+    <string name="balances_sign_out_scheduled">Tancament de sessió programat</string>
+    <string name="balances_sign_out_scheduled_detail">Tancarà la sessió tan aviat com s’hagi pujat tot</string>
+    <string name="balances_settled_title">Res pendent</string>
+    <string name="balances_settled_body">No deus res i ningú no et deu res. Els grups i les despeses nous apareixen aquí tot sols.</string>
+    <string name="group_you_owe_person">deus a %1$s</string>
+    <string name="group_owes_you">%1$s et deu</string>
+    <string name="group_former_member">Exmembre</string>
+    <string name="group_i_paid">He pagat</string>
+    <string name="group_confirm_title">Has pagat %1$s a %2$s?</string>
+    <string name="group_confirm_body">%1$s. El grup ho veu de seguida, o quan torni internet.</string>
+    <string name="group_payment_recorded">Pagament registrat</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Saldos</string>
+    <string name="tile_to_receive_total">per cobrar en total</string>
+    <string name="tile_to_pay_total">per pagar en total</string>
+    <string name="tile_owed_to_you">Et deuen %1$s</string>
+    <string name="tile_you_owe">Deus %1$s</string>
+    <string name="tile_settled_title">Tot liquidat</string>
+    <string name="tile_settled_body">Res per pagar ni per cobrar</string>
+    <string name="tile_open">Obrir</string>
+    <string name="complication_name">Saldo total</string>
+    <string name="complication_you_owe">Deus %1$s</string>
+    <string name="complication_owed_to_you">Et deuen %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Rebut</string>
+    <string name="push_view_group">Veure el grup</string>
+</resources>

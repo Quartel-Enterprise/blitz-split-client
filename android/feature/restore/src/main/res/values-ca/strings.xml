@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Recupera els teus grups</string>
+    <string name="restore_subtitle">Ja havies iniciat la sessió amb un compte? Només cal que tornis a iniciar-la. Si no, fes servir el codi de recuperació o el codi QR del teu dispositiu antic.</string>
+    <string name="restore_no_connection_title">Sense connexió</string>
+    <string name="restore_no_connection_body">Per iniciar la sessió amb un compte o un codi cal internet per baixar els teus grups. El que has escrit es conserva.</string>
+    <string name="restore_code_label">O fes servir el codi de recuperació</string>
+    <string name="restore_code_hint">Les 12 paraules en ordre. Enganxa-les totes en un camp per omplir-los tots.</string>
+    <string name="restore_scan_qr_title">Escaneja el codi QR del teu dispositiu antic</string>
+    <string name="restore_scan_qr_body">Allà: Perfil › Recuperació › Mostrar el codi QR</string>
+    <string name="restore_recover">Recuperar</string>
+    <string name="restore_try_again">Torna-ho a provar</string>
+    <string name="restore_start_fresh">Començar de zero en aquest dispositiu</string>
+    <string name="restore_error_invalid_code">No s’ha trobat el codi. Revisa les paraules i el seu ordre i torna-ho a provar.</string>
+    <string name="restore_error_too_many_attempts">Massa intents. Espera uns minuts i torna-ho a provar.</string>
+    <string name="restore_error_sign_in_failed">No s’ha pogut iniciar la sessió ara mateix. Torna-ho a provar.</string>
+    <string name="restore_error_unknown">Alguna cosa ha fallat. Torna-ho a provar.</string>
+</resources>

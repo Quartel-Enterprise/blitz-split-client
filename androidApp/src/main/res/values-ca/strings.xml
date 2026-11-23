@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">No formes part d’aquest grup</string>
+    <string name="bill_link_not_in_group_message">Aquest comentari és d’un grup del qual no formes part. Demana la invitació a qui t’ha enviat l’enllaç.</string>
+    <string name="bill_link_offline_title">Sense internet</string>
+    <string name="bill_link_offline_message">Torna a obrir l’enllaç quan tornis a tenir connexió.</string>
+    <string name="bill_link_go_home">Anar a Inici</string>
+    <string name="discard_changes_title">Vols descartar els canvis?</string>
+    <string name="discard_changes_message">Els canvis no desats es perdran.</string>
+    <string name="discard_changes_discard">Descartar</string>
+    <string name="discard_changes_keep_editing">Continuar editant</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Rellotge</string>
+    <string name="watch_connected_title">%1$s s’ha connectat al teu compte</string>
+    <string name="watch_connected_title_unnamed">Rellotge connectat al teu compte</string>
+    <string name="watch_connected_text">Veu els teus grups i se sincronitza tot sol. Per desconnectar-lo, tanca la sessió al rellotge.</string>
+</resources>

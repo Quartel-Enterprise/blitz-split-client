@@ -93,6 +93,7 @@
     <string name="profile_language_serbian">Serbian</string>
     <string name="profile_language_slovak">Slovak</string>
     <string name="profile_language_bulgarian">Bulgarian</string>
+    <string name="profile_language_catalan">Catalan</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_language_native_english" translatable="false">English</string>
@@ -131,6 +132,7 @@
     <string name="profile_language_native_serbian" translatable="false">Srpski</string>
     <string name="profile_language_native_slovak" translatable="false">Slovenčina</string>
     <string name="profile_language_native_bulgarian" translatable="false">Български</string>
+    <string name="profile_language_native_catalan" translatable="false">Català</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">
         <item quantity="one">%d active</item>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Clau Pix nova</string>
+    <string name="payment_key_title_pix_edit">Editar la clau Pix</string>
+    <string name="payment_key_title_bitcoin_new">Clau Bitcoin nova</string>
+    <string name="payment_key_title_bitcoin_edit">Editar la clau Bitcoin</string>
+    <string name="payment_key_save">Desar</string>
+
+    <string name="payment_key_pix_intro">Qui et paga veu aquesta clau en liquidar comptes. Quin tipus de clau?</string>
+    <string name="payment_key_pix_question">Quin tipus de clau?</string>
+    <string name="payment_key_pix_explanation">Qui et paga veu aquesta clau en liquidar comptes.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telèfon</string>
+    <string name="payment_key_type_email">Correu</string>
+    <string name="payment_key_type_random">Aleatòria</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mòbil amb prefix</string>
+    <string name="payment_key_label_email">Correu electrònic</string>
+    <string name="payment_key_label_random">Clau aleatòria</string>
+
+    <string name="payment_key_bitcoin_intro">Com vols rebre?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">ràpid, comissió baixa</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">a la blockchain</string>
+    <string name="payment_key_label_lightning">Lightning Address o LNURL</string>
+    <string name="payment_key_label_onchain">Adreça Bitcoin</string>
+
+    <string name="payment_key_paste">Enganxar</string>
+
+    <string name="payment_key_hint_cpf">Format 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Format nom@domini.com</string>
+    <string name="payment_key_hint_random">32 lletres i números, tal com la mostra el teu banc</string>
+    <string name="payment_key_hint_lightning">Com nom@wallet.com o LNURL1…</string>
+    <string name="payment_key_hint_onchain">Adreça de mainnet que comença per bc1q o bc1p</string>
+
+    <string name="payment_key_valid_cpf">Format 000.000.000-00 · els dígits de control coincideixen</string>
+    <string name="payment_key_valid_phone">Format +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Format nom@domini.com</string>
+    <string name="payment_key_valid_random">Clau aleatòria reconeguda (32 caràcters)</string>
+    <string name="payment_key_valid_lightning_address">Lightning Address vàlida</string>
+    <string name="payment_key_valid_lnurl">LNURL vàlid</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">CPF no vàlid: els dígits de control no coincideixen.</string>
+    <string name="payment_key_error_invalid_phone">Mòbil incomplet: fes servir el prefix i 9 dígits, començant per 9.</string>
+    <string name="payment_key_error_invalid_email">Correu incomplet: falta el domini, com .com o .com.br.</string>
+    <string name="payment_key_error_invalid_random">Clau aleatòria incompleta: té 32 lletres i números.</string>
+    <string name="payment_key_error_invalid_lightning">Això no és una Lightning Address (nom@wallet) ni un LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Això és una factura Lightning (lnbc…): es paga un cop i caduca. Enganxa una Lightning Address o un LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Adreça no vàlida. Fes servir una adreça de mainnet bc1q o bc1p.</string>
+    <string name="payment_key_error_testnet_address">Això és una adreça de testnet (tb1…). Aquí només funciona la mainnet de Bitcoin, amb adreces bc1…</string>
+    <string name="payment_key_error_already_saved">Ja tens aquesta clau.</string>
+
+    <string name="payment_key_switched_to_onchain">Això és una adreça on-chain, així que hem canviat a On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Això és una Lightning Address, així que hem canviat a Lightning.</string>
+    <string name="payment_key_cpf_notice">Qui et paga veu el teu CPF complet. Si prefereixes no compartir-lo, fes servir una clau de telèfon, de correu o aleatòria.</string>
+    <string name="payment_key_held_notice">Només pots tenir una clau Pix d’aquest tipus, així que aquesta és la que vas desar. Canvia-la aquí si vols.</string>
+
+    <string name="payment_key_accepted_title">Acceptem</string>
+    <string name="payment_key_accepted_lightning_address_sample">nom@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">Clau Pix per defecte</string>
+    <string name="payment_key_default_bitcoin_title">Clau Bitcoin per defecte</string>
+    <string name="payment_key_default_pix_detail">Es mostra primer en liquidar comptes.</string>
+    <string name="payment_key_default_bitcoin_detail">Es mostra primer quan algú paga en BTC.</string>
+    <string name="payment_key_default_now">Ara: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Per canviar-la, posa una altra clau per defecte.</string>
+    <string name="payment_key_default_locked_new">La teva primera clau d’aquest tipus és la clau per defecte.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telèfon</string>
+    <string name="payment_key_default_type_email">correu</string>
+    <string name="payment_key_default_type_random">clau aleatòria</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split no mou diners: qui paga ho fa a l’app del seu banc. Comprova que la clau està al teu nom.</string>
+    <string name="payment_key_footer_bitcoin">En liquidar comptes, mostrem l’import en sats al canvi actual. Només és una estimació: qui paga el confirma al seu moneder.</string>
+
+    <string name="payment_key_delete">Suprimir la clau</string>
+    <string name="payment_key_delete_title">Vols suprimir aquesta clau?</string>
+    <string name="payment_key_delete_body">Qui et deu ja no la veurà en liquidar comptes.</string>
+    <string name="payment_key_delete_confirm">Suprimir</string>
+</resources>

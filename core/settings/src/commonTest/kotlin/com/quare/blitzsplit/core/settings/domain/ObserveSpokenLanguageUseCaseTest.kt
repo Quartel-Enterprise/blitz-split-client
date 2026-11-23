@@ -102,10 +102,10 @@ class ObserveSpokenLanguageUseCaseTest {
     }
 
     @Test
-    fun `GIVEN a Catalan device WHEN picking each language of the app THEN it is the code of the one picked`() =
+    fun `GIVEN a Basque device WHEN picking each language of the app THEN it is the code of the one picked`() =
         runTest {
             // Given
-            prepareScenario(device = "ca-ES")
+            prepareScenario(device = "eu-ES")
             val picks = listOf(
                 AppLanguage.ENGLISH,
                 AppLanguage.PORTUGUESE,
@@ -142,6 +142,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.SERBIAN,
                 AppLanguage.SLOVAK,
                 AppLanguage.BULGARIAN,
+                AppLanguage.CATALAN,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
 
@@ -186,6 +187,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "sr",
                     "sk",
                     "bg",
+                    "ca",
                     "zh-Hant",
                 ),
                 spoken,
@@ -245,6 +247,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "sr-Latn",
             "sk",
             "bg",
+            "ca",
             "zh-Hant",
         )
 
@@ -298,6 +301,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "sr-Latn-RS",
                 "sk-SK",
                 "bg-BG",
+                "ca-ES",
                 "zh-TW",
             )
 
@@ -344,6 +348,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "sr",
                     "sk",
                     "bg",
+                    "ca",
                     "zh-Hant",
                 ),
                 spoken,
@@ -395,7 +400,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System WHEN the device is in a language the app does not have THEN it is en`() = runTest {
         // Given
         prepareScenario(picked = AppLanguage.SYSTEM)
-        val devices = listOf("ca", "ca-ES", "sw", "sw-KE", "am", "am-ET", "ceb", "ceb-PH", "sw-TZ")
+        val devices = listOf("eu", "eu-ES", "sw", "sw-KE", "am", "am-ET", "ceb", "ceb-PH", "sw-TZ")
 
         // When
         val spoken = devices.map { spokenOn(it) }
@@ -502,12 +507,12 @@ class ObserveSpokenLanguageUseCaseTest {
         }
 
     @Test
-    fun `GIVEN Japanese picked on a Catalan device being observed WHEN going back to System THEN observers see en`() =
+    fun `GIVEN Japanese picked on a Basque device being observed WHEN going back to System THEN observers see en`() =
         runTest {
             // Given
             prepareScenario(
                 picked = AppLanguage.JAPANESE,
-                device = "ca-ES",
+                device = "eu-ES",
             )
             val observed = mutableListOf<String>()
             backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
@@ -536,7 +541,7 @@ class ObserveSpokenLanguageUseCaseTest {
         runTest {
             // Given
             prepareScenario()
-            deviceLanguages = listOf("ca-ES", "es-ES", "pt-BR")
+            deviceLanguages = listOf("eu-ES", "es-ES", "pt-BR")
 
             // When
             val language = observeSpokenLanguage().first()
@@ -549,7 +554,7 @@ class ObserveSpokenLanguageUseCaseTest {
     fun `GIVEN System on a device with no language the app has WHEN observing THEN it is en`() = runTest {
         // Given
         prepareScenario()
-        deviceLanguages = listOf("ca-ES", "sw-KE")
+        deviceLanguages = listOf("eu-ES", "sw-KE")
 
         // When
         val language = observeSpokenLanguage().first()

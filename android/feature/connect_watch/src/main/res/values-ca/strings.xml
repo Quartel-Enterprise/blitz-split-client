@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Connectar el rellotge</string>
+    <string name="connect_watch_close">Tancar</string>
+    <string name="connect_watch_body">Escriu el codi que mostra el rellotge. Iniciarà la sessió al teu compte i després se sincronitzarà tot sol.</string>
+    <string name="connect_watch_code_label">Codi del rellotge</string>
+    <string name="connect_watch_error_invalid">Codi incorrecte o caducat. Obtén-ne un de nou al rellotge.</string>
+    <string name="connect_watch_error_too_many">Massa codis incorrectes. Espera uns minuts i torna-ho a provar.</string>
+    <string name="connect_watch_error_needs_account">Primer connecta un compte: les teves dades només són en aquest dispositiu.</string>
+    <string name="connect_watch_error_failed">No s’ha pogut connectar el rellotge. Torna-ho a provar.</string>
+    <string name="connect_watch_offline">Per connectar el rellotge cal internet.</string>
+    <string name="connect_watch_own_watch_only">Escriu només un codi que mostri el teu propi rellotge: qui tingui aquell rellotge entrarà al teu compte.</string>
+    <string name="connect_watch_validity">El codi és vàlid durant 5 minuts, una sola vegada.</string>
+    <string name="connect_watch_button">Connectar</string>
+    <string name="connect_watch_connected_title">Rellotge connectat</string>
+    <string name="connect_watch_connected_body">Veu els teus grups i se sincronitza tot sol. Per desconnectar-lo, tanca la sessió al rellotge.</string>
+</resources>
