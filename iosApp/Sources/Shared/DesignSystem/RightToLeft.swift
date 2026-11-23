@@ -4,8 +4,8 @@ import SwiftUI
 
 /// The right-to-left languages the app may draw in: the sentences mirror, and an amount inside one keeps its own order.
 enum RightToLeft {
-    /// The language codes written right to left (Arabic, Hebrew, Urdu).
-    nonisolated static let languageCodes: Set<String> = ["ar", "he", "ur"]
+    /// The language codes written right to left (Arabic, Hebrew, Urdu, Persian).
+    nonisolated static let languageCodes: Set<String> = ["ar", "he", "ur", "fa"]
 
     /// Whether the app's language (Profile › Language, or the device's) is written right to left. Read once per
     /// language (`refresh`), since every amount of a list asks.
@@ -37,15 +37,17 @@ enum RightToLeft {
     }
 }
 
-/// The locale amounts, numbers and dates are written in: the device's, with Latin digits (0-9) in Arabic, Bengali and Urdu, so an amount
-/// reads as the amount fields type and parse it.
+/// The locale amounts, numbers and dates are written in: the device's, with Latin digits (0-9) in Arabic, Bengali, Urdu and
+/// Persian, so an amount reads as the amount fields type and parse it.
 enum AppNumbers {
-    /// The device's locale, on Latin digits when it would write Arabic, Bengali or Urdu ones.
+    /// The device's locale, on Latin digits when it would write Arabic, Bengali, Urdu or Persian ones.
     static var locale: Locale { latin(.autoupdatingCurrent) }
 
-    /// `base` on Latin digits in Arabic, Bengali and Urdu; `base` itself in every other language.
+    private static let latinDigitCodes: Set = ["ar", "bn", "ur", "fa"]
+
+    /// `base` on Latin digits in Arabic, Bengali, Urdu and Persian; `base` itself in every other language.
     static func latin(_ base: Locale) -> Locale {
-        guard let code = base.language.languageCode?.identifier, ["ar", "bn", "ur"].contains(code),
+        guard let code = base.language.languageCode?.identifier, latinDigitCodes.contains(code),
               base.numberingSystem.identifier != "latn" else { return base }
         var components = Locale.Components(locale: base)
         components.numberingSystem = Locale.NumberingSystem("latn")

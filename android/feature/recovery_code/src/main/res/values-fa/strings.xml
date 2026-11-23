@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">کد بازیابی خود را ذخیره کنید</string>
+    <string name="recovery_code_body">شما بدون حساب کاربری از برنامه استفاده می‌کنید. اگر دستگاهتان را عوض کنید یا گم کنید، این 12 کلمه داده‌هایتان را برمی‌گرداند. آن‌ها را به ترتیب یادداشت کنید. پس از 30 روز استفاده‌نکردن، داده‌های شما حذف می‌شود و کلمه‌ها دیگر کار نمی‌کنند.</string>
+    <string name="recovery_code_copy">کپی کلمه‌ها</string>
+    <string name="recovery_code_save_to_password_manager">ذخیره در مدیر رمز عبور</string>
+    <string name="recovery_code_connect_instead">به‌جای آن، اتصال Google یا Apple</string>
+    <string name="recovery_code_connect_instead_body">بدون نیاز به کد</string>
+    <string name="recovery_code_sign_in_failed">الان امکان اتصال نیست. دوباره تلاش کنید.</string>
+    <string name="recovery_code_also_in_profile">در پروفایل › بازیابی هم هست.</string>
+    <string name="recovery_code_remind_later">بعداً یادآوری شود</string>
+    <string name="recovery_code_saved">ذخیره‌اش کردم</string>
+    <string name="recovery_code_download">دانلود</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · کد بازیابی\n\n%1$s\n\nبرای برگرداندن داده‌هایتان، از آن در «قبلاً در دستگاه دیگری استفاده کرده‌ام» استفاده کنید.\n</string>
+</resources>

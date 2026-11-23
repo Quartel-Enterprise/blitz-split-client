@@ -91,6 +91,7 @@
     <string name="profile_language_filipino">Филиппинский</string>
     <string name="profile_language_serbian">Сербский</string>
     <string name="profile_language_slovak">Словацкий</string>
+    <string name="profile_language_persian">Персидский</string>
     <string name="profile_language_system_detail">Язык устройства</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_notifications">Уведомления</string>

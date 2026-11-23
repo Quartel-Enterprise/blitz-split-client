@@ -89,6 +89,7 @@
     <string name="profile_language_filipino">فلپائنی</string>
     <string name="profile_language_serbian">سربی</string>
     <string name="profile_language_slovak">سلوواک</string>
+    <string name="profile_language_persian">فارسی</string>
     <string name="profile_language_system_detail">ڈیوائس کی زبان</string>
     <string name="profile_notifications">نوٹیفکیشنز</string>
     <plurals name="profile_notifications_active">

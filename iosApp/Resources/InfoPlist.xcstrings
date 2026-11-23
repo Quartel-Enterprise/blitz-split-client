@@ -47,6 +47,12 @@
             "value" : "Blitz Split"
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -252,6 +258,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "fa" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -467,6 +479,12 @@
             "value" : "Para escanear el código QR de una invitación o de tu dispositivo anterior, y para tomar tu foto de perfil y fotos de gastos."
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای اسکن کد QR یک دعوت یا دستگاه قبلی شما، و گرفتن عکس پروفایل و عکس هزینه‌ها."
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -677,6 +695,12 @@
             "value" : "Para invitar a personas de tus contactos con el enlace de un grupo. Sus números se quedan solo en este dispositivo."
           }
         },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای دعوت افراد از مخاطبان شما با لینک گروه. شماره‌های آن‌ها فقط روی همین دستگاه می‌ماند."
+          }
+        },
         "fil" : {
           "stringUnit" : {
             "state" : "translated",
@@ -885,6 +909,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para guardar las fotos de los gastos en tu biblioteca."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای ذخیره عکس‌های یک هزینه در کتابخانه عکس‌های شما."
           }
         },
         "fil" : {

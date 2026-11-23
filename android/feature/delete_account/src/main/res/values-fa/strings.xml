@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">حذف حساب کاربری</string>
+    <string name="delete_account_offline_title">اینترنت وصل نیست.</string>
+    <string name="delete_account_offline_body">حذف حساب کاربری به اتصال اینترنت نیاز دارد. وصل شوید و دوباره تلاش کنید.</string>
+    <string name="delete_account_heading">حساب کاربری و داده‌هایتان حذف شود؟</string>
+    <string name="delete_account_deleted_title">چه چیزهایی حذف می‌شود</string>
+    <string name="delete_account_deleted_profile">پروفایل شما (نام، عکس و رنگ)</string>
+    <string name="delete_account_deleted_keys">کلیدهای Pix و Bitcoin شما</string>
+    <string name="delete_account_deleted_provider">اتصال به حساب %1$s شما</string>
+    <string name="delete_account_deleted_recovery_code">کد بازیابی شما</string>
+    <string name="delete_account_deleted_device">نسخه داده‌های شما در این دستگاه</string>
+    <string name="delete_account_kept_title">چه چیزهایی در گروه‌هایتان می‌ماند</string>
+    <string name="delete_account_kept_groups">گروه‌ها، با هزینه‌ها و پرداخت‌هایشان، برای اعضای دیگر</string>
+    <string name="delete_account_kept_member">نام شما در هر گروه، به‌عنوان عضوی بدون حساب کاربری</string>
+    <string name="delete_account_kept_comments">نظرهای شما و عکس‌هایی که اضافه کرده‌اید، با نام شما</string>
+    <string name="delete_account_export">ابتدا خروجی گرفتن از داده‌هایم</string>
+    <string name="delete_account_confirm">می‌دانم که این کار برگشت‌پذیر نیست</string>
+    <string name="delete_account_delete">حذف حساب کاربری</string>
+    <string name="delete_account_cancel">لغو</string>
+    <string name="delete_account_failed">حساب کاربری شما حذف نشد. دوباره تلاش کنید.</string>
+</resources>

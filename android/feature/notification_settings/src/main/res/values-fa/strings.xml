@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">اعلان‌ها</string>
+    <string name="notification_settings_denied_title">اعلان‌های Blitz Split در Android خاموش است.</string>
+    <string name="notification_settings_denied_body">برای دریافت اعلان‌های زیر، آن‌ها را در تنظیمات سیستم روشن کنید. زنگوله همچنان کار می‌کند.</string>
+    <string name="notification_settings_open_settings">باز کردن تنظیمات</string>
+    <string name="notification_settings_refused_body">Android یک بار دیگر به شما اجازه می‌دهد آن‌ها را مجاز کنید تا اعلان‌های زیر را دریافت کنید. زنگوله همچنان کار می‌کند.</string>
+    <string name="notification_settings_turn_on">روشن کردن</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">مسدود در Android</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">باز کردن تنظیمات Android برای %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">اعلان‌های پوش</string>
+    <string name="notification_settings_push_switch_detail">فقط در این دستگاه</string>
+    <string name="notification_settings_section">اطلاع‌رسانی درباره</string>
+    <string name="notification_settings_push">پوش</string>
+    <string name="notification_settings_in_app">درون برنامه</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s، %2$s</string>
+    <string name="notification_settings_legend">«پوش» یک اعلان به این دستگاه می‌فرستد. «درون برنامه» آن را روی زنگوله و در «فعالیت» جدید علامت می‌زند؛ اگر خاموش باشد، باز هم در «فعالیت» نمایش داده می‌شود، اما خوانده‌شده.</string>
+    <string name="notification_settings_footer">اعلان‌ها وقتی اینترنت باشد می‌رسند. برای بی‌صدا کردن یک گروه، از منوی داخل آن استفاده کنید.</string>
+</resources>
