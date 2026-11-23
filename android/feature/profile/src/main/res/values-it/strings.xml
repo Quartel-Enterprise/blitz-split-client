@@ -89,6 +89,7 @@
     <string name="profile_language_urdu">Urdu</string>
     <string name="profile_language_filipino">Filippino</string>
     <string name="profile_language_serbian">Serbo</string>
+    <string name="profile_language_slovak">Slovacco</string>
     <string name="profile_language_system_detail">Lingua del dispositivo</string>
     <string name="profile_notifications">Notifiche</string>
     <plurals name="profile_notifications_active">

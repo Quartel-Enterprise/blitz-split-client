@@ -90,6 +90,7 @@
     <string name="profile_language_urdu">Urdština</string>
     <string name="profile_language_filipino">Filipínština</string>
     <string name="profile_language_serbian">Srbština</string>
+    <string name="profile_language_slovak">Slovenština</string>
     <string name="profile_language_system_detail">Jazyk zařízení</string>
     <string name="profile_notifications">Oznámení</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Rozdeľ výdavky bez starostí</string>
+    <string name="welcome_offline_title">Funguje offline</string>
+    <string name="welcome_offline_body">Všetko ostane v tvojom zariadení a synchronizuje sa neskôr.</string>
+    <string name="welcome_optional_title">Účet je voliteľný</string>
+    <string name="welcome_optional_body">Google alebo Apple len zabezpečia, že pri zmene zariadenia o nič neprídeš.</string>
+    <string name="welcome_invite_title">Pozvi odkazom alebo QR kódom</string>
+    <string name="welcome_invite_body">Priatelia vstúpia do skupiny bez vytvorenia účtu.</string>
+    <string name="welcome_no_connection_title">Žiadne pripojenie.</string>
+    <string name="welcome_no_connection_body">Prihlásenie účtom vyžaduje internet. Použi appku zatiaľ bez účtu a pripoj ho neskôr v Profile.</string>
+    <string name="welcome_or">alebo</string>
+    <string name="welcome_use_without_account">Použiť bez účtu</string>
+    <string name="welcome_used_on_another_device">Používal(a) som ju na inom zariadení</string>
+    <string name="welcome_sign_in_failed">Teraz sa nepodarilo prihlásiť. Skús znova.</string>
+    <string name="welcome_legal_notice">Pokračovaním súhlasíš s dokumentom %1$s a berieš na vedomie dokument %2$s.</string>
+    <string name="welcome_legal_terms">Podmienky používania</string>
+    <string name="welcome_legal_privacy">Zásady ochrany osobných údajov</string>
+    <string name="welcome_no_account_note">Bez účtu sa tvoje údaje po 30 dňoch nepoužívania odstránia. Ak ich chceš zachovať, pripoj Google alebo Apple.</string>
+    <string name="welcome_no_account_note_offline">Bez účtu sa tvoje údaje po 30 dňoch nepoužívania odstránia. Ak ich chceš zachovať, pripoj Google alebo Apple neskôr v Profile.</string>
+    <string name="welcome_expired_title">Tvoje údaje boli odstránené</string>
+    <string name="welcome_expired_body">Používal(a) si appku bez účtu a 30 dní si ju neotvoril(a), preto sa tvoje údaje odstránili. Nabudúce pripoj Google alebo Apple, aby si ich zachoval(a).</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

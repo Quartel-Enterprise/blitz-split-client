@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Zásady ochrany osobných údajov</string>
+    <string name="legal_terms">Podmienky používania</string>
+    <string name="legal_updated_privacy_policy">Aktualizované: %1$s</string>
+    <string name="legal_updated_terms">Aktualizované: %1$s</string>
+    <string name="legal_load_failed_title">Túto stránku sa nepodarilo načítať</string>
+    <string name="legal_load_failed_body">Skontroluj pripojenie a skús znova.</string>
+    <string name="legal_retry">Skúsiť znova</string>
+</resources>

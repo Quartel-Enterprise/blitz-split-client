@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Nový spôsob platby</string>
+    <string name="paying_method_edit_title">Upraviť spôsob platby</string>
+    <string name="paying_method_type">Typ</string>
+    <string name="paying_method_name">Názov</string>
+    <string name="paying_method_name_optional">Názov (voliteľné)</string>
+    <string name="paying_method_color">Farba</string>
+    <string name="paying_method_default">Predvolený spôsob</string>
+    <string name="paying_method_default_hint">Nové výdavky, ktoré zaplatíš, ho budú mať predvolene.</string>
+    <string name="paying_method_delete">Odstrániť spôsob platby</string>
+    <string name="paying_method_delete_title">Odstrániť tento spôsob platby?</string>
+    <string name="paying_method_delete_body">Výdavky, ktoré si ním označil(a), ho už nebudú zobrazovať.</string>
+    <string name="paying_method_delete_confirm">Odstrániť</string>
+    <string name="paying_method_save">Uložiť</string>
+</resources>

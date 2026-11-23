@@ -484,5 +484,19 @@ internal object SampleTripCopies {
             court = "Zakup terena",
             items = listOf("Pizza margherita", "Burrata", "Rižoto sa pečurkama", "Tiramisu", "Prosecco", "Espresso"),
         ),
+        "sk" to SampleTripCopy(
+            groupName = "Výlet do Lisabonu",
+            people = listOf("Zuzana", "Martin", "Lucia", "Tomáš", "Katarína"),
+            dinner = "Večera v trattorii",
+            apartment = "Byt v Alfame",
+            groceries = "Nákup",
+            carRental = "Požičanie auta",
+            boatTour = "Plavba loďou",
+            taxi = "Taxi z letiska",
+            roommates = "Spolubývajúci",
+            soccer = "Piatkový futbal",
+            court = "Prenájom ihriska",
+            items = listOf("Pizza Margherita", "Burrata", "Hubové rizoto", "Tiramisu", "Prosecco", "Espresso"),
+        ),
     )
 }
