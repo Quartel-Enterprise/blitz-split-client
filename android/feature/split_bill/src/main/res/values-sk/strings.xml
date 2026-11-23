@@ -111,7 +111,7 @@
     <string name="split_bill_hint_equal">Keď sa suma nedá rozdeliť rovnomerne, zvyšné centy dostane ten, kto platil.</string>
     <string name="split_bill_hint_amount">Kto skončí na %s, je mimo výdavku. Neskoršia zmena celkovej sumy upraví sumy v pomere.</string>
     <string name="split_bill_hint_percent">Iba celé čísla. Zvyšné centy dostane ten, kto platil.</string>
-    <string name="split_bill_hint_shares">Diely použi, keď niekto zje viac, napríklad ak priviedol(a) doprovod.</string>
+    <string name="split_bill_hint_shares">Diely použi, keď niekto zje viac, napríklad ak priviedol/priviedla doprovod.</string>
     <string name="split_bill_list_equal">Kto je v tom</string>
     <string name="split_bill_list_amount">Koľko mal každý</string>
     <string name="split_bill_list_percent">Percento každého</string>

@@ -37,7 +37,7 @@ NASKENUJ ÚČTENKU
 • Odfoť účtenku a položky, ceny aj celková suma sa vyplnia samy
 • Pripoj k výdavku fotky a nechaj komentár, aby sa nikto nemusel pýtať, za čo to bolo
 
-VEĎ, KTO KOMU DLŽÍ
+MAJ PREHĽAD, KTO KOMU DLŽÍ
 • Jeden zostatok v každej skupine a jeden s každým, s kým delíš výdavky
 • Zjednodušenie dlhov, aby ste sa vyrovnali čo najmenším počtom platieb
 • Zaznamenaj platby v hotovosti, prevodom alebo akokoľvek inak. Blitz Split žiadne peniaze neposiela: zaplatíte si navzájom ako vždy a potom to označíte ako zaplatené

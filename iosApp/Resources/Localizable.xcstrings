@@ -8479,7 +8479,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ho otvorí cez vlastný účet, aby ho videl(a) a mohol(a) komentovať."
+            "value" : "%@ ho otvorí cez vlastný účet, aby ho videl(a) a mohol/mohla komentovať."
           }
         },
         "sr-Latn" : {
@@ -30907,7 +30907,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stiahol(a) som ju"
+            "value" : "Stiahol/Stiahla som ju"
           }
         },
         "sr-Latn" : {
@@ -59595,7 +59595,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tento výdavok používa menu, ktorú táto verzia aplikácie nepozná. Aktualizuj aplikáciu, aby si ho mohol(a) upraviť."
+            "value" : "Tento výdavok používa menu, ktorú táto verzia aplikácie nepozná. Aktualizuj aplikáciu, aby si ho mohol/mohla upraviť."
           }
         },
         "sr-Latn" : {
@@ -184365,7 +184365,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Označ aspoň jednu osobu, aby si mohol(a) rozdeliť %@."
+            "value" : "Označ aspoň jednu osobu, aby si mohol/mohla rozdeliť %@."
           }
         },
         "sr-Latn" : {
@@ -204958,7 +204958,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Daj aspoň jednej osobe podiel, aby si mohol(a) rozdeliť %@."
+            "value" : "Daj aspoň jednej osobe podiel, aby si mohol/mohla rozdeliť %@."
           }
         },
         "sr-Latn" : {
@@ -367922,7 +367922,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ to zapol(la) po tebe. Platí posledná zmena: Zjednodušiť dlhy je zapnuté."
+            "value" : "%@ to aktivoval(a) po tebe. Platí posledná zmena: Zjednodušiť dlhy je zapnuté."
           }
         },
         "sr-Latn" : {
@@ -368125,7 +368125,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ to vypol(la) po tebe. Platí posledná zmena: Zjednodušiť dlhy je vypnuté."
+            "value" : "%@ to deaktivoval(a) po tebe. Platí posledná zmena: Zjednodušiť dlhy je vypnuté."
           }
         },
         "sr-Latn" : {
@@ -370328,7 +370328,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ práve vypol(la) Zjednodušiť dlhy. Už nedlžíš osobe %@ v skupine %@."
+            "value" : "%@ práve deaktivoval(a) Zjednodušiť dlhy. Už nedlžíš osobe %@ v skupine %@."
           }
         },
         "sr-Latn" : {
@@ -376487,7 +376487,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ zapol(la) Zjednodušiť dlhy v skupine %@"
+            "value" : "%@ aktivoval(a) Zjednodušiť dlhy v skupine %@"
           }
         },
         "sr-Latn" : {
@@ -376684,7 +376684,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ vypol(la) Zjednodušiť dlhy v skupine %@"
+            "value" : "%@ deaktivoval(a) Zjednodušiť dlhy v skupine %@"
           }
         },
         "sr-Latn" : {
@@ -380133,7 +380133,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ vypol(la) Zjednodušiť dlhy. Teraz ti %2$@ platí %3$@."
+            "value" : "%1$@ deaktivoval(a) Zjednodušiť dlhy. Teraz ti %2$@ platí %3$@."
           }
         },
         "sr-Latn" : {
@@ -380343,7 +380343,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ vypol(la) Zjednodušiť dlhy. Teraz platíš osobe %2$@ %3$@."
+            "value" : "%1$@ deaktivoval(a) Zjednodušiť dlhy. Teraz platíš osobe %2$@ %3$@."
           }
         },
         "sr-Latn" : {
@@ -380553,7 +380553,7 @@
         "sk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ vypol(la) Zjednodušiť dlhy. Pozri, ako to je u teba."
+            "value" : "%1$@ deaktivoval(a) Zjednodušiť dlhy. Pozri, ako to je u teba."
           }
         },
         "sr-Latn" : {

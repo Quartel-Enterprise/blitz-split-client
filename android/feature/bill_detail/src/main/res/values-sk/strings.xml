@@ -11,7 +11,7 @@
     <string name="bill_detail_someone_paid">Platil(a) %s</string>
     <string name="bill_detail_former_member_paid">Platil(a) bývalý člen</string>
     <string name="bill_detail_pending">Vo fronte · synchronizuje sa po pripojení</string>
-    <string name="bill_detail_unknown_currency">Tento výdavok používa menu, ktorú táto verzia aplikácie nepozná. Aktualizuj aplikáciu, aby si ho mohol(a) upraviť.</string>
+    <string name="bill_detail_unknown_currency">Tento výdavok používa menu, ktorú táto verzia aplikácie nepozná. Aktualizuj aplikáciu, aby si ho mohol/mohla upraviť.</string>
     <string name="bill_detail_my_part">Tvoj podiel</string>
     <string name="bill_detail_you_owe">dlžíš</string>
     <string name="bill_detail_to_get_back">dostaneš späť</string>
@@ -83,9 +83,9 @@
     <string name="bill_detail_history_receipt_added">priložil(a) účtenku</string>
     <string name="bill_detail_history_photo_removed">odstránil(a) fotku</string>
     <string name="bill_detail_history_receipt_removed">odstránil(a) účtenku</string>
-    <string name="bill_detail_history_link_anyone">zapol(a) odkaz pre kohokoľvek</string>
+    <string name="bill_detail_history_link_anyone">aktivoval(a) odkaz pre kohokoľvek</string>
     <string name="bill_detail_history_link_members">obmedzil(a) odkaz iba na ľudí vo výdavku</string>
-    <string name="bill_detail_history_link_off">vypol(a) odkaz</string>
+    <string name="bill_detail_history_link_off">deaktivoval(a) odkaz</string>
     <string name="bill_detail_undo">Vrátiť späť</string>
     <string name="bill_detail_undo_error">Nepodarilo sa vrátiť späť. Skús znova.</string>
     <string name="bill_detail_field_amount">Suma</string>
@@ -205,12 +205,12 @@
     <string name="share_bill_who_can_open">Kto ho môže otvoriť</string>
     <string name="share_bill_members">Iba ľudia vo výdavku</string>
     <plurals name="share_bill_members_named">
-        <item quantity="one">%s ho otvorí vo svojom účte, aby ho videl(a) a mohol(a) komentovať.</item>
+        <item quantity="one">%s ho otvorí vo svojom účte, aby ho videl(a) a mohol/mohla komentovať.</item>
         <item quantity="few">%s ho otvoria vo svojich účtoch, aby ho videli a mohli komentovať.</item>
         <item quantity="many">%s ho otvoria vo svojich účtoch, aby ho videli a mohli komentovať.</item>
         <item quantity="other">%s ho otvoria vo svojich účtoch, aby ho videli a mohli komentovať.</item>
     </plurals>
-    <string name="share_bill_members_anyone_in_group">Ktokoľvek zo skupiny ho otvorí vo svojom účte, aby ho videl(a) a mohol(a) komentovať.</string>
+    <string name="share_bill_members_anyone_in_group">Ktokoľvek zo skupiny ho otvorí vo svojom účte, aby ho videl(a) a mohol/mohla komentovať.</string>
     <string name="share_bill_anyone">Každý s odkazom</string>
     <string name="share_bill_anyone_detail">Vidí ho bez prihlásenia. Ak chce komentovať, prihlási sa účtom, aj mimo skupiny.</string>
     <string name="share_bill_note">Odkaz ukazuje výdavok, kto platil, časť každého, prílohy a komentáre. Zostatky a ostatné výdavky skupiny sa nezobrazujú.</string>

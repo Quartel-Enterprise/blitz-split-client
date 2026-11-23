@@ -56,6 +56,9 @@ enum SecondPerson {
         "kikapcsolt": "kikapcsoltál", "fizetett": "fizettél",
     ]
 
+    /// Czech's and Slovak's second-person auxiliary, put before a past in "l(a)" that the third person says without one.
+    private static let pastAuxiliaries = ["cs": "jsi", "sk": "si"]
+
     /// Each language's perfect auxiliary in the third person, with its second person.
     private static let auxiliaries = [
         "fr": ["a": "as", "l’a": "l’as", "l'a": "l'as"],
@@ -89,11 +92,11 @@ enum SecondPerson {
         case "tr": return turkishVerbForYou(verb)
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
-        case "cs":
+        case let .some(code) where pastAuxiliaries[code] != nil:
             // Why: the past may be followed by a comma or a colon ("změnil(a), kdo platil").
-            return verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil ? "jsi " + verb : verb
-        case "sk":
-            return verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil ? "si " + verb : verb
+            guard verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil,
+                  let auxiliary = pastAuxiliaries[code] else { return verb }
+            return auxiliary + " " + verb
         case "el":
             // Why: an object pronoun stays before the verb ("το επισύναψε"), which a comma or a colon may follow.
             guard let past = verb.range(of: #"^((το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)"#, options: .regularExpression)

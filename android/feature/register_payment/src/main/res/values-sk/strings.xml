@@ -70,11 +70,11 @@
     <string name="register_payment_you_owed">ty</string>
     <string name="register_payment_simplify_someone">Niekto</string>
     <string name="register_payment_simplify_on_paid">%1$s práve zjednodušil(a) dlhy. Už nedlžíš osobe %2$s v skupine %3$s.</string>
-    <string name="register_payment_simplify_off_paid">%1$s práve vypol(a) Zjednodušiť dlhy. Už nedlžíš osobe %2$s v skupine %3$s.</string>
+    <string name="register_payment_simplify_off_paid">%1$s práve deaktivoval(a) Zjednodušiť dlhy. Už nedlžíš osobe %2$s v skupine %3$s.</string>
     <string name="register_payment_simplify_on_received">%1$s práve zjednodušil(a) dlhy. %2$s ti už nedlhuje v skupine %3$s.</string>
-    <string name="register_payment_simplify_off_received">%1$s práve vypol(a) Zjednodušiť dlhy. %2$s ti už nedlhuje v skupine %3$s.</string>
+    <string name="register_payment_simplify_off_received">%1$s práve deaktivoval(a) Zjednodušiť dlhy. %2$s ti už nedlhuje v skupine %3$s.</string>
     <string name="register_payment_simplify_on_between">%1$s práve zjednodušil(a) dlhy. %2$s už nedlhuje osobe %3$s v skupine %4$s.</string>
-    <string name="register_payment_simplify_off_between">%1$s práve vypol(a) Zjednodušiť dlhy. %2$s už nedlhuje osobe %3$s v skupine %4$s.</string>
+    <string name="register_payment_simplify_off_between">%1$s práve deaktivoval(a) Zjednodušiť dlhy. %2$s už nedlhuje osobe %3$s v skupine %4$s.</string>
     <string name="register_payment_simplify_hint">Ak si peniaze už poslal(a), aj tak to označ ako zaplatené: aplikácia prepočíta zostatky.</string>
     <string name="register_payment_simplify_was_paid">%s · čo si dlžil(a)</string>
     <string name="register_payment_simplify_was_received">%1$s · čo ti dlžil(a) %2$s</string>

@@ -139,7 +139,7 @@
     <string name="profile_sign_out_now">Odhlásiť sa teraz a prísť o zmeny</string>
     <string name="profile_sign_out_failed">Odhlásenie sa nepodarilo. Skús to znova.</string>
     <string name="profile_erase_title">Vymazať profil z tohto zariadenia?</string>
-    <string name="profile_erase_body">Tvoj účet nemá prihlásenie cez Google ani Apple. Po odhlásení vymažeme kópiu v tomto zariadení. Aby si sa mohol(a) vrátiť, potrebuješ kód na obnovenie. Po 30 dňoch bez používania sa účet odstráni a kód prestane fungovať.</string>
+    <string name="profile_erase_body">Tvoj účet nemá prihlásenie cez Google ani Apple. Po odhlásení vymažeme kópiu v tomto zariadení. Aby si sa mohol/mohla vrátiť, potrebuješ kód na obnovenie. Po 30 dňoch bez používania sa účet odstráni a kód prestane fungovať.</string>
     <string name="profile_erase_body_no_code">Aplikáciu používaš bez účtu a ešte si nesynchronizoval(a), takže neexistuje kód na obnovenie. Keď odídeš, tvoj profil zmizne navždy.</string>
     <string name="profile_erase_code_saved">Kód som si uložil(a) na bezpečné miesto</string>
     <string name="profile_erase_no_code_ack">Chápem, že sa nedá obnoviť</string>

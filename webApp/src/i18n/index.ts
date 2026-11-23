@@ -335,6 +335,9 @@ const hungarianIndefinitePast: Readonly<Record<string, string>> = {
 const spanishObjectPronouns = new Set(['lo', 'la', 'los', 'las', 'le', 'les'])
 
 // Why: each language's perfect auxiliary in the third person, with its second person.
+// Why: Czech and Slovak put the second person's auxiliary before a past in "l(a)", which the third person says without one.
+const pastAuxiliaries: Partial<Record<Locale, string>> = { cs: 'jsi', sk: 'si' }
+
 const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> = {
   fr: { a: 'as', 'l’a': 'l’as', "l'a": "l'as" },
   de: { hat: 'hast', ist: 'bist' },
@@ -380,8 +383,8 @@ export function verbForYou(verb: string): string {
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
   if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
-  if (locale === 'cs') return /^\S*l\(a\)(?=[\s,:]|$)/.test(verb) ? `jsi ${verb}` : verb
-  if (locale === 'sk') return /^\S*l\(a\)(?=[\s,:]|$)/.test(verb) ? `si ${verb}` : verb
+  const pastAuxiliary = pastAuxiliaries[locale]
+  if (pastAuxiliary) return /^\S*l\(a\)(?=[\s,:]|$)/.test(verb) ? `${pastAuxiliary} ${verb}` : verb
   if (locale === 'hu') {
     return verb.replace(/^[^\s,:]+/, (past) => hungarianIndefinitePast[past] ?? (/t[ae]$/.test(past) ? `${past}d` : past))
   }

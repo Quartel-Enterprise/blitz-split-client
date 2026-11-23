@@ -18,9 +18,9 @@
     <string name="push_debts_simplified_to_you">%1$s zjednodušil(a) dlhy. Teraz ti %2$s platí %3$s.</string>
     <string name="push_debts_simplified_from_you">%1$s zjednodušil(a) dlhy. Teraz platíš osobe %2$s sumu %3$s.</string>
     <string name="push_debts_simplified_other">%1$s zjednodušil(a) dlhy. Pozri, ako to vyzerá pre teba.</string>
-    <string name="push_debts_unsimplified_to_you">%1$s vypol(a) Zjednodušiť dlhy. Teraz ti %2$s platí %3$s.</string>
-    <string name="push_debts_unsimplified_from_you">%1$s vypol(a) Zjednodušiť dlhy. Teraz platíš osobe %2$s sumu %3$s.</string>
-    <string name="push_debts_unsimplified_other">%1$s vypol(a) Zjednodušiť dlhy. Pozri, ako to vyzerá pre teba.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s deaktivoval(a) Zjednodušiť dlhy. Teraz ti %2$s platí %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s deaktivoval(a) Zjednodušiť dlhy. Teraz platíš osobe %2$s sumu %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s deaktivoval(a) Zjednodušiť dlhy. Pozri, ako to vyzerá pre teba.</string>
     <string name="notification_settings_bills">Výdavky</string>
     <string name="notification_settings_bills_detail">Nové, upravené alebo odstránené výdavky, v ktorých si</string>
     <string name="notification_settings_payments">Platby a vyrovnania</string>
