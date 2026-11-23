@@ -58,7 +58,7 @@
     <string name="default_split_more">Én andel mer</string>
     <string name="default_split_sum_left">Summen er %1$d %%. %2$d %% mangler.</string>
     <string name="default_split_sum_over">Summen er %1$d %%. %2$d %% for mye.</string>
-    <string name="default_split_sum_help">Juster prosentene til de blir 100 % for å lagre.</string>
+    <string name="default_split_sum_help">Juster prosentene til de blir 100 prosent for å lagre.</string>
     <string name="default_split_example_equal">På en utgift på %1$s: %2$s hver</string>
     <string name="default_split_example">På en utgift på %s:</string>
     <string name="default_split_example_equal_help">Den som ikke er med på en utgift, utelates fra delingen.</string>
