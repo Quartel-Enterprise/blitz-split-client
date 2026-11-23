@@ -132,9 +132,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     name, an amount or a Latin word, and uses no full stop: a sentence the code finishes ends with nothing and two of
     them are parted by the word gap's space, two clauses on the web by a space too (`fullStopUi`, `WordGap.fullStop`,
     `fullStop`, `clauseBreak`). Its plurals have one form, and its numbers are 0-9, as Arabic's, never Thai's own digits. Its dates are
-    written with the Gregorian year on Android and the web (`withGregorianCalendar`, the web's `ca-gregory`), since
-    Thai's default is the Buddhist era (2569 for 2026), while the Apple apps follow the device's own calendar setting,
-    Buddhist on a Thai iPhone unless its owner changed it (a call taken without Pierre). Vietnamese (Pierre's call, issue #448) is one variant for every
+    written with the Gregorian year on every platform (`withGregorianCalendar` and `LegacyAppLocale` on Android, the
+    web's `ca-gregory`, `AppNumbers.calendar` on Apple, its date pickers included), since Thai's default is the
+    Buddhist era (2569 for 2026): a group is shared across platforms, so a Thai iPhone shows the year Android and the
+    web show, whatever calendar its owner set (Pierre's call, November 2026, which replaced following the device's). Vietnamese (Pierre's call, issue #448) is one variant for every
     `vi` tag and talks to the user as "bạn" (friends splitting a bill), "Bạn" as the subject of an activity row,
     which Android's deleted-item notice starts with as it does in Spanish (`youSubjectLanguages`); its verbs don't
     change with the person. It calls the app Blitz Split, writes its tone marks in the modern places ("hóa đơn"), and
@@ -202,11 +203,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     respectful "شما" with the respectful verb forms (as Hindi's "आप" and Urdu's "آپ"), and writes Persian's own "ی" and
     "ک", never the Arabic letters, with the zero-width non-joiner where Persian joins a prefix or suffix ("می‌", "‌ها").
     It reads right to left as Arabic, Hebrew and Urdu do, with the same mirrored layouts, and writes numbers, amounts
-    and dates with 0-9, never its own digits (۰-۹), and in the Gregorian calendar as every other language: Android
-    and the web write the Gregorian year, not ICU's and `Intl`'s Solar Hijri default (1405 for 2026;
-    `withGregorianCalendar`, `LegacyAppLocale`, which also gives Thai `DateUtils`' ranges the Gregorian year,
-    `formattingLocale`), while the Apple apps follow the device's own
-    calendar setting, as for Thai. It ends a sentence with "." and joins two
+    and dates with 0-9, never its own digits (۰-۹), and in the Gregorian calendar on every platform, as Thai, not
+    its own Solar Hijri one (1405 for 2026), which ICU, `Intl` and an Iranian iPhone default to: a group is shared
+    across platforms, so every device shows the same year (Pierre's call; `withGregorianCalendar` and
+    `LegacyAppLocale` on Android, `formattingLocale` on the web, `AppNumbers.calendar` and the date pickers on Apple). It ends a sentence with "." and joins two
     clauses with "،" (the web's `clauseBreak`). No suffix or particle is ever glued to a value the app fills in: a name
     stands alone, after a colon or as the subject. Its verb comes last and changes with the person, so its activity
     sentences take Turkish's shape, the object after a colon, and the user's add "ید" to the past ("Ana هزینه‌ای را
