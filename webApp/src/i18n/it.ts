@@ -860,6 +860,7 @@ export const it: Record<MessageKey, string> = {
   profile_languageUrdu: 'Urdu',
   profile_languageFilipino: 'Filippino',
   profile_languageSerbian: 'Serbo',
+  profile_languageSlovak: 'Slovacco',
   profile_languageNorwegian: 'Norvegese (bokmål)',
   profile_bitcoinInSats: 'Bitcoin in satoshi',
   profile_bitcoinInSatsDetail: 'Mostra e fa inserire gli importi in bitcoin in sats (1 ₿ = 100.000.000 sats).',

@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script) and Norwegian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak and Norwegian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -190,7 +190,14 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     comes with it (below). Only the Latin script exists on Android and Apple: a
     device set to Serbian in Cyrillic (`sr`, `sr-RS`, `sr-Cyrl`, Cyrillic by default) is a language the app doesn't have,
     so it speaks English, the release notes and legal pages included, until "Srpski" is picked in Profile › Language.
-    The web's browser language reads any `sr` tag as the Latin Serbian. Norwegian (Pierre's calls, issue #551) is
+    The web's browser language reads any `sr` tag as the Latin Serbian. Slovak (Pierre's calls, issue #554) is one
+    variant for every Slovak tag, speaks informally, with "ty", never "Vy", and calls the app Blitz Split. Its past
+    forms say a gender the app doesn't know, so they are written as Czech's are, "-l(a)" ("rozdelil(a)", "vytvoril(a)"),
+    and its plurals have `one` (1), `few` (2-4), `many` (fractions, which take the few form: "1,5 skupiny") and
+    `other` (0, 5 and up), as Czech's. Its activity sentences follow Czech's rule with "si" for "jsi"
+    ([activity-and-push.md](activity-and-push.md)). No suffix is ever glued to a value the app fills in, and a name
+    is never declined: it stands after a noun or a colon ("pridal(a) člena Ana", "Zaplatiť: Ana"). Slovakia's
+    currency, the euro, is already in the app. Norwegian (Pierre's calls, issue #551) is
     Bokmål, one variant that answers every Norwegian tag: Bokmål's `nb`, the macrolanguage's `no` and Nynorsk's `nn`
     (`AppLanguage.fromTag`, the web's `pickLocale`), with no regional one; Android's resources are `values-nb`, which
     a device set to Nynorsk only reaches through its own fallback languages: one with none shows the English

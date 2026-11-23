@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Odstrániť účet</string>
+    <string name="delete_account_offline_title">Bez internetu.</string>
+    <string name="delete_account_offline_body">Odstránenie účtu vyžaduje internetové pripojenie. Pripoj sa a skús to znova.</string>
+    <string name="delete_account_heading">Odstrániť tvoj účet a údaje?</string>
+    <string name="delete_account_deleted_title">Čo sa odstráni</string>
+    <string name="delete_account_deleted_profile">Tvoj profil (meno, fotka a farba)</string>
+    <string name="delete_account_deleted_keys">Tvoje kľúče Pix a Bitcoin</string>
+    <string name="delete_account_deleted_provider">Prepojenie s tvojím účtom %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Tvoj kód na obnovenie</string>
+    <string name="delete_account_deleted_device">Kópia tvojich údajov v tomto zariadení</string>
+    <string name="delete_account_kept_title">Čo zostane v tvojich skupinách</string>
+    <string name="delete_account_kept_groups">Skupiny s ich výdavkami a platbami pre ostatných členov</string>
+    <string name="delete_account_kept_member">Tvoje meno v každej skupine, ako člena bez účtu</string>
+    <string name="delete_account_kept_comments">Tvoje komentáre a fotky, ktoré si pridal(a), pod tvojím menom</string>
+    <string name="delete_account_export">Najprv exportovať moje údaje</string>
+    <string name="delete_account_confirm">Rozumiem, že sa to nedá vrátiť späť</string>
+    <string name="delete_account_delete">Odstrániť účet</string>
+    <string name="delete_account_cancel">Zrušiť</string>
+    <string name="delete_account_failed">Účet sa nepodarilo odstrániť. Skús to znova.</string>
+</resources>

@@ -42,6 +42,7 @@ enum class AppLanguage(
     URDU("ur"),
     FILIPINO("fil"),
     SERBIAN("sr-Latn"),
+    SLOVAK("sk"),
     NORWEGIAN("nb"),
     ;
 
@@ -115,9 +116,9 @@ enum class AppLanguage(
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
          * Ukrainian, Korean, Hindi, Arabic, Chinese, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay,
-         * Greek, Croatian, Hungarian, Urdu, Filipino (or its legacy Tagalog "tl"), Serbian in the Latin script (sr-Latn, sr-Latn-RS), Norwegian (nb, or the macrolanguage's "no" and Nynorsk's "nn", all read as Bokmål) or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
+         * Greek, Croatian, Hungarian, Urdu, Filipino (or its legacy Tagalog "tl"), Serbian in the Latin script (sr-Latn, sr-Latn-RS), Slovak, Norwegian (nb, or the macrolanguage's "no" and Nynorsk's "nn", all read as Bokmål) or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
          * ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, zh-CN, he-IL or the legacy iw-IL, th-TH, vi-VN, sv-FI,
-         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, nb-NO, en-GB), SYSTEM for none or any other. Portuguese is two
+         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, sk-SK, nb-NO, en-GB), SYSTEM for none or any other. Portuguese is two
          * entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every
          * other tag (es, es-MX, es-419…) the neutral Latin-American one. Chinese is two entries too: a Traditional tag
          * (zh-Hant, zh-TW, zh-HK, zh-MO) is Taiwan's Traditional Chinese, zh-Hant, every other one (zh, zh-CN, zh-Hans,

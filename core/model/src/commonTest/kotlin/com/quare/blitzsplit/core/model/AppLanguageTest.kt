@@ -456,6 +456,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Slovak tag WHEN reading it THEN is Slovak`() {
+        // Given
+        val tags = listOf("sk", "sk-SK", "sk_SK", "SK-sk")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.SLOVAK }, languages)
+    }
+
+    @Test
     fun `GIVEN any Norwegian tag of Bokmal or Nynorsk or the macrolanguage WHEN reading it THEN is Norwegian Bokmal`() {
         // Given
         val tags = listOf("nb", "nb-NO", "NB_no", "no", "no-NO", "nn", "nn-NO", "nb-SJ")
@@ -590,6 +602,7 @@ class AppLanguageTest {
                 "UR",
                 "FIL",
                 "SR",
+                "SK",
                 "NB",
             ),
             codes,

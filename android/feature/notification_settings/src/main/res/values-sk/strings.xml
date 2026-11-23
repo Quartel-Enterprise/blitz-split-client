@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Upozornenia</string>
+    <string name="notification_settings_denied_title">Upozornenia Blitz Split sú v Androide vypnuté.</string>
+    <string name="notification_settings_denied_body">Zapni ich v nastaveniach systému, aby si dostával(a) push upozornenia nižšie. Zvonček funguje ďalej.</string>
+    <string name="notification_settings_open_settings">Otvoriť nastavenia</string>
+    <string name="notification_settings_refused_body">Android ti umožňuje povoliť ich ešte raz, aby prichádzali push upozornenia nižšie. Zvonček funguje ďalej.</string>
+    <string name="notification_settings_turn_on">Zapnúť</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Zablokované v Androide</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Otvoriť nastavenia Androidu pre: %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Push upozornenia</string>
+    <string name="notification_settings_push_switch_detail">Iba v tomto zariadení</string>
+    <string name="notification_settings_section">Upozorňovať ma na</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">V aplikácii</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push pošle upozornenie do tohto zariadenia. V aplikácii ho označí ako nové na zvončeku a v Aktivite; keď je vypnuté, v Aktivite sa aj tak zobrazí, už prečítané.</string>
+    <string name="notification_settings_footer">Upozornenia prichádzajú, keď je internet. Ak chceš skupinu stlmiť, použi ponuku v nej.</string>
+</resources>

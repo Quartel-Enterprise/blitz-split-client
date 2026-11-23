@@ -33,6 +33,7 @@ import { hu } from './hu'
 import { ur } from './ur'
 import { fil } from './fil'
 import { sr } from './sr'
+import { sk } from './sk'
 import { nb } from './nb'
 
 export type { MessageKey }
@@ -41,12 +42,12 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'nb'
+export type Locale = 'en' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'nb'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, nb }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, nb }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'nb']
+const bareLocales: readonly Locale[] = ['en', 'fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'nb']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -72,10 +73,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr` or `nb` tag (or Norwegian's `no` and Nynorsk's `nn`)
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk` or `nb` tag (or Norwegian's `no` and Nynorsk's `nn`)
  * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN,
- * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, nb-NO, nn-NO…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script) or Norwegian (Bokmål, whichever of the three), a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, nb-NO, nn-NO…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak or Norwegian (Bokmål, whichever of the three), a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, any `en` tag is English, and English when none
  * matches.
  */
@@ -174,6 +175,7 @@ const documentLanguages: Record<Locale, string> = {
   ur: 'ur',
   fil: 'fil',
   sr: 'sr-Latn',
+  sk: 'sk',
   nb: 'nb',
 }
 
@@ -241,9 +243,9 @@ const everyFormOrder: readonly Intl.LDMLPluralRule[] | undefined = (() => {
   return (['zero', 'one', 'two', 'few', 'many', 'other'] as const).filter((category) => categories.includes(category))
 })()
 
-// Why: Czech's and Romanian's second form is the one their `other` takes ("5 skupin", "20 de grupuri"), their `many`
+// Why: Czech's, Slovak's and Romanian's second form is the one their `other` takes ("5 skupin", "20 de grupuri"), their `many`
 // being Czech's fractions, which say the few form ("1,5 skupiny"), where Polish's is the one its `many` takes.
-const secondFormIsOther = locale === 'cs' || locale === 'ro'
+const secondFormIsOther = locale === 'cs' || locale === 'sk' || locale === 'ro'
 
 // Why: Croatian's third form is the one its other takes ("5 grupa"), its plural having no many.
 const thirdFormIsOther = !pluralRules.resolvedOptions().pluralCategories.includes('many')
@@ -335,6 +337,9 @@ const hungarianIndefinitePast: Readonly<Record<string, string>> = {
 const spanishObjectPronouns = new Set(['lo', 'la', 'los', 'las', 'le', 'les'])
 
 // Why: each language's perfect auxiliary in the third person, with its second person.
+// Why: Czech and Slovak put the second person's auxiliary before a past in "l(a)", which the third person says without one.
+const pastAuxiliaries: Partial<Record<Locale, string>> = { cs: 'jsi', sk: 'si' }
+
 const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> = {
   fr: { a: 'as', 'l’a': 'l’as', "l'a": "l'as" },
   de: { hat: 'hast', ist: 'bist' },
@@ -358,7 +363,8 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * the same with its ergative "ने", the user's "आपने" holding it: "ने खर्च बांटा" becomes "खर्च बांटा". Romanian swaps
  * its perfect's auxiliary as French does ("a împărțit" becomes "ai împărțit"), Croatian its "je" ("je podijelio/la"
  * becomes "si podijelio/la"), and Czech puts the auxiliary "jsi"
- * before a past in "l(a)", which the third person says without one ("rozdělil(a)" becomes "jsi rozdělil(a)"). Greek
+ * before a past in "l(a)", which the third person says without one ("rozdělil(a)" becomes "jsi rozdělil(a)"), as Slovak does with "si"
+ * ("rozdelil(a)" becomes "si rozdelil(a)"). Greek
  * ends its aorist in "-ες" for the user, an object pronoun staying before it ("μοίρασε" becomes "μοίρασες", "το
  * επισύναψε" "το επισύναψες"). Hungarian starts each with a past: a definite one in "-ta"/"-te" takes a "d" ("létrehozta"
  * becomes "létrehoztad"), an indefinite one is one of a short list a translation may start with ("felosztott" becomes
@@ -379,7 +385,8 @@ export function verbForYou(verb: string): string {
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
   if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
-  if (locale === 'cs') return /^\S*l\(a\)(?=[\s,:]|$)/.test(verb) ? `jsi ${verb}` : verb
+  const pastAuxiliary = pastAuxiliaries[locale]
+  if (pastAuxiliary) return /^\S*l\(a\)(?=[\s,:]|$)/.test(verb) ? `${pastAuxiliary} ${verb}` : verb
   if (locale === 'hu') {
     return verb.replace(/^[^\s,:]+/, (past) => hungarianIndefinitePast[past] ?? (/t[ae]$/.test(past) ? `${past}d` : past))
   }
