@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "shared": "cd .. && ./gradlew :shared:jsBrowserProductionLibraryDistribution",
+    "shared:dev": "cd .. && ./gradlew :shared:jsBrowserDevelopmentLibraryDistribution",
     "predev": "npm run shared",
     "dev": "vite",
+    "predev:fast": "npm run shared:dev",
+    "dev:fast": "SHARED_LIBRARY=development vite",
     "prebuild": "npm run shared",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",

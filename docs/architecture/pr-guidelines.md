@@ -17,4 +17,7 @@
 npm --prefix webApp run build
 ```
 
-  and build the `BoraRachar-iOS` and `BoraRachar-macOS` schemes after `./iosApp/generate-project.sh`.
+  and build the `BoraRachar-iOS` and `BoraRachar-macOS` schemes after `./iosApp/generate-project.sh`, and
+  `BoraRachar-watchOS` for a change to what the watch app compiles (`iosApp/Watch` and the Swift files its targets
+  list in `project.yml`): the project generated on a Mac leaves the watch app out of the iPhone app's build. CI
+  builds it with every pull request.

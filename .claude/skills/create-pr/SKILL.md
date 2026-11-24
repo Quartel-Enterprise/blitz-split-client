@@ -232,7 +232,7 @@ configuration and run in parallel, and pass `--continue` so one failure doesn't 
 
 Run every `./gradlew`, `xcodebuild` and `npm --prefix webApp run build` below through
 `./scripts/heavy-check.sh`, which waits until no other heavy check of this machine is running, in any
-worktree, then runs the command and exits with its code. Each worktree's Gradle daemon, Kotlin daemon
+worktree, in the order they arrived, then runs the command and exits with its code. Each worktree's Gradle daemon, Kotlin daemon
 and Kotlin/Native take more memory than the Mac has for two or three sessions building at once: side
 by side they swap and a three-minute check takes an hour, while queued each takes its minutes. Since
 the queue may wait longer than the Bash tool's ten minutes, run the checks with `run_in_background`,
@@ -292,7 +292,9 @@ catches an `appleMain` or `jsMain` the change broke, and the `compileTestKotlin*
 backtick test name with characters they don't allow). macOS compiles the same `appleMain` as the
 simulator and is left out, unless the branch changes a module that has a `macosMain`
 (`core/in_app_update`, `core/profile`): its actuals there implement the module's `expect` declarations, which a
-change elsewhere in the module can break. Then add `:<module>:compileKotlinMacosArm64` for it. `:androidApp:assembleDebug` compiles the Android
+change elsewhere in the module can break. Then add `:<module>:compileKotlinMacosArm64` for it. A `watchosMain` only
+the watch's targets compile, and no local Apple build links the watch's framework any more: a branch that changes
+one adds `:<module>:compileKotlinWatchosSimulatorArm64`. `:androidApp:assembleDebug` compiles the Android
 target and the Compose UI that draws the ViewModels. None of them link a test binary or run a
 suite on another platform: `commonTest` already ran on the JVM, and CI runs it on the others.
 
@@ -323,9 +325,15 @@ lint failure CI reported, run `:android:<module>:lintDebug` for that module.
 change reaches. The project's build phase builds the `Shared` framework with Gradle first.
 
 - `iosApp/Sources/macOS` only: the macOS scheme.
+- `iosApp/Watch` only: the watchOS scheme. The project generated here leaves the Apple Watch app out of
+  the iPhone app, so the iOS scheme doesn't build it; CI's does.
 - Anything else in `iosApp/` (`Sources/Shared`, `Sources/iOS`, `project.yml`, the resources): the iOS
   scheme. `Sources/Shared` compiles into both apps, and CI builds the macOS one.
-- Both `Sources/macOS` and something else: both schemes.
+- A Swift file the watch app compiles too, which the `BoraRachar-watchOS` and `BalanceWidget-watchOS`
+  targets of `project.yml` list (`Sources/Common`, `Widgets/Shared`, `Sources/WidgetSnapshot`, a few
+  files of `Sources/Shared`): the watchOS scheme as well, since watchOS lacks APIs iOS has. A change
+  to the string catalogs alone leaves the watch app to CI.
+- More than one of them: each one's scheme.
 
 ```bash
 ./iosApp/generate-project.sh
@@ -335,6 +343,9 @@ change reaches. The project's build phase builds the `Shared` framework with Gra
 ./scripts/heavy-check.sh xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS \
   -destination 'platform=macOS' -derivedDataPath iosApp/build/DerivedData \
   CODE_SIGNING_ALLOWED=NO build -quiet
+./scripts/heavy-check.sh xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-watchOS \
+  -destination 'generic/platform=watchOS Simulator' ARCHS=arm64 \
+  -derivedDataPath iosApp/build/DerivedData CODE_SIGNING_ALLOWED=NO build -quiet
 ```
 
 The iOS build targets the Apple silicon simulator only (`ARCHS=arm64`): `Shared` has no x86_64 simulator

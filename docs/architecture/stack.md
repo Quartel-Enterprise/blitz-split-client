@@ -42,7 +42,9 @@ until the server knows a watch, and `core/in_app_update`, which has no update pr
 ```
 
 `assembleSharedReleaseXCFramework` builds the release one. The Apple Watch app (`BoraRachar-watchOS` in
-`iosApp/project.yml`, embedded in the iPhone app) calls `embedAndSignAppleFrameworkForXcode` like the iOS app does, and
+`iosApp/project.yml`, embedded in the iPhone app by `iosApp/watch-embed.yml`, which a project generated on a Mac leaves
+out: [getting-started.md](../getting-started.md#build-and-run-the-apple-app)) calls
+`embedAndSignAppleFrameworkForXcode` like the iOS app does, and
 builds for `arm64_32` only on the device (`ARCHS[sdk=watchos*]`). Its Swift calls `BlitzSplitApple` to start Koin and
 `BlitzSplitWatch` (in `shared/src/watchosMain`, so only the watch's framework has it) for its screens, its back stack
 and what the iPhone and its pushes ask of it. On a pull request, CI's `apple-app (iOS)` builds the watch app with the
@@ -82,7 +84,8 @@ A library the shared code takes needs a watchOS target too: `software.quare:load
 
 - **Vite**, **React 19**, **TypeScript**, **Tailwind CSS 4**, **shadcn/ui** (Radix, `lucide-react`, `sonner`,
   `vaul`)
-- The JS library `blitzsplit-shared` (`shared/build/dist/js/productionLibrary`, with TypeScript definitions)
+- The JS library `blitzsplit-shared` (`shared/build/dist/js/productionLibrary`, with TypeScript definitions; `npm run
+  dev:fast` serves its development build instead)
 - **SQLite WASM** (`@sqlite.org/sqlite-wasm`) in a Web Worker, storing the database in OPFS
 
 ### Tooling
