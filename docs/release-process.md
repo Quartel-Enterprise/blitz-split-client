@@ -590,7 +590,9 @@ this was set up once, by hand, in the Cloudflare account of `CLOUDFLARE_ACCOUNT_
 - **The old host** `app.blitzsplit.com` keeps its proxied CNAME and its custom domain on the project, and a Single
   Redirect rule of the zone (Rules › Redirect Rules, `app.blitzsplit.com -> web.blitzsplit.com`) answers every request
   to it with a 301 to the same path and query on `web.blitzsplit.com`. The rule only runs on a proxied record, so keep
-  the `app` record while the old links should still work.
+  the `app` record while the old links should still work. The browser data of the old origin (the session, the
+  offline data, the installed app, its push subscription) stays there: people reach theirs on the new host by signing
+  in again, or with their recovery code.
 
 The domain answers 522 until the project has a deployment: the first run of the `web` job is what puts the app
 there.
@@ -805,9 +807,10 @@ are used is in [push-notifications.md](push-notifications.md).
 
 ## Outside the stores
 
-- **Web sign in.** Supabase's redirect URLs and the Google and Apple providers only know the domains they were
-  given. For the beta site, add `https://blitz-split-beta.pages.dev` to the redirect URLs of the Supabase project and
-  to the Google OAuth web client's authorized JavaScript origins; the Apple Services ID only lists Supabase's callback,
+- **Web sign in.** Supabase's redirect URLs and the Google OAuth web client only know the domains they were given.
+  For the beta site, add `https://blitz-split-beta.pages.dev` and `https://blitz-split-beta.pages.dev/**` to the
+  redirect URLs of the Supabase project, and `https://blitz-split-beta.pages.dev` to the Google OAuth web client's
+  authorized JavaScript origins; the Apple Services ID only lists Supabase's callback,
   so a web host needs nothing there. The production web app needs the same for its own domain
   ([The production web app](#the-production-web-app)).
 - **Invite links** open the app only through a domain the app owns (see
