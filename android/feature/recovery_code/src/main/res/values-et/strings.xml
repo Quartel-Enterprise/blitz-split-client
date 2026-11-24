@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Salvesta oma taastekood</string>
+    <string name="recovery_code_body">Kasutad rakendust ilma kontota. Need 12 sõna toovad sinu andmed tagasi, kui vahetad või kaotad seadme. Kirjuta need õiges järjekorras üles. Pärast 30 päeva kasutamatust kustutatakse sinu andmed ja sõnad lakkavad töötamast.</string>
+    <string name="recovery_code_copy">Kopeeri sõnad</string>
+    <string name="recovery_code_save_to_password_manager">Salvesta paroolihaldurisse</string>
+    <string name="recovery_code_connect_instead">Ühenda selle asemel Google või Apple</string>
+    <string name="recovery_code_connect_instead_body">Koodi pole vaja</string>
+    <string name="recovery_code_sign_in_failed">Praegu ei õnnestunud ühendada. Proovi uuesti.</string>
+    <string name="recovery_code_also_in_profile">See on ka jaotises Profiil › Taastekood.</string>
+    <string name="recovery_code_remind_later">Tuleta hiljem meelde</string>
+    <string name="recovery_code_saved">Olen selle salvestanud</string>
+    <string name="recovery_code_download">Laadi alla</string>
+    <string name="recovery_code_file_name">blitz-split-taastekood.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · taastekood\n\n%1$s\n\nKasuta seda valikus „Olen seda kasutanud teises seadmes“, et oma andmed tagasi tuua.\n</string>
+</resources>

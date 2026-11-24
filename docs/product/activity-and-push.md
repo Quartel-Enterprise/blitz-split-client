@@ -129,7 +129,10 @@ The feed, unread state, real time and push notifications.
     starts with "on", which the user's rows turn into "olet" ("Ana on jakanut kulun…", "Sinä olet jakanut kulun…"),
     the bill's history rows too, and the deleted-item notice starts with who deleted it ("Sinä olet poistanut…",
     `youSubjectLanguages`). A name is never inflected: it stands after a noun that carries the case ("on lisännyt
-    jäsenen Ana").
+    jäsenen Ana"). Estonian follows Finnish's rule: every Estonian verb phrase starts with "on", which the user's rows
+    turn into "oled" ("Ana on jaganud kulu…", "Sina oled jaganud kulu…"), its deleted-item notice starts with who
+    deleted it ("Sina oled kustutanud…", `youSubjectLanguages`), and a name stands after a noun that carries the case
+    ("on lisanud liikme Ana").
     Telugu needs no rule: its respectful
     past "-ారు" is the same for a name and for "మీరు" ("Ana ఒక ఖర్చును పంచారు: డిన్నర్", "మీరు ఒక ఖర్చును పంచారు: డిన్నర్"),
     and the object after a colon keeps every name free of case endings, as Tamil's. Its deleted-item notice starts with

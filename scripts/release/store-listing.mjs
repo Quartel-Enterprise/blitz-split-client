@@ -107,6 +107,7 @@ export const PLAY_LOCALES = {
   ca: ["ca"],
   da: ["da-DK"],
   fi: ["fi-FI"],
+  et: ["et"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
@@ -162,6 +163,8 @@ export const APP_STORE_LOCALES = {
   ca: ["ca"],
   da: ["da"],
   fi: ["fi"],
+  // Apple has no Estonian listing locale either: the language has a Play listing and no App Store one.
+  et: [],
 };
 
 /** The app's name in a listing: Bora Rachar in Brazil's Portuguese, Blitz Split in every other language. */

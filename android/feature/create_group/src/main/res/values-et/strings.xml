@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Uus grupp</string>
+    <string name="create_group_close">Sulge</string>
+    <string name="create_group_create">Loo</string>
+    <string name="create_group_change_color">Muuda grupi värvi</string>
+    <string name="create_group_name_label">Grupi nimi</string>
+    <string name="create_group_type_label">Grupi tüüp</string>
+    <string name="create_group_members_title">Kes osalevad</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d inimene</item>
+        <item quantity="other">%d inimest</item>
+    </plurals>
+    <string name="create_group_me">sina</string>
+    <string name="create_group_remove_member">Eemalda %s</string>
+    <string name="create_group_add_placeholder">Lisa nime järgi</string>
+    <string name="create_group_add">Lisa</string>
+    <string name="create_group_no_app_notice">Praegu ei vaja keegi rakendust. Saad juba kõigile kulusid lisada ja lingi hiljem saata.</string>
+    <string name="create_group_currency">Vaikimisi valuuta</string>
+    <string name="create_group_currency_caption">Uued kulud algavad selles valuutas; iga kulu võib kasutada muud valuutat.</string>
+    <string name="create_group_save_error">Gruppi ei saanud salvestada. Proovi uuesti.</string>
+    <string name="create_group_photo">Grupi foto</string>
+    <string name="create_group_take_photo">Tee foto</string>
+    <string name="create_group_choose_photo">Vali foto</string>
+    <string name="create_group_remove_photo">Eemalda foto</string>
+    <string name="create_group_photo_error">Seda fotot ei saanud kasutada. Proovi mõnda teist.</string>
+</resources>
