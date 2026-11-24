@@ -559,6 +559,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     When, New group's currency) are a list, not cards, and stay flat even when tappable: a shadow per segment would
     draw a seam in the 2 dp gaps and break the group into separate cards. iOS, the Mac and the web keep their own
     platform's look.
+  - A pointer keeps each platform's own cursor (Pierre's call, after Apple's guidelines for pointers on the Mac): the
+    Mac keeps the arrow over buttons and shows the pointing hand only over a link that opens a web page (the release
+    notes' cards and GitHub's mark, `linkPointer()`); the web shows the pointing hand over everything clickable, as a
+    web app does. So on the Mac the clickable view itself answers the hover: a card, a row outside a `List`, a chip
+    or a swatch takes a light accent fill in its own shape (`hoverHighlight(in:)`; a row's is a rounded rect inset
+    from its edges, `hoverRowHighlight()`, so it stays inside its card's corners), and a face, a photo, a QR code or a
+    lone icon fades a little (`hoverDim()`); an iPad's pointer gets the system's highlight or lift instead.
+    Standard controls and a `List`'s rows already answer it themselves and take nothing: a Mac list highlights the
+    selected row, not the hovered one.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.
   - The app is free, with nothing paid in it for now, and shows no ads (Pierre's call). The stores' listings say so
     ([store-listing.md](../store-listing.md)): something paid changes them in the same pull request.

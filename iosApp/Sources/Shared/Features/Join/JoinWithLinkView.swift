@@ -437,6 +437,7 @@ private struct JoinWithLinkContent: View {
                 }
                 .labelStyle(.iconOnly)
                 .buttonStyle(.plain)
+                .hoverDim()
                 .foregroundStyle(.secondary)
                 .frame(width: 36, height: 36)
             }

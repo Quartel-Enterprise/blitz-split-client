@@ -34,6 +34,7 @@ struct CurrencyChips: View {
                 .background(isOn ? AnyShapeStyle(Palette.accent) : AnyShapeStyle(.fill.tertiary), in: .capsule)
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .capsule)
         .accessibilityAddTraits(isOn ? .isSelected : [])
     }
 }

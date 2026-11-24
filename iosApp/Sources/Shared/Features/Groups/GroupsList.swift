@@ -229,6 +229,8 @@ private struct GroupsSummaryCard: View {
             .buttonStyle(.plain)
             .accessibilityLabel(Text("See balances"))
         }
+        // On the card, not the button behind it, so the content on top doesn't hide the pointer from it
+        .hoverHighlight(in: .rect(cornerRadius: isStacked ? 26 : 28))
     }
 
     private var amount: some View {
@@ -438,6 +440,7 @@ struct SummaryButton: View {
             .background(Palette.groupedBackground, in: .rect(cornerRadius: 16))
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .rect(cornerRadius: 16))
         .disabled(!isEnabled)
         .accessibilityHint(isEnabled ? Text(hint) : Text(verbatim: ""))
     }

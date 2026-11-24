@@ -151,6 +151,7 @@ private struct ActivityItemDetail: View {
                         meta
                     }
                     .buttonStyle(.plain)
+                    .hoverDim()
                 } else {
                     meta
                 }
@@ -252,6 +253,7 @@ private struct ActivityRelatedRow: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .hoverRowHighlight()
         .accessibilityElement(children: .combine)
     }
 }

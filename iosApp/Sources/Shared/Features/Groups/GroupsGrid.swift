@@ -127,6 +127,7 @@ private struct GroupGridCard: View {
             .groupZoomSource(groupId: group.id, cornerRadius: GroupCardMetrics.cornerRadius)
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .rect(cornerRadius: GroupCardMetrics.cornerRadius))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
         .overlay(alignment: .topTrailing) {
             GroupRowMenuButton(group: group, isOnline: isOnline, send: send)

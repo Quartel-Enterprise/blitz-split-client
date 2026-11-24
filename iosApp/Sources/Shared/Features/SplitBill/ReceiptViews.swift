@@ -140,6 +140,7 @@ struct ReceiptReadChips: View {
                     .contentShape(.capsule)
                 }
                 .buttonStyle(.plain)
+                .hoverHighlight(in: .capsule)
             }
         }
     }

@@ -284,6 +284,7 @@ private struct ChipsRow: View {
                         }
                     }
                     .buttonStyle(.plain)
+                    .hoverHighlight(in: .rect(cornerRadius: 8))
                     .accessibilityAddTraits(isSelected ? .isSelected : [])
                 }
             }

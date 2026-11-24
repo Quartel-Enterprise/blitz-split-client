@@ -102,6 +102,7 @@ private struct AccountPhotoShortcut: View {
             .frame(width: 76)
         }
         .buttonStyle(.plain)
+        .hoverDim()
         .accessibilityLabel("Use \(provider.displayName) account photo")
     }
 

@@ -32,6 +32,7 @@ struct PersonGroupsList: View {
                             .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
+                    .hoverRowHighlight()
                 } else {
                     groupRow(part)
                 }

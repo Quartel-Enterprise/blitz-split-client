@@ -170,6 +170,8 @@ private struct ReleaseNotesList: View {
                         ReleaseCard(release: release)
                     }
                     .buttonStyle(.plain)
+                    .hoverHighlight(in: .rect(cornerRadius: 16))
+                    .linkPointer()
                     .accessibilityHint("Open on GitHub")
                 }
             }
@@ -243,6 +245,7 @@ private struct GitHubButton: View {
                 .scaledToFit()
                 .frame(width: 22, height: 22)
         }
+        .linkPointer()
         .accessibilityLabel("Open on GitHub")
         .help("Open on GitHub")
     }

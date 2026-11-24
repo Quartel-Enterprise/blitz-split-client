@@ -356,6 +356,7 @@ private struct ContactsSummaryCard: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
+            .hoverRowHighlight()
             .foregroundStyle(Palette.accent)
         }
         .padding(16)
@@ -388,6 +389,7 @@ private struct ContactsSummaryCard: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .rect(cornerRadius: 16))
         .disabled(amountMinor == 0)
     }
 }

@@ -159,6 +159,7 @@ private struct AvatarSection: View {
                     AddPhotoLabel()
                 }
                 .buttonStyle(.plain)
+                .hoverDim()
                 .accessibilityLabel("Add photo")
                 .offset(x: 6, y: 6)
             }
@@ -222,6 +223,7 @@ struct ColorSwatch: View {
                 .padding(2)
         }
         .buttonStyle(.plain)
+        .hoverDim()
         .accessibilityLabel(color.label)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }

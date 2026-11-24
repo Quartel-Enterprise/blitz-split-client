@@ -280,6 +280,7 @@ private struct ShareBillVisibilityPicker: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .hoverRowHighlight()
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

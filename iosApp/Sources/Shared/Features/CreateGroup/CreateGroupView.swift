@@ -262,6 +262,7 @@ private struct CreateGroupIcon: View {
                     }
             }
             .buttonStyle(.plain)
+            .hoverDim()
             .disabled(!state.canChangeColor)
             .accessibilityLabel("Change the group's color")
             .overlay(alignment: .bottomTrailing) { photoMenu(hasPhoto: state.hasPhoto) }

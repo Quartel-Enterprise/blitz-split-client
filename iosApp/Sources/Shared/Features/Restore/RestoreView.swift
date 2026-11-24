@@ -213,6 +213,7 @@ private struct RestoreCodeSection: View {
                     .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
+                .hoverRowHighlight()
             }
             .padding(.top, 9)
         }

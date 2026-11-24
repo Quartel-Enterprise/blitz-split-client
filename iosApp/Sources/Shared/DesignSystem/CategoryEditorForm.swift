@@ -209,6 +209,7 @@ struct CategoryEditorForm<GroupField: View>: View {
                 }
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .rect(cornerRadius: 12))
         .accessibilityLabel(CategoryCopy.iconLabel(icon))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }

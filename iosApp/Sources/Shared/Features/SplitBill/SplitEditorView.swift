@@ -48,6 +48,7 @@ private struct SplitModePicker: View {
                 .contentShape(.capsule)
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .capsule)
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 }

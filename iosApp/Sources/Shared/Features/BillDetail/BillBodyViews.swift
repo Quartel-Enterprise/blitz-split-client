@@ -304,6 +304,7 @@ struct MacBillTitles: View {
                     if let onGroupPhoto {
                         Button(action: onGroupPhoto) { groupAvatar }
                             .buttonStyle(.plain)
+                            .hoverDim()
                             .accessibilityLabel("View group photo")
                     } else {
                         groupAvatar

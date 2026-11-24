@@ -44,6 +44,7 @@ struct CategoryColorGrid: View {
                             .contentShape(.circle)
                     }
                     .buttonStyle(.plain)
+                    .hoverHighlight(in: .circle)
                     .accessibilityLabel(Text("Add color"))
                 }
             }
@@ -85,6 +86,7 @@ struct CategoryColorGrid: View {
                 .contentShape(.circle)
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: .circle)
         .accessibilityLabel(tint.label)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
