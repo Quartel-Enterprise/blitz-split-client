@@ -880,6 +880,7 @@ export const fil: Record<MessageKey, string> = {
   profile_languageGujarati: 'Gujarati',
   profile_languageSlovenian: 'Slovenian',
   profile_languageLithuanian: 'Lithuanian',
+  profile_languagePunjabi: 'Punjabi',
   profile_bitcoinInSats: 'Bitcoin sa satoshi',
   profile_bitcoinInSatsDetail: 'Ipinapakita at tina-type ang halaga ng bitcoin sa sats (1 ₿ = 100,000,000 sats).',
   profile_shareUsageData: 'Ibahagi ang data ng paggamit',

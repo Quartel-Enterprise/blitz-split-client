@@ -107,6 +107,7 @@
     <string name="profile_language_gujarati">Gujarati</string>
     <string name="profile_language_slovenian">Sloveens</string>
     <string name="profile_language_lithuanian">Litouws</string>
+    <string name="profile_language_punjabi">Punjabi</string>
     <string name="profile_language_system_detail">Taal van het apparaat</string>
     <string name="profile_notifications">Meldingen</string>
     <plurals name="profile_notifications_active">

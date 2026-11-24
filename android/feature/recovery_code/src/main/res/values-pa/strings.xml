@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">ਆਪਣਾ ਰਿਕਵਰੀ ਕੋਡ ਸੇਵ ਕਰੋ</string>
+    <string name="recovery_code_body">ਤੁਸੀਂ ਇਸ ਨੂੰ ਅਕਾਊਂਟ ਤੋਂ ਬਿਨਾਂ ਵਰਤ ਰਹੇ ਹੋ। ਜੇ ਤੁਸੀਂ ਡਿਵਾਈਸ ਬਦਲਦੇ ਹੋ ਜਾਂ ਗੁਆ ਦਿੰਦੇ ਹੋ, ਤਾਂ ਇਹ 12 ਸ਼ਬਦ ਤੁਹਾਡਾ ਡਾਟਾ ਵਾਪਸ ਲਿਆਉਂਦੇ ਹਨ। ਇਨ੍ਹਾਂ ਨੂੰ ਕ੍ਰਮ ਵਿੱਚ ਲਿਖ ਲਓ। 30 ਦਿਨ ਨਾ ਵਰਤਣ \'ਤੇ, ਤੁਹਾਡਾ ਡਾਟਾ ਮਿਟ ਜਾਂਦਾ ਹੈ ਅਤੇ ਸ਼ਬਦ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਦਿੰਦੇ ਹਨ।</string>
+    <string name="recovery_code_copy">ਸ਼ਬਦ ਕਾਪੀ ਕਰੋ</string>
+    <string name="recovery_code_save_to_password_manager">ਪਾਸਵਰਡ ਮੈਨੇਜਰ ਵਿੱਚ ਸੇਵ ਕਰੋ</string>
+    <string name="recovery_code_connect_instead">ਇਸ ਦੀ ਬਜਾਏ Google ਜਾਂ Apple ਕਨੈਕਟ ਕਰੋ</string>
+    <string name="recovery_code_connect_instead_body">ਕੋਡ ਦੀ ਲੋੜ ਨਹੀਂ</string>
+    <string name="recovery_code_sign_in_failed">ਇਸ ਵੇਲੇ ਕਨੈਕਟ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="recovery_code_also_in_profile">ਇਹ ਪ੍ਰੋਫਾਈਲ › ਰਿਕਵਰੀ ਵਿੱਚ ਵੀ ਹੈ।</string>
+    <string name="recovery_code_remind_later">ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਯਾਦ ਕਰਾਓ</string>
+    <string name="recovery_code_saved">ਮੈਂ ਇਸ ਨੂੰ ਸੇਵ ਕਰ ਲਿਆ ਹੈ</string>
+    <string name="recovery_code_download">ਡਾਊਨਲੋਡ ਕਰੋ</string>
+    <string name="recovery_code_file_name">blitz-split-recovery-code.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · ਰਿਕਵਰੀ ਕੋਡ\n\n%1$s\n\nਆਪਣਾ ਡਾਟਾ ਵਾਪਸ ਲਿਆਉਣ ਲਈ ਇਸ ਨੂੰ \"ਮੈਂ ਇਸ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡਿਵਾਈਸ \'ਤੇ ਵਰਤਿਆ ਹੈ\" ਵਿੱਚ ਵਰਤੋ।\n</string>
+</resources>

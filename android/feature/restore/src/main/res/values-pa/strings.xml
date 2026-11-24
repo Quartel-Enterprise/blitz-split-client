@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">ਆਪਣੇ ਗਰੁੱਪ ਵਾਪਸ ਲਿਆਓ</string>
+    <string name="restore_subtitle">ਪਹਿਲਾਂ ਅਕਾਊਂਟ ਨਾਲ ਸਾਈਨ ਇਨ ਕੀਤਾ ਸੀ? ਬੱਸ ਦੁਬਾਰਾ ਸਾਈਨ ਇਨ ਕਰੋ। ਨਹੀਂ ਤਾਂ, ਰਿਕਵਰੀ ਕੋਡ ਜਾਂ ਆਪਣੀ ਪੁਰਾਣੀ ਡਿਵਾਈਸ ਦਾ QR ਕੋਡ ਵਰਤੋ।</string>
+    <string name="restore_no_connection_title">ਕੋਈ ਕਨੈਕਸ਼ਨ ਨਹੀਂ</string>
+    <string name="restore_no_connection_body">ਅਕਾਊਂਟ ਜਾਂ ਕੋਡ ਨਾਲ ਸਾਈਨ ਇਨ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਗਰੁੱਪ ਡਾਊਨਲੋਡ ਕਰਨ ਵਾਸਤੇ ਇੰਟਰਨੈੱਟ ਚਾਹੀਦਾ ਹੈ। ਜੋ ਤੁਸੀਂ ਲਿਖਿਆ ਹੈ ਉਹ ਰੱਖਿਆ ਗਿਆ ਹੈ।</string>
+    <string name="restore_code_label">ਜਾਂ ਰਿਕਵਰੀ ਕੋਡ ਵਰਤੋ</string>
+    <string name="restore_code_hint">12 ਸ਼ਬਦ ਕ੍ਰਮ ਵਿੱਚ। ਹਰ ਖਾਨਾ ਭਰਨ ਲਈ ਸਾਰੇ ਸ਼ਬਦ ਇੱਕ ਖਾਨੇ ਵਿੱਚ ਪੇਸਟ ਕਰੋ।</string>
+    <string name="restore_scan_qr_title">ਆਪਣੀ ਪੁਰਾਣੀ ਡਿਵਾਈਸ ਤੋਂ QR ਕੋਡ ਸਕੈਨ ਕਰੋ</string>
+    <string name="restore_scan_qr_body">ਉੱਥੇ: ਪ੍ਰੋਫਾਈਲ › ਰਿਕਵਰੀ › QR ਕੋਡ ਦਿਖਾਓ</string>
+    <string name="restore_recover">ਰਿਕਵਰ ਕਰੋ</string>
+    <string name="restore_try_again">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</string>
+    <string name="restore_start_fresh">ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਨਵੇਂ ਸਿਰੇ ਤੋਂ ਸ਼ੁਰੂ ਕਰੋ</string>
+    <string name="restore_error_invalid_code">ਕੋਡ ਨਹੀਂ ਮਿਲਿਆ। ਸ਼ਬਦ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਕ੍ਰਮ ਜਾਂਚੋ, ਫਿਰ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="restore_error_too_many_attempts">ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ। ਕੁਝ ਮਿੰਟ ਉਡੀਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="restore_error_sign_in_failed">ਇਸ ਵੇਲੇ ਸਾਈਨ ਇਨ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="restore_error_unknown">ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+</resources>

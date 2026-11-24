@@ -1,0 +1,62 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Punjabi: pick \"ਪੰਜਾਬੀ\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala panjabi: escolha \"ਪੰਜਾਬੀ\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora panjabi: escolhe \"ਪੰਜਾਬੀ\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla panyabí: elige \"ਪੰਜਾਬੀ\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais pendjabi : choisis « ਪੰਜਾਬੀ » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Punjabi: Wähle „ਪੰਜਾਬੀ“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla punjabi: scegli \"ਪੰਜਾਬੀ\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po pendżabsku: wybierz „ਪੰਜਾਬੀ” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Punjabi: kies \"ਪੰਜਾਬੀ\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがパンジャブ語に対応しました。プロフィール › 言語で「ਪੰਜਾਬੀ」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Pencapça konuşuyor: Profil › Dil'de \"ਪੰਜਾਬੀ\" seçeneğini seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Punjabi: pilih \"ਪੰਜਾਬੀ\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на панджаби: выбери «ਪੰਜਾਬੀ» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить панджабі: обери «ਪੰਜਾਬੀ» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 펀자브어를 쓸 수 있어요. 프로필 › 언어에서 ‘ਪੰਜਾਬੀ’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप पंजाबी में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “ਪੰਜਾਬੀ” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث البنجابية: يمكنك اختيار «ਪੰਜਾਬੀ» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持旁遮普语：在“个人资料 › 语言”中选择“ਪੰਜਾਬੀ”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו פנג'אבית: אפשר לבחור \"ਪੰਜਾਬੀ\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาปัญจาบแล้ว เลือก “ਪੰਜਾਬੀ” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Punjab: chọn “ਪੰਜਾਬੀ” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援旁遮普文：在「個人資料 › 語言」中選擇「ਪੰਜਾਬੀ」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu punjabi: välj ”ਪੰਜਾਬੀ” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví paňdžábsky: vyber „ਪੰਜਾਬੀ“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum punjabi: alege „ਪੰਜਾਬੀ” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন পাঞ্জাবি ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “ਪੰਜਾਬੀ” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Punjabi: pilih \"ਪੰਜਾਬੀ\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον παντζάμπι: διάλεξε «ਪੰਜਾਬੀ» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori pandžapski: odaberi „ਪੰਜਾਬੀ“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól pandzsábiul is beszél: válaszd a „ਪੰਜਾਬੀ” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ پنجابی میں بھی دستیاب ہے: پروفائل › زبان میں “ਪੰਜਾਬੀ” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Punjabi ang app: piliin ang \"ਪੰਜਾਬੀ\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori pandžapski: izaberi „ਪੰਜਾਬੀ“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "sk": "Aplikácia teraz hovorí po pandžábsky: vyber „ਪੰਜਾਬੀ“ v Profil › Jazyk, alebo nechaj jazyk zariadenia.",
+        "fa": "برنامه حالا پنجابی صحبت می‌کند: «ਪੰਜਾਬੀ» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند.",
+        "ta": "ஆப் இப்போது பஞ்சாபி மொழியில் கிடைக்கிறது: சுயவிவரம் › மொழி என்பதில் \"ਪੰਜਾਬੀ\" என்பதைத் தேர்ந்தெடுங்கள், அல்லது உங்கள் சாதனத்தின் மொழியைப் பின்பற்ற விடுங்கள்.",
+        "nb": "Appen snakker nå panjabi: velg «ਪੰਜਾਬੀ» i Profil › Språk, eller la den følge enheten din.",
+        "te": "యాప్ ఇప్పుడు పంజాబీలో అందుబాటులో ఉంది: ప్రొఫైల్ › భాషలో \"ਪੰਜਾਬੀ\" ఎంచుకోండి, లేదా మీ పరికరం భాషను అనుసరించనివ్వండి.",
+        "bg": "Приложението вече говори пенджабски: избери „ਪੰਜਾਬੀ“ в Профил › Език или остави езика на устройството.",
+        "mr": "ॲप आता पंजाबीमध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"ਪੰਜਾਬੀ\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
+        "sw": "Programu sasa inazungumza Kipunjabi: chagua \"ਪੰਜਾਬੀ\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
+        "ca": "L’app ara parla panjabi: tria «ਪੰਜਾਬੀ» a Perfil › Idioma, o deixa que segueixi el teu dispositiu.",
+        "da": "Appen taler nu punjabi: vælg »ਪੰਜਾਬੀ« i Profil › Sprog, eller lad den følge din enhed.",
+        "fi": "Sovellus puhuu nyt pandžabia: valitse ”ਪੰਜਾਬੀ” kohdassa Profiili › Kieli tai anna sen seurata laitteesi kieltä.",
+        "lv": "Lietotne tagad runā pandžabu valodā: izvēlies „ਪੰਜਾਬੀ” sadaļā Profils › Valoda vai ļauj tai sekot tavas ierīces valodai.",
+        "et": "Rakendus räägib nüüd pandžabi keelt: vali „ਪੰਜਾਬੀ“ jaotises Profiil › Keel või lase sel järgida su seadet.",
+        "gu": "ઍપ હવે પંજાબીમાં ઉપલબ્ધ છે: પ્રોફાઇલ › ભાષામાં “ਪੰਜਾਬੀ” પસંદ કરો, અથવા તેને તમારા ડિવાઇસની ભાષા મુજબ રહેવા દો.",
+        "sl": "Aplikacija je zdaj na voljo v pandžabščini: v Profil › Jezik izberi „ਪੰਜਾਬੀ“ ali pa naj sledi jeziku tvoje naprave.",
+        "lt": "Programėlė dabar kalba pendžabiškai: pasirink „ਪੰਜਾਬੀ“ skiltyje Profilis › Kalba arba leisk jai sekti tavo įrenginio kalbą.",
+        "pa": "ਐਪ ਹੁਣ ਪੰਜਾਬੀ ਵਿੱਚ ਉਪਲਬਧ ਹੈ: ਪ੍ਰੋਫਾਈਲ › ਭਾਸ਼ਾ ਵਿੱਚ “ਪੰਜਾਬੀ” ਚੁਣੋ, ਜਾਂ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਦੀ ਭਾਸ਼ਾ ਮੁਤਾਬਕ ਰਹਿਣ ਦਿਓ।"
+      }
+    }
+  ]
+}

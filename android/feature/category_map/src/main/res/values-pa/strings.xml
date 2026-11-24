@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">ਕੋਈ ਸ਼ਬਦ ਨਹੀਂ</string>
+    <string name="category_map_title">ਸ਼੍ਰੇਣੀ ਮੈਪ</string>
+    <string name="category_map_search">ਸ਼ਬਦ ਖੋਜੋ</string>
+    <string name="category_map_add">ਸ਼ਬਦ ਜੋੜੋ</string>
+    <string name="category_map_more">ਹੋਰ ਵਿਕਲਪ</string>
+    <string name="category_map_restore">ਡਿਫ਼ੌਲਟ ਬਹਾਲ ਕਰੋ</string>
+    <string name="category_map_back">ਪਿੱਛੇ</string>
+    <string name="category_map_intro">ਜਦੋਂ ਖਰਚੇ ਦੇ ਸਿਰਲੇਖ ਵਿੱਚ ਇਨ੍ਹਾਂ ਵਿੱਚੋਂ ਕੋਈ ਸ਼ਬਦ ਹੋਵੇ, ਤਾਂ ਉਸ ਦੀ ਸ਼੍ਰੇਣੀ ਆਪਣੇ ਆਪ ਆ ਜਾਂਦੀ ਹੈ। “Uber ਘਰ” ਆਵਾਜਾਈ ਬਣ ਜਾਂਦਾ ਹੈ।</string>
+    <string name="category_map_intro_offline">ਮੈਪ ਆਫ਼ਲਾਈਨ ਕੰਮ ਕਰਦਾ ਹੈ: ਬਦਲਾਅ ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਤੁਰੰਤ ਲਾਗੂ ਹੁੰਦੇ ਹਨ ਅਤੇ ਔਨਲਾਈਨ ਹੋਣ \'ਤੇ ਤੁਹਾਡੀਆਂ ਹੋਰ ਡਿਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਜਾਂਦੇ ਹਨ।</string>
+    <string name="category_map_device_only">ਤੁਹਾਡਾ ਮੈਪ ਸਿਰਫ਼ ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਰਹਿੰਦਾ ਹੈ। ਇਸ ਨੂੰ ਆਪਣੀਆਂ ਹੋਰ ਡਿਵਾਈਸਾਂ \'ਤੇ ਲਿਜਾਣ ਲਈ, ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ Google ਜਾਂ Apple ਨਾਲ ਸਾਈਨ ਇਨ ਕਰੋ।</string>
+    <string name="category_map_open_profile">ਪ੍ਰੋਫਾਈਲ ਖੋਲ੍ਹੋ</string>
+    <string name="category_map_longest_wins">ਜਦੋਂ ਦੋ ਸ਼ਬਦ ਕਿਸੇ ਸਿਰਲੇਖ ਨਾਲ ਮੇਲ ਖਾਂਦੇ ਹਨ, ਤਾਂ ਸਭ ਤੋਂ ਲੰਬਾ ਜਿੱਤਦਾ ਹੈ।</string>
+    <string name="category_map_no_result">“%1$s” ਵਾਲਾ ਕੋਈ ਸ਼ਬਦ ਨਹੀਂ</string>
+    <string name="category_map_no_result_body">ਇਸ ਨੂੰ ਜੋੜੋ, ਫਿਰ ਸਿਰਲੇਖ ਵਿੱਚ ਇਸ ਸ਼ਬਦ ਵਾਲੇ ਖਰਚੇ ਸਹੀ ਸ਼੍ਰੇਣੀ ਨਾਲ ਆਉਣਗੇ।</string>
+    <string name="category_map_add_query">“%1$s” ਜੋੜੋ</string>
+    <string name="category_map_empty_title">ਤੁਹਾਡਾ ਮੈਪ ਖਾਲੀ ਹੈ</string>
+    <string name="category_map_empty_body">ਸ਼ਬਦਾਂ ਤੋਂ ਬਿਨਾਂ, ਸ਼੍ਰੇਣੀ ਸਿਰਲੇਖ ਤੋਂ ਨਹੀਂ ਆਉਂਦੀ: ਤੁਸੀਂ ਹਰ ਖਰਚੇ \'ਤੇ ਇਸ ਨੂੰ ਚੁਣਦੇ ਹੋ।</string>
+    <string name="category_map_group_category"> · ‘%1$s’ ਗਰੁੱਪ ਦੀ ਸ਼੍ਰੇਣੀ</string>
+    <string name="category_map_only_main">ਸਿਰਫ਼ %1$s</string>
+    <string name="category_map_only_in_group">ਸਿਰਫ਼ ‘%1$s’ ਗਰੁੱਪ ਵਿੱਚ</string>
+    <string name="category_map_no_terms_yet">ਅਜੇ ਕੋਈ ਸ਼ਬਦ ਨਹੀਂ।</string>
+    <string name="category_map_add_in">%1$s ਵਿੱਚ ਸ਼ਬਦ ਜੋੜੋ</string>
+    <string name="category_map_tip">ਕਿਸੇ ਸ਼ਬਦ ਦੀ ਸ਼੍ਰੇਣੀ ਬਦਲਣ ਜਾਂ ਉਸ ਨੂੰ ਹਟਾਉਣ ਲਈ ਉਸ \'ਤੇ ਟੈਪ ਕਰੋ। ਇਹ ਪੂਰੇ ਸ਼ਬਦ ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਹੈ, ਲਗਾਂ-ਮਾਤਰਾਂ ਅਤੇ ਵੱਡੇ-ਛੋਟੇ ਅੱਖਰਾਂ ਨੂੰ ਅਣਡਿੱਠਾ ਕਰਕੇ।</string>
+    <string name="category_map_queued">ਕਤਾਰ ਵਿੱਚ</string>
+    <string name="category_map_term_action">%1$s, %2$s। ਸੋਧੋ</string>
+    <string name="category_map_new_term">ਨਵਾਂ ਸ਼ਬਦ</string>
+    <string name="category_map_edit_term">ਸ਼ਬਦ ਸੋਧੋ</string>
+    <string name="category_map_term_label">ਸ਼ਬਦ ਜਾਂ ਵਾਕੰਸ਼</string>
+    <string name="category_map_term_help">ਪੂਰੇ ਸ਼ਬਦ ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਹੈ, ਲਗਾਂ-ਮਾਤਰਾਂ ਅਤੇ ਵੱਡੇ-ਛੋਟੇ ਅੱਖਰਾਂ ਨੂੰ ਅਣਡਿੱਠਾ ਕਰਕੇ।</string>
+    <string name="category_map_term_help_app">ਐਪ ਦਾ ਸ਼ਬਦ। “ਡਿਫ਼ੌਲਟ ਬਹਾਲ ਕਰੋ” ਇਸ ਨੂੰ ਪਹਿਲਾਂ ਵਾਂਗ ਵਾਪਸ ਲੈ ਆਉਂਦਾ ਹੈ।</string>
+    <string name="category_map_term_duplicate">“%1$s” ਪਹਿਲਾਂ ਹੀ %2$s ਚੁਣਦਾ ਹੈ। ਹਰ ਸ਼ਬਦ ਦੀ ਇੱਕ ਸ਼੍ਰੇਣੀ ਹੁੰਦੀ ਹੈ।</string>
+    <string name="category_map_term_too_short">ਘੱਟੋ-ਘੱਟ 2 ਅੱਖਰ ਵਰਤੋ।</string>
+    <string name="category_map_term_too_long">ਵੱਧ ਤੋਂ ਵੱਧ 30 ਅੱਖਰ ਵਰਤੋ।</string>
+    <string name="category_map_term_invalid">ਸਿਰਫ਼ ਅੱਖਰ, ਅੰਕ ਅਤੇ ਖਾਲੀ ਥਾਂਵਾਂ ਵਰਤੋ।</string>
+    <string name="category_map_category">ਸ਼੍ਰੇਣੀ</string>
+    <string name="category_map_category_help">ਇਹ ਸ਼੍ਰੇਣੀ ਜਾਂ ਉਪ-ਸ਼੍ਰੇਣੀ ਹੋ ਸਕਦੀ ਹੈ।</string>
+    <string name="category_map_category_help_edit">ਇੱਥੇ ਬਦਲਣ ਨਾਲ ਸ਼ਬਦ ਕਿਸੇ ਹੋਰ ਸ਼੍ਰੇਣੀ ਵਿੱਚ ਚਲਾ ਜਾਂਦਾ ਹੈ।</string>
+    <string name="category_map_category_help_move">ਲਿਜਾਣ ਨਾਲ ਸ਼ਬਦ %1$s ਵਿੱਚੋਂ ਨਿਕਲ ਜਾਂਦਾ ਹੈ।</string>
+    <string name="category_map_example">ਉਦਾਹਰਨ</string>
+    <string name="category_map_example_move">ਜੇ ਲਿਜਾਇਆ ਜਾਵੇ</string>
+    <string name="category_map_remove">ਹਟਾਓ</string>
+    <string name="category_map_cancel">ਰੱਦ ਕਰੋ</string>
+    <string name="category_map_save">ਸੇਵ ਕਰੋ</string>
+    <string name="category_map_move_to">%1$s ਵਿੱਚ ਲਿਜਾਓ</string>
+    <string name="category_map_removed">“%1$s” ਮੈਪ ਵਿੱਚੋਂ ਹਟ ਗਿਆ</string>
+    <string name="category_map_undo">ਵਾਪਸ ਲਓ</string>
+    <string name="category_map_restore_title">ਕੀ ਡਿਫ਼ੌਲਟ ਮੈਪ ਬਹਾਲ ਕਰਨਾ ਹੈ?</string>
+    <string name="category_map_restore_body">ਐਪ ਦੇ 60 ਸ਼ਬਦ ਪਹਿਲਾਂ ਵਾਂਗ ਵਾਪਸ ਆ ਜਾਂਦੇ ਹਨ, ਉਹ ਵੀ ਜੋ ਤੁਸੀਂ ਹਟਾਏ ਜਾਂ ਲਿਜਾਏ ਸਨ।</string>
+    <string name="category_map_restore_own_one">ਤੁਹਾਡਾ ਬਣਾਇਆ ਸ਼ਬਦ “%1$s” ਬਣਿਆ ਰਹਿੰਦਾ ਹੈ।</string>
+    <string name="category_map_restore_confirm">ਬਹਾਲ ਕਰੋ</string>
+    <string name="category_map_save_error">ਮੈਪ ਸੇਵ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d ਸ਼ਬਦ</item>
+        <item quantity="other">%d ਸ਼ਬਦ</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ਉਪ-ਸ਼੍ਰੇਣੀ</item>
+        <item quantity="other">%d ਉਪ-ਸ਼੍ਰੇਣੀਆਂ</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” ਵਾਲਾ %1$d ਸ਼ਬਦ</item>
+        <item quantity="other">“%2$s” ਵਾਲੇ %1$d ਸ਼ਬਦ</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">ਆਫ਼ਲਾਈਨ · %d ਬਦਲਾਅ ਕਤਾਰ ਵਿੱਚ</item>
+        <item quantity="other">ਆਫ਼ਲਾਈਨ · %d ਬਦਲਾਅ ਕਤਾਰ ਵਿੱਚ</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">ਤੁਹਾਡੇ ਬਣਾਏ %d ਸ਼ਬਦ ਬਣੇ ਰਹਿੰਦੇ ਹਨ।</item>
+        <item quantity="other">ਤੁਹਾਡੇ ਬਣਾਏ %d ਸ਼ਬਦ ਬਣੇ ਰਹਿੰਦੇ ਹਨ।</item>
+    </plurals>
+    <string name="category_map_new_category">ਨਵੀਂ ਸ਼੍ਰੇਣੀ</string>
+    <string name="category_map_new_subcategory_in">%s ਵਿੱਚ ਨਵੀਂ ਉਪ-ਸ਼੍ਰੇਣੀ</string>
+    <string name="category_map_edit_category">%s ਸੋਧੋ</string>
+    <string name="category_map_category_group">ਗਰੁੱਪ</string>
+    <string name="category_map_change_color">%1$s ਦਾ ਰੰਗ ਬਦਲੋ</string>
+    <string name="category_map_restore_color">ਰੰਗ ਬਹਾਲ ਕਰੋ</string>
+    <string name="category_map_color_done">ਹੋ ਗਿਆ</string>
+</resources>

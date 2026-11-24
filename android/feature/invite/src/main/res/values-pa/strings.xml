@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">ਬੰਦ ਕਰੋ</string>
+    <string name="invite_group_created">ਗਰੁੱਪ ਬਣ ਗਿਆ</string>
+    <string name="invite_title">%s ਗਰੁੱਪ ਵਿੱਚ ਸਭ ਨੂੰ ਸੱਦਾ ਭੇਜੋ</string>
+    <string name="invite_qr_description">ਗਰੁੱਪ ਦੇ ਸੱਦਾ ਲਿੰਕ ਦਾ QR ਕੋਡ</string>
+    <string name="invite_copy">ਕਾਪੀ ਕਰੋ</string>
+    <string name="invite_copied">ਕਾਪੀ ਹੋ ਗਿਆ</string>
+    <string name="invite_who_picks">ਲਿੰਕ ਖੋਲ੍ਹਣ ਵਾਲੇ ਸੂਚੀ ਵਿੱਚੋਂ ਚੁਣਦੇ ਹਨ ਕਿ ਉਹ ਕੌਣ ਹਨ: %s। ਅਕਾਊਂਟ ਦੀ ਲੋੜ ਨਹੀਂ।</string>
+    <string name="invite_names_or">%1$s ਜਾਂ %2$s</string>
+    <string name="invite_anyone_joins">ਲਿੰਕ ਖੋਲ੍ਹਣ ਵਾਲੇ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਜਾਂਦੇ ਹਨ। ਅਕਾਊਂਟ ਦੀ ਲੋੜ ਨਹੀਂ।</string>
+    <string name="invite_pending_title">ਲਿੰਕ ਬਾਕੀ ਹੈ</string>
+    <string name="invite_pending_offline">ਤੁਹਾਡੇ ਔਨਲਾਈਨ ਹੁੰਦੇ ਹੀ ਇਹ ਬਣ ਜਾਵੇਗਾ।</string>
+    <string name="invite_pending_online">ਲਿੰਕ ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ…</string>
+    <string name="invite_failed_title">ਲਿੰਕ ਨਹੀਂ ਬਣ ਸਕਿਆ</string>
+    <string name="invite_failed_body">ਗਰੁੱਪ ਸਿੰਕ ਕਰਦੇ ਸਮੇਂ ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ।</string>
+    <string name="invite_retry">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</string>
+    <string name="invite_share">ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ</string>
+    <string name="invite_see_who_joined">ਦੇਖੋ ਕਿਸ ਨੇ ਜੁਆਇਨ ਕੀਤਾ</string>
+    <string name="invite_add_person">ਐਪ ਤੋਂ ਬਿਨਾਂ ਕਿਸੇ ਨੂੰ ਜੋੜੋ</string>
+    <string name="invite_go_to_group">ਗਰੁੱਪ \'ਤੇ ਜਾਓ</string>
+    <string name="invite_change_link">ਲਿੰਕ ਬਦਲੋ</string>
+    <string name="invite_change_link_title">ਕੀ ਸੱਦਾ ਲਿੰਕ ਬਦਲਣਾ ਹੈ?</string>
+    <string name="invite_change_link_message">ਮੌਜੂਦਾ ਲਿੰਕ ਅਤੇ QR ਕੋਡ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਦਿੰਦੇ ਹਨ, ਨਾ ਵਰਤੇ ਗਏ ਨਿੱਜੀ ਸੱਦਿਆਂ ਸਮੇਤ। ਜਿਨ੍ਹਾਂ ਨੇ ਪਹਿਲਾਂ ਹੀ ਜੁਆਇਨ ਕੀਤਾ ਹੈ, ਉਹ ਗਰੁੱਪ ਵਿੱਚ ਰਹਿੰਦੇ ਹਨ।</string>
+    <string name="invite_change_link_failed">ਲਿੰਕ ਨਹੀਂ ਬਦਲ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="invite_share_message">ਆਓ Blitz Split \'ਤੇ %1$s ਦੇ ਖਰਚੇ ਵੰਡੀਏ। ਇਸ ਲਿੰਕ ਨਾਲ ਸ਼ਾਮਲ ਹੋਵੋ: %2$s</string>
+</resources>

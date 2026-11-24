@@ -4,4 +4,6 @@
     <bool name="designsystem_portugal_portuguese">false</bool>
     <!-- True only in values-nb: the strings drawn are Norwegian, a Nynorsk device reaching them through its fallbacks -->
     <bool name="designsystem_norwegian">false</bool>
+    <!-- True only in values-pa: the strings drawn are Punjabi in Gurmukhi, a Shahmukhi device (pa-Arab) drawing English's -->
+    <bool name="designsystem_punjabi">false</bool>
 </resources>

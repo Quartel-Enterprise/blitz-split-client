@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">ਤੁਸੀਂ ਇਸ ਗਰੁੱਪ ਵਿੱਚ ਨਹੀਂ ਹੋ</string>
+    <string name="bill_link_not_in_group_message">ਇਹ ਟਿੱਪਣੀ ਅਜਿਹੇ ਗਰੁੱਪ ਵਿੱਚ ਹੈ ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ ਨਹੀਂ ਹੋ। ਜਿਸ ਨੇ ਤੁਹਾਨੂੰ ਲਿੰਕ ਭੇਜਿਆ, ਉਸ ਤੋਂ ਸੱਦਾ ਮੰਗੋ।</string>
+    <string name="bill_link_offline_title">ਇੰਟਰਨੈੱਟ ਨਹੀਂ</string>
+    <string name="bill_link_offline_message">ਔਨਲਾਈਨ ਹੋਣ \'ਤੇ ਲਿੰਕ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ।</string>
+    <string name="bill_link_go_home">ਹੋਮ \'ਤੇ ਜਾਓ</string>
+    <string name="discard_changes_title">ਕੀ ਬਦਲਾਅ ਰੱਦ ਕਰਨੇ ਹਨ?</string>
+    <string name="discard_changes_message">ਸੇਵ ਨਾ ਕੀਤੇ ਬਦਲਾਅ ਗੁਆਚ ਜਾਣਗੇ।</string>
+    <string name="discard_changes_discard">ਰੱਦ ਕਰੋ</string>
+    <string name="discard_changes_keep_editing">ਸੋਧਣਾ ਜਾਰੀ ਰੱਖੋ</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">ਘੜੀ</string>
+    <string name="watch_connected_title">%1$s ਤੁਹਾਡੇ ਅਕਾਊਂਟ ਨਾਲ ਕਨੈਕਟ ਹੋ ਗਈ</string>
+    <string name="watch_connected_title_unnamed">ਘੜੀ ਤੁਹਾਡੇ ਅਕਾਊਂਟ ਨਾਲ ਕਨੈਕਟ ਹੋ ਗਈ</string>
+    <string name="watch_connected_text">ਇਹ ਤੁਹਾਡੇ ਗਰੁੱਪ ਦੇਖਦੀ ਹੈ ਅਤੇ ਆਪਣੇ ਆਪ ਸਿੰਕ ਹੁੰਦੀ ਹੈ। ਇਸ ਨੂੰ ਡਿਸਕਨੈਕਟ ਕਰਨ ਲਈ, ਘੜੀ \'ਤੇ ਸਾਈਨ ਆਊਟ ਕਰੋ।</string>
+</resources>

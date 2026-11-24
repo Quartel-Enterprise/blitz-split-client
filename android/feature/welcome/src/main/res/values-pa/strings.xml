@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">ਖਰਚਾ ਵੰਡੋ, ਬਿਨਾਂ ਝੰਜਟ</string>
+    <string name="welcome_offline_title">ਆਫ਼ਲਾਈਨ ਕੰਮ ਕਰਦੀ ਹੈ</string>
+    <string name="welcome_offline_body">ਸਭ ਕੁਝ ਤੁਹਾਡੀ ਡਿਵਾਈਸ \'ਤੇ ਰਹਿੰਦਾ ਹੈ ਅਤੇ ਬਾਅਦ ਵਿੱਚ ਸਿੰਕ ਹੁੰਦਾ ਹੈ।</string>
+    <string name="welcome_optional_title">ਅਕਾਊਂਟ ਵਿਕਲਪਿਕ ਹੈ</string>
+    <string name="welcome_optional_body">Google ਜਾਂ Apple ਸਿਰਫ਼ ਇਸ ਲਈ ਹੈ ਕਿ ਡਿਵਾਈਸ ਬਦਲਣ \'ਤੇ ਤੁਹਾਡਾ ਕੁਝ ਵੀ ਨਾ ਗੁਆਚੇ।</string>
+    <string name="welcome_invite_title">ਲਿੰਕ ਜਾਂ QR ਕੋਡ ਨਾਲ ਸੱਦਾ ਭੇਜੋ</string>
+    <string name="welcome_invite_body">ਦੋਸਤ ਅਕਾਊਂਟ ਬਣਾਏ ਬਿਨਾਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੁੰਦੇ ਹਨ।</string>
+    <string name="welcome_no_connection_title">ਕੋਈ ਕਨੈਕਸ਼ਨ ਨਹੀਂ।</string>
+    <string name="welcome_no_connection_body">ਅਕਾਊਂਟ ਨਾਲ ਸਾਈਨ ਇਨ ਕਰਨ ਲਈ ਇੰਟਰਨੈੱਟ ਚਾਹੀਦਾ ਹੈ। ਹੁਣ ਅਕਾਊਂਟ ਤੋਂ ਬਿਨਾਂ ਵਰਤੋ ਅਤੇ ਬਾਅਦ ਵਿੱਚ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਕਨੈਕਟ ਕਰੋ।</string>
+    <string name="welcome_or">ਜਾਂ</string>
+    <string name="welcome_use_without_account">ਅਕਾਊਂਟ ਤੋਂ ਬਿਨਾਂ ਵਰਤੋ</string>
+    <string name="welcome_used_on_another_device">ਮੈਂ ਇਸ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡਿਵਾਈਸ \'ਤੇ ਵਰਤਿਆ ਹੈ</string>
+    <string name="welcome_sign_in_failed">ਇਸ ਵੇਲੇ ਸਾਈਨ ਇਨ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="welcome_legal_notice">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ %1$s ਸਵੀਕਾਰ ਕਰਦੇ ਹੋ ਅਤੇ %2$s ਤੋਂ ਜਾਣੂ ਹੋਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਦੇ ਹੋ।</string>
+    <string name="welcome_legal_terms">ਸੇਵਾ ਦੀਆਂ ਸ਼ਰਤਾਂ</string>
+    <string name="welcome_legal_privacy">ਪਰਦੇਦਾਰੀ ਨੀਤੀ</string>
+    <string name="welcome_no_account_note">ਅਕਾਊਂਟ ਤੋਂ ਬਿਨਾਂ, 30 ਦਿਨ ਨਾ ਵਰਤਣ \'ਤੇ ਤੁਹਾਡਾ ਡਾਟਾ ਮਿਟ ਜਾਂਦਾ ਹੈ। ਇਸ ਨੂੰ ਰੱਖਣ ਲਈ Google ਜਾਂ Apple ਕਨੈਕਟ ਕਰੋ।</string>
+    <string name="welcome_no_account_note_offline">ਅਕਾਊਂਟ ਤੋਂ ਬਿਨਾਂ, 30 ਦਿਨ ਨਾ ਵਰਤਣ \'ਤੇ ਤੁਹਾਡਾ ਡਾਟਾ ਮਿਟ ਜਾਂਦਾ ਹੈ। ਇਸ ਨੂੰ ਰੱਖਣ ਲਈ ਬਾਅਦ ਵਿੱਚ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ Google ਜਾਂ Apple ਕਨੈਕਟ ਕਰੋ।</string>
+    <string name="welcome_expired_title">ਤੁਹਾਡਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ</string>
+    <string name="welcome_expired_body">ਤੁਸੀਂ ਅਕਾਊਂਟ ਤੋਂ ਬਿਨਾਂ ਐਪ ਵਰਤ ਰਹੇ ਸੀ ਅਤੇ 30 ਦਿਨਾਂ ਤੱਕ ਇਸ ਨੂੰ ਨਹੀਂ ਖੋਲ੍ਹਿਆ, ਇਸ ਲਈ ਤੁਹਾਡਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ। ਅਗਲੀ ਵਾਰ ਇਸ ਨੂੰ ਰੱਖਣ ਲਈ Google ਜਾਂ Apple ਕਨੈਕਟ ਕਰੋ।</string>
+    <string name="welcome_expired_ok">ਠੀਕ ਹੈ</string>
+</resources>

@@ -11,9 +11,9 @@ h1 { font-weight: 800; letter-spacing: -.025em; }
 .line { display: block; width: max-content; max-width: none; white-space: nowrap; }
 
 /* Letters that join or stack: tightened, Arabic falls apart and Hindi's and Thai's marks touch the line above. */
-:lang(ar) h1, :lang(he) h1, :lang(hi) h1, :lang(th) h1, :lang(ur) h1, :lang(fa) h1, :lang(ta) h1, :lang(te) h1, :lang(mr) h1, :lang(gu) h1,
-:lang(ar) .stub b, :lang(he) .stub b, :lang(hi) .stub b, :lang(th) .stub b, :lang(ur) .stub b, :lang(fa) .stub b, :lang(ta) .stub b, :lang(te) .stub b, :lang(mr) .stub b, :lang(gu) .stub b { letter-spacing: 0; }
-:lang(ar) h1, :lang(hi) h1, :lang(th) h1, :lang(ur) h1, :lang(fa) h1, :lang(ta) h1, :lang(te) h1, :lang(mr) h1, :lang(gu) h1 { line-height: 1.3; }
+:lang(ar) h1, :lang(he) h1, :lang(hi) h1, :lang(th) h1, :lang(ur) h1, :lang(fa) h1, :lang(ta) h1, :lang(te) h1, :lang(mr) h1, :lang(gu) h1, :lang(pa) h1,
+:lang(ar) .stub b, :lang(he) .stub b, :lang(hi) .stub b, :lang(th) .stub b, :lang(ur) .stub b, :lang(fa) .stub b, :lang(ta) .stub b, :lang(te) .stub b, :lang(mr) .stub b, :lang(gu) .stub b, :lang(pa) .stub b { letter-spacing: 0; }
+:lang(ar) h1, :lang(hi) h1, :lang(th) h1, :lang(ur) h1, :lang(fa) h1, :lang(ta) h1, :lang(te) h1, :lang(mr) h1, :lang(gu) h1, :lang(pa) h1 { line-height: 1.3; }
 
 .phone {
   position: absolute;

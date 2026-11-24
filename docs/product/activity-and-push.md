@@ -165,6 +165,11 @@ The feed, unread state, real time and push notifications.
     ‘ડિનર’ ખર્ચ વહેંચ્યો"), a join or a leave being said with a transitive verb too ("એ ‘ગોવા ટ્રિપ’ ગ્રુપ જોઇન
     કર્યું"), whose past agrees with the object, not with who did it. Its deleted-item notice starts with who deleted
     it ("તમે …", `youSubjectLanguages`), and "You" is "તમે" everywhere.
+    Punjabi follows it too with its ergative "ਨੇ", written apart after a name, which the user's "ਤੁਸੀਂ" doesn't take:
+    every Punjabi verb phrase starts with "ਨੇ", which the user's rows drop ("Ana ਨੇ ‘ਡਿਨਰ’ ਖਰਚਾ ਵੰਡਿਆ", "ਤੁਸੀਂ
+    ‘ਡਿਨਰ’ ਖਰਚਾ ਵੰਡਿਆ"), a join or a leave being said with a transitive verb too ("ਨੇ ‘ਗੋਆ ਟ੍ਰਿਪ’ ਗਰੁੱਪ ਜੁਆਇਨ
+    ਕੀਤਾ"), whose past agrees with the object, not with who did it. Its deleted-item notice starts with who deleted it
+    ("ਤੁਸੀਂ …", `youSubjectLanguages`), and "You" is "ਤੁਸੀਂ" everywhere.
     Catalan swaps its perfect's auxiliary as French does: every Catalan verb phrase starts with "ha", or "l’ha" with a
     third-person object pronoun, which the user's rows turn into "has" / "l’has" ("Anna ha dividit la despesa…", "Tu
     has dividit la despesa…"). No reflexive verb comes after the actor, since its "s’ha" would need "t’has": a join is

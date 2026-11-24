@@ -879,6 +879,7 @@ export const el: Record<MessageKey, string> = {
   profile_languageGujarati: 'Γκουτζαράτι',
   profile_languageSlovenian: 'Σλοβενικά',
   profile_languageLithuanian: 'Λιθουανικά',
+  profile_languagePunjabi: 'Παντζάμπι',
   profile_bitcoinInSats: 'Bitcoin σε satoshi',
   profile_bitcoinInSatsDetail: 'Εμφανίζει και δέχεται ποσά bitcoin σε sats (1 ₿ = 100.000.000 sats).',
   profile_shareUsageData: 'Κοινοποίηση δεδομένων χρήσης',
