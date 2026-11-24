@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <string name="profile_setup_title">What do your friends call you?</string>
     <string name="profile_setup_subtitle">Your groups and anyone with your profile link see your name.</string>
     <string name="profile_setup_avatar_color">Avatar color</string>

@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">వెతుకులాటను క్లియర్ చేయండి</string>
     <string name="profile_language_no_results">దీనికి సరిపోయే భాష లేదు: “%1$s”</string>
     <string name="profile_language_system">సిస్టమ్</string>
-    <string name="profile_language_english">ఇంగ్లీష్</string>
+    <string name="profile_language_english">ఇంగ్లీష్ (అమెరికా)</string>
+    <string name="profile_language_english_uk">ఇంగ్లీష్ (యునైటెడ్ కింగ్‌డమ్)</string>
+    <string name="profile_language_english_australia">ఇంగ్లీష్ (ఆస్ట్రేలియా)</string>
+    <string name="profile_language_english_canada">ఇంగ్లీష్ (కెనడా)</string>
     <string name="profile_language_portuguese">పోర్చుగీస్ (బ్రెజిల్)</string>
     <string name="profile_language_portuguese_portugal">పోర్చుగీస్ (పోర్చుగల్)</string>
     <string name="profile_language_spanish">స్పానిష్ (లాటిన్ అమెరికా)</string>

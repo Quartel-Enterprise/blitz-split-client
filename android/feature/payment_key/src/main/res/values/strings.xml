@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <string name="payment_key_title_pix_new">New Pix key</string>
     <string name="payment_key_title_pix_edit">Edit Pix key</string>
     <string name="payment_key_title_bitcoin_new">New Bitcoin key</string>

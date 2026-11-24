@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <string name="app_name">Blitz Split</string>
     <!-- A comment's link that opened nothing -->
     <string name="bill_link_not_in_group_title">You\'re not in this group</string>

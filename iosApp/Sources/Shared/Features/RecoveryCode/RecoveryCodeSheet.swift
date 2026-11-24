@@ -253,6 +253,7 @@ private struct OptionRow: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .hoverRowHighlight()
         .disabled(!isEnabled)
         .opacity(isEnabled ? 1 : 0.4)
     }

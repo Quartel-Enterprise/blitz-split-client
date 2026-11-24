@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">I-clear ang paghahanap</string>
     <string name="profile_language_no_results">Walang wikang tumutugma sa “%1$s”</string>
     <string name="profile_language_system">System</string>
-    <string name="profile_language_english">Ingles</string>
+    <string name="profile_language_english">Ingles (US)</string>
+    <string name="profile_language_english_uk">Ingles (UK)</string>
+    <string name="profile_language_english_australia">Ingles (Australia)</string>
+    <string name="profile_language_english_canada">Ingles (Canada)</string>
     <string name="profile_language_portuguese">Portuges (Brazil)</string>
     <string name="profile_language_portuguese_portugal">Portuges (Portugal)</string>
     <string name="profile_language_spanish">Espanyol (Latin America)</string>

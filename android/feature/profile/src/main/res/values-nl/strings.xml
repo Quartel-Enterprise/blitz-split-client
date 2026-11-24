@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Zoekopdracht wissen</string>
     <string name="profile_language_no_results">Geen taal gevonden voor ‘%1$s’</string>
     <string name="profile_language_system">Systeem</string>
-    <string name="profile_language_english">Engels</string>
+    <string name="profile_language_english">Engels (Verenigde Staten)</string>
+    <string name="profile_language_english_uk">Engels (Verenigd Koninkrijk)</string>
+    <string name="profile_language_english_australia">Engels (Australië)</string>
+    <string name="profile_language_english_canada">Engels (Canada)</string>
     <string name="profile_language_portuguese">Portugees (Brazilië)</string>
     <string name="profile_language_portuguese_portugal">Portugees (Portugal)</string>
     <string name="profile_language_spanish">Spaans (Latijns-Amerika)</string>

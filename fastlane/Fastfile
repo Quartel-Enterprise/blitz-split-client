@@ -150,6 +150,21 @@ end
 # Store listing screenshots (docs/store-listing-screenshots.md): the Play and App Store images of every language, made
 # from the sample trip, and their upload. Ported from Bible Planner's lanes, with the retries its releases needed.
 ANDROID_PACKAGE = "com.quare.blitzsplit".freeze
+# Each App Store shelf (local-set.mjs's SHELF_LABELS) and the display type App Store Connect files it under. A
+# devices: option names shelves, and only theirs are replaced: deliver's overwrite_screenshots would delete every
+# shelf of a locale, so the lane deletes those alone and has deliver add the staged images to them.
+APP_STORE_SHELF_TYPES = {
+  "iphone_6_3" => "APP_IPHONE_61",
+  "iphone_6_7" => "APP_IPHONE_67",
+  "ipad_13" => "APP_IPAD_PRO_3GEN_129",
+  "ipad_11" => "APP_IPAD_PRO_3GEN_11",
+  "iphone_duo" => "APP_IPHONE_DUO",
+  "watch_ultra_3" => "APP_WATCH_ULTRA",
+  "mac" => "APP_DESKTOP",
+}.freeze
+MAC_SHELVES = %w[mac].freeze
+# The devices whose images go on another device's shelf (local-set.mjs's PLATFORMS): the open Duo on the Duo's.
+APP_STORE_SHELF_DEVICES = { "iphone_duo" => %w[iphone_duo_open] }.freeze
 # App Store Connect may not have finished deleting the screenshot sets deliver replaces:
 SCREENSHOT_SET_RACE_MESSAGE = "Screenshot Set Already Exists".freeze
 SCREENSHOT_SET_RACE_ATTEMPTS = 3
@@ -168,7 +183,7 @@ SCREENSHOT_REORDER_REFUSED_MESSAGE = "Can't Add/Remove Relationship when reorder
 # The most App Store Connect lists per page of a shelf's screenshots, which is far more than a shelf holds:
 APP_STORE_SHELF_PAGE_SIZE = 200
 
-desc "Generate the store listing's art of both stores in all 45 languages (docs/store-listing-screenshots.md), then"
+desc "Generate the store listing's art of both stores in all 48 languages (docs/store-listing-screenshots.md), then"
 desc "upload it. Options: skip_upload:true only generates (store_listings/listing-art/ and the fastlane folders);"
 desc "platform:android or platform:ios does one store (ios: iPhone, iPad, iPhone Duo and Mac); skip_capture:true"
 desc "reuses the Apple captures already in build/; skip_mac:true leaves the Mac out (its capture drives this Mac's"
@@ -241,6 +256,12 @@ def upload_store_screenshots(repo_root, platforms, options)
     UI.user_error!("locales: names no locale") if play_locales.empty?
     UI.user_error!("locales: is Google Play's alone (platform:android) and takes the place of locale:") if platforms != ["android"] || locale
   end
+  devices = app_store_devices(options[:devices])
+  # devices: names App Store shelves: Google Play's would go up in full, so a run naming some is the App Store's alone
+  if devices && platforms.include?("android")
+    UI.important("devices: names App Store shelves, so Google Play is left out of this run (play-store-screenshots.yml takes its own devices)")
+    platforms -= ["android"]
+  end
   quota_is_no_failure = options[:save_quota_is_no_failure].to_s == "true"
   validates_only = validate_only?(options[:validate_only])
   if validates_only && platforms != ["android"]
@@ -258,19 +279,52 @@ def upload_store_screenshots(repo_root, platforms, options)
   if stores.key?("android")
     upload_play_screenshots(play_path, play_locales.empty? ? [locale].compact : play_locales, validates_only, quota_is_no_failure)
   end
-  refuse_app_store_set_without_iphone_duo(app_store_path, locale) if stores.key?("ios")
-  upload_app_store_screenshots(mac_path, locale, "osx") if stores.key?("mac")
+  # A devices: list without a version's shelves leaves that version as it is
+  sends_ios = stores.key?("ios") && (devices.nil? || (devices - MAC_SHELVES).any?)
+  sends_mac = devices.nil? || devices.intersect?(MAC_SHELVES)
+  # Only a run that replaces the Duo's shelf can empty it: one naming other devices leaves it as it is
+  if sends_ios && (devices.nil? || devices.include?("iphone_duo"))
+    refuse_app_store_set_without_iphone_duo(app_store_path, locale)
+  end
+  if stores.key?("mac") && !sends_mac && !stores.key?("ios")
+    UI.user_error!("devices: names no Mac shelf, and this run sends the Mac's alone: #{devices.join(', ')}")
+  end
+  upload_app_store_screenshots(mac_path, locale, "osx", devices) if stores.key?("mac") && sends_mac
   return unless stores.key?("ios")
 
-  uploads = { "ios" => -> { upload_app_store_screenshots(app_store_path, locale, "ios") } }
+  # platform:ios sends the Mac's too, unless skip_mac says otherwise
+  uploads = {}
+  uploads["ios"] = -> { upload_app_store_screenshots(app_store_path, locale, "ios", devices) } if sends_ios
   if options[:skip_mac]
     UI.important("skip_mac: the Mac listing keeps its own")
+  elsif !sends_mac
+    UI.important("devices: names no Mac shelf, so the Mac listing keeps its own")
   elsif Dir.glob(File.join(mac_path, "*", "*.png")).any?
-    uploads["osx"] = -> { upload_app_store_screenshots(mac_path, locale, "osx") }
+    uploads["osx"] = -> { upload_app_store_screenshots(mac_path, locale, "osx", devices) }
   else
     UI.important("No Mac screenshots staged: the Mac listing keeps its own")
   end
+  UI.user_error!("devices: names no shelf of the App Store versions this run sends: #{devices.join(', ')}") if uploads.empty?
   each_app_store_version(uploads)
+end
+
+# The App Store shelves a devices: option names (iphone_duo,watch_ultra_3), or nil for every shelf. Refused when it
+# names none, or one that isn't a shelf, rather than read as every shelf.
+def app_store_devices(option)
+  return nil if option.nil?
+
+  devices = option.to_s.split(",").map(&:strip).reject(&:empty?).uniq
+  UI.user_error!("devices: names no shelf (#{APP_STORE_SHELF_TYPES.keys.join(', ')})") if devices.empty?
+  unknown = devices - APP_STORE_SHELF_TYPES.keys
+  UI.user_error!("devices: has #{unknown.join(', ')}, no shelf of #{APP_STORE_SHELF_TYPES.keys.join(', ')}") if unknown.any?
+  devices
+end
+
+# Whether a staged image goes on one of `devices`' shelves: <screen>_<device>.png, the open Duo on the Duo's shelf.
+def on_app_store_shelves?(file_name, devices)
+  devices.any? do |shelf|
+    [shelf, *APP_STORE_SHELF_DEVICES.fetch(shelf, [])].any? { |device| file_name.end_with?("_#{device}.png") }
+  end
 end
 
 # deliver replaces every screenshot of a locale, so a locale staged without the iPhone Duo would lose its shelf, as
@@ -572,33 +626,37 @@ end
 # landed: the tidy-up after the last locale sorts it, and names it. An upload that fails on one shelf (a size App Store
 # Connect refuses, as the iPhone Duo's inner display might) has put the other shelves up by then, unsorted, since
 # deliver sorts last: the tidy-up runs for them too, and the upload's failure is the one reported.
-def upload_app_store_screenshots(screenshots_path, locale, platform)
+def upload_app_store_screenshots(screenshots_path, locale, platform, devices = nil)
   api_key = app_store_api_key
   upload_error = nil
-  with_locale_only(screenshots_path, locale) do |path|
-    ensure_screenshots_staged(File.join(path, "*", "*.png"))
-    begin
-      tolerating(SCREENSHOT_REORDER_REFUSED_MESSAGE) do
-        retrying_on(SCREENSHOT_SET_RACE_MESSAGE, attempts: SCREENSHOT_SET_RACE_ATTEMPTS, wait_seconds: SCREENSHOT_SET_RACE_WAIT_SECONDS) do
-          upload_to_app_store(
-            api_key: api_key,
-            app_identifier: BUNDLE_ID,
-            # Unset, deliver uses the editable version; set, it creates that version when it doesn't exist yet
-            app_version: ENV["APP_VERSION"],
-            platform: platform,
-            screenshots_path: path,
-            skip_binary_upload: true,
-            skip_metadata: true,
-            skip_screenshots: false,
-            submit_for_review: false,
-            force: true,
-            precheck_include_in_app_purchases: false,
-            overwrite_screenshots: true,
-          )
+  with_locale_only(screenshots_path, locale) do |whole|
+    with_app_store_shelves_only(whole, devices) do |path|
+      ensure_screenshots_staged(File.join(path, "*", "*.png"))
+      begin
+        delete_app_store_shelves(platform, Dir.children(path).reject { |name| name.start_with?(".") }, devices) if devices
+        tolerating(SCREENSHOT_REORDER_REFUSED_MESSAGE) do
+          retrying_on(SCREENSHOT_SET_RACE_MESSAGE, attempts: SCREENSHOT_SET_RACE_ATTEMPTS, wait_seconds: SCREENSHOT_SET_RACE_WAIT_SECONDS) do
+            upload_to_app_store(
+              api_key: api_key,
+              app_identifier: BUNDLE_ID,
+              # Unset, deliver uses the editable version; set, it creates that version when it doesn't exist yet
+              app_version: ENV["APP_VERSION"],
+              platform: platform,
+              screenshots_path: path,
+              skip_binary_upload: true,
+              skip_metadata: true,
+              skip_screenshots: false,
+              submit_for_review: false,
+              force: true,
+              precheck_include_in_app_purchases: false,
+              # With devices:, their shelves were deleted above and the others are kept: deliver adds the staged images
+              overwrite_screenshots: devices.nil?,
+            )
+          end
         end
+      rescue => e
+        upload_error = e
       end
-    rescue => e
-      upload_error = e
     end
   end
   if locale.nil?
@@ -632,6 +690,71 @@ def ensure_screenshots_staged(glob)
   staged = Dir.glob(glob)
   UI.user_error!("No staged screenshots matching #{glob}") if staged.empty?
   UI.message("Found #{staged.size} staged screenshot(s)")
+end
+
+# Yields `path`, or a temporary copy holding only the images of `devices`' shelves, each locale's folder kept.
+def with_app_store_shelves_only(path, devices)
+  return yield(path) if devices.nil?
+
+  require "tmpdir"
+  Dir.mktmpdir("shelves-") do |dir|
+    Dir.glob("*/*.png", base: path).each do |image|
+      next unless on_app_store_shelves?(File.basename(image), devices)
+
+      FileUtils.mkdir_p(File.join(dir, File.dirname(image)))
+      FileUtils.cp(File.join(path, image), File.join(dir, image))
+    end
+    yield(dir)
+  end
+end
+
+# Deletes the shelves of `devices` in `locales` of the editable version, and checks that none is left, as deliver
+# does with every shelf for overwrite_screenshots. A version with none of them yet has nothing to delete.
+def delete_app_store_shelves(platform, locales, devices, tries: 5, wait_seconds: 10)
+  require "spaceship"
+
+  types = devices.map { |device| APP_STORE_SHELF_TYPES.fetch(device) }
+  app = Spaceship::ConnectAPI::App.find(BUNDLE_ID)
+  store_platform = Spaceship::ConnectAPI::Platform.map(platform.to_sym)
+  # The version deliver writes on: APP_VERSION's, or the editable one. A version App Store Connect creates copies the
+  # previous one's screenshots, and deliver without overwrite_screenshots would add to those, so it must exist first.
+  if ENV["APP_VERSION"].to_s.empty?
+    version = app.get_edit_app_store_version(platform: store_platform)
+    return if version.nil?
+  else
+    version = app.get_app_store_versions(filter: { versionString: ENV["APP_VERSION"], platform: store_platform }).first
+    if version.nil?
+      UI.user_error!("devices: replaces shelves of version #{ENV['APP_VERSION']}, which doesn't exist yet: send the whole set to create it")
+    end
+  end
+
+  tries.times do |attempt|
+    # Why: a set just deleted may still be listed for a moment, and read again at once it would be deleted again and
+    # counted as one that wouldn't go. The first check after the deletions is at once, which is when they all went
+    sleep(wait_seconds) if attempt > 1
+    sets = version.get_app_store_version_localizations.select { |localization| locales.include?(localization.locale) }
+                   .flat_map { |localization| localization.get_app_screenshot_sets.map { |set| [localization.locale, set] } }
+    # An image of these devices on a shelf of another type means the table is wrong: deleting by it would leave the
+    # old images, and deliver would add the new ones beside them
+    elsewhere = sets.reject { |_, set| types.include?(set.screenshot_display_type) }.select do |_, set|
+      (set.app_screenshots || []).any? { |screenshot| on_app_store_shelves?(screenshot.file_name.to_s, devices) }
+    end
+    if elsewhere.any?
+      UI.user_error!("App Store Connect holds images of #{devices.join(', ')} under " \
+                     "#{elsewhere.map { |l, set| "#{l} #{set.screenshot_display_type}" }.uniq.join(', ')}, " \
+                     "not the types APP_STORE_SHELF_TYPES gives them (#{types.join(', ')}): fix the table")
+    end
+    left = sets.select { |_, set| types.include?(set.screenshot_display_type) }
+    return if left.empty?
+
+    UI.user_error!("Could not delete #{left.map { |l, set| "#{l} #{set.screenshot_display_type}" }.join(', ')}") if attempt == tries - 1
+    left.each do |locale_code, set|
+      set.delete!
+      UI.message("Deleted #{locale_code} #{set.screenshot_display_type}")
+    rescue => e
+      UI.error("Could not delete #{locale_code} #{set.screenshot_display_type}: #{e.message.lines.first.to_s.strip}")
+    end
+  end
 end
 
 # Yields `path`, or a temporary copy holding only `locale`'s folder: supply and deliver upload every locale they find.

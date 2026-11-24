@@ -24,11 +24,16 @@ import { LANGS } from "./release-notes.mjs";
 export const LISTING_DIR = "store-listing";
 
 /**
- * The languages a listing is written in: the release notes' and Spain's Spanish, right after Latin America's. The
- * stores list Spain apart from the rest (es-ES), and people there search and read in other words ("ticket",
- * "móvil", "os pagáis"), as with Portugal's Portuguese, so each has a listing written in full.
+ * The listings of a release notes' language that the stores list by region too, right after the language's own: Spain's
+ * Spanish after Latin America's, and Britain's, Australia's and Canada's English after the American one. People there
+ * search and read in other words ("ticket", "móvil", "os pagáis"; "flatmates", "holiday", "mates"), as with Portugal's
+ * Portuguese, so each has a listing written in full. Their "What's new" is the language's (the Fastfile's
+ * with_notes_for).
  */
-export const LISTING_LANGS = LANGS.flatMap((lang) => (lang === "es" ? ["es", "es-ES"] : [lang]));
+const REGIONAL_LISTINGS = { en: ["en", "en-GB", "en-AU", "en-CA"], es: ["es", "es-ES"] };
+
+/** The languages a listing is written in: the release notes' and the regional ones of REGIONAL_LISTINGS. */
+export const LISTING_LANGS = LANGS.flatMap((lang) => REGIONAL_LISTINGS[lang] ?? [lang]);
 
 /**
  * A listing's fields, in the order its file has them: the heading that starts each one, the most characters its
@@ -54,6 +59,10 @@ export const FIELDS = [
  */
 export const PLAY_LOCALES = {
   en: ["en-US"],
+  // Britain's listing also goes to the other English locales Play has, which write as Britain (Pierre's call).
+  "en-GB": ["en-GB", "en-IN", "en-SG", "en-ZA"],
+  "en-AU": ["en-AU"],
+  "en-CA": ["en-CA"],
   pt: ["pt-BR"],
   "pt-PT": ["pt-PT"],
   es: ["es-419", "es-US"],
@@ -101,6 +110,9 @@ export const PLAY_LOCALES = {
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
+  "en-GB": ["en-GB"],
+  "en-AU": ["en-AU"],
+  "en-CA": ["en-CA"],
   pt: ["pt-BR"],
   "pt-PT": ["pt-PT"],
   es: ["es-MX"],

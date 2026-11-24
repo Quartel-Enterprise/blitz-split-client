@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Why: names en-AU in the generated locale config, so the system's per-app language setting offers it; its strings
+     come from values-b+en+001, the British ones every Commonwealth English reads. -->
+<resources>
+</resources>

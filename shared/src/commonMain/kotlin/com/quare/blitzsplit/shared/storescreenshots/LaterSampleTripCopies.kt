@@ -1,11 +1,53 @@
 package com.quare.blitzsplit.shared.storescreenshots
 
 /*
- * Why: the sample trips of the languages added after Filipino, kept apart so neither file outgrows the 600 lines ktlint
- * allows; SampleTripCopies joins them.
+ * Why: the sample trips of the languages added after Filipino and of the English regions, kept apart so neither file
+ * outgrows the 600 lines ktlint allows; SampleTripCopies joins them.
  */
 internal object LaterSampleTripCopies {
     val byLanguage: Map<String, SampleTripCopy> = mapOf(
+        "en-GB" to SampleTripCopy(
+            groupName = "Lisbon trip",
+            people = listOf("Oliver", "Amelia", "Harry", "Isla", "George"),
+            dinner = "Dinner at the trattoria",
+            apartment = "Flat in Alfama",
+            groceries = "Groceries",
+            carRental = "Car hire",
+            boatTour = "Boat trip",
+            taxi = "Taxi from the airport",
+            roommates = "Flatmates",
+            soccer = "Friday football",
+            court = "Pitch booking",
+            items = listOf("Pizza margherita", "Burrata", "Risotto ai funghi", "Tiramisù", "Prosecco", "Espresso"),
+        ),
+        "en-AU" to SampleTripCopy(
+            groupName = "Lisbon trip",
+            people = listOf("Jack", "Charlotte", "Oliver", "Mia", "Henry"),
+            dinner = "Dinner at the trattoria",
+            apartment = "Apartment in Alfama",
+            groceries = "Groceries",
+            carRental = "Car hire",
+            boatTour = "Boat tour",
+            taxi = "Taxi from the airport",
+            roommates = "Housemates",
+            soccer = "Friday soccer",
+            court = "Court booking",
+            items = listOf("Pizza margherita", "Burrata", "Risotto ai funghi", "Tiramisù", "Prosecco", "Espresso"),
+        ),
+        "en-CA" to SampleTripCopy(
+            groupName = "Lisbon trip",
+            people = listOf("Ethan", "Chloe", "Lucas", "Maya", "Owen"),
+            dinner = "Dinner at the trattoria",
+            apartment = "Apartment in Alfama",
+            groceries = "Groceries",
+            carRental = "Car rental",
+            boatTour = "Boat tour",
+            taxi = "Taxi from the airport",
+            roommates = "Roommates",
+            soccer = "Friday soccer",
+            court = "Court booking",
+            items = listOf("Pizza margherita", "Burrata", "Risotto ai funghi", "Tiramisù", "Prosecco", "Espresso"),
+        ),
         "sr" to SampleTripCopy(
             groupName = "Putovanje u Lisabon",
             people = listOf("Jelena", "Marko", "Ana", "Nikola", "Stefan"),

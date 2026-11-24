@@ -2,7 +2,7 @@
 
 The Google Play and App Store screenshots are **generated, not taken by hand**. Each one is a real screen of the app,
 showing a sample trip among five friends, laid out in the listing art's design: a blue background, one phrase, the
-device, a part of the screen drawn larger and, on some, a ticket or a receipt, in all 45 languages of the listings.
+device, a part of the screen drawn larger and, on some, a ticket or a receipt, in all 48 languages of the listings.
 None of the images is versioned: every run rebuilds them from source. Words, colors and the placement of each image
 are `scripts/store-screenshots/listing-art/` (`compose.mjs`, `copy.tsv`); there is no other drawing of them.
 
@@ -46,13 +46,18 @@ at, and sent through GitHub: [Sending a set made on a Mac](#sending-a-set-made-o
 through the `play-store-screenshots` workflow, which draws and sends them without a release and leaves the App
 Store's as they are: [Sending Google Play's alone](#sending-google-plays-alone).
 
-The lane runs, each step under `scripts/heavy-check.sh`:
+Each step of the lane runs under `scripts/heavy-check.sh`. The queue is first come, first served, so a session's check
+that arrived meanwhile runs before the lane's next step, and `capture-ios.sh` lets the ones that wait go first between
+two languages too (`heavy-check.sh --yield`): a check of another checkout then waits for a language, not for a slot.
+One of the lane's own checkout waits for the step to end, since it could delete the build folder the lane works in,
+and the iPhone Duo's two slots and `capture-mac.sh` hold the queue until they end. The lane runs:
 
 1. **Google Play:** `./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt` draws the bare screens and
    `-PcreativeAssets` what the tickets write; `compose.mjs` lays them out, `watch/draw-wear.sh` draws the Wear OS
    watch's ([The watches' screenshots](#the-watches-screenshots)) and `listing-art/stage-play.mjs` copies the result to
    `fastlane/metadata/android/<locale>/images/` where supply uploads from. Latin America's Spanish goes out
-   to each regional code (`es-419` and `es-US`), and Spain's to `es-ES`, as the listing text does
+   to each regional code (`es-419` and `es-US`), Spain's to `es-ES`, and Britain's English to `en-GB`, `en-IN`,
+   `en-SG` and `en-ZA`, as the listing text does
    ([store-listing.md](store-listing.md)).
 2. **App Store:** `scripts/store-screenshots/listing-art/capture.sh` runs `capture-ios.sh`, which builds the
    `BoraRachar-iOS-StoreScreenshots` UI tests once and runs them on one simulator per slot, one language at a time
@@ -171,6 +176,7 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
    | `ios`, `macos` | on | The iPhone's and iPad's version, the Mac's version: each is a version of its own on App Store Connect |
    | `app_version` | blank | The version to write on, X.Y.Z, created when it is missing. Blank writes on the one open for editing, whatever its number: a release renames it later and keeps its screenshots |
    | `allow_missing_devices` | off | The set leaves a device out on purpose, never the iPhone Duo |
+   | `devices` | blank | Replaces these shelves alone, with commas (`iphone_duo,watch_ultra_3`), as the set was sent with `--devices`: the other shelves of each locale stay as they are ([Some devices alone](#some-devices-alone)) |
    | `locales` | blank | Send these locales of the set alone, App Store codes with a space between (`en-US de-DE`): [Repairing shelves](#repairing-shelves) |
    | `tidy_only` | off | Send nothing and fetch no set: only the tidy-up and its check ([Repairing shelves](#repairing-shelves)) |
 
@@ -265,6 +271,30 @@ Connect that behaves as those shelves did (one screenshot under two ids, both go
 order refused unless it names all 11), with a shelf short of a file, a locale with no shelf, one of 215 screenshots
 over two pages and one whose lists disagree; it has not talked to App Store Connect itself.
 
+### Some devices alone
+
+deliver's `overwrite_screenshots` deletes every shelf of a locale before it uploads, which is why a set holds every
+device. To send one device, the iPhone Duo after its capture or the Apple Watch's four, without staging the others
+again:
+
+```bash
+node scripts/store-screenshots/local-set.mjs send --platform ios --devices iphone_duo --name 3.2.0-duo
+gh workflow run app-store-screenshots.yml -f set=3.2.0-duo -f macos=false -f devices=iphone_duo
+```
+
+`--devices` (the names of `SHELF_LABELS`: `iphone_6_3`, `iphone_6_7`, `ipad_13`, `ipad_11`, `iphone_duo`,
+`watch_ultra_3`, `mac`) checks and packs only those shelves, which every locale must have whole, and leaves the
+other staged images out. The lane (`upload_screenshots devices:…`) then deletes those shelves alone, by their display
+types (`APP_STORE_SHELF_TYPES` in the Fastfile), and runs deliver without `overwrite_screenshots`, so it adds the
+staged images and keeps every other shelf. A set without the iPhone Duo is refused only when it replaces the Duo's
+shelf. `-f locales="…"` narrows it further, to some languages.
+
+The workflow refuses `devices` for a set that holds other shelves (`--no-left-out`): such a set was sent whole, and
+the run would remove it with those shelves never sent. It refuses a version left on whose shelves `devices` doesn't
+name (dispatch it with `-f macos=false` or `-f ios=false`), and the lane refuses `devices` on an `app_version` that
+doesn't exist yet, since App Store Connect fills a new version with the previous one's screenshots and deliver would
+add to them: send the whole set to create it.
+
 ## Sending Google Play's alone
 
 Robolectric draws Play's screens, so nothing is captured on a device and they need no set sent from a Mac. Chrome
@@ -274,7 +304,13 @@ workflow draws them and sends them, with no release and without touching the App
 ```bash
 gh workflow run play-store-screenshots.yml -f validate_only=true   # draw them and ask Google Play: nothing changes
 gh workflow run play-store-screenshots.yml                         # draw them and send them
+gh workflow run play-store-screenshots.yml -f locales=hr,hu -f devices=play_phone,wear   # those alone
 ```
+
+**Some languages or image types alone.** `locales` (listing tags of `locales.tsv`, with commas) and `devices`
+(`play_phone`, `play_tablet_7`, `play_tablet_10`, `wear`) narrow the drawing and the staging (`ART_LOCALES`,
+`ART_DEVICES` and `PLAY_DEVICES` of `stage-play.mjs`): supply replaces only the image types it finds staged, so the
+others stay on Google Play as they are, and a run of the phone alone skips the watch's drawing.
 
 **Google Play shows a listing's screenshots to everyone the moment they change**, whatever release is out, so the
 second command is the whole publication. Dispatch it, an administrator, on `main`, once no release and no listing
@@ -393,7 +429,7 @@ measured. Should Google Play refuse to open that edit for the quota, the group w
 
 ## The watches' screenshots
 
-The two watch apps' screens at the size each store takes, in all 45 languages, written to
+The two watch apps' screens at the size each store takes, in all 48 languages, written to
 `store_listings/watch/<store>/<locale>/` to look at (`store_listings/` is git-ignored: none of the images is versioned).
 
 - **Wear OS goes to Google Play with the rest**: `watch/draw-wear.sh` draws it into `build/outputs/store-screenshots-wear/`
@@ -453,7 +489,7 @@ show the watch screen bare too, with the art on the iPhone's screenshots alone.
 
 Besides the screenshots, an App Store product page takes two images of its own, under **Product Page Information ›
 Header and Search Results** in App Store Connect. They appear on iOS and iPadOS 27 and later, and are generated like
-the screenshots, in all 45 languages:
+the screenshots, in all 48 languages:
 
 ```bash
 ./scripts/store-screenshots/creative-assets/generate.sh                               # capture, then draw
@@ -699,7 +735,10 @@ scripts/store-screenshots/local-set.mjs        # the check of a set made on a Ma
   (`PLAY_LOCALES`, `APP_STORE_LOCALES`). Its `language` is the app language's code, which keys the trip. Portugal's
   Portuguese goes by its whole tag, `pt-PT`, since `pt` is Brazil's: its own words and trip (in euros, "tu",
   Blitz Split), over the app's `pt-PT` strings. Spain's Spanish goes by `es-ES` the same way, since `es` is Latin
-  America's: its own words and trip ("ha pagado", "coche", "ticket"), over the app's `es-ES` strings.
+  America's: its own words and trip ("ha pagado", "coche", "ticket"), over the app's `es-ES` strings. Britain's,
+  Australia's and Canada's English go by `en-GB`, `en-AU` and `en-CA`, since `en` is the American one: their own trip
+  in pounds, Australian and Canadian dollars ("Flatmates", "Car hire", "Friday football" in Britain), over the app's
+  British (`values-b+en+001`) and Canadian strings, the dates and amounts written as each region writes them.
 
 ## The locale every image is drawn in
 

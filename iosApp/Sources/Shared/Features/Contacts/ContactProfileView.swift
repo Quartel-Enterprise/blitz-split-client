@@ -444,6 +444,7 @@ private struct ContactProfileHeader: View {
                     .contentShape(.circle)
             }
             .buttonStyle(.plain)
+            .hoverDim()
             .accessibilityLabel("View photo")
             .scaleEffect(reduceMotion ? 1 : scroll?.avatarScale ?? 1, anchor: .bottom)
             .opacity(Double(scroll?.avatarOpacity ?? 1))
@@ -730,6 +731,7 @@ private struct GroupsInCommon: View {
                         .contentShape(.rect)
                     }
                     .buttonStyle(.plain)
+                    .hoverHighlight(in: .rect(cornerRadius: 8))
                     if index < contact.groups.count - 1 {
                         Divider()
                     }

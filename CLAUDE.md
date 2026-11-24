@@ -37,7 +37,7 @@ node scripts/release/release-notes.mjs check   # the release notes' fragments (d
 node scripts/release/store-listing.mjs check   # the stores' listing text (docs/store-listing.md)
 ./scripts/heavy-check.sh <command>    # run a heavy build (Gradle, xcodebuild, the web build) once no other worktree runs one
 ./gradlew :androidApp:assembleDebug   # Android
-./iosApp/generate-project.sh          # then build the BoraRachar-iOS or BoraRachar-macOS scheme in Xcode
+./iosApp/generate-project.sh          # then build the BoraRachar-iOS or BoraRachar-macOS scheme in Xcode; --watch embeds the watch app
 npm --prefix webApp run dev           # web dev server (builds the shared JS library first); `build` for dist/
 ```
 

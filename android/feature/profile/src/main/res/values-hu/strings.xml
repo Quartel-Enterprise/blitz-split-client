@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Keresés törlése</string>
     <string name="profile_language_no_results">Nincs találat erre: „%1$s”</string>
     <string name="profile_language_system">Rendszer</string>
-    <string name="profile_language_english">Angol</string>
+    <string name="profile_language_english">Angol (Egyesült Államok)</string>
+    <string name="profile_language_english_uk">Angol (Egyesült Királyság)</string>
+    <string name="profile_language_english_australia">Angol (Ausztrália)</string>
+    <string name="profile_language_english_canada">Angol (Kanada)</string>
     <string name="profile_language_portuguese">Portugál (Brazília)</string>
     <string name="profile_language_portuguese_portugal">Portugál (Portugália)</string>
     <string name="profile_language_spanish">Spanyol (Latin-Amerika)</string>

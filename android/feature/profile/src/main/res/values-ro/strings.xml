@@ -55,7 +55,10 @@
     <string name="profile_language_search_clear">Șterge căutarea</string>
     <string name="profile_language_no_results">Nicio limbă nu se potrivește cu „%1$s”</string>
     <string name="profile_language_system">Sistem</string>
-    <string name="profile_language_english">Engleză</string>
+    <string name="profile_language_english">Engleză (SUA)</string>
+    <string name="profile_language_english_uk">Engleză (Regatul Unit)</string>
+    <string name="profile_language_english_australia">Engleză (Australia)</string>
+    <string name="profile_language_english_canada">Engleză (Canada)</string>
     <string name="profile_language_portuguese">Portugheză (Brazilia)</string>
     <string name="profile_language_portuguese_portugal">Portugheză (Portugalia)</string>
     <string name="profile_language_spanish">Spaniolă (America Latină)</string>

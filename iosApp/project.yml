@@ -2,9 +2,16 @@
 # ./iosApp/generate-project.sh, which reads the app version from ../version.properties.
 name: BoraRachar
 
+# The Apple Watch app inside the iPhone app: on CI and with --watch, never in a project generated for a simulator
+# run on this Mac (generate-project.sh says why)
+include:
+  - path: watch-embed.yml
+    enable: ${BLITZSPLIT_EMBED_WATCH}
+
 options:
   bundleIdPrefix: com.quare
-  # English is the source language and the fallback of every language but Portuguese (pt-BR, pt-PT), Spanish (es, es-ES), French (fr),
+  # English is the source language (with Britain's, Australia's and Canada's en-GB, en-AU and en-CA holding the words
+  # they spell differently) and the fallback of every language but Portuguese (pt-BR, pt-PT), Spanish (es, es-ES), French (fr),
   # German (de), Italian (it), Polish (pl), Dutch (nl), Japanese (ja), Turkish (tr), Indonesian (id), Russian (ru),
   # Ukrainian (uk), Korean (ko), Hindi (hi), Arabic (ar), Simplified Chinese (zh-Hans), Hebrew (he), Thai (th), Vietnamese (vi), Traditional Chinese (zh-Hant), Swedish
   # (sv), Czech (cs), Romanian (ro), Bengali (bn), Malay (ms), Greek (el), Croatian (hr), Hungarian (hu), Urdu (ur), Filipino (fil), Serbian (sr-Latn) and Slovak (sk), Persian (fa), Tamil (ta), Norwegian (nb), Telugu (te), Bulgarian (bg), Marathi (mr), Swahili (sw), Catalan (ca), Danish (da) and Finnish (fi)
@@ -45,7 +52,7 @@ settings:
     # Firebase's Objective-C categories, as its setup asks.
     FRAMEWORK_SEARCH_PATHS: $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
     OTHER_LDFLAGS: [-framework, Shared, -lsqlite3, -ObjC]
-    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, pt-BR, pt-PT, es, es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr-Latn and sk, fa, ta, nb, te, bg, mr, sw, ca, da and fi)
+    # Xcode extracts the Swift UI literals into Resources/Localizable.xcstrings (English source, en-GB, en-AU, en-CA, pt-BR, pt-PT, es, es-ES, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh-Hans, he, th, vi, zh-Hant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr-Latn and sk, fa, ta, nb, te, bg, mr, sw, ca, da and fi)
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
     GENERATE_INFOPLIST_FILE: YES
@@ -70,7 +77,14 @@ targetTemplates:
     preBuildScripts:
       - name: Build the Shared framework
         basedOnDependencyAnalysis: false
+        # A project generated without the watch app (watch-embed.yml) builds an iPhone app that would ship alone:
+        # an archive of it stops here, before Gradle links a release framework for minutes. Any other build goes
+        # on, a Release one too, as Instruments' Profile runs
         script: |
+          if [ "$ACTION" = "install" ] && [ "$PLATFORM_NAME" = "iphoneos" ] && [ "$BLITZSPLIT_EMBEDS_WATCH" != "YES" ]; then
+            echo "error: this project was generated without the Apple Watch app, which an archive ships inside the iPhone app. Generate it again: ./iosApp/generate-project.sh --watch"
+            exit 1
+          fi
           if [ "YES" = "$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED" ]; then
             echo "Skipping the Gradle build: OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED is YES"
             exit 0
@@ -95,8 +109,9 @@ targetTemplates:
         script: |
           /usr/bin/python3 -I "$SRCROOT/check-translations.py" "$SRCROOT/Resources"
     postBuildScripts:
-      # Xcode compiles es-ES.lproj and pt-PT.lproj with only the words Spain and Portugal say differently, and an
-      # es-ES or pt-PT app would show English for the rest: this fills each table with its language's (es, pt-BR),
+      # Xcode compiles es-ES.lproj, pt-PT.lproj, en-GB.lproj, en-AU.lproj and en-CA.lproj with only the words Spain,
+      # Portugal, Britain, Australia and Canada say differently, and an es-ES or pt-PT app would show English for the
+      # rest, an en-GB one only those words: this fills each table with its language's (es, pt-BR, en),
       # the keys the catalogs give the region winning, before signing
       - name: Fill the regional tables with their language's
         basedOnDependencyAnalysis: false
@@ -154,13 +169,10 @@ targets:
       - path: Widgets/Shared
       # The widget's file from the shared code's snapshot, which the watch app writes too
       - path: Sources/WidgetSnapshot
+    # The Apple Watch app the iPhone app ships with is one more dependency, which watch-embed.yml adds when
+    # generate-project.sh includes it: without it, a build of this target links one Shared framework, not two
     dependencies:
       - target: BalanceWidget
-        embed: true
-        codeSign: true
-      # The Apple Watch app ships inside the iPhone app's bundle (Watch/), as App Store Connect delivers a companion
-      # watch app, and installs on its own from the watch's App Store too (WKRunsIndependentlyOfCompanionApp)
-      - target: BoraRachar-watchOS
         embed: true
         codeSign: true
     info:
@@ -226,8 +238,8 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
         INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
     postBuildScripts:
-      # As the app's: the widget draws in the app's language, es-ES and pt-PT included, whose tables hold only the
-      # words Spain and Portugal say differently until this fills them with es's and pt-BR's
+      # As the app's: the widget draws in the app's language, es-ES, pt-PT and the English regions included, whose
+      # tables hold only the words their region says differently until this fills them with es's, pt-BR's and en's
       - name: Fill the regional tables with their language's
         basedOnDependencyAnalysis: false
         script: |

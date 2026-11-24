@@ -143,6 +143,7 @@ private struct PersonRow: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .hoverRowHighlight()
         .personAccessibility(person, action: action)
     }
 }
@@ -176,6 +177,7 @@ private struct PersonFace: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .hoverDim()
         .personAccessibility(person, action: action)
     }
 }
@@ -304,6 +306,8 @@ struct HomeSummaryCard: View {
                 RoundedRectangle(cornerRadius: 26).fill(Palette.card)
             }
             .buttonStyle(.plain)
+            // On the button behind, not the card: over "Owe you" or "You owe", disabled or not, only that button answers
+            .hoverHighlight(in: .rect(cornerRadius: 26))
             .accessibilityLabel(Text("See balances"))
         }
     }
@@ -394,9 +398,6 @@ private struct ShortcutTile: View {
     let isEnabled: Bool
     let action: () -> Void
 
-    /// A pointer over the tile (the Mac, an iPad's trackpad) tints it, so the card reads as a button.
-    @State private var isHovered = false
-
     var body: some View {
         Button(action: action) {
             VStack(spacing: 6) {
@@ -422,18 +423,11 @@ private struct ShortcutTile: View {
             .padding(.horizontal, 6)
             .padding(.vertical, 12)
             .background(Palette.card, in: .rect(cornerRadius: 22))
-            .overlay {
-                if isHovered && isEnabled {
-                    RoundedRectangle(cornerRadius: 22)
-                        .fill(Palette.accent.opacity(0.08))
-                }
-            }
             .contentShape(.rect)
         }
         .buttonStyle(ShortcutTileStyle())
+        .hoverHighlight(in: .rect(cornerRadius: 22))
         .disabled(!isEnabled)
-        .onHover { isHovered = $0 }
-        .animation(.easeOut(duration: 0.15), value: isHovered)
     }
 }
 
@@ -649,6 +643,7 @@ struct HomeGroupsSection: View {
                 .groupZoomSource(groupId: group.row.id, cornerRadius: cornerRadius)
         }
         .buttonStyle(.plain)
+        .hoverHighlight(in: cornerRadius > 0 ? AnyShape(.rect(cornerRadius: cornerRadius)) : .hoverRow)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: HomeCopy.accessibilityLabel(group)))
         .accessibilityAddTraits(.isButton)
@@ -858,6 +853,7 @@ struct HomeBillRow: View {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
+            .hoverRowHighlight()
             .accessibilityElement(children: .combine)
             RowMenuButton(title: bill.description_) { items }
                 .padding(.trailing, 8)
@@ -952,6 +948,7 @@ struct HomeAppInviteCard: View {
                     .frame(width: 96, height: 96)
             }
             .buttonStyle(.plain)
+            .hoverDim()
             .help("Enlarge the QR code")
             VStack(alignment: .leading, spacing: 6) {
                 Text(needsAccount ? "Take your groups to iPhone" : "Take Blitz Split on iPhone")

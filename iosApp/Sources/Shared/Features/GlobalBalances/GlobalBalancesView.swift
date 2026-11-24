@@ -495,6 +495,7 @@ private struct PersonSummary: View {
                         .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
+                .hoverDim()
             } else {
                 face
             }
@@ -742,6 +743,7 @@ private struct PersonDetail: View {
                         .contentShape(.rect)
                 }
                 .buttonStyle(.plain)
+                .hoverHighlight(in: .rect(cornerRadius: 8))
                 .accessibilityAddTraits(.isHeader)
             } else {
                 header

@@ -60,7 +60,17 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Latin-American one for every `es` tag but `es-ES`, and Spain's `es-ES` overriding only the words Spain says
     differently, the rest coming from `es` on every platform (Android's `values-es-rES`, Apple's `es-ES` localization,
     the web's `esES.ts`), each its own row of the picker since Pierre's feedback of November 2026 ("Español
-    (Latinoamérica)", "Español (España)"); Spanish calls the app Blitz Split, as English does). French is one
+    (Latinoamérica)", "Español (España)"); Spanish calls the app Blitz Split, as English does). Four English
+    variants (Pierre's call, November 2026), each its own row of the picker: the American one, the source, for `en`,
+    `en-US`, the US territories and the Philippines; Britain's `en-GB`; Australia's `en-AU`, which writes as Britain's;
+    and Canada's `en-CA`. On System, an English region that writes as Britain, the children of CLDR's en-001 (the
+    Commonwealth: New Zealand, Ireland, India, South Africa…) and en-150 (Europe), reads Britain's, and any other (the
+    US, the Philippines, Japan, Brazil…) the American one, as each platform's own lookup does (`BritishEnglishRegions`,
+    the web's `britishEnglishRegions`). Each regional one overrides only the words its region writes differently, the rest coming from the
+    American one: Britain and Australia write "colour", "grey", "centre", "maths", "recognised" and "towards", Canada
+    "colour", "grey" and "centre" but "math", "recognized" and "toward" (Android's `values-b+en+001`, which en-GB, en-AU
+    and the other Commonwealth regions read, and `values-en-rCA`; Apple's `en-GB`, `en-AU` and `en-CA` localizations;
+    the web's `enGB.ts` and `enCA.ts`). A new English string with one of those words needs its regional ones too. French is one
     variant for every `fr` tag (fr-FR, fr-CA, fr-BE, fr-CH…), talks to the user as "tu" (Pierre's call: friends splitting
     a bill, as Spanish's "tú") and calls the app Blitz Split. German, Italian and Polish (Pierre's calls) are likewise one
     variant each for every tag of theirs (de-AT and de-CH are `de`, it-CH is `it`), talk to the user informally ("du",
@@ -559,6 +569,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     When, New group's currency) are a list, not cards, and stay flat even when tappable: a shadow per segment would
     draw a seam in the 2 dp gaps and break the group into separate cards. iOS, the Mac and the web keep their own
     platform's look.
+  - A pointer keeps each platform's own cursor (Pierre's call, after Apple's guidelines for pointers on the Mac): the
+    Mac keeps the arrow over buttons and shows the pointing hand only over a link that opens a web page (the release
+    notes' cards and GitHub's mark, `linkPointer()`); the web shows the pointing hand over everything clickable, as a
+    web app does. So on the Mac the clickable view itself answers the hover: a card, a row outside a `List`, a chip
+    or a swatch takes a light accent fill in its own shape (`hoverHighlight(in:)`; a row's is a rounded rect inset
+    from its edges, `hoverRowHighlight()`, so it stays inside its card's corners), and a face, a photo, a QR code or a
+    lone icon fades a little (`hoverDim()`); an iPad's pointer gets the system's highlight or lift instead.
+    Standard controls and a `List`'s rows already answer it themselves and take nothing: a Mac list highlights the
+    selected row, not the hovered one.
   - The Android launcher icon comes from the legacy app until Bora Rachar has its own.
   - The app is free, with nothing paid in it for now, and shows no ads (Pierre's call). The stores' listings say so
     ([store-listing.md](../store-listing.md)): something paid changes them in the same pull request.

@@ -48,6 +48,10 @@ on:
         description: "The App Store version to write on, X.Y.Z, created when it is missing. Blank writes on the editable one"
         type: string
         default: ""
+      devices:
+        description: "The shelves to replace, with commas (iphone_duo,watch_ultra_3): the others stay as they are. Blank replaces every one"
+        type: string
+        default: ""
       best_effort:
         description: "A locale or a tidy-up that fails is listed as failed and the run is not: the caller goes on"
         type: boolean
@@ -126,6 +130,7 @@ jobs:
             upload_screenshots
             ${{ inputs.platform == 'mac' && 'platform:mac' || 'platform:ios skip_mac:true' }}
             locale:${{ matrix.locale }}
+            ${{ inputs.devices != '' && format('devices:{0}', inputs.devices) || '' }}
           app-version: ${{ inputs.app_version }}
           key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           key-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}

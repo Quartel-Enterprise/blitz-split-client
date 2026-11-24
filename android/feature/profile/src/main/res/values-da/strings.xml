@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Ryd søgning</string>
     <string name="profile_language_no_results">Intet sprog matcher »%1$s«</string>
     <string name="profile_language_system">System</string>
-    <string name="profile_language_english">Engelsk</string>
+    <string name="profile_language_english">Engelsk (USA)</string>
+    <string name="profile_language_english_uk">Engelsk (Storbritannien)</string>
+    <string name="profile_language_english_australia">Engelsk (Australien)</string>
+    <string name="profile_language_english_canada">Engelsk (Canada)</string>
     <string name="profile_language_portuguese">Portugisisk (Brasilien)</string>
     <string name="profile_language_portuguese_portugal">Portugisisk (Portugal)</string>
     <string name="profile_language_spanish">Spansk (Latinamerika)</string>

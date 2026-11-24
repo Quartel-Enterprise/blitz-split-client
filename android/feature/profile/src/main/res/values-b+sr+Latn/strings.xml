@@ -55,7 +55,10 @@
     <string name="profile_language_search_clear">Obriši pretragu</string>
     <string name="profile_language_no_results">Nijedan jezik ne odgovara pretrazi „%1$s“</string>
     <string name="profile_language_system">Sistemski</string>
-    <string name="profile_language_english">Engleski</string>
+    <string name="profile_language_english">Engleski (SAD)</string>
+    <string name="profile_language_english_uk">Engleski (Ujedinjeno Kraljevstvo)</string>
+    <string name="profile_language_english_australia">Engleski (Australija)</string>
+    <string name="profile_language_english_canada">Engleski (Kanada)</string>
     <string name="profile_language_portuguese">Portugalski (Brazil)</string>
     <string name="profile_language_portuguese_portugal">Portugalski (Portugalija)</string>
     <string name="profile_language_spanish">Španski (Latinska Amerika)</string>

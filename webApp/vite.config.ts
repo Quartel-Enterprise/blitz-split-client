@@ -19,6 +19,16 @@ function smartAppBanner(): Plugin {
   }
 }
 
+// Why: `npm run dev:fast` serves the shared library's development build, for a look at a Kotlin change while it is
+// being written: Gradle links it again in about 3 seconds, where the production build `npm run dev` serves takes 17
+// (an M4 Max, November 2026). It is not what ships (nothing is removed nor renamed in it), so the look that checks a
+// change is `npm run dev`'s. The types still come from the installed production build, as old as its last
+// `npm run shared`.
+const sharedLibrary: Record<string, string> =
+  process.env.SHARED_LIBRARY === 'development'
+    ? { 'blitzsplit-shared': path.resolve(import.meta.dirname, '../shared/build/dist/js/developmentLibrary/blitzsplit-shared.mjs') }
+    : {}
+
 export default defineConfig({
   plugins: [react(), tailwindcss(), smartAppBanner()],
   define: {
@@ -26,6 +36,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      ...sharedLibrary,
       '@': path.resolve(__dirname, './src'),
       ws: path.resolve(__dirname, './src/bridge/ws-browser.ts'),
     },

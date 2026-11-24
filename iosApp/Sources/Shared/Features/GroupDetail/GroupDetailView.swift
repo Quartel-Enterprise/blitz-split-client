@@ -430,6 +430,7 @@ private struct JoinedNotice: View {
                     .contentShape(.rect)
             }
             .buttonStyle(.plain)
+            .hoverHighlight(in: .circle)
             .accessibilityLabel("Dismiss")
         }
         if showsCalendarOffer {

@@ -132,6 +132,8 @@ private struct GroupGridCard: View {
             GroupRowMenuButton(group: group, isOnline: isOnline, send: send)
                 .padding(4)
         }
+        // Over the card and its ⋯ together, so moving onto the menu keeps the card lit
+        .hoverHighlight(in: .rect(cornerRadius: GroupCardMetrics.cornerRadius))
         .contextMenu {
             GroupRowActions(group: group, isOnline: isOnline, send: send)
         }

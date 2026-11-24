@@ -313,6 +313,7 @@ private struct PhotoEditor: View {
             photo.contentShape(.circle)
         }
         .buttonStyle(.plain)
+        .hoverDim()
         .accessibilityLabel("View photo")
         #else
         photo.accessibilityHidden(true)

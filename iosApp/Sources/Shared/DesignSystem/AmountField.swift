@@ -52,6 +52,7 @@ struct AmountField: View {
             .menuIndicator(.hidden)
             .menuStyle(.button)
             .buttonStyle(.plain)
+            .hoverDim()
             .fixedSize()
             .disabled(!currencyChoice.isEnabled)
             .accessibilityLabel(Text("Currency"))

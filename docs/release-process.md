@@ -409,6 +409,8 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to A
   the iPhone's version always gets the iPhone's, the iPad's, the iPhone Duo's and the Apple Watch's together (the
   watch is not a version of its own), and a set that leaves a device out is refused unless `allow_missing_devices`
   says it is meant. The iPhone Duo can't be left out, even then: `local-set.mjs` refuses a set without it.
+  `--devices` and `-f devices=` send some shelves alone and leave the others as they are
+  ([Some devices alone](store-listing-screenshots.md#some-devices-alone)).
 - **A locale that failed** fails the run and keeps the set: run that locale's job again with its own re-run button,
   while the version is still editable. Dispatch the release once the run's summary says every locale landed **and
   the shelves are as staged**.
@@ -701,7 +703,9 @@ Until then match finds no profile for the watch's ids and the iOS beta fails at 
 profiles found for 'AppStore_com.quare.blitzsplit.watchkitapp.mobileprovision'`); registering the watch's App IDs
 leaves the macOS profile valid. The balance widget's setup and this one were both done on 2026-11-23.
 A local build signs automatically, so Xcode registers the two ids itself on the team the first time it builds the
-watch app for a device.
+watch app for a device. A project generated on a Mac leaves the watch app out of the iPhone app
+(`./iosApp/generate-project.sh --watch` embeds it), and an archive of one stops as it starts ("Build the Shared
+framework"): every release is built on CI, where the watch app is always embedded.
 
 The Shared framework has no `arm64` watchOS slice yet, only `arm64_32` (docs/architecture/stack.md#watchos), and the
 watch app's Release build leaves `arm64` out (`ARCHS[sdk=watchos*]`). Before the first watch release, check in App

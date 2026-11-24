@@ -7,7 +7,7 @@ name: release-notes
 # that checks and sends a set of App Store screenshots made on a Mac, the one that decides what the tidy-up of the
 # App Store's shelves removes and sorts, and the ones that hold together the workflows Google Play's screenshots go
 # up through and decide how its locales are grouped and what its daily save quota stops (the lane's own tests need
-# fastlane and are skipped on this runner). See
+# fastlane and are skipped on this runner), and the ones of the queue a Mac's heavy builds share (heavy-check.sh). See
 # docs/release-notes.md. Locally: node scripts/release/release-notes.mjs check and
 # node scripts/release/store-listing.mjs check.
 on:
@@ -36,6 +36,9 @@ on:
       # What the tidy-up of the App Store's shelves removes and sorts, its tests, and the lane a test holds it to
       - 'scripts/store-screenshots/shelves.mjs'
       - 'scripts/store-screenshots/shelves.test.mjs'
+      # The queue of this Mac's heavy builds and its tests
+      - 'scripts/heavy-check.sh'
+      - 'scripts/heavy-check.test.mjs'
       - 'fastlane/Fastfile'
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
@@ -65,6 +68,9 @@ on:
       # What the tidy-up of the App Store's shelves removes and sorts, its tests, and the lane a test holds it to
       - 'scripts/store-screenshots/shelves.mjs'
       - 'scripts/store-screenshots/shelves.test.mjs'
+      # The queue of this Mac's heavy builds and its tests
+      - 'scripts/heavy-check.sh'
+      - 'scripts/heavy-check.test.mjs'
       - 'fastlane/Fastfile'
       # The workflows that send Google Play's screenshots, from a release and alone, which a test holds together
       - '.github/workflows/release-production.yml'
@@ -127,4 +133,4 @@ jobs:
           node --test scripts/release/play-screenshot-groups.test.mjs scripts/release/play-screenshots-lane.test.mjs
           scripts/release/release-notes.test.mjs scripts/release/release-scripts.test.mjs
           scripts/release/store-listing.test.mjs scripts/store-screenshots/local-set.test.mjs
-          scripts/store-screenshots/shelves.test.mjs
+          scripts/store-screenshots/shelves.test.mjs scripts/heavy-check.test.mjs

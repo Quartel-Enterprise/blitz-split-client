@@ -56,7 +56,10 @@
     <string name="profile_language_search_clear">Vymazať hľadanie</string>
     <string name="profile_language_no_results">Žiadny jazyk nezodpovedá „%1$s“</string>
     <string name="profile_language_system">Systémový</string>
-    <string name="profile_language_english">Angličtina</string>
+    <string name="profile_language_english">Angličtina (USA)</string>
+    <string name="profile_language_english_uk">Angličtina (Spojené kráľovstvo)</string>
+    <string name="profile_language_english_australia">Angličtina (Austrália)</string>
+    <string name="profile_language_english_canada">Angličtina (Kanada)</string>
     <string name="profile_language_portuguese">Portugalčina (Brazília)</string>
     <string name="profile_language_portuguese_portugal">Portugalčina (Portugalsko)</string>
     <string name="profile_language_spanish">Španielčina</string>

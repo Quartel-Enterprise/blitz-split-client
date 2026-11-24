@@ -58,7 +58,10 @@
     <string name="profile_language_search_clear">مسح البحث</string>
     <string name="profile_language_no_results">لا توجد لغة تطابق «%1$s»</string>
     <string name="profile_language_system">النظام</string>
-    <string name="profile_language_english">الإنجليزية</string>
+    <string name="profile_language_english">الإنجليزية (الولايات المتحدة)</string>
+    <string name="profile_language_english_uk">الإنجليزية (المملكة المتحدة)</string>
+    <string name="profile_language_english_australia">الإنجليزية (أستراليا)</string>
+    <string name="profile_language_english_canada">الإنجليزية (كندا)</string>
     <string name="profile_language_portuguese">البرتغالية (البرازيل)</string>
     <string name="profile_language_portuguese_portugal">البرتغالية (البرتغال)</string>
     <string name="profile_language_spanish">الإسبانية (أمريكا اللاتينية)</string>

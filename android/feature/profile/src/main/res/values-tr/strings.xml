@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Aramayı temizle</string>
     <string name="profile_language_no_results">“%1$s” ile eşleşen dil yok</string>
     <string name="profile_language_system">Sistem</string>
-    <string name="profile_language_english">İngilizce</string>
+    <string name="profile_language_english">İngilizce (ABD)</string>
+    <string name="profile_language_english_uk">İngilizce (Birleşik Krallık)</string>
+    <string name="profile_language_english_australia">İngilizce (Avustralya)</string>
+    <string name="profile_language_english_canada">İngilizce (Kanada)</string>
     <string name="profile_language_portuguese">Portekizce (Brezilya)</string>
     <string name="profile_language_portuguese_portugal">Portekizce (Portekiz)</string>
     <string name="profile_language_spanish">İspanyolca (Latin Amerika)</string>

@@ -371,10 +371,11 @@ It boots headless. When the user wants to watch, open the iOS Simulator panel on
 (`device: BoraRachar_<short_description>`) or `open -a Simulator`.
 
 **Run the app on it.** Generate the Xcode project first if this checkout doesn't have it yet
-(`./iosApp/generate-project.sh`). The build phase of the project builds the `Shared` framework with
-Gradle, so the first build takes a few minutes. In worktree mode, use the worktree's project and
-derived data path. As with the APK, run the queued `xcodebuild` on its own with `run_in_background`
-and install once it calls you back.
+(`./iosApp/generate-project.sh`, which leaves the Apple Watch app out of the iPhone app here: the
+`BoraRachar-watchOS` scheme runs it on a watch simulator). The build phase of the project builds the
+`Shared` framework with Gradle, so the first build takes a few minutes. In worktree mode, use the
+worktree's project and derived data path. As with the APK, run the queued `xcodebuild` on its own
+with `run_in_background` and install once it calls you back.
 
 ```bash
 ./scripts/heavy-check.sh xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-iOS \
@@ -403,7 +404,10 @@ scheme as `create-pr` does and `open iosApp/build/DerivedData/Build/Products/Deb
 only when the user wants to see it. The web app runs in the browser pane: the `web` configuration of
 `.claude/launch.json` serves the main checkout on port 5173. In worktree mode, start the worktree's
 own dev server on a free port instead (`npm --prefix <worktree>/webApp run dev -- --port <port>
---strictPort`, in the background) and stop it once the look is over.
+--strictPort`, in the background) and stop it once the look is over. While a Kotlin change the web
+shows is still being written, `run dev:fast` (the `web-fast` configuration, port 5174) starts sooner
+after each change: it serves the shared library's development build, which is not what ships, so the
+look that checks the finished change is `run dev`'s.
 
 ## Edge cases
 

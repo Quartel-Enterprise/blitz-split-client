@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Tøm søket</string>
     <string name="profile_language_no_results">Ingen språk samsvarer med «%1$s»</string>
     <string name="profile_language_system">System</string>
-    <string name="profile_language_english">Engelsk</string>
+    <string name="profile_language_english">Engelsk (USA)</string>
+    <string name="profile_language_english_uk">Engelsk (Storbritannia)</string>
+    <string name="profile_language_english_australia">Engelsk (Australia)</string>
+    <string name="profile_language_english_canada">Engelsk (Canada)</string>
     <string name="profile_language_portuguese">Portugisisk (Brasil)</string>
     <string name="profile_language_portuguese_portugal">Portugisisk (Portugal)</string>
     <string name="profile_language_spanish">Spansk (Latin-Amerika)</string>

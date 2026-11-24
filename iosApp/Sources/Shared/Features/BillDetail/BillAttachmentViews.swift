@@ -268,6 +268,7 @@ private struct BillAttachmentTileView: View {
             #endif
         }
         .buttonStyle(.plain)
+        .hoverDim()
         #if os(macOS)
         .help(Text(verbatim: "\(BillCopy.attachmentName(attachment)) · \(BillCopy.adder(attachment))"))
         #endif

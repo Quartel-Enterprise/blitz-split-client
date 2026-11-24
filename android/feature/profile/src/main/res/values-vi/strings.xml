@@ -53,7 +53,10 @@
     <string name="profile_language_search_clear">Xóa tìm kiếm</string>
     <string name="profile_language_no_results">Không có ngôn ngữ nào khớp với “%1$s”</string>
     <string name="profile_language_system">Hệ thống</string>
-    <string name="profile_language_english">Tiếng Anh</string>
+    <string name="profile_language_english">Tiếng Anh (Mỹ)</string>
+    <string name="profile_language_english_uk">Tiếng Anh (Anh)</string>
+    <string name="profile_language_english_australia">Tiếng Anh (Úc)</string>
+    <string name="profile_language_english_canada">Tiếng Anh (Canada)</string>
     <string name="profile_language_portuguese">Tiếng Bồ Đào Nha (Brazil)</string>
     <string name="profile_language_portuguese_portugal">Tiếng Bồ Đào Nha (Bồ Đào Nha)</string>
     <string name="profile_language_spanish">Tiếng Tây Ban Nha (Mỹ Latinh)</string>

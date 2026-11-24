@@ -8,9 +8,9 @@
   Xcode with the iOS 27.1 SDK or newer, Xcode 27.1 at the least, for the iOS, iPadOS and macOS app. That SDK has the
   iPhone Duo APIs (`reservedRegions(kind: .division)`), which the app uses behind `#available(iOS 27.1, *)` while
   still running on iOS 26, and its Xcode the iPhone Duo simulator
-- For the Apple Watch app, which the iPhone app embeds, so the iOS scheme builds it too: Xcode's watchOS platform
-  (Xcode › Settings › Components, or `xcodebuild -downloadPlatform watchOS`), whose simulator a watch paired to an
-  iPhone simulator runs it on
+- For the Apple Watch app (the `BoraRachar-watchOS` scheme, and the iOS scheme of a project generated with
+  `--watch`, which embeds it): Xcode's watchOS platform (Xcode › Settings › Components, or
+  `xcodebuild -downloadPlatform watchOS`), whose simulator a watch paired to an iPhone simulator runs it on
 - Node.js 24.12 or newer with npm, for the web app (the `firebase` package needs it)
 
 ## Local configuration
@@ -110,6 +110,13 @@ pre-build phase runs `./gradlew :shared:embedAndSignAppleFrameworkForXcode`, so 
 Kotlin framework and takes a while. Rerun `generate-project.sh` after adding or removing Swift files, or after
 changing `iosApp/project.yml` or `version.properties`.
 
+The iPhone app ships with the Apple Watch app inside, but the project generated on a Mac leaves it out: embedded,
+every build of the iPhone app builds the watch app too and links a second `Shared` framework for it, about 50 seconds
+after any Kotlin change, for an app the iPhone's simulator never opens. Run the `BoraRachar-watchOS` scheme to work on
+the watch app, or generate the project with `./iosApp/generate-project.sh --watch` to have the iPhone app carry it, as
+CI's builds and every release do. The choice stays until `--no-watch`: with no flag, a project that had the watch app
+keeps it. An archive of a project without it stops at its first phase, so none ships the iPhone app alone.
+
 The project signs automatically with the team in `project.yml`; Sign in with Apple and the `webcredentials`
 associated domain need a team that holds those capabilities for `com.quare.blitzsplit`.
 
@@ -138,7 +145,15 @@ npm --prefix webApp run build
 ```
 
 Both rebuild the shared library first (the `predev` and `prebuild` scripts). Vite serves on
-http://localhost:5173. The local database lives in the browser's OPFS storage for that origin, and only one tab can
+http://localhost:5173.
+
+While writing a Kotlin change the web shows, `npm --prefix webApp run dev:fast` starts sooner: it serves the shared
+library's development build (`shared/build/dist/js/developmentLibrary`), which Gradle links again in about 3 seconds
+after a Kotlin change, where the production build takes 17. Nothing is removed nor renamed in that build, so it is not
+what ships: look at a finished change with `run dev`. Its types are still the installed production build's, as old
+as the last `npm --prefix webApp run shared`.
+
+The local database lives in the browser's OPFS storage for that origin, and only one tab can
 hold it at a time: a second tab says the app is open in another tab and opens once the first closes, as soon as
 it's visible. Clear the database from DevTools → Application → Storage → Clear site data to start over.
 

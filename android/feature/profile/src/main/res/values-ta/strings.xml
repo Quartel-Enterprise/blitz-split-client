@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">தேடலை அழிக்கவும்</string>
     <string name="profile_language_no_results">எந்த மொழியும் பொருந்தவில்லை: ‘%1$s’</string>
     <string name="profile_language_system">சிஸ்டம்</string>
-    <string name="profile_language_english">ஆங்கிலம்</string>
+    <string name="profile_language_english">ஆங்கிலம் (அமெரிக்கா)</string>
+    <string name="profile_language_english_uk">ஆங்கிலம் (யுனைடெட் கிங்டம்)</string>
+    <string name="profile_language_english_australia">ஆங்கிலம் (ஆஸ்திரேலியா)</string>
+    <string name="profile_language_english_canada">ஆங்கிலம் (கனடா)</string>
     <string name="profile_language_portuguese">போர்த்துகீசியம் (பிரேசில்)</string>
     <string name="profile_language_portuguese_portugal">போர்த்துகீசியம் (போர்ச்சுகல்)</string>
     <string name="profile_language_spanish">ஸ்பானிஷ் (லத்தீன் அமெரிக்கா)</string>

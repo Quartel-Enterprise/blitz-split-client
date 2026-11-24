@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">تلاش صاف کریں</string>
     <string name="profile_language_no_results">“%1$s” سے کوئی زبان نہیں ملتی</string>
     <string name="profile_language_system">سسٹم</string>
-    <string name="profile_language_english">انگریزی</string>
+    <string name="profile_language_english">انگریزی (امریکہ)</string>
+    <string name="profile_language_english_uk">انگریزی (برطانیہ)</string>
+    <string name="profile_language_english_australia">انگریزی (آسٹریلیا)</string>
+    <string name="profile_language_english_canada">انگریزی (کینیڈا)</string>
     <string name="profile_language_portuguese">پرتگالی (برازیل)</string>
     <string name="profile_language_portuguese_portugal">پرتگالی (پرتگال)</string>
     <string name="profile_language_spanish">ہسپانوی (لاطینی امریکہ)</string>

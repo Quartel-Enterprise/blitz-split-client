@@ -1,0 +1,56 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "You can now choose British, Australian or Canadian English as the app's language, each with its own spelling.",
+        "pt": "Agora dá para escolher o inglês britânico, australiano ou canadense como idioma do app, cada um com a sua grafia.",
+        "pt-PT": "Agora podes escolher o inglês britânico, australiano ou canadiano como idioma da app, cada um com a sua ortografia.",
+        "es": "Ahora puedes elegir el inglés británico, australiano o canadiense como idioma de la app, cada uno con su ortografía.",
+        "fr": "Tu peux maintenant choisir l'anglais britannique, australien ou canadien comme langue de l'app, chacun avec son orthographe.",
+        "de": "Du kannst jetzt britisches, australisches oder kanadisches Englisch als Sprache der App wählen, jeweils mit eigener Schreibweise.",
+        "it": "Ora puoi scegliere l'inglese britannico, australiano o canadese come lingua dell'app, ognuno con la sua ortografia.",
+        "pl": "Możesz teraz wybrać brytyjski, australijski lub kanadyjski angielski jako język aplikacji, każdy z własną pisownią.",
+        "nl": "Je kunt nu Brits, Australisch of Canadees Engels kiezen als taal van de app, elk met de eigen spelling.",
+        "ja": "アプリの言語として、イギリス・オーストラリア・カナダの英語を選べるようになりました。それぞれのつづりで表示されます。",
+        "tr": "Artık uygulamanın dili olarak İngiliz, Avustralya veya Kanada İngilizcesini seçebilirsin; her biri kendi yazımıyla.",
+        "id": "Sekarang kamu bisa memilih bahasa Inggris Britania, Australia, atau Kanada sebagai bahasa aplikasi, masing-masing dengan ejaannya sendiri.",
+        "ru": "Теперь в качестве языка приложения можно выбрать британский, австралийский или канадский английский, каждый со своим написанием.",
+        "uk": "Тепер мовою застосунку можна вибрати британську, австралійську або канадську англійську, кожну з власним написанням.",
+        "ko": "이제 앱 언어로 영국, 호주, 캐나다 영어를 고를 수 있어요. 각각의 철자가 그대로 적용돼요.",
+        "hi": "अब आप ऐप की भाषा के रूप में ब्रिटिश, ऑस्ट्रेलियाई या कनाडाई अंग्रेज़ी चुन सकते हैं, हर एक अपनी वर्तनी के साथ।",
+        "ar": "يمكنك الآن اختيار الإنجليزية البريطانية أو الأسترالية أو الكندية لغةً للتطبيق، ولكل منها تهجئتها الخاصة.",
+        "zh": "现在可以将应用语言设为英式、澳大利亚或加拿大英语，各自使用当地的拼写。",
+        "he": "עכשיו אפשר לבחור אנגלית בריטית, אוסטרלית או קנדית כשפת האפליקציה, כל אחת עם האיות שלה.",
+        "th": "ตอนนี้เลือกภาษาอังกฤษแบบอังกฤษ ออสเตรเลีย หรือแคนาดาเป็นภาษาของแอปได้แล้ว แต่ละแบบใช้การสะกดของตัวเอง",
+        "vi": "Giờ bạn có thể chọn tiếng Anh Anh, Úc hoặc Canada làm ngôn ngữ của ứng dụng, mỗi loại với cách viết riêng.",
+        "zh-Hant": "現在可以將 App 語言設為英式、澳洲或加拿大英文，各自使用當地的拼字。",
+        "sv": "Nu kan du välja brittisk, australisk eller kanadensisk engelska som appens språk, var och en med sin egen stavning.",
+        "cs": "Nyní si můžeš jako jazyk aplikace vybrat britskou, australskou nebo kanadskou angličtinu, každou s vlastním pravopisem.",
+        "ro": "Acum poți alege engleza britanică, australiană sau canadiană ca limbă a aplicației, fiecare cu ortografia ei.",
+        "bn": "এখন অ্যাপের ভাষা হিসেবে ব্রিটিশ, অস্ট্রেলিয়ান বা কানাডিয়ান ইংরেজি বেছে নিতে পারবেন, প্রতিটি নিজের বানানে।",
+        "ms": "Kini anda boleh memilih bahasa Inggeris British, Australia atau Kanada sebagai bahasa aplikasi, masing-masing dengan ejaannya sendiri.",
+        "el": "Τώρα μπορείς να επιλέξεις βρετανικά, αυστραλιανά ή καναδικά αγγλικά ως γλώσσα της εφαρμογής, το καθένα με τη δική του ορθογραφία.",
+        "hr": "Sada kao jezik aplikacije možeš odabrati britanski, australski ili kanadski engleski, svaki s vlastitim pravopisom.",
+        "hu": "Mostantól az alkalmazás nyelvének választhatsz brit, ausztrál vagy kanadai angolt, mindegyiket a saját helyesírásával.",
+        "ur": "اب آپ ایپ کی زبان کے طور پر برطانوی، آسٹریلوی یا کینیڈین انگریزی چن سکتے ہیں، ہر ایک اپنے ہجوں کے ساتھ۔",
+        "fil": "Puwede mo na ngayong piliin ang British, Australian o Canadian English bilang wika ng app, bawat isa ay may sariling baybay.",
+        "sr": "Sada kao jezik aplikacije možeš da izabereš britanski, australijski ili kanadski engleski, svaki sa sopstvenim pravopisom.",
+        "sk": "Teraz si môžeš ako jazyk aplikácie vybrať britskú, austrálsku alebo kanadskú angličtinu, každú s vlastným pravopisom.",
+        "fa": "حالا می‌توانی انگلیسی بریتانیایی، استرالیایی یا کانادایی را به‌عنوان زبان برنامه انتخاب کنی؛ هر کدام با املای خودش.",
+        "ta": "இப்போது செயலியின் மொழியாக பிரிட்டிஷ், ஆஸ்திரேலிய அல்லது கனடிய ஆங்கிலத்தைத் தேர்ந்தெடுக்கலாம்; ஒவ்வொன்றும் அதன் சொந்த எழுத்துமுறையுடன்.",
+        "nb": "Nå kan du velge britisk, australsk eller kanadisk engelsk som appens språk, hver med sin egen stavemåte.",
+        "te": "ఇప్పుడు యాప్ భాషగా బ్రిటిష్, ఆస్ట్రేలియన్ లేదా కెనడియన్ ఇంగ్లీష్‌ను ఎంచుకోవచ్చు; ఒక్కోటి దాని సొంత స్పెల్లింగ్‌తో.",
+        "bg": "Вече можеш да избереш британски, австралийски или канадски английски за език на приложението, всеки със собствения си правопис.",
+        "mr": "आता ॲपची भाषा म्हणून ब्रिटिश, ऑस्ट्रेलियन किंवा कॅनेडियन इंग्रजी निवडता येते, प्रत्येक आपल्या स्पेलिंगसह.",
+        "sw": "Sasa unaweza kuchagua Kiingereza cha Uingereza, Australia au Kanada kama lugha ya programu, kila kimoja kwa tahajia yake.",
+        "ca": "Ara pots triar l'anglès britànic, australià o canadenc com a idioma de l'app, cadascun amb la seva ortografia.",
+        "da": "Nu kan du vælge britisk, australsk eller canadisk engelsk som appens sprog, hver med sin egen stavemåde.",
+        "fi": "Voit nyt valita sovelluksen kieleksi brittiläisen, australialaisen tai kanadalaisen englannin, kukin omalla oikeinkirjoituksellaan."
+      }
+    }
+  ]
+}
