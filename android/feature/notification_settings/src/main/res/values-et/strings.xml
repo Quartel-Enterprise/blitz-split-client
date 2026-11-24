@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Teavitused</string>
+    <string name="notification_settings_denied_title">Rakenduse Blitz Split teavitused on Androidis välja lülitatud.</string>
+    <string name="notification_settings_denied_body">Lülita need süsteemi seadetes sisse, et saada allolevaid tõuketeavitusi. Kelluke töötab edasi.</string>
+    <string name="notification_settings_open_settings">Ava seaded</string>
+    <string name="notification_settings_refused_body">Android laseb sul need veel ühe korra lubada, et saaksid allolevaid tõuketeavitusi. Kelluke töötab edasi.</string>
+    <string name="notification_settings_turn_on">Lülita sisse</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Androidis blokeeritud</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Ava Androidi seaded: %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Tõuketeavitused</string>
+    <string name="notification_settings_push_switch_detail">Ainult selles seadmes</string>
+    <string name="notification_settings_section">Teavita mind</string>
+    <string name="notification_settings_push">Tõuge</string>
+    <string name="notification_settings_in_app">Rakenduses</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Tõuge saadab sellesse seadmesse teavituse. Rakenduses märgib selle kellukesel ja jaotises Tegevus uueks; välja lülitatuna on see Tegevuses ikka näha, juba loetuna.</string>
+    <string name="notification_settings_footer">Teated saabuvad, kui internet on olemas. Grupi vaigistamiseks kasuta grupi sees olevat menüüd.</string>
+</resources>

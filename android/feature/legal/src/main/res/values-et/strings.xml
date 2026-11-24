@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Privaatsuspoliitika</string>
+    <string name="legal_terms">Kasutustingimused</string>
+    <string name="legal_updated_privacy_policy">Uuendatud %1$s</string>
+    <string name="legal_updated_terms">Uuendatud %1$s</string>
+    <string name="legal_load_failed_title">Seda lehte ei õnnestunud laadida</string>
+    <string name="legal_load_failed_body">Kontrolli ühendust ja proovi uuesti.</string>
+    <string name="legal_retry">Proovi uuesti</string>
+</resources>

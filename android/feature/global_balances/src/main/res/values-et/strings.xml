@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Saldod</string>
+    <string name="global_balances_profile">Profiil</string>
+    <string name="global_balances_offline">Võrguühenduseta · selle seadme saldod</string>
+    <string name="global_balances_filter">Näita</string>
+    <string name="global_balances_filter_all">Kõik</string>
+    <string name="global_balances_filter_you_owe">Sa võlgned</string>
+    <string name="global_balances_filter_owes_you">Võlgnevad sulle</string>
+    <string name="global_balances_hint">Juba gruppide vahel tasaarveldatud: iga inimene on näha üks kord.</string>
+    <string name="global_balances_hint_empty">Liidan kokku kõik selle seadme grupid.</string>
+    <string name="global_balances_section_you_owe">Sa võlgned · %d</string>
+    <string name="global_balances_section_owes_you">Võlgnevad sulle · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="one">%d grupp</item>
+        <item quantity="other">%d gruppi</item>
+    </plurals>
+    <string name="global_balances_guest">%s · külaline</string>
+    <string name="global_balances_you_owe">sa võlgned</string>
+    <string name="global_balances_owes_you">võlgneb sulle</string>
+    <string name="global_balances_by_group_show">Näita kontakti %s saldot gruppide kaupa</string>
+    <string name="global_balances_by_group_hide">Peida kontakti %s saldo gruppide kaupa</string>
+    <string name="global_balances_received">Saadud</string>
+    <string name="global_balances_received_from">Saadud kontaktilt %s</string>
+    <string name="global_balances_settle">Arvelda</string>
+    <string name="global_balances_settle_with">Arvelda kontaktiga %s</string>
+    <string name="global_balances_charge">Küsi raha</string>
+    <string name="global_balances_charge_person">Küsi raha kontaktilt %s</string>
+    <string name="global_balances_detail_pane">Saldo kontaktiga %s</string>
+    <string name="global_balances_detail_owes_you">%s võlgneb sulle</string>
+    <string name="global_balances_detail_you_owe">Sa võlgned kontaktile %s</string>
+    <string name="global_balances_detail_guest">%s · külaline ilma rakenduseta</string>
+    <string name="global_balances_detail_note_owed">Netosumma tasaarveldab juba grupid: Küsi raha ja Saadud kasutavad summat %s. Rakendus registreerib igas grupis makse.</string>
+    <string name="global_balances_detail_note_settle">Netosumma tasaarveldab juba grupid: Arvelda kasutab summat %s. Rakendus registreerib igas grupis makse.</string>
+    <string name="global_balances_detail_note_single">Kontaktiga %s on avatud ainult üks grupp.</string>
+    <string name="global_balances_settled_title">Kõik on tasa</string>
+    <string name="global_balances_settled_body">Keegi ei võlgne sulle ja sina ei võlgne kellelegi. Kui keegi lisab kulu, ilmub saldo siia.</string>
+    <string name="global_balances_settled_action">Vaata gruppe</string>
+    <string name="global_balances_nothing_to_pay_title">Sa ei võlgne midagi</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="one">Oled kõigiga tasa. %1$d inimene võlgneb sulle veel %2$s.</item>
+        <item quantity="other">Oled kõigiga tasa. %1$d inimest võlgnevad sulle veel kokku %2$s.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Vaata, kes sulle võlgneb</string>
+    <string name="global_balances_nothing_to_receive_title">Keegi ei võlgne sulle</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="one">Sa võlgned veel %2$s %1$d inimesele.</item>
+        <item quantity="other">Sa võlgned veel %2$s %1$d inimesele.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Vaata, kellele sa võlgned</string>
+    <string name="global_balances_coming_soon">Varsti tulekul</string>
+    <string name="global_balances_change_error">Muudatust ei õnnestunud salvestada. Proovi uuesti.</string>
+    <string name="global_balances_copied">Kopeeritud</string>
+    <string name="global_balances_charge_title">Küsi raha kontaktilt %s</string>
+    <string name="global_balances_charge_owes">Võlgneb sulle %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Sulge</string>
+    <string name="global_balances_charge_guest">%s on külaline ilma rakenduseta. Ta saab sellest teada ainult selle sõnumi kaudu, seega on sõnumis juba kirjas, mis kulusse läks.</string>
+    <string name="global_balances_charge_message">Sõnum</string>
+    <string name="global_balances_charge_pix">Lisa minu Pixi võti</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Kopeeri sõnum</string>
+    <string name="global_balances_charge_send">Saada</string>
+    <string name="global_balances_message">Tere, %1$s! Rakenduse Blitz Split arvutuste järgi võlgned mulle %2$s %3$s.</string>
+    <string name="global_balances_message_guest">Tere, %1$s! Sa võlgned mulle %2$s %3$s. Sinu osa: %4$s.</string>
+    <string name="global_balances_message_guest_paid">Tere, %1$s! Sa võlgned mulle %2$s %3$s. Sinu osa: %4$s, millest on maha arvatud juba makstud %5$s.</string>
+    <string name="global_balances_message_group">grupist %s</string>
+    <string name="global_balances_message_groups">gruppidest %s</string>
+    <string name="global_balances_message_pix">Pix (%1$s): %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Telefon</string>
+    <string name="global_balances_key_email">E-post</string>
+    <string name="global_balances_key_random">Juhuslik võti</string>
+    <string name="global_balances_message_reroute">Grupis %1$s lihtsustati võlad, nii et liikmele %2$s maksmise asemel maksad otse mulle; sinu kogusumma ei muutunud.</string>
+</resources>

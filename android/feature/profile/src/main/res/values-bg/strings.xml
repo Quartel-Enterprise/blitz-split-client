@@ -103,6 +103,7 @@
     <string name="profile_language_danish">Датски</string>
     <string name="profile_language_finnish">Фински</string>
     <string name="profile_language_latvian">Латвийски</string>
+    <string name="profile_language_estonian">Естонски</string>
     <string name="profile_language_lithuanian">Литовски</string>
     <string name="profile_language_system_detail">Език на устройството</string>
     <string name="profile_notifications">Известия</string>

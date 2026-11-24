@@ -65,6 +65,12 @@
             "value" : "Blitz Split"
           }
         },
+        "et" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -342,6 +348,12 @@
           }
         },
         "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "et" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -629,6 +641,12 @@
             "value" : "Para escanear el código QR de una invitación o de tu dispositivo anterior, y para tomar tu foto de perfil y fotos de gastos."
           }
         },
+        "et" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et skannida kutse või vana seadme QR-koodi ning teha oma profiilifoto ja kulude fotosid."
+          }
+        },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -911,6 +929,12 @@
             "value" : "Para invitar a personas de tus contactos con el enlace de un grupo. Sus números se quedan solo en este dispositivo."
           }
         },
+        "et" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et kutsuda kontaktidest inimesi grupi lingiga. Nende numbrid jäävad sellesse seadmesse."
+          }
+        },
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1191,6 +1215,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Para guardar las fotos de los gastos en tu biblioteca."
+          }
+        },
+        "et" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et salvestada kulude fotosid sinu fototeeki."
           }
         },
         "fa" : {

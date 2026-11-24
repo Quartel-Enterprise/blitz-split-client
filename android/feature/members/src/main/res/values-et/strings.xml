@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Kutselink</string>
+    <string name="members_link_pending">Pole veel loodud</string>
+    <string name="members_share">Jaga</string>
+    <string name="members_me">%s (sina)</string>
+    <string name="members_status_this_device">See seade</string>
+    <string name="members_status_joined">Liitunud</string>
+    <string name="members_status_not_joined">Pole veel liitunud</string>
+    <string name="members_options">Valikud: %s</string>
+    <string name="members_rename">Nimeta ümber</string>
+    <string name="members_personal_invite">Isiklik kutse: %s</string>
+    <string name="members_personal_message">Selle lingi avaja liitub otse nimega %s, ilma nimekirjast valimata. See töötab ühe korra.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Selle lingi avaja liitub otse nimega %1$s, ilma nimekirjast valimata, ja näeb juba oma osa %2$s seni lisatud kulus. See töötab ühe korra.</item>
+        <item quantity="other">Selle lingi avaja liitub otse nimega %1$s, ilma nimekirjast valimata, ja näeb juba oma osa %2$s seni lisatud %3$d kulus. See töötab ühe korra.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopeeri link</string>
+    <string name="members_personal_copied">Kopeeritud</string>
+    <string name="members_personal_share">Jaga: %s</string>
+    <string name="members_personal_share_message">Liitu grupiga %1$s rakenduses Blitz Split nimega %2$s: %3$s</string>
+    <string name="members_remove">Eemalda grupist</string>
+    <string name="members_remove_joined">%s on juba grupiga liitunud</string>
+    <string name="members_remove_title">Kas eemaldada %s grupist?</string>
+    <string name="members_remove_message">%s pole veel liitunud. Saad ta hiljem uuesti lisada.</string>
+    <string name="members_remove_confirm">Eemalda</string>
+    <string name="members_release">Vabasta nimi</string>
+    <string name="members_release_title">Kas vabastada nimi %s?</string>
+    <string name="members_release_message">Nimega %1$s liitunud inimene lahkub grupist. Nimi %1$s, selle värv ja kulud jäävad alles ning nime %1$s saab grupi lingi kaudu uuesti valida.</string>
+    <string name="members_release_confirm">Vabasta</string>
+    <string name="members_release_error">Nime ei saanud vabastada. Kontrolli ühendust ja proovi uuesti.</string>
+    <string name="members_add">Lisa inimene</string>
+    <string name="members_invite_instead">Tal on rakendus? Kutsu lingiga</string>
+    <string name="members_name_label">Nimi</string>
+    <string name="members_save">Salvesta</string>
+    <string name="members_cancel">Tühista</string>
+    <string name="members_change_error">Muudatust ei saanud salvestada. Proovi uuesti.</string>
+    <string name="members_remove_open_balance">Liikmel %s on avatud saldo</string>
+    <string name="members_balance_to_get_back">Saada tagasi %s</string>
+    <string name="members_balance_owes">Võlgneb %s</string>
+    <string name="members_balance_settled">Arveldatud</string>
+</resources>

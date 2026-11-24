@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Võta ühendust toega</string>
+    <string name="contact_support_description">Avame sinu e-posti rakenduse valmis sõnumiga. Kirjelda, mis juhtus, ja saada ära: iga sõnumit loevad päris inimesed.</string>
+    <string name="contact_support_to">Kellele</string>
+    <string name="contact_support_diagnostics">Lisatakse e-kirja</string>
+    <string name="contact_support_app_version">Rakenduse versioon</string>
+    <string name="contact_support_platform">Platvorm</string>
+    <string name="contact_support_language">Keel</string>
+    <string name="contact_support_account">Konto</string>
+    <string name="contact_support_profile">Profiil</string>
+    <string name="contact_support_language_system">Süsteem</string>
+    <string name="contact_support_account_local">Ainult see seade</string>
+    <string name="contact_support_account_anonymous">Pole ühendatud</string>
+    <string name="contact_support_open_email">Ava e-post</string>
+    <string name="contact_support_copy_email">Kopeeri e-posti aadress</string>
+    <string name="contact_support_notice_copied">E-posti aadress kopeeritud.</string>
+    <string name="contact_support_notice_no_app">E-posti rakendust ei leitud. Selle asemel kopeeriti aadress.</string>
+    <string name="contact_support_close">Sulge</string>
+</resources>

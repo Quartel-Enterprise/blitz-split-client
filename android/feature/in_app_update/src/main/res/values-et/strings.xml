@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="in_app_update_downloading">Uuenduse allalaadimine…</string>
+    <string name="in_app_update_download_failed">Uuenduse allalaadimine ebaõnnestus. Proovi hiljem uuesti.</string>
+</resources>

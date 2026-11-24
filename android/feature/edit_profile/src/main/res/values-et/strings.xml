@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Muuda profiili</string>
+    <string name="edit_profile_save">Salvesta</string>
+    <string name="edit_profile_change_photo">Muuda fotot</string>
+    <string name="edit_profile_take_photo">Tee foto</string>
+    <string name="edit_profile_choose_photo">Vali galeriist</string>
+    <string name="edit_profile_use_account_photo">Kasuta %1$s konto fotot</string>
+    <string name="edit_profile_remove_photo">Eemalda foto</string>
+    <string name="edit_profile_photo_error">Seda fotot ei õnnestunud kasutada. Proovi mõnda teist.</string>
+    <string name="edit_profile_avatar_color">Avatari värv</string>
+    <string name="edit_profile_avatar_color_hint">Näidatakse, kui sul pole fotot.</string>
+    <string name="edit_profile_name_label">Sinu nimi</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Sisesta vähemalt %d tähte.</string>
+    <string name="edit_profile_name_too_long">Kasuta kuni %d märki.</string>
+    <string name="edit_profile_account_notice">Nimi ja foto tulid sinu %1$s kontolt. Siin muutmine kehtib ainult rakenduses Blitz Split ega muuda sinu %1$s kontot.</string>
+    <string name="edit_profile_footer">Sinu nime ja fotot näevad sinu grupid ja kõik, kellel on sinu profiili link.</string>
+    <string name="profile_photo_close">Sulge</string>
+    <string name="profile_photo_camera">Kaamera</string>
+    <string name="profile_photo_gallery">Galerii</string>
+    <string name="profile_photo_remove">Eemalda</string>
+    <string name="profile_photo_title">Profiilifoto</string>
+</resources>

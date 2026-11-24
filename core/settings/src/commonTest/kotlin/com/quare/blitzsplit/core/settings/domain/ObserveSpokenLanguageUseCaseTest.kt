@@ -152,6 +152,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.DANISH,
                 AppLanguage.FINNISH,
                 AppLanguage.LATVIAN,
+                AppLanguage.ESTONIAN,
                 AppLanguage.LITHUANIAN,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
@@ -207,6 +208,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "da",
                     "fi",
                     "lv",
+                    "et",
                     "lt",
                     "zh-Hant",
                 ),
@@ -277,6 +279,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "da",
             "fi",
             "lv",
+            "et",
             "lt",
             "zh-Hant",
         )
@@ -341,6 +344,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "da-DK",
                 "fi-FI",
                 "lv-LV",
+                "et-EE",
                 "lt-LT",
                 "zh-TW",
             )
@@ -398,6 +402,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "da",
                     "fi",
                     "lv",
+                    "et",
                     "lt",
                     "zh-Hant",
                 ),

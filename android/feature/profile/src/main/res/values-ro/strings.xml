@@ -104,6 +104,7 @@
     <string name="profile_language_danish">Daneză</string>
     <string name="profile_language_finnish">Finlandeză</string>
     <string name="profile_language_latvian">Letonă</string>
+    <string name="profile_language_estonian">Estonă</string>
     <string name="profile_language_lithuanian">Lituaniană</string>
     <string name="profile_language_system_detail">Limba dispozitivului</string>
     <string name="profile_notifications">Notificări</string>

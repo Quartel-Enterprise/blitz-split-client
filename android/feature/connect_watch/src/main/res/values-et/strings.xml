@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Ühenda kell</string>
+    <string name="connect_watch_close">Sulge</string>
+    <string name="connect_watch_body">Sisesta kood, mida su kell näitab. Kell logib sinu kontole sisse ja sünkroonib seejärel iseseisvalt.</string>
+    <string name="connect_watch_code_label">Kella kood</string>
+    <string name="connect_watch_error_invalid">Vale või aegunud kood. Hangi kellast uus.</string>
+    <string name="connect_watch_error_too_many">Liiga palju valesid koode. Oota paar minutit ja proovi uuesti.</string>
+    <string name="connect_watch_error_needs_account">Ühenda kõigepealt konto: sinu andmed on ainult selles seadmes.</string>
+    <string name="connect_watch_error_failed">Kella ühendamine ebaõnnestus. Proovi uuesti.</string>
+    <string name="connect_watch_offline">Kella ühendamiseks on vaja internetti.</string>
+    <string name="connect_watch_own_watch_only">Sisesta ainult kood, mida näitab sinu enda kell: kellel see kell on, pääseb sinu kontole.</string>
+    <string name="connect_watch_validity">Kood kehtib 5 minutit ja ainult ühe korra.</string>
+    <string name="connect_watch_button">Ühenda</string>
+    <string name="connect_watch_connected_title">Kell on ühendatud</string>
+    <string name="connect_watch_connected_body">See näeb sinu gruppe ja sünkroonib iseseisvalt. Lahtiühendamiseks logi kellas välja.</string>
+</resources>

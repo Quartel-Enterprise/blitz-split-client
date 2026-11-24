@@ -134,7 +134,10 @@ The feed, unread state, real time and push notifications.
     in "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja rēķinu…", "Tu sadalīji
     rēķinu…"; "Ana pievienojās…", "Tu pievienojies…"), the bill's history rows too, and the deleted-item notice
     starts with who deleted it ("Tu izdzēsi…", `youSubjectLanguages`). A name is never declined: it stands after a
-    noun that carries the case ("pievienojās grupai Lisabonas brauciens").
+    noun that carries the case ("pievienojās grupai Lisabonas brauciens"). Estonian follows Finnish's rule: every Estonian verb phrase starts with "on", which the user's rows
+    turn into "oled" ("Ana on jaganud kulu…", "Sina oled jaganud kulu…"), its deleted-item notice starts with who
+    deleted it ("Sina oled kustutanud…", `youSubjectLanguages`), and a name stands after a noun that carries the case
+    ("on lisanud liikme Ana").
     Lithuanian's simple past says no gender and changes with the person: every Lithuanian verb phrase starts with it,
     in "-o" or "-ė" ("-osi", "-ėsi" when reflexive), which the user's rows turn into "-ai" or "-ei" ("Ana padalijo
     išlaidą…", "Tu padalijai išlaidą…"; "ištrynė" → "ištrynei"), the bill's history rows too, and the deleted-item

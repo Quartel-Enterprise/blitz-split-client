@@ -102,6 +102,7 @@
     <string name="profile_language_danish">丹麦语</string>
     <string name="profile_language_finnish">芬兰语</string>
     <string name="profile_language_latvian">拉脱维亚语</string>
+    <string name="profile_language_estonian">爱沙尼亚语</string>
     <string name="profile_language_lithuanian">立陶宛语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
