@@ -71,7 +71,7 @@ export function BillComments({
     />
   )
   return (
-    <section aria-labelledby="bill-comments-title" className="flex flex-col">
+    <section id={COMMENTS_ID} aria-labelledby="bill-comments-title" className="flex flex-col">
       <h3 id="bill-comments-title" className="flex justify-between text-sm font-medium">
         <span>{t('billDetail_comments')}</span>
         {state.commentCount != null && state.commentCount > 0 && <span className="font-normal text-muted-foreground tabular-nums">{state.commentCount}</span>}
@@ -94,6 +94,24 @@ export function BillComments({
       </ul>
     </section>
   )
+}
+
+const COMMENTS_ID = 'bill-comments'
+
+/**
+ * A comment or a reply posted ("posted-comment" or "posted-reply"): on a touch screen the field lets go of the focus,
+ * which closes the keyboard (a mouse and keyboard keep it for the next one, as the Mac does). A new comment, the last
+ * one as they read in the order they were written, is scrolled to once drawn: the end of Comments comes into view. A
+ * reply stays where it was answered, already in view.
+ */
+export function showPostedComment({ isReply }: { isReply: boolean }) {
+  const isTouch = window.matchMedia('(pointer: coarse)').matches
+  if (isTouch && document.activeElement instanceof HTMLElement) document.activeElement.blur()
+  if (isReply) return
+  window.setTimeout(() => {
+    const reducesMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    document.getElementById(COMMENTS_ID)?.scrollIntoView({ block: 'end', behavior: reducesMotion ? 'auto' : 'smooth' })
+  }, FOCUS_DELAY_MS)
 }
 
 /**

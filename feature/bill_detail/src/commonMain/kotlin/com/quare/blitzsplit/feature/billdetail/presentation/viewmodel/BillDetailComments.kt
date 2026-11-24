@@ -177,7 +177,9 @@ internal class BillDetailComments(
                 replyToName = replyTarget?.answeredName,
                 authorMemberId = me?.id,
                 authorName = me?.name,
-            ).onFailure {
+            ).onSuccess {
+                emit(BillDetailUiAction.ShowPostedComment(isReply = replyTarget != null))
+            }.onFailure {
                 // Why: back in the field only while nothing new was typed there, which would be lost.
                 uiState.update {
                     if (it.commentDraft.isEmpty() && it.replyTarget == null) {

@@ -6,6 +6,7 @@ import SwiftUI
 final class SharedBillModel {
     private(set) var state: SharedBillUiState
     private(set) var commentErrorCount = 0
+    private(set) var postedComment = BillPostedComment()
     private(set) var needsNameCount = 0
     private(set) var commentChangeErrorCount = 0
     private(set) var commentGoneCount = 0
@@ -23,6 +24,7 @@ final class SharedBillModel {
         watches.add(viewModel.actionWatcher.observe { [weak self] action in
             switch action {
             case is SharedBillUiActionShowCommentError: self?.commentErrorCount += 1
+            case let posted as SharedBillUiActionShowPostedComment: self?.postedComment.post(isReply: posted.isReply)
             case is SharedBillUiActionShowNeedsName: self?.needsNameCount += 1
             case is SharedBillUiActionShowCommentChangeError: self?.commentChangeErrorCount += 1
             case is SharedBillUiActionShowCommentGone: self?.commentGoneCount += 1
@@ -371,6 +373,12 @@ private struct PhoneSharedBill: View {
                 highlighted: $highlightedCommentId,
                 onShown: { model.send(SharedBillUiEventOnFocusedCommentShown.shared) },
             ))
+            .modifier(BillPostedCommentReveal(
+                posted: model.postedComment,
+                proxy: proxy,
+                focus: $isComposing,
+                lastRowId: { model.state.threads.lastRowId },
+            ))
         }
         .measuringScreenLayout($layout)
         .fullScreenCover(isPresented: model.isViewerOpen) {
@@ -415,6 +423,12 @@ private struct MacSharedBill: View {
                     proxy: proxy,
                     highlighted: $highlightedCommentId,
                     onShown: { model.send(SharedBillUiEventOnFocusedCommentShown.shared) },
+                ))
+                .modifier(BillPostedCommentReveal(
+                    posted: model.postedComment,
+                    proxy: proxy,
+                    focus: nil,
+                    lastRowId: { model.state.threads.lastRowId },
                 ))
             }
             if state.showsComposer {

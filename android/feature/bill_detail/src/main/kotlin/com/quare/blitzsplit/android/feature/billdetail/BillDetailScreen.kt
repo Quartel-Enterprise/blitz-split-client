@@ -3,10 +3,12 @@ package com.quare.blitzsplit.android.feature.billdetail
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.DeleteBillDialog
@@ -36,9 +38,16 @@ fun BillDetailScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
+    val postedCommentScroller = remember { PostedCommentScroller() }
+    val focusManager = LocalFocusManager.current
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             val message = when (action) {
+                is BillDetailUiAction.ShowPostedComment -> {
+                    showPostedComment(action.isReply, focusManager, postedCommentScroller)
+                    null
+                }
+
                 // Why: a comment's "Compartilhar" goes through the system share, the only action that isn't a message.
                 is BillDetailUiAction.ShareComment -> {
                     context.shareText(shareCommentTextOf(resources, action.share))
@@ -75,15 +84,17 @@ fun BillDetailScreen(
     )
     val saveToGallery = rememberBillPhotoSaver(snackbarHostState)
     BackHandler { viewModel.onEvent(BillDetailUiEvent.OnBackClicked) }
-    BillDetailContent(
-        state = state,
-        isDialog = isDialog,
-        snackbarHostState = snackbarHostState,
-        pickers = pickers,
-        onEvent = viewModel::onEvent,
-        sharedBillId = route.expenseId,
-        sharedGroupId = route.groupId,
-    )
+    CompositionLocalProvider(LocalPostedCommentScroller provides postedCommentScroller) {
+        BillDetailContent(
+            state = state,
+            isDialog = isDialog,
+            snackbarHostState = snackbarHostState,
+            pickers = pickers,
+            onEvent = viewModel::onEvent,
+            sharedBillId = route.expenseId,
+            sharedGroupId = route.groupId,
+        )
+    }
     val attachments = state.attachments.valueOrNull().orEmpty()
     BillAttachmentViewerDialog(
         attachments = attachments,

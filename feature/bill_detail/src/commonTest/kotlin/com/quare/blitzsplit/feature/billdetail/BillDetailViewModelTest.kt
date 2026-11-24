@@ -2192,7 +2192,10 @@ class BillDetailViewModelTest {
             assertEquals("Paguei no Pix", row.body)
             assertEquals(1, state.commentCount)
             assertFalse(state.showsNoComments)
-            assertTrue(actions.isEmpty())
+            assertEquals(
+                listOf<BillDetailUiAction>(BillDetailUiAction.ShowPostedComment(isReply = false)),
+                actions,
+            )
         }
 
     @Test
@@ -2208,6 +2211,20 @@ class BillDetailViewModelTest {
         assertTrue(comments.comments.value.isEmpty())
         assertEquals("   ", viewModel.uiState.value.commentDraft)
         assertTrue(actions.isEmpty())
+    }
+
+    @Test
+    fun `GIVEN a reply typed WHEN the device keeps it THEN shows the posted reply`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario(storedComments = listOf(comment(id = "c1")))
+        viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+        viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+
+        // When
+        viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+        // Then
+        assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowPostedComment(isReply = true)), actions)
     }
 
     @Test

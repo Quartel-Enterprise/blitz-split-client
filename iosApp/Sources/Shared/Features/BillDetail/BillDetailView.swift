@@ -7,6 +7,7 @@ final class BillDetailModel {
     private(set) var state: BillDetailUiState
     private(set) var deleteErrorCount = 0
     private(set) var commentErrorCount = 0
+    private(set) var postedComment = BillPostedComment()
     private(set) var commentChangeErrorCount = 0
     private(set) var commentGoneCount = 0
     private(set) var undoErrorCount = 0
@@ -30,6 +31,7 @@ final class BillDetailModel {
             switch action {
             case is BillDetailUiActionShowDeleteError: self?.deleteErrorCount += 1
             case is BillDetailUiActionShowCommentError: self?.commentErrorCount += 1
+            case let posted as BillDetailUiActionShowPostedComment: self?.postedComment.post(isReply: posted.isReply)
             case is BillDetailUiActionShowCommentChangeError: self?.commentChangeErrorCount += 1
             case is BillDetailUiActionShowCommentGone: self?.commentGoneCount += 1
             case let share as BillDetailUiActionShareComment: SystemShare.share(BillCopy.shareMessage(share.share))
@@ -434,6 +436,12 @@ private struct PhoneBillDetail: View {
                     highlighted: $highlightedCommentId,
                     onShown: model.focusedCommentShown,
                 ))
+                .modifier(BillPostedCommentReveal(
+                    posted: model.postedComment,
+                    proxy: proxy,
+                    focus: $isComposing,
+                    lastRowId: { model.state.loadedThreads?.lastRowId },
+                ))
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             if !state.isOnline {
@@ -795,6 +803,12 @@ private struct MacBillDetail: View {
                     highlighted: $highlightedCommentId,
                     isEnabled: showsComments,
                     onShown: model.focusedCommentShown,
+                ))
+                .modifier(BillPostedCommentReveal(
+                    posted: model.postedComment,
+                    proxy: proxy,
+                    focus: nil,
+                    lastRowId: { model.state.loadedThreads?.lastRowId },
                 ))
             }
             if showsComments {

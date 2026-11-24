@@ -1003,6 +1003,33 @@ class SharedBillViewModelTest {
         }
 
     @Test
+    fun `GIVEN a comment typed WHEN the server posts it THEN shows the posted comment`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+        // Then
+        assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowPostedComment(isReply = false)), actions)
+    }
+
+    @Test
+    fun `GIVEN a reply typed WHEN the server posts it THEN shows the posted reply`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
+        viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Carla!"))
+
+        // When
+        viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+        // Then
+        assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowPostedComment(isReply = true)), actions)
+    }
+
+    @Test
     fun `GIVEN the server fails WHEN sending a comment THEN says it failed and keeps the draft and the reply`() =
         runTest(testDispatcher) {
             // Given

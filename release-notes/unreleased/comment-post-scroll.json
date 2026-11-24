@@ -1,0 +1,56 @@
+{
+  "notes": [
+    {
+      "kind": "improved",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "After you post a comment on a bill, it scrolls to your comment so you can see it, and on a phone the keyboard closes.",
+        "pt": "Depois de enviar um comentário numa conta, a tela rola até ele para você ver, e no celular o teclado fecha.",
+        "pt-PT": "Depois de enviares um comentário numa despesa, o ecrã desloca-se até ele para o veres, e no telemóvel o teclado fecha-se.",
+        "es": "Después de publicar un comentario en una cuenta, la pantalla baja hasta él para que lo veas, y en el celular el teclado se cierra.",
+        "fr": "Après avoir publié un commentaire sur une dépense, l'écran défile jusqu'à lui pour que vous le voyiez, et sur téléphone le clavier se ferme.",
+        "de": "Nachdem du einen Kommentar zu einer Ausgabe gepostet hast, scrollt die Ansicht zu ihm, und auf dem Handy schließt sich die Tastatur.",
+        "it": "Dopo aver pubblicato un commento su una spesa, la schermata scorre fino al commento per mostrartelo e sul telefono la tastiera si chiude.",
+        "pl": "Po dodaniu komentarza do wydatku ekran przewija się do niego, żebyś go zobaczył, a na telefonie klawiatura się zamyka.",
+        "nl": "Nadat je een reactie op een uitgave plaatst, scrolt het scherm ernaartoe zodat je die ziet, en op een telefoon sluit het toetsenbord.",
+        "ja": "支出にコメントを投稿すると、そのコメントまでスクロールして確認でき、スマートフォンではキーボードが閉じます。",
+        "tr": "Bir harcamaya yorum gönderdikten sonra ekran yorumuna kayar, böylece onu görürsün; telefonda klavye de kapanır.",
+        "id": "Setelah kamu mengirim komentar pada tagihan, layar bergulir ke komentarmu agar terlihat, dan di ponsel keyboard tertutup.",
+        "ru": "После отправки комментария к расходу экран прокручивается к нему, чтобы вы его увидели, а на телефоне клавиатура закрывается.",
+        "uk": "Після надсилання коментаря до витрати екран прокручується до нього, щоб ви його побачили, а на телефоні клавіатура закривається.",
+        "ko": "지출에 댓글을 올리면 올린 댓글까지 스크롤되어 바로 볼 수 있고, 휴대폰에서는 키보드가 닫힙니다.",
+        "hi": "किसी खर्च पर टिप्पणी पोस्ट करने के बाद स्क्रीन आपकी टिप्पणी तक स्क्रॉल हो जाती है ताकि आप उसे देख सकें, और फ़ोन पर कीबोर्ड बंद हो जाता है।",
+        "ar": "بعد نشر تعليق على مصروف، تنتقل الشاشة إلى تعليقك لتراه، وعلى الهاتف تُغلق لوحة المفاتيح.",
+        "zh": "在账单上发表评论后，页面会滚动到你的评论，方便你看到；在手机上键盘也会自动收起。",
+        "he": "אחרי שמפרסמים תגובה על הוצאה, המסך גולל אליה כדי שתראו אותה, ובטלפון המקלדת נסגרת.",
+        "th": "หลังโพสต์ความคิดเห็นในรายการค่าใช้จ่าย หน้าจอจะเลื่อนไปที่ความคิดเห็นของคุณให้เห็นทันที และบนโทรศัพท์แป้นพิมพ์จะปิด",
+        "vi": "Sau khi bạn đăng bình luận về một khoản chi, màn hình cuộn đến bình luận đó để bạn thấy, và trên điện thoại bàn phím sẽ đóng.",
+        "zh-Hant": "在帳單上發表留言後，畫面會捲動到你的留言讓你看到；在手機上鍵盤也會自動收起。",
+        "sv": "När du har postat en kommentar på en utgift rullar skärmen till den så att du ser den, och på mobilen stängs tangentbordet.",
+        "cs": "Po odeslání komentáře k výdaji se obrazovka posune k němu, abyste ho viděli, a na telefonu se klávesnice zavře.",
+        "ro": "După ce postezi un comentariu la o cheltuială, ecranul derulează până la el ca să-l vezi, iar pe telefon tastatura se închide.",
+        "bn": "কোনো খরচে মন্তব্য পোস্ট করার পর স্ক্রিন আপনার মন্তব্য পর্যন্ত স্ক্রল করে যাতে আপনি সেটি দেখতে পান, আর ফোনে কীবোর্ড বন্ধ হয়ে যায়।",
+        "ms": "Selepas anda menghantar komen pada bil, skrin menatal ke komen anda supaya anda dapat melihatnya, dan pada telefon papan kekunci ditutup.",
+        "el": "Αφού δημοσιεύσετε ένα σχόλιο σε ένα έξοδο, η οθόνη κυλά σε αυτό για να το δείτε, και στο κινητό το πληκτρολόγιο κλείνει.",
+        "hr": "Nakon što objavite komentar na trošak, zaslon se pomiče do njega da ga vidite, a na mobitelu se tipkovnica zatvara.",
+        "hu": "Miután hozzászólást írsz egy kiadáshoz, a képernyő odagörget hozzá, hogy lásd, telefonon pedig bezárul a billentyűzet.",
+        "ur": "کسی خرچ پر تبصرہ پوسٹ کرنے کے بعد اسکرین آپ کے تبصرے تک اسکرول ہو جاتی ہے تاکہ آپ اسے دیکھ سکیں، اور فون پر کی بورڈ بند ہو جاتا ہے۔",
+        "fil": "Pagkatapos mong mag-post ng komento sa isang gastos, nag-i-scroll ang screen sa komento mo para makita mo ito, at sa phone nagsasara ang keyboard.",
+        "sr": "Kada objavite komentar na trošak, ekran se pomera do njega da biste ga videli, a na telefonu se tastatura zatvara.",
+        "sk": "Po pridaní komentára k výdavku sa obrazovka posunie k nemu, aby ste ho videli, a na telefóne sa klávesnica zatvorí.",
+        "fa": "پس از ارسال نظر روی یک هزینه، صفحه تا نظر شما پیمایش می‌کند تا آن را ببینید، و در تلفن صفحه‌کلید بسته می‌شود.",
+        "ta": "ஒரு செலவில் கருத்தைப் பதிவிட்ட பிறகு, அதைப் பார்க்கும்படி திரை உங்கள் கருத்துக்கு உருளும்; தொலைபேசியில் விசைப்பலகை மூடும்.",
+        "nb": "Når du har postet en kommentar på en utgift, ruller skjermen til den så du ser den, og på mobilen lukkes tastaturet.",
+        "te": "ఒక ఖర్చుపై వ్యాఖ్య పోస్ట్ చేసిన తర్వాత, మీరు చూడగలిగేలా స్క్రీన్ మీ వ్యాఖ్య వరకు స్క్రోల్ అవుతుంది, ఫోన్‌లో కీబోర్డ్ మూసుకుపోతుంది.",
+        "bg": "След като публикувате коментар към разход, екранът превърта до него, за да го видите, а на телефона клавиатурата се затваря.",
+        "mr": "एखाद्या खर्चावर टिप्पणी पोस्ट केल्यावर स्क्रीन तुमच्या टिप्पणीपर्यंत स्क्रोल होते म्हणजे ती दिसते, आणि फोनवर कीबोर्ड बंद होतो.",
+        "sw": "Baada ya kuchapisha maoni kwenye gharama, skrini husogea hadi kwenye maoni yako ili uyaone, na kwenye simu kibodi hufungwa.",
+        "ca": "Després de publicar un comentari en una despesa, la pantalla es desplaça fins a ell perquè el vegis, i al mòbil el teclat es tanca.",
+        "da": "Når du har skrevet en kommentar til en udgift, ruller skærmen hen til den, så du kan se den, og på mobilen lukkes tastaturet.",
+        "fi": "Kun lähetät kommentin kuluun, näkymä vierittyy kommenttiisi, jotta näet sen, ja puhelimessa näppäimistö sulkeutuu."
+      }
+    }
+  ]
+}

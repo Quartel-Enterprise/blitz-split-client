@@ -110,9 +110,9 @@ class JsBillCommentShare(
 )
 
 /*
- * Why: type is "delete-error", "comment-error", "comment-change-error", "comment-gone", "share-comment" (share),
- * "undo-error", "photo-unreadable", "photo-no-room", "photo-too-large", "photo-error" or "remove-photo-error"; share
- * is null for anything but "share-comment".
+ * Why: type is "delete-error", "comment-error", "posted-comment", "posted-reply", "comment-change-error",
+ * "comment-gone", "share-comment" (share), "undo-error", "photo-unreadable", "photo-no-room", "photo-too-large",
+ * "photo-error" or "remove-photo-error"; share is null for anything but "share-comment".
  */
 class JsBillDetailAction(
     val type: String,
@@ -317,6 +317,11 @@ class BillDetailPresenter(
                 BillDetailUiAction.ShowDeleteError -> JsBillDetailAction("delete-error", null)
 
                 BillDetailUiAction.ShowCommentError -> JsBillDetailAction("comment-error", null)
+
+                is BillDetailUiAction.ShowPostedComment -> JsBillDetailAction(
+                    type = if (action.isReply) "posted-reply" else "posted-comment",
+                    share = null,
+                )
 
                 BillDetailUiAction.ShowCommentChangeError -> JsBillDetailAction("comment-change-error", null)
 

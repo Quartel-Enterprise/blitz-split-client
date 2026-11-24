@@ -69,8 +69,8 @@ class JsSharedBillState(
 )
 
 /*
- * Why: type is "comment-error", "needs-name", "comment-change-error", "comment-gone" or "share-comment" (share); share
- * is null for anything but "share-comment".
+ * Why: type is "comment-error", "posted-comment", "posted-reply", "needs-name", "comment-change-error",
+ * "comment-gone" or "share-comment" (share); share is null for anything but "share-comment".
  */
 class JsSharedBillAction(
     val type: String,
@@ -134,6 +134,11 @@ class SharedBillPresenter(
         val actions = viewModel.uiAction.map { action ->
             when (action) {
                 SharedBillUiAction.ShowCommentError -> JsSharedBillAction("comment-error", null)
+
+                is SharedBillUiAction.ShowPostedComment -> JsSharedBillAction(
+                    type = if (action.isReply) "posted-reply" else "posted-comment",
+                    share = null,
+                )
 
                 SharedBillUiAction.ShowNeedsName -> JsSharedBillAction("needs-name", null)
 

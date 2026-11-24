@@ -2,10 +2,12 @@ package com.quare.blitzsplit.android.feature.billdetail
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.quare.blitzsplit.android.designsystem.component.showReplacingSnackbar
@@ -30,15 +32,19 @@ fun SharedBillScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val saveToGallery = rememberBillPhotoSaver(snackbarHostState)
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val postedCommentScroller = remember { PostedCommentScroller() }
     SharedBillActionsEffect(
         viewModel = viewModel,
         snackbarHostState = snackbarHostState,
+        postedCommentScroller = postedCommentScroller,
     )
-    SharedBillContent(
-        state = state,
-        snackbarHostState = snackbarHostState,
-        onEvent = viewModel::onEvent,
-    )
+    CompositionLocalProvider(LocalPostedCommentScroller provides postedCommentScroller) {
+        SharedBillContent(
+            state = state,
+            snackbarHostState = snackbarHostState,
+            onEvent = viewModel::onEvent,
+        )
+    }
     BillAttachmentViewerDialog(
         attachments = state.attachments,
         viewedIndex = state.viewedAttachmentIndex,
@@ -75,12 +81,19 @@ fun SharedBillScreen(
 private fun SharedBillActionsEffect(
     viewModel: SharedBillViewModel,
     snackbarHostState: SnackbarHostState,
+    postedCommentScroller: PostedCommentScroller,
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
+    val focusManager = LocalFocusManager.current
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             val message = when (action) {
+                is SharedBillUiAction.ShowPostedComment -> {
+                    showPostedComment(action.isReply, focusManager, postedCommentScroller)
+                    null
+                }
+
                 is SharedBillUiAction.ShareComment -> {
                     context.shareText(shareCommentTextOf(resources, action.share))
                     null

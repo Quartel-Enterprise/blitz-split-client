@@ -433,6 +433,8 @@ class SharedBillViewModel(
                         )
                     }
                     reload()
+                    loading?.join()
+                    uiAction.emit(SharedBillUiAction.ShowPostedComment(isReply = replyTarget != null))
                 }
 
                 // Why: the link changed meanwhile, so the page says what it shows now.

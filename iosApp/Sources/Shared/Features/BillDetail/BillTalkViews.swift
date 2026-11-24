@@ -686,6 +686,51 @@ struct BillCommentFocus: ViewModifier {
     }
 }
 
+/// A comment or a reply posted (`BillPostedComment`): the keyboard goes down (`focus`, nil on the Mac, which keeps
+/// the field for the next one), and a new comment, the last one as they read in the order they were written, is
+/// scrolled to once drawn; a reply stays where it was answered, already in view.
+struct BillPostedCommentReveal: ViewModifier {
+    let posted: BillPostedComment
+    let proxy: ScrollViewProxy
+    let focus: FocusState<Bool>.Binding?
+    /// Read once the rows are laid out, so the comment posted is there to scroll to.
+    let lastRowId: () -> String?
+
+    func body(content: Content) -> some View {
+        // Why: on a change only, never when the view appears again (back from a profile, another tab)
+        content.onChange(of: posted.count) {
+            focus?.wrappedValue = false
+            guard !posted.isReply else { return }
+            Task {
+                // Why: the keyboard goes down and the new comment lays out first, or the scroll lands short of it
+                try? await Task.sleep(for: .milliseconds(350))
+                guard let id = lastRowId() else { return }
+                withAnimation { proxy.scrollTo(id, anchor: .bottom) }
+            }
+        }
+    }
+}
+
+/// The comments and replies posted from this screen, counted so each one is seen once, and whether the last was
+/// a reply.
+struct BillPostedComment: Equatable {
+    private(set) var count = 0
+    private(set) var isReply = false
+
+    mutating func post(isReply: Bool) {
+        count += 1
+        self.isReply = isReply
+    }
+}
+
+extension Array where Element == BillCommentThread {
+    /// The row drawn last: the last thread's last reply, or its comment.
+    var lastRowId: String? {
+        guard let thread = last else { return nil }
+        return thread.replies.last?.id ?? thread.comment.id
+    }
+}
+
 /// What went wrong with a comment, said in the glass toast of Bill and of a bill's link page.
 enum BillCommentToasts {
     static func messages(goneCount: Int, sendErrorCount: Int, changeErrorCount: Int) -> [GlassToastMessage] {
