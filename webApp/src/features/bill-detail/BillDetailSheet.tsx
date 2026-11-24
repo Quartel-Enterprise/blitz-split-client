@@ -46,7 +46,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   const composerRef = useRef<HTMLTextAreaElement>(null)
   useActions(presenter, (p, onAction: (action: JsBillDetailAction) => void) => p.observeActions(onAction), (action) => {
     if (action.type === 'share-comment' && action.share) shareComment(action.share)
-    if (action.type === 'posted-comment' || action.type === 'posted-reply') showPostedComment({ isReply: action.type === 'posted-reply' })
+    showPostedComment(action.type)
     const message = actionMessages[action.type]
     if (message) toast(t(message))
   })

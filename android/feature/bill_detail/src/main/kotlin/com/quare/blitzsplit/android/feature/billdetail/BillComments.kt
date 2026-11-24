@@ -164,7 +164,8 @@ internal fun PendingLine(
  */
 internal class PostedCommentScroller {
     val requester = BringIntoViewRequester()
-    var size by mutableStateOf(IntSize.Zero)
+    // Why: read only when a comment is posted, never while drawing, so it needs no snapshot state.
+    var size = IntSize.Zero
 
     suspend fun showEnd() {
         if (size.height == 0) return

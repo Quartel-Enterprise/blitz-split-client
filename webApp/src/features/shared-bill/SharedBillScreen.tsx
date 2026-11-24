@@ -24,7 +24,7 @@ export function SharedBillScreen({ route }: { route: JsRoute }) {
   const state = useWatch(presenter, (p, onChange: (state: JsSharedBillState) => void) => p.observeState(onChange))
   useActions(presenter, (p, onAction: (action: JsSharedBillAction) => void) => p.observeActions(onAction), (action) => {
     if (action.type === 'comment-error') toast(t('sharedBill_commentError'))
-    if (action.type === 'posted-comment' || action.type === 'posted-reply') showPostedComment({ isReply: action.type === 'posted-reply' })
+    showPostedComment(action.type)
     if (action.type === 'needs-name') toast(t('sharedBill_needsName'))
     if (action.type === 'comment-change-error') toast(t('sharedBill_commentChangeError'))
     if (action.type === 'comment-gone') toast(t('billDetail_commentGone'))

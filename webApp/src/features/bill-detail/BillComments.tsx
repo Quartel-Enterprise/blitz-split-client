@@ -102,12 +102,13 @@ const COMMENTS_ID = 'bill-comments'
  * A comment or a reply posted ("posted-comment" or "posted-reply"): on a touch screen the field lets go of the focus,
  * which closes the keyboard (a mouse and keyboard keep it for the next one, as the Mac does). A new comment, the last
  * one as they read in the order they were written, is scrolled to once drawn: the end of Comments comes into view. A
- * reply stays where it was answered, already in view.
+ * reply stays where it was answered, already in view. Any other action type does nothing.
  */
-export function showPostedComment({ isReply }: { isReply: boolean }) {
+export function showPostedComment(actionType: string) {
+  if (actionType !== 'posted-comment' && actionType !== 'posted-reply') return
   const isTouch = window.matchMedia('(pointer: coarse)').matches
   if (isTouch && document.activeElement instanceof HTMLElement) document.activeElement.blur()
-  if (isReply) return
+  if (actionType === 'posted-reply') return
   window.setTimeout(() => {
     const reducesMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     document.getElementById(COMMENTS_ID)?.scrollIntoView({ block: 'end', behavior: reducesMotion ? 'auto' : 'smooth' })
