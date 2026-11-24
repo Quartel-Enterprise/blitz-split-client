@@ -69,7 +69,8 @@ Start with:
    ```
 
    and, if you touched the Apple app, build the `BoraRachar-iOS` and `BoraRachar-macOS` schemes after
-   `./iosApp/generate-project.sh`.
+   `./iosApp/generate-project.sh`, and the `BoraRachar-watchOS` scheme if you touched the Apple Watch app
+   (`iosApp/Watch`): the iPhone app's build leaves it out on your Mac, and CI builds it.
 
 ## Opening the pull request
 

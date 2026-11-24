@@ -1,0 +1,13 @@
+# Included by project.yml when generate-project.sh embeds the Apple Watch app (on CI, or with --watch). The watch app
+# ships inside the iPhone app's bundle (Watch/), as App Store Connect delivers a companion watch app, and installs on
+# its own from the watch's App Store too (WKRunsIndependentlyOfCompanionApp).
+targets:
+  BoraRachar-iOS:
+    dependencies:
+      - target: BoraRachar-watchOS
+        embed: true
+        codeSign: true
+    settings:
+      base:
+        # Read by the release check of "Build the Shared framework"
+        BLITZSPLIT_EMBEDS_WATCH: YES

@@ -148,6 +148,9 @@ one after the other:
 ./scripts/heavy-check.sh xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-macOS \
   -destination 'platform=macOS' -derivedDataPath iosApp/build/DerivedData \
   CODE_SIGNING_ALLOWED=NO build -quiet
+./scripts/heavy-check.sh xcodebuild -project iosApp/BoraRachar.xcodeproj -scheme BoraRachar-watchOS \
+  -destination 'generic/platform=watchOS Simulator' ARCHS=arm64 \
+  -derivedDataPath iosApp/build/DerivedData CODE_SIGNING_ALLOWED=NO build -quiet
 ```
 
 - If the JS build stops with "Lock file was changed", a Kotlin library brought new npm packages:

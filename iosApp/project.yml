@@ -2,6 +2,12 @@
 # ./iosApp/generate-project.sh, which reads the app version from ../version.properties.
 name: BoraRachar
 
+# The Apple Watch app inside the iPhone app: on CI and with --watch, never in a project generated for a simulator
+# run on this Mac (generate-project.sh says why)
+include:
+  - path: watch-embed.yml
+    enable: ${BLITZSPLIT_EMBED_WATCH}
+
 options:
   bundleIdPrefix: com.quare
   # English is the source language (with Britain's, Australia's and Canada's en-GB, en-AU and en-CA holding the words
@@ -71,7 +77,17 @@ targetTemplates:
     preBuildScripts:
       - name: Build the Shared framework
         basedOnDependencyAnalysis: false
+        # A project generated without the watch app (watch-embed.yml) builds an iPhone app that ships alone: fine on
+        # a simulator, never for a release. Checked first, since Gradle links a release framework for minutes
         script: |
+          if [ "$CONFIGURATION" = "Release" ] && [ "$BLITZSPLIT_EMBEDS_WATCH" != "YES" ]; then
+            case "$PLATFORM_NAME" in
+              iphone*)
+                echo "error: this project was generated without the Apple Watch app, which a release ships inside the iPhone app. Generate it again: ./iosApp/generate-project.sh --watch"
+                exit 1
+                ;;
+            esac
+          fi
           if [ "YES" = "$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED" ]; then
             echo "Skipping the Gradle build: OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED is YES"
             exit 0
@@ -156,13 +172,10 @@ targets:
       - path: Widgets/Shared
       # The widget's file from the shared code's snapshot, which the watch app writes too
       - path: Sources/WidgetSnapshot
+    # The Apple Watch app the iPhone app ships with is one more dependency, which watch-embed.yml adds when
+    # generate-project.sh includes it: without it, a build of this target links one Shared framework, not two
     dependencies:
       - target: BalanceWidget
-        embed: true
-        codeSign: true
-      # The Apple Watch app ships inside the iPhone app's bundle (Watch/), as App Store Connect delivers a companion
-      # watch app, and installs on its own from the watch's App Store too (WKRunsIndependentlyOfCompanionApp)
-      - target: BoraRachar-watchOS
         embed: true
         codeSign: true
     info:

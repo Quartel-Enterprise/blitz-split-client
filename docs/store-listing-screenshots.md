@@ -46,7 +46,10 @@ at, and sent through GitHub: [Sending a set made on a Mac](#sending-a-set-made-o
 through the `play-store-screenshots` workflow, which draws and sends them without a release and leaves the App
 Store's as they are: [Sending Google Play's alone](#sending-google-plays-alone).
 
-The lane runs, each step under `scripts/heavy-check.sh`:
+Each step of the lane runs under `scripts/heavy-check.sh`. The queue is first come, first served, so a session's check
+that arrived meanwhile runs before the lane's next step, and `capture-ios.sh` lets the ones that wait go first between
+two languages too (`heavy-check.sh --yield`): a check then waits for a language, not for a slot. The iPhone Duo's two
+slots and `capture-mac.sh` hold the queue until they end. The lane runs:
 
 1. **Google Play:** `./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt` draws the bare screens and
    `-PcreativeAssets` what the tickets write; `compose.mjs` lays them out, `watch/draw-wear.sh` draws the Wear OS

@@ -319,6 +319,15 @@ capture_language() {
   return 1
 }
 
+# Boots the simulator, if it isn't up, and gives its status bar Apple's 9:41: a shutdown takes the status bar back.
+ready_simulator() {
+  local udid="$1"
+  xcrun simctl boot "$udid" 2> /dev/null || true
+  xcrun simctl bootstatus "$udid" -b > /dev/null
+  xcrun simctl status_bar "$udid" override --time "9:41" --dataNetwork wifi --wifiMode active --wifiBars 3 \
+    --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100
+}
+
 # Every language of a slot, one after the other. A language that failed doesn't stop the others, but the slot's
 # FAILED_LANGUAGES-th does: by then it is the slot that fails, and each one more costs two tries. failed_languages
 # names the slot's, and counts the ones it then left untried.
@@ -336,6 +345,19 @@ capture_slot() {
   summary "| --- | --- | --- |"
   for tag in "${locales[@]}"; do
     position=$((position + 1))
+    # A slot takes an hour or more, and a session's check a minute: between two languages, the checks that wait for
+    # the queue this run holds go first (heavy-check.sh). Nothing to do outside the queue, as on CI. What took the
+    # turn may be another run of this script on this simulator, which shuts it down as its slot ends: it is made
+    # ready again. Not on the Duo, which that run would boot closed again, under a slot that had it open.
+    if [ "$position" -gt 1 ] && [ -n "$HEAVY_CHECK_HOLDER" ]; then
+      case "$slot" in
+        iphoneduo*) ;;
+        *)
+          "$ROOT/scripts/heavy-check.sh" --yield || true
+          ready_simulator "$udid"
+          ;;
+      esac
+    fi
     if capture_language "$slot" "$udid" "$tag" "$position" "$total"; then
       captured_count=$((captured_count + 1))
       done_seconds=$((done_seconds + language_seconds))
@@ -424,10 +446,7 @@ for slot in $SLOTS; do
   echo "Capturing $slot on $udid: ${#locales[@]} language(s), ${#screen_files[@]} screen(s) each"
   # The Duo boots closed, whatever a run that stopped halfway left it as: its two slots share the simulator.
   case "$slot" in iphoneduo*) xcrun simctl shutdown "$udid" 2> /dev/null || true ;; esac
-  xcrun simctl boot "$udid" 2> /dev/null || true
-  xcrun simctl bootstatus "$udid" -b > /dev/null
-  xcrun simctl status_bar "$udid" override --time "9:41" --dataNetwork wifi --wifiMode active --wifiBars 3 \
-    --cellularMode active --cellularBars 4 --batteryState discharging --batteryLevel 100
+  ready_simulator "$udid"
   # Only the locales and screens asked for are captured again: a narrowed run keeps the others' PNGs. A whole run
   # starts the slot over, so one it then skips leaves no older capture to frame.
   if [ -z "$STORE_SCREENSHOTS_LOCALES" ] && [ -n "$is_whole_table" ]; then rm -rf "${OUTPUT:?}/$slot"; fi
