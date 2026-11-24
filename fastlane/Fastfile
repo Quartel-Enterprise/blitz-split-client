@@ -231,8 +231,9 @@ end
 # check alone, as for the listing's text: the App Store has none, and its screenshots would go up for real, so they
 # are left out of that run.
 def upload_store_screenshots(repo_root, platforms, options)
-  # fastlane reads a lane option of yes/no as a boolean, so locale:no, the App Store's Norwegian, arrives as false
-  locale = options[:locale] == false ? "no" : options[:locale]
+  # fastlane reads a lane option of yes/no (or true/false) as a boolean, so locale:no, the App Store's Norwegian,
+  # arrives as false. Read back as the word, so a true is named as an unstaged locale rather than failing in File.join
+  locale = { false => "no", true => "yes" }.fetch(options[:locale], options[:locale])
   play_locales = options[:locales].to_s.split(",").map(&:strip).reject(&:empty?)
   if options.key?(:locales)
     # Without this an empty list would read as no locale named, which sends everything staged
