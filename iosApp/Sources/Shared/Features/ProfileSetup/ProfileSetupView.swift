@@ -223,7 +223,7 @@ struct ColorSwatch: View {
                 .padding(2)
         }
         .buttonStyle(.plain)
-        .hoverDim()
+        .hoverHighlight(in: .circle)
         .accessibilityLabel(color.label)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }

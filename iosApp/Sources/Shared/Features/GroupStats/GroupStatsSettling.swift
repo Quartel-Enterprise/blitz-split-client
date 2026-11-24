@@ -71,7 +71,7 @@ private struct StatsSettlerLine: View {
                 }
             }
         }
-        .opensProfile(onOpen)
+        .opensProfile(onOpen, hover: .row)
     }
 
     private var name: String {

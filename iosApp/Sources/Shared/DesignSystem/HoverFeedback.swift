@@ -34,21 +34,27 @@ private struct HoverHighlight<S: Shape>: ViewModifier {
 /// The same answer for content with no shape of its own to fill (a face, a photo, a name, a lone icon): it fades a
 /// little on the Mac, and the iPad's pointer lifts it.
 private struct HoverDim: ViewModifier {
-    let isOn: Bool
-
     @Environment(\.isEnabled) private var isEnabled
     @State private var isHovered = false
 
     func body(content: Content) -> some View {
         #if os(macOS)
         content
-            .opacity(isOn && isHovered && isEnabled ? 0.75 : 1)
+            .opacity(isHovered && isEnabled ? 0.75 : 1)
             .onHover { isHovered = $0 }
             .animation(.easeOut(duration: 0.15), value: isHovered)
         #else
-        content.hoverEffect(.lift, isEnabled: isOn && isEnabled)
+        content.hoverEffect(.lift, isEnabled: isEnabled)
         #endif
     }
+}
+
+/// Which answer a view that may be a face or a whole row takes (`opensProfile`): a face fades, a row outside a `List`
+/// takes the row's highlight, and a row of a `List` takes nothing, since the list answers for it.
+enum HoverFeedback {
+    case dim
+    case row
+    case none
 }
 
 extension AnyShape {
@@ -71,8 +77,18 @@ extension View {
     }
 
     /// Fades this clickable face, photo, name or icon a little while a pointer is over it.
-    func hoverDim(_ isOn: Bool = true) -> some View {
-        modifier(HoverDim(isOn: isOn))
+    func hoverDim() -> some View {
+        modifier(HoverDim())
+    }
+
+    /// The answer `feedback` names.
+    @ViewBuilder
+    func hover(_ feedback: HoverFeedback) -> some View {
+        switch feedback {
+        case .dim: hoverDim()
+        case .row: hoverRowHighlight()
+        case .none: self
+        }
     }
 
     /// The pointing hand over a button that opens a web page: on the Mac, Apple keeps it for links.

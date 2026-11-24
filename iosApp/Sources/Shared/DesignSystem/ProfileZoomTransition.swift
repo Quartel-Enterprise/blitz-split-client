@@ -63,8 +63,8 @@ extension View {
     }
 
     /// `opensProfile` whose tap first arms the zoom out of the face `faceId`.
-    func opensProfile(_ action: (() -> Void)?, zoomingFrom faceId: String, hovers: Bool = true) -> some View {
-        modifier(ProfileZoomArmingModifier(action: action, faceId: faceId, hovers: hovers))
+    func opensProfile(_ action: (() -> Void)?, zoomingFrom faceId: String, hover: HoverFeedback = .dim) -> some View {
+        modifier(ProfileZoomArmingModifier(action: action, faceId: faceId, hover: hover))
     }
 }
 
@@ -114,7 +114,7 @@ private struct ProfileZoomSourceModifier: ViewModifier {
 private struct ProfileZoomArmingModifier: ViewModifier {
     let action: (() -> Void)?
     let faceId: String
-    let hovers: Bool
+    let hover: HoverFeedback
 
     @Environment(\.profileZoomScope) private var scope
 
@@ -126,7 +126,7 @@ private struct ProfileZoomArmingModifier: ViewModifier {
                     action()
                 }
             },
-            hovers: hovers,
+            hover: hover,
         )
     }
 }

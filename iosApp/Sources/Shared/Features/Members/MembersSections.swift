@@ -269,7 +269,7 @@ private struct MemberRow: View {
             content
                 .foregroundStyle(.primary)
                 .accessibilityElement(children: .combine)
-                .opensProfile({ send(MembersUiEventOnMemberClicked(memberId: member.id)) }, zoomingFrom: faceId, hovers: false)
+                .opensProfile({ send(MembersUiEventOnMemberClicked(memberId: member.id)) }, zoomingFrom: faceId, hover: .none)
                 // A long press (a right click on the Mac) holds the same items as the ⋯
                 .contextMenu { menuItems }
             Menu {

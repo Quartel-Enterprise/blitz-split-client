@@ -622,7 +622,7 @@ private struct StatsPersonLine: View {
                     .foregroundStyle(person.amountMinor > 0 ? .primary : .secondary)
             }
         }
-        .opensProfile(person.opensProfile ? onOpen : nil)
+        .opensProfile(person.opensProfile ? onOpen : nil, hover: .row)
     }
 }
 
