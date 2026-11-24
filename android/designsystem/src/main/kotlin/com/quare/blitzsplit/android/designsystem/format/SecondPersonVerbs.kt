@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import com.quare.blitzsplit.android.designsystem.R
-import com.quare.blitzsplit.core.model.AppLanguage
 import java.util.Locale
 
 private const val SPANISH = "es"
@@ -376,18 +375,20 @@ private fun secondPersonLanguageUi(): String {
     val isPortugal = resources.getBoolean(R.bool.designsystem_portugal_portuguese)
     return when {
         locale.language == PORTUGUESE && isPortugal -> PORTUGAL_PORTUGUESE
+
         resources.getBoolean(R.bool.designsystem_norwegian) -> NORWEGIAN
-        isCyrillicSerbian(locale) || isShahmukhiPunjabi(locale) -> ""
+
+        resources.getBoolean(R.bool.designsystem_punjabi) -> PUNJABI
+
+        // Why: Punjabi strings not drawn on a Punjabi device are English's: it is in Shahmukhi (pa-Arab, pa-PK).
+        isCyrillicSerbian(locale) || locale.language == PUNJABI -> ""
+
         else -> locale.language
     }
 }
 
 // Why: a Serbian device in Cyrillic draws the English strings, the app having the Latin resources only.
 private fun isCyrillicSerbian(locale: Locale): Boolean = locale.language == SERBIAN && locale.script != LATIN_SCRIPT
-
-// Why: Punjabi in Shahmukhi (pa-Arab, pa-PK) reads the English strings, the app having Punjabi in Gurmukhi only.
-private fun isShahmukhiPunjabi(locale: Locale): Boolean =
-    locale.language == PUNJABI && AppLanguage.fromTag(locale.toLanguageTag()) != AppLanguage.PUNJABI
 
 // Why: only the user is "Tú"; the verb of someone else stays in the third person.
 @Composable

@@ -17,13 +17,14 @@ class GetLegalLanguageUseCase(
         val tag = observeAppLanguage().first().tag ?: deviceLanguage()
         /*
          * Why: an app language reads its own pages (Traditional Chinese's "zh-Hant", the bare "zh" being Simplified's),
-         * any other its bare code.
+         * any other its bare code, but Punjabi in Shahmukhi (pa-Arab, pa-PK), whose bare "pa" pages are in Gurmukhi,
+         * which the app has Punjabi in only (Pierre's call): it reads English's, as the app does.
          */
         val language = AppLanguage
             .fromTag(tag)
             .takeIf { it != AppLanguage.SYSTEM }
             ?.spokenCode
-            ?: AppLanguage.languageOf(tag)
+            ?: AppLanguage.languageOf(tag)?.takeIf { it != AppLanguage.PUNJABI.tag }
         return language?.takeIf { languagePattern.matches(it) } ?: DEFAULT_LANGUAGE
     }
 

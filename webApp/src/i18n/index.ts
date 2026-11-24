@@ -75,7 +75,7 @@ const bareLocales: readonly Locale[] = ['fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr'
  * are read before any extension, as AppLanguage's.
  */
 function isTraditionalChinese(subtags: readonly string[]): boolean {
-  const script = beforeExtension(subtags).find((subtag) => /^[a-z]{4}$/.test(subtag))
+  const script = scriptOf(subtags)
   if (script) return script === 'hant'
   const region = regionOf(subtags)
   return region === 'tw' || region === 'hk' || region === 'mo'
@@ -86,9 +86,14 @@ function isTraditionalChinese(subtags: readonly string[]): boolean {
  * never pa-Arab), else any region but Pakistan, whose pa-PK is Shahmukhi by default. As AppLanguage's.
  */
 function isGurmukhi(subtags: readonly string[]): boolean {
-  const script = beforeExtension(subtags).find((subtag) => /^[a-z]{4}$/.test(subtag))
+  const script = scriptOf(subtags)
   if (script) return script === 'guru'
   return regionOf(subtags) !== 'pk'
+}
+
+// Why: a tag's script, its four-letter subtag before any extension ("hant" of zh-Hant-TW), as AppLanguage.scriptOf.
+function scriptOf(subtags: readonly string[]): string | undefined {
+  return beforeExtension(subtags).find((subtag) => /^[a-z]{4}$/.test(subtag))
 }
 
 // Why: a tag's subtags before any extension ("-u-fw-mon", whose one-letter singleton starts it), as AppLanguage's.
