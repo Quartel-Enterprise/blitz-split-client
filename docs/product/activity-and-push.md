@@ -129,11 +129,17 @@ The feed, unread state, real time and push notifications.
     starts with "on", which the user's rows turn into "olet" ("Ana on jakanut kulun…", "Sinä olet jakanut kulun…"),
     the bill's history rows too, and the deleted-item notice starts with who deleted it ("Sinä olet poistanut…",
     `youSubjectLanguages`). A name is never inflected: it stands after a noun that carries the case ("on lisännyt
-    jäsenen Ana"). Slovenian swaps its "je" for "si", as Croatian does: every Slovenian verb phrase starts with "je"
-    before a past written "-l(a)", the app not knowing the gender, which the user's rows turn into "si" ("Ana je
-    razdelil(a) strošek…", "Ti si razdelil(a) strošek…"), the bill's history rows too. No clitic or reflexive pronoun
-    follows the actor, since Slovenian puts "si" before one and "je" after it ("je vstopil(a) v skupino", never "se je
-    pridružil(a)"). The deleted-item notice starts with who deleted it ("Ti si izbrisal(a)…", `youSubjectLanguages`).
+    jäsenen Ana").
+    Latvian starts every verb phrase with a simple past, which says the person but not the gender: its third person
+    in "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja rēķinu…", "Tu sadalīji
+    rēķinu…"; "Ana pievienojās…", "Tu pievienojies…"), the bill's history rows too, and the deleted-item notice
+    starts with who deleted it ("Tu izdzēsi…", `youSubjectLanguages`). A name is never declined: it stands after a
+    noun that carries the case ("pievienojās grupai Lisabonas brauciens"). Slovenian swaps its "je" for "si", as
+    Croatian does: every Slovenian verb phrase starts with "je" before a past written "-l(a)", the app not knowing the
+    gender, which the user's rows turn into "si" ("Ana je razdelil(a) strošek…", "Ti si razdelil(a) strošek…"), the
+    bill's history rows too. No clitic or reflexive pronoun follows the actor, since Slovenian puts "si" before one
+    and "je" after it ("je vstopil(a) v skupino", never "se je pridružil(a)"). The deleted-item notice starts with who
+    deleted it ("Ti si izbrisal(a)…", `youSubjectLanguages`).
     Telugu needs no rule: its respectful
     past "-ారు" is the same for a name and for "మీరు" ("Ana ఒక ఖర్చును పంచారు: డిన్నర్", "మీరు ఒక ఖర్చును పంచారు: డిన్నర్"),
     and the object after a colon keeps every name free of case endings, as Tamil's. Its deleted-item notice starts with

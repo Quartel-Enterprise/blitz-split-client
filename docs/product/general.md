@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish and Slovenian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian and Slovenian: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -290,16 +290,25 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     after a noun that carries the case ("ryhmässä Lissabonin matka"). Every activity verb phrase is a perfect that
     starts with "on", which the user's rows turn into "olet" ("Ana on jakanut…", "Sinä olet jakanut…"), and its
     deleted-item notice starts with who deleted it (`youSubjectLanguages`). Its plurals have one and other. The picker
-    names it "Suomi", and its chip reads "FI". It brings no currency, the euro covering Finland. Slovenian (Pierre's
-    calls, issue #581) is one variant for every `sl` tag, talks to the user in the informal "ti" and calls the app
-    Blitz Split. A name the app fills in is never declined, as Croatian's: it stands after a noun or a colon
-    ("je dodal(a) člana Ana", "Plačnik: Ana"). Its past says the gender, which the app doesn't know, so it is written
-    "-l(a)", and every activity verb phrase starts with "je" before it, which the user's rows turn into "si" ("Ana je
-    razdelil(a)…", "Ti si razdelil(a)…"), with no clitic or reflexive pronoun that would move with it; its deleted-item
-    notice starts with who deleted it (`youSubjectLanguages`). Its plurals have one (1, 101…), two (2, 102…), few
-    (3, 4, 103…) and other, in every plural of the three platforms (the web writes an `…Other` message as
-    "one|two|few|other"). The picker names it "Slovenščina", and its chip reads "SL". It brings no currency, the euro
-    covering Slovenia, and writes Latin digits and the Gregorian calendar. The
+    names it "Suomi", and its chip reads "FI". It brings no currency, the euro covering Finland. Latvian (Pierre's
+    calls, issue #581) is one variant for every `lv` tag, talks to the user in the informal "tu" and calls the app
+    Blitz Split, never declined. A value the app fills in is never declined either: it stands after a colon, as the
+    subject, or after a noun that carries the case ("grupai Lisabonas brauciens"). Every activity verb phrase starts
+    with a simple past, which says the person but not the gender, and the user's rows turn its "-a" into "-i" and a
+    reflexive "-ās" into "-ies" ("Ana sadalīja…", "Tu sadalīji…"); its deleted-item notice starts with who deleted it
+    (`youSubjectLanguages`). Its plurals have zero, one and other: zero (0, 10–20, 30…) writes what other does, and 21,
+    31… take the singular, so a web `…Other` message holds one|other ("{count} grupa|{count} grupas"). It writes the
+    Gregorian calendar with Latin digits, as the platforms do for it anyway. The picker names it "Latviešu", and its
+    chip reads "LV". It brings no currency, the euro covering Latvia. Slovenian (Pierre's calls, issue #581) is one
+    variant for every `sl` tag, talks to the user in the informal "ti" and calls the app Blitz Split. A name the app
+    fills in is never declined, as Croatian's: it stands after a noun or a colon ("je dodal(a) člana Ana", "Plačnik:
+    Ana"). Its past says the gender, which the app doesn't know, so it is written "-l(a)", and every activity verb
+    phrase starts with "je" before it, which the user's rows turn into "si" ("Ana je razdelil(a)…", "Ti si
+    razdelil(a)…"), with no clitic or reflexive pronoun that would move with it; its deleted-item notice starts with
+    who deleted it (`youSubjectLanguages`). Its plurals have one (1, 101…), two (2, 102…), few (3, 4, 103…) and other,
+    in every plural of the three platforms (the web writes an `…Other` message as "one|two|few|other"). The picker
+    names it "Slovenščina", and its chip reads "SL". It brings no currency, the euro covering Slovenia, and writes
+    Latin digits and the Gregorian calendar. The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Izmanto šeit to pašu kontu, kas tālrunī. Pēc tam pulkstenis darbosies patstāvīgi.</string>
+    <string name="pair_connect">Savienot</string>
+    <string name="pair_connecting">Saņem tavu kontu no tālruņa…</string>
+    <string name="pair_connected_title">Viss gatavs, %1$s</string>
+    <string name="pair_connected_title_unnamed">Viss gatavs</string>
+    <string name="pair_connected_body">Pulkstenis sinhronizējas pats, pat tālu no tālruņa.</string>
+    <string name="pair_continue">Turpināt</string>
+    <string name="pair_local_only_title">Tavi dati ir tikai tālrunī</string>
+    <string name="pair_local_only_body">Tālrunī sadaļā Profils pievieno kontu un šeit vēlreiz pieskaries Savienot.</string>
+    <string name="pair_ok">Labi</string>
+    <string name="pair_far_title">Tālrunis nav sasniedzams</string>
+    <string name="pair_far_body">Pietuvini tālruni vai savieno ar kodu.</string>
+    <string name="pair_try_again">Mēģināt vēlreiz</string>
+    <string name="pair_use_code">Izmantot kodu</string>
+    <string name="pair_code_label">Tavs kods</string>
+    <string name="pair_code_description">Kods %1$s</string>
+    <string name="pair_code_where">Tālrunī: Profils › Savienot pulksteni</string>
+    <string name="pair_code_validity">Derīgs 5 minūtes</string>
+    <string name="pair_cancel">Atcelt</string>
+    <string name="pair_signed_out_title">Tu izrakstījies tālrunī</string>
+    <string name="pair_signed_out_body">Dati tika dzēsti arī no šī pulksteņa.</string>
+    <string name="pair_connect_again">Savienot vēlreiz</string>
+    <string name="pair_error_offline">Pulksteņa savienošanai vajag internetu.</string>
+    <string name="pair_error_too_many">Pārāk daudz mēģinājumu. Pagaidi dažas minūtes un savieno vēlreiz.</string>
+    <string name="pair_error_failed">Neizdevās savienot pulksteni. Mēģini vēlreiz.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Bilances</string>
+    <string name="balances_offline">Bezsaistē</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="zero">Bezsaistē · %d izmaiņas rindā</item>
+        <item quantity="one">Bezsaistē · %d izmaiņa rindā</item>
+        <item quantity="other">Bezsaistē · %d izmaiņas rindā</item>
+    </plurals>
+    <string name="balances_overall">Kopējā bilance</string>
+    <string name="balances_to_receive">jāsaņem</string>
+    <string name="balances_you_owe">tu esi parādā</string>
+    <string name="balances_group_to_receive">%1$s jāsaņem</string>
+    <string name="balances_group_you_owe">%1$s tu esi parādā</string>
+    <string name="balances_group_even">Kopumā nulle</string>
+    <string name="balances_waiting">gaida nosūtīšanu</string>
+    <string name="balances_updated_at">Atjaunināts plkst. %1$s</string>
+    <string name="balances_sign_out">Izrakstīties</string>
+    <string name="balances_sign_out_title">Izrakstīties no šī pulksteņa?</string>
+    <string name="balances_sign_out_body">Tā dati tiks izdzēsti, kad rindā gaidošais būs nosūtīts. Tālrunī tu neizrakstīsies.</string>
+    <string name="balances_sign_out_scheduled">Izrakstīšanās ieplānota</string>
+    <string name="balances_sign_out_scheduled_detail">Izrakstīsies, tiklīdz viss būs augšupielādēts</string>
+    <string name="balances_settled_title">Nav atklātu parādu</string>
+    <string name="balances_settled_body">Tu neesi nevienam parādā, un neviens nav parādā tev. Jaunas grupas un rēķini šeit parādīsies paši.</string>
+    <string name="group_you_owe_person">tu esi parādā personai %1$s</string>
+    <string name="group_owes_you">%1$s ir parādā tev</string>
+    <string name="group_former_member">Bijušais dalībnieks</string>
+    <string name="group_i_paid">Es samaksāju</string>
+    <string name="group_confirm_title">Samaksāji %1$s personai %2$s?</string>
+    <string name="group_confirm_body">%1$s. Grupa to redzēs uzreiz vai tad, kad atjaunosies internets.</string>
+    <string name="group_payment_recorded">Maksājums reģistrēts</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Bilances</string>
+    <string name="tile_to_receive_total">kopā jāsaņem</string>
+    <string name="tile_to_pay_total">kopā jāmaksā</string>
+    <string name="tile_owed_to_you">Tev ir parādā %1$s</string>
+    <string name="tile_you_owe">Tu esi parādā %1$s</string>
+    <string name="tile_settled_title">Viss nokārtots</string>
+    <string name="tile_settled_body">Nav nekā, ko maksāt vai saņemt</string>
+    <string name="tile_open">Atvērt</string>
+    <string name="complication_name">Kopējā bilance</string>
+    <string name="complication_you_owe">Tu esi parādā %1$s</string>
+    <string name="complication_owed_to_you">Tev ir parādā %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Saņemts</string>
+    <string name="push_view_group">Skatīt grupu</string>
+</resources>

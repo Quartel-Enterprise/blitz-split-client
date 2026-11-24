@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Aizvērt</string>
+    <string name="invite_group_created">Grupa izveidota</string>
+    <string name="invite_title">Uzaicini visus uz grupu %s</string>
+    <string name="invite_qr_description">Grupas uzaicinājuma saites QR kods</string>
+    <string name="invite_copy">Kopēt</string>
+    <string name="invite_copied">Nokopēts</string>
+    <string name="invite_who_picks">Kas atver saiti, sarakstā izvēlas, kas ir: %s. Konts nav vajadzīgs.</string>
+    <string name="invite_names_or">%1$s vai %2$s</string>
+    <string name="invite_anyone_joins">Kas atver saiti, pievienojas grupai. Konts nav vajadzīgs.</string>
+    <string name="invite_pending_title">Saite vēl nav gatava</string>
+    <string name="invite_pending_offline">Tā tiks izveidota, tiklīdz būsi tiešsaistē.</string>
+    <string name="invite_pending_online">Izveido saiti…</string>
+    <string name="invite_failed_title">Neizdevās izveidot saiti</string>
+    <string name="invite_failed_body">Sinhronizējot grupu, kaut kas nogāja greizi.</string>
+    <string name="invite_retry">Mēģināt vēlreiz</string>
+    <string name="invite_share">Kopīgot saiti</string>
+    <string name="invite_see_who_joined">Skatīt, kas pievienojās</string>
+    <string name="invite_add_person">Pievienot kādu bez lietotnes</string>
+    <string name="invite_go_to_group">Atvērt grupu</string>
+    <string name="invite_change_link">Mainīt saiti</string>
+    <string name="invite_change_link_title">Mainīt uzaicinājuma saiti?</string>
+    <string name="invite_change_link_message">Pašreizējā saite un QR kods vairs nedarbosies, tostarp neizmantotie personīgie uzaicinājumi. Tie, kas jau pievienojās, paliek grupā.</string>
+    <string name="invite_change_link_failed">Neizdevās mainīt saiti. Mēģini vēlreiz.</string>
+    <string name="invite_share_message">Sadalīsim grupas %1$s rēķinus lietotnē Blitz Split. Pievienojies ar šo saiti: %2$s</string>
+</resources>

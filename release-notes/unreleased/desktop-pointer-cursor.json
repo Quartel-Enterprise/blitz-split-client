@@ -2,7 +2,10 @@
   "notes": [
     {
       "kind": "improved",
-      "platforms": ["ios", "mac"],
+      "platforms": [
+        "ios",
+        "mac"
+      ],
       "text": {
         "en": "Cards, rows and buttons now light up under the pointer on the Mac and on an iPad with a mouse or trackpad.",
         "pt": "Cards, linhas e botões agora se destacam sob o cursor no Mac e no iPad com mouse ou trackpad.",
@@ -48,6 +51,7 @@
         "ca": "Les targetes, files i botons ara es ressalten sota el punter al Mac i a l'iPad amb ratolí o trackpad.",
         "da": "Kort, rækker og knapper lyser nu op under markøren på Mac og på iPad med mus eller pegefelt.",
         "fi": "Kortit, rivit ja painikkeet korostuvat nyt osoittimen alla Macissa ja iPadissa, jossa on hiiri tai ohjauslevy.",
+        "lv": "Kartītes, rindas un pogas tagad izceļas zem rādītāja Mac datorā un iPad ierīcē ar peli vai skārienpaliktni.",
         "sl": "Kartice, vrstice in gumbi se zdaj osvetlijo pod kazalcem na Macu in na iPadu z miško ali sledilno ploščico."
       }
     }

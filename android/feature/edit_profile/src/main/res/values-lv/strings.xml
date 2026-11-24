@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Rediģēt profilu</string>
+    <string name="edit_profile_save">Saglabāt</string>
+    <string name="edit_profile_change_photo">Mainīt fotoattēlu</string>
+    <string name="edit_profile_take_photo">Uzņemt fotoattēlu</string>
+    <string name="edit_profile_choose_photo">Izvēlēties no galerijas</string>
+    <string name="edit_profile_use_account_photo">Izmantot %1$s konta fotoattēlu</string>
+    <string name="edit_profile_remove_photo">Noņemt fotoattēlu</string>
+    <string name="edit_profile_photo_error">Neizdevās izmantot šo fotoattēlu. Izmēģini citu.</string>
+    <string name="edit_profile_avatar_color">Avatāra krāsa</string>
+    <string name="edit_profile_avatar_color_hint">Tiek rādīta, ja tev nav fotoattēla.</string>
+    <string name="edit_profile_name_label">Tavs vārds</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Ievadi vismaz %d burtus.</string>
+    <string name="edit_profile_name_too_long">Izmanto ne vairāk kā %d rakstzīmes.</string>
+    <string name="edit_profile_account_notice">Vārds un fotoattēls ir no tava %1$s konta. To maiņa šeit attiecas tikai uz Blitz Split un nemaina tavu %1$s kontu.</string>
+    <string name="edit_profile_footer">Tavu vārdu un fotoattēlu redz tavas grupas un ikviens, kam ir tava profila saite.</string>
+    <string name="profile_photo_close">Aizvērt</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galerija</string>
+    <string name="profile_photo_remove">Noņemt</string>
+    <string name="profile_photo_title">Profila fotoattēls</string>
+</resources>
