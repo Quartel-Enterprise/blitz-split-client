@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · atkopšanas kods</string>
+    <string name="platform_export_file_name">blitz-split-dati-%1$s.json</string>
+    <string name="platform_camera_denied">Atļauj kameru iestatījumos, lai uzņemtu fotoattēlu.</string>
+    <string name="platform_camera_settings">Iestatījumi</string>
+    <string name="platform_receipt_source_camera">Uzņemt fotoattēlu</string>
+    <string name="platform_receipt_source_gallery">Izvēlēties no galerijas</string>
+    <string name="platform_receipt_source_file">Izvēlēties failu</string>
+    <string name="platform_receipt_camera_title">Skenēt čeku</string>
+    <string name="platform_receipt_camera_close">Aizvērt</string>
+    <string name="platform_receipt_camera_flash_on">Ieslēgt zibspuldzi</string>
+    <string name="platform_receipt_camera_flash_off">Izslēgt zibspuldzi</string>
+    <string name="platform_receipt_camera_hint">Ietver visu čeku rāmī. Mēs aizpildām summu, datumu un aprakstu; tu pārbaudi pirms saglabāšanas.</string>
+    <string name="platform_receipt_camera_gallery">Izvēlēties no galerijas</string>
+    <string name="platform_receipt_camera_shutter">Uzņemt fotoattēlu</string>
+    <string name="platform_receipt_camera_unavailable">Kamera nav pieejama. Izvēlies čeka fotoattēlu no galerijas.</string>
+    <string name="platform_receipt_camera_permission">Atļauj kameru, lai skenētu čeku, vai izvēlies fotoattēlu no galerijas.</string>
+    <string name="platform_receipt_camera_allow">Atļaut kameru</string>
+    <string name="platform_receipt_camera_settings">Atvērt iestatījumus</string>
+</resources>

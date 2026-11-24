@@ -1,0 +1,58 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Latvian: pick \"Latviešu\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala letão: escolha \"Latviešu\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora letão: escolhe \"Latviešu\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla letón: elige \"Latviešu\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais letton : choisis « Latviešu » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Lettisch: Wähle „Latviešu“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla lettone: scegli \"Latviešu\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po łotewsku: wybierz „Latviešu” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Lets: kies \"Latviešu\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがラトビア語に対応しました。プロフィール › 言語で「Latviešu」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Letonca konuşuyor: Profil › Dil'de \"Latviešu\" seçeneğini seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Latvia: pilih \"Latviešu\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на латышском: выбери «Latviešu» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить латиською: обери «Latviešu» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 라트비아어를 쓸 수 있어요. 프로필 › 언어에서 ‘Latviešu’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप लातवियाई में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Latviešu” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث اللاتفية: يمكنك اختيار «Latviešu» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持拉脱维亚语：在“个人资料 › 语言”中选择“Latviešu”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו לטבית: אפשר לבחור \"Latviešu\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาลัตเวียแล้ว เลือก “Latviešu” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Latvia: chọn “Latviešu” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援拉脫維亞文：在「個人資料 › 語言」中選擇「Latviešu」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu lettiska: välj ”Latviešu” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví lotyšsky: vyber „Latviešu“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum letonă: alege „Latviešu” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন লাটভিয়ান ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “Latviešu” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Latvia: pilih \"Latviešu\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον λετονικά: διάλεξε «Latviešu» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori latvijski: odaberi „Latviešu“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól lettül is beszél: válaszd a „Latviešu” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ لیٹوین میں بھی دستیاب ہے: پروفائل › زبان میں “Latviešu” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Latvian ang app: piliin ang \"Latviešu\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori letonski: izaberi „Latviešu“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "sk": "Aplikácia teraz hovorí po lotyšsky: vyber „Latviešu“ v Profil › Jazyk, alebo nechaj jazyk zariadenia.",
+        "fa": "برنامه حالا لتونیایی صحبت می‌کند: «Latviešu» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند.",
+        "ta": "ஆப் இப்போது லாட்வியன் மொழியில் கிடைக்கிறது: சுயவிவரம் › மொழி என்பதில் \"Latviešu\" என்பதைத் தேர்ந்தெடுங்கள், அல்லது உங்கள் சாதனத்தின் மொழியைப் பின்பற்ற விடுங்கள்.",
+        "nb": "Appen snakker nå latvisk: velg «Latviešu» i Profil › Språk, eller la den følge enheten din.",
+        "te": "యాప్ ఇప్పుడు లాట్వియన్‌లో అందుబాటులో ఉంది: ప్రొఫైల్ › భాషలో \"Latviešu\" ఎంచుకోండి, లేదా మీ పరికరం భాషను అనుసరించనివ్వండి.",
+        "bg": "Приложението вече говори латвийски: избери „Latviešu“ в Профил › Език или остави езика на устройството.",
+        "mr": "ॲप आता लाटव्हियनमध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"Latviešu\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
+        "sw": "Programu sasa inazungumza Kilatvia: chagua \"Latviešu\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
+        "ca": "L’app ara parla letó: tria «Latviešu» a Perfil › Idioma, o deixa que segueixi el teu dispositiu.",
+        "da": "Appen taler nu lettisk: vælg »Latviešu« i Profil › Sprog, eller lad den følge din enhed.",
+        "fi": "Sovellus puhuu nyt latviaa: valitse ”Latviešu” kohdassa Profiili › Kieli tai anna sen seurata laitteesi kieltä.",
+        "lv": "Lietotne tagad runā latviski: izvēlies „Latviešu” sadaļā Profils › Valoda vai ļauj tai sekot tavas ierīces valodai.",
+        "gu": "ઍપ હવે લાત્વિયનમાં ઉપલબ્ધ છે: પ્રોફાઇલ › ભાષામાં “Latviešu” પસંદ કરો, અથવા તેને તમારા ડિવાઇસની ભાષા મુજબ રહેવા દો."
+      }
+    }
+  ]
+}

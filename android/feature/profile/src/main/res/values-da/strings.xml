@@ -102,6 +102,7 @@
     <string name="profile_language_catalan">Catalansk</string>
     <string name="profile_language_danish">Dansk</string>
     <string name="profile_language_finnish">Finsk</string>
+    <string name="profile_language_latvian">Lettisk</string>
     <string name="profile_language_gujarati">Gujarati</string>
     <string name="profile_language_system_detail">Enhedens sprog</string>
     <!-- Each language in its own language, the same in every locale -->

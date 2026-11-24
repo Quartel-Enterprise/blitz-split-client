@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Tu neesi šajā grupā</string>
+    <string name="bill_link_not_in_group_message">Šis komentārs ir grupā, kurā tu neesi. Palūdz uzaicinājumu tam, kurš tev nosūtīja saiti.</string>
+    <string name="bill_link_offline_title">Nav interneta</string>
+    <string name="bill_link_offline_message">Atver saiti vēlreiz, kad atkal būsi tiešsaistē.</string>
+    <string name="bill_link_go_home">Uz sākumu</string>
+    <string name="discard_changes_title">Atmest izmaiņas?</string>
+    <string name="discard_changes_message">Nesaglabātās izmaiņas tiks zaudētas.</string>
+    <string name="discard_changes_discard">Atmest</string>
+    <string name="discard_changes_keep_editing">Turpināt rediģēt</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Pulkstenis</string>
+    <string name="watch_connected_title">%1$s pievienots tavam kontam</string>
+    <string name="watch_connected_title_unnamed">Pulkstenis pievienots tavam kontam</string>
+    <string name="watch_connected_text">Tas redz tavas grupas un sinhronizējas pats. Lai to atvienotu, izraksties pulkstenī.</string>
+</resources>

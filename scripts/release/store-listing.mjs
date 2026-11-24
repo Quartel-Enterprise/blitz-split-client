@@ -107,6 +107,7 @@ export const PLAY_LOCALES = {
   ca: ["ca"],
   da: ["da-DK"],
   fi: ["fi-FI"],
+  lv: ["lv"],
   gu: ["gu"],
 };
 export const APP_STORE_LOCALES = {
@@ -163,6 +164,8 @@ export const APP_STORE_LOCALES = {
   ca: ["ca"],
   da: ["da"],
   fi: ["fi"],
+  // Apple has no Latvian listing locale either: the language has a Play listing and no App Store one.
+  lv: [],
   gu: ["gu-IN"],
 };
 

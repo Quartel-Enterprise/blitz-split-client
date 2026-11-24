@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Paziņojumi</string>
+    <string name="notification_settings_denied_title">Blitz Split paziņojumi Android ierīcē ir izslēgti.</string>
+    <string name="notification_settings_denied_body">Ieslēdz tos sistēmas iestatījumos, lai saņemtu tālāk norādītos push paziņojumus. Zvaniņš turpina darboties.</string>
+    <string name="notification_settings_open_settings">Atvērt iestatījumus</string>
+    <string name="notification_settings_refused_body">Android ļauj tos atļaut vēl vienu reizi, lai saņemtu tālāk norādītos push paziņojumus. Zvaniņš turpina darboties.</string>
+    <string name="notification_settings_turn_on">Ieslēgt</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Bloķēts Android iestatījumos</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Atvērt Android iestatījumus: %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Push paziņojumi</string>
+    <string name="notification_settings_push_switch_detail">Tikai šajā ierīcē</string>
+    <string name="notification_settings_section">Paziņot man par</string>
+    <string name="notification_settings_push">Push</string>
+    <string name="notification_settings_in_app">Lietotnē</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Push nosūta paziņojumu uz šo ierīci. Lietotnē to atzīmē kā jaunu pie zvaniņa un sadaļā Aktivitāte; ja izslēgts, tas joprojām tiek rādīts sadaļā Aktivitāte, jau izlasīts.</string>
+    <string name="notification_settings_footer">Paziņojumi pienāk, kad ir internets. Lai izslēgtu grupas paziņojumus, izmanto izvēlni grupā.</string>
+</resources>

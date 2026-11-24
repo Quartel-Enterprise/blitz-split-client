@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Dzēst kontu</string>
+    <string name="delete_account_offline_title">Nav interneta.</string>
+    <string name="delete_account_offline_body">Konta dzēšanai vajag interneta savienojumu. Pieslēdzies un mēģini vēlreiz.</string>
+    <string name="delete_account_heading">Dzēst tavu kontu un datus?</string>
+    <string name="delete_account_deleted_title">Kas tiek dzēsts</string>
+    <string name="delete_account_deleted_profile">Tavs profils (vārds, fotoattēls un krāsa)</string>
+    <string name="delete_account_deleted_keys">Tavas Pix un Bitcoin atslēgas</string>
+    <string name="delete_account_deleted_provider">Saite ar tavu %1$s kontu</string>
+    <string name="delete_account_deleted_recovery_code">Tavs atkopšanas kods</string>
+    <string name="delete_account_deleted_device">Tavu datu kopija šajā ierīcē</string>
+    <string name="delete_account_kept_title">Kas paliek tavās grupās</string>
+    <string name="delete_account_kept_groups">Grupas ar to rēķiniem un maksājumiem pārējiem dalībniekiem</string>
+    <string name="delete_account_kept_member">Tavs vārds katrā grupā kā dalībnieks bez konta</string>
+    <string name="delete_account_kept_comments">Tavi komentāri un pievienotie fotoattēli ar tavu vārdu</string>
+    <string name="delete_account_export">Vispirms eksportēt manus datus</string>
+    <string name="delete_account_confirm">Saprotu, ka to nevar atsaukt</string>
+    <string name="delete_account_delete">Dzēst kontu</string>
+    <string name="delete_account_cancel">Atcelt</string>
+    <string name="delete_account_failed">Neizdevās izdzēst tavu kontu. Mēģini vēlreiz.</string>
+</resources>

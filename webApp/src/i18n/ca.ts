@@ -876,6 +876,7 @@ export const ca: Record<MessageKey, string> = {
   profile_languageCatalan: 'Català',
   profile_languageDanish: 'Danès',
   profile_languageFinnish: 'Finès',
+  profile_languageLatvian: 'Letó',
   profile_languageGujarati: 'Gujarati',
   profile_bitcoinInSats: 'Bitcoin en satoshis',
   profile_bitcoinInSatsDetail: 'Mostra i permet escriure els imports de bitcoin en sats (1 ₿ = 100.000.000 sats).',

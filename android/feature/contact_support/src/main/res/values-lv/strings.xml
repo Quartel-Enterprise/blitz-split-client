@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Sazināties ar atbalstu</string>
+    <string name="contact_support_description">Mēs atvērsim tavu e-pasta lietotni ar sagatavotu ziņu. Apraksti, kas notika, un nosūti to: katru ziņu lasa īsti cilvēki.</string>
+    <string name="contact_support_to">Kam</string>
+    <string name="contact_support_diagnostics">Tiks iekļauts e-pastā</string>
+    <string name="contact_support_app_version">Lietotnes versija</string>
+    <string name="contact_support_platform">Platforma</string>
+    <string name="contact_support_language">Valoda</string>
+    <string name="contact_support_account">Konts</string>
+    <string name="contact_support_profile">Profils</string>
+    <string name="contact_support_language_system">Sistēmas</string>
+    <string name="contact_support_account_local">Tikai šajā ierīcē</string>
+    <string name="contact_support_account_anonymous">Nav pievienots</string>
+    <string name="contact_support_open_email">Atvērt e-pastu</string>
+    <string name="contact_support_copy_email">Kopēt e-pasta adresi</string>
+    <string name="contact_support_notice_copied">E-pasta adrese nokopēta.</string>
+    <string name="contact_support_notice_no_app">Netika atrasta e-pasta lietotne. Tā vietā adrese tika nokopēta.</string>
+    <string name="contact_support_close">Aizvērt</string>
+</resources>
