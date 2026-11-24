@@ -8,7 +8,7 @@
 // A language with two plurals where English has one (Polish's few and many, Czech's few and other, Romanian's few and
 // other) writes them as "few|many" (or "few|other") in an `…Other` message with a {count}; one whose singular also
 // takes counts past 1 (Russian's and Ukrainian's 21) writes three, "one|few|many" (Croatian, which has no many,
-// "one|few|other"); one with no few whose singular takes 21 (Latvian) writes two, "one|other". A language with a dual (Arabic, Hebrew, Slovenian)
+// "one|few|other", as Lithuanian, whose many is only its fractions); one with no few whose singular takes 21 (Latvian) writes two, "one|other". A language with a dual (Arabic, Hebrew, Slovenian)
 // writes every category it has, in CLDR's order: "zero|one|two|few|many|other" (Slovenian's "one|two|few|other"). `t()` picks one. A "|" anywhere else,
 // in another language, or another number of forms, would print on screen or never be picked.
 //
@@ -35,6 +35,12 @@ const everyForm = (language) => {
   const categories = categoriesOf(language)
   if (!categories.includes('two')) return undefined
   return ['zero', 'one', 'two', 'few', 'many', 'other'].filter((category) => categories.includes(category))
+}
+
+// Why: whether a whole count takes many, as Russian's 5 does; Lithuanian's many is only its fractions.
+const wholeCountTakesMany = (language) => {
+  const rules = new Intl.PluralRules(language.slice(0, 2))
+  return Array.from({ length: 200 }, (_, count) => rules.select(count)).includes('many')
 }
 
 // Why: Russian's, Ukrainian's and Croatian's 21 takes the singular, which an …Other message must then hold too:
@@ -64,7 +70,7 @@ for (const language of languages) {
     } else if (messages[key].includes('|')) {
       const forms = messages[key].split('|')
       if (!hasFew(language) && !everyForm(language) && !singularTakes21(language)) {
-        fail(language, key, 'has a "|", which only a language with a few plural (Polish, Russian, Ukrainian, Czech, Romanian, Croatian) or a singular past 1 (Latvian) may hold')
+        fail(language, key, 'has a "|", which only a language with a few plural (Polish, Russian, Ukrainian, Czech, Romanian, Croatian, Lithuanian) or a singular past 1 (Latvian) may hold')
         continue
       }
       // Why: a …WordOther message is the word beside a count drawn apart ("7 payments" with a big 7), whose caller
@@ -78,7 +84,8 @@ for (const language of languages) {
       if (forms.length !== formCount || forms.some((form) => form.trim() === '')) {
         // Why: Polish's second form is its many; Czech's and Romanian's is their other.
         const twoForms = language === 'pl' ? '"few|many"' : hasFew(language) ? '"few|other"' : '"one|other"'
-        const threeForms = categoriesOf(language).includes('many') ? '"one|few|many"' : '"one|few|other"'
+        // Why: a many that no whole count takes (Lithuanian's, only its fractions) leaves the third form to other.
+        const threeForms = wholeCountTakesMany(language) ? '"one|few|many"' : '"one|few|other"'
         const expected = every ? `"${every.join('|')}"` : formCount === 3 ? threeForms : twoForms
         fail(language, key, `must hold exactly ${formCount} plural forms, ${expected}`)
         continue

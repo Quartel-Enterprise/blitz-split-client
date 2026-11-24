@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Priminimas atsiskaityti</string>
+    <string name="push_bill_created">%1$s pridėjo išlaidą „%2$s“ su tavimi</string>
+    <string name="push_bill_edited">%1$s redagavo išlaidą „%2$s“</string>
+    <string name="push_bill_deleted">%1$s ištrynė išlaidą „%2$s“</string>
+    <string name="push_comment_added">%1$s pakomentavo išlaidą „%2$s“: %3$s</string>
+    <string name="push_payment_paid_you">%1$s pažymėjo, kad tau sumokėjo</string>
+    <string name="push_payment_to_you">%1$s pažymėjo, kad %2$s tau sumokėjo</string>
+    <string name="push_payment_received_yours">%1$s pažymėjo, kad gavo tavo mokėjimą</string>
+    <string name="push_payment_from_you">%1$s pažymėjo, kad sumokėjai nariui %2$s</string>
+    <string name="push_payment_undone">%1$s atšaukė mokėjimą su tavimi</string>
+    <string name="push_charge_sent">%1$s atsiuntė tau priminimą atsiskaityti</string>
+    <string name="push_settle_reminder">Grupėje %1$s turi neatsiskaitytą balansą</string>
+    <string name="push_settle_reminders">Turi neatsiskaitytų balansų keliose grupėse (%1$s)</string>
+    <string name="push_added_to_group">%1$s pridėjo tave prie grupės</string>
+    <string name="push_member_joined">%1$s prisijungė prie grupės</string>
+    <string name="push_debts_simplified_to_you">%1$s supaprastino skolas. Dabar %2$s moka tau %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s supaprastino skolas. Dabar tu moki nariui %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s supaprastino skolas. Pažiūrėk, kaip tai paveikė tave.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s išjungė „Supaprastinti skolas“. Dabar %2$s moka tau %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s išjungė „Supaprastinti skolas“. Dabar tu moki nariui %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s išjungė „Supaprastinti skolas“. Pažiūrėk, kaip tai paveikė tave.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">Išlaidos</string>
+    <string name="notification_settings_bills_detail">Naujos, redaguotos ar ištrintos išlaidos, kuriose dalyvauji</string>
+    <string name="notification_settings_payments">Mokėjimai ir atsiskaitymai</string>
+    <string name="notification_settings_payments_detail">Mokėjimai tau ar iš tavęs ir supaprastintos skolos</string>
+    <string name="notification_settings_comments">Komentarai</string>
+    <string name="notification_settings_comments_detail">Išlaidose, kuriose dalyvauji, ir pokalbiuose, kuriuose rašei</string>
+    <string name="notification_settings_people_and_groups">Žmonės ir grupės</string>
+    <string name="notification_settings_people_and_groups_detail">Kas prisijungia prie tavo grupių ar iš jų išeina ir kas jose keičiasi</string>
+    <string name="notification_settings_payment_requests">Mokėjimo prašymai</string>
+    <string name="notification_settings_payment_requests_detail">Kai kas nors prašo tavęs sumokėti</string>
+    <string name="notification_settings_balance_reminder">Priminimas apie neatsiskaitytą balansą</string>
+    <string name="notification_settings_balance_reminder_detail">Kartą per savaitę, jei yra neatsiskaitytas balansas</string>
+</resources>

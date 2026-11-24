@@ -155,6 +155,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 AppLanguage.ESTONIAN,
                 AppLanguage.GUJARATI,
                 AppLanguage.SLOVENIAN,
+                AppLanguage.LITHUANIAN,
                 AppLanguage.KANNADA,
                 AppLanguage.CHINESE_TRADITIONAL,
             )
@@ -213,6 +214,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "et",
                     "gu",
                     "sl",
+                    "lt",
                     "kn",
                     "zh-Hant",
                 ),
@@ -286,6 +288,7 @@ class ObserveSpokenLanguageUseCaseTest {
             "et",
             "gu",
             "sl",
+            "lt",
             "kn",
             "zh-Hant",
         )
@@ -353,6 +356,7 @@ class ObserveSpokenLanguageUseCaseTest {
                 "et-EE",
                 "gu-IN",
                 "sl-SI",
+                "lt-LT",
                 "kn-IN",
                 "zh-TW",
             )
@@ -413,6 +417,7 @@ class ObserveSpokenLanguageUseCaseTest {
                     "et",
                     "gu",
                     "sl",
+                    "lt",
                     "kn",
                     "zh-Hant",
                 ),

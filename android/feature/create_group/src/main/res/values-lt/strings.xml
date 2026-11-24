@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Nauja grupė</string>
+    <string name="create_group_close">Uždaryti</string>
+    <string name="create_group_create">Sukurti</string>
+    <string name="create_group_change_color">Keisti grupės spalvą</string>
+    <string name="create_group_name_label">Grupės pavadinimas</string>
+    <string name="create_group_type_label">Grupės tipas</string>
+    <string name="create_group_members_title">Kas dalyvauja</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d žmogus</item>
+        <item quantity="few">%d žmonės</item>
+        <item quantity="many">%d žmogaus</item>
+        <item quantity="other">%d žmonių</item>
+    </plurals>
+    <string name="create_group_me">tu</string>
+    <string name="create_group_remove_member">Pašalinti: %s</string>
+    <string name="create_group_add_placeholder">Pridėti pagal vardą</string>
+    <string name="create_group_add">Pridėti</string>
+    <string name="create_group_no_app_notice">Dabar niekam nereikia programėlės. Jau gali pridėti išlaidų visiems, o nuorodą išsiųsti vėliau.</string>
+    <string name="create_group_currency">Numatytoji valiuta</string>
+    <string name="create_group_currency_caption">Naujos išlaidos prasideda šia valiuta; kiekvienai išlaidai galima pasirinkti kitą.</string>
+    <string name="create_group_save_error">Nepavyko išsaugoti grupės. Bandyk dar kartą.</string>
+    <string name="create_group_photo">Grupės nuotrauka</string>
+    <string name="create_group_take_photo">Fotografuoti</string>
+    <string name="create_group_choose_photo">Pasirinkti nuotrauką</string>
+    <string name="create_group_remove_photo">Pašalinti nuotrauką</string>
+    <string name="create_group_photo_error">Nepavyko panaudoti šios nuotraukos. Pabandyk kitą.</string>
+</resources>

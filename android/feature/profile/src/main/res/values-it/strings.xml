@@ -107,6 +107,7 @@
     <string name="profile_language_estonian">Estone</string>
     <string name="profile_language_gujarati">Gujarati</string>
     <string name="profile_language_slovenian">Sloveno</string>
+    <string name="profile_language_lithuanian">Lituano</string>
     <string name="profile_language_kannada">Kannada</string>
     <string name="profile_language_system_detail">Lingua del dispositivo</string>
     <string name="profile_notifications">Notifiche</string>

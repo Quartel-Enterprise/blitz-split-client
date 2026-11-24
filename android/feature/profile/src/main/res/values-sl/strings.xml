@@ -108,6 +108,7 @@
     <string name="profile_language_estonian">Estonščina</string>
     <string name="profile_language_gujarati">Gudžaratščina</string>
     <string name="profile_language_slovenian">Slovenščina</string>
+    <string name="profile_language_lithuanian">Litovščina</string>
     <string name="profile_language_kannada">Kanareščina</string>
     <string name="profile_language_system_detail">Jezik naprave</string>
     <string name="profile_notifications">Obvestila</string>
