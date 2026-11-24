@@ -231,7 +231,7 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     the device's language (English for one the app doesn't have), then each language in its own name, the way its
     speakers look for it, with its name in the app's language as a smaller line under it (Pierre's call, beta feedback,
     back from only translated names): "English (US)", "English (UK)", "English (Australia)", "English (Canada)", "Português (Brasil)", "Português (Portugal)", "Español (Latinoamérica)", "Español (España)", "Français", "Deutsch", "Italiano",
-    "Polski", "Nederlands", "日本語", "Türkçe", "Bahasa Indonesia", "Русский" and "Українська", the same in every language, under them "Portuguese
+    "Polski", "Nederlands", "日本語", "Türkçe", "Bahasa Indonesia", "Русский", "Українська"… "Suomi", "Eesti", the same in every language, under them "Portuguese
     (Brazil)", "Portuguese (Portugal)", "Spanish (Latin America)", "Spanish (Spain)"… in English and "Inglês (EUA)", "Espanhol (América Latina)"… in Portuguese, the smaller line left out where both read
     the same (Italian's "Italiano" in Portuguese, Portuguese's own row). A region is spelled out, never a code:
     "Português (Brasil)", "Portuguese (Brazil)". The Portuguese of Portugal is its own row, never picked by the

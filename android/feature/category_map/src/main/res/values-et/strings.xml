@@ -9,7 +9,7 @@
     <string name="category_map_back">Tagasi</string>
     <string name="category_map_intro">Kui kulu pealkirjas on mõni neist sõnadest, tuleb kategooria iseenesest. „Uber koju“ saab kategooria Transport.</string>
     <string name="category_map_intro_offline">Kaart töötab ka ilma internetita: muudatused kehtivad selles seadmes kohe ja jõuavad su teistesse seadmetesse, kui oled taas võrgus.</string>
-    <string name="category_map_device_only">Sinu kaart jääb ainult sellesse seadmesse. Et viia see oma teistesse seadmetesse, logi oma profiilis sisse Google\'i või Apple\'iga.</string>
+    <string name="category_map_device_only">Sinu kaart jääb ainult sellesse seadmesse. Et viia see oma teistesse seadmetesse, logi oma profiilis sisse Google’i või Apple’iga.</string>
     <string name="category_map_open_profile">Ava profiil</string>
     <string name="category_map_longest_wins">Kui pealkirjaga sobib kaks terminit, võidab pikem.</string>
     <string name="category_map_no_result">Termineid sõnaga „%1$s“ pole</string>

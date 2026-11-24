@@ -76,10 +76,10 @@
     <string name="activity_detail_charge">%s · sõnum saadetud</string>
     <string name="activity_detail_comment">„%s“</string>
     <string name="activity_detail_change">%1$s %2$s → %3$s</string>
-    <string name="activity_deleted_notice_bill">%2$s on kustutanud: %1$s (%3$s). Kirje jääb tegevuste hulka, kuid kulu enam ei avane.</string>
-    <string name="activity_deleted_notice_group">%2$s on kustutanud: %1$s (%3$s). Kirje jääb tegevuste hulka, kuid grupp enam ei avane.</string>
-    <string name="activity_deleted_notice_bill_unknown">%s on kustutatud. Kirje jääb tegevuste hulka, kuid kulu enam ei avane.</string>
-    <string name="activity_deleted_notice_group_unknown">%s on kustutatud. Kirje jääb tegevuste hulka, kuid grupp enam ei avane.</string>
+    <string name="activity_deleted_notice_bill">%2$s on kustutanud: %1$s (%3$s). Kirje jääb vaatesse Tegevus, kuid kulu enam ei avane.</string>
+    <string name="activity_deleted_notice_group">%2$s on kustutanud: %1$s (%3$s). Kirje jääb vaatesse Tegevus, kuid grupp enam ei avane.</string>
+    <string name="activity_deleted_notice_bill_unknown">%s on kustutatud. Kirje jääb vaatesse Tegevus, kuid kulu enam ei avane.</string>
+    <string name="activity_deleted_notice_group_unknown">%s on kustutatud. Kirje jääb vaatesse Tegevus, kuid grupp enam ei avane.</string>
     <string name="activity_this_bill">See kulu</string>
     <string name="activity_this_group">See grupp</string>
     <string name="activity_you_lowercase">sina</string>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="designsystem_continue_with_google">Jätka Google\'iga</string>
-    <string name="designsystem_continue_with_apple">Jätka Apple\'iga</string>
+    <string name="designsystem_continue_with_google">Jätka Google’iga</string>
+    <string name="designsystem_continue_with_apple">Jätka Apple’iga</string>
     <string name="designsystem_google_short">Google</string>
     <string name="designsystem_apple_short">Apple</string>
     <string name="designsystem_back">Tagasi</string>

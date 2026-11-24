@@ -147,7 +147,7 @@
     <string name="profile_sign_out_now">Logi kohe välja ja kaota muudatused</string>
     <string name="profile_sign_out_failed">Väljalogimine ebaõnnestus. Proovi uuesti.</string>
     <string name="profile_erase_title">Kas kustutada profiil sellest seadmest?</string>
-    <string name="profile_erase_body">Sinu kontol pole Google\'i ega Apple\'i sisselogimist. Välja logides kustutame selle seadme koopia. Tagasi tulemiseks on sul vaja taastekoodi. Pärast 30 päeva kasutamata jätmist konto kustutatakse ja kood lakkab töötamast.</string>
+    <string name="profile_erase_body">Sinu kontol pole Google’i ega Apple’i sisselogimist. Välja logides kustutame selle seadme koopia. Tagasi tulemiseks on sul vaja taastekoodi. Pärast 30 päeva kasutamata jätmist konto kustutatakse ja kood lakkab töötamast.</string>
     <string name="profile_erase_body_no_code">Kasutad rakendust ilma kontota ega ole veel sünkrooninud, seega taastekoodi pole. Lahkudes kaob sinu profiil jäädavalt.</string>
     <string name="profile_erase_code_saved">Hoidsin koodi kindlas kohas alles</string>
     <string name="profile_erase_no_code_ack">Saan aru, et seda ei saa taastada</string>
