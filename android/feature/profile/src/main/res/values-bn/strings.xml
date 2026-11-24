@@ -105,6 +105,7 @@
     <string name="profile_language_latvian">লাটভিয়ান</string>
     <string name="profile_language_estonian">এস্তোনীয়</string>
     <string name="profile_language_gujarati">গুজরাটি</string>
+    <string name="profile_language_slovenian">স্লোভেনীয়</string>
     <string name="profile_language_system_detail">ডিভাইসের ভাষা</string>
     <string name="profile_notifications">নোটিফিকেশন</string>
     <plurals name="profile_notifications_active">

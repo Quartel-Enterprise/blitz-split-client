@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">Poveži uro</string>
+    <string name="connect_watch_close">Zapri</string>
+    <string name="connect_watch_body">Vnesi kodo, ki jo prikaže tvoja ura. Ura se prijavi v tvoj račun in se nato sinhronizira sama.</string>
+    <string name="connect_watch_code_label">Koda ure</string>
+    <string name="connect_watch_error_invalid">Napačna ali potekla koda. Na uri pridobi novo.</string>
+    <string name="connect_watch_error_too_many">Preveč napačnih kod. Počakaj nekaj minut in poskusi znova.</string>
+    <string name="connect_watch_error_needs_account">Najprej poveži račun: tvoji podatki so samo na tej napravi.</string>
+    <string name="connect_watch_error_failed">Ure ni bilo mogoče povezati. Poskusi znova.</string>
+    <string name="connect_watch_offline">Za povezovanje ure potrebuješ internet.</string>
+    <string name="connect_watch_own_watch_only">Vnesi samo kodo, ki jo prikaže tvoja lastna ura: kdor ima to uro, dobi dostop do tvojega računa.</string>
+    <string name="connect_watch_validity">Koda velja 5 minut, enkrat.</string>
+    <string name="connect_watch_button">Poveži</string>
+    <string name="connect_watch_connected_title">Ura povezana</string>
+    <string name="connect_watch_connected_body">Vidi tvoje skupine in se sinhronizira sama. Če jo želiš odklopiti, se odjavi na uri.</string>
+</resources>

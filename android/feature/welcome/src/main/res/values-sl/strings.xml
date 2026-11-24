@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Razdeli strošek, brez zapletov</string>
+    <string name="welcome_offline_title">Deluje brez povezave</string>
+    <string name="welcome_offline_body">Vse ostane v tvoji napravi in se sinhronizira pozneje.</string>
+    <string name="welcome_optional_title">Račun ni obvezen</string>
+    <string name="welcome_optional_body">Google ali Apple samo poskrbita, da ničesar ne izgubiš, ko zamenjaš napravo.</string>
+    <string name="welcome_invite_title">Povabi s povezavo ali kodo QR</string>
+    <string name="welcome_invite_body">Prijatelji vstopijo v skupino brez ustvarjanja računa.</string>
+    <string name="welcome_no_connection_title">Ni povezave.</string>
+    <string name="welcome_no_connection_body">Za prijavo z računom potrebuješ internet. Zdaj uporabljaj brez računa in se poveži pozneje v Profilu.</string>
+    <string name="welcome_or">ali</string>
+    <string name="welcome_use_without_account">Uporabljaj brez računa</string>
+    <string name="welcome_used_on_another_device">Uporabljal(a) sem jo že v drugi napravi</string>
+    <string name="welcome_sign_in_failed">Prijava trenutno ni uspela. Poskusi znova.</string>
+    <string name="welcome_legal_notice">Z nadaljevanjem sprejemaš %1$s in potrjuješ, da si seznanjen(a) s %2$s.</string>
+    <string name="welcome_legal_terms">Pogoje uporabe</string>
+    <string name="welcome_legal_privacy">Pravilnikom o zasebnosti</string>
+    <string name="welcome_no_account_note">Brez računa se tvoji podatki izbrišejo po 30 dneh neuporabe. Poveži Google ali Apple, da jih obdržiš.</string>
+    <string name="welcome_no_account_note_offline">Brez računa se tvoji podatki izbrišejo po 30 dneh neuporabe. Da jih obdržiš, pozneje v Profilu poveži Google ali Apple.</string>
+    <string name="welcome_expired_title">Tvoji podatki so bili izbrisani</string>
+    <string name="welcome_expired_body">Aplikacijo si uporabljal(a) brez računa in je nisi odprl(a) 30 dni, zato so bili tvoji podatki izbrisani. Poveži Google ali Apple, da jih naslednjič obdržiš.</string>
+    <string name="welcome_expired_ok">V redu</string>
+</resources>

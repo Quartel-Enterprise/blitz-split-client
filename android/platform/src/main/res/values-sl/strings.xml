@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · obnovitvena koda</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">Za fotografiranje dovoli kamero v Nastavitvah.</string>
+    <string name="platform_camera_settings">Nastavitve</string>
+    <string name="platform_receipt_source_camera">Fotografiraj</string>
+    <string name="platform_receipt_source_gallery">Izberi iz galerije</string>
+    <string name="platform_receipt_source_file">Izberi datoteko</string>
+    <string name="platform_receipt_camera_title">Skeniraj potrdilo</string>
+    <string name="platform_receipt_camera_close">Zapri</string>
+    <string name="platform_receipt_camera_flash_on">Vklopi bliskavico</string>
+    <string name="platform_receipt_camera_flash_off">Izklopi bliskavico</string>
+    <string name="platform_receipt_camera_hint">Celotno potrdilo postavi v okvir. Izpolnimo znesek, datum in opis; pred shranjevanjem vse preveriš.</string>
+    <string name="platform_receipt_camera_gallery">Izberi iz galerije</string>
+    <string name="platform_receipt_camera_shutter">Fotografiraj</string>
+    <string name="platform_receipt_camera_unavailable">Kamera ni na voljo. Izberi fotografijo potrdila iz galerije.</string>
+    <string name="platform_receipt_camera_permission">Dovoli kamero, da skeniraš potrdilo, ali izberi fotografijo iz galerije.</string>
+    <string name="platform_receipt_camera_allow">Dovoli kamero</string>
+    <string name="platform_receipt_camera_settings">Odpri nastavitve</string>
+</resources>

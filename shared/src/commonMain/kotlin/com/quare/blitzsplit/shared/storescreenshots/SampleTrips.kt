@@ -90,6 +90,7 @@ object SampleTrips {
         "lv" to GroupCurrency.EUR,
         "et" to GroupCurrency.EUR,
         "gu" to GroupCurrency.INR,
+        "sl" to GroupCurrency.EUR,
         "sw" to GroupCurrency.KES,
     )
 

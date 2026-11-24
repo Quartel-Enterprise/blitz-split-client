@@ -36,6 +36,7 @@ private const val LATVIAN = "lv"
 private const val LATVIAN_REFLEXIVE_PAST = "ās"
 private const val LATVIAN_PAST = "a"
 private const val ESTONIAN = "et"
+private const val SLOVENIAN = "sl"
 private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
 private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
@@ -88,6 +89,7 @@ private val secondPersonAuxiliaries = mapOf(
     SERBIAN to mapOf("je" to "si"),
     FINNISH to mapOf("on" to "olet"),
     ESTONIAN to mapOf("on" to "oled"),
+    SLOVENIAN to mapOf("je" to "si"),
     CATALAN to mapOf("ha" to "has", "l’ha" to "l’has", "l'ha" to "l'has"),
 )
 private val turkishPast = Regex("[dt][ıiuü]$")
@@ -133,6 +135,7 @@ private val youSubjectLanguages = setOf(
     FINNISH,
     LATVIAN,
     ESTONIAN,
+    SLOVENIAN,
     HUNGARIAN,
     URDU,
     PERSIAN,
@@ -170,7 +173,9 @@ private val irregularSecondPerson = mapOf(
  * "Tu hai diviso"; "Ana heeft verdeeld", "Jij hebt verdeeld"; Romanian's "a" too: "Ana a împărțit", "Tu ai împărțit";
  * Catalan's "ha" too, every Catalan verb phrase being a perfect that starts with "ha" or "l’ha": "Anna ha dividit",
  * "Tu has dividit"; and Croatian's "je", every Croatian verb phrase starting with it before a past written "-o/la", the app not knowing
- * the gender: "Ana je podijelio/la", "Ti si podijelio/la"; Finnish's "on": "Ana on jakanut", "Sinä olet jakanut"; and Estonian's "on": "Ana on jaganud", "Sina oled jaganud".
+ * the gender: "Ana je podijelio/la", "Ti si podijelio/la"; Finnish's "on": "Ana on jakanut", "Sinä olet jakanut"; Estonian's "on": "Ana on jaganud", "Sina oled jaganud"; and
+ * Slovenian's "je", every Slovenian verb phrase starting with it before a past written "-l(a)": "Ana je razdelil(a)",
+ * "Ti si razdelil(a)".
  * Czech says the person with an auxiliary before its past, which the third person has none of: "Ana rozdělil(a)", "Ty
  * jsi rozdělil(a)", and Slovak likewise with "si": "Ana rozdelil(a)", "Ty si rozdelil(a)". Polish's past says the gender, which the app doesn't know, so its verb phrases start with a past in
  * "ł(a)": "Ana podzielił(a)", "Ty podzieliłeś(-aś)". Turkish puts its simple past last: "Ana böldü", "Sen böldün",
@@ -339,7 +344,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…", Norwegian "Du slettet…", Danish "Du slettede…", Finnish "Sinä olet poistanut…" and Estonian "Sina oled kustutanud…" (with their verb rule), Latvian "Tu izdzēsi…" (with its own), Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
+ * Swedish "Du raderade…", Norwegian "Du slettet…", Danish "Du slettede…", Finnish "Sinä olet poistanut…" and Estonian "Sina oled kustutanud…" (with their verb rule), Latvian "Tu izdzēsi…" (with its own), Slovenian "Ti si izbrisal(a)…" (with its verb rule), Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
  * حذف کردید…", with its verb rule. Czech says "Ty jsi
  * smazal(a)…", Slovak "Ty si vymazal(a)…", Bulgarian "Ти изтри…", Catalan "Tu has suprimit…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"

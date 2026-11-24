@@ -585,6 +585,7 @@ private struct LanguageName: View {
         case .latvian: "Latviešu"
         case .estonian: "Eesti"
         case .gujarati: "ગુજરાતી"
+        case .slovenian: "Slovenščina"
         default: nil
         }
     }
@@ -843,6 +844,11 @@ private struct LanguageName: View {
         )
         case .gujarati: String(
             localized: "Gujarati",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .slovenian: String(
+            localized: "Slovenian",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )

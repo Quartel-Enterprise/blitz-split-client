@@ -104,6 +104,7 @@
     <string name="profile_language_latvian">拉脱维亚语</string>
     <string name="profile_language_estonian">爱沙尼亚语</string>
     <string name="profile_language_gujarati">古吉拉特语</string>
+    <string name="profile_language_slovenian">斯洛文尼亚语</string>
     <string name="profile_language_system_detail">设备语言</string>
     <string name="profile_notifications">通知</string>
     <plurals name="profile_notifications_active">

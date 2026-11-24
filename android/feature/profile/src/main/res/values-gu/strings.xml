@@ -105,6 +105,7 @@
     <string name="profile_language_latvian">લાત્વિયન</string>
     <string name="profile_language_estonian">એસ્ટોનિયન</string>
     <string name="profile_language_gujarati">ગુજરાતી</string>
+    <string name="profile_language_slovenian">સ્લોવેનિયન</string>
     <string name="profile_language_system_detail">ડિવાઇસની ભાષા</string>
     <string name="profile_notifications">નોટિફિકેશન</string>
     <plurals name="profile_notifications_active">

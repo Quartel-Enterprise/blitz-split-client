@@ -106,6 +106,7 @@
     <string name="profile_language_latvian">Letó</string>
     <string name="profile_language_estonian">Estonià</string>
     <string name="profile_language_gujarati">Gujarati</string>
+    <string name="profile_language_slovenian">Eslovè</string>
     <string name="profile_language_system_detail">Idioma del dispositiu</string>
     <string name="profile_notifications">Notificacions</string>
     <plurals name="profile_notifications_active">

@@ -8,8 +8,8 @@
 // A language with two plurals where English has one (Polish's few and many, Czech's few and other, Romanian's few and
 // other) writes them as "few|many" (or "few|other") in an `…Other` message with a {count}; one whose singular also
 // takes counts past 1 (Russian's and Ukrainian's 21) writes three, "one|few|many" (Croatian, which has no many,
-// "one|few|other"); one with no few whose singular takes 21 (Latvian) writes two, "one|other". A language with a dual (Arabic)
-// writes every category it has, in CLDR's order: "zero|one|two|few|many|other". `t()` picks one. A "|" anywhere else,
+// "one|few|other"); one with no few whose singular takes 21 (Latvian) writes two, "one|other". A language with a dual (Arabic, Hebrew, Slovenian)
+// writes every category it has, in CLDR's order: "zero|one|two|few|many|other" (Slovenian's "one|two|few|other"). `t()` picks one. A "|" anywhere else,
 // in another language, or another number of forms, would print on screen or never be picked.
 //
 // Runs on the TypeScript sources through Node's own type stripping, with no build:  node scripts/check-messages.mjs

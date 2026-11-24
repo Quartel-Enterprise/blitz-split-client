@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Zapri</string>
+    <string name="invite_group_created">Skupina ustvarjena</string>
+    <string name="invite_title">Povabi vse v skupino %s</string>
+    <string name="invite_qr_description">Koda QR povezave za povabilo v skupino</string>
+    <string name="invite_copy">Kopiraj</string>
+    <string name="invite_copied">Kopirano</string>
+    <string name="invite_who_picks">Kdor odpre povezavo, na seznamu izbere, kdo je: %s. Račun ni potreben.</string>
+    <string name="invite_names_or">%1$s ali %2$s</string>
+    <string name="invite_anyone_joins">Kdor odpre povezavo, vstopi v skupino. Račun ni potreben.</string>
+    <string name="invite_pending_title">Povezava v pripravi</string>
+    <string name="invite_pending_offline">Ustvari se, takoj ko boš povezan(a).</string>
+    <string name="invite_pending_online">Ustvarjanje povezave…</string>
+    <string name="invite_failed_title">Povezave ni bilo mogoče ustvariti</string>
+    <string name="invite_failed_body">Med sinhronizacijo skupine je šlo nekaj narobe.</string>
+    <string name="invite_retry">Poskusi znova</string>
+    <string name="invite_share">Deli povezavo</string>
+    <string name="invite_see_who_joined">Poglej, kdo je vstopil</string>
+    <string name="invite_add_person">Dodaj nekoga brez aplikacije</string>
+    <string name="invite_go_to_group">Pojdi v skupino</string>
+    <string name="invite_change_link">Spremeni povezavo</string>
+    <string name="invite_change_link_title">Želiš spremeniti povezavo za povabilo?</string>
+    <string name="invite_change_link_message">Trenutna povezava in koda QR ne bosta več delovali, vključno z neuporabljenimi osebnimi povabili. Kdor je že vstopil, ostane v skupini.</string>
+    <string name="invite_change_link_failed">Povezave ni bilo mogoče spremeniti. Poskusi znova.</string>
+    <string name="invite_share_message">Razdelimo stroške skupine %1$s v aplikaciji Blitz Split. Vstopi s to povezavo: %2$s</string>
+</resources>

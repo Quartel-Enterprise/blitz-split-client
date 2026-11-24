@@ -215,6 +215,12 @@
             "value" : "Blitz Split"
           }
         },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "sr-Latn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -498,6 +504,12 @@
           }
         },
         "sk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "sl" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -791,6 +803,12 @@
             "value" : "Na skenovanie QR kódu pozvánky alebo zo starého zariadenia a na fotenie tvojej profilovej fotky a fotiek výdavkov."
           }
         },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Za skeniranje kode QR povabila ali s tvoje stare naprave ter za fotografiranje tvoje profilne slike in fotografij stroškov."
+          }
+        },
         "sr-Latn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1079,6 +1097,12 @@
             "value" : "Na pozývanie ľudí z tvojich kontaktov odkazom do skupiny. Ich čísla zostávajú v tomto zariadení."
           }
         },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Za povabilo ljudi iz tvojih stikov s povezavo skupine. Njihove številke ostanejo v tej napravi."
+          }
+        },
         "sr-Latn" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1365,6 +1389,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Na uloženie fotiek výdavku do tvojej knižnice."
+          }
+        },
+        "sl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Za shranjevanje fotografij stroškov v tvojo fototeko."
           }
         },
         "sr-Latn" : {

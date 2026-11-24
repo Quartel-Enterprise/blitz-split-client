@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Povezava za povabilo</string>
+    <string name="members_link_pending">Še ni ustvarjena</string>
+    <string name="members_share">Deli</string>
+    <string name="members_me">%s (ti)</string>
+    <string name="members_status_this_device">Ta naprava</string>
+    <string name="members_status_joined">Vstopil(a)</string>
+    <string name="members_status_not_joined">Še ni vstopil(a)</string>
+    <string name="members_options">Možnosti za %s</string>
+    <string name="members_rename">Preimenuj</string>
+    <string name="members_personal_invite">Osebno povabilo za %s</string>
+    <string name="members_personal_message">Kdor odpre to povezavo, vstopi neposredno kot %s, ne da bi izbiral s seznama. Deluje enkrat.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Kdor odpre to povezavo, vstopi neposredno kot %1$s, ne da bi izbiral s seznama, in že vidi svoj delež %2$s v %3$d dosedanjem strošku. Deluje enkrat.</item>
+        <item quantity="two">Kdor odpre to povezavo, vstopi neposredno kot %1$s, ne da bi izbiral s seznama, in že vidi svoj delež %2$s v %3$d dosedanjih stroških. Deluje enkrat.</item>
+        <item quantity="few">Kdor odpre to povezavo, vstopi neposredno kot %1$s, ne da bi izbiral s seznama, in že vidi svoj delež %2$s v %3$d dosedanjih stroških. Deluje enkrat.</item>
+        <item quantity="other">Kdor odpre to povezavo, vstopi neposredno kot %1$s, ne da bi izbiral s seznama, in že vidi svoj delež %2$s v %3$d dosedanjih stroških. Deluje enkrat.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopiraj povezavo</string>
+    <string name="members_personal_copied">Kopirano</string>
+    <string name="members_personal_share">Deli z osebo %s</string>
+    <string name="members_personal_share_message">Vstopi v skupino %1$s kot %2$s v aplikaciji Blitz Split: %3$s</string>
+    <string name="members_remove">Odstrani iz skupine</string>
+    <string name="members_remove_joined">%s je že vstopil(a) v skupino</string>
+    <string name="members_remove_title">Želiš odstraniti osebo %s iz skupine?</string>
+    <string name="members_remove_message">%s še ni vstopil(a). Pozneje lahko to osebo spet dodaš.</string>
+    <string name="members_remove_confirm">Odstrani</string>
+    <string name="members_release">Sprosti ime</string>
+    <string name="members_release_title">Želiš sprostiti ime %s?</string>
+    <string name="members_release_message">Kdor je vstopil kot %1$s, zapusti skupino. Ime, barva in stroški osebe %1$s ostanejo, ime %1$s pa je mogoče znova izbrati prek povezave skupine.</string>
+    <string name="members_release_confirm">Sprosti</string>
+    <string name="members_release_error">Imena ni bilo mogoče sprostiti. Preveri povezavo in poskusi znova.</string>
+    <string name="members_add">Dodaj osebo</string>
+    <string name="members_invite_instead">Ima aplikacijo? Povabi s povezavo</string>
+    <string name="members_name_label">Ime</string>
+    <string name="members_save">Shrani</string>
+    <string name="members_cancel">Prekliči</string>
+    <string name="members_change_error">Spremembe ni bilo mogoče shraniti. Poskusi znova.</string>
+    <string name="members_remove_open_balance">%s ima odprto stanje</string>
+    <string name="members_balance_to_get_back">%s za vračilo</string>
+    <string name="members_balance_owes">%s dolguje</string>
+    <string name="members_balance_settled">Poravnano</string>
+</resources>

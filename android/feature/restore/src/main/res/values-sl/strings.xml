@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Vrni svoje skupine</string>
+    <string name="restore_subtitle">Si se že prijavil(a) z računom? Samo prijavi se znova. Če ne, uporabi obnovitveno kodo ali kodo QR iz stare naprave.</string>
+    <string name="restore_no_connection_title">Ni povezave</string>
+    <string name="restore_no_connection_body">Za prijavo z računom ali kodo potrebuješ internet, da se prenesejo tvoje skupine. Kar si vpisal(a), ostane shranjeno.</string>
+    <string name="restore_code_label">Ali uporabi obnovitveno kodo</string>
+    <string name="restore_code_hint">12 besed po vrsti. Prilepi jih vse v eno polje, da se izpolnijo vsa polja.</string>
+    <string name="restore_scan_qr_title">Skeniraj kodo QR iz stare naprave</string>
+    <string name="restore_scan_qr_body">Tam: Profil › Obnovitev › Pokaži kodo QR</string>
+    <string name="restore_recover">Obnovi</string>
+    <string name="restore_try_again">Poskusi znova</string>
+    <string name="restore_start_fresh">Začni na novo v tej napravi</string>
+    <string name="restore_error_invalid_code">Kode ni mogoče najti. Preveri besede in njihov vrstni red ter poskusi znova.</string>
+    <string name="restore_error_too_many_attempts">Preveč poskusov. Počakaj nekaj minut in poskusi znova.</string>
+    <string name="restore_error_sign_in_failed">Prijava trenutno ni uspela. Poskusi znova.</string>
+    <string name="restore_error_unknown">Nekaj je šlo narobe. Poskusi znova.</string>
+</resources>
