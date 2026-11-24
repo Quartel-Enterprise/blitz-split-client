@@ -247,6 +247,7 @@ fun toSecondPerson(
         val (stem, vowel, reflexive) = match.destructured
         stem + (if (vowel == "o") "ai" else "ei") + reflexive
     }
+
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
 

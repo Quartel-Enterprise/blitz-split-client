@@ -837,6 +837,9 @@ private struct LanguageName: View {
         )
         case .lithuanian: String(
             localized: "Lithuanian",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
         default: String(localized: "System", bundle: .appLanguage)
         }
     }

@@ -250,5 +250,6 @@ internal object LaterSampleTripCopies {
             soccer = "Penktadienio futbolas",
             court = "Aikštelės nuoma",
             items = listOf("Pica Margherita", "Burrata", "Rizotas su grybais", "Tiramisu", "Prosecco", "Espresso"),
+        ),
     )
 }
