@@ -57,7 +57,10 @@
     <string name="profile_language_search_clear">Clear search</string>
     <string name="profile_language_no_results">No language matches “%1$s”</string>
     <string name="profile_language_system">System</string>
-    <string name="profile_language_english">English</string>
+    <string name="profile_language_english">English (US)</string>
+    <string name="profile_language_english_uk">English (UK)</string>
+    <string name="profile_language_english_australia">English (Australia)</string>
+    <string name="profile_language_english_canada">English (Canada)</string>
     <string name="profile_language_portuguese">Portuguese (Brazil)</string>
     <string name="profile_language_portuguese_portugal">Portuguese (Portugal)</string>
     <string name="profile_language_spanish">Spanish (Latin America)</string>
@@ -104,7 +107,10 @@
     <string name="profile_language_finnish">Finnish</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
-    <string name="profile_language_native_english" translatable="false">English</string>
+    <string name="profile_language_native_english" translatable="false">English (US)</string>
+    <string name="profile_language_native_english_uk" translatable="false">English (UK)</string>
+    <string name="profile_language_native_english_australia" translatable="false">English (Australia)</string>
+    <string name="profile_language_native_english_canada" translatable="false">English (Canada)</string>
     <string name="profile_language_native_portuguese" translatable="false">Português (Brasil)</string>
     <string name="profile_language_native_portuguese_portugal" translatable="false">Português (Portugal)</string>
     <string name="profile_language_native_spanish" translatable="false">Español (Latinoamérica)</string>

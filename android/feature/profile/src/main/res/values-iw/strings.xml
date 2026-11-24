@@ -55,7 +55,10 @@
     <string name="profile_language_search_clear">ניקוי החיפוש</string>
     <string name="profile_language_no_results">אין שפה שמתאימה ל-\"%1$s\"</string>
     <string name="profile_language_system">לפי המערכת</string>
-    <string name="profile_language_english">אנגלית</string>
+    <string name="profile_language_english">אנגלית (ארצות הברית)</string>
+    <string name="profile_language_english_uk">אנגלית (בריטניה)</string>
+    <string name="profile_language_english_australia">אנגלית (אוסטרליה)</string>
+    <string name="profile_language_english_canada">אנגלית (קנדה)</string>
     <string name="profile_language_portuguese">פורטוגזית (ברזיל)</string>
     <string name="profile_language_portuguese_portugal">פורטוגזית (פורטוגל)</string>
     <string name="profile_language_spanish">ספרדית (אמריקה הלטינית)</string>

@@ -340,6 +340,9 @@ private fun LanguageChip(
 internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.SYSTEM -> stringResource(R.string.profile_language_system)
     AppLanguage.ENGLISH -> stringResource(R.string.profile_language_native_english)
+    AppLanguage.ENGLISH_UK -> stringResource(R.string.profile_language_native_english_uk)
+    AppLanguage.ENGLISH_AUSTRALIA -> stringResource(R.string.profile_language_native_english_australia)
+    AppLanguage.ENGLISH_CANADA -> stringResource(R.string.profile_language_native_english_canada)
     AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_native_portuguese)
     AppLanguage.PORTUGUESE_PORTUGAL -> stringResource(R.string.profile_language_native_portuguese_portugal)
     AppLanguage.SPANISH -> stringResource(R.string.profile_language_native_spanish)
@@ -391,6 +394,9 @@ internal fun languageName(language: AppLanguage): String = when (language) {
 private fun translatedLanguageName(language: AppLanguage): String = when (language) {
     AppLanguage.SYSTEM -> stringResource(R.string.profile_language_system)
     AppLanguage.ENGLISH -> stringResource(R.string.profile_language_english)
+    AppLanguage.ENGLISH_UK -> stringResource(R.string.profile_language_english_uk)
+    AppLanguage.ENGLISH_AUSTRALIA -> stringResource(R.string.profile_language_english_australia)
+    AppLanguage.ENGLISH_CANADA -> stringResource(R.string.profile_language_english_canada)
     AppLanguage.PORTUGUESE -> stringResource(R.string.profile_language_portuguese)
     AppLanguage.PORTUGUESE_PORTUGAL -> stringResource(R.string.profile_language_portuguese_portugal)
     AppLanguage.SPANISH -> stringResource(R.string.profile_language_spanish)

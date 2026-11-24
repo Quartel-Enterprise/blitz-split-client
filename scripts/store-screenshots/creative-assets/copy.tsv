@@ -2,6 +2,9 @@
 # ../locales.tsv: the product page header's phrase and the search result's, whose | breaks the line.
 # tag	header	searchResults
 en-US	Split the bill. Keep the friends.	Split bills|with friends.
+en-GB	Split the bill. Keep the friends.	Split bills|with mates.
+en-AU	Split the bill. Keep the friends.	Split bills|with mates.
+en-CA	Split the bill. Keep the friends.	Split bills|with friends.
 pt-BR	Divida a conta, não a amizade.	Divida a conta|com os amigos.
 pt-PT	Divide a conta, não a amizade.	Divide a conta|com os amigos.
 es	Divide la cuenta, no la amistad.	Divide cuentas|con amigos.

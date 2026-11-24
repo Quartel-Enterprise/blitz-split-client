@@ -61,6 +61,9 @@ each platform.
       (no case ending glued to a placeholder), in Bulgarian in `res/values-bg/strings.xml` (one and other, no suffix or article glued to a placeholder), in
       Marathi in `res/values-mr/strings.xml` (no case ending glued to a placeholder), in Swahili in `res/values-sw/strings.xml`, in Catalan in `res/values-ca/strings.xml` (the typographic ’, no apostrophe contraction before a placeholder),
       in Danish in `res/values-da/strings.xml` and in Finnish in `res/values-fi/strings.xml` (no case ending glued to a placeholder)
+- [ ] A new English string with a word Britain or Canada writes differently ("color", "gray", "center", "math",
+  "recognized", "toward") also in `values-b+en+001` and `values-en-rCA`, Apple's `en-GB`, `en-AU` and `en-CA`, and
+  the web's `enGB.ts` or `enCA.ts` ([general.md](../product/general.md))
 - [ ] Any resource of a `values-pt-rPT` or `values-es-rES` (a string, a bool) also in `values-pt` or `values-es`:
       Android 7 and later fall back to a child of the language when its bare folder lacks a resource, so a pt-BR
       device read Portugal's `designsystem_portugal_portuguese` and wrote "Você criaste a conta"

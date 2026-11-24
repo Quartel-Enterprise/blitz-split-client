@@ -55,7 +55,10 @@
     <string name="profile_language_search_clear">Effacer la recherche</string>
     <string name="profile_language_no_results">Aucune langue ne correspond à « %1$s »</string>
     <string name="profile_language_system">Système</string>
-    <string name="profile_language_english">Anglais</string>
+    <string name="profile_language_english">Anglais (États-Unis)</string>
+    <string name="profile_language_english_uk">Anglais (Royaume-Uni)</string>
+    <string name="profile_language_english_australia">Anglais (Australie)</string>
+    <string name="profile_language_english_canada">Anglais (Canada)</string>
     <string name="profile_language_portuguese">Portugais (Brésil)</string>
     <string name="profile_language_portuguese_portugal">Portugais (Portugal)</string>
     <string name="profile_language_spanish">Espagnol (Amérique latine)</string>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Fills each regional table of the built app (es-ES.lproj, pt-PT.lproj) with its language's table (es.lproj,
-pt-BR.lproj), the region's own keys winning.
+"""Fills each regional table of the built app (es-ES.lproj, pt-PT.lproj, en-GB.lproj, en-AU.lproj, en-CA.lproj) with
+its language's table (es.lproj, pt-BR.lproj, en.lproj), the region's own keys winning.
 
 Localizable.xcstrings holds Spain's es-ES and Portugal's pt-PT only for the words they say differently
 (docs/product/general.md), and Xcode compiles es-ES.lproj/Localizable.strings with only those. A bundle whose language

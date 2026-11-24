@@ -125,12 +125,14 @@ test("every language of the listings has a file the stores take", () => {
   assert.deepEqual(Object.keys(listings), LISTING_LANGS);
 });
 
-test("the listings are written in the release notes' languages and Spain's Spanish, after Latin America's", () => {
+test("the listings are written in the release notes' languages and the regional ones, after their language's", () => {
+  const regional = ["es-ES", "en-GB", "en-AU", "en-CA"];
   assert.deepEqual(
-    LISTING_LANGS.filter((lang) => lang !== "es-ES"),
+    LISTING_LANGS.filter((lang) => !regional.includes(lang)),
     LANGS,
   );
   assert.equal(LISTING_LANGS[LISTING_LANGS.indexOf("es") + 1], "es-ES");
+  assert.deepEqual(LISTING_LANGS.slice(LISTING_LANGS.indexOf("en"), LISTING_LANGS.indexOf("en") + 4), ["en", "en-GB", "en-AU", "en-CA"]);
 });
 
 test("every language goes to a locale of each store, none twice", () => {

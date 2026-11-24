@@ -7,7 +7,8 @@ import java.util.Locale
 /**
  * A language of the listings. [tag] names the generated folder; [language] picks the sample trip:
  * the app language's code, Portugal's Portuguese by its whole tag (pt-PT), since "pt" is Brazil's, and Spain's Spanish
- * by its own (es-ES), since "es" is Latin America's. [drawnLocale] is what Robolectric draws the Play screens in, so it is a language with at most a region, and a script only
+ * by its own (es-ES), since "es" is Latin America's, and Britain's, Australia's and Canada's English by theirs (en-GB,
+ * en-AU, en-CA), since "en" is the American one. [drawnLocale] is what Robolectric draws the Play screens in, so it is a language with at most a region, and a script only
  * where the language is written in two and the app has one of them (Serbian's Latin): the
  * resources' language and the region the amounts, dates and hours are written in, the tag itself for every set but
  * Latin America's Spanish, Chinese, drawn in zh-CN for mainland China's yuan, Hebrew, drawn in iw-IL, the legacy
@@ -45,6 +46,21 @@ internal val storeLocales = listOf(
         tag = "en-US",
         language = "en",
         drawnLocale = "en-US",
+    ),
+    StoreLocale(
+        tag = "en-GB",
+        language = "en-GB",
+        drawnLocale = "en-GB",
+    ),
+    StoreLocale(
+        tag = "en-AU",
+        language = "en-AU",
+        drawnLocale = "en-AU",
+    ),
+    StoreLocale(
+        tag = "en-CA",
+        language = "en-CA",
+        drawnLocale = "en-CA",
     ),
     StoreLocale(
         tag = "pt-BR",

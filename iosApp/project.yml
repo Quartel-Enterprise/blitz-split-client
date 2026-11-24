@@ -95,8 +95,9 @@ targetTemplates:
         script: |
           /usr/bin/python3 -I "$SRCROOT/check-translations.py" "$SRCROOT/Resources"
     postBuildScripts:
-      # Xcode compiles es-ES.lproj and pt-PT.lproj with only the words Spain and Portugal say differently, and an
-      # es-ES or pt-PT app would show English for the rest: this fills each table with its language's (es, pt-BR),
+      # Xcode compiles es-ES.lproj, pt-PT.lproj, en-GB.lproj, en-AU.lproj and en-CA.lproj with only the words Spain,
+      # Portugal, Britain, Australia and Canada say differently, and an es-ES or pt-PT app would show English for the
+      # rest, an en-GB one only those words: this fills each table with its language's (es, pt-BR, en),
       # the keys the catalogs give the region winning, before signing
       - name: Fill the regional tables with their language's
         basedOnDependencyAnalysis: false
@@ -226,8 +227,8 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ""
         INFOPLIST_KEY_CFBundleDisplayName: Blitz Split
     postBuildScripts:
-      # As the app's: the widget draws in the app's language, es-ES and pt-PT included, whose tables hold only the
-      # words Spain and Portugal say differently until this fills them with es's and pt-BR's
+      # As the app's: the widget draws in the app's language, es-ES, pt-PT and the English regions included, whose
+      # tables hold only the words their region says differently until this fills them with es's, pt-BR's and en's
       - name: Fill the regional tables with their language's
         basedOnDependencyAnalysis: false
         script: |

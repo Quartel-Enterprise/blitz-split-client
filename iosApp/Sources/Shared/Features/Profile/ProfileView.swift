@@ -534,7 +534,10 @@ private struct LanguageName: View {
     /// The same in every language of the app, so not in the string catalog.
     private var nativeName: String? {
         switch language {
-        case .english: "English"
+        case .english: "English (US)"
+        case .englishUk: "English (UK)"
+        case .englishAustralia: "English (Australia)"
+        case .englishCanada: "English (Canada)"
         case .portuguese: "Português (Brasil)"
         case .portuguesePortugal: "Português (Portugal)"
         case .spanish: "Español (Latinoamérica)"
@@ -586,7 +589,22 @@ private struct LanguageName: View {
     private var translatedName: String {
         switch language {
         case .english: String(
-            localized: "English",
+            localized: "English (US)",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .englishUk: String(
+            localized: "English (UK)",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .englishAustralia: String(
+            localized: "English (Australia)",
+            bundle: .appLanguage,
+            comment: "A language of Profile › Language, in the app's language",
+        )
+        case .englishCanada: String(
+            localized: "English (Canada)",
             bundle: .appLanguage,
             comment: "A language of Profile › Language, in the app's language",
         )

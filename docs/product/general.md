@@ -60,7 +60,15 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     Latin-American one for every `es` tag but `es-ES`, and Spain's `es-ES` overriding only the words Spain says
     differently, the rest coming from `es` on every platform (Android's `values-es-rES`, Apple's `es-ES` localization,
     the web's `esES.ts`), each its own row of the picker since Pierre's feedback of November 2026 ("Español
-    (Latinoamérica)", "Español (España)"); Spanish calls the app Blitz Split, as English does). French is one
+    (Latinoamérica)", "Español (España)"); Spanish calls the app Blitz Split, as English does). Four English
+    variants (Pierre's call, November 2026), each its own row of the picker: the American one, the source, for `en`,
+    `en-US`, the US territories and the Philippines; Britain's `en-GB`; Australia's `en-AU`, which writes as Britain's;
+    and Canada's `en-CA`. Any other English region (New Zealand, Ireland, India, South Africa…) reads Britain's, on
+    System too. Each regional one overrides only the words its region writes differently, the rest coming from the
+    American one: Britain and Australia write "colour", "grey", "centre", "maths", "recognised" and "towards", Canada
+    "colour", "grey" and "centre" but "math", "recognized" and "toward" (Android's `values-b+en+001`, which en-GB, en-AU
+    and the other Commonwealth regions read, and `values-en-rCA`; Apple's `en-GB`, `en-AU` and `en-CA` localizations;
+    the web's `enGB.ts` and `enCA.ts`). A new English string with one of those words needs its regional ones too. French is one
     variant for every `fr` tag (fr-FR, fr-CA, fr-BE, fr-CH…), talks to the user as "tu" (Pierre's call: friends splitting
     a bill, as Spanish's "tú") and calls the app Blitz Split. German, Italian and Polish (Pierre's calls) are likewise one
     variant each for every tag of theirs (de-AT and de-CH are `de`, it-CH is `it`), talk to the user informally ("du",

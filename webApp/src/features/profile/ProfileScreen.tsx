@@ -46,7 +46,10 @@ const timeFormats: { code: TimeFormat; label: MessageKey }[] = [
  * out for the ones written for a region. The same in every language of the app, so not in the dictionaries.
  */
 const nativeLanguageNames: Record<string, string> = {
-  en: 'English',
+  en: 'English (US)',
+  'en-GB': 'English (UK)',
+  'en-AU': 'English (Australia)',
+  'en-CA': 'English (Canada)',
   'pt-BR': 'Português (Brasil)',
   'pt-PT': 'Português (Portugal)',
   es: 'Español (Latinoamérica)',
@@ -96,6 +99,9 @@ const nativeLanguageNames: Record<string, string> = {
 /** The same language in the app's language, "Portuguese (Brazil)", under its own name. */
 const languageNames: Record<string, MessageKey> = {
   en: 'profile_languageEnglish',
+  'en-GB': 'profile_languageEnglishUk',
+  'en-AU': 'profile_languageEnglishAustralia',
+  'en-CA': 'profile_languageEnglishCanada',
   'pt-BR': 'profile_languagePortuguese',
   'pt-PT': 'profile_languagePortuguesePortugal',
   es: 'profile_languageSpanish',

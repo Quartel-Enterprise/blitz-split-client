@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Futa utafutaji</string>
     <string name="profile_language_no_results">Hakuna lugha inayolingana na “%1$s”</string>
     <string name="profile_language_system">Mfumo</string>
-    <string name="profile_language_english">Kiingereza</string>
+    <string name="profile_language_english">Kiingereza (Marekani)</string>
+    <string name="profile_language_english_uk">Kiingereza (Uingereza)</string>
+    <string name="profile_language_english_australia">Kiingereza (Australia)</string>
+    <string name="profile_language_english_canada">Kiingereza (Kanada)</string>
     <string name="profile_language_portuguese">Kireno (Brazili)</string>
     <string name="profile_language_portuguese_portugal">Kireno (Ureno)</string>
     <string name="profile_language_spanish">Kihispania (Amerika ya Kusini)</string>

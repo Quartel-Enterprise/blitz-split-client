@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">Изчисти търсенето</string>
     <string name="profile_language_no_results">Няма език, който да съвпада с „%1$s“</string>
     <string name="profile_language_system">Системен</string>
-    <string name="profile_language_english">Английски</string>
+    <string name="profile_language_english">Английски (САЩ)</string>
+    <string name="profile_language_english_uk">Английски (Обединеното кралство)</string>
+    <string name="profile_language_english_australia">Английски (Австралия)</string>
+    <string name="profile_language_english_canada">Английски (Канада)</string>
     <string name="profile_language_portuguese">Португалски (Бразилия)</string>
     <string name="profile_language_portuguese_portugal">Португалски (Португалия)</string>
     <string name="profile_language_spanish">Испански (Латинска Америка)</string>

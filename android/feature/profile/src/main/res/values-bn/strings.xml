@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">খোঁজা মুছুন</string>
     <string name="profile_language_no_results">“%1$s” নামে কোনো ভাষা মেলেনি</string>
     <string name="profile_language_system">সিস্টেম</string>
-    <string name="profile_language_english">ইংরেজি</string>
+    <string name="profile_language_english">ইংরেজি (মার্কিন যুক্তরাষ্ট্র)</string>
+    <string name="profile_language_english_uk">ইংরেজি (যুক্তরাজ্য)</string>
+    <string name="profile_language_english_australia">ইংরেজি (অস্ট্রেলিয়া)</string>
+    <string name="profile_language_english_canada">ইংরেজি (কানাডা)</string>
     <string name="profile_language_portuguese">পর্তুগিজ (ব্রাজিল)</string>
     <string name="profile_language_portuguese_portugal">পর্তুগিজ (পর্তুগাল)</string>
     <string name="profile_language_spanish">স্প্যানিশ (লাতিন আমেরিকা)</string>

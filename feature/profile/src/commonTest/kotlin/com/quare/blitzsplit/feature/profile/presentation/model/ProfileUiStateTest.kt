@@ -17,7 +17,10 @@ class ProfileUiStateTest {
     private val englishNames: (AppLanguage) -> List<String> = { language ->
         when (language) {
             AppLanguage.SYSTEM -> listOf("Device language")
-            AppLanguage.ENGLISH -> listOf("English", "English")
+            AppLanguage.ENGLISH -> listOf("English (US)", "English (US)")
+            AppLanguage.ENGLISH_UK -> listOf("English (UK)", "English (UK)")
+            AppLanguage.ENGLISH_AUSTRALIA -> listOf("English (Australia)", "English (Australia)")
+            AppLanguage.ENGLISH_CANADA -> listOf("English (Canada)", "English (Canada)")
             AppLanguage.PORTUGUESE -> listOf("Português (Brasil)", "Portuguese (Brazil)")
             AppLanguage.PORTUGUESE_PORTUGAL -> listOf("Português (Portugal)", "Portuguese (Portugal)")
             AppLanguage.SPANISH -> listOf("Español (Latinoamérica)", "Spanish (Latin America)")
@@ -77,6 +80,9 @@ class ProfileUiStateTest {
     private val allOptions = listOf(
         AppLanguage.SYSTEM,
         AppLanguage.ENGLISH,
+        AppLanguage.ENGLISH_UK,
+        AppLanguage.ENGLISH_AUSTRALIA,
+        AppLanguage.ENGLISH_CANADA,
         AppLanguage.PORTUGUESE,
         AppLanguage.PORTUGUESE_PORTUGAL,
         AppLanguage.SPANISH,
@@ -680,6 +686,9 @@ class ProfileUiStateTest {
             listOf(
                 AppLanguage.SYSTEM,
                 AppLanguage.ENGLISH,
+                AppLanguage.ENGLISH_UK,
+                AppLanguage.ENGLISH_AUSTRALIA,
+                AppLanguage.ENGLISH_CANADA,
                 AppLanguage.PORTUGUESE,
                 AppLanguage.PORTUGUESE_PORTUGAL,
                 AppLanguage.SPANISH,
@@ -742,6 +751,9 @@ class ProfileUiStateTest {
             listOf(
                 AppLanguage.SYSTEM,
                 AppLanguage.ENGLISH,
+                AppLanguage.ENGLISH_UK,
+                AppLanguage.ENGLISH_AUSTRALIA,
+                AppLanguage.ENGLISH_CANADA,
                 AppLanguage.PORTUGUESE,
                 AppLanguage.PORTUGUESE_PORTUGAL,
                 AppLanguage.SPANISH,
@@ -888,7 +900,7 @@ class ProfileUiStateTest {
     }
 
     @Test
-    fun `GIVEN ua or uk typed and no names WHEN searching the languages THEN finds Ukrainian by chip or code`() {
+    fun `GIVEN ua or uk typed and no names WHEN searching THEN finds Ukrainian and British English by chip or code`() {
         // Given
         val queries = listOf("ua", "uk")
 
@@ -896,7 +908,10 @@ class ProfileUiStateTest {
         val options = queries.map { state(languageQuery = it).findLanguageOptions({ emptyList() }) }
 
         // Then
-        assertEquals(List(queries.size) { listOf(AppLanguage.UKRAINIAN) }, options)
+        assertEquals(
+            listOf(listOf(AppLanguage.UKRAINIAN), listOf(AppLanguage.ENGLISH_UK, AppLanguage.UKRAINIAN)),
+            options,
+        )
     }
 
     @Test
@@ -923,6 +938,9 @@ class ProfileUiStateTest {
         assertEquals(
             listOf(
                 AppLanguage.ENGLISH,
+                AppLanguage.ENGLISH_UK,
+                AppLanguage.ENGLISH_AUSTRALIA,
+                AppLanguage.ENGLISH_CANADA,
                 AppLanguage.FRENCH,
                 AppLanguage.SWEDISH,
                 AppLanguage.BENGALI,
@@ -968,6 +986,9 @@ class ProfileUiStateTest {
         assertEquals(
             listOf(
                 AppLanguage.ENGLISH,
+                AppLanguage.ENGLISH_UK,
+                AppLanguage.ENGLISH_AUSTRALIA,
+                AppLanguage.ENGLISH_CANADA,
                 AppLanguage.SPANISH,
                 AppLanguage.SPANISH_SPAIN,
                 AppLanguage.POLISH,

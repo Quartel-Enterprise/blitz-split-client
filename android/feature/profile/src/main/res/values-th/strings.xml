@@ -53,7 +53,10 @@
     <string name="profile_language_search_clear">ล้างการค้นหา</string>
     <string name="profile_language_no_results">ไม่มีภาษาที่ตรงกับ “%1$s”</string>
     <string name="profile_language_system">ตามระบบ</string>
-    <string name="profile_language_english">อังกฤษ</string>
+    <string name="profile_language_english">อังกฤษ (สหรัฐอเมริกา)</string>
+    <string name="profile_language_english_uk">อังกฤษ (สหราชอาณาจักร)</string>
+    <string name="profile_language_english_australia">อังกฤษ (ออสเตรเลีย)</string>
+    <string name="profile_language_english_canada">อังกฤษ (แคนาดา)</string>
     <string name="profile_language_portuguese">โปรตุเกส (บราซิล)</string>
     <string name="profile_language_portuguese_portugal">โปรตุเกส (โปรตุเกส)</string>
     <string name="profile_language_spanish">สเปน (ละตินอเมริกา)</string>

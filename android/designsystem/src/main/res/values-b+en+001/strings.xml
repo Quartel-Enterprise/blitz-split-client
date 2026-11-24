@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Why: the words Britain writes differently from the American English of values/ ("colour", "grey", "maths"): Android reads them for en-GB, en-AU and every other English region whose parent is en-001 (New Zealand, Ireland, India...), Pierre's call. A key missing here keeps the American wording. -->
+<resources>
+    <string name="designsystem_category_color">Colour</string>
+    <string name="designsystem_category_color_gray">Grey</string>
+    <string name="designsystem_custom_color_add">Add colour</string>
+    <string name="designsystem_custom_color_title">New colour</string>
+    <string name="designsystem_custom_color_label">Custom colour %1$s</string>
+    <string name="designsystem_custom_color_full">Your palette is full: long press one of your colours to delete it.</string>
+    <string name="designsystem_custom_color_hint">Long press one of your colours to delete it.</string>
+    <string name="designsystem_custom_color_delete_title">Delete this colour?</string>
+    <string name="designsystem_custom_color_in_use_title">This colour is in use</string>
+    <string name="designsystem_custom_color_in_use_message">%1$s uses this colour. Change its colour first, then delete it.</string>
+</resources>

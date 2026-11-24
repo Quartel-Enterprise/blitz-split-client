@@ -53,7 +53,10 @@
     <string name="profile_language_search_clear">검색어 지우기</string>
     <string name="profile_language_no_results">“%1$s” 검색어와 일치하는 언어가 없어요</string>
     <string name="profile_language_system">시스템 설정</string>
-    <string name="profile_language_english">영어</string>
+    <string name="profile_language_english">영어(미국)</string>
+    <string name="profile_language_english_uk">영어(영국)</string>
+    <string name="profile_language_english_australia">영어(오스트레일리아)</string>
+    <string name="profile_language_english_canada">영어(캐나다)</string>
     <string name="profile_language_portuguese">포르투갈어(브라질)</string>
     <string name="profile_language_portuguese_portugal">포르투갈어(포르투갈)</string>
     <string name="profile_language_spanish">스페인어(라틴 아메리카)</string>

@@ -225,6 +225,9 @@ internal class WearStoreScreenshots {
 
     // Why: the languages whose Android resource qualifiers aren't their tag's language code
     private val androidQualifiers = mapOf(
+        "en-GB" to "en-rGB",
+        "en-AU" to "en-rAU",
+        "en-CA" to "en-rCA",
         "pt-BR" to "pt-rBR",
         "pt-PT" to "pt-rPT",
         "es" to "es-rGQ",

@@ -54,7 +54,10 @@
     <string name="profile_language_search_clear">खोज साफ़ करें</string>
     <string name="profile_language_no_results">“%1$s” से कोई भाषा मेल नहीं खाती</string>
     <string name="profile_language_system">सिस्टम</string>
-    <string name="profile_language_english">अंग्रेज़ी</string>
+    <string name="profile_language_english">अंग्रेज़ी (अमेरिका)</string>
+    <string name="profile_language_english_uk">अंग्रेज़ी (यूनाइटेड किंगडम)</string>
+    <string name="profile_language_english_australia">अंग्रेज़ी (ऑस्ट्रेलिया)</string>
+    <string name="profile_language_english_canada">अंग्रेज़ी (कनाडा)</string>
     <string name="profile_language_portuguese">पुर्तगाली (ब्राज़ील)</string>
     <string name="profile_language_portuguese_portugal">पुर्तगाली (पुर्तगाल)</string>
     <string name="profile_language_spanish">स्पेनिश (लैटिन अमेरिका)</string>

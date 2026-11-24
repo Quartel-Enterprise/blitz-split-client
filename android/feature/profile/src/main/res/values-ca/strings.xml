@@ -55,7 +55,10 @@
     <string name="profile_language_search_clear">Esborrar la cerca</string>
     <string name="profile_language_no_results">Cap idioma coincideix amb «%1$s»</string>
     <string name="profile_language_system">Sistema</string>
-    <string name="profile_language_english">Anglès</string>
+    <string name="profile_language_english">Anglès (Estats Units)</string>
+    <string name="profile_language_english_uk">Anglès (Regne Unit)</string>
+    <string name="profile_language_english_australia">Anglès (Austràlia)</string>
+    <string name="profile_language_english_canada">Anglès (Canadà)</string>
     <string name="profile_language_portuguese">Portuguès (Brasil)</string>
     <string name="profile_language_portuguese_portugal">Portuguès (Portugal)</string>
     <string name="profile_language_spanish">Espanyol (Amèrica Llatina)</string>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Why: Canada's spelling ("colour", "grey", but "math" and "recognized" as the US). Every key en-001 changes is here, whichever parent Android gives en-CA. A key missing here keeps the American wording. -->
+<resources>
+    <string name="profile_edit_subtitle">Name, photo and avatar colour</string>
+    <string name="profile_dynamic_colors">Dynamic colours</string>
+    <string name="profile_dynamic_colors_detail">Use your Android system colours in the app</string>
+    <string name="profile_appearance_dynamic_summary">%1$s · dynamic colours</string>
+    <string name="profile_dynamic_colors_info">About dynamic colours</string>
+    <string name="profile_dynamic_colors_info_body">Dynamic colours match the app to your Android system colours: buttons, backgrounds and highlights take the colours Android uses, which come from your wallpaper or from the palette you picked in Android\'s settings, and change when those do.</string>
+    <string name="profile_dynamic_colors_info_note">Groups, avatars and categories keep their own colours, so you still tell them apart. This only applies to this device.</string>
+</resources>

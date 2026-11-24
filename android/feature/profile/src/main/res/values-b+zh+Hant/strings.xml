@@ -53,7 +53,10 @@
     <string name="profile_language_search_clear">清除搜尋</string>
     <string name="profile_language_no_results">沒有符合「%1$s」的語言</string>
     <string name="profile_language_system">跟隨系統</string>
-    <string name="profile_language_english">英文</string>
+    <string name="profile_language_english">英文（美國）</string>
+    <string name="profile_language_english_uk">英文（英國）</string>
+    <string name="profile_language_english_australia">英文（澳洲）</string>
+    <string name="profile_language_english_canada">英文（加拿大）</string>
     <string name="profile_language_portuguese">葡萄牙文（巴西）</string>
     <string name="profile_language_portuguese_portugal">葡萄牙文（葡萄牙）</string>
     <string name="profile_language_spanish">西班牙文（拉丁美洲）</string>

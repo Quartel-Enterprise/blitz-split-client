@@ -56,7 +56,10 @@
     <string name="profile_language_search_clear">Очистить поиск</string>
     <string name="profile_language_no_results">Нет языков по запросу «%1$s»</string>
     <string name="profile_language_system">Системный</string>
-    <string name="profile_language_english">Английский</string>
+    <string name="profile_language_english">Английский (США)</string>
+    <string name="profile_language_english_uk">Английский (Великобритания)</string>
+    <string name="profile_language_english_australia">Английский (Австралия)</string>
+    <string name="profile_language_english_canada">Английский (Канада)</string>
     <string name="profile_language_portuguese">Португальский (Бразилия)</string>
     <string name="profile_language_portuguese_portugal">Португальский (Португалия)</string>
     <string name="profile_language_spanish">Испанский (Латинская Америка)</string>

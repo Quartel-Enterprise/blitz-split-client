@@ -9,6 +9,9 @@ enum class AppLanguage(
 ) {
     SYSTEM(null),
     ENGLISH("en"),
+    ENGLISH_UK("en-GB"),
+    ENGLISH_AUSTRALIA("en-AU"),
+    ENGLISH_CANADA("en-CA"),
     PORTUGUESE("pt-BR"),
     PORTUGUESE_PORTUGAL("pt-PT"),
     SPANISH("es"),
@@ -60,10 +63,14 @@ enum class AppLanguage(
      * than one region shows each one's region, so its chips differ: "BR" and "PT", "419" (Latin America's UN code,
      * as in es-419, its tag having no region) and "ES". Ukrainian shows Ukraine's "UA", since its code's "UK" reads as
      * the United Kingdom. Chinese, whose two entries differ by script, shows the region each is written for, "CN" for
-     * Simplified and "TW" for Traditional.
+     * Simplified and "TW" for Traditional. English shows "US" for the one with no region, "UK" for Britain's, as people
+     * read it (Ukrainian's "UA" leaves "UK" free), and Canada's three letters, "CAN", since "CA" is Catalan's.
      */
     val chipCode: String?
         get() = when {
+            this == ENGLISH -> UNITED_STATES
+            this == ENGLISH_UK -> UNITED_KINGDOM
+            this == ENGLISH_CANADA -> CANADA
             this == SPANISH -> LATIN_AMERICA
             this == UKRAINIAN -> UKRAINE
             this == CHINESE_SIMPLIFIED -> MAINLAND_CHINA
@@ -102,6 +109,14 @@ enum class AppLanguage(
 
         private const val UKRAINE = "UA"
 
+        private const val UNITED_STATES = "US"
+
+        private const val UNITED_KINGDOM = "UK"
+
+        private const val CANADA = "CAN"
+
+        private const val ENGLISH_LANGUAGE = "en"
+
         private const val CHINESE = "zh"
 
         /*
@@ -127,7 +142,9 @@ enum class AppLanguage(
          * Ukrainian, Korean, Hindi, Arabic, Chinese, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay,
          * Greek, Croatian, Hungarian, Urdu, Filipino (or its legacy Tagalog "tl"), Serbian in the Latin script (sr-Latn, sr-Latn-RS), Slovak, Persian, Tamil, Norwegian (nb, or the macrolanguage's "no" and Nynorsk's "nn", all read as Bokmål), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too, ca-ES-valencia), Danish, Finnish or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
          * ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, zh-CN, he-IL or the legacy iw-IL, th-TH, vi-VN, sv-FI,
-         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, sk-SK, fa-IR or fa-AF, ta-LK, nb-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, da-DK, fi-FI, en-GB), SYSTEM for none or any other. Portuguese is two
+         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, sk-SK, fa-IR or fa-AF, ta-LK, nb-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, da-DK, fi-FI, en-NZ), SYSTEM for none or any other. English is four
+         * entries: en-GB, en-AU and en-CA are their regions', en, en-US and the other American regions the US one, every
+         * other region (en-NZ, en-IE, en-IN…) Britain's. Portuguese is two
          * entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every
          * other tag (es, es-MX, es-419…) the neutral Latin-American one. Chinese is two entries too: a Traditional tag
          * (zh-Hant, zh-TW, zh-HK, zh-MO) is Taiwan's Traditional Chinese, zh-Hant, every other one (zh, zh-CN, zh-Hans,
@@ -136,12 +153,37 @@ enum class AppLanguage(
         fun fromTag(tag: String?): AppLanguage {
             if (isTraditionalChinese(tag)) return CHINESE_TRADITIONAL
             if (languageOf(tag) == SERBIAN_LANGUAGE && scriptOf(tag) != LATIN_SCRIPT) return SYSTEM
+            if (languageOf(tag) == ENGLISH_LANGUAGE) return englishOf(tag)
             val variants = variantsOf(languageOf(tag))
             val region = regionOf(tag)
             return variants.firstOrNull { region != null && regionOf(it.tag) == region }
                 ?: variants.firstOrNull()
                 ?: SYSTEM
         }
+
+        /*
+         * Why: an English tag's entry: its region's own (en-GB, en-AU, en-CA), the American one for no region or a
+         * region that writes as the United States (CLDR's parents of the English locales, and so the Apple app's own
+         * lookup: the US, its territories and the Philippines), the British one for any other region (New Zealand,
+         * Ireland, India, the world's "001", Europe's "150"…), as Android's en-001 strings and Apple's en-GB fallback
+         * give it on System (Pierre's call).
+         */
+        private fun englishOf(tag: String?): AppLanguage {
+            val americanRegions = setOf("US", "AS", "GU", "MH", "MP", "PR", "UM", "VI", "PH")
+            val region = regionOf(tag) ?: unM49RegionOf(tag)
+            return if (region == null || region in americanRegions) {
+                ENGLISH
+            } else {
+                variantsOf(ENGLISH_LANGUAGE).firstOrNull { regionOf(it.tag) == region } ?: ENGLISH_UK
+            }
+        }
+
+        // Why: a tag's UN M.49 region of three digits ("001" of en-001), which regionOf leaves out.
+        private fun unM49RegionOf(tag: String?): String? = tag
+            ?.split('-', '_')
+            ?.drop(1)
+            ?.takeWhile { it.length > 1 }
+            ?.firstOrNull { it.length == 3 && it.all(Char::isDigit) }
 
         /*
          * Why: a Chinese tag written in Traditional characters: its script says so when it has one (zh-Hant-CN is
