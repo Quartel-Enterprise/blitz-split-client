@@ -467,7 +467,7 @@ export function verbForYou(verb: string): string {
   if (locale === 'tr') return turkishVerbForYou(verb)
   if (locale === 'fa') return persianVerbForYou(verb)
   if (locale === 'ta') return tamilVerbForYou(verb)
-  if (locale === 'kn') return verbLastForYou(verb, '(?<=[ಕ-ಹ])ರು', 'ಿರಿ', true)
+  if (locale === 'kn') return verb.replace(/^([^:]*?[ಕ-ಹ])ರು(\s*(?::|$))/u, '$1ಿರಿ$2')
   if (locale === 'ko') return verb.replace(/^님이(?: |$)/, '')
   if (locale === 'hi') return verb.replace(/^ने(?: |$)/, '')
   if (locale === 'mr') return verb.replace(/^यांनी(?: |$)/, '')
