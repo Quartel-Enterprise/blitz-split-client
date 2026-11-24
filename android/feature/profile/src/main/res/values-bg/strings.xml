@@ -106,6 +106,7 @@
     <string name="profile_language_estonian">Естонски</string>
     <string name="profile_language_gujarati">Гуджарати</string>
     <string name="profile_language_slovenian">Словенски</string>
+    <string name="profile_language_kannada">Каннада</string>
     <string name="profile_language_system_detail">Език на устройството</string>
     <string name="profile_notifications">Известия</string>
     <plurals name="profile_notifications_active">

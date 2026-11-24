@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">ನಿಮ್ಮ ಸ್ನೇಹಿತರು ನಿಮ್ಮನ್ನು ಏನೆಂದು ಕರೆಯುತ್ತಾರೆ?</string>
+    <string name="profile_setup_subtitle">ನಿಮ್ಮ ಗುಂಪುಗಳು ಮತ್ತು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಲಿಂಕ್ ಇರುವ ಯಾರಾದರೂ ನಿಮ್ಮ ಹೆಸರನ್ನು ನೋಡುತ್ತಾರೆ.</string>
+    <string name="profile_setup_avatar_color">ಅವತಾರ್ ಬಣ್ಣ</string>
+    <string name="profile_setup_add_photo">ಫೋಟೋ ಸೇರಿಸಿ</string>
+    <string name="profile_setup_photo_error">ಈ ಫೋಟೋವನ್ನು ಬಳಸಲು ಆಗಲಿಲ್ಲ. ಬೇರೊಂದನ್ನು ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="profile_setup_name_label">ನಿಮ್ಮ ಹೆಸರು</string>
+    <string name="profile_setup_name_placeholder">ರಮೇಶ್ ಕುಮಾರ್</string>
+    <string name="profile_setup_name_too_short">ಕನಿಷ್ಠ %d ಅಕ್ಷರಗಳನ್ನು ಟೈಪ್ ಮಾಡಿ.</string>
+    <string name="profile_setup_name_too_long">ಗರಿಷ್ಠ %d ಅಕ್ಷರಗಳನ್ನು ಬಳಸಿ.</string>
+    <string name="profile_setup_name_hint">ಇದನ್ನು ನಂತರ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</string>
+    <string name="profile_setup_saved_locally">ಸದ್ಯಕ್ಕೆ ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಸೇವ್ ಆಗಿದೆ.</string>
+    <string name="profile_setup_continue">ಮುಂದುವರಿಸಿ</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">ನೀವು ಈ ಗುಂಪಿನಲ್ಲಿ ಇಲ್ಲ</string>
+    <string name="bill_link_not_in_group_message">ಈ ಕಾಮೆಂಟ್ ನೀವು ಇಲ್ಲದ ಒಂದು ಗುಂಪಿನಲ್ಲಿದೆ. ನಿಮಗೆ ಲಿಂಕ್ ಕಳುಹಿಸಿದವರಲ್ಲಿ ಆಹ್ವಾನವನ್ನು ಕೇಳಿ.</string>
+    <string name="bill_link_offline_title">ಇಂಟರ್ನೆಟ್ ಇಲ್ಲ</string>
+    <string name="bill_link_offline_message">ನೀವು ಮತ್ತೆ ಆನ್‌ಲೈನ್‌ಗೆ ಬಂದ ನಂತರ ಲಿಂಕ್ ಅನ್ನು ಮತ್ತೆ ತೆರೆಯಿರಿ.</string>
+    <string name="bill_link_go_home">ಮುಖಪುಟಕ್ಕೆ ಹೋಗಿ</string>
+    <string name="discard_changes_title">ಬದಲಾವಣೆಗಳನ್ನು ತ್ಯಜಿಸಬೇಕೇ?</string>
+    <string name="discard_changes_message">ಸೇವ್ ಮಾಡದ ಬದಲಾವಣೆಗಳು ಕಳೆದುಹೋಗುತ್ತವೆ.</string>
+    <string name="discard_changes_discard">ತ್ಯಜಿಸಿ</string>
+    <string name="discard_changes_keep_editing">ಎಡಿಟ್ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಿ</string>
+    <string name="watch_channel_name">ವಾಚ್</string>
+    <string name="watch_connected_title">ನಿಮ್ಮ ಖಾತೆಗೆ ಸಂಪರ್ಕಗೊಂಡಿದೆ: %1$s</string>
+    <string name="watch_connected_title_unnamed">ವಾಚ್ ನಿಮ್ಮ ಖಾತೆಗೆ ಸಂಪರ್ಕಗೊಂಡಿದೆ</string>
+    <string name="watch_connected_text">ಇದು ನಿಮ್ಮ ಗುಂಪುಗಳನ್ನು ನೋಡುತ್ತದೆ ಮತ್ತು ತಾನಾಗಿಯೇ ಸಿಂಕ್ ಆಗುತ್ತದೆ. ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲು, ವಾಚ್‌ನಲ್ಲಿ ಸೈನ್ ಔಟ್ ಮಾಡಿ.</string>
+</resources>

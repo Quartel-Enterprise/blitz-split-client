@@ -143,6 +143,12 @@
             "value" : "Blitz Split"
           }
         },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
@@ -432,6 +438,12 @@
           }
         },
         "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "kn" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -731,6 +743,12 @@
             "value" : "招待や古いデバイスのQRコードのスキャン、プロフィール写真や支出の写真の撮影に使用します。"
           }
         },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಆಹ್ವಾನದ ಅಥವಾ ನಿಮ್ಮ ಹಳೆಯ ಸಾಧನದ QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, ಮತ್ತು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಫೋಟೋ ಹಾಗೂ ಖರ್ಚುಗಳ ಫೋಟೋಗಳನ್ನು ತೆಗೆಯಲು."
+          }
+        },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1025,6 +1043,12 @@
             "value" : "グループのリンクで連絡先から招待するために使用します。電話番号はこのデバイスから出ません。"
           }
         },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಗುಂಪಿನ ಲಿಂಕ್ ಮೂಲಕ ನಿಮ್ಮ ಸಂಪರ್ಕಗಳಲ್ಲಿರುವ ಜನರನ್ನು ಆಹ್ವಾನಿಸಲು. ಅವರ ಸಂಖ್ಯೆಗಳು ಈ ಸಾಧನದಲ್ಲೇ ಉಳಿಯುತ್ತವೆ."
+          }
+        },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1317,6 +1341,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "支出の写真をライブラリに保存するために使用します。"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಖರ್ಚುಗಳ ಫೋಟೋಗಳನ್ನು ನಿಮ್ಮ ಲೈಬ್ರರಿಗೆ ಸೇವ್ ಮಾಡಲು."
           }
         },
         "ko" : {

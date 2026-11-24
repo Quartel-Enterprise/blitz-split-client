@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">ಮುಚ್ಚಿ</string>
+    <string name="invite_group_created">ಗುಂಪನ್ನು ರಚಿಸಲಾಗಿದೆ</string>
+    <string name="invite_title">ಎಲ್ಲರನ್ನೂ ಆಹ್ವಾನಿಸಿ: %s</string>
+    <string name="invite_qr_description">ಗುಂಪಿನ ಆಹ್ವಾನ ಲಿಂಕ್‌ನ QR ಕೋಡ್</string>
+    <string name="invite_copy">ಕಾಪಿ ಮಾಡಿ</string>
+    <string name="invite_copied">ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</string>
+    <string name="invite_who_picks">ಲಿಂಕ್ ತೆರೆಯುವವರು ಪಟ್ಟಿಯಲ್ಲಿ ತಾವು ಯಾರು ಎಂದು ಆಯ್ಕೆಮಾಡುತ್ತಾರೆ: %s. ಖಾತೆ ಬೇಕಿಲ್ಲ.</string>
+    <string name="invite_names_or">%1$s ಅಥವಾ %2$s</string>
+    <string name="invite_anyone_joins">ಲಿಂಕ್ ತೆರೆಯುವವರು ಗುಂಪಿಗೆ ಸೇರುತ್ತಾರೆ. ಖಾತೆ ಬೇಕಿಲ್ಲ.</string>
+    <string name="invite_pending_title">ಲಿಂಕ್ ಬಾಕಿ ಇದೆ</string>
+    <string name="invite_pending_offline">ನೀವು ಆನ್‌ಲೈನ್‌ಗೆ ಬಂದ ತಕ್ಷಣ ಇದು ರಚನೆಯಾಗುತ್ತದೆ.</string>
+    <string name="invite_pending_online">ಲಿಂಕ್ ರಚಿಸಲಾಗುತ್ತಿದೆ…</string>
+    <string name="invite_failed_title">ಲಿಂಕ್ ರಚಿಸಲು ಆಗಲಿಲ್ಲ</string>
+    <string name="invite_failed_body">ಗುಂಪನ್ನು ಸಿಂಕ್ ಮಾಡುವಾಗ ಏನೋ ತಪ್ಪಾಗಿದೆ.</string>
+    <string name="invite_retry">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</string>
+    <string name="invite_share">ಲಿಂಕ್ ಶೇರ್ ಮಾಡಿ</string>
+    <string name="invite_see_who_joined">ಯಾರು ಸೇರಿದರು ಎಂದು ನೋಡಿ</string>
+    <string name="invite_add_person">ಆ್ಯಪ್ ಇಲ್ಲದ ಒಬ್ಬರನ್ನು ಸೇರಿಸಿ</string>
+    <string name="invite_go_to_group">ಗುಂಪಿಗೆ ಹೋಗಿ</string>
+    <string name="invite_change_link">ಲಿಂಕ್ ಬದಲಾಯಿಸಿ</string>
+    <string name="invite_change_link_title">ಆಹ್ವಾನ ಲಿಂಕ್ ಅನ್ನು ಬದಲಾಯಿಸಬೇಕೇ?</string>
+    <string name="invite_change_link_message">ಈಗಿನ ಲಿಂಕ್ ಮತ್ತು QR ಕೋಡ್ ಕೆಲಸ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತವೆ, ಬಳಸದ ವೈಯಕ್ತಿಕ ಆಹ್ವಾನಗಳೂ ಸೇರಿ. ಈಗಾಗಲೇ ಸೇರಿದವರು ಗುಂಪಿನಲ್ಲೇ ಉಳಿಯುತ್ತಾರೆ.</string>
+    <string name="invite_change_link_failed">ಲಿಂಕ್ ಬದಲಾಯಿಸಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="invite_share_message">Blitz Split ನಲ್ಲಿ ಖರ್ಚುಗಳನ್ನು ಹಂಚೋಣ: %1$s. ಈ ಲಿಂಕ್ ಮೂಲಕ ಸೇರಿ: %2$s</string>
+</resources>

@@ -106,6 +106,7 @@
     <string name="profile_language_estonian">Estonca</string>
     <string name="profile_language_gujarati">Güceratça</string>
     <string name="profile_language_slovenian">Slovence</string>
+    <string name="profile_language_kannada">Kannada dili</string>
     <string name="profile_language_system_detail">Cihaz dili</string>
     <string name="profile_notifications">Bildirimler</string>
     <plurals name="profile_notifications_active">

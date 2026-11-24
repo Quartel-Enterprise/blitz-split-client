@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">ಸಹಾಯವನ್ನು ಸಂಪರ್ಕಿಸಿ</string>
+    <string name="contact_support_description">ಕಳುಹಿಸಲು ಸಿದ್ಧವಾದ ಸಂದೇಶದೊಂದಿಗೆ ನಿಮ್ಮ ಇಮೇಲ್ ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯುತ್ತೇವೆ. ಏನಾಯಿತು ಎಂದು ವಿವರಿಸಿ ಮತ್ತು ಕಳುಹಿಸಿ: ಪ್ರತಿ ಸಂದೇಶವನ್ನು ನಿಜವಾದ ಜನರು ಓದುತ್ತಾರೆ.</string>
+    <string name="contact_support_to">ಸ್ವೀಕರಿಸುವವರು</string>
+    <string name="contact_support_diagnostics">ಇಮೇಲ್‌ನಲ್ಲಿ ಸೇರಿಸಲಾಗುತ್ತದೆ</string>
+    <string name="contact_support_app_version">ಆ್ಯಪ್ ಆವೃತ್ತಿ</string>
+    <string name="contact_support_platform">ಪ್ಲಾಟ್‌ಫಾರ್ಮ್</string>
+    <string name="contact_support_language">ಭಾಷೆ</string>
+    <string name="contact_support_account">ಖಾತೆ</string>
+    <string name="contact_support_profile">ಪ್ರೊಫೈಲ್</string>
+    <string name="contact_support_language_system">ಸಿಸ್ಟಮ್</string>
+    <string name="contact_support_account_local">ಈ ಸಾಧನ ಮಾತ್ರ</string>
+    <string name="contact_support_account_anonymous">ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ</string>
+    <string name="contact_support_open_email">ಇಮೇಲ್ ತೆರೆಯಿರಿ</string>
+    <string name="contact_support_copy_email">ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ಕಾಪಿ ಮಾಡಿ</string>
+    <string name="contact_support_notice_copied">ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ.</string>
+    <string name="contact_support_notice_no_app">ಯಾವುದೇ ಇಮೇಲ್ ಆ್ಯಪ್ ಸಿಗಲಿಲ್ಲ. ಬದಲಾಗಿ ವಿಳಾಸವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ.</string>
+    <string name="contact_support_close">ಮುಚ್ಚಿ</string>
+</resources>

@@ -106,6 +106,10 @@ private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
 private val swahiliThirdPersonPrefix = Regex("""^a(?=(?:me|li)\S)""")
 private const val TAMIL_SECOND_PERSON_PAST = "ீர்கள்"
+private const val KANNADA = "kn"
+private const val KANNADA_THIRD_PERSON_PAST = "ರು"
+private val kannadaPast = Regex("[ಕ-ಹ]$KANNADA_THIRD_PERSON_PAST$")
+private const val KANNADA_SECOND_PERSON_PAST = "ಿರಿ"
 private val youSubjectLanguages = setOf(
     SPANISH,
     PORTUGAL_PORTUGUESE,
@@ -146,6 +150,7 @@ private val youSubjectLanguages = setOf(
     MARATHI,
     SWAHILI,
     GUJARATI,
+    KANNADA,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -208,7 +213,10 @@ private val irregularSecondPerson = mapOf(
  * third person in "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji";
  * "Ana pievienojās", "Tu pievienojies"). Gujarati does as Hindi with its agent "એ", written apart
  * after a name, which the user's "તમે" doesn't take: every Gujarati verb phrase starts with "એ", which the user's drops
- * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Same rules as the web's and the Apple app's `verbForYou`.
+ * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Kannada puts its verb last as Tamil does, ending every verb phrase,
+ * before the colon that leads to the object, with a respectful past in "-ರು" after a consonant, whose "ರು" the user's
+ * turns into "ಿರಿ" ("Ana ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದರು", "ನೀವು ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದಿರಿ"). Same rules as the web's and the Apple
+ * app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -231,6 +239,13 @@ fun toSecondPerson(
     PERSIAN -> toVerbLastSecondPerson(verb, persianPast, PERSIAN_SECOND_PERSON_ENDING)
 
     TAMIL -> toVerbLastSecondPerson(verb, tamilPast, TAMIL_SECOND_PERSON_PAST, dropped = TAMIL_THIRD_PERSON_PAST)
+
+    KANNADA -> toVerbLastSecondPerson(
+        verb,
+        kannadaPast,
+        KANNADA_SECOND_PERSON_PAST,
+        dropped = KANNADA_THIRD_PERSON_PAST,
+    )
 
     KOREAN -> dropSubjectParticle(verb, KOREAN_HONORIFIC_SUBJECT)
 
@@ -281,7 +296,8 @@ private fun replaceFirstWord(
  * colon that leads to the object if there is one ("bir harcamayı böldü:", "هزینه‌ای را تقسیم کرد:"), and the second
  * person adds its ending to it: Turkish an "n" whatever the vowel ("böldü" → "böldün", "katıldı" → "katıldın"),
  * Persian, whose past stem ends in "د" or "ت", the respectful "ید" ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید").
- * Tamil's respectful past drops its "-ார்" for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"): `dropped`. A
+ * Tamil's respectful past drops its "-ார்" for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"): `dropped`, and
+ * Kannada's its "ರು" for the user's "ಿರಿ" ("ಹಂಚಿದರು" → "ಹಂಚಿದಿರಿ"). A
  * phrase whose clause doesn't end in that past stays as it is.
  */
 private fun toVerbLastSecondPerson(
@@ -351,7 +367,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
  * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, Marathi "तुम्ही … हटवला", with its rule,
- * Swahili "Wewe ulifuta…", with its own, and Gujarati "તમે … ડિલીટ કર્યો", with its rule.
+ * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, and Kannada "ನೀವು ಅಳಿಸಿದಿರಿ: …",
+ * with its own.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages

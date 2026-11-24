@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">ಲೆಕ್ಕ ಚುಕ್ತಾ ಮಾಡಲು ಜ್ಞಾಪನೆ</string>
+    <string name="push_bill_created">%1$s ನಿಮ್ಮೊಂದಿಗೆ ಒಂದು ಖರ್ಚನ್ನು ಸೇರಿಸಿದರು: “%2$s”</string>
+    <string name="push_bill_edited">%1$s ಒಂದು ಖರ್ಚನ್ನು ಎಡಿಟ್ ಮಾಡಿದರು: “%2$s”</string>
+    <string name="push_bill_deleted">%1$s ಒಂದು ಖರ್ಚನ್ನು ಅಳಿಸಿದರು: “%2$s”</string>
+    <string name="push_comment_added">%1$s ಕಾಮೆಂಟ್ ಮಾಡಿದರು (“%2$s”): %3$s</string>
+    <string name="push_payment_paid_you">%1$s ತಾವು ನಿಮಗೆ ಪಾವತಿಸಿದ್ದಾಗಿ ಗುರುತಿಸಿದರು</string>
+    <string name="push_payment_to_you">%1$s ಗುರುತಿಸಿದರು: %2$s ನಿಮಗೆ ಪಾವತಿಸಿದರು</string>
+    <string name="push_payment_received_yours">%1$s ನಿಮ್ಮ ಪಾವತಿಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿದರು</string>
+    <string name="push_payment_from_you">%1$s ಗುರುತಿಸಿದರು: ನೀವು ಪಾವತಿಸಿದಿರಿ, ಪಡೆದವರು: %2$s</string>
+    <string name="push_payment_undone">%1$s ನಿಮ್ಮೊಂದಿಗಿನ ಒಂದು ಪಾವತಿಯನ್ನು ರದ್ದುಗೊಳಿಸಿದರು</string>
+    <string name="push_charge_sent">%1$s ಲೆಕ್ಕ ಚುಕ್ತಾ ಮಾಡಲು ನಿಮಗೆ ಜ್ಞಾಪನೆ ಕಳುಹಿಸಿದರು</string>
+    <string name="push_settle_reminder">ನಿಮಗೆ ಬಾಕಿ ಇರುವ ಬ್ಯಾಲೆನ್ಸ್ ಇದೆ: %1$s</string>
+    <string name="push_settle_reminders">%1$s ಗುಂಪುಗಳಲ್ಲಿ ನಿಮಗೆ ಬಾಕಿ ಇರುವ ಬ್ಯಾಲೆನ್ಸ್ ಇದೆ</string>
+    <string name="push_added_to_group">%1$s ನಿಮ್ಮನ್ನು ಗುಂಪಿಗೆ ಸೇರಿಸಿದರು</string>
+    <string name="push_member_joined">%1$s ಗುಂಪಿಗೆ ಸೇರಿದರು</string>
+    <string name="push_debts_simplified_to_you">%1$s ಸಾಲಗಳನ್ನು ಸರಳಗೊಳಿಸಿದರು. ಈಗ %2$s ನಿಮಗೆ %3$s ಪಾವತಿಸುತ್ತಾರೆ.</string>
+    <string name="push_debts_simplified_from_you">%1$s ಸಾಲಗಳನ್ನು ಸರಳಗೊಳಿಸಿದರು. ಈಗ ನೀವು %3$s ಪಾವತಿಸಬೇಕು, ಪಡೆಯುವವರು: %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s ಸಾಲಗಳನ್ನು ಸರಳಗೊಳಿಸಿದರು. ನಿಮಗೆ ಏನು ಬದಲಾಗಿದೆ ಎಂದು ನೋಡಿ.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ‘ಸಾಲಗಳನ್ನು ಸರಳಗೊಳಿಸಿ’ ಅನ್ನು ಆಫ್ ಮಾಡಿದರು. ಈಗ %2$s ನಿಮಗೆ %3$s ಪಾವತಿಸುತ್ತಾರೆ.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ‘ಸಾಲಗಳನ್ನು ಸರಳಗೊಳಿಸಿ’ ಅನ್ನು ಆಫ್ ಮಾಡಿದರು. ಈಗ ನೀವು %3$s ಪಾವತಿಸಬೇಕು, ಪಡೆಯುವವರು: %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s ‘ಸಾಲಗಳನ್ನು ಸರಳಗೊಳಿಸಿ’ ಅನ್ನು ಆಫ್ ಮಾಡಿದರು. ನಿಮಗೆ ಏನು ಬದಲಾಗಿದೆ ಎಂದು ನೋಡಿ.</string>
+    <string name="notification_settings_bills">ಖರ್ಚುಗಳು</string>
+    <string name="notification_settings_bills_detail">ನೀವು ಇರುವ ಖರ್ಚುಗಳನ್ನು ಸೇರಿಸಿದಾಗ, ಎಡಿಟ್ ಮಾಡಿದಾಗ ಅಥವಾ ಅಳಿಸಿದಾಗ</string>
+    <string name="notification_settings_payments">ಪಾವತಿಗಳು ಮತ್ತು ಲೆಕ್ಕ ಚುಕ್ತಾಗಳು</string>
+    <string name="notification_settings_payments_detail">ನಿಮಗೆ ಬರುವ ಅಥವಾ ನೀವು ಮಾಡುವ ಪಾವತಿಗಳು, ಮತ್ತು ಸರಳಗೊಳಿಸಿದ ಸಾಲಗಳು</string>
+    <string name="notification_settings_comments">ಕಾಮೆಂಟ್‌ಗಳು</string>
+    <string name="notification_settings_comments_detail">ನೀವು ಇರುವ ಖರ್ಚುಗಳಲ್ಲಿ ಮತ್ತು ನೀವು ಬರೆದ ಸಂಭಾಷಣೆಗಳಲ್ಲಿ</string>
+    <string name="notification_settings_people_and_groups">ಜನರು ಮತ್ತು ಗುಂಪುಗಳು</string>
+    <string name="notification_settings_people_and_groups_detail">ನಿಮ್ಮ ಗುಂಪುಗಳಿಗೆ ಯಾರು ಸೇರುತ್ತಾರೆ ಅಥವಾ ತೊರೆಯುತ್ತಾರೆ, ಮತ್ತು ಅವುಗಳಲ್ಲಿ ಏನು ಬದಲಾಗುತ್ತದೆ</string>
+    <string name="notification_settings_payment_requests">ಪಾವತಿ ವಿನಂತಿಗಳು</string>
+    <string name="notification_settings_payment_requests_detail">ಯಾರಾದರೂ ನಿಮ್ಮನ್ನು ಪಾವತಿಸಲು ಕೇಳಿದಾಗ</string>
+    <string name="notification_settings_balance_reminder">ಬಾಕಿ ಬ್ಯಾಲೆನ್ಸ್ ಜ್ಞಾಪನೆ</string>
+    <string name="notification_settings_balance_reminder_detail">ಬಾಕಿ ಬ್ಯಾಲೆನ್ಸ್ ಇದ್ದರೆ, ವಾರಕ್ಕೊಮ್ಮೆ</string>
+</resources>

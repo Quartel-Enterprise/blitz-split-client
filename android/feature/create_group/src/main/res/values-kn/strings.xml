@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">ಹೊಸ ಗುಂಪು</string>
+    <string name="create_group_close">ಮುಚ್ಚಿ</string>
+    <string name="create_group_create">ರಚಿಸಿ</string>
+    <string name="create_group_change_color">ಗುಂಪಿನ ಬಣ್ಣವನ್ನು ಬದಲಾಯಿಸಿ</string>
+    <string name="create_group_name_label">ಗುಂಪಿನ ಹೆಸರು</string>
+    <string name="create_group_type_label">ಗುಂಪಿನ ಪ್ರಕಾರ</string>
+    <string name="create_group_members_title">ಯಾರೆಲ್ಲಾ ಇದ್ದಾರೆ</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d ವ್ಯಕ್ತಿ</item>
+        <item quantity="other">%d ಜನರು</item>
+    </plurals>
+    <string name="create_group_me">ನೀವು</string>
+    <string name="create_group_remove_member">ತೆಗೆದುಹಾಕಿ: %s</string>
+    <string name="create_group_add_placeholder">ಹೆಸರಿನಿಂದ ಸೇರಿಸಿ</string>
+    <string name="create_group_add">ಸೇರಿಸಿ</string>
+    <string name="create_group_no_app_notice">ಈಗ ಯಾರಿಗೂ ಆ್ಯಪ್ ಬೇಕಿಲ್ಲ. ನೀವು ಈಗಲೇ ಎಲ್ಲರಿಗೂ ಖರ್ಚುಗಳನ್ನು ಸೇರಿಸಬಹುದು ಮತ್ತು ಲಿಂಕ್ ಅನ್ನು ನಂತರ ಕಳುಹಿಸಬಹುದು.</string>
+    <string name="create_group_currency">ಡೀಫಾಲ್ಟ್ ಕರೆನ್ಸಿ</string>
+    <string name="create_group_currency_caption">ಹೊಸ ಖರ್ಚುಗಳು ಈ ಕರೆನ್ಸಿಯಲ್ಲಿ ಆರಂಭವಾಗುತ್ತವೆ; ಪ್ರತಿ ಖರ್ಚು ಬೇರೆ ಕರೆನ್ಸಿಯನ್ನು ಬಳಸಬಹುದು.</string>
+    <string name="create_group_save_error">ಗುಂಪನ್ನು ಸೇವ್ ಮಾಡಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="create_group_photo">ಗುಂಪಿನ ಫೋಟೋ</string>
+    <string name="create_group_take_photo">ಫೋಟೋ ತೆಗೆಯಿರಿ</string>
+    <string name="create_group_choose_photo">ಫೋಟೋ ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="create_group_remove_photo">ಫೋಟೋ ತೆಗೆದುಹಾಕಿ</string>
+    <string name="create_group_photo_error">ಈ ಫೋಟೋವನ್ನು ಬಳಸಲು ಆಗಲಿಲ್ಲ. ಬೇರೆ ಫೋಟೋ ಪ್ರಯತ್ನಿಸಿ.</string>
+</resources>

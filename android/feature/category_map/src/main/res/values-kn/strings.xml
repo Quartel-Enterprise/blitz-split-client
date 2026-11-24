@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">ಪದಗಳಿಲ್ಲ</string>
+    <string name="category_map_title">ವರ್ಗ ನಕ್ಷೆ</string>
+    <string name="category_map_search">ಪದಗಳನ್ನು ಹುಡುಕಿ</string>
+    <string name="category_map_add">ಪದ ಸೇರಿಸಿ</string>
+    <string name="category_map_more">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</string>
+    <string name="category_map_restore">ಡೀಫಾಲ್ಟ್ ಮರುಸ್ಥಾಪಿಸಿ</string>
+    <string name="category_map_back">ಹಿಂದೆ</string>
+    <string name="category_map_intro">ಖರ್ಚಿನ ಶೀರ್ಷಿಕೆಯಲ್ಲಿ ಇವುಗಳಲ್ಲಿ ಒಂದು ಪದವಿದ್ದರೆ, ಅದರ ವರ್ಗ ತಾನಾಗಿಯೇ ಬರುತ್ತದೆ. “Uber ಮನೆ” ಸಾರಿಗೆ ಆಗುತ್ತದೆ.</string>
+    <string name="category_map_intro_offline">ನಕ್ಷೆ ಆಫ್‌ಲೈನ್‌ನಲ್ಲೂ ಕೆಲಸ ಮಾಡುತ್ತದೆ: ಬದಲಾವಣೆಗಳು ಈ ಸಾಧನದಲ್ಲಿ ತಕ್ಷಣ ಜಾರಿಗೆ ಬರುತ್ತವೆ, ಮತ್ತು ಮತ್ತೆ ಆನ್‌ಲೈನ್ ಆದಾಗ ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳನ್ನು ತಲುಪುತ್ತವೆ.</string>
+    <string name="category_map_device_only">ನಿಮ್ಮ ನಕ್ಷೆ ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಇರುತ್ತದೆ. ಅದನ್ನು ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಿಗೆ ಕೊಂಡೊಯ್ಯಲು, ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ Google ಅಥವಾ Apple ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ.</string>
+    <string name="category_map_open_profile">ಪ್ರೊಫೈಲ್ ತೆರೆಯಿರಿ</string>
+    <string name="category_map_longest_wins">ಎರಡು ಪದಗಳು ಒಂದು ಶೀರ್ಷಿಕೆಗೆ ಹೊಂದಿಕೆಯಾದರೆ, ಉದ್ದವಾದ ಪದವೇ ಗೆಲ್ಲುತ್ತದೆ.</string>
+    <string name="category_map_no_result">ಈ ಪದ ಇಲ್ಲ: “%1$s”</string>
+    <string name="category_map_no_result_body">ಇದನ್ನು ಸೇರಿಸಿದರೆ, ಶೀರ್ಷಿಕೆಯಲ್ಲಿ ಈ ಪದವಿರುವ ಖರ್ಚುಗಳು ಸರಿಯಾದ ವರ್ಗದೊಂದಿಗೆ ಬರುತ್ತವೆ.</string>
+    <string name="category_map_add_query">ಸೇರಿಸಿ: “%1$s”</string>
+    <string name="category_map_empty_title">ನಿಮ್ಮ ನಕ್ಷೆ ಖಾಲಿಯಾಗಿದೆ</string>
+    <string name="category_map_empty_body">ಪದಗಳಿಲ್ಲದೆ, ವರ್ಗ ಶೀರ್ಷಿಕೆಯಿಂದ ಬರುವುದಿಲ್ಲ: ಪ್ರತಿ ಖರ್ಚಿನಲ್ಲೂ ನೀವೇ ಅದನ್ನು ಆಯ್ಕೆಮಾಡುತ್ತೀರಿ.</string>
+    <string name="category_map_group_category"> · ‘%1$s’ ಗುಂಪಿನ ವರ್ಗ</string>
+    <string name="category_map_only_main">%1$s ಮಾತ್ರ</string>
+    <string name="category_map_only_in_group">‘%1$s’ ಗುಂಪಿನಲ್ಲಿ ಮಾತ್ರ</string>
+    <string name="category_map_no_terms_yet">ಇನ್ನೂ ಪದಗಳಿಲ್ಲ.</string>
+    <string name="category_map_add_in">ಪದ ಸೇರಿಸಿ: %1$s</string>
+    <string name="category_map_tip">ಪದದ ವರ್ಗವನ್ನು ಬದಲಾಯಿಸಲು ಅಥವಾ ಅದನ್ನು ತೆಗೆದುಹಾಕಲು, ಅದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ. ಇದು ಸಂಪೂರ್ಣ ಪದಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುತ್ತದೆ, ಅಕ್ಸೆಂಟ್‌ಗಳು ಮತ್ತು ದೊಡ್ಡ/ಸಣ್ಣ ಅಕ್ಷರಗಳನ್ನು ಪರಿಗಣಿಸದೆ.</string>
+    <string name="category_map_queued">ಸರದಿಯಲ್ಲಿದೆ</string>
+    <string name="category_map_term_action">%1$s, %2$s. ಎಡಿಟ್ ಮಾಡಿ</string>
+    <string name="category_map_new_term">ಹೊಸ ಪದ</string>
+    <string name="category_map_edit_term">ಪದವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</string>
+    <string name="category_map_term_label">ಪದ ಅಥವಾ ವಾಕ್ಯಾಂಶ</string>
+    <string name="category_map_term_help">ಸಂಪೂರ್ಣ ಪದಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುತ್ತದೆ, ಅಕ್ಸೆಂಟ್‌ಗಳು ಮತ್ತು ದೊಡ್ಡ/ಸಣ್ಣ ಅಕ್ಷರಗಳನ್ನು ಪರಿಗಣಿಸದೆ.</string>
+    <string name="category_map_term_help_app">ಆ್ಯಪ್‌ನ ಪದ. ಡೀಫಾಲ್ಟ್ ಮರುಸ್ಥಾಪಿಸಿದರೆ ಅದು ಮೊದಲಿದ್ದಂತೆಯೇ ಮರಳಿ ಬರುತ್ತದೆ.</string>
+    <string name="category_map_term_duplicate">“%1$s” ಈಗಾಗಲೇ ಈ ವರ್ಗವನ್ನು ಆಯ್ಕೆಮಾಡುತ್ತದೆ: %2$s. ಪ್ರತಿ ಪದಕ್ಕೆ ಒಂದೇ ವರ್ಗ.</string>
+    <string name="category_map_term_too_short">ಕನಿಷ್ಠ 2 ಅಕ್ಷರಗಳನ್ನು ಬಳಸಿ.</string>
+    <string name="category_map_term_too_long">ಗರಿಷ್ಠ 30 ಅಕ್ಷರಗಳನ್ನು ಬಳಸಿ.</string>
+    <string name="category_map_term_invalid">ಅಕ್ಷರಗಳು, ಅಂಕಿಗಳು ಮತ್ತು ಸ್ಪೇಸ್‌ಗಳನ್ನು ಮಾತ್ರ ಬಳಸಿ.</string>
+    <string name="category_map_category">ವರ್ಗ</string>
+    <string name="category_map_category_help">ಇದು ವರ್ಗ ಅಥವಾ ಉಪವರ್ಗ ಆಗಿರಬಹುದು.</string>
+    <string name="category_map_category_help_edit">ಇಲ್ಲಿ ಬದಲಾಯಿಸಿದರೆ, ಪದ ಬೇರೊಂದು ವರ್ಗಕ್ಕೆ ಹೋಗುತ್ತದೆ.</string>
+    <string name="category_map_category_help_move">ಸರಿಸಿದರೆ, ಪದ ಈ ವರ್ಗದಿಂದ ಹೊರಹೋಗುತ್ತದೆ: %1$s.</string>
+    <string name="category_map_example">ಉದಾಹರಣೆ</string>
+    <string name="category_map_example_move">ಸರಿಸಿದರೆ</string>
+    <string name="category_map_remove">ತೆಗೆದುಹಾಕಿ</string>
+    <string name="category_map_cancel">ರದ್ದುಮಾಡಿ</string>
+    <string name="category_map_save">ಸೇವ್ ಮಾಡಿ</string>
+    <string name="category_map_move_to">ಇಲ್ಲಿಗೆ ಸರಿಸಿ: %1$s</string>
+    <string name="category_map_removed">“%1$s” ನಕ್ಷೆಯಿಂದ ಹೊರಹೋಯಿತು</string>
+    <string name="category_map_undo">ರದ್ದುಗೊಳಿಸಿ</string>
+    <string name="category_map_restore_title">ಡೀಫಾಲ್ಟ್ ನಕ್ಷೆಯನ್ನು ಮರುಸ್ಥಾಪಿಸಬೇಕೇ?</string>
+    <string name="category_map_restore_body">ನೀವು ತೆಗೆದುಹಾಕಿದ ಅಥವಾ ಸರಿಸಿದವುಗಳೂ ಸೇರಿದಂತೆ, ಆ್ಯಪ್‌ನ 60 ಪದಗಳು ಮೊದಲಿದ್ದಂತೆಯೇ ಮರಳಿ ಬರುತ್ತವೆ.</string>
+    <string name="category_map_restore_own_one">ನೀವು ರಚಿಸಿದ ಪದ “%1$s” ಹಾಗೆಯೇ ಉಳಿಯುತ್ತದೆ.</string>
+    <string name="category_map_restore_confirm">ಮರುಸ್ಥಾಪಿಸಿ</string>
+    <string name="category_map_save_error">ನಕ್ಷೆಯನ್ನು ಸೇವ್ ಮಾಡಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d ಪದ</item>
+        <item quantity="other">%d ಪದಗಳು</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d ಉಪವರ್ಗ</item>
+        <item quantity="other">%d ಉಪವರ್ಗಗಳು</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d ಪದ: “%2$s”</item>
+        <item quantity="other">%1$d ಪದಗಳು: “%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">ಆಫ್‌ಲೈನ್ · %d ಬದಲಾವಣೆ ಸರದಿಯಲ್ಲಿದೆ</item>
+        <item quantity="other">ಆಫ್‌ಲೈನ್ · %d ಬದಲಾವಣೆಗಳು ಸರದಿಯಲ್ಲಿವೆ</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">ನೀವು ರಚಿಸಿದ %d ಪದ ಹಾಗೆಯೇ ಉಳಿಯುತ್ತದೆ.</item>
+        <item quantity="other">ನೀವು ರಚಿಸಿದ %d ಪದಗಳು ಹಾಗೆಯೇ ಉಳಿಯುತ್ತವೆ.</item>
+    </plurals>
+    <string name="category_map_new_category">ಹೊಸ ವರ್ಗ</string>
+    <string name="category_map_new_subcategory_in">ಹೊಸ ಉಪವರ್ಗ: %s</string>
+    <string name="category_map_edit_category">ಎಡಿಟ್ ಮಾಡಿ: %s</string>
+    <string name="category_map_category_group">ಗುಂಪು</string>
+    <string name="category_map_change_color">ಬಣ್ಣ ಬದಲಾಯಿಸಿ: %1$s</string>
+    <string name="category_map_restore_color">ಬಣ್ಣವನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</string>
+    <string name="category_map_color_done">ಮುಗಿದಿದೆ</string>
+</resources>

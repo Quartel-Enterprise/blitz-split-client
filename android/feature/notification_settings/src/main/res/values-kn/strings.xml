@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">ನೋಟಿಫಿಕೇಶನ್‌ಗಳು</string>
+    <string name="notification_settings_denied_title">Blitz Split ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು Android ನಲ್ಲಿ ಆಫ್ ಮಾಡಲಾಗಿದೆ.</string>
+    <string name="notification_settings_denied_body">ಕೆಳಗಿನ ಪುಶ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪಡೆಯಲು ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅವುಗಳನ್ನು ಆನ್ ಮಾಡಿ. ಬೆಲ್ ಕೆಲಸ ಮಾಡುತ್ತಲೇ ಇರುತ್ತದೆ.</string>
+    <string name="notification_settings_open_settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="notification_settings_refused_body">ಕೆಳಗಿನ ಪುಶ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಪಡೆಯಲು ಅವುಗಳನ್ನು ಇನ್ನೊಮ್ಮೆ ಅನುಮತಿಸಲು Android ಅವಕಾಶ ನೀಡುತ್ತದೆ. ಬೆಲ್ ಕೆಲಸ ಮಾಡುತ್ತಲೇ ಇರುತ್ತದೆ.</string>
+    <string name="notification_settings_turn_on">ಆನ್ ಮಾಡಿ</string>
+    <string name="notification_settings_blocked_in_android">Android ನಲ್ಲಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</string>
+    <string name="notification_settings_open_channel_settings_description">Android ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ: %1$s</string>
+    <string name="notification_settings_push_switch">ಪುಶ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು</string>
+    <string name="notification_settings_push_switch_detail">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ</string>
+    <string name="notification_settings_section">ಇವುಗಳ ಬಗ್ಗೆ ನನಗೆ ತಿಳಿಸಿ</string>
+    <string name="notification_settings_push">ಪುಶ್</string>
+    <string name="notification_settings_in_app">ಆ್ಯಪ್‌ನಲ್ಲಿ</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">ಪುಶ್ ಈ ಸಾಧನಕ್ಕೆ ನೋಟಿಫಿಕೇಶನ್ ಕಳುಹಿಸುತ್ತದೆ. ಆ್ಯಪ್‌ನಲ್ಲಿ ಎಂಬುದು ಅದನ್ನು ಬೆಲ್‌ನಲ್ಲಿ ಮತ್ತು ಚಟುವಟಿಕೆಯಲ್ಲಿ ಹೊಸದು ಎಂದು ಗುರುತಿಸುತ್ತದೆ; ಆಫ್ ಮಾಡಿದರೆ, ಅದು ಚಟುವಟಿಕೆಯಲ್ಲಿ ಈಗಾಗಲೇ ಓದಿದಂತೆ ಕಾಣಿಸುತ್ತದೆ.</string>
+    <string name="notification_settings_footer">ಇಂಟರ್ನೆಟ್ ಇದ್ದಾಗ ಸೂಚನೆಗಳು ಬರುತ್ತವೆ. ಗುಂಪನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲು, ಅದರೊಳಗಿನ ಮೆನು ಬಳಸಿ.</string>
+</resources>

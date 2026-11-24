@@ -30,7 +30,8 @@ import SwiftUI
 /// Hindi with its respectful agent "यांनी", which the user's "तुम्ही" doesn't take, so its verb phrases all start with
 /// "यांनी", which the user's drops ("Ana यांनी खर्च वाटला", "तुम्ही खर्च वाटला").
 /// Gujarati does the same with its agent "એ", which the user's "તમે" doesn't take ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ
-/// વહેંચ્યો").
+/// વહેંચ્યો"). Kannada puts its verb last as Tamil does, its respectful past in "-ರು" after a consonant becoming the
+/// user's "-ಿರಿ" ("Ana ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದರು", "ನೀವು ಒಂದು ಖರ್ಚನ್ನು ಹಂಚಿದಿರಿ").
 ///
 /// Latvian starts each verb phrase with a simple past, which says the person but not the gender: its third person in
 /// "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji"; "Ana
@@ -115,6 +116,7 @@ enum SecondPerson {
         case "tr": return turkishVerbForYou(verb)
         case "fa": return verbLastForYou(verb, past: "[دت]$", ending: "ید")
         case "ta": return verbLastForYou(verb, past: "ார்$", ending: "ீர்கள்", dropped: "ார்")
+        case "kn": return verbLastForYou(verb, past: "[ಕ-ಹ]ರು$", ending: "ಿರಿ", dropped: "ರು")
         case "ko": return verbWithoutSubjectParticle(verb, particle: "님이")
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case "mr": return verbWithoutSubjectParticle(verb, particle: "यांनी")
@@ -185,8 +187,8 @@ enum SecondPerson {
     /// A language that puts its verb last (Turkish, Persian): the clause before the colon that leads to the object, if
     /// any, ends with a simple past matching `past`, which takes `ending` for the user. Persian's past stem ends in "د"
     /// or "ت" and takes the respectful "ید" ("تقسیم کرد" → "تقسیم کردید", "پیوست" → "پیوستید"). Tamil's respectful past
-    /// drops its "-ார்" (`dropped`) for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"). A phrase whose clause
-    /// doesn't end in that past stays as it is.
+    /// drops its "-ார்" (`dropped`) for the user's "-ீர்கள்" ("பிரித்தார்" → "பிரித்தீர்கள்"), Kannada's its "ರು" for the
+    /// user's "ಿರಿ" ("ಹಂಚಿದರು" → "ಹಂಚಿದಿರಿ"). A phrase whose clause doesn't end in that past stays as it is.
     private static func verbLastForYou(_ verb: String, past: String, ending: String, dropped: String = "") -> String {
         var end = verb.firstIndex(of: ":") ?? verb.endIndex
         while end > verb.startIndex, verb[verb.index(before: end)].isWhitespace {
