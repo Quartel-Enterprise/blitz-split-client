@@ -84,7 +84,7 @@
     <string name="bill_detail_history_photo_removed">pašalino nuotrauką</string>
     <string name="bill_detail_history_receipt_removed">pašalino kvitą</string>
     <string name="bill_detail_history_link_anyone">įjungė nuorodą visiems</string>
-    <string name="bill_detail_history_link_members">padarė nuorodą tik išlaidos dalyviams</string>
+    <string name="bill_detail_history_link_members">apribojo nuorodą išlaidos dalyviams</string>
     <string name="bill_detail_history_link_off">išjungė nuorodą</string>
     <string name="bill_detail_undo">Anuliuoti</string>
     <string name="bill_detail_undo_error">Nepavyko anuliuoti. Bandyk dar kartą.</string>

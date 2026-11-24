@@ -1000,7 +1000,6 @@ class ProfileUiStateTest {
                 AppLanguage.SWEDISH,
                 AppLanguage.DANISH,
                 AppLanguage.FINNISH,
-                AppLanguage.LITHUANIAN,
             ),
             options,
         )

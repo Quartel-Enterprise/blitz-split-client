@@ -9667,7 +9667,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ sukūrė išlaidą neprisijungus"
+            "value" : "%@ sukūrė išlaidą be interneto"
           }
         },
         "mr" : {
@@ -10456,7 +10456,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ redagavo išlaidą neprisijungus"
+            "value" : "%@ redagavo išlaidą be interneto"
           }
         },
         "mr" : {
@@ -10719,7 +10719,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ padarė nuorodą tik išlaidos žmonėms"
+            "value" : "%@ apribojo nuorodą išlaidos dalyviams"
           }
         },
         "mr" : {
