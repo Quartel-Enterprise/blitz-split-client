@@ -232,14 +232,16 @@ The profile, its photo, appearance, in-app update and Adjust photo.
     speakers look for it, with its name in the app's language as a smaller line under it (Pierre's call, beta feedback,
     back from only translated names): "English (US)", "English (UK)", "English (Australia)", "English (Canada)", "Português (Brasil)", "Português (Portugal)", "Español (Latinoamérica)", "Español (España)", "Français", "Deutsch", "Italiano",
     "Polski", "Nederlands", "日本語", "Türkçe", "Bahasa Indonesia", "Русский" and "Українська", the same in every language, under them "Portuguese
-    (Brazil)", "Portuguese (Portugal)", "Spanish (Latin America)", "Spanish (Spain)"… in English and "Inglês", "Espanhol (América Latina)"… in Portuguese, the smaller line left out where both read
+    (Brazil)", "Portuguese (Portugal)", "Spanish (Latin America)", "Spanish (Spain)"… in English and "Inglês (EUA)", "Espanhol (América Latina)"… in Portuguese, the smaller line left out where both read
     the same (Italian's "Italiano" in Portuguese, Portuguese's own row). A region is spelled out, never a code:
     "Português (Brasil)", "Portuguese (Brazil)". The Portuguese of Portugal is its own row, never picked by the
     device's region (Pierre's call), so a Brazilian living in Portugal still picks Brazil's, and so is the Spanish of
     Spain (Pierre's call, November 2026: it used to be the one "Spanish" row, Spain's on a device whose region was
     Spain), so "Español (Latinoamérica)" is the neutral `es` and "Español (España)" Spain's `es-ES` wherever the device
     is. The English of Britain, Australia and Canada are rows of their own too (Pierre's call, November 2026), the
-    American one's chip reading "US" and Britain's "UK", as people read it, Australia's "AU" and Canada's "CAN", since "CA" is Catalan's. Portugal's chip reads "PT" and Brazil's "BR", Spain's "ES" and Latin America's "419" (its UN code, as in es-419;
+    American one's chip reading "US" and Britain's "UK", as people read it, Australia's "AU" and Canada's "CAN", since "CA" is Catalan's.
+    Android's own App languages setting also offers "English (World)" (en-001, the folder the British strings live in),
+    which the app reads as English (UK). Portugal's chip reads "PT" and Brazil's "BR", Spain's "ES" and Latin America's "419" (its UN code, as in es-419;
     Ukrainian's is Ukraine's "UA", since "UK" reads as the United Kingdom; Simplified Chinese's is "CN" and Traditional's "TW", the region each is written for; every other chip is its language's code), and a search for "pt", "es" or "en" finds every variant of the language. Each own name is marked with its language, so a screen
     reader reads "日本語" as Japanese and the font draws it as Japan's. Kept per device and
     never synced, still there after a sign out, and kept by each platform's own per-app language

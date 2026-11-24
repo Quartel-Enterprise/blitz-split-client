@@ -288,8 +288,8 @@ private fun LanguageRow(
 }
 
 /*
- * Why: the language's code ("EN"; "BR" and "PT", "419" and "ES" for the two of each) as Bible Planner's chip, a phone
- * for System.
+ * Why: the language's code ("FR"; "BR" and "PT", "419" and "ES" for the two of each; "US", "UK", "AU" and "CAN"
+ * for the English ones) as Bible Planner's chip, a phone for System.
  */
 @Composable
 private fun LanguageChip(

@@ -1,6 +1,7 @@
 import { browserLanguages } from '@/lib/platform'
 import { en, type MessageKey } from './en'
 import { es } from './es'
+import { britishEnglishRegions } from './britishEnglishRegions'
 import { enCA } from './enCA'
 import { enGB } from './enGB'
 import { esES } from './esES'
@@ -55,7 +56,10 @@ export type { MessageKey }
  */
 export type Locale = 'en' | 'en-GB' | 'en-AU' | 'en-CA' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta' | 'nb' | 'te' | 'bg' | 'mr' | 'sw' | 'ca' | 'da' | 'fi'
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, 'en-GB': { ...en, ...enCA, ...enGB }, 'en-AU': { ...en, ...enCA, ...enGB }, 'en-CA': { ...en, ...enCA }, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg, mr, sw, ca, da, fi }
+// Why: Britain's English, which Australia's reads too: Canada's spelling, then the words Canada writes as the US.
+const britishEnglish = { ...en, ...enCA, ...enGB }
+
+const messages: Record<Locale, Record<MessageKey, string>> = { en, 'en-GB': britishEnglish, 'en-AU': britishEnglish, 'en-CA': { ...en, ...enCA }, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg, mr, sw, ca, da, fi }
 
 // Why: the languages with one variant for every tag of theirs.
 const bareLocales: readonly Locale[] = ['fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta', 'nb', 'te', 'bg', 'mr', 'sw', 'ca', 'da', 'fi']
@@ -66,37 +70,30 @@ const bareLocales: readonly Locale[] = ['fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr'
  * are read before any extension, as AppLanguage's.
  */
 function isTraditionalChinese(subtags: readonly string[]): boolean {
-  const end = subtags.findIndex((subtag) => subtag.length < 2)
-  const tagSubtags = end === -1 ? subtags : subtags.slice(0, end)
-  const script = tagSubtags.find((subtag) => /^[a-z]{4}$/.test(subtag))
+  const script = beforeExtension(subtags).find((subtag) => /^[a-z]{4}$/.test(subtag))
   if (script) return script === 'hant'
   const region = regionOf(subtags)
   return region === 'tw' || region === 'hk' || region === 'mo'
 }
 
-/**
- * The English regions that write as the United States, as CLDR's parents of the English locales and Apple's own lookup
- * have them: the US, its territories and the Philippines. Any other region with no dictionary of its own (New Zealand,
- * Ireland, India, the world's "001"…) writes as Britain (Pierre's call), as AppLanguage.fromTag reads it.
- */
-const americanEnglishRegions: readonly string[] = ['us', 'as', 'gu', 'mh', 'mp', 'pr', 'um', 'vi', 'ph']
-
-// Why: an English tag's locale: its region's own (en-GB, en-AU, en-CA), American for none or an American region,
-// British for any other, the three-digit UN regions ("001", "150") included.
-function englishOf(subtags: readonly string[]): Locale {
+// Why: a tag's subtags before any extension ("-u-fw-mon", whose one-letter singleton starts it), as AppLanguage's.
+function beforeExtension(subtags: readonly string[]): readonly string[] {
   const end = subtags.findIndex((subtag) => subtag.length < 2)
-  const tagSubtags = end === -1 ? subtags : subtags.slice(0, end)
-  const region = tagSubtags.find((subtag) => subtag.length === 2 || /^\d{3}$/.test(subtag))
-  if (region === undefined || americanEnglishRegions.includes(region)) return 'en'
+  return end === -1 ? subtags : subtags.slice(0, end)
+}
+
+// Why: an English tag's locale: its region's own (en-GB, en-AU, en-CA), British for a region that writes as Britain
+// (britishEnglishRegions: en-NZ, en-IE, en-IN, en-DE, the UN's "001" and "150"…), American for none or any other.
+function englishOf(subtags: readonly string[]): Locale {
+  const region = beforeExtension(subtags).find((subtag) => subtag.length === 2 || /^\d{3}$/.test(subtag))
   if (region === 'au') return 'en-AU'
   if (region === 'ca') return 'en-CA'
-  return 'en-GB'
+  return region !== undefined && britishEnglishRegions.has(region) ? 'en-GB' : 'en'
 }
 
 // Why: the first two-letter subtag before any extension ("-u-fw-mon", whose keys are no region), as AppLanguage.regionOf.
 function regionOf(subtags: readonly string[]): string | undefined {
-  const end = subtags.findIndex((subtag) => subtag.length < 2)
-  return (end === -1 ? subtags : subtags.slice(0, end)).find((subtag) => subtag.length === 2)
+  return beforeExtension(subtags).find((subtag) => subtag.length === 2)
 }
 
 /**
@@ -108,8 +105,8 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
  * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil , Norwegian (Bokmål, whichever of the three) Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish or Finnish, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, `en-GB`, `en-AU` and `en-CA` are their regions'
- * English, `en`, `en-US` and the other American regions the American one, any other `en` tag (en-NZ, en-IE, en-IN…)
- * British English, and American English when none matches.
+ * English, an `en` tag of a region that writes as Britain (en-NZ, en-IE, en-IN, en-DE…) British English, any other
+ * `en` tag (en, en-US, en-JP…) American English, and American English when none matches.
  */
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {

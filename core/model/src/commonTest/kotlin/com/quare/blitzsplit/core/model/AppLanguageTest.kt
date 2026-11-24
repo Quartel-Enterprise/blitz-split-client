@@ -168,15 +168,37 @@ class AppLanguageTest {
     }
 
     @Test
-    fun `GIVEN an English tag of another language entry region WHEN reading it THEN is the British English`() {
+    fun `GIVEN an English tag of another language entry region WHEN reading it THEN is English as CLDR parents it`() {
         // Given
-        val tags = listOf("en-ES", "en-PT", "en-BR", "en-CN", "en-TW", "en-UA")
+        val tags = listOf("en-ES", "en-PT", "en-UA", "en-BR", "en-CN", "en-TW")
 
         // When
         val languages = tags.map(AppLanguage::fromTag)
 
         // Then
-        assertEquals(List(tags.size) { AppLanguage.ENGLISH_UK }, languages)
+        assertEquals(
+            listOf(
+                AppLanguage.ENGLISH_UK,
+                AppLanguage.ENGLISH_UK,
+                AppLanguage.ENGLISH_UK,
+                AppLanguage.ENGLISH,
+                AppLanguage.ENGLISH,
+                AppLanguage.ENGLISH,
+            ),
+            languages,
+        )
+    }
+
+    @Test
+    fun `GIVEN an English tag of a region CLDR keeps American WHEN reading it THEN is the American English`() {
+        // Given
+        val tags = listOf("en-JP", "en-MX", "en-KR", "en-AR", "en_jp")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.ENGLISH }, languages)
     }
 
     @Test

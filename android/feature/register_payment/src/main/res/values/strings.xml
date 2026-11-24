@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="en">
     <string name="register_payment_title_received">Did %s pay you?</string>
     <string name="register_payment_title_paid">Did you pay %s?</string>
     <string name="register_payment_title_between">Did %1$s pay %2$s?</string>

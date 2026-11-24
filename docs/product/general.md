@@ -63,8 +63,10 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     (Latinoamérica)", "Español (España)"); Spanish calls the app Blitz Split, as English does). Four English
     variants (Pierre's call, November 2026), each its own row of the picker: the American one, the source, for `en`,
     `en-US`, the US territories and the Philippines; Britain's `en-GB`; Australia's `en-AU`, which writes as Britain's;
-    and Canada's `en-CA`. Any other English region (New Zealand, Ireland, India, South Africa…) reads Britain's, on
-    System too. Each regional one overrides only the words its region writes differently, the rest coming from the
+    and Canada's `en-CA`. On System, an English region that writes as Britain, the children of CLDR's en-001 (the
+    Commonwealth: New Zealand, Ireland, India, South Africa…) and en-150 (Europe), reads Britain's, and any other (the
+    US, the Philippines, Japan, Brazil…) the American one, as each platform's own lookup does (`BritishEnglishRegions`,
+    the web's `britishEnglishRegions`). Each regional one overrides only the words its region writes differently, the rest coming from the
     American one: Britain and Australia write "colour", "grey", "centre", "maths", "recognised" and "towards", Canada
     "colour", "grey" and "centre" but "math", "recognized" and "toward" (Android's `values-b+en+001`, which en-GB, en-AU
     and the other Commonwealth regions read, and `values-en-rCA`; Apple's `en-GB`, `en-AU` and `en-CA` localizations;
