@@ -111,7 +111,7 @@ export const PLAY_LOCALES = {
   et: ["et"],
   gu: ["gu"],
   sl: ["sl"],
-  kn: ["kn"],
+  kn: ["kn-IN"],
 };
 export const APP_STORE_LOCALES = {
   en: ["en-US"],
