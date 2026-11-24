@@ -124,16 +124,45 @@ struct StoreScreenshotsRun {
     /// other apps' windows are hidden (as ⌥⌘H does, no permission needed), so the sidebar's glass shows nothing of
     /// them. They come back with a click on their Dock icon. The window's number goes to the app's output, where
     /// capture-mac.sh reads it to photograph that window alone.
-    static func sizeWindow() {
-        guard current != nil, let window = mainWindow ?? NSApplication.shared.windows.first(where: \.canBecomeMain)
-        else { return }
+    ///
+    /// A launch behind the other apps may run this before its view has a window on screen: it tries again a moment
+    /// later, for as long as capture-mac.sh waits, and takes a window not yet on screen only on its last try. The
+    /// window goes to the first Retina screen, the one with the menu bar when it is Retina, whichever display the last
+    /// run left it on: capture-mac.sh refuses a capture that isn't Retina.
+    static func sizeWindow(attemptsLeft: Int = windowAttempts) {
+        guard current != nil else { return }
+        let hiddenWindow = attemptsLeft == 0 ? NSApplication.shared.windows.first(where: \.canBecomeMain) : nil
+        guard let window = mainWindow ?? hiddenWindow else {
+            if attemptsLeft > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + windowAttemptInterval) {
+                    sizeWindow(attemptsLeft: attemptsLeft - 1)
+                }
+            }
+            return
+        }
         NSApplication.shared.hideOtherApplications(nil)
         window.setContentSize(windowSize)
-        window.center()
+        if let screen = NSScreen.screens.first(where: { $0.backingScaleFactor >= 2 }) ?? NSScreen.screens.first {
+            let visible = screen.visibleFrame
+            let size = window.frame.size
+            // Why: AppKit moves a window whose title bar is under the menu bar, and screencapture -l photographs only
+            // the part on screen, so on a screen smaller than the window both would cut the capture
+            let top = min(visible.midY + size.height / 2, visible.maxY)
+            let left = max(visible.midX - size.width / 2, visible.minX)
+            window.setFrameOrigin(NSPoint(x: left, y: top - size.height))
+        } else {
+            window.center()
+        }
         window.makeKeyAndOrderFront(nil)
         print("\(windowNumberLine) \(window.windowNumber)")
         fflush(stdout)
     }
+
+    /// How often, and how many times, a launch with no window yet looks for it again: 30 seconds in all, as long as
+    /// capture-mac.sh's WINDOW_TIMEOUT.
+    private static let windowAttemptInterval: TimeInterval = 0.2
+    /// Not private: a default argument may only read what the function's own callers can.
+    static let windowAttempts = 150
 
     /// What capture-mac.sh looks for in the app's output, followed by the window's number.
     private static let windowNumberLine = "store-screenshots-window"
