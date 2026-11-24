@@ -60,8 +60,9 @@ each platform.
       `res/values-ta/strings.xml` (no case ending glued to a placeholder), in Norwegian in `res/values-nb/strings.xml`, in Telugu in `res/values-te/strings.xml`
       (no case ending glued to a placeholder), in Bulgarian in `res/values-bg/strings.xml` (one and other, no suffix or article glued to a placeholder), in
       Marathi in `res/values-mr/strings.xml` (no case ending glued to a placeholder), in Swahili in `res/values-sw/strings.xml`, in Catalan in `res/values-ca/strings.xml` (the typographic ’, no apostrophe contraction before a placeholder),
-      in Danish in `res/values-da/strings.xml`, in Finnish in `res/values-fi/strings.xml` (no case ending glued to a placeholder),
-      in Latvian in `res/values-lv/strings.xml` (zero, one and other, no case ending glued to a placeholder) and in Gujarati in
+      in Danish in `res/values-da/strings.xml`, in Finnish in `res/values-fi/strings.xml` (no case ending glued to a placeholder)
+      and in Latvian in `res/values-lv/strings.xml` (zero, one and other, no case ending glued to a placeholder),
+      in Estonian in `res/values-et/strings.xml` (no case ending glued to a placeholder) and in Gujarati in
       `res/values-gu/strings.xml` (no case ending glued to a placeholder)
 - [ ] A new English string with a word Britain or Canada writes differently ("color", "gray", "center", "math",
   "recognized", "toward") also in `values-b+en+001` and `values-en-rCA`, Apple's `en-GB`, `en-AU` and `en-CA`, and

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Arveldamise meeldetuletus</string>
+    <string name="push_bill_created">%1$s on lisanud kulu „%2$s“, milles sa osaled</string>
+    <string name="push_bill_edited">%1$s on muutnud kulu „%2$s“</string>
+    <string name="push_bill_deleted">%1$s on kustutanud kulu „%2$s“</string>
+    <string name="push_comment_added">%1$s on kommenteerinud kulu „%2$s“: %3$s</string>
+    <string name="push_payment_paid_you">%1$s on märkinud, et maksis sulle</string>
+    <string name="push_payment_to_you">%1$s on märkinud, et %2$s maksis sulle</string>
+    <string name="push_payment_received_yours">%1$s on märkinud sinu makse kättesaaduks</string>
+    <string name="push_payment_from_you">%1$s on märkinud, et sa maksid liikmele %2$s</string>
+    <string name="push_payment_undone">%1$s on tühistanud makse sinuga</string>
+    <string name="push_charge_sent">%1$s on saatnud sulle meeldetuletuse arveldada</string>
+    <string name="push_settle_reminder">Sul on grupis %1$s avatud saldo</string>
+    <string name="push_settle_reminders">Sul on avatud saldo %1$s grupis</string>
+    <string name="push_added_to_group">%1$s on lisanud sind gruppi</string>
+    <string name="push_member_joined">%1$s on liitunud grupiga</string>
+    <string name="push_debts_simplified_to_you">%1$s on lihtsustanud võlgu. Nüüd maksab %2$s sulle %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s on lihtsustanud võlgu. Nüüd maksad sa liikmele %2$s %3$s.</string>
+    <string name="push_debts_simplified_other">%1$s on lihtsustanud võlgu. Vaata, mida see sinu jaoks tähendab.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s on välja lülitanud valiku „Lihtsusta võlgu“. Nüüd maksab %2$s sulle %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s on välja lülitanud valiku „Lihtsusta võlgu“. Nüüd maksad sa liikmele %2$s %3$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s on välja lülitanud valiku „Lihtsusta võlgu“. Vaata, mida see sinu jaoks tähendab.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">Kulud</string>
+    <string name="notification_settings_bills_detail">Uued, muudetud või kustutatud kulud, milles sa osaled</string>
+    <string name="notification_settings_payments">Maksed ja arveldused</string>
+    <string name="notification_settings_payments_detail">Maksed sulle või sinult ja lihtsustatud võlad</string>
+    <string name="notification_settings_comments">Kommentaarid</string>
+    <string name="notification_settings_comments_detail">Kuludes, milles sa osaled, ja aruteludes, kuhu sa kirjutasid</string>
+    <string name="notification_settings_people_and_groups">Inimesed ja grupid</string>
+    <string name="notification_settings_people_and_groups_detail">Kes sinu gruppidega liitub või neist lahkub ja mis neis muutub</string>
+    <string name="notification_settings_payment_requests">Maksetaotlused</string>
+    <string name="notification_settings_payment_requests_detail">Kui keegi palub sul maksta</string>
+    <string name="notification_settings_balance_reminder">Avatud saldo meeldetuletus</string>
+    <string name="notification_settings_balance_reminder_detail">Kord nädalas, kui on avatud saldo</string>
+</resources>

@@ -1,0 +1,59 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Estonian: pick \"Eesti\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala estoniano: escolha \"Eesti\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora estónio: escolhe \"Eesti\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla estonio: elige \"Eesti\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais estonien : choisis « Eesti » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Estnisch: Wähle „Eesti“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla estone: scegli \"Eesti\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po estońsku: wybierz „Eesti” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Estisch: kies \"Eesti\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがエストニア語に対応しました。プロフィール › 言語で「Eesti」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Estonca konuşuyor: Profil › Dil'de \"Eesti\" seçeneğini seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Estonia: pilih \"Eesti\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на эстонском: выбери «Eesti» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить естонською: обери «Eesti» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 에스토니아어를 쓸 수 있어요. 프로필 › 언어에서 ‘Eesti’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप एस्टोनियाई में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Eesti” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث الإستونية: يمكنك اختيار «Eesti» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持爱沙尼亚语：在“个人资料 › 语言”中选择“Eesti”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו אסטונית: אפשר לבחור \"Eesti\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาเอสโตเนียแล้ว เลือก “Eesti” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Estonia: chọn “Eesti” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援愛沙尼亞文：在「個人資料 › 語言」中選擇「Eesti」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu estniska: välj ”Eesti” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví estonsky: vyber „Eesti“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum estonă: alege „Eesti” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন এস্তোনীয় ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “Eesti” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Estonia: pilih \"Eesti\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον εσθονικά: διάλεξε «Eesti» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori estonski: odaberi „Eesti“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól észtül is beszél: válaszd az „Eesti” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ اسٹونین میں بھی دستیاب ہے: پروفائل › زبان میں “Eesti” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Estonian ang app: piliin ang \"Eesti\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori estonski: izaberi „Eesti“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "sk": "Aplikácia teraz hovorí po estónsky: vyber „Eesti“ v Profil › Jazyk, alebo nechaj jazyk zariadenia.",
+        "fa": "برنامه حالا استونیایی صحبت می‌کند: «Eesti» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند.",
+        "ta": "ஆப் இப்போது எஸ்டோனிய மொழியில் கிடைக்கிறது: சுயவிவரம் › மொழி என்பதில் \"Eesti\" என்பதைத் தேர்ந்தெடுங்கள், அல்லது உங்கள் சாதனத்தின் மொழியைப் பின்பற்ற விடுங்கள்.",
+        "nb": "Appen snakker nå estisk: velg «Eesti» i Profil › Språk, eller la den følge enheten din.",
+        "te": "యాప్ ఇప్పుడు ఎస్టోనియన్‌లో అందుబాటులో ఉంది: ప్రొఫైల్ › భాషలో \"Eesti\" ఎంచుకోండి, లేదా మీ పరికరం భాషను అనుసరించనివ్వండి.",
+        "bg": "Приложението вече говори естонски: избери „Eesti“ в Профил › Език или остави езика на устройството.",
+        "mr": "ॲप आता एस्टोनियनमध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"Eesti\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
+        "sw": "Programu sasa inazungumza Kiestonia: chagua \"Eesti\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
+        "ca": "L’app ara parla estonià: tria «Eesti» a Perfil › Idioma, o deixa que segueixi el teu dispositiu.",
+        "da": "Appen taler nu estisk: vælg »Eesti« i Profil › Sprog, eller lad den følge din enhed.",
+        "fi": "Sovellus puhuu nyt viroa: valitse ”Eesti” kohdassa Profiili › Kieli tai anna sen seurata laitteesi kieltä.",
+        "lv": "Lietotne tagad runā igauniski: izvēlies „Eesti” sadaļā Profils › Valoda vai ļauj tai sekot tavas ierīces valodai.",
+        "et": "Rakendus räägib nüüd eesti keelt: vali „Eesti“ jaotises Profiil › Keel või lase sel järgida su seadet.",
+        "gu": "ઍપ હવે એસ્ટોનિયનમાં ઉપલબ્ધ છે: પ્રોફાઇલ › ભાષામાં “Eesti” પસંદ કરો, અથવા તેને તમારા ડિવાઇસની ભાષા મુજબ રહેવા દો."
+      }
+    }
+  ]
+}

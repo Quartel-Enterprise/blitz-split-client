@@ -873,6 +873,7 @@ export const mr: Record<MessageKey, string> = {
   profile_languageDanish: 'डॅनिश',
   profile_languageFinnish: 'फिनिश',
   profile_languageLatvian: 'लाटव्हियन',
+  profile_languageEstonian: 'एस्टोनियन',
   profile_languageGujarati: 'गुजराती',
   profile_bitcoinInSats: 'सातोशीमध्ये Bitcoin',
   profile_bitcoinInSatsDetail: 'बिटकॉइनच्या रकमा sats मध्ये दाखवते आणि लिहिते (1 ₿ = 100,000,000 sats).',

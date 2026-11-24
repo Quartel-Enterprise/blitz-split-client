@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Termineid pole</string>
+    <string name="category_map_title">Kategooriate kaart</string>
+    <string name="category_map_search">Otsi termineid</string>
+    <string name="category_map_add">Lisa termin</string>
+    <string name="category_map_more">Rohkem valikuid</string>
+    <string name="category_map_restore">Taasta vaikimisi</string>
+    <string name="category_map_back">Tagasi</string>
+    <string name="category_map_intro">Kui kulu pealkirjas on mõni neist sõnadest, tuleb kategooria iseenesest. „Uber koju“ saab kategooria Transport.</string>
+    <string name="category_map_intro_offline">Kaart töötab ka ilma internetita: muudatused kehtivad selles seadmes kohe ja jõuavad su teistesse seadmetesse, kui oled taas võrgus.</string>
+    <string name="category_map_device_only">Sinu kaart jääb ainult sellesse seadmesse. Et viia see oma teistesse seadmetesse, logi oma profiilis sisse Google’i või Apple’iga.</string>
+    <string name="category_map_open_profile">Ava profiil</string>
+    <string name="category_map_longest_wins">Kui pealkirjaga sobib kaks terminit, võidab pikem.</string>
+    <string name="category_map_no_result">Termineid sõnaga „%1$s“ pole</string>
+    <string name="category_map_no_result_body">Lisa see ja kulud, mille pealkirjas on see sõna, saavad õige kategooria.</string>
+    <string name="category_map_add_query">Lisa „%1$s“</string>
+    <string name="category_map_empty_title">Sinu kaart on tühi</string>
+    <string name="category_map_empty_body">Ilma terminiteta ei tule kategooria pealkirjast: valid selle igal kulul ise.</string>
+    <string name="category_map_group_category"> · kategooria grupis %1$s</string>
+    <string name="category_map_only_main">Ainult %1$s</string>
+    <string name="category_map_only_in_group">ainult grupis %1$s</string>
+    <string name="category_map_no_terms_yet">Termineid veel pole.</string>
+    <string name="category_map_add_in">Lisa termin kategooriasse %1$s</string>
+    <string name="category_map_tip">Puuduta terminit, et muuta selle kategooriat või see eemaldada. See sobib tervele sõnale, eirates täpitähti ja suurtähti.</string>
+    <string name="category_map_queued">järjekorras</string>
+    <string name="category_map_term_action">%1$s, %2$s. Muuda</string>
+    <string name="category_map_new_term">Uus termin</string>
+    <string name="category_map_edit_term">Muuda terminit</string>
+    <string name="category_map_term_label">Sõna või fraas</string>
+    <string name="category_map_term_help">Sobib tervele sõnale, eirates täpitähti ja suurtähti.</string>
+    <string name="category_map_term_help_app">Rakenduse termin. Taasta vaikimisi toob selle tagasi algsel kujul.</string>
+    <string name="category_map_term_duplicate">„%1$s“ valib juba kategooria %2$s. Igal terminil on üks kategooria.</string>
+    <string name="category_map_term_too_short">Kasuta vähemalt 2 tähte.</string>
+    <string name="category_map_term_too_long">Kasuta kõige rohkem 30 tähte.</string>
+    <string name="category_map_term_invalid">Kasuta ainult tähti, numbreid ja tühikuid.</string>
+    <string name="category_map_category">Kategooria</string>
+    <string name="category_map_category_help">See võib olla kategooria või alamkategooria.</string>
+    <string name="category_map_category_help_edit">Siin muutmine viib termini teise kategooriasse.</string>
+    <string name="category_map_category_help_move">Teisaldamine viib termini kategooriast %1$s välja.</string>
+    <string name="category_map_example">Näide</string>
+    <string name="category_map_example_move">Teisaldamisel</string>
+    <string name="category_map_remove">Eemalda</string>
+    <string name="category_map_cancel">Tühista</string>
+    <string name="category_map_save">Salvesta</string>
+    <string name="category_map_move_to">Teisalda kategooriasse %1$s</string>
+    <string name="category_map_removed">„%1$s“ eemaldati kaardilt</string>
+    <string name="category_map_undo">Võta tagasi</string>
+    <string name="category_map_restore_title">Kas taastada vaikimisi kaart?</string>
+    <string name="category_map_restore_body">Rakenduse 60 terminit tulevad tagasi algsel kujul, ka need, mille eemaldasid või teisaldasid.</string>
+    <string name="category_map_restore_own_one">Sinu loodud termin „%1$s“ jääb alles.</string>
+    <string name="category_map_restore_confirm">Taasta</string>
+    <string name="category_map_save_error">Kaarti ei õnnestunud salvestada. Proovi uuesti.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d termin</item>
+        <item quantity="other">%d terminit</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d alamkategooria</item>
+        <item quantity="other">%d alamkategooriat</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d termin sõnaga „%2$s“</item>
+        <item quantity="other">%1$d terminit sõnaga „%2$s“</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Võrguühenduseta · %d muudatus ootel</item>
+        <item quantity="other">Võrguühenduseta · %d muudatust ootel</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">Sinu loodud %d termin jääb alles.</item>
+        <item quantity="other">Sinu loodud %d terminit jäävad alles.</item>
+    </plurals>
+    <string name="category_map_new_category">Uus kategooria</string>
+    <string name="category_map_new_subcategory_in">Uus alamkategooria kategoorias %s</string>
+    <string name="category_map_edit_category">Muuda: %s</string>
+    <string name="category_map_category_group">Grupp</string>
+    <string name="category_map_change_color">Muuda kategooria %1$s värvi</string>
+    <string name="category_map_restore_color">Taasta värv</string>
+    <string name="category_map_color_done">Valmis</string>
+</resources>

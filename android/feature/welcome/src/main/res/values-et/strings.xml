@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Jaga arvet ilma vaevata</string>
+    <string name="welcome_offline_title">Töötab ilma internetita</string>
+    <string name="welcome_offline_body">Kõik jääb sinu seadmesse ja sünkroonitakse hiljem.</string>
+    <string name="welcome_optional_title">Konto pole kohustuslik</string>
+    <string name="welcome_optional_body">Google või Apple on vaid selleks, et sa seadet vahetades midagi ei kaotaks.</string>
+    <string name="welcome_invite_title">Kutsu lingi või QR-koodiga</string>
+    <string name="welcome_invite_body">Sõbrad liituvad grupiga ilma kontot loomata.</string>
+    <string name="welcome_no_connection_title">Ühendus puudub.</string>
+    <string name="welcome_no_connection_body">Kontoga sisselogimiseks on vaja internetti. Kasuta praegu ilma kontota ja ühenda hiljem profiilis.</string>
+    <string name="welcome_or">või</string>
+    <string name="welcome_use_without_account">Kasuta ilma kontota</string>
+    <string name="welcome_used_on_another_device">Olen seda kasutanud teises seadmes</string>
+    <string name="welcome_sign_in_failed">Praegu ei saanud sisse logida. Proovi uuesti.</string>
+    <string name="welcome_legal_notice">Jätkates nõustud dokumendiga %1$s ja kinnitad, et oled tutvunud dokumendiga %2$s.</string>
+    <string name="welcome_legal_terms">Kasutustingimused</string>
+    <string name="welcome_legal_privacy">Privaatsuspoliitika</string>
+    <string name="welcome_no_account_note">Ilma kontota kustutatakse sinu andmed pärast 30 päeva kasutamata jätmist. Nende säilitamiseks ühenda Google või Apple.</string>
+    <string name="welcome_no_account_note_offline">Ilma kontota kustutatakse sinu andmed pärast 30 päeva kasutamata jätmist. Nende säilitamiseks ühenda hiljem profiilis Google või Apple.</string>
+    <string name="welcome_expired_title">Sinu andmed kustutati</string>
+    <string name="welcome_expired_body">Sa kasutasid rakendust ilma kontota ega avanud seda 30 päeva, seega sinu andmed kustutati. Järgmisel korral nende säilitamiseks ühenda Google või Apple.</string>
+    <string name="welcome_expired_ok">OK</string>
+</resources>

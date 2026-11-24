@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Uus makseviis</string>
+    <string name="paying_method_edit_title">Muuda makseviisi</string>
+    <string name="paying_method_type">Tüüp</string>
+    <string name="paying_method_name">Nimi</string>
+    <string name="paying_method_name_optional">Nimi (valikuline)</string>
+    <string name="paying_method_color">Värv</string>
+    <string name="paying_method_default">Vaikimisi makseviis</string>
+    <string name="paying_method_default_hint">Uued kulud, mille sina maksad, algavad sellega.</string>
+    <string name="paying_method_delete">Kustuta makseviis</string>
+    <string name="paying_method_delete_title">Kas kustutada see makseviis?</string>
+    <string name="paying_method_delete_body">Kuludel, mille sellega märkisid, seda enam ei näidata.</string>
+    <string name="paying_method_delete_confirm">Kustuta</string>
+    <string name="paying_method_save">Salvesta</string>
+</resources>
