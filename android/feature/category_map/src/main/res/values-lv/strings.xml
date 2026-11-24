@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Nav atslēgvārdu</string>
+    <string name="category_map_title">Kategoriju karte</string>
+    <string name="category_map_search">Meklēt atslēgvārdus</string>
+    <string name="category_map_add">Pievienot atslēgvārdu</string>
+    <string name="category_map_more">Citas opcijas</string>
+    <string name="category_map_restore">Atjaunot noklusējumu</string>
+    <string name="category_map_back">Atpakaļ</string>
+    <string name="category_map_intro">Ja rēķina nosaukumā ir kāds no šiem vārdiem, kategorija tiek izvēlēta automātiski. „Uber uz mājām” kļūst par Transportu.</string>
+    <string name="category_map_intro_offline">Karte darbojas bezsaistē: izmaiņas šajā ierīcē stājas spēkā uzreiz un nonāk citās tavās ierīcēs, kad būsi atkal tiešsaistē.</string>
+    <string name="category_map_device_only">Tava karte paliek tikai šajā ierīcē. Lai to lietotu citās ierīcēs, pieraksties ar Google vai Apple savā profilā.</string>
+    <string name="category_map_open_profile">Atvērt profilu</string>
+    <string name="category_map_longest_wins">Ja nosaukumam atbilst divi atslēgvārdi, uzvar garākais.</string>
+    <string name="category_map_no_result">Nav atslēgvārda ar „%1$s”</string>
+    <string name="category_map_no_result_body">Pievieno to, un rēķini ar šo vārdu nosaukumā saņems pareizo kategoriju.</string>
+    <string name="category_map_add_query">Pievienot „%1$s”</string>
+    <string name="category_map_empty_title">Tava karte ir tukša</string>
+    <string name="category_map_empty_body">Bez atslēgvārdiem kategorija netiek noteikta pēc nosaukuma: tu to izvēlies katram rēķinam.</string>
+    <string name="category_map_group_category"> · grupas %1$s kategorija</string>
+    <string name="category_map_only_main">Tikai %1$s</string>
+    <string name="category_map_only_in_group">tikai grupā %1$s</string>
+    <string name="category_map_no_terms_yet">Vēl nav atslēgvārdu.</string>
+    <string name="category_map_add_in">Pievienot atslēgvārdu kategorijā %1$s</string>
+    <string name="category_map_tip">Pieskaries atslēgvārdam, lai mainītu tā kategoriju vai to noņemtu. Tiek salīdzināts viss vārds, neņemot vērā diakritiskās zīmes un reģistru.</string>
+    <string name="category_map_queued">rindā</string>
+    <string name="category_map_term_action">%1$s, %2$s. Rediģēt</string>
+    <string name="category_map_new_term">Jauns atslēgvārds</string>
+    <string name="category_map_edit_term">Rediģēt atslēgvārdu</string>
+    <string name="category_map_term_label">Vārds vai frāze</string>
+    <string name="category_map_term_help">Tiek salīdzināts viss vārds, neņemot vērā diakritiskās zīmes un reģistru.</string>
+    <string name="category_map_term_help_app">Lietotnes atslēgvārds. „Atjaunot noklusējumu” to atgriezīs sākotnējā veidā.</string>
+    <string name="category_map_term_duplicate">„%1$s” jau izvēlas %2$s. Katram atslēgvārdam ir viena kategorija.</string>
+    <string name="category_map_term_too_short">Izmanto vismaz 2 burtus.</string>
+    <string name="category_map_term_too_long">Izmanto ne vairāk kā 30 burtus.</string>
+    <string name="category_map_term_invalid">Izmanto tikai burtus, ciparus un atstarpes.</string>
+    <string name="category_map_category">Kategorija</string>
+    <string name="category_map_category_help">Tā var būt kategorija vai apakškategorija.</string>
+    <string name="category_map_category_help_edit">Mainot to šeit, atslēgvārds tiek pārvietots uz citu kategoriju.</string>
+    <string name="category_map_category_help_move">Pārvietojot atslēgvārds tiek izņemts no kategorijas %1$s.</string>
+    <string name="category_map_example">Piemērs</string>
+    <string name="category_map_example_move">Ja pārvietosi</string>
+    <string name="category_map_remove">Noņemt</string>
+    <string name="category_map_cancel">Atcelt</string>
+    <string name="category_map_save">Saglabāt</string>
+    <string name="category_map_move_to">Pārvietot uz %1$s</string>
+    <string name="category_map_removed">„%1$s” izņemts no kartes</string>
+    <string name="category_map_undo">Atsaukt</string>
+    <string name="category_map_restore_title">Atjaunot noklusējuma karti?</string>
+    <string name="category_map_restore_body">Lietotnes 60 atslēgvārdi atgriezīsies sākotnējā veidā, arī tie, kurus tu noņēmi vai pārvietoji.</string>
+    <string name="category_map_restore_own_one">Tevis izveidotais atslēgvārds „%1$s” paliek.</string>
+    <string name="category_map_restore_confirm">Atjaunot</string>
+    <string name="category_map_save_error">Neizdevās saglabāt karti. Mēģini vēlreiz.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="zero">%d atslēgvārdi</item>
+        <item quantity="one">%d atslēgvārds</item>
+        <item quantity="other">%d atslēgvārdi</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="zero">%d apakškategorijas</item>
+        <item quantity="one">%d apakškategorija</item>
+        <item quantity="other">%d apakškategorijas</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="zero">%1$d atslēgvārdi ar „%2$s”</item>
+        <item quantity="one">%1$d atslēgvārds ar „%2$s”</item>
+        <item quantity="other">%1$d atslēgvārdi ar „%2$s”</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="zero">Bezsaistē · %d izmaiņas rindā</item>
+        <item quantity="one">Bezsaistē · %d izmaiņa rindā</item>
+        <item quantity="other">Bezsaistē · %d izmaiņas rindā</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="zero">Paliek %d tevis izveidotie atslēgvārdi.</item>
+        <item quantity="one">Paliek %d tevis izveidotais atslēgvārds.</item>
+        <item quantity="other">Paliek %d tevis izveidotie atslēgvārdi.</item>
+    </plurals>
+    <string name="category_map_new_category">Jauna kategorija</string>
+    <string name="category_map_new_subcategory_in">Jauna apakškategorija kategorijā %s</string>
+    <string name="category_map_edit_category">Rediģēt: %s</string>
+    <string name="category_map_category_group">Grupa</string>
+    <string name="category_map_change_color">Mainīt krāsu: %1$s</string>
+    <string name="category_map_restore_color">Atjaunot krāsu</string>
+    <string name="category_map_color_done">Gatavs</string>
+</resources>

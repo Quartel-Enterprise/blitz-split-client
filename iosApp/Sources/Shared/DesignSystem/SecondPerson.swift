@@ -29,6 +29,10 @@ import SwiftUI
 /// Hindi with its respectful agent "यांनी", which the user's "तुम्ही" doesn't take, so its verb phrases all start with
 /// "यांनी", which the user's drops ("Ana यांनी खर्च वाटला", "तुम्ही खर्च वाटला").
 ///
+/// Latvian starts each verb phrase with a simple past, which says the person but not the gender: its third person in
+/// "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji"; "Ana
+/// pievienojās", "Tu pievienojies").
+///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
 enum SecondPerson {
@@ -96,8 +100,9 @@ enum SecondPerson {
     /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Greek: the aorist takes an "ς", so "μοίρασε" → "μοίρασες".
     /// Hungarian: the past the phrase starts with takes a "d" in "-ta"/"-te" ("létrehozta" → "létrehoztad"), or its
     /// listed second person ("felosztott" → "felosztottál"). Swahili: the third person's "a" of the perfect or past the
-/// phrase starts with turns into "u", so "amegawanya" → "umegawanya", "alifuta" → "ulifuta". Another language keeps
-/// the verb as it is.
+    /// phrase starts with turns into "u", so "amegawanya" → "umegawanya", "alifuta" → "ulifuta". Latvian: the past the
+    /// phrase starts with ends in "-i" for "-a" and "-ies" for "-ās", so "sadalīja" → "sadalīji", "pievienojās" →
+    /// "pievienojies". Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
@@ -118,17 +123,18 @@ enum SecondPerson {
             guard let past = verb.range(of: #"^((το|τη|την|τον|τα|τους|τις) )?\S*ε(?=[\s,:]|$)"#, options: .regularExpression)
             else { return verb }
             return verb.replacingCharacters(in: past, with: verb[past] + "ς")
-        case "hu":
-            // Why: the past may be followed by a comma or a colon ("csatolta ma, 21:10").
-            guard let past = verb.range(of: #"^[^\s,:]+"#, options: .regularExpression) else { return verb }
-            let word = String(verb[past])
-            if let known = hungarianIndefinitePast[word] { return verb.replacingCharacters(in: past, with: known) }
-            guard word.hasSuffix("ta") || word.hasSuffix("te") else { return verb }
-            return verb.replacingCharacters(in: past, with: word + "d")
+        case "hu": return replacingFirstPast(of: verb) { word in
+                if let known = hungarianIndefinitePast[word] { return known }
+                return word.hasSuffix("ta") || word.hasSuffix("te") ? word + "d" : nil
+            }
         case "sw":
             // Why: "amegawanya" → "umegawanya", "alilipa" → "ulilipa": only the subject prefix changes.
             guard verb.range(of: #"^a(?=(me|li)\S)"#, options: .regularExpression) != nil else { return verb }
             return "u" + verb.dropFirst()
+        case "lv": return replacingFirstPast(of: verb) { word in
+                if word.hasSuffix("ās") { return String(word.dropLast(2)) + "ies" }
+                return word.hasSuffix("a") ? String(word.dropLast()) + "i" : nil
+            }
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }
@@ -148,6 +154,14 @@ enum SecondPerson {
     }
 
     /// The verb phrase with its first word replaced, or as it is when `replacement` has none for that word.
+    /// The verb phrase with its first word, up to a space, a comma or a colon ("csatolta ma, 21:10", "izdzēsa: …"),
+    /// replaced, or as it is when `replacement` has none for that word. Hungarian's and Latvian's pasts.
+    private static func replacingFirstPast(of verb: String, with replacement: (String) -> String?) -> String {
+        guard let past = verb.range(of: #"^[^\s,:]+"#, options: .regularExpression),
+              let replaced = replacement(String(verb[past])) else { return verb }
+        return verb.replacingCharacters(in: past, with: replaced)
+    }
+
     private static func replacingFirstWord(of verb: String, with replacement: (String) -> String?) -> String {
         var words = verb.split(separator: " ", omittingEmptySubsequences: false).map(String.init)
         guard let first = words.first, let replaced = replacement(first) else { return verb }

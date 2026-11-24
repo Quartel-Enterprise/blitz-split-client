@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="global_balances_title">Bilances</string>
+    <string name="global_balances_profile">Profils</string>
+    <string name="global_balances_offline">Bezsaistē · šīs ierīces bilances</string>
+    <string name="global_balances_filter">Rādīt</string>
+    <string name="global_balances_filter_all">Visi</string>
+    <string name="global_balances_filter_you_owe">Tu esi parādā</string>
+    <string name="global_balances_filter_owes_you">Parādā tev</string>
+    <string name="global_balances_hint">Jau savstarpēji ieskaitīts starp grupām: katra persona parādās vienreiz.</string>
+    <string name="global_balances_hint_empty">Saskaita visas grupas šajā ierīcē.</string>
+    <string name="global_balances_section_you_owe">Tu esi parādā · %d</string>
+    <string name="global_balances_section_owes_you">Parādā tev · %d</string>
+    <plurals name="global_balances_groups">
+        <item quantity="zero">%d grupas</item>
+        <item quantity="one">%d grupa</item>
+        <item quantity="other">%d grupas</item>
+    </plurals>
+    <string name="global_balances_guest">%s · viesis</string>
+    <string name="global_balances_you_owe">tu esi parādā</string>
+    <string name="global_balances_owes_you">ir parādā tev</string>
+    <string name="global_balances_by_group_show">Rādīt pa grupām: %s</string>
+    <string name="global_balances_by_group_hide">Paslēpt pa grupām: %s</string>
+    <string name="global_balances_received">Saņemts</string>
+    <string name="global_balances_received_from">Saņemts no dalībnieka %s</string>
+    <string name="global_balances_settle">Norēķināties</string>
+    <string name="global_balances_settle_with">Norēķināties ar dalībnieku %s</string>
+    <string name="global_balances_charge">Pieprasīt</string>
+    <string name="global_balances_charge_person">Pieprasīt no dalībnieka %s</string>
+    <string name="global_balances_detail_pane">Bilance ar dalībnieku %s</string>
+    <string name="global_balances_detail_owes_you">%s ir parādā tev</string>
+    <string name="global_balances_detail_you_owe">Tu esi parādā dalībniekam %s</string>
+    <string name="global_balances_detail_guest">%s · viesis bez lietotnes</string>
+    <string name="global_balances_detail_note_owed">Neto summa jau savstarpēji ieskaita grupas: Pieprasīt un Saņemts izmanto %s. Lietotne reģistrē maksājumu katrā grupā.</string>
+    <string name="global_balances_detail_note_settle">Neto summa jau savstarpēji ieskaita grupas: Norēķināties izmanto %s. Lietotne reģistrē maksājumu katrā grupā.</string>
+    <string name="global_balances_detail_note_single">Ar dalībnieku %s neslēgta ir tikai viena grupa.</string>
+    <string name="global_balances_settled_title">Viss nokārtots</string>
+    <string name="global_balances_settled_body">Neviens nav parādā tev, un tu neesi parādā nevienam. Kad kāds pievienos rēķinu, bilance parādīsies šeit.</string>
+    <string name="global_balances_settled_action">Skatīt grupas</string>
+    <string name="global_balances_nothing_to_pay_title">Tu neesi parādā neko</string>
+    <plurals name="global_balances_nothing_to_pay_body">
+        <item quantity="zero">Tavi norēķini ar visiem ir nokārtoti. Tev vēl jāatgūst %2$s no %1$d cilvēkiem.</item>
+        <item quantity="one">Tavi norēķini ar visiem ir nokārtoti. Tev vēl jāatgūst %2$s no %1$d cilvēka.</item>
+        <item quantity="other">Tavi norēķini ar visiem ir nokārtoti. Tev vēl jāatgūst %2$s no %1$d cilvēkiem.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_pay_action">Skatīt, kas tev ir parādā</string>
+    <string name="global_balances_nothing_to_receive_title">Neviens tev nav parādā</string>
+    <plurals name="global_balances_nothing_to_receive_body">
+        <item quantity="zero">Tu vēl esi parādā %2$s %1$d cilvēkiem.</item>
+        <item quantity="one">Tu vēl esi parādā %2$s %1$d cilvēkam.</item>
+        <item quantity="other">Tu vēl esi parādā %2$s %1$d cilvēkiem.</item>
+    </plurals>
+    <string name="global_balances_nothing_to_receive_action">Skatīt, kam tu esi parādā</string>
+    <string name="global_balances_coming_soon">Drīzumā</string>
+    <string name="global_balances_change_error">Neizdevās saglabāt izmaiņas. Mēģini vēlreiz.</string>
+    <string name="global_balances_copied">Nokopēts</string>
+    <string name="global_balances_charge_title">Pieprasīt no dalībnieka %s</string>
+    <string name="global_balances_charge_owes">Parādā tev %1$s · %2$s</string>
+    <string name="global_balances_charge_close">Aizvērt</string>
+    <string name="global_balances_charge_guest">%s ir viesis bez lietotnes. Šī persona par to uzzinās tikai no šīs ziņas, tāpēc tajā jau ir norādīts, kas iekļauts rēķinā.</string>
+    <string name="global_balances_charge_message">Ziņa</string>
+    <string name="global_balances_charge_pix">Iekļaut manu Pix atslēgu</string>
+    <string name="global_balances_charge_pix_key">%1$s · %2$s</string>
+    <string name="global_balances_charge_copy">Kopēt ziņu</string>
+    <string name="global_balances_charge_send">Sūtīt</string>
+    <string name="global_balances_message">Čau, %1$s! Pēc Blitz Split aprēķiniem tu man esi parādā %2$s par %3$s.</string>
+    <string name="global_balances_message_guest">Čau, %1$s! Tu man esi parādā %2$s par %3$s. Tava daļa: %4$s.</string>
+    <string name="global_balances_message_guest_paid">Čau, %1$s! Tu man esi parādā %2$s par %3$s. Tava daļa: %4$s, atskaitot %5$s, ko tu jau samaksāji.</string>
+    <string name="global_balances_message_group">grupu %s</string>
+    <string name="global_balances_message_groups">grupām %s</string>
+    <string name="global_balances_message_pix">%1$s Pix: %2$s</string>
+    <string name="global_balances_key_cpf">CPF</string>
+    <string name="global_balances_key_phone">Tālrunis</string>
+    <string name="global_balances_key_email">E-pasts</string>
+    <string name="global_balances_key_random">Nejauša atslēga</string>
+    <string name="global_balances_message_reroute">Grupa %1$s vienkāršoja parādus, tāpēc tu maksā tieši man, nevis personai %2$s; tava kopsumma nemainījās.</string>
+</resources>

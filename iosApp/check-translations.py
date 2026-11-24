@@ -22,7 +22,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 # Every language the app is translated into, but English (the source) and its regional variants, es-ES and pt-PT (partial)
-REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh-Hans", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr", "hu", "ur", "fil", "sr-Latn", "sk", "fa", "ta", "nb", "te", "bg", "mr", "sw", "ca", "da", "fi")
+REQUIRED = ("pt-BR", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh-Hans", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr", "hu", "ur", "fil", "sr-Latn", "sk", "fa", "ta", "nb", "te", "bg", "mr", "sw", "ca", "da", "fi", "lv")
 # The regional ones that hold only their own words: no key needs them, but the ones they give keep the placeholders
 PARTIAL = ("es-ES", "pt-PT", "en-GB", "en-AU", "en-CA")
 # The plural categories each language needs when it varies by plural, where it needs more than one and other: a
@@ -32,6 +32,7 @@ PLURAL_CATEGORIES = {
     **{language: {"one", "few", "other"} for language in ("ro", "hr", "sr-Latn")},
     "ar": {"zero", "one", "two", "few", "many", "other"},
     "he": {"one", "two", "other"},
+    "lv": {"zero", "one", "other"},
 }
 CATALOGS = ("Localizable.xcstrings", "InfoPlist.xcstrings")
 

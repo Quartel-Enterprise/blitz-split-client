@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Uzaicinājuma saite</string>
+    <string name="members_link_pending">Vēl nav izveidota</string>
+    <string name="members_share">Kopīgot</string>
+    <string name="members_me">%s (tu)</string>
+    <string name="members_status_this_device">Šī ierīce</string>
+    <string name="members_status_joined">Pievienojās</string>
+    <string name="members_status_not_joined">Vēl nav grupā</string>
+    <string name="members_options">Iespējas: %s</string>
+    <string name="members_rename">Pārdēvēt</string>
+    <string name="members_personal_invite">Personīgs uzaicinājums: %s</string>
+    <string name="members_personal_message">Kas atver šo saiti, uzreiz pievienojas kā %s, neizvēloties no saraksta. Tā darbojas vienu reizi.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="zero">Kas atver šo saiti, uzreiz pievienojas kā %1$s, neizvēloties no saraksta, un jau redz savu daļu (%2$s) %3$d līdz šim pievienotajos rēķinos. Tā darbojas vienu reizi.</item>
+        <item quantity="one">Kas atver šo saiti, uzreiz pievienojas kā %1$s, neizvēloties no saraksta, un jau redz savu daļu (%2$s) %3$d līdz šim pievienotajā rēķinā. Tā darbojas vienu reizi.</item>
+        <item quantity="other">Kas atver šo saiti, uzreiz pievienojas kā %1$s, neizvēloties no saraksta, un jau redz savu daļu (%2$s) %3$d līdz šim pievienotajos rēķinos. Tā darbojas vienu reizi.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopēt saiti</string>
+    <string name="members_personal_copied">Nokopēts</string>
+    <string name="members_personal_share">Kopīgot ar personu %s</string>
+    <string name="members_personal_share_message">Pievienojies grupai %1$s kā %2$s lietotnē Blitz Split: %3$s</string>
+    <string name="members_remove">Noņemt no grupas</string>
+    <string name="members_remove_joined">%s jau pievienojās grupai</string>
+    <string name="members_remove_title">Noņemt personu %s no grupas?</string>
+    <string name="members_remove_message">%s vēl nav grupā. Vēlāk šo personu varēsi pievienot atkal.</string>
+    <string name="members_remove_confirm">Noņemt</string>
+    <string name="members_release">Atbrīvot vārdu</string>
+    <string name="members_release_title">Atbrīvot vārdu %s?</string>
+    <string name="members_release_message">Kas pievienojās kā %1$s, pamet grupu. Vārds %1$s, krāsa un rēķini paliek, un vārdu %1$s varēs atkal izvēlēties, izmantojot grupas saiti.</string>
+    <string name="members_release_confirm">Atbrīvot</string>
+    <string name="members_release_error">Neizdevās atbrīvot vārdu. Pārbaudi savienojumu un mēģini vēlreiz.</string>
+    <string name="members_add">Pievienot personu</string>
+    <string name="members_invite_instead">Ir lietotne? Uzaicini ar saiti</string>
+    <string name="members_name_label">Vārds</string>
+    <string name="members_save">Saglabāt</string>
+    <string name="members_cancel">Atcelt</string>
+    <string name="members_change_error">Neizdevās saglabāt izmaiņas. Mēģini vēlreiz.</string>
+    <string name="members_remove_open_balance">Personai %s ir nenokārtota bilance</string>
+    <string name="members_balance_to_get_back">%s jāsaņem</string>
+    <string name="members_balance_owes">parādā %s</string>
+    <string name="members_balance_settled">Norēķins pabeigts</string>
+</resources>
