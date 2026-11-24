@@ -1991,7 +1991,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kiekvieną %@ %@"
+            "value" : "Kas savaitę: %@, %@"
           }
         },
         "mr" : {
@@ -47156,7 +47156,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ ištrynė %@"
+            "value" : "%@ ištrynė išlaidą %@"
           }
         },
         "mr" : {
@@ -47945,7 +47945,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ redagavo %@"
+            "value" : "%@ redagavo išlaidą %@"
           }
         },
         "mr" : {
@@ -68915,7 +68915,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ prisijungė prie %@"
+            "value" : "%@ prisijungė prie grupės %@"
           }
         },
         "mr" : {
@@ -69441,7 +69441,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ išėjo iš %@"
+            "value" : "%@ išėjo iš grupės %@"
           }
         },
         "mr" : {
@@ -103873,7 +103873,7 @@
         "lt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ padalijo %@"
+            "value" : "%@ padalijo išlaidą %@"
           }
         },
         "mr" : {
