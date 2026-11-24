@@ -9,5 +9,5 @@ targets:
         codeSign: true
     settings:
       base:
-        # Read by the release check of "Build the Shared framework"
+        # Read by the archive's check of "Build the Shared framework"
         BLITZSPLIT_EMBEDS_WATCH: YES

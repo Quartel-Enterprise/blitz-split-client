@@ -292,7 +292,9 @@ catches an `appleMain` or `jsMain` the change broke, and the `compileTestKotlin*
 backtick test name with characters they don't allow). macOS compiles the same `appleMain` as the
 simulator and is left out, unless the branch changes a module that has a `macosMain`
 (`core/in_app_update`, `core/profile`): its actuals there implement the module's `expect` declarations, which a
-change elsewhere in the module can break. Then add `:<module>:compileKotlinMacosArm64` for it. `:androidApp:assembleDebug` compiles the Android
+change elsewhere in the module can break. Then add `:<module>:compileKotlinMacosArm64` for it. A `watchosMain` only
+the watch's targets compile, and no local Apple build links the watch's framework any more: a branch that changes
+one adds `:<module>:compileKotlinWatchosSimulatorArm64`. `:androidApp:assembleDebug` compiles the Android
 target and the Compose UI that draws the ViewModels. None of them link a test binary or run a
 suite on another platform: `commonTest` already ran on the JVM, and CI runs it on the others.
 
@@ -326,7 +328,11 @@ change reaches. The project's build phase builds the `Shared` framework with Gra
 - `iosApp/Watch` only: the watchOS scheme. The project generated here leaves the Apple Watch app out of
   the iPhone app, so the iOS scheme doesn't build it; CI's does.
 - Anything else in `iosApp/` (`Sources/Shared`, `Sources/iOS`, `project.yml`, the resources): the iOS
-  scheme. `Sources/Shared` compiles into both apps, and CI builds the macOS one and the watch app.
+  scheme. `Sources/Shared` compiles into both apps, and CI builds the macOS one.
+- A Swift file the watch app compiles too, which the `BoraRachar-watchOS` and `BalanceWidget-watchOS`
+  targets of `project.yml` list (`Sources/Common`, `Widgets/Shared`, `Sources/WidgetSnapshot`, a few
+  files of `Sources/Shared`): the watchOS scheme as well, since watchOS lacks APIs iOS has. A change
+  to the string catalogs alone leaves the watch app to CI.
 - More than one of them: each one's scheme.
 
 ```bash

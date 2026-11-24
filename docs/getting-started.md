@@ -114,8 +114,8 @@ The iPhone app ships with the Apple Watch app inside, but the project generated 
 every build of the iPhone app builds the watch app too and links a second `Shared` framework for it, about 50 seconds
 after any Kotlin change, for an app the iPhone's simulator never opens. Run the `BoraRachar-watchOS` scheme to work on
 the watch app, or generate the project with `./iosApp/generate-project.sh --watch` to have the iPhone app carry it, as
-CI's builds and every release do. A Release build of a project without it stops at its first phase, so no archive ships
-the iPhone app alone.
+CI's builds and every release do. The choice stays until `--no-watch`: with no flag, a project that had the watch app
+keeps it. An archive of a project without it stops at its first phase, so none ships the iPhone app alone.
 
 The project signs automatically with the team in `project.yml`; Sign in with Apple and the `webcredentials`
 associated domain need a team that holds those capabilities for `com.quare.blitzsplit`.

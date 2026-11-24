@@ -704,7 +704,7 @@ profiles found for 'AppStore_com.quare.blitzsplit.watchkitapp.mobileprovision'`)
 leaves the macOS profile valid. The balance widget's setup and this one were both done on 2026-11-23.
 A local build signs automatically, so Xcode registers the two ids itself on the team the first time it builds the
 watch app for a device. A project generated on a Mac leaves the watch app out of the iPhone app
-(`./iosApp/generate-project.sh --watch` embeds it), and a Release build of one stops as it starts ("Build the Shared
+(`./iosApp/generate-project.sh --watch` embeds it), and an archive of one stops as it starts ("Build the Shared
 framework"): every release is built on CI, where the watch app is always embedded.
 
 The Shared framework has no `arm64` watchOS slice yet, only `arm64_32` (docs/architecture/stack.md#watchos), and the

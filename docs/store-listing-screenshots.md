@@ -48,8 +48,9 @@ Store's as they are: [Sending Google Play's alone](#sending-google-plays-alone).
 
 Each step of the lane runs under `scripts/heavy-check.sh`. The queue is first come, first served, so a session's check
 that arrived meanwhile runs before the lane's next step, and `capture-ios.sh` lets the ones that wait go first between
-two languages too (`heavy-check.sh --yield`): a check then waits for a language, not for a slot. The iPhone Duo's two
-slots and `capture-mac.sh` hold the queue until they end. The lane runs:
+two languages too (`heavy-check.sh --yield`): a check of another checkout then waits for a language, not for a slot.
+One of the lane's own checkout waits for the step to end, since it could delete the build folder the lane works in,
+and the iPhone Duo's two slots and `capture-mac.sh` hold the queue until they end. The lane runs:
 
 1. **Google Play:** `./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt` draws the bare screens and
    `-PcreativeAssets` what the tickets write; `compose.mjs` lays them out, `watch/draw-wear.sh` draws the Wear OS

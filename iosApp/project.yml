@@ -77,16 +77,13 @@ targetTemplates:
     preBuildScripts:
       - name: Build the Shared framework
         basedOnDependencyAnalysis: false
-        # A project generated without the watch app (watch-embed.yml) builds an iPhone app that ships alone: fine on
-        # a simulator, never for a release. Checked first, since Gradle links a release framework for minutes
+        # A project generated without the watch app (watch-embed.yml) builds an iPhone app that would ship alone:
+        # an archive of it stops here, before Gradle links a release framework for minutes. Any other build goes
+        # on, a Release one too, as Instruments' Profile runs
         script: |
-          if [ "$CONFIGURATION" = "Release" ] && [ "$BLITZSPLIT_EMBEDS_WATCH" != "YES" ]; then
-            case "$PLATFORM_NAME" in
-              iphone*)
-                echo "error: this project was generated without the Apple Watch app, which a release ships inside the iPhone app. Generate it again: ./iosApp/generate-project.sh --watch"
-                exit 1
-                ;;
-            esac
+          if [ "$ACTION" = "install" ] && [ "$PLATFORM_NAME" = "iphoneos" ] && [ "$BLITZSPLIT_EMBEDS_WATCH" != "YES" ]; then
+            echo "error: this project was generated without the Apple Watch app, which an archive ships inside the iPhone app. Generate it again: ./iosApp/generate-project.sh --watch"
+            exit 1
           fi
           if [ "YES" = "$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED" ]; then
             echo "Skipping the Gradle build: OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED is YES"

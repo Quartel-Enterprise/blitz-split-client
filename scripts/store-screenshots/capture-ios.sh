@@ -347,14 +347,15 @@ capture_slot() {
     position=$((position + 1))
     # A slot takes an hour or more, and a session's check a minute: between two languages, the checks that wait for
     # the queue this run holds go first (heavy-check.sh). Nothing to do outside the queue, as on CI. What took the
-    # turn may be another run of this script on this simulator, which shuts it down as its slot ends: it is made
-    # ready again. Not on the Duo, which that run would boot closed again, under a slot that had it open.
+    # turn may be another run of this script on this simulator, which shuts it down as its slot ends: it is then
+    # made ready again. Not on the Duo, which that run would boot closed again, under a slot that had it open.
     if [ "$position" -gt 1 ] && [ -n "$HEAVY_CHECK_HOLDER" ]; then
       case "$slot" in
         iphoneduo*) ;;
         *)
           "$ROOT/scripts/heavy-check.sh" --yield || true
-          ready_simulator "$udid"
+          # Not grep -q, which ends at the first match and fails the pipe that still writes to it.
+          if ! xcrun simctl list devices booted | grep -F "$udid" > /dev/null; then ready_simulator "$udid"; fi
           ;;
       esac
     fi
