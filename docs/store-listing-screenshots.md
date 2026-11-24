@@ -33,12 +33,12 @@ fastlane upload_screenshots platform:mac             # upload the Mac's alone
 A stable release dispatched with `screenshots` on runs the same steps in CI, in jobs of `release-production`: the
 capture on one runner per slot, the art, and the upload to each store, one job per locale on the App Store and a
 few locales per job on Google Play ([release-process.md](release-process.md#screenshots-with-a-release)). The input is off unless asked, so a
-release after a new language or a changed screen has to pass `screenshots=true`. That captures the iPhone's and the
-iPad's slots (`iphone63`, `iphone67`, `ipad13`). The iPhone Duo's two (`iphoneduo`, `iphoneduoopen`) and the Mac's
+release after a new language or a changed screen has to pass `screenshots=true`. The iPhone's and the iPad's slots
+(`iphone63`, `iphone67`, `ipad13`) are captured beside the iPhone Duo's or for the Mac's frames. The iPhone Duo's two (`iphoneduo`, `iphoneduoopen`) and the Mac's
 are captured only with `screenshots_iphone_duo=true` and `screenshots_mac=true`, off unless asked for, since all
 three failed on the runners in the first release that ran them, and only in a run that releases their platform
 ([release-process.md](release-process.md#the-devices-the-app-stores-captures-run-on)). Without the iPhone Duo's, a
-release uploads none of the iPhone's and the iPad's either, since that would empty the Duo's shelf. Run the lane by
+release captures and uploads none of the iPhone's and the iPad's either, since that would empty the Duo's shelf. Run the lane by
 hand between releases, when a release's screenshot jobs failed, and for the devices a release leaves out.
 
 **For the App Store, the runners' captures can't be trusted today**, so its screenshots are made on a Mac, looked

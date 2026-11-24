@@ -175,7 +175,7 @@ describe("the check of a set", () => {
   });
 
   test("refuses a set without the iPhone Duo even when devices may be left out", () => {
-    assert.deepEqual(REQUIRED_SHELVES, ["iphone_duo"]);
+    assert.deepEqual(Object.keys(REQUIRED_SHELVES), ["iphone_duo"]);
     const folder = stage("ios", { keep: ({ device }) => !device.startsWith("iphone_duo") });
     for (const allowMissingDevices of [false, true]) {
       const report = checkPlatform("ios", folder, { allowMissingDevices });

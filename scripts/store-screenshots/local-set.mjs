@@ -92,7 +92,7 @@ export const SHELF_LABELS = {
  * without it (24 November 2026), and its open display needs a capture of its own (capture-duo-open.py) that is easy
  * to skip, so a set without it is always refused.
  */
-export const REQUIRED_SHELVES = ["iphone_duo"];
+export const REQUIRED_SHELVES = { iphone_duo: "listing-art/capture.sh for the closed Duo, capture-duo-open.py for the open one" };
 /** The display type App Store Connect names the Apple Watch shelf by (fastlane's APP_WATCH_ULTRA, 422x514). */
 export const WATCH_SHELF_TYPE = "APP_WATCH_ULTRA";
 
@@ -262,9 +262,9 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
   for (const shelf of shelves) {
     const ofLocale = held[shelf];
     if (ofLocale.size === 0) {
-      if (REQUIRED_SHELVES.includes(shelf)) {
+      if (shelf in REQUIRED_SHELVES) {
         problems.add(
-          `No ${SHELF_LABELS[shelf]} image in the set: the upload would empty that shelf, and it can't be left out, even with --allow-missing-devices (capture it: listing-art/capture.sh and capture-duo-open.py)`,
+          `No ${SHELF_LABELS[shelf]} image in the set: the upload would empty that shelf, and it can't be left out, even with --allow-missing-devices (capture it: ${REQUIRED_SHELVES[shelf]})`,
         );
         continue;
       }

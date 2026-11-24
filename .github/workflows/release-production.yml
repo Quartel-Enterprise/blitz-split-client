@@ -842,8 +842,8 @@ jobs:
 
   # Chrome lays each capture out in the listing art's design (listing-art/compose.mjs), on a Mac runner, whose fonts
   # and Chrome the art is drawn with. The script fails without the iPhone's and the iPad's captures; the iPhone Duo's
-  # and the Mac's are drawn when they are there, so a device the run left out, like one whose capture failed, only
-  # leaves its own images out: with no Mac capture `mac_locales` is empty, and the Mac's upload and tidy-up jobs skip.
+  # and the Mac's are drawn when they are there. Without the Duo's, `ios_locales` is emptied, so the iPhone's and the
+  # iPad's aren't uploaded either; with no Mac capture `mac_locales` is empty, and the Mac's upload and tidy-up jobs skip.
   apple-screenshots-frame:
     name: App Store, frame the screenshots
     needs: [plan, apple-screenshots-capture]

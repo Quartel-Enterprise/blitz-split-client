@@ -42,8 +42,11 @@ if [ "$SCREENSHOTS" = true ]; then
     if [ "$SUBMIT" != true ]; then
       row="$row. None of the App Store's is: they only go up in a run that submits for review"
     else
-      # The one run that submits and could upload none of them: the Mac alone, without its marker.
-      row="$row. None of the App Store's is: the Mac's capture is behind \`screenshots_mac\`"
+      # A run that submits and captures nothing: neither marker is on for a platform it releases.
+      behind=()
+      if [ "$IOS" = true ]; then behind+=("the iPhone's and the iPad's go up only with the iPhone Duo's (\`screenshots_iphone_duo\`)"); fi
+      if [ "$MACOS" = true ]; then behind+=("the Mac's capture is behind \`screenshots_mac\`"); fi
+      row="$row. None of the App Store's is: $(IFS=';'; echo "${behind[*]}" | sed 's/;/, and /g')"
     fi
   fi
 elif [ "$SCREENSHOTS_IPHONE_DUO" = true ] || [ "$SCREENSHOTS_MAC" = true ]; then

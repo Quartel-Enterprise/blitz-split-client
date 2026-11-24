@@ -97,7 +97,7 @@ dispatched behind a waiting one cancels it without a word.
 | `rollout` | `100` | On the production track, the percentage of the users who get the release: under 100 is a staged rollout |
 | `submit_for_review` | on | Sends the iOS and macOS builds to App Store review. Off, they stop at TestFlight |
 | `phased_release` | off | Releases an approved update over seven days, to the people with automatic updates. Off, everyone gets it at once |
-| `screenshots` | off | Makes the store listings' screenshots again and uploads them, with a release ([Screenshots with a release](#screenshots-with-a-release)). The App Store's are captured on the iPhone and the iPad, and uploaded only with the iPhone Duo's (`screenshots_iphone_duo`) |
+| `screenshots` | off | Makes the store listings' screenshots again and uploads them, with a release ([Screenshots with a release](#screenshots-with-a-release)). The App Store's iPhone and iPad are captured and uploaded only with the iPhone Duo's (`screenshots_iphone_duo`), or captured for the Mac's frames (`screenshots_mac`) |
 | `screenshots_iphone_duo` | off | With `screenshots`, captures the iPhone Duo too, closed and open. Its captures fail on the runners today ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)). Without it, the iPhone's and the iPad's aren't uploaded, since that would empty the Duo's shelf |
 | `screenshots_mac` | off | With `screenshots`, captures the Mac too. Its capture fails on the runners today, and the Mac's listing has no screenshots yet, so the Mac can't be submitted until they are uploaded from a Mac |
 
@@ -304,8 +304,9 @@ submission goes on with the screenshots the version already has.
 
 #### The devices the App Store's captures run on
 
-With `screenshots` on, the App Store's captures run on the iPhone and the iPad. The iPhone Duo and the Mac are each
-behind a marker of their own, off unless the release asks for it (Pierre's call, November 2026: their captures
+With `screenshots` on, the App Store's captures run on the iPhone and the iPad only beside the iPhone Duo's or the
+Mac's: the iPhone's and the iPad's go up only with the Duo's, and the Mac's frames need them. The iPhone Duo and the
+Mac are each behind a marker of their own, off unless the release asks for it (Pierre's call, November 2026: their captures
 don't work on the runners yet, so a release leaves them out until they do):
 
 | Marker | Default | Slots it captures |
@@ -334,8 +335,8 @@ that started only to stop would hold one.
   uploads, so a set without the Duo's would empty its shelf in every locale, as a set sent from a Mac did on
   24 November 2026. `upload_store_screenshots` (the Fastfile) refuses an iPhone and iPad upload with no iPhone Duo
   image staged, so a release with `screenshots` and without `screenshots_iphone_duo`, or whose Duo captures failed,
-  uploads none of the iPhone and iPad version's images and leaves its shelves as they are: the frame job then lists
-  no iOS locale, with a warning, so no upload job runs. The Mac's still go up with `screenshots_mac`. Send the
+  uploads none of the iPhone and iPad version's images and leaves its shelves as they are: it doesn't capture them
+  unless the Mac's frames need them, and the frame job then lists no iOS locale, with a warning, so no upload job runs. The Mac's still go up with `screenshots_mac`. Send the
   iPhone's and the iPad's from a Mac instead ([Screenshots made on a Mac](#screenshots-made-on-a-mac)).
 - **The Apple Watch's shelf is not captured by a release**, so a release with `screenshots` leaves every locale's
   watch shelf empty, for the same reason. Its four images go up in a set sent from a Mac
