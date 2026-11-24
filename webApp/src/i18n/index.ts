@@ -105,10 +105,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta` , `nb` (or Norwegian's `no` and Nynorsk's `nn`) `te` , `bg`, `mr`, `sw`, `ca`, `da`, `fi`, `lv`, `et`, `gu`, `sl` or `ml` tag
- * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN,
- * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, ml-IN…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil , Norwegian (Bokmål, whichever of the three) Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian or Malayalam, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `he`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta`, `nb` (or Norwegian's `no` and Nynorsk's `nn`), `te`, `bg`, `mr`, `sw`, `ca`, `da`, `fi`, `lv`, `et`, `gu`, `sl` or `ml` tag
+ * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, he-IL, the legacy iw-IL, th-TH, vi-VN,
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, the legacy tl-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, ml-IN…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil, Norwegian (Bokmål, whichever of the three), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian or Malayalam, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, `en-GB`, `en-AU` and `en-CA` are their regions'
  * English, an `en` tag of a region that writes as Britain (en-NZ, en-IE, en-IN, en-DE…) British English, any other
  * `en` tag (en, en-US, en-JP…) American English, and American English when none matches.
@@ -116,9 +116,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
 export function pickLocale(languages: readonly string[]): Locale {
   for (const tag of languages) {
     const [subtag, ...rest] = tag.toLowerCase().split(/[-_]/)
-    // Why: "in" is Indonesian's legacy code and "tl" Tagalog's (Filipino), which older Android WebViews still send, and
-    // Norwegian's "no" and Nynorsk's "nn" read as Bokmål; AppLanguage.fromTag maps them too.
-    const language = subtag === 'in' ? 'id' : subtag === 'tl' ? 'fil' : subtag === 'no' || subtag === 'nn' ? 'nb' : subtag
+    // Why: "in" is Indonesian's legacy code, "iw" Hebrew's and "tl" Tagalog's (Filipino), which older Android WebViews
+    // still send, and Norwegian's "no" and Nynorsk's "nn" read as Bokmål; AppLanguage.fromTag maps them too.
+    const language =
+      subtag === 'in' ? 'id' : subtag === 'iw' ? 'he' : subtag === 'tl' ? 'fil' : subtag === 'no' || subtag === 'nn' ? 'nb' : subtag
     if (language === 'zh' && isTraditionalChinese(rest)) return 'zh-Hant'
     if (bareLocales.includes(language as Locale)) return language as Locale
     if (language === 'pt') return regionOf(rest) === 'pt' ? 'pt-PT' : 'pt'
