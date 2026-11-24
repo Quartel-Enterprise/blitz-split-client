@@ -276,9 +276,9 @@ const formattingKeys: Readonly<Record<string, Readonly<Record<string, string>>>>
 }
 
 /**
- * The tag to hand `Intl` for numbers, amounts and dates: `tag` itself, but with Latin digits (`-u-nu-latn`) for
- * Arabic, Thai, Bengali, Urdu and Persian, so an amount reads "12.50" as the amount fields type it, and the Gregorian
- * calendar (`-u-ca-gregory`) for Thai and Persian. Every other language gets `tag` unchanged.
+ * The tag to hand `Intl` for numbers, amounts and dates: `tag` itself, with the extension keys `formattingKeys` gives
+ * its language: Latin digits (`-u-nu-latn`), so an amount reads "12.50" as the amount fields type it, and the
+ * Gregorian calendar (`-u-ca-gregory`) where the language's own differs. Every other language gets `tag` unchanged.
  */
 export function formattingLocale(tag: string): string {
   const wanted = formattingKeys[tag.toLowerCase().split(/[-_]/)[0]]
@@ -449,6 +449,7 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * Telugu's respectful past "-ారు" is the same for a name and for "మీరు", so its verb stays as it is. Marathi does as
  * Hindi with its respectful agent "यांनी", the user's "तुम्ही" taking none: "यांनी खर्च वाटला" becomes "खर्च वाटला".
  * Gujarati does too with its agent "એ", the user's "તમે" taking none: "એ ખર્ચ વહેંચ્યો" becomes "ખર્ચ વહેંચ્યો".
+ * Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is.
  * Swahili's verb carries the subject's prefix: every verb phrase starts with a perfect "a-me-" or a past "a-li-", whose
  * "a" becomes the user's "u" ("amegawanya" becomes "umegawanya").
  * Latvian ones start with a simple past, which says the person but not the gender: its "-a" becomes the user's "-i",

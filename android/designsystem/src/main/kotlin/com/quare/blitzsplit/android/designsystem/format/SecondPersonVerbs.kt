@@ -210,7 +210,9 @@ private val irregularSecondPerson = mapOf(
  * third person in "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji";
  * "Ana pievienojās", "Tu pievienojies"). Gujarati does as Hindi with its agent "એ", written apart
  * after a name, which the user's "તમે" doesn't take: every Gujarati verb phrase starts with "એ", which the user's drops
- * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Same rules as the web's and the Apple app's `verbForYou`.
+ * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb
+ * stays as it is ("Ana ചെലവ് വിഭജിച്ചു", "നിങ്ങൾ ചെലവ് വിഭജിച്ചു"). Same rules as the web's and the Apple app's
+ * `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
