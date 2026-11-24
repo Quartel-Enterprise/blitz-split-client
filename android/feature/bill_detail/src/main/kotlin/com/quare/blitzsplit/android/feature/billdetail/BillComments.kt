@@ -32,16 +32,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
@@ -53,7 +49,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.quare.blitzsplit.android.designsystem.component.AvatarBadge
 import com.quare.blitzsplit.android.designsystem.component.PendingIndicator
@@ -64,9 +59,6 @@ import com.quare.blitzsplit.android.designsystem.component.rememberProfileFlight
 import com.quare.blitzsplit.android.designsystem.format.DateTimeTextFormatter
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentRow
 import com.quare.blitzsplit.feature.billdetail.presentation.model.BillCommentThread
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 // Why: a reply sits under its comment's text, past the comment's avatar (16 + 32 + 12).
 private val replyStartPadding = 60.dp
@@ -75,7 +67,6 @@ internal val commentAvatarSize = 32.dp
 private val replyAvatarSize = 28.dp
 private const val HIGHLIGHT_HOLD_MILLIS = 600
 private const val HIGHLIGHT_FADE_MILLIS = 1400
-private const val POSTED_COMMENT_DELAY_MILLIS = 300L
 
 // Why: "Sem internet. Comentários e fotos ficam na fila e saem ao reconectar." at the top of Conta.
 @Composable
@@ -159,48 +150,6 @@ internal fun PendingLine(
 }
 
 /*
- * Why: the end of "Comments", where a new comment lands (they read in the order they were written), scrolled into view
- * once one is posted, in whichever column scrolls it.
- */
-internal class PostedCommentScroller {
-    val requester = BringIntoViewRequester()
-    // Why: read only when a comment is posted, never while drawing, so it needs no snapshot state.
-    var size = IntSize.Zero
-
-    suspend fun showEnd() {
-        if (size.height == 0) return
-        requester.bringIntoView(
-            Rect(
-                left = 0f,
-                top = size.height - 1f,
-                right = size.width.toFloat(),
-                bottom = size.height.toFloat(),
-            ),
-        )
-    }
-}
-
-// Why: set by the screen that draws "Comments"; null in previews, which post nothing.
-internal val LocalPostedCommentScroller = staticCompositionLocalOf<PostedCommentScroller?> { null }
-
-/*
- * Why: the keyboard closes; a new comment is scrolled to once the keyboard is down and the comment drawn (or the scroll
- * lands short of it), while a reply stays where it was answered.
- */
-internal fun CoroutineScope.showPostedComment(
-    isReply: Boolean,
-    focusManager: FocusManager,
-    scroller: PostedCommentScroller,
-) {
-    focusManager.clearFocus()
-    if (isReply) return
-    launch {
-        delay(POSTED_COMMENT_DELAY_MILLIS)
-        scroller.showEnd()
-    }
-}
-
-/*
  * Why: "Comentários" (7.3c): each comment with its replies under it, one level deep, as one card per thread; the one
  * being answered stands out while "Respondendo a Diego" is on.
  */
@@ -213,18 +162,12 @@ internal fun BillCommentsSection(
     showsNoComments: Boolean,
     replyTargetId: String?,
     focusedCommentId: String?,
+    // Why: the comment or reply this device just posted, brought into view once drawn, with no tint.
+    postedCommentId: String?,
     dates: DateTimeTextFormatter,
     callbacks: BillCommentCallbacks,
 ) {
-    val postedCommentScroller = LocalPostedCommentScroller.current
-    Column(
-        modifier = postedCommentScroller?.let { scroller ->
-            Modifier
-                .bringIntoViewRequester(scroller.requester)
-                .onSizeChanged { scroller.size = it }
-        } ?: Modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         BillSectionTitle(
             text = stringResource(R.string.bill_detail_comments),
             trailing = commentCount?.takeIf { it > 0 }?.toString(),
@@ -280,7 +223,7 @@ internal fun BillCommentsSection(
                         row = row,
                         isReply = index > 0,
                         isReplyTarget = row.id == replyTargetId,
-                        isFocused = isFocused,
+                        bringsIntoView = isFocused || row.id == postedCommentId,
                         highlight = when {
                             isFocused -> 1f
                             row.id == highlightedId -> highlight.value
@@ -289,9 +232,13 @@ internal fun BillCommentsSection(
                         shape = groupedRowShapeOf(index, rows.size),
                         dates = dates,
                         callbacks = callbacks,
-                        onFocusShown = {
-                            highlightedId = row.id
-                            callbacks.onFocusedCommentShown()
+                        onShownInView = {
+                            if (isFocused) {
+                                highlightedId = row.id
+                                callbacks.onFocusedCommentShown()
+                            } else {
+                                callbacks.onPostedCommentShown()
+                            }
                         },
                         modifier = if (index == 0 && threadIndex > 0) Modifier.padding(top = 8.dp) else Modifier,
                     )
@@ -306,23 +253,26 @@ private fun CommentRow(
     row: BillCommentRow,
     isReply: Boolean,
     isReplyTarget: Boolean,
-    // Why: the comment a link opened Conta at, scrolled into view once laid out, in whichever column scrolls it.
-    isFocused: Boolean,
+    /*
+     * Why: the comment a link opened Conta at, or the one just posted, scrolled into view once laid out, in whichever
+     * column scrolls it.
+     */
+    bringsIntoView: Boolean,
     // Why: 1 for the comment a link opened Conta at, fading to 0.
     highlight: Float,
     shape: Shape,
     dates: DateTimeTextFormatter,
     callbacks: BillCommentCallbacks,
-    onFocusShown: () -> Unit,
+    onShownInView: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val bringIntoView = remember { BringIntoViewRequester() }
-    if (isFocused) {
-        val currentOnFocusShown by rememberUpdatedState(onFocusShown)
+    if (bringsIntoView) {
+        val currentOnShownInView by rememberUpdatedState(onShownInView)
         LaunchedEffect(bringIntoView) {
             withFrameNanos {}
             bringIntoView.bringIntoView()
-            currentOnFocusShown()
+            currentOnShownInView()
         }
     }
     val baseColor = if (isReplyTarget) {

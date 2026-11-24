@@ -108,6 +108,7 @@ class SharedBillViewModel(
                 commentToDelete = null,
                 likesCommentId = null,
                 focusedCommentId = null,
+                postedCommentId = null,
                 isChangingComment = false,
             ),
         )
@@ -127,6 +128,7 @@ class SharedBillViewModel(
     private var commentId: String? = null
 
     private val edit = CommentComposerEdit()
+    private val postedWatch = PostedCommentWatch()
 
     // Why: the comment the link was shared at is looked for once, when the bill first shows.
     private var focusCommentId: String? = route.commentId
@@ -227,6 +229,8 @@ class SharedBillViewModel(
             is SharedBillUiEvent.OnCommentShareClicked -> shareComment(event.commentId)
 
             SharedBillUiEvent.OnFocusedCommentShown -> uiState.update { it.copy(focusedCommentId = null) }
+
+            SharedBillUiEvent.OnPostedCommentShown -> uiState.update { it.copy(postedCommentId = null) }
         }
     }
 
@@ -302,6 +306,7 @@ class SharedBillViewModel(
                 }
                 if (bill.isMember) watchExpense(bill.expenseId) else stopWatchingExpense()
                 focusLinkedComment()
+                uiState.update { it.copy(postedCommentId = postedWatch.findDrawnIn(it.threads) ?: it.postedCommentId) }
                 // Why: the comment being edited was deleted meanwhile, so the edit has nothing to save.
                 val editingId = uiState.value.editingCommentId
                 if (editingId != null && uiState.value.threads
@@ -388,14 +393,9 @@ class SharedBillViewModel(
     }
 
     private fun trackSendClicked(isEdit: Boolean) {
-        trackEvent(
-            "comment_send_clicked",
-            mapOf(
-                // Why: an edit saves only its text, whatever reply was picked meanwhile.
-                "is_reply" to (!isEdit && uiState.value.replyTarget != null),
-                "is_edit" to isEdit,
-                "source" to SHARED_BILL_SOURCE,
-            ),
+        trackEvent.commentSendClicked(
+            isEdit = isEdit,
+            hasReplyTarget = uiState.value.replyTarget != null,
         )
     }
 
@@ -432,9 +432,9 @@ class SharedBillViewModel(
                             replyTarget = it.replyTarget.takeUnless { target -> target == replyTarget },
                         )
                     }
+                    postedWatch.posted(id)
+                    uiAction.emit(SharedBillUiAction.CommentPosted)
                     reload()
-                    loading?.join()
-                    uiAction.emit(SharedBillUiAction.ShowPostedComment(isReply = replyTarget != null))
                 }
 
                 // Why: the link changed meanwhile, so the page says what it shows now.

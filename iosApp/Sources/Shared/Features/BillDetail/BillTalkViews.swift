@@ -686,48 +686,24 @@ struct BillCommentFocus: ViewModifier {
     }
 }
 
-/// A comment or a reply posted (`BillPostedComment`): the keyboard goes down (`focus`, nil on the Mac, which keeps
-/// the field for the next one), and a new comment, the last one as they read in the order they were written, is
-/// scrolled to once drawn; a reply stays where it was answered, already in view.
-struct BillPostedCommentReveal: ViewModifier {
-    let posted: BillPostedComment
+/// The comment or reply this device just posted (`postedCommentId`, set once it is drawn): scrolled into view, the
+/// least needed and with no tint, then the ViewModel is told, once. Only on the scroll view that holds the comments.
+struct BillPostedCommentScroll: ViewModifier {
+    let postedCommentId: String?
     let proxy: ScrollViewProxy
-    let focus: FocusState<Bool>.Binding?
-    /// Read once the rows are laid out, so the comment posted is there to scroll to.
-    let lastRowId: () -> String?
+    var isEnabled = true
+    /// Tells the ViewModel the comment was shown, which clears it.
+    let onShown: () -> Void
 
     func body(content: Content) -> some View {
-        // Why: on a change only, never when the view appears again (back from a profile, another tab)
-        content.onChange(of: posted.count) {
-            focus?.wrappedValue = false
-            guard !posted.isReply else { return }
-            Task {
-                // Why: the keyboard goes down and the new comment lays out first, or the scroll lands short of it
-                try? await Task.sleep(for: .milliseconds(350))
-                guard let id = lastRowId() else { return }
-                withAnimation { proxy.scrollTo(id, anchor: .bottom) }
-            }
+        content.task(id: postedCommentId) {
+            guard isEnabled, let id = postedCommentId else { return }
+            // Why: the new row lays out first, or there is nothing to scroll to yet
+            try? await Task.sleep(for: .milliseconds(150))
+            guard !Task.isCancelled else { return }
+            withAnimation { proxy.scrollTo(id) }
+            onShown()
         }
-    }
-}
-
-/// The comments and replies posted from this screen, counted so each one is seen once, and whether the last was
-/// a reply.
-struct BillPostedComment: Equatable {
-    private(set) var count = 0
-    private(set) var isReply = false
-
-    mutating func post(isReply: Bool) {
-        count += 1
-        self.isReply = isReply
-    }
-}
-
-extension Array where Element == BillCommentThread {
-    /// The row drawn last: the last thread's last reply, or its comment.
-    var lastRowId: String? {
-        guard let thread = last else { return nil }
-        return thread.replies.last?.id ?? thread.comment.id
     }
 }
 

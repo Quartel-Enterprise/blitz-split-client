@@ -7,13 +7,8 @@ sealed interface BillDetailUiAction {
     // Why: the comment couldn't be kept on the device (its bill went meanwhile); what was typed stays.
     data object ShowCommentError : BillDetailUiAction
 
-    /*
-     * Why: a comment or a reply was kept, so the keyboard closes; a new comment, the last one, is scrolled to, while a
-     * reply stays where it was answered, already in view.
-     */
-    data class ShowPostedComment(
-        val isReply: Boolean,
-    ) : BillDetailUiAction
+    // Why: a comment or a reply was kept, so the keyboard closes at once; postedCommentId scrolls to it once drawn.
+    data object CommentPosted : BillDetailUiAction
 
     // Why: the edit, the deletion or the like couldn't be kept on the device (the comment went meanwhile).
     data object ShowCommentChangeError : BillDetailUiAction

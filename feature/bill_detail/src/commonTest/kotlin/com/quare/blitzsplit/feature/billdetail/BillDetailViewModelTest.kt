@@ -2193,7 +2193,7 @@ class BillDetailViewModelTest {
             assertEquals(1, state.commentCount)
             assertFalse(state.showsNoComments)
             assertEquals(
-                listOf<BillDetailUiAction>(BillDetailUiAction.ShowPostedComment(isReply = false)),
+                listOf<BillDetailUiAction>(BillDetailUiAction.CommentPosted),
                 actions,
             )
         }
@@ -2214,18 +2214,36 @@ class BillDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN a reply typed WHEN the device keeps it THEN shows the posted reply`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario(storedComments = listOf(comment(id = "c1")))
-        viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
-        viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
+    fun `GIVEN a reply typed WHEN the device keeps it THEN scrolls to the reply once drawn`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario(storedComments = listOf(comment(id = "c1")))
+            viewModel.onEvent(BillDetailUiEvent.OnReplyClicked("c1"))
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Eu levo"))
 
-        // When
-        viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
 
-        // Then
-        assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.ShowPostedComment(isReply = true)), actions)
-    }
+            // Then
+            val reply = comments.comments.value.single { it.id != "c1" }
+            assertEquals(reply.id, viewModel.uiState.value.postedCommentId)
+            assertEquals(listOf<BillDetailUiAction>(BillDetailUiAction.CommentPosted), actions)
+        }
+
+    @Test
+    fun `GIVEN the posted comment scrolled to WHEN the screen says so THEN scrolls to it no more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            viewModel.onEvent(BillDetailUiEvent.OnCommentChanged("Paguei no Pix"))
+            viewModel.onEvent(BillDetailUiEvent.OnSendCommentClicked)
+
+            // When
+            viewModel.onEvent(BillDetailUiEvent.OnPostedCommentShown)
+
+            // Then
+            assertNull(viewModel.uiState.value.postedCommentId)
+        }
 
     @Test
     fun `GIVEN a comment the device fails to keep WHEN another was typed meanwhile THEN keeps the new text`() =

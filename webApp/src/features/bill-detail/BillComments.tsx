@@ -18,15 +18,15 @@ import { freeTextProps } from '@/lib/freeText'
 import { cn } from '@/lib/utils'
 
 /** What "Comentários" reads: Conta's state, or a bill's link page's, which names the same things the same way. */
-export type CommentsState = Pick<JsBillDetailState, 'threads' | 'commentCount' | 'showsNoComments' | 'focusedCommentId'>
+export type CommentsState = Pick<JsBillDetailState, 'threads' | 'commentCount' | 'showsNoComments' | 'focusedCommentId' | 'postedCommentId'>
 export type ComposerState = Pick<JsBillDetailState, 'commentDraft' | 'replyTarget' | 'canSendComment' | 'isEditingComment'>
 export type ComposerPresenter = Pick<BillDetailPresenter, 'changeComment' | 'sendComment' | 'cancelReply' | 'cancelEdit'>
 /** A comment's heart, its likes, its ⋯ menu and the comment a link opened at, the same on Conta and the link's page. */
-export type CommentsPresenter = Pick<BillDetailPresenter, 'likeComment' | 'openLikes' | 'shareComment' | 'deleteComment' | 'focusedCommentShown'>
+export type CommentsPresenter = Pick<BillDetailPresenter, 'likeComment' | 'openLikes' | 'shareComment' | 'deleteComment' | 'focusedCommentShown' | 'postedCommentShown'>
 export type CommentDialogsState = Pick<JsBillDetailState, 'commentToDelete' | 'likesComment'>
 export type CommentDialogsPresenter = Pick<BillDetailPresenter, 'confirmDeleteComment' | 'dismissDeleteComment' | 'closeLikes'>
 
-// Why: the row a link scrolls to, found by its comment's id.
+// Why: the row a link or a post scrolls to, found by its comment's id.
 const commentElementId = (commentId: string) => `comment-${commentId}`
 
 // Why: the panel slides in first, so the scroll lands where the comment ends up.
@@ -58,6 +58,7 @@ export function BillComments({
   onPerson?: (memberId: string) => void
 }) {
   const highlightedId = useFocusedComment(state, presenter)
+  usePostedComment(state, presenter)
   const comment = (row: JsBillCommentRow, isReply: boolean) => (
     <Comment
       row={row}
@@ -71,7 +72,7 @@ export function BillComments({
     />
   )
   return (
-    <section id={COMMENTS_ID} aria-labelledby="bill-comments-title" className="flex flex-col">
+    <section aria-labelledby="bill-comments-title" className="flex flex-col">
       <h3 id="bill-comments-title" className="flex justify-between text-sm font-medium">
         <span>{t('billDetail_comments')}</span>
         {state.commentCount != null && state.commentCount > 0 && <span className="font-normal text-muted-foreground tabular-nums">{state.commentCount}</span>}
@@ -96,23 +97,33 @@ export function BillComments({
   )
 }
 
-const COMMENTS_ID = 'bill-comments'
-
 /**
- * A comment or a reply posted ("posted-comment" or "posted-reply"): on a touch screen the field lets go of the focus,
- * which closes the keyboard (a mouse and keyboard keep it for the next one, as the Mac does). A new comment, the last
- * one as they read in the order they were written, is scrolled to once drawn: the end of Comments comes into view. A
- * reply stays where it was answered, already in view. Any other action type does nothing.
+ * A comment or a reply posted ("comment-posted"): on a touch screen the field lets go of the focus at once, which
+ * closes the keyboard; a mouse and keyboard keep it for the next one, as the Mac does. The comment itself is scrolled
+ * to once drawn (`postedCommentId`). Any other action type does nothing.
  */
-export function showPostedComment(actionType: string) {
-  if (actionType !== 'posted-comment' && actionType !== 'posted-reply') return
+export function releaseCommentField(actionType: string) {
+  if (actionType !== 'comment-posted') return
   const isTouch = window.matchMedia('(pointer: coarse)').matches
   if (isTouch && document.activeElement instanceof HTMLElement) document.activeElement.blur()
-  if (actionType === 'posted-reply') return
-  window.setTimeout(() => {
-    const reducesMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    document.getElementById(COMMENTS_ID)?.scrollIntoView({ block: 'end', behavior: reducesMotion ? 'auto' : 'smooth' })
-  }, FOCUS_DELAY_MS)
+}
+
+/**
+ * The comment or reply just posted, once its row is drawn: scrolled into view, the least needed and with no tint,
+ * then `postedCommentShown`, so it happens once.
+ */
+function usePostedComment(state: CommentsState, presenter: CommentsPresenter) {
+  const postedId = state.postedCommentId
+  useEffect(() => {
+    if (!postedId) return
+    // Why: after the frame that draws the new row, or there is nothing to scroll to yet
+    const frame = window.requestAnimationFrame(() => {
+      const reducesMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      document.getElementById(commentElementId(postedId))?.scrollIntoView({ block: 'nearest', behavior: reducesMotion ? 'auto' : 'smooth' })
+      presenter.postedCommentShown()
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [postedId, presenter])
 }
 
 /**

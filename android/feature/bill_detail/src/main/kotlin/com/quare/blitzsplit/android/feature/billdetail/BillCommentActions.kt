@@ -54,6 +54,7 @@ internal class BillCommentCallbacks(
     val onEditClick: (commentId: String) -> Unit,
     val onDeleteClick: (commentId: String) -> Unit,
     val onFocusedCommentShown: () -> Unit,
+    val onPostedCommentShown: () -> Unit,
 )
 
 /*

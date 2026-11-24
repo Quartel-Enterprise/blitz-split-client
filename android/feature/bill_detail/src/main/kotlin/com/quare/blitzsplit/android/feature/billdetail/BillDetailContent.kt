@@ -400,6 +400,7 @@ private fun BillDetailPeopleSection(
             onEditClick = { onEvent(BillDetailUiEvent.OnCommentEditClicked(it)) },
             onDeleteClick = { onEvent(BillDetailUiEvent.OnCommentDeleteClicked(it)) },
             onFocusedCommentShown = { onEvent(BillDetailUiEvent.OnFocusedCommentShown) },
+            onPostedCommentShown = { onEvent(BillDetailUiEvent.OnPostedCommentShown) },
         )
     }
     BillSplitSection(
@@ -416,6 +417,7 @@ private fun BillDetailPeopleSection(
         showsNoComments = state.showsNoComments,
         replyTargetId = state.replyTarget?.commentId,
         focusedCommentId = state.focusedCommentId,
+        postedCommentId = state.postedCommentId,
         dates = dates,
         callbacks = comments,
     )

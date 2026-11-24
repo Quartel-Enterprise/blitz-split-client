@@ -3,7 +3,6 @@ package com.quare.blitzsplit.android.feature.billdetail
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,13 +37,13 @@ fun BillDetailScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
-    val postedCommentScroller = remember { PostedCommentScroller() }
     val focusManager = LocalFocusManager.current
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             val message = when (action) {
-                is BillDetailUiAction.ShowPostedComment -> {
-                    showPostedComment(action.isReply, focusManager, postedCommentScroller)
+                // Why: the keyboard closes at once; the comment is scrolled to once drawn (postedCommentId).
+                BillDetailUiAction.CommentPosted -> {
+                    focusManager.clearFocus()
                     null
                 }
 
@@ -84,17 +83,15 @@ fun BillDetailScreen(
     )
     val saveToGallery = rememberBillPhotoSaver(snackbarHostState)
     BackHandler { viewModel.onEvent(BillDetailUiEvent.OnBackClicked) }
-    CompositionLocalProvider(LocalPostedCommentScroller provides postedCommentScroller) {
-        BillDetailContent(
-            state = state,
-            isDialog = isDialog,
-            snackbarHostState = snackbarHostState,
-            pickers = pickers,
-            onEvent = viewModel::onEvent,
-            sharedBillId = route.expenseId,
-            sharedGroupId = route.groupId,
-        )
-    }
+    BillDetailContent(
+        state = state,
+        isDialog = isDialog,
+        snackbarHostState = snackbarHostState,
+        pickers = pickers,
+        onEvent = viewModel::onEvent,
+        sharedBillId = route.expenseId,
+        sharedGroupId = route.groupId,
+    )
     val attachments = state.attachments.valueOrNull().orEmpty()
     BillAttachmentViewerDialog(
         attachments = attachments,

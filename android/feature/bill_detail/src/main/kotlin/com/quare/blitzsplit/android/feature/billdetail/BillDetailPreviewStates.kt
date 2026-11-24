@@ -118,6 +118,7 @@ internal fun createPreviewBillDetailState(
         commentToDelete = null,
         likesCommentId = null,
         focusedCommentId = null,
+        postedCommentId = null,
         history = (if (isPending) createPendingPreviewHistory() else createPreviewHistory()).toLoaded(),
         isHistoryFromDeviceOnly = isReplyingOffline,
         isOnline = !isReplyingOffline,

@@ -66,6 +66,8 @@ data class BillDetailUiState(
     val likesCommentId: String?,
     // Why: the comment a link opened Conta at: scrolled to and highlighted once, then null.
     val focusedCommentId: String?,
+    // Why: the comment or reply this device just posted, once drawn: scrolled into view once, then null.
+    val postedCommentId: String?,
     /*
      * Why: "Histórico", the most recent first, by day; never the comments. Loading online until the server's history
      * answered; offline, or once that read failed, the device's lines (isHistoryFromDeviceOnly).

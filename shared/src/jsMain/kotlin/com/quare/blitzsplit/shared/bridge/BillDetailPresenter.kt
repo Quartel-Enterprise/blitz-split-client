@@ -110,7 +110,7 @@ class JsBillCommentShare(
 )
 
 /*
- * Why: type is "delete-error", "comment-error", "posted-comment", "posted-reply", "comment-change-error",
+ * Why: type is "delete-error", "comment-error", "comment-posted", "comment-change-error",
  * "comment-gone", "share-comment" (share), "undo-error", "photo-unreadable", "photo-no-room", "photo-too-large",
  * "photo-error" or "remove-photo-error"; share is null for anything but "share-comment".
  */
@@ -205,6 +205,8 @@ class JsBillDetailState(
     val likesComment: JsBillCommentRow?,
     // Why: the comment a link opened Conta at, scrolled to and highlighted once (focusedCommentShown), then null.
     val focusedCommentId: String?,
+    // Why: the comment just posted, once drawn: scrolled into view once (postedCommentShown), then null.
+    val postedCommentId: String?,
     // Why: "Histórico", the most recent first; empty hides it, null while the server's history loads (shimmer).
     val history: Array<JsBillHistoryDay>?,
     // Why: the history shows only the device's lines: offline, or the server's read failed.
@@ -283,6 +285,7 @@ class BillDetailPresenter(
                 commentToDelete = state.commentToDelete,
                 likesComment = state.likesComment?.let(::toJsBillCommentRow),
                 focusedCommentId = state.focusedCommentId,
+                postedCommentId = state.postedCommentId,
                 history = state.history
                     .valueOrNull()
                     ?.map { toJsBillHistoryDay(it, state.categories) }
@@ -318,10 +321,7 @@ class BillDetailPresenter(
 
                 BillDetailUiAction.ShowCommentError -> JsBillDetailAction("comment-error", null)
 
-                is BillDetailUiAction.ShowPostedComment -> JsBillDetailAction(
-                    type = if (action.isReply) "posted-reply" else "posted-comment",
-                    share = null,
-                )
+                BillDetailUiAction.CommentPosted -> JsBillDetailAction("comment-posted", null)
 
                 BillDetailUiAction.ShowCommentChangeError -> JsBillDetailAction("comment-change-error", null)
 
@@ -439,6 +439,10 @@ class BillDetailPresenter(
 
     fun focusedCommentShown() {
         viewModel.onEvent(BillDetailUiEvent.OnFocusedCommentShown)
+    }
+
+    fun postedCommentShown() {
+        viewModel.onEvent(BillDetailUiEvent.OnPostedCommentShown)
     }
 
     fun undo() {

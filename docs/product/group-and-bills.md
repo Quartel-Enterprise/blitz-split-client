@@ -183,9 +183,9 @@ Group expenses, Bill, comments, attachments, sharing, Statistics, editing and de
     level deep: a reply to a reply joins its thread and names whom it answers. "Send comment" stays disabled
     until something is typed (1 to 1000 letters); the composer is pinned at the bottom on a phone and under the
     comments in two columns. Once a comment or a reply is posted (kept on the device, or up on a bill's link page), the
-    keyboard closes, and a new comment, the last of "Comments", is scrolled into view; a reply stays where it was
-    answered. The Mac and the web with a mouse keep the field focused for the next one, and saving an edit moves
-    nothing. Offline, a banner says "No internet. Comments and photos are queued and go out when you're back online.". Each comment (beta feedback 14, Pierre's call) has a heart and a menu (⋮/⋯, the row's long press
+    keyboard closes at once, and the comment or reply is scrolled into view (the least needed, no tint) once the
+    device's copy or the page read again draws it, never on a timer. The Mac and the web with a mouse keep the field
+    focused for the next one, and saving an edit moves nothing. Offline, a banner says "No internet. Comments and photos are queued and go out when you're back online.". Each comment (beta feedback 14, Pierre's call) has a heart and a menu (⋮/⋯, the row's long press
     and right click): the heart likes it or undoes the like, one per person, offline too through the queue
     (`bill_comment_likes`, the newer toggle wins), with the count beside it, which opens "Likes" (who liked it, in
     the order they did); "Share" sends "Ana commented on “Dinner”: “…”" with the comment's

@@ -2,7 +2,6 @@ package com.quare.blitzsplit.android.feature.billdetail
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,19 +31,15 @@ fun SharedBillScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val saveToGallery = rememberBillPhotoSaver(snackbarHostState)
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val postedCommentScroller = remember { PostedCommentScroller() }
     SharedBillActionsEffect(
         viewModel = viewModel,
         snackbarHostState = snackbarHostState,
-        postedCommentScroller = postedCommentScroller,
     )
-    CompositionLocalProvider(LocalPostedCommentScroller provides postedCommentScroller) {
-        SharedBillContent(
-            state = state,
-            snackbarHostState = snackbarHostState,
-            onEvent = viewModel::onEvent,
-        )
-    }
+    SharedBillContent(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onEvent = viewModel::onEvent,
+    )
     BillAttachmentViewerDialog(
         attachments = state.attachments,
         viewedIndex = state.viewedAttachmentIndex,
@@ -81,7 +76,6 @@ fun SharedBillScreen(
 private fun SharedBillActionsEffect(
     viewModel: SharedBillViewModel,
     snackbarHostState: SnackbarHostState,
-    postedCommentScroller: PostedCommentScroller,
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -89,8 +83,9 @@ private fun SharedBillActionsEffect(
     LaunchedEffect(viewModel) {
         viewModel.uiAction.collect { action ->
             val message = when (action) {
-                is SharedBillUiAction.ShowPostedComment -> {
-                    showPostedComment(action.isReply, focusManager, postedCommentScroller)
+                // Why: the keyboard closes at once; the comment is scrolled to once drawn (postedCommentId).
+                SharedBillUiAction.CommentPosted -> {
+                    focusManager.clearFocus()
                     null
                 }
 

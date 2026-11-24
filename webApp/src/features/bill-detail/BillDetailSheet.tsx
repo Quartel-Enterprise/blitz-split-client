@@ -21,7 +21,7 @@ import { payerNamesText } from '@/lib/payers'
 import { CategoryBadge, categoryPath } from '@/lib/categories'
 import { cn } from '@/lib/utils'
 import { AttachmentViewer, BillAttachments, useLocalPhotoUrls } from './BillAttachments'
-import { BillComments, CommentComposer, CommentDialogs, shareComment, showPostedComment } from './BillComments'
+import { BillComments, CommentComposer, CommentDialogs, shareComment, releaseCommentField } from './BillComments'
 import { BillDeleteDialog } from './BillDeleteDialog'
 import { BillHistory } from './BillHistory'
 import { splitTitles } from './billHistoryText'
@@ -46,7 +46,7 @@ export function BillDetailSheet({ route, isCovered }: { route: JsRoute; isCovere
   const composerRef = useRef<HTMLTextAreaElement>(null)
   useActions(presenter, (p, onAction: (action: JsBillDetailAction) => void) => p.observeActions(onAction), (action) => {
     if (action.type === 'share-comment' && action.share) shareComment(action.share)
-    showPostedComment(action.type)
+    releaseCommentField(action.type)
     const message = actionMessages[action.type]
     if (message) toast(t(message))
   })

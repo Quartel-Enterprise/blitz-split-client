@@ -1003,7 +1003,47 @@ class SharedBillViewModelTest {
         }
 
     @Test
-    fun `GIVEN a comment typed WHEN the server posts it THEN shows the posted comment`() = runTest(testDispatcher) {
+    fun `GIVEN a comment typed WHEN the server posts it THEN closes the keyboard before the page is read again`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            links.loadGate = CompletableDeferred()
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+
+            // Then
+            assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.CommentPosted), actions)
+            assertNull(viewModel.uiState.value.postedCommentId)
+        }
+
+    @Test
+    fun `GIVEN a comment posted WHEN the page read again holds it THEN scrolls to it`() = runTest(testDispatcher) {
+        // Given
+        prepareScenario()
+        val gate = CompletableDeferred<Unit>()
+        links.loadGate = gate
+        viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+        viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+        val postedId = links.postedComments.single().id
+        val posted = comment(
+            id = postedId,
+            authorName = "Pierre",
+            threadId = null,
+            viaLink = true,
+        )
+        links.sharedBills.value = mapOf(CODE to openBill(comments = thread + posted))
+
+        // When
+        gate.complete(Unit)
+
+        // Then
+        assertEquals(postedId, viewModel.uiState.value.postedCommentId)
+    }
+
+    @Test
+    fun `GIVEN a comment posted WHEN the page read again lacks it THEN scrolls nowhere`() = runTest(testDispatcher) {
         // Given
         prepareScenario()
         viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
@@ -1012,22 +1052,34 @@ class SharedBillViewModelTest {
         viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
 
         // Then
-        assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowPostedComment(isReply = false)), actions)
+        assertNull(viewModel.uiState.value.postedCommentId)
     }
 
     @Test
-    fun `GIVEN a reply typed WHEN the server posts it THEN shows the posted reply`() = runTest(testDispatcher) {
-        // Given
-        prepareScenario()
-        viewModel.onEvent(SharedBillUiEvent.OnReplyClicked("c1"))
-        viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Carla!"))
+    fun `GIVEN the posted comment scrolled to WHEN the page says so THEN scrolls to it no more`() =
+        runTest(testDispatcher) {
+            // Given
+            prepareScenario()
+            val gate = CompletableDeferred<Unit>()
+            links.loadGate = gate
+            viewModel.onEvent(SharedBillUiEvent.OnCommentChanged("Valeu, Bruno!"))
+            viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+            val posted =
+                comment(
+                    id = links.postedComments.single().id,
+                    authorName = "Pierre",
+                    threadId = null,
+                    viaLink = true,
+                )
+            links.sharedBills.value = mapOf(CODE to openBill(comments = thread + posted))
+            gate.complete(Unit)
 
-        // When
-        viewModel.onEvent(SharedBillUiEvent.OnSendCommentClicked)
+            // When
+            viewModel.onEvent(SharedBillUiEvent.OnPostedCommentShown)
 
-        // Then
-        assertEquals(listOf<SharedBillUiAction>(SharedBillUiAction.ShowPostedComment(isReply = true)), actions)
-    }
+            // Then
+            assertNull(viewModel.uiState.value.postedCommentId)
+        }
 
     @Test
     fun `GIVEN the server fails WHEN sending a comment THEN says it failed and keeps the draft and the reply`() =
