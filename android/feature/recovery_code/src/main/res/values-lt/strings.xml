@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Išsisaugok atkūrimo kodą</string>
+    <string name="recovery_code_body">Naudojiesi programėle be paskyros. Šie 12 žodžių sugrąžins tavo duomenis, jei pakeisi ar pamesi įrenginį. Užsirašyk juos iš eilės. Po 30 dienų nenaudojimo tavo duomenys ištrinami, o žodžiai nebetinka.</string>
+    <string name="recovery_code_copy">Kopijuoti žodžius</string>
+    <string name="recovery_code_save_to_password_manager">Išsaugoti slaptažodžių tvarkyklėje</string>
+    <string name="recovery_code_connect_instead">Verčiau susieti „Google“ arba „Apple“</string>
+    <string name="recovery_code_connect_instead_body">Kodo nereikia</string>
+    <string name="recovery_code_sign_in_failed">Šiuo metu nepavyko prisijungti. Bandyk dar kartą.</string>
+    <string name="recovery_code_also_in_profile">Jį taip pat rasi skiltyje „Profilis“ › „Atkūrimas“.</string>
+    <string name="recovery_code_remind_later">Priminti vėliau</string>
+    <string name="recovery_code_saved">Išsisaugojau</string>
+    <string name="recovery_code_download">Atsisiųsti</string>
+    <string name="recovery_code_file_name">blitz-split-atkurimo-kodas.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · atkūrimo kodas\n\n%1$s\n\nNaudok jį per „Jau naudojau kitame įrenginyje“, kad susigrąžintum savo duomenis.\n</string>
+</resources>

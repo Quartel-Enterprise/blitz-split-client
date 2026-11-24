@@ -106,6 +106,7 @@
     <string name="profile_language_estonian">Eesti</string>
     <string name="profile_language_gujarati">Gudžarati</string>
     <string name="profile_language_slovenian">Sloveeni</string>
+    <string name="profile_language_lithuanian">Leedu</string>
     <string name="profile_language_punjabi">Pandžabi</string>
     <string name="profile_language_system_detail">Seadme keel</string>
     <string name="profile_notifications">Teavitused</string>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_profile_title">Redaguoti profilį</string>
+    <string name="edit_profile_save">Išsaugoti</string>
+    <string name="edit_profile_change_photo">Keisti nuotrauką</string>
+    <string name="edit_profile_take_photo">Fotografuoti</string>
+    <string name="edit_profile_choose_photo">Pasirinkti iš galerijos</string>
+    <string name="edit_profile_use_account_photo">Naudoti %1$s paskyros nuotrauką</string>
+    <string name="edit_profile_remove_photo">Pašalinti nuotrauką</string>
+    <string name="edit_profile_photo_error">Nepavyko panaudoti šios nuotraukos. Pabandyk kitą.</string>
+    <string name="edit_profile_avatar_color">Avataro spalva</string>
+    <string name="edit_profile_avatar_color_hint">Rodoma, kai neturi nuotraukos.</string>
+    <string name="edit_profile_name_label">Tavo vardas</string>
+    <string name="edit_profile_name_count">%1$d/%2$d</string>
+    <string name="edit_profile_name_too_short">Įvesk bent %d raides.</string>
+    <string name="edit_profile_name_too_long">Naudok iki %d simbolių.</string>
+    <string name="edit_profile_account_notice">Vardas ir nuotrauka paimti iš tavo %1$s paskyros. Pakeitus juos čia, jie pasikeis tik Blitz Split, o tavo %1$s paskyra liks nepakitusi.</string>
+    <string name="edit_profile_footer">Tavo vardą ir nuotrauką mato tavo grupės ir visi, kas turi tavo profilio nuorodą.</string>
+    <string name="profile_photo_close">Uždaryti</string>
+    <string name="profile_photo_camera">Kamera</string>
+    <string name="profile_photo_gallery">Galerija</string>
+    <string name="profile_photo_remove">Pašalinti</string>
+    <string name="profile_photo_title">Profilio nuotrauka</string>
+</resources>

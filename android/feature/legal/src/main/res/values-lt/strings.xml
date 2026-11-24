@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="legal_privacy_policy">Privatumo politika</string>
+    <string name="legal_terms">Paslaugų teikimo sąlygos</string>
+    <string name="legal_updated_privacy_policy">Atnaujinta %1$s</string>
+    <string name="legal_updated_terms">Atnaujinta %1$s</string>
+    <string name="legal_load_failed_title">Nepavyko įkelti šio puslapio</string>
+    <string name="legal_load_failed_body">Patikrink ryšį ir bandyk dar kartą.</string>
+    <string name="legal_retry">Bandyti dar kartą</string>
+</resources>

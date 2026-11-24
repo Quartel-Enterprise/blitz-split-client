@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connect_watch_title">Susieti laikrodį</string>
+    <string name="connect_watch_close">Uždaryti</string>
+    <string name="connect_watch_body">Įvesk kodą, kurį rodo tavo laikrodis. Jis prisijungs prie tavo paskyros ir toliau sinchronizuosis pats.</string>
+    <string name="connect_watch_code_label">Laikrodžio kodas</string>
+    <string name="connect_watch_error_invalid">Neteisingas arba pasibaigęs kodas. Gauk naują laikrodyje.</string>
+    <string name="connect_watch_error_too_many">Per daug neteisingų kodų. Palauk kelias minutes ir bandyk dar kartą.</string>
+    <string name="connect_watch_error_needs_account">Pirmiausia susiek paskyrą: tavo duomenys yra tik šiame įrenginyje.</string>
+    <string name="connect_watch_error_failed">Nepavyko susieti laikrodžio. Bandyk dar kartą.</string>
+    <string name="connect_watch_offline">Laikrodžiui susieti reikia interneto.</string>
+    <string name="connect_watch_own_watch_only">Įvesk tik kodą, rodomą tavo paties laikrodyje: kas turi tą laikrodį, tas pateks į tavo paskyrą.</string>
+    <string name="connect_watch_validity">Kodas galioja 5 minutes, vieną kartą.</string>
+    <string name="connect_watch_button">Susieti</string>
+    <string name="connect_watch_connected_title">Laikrodis susietas</string>
+    <string name="connect_watch_connected_body">Jis mato tavo grupes ir sinchronizuojasi pats. Kad jį atsietum, atsijunk laikrodyje.</string>
+</resources>

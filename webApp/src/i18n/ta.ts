@@ -876,6 +876,7 @@ export const ta: Record<MessageKey, string> = {
   profile_languageEstonian: 'எஸ்டோனியன்',
   profile_languageGujarati: 'குஜராத்தி',
   profile_languageSlovenian: 'ஸ்லோவேனியன்',
+  profile_languageLithuanian: 'லிதுவேனியன்',
   profile_languagePunjabi: 'பஞ்சாபி',
   profile_bitcoinInSats: 'பிட்காயின் சடோஷிகளில்',
   profile_bitcoinInSatsDetail: 'பிட்காயின் தொகைகளை sats-இல் காட்டும், உள்ளிடும் (1 ₿ = 100,000,000 sats).',

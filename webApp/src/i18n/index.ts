@@ -51,6 +51,7 @@ import { lv } from './lv'
 import { et } from './et'
 import { gu } from './gu'
 import { sl } from './sl'
+import { lt } from './lt'
 import { pa } from './pa'
 
 export type { MessageKey }
@@ -59,15 +60,15 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'en-GB' | 'en-AU' | 'en-CA' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta' | 'nb' | 'te' | 'bg' | 'mr' | 'sw' | 'ca' | 'da' | 'fi' | 'lv' | 'et' | 'gu' | 'sl' | 'pa'
+export type Locale = 'en' | 'en-GB' | 'en-AU' | 'en-CA' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta' | 'nb' | 'te' | 'bg' | 'mr' | 'sw' | 'ca' | 'da' | 'fi' | 'lv' | 'et' | 'gu' | 'sl' | 'lt' | 'pa'
 
 // Why: Britain's English, which Australia's reads too: Canada's spelling, then the words Canada writes as the US.
 const britishEnglish = { ...en, ...enCA, ...enGB }
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, 'en-GB': britishEnglish, 'en-AU': britishEnglish, 'en-CA': { ...en, ...enCA }, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg, mr, sw, ca, da, fi, lv, et, gu, sl, pa }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, 'en-GB': britishEnglish, 'en-AU': britishEnglish, 'en-CA': { ...en, ...enCA }, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg, mr, sw, ca, da, fi, lv, et, gu, sl, lt, pa }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta', 'nb', 'te', 'bg', 'mr', 'sw', 'ca', 'da', 'fi', 'lv', 'et', 'gu', 'sl']
+const bareLocales: readonly Locale[] = ['fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta', 'nb', 'te', 'bg', 'mr', 'sw', 'ca', 'da', 'fi', 'lv', 'et', 'gu', 'sl', 'lt']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -120,10 +121,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `he`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta`, `nb` (or Norwegian's `no` and Nynorsk's `nn`), `te`, `bg`, `mr`, `sw`, `ca`, `da`, `fi`, `lv`, `et`, `gu` or `sl` tag
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `he`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta`, `nb` (or Norwegian's `no` and Nynorsk's `nn`), `te`, `bg`, `mr`, `sw`, `ca`, `da`, `fi`, `lv`, `et`, `gu`, `sl` or `lt` tag
  * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, he-IL, the legacy iw-IL, th-TH, vi-VN,
- * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, the legacy tl-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil, Norwegian (Bokmål, whichever of the three), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish, Latvian, Estonian, Gujarati or Slovenian, a `pa` tag in Gurmukhi (pa, pa-Guru, pa-IN) is
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, the legacy tl-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, lt-LT…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil, Norwegian (Bokmål, whichever of the three), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian or Lithuanian, a `pa` tag in Gurmukhi (pa, pa-Guru, pa-IN) is
  * Punjabi, while one in Shahmukhi (pa-Arab, pa-Arab-PK) or Pakistan's with no script (pa-PK) is no language the app has, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, `en-GB`, `en-AU` and `en-CA` are their regions'
  * English, an `en` tag of a region that writes as Britain (en-NZ, en-IE, en-IN, en-DE…) British English, any other
@@ -248,6 +249,7 @@ const documentLanguages: Record<Locale, string> = {
   et: 'et',
   gu: 'gu',
   sl: 'sl',
+  lt: 'lt',
   pa: 'pa',
 }
 
@@ -326,8 +328,9 @@ const everyFormOrder: readonly Intl.LDMLPluralRule[] | undefined = (() => {
 // being Czech's fractions, which say the few form ("1,5 skupiny"), where Polish's is the one its `many` takes.
 const secondFormIsOther = locale === 'cs' || locale === 'sk' || locale === 'ro'
 
-// Why: Croatian's third form is the one its other takes ("5 grupa"), its plural having no many.
-const thirdFormIsOther = !pluralRules.resolvedOptions().pluralCategories.includes('many')
+// Why: the third form is the one other takes when no whole count takes many: Croatian's ("5 grupa"), its plural having
+// no many, and Lithuanian's ("10 grupių"), whose many is only its fractions, which no count the app passes has.
+const thirdFormIsOther = !Array.from({ length: 200 }, (_, count) => pluralRules.select(count)).includes('many')
 
 // Why: Latvian has no few, but says 21 in the singular ("21 grupa"): its two forms are one|other, its zero (0, 10–20,
 // 30…) taking other's ("10 grupas").
@@ -342,7 +345,9 @@ const firstFormIsOne = pluralRules.select(21) === 'one' && !pluralRules.resolved
  * Czech ("{count} skupiny|{count} skupin") and Romanian ("{count} grupuri|{count} de grupuri") hold two forms too,
  * their second one being the one their other takes (`secondFormIsOther`). Croatian says 21 in the singular too, and
  * holds three, one|few|other ("{count} grupa|{count} grupe|{count} grupa"), the third being its other's
- * (`thirdFormIsOther`), a fraction taking the form CLDR gives it. Arabic has a dual, so its messages hold every
+ * (`thirdFormIsOther`), a fraction taking the form CLDR gives it. Lithuanian says 21 in the singular too, and 2–9 in a
+ * form of their own, so it holds one|few|other ("{count} grupė|{count} grupės|{count} grupių"), its many being only the
+ * fractions, which take the third form. Arabic has a dual, so its messages hold every
  * category it has, in CLDR's order, "zero|one|two|few|many|other" (`everyFormOrder`), and so does any language whose
  * plural has a two: Hebrew's "one|two|other", Slovenian's "one|two|few|other" ("{count} skupina|{count} skupini|{count}
  * skupine|{count} skupin", 101 taking the one form, 102 the two). Latvian has no few but says 21 in the singular too, so its messages hold one|other ("{count}
@@ -474,6 +479,8 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * "a" becomes the user's "u" ("amegawanya" becomes "umegawanya").
  * Latvian ones start with a simple past, which says the person but not the gender: its "-a" becomes the user's "-i",
  * a reflexive "-ās" the user's "-ies" ("sadalīja" becomes "sadalīji", "pievienojās" becomes "pievienojies").
+ * Lithuanian ones start with a simple past, which says no gender, in "-o" or "-ė" ("-osi", "-ėsi" when reflexive), the
+ * user's taking "-ai" or "-ei": "padalijo" becomes "padalijai", "ištrynė" "ištrynei", "dalijosi" "dalijaisi".
  * Portugal's Portuguese ("tu") ends the preterite in "-aste", "-este" or "-iste": "dividiu" becomes "dividiste". Same
  * rules as Android's `toSecondPerson` and the Apple app's `SecondPerson`.
  */
@@ -494,6 +501,9 @@ export function verbForYou(verb: string): string {
   if (locale === 'pa') return verb.replace(/^ਨੇ(?: |$)/, '')
   if (locale === 'sw') return verb.replace(/^a(?=(?:me|li)\S)/, 'u')
   if (locale === 'lv') return verb.replace(/^[^\s,:]+/, (past) => past.replace(/ās$/, 'ies').replace(/a$/, 'i'))
+  if (locale === 'lt') {
+    return verb.replace(/^(\S*?)([oė])(si)?(?=[\s,:]|$)/, (_, stem: string, vowel: string, reflexive?: string) => `${stem}${vowel === 'o' ? 'ai' : 'ei'}${reflexive ?? ''}`)
+  }
   if (locale === 'pl') return verb.replace(/^(\S*)ł\(a\)(?= |$)/, '$1łeś(-aś)')
   const pastAuxiliary = pastAuxiliaries[locale]
   if (pastAuxiliary) return /^\S*l\(a\)(?=[\s,:]|$)/.test(verb) ? `${pastAuxiliary} ${verb}` : verb

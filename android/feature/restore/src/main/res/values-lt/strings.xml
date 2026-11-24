@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Susigrąžink savo grupes</string>
+    <string name="restore_subtitle">Anksčiau prisijungei su paskyra? Tiesiog prisijunk dar kartą. Jei ne, naudok atkūrimo kodą arba QR kodą iš senojo įrenginio.</string>
+    <string name="restore_no_connection_title">Nėra ryšio</string>
+    <string name="restore_no_connection_body">Norint prisijungti su paskyra arba kodu, reikia interneto tavo grupėms atsisiųsti. Tai, ką įvedei, išsaugoma.</string>
+    <string name="restore_code_label">Arba naudok atkūrimo kodą</string>
+    <string name="restore_code_hint">12 žodžių iš eilės. Įklijuok juos visus į vieną lauką ir bus užpildyti visi laukai.</string>
+    <string name="restore_scan_qr_title">Nuskenuok QR kodą iš senojo įrenginio</string>
+    <string name="restore_scan_qr_body">Ten: „Profilis“ › „Atkūrimas“ › „Rodyti QR kodą“</string>
+    <string name="restore_recover">Atkurti</string>
+    <string name="restore_try_again">Bandyti dar kartą</string>
+    <string name="restore_start_fresh">Pradėti iš naujo šiame įrenginyje</string>
+    <string name="restore_error_invalid_code">Kodas nerastas. Patikrink žodžius ir jų tvarką, tada bandyk dar kartą.</string>
+    <string name="restore_error_too_many_attempts">Per daug bandymų. Palauk kelias minutes ir bandyk dar kartą.</string>
+    <string name="restore_error_sign_in_failed">Šiuo metu nepavyko prisijungti. Bandyk dar kartą.</string>
+    <string name="restore_error_unknown">Kažkas nepavyko. Bandyk dar kartą.</string>
+</resources>
