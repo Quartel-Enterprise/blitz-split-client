@@ -862,7 +862,12 @@ project's Mac its own screenshot of the window failed as well ("Image creation f
 - **The window alone, always the same size.** `StoreScreenshotsRun.sizeWindow` gives the window the same size on
   every launch and hides every other app's windows first (as ⌥⌘H does), so the sidebar's glass shows the wallpaper
   and nothing else. It then prints the window's number, which the script reads from the app's output and hands to
-  `screencapture -l`. The hidden apps come back with a click on their Dock icon.
+  `screencapture -l`. The hidden apps come back with a click on their Dock icon. A launch behind the others may show
+  its view before it has a window, so `sizeWindow` tries again every 0.2 s for a few seconds: without that it printed
+  nothing and the script stopped ("The app opened no window", 24 November 2026).
+- **On the main display.** macOS reopens a window where the last run left it, which on a Mac with several displays
+  may be one that isn't Retina. `sizeWindow` centers the window on the screen with the menu bar, whichever display it
+  opened on.
 - **On a Retina display.** The frame draws the window at twice its points (2880x1800). On a display that isn't
   Retina the capture is 1440x900 and would go to the listing blurred, so the script stops at the first one, which
   is still there to look at.

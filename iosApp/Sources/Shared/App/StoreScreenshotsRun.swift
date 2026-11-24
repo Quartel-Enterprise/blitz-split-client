@@ -124,12 +124,27 @@ struct StoreScreenshotsRun {
     /// other apps' windows are hidden (as ⌥⌘H does, no permission needed), so the sidebar's glass shows nothing of
     /// them. They come back with a click on their Dock icon. The window's number goes to the app's output, where
     /// capture-mac.sh reads it to photograph that window alone.
-    static func sizeWindow() {
-        guard current != nil, let window = mainWindow ?? NSApplication.shared.windows.first(where: \.canBecomeMain)
-        else { return }
+    ///
+    /// A launch behind the other apps may run this before its view has a window: it tries again a moment later, for
+    /// a few seconds. The window goes to the screen with the menu bar, whichever display the last run left it on:
+    /// another display may not be Retina, and capture-mac.sh refuses a capture that isn't.
+    static func sizeWindow(attemptsLeft: Int = 25) {
+        guard current != nil else { return }
+        guard let window = mainWindow ?? NSApplication.shared.windows.first(where: \.canBecomeMain) else {
+            if attemptsLeft > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { sizeWindow(attemptsLeft: attemptsLeft - 1) }
+            }
+            return
+        }
         NSApplication.shared.hideOtherApplications(nil)
         window.setContentSize(windowSize)
-        window.center()
+        if let screen = NSScreen.screens.first {
+            let visible = screen.visibleFrame
+            let size = window.frame.size
+            window.setFrameOrigin(NSPoint(x: visible.midX - size.width / 2, y: visible.midY - size.height / 2))
+        } else {
+            window.center()
+        }
         window.makeKeyAndOrderFront(nil)
         print("\(windowNumberLine) \(window.windowNumber)")
         fflush(stdout)
