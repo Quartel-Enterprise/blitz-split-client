@@ -277,8 +277,8 @@ the language and the screen it stops at.
 
 **The uploads are split into jobs**, one after the other, on each store (Bible Planner's releases lost a whole
 upload to one image Google Play answered with a server error): what a store refused is all that failed, and the
-rest is up. On the App Store a job sends one locale, which adds up over its 46 (not timed yet). On Google Play a
-job sends a few, six unless the caller says otherwise, through one Play edit: ten jobs for its 59 locales, since
+rest is up. On the App Store a job sends one locale, which adds up over its 47 (not timed yet). On Google Play a
+job sends a few, six unless the caller says otherwise, through one Play edit: ten jobs for its 60 locales, since
 each edit Google Play saves counts against [a daily quota](#google-plays-daily-save-quota) that one job per locale
 ran out of (27 saves a set, about two minutes a locale, in the first release that ran them, 3.0.0). The submission
 waits for the App Store's, and the next release or beta for them all, since they share the `release` group.
@@ -447,7 +447,7 @@ gh workflow run play-store-screenshots.yml                         # draw them a
   ([`no-run-going`](../.github/actions/no-run-going/action.yml)): the workflow refuses to start while a stable
   release or a run of `store-listing` is in progress or waiting, each of its upload jobs checks again, and a stable
   release refuses to start while a run of it isn't over, whatever its platforms, `plan` failing however the release
-  was dispatched and `release-production.sh` saying so first. Ten jobs for Play's 59 locales, not timed yet (one
+  was dispatched and `release-production.sh` saying so first. Ten jobs for Play's 60 locales, not timed yet (one
   job per locale took about an hour).
 - **After the release when both happen on one day**: each job that changes something is a save of
   [Google Play's daily save quota](#google-plays-daily-save-quota), and so is the release's bundle, which must not

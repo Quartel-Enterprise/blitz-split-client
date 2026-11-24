@@ -103,6 +103,8 @@ private const val MARATHI = "mr"
 private const val MARATHI_RESPECTFUL_AGENT = "यांनी"
 private const val GUJARATI = "gu"
 private const val GUJARATI_AGENT = "એ"
+private const val PUNJABI = "pa"
+private const val PUNJABI_ERGATIVE = "ਨੇ"
 private const val MALAYALAM = "ml"
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
@@ -150,6 +152,7 @@ private val youSubjectLanguages = setOf(
     MARATHI,
     SWAHILI,
     GUJARATI,
+    PUNJABI,
     MALAYALAM,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
@@ -216,6 +219,8 @@ private val irregularSecondPerson = mapOf(
  * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Lithuanian's simple past, which says no gender and which every Lithuanian
  * verb phrase starts with, ends in "-o" or "-ė" ("-osi", "-ėsi" when reflexive) for someone else and "-ai" or "-ei"
  * ("-aisi", "-eisi") for the user: "Ana padalijo", "Tu padalijai"; "ištrynė" → "ištrynei", "dalijosi" → "dalijaisi".
+ * Punjabi does as Gujarati with its ergative "ਨੇ", which the user's "ਤੁਸੀਂ"
+ * doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ", "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ").
  * Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
  * "നിങ്ങൾ ചെലവ് വിഭജിച്ചു"). Same rules as the web's and the Apple app's `verbForYou`.
  */
@@ -248,6 +253,8 @@ fun toSecondPerson(
     MARATHI -> dropSubjectParticle(verb, MARATHI_RESPECTFUL_AGENT)
 
     GUJARATI -> dropSubjectParticle(verb, GUJARATI_AGENT)
+
+    PUNJABI -> dropSubjectParticle(verb, PUNJABI_ERGATIVE)
 
     CZECH -> if (czechPast.containsMatchIn(verb)) "$CZECH_SECOND_PERSON_AUXILIARY $verb" else verb
 
@@ -365,8 +372,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
  * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, Marathi "तुम्ही … हटवला", with its rule,
- * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, and Malayalam
- * "നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", its verb not changing with the person.
+ * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, Punjabi "ਤੁਸੀਂ … ਮਿਟਾਇਆ",
+ * with its own, and Malayalam "നിങ്ങൾ ഡിലീറ്റ് ചെയ്തു: …", its verb not changing with the person.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages
@@ -383,8 +390,14 @@ private fun secondPersonLanguageUi(): String {
     val isPortugal = resources.getBoolean(R.bool.designsystem_portugal_portuguese)
     return when {
         locale.language == PORTUGUESE && isPortugal -> PORTUGAL_PORTUGUESE
+
         resources.getBoolean(R.bool.designsystem_norwegian) -> NORWEGIAN
-        isCyrillicSerbian(locale) -> ""
+
+        resources.getBoolean(R.bool.designsystem_punjabi) -> PUNJABI
+
+        // Why: Punjabi strings not drawn on a Punjabi device are English's: it is in Shahmukhi (pa-Arab, pa-PK).
+        isCyrillicSerbian(locale) || locale.language == PUNJABI -> ""
+
         else -> locale.language
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">ਅਕਾਊਂਟ ਮਿਟਾਓ</string>
+    <string name="delete_account_offline_title">ਇੰਟਰਨੈੱਟ ਨਹੀਂ।</string>
+    <string name="delete_account_offline_body">ਤੁਹਾਡਾ ਅਕਾਊਂਟ ਮਿਟਾਉਣ ਲਈ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਚਾਹੀਦਾ ਹੈ। ਕਨੈਕਟ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="delete_account_heading">ਕੀ ਆਪਣਾ ਅਕਾਊਂਟ ਅਤੇ ਆਪਣਾ ਡਾਟਾ ਮਿਟਾਉਣਾ ਹੈ?</string>
+    <string name="delete_account_deleted_title">ਕੀ ਮਿਟਾਇਆ ਜਾਂਦਾ ਹੈ</string>
+    <string name="delete_account_deleted_profile">ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ (ਨਾਮ, ਫ਼ੋਟੋ ਅਤੇ ਰੰਗ)</string>
+    <string name="delete_account_deleted_keys">ਤੁਹਾਡੀਆਂ Pix ਅਤੇ Bitcoin ਕੁੰਜੀਆਂ</string>
+    <string name="delete_account_deleted_provider">ਤੁਹਾਡੇ %1$s ਅਕਾਊਂਟ ਨਾਲ ਜੋੜ</string>
+    <string name="delete_account_deleted_recovery_code">ਤੁਹਾਡਾ ਰਿਕਵਰੀ ਕੋਡ</string>
+    <string name="delete_account_deleted_device">ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਤੁਹਾਡੇ ਡਾਟਾ ਦੀ ਕਾਪੀ</string>
+    <string name="delete_account_kept_title">ਤੁਹਾਡੇ ਗਰੁੱਪਾਂ ਵਿੱਚ ਕੀ ਰਹਿੰਦਾ ਹੈ</string>
+    <string name="delete_account_kept_groups">ਗਰੁੱਪ, ਆਪਣੇ ਖਰਚਿਆਂ ਅਤੇ ਭੁਗਤਾਨਾਂ ਸਮੇਤ, ਬਾਕੀ ਮੈਂਬਰਾਂ ਲਈ</string>
+    <string name="delete_account_kept_member">ਹਰ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡਾ ਨਾਮ, ਅਕਾਊਂਟ ਤੋਂ ਬਿਨਾਂ ਮੈਂਬਰ ਵਜੋਂ</string>
+    <string name="delete_account_kept_comments">ਤੁਹਾਡੀਆਂ ਟਿੱਪਣੀਆਂ ਅਤੇ ਤੁਹਾਡੀਆਂ ਜੋੜੀਆਂ ਫ਼ੋਟੋਆਂ, ਤੁਹਾਡੇ ਨਾਮ ਹੇਠ</string>
+    <string name="delete_account_export">ਪਹਿਲਾਂ ਮੇਰਾ ਡਾਟਾ ਐਕਸਪੋਰਟ ਕਰੋ</string>
+    <string name="delete_account_confirm">ਮੈਨੂੰ ਪਤਾ ਹੈ ਕਿ ਇਹ ਵਾਪਸ ਨਹੀਂ ਲਿਆ ਜਾ ਸਕਦਾ</string>
+    <string name="delete_account_delete">ਅਕਾਊਂਟ ਮਿਟਾਓ</string>
+    <string name="delete_account_cancel">ਰੱਦ ਕਰੋ</string>
+    <string name="delete_account_failed">ਤੁਹਾਡਾ ਅਕਾਊਂਟ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+</resources>

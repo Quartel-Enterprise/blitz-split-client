@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">ਭੁਗਤਾਨ ਦਾ ਨਵਾਂ ਤਰੀਕਾ</string>
+    <string name="paying_method_edit_title">ਭੁਗਤਾਨ ਦਾ ਤਰੀਕਾ ਸੋਧੋ</string>
+    <string name="paying_method_type">ਕਿਸਮ</string>
+    <string name="paying_method_name">ਨਾਮ</string>
+    <string name="paying_method_name_optional">ਨਾਮ (ਵਿਕਲਪਿਕ)</string>
+    <string name="paying_method_color">ਰੰਗ</string>
+    <string name="paying_method_default">ਡਿਫ਼ੌਲਟ ਤਰੀਕਾ</string>
+    <string name="paying_method_default_hint">ਤੁਹਾਡੇ ਵੱਲੋਂ ਭੁਗਤਾਨ ਕੀਤੇ ਨਵੇਂ ਖਰਚੇ ਇਸ ਨਾਲ ਸ਼ੁਰੂ ਹੁੰਦੇ ਹਨ।</string>
+    <string name="paying_method_delete">ਭੁਗਤਾਨ ਦਾ ਤਰੀਕਾ ਮਿਟਾਓ</string>
+    <string name="paying_method_delete_title">ਕੀ ਭੁਗਤਾਨ ਦਾ ਇਹ ਤਰੀਕਾ ਮਿਟਾਉਣਾ ਹੈ?</string>
+    <string name="paying_method_delete_body">ਜਿਨ੍ਹਾਂ ਖਰਚਿਆਂ \'ਤੇ ਤੁਸੀਂ ਇਹ ਮਾਰਕ ਕੀਤਾ ਸੀ, ਉਹ ਹੁਣ ਇਸ ਨੂੰ ਨਹੀਂ ਦਿਖਾਉਣਗੇ।</string>
+    <string name="paying_method_delete_confirm">ਮਿਟਾਓ</string>
+    <string name="paying_method_save">ਸੇਵ ਕਰੋ</string>
+</resources>

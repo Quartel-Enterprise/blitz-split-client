@@ -31,7 +31,8 @@ import SwiftUI
 /// Hindi with its respectful agent "यांनी", which the user's "तुम्ही" doesn't take, so its verb phrases all start with
 /// "यांनी", which the user's drops ("Ana यांनी खर्च वाटला", "तुम्ही खर्च वाटला").
 /// Gujarati does the same with its agent "એ", which the user's "તમે" doesn't take ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ
-/// વહેંચ્યો").
+/// વહેંચ્યો"), and Punjabi with its ergative "ਨੇ", which the user's "ਤੁਸੀਂ" doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ",
+/// "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ").
 /// Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
 /// "നിങ്ങൾ ചെലവ് വിഭജിച്ചു").
 ///
@@ -124,6 +125,7 @@ enum SecondPerson {
         case "hi": return verbWithoutSubjectParticle(verb, particle: "ने")
         case "mr": return verbWithoutSubjectParticle(verb, particle: "यांनी")
         case "gu": return verbWithoutSubjectParticle(verb, particle: "એ")
+        case "pa": return verbWithoutSubjectParticle(verb, particle: "ਨੇ")
         case let .some(code) where pastAuxiliaries[code] != nil:
             // Why: the past may be followed by a comma or a colon ("změnil(a), kdo platil").
             guard verb.range(of: #"^\S*l\(a\)(?=[\s,:]|$)"#, options: .regularExpression) != nil,

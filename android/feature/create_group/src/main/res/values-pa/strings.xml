@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">ਨਵਾਂ ਗਰੁੱਪ</string>
+    <string name="create_group_close">ਬੰਦ ਕਰੋ</string>
+    <string name="create_group_create">ਬਣਾਓ</string>
+    <string name="create_group_change_color">ਗਰੁੱਪ ਦਾ ਰੰਗ ਬਦਲੋ</string>
+    <string name="create_group_name_label">ਗਰੁੱਪ ਦਾ ਨਾਮ</string>
+    <string name="create_group_type_label">ਗਰੁੱਪ ਦੀ ਕਿਸਮ</string>
+    <string name="create_group_members_title">ਕੌਣ-ਕੌਣ ਸ਼ਾਮਲ ਹੈ</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d ਵਿਅਕਤੀ</item>
+        <item quantity="other">%d ਲੋਕ</item>
+    </plurals>
+    <string name="create_group_me">ਤੁਸੀਂ</string>
+    <string name="create_group_remove_member">%s ਨੂੰ ਹਟਾਓ</string>
+    <string name="create_group_add_placeholder">ਨਾਮ ਨਾਲ ਜੋੜੋ</string>
+    <string name="create_group_add">ਜੋੜੋ</string>
+    <string name="create_group_no_app_notice">ਅਜੇ ਕਿਸੇ ਨੂੰ ਐਪ ਦੀ ਲੋੜ ਨਹੀਂ। ਤੁਸੀਂ ਹੁਣੇ ਸਭ ਲਈ ਖਰਚੇ ਜੋੜ ਸਕਦੇ ਹੋ ਅਤੇ ਲਿੰਕ ਬਾਅਦ ਵਿੱਚ ਭੇਜ ਸਕਦੇ ਹੋ।</string>
+    <string name="create_group_currency">ਡਿਫ਼ੌਲਟ ਕਰੰਸੀ</string>
+    <string name="create_group_currency_caption">ਨਵੇਂ ਖਰਚੇ ਇਸ ਕਰੰਸੀ ਵਿੱਚ ਸ਼ੁਰੂ ਹੁੰਦੇ ਹਨ; ਹਰ ਖਰਚਾ ਕੋਈ ਹੋਰ ਕਰੰਸੀ ਵਰਤ ਸਕਦਾ ਹੈ।</string>
+    <string name="create_group_save_error">ਗਰੁੱਪ ਸੇਵ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="create_group_photo">ਗਰੁੱਪ ਦੀ ਫ਼ੋਟੋ</string>
+    <string name="create_group_take_photo">ਫ਼ੋਟੋ ਖਿੱਚੋ</string>
+    <string name="create_group_choose_photo">ਫ਼ੋਟੋ ਚੁਣੋ</string>
+    <string name="create_group_remove_photo">ਫ਼ੋਟੋ ਹਟਾਓ</string>
+    <string name="create_group_photo_error">ਇਹ ਫ਼ੋਟੋ ਵਰਤੀ ਨਹੀਂ ਜਾ ਸਕੀ। ਕੋਈ ਹੋਰ ਅਜ਼ਮਾਓ।</string>
+</resources>

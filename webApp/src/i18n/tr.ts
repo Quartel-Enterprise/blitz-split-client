@@ -879,6 +879,7 @@ export const tr: Record<MessageKey, string> = {
   profile_languageGujarati: 'Güceratça',
   profile_languageSlovenian: 'Slovence',
   profile_languageLithuanian: 'Litvanca',
+  profile_languagePunjabi: 'Pencapça',
   profile_languageMalayalam: 'Malayalamca',
   profile_bitcoinInSats: 'Satoshi cinsinden bitcoin',
   profile_bitcoinInSatsDetail: 'Bitcoin tutarlarını sats olarak gösterir ve girer (1 ₿ = 100.000.000 sats).',

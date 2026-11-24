@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · ਰਿਕਵਰੀ ਕੋਡ</string>
+    <string name="platform_export_file_name">blitz-split-data-%1$s.json</string>
+    <string name="platform_camera_denied">ਫ਼ੋਟੋ ਲੈਣ ਲਈ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।</string>
+    <string name="platform_camera_settings">ਸੈਟਿੰਗਾਂ</string>
+    <string name="platform_receipt_source_camera">ਫ਼ੋਟੋ ਲਓ</string>
+    <string name="platform_receipt_source_gallery">ਗੈਲਰੀ ਵਿੱਚੋਂ ਚੁਣੋ</string>
+    <string name="platform_receipt_source_file">ਫ਼ਾਈਲ ਚੁਣੋ</string>
+    <string name="platform_receipt_camera_title">ਰਸੀਦ ਸਕੈਨ ਕਰੋ</string>
+    <string name="platform_receipt_camera_close">ਬੰਦ ਕਰੋ</string>
+    <string name="platform_receipt_camera_flash_on">ਫ਼ਲੈਸ਼ ਚਾਲੂ ਕਰੋ</string>
+    <string name="platform_receipt_camera_flash_off">ਫ਼ਲੈਸ਼ ਬੰਦ ਕਰੋ</string>
+    <string name="platform_receipt_camera_hint">ਪੂਰੀ ਰਸੀਦ ਨੂੰ ਫ਼੍ਰੇਮ ਵਿੱਚ ਰੱਖੋ। ਅਸੀਂ ਰਕਮ, ਤਾਰੀਖ਼ ਅਤੇ ਵੇਰਵਾ ਭਰ ਦਿੰਦੇ ਹਾਂ; ਸੇਵ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਸੀਂ ਜਾਂਚ ਲਓ।</string>
+    <string name="platform_receipt_camera_gallery">ਗੈਲਰੀ ਵਿੱਚੋਂ ਚੁਣੋ</string>
+    <string name="platform_receipt_camera_shutter">ਫ਼ੋਟੋ ਲਓ</string>
+    <string name="platform_receipt_camera_unavailable">ਕੈਮਰਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਗੈਲਰੀ ਵਿੱਚੋਂ ਰਸੀਦ ਦੀ ਫ਼ੋਟੋ ਚੁਣੋ।</string>
+    <string name="platform_receipt_camera_permission">ਰਸੀਦ ਸਕੈਨ ਕਰਨ ਲਈ ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ, ਜਾਂ ਗੈਲਰੀ ਵਿੱਚੋਂ ਫ਼ੋਟੋ ਚੁਣੋ।</string>
+    <string name="platform_receipt_camera_allow">ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
+    <string name="platform_receipt_camera_settings">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</string>
+</resources>
