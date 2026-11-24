@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Sadali rēķinu bez raizēm</string>
+    <string name="welcome_offline_title">Darbojas bezsaistē</string>
+    <string name="welcome_offline_body">Viss paliek tavā ierīcē un sinhronizējas vēlāk.</string>
+    <string name="welcome_optional_title">Konts nav obligāts</string>
+    <string name="welcome_optional_body">Google vai Apple tikai palīdz neko nezaudēt, kad maini ierīci.</string>
+    <string name="welcome_invite_title">Uzaicini ar saiti vai QR kodu</string>
+    <string name="welcome_invite_body">Draugi pievienojas grupai, neveidojot kontu.</string>
+    <string name="welcome_no_connection_title">Nav savienojuma.</string>
+    <string name="welcome_no_connection_body">Lai pierakstītos ar kontu, vajag internetu. Izmanto lietotni bez konta tagad un pievieno kontu vēlāk sadaļā Profils.</string>
+    <string name="welcome_or">vai</string>
+    <string name="welcome_use_without_account">Izmantot bez konta</string>
+    <string name="welcome_used_on_another_device">Jau izmantoju to citā ierīcē</string>
+    <string name="welcome_sign_in_failed">Pašlaik neizdevās pierakstīties. Mēģini vēlreiz.</string>
+    <string name="welcome_legal_notice">Turpinot tu pieņem dokumentu %1$s un apliecini, ka izlasīji dokumentu %2$s.</string>
+    <string name="welcome_legal_terms">Lietošanas noteikumi</string>
+    <string name="welcome_legal_privacy">Privātuma politika</string>
+    <string name="welcome_no_account_note">Bez konta tavi dati tiek dzēsti pēc 30 dienām, ja lietotne netiek izmantota. Pievieno Google vai Apple, lai tos saglabātu.</string>
+    <string name="welcome_no_account_note_offline">Bez konta tavi dati tiek dzēsti pēc 30 dienām, ja lietotne netiek izmantota. Lai tos saglabātu, vēlāk sadaļā Profils pievieno Google vai Apple.</string>
+    <string name="welcome_expired_title">Tavi dati tika izdzēsti</string>
+    <string name="welcome_expired_body">Tu izmantoji lietotni bez konta un neatvēri to 30 dienas, tāpēc tavi dati tika izdzēsti. Pievieno Google vai Apple, lai nākamreiz tos saglabātu.</string>
+    <string name="welcome_expired_ok">Labi</string>
+</resources>

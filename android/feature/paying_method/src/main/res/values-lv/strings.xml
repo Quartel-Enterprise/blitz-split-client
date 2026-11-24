@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Jauna maksājuma metode</string>
+    <string name="paying_method_edit_title">Rediģēt maksājuma metodi</string>
+    <string name="paying_method_type">Veids</string>
+    <string name="paying_method_name">Nosaukums</string>
+    <string name="paying_method_name_optional">Nosaukums (neobligāts)</string>
+    <string name="paying_method_color">Krāsa</string>
+    <string name="paying_method_default">Noklusējuma metode</string>
+    <string name="paying_method_default_hint">Jauni rēķini, ko tu apmaksā, sākas ar to.</string>
+    <string name="paying_method_delete">Dzēst maksājuma metodi</string>
+    <string name="paying_method_delete_title">Dzēst šo maksājuma metodi?</string>
+    <string name="paying_method_delete_body">Rēķinos, kuros to atzīmēji, tā vairs netiks rādīta.</string>
+    <string name="paying_method_delete_confirm">Dzēst</string>
+    <string name="paying_method_save">Saglabāt</string>
+</resources>

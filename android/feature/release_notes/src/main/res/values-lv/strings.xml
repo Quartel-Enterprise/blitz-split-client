@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Jaunumi</string>
+    <string name="release_notes_show_beta">Rādīt beta versijas</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Šī versija</string>
+    <string name="release_notes_empty">Jaunumu vēl nav.</string>
+    <string name="release_notes_empty_only_betas">Stabilas versijas vēl nav. Ieslēdz beta versijas, lai redzētu, kas tiek testēts.</string>
+    <string name="release_notes_load_failed_title">Neizdevās ielādēt jaunumus</string>
+    <string name="release_notes_load_failed_body">Pārbaudi savienojumu un mēģini vēlreiz.</string>
+    <string name="release_notes_retry">Mēģināt vēlreiz</string>
+    <string name="release_notes_open_on_github">Atvērt GitHub</string>
+</resources>

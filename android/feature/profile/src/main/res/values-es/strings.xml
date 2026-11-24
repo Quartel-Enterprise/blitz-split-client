@@ -103,6 +103,7 @@
     <string name="profile_language_catalan">Catalán</string>
     <string name="profile_language_danish">Danés</string>
     <string name="profile_language_finnish">Finés</string>
+    <string name="profile_language_latvian">Letón</string>
     <string name="profile_language_system_detail">Idioma del dispositivo</string>
     <string name="profile_notifications">Notificaciones</string>
     <plurals name="profile_notifications_active">

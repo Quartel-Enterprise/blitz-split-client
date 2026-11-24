@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Kā tevi sauc draugi?</string>
+    <string name="profile_setup_subtitle">Tavu vārdu redz tavas grupas un ikviens, kam ir tava profila saite.</string>
+    <string name="profile_setup_avatar_color">Avatāra krāsa</string>
+    <string name="profile_setup_add_photo">Pievienot fotoattēlu</string>
+    <string name="profile_setup_photo_error">Neizdevās izmantot šo fotoattēlu. Izmēģini citu.</string>
+    <string name="profile_setup_name_label">Tavs vārds</string>
+    <string name="profile_setup_name_placeholder">Jānis Bērziņš</string>
+    <string name="profile_setup_name_too_short">Ievadi vismaz %d burtus.</string>
+    <string name="profile_setup_name_too_long">Izmanto ne vairāk kā %d rakstzīmes.</string>
+    <string name="profile_setup_name_hint">To vēlāk var mainīt sadaļā Profils.</string>
+    <string name="profile_setup_saved_locally">Pagaidām saglabāts tikai šajā ierīcē.</string>
+    <string name="profile_setup_continue">Turpināt</string>
+</resources>

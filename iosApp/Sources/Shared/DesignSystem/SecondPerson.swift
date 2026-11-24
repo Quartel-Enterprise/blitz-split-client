@@ -29,6 +29,10 @@ import SwiftUI
 /// Hindi with its respectful agent "यांनी", which the user's "तुम्ही" doesn't take, so its verb phrases all start with
 /// "यांनी", which the user's drops ("Ana यांनी खर्च वाटला", "तुम्ही खर्च वाटला").
 ///
+/// Latvian starts each verb phrase with a simple past, which says the person but not the gender: its third person in
+/// "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji"; "Ana
+/// pievienojās", "Tu pievienojies").
+///
 /// A sentence is localized with the placeholders `actor` and `object` in place of the names, so its verb can be
 /// changed before the names, bold or not, go in. The same rules as the web's and Android's `toSecondPerson`.
 enum SecondPerson {
@@ -96,7 +100,9 @@ enum SecondPerson {
     /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Greek: the aorist takes an "ς", so "μοίρασε" → "μοίρασες".
     /// Hungarian: the past the phrase starts with takes a "d" in "-ta"/"-te" ("létrehozta" → "létrehoztad"), or its
     /// listed second person ("felosztott" → "felosztottál"). Swahili: the third person's "a" of the perfect or past the
-/// phrase starts with turns into "u", so "amegawanya" → "umegawanya", "alifuta" → "ulifuta". Another language keeps
+/// phrase starts with turns into "u", so "amegawanya" → "umegawanya", "alifuta" → "ulifuta". Latvian: the past the
+/// phrase starts with ends in "-i" for "-a" and "-ies" for "-ās", so "sadalīja" → "sadalīji", "pievienojās" →
+/// "pievienojies". Another language keeps
 /// the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
@@ -129,6 +135,13 @@ enum SecondPerson {
             // Why: "amegawanya" → "umegawanya", "alilipa" → "ulilipa": only the subject prefix changes.
             guard verb.range(of: #"^a(?=(me|li)\S)"#, options: .regularExpression) != nil else { return verb }
             return "u" + verb.dropFirst()
+        case "lv":
+            // Why: the past may be followed by a comma or a colon, as Hungarian's.
+            guard let past = verb.range(of: #"^[^\s,:]+"#, options: .regularExpression) else { return verb }
+            let word = String(verb[past])
+            if word.hasSuffix("ās") { return verb.replacingCharacters(in: past, with: word.dropLast(2) + "ies") }
+            guard word.hasSuffix("a") else { return verb }
+            return verb.replacingCharacters(in: past, with: word.dropLast() + "i")
         case "pl": return replacingFirstWord(of: verb) { word in
                 word.hasSuffix("ł(a)") ? String(word.dropLast("ł(a)".count)) + "łeś(-aś)" : nil
             }
