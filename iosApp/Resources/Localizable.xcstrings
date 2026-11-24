@@ -922,7 +922,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Blitz Split · atkopšanas kods\n\n%@\n\nIzmanto to sadaļā „Izmantoju to citā ierīcē”, lai atgūtu savus datus.\n"
+            "value" : "Blitz Split · atkopšanas kods\n\n%@\n\nIzmanto to sadaļā „Jau izmantoju to citā ierīcē”, lai atgūtu savus datus.\n"
           }
         },
         "mr" : {
@@ -281814,7 +281814,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Izmantoju to citā ierīcē"
+            "value" : "Jau izmantoju to citā ierīcē"
           }
         },
         "mr" : {
