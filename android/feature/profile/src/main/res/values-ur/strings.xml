@@ -104,6 +104,7 @@
     <string name="profile_language_finnish">فنش</string>
     <string name="profile_language_latvian">لیٹوین</string>
     <string name="profile_language_estonian">اسٹونین</string>
+    <string name="profile_language_gujarati">گجراتی</string>
     <string name="profile_language_system_detail">ڈیوائس کی زبان</string>
     <string name="profile_notifications">نوٹیفکیشنز</string>
     <plurals name="profile_notifications_active">

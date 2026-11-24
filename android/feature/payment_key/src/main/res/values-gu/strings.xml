@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">નવી Pix કી</string>
+    <string name="payment_key_title_pix_edit">Pix કી એડિટ કરો</string>
+    <string name="payment_key_title_bitcoin_new">નવી Bitcoin કી</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin કી એડિટ કરો</string>
+    <string name="payment_key_save">સેવ કરો</string>
+
+    <string name="payment_key_pix_intro">જે તમને ચૂકવે છે તે હિસાબ પતાવતી વખતે આ કી જુએ છે. કયા પ્રકારની કી?</string>
+    <string name="payment_key_pix_question">કયા પ્રકારની કી?</string>
+    <string name="payment_key_pix_explanation">જે તમને ચૂકવે છે તે હિસાબ પતાવતી વખતે આ કી જુએ છે.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">ફોન</string>
+    <string name="payment_key_type_email">ઇમેઇલ</string>
+    <string name="payment_key_type_random">રેન્ડમ</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">એરિયા કોડ સાથે મોબાઇલ નંબર</string>
+    <string name="payment_key_label_email">ઇમેઇલ</string>
+    <string name="payment_key_label_random">રેન્ડમ કી</string>
+
+    <string name="payment_key_bitcoin_intro">તમે કેવી રીતે મેળવવા માગો છો?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">ઝડપી, ઓછી ફી</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">બ્લૉકચેન પર</string>
+    <string name="payment_key_label_lightning">Lightning Address અથવા LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin સરનામું</string>
+
+    <string name="payment_key_paste">પેસ્ટ કરો</string>
+
+    <string name="payment_key_hint_cpf">ફોર્મેટ 000.000.000-00</string>
+    <string name="payment_key_hint_phone">ફોર્મેટ +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">ફોર્મેટ name@domain.com</string>
+    <string name="payment_key_hint_random">32 અક્ષરો અને અંકો, તમારી બેંક બતાવે તે રીતે</string>
+    <string name="payment_key_hint_lightning">જેમ કે name@wallet.com અથવા LNURL1…</string>
+    <string name="payment_key_hint_onchain">bc1q અથવા bc1p થી શરૂ થતું mainnet સરનામું</string>
+
+    <string name="payment_key_valid_cpf">ફોર્મેટ 000.000.000-00 · ચેક અંકો મેળ ખાય છે</string>
+    <string name="payment_key_valid_phone">ફોર્મેટ +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">ફોર્મેટ name@domain.com</string>
+    <string name="payment_key_valid_random">રેન્ડમ કી ઓળખાઈ (32 અક્ષરો)</string>
+    <string name="payment_key_valid_lightning_address">માન્ય Lightning Address</string>
+    <string name="payment_key_valid_lnurl">માન્ય LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">અમાન્ય CPF: ચેક અંકો મેળ ખાતા નથી.</string>
+    <string name="payment_key_error_invalid_phone">અધૂરો મોબાઇલ નંબર: એરિયા કોડ અને 9 થી શરૂ થતા 9 અંકો વાપરો.</string>
+    <string name="payment_key_error_invalid_email">અધૂરો ઇમેઇલ: ડોમેન ખૂટે છે, જેમ કે .com અથવા .com.br.</string>
+    <string name="payment_key_error_invalid_random">અધૂરી રેન્ડમ કી: તેમાં 32 અક્ષરો અને અંકો હોય છે.</string>
+    <string name="payment_key_error_invalid_lightning">આ Lightning Address (name@wallet) કે LNURL નથી.</string>
+    <string name="payment_key_error_lightning_invoice">આ Lightning ઇન્વૉઇસ (lnbc…) છે: તે એક જ વાર ચૂકવાય છે અને સમાપ્ત થઈ જાય છે. Lightning Address અથવા LNURL પેસ્ટ કરો.</string>
+    <string name="payment_key_error_invalid_onchain">અમાન્ય સરનામું. mainnet નું bc1q અથવા bc1p સરનામું વાપરો.</string>
+    <string name="payment_key_error_testnet_address">આ testnet સરનામું (tb1…) છે. અહીં ફક્ત Bitcoin mainnet ચાલે છે, bc1… સરનામાં સાથે.</string>
+    <string name="payment_key_error_already_saved">તમારી પાસે આ કી પહેલેથી છે.</string>
+
+    <string name="payment_key_switched_to_onchain">આ on-chain સરનામું છે, તેથી અમે On-chain પર બદલી દીધું.</string>
+    <string name="payment_key_switched_to_lightning">આ Lightning Address છે, તેથી અમે Lightning પર બદલી દીધું.</string>
+    <string name="payment_key_cpf_notice">જે તમને ચૂકવે છે તે તમારો આખો CPF જુએ છે. જો તમે તે શેર કરવા ન માગતા હો, તો ફોન, ઇમેઇલ કે રેન્ડમ કી વાપરો.</string>
+    <string name="payment_key_held_notice">તમારી પાસે આ પ્રકારની ફક્ત એક જ Pix કી હોઈ શકે, તેથી આ તમે સેવ કરેલી કી છે. તમે ઇચ્છો તો અહીં તેને બદલો.</string>
+
+    <string name="payment_key_accepted_title">અમે સ્વીકારીએ છીએ</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">ડિફૉલ્ટ Pix કી</string>
+    <string name="payment_key_default_bitcoin_title">ડિફૉલ્ટ Bitcoin કી</string>
+    <string name="payment_key_default_pix_detail">હિસાબ પતાવતી વખતે પહેલાં બતાવાય છે.</string>
+    <string name="payment_key_default_bitcoin_detail">કોઈ BTC માં ચૂકવે ત્યારે પહેલાં બતાવાય છે.</string>
+    <string name="payment_key_default_now">હાલમાં: %1$s.</string>
+    <string name="payment_key_default_locked_editing">તેને બદલવા માટે, બીજી કીને ડિફૉલ્ટ બનાવો.</string>
+    <string name="payment_key_default_locked_new">આ પ્રકારની તમારી પહેલી કી ડિફૉલ્ટ હોય છે.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">ફોન</string>
+    <string name="payment_key_default_type_email">ઇમેઇલ</string>
+    <string name="payment_key_default_type_random">રેન્ડમ કી</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split પૈસા ટ્રાન્સફર કરતું નથી: ચૂકવનાર પોતાની બેંક ઍપમાં ચૂકવે છે. ખાતરી કરો કે કી તમારા નામે છે.</string>
+    <string name="payment_key_footer_bitcoin">હિસાબ પતાવતી વખતે, અમે હાલના દરે રકમ sats માં બતાવીએ છીએ. તે ફક્ત અંદાજ છે: ચૂકવનાર પોતાના વૉલેટમાં તેની ખાતરી કરે છે.</string>
+
+    <string name="payment_key_delete">કી ડિલીટ કરો</string>
+    <string name="payment_key_delete_title">આ કી ડિલીટ કરવી છે?</string>
+    <string name="payment_key_delete_body">જેમણે તમને પૈસા આપવાના છે, તેઓ હિસાબ પતાવતી વખતે હવે તે જોશે નહીં.</string>
+    <string name="payment_key_delete_confirm">ડિલીટ કરો</string>
+</resources>

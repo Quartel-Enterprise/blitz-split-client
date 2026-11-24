@@ -104,6 +104,7 @@
     <string name="profile_language_finnish">Suomi</string>
     <string name="profile_language_latvian">Latvia</string>
     <string name="profile_language_estonian">Viro</string>
+    <string name="profile_language_gujarati">Gudžarati</string>
     <string name="profile_language_system_detail">Laitteen kieli</string>
     <string name="profile_notifications">Ilmoitukset</string>
     <plurals name="profile_notifications_active">

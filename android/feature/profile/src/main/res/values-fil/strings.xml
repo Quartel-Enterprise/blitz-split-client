@@ -104,6 +104,7 @@
     <string name="profile_language_finnish">Finnish</string>
     <string name="profile_language_latvian">Latvian</string>
     <string name="profile_language_estonian">Estonian</string>
+    <string name="profile_language_gujarati">Gujarati</string>
     <string name="profile_language_system_detail">Wika ng device</string>
     <string name="profile_notifications">Mga notipikasyon</string>
     <plurals name="profile_notifications_active">

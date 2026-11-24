@@ -105,6 +105,7 @@
     <string name="profile_language_finnish">Finlandese</string>
     <string name="profile_language_latvian">Lettone</string>
     <string name="profile_language_estonian">Estone</string>
+    <string name="profile_language_gujarati">Gujarati</string>
     <string name="profile_language_system_detail">Lingua del dispositivo</string>
     <string name="profile_notifications">Notifiche</string>
     <plurals name="profile_notifications_active">

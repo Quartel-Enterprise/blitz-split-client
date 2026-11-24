@@ -95,6 +95,12 @@
             "value" : "Blitz Split"
           }
         },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "he" : {
           "stringUnit" : {
             "state" : "translated",
@@ -372,6 +378,12 @@
           }
         },
         "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "gu" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -659,6 +671,12 @@
             "value" : "Pour scanner le QR code d’une invitation ou de ton ancien appareil, et pour prendre ta photo de profil et des photos de dépenses."
           }
         },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "આમંત્રણનો અથવા તમારા જૂના ડિવાઇસનો QR કોડ સ્કૅન કરવા માટે, અને તમારો પ્રોફાઇલ ફોટો અને ખર્ચના ફોટા લેવા માટે."
+          }
+        },
         "he" : {
           "stringUnit" : {
             "state" : "translated",
@@ -941,6 +959,12 @@
             "value" : "Pour inviter des personnes de tes contacts avec le lien d’un groupe. Leurs numéros restent uniquement sur cet appareil."
           }
         },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ગ્રુપની લિંકથી તમારા સંપર્કોમાંથી લોકોને આમંત્રણ આપવા માટે. તેમના નંબર આ જ ડિવાઇસ પર રહે છે."
+          }
+        },
         "he" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1221,6 +1245,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pour enregistrer les photos des dépenses dans ta photothèque."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ખર્ચના ફોટા તમારી લાઇબ્રેરીમાં સેવ કરવા માટે."
           }
         },
         "he" : {

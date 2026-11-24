@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">તમારા ગ્રુપ પાછા લાવો</string>
+    <string name="restore_subtitle">પહેલાં એકાઉન્ટથી સાઇન ઇન કર્યું હતું? બસ ફરી સાઇન ઇન કરો. નહીં તો, રિકવરી કોડ અથવા તમારા જૂના ડિવાઇસનો QR કોડ વાપરો.</string>
+    <string name="restore_no_connection_title">કનેક્શન નથી</string>
+    <string name="restore_no_connection_body">એકાઉન્ટ કે કોડથી સાઇન ઇન કરવા માટે તમારા ગ્રુપ ડાઉનલોડ કરવા ઇન્ટરનેટ જોઈએ. તમે જે લખ્યું છે તે સચવાયેલું રહે છે.</string>
+    <string name="restore_code_label">અથવા રિકવરી કોડ વાપરો</string>
+    <string name="restore_code_hint">12 શબ્દો ક્રમમાં. બધાં ખાનાં ભરવા માટે બધા શબ્દો એક જ ખાનામાં પેસ્ટ કરો.</string>
+    <string name="restore_scan_qr_title">તમારા જૂના ડિવાઇસનો QR કોડ સ્કૅન કરો</string>
+    <string name="restore_scan_qr_body">ત્યાં: પ્રોફાઇલ › રિકવરી › QR કોડ બતાવો</string>
+    <string name="restore_recover">પાછું મેળવો</string>
+    <string name="restore_try_again">ફરી પ્રયાસ કરો</string>
+    <string name="restore_start_fresh">આ ડિવાઇસ પર નવેસરથી શરૂ કરો</string>
+    <string name="restore_error_invalid_code">કોડ મળ્યો નહીં. શબ્દો અને તેમનો ક્રમ તપાસો, પછી ફરી પ્રયાસ કરો.</string>
+    <string name="restore_error_too_many_attempts">ઘણા બધા પ્રયાસો થયા. થોડી મિનિટ રાહ જુઓ અને ફરી પ્રયાસ કરો.</string>
+    <string name="restore_error_sign_in_failed">હમણાં સાઇન ઇન થઈ શક્યું નહીં. ફરી પ્રયાસ કરો.</string>
+    <string name="restore_error_unknown">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</string>
+</resources>

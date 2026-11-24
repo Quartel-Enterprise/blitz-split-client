@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">હિસાબ પતાવવાનું રિમાઇન્ડર</string>
+    <string name="push_bill_created">%1$s એ તમારી સાથે ‘%2$s’ ખર્ચ ઉમેર્યો</string>
+    <string name="push_bill_edited">%1$s એ ‘%2$s’ ખર્ચ એડિટ કર્યો</string>
+    <string name="push_bill_deleted">%1$s એ ‘%2$s’ ખર્ચ ડિલીટ કર્યો</string>
+    <string name="push_comment_added">%1$s એ ‘%2$s’ ખર્ચ પર કોમેન્ટ કરી: %3$s</string>
+    <string name="push_payment_paid_you">%1$s એ નોંધ્યું કે તેમણે તમને ચૂકવ્યા</string>
+    <string name="push_payment_to_you">%1$s એ નોંધ્યું કે %2$s એ તમને ચૂકવ્યા</string>
+    <string name="push_payment_received_yours">%1$s એ તમારી ચુકવણી મળી ગઈ હોવાનું નોંધ્યું</string>
+    <string name="push_payment_from_you">%1$s એ નોંધ્યું કે તમે %2$s ને ચૂકવ્યા</string>
+    <string name="push_payment_undone">%1$s એ તમારી સાથેની એક ચુકવણી પાછી વાળી</string>
+    <string name="push_charge_sent">%1$s એ તમને હિસાબ પતાવવાનું રિમાઇન્ડર મોકલ્યું</string>
+    <string name="push_settle_reminder">‘%1$s’ ગ્રુપમાં તમારું બેલેન્સ હજી બાકી છે</string>
+    <string name="push_settle_reminders">%1$s ગ્રુપમાં તમારાં બેલેન્સ હજી બાકી છે</string>
+    <string name="push_added_to_group">%1$s એ તમને ગ્રુપમાં ઉમેર્યા</string>
+    <string name="push_member_joined">%1$s એ ગ્રુપ જોઇન કર્યું</string>
+    <string name="push_debts_simplified_to_you">%1$s એ દેવાં સરળ કર્યાં. હવે %2$s તમને %3$s ચૂકવશે.</string>
+    <string name="push_debts_simplified_from_you">%1$s એ દેવાં સરળ કર્યાં. હવે તમે %2$s ને %3$s ચૂકવશો.</string>
+    <string name="push_debts_simplified_other">%1$s એ દેવાં સરળ કર્યાં. તમારા માટે શું બદલાયું તે જુઓ.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s એ “દેવાં સરળ કરો” બંધ કર્યું. હવે %2$s તમને %3$s ચૂકવશે.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s એ “દેવાં સરળ કરો” બંધ કર્યું. હવે તમે %2$s ને %3$s ચૂકવશો.</string>
+    <string name="push_debts_unsimplified_other">%1$s એ “દેવાં સરળ કરો” બંધ કર્યું. તમારા માટે શું બદલાયું તે જુઓ.</string>
+    <string name="notification_settings_bills">ખર્ચ</string>
+    <string name="notification_settings_bills_detail">તમે જેમાં સામેલ હો તે નવા, એડિટ કરેલા કે ડિલીટ કરેલા ખર્ચ</string>
+    <string name="notification_settings_payments">ચુકવણીઓ અને હિસાબ</string>
+    <string name="notification_settings_payments_detail">તમને મળેલી કે તમે કરેલી ચુકવણીઓ, અને સરળ કરેલાં દેવાં</string>
+    <string name="notification_settings_comments">કોમેન્ટ</string>
+    <string name="notification_settings_comments_detail">તમે જેમાં સામેલ હો તે ખર્ચ પર અને તમે જેમાં લખ્યું હોય તે ચર્ચાઓમાં</string>
+    <string name="notification_settings_people_and_groups">લોકો અને ગ્રુપ</string>
+    <string name="notification_settings_people_and_groups_detail">તમારા ગ્રુપમાં કોણ જોડાય કે છોડે, અને તેમાં શું બદલાય</string>
+    <string name="notification_settings_payment_requests">પૈસાની માગણીઓ</string>
+    <string name="notification_settings_payment_requests_detail">જ્યારે કોઈ તમારી પાસે પૈસા માગે</string>
+    <string name="notification_settings_balance_reminder">બાકી બેલેન્સનું રિમાઇન્ડર</string>
+    <string name="notification_settings_balance_reminder_detail">અઠવાડિયામાં એક વાર, જો બેલેન્સ બાકી હોય</string>
+</resources>

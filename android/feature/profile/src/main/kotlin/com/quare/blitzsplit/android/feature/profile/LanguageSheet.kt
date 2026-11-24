@@ -388,6 +388,7 @@ internal fun languageName(language: AppLanguage): String = when (language) {
     AppLanguage.FINNISH -> stringResource(R.string.profile_language_native_finnish)
     AppLanguage.LATVIAN -> stringResource(R.string.profile_language_native_latvian)
     AppLanguage.ESTONIAN -> stringResource(R.string.profile_language_native_estonian)
+    AppLanguage.GUJARATI -> stringResource(R.string.profile_language_native_gujarati)
     AppLanguage.CHINESE_TRADITIONAL -> stringResource(R.string.profile_language_native_chinese_traditional)
 }
 
@@ -444,5 +445,6 @@ private fun translatedLanguageName(language: AppLanguage): String = when (langua
     AppLanguage.FINNISH -> stringResource(R.string.profile_language_finnish)
     AppLanguage.LATVIAN -> stringResource(R.string.profile_language_latvian)
     AppLanguage.ESTONIAN -> stringResource(R.string.profile_language_estonian)
+    AppLanguage.GUJARATI -> stringResource(R.string.profile_language_gujarati)
     AppLanguage.CHINESE_TRADITIONAL -> stringResource(R.string.profile_language_chinese_traditional)
 }
