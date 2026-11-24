@@ -8,6 +8,14 @@ description: >-
   scripts/readme-hero/chrome.mjs drives.
 
 inputs:
+  locales:
+    description: 'The listing tags of locales.tsv to draw and stage, with commas (en-US,ja). Blank draws every language'
+    required: false
+    default: ''
+  devices:
+    description: 'The image types to draw and stage, with commas (play_phone, play_tablet_7, play_tablet_10, wear): supply replaces only those on Google Play. Blank draws every one'
+    required: false
+    default: ''
   cache-encryption-key:
     description: 'The secret Gradle''s configuration cache is encrypted with (GRADLE_ENCRYPTION_KEY)'
     required: false
@@ -35,12 +43,34 @@ runs:
         node-version: 24
 
     # The devices of Google Play's shelves that are staged: the foldables go up by hand, so nothing draws them here.
+    # `devices` and `locales` narrow every step below, as ART_DEVICES and ART_LOCALES do on a Mac, and PLAY_DEVICES
+    # the staging: the phone's and tablets' drawing is skipped without one of them, the watch's without wear.
     - name: Name the Play devices
+      id: devices
       shell: bash
-      run: echo "ART_DEVICES=play_phone,play_tablet_7,play_tablet_10" >> "$GITHUB_ENV"
+      env:
+        LOCALES: ${{ inputs.locales }}
+        DEVICES: ${{ inputs.devices }}
+      run: |
+        devices="${DEVICES:-play_phone,play_tablet_7,play_tablet_10,wear}"
+        devices="${devices// /}"
+        # Refused here, before the drawing, as stage-play.mjs would refuse it after
+        if [[ ! "$devices" =~ ^(play_phone|play_tablet_7|play_tablet_10|wear)(,(play_phone|play_tablet_7|play_tablet_10|wear))*$ ]]; then
+          echo "::error::devices names image types of play_phone, play_tablet_7, play_tablet_10 and wear, with commas: $DEVICES"
+          exit 1
+        fi
+        art="$(tr ',' '\n' <<< "$devices" | grep '^play_' | paste -sd, - || true)"
+        {
+          echo "ART_DEVICES=$art"
+          echo "PLAY_DEVICES=$devices"
+          echo "ART_LOCALES=${LOCALES// /}"
+        } >> "$GITHUB_ENV"
+        echo "art=$art" >> "$GITHUB_OUTPUT"
+        if [[ ",$devices," == *",wear,"* ]]; then echo "wear=true" >> "$GITHUB_OUTPUT"; fi
 
     # The bare screens, then what the tickets write on them, then the art laid out in Chrome and staged for supply.
     - name: Draw the screens
+      if: ${{ steps.devices.outputs.art != '' }}
       shell: bash
       run: |
         ./gradlew :android:store_screenshots:testDebugUnitTest -PplayArt --rerun -q
@@ -48,13 +78,16 @@ runs:
 
     # The Wear OS watch's screens (four of each language, Robolectric), which stage-play.mjs stages as wearScreenshots
     - name: Draw the watch screens
+      if: ${{ steps.devices.outputs.wear == 'true' }}
       shell: bash
       run: ./scripts/store-screenshots/watch/draw-wear.sh
 
     - name: Make the screenshots
       shell: bash
+      env:
+        ART: ${{ steps.devices.outputs.art }}
       run: |
-        node scripts/store-screenshots/listing-art/compose.mjs
+        if [ -n "$ART" ]; then node scripts/store-screenshots/listing-art/compose.mjs; fi
         node scripts/store-screenshots/listing-art/stage-play.mjs
 
     # The upload jobs' matrix, read off what was staged: the list of languages lives in the generators alone. Read

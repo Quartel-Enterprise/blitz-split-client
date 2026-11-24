@@ -4,6 +4,10 @@
 // regional codes, as the listing text does (scripts/release/store-listing.mjs).
 //
 //   node scripts/store-screenshots/listing-art/stage-play.mjs
+//   PLAY_DEVICES=play_phone,wear ART_LOCALES=en-US,ja node scripts/store-screenshots/listing-art/stage-play.mjs
+//
+// PLAY_DEVICES stages those image types alone (play_phone, play_tablet_7, play_tablet_10, wear; every one when unset):
+// supply replaces only the image types it finds staged, so the others stay on Google Play as they are.
 //
 // The Wear OS watch's four screens of each language (scripts/store-screenshots/watch/draw-wear.sh, build/outputs/
 // store-screenshots-wear/<locale>/) are staged as wearScreenshots, bare: Google Play takes no frame, text or background
@@ -27,6 +31,12 @@ const WEAR_IMAGES = 4;
 const rows = (await readFile(join(ROOT, "scripts/store-screenshots/locales.tsv"), "utf8")).split("\n").filter((row) => row.trim() && !row.startsWith("#"));
 const languageOf = Object.fromEntries(rows.map((row) => row.split("\t")).map(([tag, language]) => [tag, language]));
 
+// The image types to stage: PLAY_DEVICES's, or every one.
+const PLAY_DEVICES = [...Object.keys(IMAGE_TYPES), "wear"];
+const devices = process.env.PLAY_DEVICES ? [...new Set(process.env.PLAY_DEVICES.split(",").map((device) => device.trim()).filter(Boolean))] : PLAY_DEVICES;
+const unknownDevices = devices.filter((device) => !PLAY_DEVICES.includes(device));
+if (devices.length === 0 || unknownDevices.length) throw new Error(`PLAY_DEVICES names devices of ${PLAY_DEVICES.join(", ")}: ${process.env.PLAY_DEVICES}`);
+
 // The locales to stage: ART_LOCALES's, or every one the art was drawn in. A language with no art stops the run before anything is replaced.
 const wanted = process.env.ART_LOCALES ? process.env.ART_LOCALES.split(",") : Object.keys(languageOf);
 const unknown = wanted.filter((tag) => !languageOf[tag]);
@@ -38,12 +48,14 @@ for (const tag of wanted) {
   const playLocales = PLAY_LOCALES[languageOf[tag]];
   if (!playLocales) throw new Error(`store-listing.mjs has no Play locale for ${tag}`);
   for (const [device, imageType] of Object.entries(IMAGE_TYPES)) {
+    if (!devices.includes(device)) continue;
     const folder = join(ART, device, tag);
     const images = (await readdir(folder).catch(() => [])).filter((name) => name.endsWith(".png")).sort();
     if (images.length !== IMAGES_PER_DEVICE) throw new Error(`${device} ${tag} has ${images.length} images, Google Play's shelf takes ${IMAGES_PER_DEVICE}: run compose.mjs`);
     plan.push({ playLocales, imageType, folder, images });
   }
   // The watch's folder of the language, checked with the rest: a language drawn without it stops the run too.
+  if (!devices.includes("wear")) continue;
   const wearFolder = join(WEAR_ART, tag);
   const wearImages = (await readdir(wearFolder).catch(() => [])).filter((name) => name.endsWith(".png")).sort();
   if (wearImages.length !== WEAR_IMAGES) throw new Error(`The Wear OS watch ${tag} has ${wearImages.length} images, Google Play's shelf takes ${WEAR_IMAGES} here: run watch/draw-wear.sh`);

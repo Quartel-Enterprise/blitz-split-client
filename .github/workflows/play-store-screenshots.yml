@@ -37,6 +37,14 @@ on:
         description: "Only draw them and ask Google Play whether it would take them: the listing doesn't change"
         type: boolean
         default: false
+      locales:
+        description: "Draw and send these languages alone, listing tags of locales.tsv with commas (en-US,ja,hr). Blank sends every one"
+        type: string
+        default: ""
+      devices:
+        description: "Draw and send these image types alone, with commas (play_phone, play_tablet_7, play_tablet_10, wear): the others stay on Google Play as they are. Blank sends every one"
+        type: string
+        default: ""
       group_size:
         description: "How many locales go through one Play edit, in one job: each edit Google Play saves counts against its daily quota"
         type: number
@@ -114,6 +122,8 @@ jobs:
         id: draw
         uses: ./.github/actions/play-screenshots-draw
         with:
+          locales: ${{ inputs.locales }}
+          devices: ${{ inputs.devices }}
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Say what the run sends
