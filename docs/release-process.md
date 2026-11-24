@@ -594,8 +594,8 @@ this was set up once, by hand, in the Cloudflare account of `CLOUDFLARE_ACCOUNT_
   offline data, the installed app, its push subscription) stays there: people reach theirs on the new host by signing
   in again, or with their recovery code.
 
-The domain answers 522 until the project has a deployment: the first run of the `web` job is what puts the app
-there.
+The domain answers 522 whenever the project has no deployment, as it did until the first run of the `web` job put
+the app there.
 
 Should any of it ever have to be made again, the `web` job says what is missing before it builds: it fails naming
 the project when there is none, or when its production branch isn't `main`, and warns when the project doesn't
@@ -608,20 +608,22 @@ What the production web app needs outside this repository, or its sign in fails:
 
 - `https://web.blitzsplit.com` and `https://web.blitzsplit.com/**` in the redirect URLs of the Supabase project
   (`docs/auth.md` of `blitz-split-api`), where Supabase sends the browser back after Google or Apple.
-- `https://web.blitzsplit.com` in the authorized JavaScript origins of the Google OAuth web client (project
-  `blitz-split`). Its only redirect URIs are Supabase's callback and Firebase's handler: the web signs in through
-  Supabase's OAuth redirect, so the app's own host is never a Google redirect URI.
+
+The Google OAuth web client (project `blitz-split`) lists `https://web.blitzsplit.com` in its authorized JavaScript
+origins, but sign in doesn't depend on it: the web signs in through Supabase's OAuth redirect
+(`signInWith(provider)`), which Google checks against the redirect URIs, Supabase's callback, never against the
+origins. Look at Supabase's redirect URLs first when the web's sign in breaks.
 
 The Apple Services ID (`com.quare.blitzsplit.web`) needs nothing for a web host: Apple only ever redirects to
-Supabase's callback, the one domain and return URL the Services ID lists. Both lists above still hold the
-`app.blitzsplit.com` entries, which can go now that the old host only redirects.
+Supabase's callback, the one domain and return URL the Services ID lists. Supabase's redirect URLs and Google's
+origins still hold the `app.blitzsplit.com` entries, which can go now that the old host only redirects. Supabase's
+Site URL, the fallback for a rejected redirect, never named `app.blitzsplit.com`, so it needs no change for this.
 
-Two changes in `blitz-split-site` wait for the first production deploy, and are not this workflow's:
+Two changes in `blitz-split-site` waited for the first production deploy, and are not this workflow's:
 
-- The invite links blitzsplit.com redirects to a web app still go to the beta's
+- Done: `webAppLive` is on in its `public/stores.js`, so the site offers https://web.blitzsplit.com.
+- Now due: the invite links blitzsplit.com sends to a web app still name the beta's
   ([Joining and foldables](product/joining-and-folds.md)), until they point at web.blitzsplit.com.
-- The site only offers the web app once `webAppLive` is on in its `public/stores.js`, next to the `webAppUrl` that
-  already names https://web.blitzsplit.com.
 
 ### Google Play access
 
