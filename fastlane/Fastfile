@@ -150,8 +150,6 @@ end
 # Store listing screenshots (docs/store-listing-screenshots.md): the Play and App Store images of every language, made
 # from the sample trip, and their upload. Ported from Bible Planner's lanes, with the retries its releases needed.
 ANDROID_PACKAGE = "com.quare.blitzsplit".freeze
-# App Store Connect may not have finished deleting the screenshot sets deliver replaces:
-SCREENSHOT_SET_RACE_MESSAGE = "Screenshot Set Already Exists".freeze
 # Each App Store shelf (local-set.mjs's SHELF_LABELS) and the display type App Store Connect files it under. A
 # devices: option names shelves, and only theirs are replaced: deliver's overwrite_screenshots would delete every
 # shelf of a locale, so the lane deletes those alone and has deliver add the staged images to them.
@@ -165,6 +163,8 @@ APP_STORE_SHELF_TYPES = {
   "mac" => "APP_DESKTOP",
 }.freeze
 MAC_SHELVES = %w[mac].freeze
+# App Store Connect may not have finished deleting the screenshot sets deliver replaces:
+SCREENSHOT_SET_RACE_MESSAGE = "Screenshot Set Already Exists".freeze
 SCREENSHOT_SET_RACE_ATTEMPTS = 3
 SCREENSHOT_SET_RACE_WAIT_SECONDS = 30
 # Google Play's API answers a 5xx now and then, which supply reports once its own HTTP retries run out:
@@ -698,7 +698,7 @@ end
 
 # Deletes the shelves of `devices` in `locales` of the editable version, and checks that none is left, as deliver
 # does with every shelf for overwrite_screenshots. A version with none of them yet has nothing to delete.
-def delete_app_store_shelves(platform, locales, devices, tries: 5)
+def delete_app_store_shelves(platform, locales, devices, tries: 5, wait_seconds: 10)
   require "spaceship"
 
   types = devices.map { |device| APP_STORE_SHELF_TYPES.fetch(device) }
@@ -717,6 +717,9 @@ def delete_app_store_shelves(platform, locales, devices, tries: 5)
   end
 
   tries.times do |attempt|
+    # Why: a set just deleted may still be listed for a moment, and read again at once it would be deleted again and
+    # counted as one that wouldn't go. The first check after the deletions is at once, which is when they all went
+    sleep(wait_seconds) if attempt > 1
     left = version.get_app_store_version_localizations.select { |localization| locales.include?(localization.locale) }
                   .flat_map { |localization| localization.get_app_screenshot_sets.map { |set| [localization.locale, set] } }
                   .select { |_, set| types.include?(set.screenshot_display_type) }

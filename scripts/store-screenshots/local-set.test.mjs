@@ -635,8 +635,6 @@ describe("the workflow's report", () => {
     assert.equal(tidied.output, "landed=true\ntidied=false\n");
   });
 
-  // The report reads the jobs by the names the two workflows give them, and the workflow builds the release's tag
-  // and checks the set's name by itself, in shell: held here to what the script does.
   test("names the same shelves as the Fastfile, which deletes a devices: list's shelves by their display types", () => {
     const fastfile = readFileSync(join(REPO_ROOT, "fastlane/Fastfile"), "utf8");
     const table = fastfile.match(/APP_STORE_SHELF_TYPES = \{\n([\s\S]*?)\n\}\.freeze/);
@@ -651,6 +649,8 @@ describe("the workflow's report", () => {
     assert.equal(dispatch.split("      devices: ${{ inputs.devices }}\n").length, 3);
   });
 
+  // The report reads the jobs by the names the two workflows give them, and the workflow builds the release's tag
+  // and checks the set's name by itself, in shell: held here to what the script does.
   test("matches what the workflows name and check", () => {
     const dispatch = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots.yml"), "utf8");
     const upload = readFileSync(join(REPO_ROOT, ".github/workflows/app-store-screenshots-upload.yml"), "utf8");

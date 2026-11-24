@@ -3,14 +3,16 @@
 // the key is: the `app-store-screenshots` workflow uploads it (docs/store-listing-screenshots.md#sending-a-set-made-on-a-mac).
 //
 //   node scripts/store-screenshots/local-set.mjs check [<folder>] [--platform ios|mac] [--allow-missing-devices]
+//                                                       [--devices <shelf>,<shelf>]
 //       Fails on a set App Store Connect would take wrong, saying what is wrong with it: a locale of the listing it
 //       lacks, a device with a screen missing, an image whose size isn't its device's, a file that isn't a PNG.
 //   node scripts/store-screenshots/local-set.mjs send [<folder>] [--name <name>] [--platform ios|mac]
-//                                                      [--allow-missing-devices] [--replace] [--dry-run]
-//   --devices iphone_duo,watch_ultra_3 checks and sends only those shelves (SHELF_LABELS' names): the upload replaces
-//       them alone and leaves every other shelf of a locale as it is.
+//                                                      [--allow-missing-devices] [--devices <shelf>,<shelf>]
+//                                                      [--replace] [--dry-run]
 //       Checks the set, packs it and uploads it as the assets of a draft GitHub release, then prints the command that
 //       dispatches the workflow. --dry-run checks and packs, and sends nothing.
+//   --devices iphone_duo,watch_ultra_3 checks and sends only those shelves (SHELF_LABELS' names): the upload replaces
+//       them alone and leaves every other shelf of a locale as it is.
 //   node scripts/store-screenshots/local-set.mjs locales --staged <json> --only "<locale> <locale>"
 //       The workflow's matrix when it sends chosen locales alone: those of the set's, or a failure naming one the
 //       set lacks.
