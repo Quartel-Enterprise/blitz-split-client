@@ -104,6 +104,7 @@
     <string name="profile_language_danish">Danski</string>
     <string name="profile_language_finnish">Finski</string>
     <string name="profile_language_latvian">Letonski</string>
+    <string name="profile_language_estonian">Estonski</string>
     <string name="profile_language_system_detail">Jezik uređaja</string>
     <string name="profile_notifications">Obaveštenja</string>
     <plurals name="profile_notifications_active">

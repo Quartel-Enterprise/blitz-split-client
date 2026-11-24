@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Uus Pixi võti</string>
+    <string name="payment_key_title_pix_edit">Muuda Pixi võtit</string>
+    <string name="payment_key_title_bitcoin_new">Uus Bitcoini võti</string>
+    <string name="payment_key_title_bitcoin_edit">Muuda Bitcoini võtit</string>
+    <string name="payment_key_save">Salvesta</string>
+
+    <string name="payment_key_pix_intro">Kes sulle maksab, näeb arveldamisel seda võtit. Mis tüüpi võti?</string>
+    <string name="payment_key_pix_question">Mis tüüpi võti?</string>
+    <string name="payment_key_pix_explanation">Kes sulle maksab, näeb arveldamisel seda võtit.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefon</string>
+    <string name="payment_key_type_email">E-post</string>
+    <string name="payment_key_type_random">Juhuslik</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mobiilinumber koos suunakoodiga</string>
+    <string name="payment_key_label_email">E-post</string>
+    <string name="payment_key_label_random">Juhuslik võti</string>
+
+    <string name="payment_key_bitcoin_intro">Kuidas soovid raha saada?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">kiire, väike tasu</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">plokiahelas</string>
+    <string name="payment_key_label_lightning">Lightning Address või LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoini aadress</string>
+
+    <string name="payment_key_paste">Kleebi</string>
+
+    <string name="payment_key_hint_cpf">Vorming 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Vorming +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Vorming nimi@domeen.com</string>
+    <string name="payment_key_hint_random">32 tähte ja numbrit, nii nagu sinu pank seda näitab</string>
+    <string name="payment_key_hint_lightning">Näiteks nimi@rahakott.com või LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainneti aadress, mis algab bc1q või bc1p</string>
+
+    <string name="payment_key_valid_cpf">Vorming 000.000.000-00 · kontrollnumbrid klapivad</string>
+    <string name="payment_key_valid_phone">Vorming +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Vorming nimi@domeen.com</string>
+    <string name="payment_key_valid_random">Juhuslik võti tuvastatud (32 märki)</string>
+    <string name="payment_key_valid_lightning_address">Kehtiv Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Kehtiv LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Vigane CPF: kontrollnumbrid ei klapi.</string>
+    <string name="payment_key_error_invalid_phone">Mobiilinumber on puudulik: kasuta suunakoodi ja 9 numbrit, mis algavad 9-ga.</string>
+    <string name="payment_key_error_invalid_email">E-post on puudulik: domeen puudub, näiteks .com või .com.br.</string>
+    <string name="payment_key_error_invalid_random">Juhuslik võti on puudulik: selles on 32 tähte ja numbrit.</string>
+    <string name="payment_key_error_invalid_lightning">See pole Lightning Address (nimi@rahakott) ega LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">See on Lightningi arve (lnbc…): seda saab maksta ühe korra ja see aegub. Kleebi Lightning Address või LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Vigane aadress. Kasuta mainneti bc1q või bc1p aadressi.</string>
+    <string name="payment_key_error_testnet_address">See on testneti aadress (tb1…). Siin töötab ainult Bitcoini mainnet, bc1… aadressidega.</string>
+    <string name="payment_key_error_already_saved">Sul on see võti juba olemas.</string>
+
+    <string name="payment_key_switched_to_onchain">See on on-chain aadress, seega vahetasime valikule On-chain.</string>
+    <string name="payment_key_switched_to_lightning">See on Lightning Address, seega vahetasime valikule Lightning.</string>
+    <string name="payment_key_cpf_notice">Kes sulle maksab, näeb sinu täielikku CPF-i. Kui sa ei soovi seda jagada, kasuta telefoni, e-posti või juhuslikku võtit.</string>
+    <string name="payment_key_held_notice">Sul saab olla ainult üks seda tüüpi Pixi võti, seega see on sinu salvestatud võti. Muuda seda siin, kui soovid.</string>
+
+    <string name="payment_key_accepted_title">Me aktsepteerime</string>
+    <string name="payment_key_accepted_lightning_address_sample">nimi@rahakott.app</string>
+
+    <string name="payment_key_default_pix_title">Pixi vaikevõti</string>
+    <string name="payment_key_default_bitcoin_title">Bitcoini vaikevõti</string>
+    <string name="payment_key_default_pix_detail">Näidatakse arveldamisel esimesena.</string>
+    <string name="payment_key_default_bitcoin_detail">Näidatakse esimesena, kui keegi maksab BTC-s.</string>
+    <string name="payment_key_default_now">Praegu: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Selle muutmiseks tee mõni teine võti vaikevõtmeks.</string>
+    <string name="payment_key_default_locked_new">Sinu esimene seda liiki võti on vaikevõti.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefon</string>
+    <string name="payment_key_default_type_email">e-post</string>
+    <string name="payment_key_default_type_random">juhuslik võti</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split ei liiguta raha: maksja maksab oma panga rakenduses. Kontrolli, et võti on sinu nimel.</string>
+    <string name="payment_key_footer_bitcoin">Arveldamisel näitame summat satoshides praeguse kursiga. See on vaid hinnang: maksja kinnitab selle oma rahakotis.</string>
+
+    <string name="payment_key_delete">Kustuta võti</string>
+    <string name="payment_key_delete_title">Kas kustutada see võti?</string>
+    <string name="payment_key_delete_body">Sulle võlgnevad inimesed ei näe seda arveldamisel enam.</string>
+    <string name="payment_key_delete_confirm">Kustuta</string>
+</resources>

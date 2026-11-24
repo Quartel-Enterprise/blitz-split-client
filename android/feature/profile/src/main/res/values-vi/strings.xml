@@ -102,6 +102,7 @@
     <string name="profile_language_danish">Tiếng Đan Mạch</string>
     <string name="profile_language_finnish">Tiếng Phần Lan</string>
     <string name="profile_language_latvian">Tiếng Latvia</string>
+    <string name="profile_language_estonian">Tiếng Estonia</string>
     <string name="profile_language_system_detail">Ngôn ngữ của thiết bị</string>
     <string name="profile_notifications">Thông báo</string>
     <plurals name="profile_notifications_active">

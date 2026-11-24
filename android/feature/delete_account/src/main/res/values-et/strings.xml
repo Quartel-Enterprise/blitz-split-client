@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Kustuta konto</string>
+    <string name="delete_account_offline_title">Internetti pole.</string>
+    <string name="delete_account_offline_body">Konto kustutamiseks on vaja internetiühendust. Ühenda ja proovi uuesti.</string>
+    <string name="delete_account_heading">Kas kustutada sinu konto ja andmed?</string>
+    <string name="delete_account_deleted_title">Mis kustutatakse</string>
+    <string name="delete_account_deleted_profile">Sinu profiil (nimi, foto ja värv)</string>
+    <string name="delete_account_deleted_keys">Sinu Pixi ja Bitcoini võtmed</string>
+    <string name="delete_account_deleted_provider">Seos sinu %1$s kontoga</string>
+    <string name="delete_account_deleted_recovery_code">Sinu taastekood</string>
+    <string name="delete_account_deleted_device">Sinu andmete koopia selles seadmes</string>
+    <string name="delete_account_kept_title">Mis jääb sinu gruppidesse</string>
+    <string name="delete_account_kept_groups">Grupid koos kulude ja maksetega teiste liikmete jaoks</string>
+    <string name="delete_account_kept_member">Sinu nimi igas grupis, kontota liikmena</string>
+    <string name="delete_account_kept_comments">Sinu kommentaarid ja lisatud fotod, sinu nime all</string>
+    <string name="delete_account_export">Ekspordi enne minu andmed</string>
+    <string name="delete_account_confirm">Saan aru, et seda ei saa tagasi võtta</string>
+    <string name="delete_account_delete">Kustuta konto</string>
+    <string name="delete_account_cancel">Tühista</string>
+    <string name="delete_account_failed">Kontot ei õnnestunud kustutada. Proovi uuesti.</string>
+</resources>

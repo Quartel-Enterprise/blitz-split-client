@@ -48,6 +48,7 @@ import { ca } from './ca'
 import { da } from './da'
 import { fi } from './fi'
 import { lv } from './lv'
+import { et } from './et'
 
 export type { MessageKey }
 /**
@@ -55,15 +56,15 @@ export type { MessageKey }
  * `pt` is Brazil's Portuguese; `pt-PT` is Portugal's, which overrides only the words it says differently.
  * `zh` is Simplified Chinese, mainland China's; `zh-Hant` is Traditional Chinese, Taiwan's.
  */
-export type Locale = 'en' | 'en-GB' | 'en-AU' | 'en-CA' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta' | 'nb' | 'te' | 'bg' | 'mr' | 'sw' | 'ca' | 'da' | 'fi' | 'lv'
+export type Locale = 'en' | 'en-GB' | 'en-AU' | 'en-CA' | 'pt' | 'pt-PT' | 'es' | 'es-ES' | 'fr' | 'de' | 'it' | 'pl' | 'nl' | 'ja' | 'tr' | 'id' | 'ru' | 'uk' | 'ko' | 'hi' | 'ar' | 'zh' | 'he' | 'th' | 'vi' | 'zh-Hant' | 'sv' | 'cs' | 'ro' | 'bn' | 'ms' | 'el' | 'hr' | 'hu' | 'ur' | 'fil' | 'sr' | 'sk' | 'fa' | 'ta' | 'nb' | 'te' | 'bg' | 'mr' | 'sw' | 'ca' | 'da' | 'fi' | 'lv' | 'et'
 
 // Why: Britain's English, which Australia's reads too: Canada's spelling, then the words Canada writes as the US.
 const britishEnglish = { ...en, ...enCA, ...enGB }
 
-const messages: Record<Locale, Record<MessageKey, string>> = { en, 'en-GB': britishEnglish, 'en-AU': britishEnglish, 'en-CA': { ...en, ...enCA }, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg, mr, sw, ca, da, fi, lv }
+const messages: Record<Locale, Record<MessageKey, string>> = { en, 'en-GB': britishEnglish, 'en-AU': britishEnglish, 'en-CA': { ...en, ...enCA }, pt, 'pt-PT': { ...pt, ...ptPT }, es, 'es-ES': { ...es, ...esES }, fr, de, it, pl, nl, ja, tr, id, ru, uk, ko, hi, ar, zh, he, th, vi, 'zh-Hant': zhHant, sv, cs, ro, bn, ms, el, hr, hu, ur, fil, sr, sk, fa, ta, nb, te, bg, mr, sw, ca, da, fi, lv, et }
 
 // Why: the languages with one variant for every tag of theirs.
-const bareLocales: readonly Locale[] = ['fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta', 'nb', 'te', 'bg', 'mr', 'sw', 'ca', 'da', 'fi', 'lv']
+const bareLocales: readonly Locale[] = ['fr', 'de', 'it', 'pl', 'nl', 'ja', 'tr', 'id', 'ru', 'uk', 'ko', 'hi', 'ar', 'zh', 'he', 'th', 'vi', 'sv', 'cs', 'ro', 'bn', 'ms', 'el', 'hr', 'hu', 'ur', 'fil', 'sr', 'sk', 'fa', 'ta', 'nb', 'te', 'bg', 'mr', 'sw', 'ca', 'da', 'fi', 'lv', 'et']
 
 /**
  * A Chinese tag's subtags written in Traditional characters: its script says so when it has one (zh-Hant-CN is
@@ -101,10 +102,10 @@ function regionOf(subtags: readonly string[]): string | undefined {
  * The first browser language the app has, in the browser's order: `pt-PT` (exactly Portugal) is Portugal's Portuguese,
  * every other `pt` tag (pt, pt-BR…) is Brazil's, `es-ES` (Spain) is Spain's Spanish, every other `es` tag (es, es-MX,
  * es-419, es-AR…) is the neutral Latin-American Spanish, any `fr` tag (fr, fr-FR, fr-CA…) is French, any `de`, `it`,
- * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta` , `nb` (or Norwegian's `no` and Nynorsk's `nn`) `te` , `bg`, `mr`, `sw`, `ca`, `da`, `fi` or `lv` tag
+ * `pl`, `nl`, `ja`, `tr`, `id`, `ru`, `uk`, `ko`, `hi`, `ar`, `th`, `vi`, `sv`, `cs`, `ro`, `bn`, `ms`, `el`, `hr`, `hu`, `ur`, `fil`, `sr`, `sk`, `fa`, `ta` , `nb` (or Norwegian's `no` and Nynorsk's `nn`) `te` , `bg`, `mr`, `sw`, `ca`, `da`, `fi` or `lv` or `et` tag
  * (de-AT, it-CH, pl-PL, nl-BE, ja-JP, tr-CY, id-ID, the legacy in-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, th-TH, vi-VN,
- * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI, lv-LV…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
- * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil , Norwegian (Bokmål, whichever of the three) Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish or Latvian, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
+ * sv-FI, cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-RO, ur-PK, fil-PH, sr-RS, sr-Latn-RS, sr-Cyrl-RS, sk-SK, fa-IR, fa-AF, ta-LK, nb-NO, nn-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, ca-ES-valencia, da-DK, fi-FI, lv-LV, et-EE…) is German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
+ * Russian, Ukrainian, Korean, Hindi, Arabic, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (in Latin, whatever its script), Slovak, Persian (Iran's, fa-AF too), Tamil , Norwegian (Bokmål, whichever of the three) Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too), Danish, Finnish, Latv or Estonian, a Traditional `zh` tag (zh-Hant, zh-TW, zh-HK, zh-MO) is Traditional Chinese,
  * any other `zh` tag (zh-CN, zh-Hans, zh-SG…) is Simplified Chinese, `en-GB`, `en-AU` and `en-CA` are their regions'
  * English, an `en` tag of a region that writes as Britain (en-NZ, en-IE, en-IN, en-DE…) British English, any other
  * `en` tag (en, en-US, en-JP…) American English, and American English when none matches.
@@ -220,6 +221,7 @@ const documentLanguages: Record<Locale, string> = {
   da: 'da',
   fi: 'fi',
   lv: 'lv',
+  et: 'et',
 }
 
 const documentLanguage = documentLanguages[locale]
@@ -403,6 +405,7 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
   hr: { je: 'si' },
   sr: { je: 'si' },
   fi: { on: 'olet' },
+  et: { on: 'oled' },
   ca: { ha: 'has', 'l’ha': 'l’has', "l'ha": "l'has" },
 }
 
@@ -418,7 +421,7 @@ const secondPersonAuxiliaries: Partial<Record<Locale, Record<string, string>>> =
  * own particle, so its verb phrases all start with "님이", which the user's drops: "님이 나눴어요" becomes "나눴어요". Hindi does
  * the same with its ergative "ने", the user's "आपने" holding it: "ने खर्च बांटा" becomes "खर्च बांटा". Romanian swaps
  * its perfect's auxiliary as French does ("a împărțit" becomes "ai împărțit"), Catalan its "ha" ("ha dividit" becomes "has dividit"), Croatian its "je" ("je podijelio/la"
- * becomes "si podijelio/la"), Finnish its "on" ("on jakanut" becomes "olet jakanut"), and Czech puts the auxiliary "jsi"
+ * becomes "si podijelio/la"), Finnish its "on" ("on jakanut" becomes "olet jakanut"), Estonian its "on" ("on jaganud" becomes "oled jaganud"), and Czech puts the auxiliary "jsi"
  * before a past in "l(a)", which the third person says without one ("rozdělil(a)" becomes "jsi rozdělil(a)"), as Slovak does with "si"
  * ("rozdelil(a)" becomes "si rozdelil(a)"). Greek
  * ends its aorist in "-ες" for the user, an object pronoun staying before it ("μοίρασε" becomes "μοίρασες", "το

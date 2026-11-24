@@ -50,7 +50,8 @@
         "ca": "Després de publicar un comentari en una despesa, la pantalla es desplaça fins a ell perquè el vegis, i al mòbil el teclat es tanca.",
         "da": "Når du har skrevet en kommentar til en udgift, ruller skærmen hen til den, så du kan se den, og på mobilen lukkes tastaturet.",
         "fi": "Kun lähetät kommentin kuluun, näkymä vierittyy kommenttiisi, jotta näet sen, ja puhelimessa näppäimistö sulkeutuu.",
-        "lv": "Kad pievieno komentāru rēķinam, ekrāns aizritina līdz tavam komentāram, lai tu to redzētu, un tālrunī tastatūra aizveras."
+        "lv": "Kad pievieno komentāru rēķinam, ekrāns aizritina līdz tavam komentāram, lai tu to redzētu, un tālrunī tastatūra aizveras.",
+        "et": "Kui postitad kulule kommentaari, kerib vaade sinu kommentaarini, et sa seda näeksid, ja telefonis sulgub klaviatuur."
       }
     }
   ]
