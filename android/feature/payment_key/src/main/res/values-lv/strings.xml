@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Jauna Pix atslēga</string>
+    <string name="payment_key_title_pix_edit">Rediģēt Pix atslēgu</string>
+    <string name="payment_key_title_bitcoin_new">Jauna Bitcoin atslēga</string>
+    <string name="payment_key_title_bitcoin_edit">Rediģēt Bitcoin atslēgu</string>
+    <string name="payment_key_save">Saglabāt</string>
+
+    <string name="payment_key_pix_intro">Kas tev maksā, redz šo atslēgu, norēķinoties. Kāda veida atslēga?</string>
+    <string name="payment_key_pix_question">Kāda veida atslēga?</string>
+    <string name="payment_key_pix_explanation">Kas tev maksā, redz šo atslēgu, norēķinoties.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Tālrunis</string>
+    <string name="payment_key_type_email">E-pasts</string>
+    <string name="payment_key_type_random">Nejauša</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mobilā tālruņa numurs ar reģiona kodu</string>
+    <string name="payment_key_label_email">E-pasts</string>
+    <string name="payment_key_label_random">Nejauša atslēga</string>
+
+    <string name="payment_key_bitcoin_intro">Kā vēlies saņemt?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">ātri, zema komisija</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">blokķēdē</string>
+    <string name="payment_key_label_lightning">Lightning Address vai LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin adrese</string>
+
+    <string name="payment_key_paste">Ielīmēt</string>
+
+    <string name="payment_key_hint_cpf">Formāts 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Formāts +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Formāts vards@domens.com</string>
+    <string name="payment_key_hint_random">32 burti un cipari, kā to rāda tava banka</string>
+    <string name="payment_key_hint_lightning">Piem., vards@maks.com vai LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainnet adrese, kas sākas ar bc1q vai bc1p</string>
+
+    <string name="payment_key_valid_cpf">Formāts 000.000.000-00 · kontrolcipari sakrīt</string>
+    <string name="payment_key_valid_phone">Formāts +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Formāts vards@domens.com</string>
+    <string name="payment_key_valid_random">Nejauša atslēga atpazīta (32 rakstzīmes)</string>
+    <string name="payment_key_valid_lightning_address">Derīga Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Derīgs LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Nederīgs CPF: kontrolcipari nesakrīt.</string>
+    <string name="payment_key_error_invalid_phone">Nepilns mobilā tālruņa numurs: izmanto reģiona kodu un 9 ciparus, sākot ar 9.</string>
+    <string name="payment_key_error_invalid_email">Nepilna e-pasta adrese: trūkst domēna, piem., .com vai .com.br.</string>
+    <string name="payment_key_error_invalid_random">Nepilna nejaušā atslēga: tajā ir 32 burti un cipari.</string>
+    <string name="payment_key_error_invalid_lightning">Tā nav Lightning Address (vards@maks) vai LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Tas ir Lightning maksājuma pieprasījums (lnbc…): to var apmaksāt vienreiz, un tam beidzas derīgums. Ielīmē Lightning Address vai LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Nederīga adrese. Izmanto mainnet adresi bc1q vai bc1p.</string>
+    <string name="payment_key_error_testnet_address">Tā ir testnet adrese (tb1…). Šeit darbojas tikai Bitcoin mainnet ar bc1… adresēm.</string>
+    <string name="payment_key_error_already_saved">Tev jau ir šī atslēga.</string>
+
+    <string name="payment_key_switched_to_onchain">Šī ir on-chain adrese, tāpēc pārslēdzām uz On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Šī ir Lightning Address, tāpēc pārslēdzām uz Lightning.</string>
+    <string name="payment_key_cpf_notice">Kas tev maksā, redz tavu pilno CPF. Ja nevēlies to kopīgot, izmanto tālruņa, e-pasta vai nejaušu atslēgu.</string>
+    <string name="payment_key_held_notice">Tev var būt tikai viena šāda veida Pix atslēga, tāpēc šī ir tā, ko saglabāji. Ja vēlies, maini to šeit.</string>
+
+    <string name="payment_key_accepted_title">Mēs pieņemam</string>
+    <string name="payment_key_accepted_lightning_address_sample">vards@maks.app</string>
+
+    <string name="payment_key_default_pix_title">Noklusējuma Pix atslēga</string>
+    <string name="payment_key_default_bitcoin_title">Noklusējuma Bitcoin atslēga</string>
+    <string name="payment_key_default_pix_detail">Tiek rādīta pirmā, norēķinoties.</string>
+    <string name="payment_key_default_bitcoin_detail">Tiek rādīta pirmā, kad kāds maksā BTC.</string>
+    <string name="payment_key_default_now">Pašlaik: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Lai to mainītu, padari citu atslēgu par noklusējuma atslēgu.</string>
+    <string name="payment_key_default_locked_new">Tava pirmā šāda veida atslēga ir noklusējuma atslēga.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">tālrunis</string>
+    <string name="payment_key_default_type_email">e-pasts</string>
+    <string name="payment_key_default_type_random">nejauša atslēga</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split nepārskaita naudu: maksātājs maksā savas bankas lietotnē. Pārbaudi, vai atslēga ir uz tava vārda.</string>
+    <string name="payment_key_footer_bitcoin">Norēķinoties mēs rādām summu satos pēc pašreizējā kursa. Tā ir tikai aptuvena: maksātājs to apstiprina savā makā.</string>
+
+    <string name="payment_key_delete">Dzēst atslēgu</string>
+    <string name="payment_key_delete_title">Dzēst šo atslēgu?</string>
+    <string name="payment_key_delete_body">Tie, kas tev ir parādā, to vairs neredzēs, norēķinoties.</string>
+    <string name="payment_key_delete_confirm">Dzēst</string>
+</resources>

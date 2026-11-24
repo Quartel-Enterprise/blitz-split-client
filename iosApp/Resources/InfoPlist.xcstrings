@@ -143,6 +143,12 @@
             "value" : "Blitz Split"
           }
         },
+        "lv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -414,6 +420,12 @@
           }
         },
         "lt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blitz Split"
+          }
+        },
+        "lv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blitz Split"
@@ -695,6 +707,12 @@
             "value" : "Kad galėtum nuskenuoti kvietimo ar senojo įrenginio QR kodą, nufotografuoti savo profilio nuotrauką ir išlaidų nuotraukas."
           }
         },
+        "lv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lai skenētu uzaicinājuma vai vecās ierīces QR kodu un uzņemtu tavu profila fotoattēlu un rēķinu fotoattēlus."
+          }
+        },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -971,6 +989,12 @@
             "value" : "Kad galėtum pakviesti žmones iš savo kontaktų su grupės nuoroda. Jų numeriai lieka šiame įrenginyje."
           }
         },
+        "lv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lai uzaicinātu cilvēkus no taviem kontaktiem ar grupas saiti. Viņu numuri paliek šajā ierīcē."
+          }
+        },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1245,6 +1269,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kad galėtum išsaugoti išlaidos nuotraukas savo bibliotekoje."
+          }
+        },
+        "lv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lai saglabātu rēķinu fotoattēlus tavā bibliotēkā."
           }
         },
         "mr" : {

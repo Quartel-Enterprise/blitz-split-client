@@ -101,6 +101,7 @@
     <string name="profile_language_catalan">카탈로니아어</string>
     <string name="profile_language_danish">덴마크어</string>
     <string name="profile_language_finnish">핀란드어</string>
+    <string name="profile_language_latvian">라트비아어</string>
     <string name="profile_language_lithuanian">리투아니아어</string>
     <string name="profile_language_system_detail">기기 언어</string>
     <string name="profile_notifications">알림</string>

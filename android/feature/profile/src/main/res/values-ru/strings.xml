@@ -104,6 +104,7 @@
     <string name="profile_language_catalan">Каталанский</string>
     <string name="profile_language_danish">Датский</string>
     <string name="profile_language_finnish">Финский</string>
+    <string name="profile_language_latvian">Латышский</string>
     <string name="profile_language_lithuanian">Литовский</string>
     <string name="profile_language_system_detail">Язык устройства</string>
     <!-- Each language in its own language, the same in every locale -->

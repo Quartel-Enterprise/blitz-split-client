@@ -130,6 +130,11 @@ The feed, unread state, real time and push notifications.
     the bill's history rows too, and the deleted-item notice starts with who deleted it ("Sinä olet poistanut…",
     `youSubjectLanguages`). A name is never inflected: it stands after a noun that carries the case ("on lisännyt
     jäsenen Ana").
+    Latvian starts every verb phrase with a simple past, which says the person but not the gender: its third person
+    in "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja rēķinu…", "Tu sadalīji
+    rēķinu…"; "Ana pievienojās…", "Tu pievienojies…"), the bill's history rows too, and the deleted-item notice
+    starts with who deleted it ("Tu izdzēsi…", `youSubjectLanguages`). A name is never declined: it stands after a
+    noun that carries the case ("pievienojās grupai Lisabonas brauciens").
     Lithuanian's simple past says no gender and changes with the person: every Lithuanian verb phrase starts with it,
     in "-o" or "-ė" ("-osi", "-ėsi" when reflexive), which the user's rows turn into "-ai" or "-ei" ("Ana padalijo
     išlaidą…", "Tu padalijai išlaidą…"; "ištrynė" → "ištrynei"), the bill's history rows too, and the deleted-item

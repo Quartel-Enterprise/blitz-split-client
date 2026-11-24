@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Saglabā savu atkopšanas kodu</string>
+    <string name="recovery_code_body">Tu izmanto lietotni bez konta. Šie 12 vārdi atgūs tavus datus, ja nomainīsi vai pazaudēsi ierīci. Pieraksti tos pareizā secībā. Pēc 30 dienām bez lietošanas tavi dati tiek dzēsti un vārdi vairs nedarbojas.</string>
+    <string name="recovery_code_copy">Kopēt vārdus</string>
+    <string name="recovery_code_save_to_password_manager">Saglabāt paroļu pārvaldniekā</string>
+    <string name="recovery_code_connect_instead">Tā vietā pievienot Google vai Apple</string>
+    <string name="recovery_code_connect_instead_body">Kods nav vajadzīgs</string>
+    <string name="recovery_code_sign_in_failed">Pašlaik neizdevās pievienot kontu. Mēģini vēlreiz.</string>
+    <string name="recovery_code_also_in_profile">Tas ir pieejams arī sadaļā Profils › Atkopšana.</string>
+    <string name="recovery_code_remind_later">Atgādināt vēlāk</string>
+    <string name="recovery_code_saved">Es to saglabāju</string>
+    <string name="recovery_code_download">Lejupielādēt</string>
+    <string name="recovery_code_file_name">blitz-split-atkopsanas-kods.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · atkopšanas kods\n\n%1$s\n\nIzmanto to, izvēloties „Jau izmantoju to citā ierīcē”, lai atgūtu savus datus.\n</string>
+</resources>
