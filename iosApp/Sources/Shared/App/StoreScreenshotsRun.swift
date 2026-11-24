@@ -141,7 +141,9 @@ struct StoreScreenshotsRun {
         if let screen = NSScreen.screens.first {
             let visible = screen.visibleFrame
             let size = window.frame.size
-            window.setFrameOrigin(NSPoint(x: visible.midX - size.width / 2, y: visible.midY - size.height / 2))
+            // Its title bar kept below the menu bar on a screen shorter than the window
+            let top = min(visible.midY + size.height / 2, visible.maxY)
+            window.setFrameOrigin(NSPoint(x: visible.midX - size.width / 2, y: top - size.height))
         } else {
             window.center()
         }

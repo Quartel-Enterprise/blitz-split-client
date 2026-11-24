@@ -867,7 +867,7 @@ project's Mac its own screenshot of the window failed as well ("Image creation f
   nothing and the script stopped ("The app opened no window", 24 November 2026).
 - **On the main display.** macOS reopens a window where the last run left it, which on a Mac with several displays
   may be one that isn't Retina. `sizeWindow` centers the window on the screen with the menu bar, whichever display it
-  opened on.
+  opened on, its title bar kept below the menu bar when that screen is shorter than the window.
 - **On a Retina display.** The frame draws the window at twice its points (2880x1800). On a display that isn't
   Retina the capture is 1440x900 and would go to the listing blurred, so the script stops at the first one, which
   is still there to look at.
