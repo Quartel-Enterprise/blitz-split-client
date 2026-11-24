@@ -107,6 +107,7 @@
     <string name="profile_language_estonian">Estonski</string>
     <string name="profile_language_gujarati">Gudžaratski</string>
     <string name="profile_language_slovenian">Slovenski</string>
+    <string name="profile_language_punjabi">Pandžapski</string>
     <string name="profile_language_system_detail">Jezik uređaja</string>
     <string name="profile_notifications">Obavijesti</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="push_reminder_title">ਹਿਸਾਬ ਬਰਾਬਰ ਕਰਨ ਦੀ ਯਾਦ</string>
+    <string name="push_bill_created">%1$s ਨੇ ਤੁਹਾਡੇ ਨਾਲ ‘%2$s’ ਖਰਚਾ ਜੋੜਿਆ</string>
+    <string name="push_bill_edited">%1$s ਨੇ ‘%2$s’ ਖਰਚਾ ਸੋਧਿਆ</string>
+    <string name="push_bill_deleted">%1$s ਨੇ ‘%2$s’ ਖਰਚਾ ਮਿਟਾਇਆ</string>
+    <string name="push_comment_added">%1$s ਨੇ ‘%2$s’ ਖਰਚੇ ਉੱਤੇ ਟਿੱਪਣੀ ਕੀਤੀ: %3$s</string>
+    <string name="push_payment_paid_you">%1$s ਨੇ ਦਰਜ ਕੀਤਾ ਕਿ ਉਹਨਾਂ ਨੇ ਤੁਹਾਨੂੰ ਭੁਗਤਾਨ ਕੀਤਾ</string>
+    <string name="push_payment_to_you">%1$s ਨੇ ਦਰਜ ਕੀਤਾ ਕਿ %2$s ਨੇ ਤੁਹਾਨੂੰ ਭੁਗਤਾਨ ਕੀਤਾ</string>
+    <string name="push_payment_received_yours">%1$s ਨੇ ਤੁਹਾਡਾ ਭੁਗਤਾਨ ਮਿਲ ਗਿਆ ਵਜੋਂ ਦਰਜ ਕੀਤਾ</string>
+    <string name="push_payment_from_you">%1$s ਨੇ ਦਰਜ ਕੀਤਾ ਕਿ ਤੁਸੀਂ %2$s ਨੂੰ ਭੁਗਤਾਨ ਕੀਤਾ</string>
+    <string name="push_payment_undone">%1$s ਨੇ ਤੁਹਾਡੇ ਨਾਲ ਦਾ ਇੱਕ ਭੁਗਤਾਨ ਵਾਪਸ ਲਿਆ</string>
+    <string name="push_charge_sent">%1$s ਨੇ ਤੁਹਾਨੂੰ ਹਿਸਾਬ ਬਰਾਬਰ ਕਰਨ ਦੀ ਯਾਦ ਭੇਜੀ</string>
+    <string name="push_settle_reminder">‘%1$s’ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡਾ ਬੈਲੇਂਸ ਅਜੇ ਬਾਕੀ ਹੈ</string>
+    <string name="push_settle_reminders">%1$s ਗਰੁੱਪਾਂ ਵਿੱਚ ਤੁਹਾਡੇ ਬੈਲੇਂਸ ਅਜੇ ਬਾਕੀ ਹਨ</string>
+    <string name="push_added_to_group">%1$s ਨੇ ਤੁਹਾਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਜੋੜਿਆ</string>
+    <string name="push_member_joined">%1$s ਨੇ ਗਰੁੱਪ ਜੁਆਇਨ ਕੀਤਾ</string>
+    <string name="push_debts_simplified_to_you">%1$s ਨੇ ਕਰਜ਼ੇ ਸਰਲ ਕੀਤੇ। ਹੁਣ %2$s ਤੁਹਾਨੂੰ %3$s ਦੇਣਗੇ।</string>
+    <string name="push_debts_simplified_from_you">%1$s ਨੇ ਕਰਜ਼ੇ ਸਰਲ ਕੀਤੇ। ਹੁਣ ਤੁਸੀਂ %2$s ਨੂੰ %3$s ਦਿਓਗੇ।</string>
+    <string name="push_debts_simplified_other">%1$s ਨੇ ਕਰਜ਼ੇ ਸਰਲ ਕੀਤੇ। ਦੇਖੋ ਤੁਹਾਡੇ ਲਈ ਕੀ ਬਦਲਿਆ।</string>
+    <string name="push_debts_unsimplified_to_you">%1$s ਨੇ “ਕਰਜ਼ੇ ਸਰਲ ਕਰੋ” ਬੰਦ ਕੀਤਾ। ਹੁਣ %2$s ਤੁਹਾਨੂੰ %3$s ਦੇਣਗੇ।</string>
+    <string name="push_debts_unsimplified_from_you">%1$s ਨੇ “ਕਰਜ਼ੇ ਸਰਲ ਕਰੋ” ਬੰਦ ਕੀਤਾ। ਹੁਣ ਤੁਸੀਂ %2$s ਨੂੰ %3$s ਦਿਓਗੇ।</string>
+    <string name="push_debts_unsimplified_other">%1$s ਨੇ “ਕਰਜ਼ੇ ਸਰਲ ਕਰੋ” ਬੰਦ ਕੀਤਾ। ਦੇਖੋ ਤੁਹਾਡੇ ਲਈ ਕੀ ਬਦਲਿਆ।</string>
+    <string name="notification_settings_bills">ਖਰਚੇ</string>
+    <string name="notification_settings_bills_detail">ਜਿਨ੍ਹਾਂ ਖਰਚਿਆਂ ਵਿੱਚ ਤੁਸੀਂ ਹੋ, ਉਹਨਾਂ ਦੇ ਨਵੇਂ, ਸੋਧੇ ਜਾਂ ਮਿਟਾਏ ਗਏ ਖਰਚੇ</string>
+    <string name="notification_settings_payments">ਭੁਗਤਾਨ ਅਤੇ ਹਿਸਾਬ ਬਰਾਬਰ</string>
+    <string name="notification_settings_payments_detail">ਤੁਹਾਨੂੰ ਜਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਭੁਗਤਾਨ, ਅਤੇ ਸਰਲ ਕੀਤੇ ਕਰਜ਼ੇ</string>
+    <string name="notification_settings_comments">ਟਿੱਪਣੀਆਂ</string>
+    <string name="notification_settings_comments_detail">ਜਿਨ੍ਹਾਂ ਖਰਚਿਆਂ ਵਿੱਚ ਤੁਸੀਂ ਹੋ ਅਤੇ ਜਿਨ੍ਹਾਂ ਗੱਲਬਾਤਾਂ ਵਿੱਚ ਤੁਸੀਂ ਲਿਖਿਆ, ਉਹਨਾਂ ’ਤੇ</string>
+    <string name="notification_settings_people_and_groups">ਲੋਕ ਅਤੇ ਗਰੁੱਪ</string>
+    <string name="notification_settings_people_and_groups_detail">ਤੁਹਾਡੇ ਗਰੁੱਪਾਂ ਵਿੱਚ ਕੌਣ ਸ਼ਾਮਲ ਹੁੰਦਾ ਜਾਂ ਛੱਡਦਾ ਹੈ, ਅਤੇ ਉਹਨਾਂ ਵਿੱਚ ਕੀ ਬਦਲਦਾ ਹੈ</string>
+    <string name="notification_settings_payment_requests">ਪੈਸਿਆਂ ਦੀਆਂ ਮੰਗਾਂ</string>
+    <string name="notification_settings_payment_requests_detail">ਜਦੋਂ ਕੋਈ ਤੁਹਾਨੂੰ ਭੁਗਤਾਨ ਕਰਨ ਲਈ ਕਹਿੰਦਾ ਹੈ</string>
+    <string name="notification_settings_balance_reminder">ਬਕਾਇਆ ਬੈਲੇਂਸ ਦੀ ਯਾਦ</string>
+    <string name="notification_settings_balance_reminder_detail">ਹਫ਼ਤੇ ਵਿੱਚ ਇੱਕ ਵਾਰ, ਜੇ ਕੋਈ ਬੈਲੇਂਸ ਬਾਕੀ ਹੈ</string>
+</resources>

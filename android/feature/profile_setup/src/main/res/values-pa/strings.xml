@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">ਤੁਹਾਡੇ ਦੋਸਤ ਤੁਹਾਨੂੰ ਕੀ ਕਹਿੰਦੇ ਹਨ?</string>
+    <string name="profile_setup_subtitle">ਤੁਹਾਡੇ ਗਰੁੱਪਾਂ ਨੂੰ ਅਤੇ ਤੁਹਾਡਾ ਪ੍ਰੋਫਾਈਲ ਲਿੰਕ ਰੱਖਣ ਵਾਲੇ ਹਰ ਕਿਸੇ ਨੂੰ ਤੁਹਾਡਾ ਨਾਮ ਦਿਖਦਾ ਹੈ।</string>
+    <string name="profile_setup_avatar_color">ਅਵਤਾਰ ਦਾ ਰੰਗ</string>
+    <string name="profile_setup_add_photo">ਫ਼ੋਟੋ ਜੋੜੋ</string>
+    <string name="profile_setup_photo_error">ਇਹ ਫ਼ੋਟੋ ਵਰਤੀ ਨਹੀਂ ਜਾ ਸਕੀ। ਕੋਈ ਹੋਰ ਅਜ਼ਮਾਓ।</string>
+    <string name="profile_setup_name_label">ਤੁਹਾਡਾ ਨਾਮ</string>
+    <string name="profile_setup_name_placeholder">ਹਰਪ੍ਰੀਤ ਸਿੱਧੂ</string>
+    <string name="profile_setup_name_too_short">ਘੱਟੋ-ਘੱਟ %d ਅੱਖਰ ਲਿਖੋ।</string>
+    <string name="profile_setup_name_too_long">ਵੱਧ ਤੋਂ ਵੱਧ %d ਅੱਖਰ ਵਰਤੋ।</string>
+    <string name="profile_setup_name_hint">ਤੁਸੀਂ ਇਸ ਨੂੰ ਬਾਅਦ ਵਿੱਚ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਬਦਲ ਸਕਦੇ ਹੋ।</string>
+    <string name="profile_setup_saved_locally">ਫ਼ਿਲਹਾਲ ਸਿਰਫ਼ ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਸੇਵ ਕੀਤਾ ਗਿਆ।</string>
+    <string name="profile_setup_continue">ਜਾਰੀ ਰੱਖੋ</string>
+</resources>

@@ -771,6 +771,30 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Punjabi tag in Gurmukhi WHEN reading it THEN is Punjabi`() {
+        // Given
+        val tags = listOf("pa", "pa-IN", "PA_in", "pa-Guru", "pa-Guru-IN", "pa-CA")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.PUNJABI }, languages)
+    }
+
+    @Test
+    fun `GIVEN a Punjabi tag in Shahmukhi or of Pakistan WHEN reading it THEN is no language the app has`() {
+        // Given
+        val tags = listOf("pa-Arab", "pa-Arab-PK", "pa-PK", "pa_PK", "pa-Arab-IN")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.SYSTEM }, languages)
+    }
+
+    @Test
     fun `GIVEN a Traditional Chinese tag WHEN reading it THEN is Traditional Chinese`() {
         // Given
         val tags = listOf("zh-Hant", "zh-TW", "zh_TW", "zh-Hant-TW", "zh-HK", "zh-MO", "ZH-hant", "zh-Hant-CN")
@@ -911,6 +935,7 @@ class AppLanguageTest {
                 "ET",
                 "GU",
                 "SL",
+                "PA",
             ),
             codes,
         )

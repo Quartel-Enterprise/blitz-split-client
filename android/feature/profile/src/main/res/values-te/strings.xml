@@ -106,6 +106,7 @@
     <string name="profile_language_estonian">ఎస్టోనియన్</string>
     <string name="profile_language_gujarati">గుజరాతీ</string>
     <string name="profile_language_slovenian">స్లోవేనియన్</string>
+    <string name="profile_language_punjabi">పంజాబీ</string>
     <string name="profile_language_system_detail">పరికరం భాష</string>
     <string name="profile_notifications">నోటిఫికేషన్‌లు</string>
     <plurals name="profile_notifications_active">

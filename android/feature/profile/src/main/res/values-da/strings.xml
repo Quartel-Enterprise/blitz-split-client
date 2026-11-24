@@ -106,6 +106,7 @@
     <string name="profile_language_estonian">Estisk</string>
     <string name="profile_language_gujarati">Gujarati</string>
     <string name="profile_language_slovenian">Slovensk</string>
+    <string name="profile_language_punjabi">Punjabi</string>
     <string name="profile_language_system_detail">Enhedens sprog</string>
     <!-- Each language in its own language, the same in every locale -->
     <string name="profile_notifications">Notifikationer</string>

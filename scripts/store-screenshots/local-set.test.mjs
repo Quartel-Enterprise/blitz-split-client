@@ -443,7 +443,7 @@ describe("sending a set", () => {
     assert.match(create, /^release create store-screenshots-3\.0\.0 --draft --title App Store screenshots: 3\.0\.0 --notes /);
     assert.match(create, /\/ios\.tar \S+\/mac\.tar \S+\/SHA256SUMS$/);
     // The release's text says what the set holds, and nothing of the Mac it came from.
-    assert.match(create, /iPhone and iPad: 45 locale\(s\), 2430 image\(s\), 0 MB {3}each locale: /);
+    assert.match(create, /iPhone and iPad: 46 locale\(s\), 2484 image\(s\), 0 MB {3}each locale: /);
     assert.ok(!create.split(" --notes ")[1].split(" /")[0].includes(root));
     assert.match(stdout, /\n {2}gh workflow run app-store-screenshots\.yml --repo Quartel-Enterprise\/blitz-split-client -f set=3\.0\.0\n/);
   });

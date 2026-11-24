@@ -108,6 +108,7 @@
     <string name="profile_language_estonian">Estoński</string>
     <string name="profile_language_gujarati">Gudżarati</string>
     <string name="profile_language_slovenian">Słoweński</string>
+    <string name="profile_language_punjabi">Pendżabski</string>
     <string name="profile_language_system_detail">Język urządzenia</string>
     <string name="profile_notifications">Powiadomienia</string>
     <plurals name="profile_notifications_active">

@@ -106,6 +106,7 @@
     <string name="profile_language_estonian">Estniska</string>
     <string name="profile_language_gujarati">Gujarati</string>
     <string name="profile_language_slovenian">Slovenska</string>
+    <string name="profile_language_punjabi">Punjabi</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Aviseringar</string>
     <plurals name="profile_notifications_active">

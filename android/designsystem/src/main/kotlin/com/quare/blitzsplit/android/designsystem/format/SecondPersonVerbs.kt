@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import com.quare.blitzsplit.android.designsystem.R
+import com.quare.blitzsplit.core.model.AppLanguage
 import java.util.Locale
 
 private const val SPANISH = "es"
@@ -101,6 +102,8 @@ private const val MARATHI = "mr"
 private const val MARATHI_RESPECTFUL_AGENT = "यांनी"
 private const val GUJARATI = "gu"
 private const val GUJARATI_AGENT = "એ"
+private const val PUNJABI = "pa"
+private const val PUNJABI_ERGATIVE = "ਨੇ"
 private const val TAMIL_THIRD_PERSON_PAST = "ார்"
 private val tamilPast = Regex("$TAMIL_THIRD_PERSON_PAST$")
 private const val SWAHILI = "sw"
@@ -146,6 +149,7 @@ private val youSubjectLanguages = setOf(
     MARATHI,
     SWAHILI,
     GUJARATI,
+    PUNJABI,
 )
 private val spanishObjectPronouns = setOf("lo", "la", "los", "las", "le", "les")
 private val portugueseIrregularSecondPerson = mapOf(
@@ -208,7 +212,8 @@ private val irregularSecondPerson = mapOf(
  * third person in "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji";
  * "Ana pievienojās", "Tu pievienojies"). Gujarati does as Hindi with its agent "એ", written apart
  * after a name, which the user's "તમે" doesn't take: every Gujarati verb phrase starts with "એ", which the user's drops
- * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Same rules as the web's and the Apple app's `verbForYou`.
+ * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Punjabi does the same with its ergative "ਨੇ", which the user's "ਤੁਸੀਂ"
+ * doesn't take ("Ana ਨੇ ਖਰਚਾ ਵੰਡਿਆ", "ਤੁਸੀਂ ਖਰਚਾ ਵੰਡਿਆ"). Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -239,6 +244,8 @@ fun toSecondPerson(
     MARATHI -> dropSubjectParticle(verb, MARATHI_RESPECTFUL_AGENT)
 
     GUJARATI -> dropSubjectParticle(verb, GUJARATI_AGENT)
+
+    PUNJABI -> dropSubjectParticle(verb, PUNJABI_ERGATIVE)
 
     CZECH -> if (czechPast.containsMatchIn(verb)) "$CZECH_SECOND_PERSON_AUXILIARY $verb" else verb
 
@@ -351,7 +358,8 @@ private fun toSpanishSecondPerson(verb: String): String {
  * ("od Ane"). Filipino says "Ikaw ay nagbura…", its verb not changing with the person, rather than a "by you" that
  * would need "ni" for a name and "mo" for the user. Tamil says "நீங்கள் நீக்கினீர்கள்: …", with its verb rule, and
  * Telugu "మీరు తొలగించారు: …", its verb not changing with the person, Marathi "तुम्ही … हटवला", with its rule,
- * Swahili "Wewe ulifuta…", with its own, and Gujarati "તમે … ડિલીટ કર્યો", with its rule.
+ * Swahili "Wewe ulifuta…", with its own, Gujarati "તમે … ડિલીટ કર્યો", with its rule, and Punjabi "ਤੁਸੀਂ … ਮਿਟਾਇਆ",
+ * with its own.
  */
 @Composable
 fun isYouSubjectUi(): Boolean = secondPersonLanguageUi() in youSubjectLanguages
@@ -369,13 +377,17 @@ private fun secondPersonLanguageUi(): String {
     return when {
         locale.language == PORTUGUESE && isPortugal -> PORTUGAL_PORTUGUESE
         resources.getBoolean(R.bool.designsystem_norwegian) -> NORWEGIAN
-        isCyrillicSerbian(locale) -> ""
+        isCyrillicSerbian(locale) || isShahmukhiPunjabi(locale) -> ""
         else -> locale.language
     }
 }
 
 // Why: a Serbian device in Cyrillic draws the English strings, the app having the Latin resources only.
 private fun isCyrillicSerbian(locale: Locale): Boolean = locale.language == SERBIAN && locale.script != LATIN_SCRIPT
+
+// Why: Punjabi in Shahmukhi (pa-Arab, pa-PK) reads the English strings, the app having Punjabi in Gurmukhi only.
+private fun isShahmukhiPunjabi(locale: Locale): Boolean =
+    locale.language == PUNJABI && AppLanguage.fromTag(locale.toLanguageTag()) != AppLanguage.PUNJABI
 
 // Why: only the user is "Tú"; the verb of someone else stays in the third person.
 @Composable
