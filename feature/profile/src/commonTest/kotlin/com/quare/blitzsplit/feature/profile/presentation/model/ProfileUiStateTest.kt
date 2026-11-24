@@ -64,6 +64,7 @@ class ProfileUiStateTest {
             AppLanguage.CATALAN -> listOf("Català", "Catalan")
             AppLanguage.DANISH -> listOf("Dansk", "Danish")
             AppLanguage.FINNISH -> listOf("Suomi", "Finnish")
+            AppLanguage.SLOVENIAN -> listOf("Slovenščina", "Slovenian")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
     }
@@ -127,6 +128,7 @@ class ProfileUiStateTest {
         AppLanguage.CATALAN,
         AppLanguage.DANISH,
         AppLanguage.FINNISH,
+        AppLanguage.SLOVENIAN,
     )
 
     @Test
@@ -733,6 +735,7 @@ class ProfileUiStateTest {
                 AppLanguage.CATALAN,
                 AppLanguage.DANISH,
                 AppLanguage.FINNISH,
+                AppLanguage.SLOVENIAN,
             ),
             options,
         )
@@ -798,6 +801,7 @@ class ProfileUiStateTest {
                 AppLanguage.CATALAN,
                 AppLanguage.DANISH,
                 AppLanguage.FINNISH,
+                AppLanguage.SLOVENIAN,
             ),
             options,
         )
@@ -945,6 +949,7 @@ class ProfileUiStateTest {
                 AppLanguage.SWEDISH,
                 AppLanguage.BENGALI,
                 AppLanguage.SLOVAK,
+                AppLanguage.SLOVENIAN,
             ),
             options,
         )

@@ -102,6 +102,7 @@
     <string name="profile_language_catalan">Kikatalani</string>
     <string name="profile_language_danish">Kideni</string>
     <string name="profile_language_finnish">Kifini</string>
+    <string name="profile_language_slovenian">Kislovenia</string>
     <string name="profile_language_system_detail">Lugha ya kifaa</string>
     <string name="profile_notifications">Arifa</string>
     <plurals name="profile_notifications_active">

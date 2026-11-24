@@ -102,6 +102,7 @@
     <string name="profile_language_catalan">कॅटलान</string>
     <string name="profile_language_danish">डॅनिश</string>
     <string name="profile_language_finnish">फिनिश</string>
+    <string name="profile_language_slovenian">स्लोव्हेनियन</string>
     <string name="profile_language_system_detail">डिव्हाइसची भाषा</string>
     <string name="profile_notifications">सूचना</string>
     <plurals name="profile_notifications_active">

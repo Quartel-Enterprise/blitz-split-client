@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Izbriši račun</string>
+    <string name="delete_account_offline_title">Ni interneta.</string>
+    <string name="delete_account_offline_body">Za brisanje računa potrebuješ internetno povezavo. Poveži se in poskusi znova.</string>
+    <string name="delete_account_heading">Želiš izbrisati svoj račun in podatke?</string>
+    <string name="delete_account_deleted_title">Kaj se izbriše</string>
+    <string name="delete_account_deleted_profile">Tvoj profil (ime, fotografija in barva)</string>
+    <string name="delete_account_deleted_keys">Tvoji ključi Pix in Bitcoin</string>
+    <string name="delete_account_deleted_provider">Povezava s tvojim računom %1$s</string>
+    <string name="delete_account_deleted_recovery_code">Tvoja obnovitvena koda</string>
+    <string name="delete_account_deleted_device">Kopija tvojih podatkov na tej napravi</string>
+    <string name="delete_account_kept_title">Kaj ostane v tvojih skupinah</string>
+    <string name="delete_account_kept_groups">Skupine z njihovimi stroški in plačili, za druge člane</string>
+    <string name="delete_account_kept_member">Tvoje ime v vsaki skupini, kot član brez računa</string>
+    <string name="delete_account_kept_comments">Tvoji komentarji in fotografije, ki si jih dodal(a), pod tvojim imenom</string>
+    <string name="delete_account_export">Najprej izvozi moje podatke</string>
+    <string name="delete_account_confirm">Razumem, da tega ni mogoče razveljaviti</string>
+    <string name="delete_account_delete">Izbriši račun</string>
+    <string name="delete_account_cancel">Prekliči</string>
+    <string name="delete_account_failed">Računa ni bilo mogoče izbrisati. Poskusi znova.</string>
+</resources>

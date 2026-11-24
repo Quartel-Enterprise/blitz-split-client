@@ -102,6 +102,7 @@
     <string name="profile_language_catalan">Katalansk</string>
     <string name="profile_language_danish">Dansk</string>
     <string name="profile_language_finnish">Finsk</string>
+    <string name="profile_language_slovenian">Slovensk</string>
     <string name="profile_language_system_detail">Enhetens språk</string>
     <string name="profile_notifications">Varsler</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Opombe ob izdaji</string>
+    <string name="release_notes_show_beta">Pokaži različice beta</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Ta različica</string>
+    <string name="release_notes_empty">Še ni opomb ob izdaji.</string>
+    <string name="release_notes_empty_only_betas">Stabilne različice še ni. Vklopi različice beta, da vidiš, kaj se preizkuša.</string>
+    <string name="release_notes_load_failed_title">Opomb ob izdaji ni bilo mogoče naložiti</string>
+    <string name="release_notes_load_failed_body">Preveri povezavo in poskusi znova.</string>
+    <string name="release_notes_retry">Poskusi znova</string>
+    <string name="release_notes_open_on_github">Odpri na GitHubu</string>
+</resources>

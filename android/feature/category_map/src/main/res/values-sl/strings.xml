@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Ni izrazov</string>
+    <string name="category_map_title">Zemljevid kategorij</string>
+    <string name="category_map_search">Išči izraze</string>
+    <string name="category_map_add">Dodaj izraz</string>
+    <string name="category_map_more">Več možnosti</string>
+    <string name="category_map_restore">Obnovi privzeto</string>
+    <string name="category_map_back">Nazaj</string>
+    <string name="category_map_intro">Ko naslov stroška vsebuje eno od teh besed, se kategorija nastavi sama. „Uber domov“ postane Prevoz.</string>
+    <string name="category_map_intro_offline">Zemljevid deluje brez povezave: spremembe na tej napravi veljajo takoj, na tvoje druge naprave pa pridejo, ko se znova povežeš.</string>
+    <string name="category_map_device_only">Tvoj zemljevid ostane samo na tej napravi. Če ga želiš imeti tudi na drugih napravah, se v profilu prijavi z Googlom ali Applom.</string>
+    <string name="category_map_open_profile">Odpri profil</string>
+    <string name="category_map_longest_wins">Ko se z naslovom ujemata dva izraza, zmaga daljši.</string>
+    <string name="category_map_no_result">Ni izraza z „%1$s“</string>
+    <string name="category_map_no_result_body">Dodaj ga in stroški s to besedo v naslovu bodo dobili pravo kategorijo.</string>
+    <string name="category_map_add_query">Dodaj „%1$s“</string>
+    <string name="category_map_empty_title">Tvoj zemljevid je prazen</string>
+    <string name="category_map_empty_body">Brez izrazov se kategorija ne določi iz naslova: izbereš jo pri vsakem strošku.</string>
+    <string name="category_map_group_category"> · kategorija skupine %1$s</string>
+    <string name="category_map_only_main">Samo %1$s</string>
+    <string name="category_map_only_in_group">samo v skupini %1$s</string>
+    <string name="category_map_no_terms_yet">Še ni izrazov.</string>
+    <string name="category_map_add_in">Dodaj izraz v: %1$s</string>
+    <string name="category_map_tip">Dotakni se izraza, da mu spremeniš kategorijo ali ga odstraniš. Ujema se cela beseda, ne glede na naglasna znamenja in velike črke.</string>
+    <string name="category_map_queued">v čakalni vrsti</string>
+    <string name="category_map_term_action">%1$s, %2$s. Uredi</string>
+    <string name="category_map_new_term">Nov izraz</string>
+    <string name="category_map_edit_term">Uredi izraz</string>
+    <string name="category_map_term_label">Beseda ali besedna zveza</string>
+    <string name="category_map_term_help">Ujema se cela beseda, ne glede na naglasna znamenja in velike črke.</string>
+    <string name="category_map_term_help_app">Izraz aplikacije. Obnovi privzeto ga vrne v prvotni obliki.</string>
+    <string name="category_map_term_duplicate">„%1$s“ že izbere %2$s. Vsak izraz ima eno kategorijo.</string>
+    <string name="category_map_term_too_short">Uporabi vsaj 2 črki.</string>
+    <string name="category_map_term_too_long">Uporabi največ 30 črk.</string>
+    <string name="category_map_term_invalid">Uporabi samo črke, števke in presledke.</string>
+    <string name="category_map_category">Kategorija</string>
+    <string name="category_map_category_help">Lahko je kategorija ali podkategorija.</string>
+    <string name="category_map_category_help_edit">Če jo spremeniš tukaj, se izraz premakne v drugo kategorijo.</string>
+    <string name="category_map_category_help_move">Premik odstrani izraz iz kategorije: %1$s.</string>
+    <string name="category_map_example">Primer</string>
+    <string name="category_map_example_move">Če ga premakneš</string>
+    <string name="category_map_remove">Odstrani</string>
+    <string name="category_map_cancel">Prekliči</string>
+    <string name="category_map_save">Shrani</string>
+    <string name="category_map_move_to">Premakni v: %1$s</string>
+    <string name="category_map_removed">„%1$s“ je odstranjen z zemljevida</string>
+    <string name="category_map_undo">Razveljavi</string>
+    <string name="category_map_restore_title">Želiš obnoviti privzeti zemljevid?</string>
+    <string name="category_map_restore_body">60 izrazov aplikacije se vrne v prvotni obliki, tudi tisti, ki si jih odstranil(a) ali premaknil(a).</string>
+    <string name="category_map_restore_own_one">Izraz, ki si ga ustvaril(a), „%1$s“, ostane.</string>
+    <string name="category_map_restore_confirm">Obnovi</string>
+    <string name="category_map_save_error">Zemljevida ni bilo mogoče shraniti. Poskusi znova.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d izraz</item>
+        <item quantity="two">%d izraza</item>
+        <item quantity="few">%d izrazi</item>
+        <item quantity="other">%d izrazov</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d podkategorija</item>
+        <item quantity="two">%d podkategoriji</item>
+        <item quantity="few">%d podkategorije</item>
+        <item quantity="other">%d podkategorij</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d izraz z „%2$s“</item>
+        <item quantity="two">%1$d izraza z „%2$s“</item>
+        <item quantity="few">%1$d izrazi z „%2$s“</item>
+        <item quantity="other">%1$d izrazov z „%2$s“</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Brez povezave · %d sprememba v čakalni vrsti</item>
+        <item quantity="two">Brez povezave · %d spremembi v čakalni vrsti</item>
+        <item quantity="few">Brez povezave · %d spremembe v čakalni vrsti</item>
+        <item quantity="other">Brez povezave · %d sprememb v čakalni vrsti</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d izraz, ki si ga ustvaril(a), ostane.</item>
+        <item quantity="two">%d izraza, ki si ju ustvaril(a), ostaneta.</item>
+        <item quantity="few">%d izrazi, ki si jih ustvaril(a), ostanejo.</item>
+        <item quantity="other">%d izrazov, ki si jih ustvaril(a), ostane.</item>
+    </plurals>
+    <string name="category_map_new_category">Nova kategorija</string>
+    <string name="category_map_new_subcategory_in">Nova podkategorija v: %s</string>
+    <string name="category_map_edit_category">Uredi %s</string>
+    <string name="category_map_category_group">Skupina</string>
+    <string name="category_map_change_color">Spremeni barvo: %1$s</string>
+    <string name="category_map_restore_color">Obnovi barvo</string>
+    <string name="category_map_color_done">Končano</string>
+</resources>
