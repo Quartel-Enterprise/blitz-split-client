@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">કોઈ શબ્દ નથી</string>
+    <string name="category_map_title">કેટેગરી મૅપ</string>
+    <string name="category_map_search">શબ્દો શોધો</string>
+    <string name="category_map_add">શબ્દ ઉમેરો</string>
+    <string name="category_map_more">વધુ વિકલ્પો</string>
+    <string name="category_map_restore">ડિફૉલ્ટ પાછું લાવો</string>
+    <string name="category_map_back">પાછા</string>
+    <string name="category_map_intro">જ્યારે ખર્ચના શીર્ષકમાં આમાંનો કોઈ શબ્દ હોય, ત્યારે તેની કેટેગરી આપમેળે આવી જાય છે. “Uber home” પરિવહન બની જાય છે.</string>
+    <string name="category_map_intro_offline">મૅપ ઑફલાઇન કામ કરે છે: ફેરફારો આ ડિવાઇસ પર તરત લાગુ થાય છે અને ઑનલાઇન થતાં તમારા બીજા ડિવાઇસ સુધી પહોંચે છે.</string>
+    <string name="category_map_device_only">તમારો મૅપ ફક્ત આ ડિવાઇસ પર રહે છે. તેને તમારા બીજા ડિવાઇસ પર લઈ જવા માટે, તમારી પ્રોફાઇલમાં Google કે Apple થી સાઇન ઇન કરો.</string>
+    <string name="category_map_open_profile">પ્રોફાઇલ ખોલો</string>
+    <string name="category_map_longest_wins">જ્યારે બે શબ્દો શીર્ષક સાથે મેળ ખાય, ત્યારે સૌથી લાંબો શબ્દ જીતે છે.</string>
+    <string name="category_map_no_result">“%1$s” સાથે કોઈ શબ્દ નથી</string>
+    <string name="category_map_no_result_body">તેને ઉમેરો, અને શીર્ષકમાં આ શબ્દવાળા ખર્ચ સાચી કેટેગરી સાથે આવશે.</string>
+    <string name="category_map_add_query">“%1$s” ઉમેરો</string>
+    <string name="category_map_empty_title">તમારો મૅપ ખાલી છે</string>
+    <string name="category_map_empty_body">શબ્દો વગર, કેટેગરી શીર્ષક પરથી નથી આવતી: તમે દરેક ખર્ચ પર તે પસંદ કરો છો.</string>
+    <string name="category_map_group_category"> · ‘%1$s’ ગ્રુપની કેટેગરી</string>
+    <string name="category_map_only_main">ફક્ત %1$s</string>
+    <string name="category_map_only_in_group">ફક્ત ‘%1$s’ ગ્રુપમાં</string>
+    <string name="category_map_no_terms_yet">હજી કોઈ શબ્દ નથી.</string>
+    <string name="category_map_add_in">શબ્દ ઉમેરો: %1$s</string>
+    <string name="category_map_tip">કોઈ શબ્દની કેટેગરી બદલવા કે તેને કાઢવા માટે તેના પર ટૅપ કરો. તે આખા શબ્દ સાથે મેળ ખાય છે, ઍક્સેન્ટ અને કેપિટલ-નાના અક્ષરોને અવગણીને.</string>
+    <string name="category_map_queued">કતારમાં</string>
+    <string name="category_map_term_action">%1$s, %2$s. એડિટ કરો</string>
+    <string name="category_map_new_term">નવો શબ્દ</string>
+    <string name="category_map_edit_term">શબ્દ એડિટ કરો</string>
+    <string name="category_map_term_label">શબ્દ કે વાક્યાંશ</string>
+    <string name="category_map_term_help">આખા શબ્દ સાથે મેળ ખાય છે, ઍક્સેન્ટ અને કેપિટલ-નાના અક્ષરોને અવગણીને.</string>
+    <string name="category_map_term_help_app">ઍપનો શબ્દ. “ડિફૉલ્ટ પાછું લાવો” તેને મૂળ રૂપે પાછો લાવે છે.</string>
+    <string name="category_map_term_duplicate">“%1$s” પહેલેથી આ કેટેગરી પસંદ કરે છે: %2$s. દરેક શબ્દની એક જ કેટેગરી હોય છે.</string>
+    <string name="category_map_term_too_short">ઓછામાં ઓછા 2 અક્ષર વાપરો.</string>
+    <string name="category_map_term_too_long">વધુમાં વધુ 30 અક્ષર વાપરો.</string>
+    <string name="category_map_term_invalid">ફક્ત અક્ષરો, અંકો અને સ્પેસ વાપરો.</string>
+    <string name="category_map_category">કેટેગરી</string>
+    <string name="category_map_category_help">તે કેટેગરી કે સબકેટેગરી હોઈ શકે છે.</string>
+    <string name="category_map_category_help_edit">અહીં તેને બદલવાથી શબ્દ બીજી કેટેગરીમાં જતો રહે છે.</string>
+    <string name="category_map_category_help_move">ખસેડવાથી શબ્દ અહીંથી નીકળી જાય છે: %1$s.</string>
+    <string name="category_map_example">ઉદાહરણ</string>
+    <string name="category_map_example_move">જો ખસેડાય તો</string>
+    <string name="category_map_remove">કાઢો</string>
+    <string name="category_map_cancel">રદ કરો</string>
+    <string name="category_map_save">સેવ કરો</string>
+    <string name="category_map_move_to">અહીં ખસેડો: %1$s</string>
+    <string name="category_map_removed">“%1$s” મૅપમાંથી નીકળી ગયો</string>
+    <string name="category_map_undo">પાછું વાળો</string>
+    <string name="category_map_restore_title">ડિફૉલ્ટ મૅપ પાછો લાવવો છે?</string>
+    <string name="category_map_restore_body">ઍપના 60 શબ્દો મૂળ રૂપે પાછા આવે છે, તમે કાઢેલા કે ખસેડેલા શબ્દો સહિત.</string>
+    <string name="category_map_restore_own_one">તમે બનાવેલો શબ્દ, “%1$s”, રહેશે.</string>
+    <string name="category_map_restore_confirm">પાછું લાવો</string>
+    <string name="category_map_save_error">મૅપ સેવ થઈ શક્યો નહીં. ફરી પ્રયાસ કરો.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d શબ્દ</item>
+        <item quantity="other">%d શબ્દો</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d સબકેટેગરી</item>
+        <item quantity="other">%d સબકેટેગરી</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">“%2$s” સાથે %1$d શબ્દ</item>
+        <item quantity="other">“%2$s” સાથે %1$d શબ્દો</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">ઑફલાઇન · %d ફેરફાર કતારમાં</item>
+        <item quantity="other">ઑફલાઇન · %d ફેરફાર કતારમાં</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">તમે બનાવેલા %d શબ્દ રહેશે.</item>
+        <item quantity="other">તમે બનાવેલા %d શબ્દો રહેશે.</item>
+    </plurals>
+    <string name="category_map_new_category">નવી કેટેગરી</string>
+    <string name="category_map_new_subcategory_in">નવી સબકેટેગરી: %s</string>
+    <string name="category_map_edit_category">એડિટ કરો: %s</string>
+    <string name="category_map_category_group">ગ્રુપ</string>
+    <string name="category_map_change_color">રંગ બદલો: %1$s</string>
+    <string name="category_map_restore_color">રંગ પાછો લાવો</string>
+    <string name="category_map_color_done">થઈ ગયું</string>
+</resources>

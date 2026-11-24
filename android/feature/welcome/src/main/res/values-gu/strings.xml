@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">ખર્ચ વહેંચો, કોઈ ઝંઝટ વગર</string>
+    <string name="welcome_offline_title">ઑફલાઇન કામ કરે છે</string>
+    <string name="welcome_offline_body">બધું તમારા ડિવાઇસ પર રહે છે અને પછીથી સિંક થાય છે.</string>
+    <string name="welcome_optional_title">એકાઉન્ટ વૈકલ્પિક છે</string>
+    <string name="welcome_optional_body">Google કે Apple ફક્ત એટલા માટે છે કે ડિવાઇસ બદલો ત્યારે તમે કંઈ ગુમાવો નહીં.</string>
+    <string name="welcome_invite_title">લિંક કે QR કોડથી આમંત્રણ આપો</string>
+    <string name="welcome_invite_body">મિત્રો એકાઉન્ટ બનાવ્યા વગર ગ્રુપમાં જોડાય છે.</string>
+    <string name="welcome_no_connection_title">કનેક્શન નથી.</string>
+    <string name="welcome_no_connection_body">એકાઉન્ટથી સાઇન ઇન કરવા માટે ઇન્ટરનેટ જોઈએ. હમણાં એકાઉન્ટ વગર વાપરો અને પછીથી પ્રોફાઇલમાં કનેક્ટ કરો.</string>
+    <string name="welcome_or">અથવા</string>
+    <string name="welcome_use_without_account">એકાઉન્ટ વગર વાપરો</string>
+    <string name="welcome_used_on_another_device">મેં બીજા ડિવાઇસ પર વાપરી છે</string>
+    <string name="welcome_sign_in_failed">હમણાં સાઇન ઇન થઈ શક્યું નહીં. ફરી પ્રયાસ કરો.</string>
+    <string name="welcome_legal_notice">આગળ વધીને, તમે %1$s સ્વીકારો છો અને %2$s ની નોંધ લો છો.</string>
+    <string name="welcome_legal_terms">સેવાની શરતો</string>
+    <string name="welcome_legal_privacy">પ્રાઇવસી પોલિસી</string>
+    <string name="welcome_no_account_note">એકાઉન્ટ વગર, 30 દિવસ ઉપયોગ ન થાય તો તમારો ડેટા ડિલીટ થઈ જાય છે. તેને સાચવી રાખવા Google કે Apple કનેક્ટ કરો.</string>
+    <string name="welcome_no_account_note_offline">એકાઉન્ટ વગર, 30 દિવસ ઉપયોગ ન થાય તો તમારો ડેટા ડિલીટ થઈ જાય છે. તેને સાચવી રાખવા પછીથી પ્રોફાઇલમાં Google કે Apple કનેક્ટ કરો.</string>
+    <string name="welcome_expired_title">તમારો ડેટા ડિલીટ થઈ ગયો</string>
+    <string name="welcome_expired_body">તમે એકાઉન્ટ વગર ઍપ વાપરતા હતા અને 30 દિવસ સુધી તેને ખોલી નહીં, તેથી તમારો ડેટા ડિલીટ થઈ ગયો. આગલી વખતે તેને સાચવી રાખવા Google કે Apple કનેક્ટ કરો.</string>
+    <string name="welcome_expired_ok">ઠીક છે</string>
+</resources>

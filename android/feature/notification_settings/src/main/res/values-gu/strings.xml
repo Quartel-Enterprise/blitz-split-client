@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">નોટિફિકેશન</string>
+    <string name="notification_settings_denied_title">Android પર Blitz Split ના નોટિફિકેશન બંધ છે.</string>
+    <string name="notification_settings_denied_body">નીચેના પુશ મેળવવા માટે તેમને સિસ્ટમ સેટિંગ્સમાં ચાલુ કરો. ઘંટડી કામ કરતી રહે છે.</string>
+    <string name="notification_settings_open_settings">સેટિંગ્સ ખોલો</string>
+    <string name="notification_settings_refused_body">નીચેના પુશ મેળવવા માટે Android તમને તેમને વધુ એક વાર મંજૂરી આપવા દે છે. ઘંટડી કામ કરતી રહે છે.</string>
+    <string name="notification_settings_turn_on">ચાલુ કરો</string>
+    <string name="notification_settings_blocked_in_android">Android માં બ્લૉક છે</string>
+    <string name="notification_settings_open_channel_settings_description">આ માટે Android સેટિંગ્સ ખોલો: %1$s</string>
+    <string name="notification_settings_push_switch">પુશ નોટિફિકેશન</string>
+    <string name="notification_settings_push_switch_detail">ફક્ત આ ડિવાઇસ પર</string>
+    <string name="notification_settings_section">મને આ વિશે જાણ કરો</string>
+    <string name="notification_settings_push">પુશ</string>
+    <string name="notification_settings_in_app">ઍપમાં</string>
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">પુશ આ ડિવાઇસ પર નોટિફિકેશન મોકલે છે. “ઍપમાં” તેને ઘંટડી પર અને પ્રવૃત્તિમાં નવું તરીકે માર્ક કરે છે; બંધ હોય તો પણ તે પ્રવૃત્તિમાં દેખાય છે, પહેલેથી વાંચેલું.</string>
+    <string name="notification_settings_footer">ઇન્ટરનેટ હોય ત્યારે સૂચનાઓ આવે છે. કોઈ ગ્રુપને મ્યૂટ કરવા, તેની અંદરનું મેનૂ વાપરો.</string>
+</resources>

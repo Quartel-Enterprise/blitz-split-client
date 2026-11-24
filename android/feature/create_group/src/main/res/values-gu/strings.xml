@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">નવું ગ્રુપ</string>
+    <string name="create_group_close">બંધ કરો</string>
+    <string name="create_group_create">બનાવો</string>
+    <string name="create_group_change_color">ગ્રુપનો રંગ બદલો</string>
+    <string name="create_group_name_label">ગ્રુપનું નામ</string>
+    <string name="create_group_type_label">ગ્રુપનો પ્રકાર</string>
+    <string name="create_group_members_title">કોણ કોણ છે</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d વ્યક્તિ</item>
+        <item quantity="other">%d લોકો</item>
+    </plurals>
+    <string name="create_group_me">તમે</string>
+    <string name="create_group_remove_member">કાઢો: %s</string>
+    <string name="create_group_add_placeholder">નામથી ઉમેરો</string>
+    <string name="create_group_add">ઉમેરો</string>
+    <string name="create_group_no_app_notice">હમણાં કોઈને ઍપની જરૂર નથી. તમે અત્યારથી જ બધા માટે ખર્ચ ઉમેરી શકો છો અને લિંક પછીથી મોકલી શકો છો.</string>
+    <string name="create_group_currency">ડિફૉલ્ટ ચલણ</string>
+    <string name="create_group_currency_caption">નવા ખર્ચ આ ચલણમાં શરૂ થાય છે; દરેક ખર્ચ બીજું ચલણ વાપરી શકે છે.</string>
+    <string name="create_group_save_error">ગ્રુપ સેવ થઈ શક્યું નહીં. ફરી પ્રયાસ કરો.</string>
+    <string name="create_group_photo">ગ્રુપનો ફોટો</string>
+    <string name="create_group_take_photo">ફોટો લો</string>
+    <string name="create_group_choose_photo">ફોટો પસંદ કરો</string>
+    <string name="create_group_remove_photo">ફોટો કાઢો</string>
+    <string name="create_group_photo_error">આ ફોટો વાપરી શકાયો નહીં. બીજો અજમાવો.</string>
+</resources>

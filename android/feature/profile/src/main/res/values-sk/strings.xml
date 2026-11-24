@@ -104,6 +104,7 @@
     <string name="profile_language_catalan">Katalánčina</string>
     <string name="profile_language_danish">Dánčina</string>
     <string name="profile_language_finnish">Fínčina</string>
+    <string name="profile_language_gujarati">Gudžarátčina</string>
     <string name="profile_language_system_detail">Jazyk zariadenia</string>
     <string name="profile_notifications">Upozornenia</string>
     <plurals name="profile_notifications_active">

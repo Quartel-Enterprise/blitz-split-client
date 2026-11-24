@@ -87,6 +87,7 @@ object SampleTrips {
         "ca" to GroupCurrency.EUR,
         "da" to GroupCurrency.DKK,
         "fi" to GroupCurrency.EUR,
+        "gu" to GroupCurrency.INR,
         "sw" to GroupCurrency.KES,
     )
 
