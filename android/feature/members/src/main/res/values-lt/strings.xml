@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="members_link_title">Pakvietimo nuoroda</string>
+    <string name="members_link_pending">Dar nesukurta</string>
+    <string name="members_share">Bendrinti</string>
+    <string name="members_me">%s (tu)</string>
+    <string name="members_status_this_device">Šis įrenginys</string>
+    <string name="members_status_joined">Prisijungė</string>
+    <string name="members_status_not_joined">Dar neprisijungė</string>
+    <string name="members_options">Parinktys: %s</string>
+    <string name="members_rename">Pervadinti</string>
+    <string name="members_personal_invite">Asmeninis pakvietimas: %s</string>
+    <string name="members_personal_message">Kas atidarys šią nuorodą, iškart prisijungs kaip %s ir nereikės rinktis iš sąrašo. Ji veikia vieną kartą.</string>
+    <plurals name="members_personal_message_bills">
+        <item quantity="one">Kas atidarys šią nuorodą, iškart prisijungs kaip %1$s, nereikės rinktis iš sąrašo, ir jau matys savo dalį (%2$s) %3$d iki šiol pridėtoje išlaidoje. Ji veikia vieną kartą.</item>
+        <item quantity="few">Kas atidarys šią nuorodą, iškart prisijungs kaip %1$s, nereikės rinktis iš sąrašo, ir jau matys savo dalį (%2$s) %3$d iki šiol pridėtose išlaidose. Ji veikia vieną kartą.</item>
+        <item quantity="many">Kas atidarys šią nuorodą, iškart prisijungs kaip %1$s, nereikės rinktis iš sąrašo, ir jau matys savo dalį (%2$s) %3$d iki šiol pridėtos išlaidos. Ji veikia vieną kartą.</item>
+        <item quantity="other">Kas atidarys šią nuorodą, iškart prisijungs kaip %1$s, nereikės rinktis iš sąrašo, ir jau matys savo dalį (%2$s) %3$d iki šiol pridėtų išlaidų. Ji veikia vieną kartą.</item>
+    </plurals>
+    <string name="members_personal_copy">Kopijuoti nuorodą</string>
+    <string name="members_personal_copied">Nukopijuota</string>
+    <string name="members_personal_share">Bendrinti su nariu %s</string>
+    <string name="members_personal_share_message">Prisijunk prie grupės %1$s kaip %2$s programėlėje Blitz Split: %3$s</string>
+    <string name="members_remove">Pašalinti iš grupės</string>
+    <string name="members_remove_joined">%s jau prisijungė prie grupės</string>
+    <string name="members_remove_title">Pašalinti narį %s iš grupės?</string>
+    <string name="members_remove_message">%s dar neprisijungė. Vėliau galėsi vėl pridėti.</string>
+    <string name="members_remove_confirm">Pašalinti</string>
+    <string name="members_release">Atlaisvinti vardą</string>
+    <string name="members_release_title">Atlaisvinti vardą %s?</string>
+    <string name="members_release_message">Kas prisijungė kaip %1$s, išeis iš grupės. Vardas %1$s, jo spalva ir išlaidos liks, o vardą %1$s vėl bus galima pasirinkti per grupės nuorodą.</string>
+    <string name="members_release_confirm">Atlaisvinti</string>
+    <string name="members_release_error">Nepavyko atlaisvinti vardo. Patikrink ryšį ir bandyk dar kartą.</string>
+    <string name="members_add">Pridėti žmogų</string>
+    <string name="members_invite_instead">Turi programėlę? Pakviesk nuoroda</string>
+    <string name="members_name_label">Vardas</string>
+    <string name="members_save">Išsaugoti</string>
+    <string name="members_cancel">Atšaukti</string>
+    <string name="members_change_error">Nepavyko išsaugoti pakeitimo. Bandyk dar kartą.</string>
+    <string name="members_remove_open_balance">%s turi neatsiskaitytą balansą</string>
+    <string name="members_balance_to_get_back">turi atgauti %s</string>
+    <string name="members_balance_owes">turi grąžinti %s</string>
+    <string name="members_balance_settled">Atsiskaitė</string>
+</resources>

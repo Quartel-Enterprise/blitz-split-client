@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="release_notes_title">Versijų naujienos</string>
+    <string name="release_notes_show_beta">Rodyti beta versijas</string>
+    <string name="release_notes_beta_badge">Beta %1$d</string>
+    <string name="release_notes_installed_badge">Ši versija</string>
+    <string name="release_notes_empty">Versijų naujienų dar nėra.</string>
+    <string name="release_notes_empty_only_betas">Stabilios versijos dar nėra. Įjunk beta versijas ir pamatysi, kas šiuo metu testuojama.</string>
+    <string name="release_notes_load_failed_title">Nepavyko įkelti versijų naujienų</string>
+    <string name="release_notes_load_failed_body">Patikrink ryšį ir bandyk dar kartą.</string>
+    <string name="release_notes_retry">Bandyti dar kartą</string>
+    <string name="release_notes_open_on_github">Atidaryti „GitHub“</string>
+</resources>

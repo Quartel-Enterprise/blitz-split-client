@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">Naujas Pix raktas</string>
+    <string name="payment_key_title_pix_edit">Redaguoti Pix raktą</string>
+    <string name="payment_key_title_bitcoin_new">Naujas Bitcoin raktas</string>
+    <string name="payment_key_title_bitcoin_edit">Redaguoti Bitcoin raktą</string>
+    <string name="payment_key_save">Išsaugoti</string>
+
+    <string name="payment_key_pix_intro">Kas tau moka, mato šį raktą, kai atsiskaito. Kokio tipo raktas?</string>
+    <string name="payment_key_pix_question">Kokio tipo raktas?</string>
+    <string name="payment_key_pix_explanation">Kas tau moka, mato šį raktą, kai atsiskaito.</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">Telefonas</string>
+    <string name="payment_key_type_email">El. paštas</string>
+    <string name="payment_key_type_random">Atsitiktinis</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">Mobiliojo telefono numeris su vietovės kodu</string>
+    <string name="payment_key_label_email">El. paštas</string>
+    <string name="payment_key_label_random">Atsitiktinis raktas</string>
+
+    <string name="payment_key_bitcoin_intro">Kaip nori gauti pinigus?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">greitai, mažas mokestis</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">blokų grandinėje</string>
+    <string name="payment_key_label_lightning">Lightning Address arba LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin adresas</string>
+
+    <string name="payment_key_paste">Įklijuoti</string>
+
+    <string name="payment_key_hint_cpf">Formatas 000.000.000-00</string>
+    <string name="payment_key_hint_phone">Formatas +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">Formatas vardas@domenas.com</string>
+    <string name="payment_key_hint_random">32 raidės ir skaitmenys, kaip rodo tavo bankas</string>
+    <string name="payment_key_hint_lightning">Pvz., vardas@pinigine.com arba LNURL1…</string>
+    <string name="payment_key_hint_onchain">Mainnet adresas, prasidedantis bc1q arba bc1p</string>
+
+    <string name="payment_key_valid_cpf">Formatas 000.000.000-00 · kontroliniai skaitmenys sutampa</string>
+    <string name="payment_key_valid_phone">Formatas +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">Formatas vardas@domenas.com</string>
+    <string name="payment_key_valid_random">Atsitiktinis raktas atpažintas (32 simboliai)</string>
+    <string name="payment_key_valid_lightning_address">Tinkamas Lightning Address</string>
+    <string name="payment_key_valid_lnurl">Tinkamas LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">Netinkamas CPF: kontroliniai skaitmenys nesutampa.</string>
+    <string name="payment_key_error_invalid_phone">Neužbaigtas mobiliojo telefono numeris: įvesk vietovės kodą ir 9 skaitmenis, pradedant 9.</string>
+    <string name="payment_key_error_invalid_email">Neužbaigtas el. pašto adresas: trūksta domeno, pvz., .com ar .com.br.</string>
+    <string name="payment_key_error_invalid_random">Neužbaigtas atsitiktinis raktas: jį sudaro 32 raidės ir skaitmenys.</string>
+    <string name="payment_key_error_invalid_lightning">Tai nėra Lightning Address (vardas@pinigine) ar LNURL.</string>
+    <string name="payment_key_error_lightning_invoice">Tai Lightning sąskaita (lnbc…): ja galima sumokėti tik kartą, ir jos galiojimas baigiasi. Įklijuok Lightning Address arba LNURL.</string>
+    <string name="payment_key_error_invalid_onchain">Netinkamas adresas. Naudok mainnet bc1q arba bc1p adresą.</string>
+    <string name="payment_key_error_testnet_address">Tai testnet adresas (tb1…). Čia veikia tik Bitcoin mainnet su bc1… adresais.</string>
+    <string name="payment_key_error_already_saved">Šį raktą jau turi.</string>
+
+    <string name="payment_key_switched_to_onchain">Tai on-chain adresas, todėl perjungėme į On-chain.</string>
+    <string name="payment_key_switched_to_lightning">Tai Lightning Address, todėl perjungėme į Lightning.</string>
+    <string name="payment_key_cpf_notice">Kas tau moka, mato visą tavo CPF. Jei nenori jo rodyti, naudok telefono, el. pašto ar atsitiktinį raktą.</string>
+    <string name="payment_key_held_notice">Gali turėti tik vieną tokio tipo Pix raktą, todėl čia rodomas tas, kurį išsaugojai. Jei nori, pakeisk jį čia.</string>
+
+    <string name="payment_key_accepted_title">Priimame</string>
+    <string name="payment_key_accepted_lightning_address_sample">vardas@pinigine.app</string>
+
+    <string name="payment_key_default_pix_title">Numatytasis Pix raktas</string>
+    <string name="payment_key_default_bitcoin_title">Numatytasis Bitcoin raktas</string>
+    <string name="payment_key_default_pix_detail">Rodomas pirmas atsiskaitant.</string>
+    <string name="payment_key_default_bitcoin_detail">Rodomas pirmas, kai kas nors moka BTC.</string>
+    <string name="payment_key_default_now">Dabar: %1$s.</string>
+    <string name="payment_key_default_locked_editing">Kad jį pakeistum, padaryk numatytuoju kitą raktą.</string>
+    <string name="payment_key_default_locked_new">Pirmasis tokio tipo raktas tampa numatytuoju.</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">telefonas</string>
+    <string name="payment_key_default_type_email">el. paštas</string>
+    <string name="payment_key_default_type_random">atsitiktinis raktas</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split neperveda pinigų: mokėtojas moka savo banko programėlėje. Patikrink, ar raktas užregistruotas tavo vardu.</string>
+    <string name="payment_key_footer_bitcoin">Atsiskaitant rodome sumą satoshiais pagal dabartinį kursą. Tai tik apytikslė suma: mokėtojas ją patvirtina savo piniginėje.</string>
+
+    <string name="payment_key_delete">Ištrinti raktą</string>
+    <string name="payment_key_delete_title">Ištrinti šį raktą?</string>
+    <string name="payment_key_delete_body">Tie, kurie turi tau grąžinti, atsiskaitant jo nebematys.</string>
+    <string name="payment_key_delete_confirm">Ištrinti</string>
+</resources>

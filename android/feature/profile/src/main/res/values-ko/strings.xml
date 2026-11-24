@@ -105,6 +105,7 @@
     <string name="profile_language_estonian">에스토니아어</string>
     <string name="profile_language_gujarati">구자라트어</string>
     <string name="profile_language_slovenian">슬로베니아어</string>
+    <string name="profile_language_lithuanian">리투아니아어</string>
     <string name="profile_language_system_detail">기기 언어</string>
     <string name="profile_notifications">알림</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="platform_app_name">Blitz Split</string>
+    <string name="platform_recovery_code_account">Blitz Split · atkūrimo kodas</string>
+    <string name="platform_export_file_name">blitz-split-duomenys-%1$s.json</string>
+    <string name="platform_camera_denied">Nustatymuose leisk naudoti kamerą, kad galėtum fotografuoti.</string>
+    <string name="platform_camera_settings">Nustatymai</string>
+    <string name="platform_receipt_source_camera">Fotografuoti</string>
+    <string name="platform_receipt_source_gallery">Pasirinkti iš galerijos</string>
+    <string name="platform_receipt_source_file">Pasirinkti failą</string>
+    <string name="platform_receipt_camera_title">Nuskenuoti kvitą</string>
+    <string name="platform_receipt_camera_close">Uždaryti</string>
+    <string name="platform_receipt_camera_flash_on">Įjungti blykstę</string>
+    <string name="platform_receipt_camera_flash_off">Išjungti blykstę</string>
+    <string name="platform_receipt_camera_hint">Sutalpink visą kvitą į rėmelį. Sumą, datą ir aprašymą užpildysime mes; tu tik patikrini prieš išsaugant.</string>
+    <string name="platform_receipt_camera_gallery">Pasirinkti iš galerijos</string>
+    <string name="platform_receipt_camera_shutter">Fotografuoti</string>
+    <string name="platform_receipt_camera_unavailable">Kamera nepasiekiama. Pasirink kvito nuotrauką iš galerijos.</string>
+    <string name="platform_receipt_camera_permission">Leisk naudoti kamerą, kad galėtum nuskenuoti kvitą, arba pasirink nuotrauką iš galerijos.</string>
+    <string name="platform_receipt_camera_allow">Leisti naudoti kamerą</string>
+    <string name="platform_receipt_camera_settings">Atidaryti nustatymus</string>
+</resources>

@@ -106,6 +106,7 @@
     <string name="profile_language_estonian">एस्टोनियन</string>
     <string name="profile_language_gujarati">गुजराती</string>
     <string name="profile_language_slovenian">स्लोव्हेनियन</string>
+    <string name="profile_language_lithuanian">लिथुआनियन</string>
     <string name="profile_language_system_detail">डिव्हाइसची भाषा</string>
     <string name="profile_notifications">सूचना</string>
     <plurals name="profile_notifications_active">

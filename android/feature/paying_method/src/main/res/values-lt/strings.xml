@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">Naujas mokėjimo būdas</string>
+    <string name="paying_method_edit_title">Redaguoti mokėjimo būdą</string>
+    <string name="paying_method_type">Tipas</string>
+    <string name="paying_method_name">Pavadinimas</string>
+    <string name="paying_method_name_optional">Pavadinimas (nebūtina)</string>
+    <string name="paying_method_color">Spalva</string>
+    <string name="paying_method_default">Numatytasis būdas</string>
+    <string name="paying_method_default_hint">Naujose išlaidose, kurias sumoki, jis parenkamas iš karto.</string>
+    <string name="paying_method_delete">Ištrinti mokėjimo būdą</string>
+    <string name="paying_method_delete_title">Ištrinti šį mokėjimo būdą?</string>
+    <string name="paying_method_delete_body">Išlaidose, kurias juo pažymėjai, jis nebebus rodomas.</string>
+    <string name="paying_method_delete_confirm">Ištrinti</string>
+    <string name="paying_method_save">Išsaugoti</string>
+</resources>
