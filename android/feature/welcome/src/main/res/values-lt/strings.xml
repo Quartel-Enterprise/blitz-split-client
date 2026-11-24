@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_title">Dalyk išlaidas be vargo</string>
+    <string name="welcome_offline_title">Veikia be interneto</string>
+    <string name="welcome_offline_body">Viskas lieka tavo įrenginyje ir sinchronizuojama vėliau.</string>
+    <string name="welcome_optional_title">Paskyra nebūtina</string>
+    <string name="welcome_optional_body">„Google“ ar „Apple“ paskyra reikalinga tik tam, kad nieko neprarastum, kai pakeisi įrenginį.</string>
+    <string name="welcome_invite_title">Kviesk nuoroda arba QR kodu</string>
+    <string name="welcome_invite_body">Draugai prisijungia prie grupės nesukūrę paskyros.</string>
+    <string name="welcome_no_connection_title">Nėra ryšio.</string>
+    <string name="welcome_no_connection_body">Prisijungti su paskyra galima tik su internetu. Dabar naudokis be paskyros, o vėliau ją susiek skiltyje „Profilis“.</string>
+    <string name="welcome_or">arba</string>
+    <string name="welcome_use_without_account">Naudoti be paskyros</string>
+    <string name="welcome_used_on_another_device">Jau naudojau kitame įrenginyje</string>
+    <string name="welcome_sign_in_failed">Šiuo metu nepavyko prisijungti. Bandyk dar kartą.</string>
+    <string name="welcome_legal_notice">Jei tęsi, sutinki su %1$s ir patvirtini, kad susipažinai su %2$s.</string>
+    <string name="welcome_legal_terms">paslaugų teikimo sąlygomis</string>
+    <string name="welcome_legal_privacy">privatumo politika</string>
+    <string name="welcome_no_account_note">Be paskyros tavo duomenys ištrinami po 30 dienų nenaudojimo. Kad juos išsaugotum, susiek „Google“ arba „Apple“ paskyrą.</string>
+    <string name="welcome_no_account_note_offline">Be paskyros tavo duomenys ištrinami po 30 dienų nenaudojimo. Kad juos išsaugotum, vėliau skiltyje „Profilis“ susiek „Google“ arba „Apple“ paskyrą.</string>
+    <string name="welcome_expired_title">Tavo duomenys ištrinti</string>
+    <string name="welcome_expired_body">Naudojaisi programėle be paskyros ir 30 dienų jos neatidarei, todėl tavo duomenys ištrinti. Kitą kartą susiek „Google“ arba „Apple“ paskyrą, kad juos išsaugotum.</string>
+    <string name="welcome_expired_ok">Gerai</string>
+</resources>

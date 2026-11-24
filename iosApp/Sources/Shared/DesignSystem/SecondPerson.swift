@@ -15,7 +15,8 @@ import SwiftUI
 /// rozdělil(a)", "Ty jsi rozdělil(a)"), as Slovak does with "si" ("Ana rozdelil(a)", "Ty si rozdelil(a)"). Greek ends its aorist in "-ε" for someone else and "-ες" for the user ("Ana
 /// μοίρασε", "Εσύ μοίρασες"). Croatian swaps its "je" for "si" before a past written "-o/la", the app not knowing the
 /// gender ("Ana je podijelio/la", "Ti si podijelio/la"), and Finnish its "on" for "olet" ("Ana on jakanut", "Sinä olet
-/// jakanut"). Hungarian starts each verb phrase with a past: a definite one
+/// jakanut"). Lithuanian's simple past says no gender and ends in "-o" or "-ė" for a name, "-ai" or "-ei" for the user
+/// ("Ana padalijo", "Tu padalijai"). Hungarian starts each verb phrase with a past: a definite one
 /// in "-ta"/"-te" takes a "d" for the user ("Ana létrehozta", "Te létrehoztad"), an indefinite one is one of a short
 /// list a translation may start with, each with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's
 /// respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
@@ -96,7 +97,9 @@ enum SecondPerson {
     /// "आपने" holding it, so "ने खर्च बांटा" → "खर्च बांटा". Greek: the aorist takes an "ς", so "μοίρασε" → "μοίρασες".
     /// Hungarian: the past the phrase starts with takes a "d" in "-ta"/"-te" ("létrehozta" → "létrehoztad"), or its
     /// listed second person ("felosztott" → "felosztottál"). Swahili: the third person's "a" of the perfect or past the
-/// phrase starts with turns into "u", so "amegawanya" → "umegawanya", "alifuta" → "ulifuta". Another language keeps
+/// phrase starts with turns into "u", so "amegawanya" → "umegawanya", "alifuta" → "ulifuta". Lithuanian: every verb
+/// phrase starts with a simple past, which says no gender, in "-o" or "-ė" ("-osi", "-ėsi" when reflexive), the user's
+/// taking "-ai" or "-ei": "padalijo" → "padalijai", "ištrynė" → "ištrynei", "dalijosi" → "dalijaisi". Another language keeps
 /// the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
@@ -125,6 +128,14 @@ enum SecondPerson {
             if let known = hungarianIndefinitePast[word] { return verb.replacingCharacters(in: past, with: known) }
             guard word.hasSuffix("ta") || word.hasSuffix("te") else { return verb }
             return verb.replacingCharacters(in: past, with: word + "d")
+        case "lt":
+            // Why: the past may be followed by a comma or a colon ("ištrynė:"), and a reflexive one ends in "-si".
+            guard let past = verb.range(of: #"^\S*?[oė](si)?(?=[\s,:]|$)"#, options: .regularExpression) else { return verb }
+            let word = verb[past]
+            let isReflexive = word.count > 2 && word.hasSuffix("si")
+            let core = isReflexive ? word.dropLast(2) : word[...]
+            let ending = (core.last == "o" ? "ai" : "ei") + (isReflexive ? "si" : "")
+            return verb.replacingCharacters(in: past, with: core.dropLast() + ending)
         case "sw":
             // Why: "amegawanya" → "umegawanya", "alilipa" → "ulilipa": only the subject prefix changes.
             guard verb.range(of: #"^a(?=(me|li)\S)"#, options: .regularExpression) != nil else { return verb }

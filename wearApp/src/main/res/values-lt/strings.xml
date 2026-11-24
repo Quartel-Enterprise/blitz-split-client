@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- Connecting the watch (15.9 to 15.13); the phone is "phone" on Wear OS -->
+    <string name="pair_welcome_body">Naudok tą pačią paskyrą kaip telefone. Tada laikrodis veiks savarankiškai.</string>
+    <string name="pair_connect">Susieti</string>
+    <string name="pair_connecting">Gaunama paskyra iš telefono…</string>
+    <string name="pair_connected_title">Paruošta, %1$s</string>
+    <string name="pair_connected_title_unnamed">Paruošta</string>
+    <string name="pair_connected_body">Laikrodis sinchronizuojasi pats, net ir toli nuo telefono.</string>
+    <string name="pair_continue">Tęsti</string>
+    <string name="pair_local_only_title">Tavo duomenys yra tik telefone</string>
+    <string name="pair_local_only_body">Telefone, profilyje, susiek paskyrą ir čia vėl paliesk „Susieti“.</string>
+    <string name="pair_ok">Gerai</string>
+    <string name="pair_far_title">Telefonas per toli</string>
+    <string name="pair_far_body">Priartink telefoną arba prisijunk su kodu.</string>
+    <string name="pair_try_again">Bandyti dar kartą</string>
+    <string name="pair_use_code">Naudoti kodą</string>
+    <string name="pair_code_label">Tavo kodas</string>
+    <string name="pair_code_description">Kodas %1$s</string>
+    <string name="pair_code_where">Telefone: Profilis › Susieti laikrodį</string>
+    <string name="pair_code_validity">Galioja 5 minutes</string>
+    <string name="pair_cancel">Atšaukti</string>
+    <string name="pair_signed_out_title">Atsijungei telefone</string>
+    <string name="pair_signed_out_body">Duomenys ištrinti ir iš šio laikrodžio.</string>
+    <string name="pair_connect_again">Susieti iš naujo</string>
+    <string name="pair_error_offline">Laikrodžiui prijungti reikia interneto.</string>
+    <string name="pair_error_too_many">Per daug bandymų. Palauk kelias minutes ir prijunk iš naujo.</string>
+    <string name="pair_error_failed">Nepavyko prijungti laikrodžio. Bandyk dar kartą.</string>
+    <!-- Balances (15.3) and a group (15.4 to 15.6) -->
+    <string name="balances_title">Balansai</string>
+    <string name="balances_offline">Neprisijungus</string>
+    <plurals name="balances_offline_queued">
+        <item quantity="one">Neprisijungus · %d pakeitimas eilėje</item>
+        <item quantity="few">Neprisijungus · %d pakeitimai eilėje</item>
+        <item quantity="many">Neprisijungus · %d pakeitimo eilėje</item>
+        <item quantity="other">Neprisijungus · %d pakeitimų eilėje</item>
+    </plurals>
+    <string name="balances_overall">Bendras balansas</string>
+    <string name="balances_to_receive">turi atgauti</string>
+    <string name="balances_you_owe">turi grąžinti</string>
+    <string name="balances_group_to_receive">%1$s atgauti</string>
+    <string name="balances_group_you_owe">%1$s grąžinti</string>
+    <string name="balances_group_even">Iš viso lygu</string>
+    <string name="balances_waiting">laukia išsiuntimo</string>
+    <string name="balances_updated_at">Atnaujinta %1$s</string>
+    <string name="balances_sign_out">Atsijungti</string>
+    <string name="balances_sign_out_title">Atsijungti šiame laikrodyje?</string>
+    <string name="balances_sign_out_body">Jo duomenys bus ištrinti, kai bus išsiųsta tai, kas laukia eilėje. Telefonas liks prisijungęs.</string>
+    <string name="balances_sign_out_scheduled">Atsijungimas suplanuotas</string>
+    <string name="balances_sign_out_scheduled_detail">Atsijungs, kai tik viskas bus įkelta</string>
+    <string name="balances_settled_title">Nėra neatsiskaitytų skolų</string>
+    <string name="balances_settled_body">Tu niekam nieko neturi grąžinti, ir tau niekas nieko. Naujos grupės ir išlaidos atsiras čia savaime.</string>
+    <string name="group_you_owe_person">turi grąžinti nariui %1$s</string>
+    <string name="group_owes_you">%1$s turi tau grąžinti</string>
+    <string name="group_former_member">Buvęs narys</string>
+    <string name="group_i_paid">Sumokėjau</string>
+    <string name="group_confirm_title">Sumokėjai %1$s nariui %2$s?</string>
+    <string name="group_confirm_body">%1$s. Grupė tai pamatys iš karto arba kai vėl bus interneto.</string>
+    <string name="group_payment_recorded">Mokėjimas užregistruotas</string>
+    <!-- The Tile (15.1) and the complications (15.2) -->
+    <string name="tile_title">Balansai</string>
+    <string name="tile_to_receive_total">iš viso atgauti</string>
+    <string name="tile_to_pay_total">iš viso sumokėti</string>
+    <string name="tile_owed_to_you">Turi atgauti %1$s</string>
+    <string name="tile_you_owe">Turi grąžinti %1$s</string>
+    <string name="tile_settled_title">Viskas atsiskaityta</string>
+    <string name="tile_settled_body">Nieko nereikia nei mokėti, nei gauti</string>
+    <string name="tile_open">Atidaryti</string>
+    <string name="complication_name">Bendras balansas</string>
+    <string name="complication_you_owe">Turi grąžinti %1$s</string>
+    <string name="complication_owed_to_you">Turi atgauti %1$s</string>
+    <!-- The watch's own pushes (15.7) -->
+    <string name="push_received">Gauta</string>
+    <string name="push_view_group">Žiūrėti grupę</string>
+</resources>

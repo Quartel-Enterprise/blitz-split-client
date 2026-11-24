@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Uždaryti</string>
+    <string name="invite_group_created">Grupė sukurta</string>
+    <string name="invite_title">Pakviesti visus į grupę %s</string>
+    <string name="invite_qr_description">Grupės pakvietimo nuorodos QR kodas</string>
+    <string name="invite_copy">Kopijuoti</string>
+    <string name="invite_copied">Nukopijuota</string>
+    <string name="invite_who_picks">Kas atidarys nuorodą, pasirinks save iš sąrašo: %s. Paskyros nereikia.</string>
+    <string name="invite_names_or">%1$s ar %2$s</string>
+    <string name="invite_anyone_joins">Kas atidarys nuorodą, prisijungs prie grupės. Paskyros nereikia.</string>
+    <string name="invite_pending_title">Nuoroda laukia</string>
+    <string name="invite_pending_offline">Ji bus sukurta, kai tik prisijungsi prie interneto.</string>
+    <string name="invite_pending_online">Kuriama nuoroda…</string>
+    <string name="invite_failed_title">Nepavyko sukurti nuorodos</string>
+    <string name="invite_failed_body">Sinchronizuojant grupę kažkas nepavyko.</string>
+    <string name="invite_retry">Bandyti dar kartą</string>
+    <string name="invite_share">Bendrinti nuorodą</string>
+    <string name="invite_see_who_joined">Žiūrėti, kas prisijungė</string>
+    <string name="invite_add_person">Pridėti žmogų be programėlės</string>
+    <string name="invite_go_to_group">Eiti į grupę</string>
+    <string name="invite_change_link">Keisti nuorodą</string>
+    <string name="invite_change_link_title">Pakeisti pakvietimo nuorodą?</string>
+    <string name="invite_change_link_message">Dabartinė nuoroda ir QR kodas nustos veikti, įskaitant nepanaudotus asmeninius pakvietimus. Kas jau prisijungė, liks grupėje.</string>
+    <string name="invite_change_link_failed">Nepavyko pakeisti nuorodos. Bandyk dar kartą.</string>
+    <string name="invite_share_message">Padalykime grupės %1$s išlaidas su Blitz Split. Prisijunk per šią nuorodą: %2$s</string>
+</resources>

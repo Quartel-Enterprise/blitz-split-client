@@ -130,6 +130,11 @@ The feed, unread state, real time and push notifications.
     the bill's history rows too, and the deleted-item notice starts with who deleted it ("Sinä olet poistanut…",
     `youSubjectLanguages`). A name is never inflected: it stands after a noun that carries the case ("on lisännyt
     jäsenen Ana").
+    Lithuanian's simple past says no gender and changes with the person: every Lithuanian verb phrase starts with it,
+    in "-o" or "-ė" ("-osi", "-ėsi" when reflexive), which the user's rows turn into "-ai" or "-ei" ("Ana padalijo
+    išlaidą…", "Tu padalijai išlaidą…"; "ištrynė" → "ištrynei"), the bill's history rows too, and the deleted-item
+    notice starts with who deleted it ("Tu ištrynei…", `youSubjectLanguages`). A name is never declined: it stands as
+    the subject or after a noun that carries the case ("pašalino narį Ana").
     Telugu needs no rule: its respectful
     past "-ారు" is the same for a name and for "మీరు" ("Ana ఒక ఖర్చును పంచారు: డిన్నర్", "మీరు ఒక ఖర్చును పంచారు: డిన్నర్"),
     and the object after a colon keeps every name free of case endings, as Tamil's. Its deleted-item notice starts with

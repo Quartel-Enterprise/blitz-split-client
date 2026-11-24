@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">Pranešimai</string>
+    <string name="notification_settings_denied_title">Blitz Split pranešimai išjungti Android sistemoje.</string>
+    <string name="notification_settings_denied_body">Įjunk juos sistemos nustatymuose, kad gautum toliau nurodytus tiesioginius pranešimus. Varpelis veikia ir toliau.</string>
+    <string name="notification_settings_open_settings">Atidaryti nustatymus</string>
+    <string name="notification_settings_refused_body">Android leidžia dar kartą juos leisti, kad gautum toliau nurodytus tiesioginius pranešimus. Varpelis veikia ir toliau.</string>
+    <string name="notification_settings_turn_on">Įjungti</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Užblokuota Android sistemoje</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">Atidaryti Android nustatymus: %1$s</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">Tiesioginiai pranešimai</string>
+    <string name="notification_settings_push_switch_detail">Tik šiame įrenginyje</string>
+    <string name="notification_settings_section">Pranešti man apie</string>
+    <string name="notification_settings_push">Tiesioginiai</string>
+    <string name="notification_settings_in_app">Programėlėje</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">Tiesioginis pranešimas siunčiamas į šį įrenginį. „Programėlėje“ pažymi jį kaip naują prie varpelio ir skiltyje „Veikla“; išjungus jis vis tiek rodomas skiltyje „Veikla“, jau perskaitytas.</string>
+    <string name="notification_settings_footer">Pranešimai ateina, kai yra internetas. Kad nutildytum grupę, naudok jos meniu.</string>
+</resources>

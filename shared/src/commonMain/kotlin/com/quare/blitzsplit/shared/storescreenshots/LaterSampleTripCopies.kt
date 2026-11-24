@@ -223,5 +223,19 @@ internal object LaterSampleTripCopies {
             court = "Kentän vuokra",
             items = listOf("Pizza margherita", "Burrata", "Sienirisotto", "Tiramisu", "Prosecco", "Espresso"),
         ),
+        "lt" to SampleTripCopy(
+            groupName = "Kelionė į Lisaboną",
+            people = listOf("Austėja", "Lukas", "Emilija", "Matas", "Gabija"),
+            dinner = "Vakarienė tratorijoje",
+            apartment = "Butas Alfamoje",
+            groceries = "Maisto produktai",
+            carRental = "Automobilio nuoma",
+            boatTour = "Pasiplaukiojimas laivu",
+            taxi = "Taksi iš oro uosto",
+            roommates = "Bendras butas",
+            soccer = "Penktadienio futbolas",
+            court = "Aikštelės nuoma",
+            items = listOf("Pica Margherita", "Burrata", "Rizotas su grybais", "Tiramisu", "Prosecco", "Espresso"),
+        ),
     )
 }
