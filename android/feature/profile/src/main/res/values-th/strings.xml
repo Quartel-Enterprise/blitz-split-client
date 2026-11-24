@@ -103,6 +103,7 @@
     <string name="profile_language_finnish">ฟินแลนด์</string>
     <string name="profile_language_latvian">ลัตเวีย</string>
     <string name="profile_language_estonian">เอสโตเนีย</string>
+    <string name="profile_language_gujarati">คุชราต</string>
     <string name="profile_language_lithuanian">ลิทัวเนีย</string>
     <string name="profile_language_system_detail">ภาษาของอุปกรณ์</string>
     <string name="profile_notifications">การแจ้งเตือน</string>

@@ -96,6 +96,7 @@ const nativeLanguageNames: Record<string, string> = {
   fi: 'Suomi',
   lv: 'Latviešu',
   et: 'Eesti',
+  gu: 'ગુજરાતી',
   lt: 'Lietuvių',
 }
 
@@ -151,6 +152,7 @@ const languageNames: Record<string, MessageKey> = {
   fi: 'profile_languageFinnish',
   lv: 'profile_languageLatvian',
   et: 'profile_languageEstonian',
+  gu: 'profile_languageGujarati',
   lt: 'profile_languageLithuanian',
 }
 

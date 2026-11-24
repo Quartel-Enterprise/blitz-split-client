@@ -747,6 +747,18 @@ class AppLanguageTest {
     }
 
     @Test
+    fun `GIVEN any Gujarati tag WHEN reading it THEN is Gujarati`() {
+        // Given
+        val tags = listOf("gu", "gu-IN", "GU_in", "gu-GB")
+
+        // When
+        val languages = tags.map(AppLanguage::fromTag)
+
+        // Then
+        assertEquals(List(tags.size) { AppLanguage.GUJARATI }, languages)
+    }
+
+    @Test
     fun `GIVEN any Lithuanian tag WHEN reading it THEN is Lithuanian`() {
         // Given
         val tags = listOf("lt", "lt-LT", "LT_lt", "lt-PL")
@@ -897,6 +909,7 @@ class AppLanguageTest {
                 "FI",
                 "LV",
                 "ET",
+                "GU",
                 "LT",
             ),
             codes,

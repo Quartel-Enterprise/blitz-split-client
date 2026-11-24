@@ -1,0 +1,60 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Gujarati: pick \"ગુજરાતી\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala guzerate: escolha \"ગુજરાતી\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora guzerate: escolhe \"ગુજરાતી\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla guyaratí: elige \"ગુજરાતી\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais goudjarati : choisis « ગુજરાતી » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Gujarati: Wähle „ગુજરાતી“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla gujarati: scegli \"ગુજરાતી\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po gudżarati: wybierz „ગુજરાતી” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Gujarati: kies \"ગુજરાતી\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがグジャラート語に対応しました。プロフィール › 言語で「ગુજરાતી」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Güceratça konuşuyor: Profil › Dil'de \"ગુજરાતી\" seçeneğini seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Gujarat: pilih \"ગુજરાતી\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на гуджарати: выбери «ગુજરાતી» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить гуджараті: обери «ગુજરાતી» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 구자라트어를 쓸 수 있어요. 프로필 › 언어에서 ‘ગુજરાતી’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप गुजराती में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “ગુજરાતી” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث الغوجاراتية: يمكنك اختيار «ગુજરાતી» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持古吉拉特语：在“个人资料 › 语言”中选择“ગુજરાતી”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו גוג'ראטית: אפשר לבחור \"ગુજરાતી\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาคุชราตแล้ว เลือก “ગુજરાતી” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Gujarat: chọn “ગુજરાતી” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援古吉拉特文：在「個人資料 › 語言」中選擇「ગુજરાતી」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu gujarati: välj ”ગુજરાતી” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví gudžarátsky: vyber „ગુજરાતી“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum gujarati: alege „ગુજરાતી” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন গুজরাটি ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “ગુજરાતી” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Gujarati: pilih \"ગુજરાતી\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον γκουτζαράτι: διάλεξε «ગુજરાતી» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori gudžaratski: odaberi „ગુજરાતી“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól gudzsaratiul is beszél: válaszd a „ગુજરાતી” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ گجراتی میں بھی دستیاب ہے: پروفائل › زبان میں “ગુજરાતી” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Gujarati ang app: piliin ang \"ગુજરાતી\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori gudžarati: izaberi „ગુજરાતી“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "sk": "Aplikácia teraz hovorí po gudžarátsky: vyber „ગુજરાતી“ v Profil › Jazyk, alebo nechaj jazyk zariadenia.",
+        "fa": "برنامه حالا گجراتی صحبت می‌کند: «ગુજરાતી» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند.",
+        "ta": "ஆப் இப்போது குஜராத்தி மொழியில் கிடைக்கிறது: சுயவிவரம் › மொழி என்பதில் \"ગુજરાતી\" என்பதைத் தேர்ந்தெடுங்கள், அல்லது உங்கள் சாதனத்தின் மொழியைப் பின்பற்ற விடுங்கள்.",
+        "nb": "Appen snakker nå gujarati: velg «ગુજરાતી» i Profil › Språk, eller la den følge enheten din.",
+        "te": "యాప్ ఇప్పుడు గుజరాతీలో అందుబాటులో ఉంది: ప్రొఫైల్ › భాషలో \"ગુજરાતી\" ఎంచుకోండి, లేదా మీ పరికరం భాషను అనుసరించనివ్వండి.",
+        "bg": "Приложението вече говори гуджарати: избери „ગુજરાતી“ в Профил › Език или остави езика на устройството.",
+        "mr": "ॲप आता गुजरातीमध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"ગુજરાતી\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
+        "sw": "Programu sasa inazungumza Kigujarati: chagua \"ગુજરાતી\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
+        "ca": "L’app ara parla gujarati: tria «ગુજરાતી» a Perfil › Idioma, o deixa que segueixi el teu dispositiu.",
+        "da": "Appen taler nu gujarati: vælg »ગુજરાતી« i Profil › Sprog, eller lad den følge din enhed.",
+        "fi": "Sovellus puhuu nyt gudžaratia: valitse ”ગુજરાતી” kohdassa Profiili › Kieli tai anna sen seurata laitteesi kieltä.",
+        "lv": "Lietotne tagad runā gudžaratu valodā: izvēlies „ગુજરાતી” sadaļā Profils › Valoda vai ļauj tai sekot tavas ierīces valodai.",
+        "et": "Rakendus räägib nüüd gudžarati keelt: vali „ગુજરાતી“ jaotises Profiil › Keel või lase sel järgida su seadet.",
+        "gu": "ઍપ હવે ગુજરાતીમાં ઉપલબ્ધ છે: પ્રોફાઇલ › ભાષામાં “ગુજરાતી” પસંદ કરો, અથવા તેને તમારા ડિવાઇસની ભાષા મુજબ રહેવા દો.",
+        "lt": "Programėlė dabar kalba gudžaratiškai: pasirink „ગુજરાતી“ skiltyje Profilis › Kalba arba leisk jai sekti tavo įrenginio kalbą."
+      }
+    }
+  ]
+}

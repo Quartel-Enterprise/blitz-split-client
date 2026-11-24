@@ -850,6 +850,7 @@ export const et: Record<MessageKey, string> = {
   profile_languageFinnish: 'Soome',
   profile_languageLatvian: 'Läti',
   profile_languageEstonian: 'Eesti',
+  profile_languageGujarati: 'Gudžarati',
   profile_languageLithuanian: 'Leedu',
   profile_bitcoinInSats: 'Bitcoin satoshides',
   profile_bitcoinInSatsDetail: 'Näitab ja sisestab bitcoini summasid satsides (1 ₿ = 100 000 000 satsi).',

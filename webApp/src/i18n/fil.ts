@@ -877,6 +877,7 @@ export const fil: Record<MessageKey, string> = {
   profile_languageFinnish: 'Finnish',
   profile_languageLatvian: 'Latvian',
   profile_languageEstonian: 'Estonian',
+  profile_languageGujarati: 'Gujarati',
   profile_languageLithuanian: 'Lithuanian',
   profile_bitcoinInSats: 'Bitcoin sa satoshi',
   profile_bitcoinInSatsDetail: 'Ipinapakita at tina-type ang halaga ng bitcoin sa sats (1 ₿ = 100,000,000 sats).',

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="paying_method_new_title">ચુકવણીની નવી રીત</string>
+    <string name="paying_method_edit_title">ચુકવણીની રીત એડિટ કરો</string>
+    <string name="paying_method_type">પ્રકાર</string>
+    <string name="paying_method_name">નામ</string>
+    <string name="paying_method_name_optional">નામ (વૈકલ્પિક)</string>
+    <string name="paying_method_color">રંગ</string>
+    <string name="paying_method_default">ડિફૉલ્ટ રીત</string>
+    <string name="paying_method_default_hint">તમે ચૂકવો તે નવા ખર્ચ આનાથી શરૂ થાય છે.</string>
+    <string name="paying_method_delete">ચુકવણીની રીત ડિલીટ કરો</string>
+    <string name="paying_method_delete_title">ચુકવણીની આ રીત ડિલીટ કરવી છે?</string>
+    <string name="paying_method_delete_body">જે ખર્ચ પર તમે તેને માર્ક કરી હતી, તેના પર તે હવે દેખાશે નહીં.</string>
+    <string name="paying_method_delete_confirm">ડિલીટ કરો</string>
+    <string name="paying_method_save">સેવ કરો</string>
+</resources>
