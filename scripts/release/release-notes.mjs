@@ -26,7 +26,7 @@ import { fileURLToPath } from "node:url";
  * The languages of the notes, English first: the ones blitz-split-site's release notes have. Portugal's Portuguese,
  * pt-PT, is one of its own there, written in full, not the few words over Brazil's that the apps keep for it.
  */
-export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr", "hu", "ur", "fil", "sr", "sk", "fa", "ta", "nb", "te", "bg", "mr", "sw", "ca", "da", "fi", "lv", "et", "gu", "sl", "ml"];
+export const LANGS = ["en", "pt", "pt-PT", "es", "fr", "de", "it", "pl", "nl", "ja", "tr", "id", "ru", "uk", "ko", "hi", "ar", "zh", "he", "th", "vi", "zh-Hant", "sv", "cs", "ro", "bn", "ms", "el", "hr", "hu", "ur", "fil", "sr", "sk", "fa", "ta", "nb", "te", "bg", "mr", "sw", "ca", "da", "fi", "lv", "et", "gu", "sl", "lt", "ml"];
 /** The platforms a note names, in the order it lists them; "all" stands alone, for every one of them. */
 export const PLATFORMS = ["android", "ios", "mac", "web"];
 /** What a note is, in the order a version lists its notes. Only "fixed" leaves the version a patch. */
@@ -96,6 +96,7 @@ const NOTHING_TO_SAY = {
   et: "Veaparandused ja jõudluse täiustused.",
   gu: "બગ ફિક્સ અને પર્ફોર્મન્સમાં સુધારા.",
   sl: "Popravki napak in izboljšave delovanja.",
+  lt: "Klaidų pataisymai ir našumo patobulinimai.",
   ml: "ബഗ് പരിഹാരങ്ങളും പ്രകടന മെച്ചപ്പെടുത്തലുകളും.",
 };
 

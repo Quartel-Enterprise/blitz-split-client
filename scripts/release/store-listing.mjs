@@ -111,6 +111,7 @@ export const PLAY_LOCALES = {
   et: ["et"],
   gu: ["gu"],
   sl: ["sl"],
+  lt: ["lt"],
   ml: ["ml-IN"],
 };
 export const APP_STORE_LOCALES = {
@@ -173,6 +174,8 @@ export const APP_STORE_LOCALES = {
   et: [],
   gu: ["gu-IN"],
   sl: ["sl-SI"],
+  // Apple has no Lithuanian listing locale either: the language has a Play listing and no App Store one.
+  lt: [],
   ml: ["ml-IN"],
 };
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_setup_title">Kaip tave vadina draugai?</string>
+    <string name="profile_setup_subtitle">Tavo vardą mato tavo grupės ir visi, turintys tavo profilio nuorodą.</string>
+    <string name="profile_setup_avatar_color">Avataro spalva</string>
+    <string name="profile_setup_add_photo">Pridėti nuotrauką</string>
+    <string name="profile_setup_photo_error">Nepavyko panaudoti šios nuotraukos. Pabandyk kitą.</string>
+    <string name="profile_setup_name_label">Tavo vardas</string>
+    <string name="profile_setup_name_placeholder">Jonas Jonaitis</string>
+    <string name="profile_setup_name_too_short">Įvesk bent %d raides.</string>
+    <string name="profile_setup_name_too_long">Naudok ne daugiau kaip %d simbolius.</string>
+    <string name="profile_setup_name_hint">Gali pakeisti jį vėliau skiltyje „Profilis“.</string>
+    <string name="profile_setup_saved_locally">Kol kas išsaugota tik šiame įrenginyje.</string>
+    <string name="profile_setup_continue">Tęsti</string>
+</resources>

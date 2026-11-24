@@ -37,6 +37,8 @@ private const val LATVIAN_REFLEXIVE_PAST = "ās"
 private const val LATVIAN_PAST = "a"
 private const val ESTONIAN = "et"
 private const val SLOVENIAN = "sl"
+private const val LITHUANIAN = "lt"
+private val lithuanianPast = Regex("""^(\S*?)([oė])(si)?(?=[\s,:]|$)""")
 private val czechPast = Regex("""^\S*l\(a\)(?=[\s,:]|$)""")
 private const val ROMANIAN = "ro"
 private const val BENGALI = "bn"
@@ -137,6 +139,7 @@ private val youSubjectLanguages = setOf(
     LATVIAN,
     ESTONIAN,
     SLOVENIAN,
+    LITHUANIAN,
     HUNGARIAN,
     URDU,
     PERSIAN,
@@ -210,9 +213,11 @@ private val irregularSecondPerson = mapOf(
  * third person in "-a" ends in "-i" for the user, a reflexive one in "-ās" in "-ies" ("Ana sadalīja", "Tu sadalīji";
  * "Ana pievienojās", "Tu pievienojies"). Gujarati does as Hindi with its agent "એ", written apart
  * after a name, which the user's "તમે" doesn't take: every Gujarati verb phrase starts with "એ", which the user's drops
- * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb
- * stays as it is ("Ana ചെലവ് വിഭജിച്ചു", "നിങ്ങൾ ചെലവ് വിഭജിച്ചു"). Same rules as the web's and the Apple app's
- * `verbForYou`.
+ * ("Ana એ ખર્ચ વહેંચ્યો", "તમે ખર્ચ વહેંચ્યો"). Lithuanian's simple past, which says no gender and which every Lithuanian
+ * verb phrase starts with, ends in "-o" or "-ė" ("-osi", "-ėsi" when reflexive) for someone else and "-ai" or "-ei"
+ * ("-aisi", "-eisi") for the user: "Ana padalijo", "Tu padalijai"; "ištrynė" → "ištrynei", "dalijosi" → "dalijaisi".
+ * Malayalam's past is the same for a name and for "നിങ്ങൾ", so its verb stays as it is ("Ana ചെലവ് വിഭജിച്ചു",
+ * "നിങ്ങൾ ചെലവ് വിഭജിച്ചു"). Same rules as the web's and the Apple app's `verbForYou`.
  */
 fun toSecondPerson(
     verb: String,
@@ -255,6 +260,11 @@ fun toSecondPerson(
     SWAHILI -> swahiliThirdPersonPrefix.replace(verb, "u")
 
     LATVIAN -> firstWord.replace(verb) { match -> toLatvianSecondPerson(match.value) }
+
+    LITHUANIAN -> lithuanianPast.replace(verb) { match ->
+        val (stem, vowel, reflexive) = match.destructured
+        stem + (if (vowel == "o") "ai" else "ei") + reflexive
+    }
 
     else -> secondPersonAuxiliaries[language]?.let { auxiliaries -> replaceFirstWord(verb, auxiliaries::get) } ?: verb
 }
@@ -348,7 +358,7 @@ private fun toSpanishSecondPerson(verb: String): String {
  * too, with the verb as it is, rather than a "by you" that would decline the names of everyone else ("удалено Иваном").
  * Korean says "내가" rather than a "by you" that would put "님이" after "나", and Hindi "आपने" rather than "आपके द्वारा".
  * Vietnamese says "Bạn đã xóa…", as it says every other row of the user's, its verb not changing with the person, and
- * Swedish "Du raderade…", Norwegian "Du slettet…", Danish "Du slettede…", Finnish "Sinä olet poistanut…" and Estonian "Sina oled kustutanud…" (with their verb rule), Latvian "Tu izdzēsi…" (with its own), Slovenian "Ti si izbrisal(a)…" (with its verb rule), Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
+ * Swedish "Du raderade…", Norwegian "Du slettet…", Danish "Du slettede…", Finnish "Sinä olet poistanut…" and Estonian "Sina oled kustutanud…" (with their verb rule), Latvian "Tu izdzēsi…" (with its own), Slovenian "Ti si izbrisal(a)…" (with its verb rule), Lithuanian "Tu ištrynei…" (with its verb rule), Bengali "আপনি মুছে ফেলেছেন…" and Urdu "آپ نے حذف کیا…" likewise. Persian says "شما
  * حذف کردید…", with its verb rule. Czech says "Ty jsi
  * smazal(a)…", Slovak "Ty si vymazal(a)…", Bulgarian "Ти изтри…", Catalan "Tu has suprimit…", Romanian "Tu ai șters…", Greek "Εσύ διέγραψες…", Hungarian "Te törölted…" and Croatian "Ti si
  * izbrisao/la…", with their verb rule, Croatian also so as not to decline the names of everyone else after "by"

@@ -16,7 +16,8 @@ import SwiftUI
 /// μοίρασε", "Εσύ μοίρασες"). Croatian swaps its "je" for "si" before a past written "-o/la", the app not knowing the
 /// gender ("Ana je podijelio/la", "Ti si podijelio/la"), Finnish its "on" for "olet" ("Ana on jakanut", "Sinä olet
 /// jakanut"), Estonian its "on" for "oled" ("Ana on jaganud", "Sina oled jaganud"),
-/// and Slovenian its "je" for "si" before a past written "-l(a)" ("Ana je razdelil(a)", "Ti si razdelil(a)"). Hungarian starts each verb phrase with a past: a definite one
+/// and Slovenian its "je" for "si" before a past written "-l(a)" ("Ana je razdelil(a)", "Ti si razdelil(a)"). Lithuanian's simple past says no gender and ends in "-o"
+/// or "-ė" for a name, "-ai" or "-ei" for the user ("Ana padalijo", "Tu padalijai"). Hungarian starts each verb phrase with a past: a definite one
 /// in "-ta"/"-te" takes a "d" for the user ("Ana létrehozta", "Te létrehoztad"), an indefinite one is one of a short
 /// list a translation may start with, each with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's
 /// respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
@@ -109,7 +110,9 @@ enum SecondPerson {
     /// listed second person ("felosztott" → "felosztottál"). Swahili: the third person's "a" of the perfect or past the
     /// phrase starts with turns into "u", so "amegawanya" → "umegawanya", "alifuta" → "ulifuta". Latvian: the past the
     /// phrase starts with ends in "-i" for "-a" and "-ies" for "-ās", so "sadalīja" → "sadalīji", "pievienojās" →
-    /// "pievienojies". Another language keeps the verb as it is.
+    /// "pievienojies". Lithuanian: the simple past the phrase starts with, which says no gender, ends in
+    /// "-ai" or "-ei" for "-o" or "-ė" ("-aisi", "-eisi" when reflexive), so "padalijo" → "padalijai", "ištrynė" →
+    /// "ištrynei", "dalijosi" → "dalijaisi". Another language keeps the verb as it is.
     static func verbForYou(_ verb: String, language: String? = appSecondPersonLanguage) -> String {
         switch language {
         case "es": return spanishVerbForYou(verb)
@@ -134,6 +137,12 @@ enum SecondPerson {
         case "hu": return replacingFirstPast(of: verb) { word in
                 if let known = hungarianIndefinitePast[word] { return known }
                 return word.hasSuffix("ta") || word.hasSuffix("te") ? word + "d" : nil
+            }
+        case "lt": return replacingFirstPast(of: verb) { word in
+                for (third, second) in [("osi", "aisi"), ("ėsi", "eisi"), ("o", "ai"), ("ė", "ei")] where word.hasSuffix(third) {
+                    return String(word.dropLast(third.count)) + second
+                }
+                return nil
             }
         case "sw":
             // Why: "amegawanya" → "umegawanya", "alilipa" → "ulilipa": only the subject prefix changes.

@@ -853,6 +853,7 @@ export const ml: Record<MessageKey, string> = {
   profile_languageEstonian: 'എസ്റ്റോണിയൻ',
   profile_languageGujarati: 'ഗുജറാത്തി',
   profile_languageSlovenian: 'സ്ലോവേനിയൻ',
+  profile_languageLithuanian: 'ലിത്വാനിയൻ',
   profile_languageMalayalam: 'മലയാളം',
   profile_bitcoinInSats: 'Bitcoin സതോഷിയിൽ',
   profile_bitcoinInSatsDetail: 'Bitcoin തുകകൾ sats-ൽ കാണിക്കുകയും ടൈപ്പ് ചെയ്യുകയും ചെയ്യുന്നു (1 ₿ = 100,000,000 sats).',

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="delete_account_title">Ištrinti paskyrą</string>
+    <string name="delete_account_offline_title">Nėra interneto.</string>
+    <string name="delete_account_offline_body">Paskyrai ištrinti reikia interneto ryšio. Prisijunk prie interneto ir bandyk dar kartą.</string>
+    <string name="delete_account_heading">Ištrinti paskyrą ir tavo duomenis?</string>
+    <string name="delete_account_deleted_title">Kas bus ištrinta</string>
+    <string name="delete_account_deleted_profile">Tavo profilis (vardas, nuotrauka ir spalva)</string>
+    <string name="delete_account_deleted_keys">Tavo Pix ir Bitcoin raktai</string>
+    <string name="delete_account_deleted_provider">Susiejimas su tavo %1$s paskyra</string>
+    <string name="delete_account_deleted_recovery_code">Tavo atkūrimo kodas</string>
+    <string name="delete_account_deleted_device">Tavo duomenų kopija šiame įrenginyje</string>
+    <string name="delete_account_kept_title">Kas lieka tavo grupėse</string>
+    <string name="delete_account_kept_groups">Grupės su jų išlaidomis ir mokėjimais – kitiems nariams</string>
+    <string name="delete_account_kept_member">Tavo vardas kiekvienoje grupėje, kaip nario be paskyros</string>
+    <string name="delete_account_kept_comments">Tavo komentarai ir pridėtos nuotraukos, tavo vardu</string>
+    <string name="delete_account_export">Pirma eksportuoti mano duomenis</string>
+    <string name="delete_account_confirm">Suprantu, kad to anuliuoti negalima</string>
+    <string name="delete_account_delete">Ištrinti paskyrą</string>
+    <string name="delete_account_cancel">Atšaukti</string>
+    <string name="delete_account_failed">Nepavyko ištrinti paskyros. Bandyk dar kartą.</string>
+</resources>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_map_no_terms">Raktažodžių nėra</string>
+    <string name="category_map_title">Kategorijų žemėlapis</string>
+    <string name="category_map_search">Ieškoti raktažodžių</string>
+    <string name="category_map_add">Pridėti raktažodį</string>
+    <string name="category_map_more">Daugiau parinkčių</string>
+    <string name="category_map_restore">Atkurti numatytuosius</string>
+    <string name="category_map_back">Atgal</string>
+    <string name="category_map_intro">Kai išlaidos pavadinime yra vienas iš šių žodžių, kategorija parenkama savaime. „Taksi namo“ patenka į „Transportą“.</string>
+    <string name="category_map_intro_offline">Žemėlapis veikia ir be interneto: pakeitimai šiame įrenginyje galioja iš karto, o į kitus tavo įrenginius patenka, kai vėl prisijungi.</string>
+    <string name="category_map_device_only">Tavo žemėlapis lieka tik šiame įrenginyje. Kad jis būtų ir kituose tavo įrenginiuose, profilyje prisijunk su „Google“ ar „Apple“.</string>
+    <string name="category_map_open_profile">Atidaryti profilį</string>
+    <string name="category_map_longest_wins">Kai pavadinimą atitinka du raktažodžiai, laimi ilgesnis.</string>
+    <string name="category_map_no_result">Nėra raktažodžio su „%1$s“</string>
+    <string name="category_map_no_result_body">Pridėk jį, ir išlaidos su šiuo žodžiu pavadinime gaus tinkamą kategoriją.</string>
+    <string name="category_map_add_query">Pridėti „%1$s“</string>
+    <string name="category_map_empty_title">Tavo žemėlapis tuščias</string>
+    <string name="category_map_empty_body">Be raktažodžių kategorija nėra parenkama pagal pavadinimą: ją pasirenki kiekvienai išlaidai.</string>
+    <string name="category_map_group_category"> · grupės %1$s kategorija</string>
+    <string name="category_map_only_main">Tik %1$s</string>
+    <string name="category_map_only_in_group">tik grupėje %1$s</string>
+    <string name="category_map_no_terms_yet">Kol kas raktažodžių nėra.</string>
+    <string name="category_map_add_in">Pridėti raktažodį į kategoriją %1$s</string>
+    <string name="category_map_tip">Paliesk raktažodį, kad pakeistum jo kategoriją ar jį pašalintum. Jis atitinka visą žodį, nepaisant diakritinių ženklų ir didžiųjų raidžių.</string>
+    <string name="category_map_queued">eilėje</string>
+    <string name="category_map_term_action">%1$s, %2$s. Redaguoti</string>
+    <string name="category_map_new_term">Naujas raktažodis</string>
+    <string name="category_map_edit_term">Redaguoti raktažodį</string>
+    <string name="category_map_term_label">Žodis ar frazė</string>
+    <string name="category_map_term_help">Atitinka visą žodį, nepaisant diakritinių ženklų ir didžiųjų raidžių.</string>
+    <string name="category_map_term_help_app">Programėlės raktažodis. „Atkurti numatytuosius“ grąžins jį tokį, koks buvo.</string>
+    <string name="category_map_term_duplicate">„%1$s“ jau parenka kategoriją %2$s. Kiekvienas raktažodis turi vieną kategoriją.</string>
+    <string name="category_map_term_too_short">Įvesk bent 2 raides.</string>
+    <string name="category_map_term_too_long">Įvesk ne daugiau kaip 30 raidžių.</string>
+    <string name="category_map_term_invalid">Naudok tik raides, skaitmenis ir tarpus.</string>
+    <string name="category_map_category">Kategorija</string>
+    <string name="category_map_category_help">Tai gali būti kategorija arba subkategorija.</string>
+    <string name="category_map_category_help_edit">Pakeitus čia, raktažodis perkeliamas į kitą kategoriją.</string>
+    <string name="category_map_category_help_move">Perkėlus raktažodis pašalinamas iš kategorijos %1$s.</string>
+    <string name="category_map_example">Pavyzdys</string>
+    <string name="category_map_example_move">Jei perkelsi</string>
+    <string name="category_map_remove">Pašalinti</string>
+    <string name="category_map_cancel">Atšaukti</string>
+    <string name="category_map_save">Išsaugoti</string>
+    <string name="category_map_move_to">Perkelti į kategoriją %1$s</string>
+    <string name="category_map_removed">„%1$s“ pašalintas iš žemėlapio</string>
+    <string name="category_map_undo">Anuliuoti</string>
+    <string name="category_map_restore_title">Atkurti numatytąjį žemėlapį?</string>
+    <string name="category_map_restore_body">Grįš visi 60 programėlės raktažodžių tokie, kokie buvo, įskaitant tuos, kuriuos pašalinai ar perkėlei.</string>
+    <string name="category_map_restore_own_one">Tavo sukurtas raktažodis „%1$s“ liks.</string>
+    <string name="category_map_restore_confirm">Atkurti</string>
+    <string name="category_map_save_error">Nepavyko išsaugoti žemėlapio. Bandyk dar kartą.</string>
+    <string name="category_map_path">%1$s › %2$s</string>
+    <plurals name="category_map_term_count">
+        <item quantity="one">%d raktažodis</item>
+        <item quantity="few">%d raktažodžiai</item>
+        <item quantity="many">%d raktažodžio</item>
+        <item quantity="other">%d raktažodžių</item>
+    </plurals>
+    <plurals name="category_map_subcategory_count">
+        <item quantity="one">%d subkategorija</item>
+        <item quantity="few">%d subkategorijos</item>
+        <item quantity="many">%d subkategorijos</item>
+        <item quantity="other">%d subkategorijų</item>
+    </plurals>
+    <plurals name="category_map_results">
+        <item quantity="one">%1$d raktažodis su „%2$s“</item>
+        <item quantity="few">%1$d raktažodžiai su „%2$s“</item>
+        <item quantity="many">%1$d raktažodžio su „%2$s“</item>
+        <item quantity="other">%1$d raktažodžių su „%2$s“</item>
+    </plurals>
+    <plurals name="category_map_offline_queue">
+        <item quantity="one">Neprisijungus · %d pakeitimas eilėje</item>
+        <item quantity="few">Neprisijungus · %d pakeitimai eilėje</item>
+        <item quantity="many">Neprisijungus · %d pakeitimo eilėje</item>
+        <item quantity="other">Neprisijungus · %d pakeitimų eilėje</item>
+    </plurals>
+    <plurals name="category_map_restore_own_many">
+        <item quantity="one">%d tavo sukurtas raktažodis liks.</item>
+        <item quantity="few">%d tavo sukurti raktažodžiai liks.</item>
+        <item quantity="many">%d tavo sukurto raktažodžio liks.</item>
+        <item quantity="other">%d tavo sukurtų raktažodžių liks.</item>
+    </plurals>
+    <string name="category_map_new_category">Nauja kategorija</string>
+    <string name="category_map_new_subcategory_in">Nauja subkategorija kategorijoje %s</string>
+    <string name="category_map_edit_category">Redaguoti: %s</string>
+    <string name="category_map_category_group">Grupė</string>
+    <string name="category_map_change_color">Keisti kategorijos %1$s spalvą</string>
+    <string name="category_map_restore_color">Atkurti spalvą</string>
+    <string name="category_map_color_done">Atlikta</string>
+</resources>

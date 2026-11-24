@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <string name="bill_link_not_in_group_title">Tavęs nėra šioje grupėje</string>
+    <string name="bill_link_not_in_group_message">Šis komentaras yra grupėje, kurioje tavęs nėra. Paprašyk pakvietimo to, kas tau atsiuntė nuorodą.</string>
+    <string name="bill_link_offline_title">Nėra interneto</string>
+    <string name="bill_link_offline_message">Atidaryk nuorodą dar kartą, kai vėl turėsi internetą.</string>
+    <string name="bill_link_go_home">Eiti į pradžią</string>
+    <string name="discard_changes_title">Atmesti pakeitimus?</string>
+    <string name="discard_changes_message">Neišsaugoti pakeitimai bus prarasti.</string>
+    <string name="discard_changes_discard">Atmesti</string>
+    <string name="discard_changes_keep_editing">Toliau redaguoti</string>
+    <string name="watch_channel_name">Laikrodis</string>
+    <string name="watch_connected_title">%1$s susietas su tavo paskyra</string>
+    <string name="watch_connected_title_unnamed">Laikrodis susietas su tavo paskyra</string>
+    <string name="watch_connected_text">Jis mato tavo grupes ir sinchronizuojasi pats. Kad jį atsietum, atsijunk laikrodyje.</string>
+</resources>

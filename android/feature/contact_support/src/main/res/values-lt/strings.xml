@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">Susisiekti su pagalba</string>
+    <string name="contact_support_description">Atidarysime tavo el. pašto programėlę su paruoštu laišku. Aprašyk, kas nutiko, ir išsiųsk: kiekvieną laišką skaito tikri žmonės.</string>
+    <string name="contact_support_to">Kam</string>
+    <string name="contact_support_diagnostics">Bus įtraukta į laišką</string>
+    <string name="contact_support_app_version">Programėlės versija</string>
+    <string name="contact_support_platform">Platforma</string>
+    <string name="contact_support_language">Kalba</string>
+    <string name="contact_support_account">Paskyra</string>
+    <string name="contact_support_profile">Profilis</string>
+    <string name="contact_support_language_system">Sistemos</string>
+    <string name="contact_support_account_local">Tik šis įrenginys</string>
+    <string name="contact_support_account_anonymous">Nesusieta</string>
+    <string name="contact_support_open_email">Atidaryti el. paštą</string>
+    <string name="contact_support_copy_email">Kopijuoti el. pašto adresą</string>
+    <string name="contact_support_notice_copied">El. pašto adresas nukopijuotas.</string>
+    <string name="contact_support_notice_no_app">Nerasta el. pašto programėlės. Vietoj to adresas nukopijuotas.</string>
+    <string name="contact_support_close">Uždaryti</string>
+</resources>
