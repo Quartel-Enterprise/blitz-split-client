@@ -1,7 +1,7 @@
 import { browserLanguages } from '@/lib/platform'
 import { en, type MessageKey } from './en'
 import { es } from './es'
-import { britishEnglishRegions } from './britishEnglishRegions'
+import { britishEnglishRegions } from '@/lib/britishEnglishRegions'
 import { enCA } from './enCA'
 import { enGB } from './enGB'
 import { esES } from './esES'
