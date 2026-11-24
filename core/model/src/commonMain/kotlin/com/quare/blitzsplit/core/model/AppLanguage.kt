@@ -61,6 +61,7 @@ enum class AppLanguage(
     GUJARATI("gu"),
     SLOVENIAN("sl"),
     LITHUANIAN("lt"),
+    PUNJABI("pa"),
     KANNADA("kn"),
     ;
 
@@ -133,6 +134,17 @@ enum class AppLanguage(
 
         private const val LATIN_SCRIPT = "LATN"
 
+        /*
+         * Why: the app has Punjabi in the Gurmukhi script only (Pierre's call), so a Shahmukhi tag (pa-Arab, pa-Arab-PK)
+         * or Pakistan's with no script (pa-PK, Shahmukhi by default) finds no strings of its own: it reads as a language
+         * the app doesn't have. Any other (pa, pa-Guru, pa-IN, pa-Guru-IN) is Gurmukhi, its default script.
+         */
+        private const val PUNJABI_LANGUAGE = "pa"
+
+        private const val GURMUKHI_SCRIPT = "GURU"
+
+        private const val PAKISTAN = "PK"
+
         private const val MAINLAND_CHINA = "CN"
 
         private const val TRADITIONAL_SCRIPT = "HANT"
@@ -146,9 +158,9 @@ enum class AppLanguage(
         /*
          * Why: any Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian, Russian,
          * Ukrainian, Korean, Hindi, Arabic, Chinese, Hebrew, Thai, Vietnamese, Swedish, Czech, Romanian, Bengali, Malay,
-         * Greek, Croatian, Hungarian, Urdu, Filipino (or its legacy Tagalog "tl"), Serbian in the Latin script (sr-Latn, sr-Latn-RS), Slovak, Persian, Tamil, Norwegian (nb, or the macrolanguage's "no" and Nynorsk's "nn", all read as Bokmål), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too, ca-ES-valencia), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Kannada, Lithuanian or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
+         * Greek, Croatian, Hungarian, Urdu, Filipino (or its legacy Tagalog "tl"), Serbian in the Latin script (sr-Latn, sr-Latn-RS), Slovak, Persian, Tamil, Norwegian (nb, or the macrolanguage's "no" and Nynorsk's "nn", all read as Bokmål), Telugu, Bulgarian, Marathi, Swahili, Catalan (Valencian too, ca-ES-valencia), Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Kannada, Lithuanian, Punjabi in the Gurmukhi script (pa, pa-Guru, pa-IN, never pa-Arab or pa-PK) or English tag the platform kept (pt-BR, es-ES, fr-CA, de-AT, it-CH, pl-PL, nl-BE,
          * ja-JP, tr-CY, id-ID, ru-KZ, uk-UA, ko-KR, hi-IN, ar-EG, zh-CN, he-IL or the legacy iw-IL, th-TH, vi-VN, sv-FI,
-         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, sk-SK, fa-IR or fa-AF, ta-LK, nb-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, kn-IN, lt-LT, en-NZ), SYSTEM for none or any other. English is four
+         * cs-CZ, ro-MD, bn-IN, ms-SG, el-CY, hr-BA, hu-HU, ur-PK, fil-PH, sr-Latn-RS, sk-SK, fa-IR or fa-AF, ta-LK, nb-NO, te-IN, bg-BG, mr-IN, sw-KE, sw-TZ, ca-ES, da-DK, fi-FI, lv-LV, et-EE, gu-IN, sl-SI, kn-IN, lt-LT, pa-IN, en-NZ), SYSTEM for none or any other. English is four
          * entries: en-GB, en-AU and en-CA are their regions', a region that writes as Britain (en-NZ, en-IE, en-IN, en-DE…)
          * Britain's, en, en-US and every other region the American one. Portuguese is two
          * entries: pt-PT is Portugal's, every other tag (pt, pt-BR…) Brazil's. Spanish too: es-ES is Spain's, every
@@ -159,6 +171,7 @@ enum class AppLanguage(
         fun fromTag(tag: String?): AppLanguage {
             if (isTraditionalChinese(tag)) return CHINESE_TRADITIONAL
             if (languageOf(tag) == SERBIAN_LANGUAGE && scriptOf(tag) != LATIN_SCRIPT) return SYSTEM
+            if (languageOf(tag) == PUNJABI_LANGUAGE && !isGurmukhi(tag)) return SYSTEM
             if (languageOf(tag) == ENGLISH_LANGUAGE) return englishOf(tag)
             val variants = variantsOf(languageOf(tag))
             val region = regionOf(tag)
@@ -192,6 +205,10 @@ enum class AppLanguage(
             val script = scriptOf(tag) ?: return regionOf(tag).let { it == TAIWAN || it == HONG_KONG || it == MACAU }
             return script == TRADITIONAL_SCRIPT
         }
+
+        // Why: a Punjabi tag written in Gurmukhi: its script says so when it has one, else any region but Pakistan.
+        private fun isGurmukhi(tag: String?): Boolean =
+            scriptOf(tag)?.let { it == GURMUKHI_SCRIPT } ?: (regionOf(tag) != PAKISTAN)
 
         // Why: a tag's script in upper case ("HANS" of zh-Hans-CN), before any extension, as regionOf reads its region.
         private fun scriptOf(tag: String?): String? = subtagsOf(tag)

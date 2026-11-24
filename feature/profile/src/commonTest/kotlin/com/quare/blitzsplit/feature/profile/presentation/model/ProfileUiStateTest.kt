@@ -69,6 +69,7 @@ class ProfileUiStateTest {
             AppLanguage.GUJARATI -> listOf("ગુજરાતી", "Gujarati")
             AppLanguage.SLOVENIAN -> listOf("Slovenščina", "Slovenian")
             AppLanguage.LITHUANIAN -> listOf("Lietuvių", "Lithuanian")
+            AppLanguage.PUNJABI -> listOf("ਪੰਜਾਬੀ", "Punjabi")
             AppLanguage.KANNADA -> listOf("ಕನ್ನಡ", "Kannada")
             AppLanguage.CHINESE_TRADITIONAL -> listOf("中文（繁體）", "Chinese (Traditional)")
         }
@@ -138,6 +139,7 @@ class ProfileUiStateTest {
         AppLanguage.GUJARATI,
         AppLanguage.SLOVENIAN,
         AppLanguage.LITHUANIAN,
+        AppLanguage.PUNJABI,
         AppLanguage.KANNADA,
     )
 
@@ -750,6 +752,7 @@ class ProfileUiStateTest {
                 AppLanguage.GUJARATI,
                 AppLanguage.SLOVENIAN,
                 AppLanguage.LITHUANIAN,
+                AppLanguage.PUNJABI,
                 AppLanguage.KANNADA,
             ),
             options,
@@ -821,6 +824,7 @@ class ProfileUiStateTest {
                 AppLanguage.GUJARATI,
                 AppLanguage.SLOVENIAN,
                 AppLanguage.LITHUANIAN,
+                AppLanguage.PUNJABI,
                 AppLanguage.KANNADA,
             ),
             options,

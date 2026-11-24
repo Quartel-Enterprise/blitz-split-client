@@ -51,7 +51,7 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     interest with Profile's "Share usage data" as its opt out ([profile.md](profile.md),
     [docs/analytics](../analytics/README.md#consent)), and the web shows no cookie banner, in the EU either.
   - Every UI is in English, Portuguese, Spanish, French, German, Italian, Polish, Dutch, Japanese, Turkish, Indonesian,
-    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian and Kannada: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
+    Russian, Ukrainian, Korean, Hindi, Arabic, Chinese (Simplified), Hebrew, Thai, Vietnamese, Chinese (Traditional), Swedish, Czech, Romanian, Bengali, Malay, Greek, Croatian, Hungarian, Urdu, Filipino, Serbian (Latin script), Slovak, Persian, Tamil, Norwegian, Telugu, Bulgarian, Marathi, Swahili, Catalan, Danish, Finnish, Latvian, Estonian, Gujarati, Slovenian, Lithuanian, Punjabi and Kannada: the device's language, English for any other, unless Profile › Preferences › "Language" picked one ([profile.md](profile.md)) (Pierre's call: two Portuguese variants, Brazil's
     `pt-BR` for every `pt` tag but `pt-PT`, and Portugal's `pt-PT`, each its own row of the picker ("Português (Brasil)",
     "Português (Portugal)"), Portugal's overriding only the words Portugal says differently, the rest coming from
     `pt-BR` on every platform (Android's `values-pt-rPT`, Apple's `pt-PT` localization, the web's `ptPT.ts`). Portugal's
@@ -347,7 +347,26 @@ Cross-cutting product decisions: language, amounts, colors, currencies, platform
     starting with who deleted it (`youSubjectLanguages`); a gendered word about a person, where one can't be
     avoided, carries both endings ("skolingas (-a)"). Its plurals have one, few, many (fractions only) and other, so
     the web writes three forms, one|few|other. The picker names it "Lietuvių", and its chip reads "LT". It brings no
-    currency, the euro covering Lithuania, and only Google Play has a Lithuanian listing. The
+    currency, the euro covering Lithuania, and only Google Play has a Lithuanian listing. Punjabi (Pierre's calls,
+    issue #581) is written in Gurmukhi only, never Shahmukhi: it is one variant for `pa`, `pa-Guru` and `pa-IN` (any
+    tag in Gurmukhi, its default script, pa-CA too), while a Shahmukhi tag (`pa-Arab`, `pa-Arab-PK`) or Pakistan's
+    with no script (`pa-PK`, Shahmukhi by default) reads as a language the app doesn't have, English (`AppLanguage.fromTag`, the
+    web's `pickLocale`; Android's `values-pa` and Apple's `pa` localization already skip a Shahmukhi device, Apple
+    reading its own `pa-PK` as Gurmukhi, since it writes Shahmukhi `pa-Arab`: an Apple device in `pa-PK` draws the
+    app in Punjabi while the shared code, which reads that tag as Shahmukhi, asks blitzsplit.com for the release notes and
+    the legal pages in the device's next language). It talks to the user with the respectful
+    "ਤੁਸੀਂ" and its plural verb forms (as Hindi's "आप" and Gujarati's "તમે"), in the plain everyday Punjabi Indian apps
+    write, English loanwords included where natural (ਗਰੁੱਪ, ਬੈਲੇਂਸ, ਅਕਾਊਂਟ, ਲਿੰਕ); it calls the app Blitz Split, ends
+    a sentence with the danda "।", as Hindi does (the code too, where it finishes one: `fullStopUi`, `WordGap.fullStop`,
+    `fullStop`), and its plurals have one and other, "one" covering 0 too. Its default digits are already 0-9, and the
+    code keeps them even on a device set to Gurmukhi digits ("nu-latn": `latinDigitLanguages`, `AppNumbers`, the web's
+    `formattingKeys`), with the Gregorian calendar. No postposition is ever glued to a value the app fills in: a
+    person's name takes "ਨੇ", "ਨੂੰ" or "ਦਾ" written apart ("Ana ਨੂੰ"), a slot that may be the user ("ਤੁਸੀਂ") takes
+    none and stands after a colon, and any other value stands after a colon or before a noun that carries the
+    postposition. A person's gender is never assumed: a past says it with the ergative "ਨੇ", whose verb agrees with the
+    object, or in the respectful plural. Its past puts that "ਨੇ" after the actor but none after the user's "ਤੁਸੀਂ", so
+    its activity sentences follow Hindi's rule with "ਨੇ" ([activity-and-push.md](activity-and-push.md)). The picker
+    names it "ਪੰਜਾਬੀ", and its chip reads "PA". It uses INR. The
     brand
     badge shows the currency symbol of the device's region, `$` when there is none.
   - Every amount field (Split a bill's total, "Several people paid", Amounts, an item's price and Amount, the

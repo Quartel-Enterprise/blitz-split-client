@@ -244,7 +244,7 @@ const CSS = `
 body{position:relative;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;-webkit-font-smoothing:antialiased}
 #stage{position:absolute;top:0}.band{position:absolute;left:0;top:0}.panel{position:absolute;top:0;overflow:hidden}
 h1{position:absolute;font-weight:800;letter-spacing:-.03em;line-height:1.08}h1 span{display:block;width:max-content;white-space:nowrap}
-:lang(ar) h1,:lang(he) h1,:lang(hi) h1,:lang(th) h1,:lang(ur) h1,:lang(fa) h1,:lang(ta) h1,:lang(te) h1,:lang(mr) h1,:lang(gu) h1,:lang(kn) h1{letter-spacing:0;line-height:1.3}
+:lang(ar) h1,:lang(he) h1,:lang(hi) h1,:lang(th) h1,:lang(ur) h1,:lang(fa) h1,:lang(ta) h1,:lang(te) h1,:lang(mr) h1,:lang(gu) h1,:lang(kn) h1,:lang(pa) h1{letter-spacing:0;line-height:1.3}
 .device{position:absolute;background:linear-gradient(145deg,#55606c,#15191e 35%,#0b0d10 70%,#434d58);box-shadow:0 80px 150px rgba(0,24,60,.55),0 20px 50px rgba(0,24,60,.4)}
 .device img{display:block;width:100%}
 .window{position:absolute;filter:drop-shadow(0 60px 110px rgba(0,20,50,.55)) drop-shadow(0 0 2px rgba(0,0,0,.6))}

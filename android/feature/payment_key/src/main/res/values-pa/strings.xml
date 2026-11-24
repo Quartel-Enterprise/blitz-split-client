@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_key_title_pix_new">ਨਵੀਂ Pix ਕੁੰਜੀ</string>
+    <string name="payment_key_title_pix_edit">Pix ਕੁੰਜੀ ਸੋਧੋ</string>
+    <string name="payment_key_title_bitcoin_new">ਨਵੀਂ Bitcoin ਕੁੰਜੀ</string>
+    <string name="payment_key_title_bitcoin_edit">Bitcoin ਕੁੰਜੀ ਸੋਧੋ</string>
+    <string name="payment_key_save">ਸੇਵ ਕਰੋ</string>
+
+    <string name="payment_key_pix_intro">ਤੁਹਾਨੂੰ ਭੁਗਤਾਨ ਕਰਨ ਵਾਲੇ ਹਿਸਾਬ ਬਰਾਬਰ ਕਰਦੇ ਸਮੇਂ ਇਹ ਕੁੰਜੀ ਦੇਖਦੇ ਹਨ। ਕਿਹੜੀ ਕਿਸਮ ਦੀ ਕੁੰਜੀ?</string>
+    <string name="payment_key_pix_question">ਕਿਹੜੀ ਕਿਸਮ ਦੀ ਕੁੰਜੀ?</string>
+    <string name="payment_key_pix_explanation">ਤੁਹਾਨੂੰ ਭੁਗਤਾਨ ਕਰਨ ਵਾਲੇ ਹਿਸਾਬ ਬਰਾਬਰ ਕਰਦੇ ਸਮੇਂ ਇਹ ਕੁੰਜੀ ਦੇਖਦੇ ਹਨ।</string>
+    <string name="payment_key_type_cpf">CPF</string>
+    <string name="payment_key_type_phone">ਫ਼ੋਨ</string>
+    <string name="payment_key_type_email">ਈਮੇਲ</string>
+    <string name="payment_key_type_random">ਰੈਂਡਮ</string>
+    <string name="payment_key_label_cpf">CPF</string>
+    <string name="payment_key_label_phone">ਏਰੀਆ ਕੋਡ ਸਮੇਤ ਮੋਬਾਈਲ ਨੰਬਰ</string>
+    <string name="payment_key_label_email">ਈਮੇਲ</string>
+    <string name="payment_key_label_random">ਰੈਂਡਮ ਕੁੰਜੀ</string>
+
+    <string name="payment_key_bitcoin_intro">ਤੁਸੀਂ ਕਿਵੇਂ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</string>
+    <string name="payment_key_network_lightning">Lightning</string>
+    <string name="payment_key_network_lightning_detail">ਤੇਜ਼, ਘੱਟ ਫ਼ੀਸ</string>
+    <string name="payment_key_network_onchain">On-chain</string>
+    <string name="payment_key_network_onchain_detail">ਬਲਾਕਚੇਨ \'ਤੇ</string>
+    <string name="payment_key_label_lightning">Lightning Address ਜਾਂ LNURL</string>
+    <string name="payment_key_label_onchain">Bitcoin ਪਤਾ</string>
+
+    <string name="payment_key_paste">ਪੇਸਟ ਕਰੋ</string>
+
+    <string name="payment_key_hint_cpf">ਫ਼ਾਰਮੈਟ 000.000.000-00</string>
+    <string name="payment_key_hint_phone">ਫ਼ਾਰਮੈਟ +55 (00) 90000-0000</string>
+    <string name="payment_key_hint_email">ਫ਼ਾਰਮੈਟ name@domain.com</string>
+    <string name="payment_key_hint_random">32 ਅੱਖਰ ਅਤੇ ਅੰਕ, ਜਿਵੇਂ ਤੁਹਾਡਾ ਬੈਂਕ ਦਿਖਾਉਂਦਾ ਹੈ</string>
+    <string name="payment_key_hint_lightning">ਜਿਵੇਂ name@wallet.com ਜਾਂ LNURL1…</string>
+    <string name="payment_key_hint_onchain">bc1q ਜਾਂ bc1p ਨਾਲ ਸ਼ੁਰੂ ਹੋਣ ਵਾਲਾ mainnet ਪਤਾ</string>
+
+    <string name="payment_key_valid_cpf">ਫ਼ਾਰਮੈਟ 000.000.000-00 · ਜਾਂਚ ਅੰਕ ਮੇਲ ਖਾਂਦੇ ਹਨ</string>
+    <string name="payment_key_valid_phone">ਫ਼ਾਰਮੈਟ +55 (00) 90000-0000</string>
+    <string name="payment_key_valid_email">ਫ਼ਾਰਮੈਟ name@domain.com</string>
+    <string name="payment_key_valid_random">ਰੈਂਡਮ ਕੁੰਜੀ ਪਛਾਣੀ ਗਈ (32 ਅੱਖਰ)</string>
+    <string name="payment_key_valid_lightning_address">ਸਹੀ Lightning Address</string>
+    <string name="payment_key_valid_lnurl">ਸਹੀ LNURL</string>
+    <string name="payment_key_valid_segwit">SegWit (bc1q) · mainnet</string>
+    <string name="payment_key_valid_taproot">Taproot (bc1p) · mainnet</string>
+
+    <string name="payment_key_error_invalid_cpf">ਗਲਤ CPF: ਜਾਂਚ ਅੰਕ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ।</string>
+    <string name="payment_key_error_invalid_phone">ਅਧੂਰਾ ਮੋਬਾਈਲ ਨੰਬਰ: ਏਰੀਆ ਕੋਡ ਅਤੇ 9 ਨਾਲ ਸ਼ੁਰੂ ਹੋਣ ਵਾਲੇ 9 ਅੰਕ ਵਰਤੋ।</string>
+    <string name="payment_key_error_invalid_email">ਅਧੂਰੀ ਈਮੇਲ: ਡੋਮੇਨ ਨਹੀਂ ਹੈ, ਜਿਵੇਂ .com ਜਾਂ .com.br।</string>
+    <string name="payment_key_error_invalid_random">ਅਧੂਰੀ ਰੈਂਡਮ ਕੁੰਜੀ: ਇਸ ਵਿੱਚ 32 ਅੱਖਰ ਅਤੇ ਅੰਕ ਹੁੰਦੇ ਹਨ।</string>
+    <string name="payment_key_error_invalid_lightning">ਇਹ Lightning Address (name@wallet) ਜਾਂ LNURL ਨਹੀਂ ਹੈ।</string>
+    <string name="payment_key_error_lightning_invoice">ਇਹ Lightning ਇਨਵੌਇਸ (lnbc…) ਹੈ: ਇਹ ਇੱਕ ਵਾਰ ਭੁਗਤਾਨ ਕਰਦਾ ਹੈ ਅਤੇ ਮਿਆਦ ਪੁੱਗ ਜਾਂਦੀ ਹੈ। Lightning Address ਜਾਂ LNURL ਪੇਸਟ ਕਰੋ।</string>
+    <string name="payment_key_error_invalid_onchain">ਗਲਤ ਪਤਾ। mainnet ਦਾ bc1q ਜਾਂ bc1p ਪਤਾ ਵਰਤੋ।</string>
+    <string name="payment_key_error_testnet_address">ਇਹ testnet ਪਤਾ (tb1…) ਹੈ। ਇੱਥੇ ਸਿਰਫ਼ Bitcoin mainnet ਕੰਮ ਕਰਦਾ ਹੈ, bc1… ਪਤਿਆਂ ਨਾਲ।</string>
+    <string name="payment_key_error_already_saved">ਤੁਹਾਡੇ ਕੋਲ ਇਹ ਕੁੰਜੀ ਪਹਿਲਾਂ ਹੀ ਹੈ।</string>
+
+    <string name="payment_key_switched_to_onchain">ਇਹ on-chain ਪਤਾ ਹੈ, ਇਸ ਲਈ ਅਸੀਂ On-chain \'ਤੇ ਬਦਲ ਦਿੱਤਾ।</string>
+    <string name="payment_key_switched_to_lightning">ਇਹ Lightning Address ਹੈ, ਇਸ ਲਈ ਅਸੀਂ Lightning \'ਤੇ ਬਦਲ ਦਿੱਤਾ।</string>
+    <string name="payment_key_cpf_notice">ਤੁਹਾਨੂੰ ਭੁਗਤਾਨ ਕਰਨ ਵਾਲੇ ਤੁਹਾਡਾ ਪੂਰਾ CPF ਦੇਖਦੇ ਹਨ। ਜੇ ਤੁਸੀਂ ਇਸ ਨੂੰ ਸਾਂਝਾ ਨਹੀਂ ਕਰਨਾ ਚਾਹੁੰਦੇ, ਤਾਂ ਫ਼ੋਨ, ਈਮੇਲ ਜਾਂ ਰੈਂਡਮ ਕੁੰਜੀ ਵਰਤੋ।</string>
+    <string name="payment_key_held_notice">ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਕਿਸਮ ਦੀ ਸਿਰਫ਼ ਇੱਕ Pix ਕੁੰਜੀ ਹੋ ਸਕਦੀ ਹੈ, ਇਸ ਲਈ ਇਹ ਉਹੀ ਹੈ ਜੋ ਤੁਸੀਂ ਸੇਵ ਕੀਤੀ ਸੀ। ਚਾਹੋ ਤਾਂ ਇਸ ਨੂੰ ਇੱਥੇ ਬਦਲੋ।</string>
+
+    <string name="payment_key_accepted_title">ਅਸੀਂ ਇਹ ਸਵੀਕਾਰ ਕਰਦੇ ਹਾਂ</string>
+    <string name="payment_key_accepted_lightning_address_sample">name@wallet.app</string>
+
+    <string name="payment_key_default_pix_title">ਡਿਫ਼ੌਲਟ Pix ਕੁੰਜੀ</string>
+    <string name="payment_key_default_bitcoin_title">ਡਿਫ਼ੌਲਟ Bitcoin ਕੁੰਜੀ</string>
+    <string name="payment_key_default_pix_detail">ਹਿਸਾਬ ਬਰਾਬਰ ਕਰਦੇ ਸਮੇਂ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਦਿਖਦੀ ਹੈ।</string>
+    <string name="payment_key_default_bitcoin_detail">ਜਦੋਂ ਕੋਈ BTC ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੇ ਤਾਂ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਦਿਖਦੀ ਹੈ।</string>
+    <string name="payment_key_default_now">ਹੁਣ: %1$s।</string>
+    <string name="payment_key_default_locked_editing">ਇਸ ਨੂੰ ਬਦਲਣ ਲਈ, ਕਿਸੇ ਹੋਰ ਕੁੰਜੀ ਨੂੰ ਡਿਫ਼ੌਲਟ ਬਣਾਓ।</string>
+    <string name="payment_key_default_locked_new">ਇਸ ਕਿਸਮ ਦੀ ਤੁਹਾਡੀ ਪਹਿਲੀ ਕੁੰਜੀ ਡਿਫ਼ੌਲਟ ਹੁੰਦੀ ਹੈ।</string>
+    <string name="payment_key_default_type_cpf">CPF</string>
+    <string name="payment_key_default_type_phone">ਫ਼ੋਨ</string>
+    <string name="payment_key_default_type_email">ਈਮੇਲ</string>
+    <string name="payment_key_default_type_random">ਰੈਂਡਮ ਕੁੰਜੀ</string>
+    <string name="payment_key_default_type_lightning">Lightning</string>
+    <string name="payment_key_default_type_onchain">on-chain</string>
+
+    <string name="payment_key_footer_pix">Blitz Split ਪੈਸੇ ਨਹੀਂ ਭੇਜਦਾ: ਭੁਗਤਾਨ ਕਰਨ ਵਾਲੇ ਆਪਣੀ ਬੈਂਕ ਐਪ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰਦੇ ਹਨ। ਜਾਂਚ ਕਰੋ ਕਿ ਕੁੰਜੀ ਤੁਹਾਡੇ ਨਾਮ \'ਤੇ ਹੈ।</string>
+    <string name="payment_key_footer_bitcoin">ਹਿਸਾਬ ਬਰਾਬਰ ਕਰਦੇ ਸਮੇਂ, ਅਸੀਂ ਮੌਜੂਦਾ ਰੇਟ \'ਤੇ ਰਕਮ sats ਵਿੱਚ ਦਿਖਾਉਂਦੇ ਹਾਂ। ਇਹ ਸਿਰਫ਼ ਅੰਦਾਜ਼ਾ ਹੈ: ਭੁਗਤਾਨ ਕਰਨ ਵਾਲੇ ਇਸ ਦੀ ਪੁਸ਼ਟੀ ਆਪਣੇ ਵਾਲਿਟ ਵਿੱਚ ਕਰਦੇ ਹਨ।</string>
+
+    <string name="payment_key_delete">ਕੁੰਜੀ ਮਿਟਾਓ</string>
+    <string name="payment_key_delete_title">ਕੀ ਇਹ ਕੁੰਜੀ ਮਿਟਾਉਣੀ ਹੈ?</string>
+    <string name="payment_key_delete_body">ਜਿਨ੍ਹਾਂ ਨੇ ਤੁਹਾਨੂੰ ਪੈਸੇ ਦੇਣੇ ਹਨ, ਉਹ ਹਿਸਾਬ ਬਰਾਬਰ ਕਰਦੇ ਸਮੇਂ ਇਸ ਨੂੰ ਹੋਰ ਨਹੀਂ ਦੇਖਣਗੇ।</string>
+    <string name="payment_key_delete_confirm">ਮਿਟਾਓ</string>
+</resources>

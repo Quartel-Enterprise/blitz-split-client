@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="contact_support_title">ਸਹਾਇਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋ</string>
+    <string name="contact_support_description">ਅਸੀਂ ਤੁਹਾਡੀ ਈਮੇਲ ਐਪ ਤਿਆਰ ਸੁਨੇਹੇ ਨਾਲ ਖੋਲ੍ਹਾਂਗੇ। ਦੱਸੋ ਕਿ ਕੀ ਹੋਇਆ ਅਤੇ ਭੇਜ ਦਿਓ: ਹਰ ਸੁਨੇਹਾ ਅਸਲ ਲੋਕ ਪੜ੍ਹਦੇ ਹਨ।</string>
+    <string name="contact_support_to">ਨੂੰ</string>
+    <string name="contact_support_diagnostics">ਈਮੇਲ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾਵੇਗਾ</string>
+    <string name="contact_support_app_version">ਐਪ ਵਰਜ਼ਨ</string>
+    <string name="contact_support_platform">ਪਲੈਟਫ਼ਾਰਮ</string>
+    <string name="contact_support_language">ਭਾਸ਼ਾ</string>
+    <string name="contact_support_account">ਅਕਾਊਂਟ</string>
+    <string name="contact_support_profile">ਪ੍ਰੋਫਾਈਲ</string>
+    <string name="contact_support_language_system">ਸਿਸਟਮ</string>
+    <string name="contact_support_account_local">ਸਿਰਫ਼ ਇਹ ਡਿਵਾਈਸ</string>
+    <string name="contact_support_account_anonymous">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</string>
+    <string name="contact_support_open_email">ਈਮੇਲ ਖੋਲ੍ਹੋ</string>
+    <string name="contact_support_copy_email">ਈਮੇਲ ਪਤਾ ਕਾਪੀ ਕਰੋ</string>
+    <string name="contact_support_notice_copied">ਈਮੇਲ ਪਤਾ ਕਾਪੀ ਹੋ ਗਿਆ।</string>
+    <string name="contact_support_notice_no_app">ਕੋਈ ਈਮੇਲ ਐਪ ਨਹੀਂ ਮਿਲੀ। ਇਸ ਦੀ ਬਜਾਏ ਪਤਾ ਕਾਪੀ ਕਰ ਦਿੱਤਾ ਗਿਆ।</string>
+    <string name="contact_support_close">ਬੰਦ ਕਰੋ</string>
+</resources>

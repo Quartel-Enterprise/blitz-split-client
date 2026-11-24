@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Profile › Connect watch (15.14): the code a watch shows when its phone is out of reach -->
+    <string name="connect_watch_title">ਘੜੀ ਕਨੈਕਟ ਕਰੋ</string>
+    <string name="connect_watch_close">ਬੰਦ ਕਰੋ</string>
+    <string name="connect_watch_body">ਤੁਹਾਡੀ ਘੜੀ \'ਤੇ ਦਿਖਦਾ ਕੋਡ ਲਿਖੋ। ਇਹ ਤੁਹਾਡੇ ਅਕਾਊਂਟ ਵਿੱਚ ਸਾਈਨ ਇਨ ਕਰਦੀ ਹੈ ਅਤੇ ਫਿਰ ਆਪਣੇ ਆਪ ਸਿੰਕ ਹੁੰਦੀ ਹੈ।</string>
+    <string name="connect_watch_code_label">ਘੜੀ ਦਾ ਕੋਡ</string>
+    <string name="connect_watch_error_invalid">ਗਲਤ ਜਾਂ ਮਿਆਦ ਪੁੱਗਿਆ ਕੋਡ। ਘੜੀ \'ਤੇ ਨਵਾਂ ਲਓ।</string>
+    <string name="connect_watch_error_too_many">ਬਹੁਤ ਸਾਰੇ ਗਲਤ ਕੋਡ। ਕੁਝ ਮਿੰਟ ਉਡੀਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="connect_watch_error_needs_account">ਪਹਿਲਾਂ ਅਕਾਊਂਟ ਕਨੈਕਟ ਕਰੋ: ਤੁਹਾਡਾ ਡਾਟਾ ਸਿਰਫ਼ ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਹੈ।</string>
+    <string name="connect_watch_error_failed">ਘੜੀ ਕਨੈਕਟ ਨਹੀਂ ਹੋ ਸਕੀ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="connect_watch_offline">ਘੜੀ ਕਨੈਕਟ ਕਰਨ ਲਈ ਇੰਟਰਨੈੱਟ ਚਾਹੀਦਾ ਹੈ।</string>
+    <string name="connect_watch_own_watch_only">ਸਿਰਫ਼ ਆਪਣੀ ਘੜੀ \'ਤੇ ਦਿਖਿਆ ਕੋਡ ਲਿਖੋ: ਜਿਸ ਕੋਲ ਵੀ ਉਹ ਘੜੀ ਹੈ, ਉਹ ਤੁਹਾਡੇ ਅਕਾਊਂਟ ਤੱਕ ਪਹੁੰਚ ਜਾਂਦੇ ਹਨ।</string>
+    <string name="connect_watch_validity">ਕੋਡ 5 ਮਿੰਟ ਲਈ, ਇੱਕ ਵਾਰ ਵੈਧ ਹੈ।</string>
+    <string name="connect_watch_button">ਕਨੈਕਟ ਕਰੋ</string>
+    <string name="connect_watch_connected_title">ਘੜੀ ਕਨੈਕਟ ਹੋ ਗਈ</string>
+    <string name="connect_watch_connected_body">ਇਹ ਤੁਹਾਡੇ ਗਰੁੱਪ ਦੇਖਦੀ ਹੈ ਅਤੇ ਆਪਣੇ ਆਪ ਸਿੰਕ ਹੁੰਦੀ ਹੈ। ਇਸ ਨੂੰ ਡਿਸਕਨੈਕਟ ਕਰਨ ਲਈ, ਘੜੀ \'ਤੇ ਸਾਈਨ ਆਊਟ ਕਰੋ।</string>
+</resources>

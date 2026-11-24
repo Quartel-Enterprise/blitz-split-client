@@ -163,6 +163,36 @@ class GetLegalLanguageUseCaseTest {
         }
 
     @Test
+    fun `GIVEN System on a Shahmukhi Punjabi device WHEN asking the language THEN it is en and not pa`() = runTest {
+        // Given
+        prepareScenario(
+            picked = AppLanguage.SYSTEM,
+            device = "pa-Arab-PK",
+        )
+
+        // When
+        val language = getLegalLanguage()
+
+        // Then
+        assertEquals("en", language)
+    }
+
+    @Test
+    fun `GIVEN System on a Punjabi device of Pakistan WHEN asking the language THEN it is en and not pa`() = runTest {
+        // Given
+        prepareScenario(
+            picked = AppLanguage.SYSTEM,
+            device = "pa-PK",
+        )
+
+        // When
+        val language = getLegalLanguage()
+
+        // Then
+        assertEquals("en", language)
+    }
+
+    @Test
     fun `GIVEN System on a device with an upper case language WHEN asking the language THEN it is lower case`() =
         runTest {
             // Given

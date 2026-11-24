@@ -854,6 +854,7 @@ export const kn: Record<MessageKey, string> = {
   profile_languageGujarati: 'ಗುಜರಾತಿ',
   profile_languageSlovenian: 'ಸ್ಲೋವೇನಿಯನ್',
   profile_languageLithuanian: 'ಲಿಥುವೇನಿಯನ್',
+  profile_languagePunjabi: 'ಪಂಜಾಬಿ',
   profile_languageKannada: 'ಕನ್ನಡ',
   profile_bitcoinInSats: 'ಸತೋಶಿಗಳಲ್ಲಿ Bitcoin',
   profile_bitcoinInSatsDetail: 'Bitcoin ಮೊತ್ತಗಳನ್ನು sats ನಲ್ಲಿ ತೋರಿಸುತ್ತದೆ ಮತ್ತು ಟೈಪ್ ಮಾಡಿಸುತ್ತದೆ (1 ₿ = 100,000,000 sats).',

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_settings_title">ਸੂਚਨਾਵਾਂ</string>
+    <string name="notification_settings_denied_title">Android \'ਤੇ Blitz Split ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ।</string>
+    <string name="notification_settings_denied_body">ਹੇਠਾਂ ਦਿੱਤੀਆਂ ਪੁਸ਼ ਸੂਚਨਾਵਾਂ ਲੈਣ ਲਈ ਇਨ੍ਹਾਂ ਨੂੰ ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਚਾਲੂ ਕਰੋ। ਘੰਟੀ ਕੰਮ ਕਰਦੀ ਰਹਿੰਦੀ ਹੈ।</string>
+    <string name="notification_settings_open_settings">ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</string>
+    <string name="notification_settings_refused_body">Android ਤੁਹਾਨੂੰ ਹੇਠਾਂ ਦਿੱਤੀਆਂ ਪੁਸ਼ ਸੂਚਨਾਵਾਂ ਲੈਣ ਲਈ ਇਨ੍ਹਾਂ ਨੂੰ ਇੱਕ ਵਾਰ ਹੋਰ ਇਜਾਜ਼ਤ ਦੇਣ ਦਿੰਦਾ ਹੈ। ਘੰਟੀ ਕੰਮ ਕਰਦੀ ਰਹਿੰਦੀ ਹੈ।</string>
+    <string name="notification_settings_turn_on">ਚਾਲੂ ਕਰੋ</string>
+    <!-- Why: a row whose channel the person silenced in Android's settings. -->
+    <string name="notification_settings_blocked_in_android">Android ਵਿੱਚ ਬਲੌਕ ਹੈ</string>
+    <!-- Why: what a screen reader says for its "Open settings", with the row's name. -->
+    <string name="notification_settings_open_channel_settings_description">%1$s ਲਈ Android ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</string>
+    <!-- Why: the switch over the rows, whether this device takes pushes at all. -->
+    <string name="notification_settings_push_switch">ਪੁਸ਼ ਸੂਚਨਾਵਾਂ</string>
+    <string name="notification_settings_push_switch_detail">ਸਿਰਫ਼ ਇਸ ਡਿਵਾਈਸ \'ਤੇ</string>
+    <string name="notification_settings_section">ਮੈਨੂੰ ਇਨ੍ਹਾਂ ਬਾਰੇ ਸੂਚਿਤ ਕਰੋ</string>
+    <string name="notification_settings_push">ਪੁਸ਼</string>
+    <string name="notification_settings_in_app">ਐਪ ਵਿੱਚ</string>
+    <!-- Why: what a screen reader says for each toggle, "Bills, Push". -->
+    <string name="notification_settings_toggle_description">%1$s, %2$s</string>
+    <string name="notification_settings_legend">ਪੁਸ਼ ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਸੂਚਨਾ ਭੇਜਦਾ ਹੈ। ਐਪ ਵਿੱਚ ਇਸ ਨੂੰ ਘੰਟੀ \'ਤੇ ਅਤੇ ਸਰਗਰਮੀ ਵਿੱਚ ਨਵਾਂ ਮਾਰਕ ਕਰਦਾ ਹੈ; ਬੰਦ ਹੋਣ \'ਤੇ ਵੀ ਇਹ ਸਰਗਰਮੀ ਵਿੱਚ ਦਿਖਦਾ ਹੈ, ਪਹਿਲਾਂ ਹੀ ਪੜ੍ਹਿਆ ਹੋਇਆ।</string>
+    <string name="notification_settings_footer">ਇੰਟਰਨੈੱਟ ਹੋਣ \'ਤੇ ਸੂਚਨਾਵਾਂ ਆਉਂਦੀਆਂ ਹਨ। ਕਿਸੇ ਗਰੁੱਪ ਨੂੰ ਮਿਊਟ ਕਰਨ ਲਈ, ਉਸ ਦੇ ਅੰਦਰਲਾ ਮੀਨੂ ਵਰਤੋ।</string>
+</resources>
