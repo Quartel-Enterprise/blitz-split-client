@@ -879,6 +879,7 @@ export const uk: Record<MessageKey, string> = {
   profile_languageDanish: 'Данська',
   profile_languageFinnish: 'Фінська',
   profile_languageLatvian: 'Латиська',
+  profile_languageEstonian: 'Естонська',
   profile_languageSlovenian: 'Словенська',
   profile_bitcoinInSats: 'Bitcoin у сатоші',
   profile_bitcoinInSatsDetail: 'Показує й вводить суми в біткоїнах у сатах (1 ₿ = 100 000 000 сатів).',

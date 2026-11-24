@@ -849,6 +849,7 @@ export const lv: Record<MessageKey, string> = {
   profile_languageDanish: 'Dāņu',
   profile_languageFinnish: 'Somu',
   profile_languageLatvian: 'Latviešu',
+  profile_languageEstonian: 'Igauņu',
   profile_languageSlovenian: 'Slovēņu',
   profile_bitcoinInSats: 'Bitcoin satoši vienībās',
   profile_bitcoinInSatsDetail: 'Rāda un ļauj ievadīt bitcoin summas satoši vienībās (1 ₿ = 100 000 000 sats).',

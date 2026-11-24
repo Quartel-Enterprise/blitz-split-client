@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restore_title">Too oma grupid tagasi</string>
+    <string name="restore_subtitle">Logisid varem kontoga sisse? Lihtsalt logi uuesti sisse. Kui ei, kasuta taastekoodi või vana seadme QR-koodi.</string>
+    <string name="restore_no_connection_title">Ühendus puudub</string>
+    <string name="restore_no_connection_body">Kontoga või koodiga sisselogimiseks on gruppide allalaadimiseks vaja internetti. Sisestatu jääb alles.</string>
+    <string name="restore_code_label">Või kasuta taastekoodi</string>
+    <string name="restore_code_hint">12 sõna õiges järjekorras. Kleebi need kõik ühte välja, et kõik väljad täituksid.</string>
+    <string name="restore_scan_qr_title">Skanni vana seadme QR-kood</string>
+    <string name="restore_scan_qr_body">Seal: Profiil › Taastamine › Näita QR-koodi</string>
+    <string name="restore_recover">Taasta</string>
+    <string name="restore_try_again">Proovi uuesti</string>
+    <string name="restore_start_fresh">Alusta selles seadmes otsast</string>
+    <string name="restore_error_invalid_code">Koodi ei leitud. Kontrolli sõnu ja nende järjekorda ning proovi uuesti.</string>
+    <string name="restore_error_too_many_attempts">Liiga palju katseid. Oota paar minutit ja proovi uuesti.</string>
+    <string name="restore_error_sign_in_failed">Praegu ei õnnestunud sisse logida. Proovi uuesti.</string>
+    <string name="restore_error_unknown">Midagi läks valesti. Proovi uuesti.</string>
+</resources>

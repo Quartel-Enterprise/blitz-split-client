@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Blitz Split</string>
+    <!-- A comment's link that opened nothing -->
+    <string name="bill_link_not_in_group_title">Sa ei ole selles grupis</string>
+    <string name="bill_link_not_in_group_message">See kommentaar on grupis, kuhu sa ei kuulu. Küsi lingi saatjalt kutset.</string>
+    <string name="bill_link_offline_title">Internetiühendus puudub</string>
+    <string name="bill_link_offline_message">Ava link uuesti, kui oled jälle võrgus.</string>
+    <string name="bill_link_go_home">Mine avalehele</string>
+    <string name="discard_changes_title">Loobuda muudatustest?</string>
+    <string name="discard_changes_message">Salvestamata muudatused lähevad kaotsi.</string>
+    <string name="discard_changes_discard">Loobu</string>
+    <string name="discard_changes_keep_editing">Jätka muutmist</string>
+    <!-- 15.15: a nearby watch got the account, with the name the watch has on the system -->
+    <string name="watch_channel_name">Kell</string>
+    <string name="watch_connected_title">Kell %1$s on sinu kontoga ühendatud</string>
+    <string name="watch_connected_title_unnamed">Kell on sinu kontoga ühendatud</string>
+    <string name="watch_connected_text">See näeb sinu gruppe ja sünkroonib iseseisvalt. Lahtiühendamiseks logi kellas välja.</string>
+</resources>

@@ -106,6 +106,7 @@
     <string name="profile_language_danish">Danish</string>
     <string name="profile_language_finnish">Finnish</string>
     <string name="profile_language_latvian">Latvian</string>
+    <string name="profile_language_estonian">Estonian</string>
     <string name="profile_language_slovenian">Slovenian</string>
     <string name="profile_language_system_detail">Device language</string>
     <!-- Each language in its own language, the same in every locale -->
@@ -158,6 +159,7 @@
     <string name="profile_language_native_danish" translatable="false">Dansk</string>
     <string name="profile_language_native_finnish" translatable="false">Suomi</string>
     <string name="profile_language_native_latvian" translatable="false">Latviešu</string>
+    <string name="profile_language_native_estonian" translatable="false">Eesti</string>
     <string name="profile_language_native_slovenian" translatable="false">Slovenščina</string>
     <string name="profile_notifications">Notifications</string>
     <plurals name="profile_notifications_active">

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invite_close">Sulge</string>
+    <string name="invite_group_created">Grupp loodud</string>
+    <string name="invite_title">Kutsu kõik gruppi %s</string>
+    <string name="invite_qr_description">Grupi kutselingi QR-kood</string>
+    <string name="invite_copy">Kopeeri</string>
+    <string name="invite_copied">Kopeeritud</string>
+    <string name="invite_who_picks">Lingi avaja valib nimekirjast, kes ta on: %s. Kontot pole vaja.</string>
+    <string name="invite_names_or">%1$s või %2$s</string>
+    <string name="invite_anyone_joins">Lingi avaja liitub grupiga. Kontot pole vaja.</string>
+    <string name="invite_pending_title">Link ootel</string>
+    <string name="invite_pending_offline">See luuakse kohe, kui oled võrgus.</string>
+    <string name="invite_pending_online">Lingi loomine…</string>
+    <string name="invite_failed_title">Linki ei saanud luua</string>
+    <string name="invite_failed_body">Grupi sünkroonimisel läks midagi valesti.</string>
+    <string name="invite_retry">Proovi uuesti</string>
+    <string name="invite_share">Jaga linki</string>
+    <string name="invite_see_who_joined">Vaata, kes liitusid</string>
+    <string name="invite_add_person">Lisa keegi ilma rakenduseta</string>
+    <string name="invite_go_to_group">Mine gruppi</string>
+    <string name="invite_change_link">Muuda linki</string>
+    <string name="invite_change_link_title">Kas muuta kutselinki?</string>
+    <string name="invite_change_link_message">Praegune link ja QR-kood lakkavad töötamast, sealhulgas kasutamata isiklikud kutsed. Kes on juba liitunud, jääb gruppi.</string>
+    <string name="invite_change_link_failed">Linki ei saanud muuta. Proovi uuesti.</string>
+    <string name="invite_share_message">Jagame grupi %1$s kulusid rakenduses Blitz Split. Liitu selle lingiga: %2$s</string>
+</resources>

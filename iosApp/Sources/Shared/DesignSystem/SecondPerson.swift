@@ -15,7 +15,8 @@ import SwiftUI
 /// rozdělil(a)", "Ty jsi rozdělil(a)"), as Slovak does with "si" ("Ana rozdelil(a)", "Ty si rozdelil(a)"). Greek ends its aorist in "-ε" for someone else and "-ες" for the user ("Ana
 /// μοίρασε", "Εσύ μοίρασες"). Croatian swaps its "je" for "si" before a past written "-o/la", the app not knowing the
 /// gender ("Ana je podijelio/la", "Ti si podijelio/la"), Finnish its "on" for "olet" ("Ana on jakanut", "Sinä olet
-/// jakanut"), and Slovenian its "je" for "si" before a past written "-l(a)" ("Ana je razdelil(a)", "Ti si razdelil(a)"). Hungarian starts each verb phrase with a past: a definite one
+/// jakanut"), Estonian its "on" for "oled" ("Ana on jaganud", "Sina oled jaganud"),
+/// and Slovenian its "je" for "si" before a past written "-l(a)" ("Ana je razdelil(a)", "Ti si razdelil(a)"). Hungarian starts each verb phrase with a past: a definite one
 /// in "-ta"/"-te" takes a "d" for the user ("Ana létrehozta", "Te létrehoztad"), an indefinite one is one of a short
 /// list a translation may start with, each with its own second person ("Ana felosztott", "Te felosztottál"). Bengali's
 /// respectful verb is the same for a name and for "আপনি", and Malay's doesn't change.
@@ -81,15 +82,16 @@ enum SecondPerson {
         "hr": ["je": "si"],
         "sr": ["je": "si"],
         "fi": ["on": "olet"],
+        "et": ["on": "oled"],
         "sl": ["je": "si"],
         "ca": ["ha": "has", "l’ha": "l’has", "l'ha": "l'has"],
     ]
 
     /// Spanish: "dividió" → "dividiste", "se unió a" → "te uniste a", "cambió la división de" → "cambiaste la división de".
-    /// French, German, Italian, Dutch, Romanian, Croatian, Catalan ("ha dividit" → "has dividit"), Finnish and Slovenian: every verb phrase is a perfect that starts with its
+    /// French, German, Italian, Dutch, Romanian, Croatian, Catalan ("ha dividit" → "has dividit"), Finnish, Estonian and Slovenian: every verb phrase is a perfect that starts with its
     /// auxiliary, so "a divisé" → "as divisé", "hat geteilt" → "hast geteilt", "ist beigetreten" → "bist beigetreten",
     /// "ha diviso" → "hai diviso", "heeft verdeeld" → "hebt verdeeld", "is lid geworden" → "bent lid geworden", "a
-    /// împărțit" → "ai împărțit", "je podijelio/la" → "si podijelio/la", "on jakanut" → "olet jakanut", "je razdelil(a)" → "si razdelil(a)". Czech: the second person's past takes the
+    /// împărțit" → "ai împărțit", "je podijelio/la" → "si podijelio/la", "on jakanut" → "olet jakanut", "on jaganud" → "oled jaganud", "je razdelil(a)" → "si razdelil(a)". Czech: the second person's past takes the
     /// auxiliary "jsi" the third person has none of, so "rozdělil(a)" → "jsi rozdělil(a)"; a phrase that doesn't start
     /// with that past stays as it is. Slovak likewise with "si": "rozdelil(a)" → "si rozdelil(a)".
     /// Portugal's Portuguese: "dividiu" → "dividiste", "leu" → "leste", "saiu" → "saíste", "fez" → "fizeste".
