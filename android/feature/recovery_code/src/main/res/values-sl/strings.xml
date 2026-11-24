@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recovery_code_title">Shrani svojo obnovitveno kodo</string>
+    <string name="recovery_code_body">Aplikacijo uporabljaš brez računa. Teh 12 besed vrne tvoje podatke, če zamenjaš ali izgubiš napravo. Zapiši jih po vrsti. Po 30 dneh neuporabe se tvoji podatki izbrišejo in besede ne delujejo več.</string>
+    <string name="recovery_code_copy">Kopiraj besede</string>
+    <string name="recovery_code_save_to_password_manager">Shrani v upravitelja gesel</string>
+    <string name="recovery_code_connect_instead">Raje poveži Google ali Apple</string>
+    <string name="recovery_code_connect_instead_body">Koda ni potrebna</string>
+    <string name="recovery_code_sign_in_failed">Povezava trenutno ni uspela. Poskusi znova.</string>
+    <string name="recovery_code_also_in_profile">Najdeš jo tudi v Profil › Obnovitvena koda.</string>
+    <string name="recovery_code_remind_later">Opomni me pozneje</string>
+    <string name="recovery_code_saved">Shranil(a) sem jo</string>
+    <string name="recovery_code_download">Prenesi</string>
+    <string name="recovery_code_file_name">blitz-split-obnovitvena-koda.txt</string>
+    <string name="recovery_code_file_text">Blitz Split · obnovitvena koda\n\n%1$s\n\nUporabi jo v možnosti „Aplikacijo sem že uporabljal(a) na drugi napravi“, da vrneš svoje podatke.\n</string>
+</resources>

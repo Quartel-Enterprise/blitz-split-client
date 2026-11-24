@@ -1,0 +1,61 @@
+{
+  "notes": [
+    {
+      "kind": "new",
+      "platforms": [
+        "all"
+      ],
+      "text": {
+        "en": "The app now speaks Slovenian: pick \"Slovenščina\" in Profile › Language, or let it follow your device.",
+        "pt": "O app agora fala esloveno: escolha \"Slovenščina\" em Perfil › Idioma, ou deixe seguir o aparelho.",
+        "pt-PT": "A app fala agora esloveno: escolhe \"Slovenščina\" em Perfil › Idioma, ou deixa seguir o telemóvel.",
+        "es": "La app ahora habla esloveno: elige \"Slovenščina\" en Perfil › Idioma, o deja que siga a tu dispositivo.",
+        "fr": "L’app parle désormais slovène : choisis « Slovenščina » dans Profil › Langue, ou laisse-la suivre ton appareil.",
+        "de": "Die App spricht jetzt Slowenisch: Wähle „Slovenščina“ unter Profil › Sprache oder lass sie deinem Gerät folgen.",
+        "it": "L’app ora parla sloveno: scegli \"Slovenščina\" in Profilo › Lingua, oppure lascia che segua il dispositivo.",
+        "pl": "Aplikacja mówi teraz po słoweńsku: wybierz „Slovenščina” w Profil › Język albo zostaw język urządzenia.",
+        "nl": "De app spreekt nu Sloveens: kies \"Slovenščina\" in Profiel › Taal, of laat hem je toestel volgen.",
+        "ja": "アプリがスロベニア語に対応しました。プロフィール › 言語で「Slovenščina」を選ぶか、端末の言語に合わせられます。",
+        "tr": "Uygulama artık Slovence konuşuyor: Profil › Dil'de \"Slovenščina\" seçeneğini seç veya cihazının dilini izlesin.",
+        "id": "Aplikasi kini berbahasa Slovenia: pilih \"Slovenščina\" di Profil › Bahasa, atau biarkan mengikuti perangkatmu.",
+        "ru": "Приложение теперь говорит на словенском: выбери «Slovenščina» в «Профиль › Язык» или оставь язык устройства.",
+        "uk": "Застосунок тепер говорить словенською: обери «Slovenščina» в «Профіль › Мова» або залиш мову пристрою.",
+        "ko": "이제 앱에서 슬로베니아어를 쓸 수 있어요. 프로필 › 언어에서 ‘Slovenščina’를 고르거나 기기 언어를 따르게 하세요.",
+        "hi": "अब ऐप स्लोवेनियाई में भी उपलब्ध है: प्रोफ़ाइल › भाषा में “Slovenščina” चुनें, या इसे डिवाइस की भाषा पर रहने दें।",
+        "ar": "أصبح التطبيق يتحدث السلوفينية: يمكنك اختيار «Slovenščina» من الملف الشخصي › اللغة، أو جعله يتبع لغة جهازك.",
+        "zh": "应用现已支持斯洛文尼亚语：在“个人资料 › 语言”中选择“Slovenščina”，或让它跟随你的设备。",
+        "he": "האפליקציה מדברת עכשיו סלובנית: אפשר לבחור \"Slovenščina\" בפרופיל › שפה, או לתת לה לעקוב אחרי שפת המכשיר.",
+        "th": "แอปรองรับภาษาสโลวีเนียแล้ว เลือก “Slovenščina” ใน โปรไฟล์ › ภาษา หรือให้ตามภาษาของอุปกรณ์",
+        "vi": "Ứng dụng giờ đã có tiếng Slovenia: chọn “Slovenščina” trong Hồ sơ › Ngôn ngữ, hoặc để ứng dụng theo ngôn ngữ của thiết bị.",
+        "zh-Hant": "App現已支援斯洛維尼亞文：在「個人資料 › 語言」中選擇「Slovenščina」，或讓它跟隨你的裝置。",
+        "sv": "Appen talar nu slovenska: välj ”Slovenščina” i Profil › Språk, eller låt den följa din enhet.",
+        "cs": "Aplikace teď mluví slovinsky: vyber „Slovenščina“ v Profil › Jazyk, nebo nech jazyk zařízení.",
+        "ro": "Aplicația vorbește acum slovenă: alege „Slovenščina” în Profil › Limbă sau las-o să urmeze dispozitivul tău.",
+        "bn": "অ্যাপটি এখন স্লোভেনীয় ভাষায় পাওয়া যাচ্ছে: প্রোফাইল › ভাষা থেকে “Slovenščina” বেছে নিন, অথবা আপনার ডিভাইসের ভাষা অনুসরণ করতে দিন।",
+        "ms": "Aplikasi ini kini tersedia dalam bahasa Slovenia: pilih \"Slovenščina\" di Profil › Bahasa, atau biarkan ia mengikut peranti anda.",
+        "el": "Η εφαρμογή μιλάει πλέον σλοβενικά: διάλεξε «Slovenščina» στο Προφίλ › Γλώσσα ή άφησέ τη να ακολουθεί τη συσκευή σου.",
+        "hr": "Aplikacija sada govori slovenski: odaberi „Slovenščina“ u Profil › Jezik ili ostavi jezik svog uređaja.",
+        "hu": "Az app mostantól szlovénul is beszél: válaszd a „Slovenščina” lehetőséget a Profil › Nyelv menüben, vagy hagyd, hogy az eszközöd nyelvét kövesse.",
+        "ur": "اب ایپ سلووینیائی میں بھی دستیاب ہے: پروفائل › زبان میں “Slovenščina” منتخب کریں، یا اسے اپنی ڈیوائس کی زبان پر رہنے دیں۔",
+        "fil": "Marunong na ng Slovenian ang app: piliin ang \"Slovenščina\" sa Profile › Wika, o hayaan itong sundin ang device mo.",
+        "sr": "Aplikacija sada govori slovenački: izaberi „Slovenščina“ u Profil › Jezik ili je pusti da prati tvoj uređaj.",
+        "sk": "Aplikácia teraz hovorí po slovinsky: vyber „Slovenščina“ v Profil › Jazyk, alebo nechaj jazyk zariadenia.",
+        "fa": "برنامه حالا اسلوونیایی صحبت می‌کند: «Slovenščina» را در پروفایل › زبان انتخاب کنید، یا بگذارید از زبان دستگاه شما پیروی کند.",
+        "ta": "ஆப் இப்போது ஸ்லோவேனிய மொழியில் கிடைக்கிறது: சுயவிவரம் › மொழி என்பதில் \"Slovenščina\" என்பதைத் தேர்ந்தெடுங்கள், அல்லது உங்கள் சாதனத்தின் மொழியைப் பின்பற்ற விடுங்கள்.",
+        "nb": "Appen snakker nå slovensk: velg «Slovenščina» i Profil › Språk, eller la den følge enheten din.",
+        "te": "యాప్ ఇప్పుడు స్లోవేనియన్‌లో అందుబాటులో ఉంది: ప్రొఫైల్ › భాషలో \"Slovenščina\" ఎంచుకోండి, లేదా మీ పరికరం భాషను అనుసరించనివ్వండి.",
+        "bg": "Приложението вече говори словенски: избери „Slovenščina“ в Профил › Език или остави езика на устройството.",
+        "mr": "ॲप आता स्लोव्हेनियनमध्ये उपलब्ध आहे: प्रोफाइल › भाषा मध्ये \"Slovenščina\" निवडा, किंवा ते तुमच्या डिव्हाइसच्या भाषेनुसार राहू द्या.",
+        "sw": "Programu sasa inazungumza Kislovenia: chagua \"Slovenščina\" katika Wasifu › Lugha, au iache ifuate kifaa chako.",
+        "ca": "L’app ara parla eslovè: tria «Slovenščina» a Perfil › Idioma, o deixa que segueixi el teu dispositiu.",
+        "da": "Appen taler nu slovensk: vælg »Slovenščina« i Profil › Sprog, eller lad den følge din enhed.",
+        "fi": "Sovellus puhuu nyt sloveniaa: valitse ”Slovenščina” kohdassa Profiili › Kieli tai anna sen seurata laitteesi kieltä.",
+        "lv": "Lietotne tagad runā slovēniski: izvēlies „Slovenščina” sadaļā Profils › Valoda vai ļauj tai sekot tavas ierīces valodai.",
+        "et": "Rakendus räägib nüüd sloveeni keelt: vali „Slovenščina“ jaotises Profiil › Keel või lase sel järgida su seadet.",
+        "gu": "ઍપ હવે સ્લોવેનિયનમાં ઉપલબ્ધ છે: પ્રોફાઇલ › ભાષામાં “Slovenščina” પસંદ કરો, અથવા તેને તમારા ડિવાઇસની ભાષા મુજબ રહેવા દો.",
+        "sl": "Aplikacija zdaj govori slovensko: v Profil › Jezik izberi „Slovenščina“ ali pa naj sledi jeziku tvoje naprave.",
+        "lt": "Programėlė dabar kalba slovėniškai: pasirink „Slovenščina“ skiltyje Profilis › Kalba arba leisk jai sekti tavo įrenginio kalbą."
+      }
+    }
+  ]
+}

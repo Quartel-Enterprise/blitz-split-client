@@ -110,6 +110,7 @@ export const PLAY_LOCALES = {
   lv: ["lv"],
   et: ["et"],
   gu: ["gu"],
+  sl: ["sl"],
   lt: ["lt"],
 };
 export const APP_STORE_LOCALES = {
@@ -171,6 +172,7 @@ export const APP_STORE_LOCALES = {
   // Apple has no Estonian listing locale either: the language has a Play listing and no App Store one.
   et: [],
   gu: ["gu-IN"],
+  sl: ["sl-SI"],
   // Apple has no Lithuanian listing locale either: the language has a Play listing and no App Store one.
   lt: [],
 };

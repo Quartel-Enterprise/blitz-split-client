@@ -852,6 +852,7 @@ export const lt: Record<MessageKey, string> = {
   profile_languageLatvian: 'Latvių',
   profile_languageEstonian: 'Estų',
   profile_languageGujarati: 'Gudžaratų',
+  profile_languageSlovenian: 'Slovėnų',
   profile_languageLithuanian: 'Lietuvių',
   profile_bitcoinInSats: 'Bitcoin satošiais',
   profile_bitcoinInSatsDetail: 'Rodo ir leidžia įvesti bitcoin sumas satošiais (1 ₿ = 100 000 000 sats).',

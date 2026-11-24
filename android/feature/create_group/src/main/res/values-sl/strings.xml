@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_group_title">Nova skupina</string>
+    <string name="create_group_close">Zapri</string>
+    <string name="create_group_create">Ustvari</string>
+    <string name="create_group_change_color">Spremeni barvo skupine</string>
+    <string name="create_group_name_label">Ime skupine</string>
+    <string name="create_group_type_label">Vrsta skupine</string>
+    <string name="create_group_members_title">Kdo sodeluje</string>
+    <plurals name="create_group_member_count">
+        <item quantity="one">%d oseba</item>
+        <item quantity="two">%d osebi</item>
+        <item quantity="few">%d osebe</item>
+        <item quantity="other">%d oseb</item>
+    </plurals>
+    <string name="create_group_me">ti</string>
+    <string name="create_group_remove_member">Odstrani: %s</string>
+    <string name="create_group_add_placeholder">Dodaj po imenu</string>
+    <string name="create_group_add">Dodaj</string>
+    <string name="create_group_no_app_notice">Zdaj nihče ne potrebuje aplikacije. Stroške lahko že dodajaš za vse, povezavo pa pošlješ pozneje.</string>
+    <string name="create_group_currency">Privzeta valuta</string>
+    <string name="create_group_currency_caption">Novi stroški se začnejo v tej valuti; vsak strošek lahko uporabi drugo.</string>
+    <string name="create_group_save_error">Skupine ni bilo mogoče shraniti. Poskusi znova.</string>
+    <string name="create_group_photo">Fotografija skupine</string>
+    <string name="create_group_take_photo">Fotografiraj</string>
+    <string name="create_group_choose_photo">Izberi fotografijo</string>
+    <string name="create_group_remove_photo">Odstrani fotografijo</string>
+    <string name="create_group_photo_error">Te fotografije ni bilo mogoče uporabiti. Poskusi z drugo.</string>
+</resources>

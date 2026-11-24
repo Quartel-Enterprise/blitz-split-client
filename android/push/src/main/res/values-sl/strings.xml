@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Atividade's push notifications, worded from the server's kind and words -->
+    <string name="push_reminder_title">Opomnik za poravnavo</string>
+    <string name="push_bill_created">%1$s je dodal(a) strošek „%2$s“, v katerem sodeluješ</string>
+    <string name="push_bill_edited">%1$s je uredil(a) strošek „%2$s“</string>
+    <string name="push_bill_deleted">%1$s je izbrisal(a) strošek „%2$s“</string>
+    <string name="push_comment_added">%1$s je komentiral(a) strošek „%2$s“: %3$s</string>
+    <string name="push_payment_paid_you">%1$s je označil(a), da ti je plačal(a)</string>
+    <string name="push_payment_to_you">%1$s je označil(a), da ti je %2$s plačal(a)</string>
+    <string name="push_payment_received_yours">%1$s je označil(a) tvoje plačilo kot prejeto</string>
+    <string name="push_payment_from_you">%1$s je označil(a), da si plačal(a) članu %2$s</string>
+    <string name="push_payment_undone">%1$s je razveljavil(a) plačilo s tabo</string>
+    <string name="push_charge_sent">%1$s ti je poslal(a) opomnik za poravnavo</string>
+    <string name="push_settle_reminder">V skupini %1$s imaš odprto stanje</string>
+    <string name="push_settle_reminders">Odprta stanja imaš v %1$s skupinah</string>
+    <string name="push_added_to_group">%1$s te je dodal(a) v skupino</string>
+    <string name="push_member_joined">%1$s je vstopil(a) v skupino</string>
+    <string name="push_debts_simplified_to_you">%1$s je poenostavil(a) dolgove. Zdaj ti %2$s plača %3$s.</string>
+    <string name="push_debts_simplified_from_you">%1$s je poenostavil(a) dolgove. Zdaj plačaš %3$s članu %2$s.</string>
+    <string name="push_debts_simplified_other">%1$s je poenostavil(a) dolgove. Poglej, kaj to pomeni zate.</string>
+    <string name="push_debts_unsimplified_to_you">%1$s je izklopil(a) Poenostavi dolgove. Zdaj ti %2$s plača %3$s.</string>
+    <string name="push_debts_unsimplified_from_you">%1$s je izklopil(a) Poenostavi dolgove. Zdaj plačaš %3$s članu %2$s.</string>
+    <string name="push_debts_unsimplified_other">%1$s je izklopil(a) Poenostavi dolgove. Poglej, kaj to pomeni zate.</string>
+    <!-- The channels, one per row of Notifications (4.8), which the phone and the watch create alike -->
+    <string name="notification_settings_bills">Stroški</string>
+    <string name="notification_settings_bills_detail">Novi, urejeni ali izbrisani stroški, v katerih sodeluješ</string>
+    <string name="notification_settings_payments">Plačila in poravnave</string>
+    <string name="notification_settings_payments_detail">Plačila tebi ali od tebe ter poenostavljeni dolgovi</string>
+    <string name="notification_settings_comments">Komentarji</string>
+    <string name="notification_settings_comments_detail">Pri stroških, v katerih sodeluješ, in v nitih, v katere si pisal(a)</string>
+    <string name="notification_settings_people_and_groups">Ljudje in skupine</string>
+    <string name="notification_settings_people_and_groups_detail">Kdo vstopi v tvoje skupine ali jih zapusti in kaj se v njih spremeni</string>
+    <string name="notification_settings_payment_requests">Zahteve za plačilo</string>
+    <string name="notification_settings_payment_requests_detail">Ko te nekdo prosi, da plačaš</string>
+    <string name="notification_settings_balance_reminder">Opomnik o odprtem stanju</string>
+    <string name="notification_settings_balance_reminder_detail">Enkrat na teden, če obstaja odprto stanje</string>
+</resources>

@@ -246,7 +246,7 @@ With `screenshots` on, a run that releases makes the listings' screenshots again
 
 - **Google Play**, after the bundle reached the production track: `android-screenshots-render` draws them, on a Mac runner, next to
   the build (the [`play-screenshots-draw`](../.github/actions/play-screenshots-draw/action.yml) action), and
-  `android-screenshots` uploads the ones that changed, a few locales per "send 1 of 5: \<locales\>" job (the jobs
+  `android-screenshots` uploads the ones that changed, a few locales per "send 1 of 10: \<locales\>" job (the jobs
   of [`play-store-screenshots-upload.yml`](../.github/workflows/play-store-screenshots-upload.yml), which also send
   them without a release). Play shows a listing's screenshots to everyone at once, so a testing track brings none.
   **The bundles always go first**: `android-screenshots` needs `android-upload` to have landed and `wear-upload` to be over, so a bundle is never the save
@@ -277,8 +277,8 @@ the language and the screen it stops at.
 
 **The uploads are split into jobs**, one after the other, on each store (Bible Planner's releases lost a whole
 upload to one image Google Play answered with a server error): what a store refused is all that failed, and the
-rest is up. On the App Store a job sends one locale, which adds up over its 44 (not timed yet). On Google Play a
-job sends a few, six unless the caller says otherwise, through one Play edit: ten jobs for its 57 locales, since
+rest is up. On the App Store a job sends one locale, which adds up over its 45 (not timed yet). On Google Play a
+job sends a few, six unless the caller says otherwise, through one Play edit: ten jobs for its 58 locales, since
 each edit Google Play saves counts against [a daily quota](#google-plays-daily-save-quota) that one job per locale
 ran out of (27 saves a set, about two minutes a locale, in the first release that ran them, 3.0.0). The submission
 waits for the App Store's, and the next release or beta for them all, since they share the `release` group.
@@ -447,7 +447,7 @@ gh workflow run play-store-screenshots.yml                         # draw them a
   ([`no-run-going`](../.github/actions/no-run-going/action.yml)): the workflow refuses to start while a stable
   release or a run of `store-listing` is in progress or waiting, each of its upload jobs checks again, and a stable
   release refuses to start while a run of it isn't over, whatever its platforms, `plan` failing however the release
-  was dispatched and `release-production.sh` saying so first. Ten jobs for Play's 57 locales, not timed yet (one
+  was dispatched and `release-production.sh` saying so first. Ten jobs for Play's 58 locales, not timed yet (one
   job per locale took about an hour).
 - **After the release when both happen on one day**: each job that changes something is a save of
   [Google Play's daily save quota](#google-plays-daily-save-quota), and so is the release's bundle, which must not
@@ -472,7 +472,7 @@ documents neither the number nor when the count starts over: roughly 50 saves in
   takes saves again (when is not known: try the next day). Screenshots can wait a day. A release with `screenshots`
   on already sends its bundle before any screenshot.
 - **Not a release to a testing track, a listing, the release and a set of screenshots on the same day.** Each is
-  at least one save, and a set whose every locale changed is five (it was 27). Spread them when the day already had
+  at least one save, and a set whose every locale changed is ten (it was 27). Spread them when the day already had
   many.
 - **Screenshots the quota refused are sent later, and nothing failed**: the job Google Play refused ends well with
   a warning, the groups after it stop before they reach Google Play, and the run's summary names the locales that
