@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="bill_detail_back">Atpakaļ</string>
     <string name="bill_detail_group_photo_open">Skatīt grupas fotoattēlu</string>
     <string name="bill_detail_edit">Rediģēt</string>
@@ -145,13 +145,13 @@
         <item quantity="other">pievienoja %d fotoattēlus</item>
     </plurals>
     <plurals name="bill_detail_owe_you_each">
-        <item quantity="zero">%1$s ir parādā tev katrs %2$s.</item>
-        <item quantity="one">%1$s ir parādā tev %2$s.</item>
+        <item quantity="zero" tools:ignore="ImpliedQuantity">%1$s ir parādā tev katrs %2$s.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%1$s ir parādā tev %2$s.</item>
         <item quantity="other">%1$s ir parādā tev katrs %2$s.</item>
     </plurals>
     <plurals name="bill_detail_owe_you_total">
-        <item quantity="zero">%1$s ir parādā tev kopā %2$s.</item>
-        <item quantity="one">%1$s ir parādā tev %2$s.</item>
+        <item quantity="zero" tools:ignore="ImpliedQuantity">%1$s ir parādā tev kopā %2$s.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%1$s ir parādā tev %2$s.</item>
         <item quantity="other">%1$s ir parādā tev kopā %2$s.</item>
     </plurals>
     <plurals name="bill_detail_mode_equal">
@@ -195,8 +195,8 @@
     <string name="share_bill_who_can_open">Kas var to atvērt</string>
     <string name="share_bill_members">Tikai rēķina dalībnieki</string>
     <plurals name="share_bill_members_named">
-        <item quantity="zero">%s to atver ar savu kontu, lai skatītu un komentētu.</item>
-        <item quantity="one">%s to atver ar savu kontu, lai skatītu un komentētu.</item>
+        <item quantity="zero" tools:ignore="ImpliedQuantity">%s to atver ar savu kontu, lai skatītu un komentētu.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%s to atver ar savu kontu, lai skatītu un komentētu.</item>
         <item quantity="other">%s to atver ar savu kontu, lai skatītu un komentētu.</item>
     </plurals>
     <string name="share_bill_members_anyone_in_group">Ikviens grupā to atver ar savu kontu, lai skatītu un komentētu.</string>

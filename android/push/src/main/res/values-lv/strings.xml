@@ -13,7 +13,7 @@
     <string name="push_payment_undone">%1$s atsauca maksājumu, kas saistīts ar tevi</string>
     <string name="push_charge_sent">%1$s nosūtīja tev atgādinājumu norēķināties</string>
     <string name="push_settle_reminder">Tev ir neslēgta bilance grupā %1$s</string>
-    <string name="push_settle_reminders">Tev ir neslēgtas bilances %1$s grupās</string>
+    <string name="push_settle_reminders">Tev ir neslēgtas bilances grupās: %1$s</string>
     <string name="push_added_to_group">%1$s pievienoja tevi grupai</string>
     <string name="push_member_joined">%1$s pievienojās grupai</string>
     <string name="push_debts_simplified_to_you">%1$s vienkāršoja parādus. Tagad %2$s maksā tev %3$s.</string>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="join_close">Aizvērt</string>
     <string name="join_chip">Uzaicinājums</string>
     <string name="join_title">%1$s tevi uzaicināja uz grupu %2$s</string>
@@ -11,8 +11,8 @@
     </plurals>
     <string name="join_summary_creator">%1$s · izveidoja %2$s</string>
     <plurals name="join_already_in">
-        <item quantity="zero">%s jau ir grupā</item>
-        <item quantity="one">%s jau ir grupā</item>
+        <item quantity="zero" tools:ignore="ImpliedQuantity">%s jau ir grupā</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%s jau ir grupā</item>
         <item quantity="other">%s jau ir grupā</item>
     </plurals>
     <string name="join_names_last_separator">" un "</string>

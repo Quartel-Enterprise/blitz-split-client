@@ -95,13 +95,13 @@
     </plurals>
     <plurals name="designsystem_group_exit_delete_members">
         <item quantity="zero">visiem %d dalībniekiem</item>
-        <item quantity="one">%d dalībniekam</item>
+        <item quantity="one">visiem %d dalībniekam</item>
         <item quantity="other">visiem %d dalībniekiem</item>
     </plurals>
     <string name="designsystem_group_exit_delete_confirm">Dzēst visiem</string>
     <string name="designsystem_group_exit_deleted_title">Grupa izdzēsta</string>
-    <string name="designsystem_group_exit_deleted_message">%1$s izdzēsa grupu „%2$s”, kad visi bija norēķinājušies. Nekas nepalika neslēgts, un grupa pazūd no tava saraksta.</string>
-    <string name="designsystem_group_exit_deleted_message_nobody">Grupa „%s” tika izdzēsta, kad visi bija norēķinājušies. Nekas nepalika neslēgts, un grupa pazūd no tava saraksta.</string>
+    <string name="designsystem_group_exit_deleted_message">%1$s izdzēsa grupu „%2$s”, kad visi bija norēķinājušies. Nekas nepalika atvērts, un grupa pazūd no tava saraksta.</string>
+    <string name="designsystem_group_exit_deleted_message_nobody">Grupa „%s” tika izdzēsta, kad visi bija norēķinājušies. Nekas nepalika atvērts, un grupa pazūd no tava saraksta.</string>
     <string name="designsystem_group_exit_back_to_groups">Atpakaļ uz grupām</string>
     <string name="designsystem_group_exit_leave_error">Neizdevās pamest grupu. Pārbaudi savienojumu un mēģini vēlreiz.</string>
     <string name="designsystem_group_exit_needs_internet">Nepieciešams internets</string>

@@ -300,7 +300,7 @@ const thirdFormIsOther = !pluralRules.resolvedOptions().pluralCategories.include
 
 // Why: Latvian has no few, but says 21 in the singular ("21 grupa"): its two forms are one|other, its zero (0, 10–20,
 // 30…) taking other's ("10 grupas").
-const firstFormIsOne = !pluralRules.resolvedOptions().pluralCategories.includes('few')
+const firstFormIsOne = pluralRules.select(21) === 'one' && !pluralRules.resolvedOptions().pluralCategories.includes('few')
 
 /**
  * Polish says "2 grupy" but "5 grup": where the other languages have one plural, it has few (2–4, 22–24…) and many (0,

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="edit_group_title">Rediģēt grupu</string>
     <string name="edit_group_close">Aizvērt</string>
     <string name="edit_group_save">Saglabāt</string>
@@ -30,8 +30,8 @@
     <string name="default_split_offline_note">Nav interneta: jaunais sadalījums jau ir spēkā šajā ierīcē un nonāks pie citiem, kad tā atkal būs tiešsaistē.</string>
     <string name="default_split_save_error">Neizdevās saglabāt sadalījumu. Mēģini vēlreiz.</string>
     <plurals name="default_split_joined">
-        <item quantity="zero">%s pievienojās grupai</item>
-        <item quantity="one">%s pievienojās grupai</item>
+        <item quantity="zero" tools:ignore="ImpliedQuantity">%s pievienojās grupai</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%s pievienojās grupai</item>
         <item quantity="other">%s pievienojās grupai</item>
     </plurals>
     <string name="default_split_start_equal_one">Jau piedalās sadalījumā</string>
@@ -122,8 +122,8 @@
     <string name="simplify_confirm_title_on">Vienkāršot parādus?</string>
     <string name="simplify_confirm_title_off">Izslēgt parādu vienkāršošanu?</string>
     <plurals name="simplify_payments_label">
-        <item quantity="zero">maksājumi</item>
-        <item quantity="one">maksājums</item>
+        <item quantity="zero" tools:ignore="ImpliedQuantity">maksājumi</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">maksājums</item>
         <item quantity="other">maksājumi</item>
     </plurals>
     <plurals name="simplify_payments">

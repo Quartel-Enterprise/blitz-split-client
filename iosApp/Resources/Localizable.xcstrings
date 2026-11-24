@@ -133,7 +133,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pievieno atgādinājumu savā kalendārā"
+            "value" : "Pievienot atgādinājumu savam kalendāram"
           }
         },
         "mr" : {
@@ -9930,7 +9930,7 @@
         "lv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ izdzēsa komentāru pie rēķina %@"
+            "value" : "%@ izdzēsa komentāru rēķinā %@"
           }
         },
         "mr" : {
@@ -170918,7 +170918,7 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld dalībniekam"
+                  "value" : "visiem %lld dalībniekam"
                 }
               },
               "other" : {

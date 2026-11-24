@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="split_bill_title">Sadalīt rēķinu</string>
     <string name="split_bill_close">Aizvērt</string>
     <string name="split_bill_save">Saglabāt</string>
@@ -41,8 +41,8 @@
     </plurals>
     <string name="split_bill_each">%s katram</string>
     <plurals name="split_bill_excluded">
-        <item quantity="zero">%s nepiedalās</item>
-        <item quantity="one">%s nepiedalās</item>
+        <item quantity="zero" tools:ignore="ImpliedQuantity">%s nepiedalās</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">%s nepiedalās</item>
         <item quantity="other">%s nepiedalās</item>
     </plurals>
     <string name="split_bill_excluded_me">Tu nepiedalies</string>
@@ -74,8 +74,8 @@
     <string name="split_bill_status_amount_closed">Sakrīt: %s</string>
     <string name="split_bill_status_amount_progress">Pagaidām %1$s no %2$s.</string>
     <plurals name="split_bill_status_without_value">
-        <item quantity="zero">Bez summas: %s.</item>
-        <item quantity="one">Bez summas: %s.</item>
+        <item quantity="zero" tools:ignore="ImpliedQuantity">Bez summas: %s.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Bez summas: %s.</item>
         <item quantity="other">Bez summas: %s.</item>
     </plurals>
     <string name="split_bill_status_without_value_me">Tev nav summas.</string>
@@ -212,8 +212,8 @@
     <string name="split_bill_items_row_nobody">Vēl neviena</string>
     <string name="split_bill_items_loose_all">Pieskaries katrai pozīcijai un atzīmē, kam tā bija. „Gatavs” kļūs pieejams, kad katrai pozīcijai būs kāds.</string>
     <plurals name="split_bill_items_loose_some">
-        <item quantity="zero">Vēl bez neviena: %1$s. %2$s paliek ārpus sadalījuma.</item>
-        <item quantity="one">Vēl bez neviena: %1$s. %2$s paliek ārpus sadalījuma.</item>
+        <item quantity="zero" tools:ignore="ImpliedQuantity">Vēl bez neviena: %1$s. %2$s paliek ārpus sadalījuma.</item>
+        <item quantity="one" tools:ignore="ImpliedQuantity">Vēl bez neviena: %1$s. %2$s paliek ārpus sadalījuma.</item>
         <item quantity="other">Vēl bez neviena: %1$s. %2$s paliek ārpus sadalījuma.</item>
     </plurals>
     <string name="split_bill_items_sum_receipt">Pozīcijas, apkalpošana un galda maksa kopā ir %1$s, bet čekā ir %2$s.</string>

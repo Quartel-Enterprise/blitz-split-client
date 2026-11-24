@@ -2344,7 +2344,7 @@ export const lv: Record<MessageKey, string> = {
   reminder_time: 'Laiks',
   reminder_addToMyCalendar: 'Pievienot manam kalendāram',
   reminder_addToCalendar: 'Pievienot kalendāram',
-  reminder_addToCalendarJoined: 'Pievieno atgādinājumu savam kalendāram',
+  reminder_addToCalendarJoined: 'Pievienot atgādinājumu savam kalendāram',
   reminder_summaryWeekly: 'Katru nedēļu: {day}, plkst. {time}',
   reminder_summaryMonthly: 'Katru mēnesi {day}. datumā plkst. {time}',
   reminder_bannerTitle: 'Laiks norēķināties',
