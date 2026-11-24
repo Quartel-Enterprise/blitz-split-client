@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   PLATFORMS,
+  REQUIRED_SHELVES,
   REPOSITORY,
   SET_NAME,
   SHELF_LABELS,
@@ -164,14 +165,24 @@ describe("the check of a set", () => {
 
   // deliver replaces every screenshot of a locale with what it is handed.
   test("refuses a set that would empty a device's shelf by leaving the device out, unless that is meant", () => {
-    const folder = stage("ios", { keep: ({ device }) => !device.startsWith("iphone_duo") });
+    const folder = stage("ios", { keep: ({ device }) => device !== "ipad_11" });
     const problems = problemsOf("ios", folder);
     assert.equal(problems.length, 1);
-    assert.match(problems[0], /^No iPhone Duo image in the set: .* would empty that shelf \(--allow-missing-devices when that is meant\)$/);
+    assert.match(problems[0], /^No iPad 11" image in the set: .* would empty that shelf \(--allow-missing-devices when that is meant\)$/);
     const allowed = checkPlatform("ios", folder, { allowMissingDevices: true });
     assert.deepEqual(allowed.problems, []);
-    assert.deepEqual(allowed.missingShelves, ["iphone_duo"]);
-    assert.equal(describeShelves(allowed), 'iPhone 6.3" 10, iPhone 6.7" 10, iPad 13" 10, iPad 11" 10, Apple Watch Ultra 3 4');
+    assert.deepEqual(allowed.missingShelves, ["ipad_11"]);
+  });
+
+  test("refuses a set without the iPhone Duo even when devices may be left out", () => {
+    assert.deepEqual(Object.keys(REQUIRED_SHELVES), ["iphone_duo"]);
+    const folder = stage("ios", { keep: ({ device }) => !device.startsWith("iphone_duo") });
+    for (const allowMissingDevices of [false, true]) {
+      const report = checkPlatform("ios", folder, { allowMissingDevices });
+      assert.equal(report.problems.length, 1);
+      assert.match(report.problems[0], /^No iPhone Duo image in the set: .* can't be left out, even with --allow-missing-devices/);
+      assert.deepEqual(report.missingShelves, []);
+    }
   });
 
   test("takes the Apple Watch's four screens on a shelf of its own, whose absence is refused like any device's", () => {

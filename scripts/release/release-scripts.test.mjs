@@ -254,9 +254,9 @@ describe("the slots a release captures the App Store's screenshots on", () => {
     return output === "" ? [] : JSON.parse(output);
   };
 
-  test("are the iPhone's two and the iPad's, which the frames need, with both markers off", () => {
-    assert.deepEqual(slots(), IPHONE_AND_IPAD);
-    assert.deepEqual(slots({ macos: false }), IPHONE_AND_IPAD);
+  test("are none with both markers off, since the iPhone's and the iPad's go up only with the iPhone Duo's", () => {
+    assert.deepEqual(slots(), []);
+    assert.deepEqual(slots({ macos: false }), []);
   });
 
   test("gain the iPhone Duo's two, closed and open, with its marker", () => {
@@ -284,7 +284,7 @@ describe("the slots a release captures the App Store's screenshots on", () => {
   });
 
   test("are one line of JSON, as a job's matrix reads it from a step's output", () => {
-    assert.equal(slotsOutput({ IOS: "true", MACOS: "true", SCREENSHOTS_IPHONE_DUO: "false", SCREENSHOTS_MAC: "false" }), '["iphone63","iphone67","ipad13"]\n');
+    assert.equal(slotsOutput({ IOS: "true", MACOS: "true", SCREENSHOTS_IPHONE_DUO: "true", SCREENSHOTS_MAC: "false" }), '["iphone63","iphone67","ipad13","iphoneduo","iphoneduoopen"]\n');
   });
 
   test("are refused when an input is neither true nor false, or missing, rather than read as off", () => {
@@ -311,15 +311,16 @@ describe("what the plan says of a release's screenshots", () => {
 
   test("names the slots the App Store's are captured on, and the marker of each device left out", () => {
     assert.deepEqual(plan(), {
-      row: `made again and uploaded with a release. The App Store's are captured on ${SLOTS}, without the iPhone Duo (\`screenshots_iphone_duo\`), without the Mac (\`screenshots_mac\`)`,
+      row: "made again and uploaded with a release. None of the App Store's is: the iPhone's and the iPad's go up only with the iPhone Duo's (`screenshots_iphone_duo`), and the Mac's capture is behind `screenshots_mac`",
       warnings: [],
     });
+    assert.equal(plan({ mac: true }).row, `made again and uploaded with a release. The App Store's are captured on ${SLOTS}, \`mac\`, without the iPhone Duo (\`screenshots_iphone_duo\`), so the iPhone's and the iPad's aren't uploaded`);
     assert.equal(plan({ duo: true }).row, `made again and uploaded with a release. The App Store's are captured on ${SLOTS}, \`iphoneduo\`, \`iphoneduoopen\`, without the Mac (\`screenshots_mac\`)`);
     assert.equal(plan({ duo: true, mac: true }).row, `made again and uploaded with a release. The App Store's are captured on ${SLOTS}, \`iphoneduo\`, \`iphoneduoopen\`, \`mac\``);
   });
 
   test("doesn't call left out a device whose platform the run doesn't release", () => {
-    assert.equal(plan({ macos: false }).row, `made again and uploaded with a release. The App Store's are captured on ${SLOTS}, without the iPhone Duo (\`screenshots_iphone_duo\`)`);
+    assert.equal(plan({ macos: false }).row, "made again and uploaded with a release. None of the App Store's is: the iPhone's and the iPad's go up only with the iPhone Duo's (`screenshots_iphone_duo`)");
     assert.equal(plan({ ios: false, mac: true }).row, `made again and uploaded with a release. The App Store's are captured on ${SLOTS}, \`mac\``);
   });
 
@@ -373,7 +374,7 @@ describe("the stable release's script", () => {
 
   test("says each device the App Store's screenshots leave out, when its marker wasn't passed", () => {
     const both = release("screenshots=true");
-    assert.match(both, /leave the iPhone Duo out: screenshots_iphone_duo=true adds it/);
+    assert.match(both, /leave the iPhone Duo out, so the iPhone.s and the iPad.s aren.t uploaded .*: screenshots_iphone_duo=true adds it/);
     assert.match(both, /leave the Mac out: screenshots_mac=true adds it/);
     const duoNamed = release("screenshots=true", "screenshots_iphone_duo=true");
     assert.doesNotMatch(duoNamed, /leave the iPhone Duo out/);
@@ -381,7 +382,10 @@ describe("the stable release's script", () => {
     const macNamed = release("screenshots=true", "screenshots_mac=false");
     assert.match(macNamed, /leave the iPhone Duo out/);
     assert.doesNotMatch(macNamed, /leave the Mac out/);
-    assert.doesNotMatch(release("screenshots=true", "screenshots_iphone_duo=false", "screenshots_mac=true"), /leave the/);
+    // The Duo's hint also follows an explicit false: without it, the iPhone's and the iPad's aren't uploaded either.
+    const duoRefused = release("screenshots=true", "screenshots_iphone_duo=false", "screenshots_mac=true");
+    assert.match(duoRefused, /leave the iPhone Duo out/);
+    assert.doesNotMatch(duoRefused, /leave the Mac out/);
   });
 
   test("names no device a run couldn't capture: one that doesn't submit, or without the device's platform", () => {

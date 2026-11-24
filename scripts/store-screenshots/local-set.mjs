@@ -87,6 +87,12 @@ export const SHELF_LABELS = {
   watch_ultra_3: "Apple Watch Ultra 3",
   mac: "Mac",
 };
+/**
+ * The shelves a set can't leave out, even with --allow-missing-devices: the iPhone Duo's was emptied by a set sent
+ * without it (24 November 2026), and its open display needs a capture of its own (capture-duo-open.py) that is easy
+ * to skip, so a set without it is always refused.
+ */
+export const REQUIRED_SHELVES = { iphone_duo: "listing-art/capture.sh for the closed Duo, capture-duo-open.py for the open one" };
 /** The display type App Store Connect names the Apple Watch shelf by (fastlane's APP_WATCH_ULTRA, 422x514). */
 export const WATCH_SHELF_TYPE = "APP_WATCH_ULTRA";
 
@@ -168,8 +174,8 @@ class Problems {
  * each, and what it holds: the locales, the files to pack, and each shelf's images in a locale.
  *
  * deliver replaces every screenshot of a locale with what it is handed, so a shelf the set leaves out is emptied.
- * A device missing from the whole set is refused unless `allowMissingDevices` says it is left out on purpose; one
- * that some locales have and others lack is always refused.
+ * A device missing from the whole set is refused unless `allowMissingDevices` says it is left out on purpose, and
+ * always for a shelf of REQUIRED_SHELVES; one that some locales have and others lack is always refused.
  */
 export function checkPlatform(platform, folder, { allowMissingDevices = false } = {}) {
   const { label, devices } = PLATFORMS[platform];
@@ -256,6 +262,12 @@ export function checkPlatform(platform, folder, { allowMissingDevices = false } 
   for (const shelf of shelves) {
     const ofLocale = held[shelf];
     if (ofLocale.size === 0) {
+      if (shelf in REQUIRED_SHELVES) {
+        problems.add(
+          `No ${SHELF_LABELS[shelf]} image in the set: the upload would empty that shelf, and it can't be left out, even with --allow-missing-devices (capture it: ${REQUIRED_SHELVES[shelf]})`,
+        );
+        continue;
+      }
       report.missingShelves.push(shelf);
       if (!allowMissingDevices) {
         problems.add(

@@ -88,9 +88,10 @@ Every translator, human or agent, reads it first; without it each one picks its 
   ([release-process.md](../../../docs/release-process.md#screenshots-with-a-release)), or, for Google Play alone,
   from the `play-store-screenshots` workflow
   ([release-process.md](../../../docs/release-process.md#google-plays-screenshots-alone)): say so when you hand the
-  task back. Until then its listing shows the default language's. That input alone captures the iPhone and the
-  iPad on the App Store: the iPhone Duo's and the Mac's are made only with `screenshots_iphone_duo=true` and
-  `screenshots_mac=true`, whose captures fail on the runners today, or by hand on a Mac.
+  task back. Until then its listing shows the default language's. That input alone uploads nothing of the iPhone
+  and the iPad on the App Store, since a set without the iPhone Duo would empty its shelf: the Duo's and the Mac's
+  are made only with `screenshots_iphone_duo=true` and `screenshots_mac=true`, whose captures fail on the runners
+  today, so the App Store's are made by hand on a Mac.
 
 ## 4. The activity sentences
 

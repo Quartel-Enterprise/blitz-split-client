@@ -21,7 +21,7 @@ The two stores get their screens differently, because the app has a native UI on
 ## One command
 
 ```bash
-fastlane screenshots                                 # everything, then upload
+fastlane screenshots                                 # everything, then upload (refused without the open Duo's captures)
 fastlane screenshots skip_upload:true                # generate only, nothing reaches a store
 fastlane screenshots platform:android skip_upload:true
 fastlane screenshots platform:ios skip_capture:true  # draw the iOS captures already in build/ again
@@ -33,12 +33,13 @@ fastlane upload_screenshots platform:mac             # upload the Mac's alone
 A stable release dispatched with `screenshots` on runs the same steps in CI, in jobs of `release-production`: the
 capture on one runner per slot, the art, and the upload to each store, one job per locale on the App Store and a
 few locales per job on Google Play ([release-process.md](release-process.md#screenshots-with-a-release)). The input is off unless asked, so a
-release after a new language or a changed screen has to pass `screenshots=true`. That captures the iPhone's and the
-iPad's slots (`iphone63`, `iphone67`, `ipad13`). The iPhone Duo's two (`iphoneduo`, `iphoneduoopen`) and the Mac's
+release after a new language or a changed screen has to pass `screenshots=true`. The iPhone's and the iPad's slots
+(`iphone63`, `iphone67`, `ipad13`) are captured beside the iPhone Duo's or for the Mac's frames. The iPhone Duo's two (`iphoneduo`, `iphoneduoopen`) and the Mac's
 are captured only with `screenshots_iphone_duo=true` and `screenshots_mac=true`, off unless asked for, since all
 three failed on the runners in the first release that ran them, and only in a run that releases their platform
-([release-process.md](release-process.md#the-devices-the-app-stores-captures-run-on)). Run the lane by hand between
-releases, when a release's screenshot jobs failed, and for the devices a release leaves out.
+([release-process.md](release-process.md#the-devices-the-app-stores-captures-run-on)). Without the iPhone Duo's, a
+release captures and uploads none of the iPhone's and the iPad's either, since that would empty the Duo's shelf. Run the lane by
+hand between releases, when a release's screenshot jobs failed, and for the devices a release leaves out.
 
 **For the App Store, the runners' captures can't be trusted today**, so its screenshots are made on a Mac, looked
 at, and sent through GitHub: [Sending a set made on a Mac](#sending-a-set-made-on-a-mac). **Google Play's go alone**
@@ -154,7 +155,7 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
    | A device without one of its screens in a locale, or the same screen twice on the iPhone Duo's shelf, or a screen of another device's shelf | A shelf shows the ten screens of `screens.tsv`, once each, the Apple Watch's the four of `WATCH_SCREENS` (`01_balances`, `02_group`, `03_confirm`, `04_recorded`); the Duo's takes each from one display, open or closed |
    | An image whose size isn't its device's (the table of [What the images show](#what-the-images-show)) | deliver files an image on a shelf by its size, and the iPad's are framed lying down: an upright one is an old one. The Apple Watch's is 422x514 (Ultra 3), and App Store Connect takes **one watch size for every locale**, so a locale with another is refused |
    | A file that isn't a PNG, by its name or by its bytes, or that isn't `<screen>_<device>.png` | Nothing else belongs in a staged folder. Hidden files, the Finder's `.DS_Store`, are left out and not refused |
-   | **A device the whole set leaves out** | deliver replaces every screenshot of a locale with what it is handed, so the shelf of a device left out is emptied. `--allow-missing-devices` says it is meant, as for a set without the iPhone Duo or without the Apple Watch's four. **The watch is not a version of its own**: its shelf is one more of the iPhone's and iPad's version, in `ios.tar`, since deliver would empty it otherwise |
+   | **A device the whole set leaves out** | deliver replaces every screenshot of a locale with what it is handed, so the shelf of a device left out is emptied. `--allow-missing-devices` says it is meant, as for a set without the Apple Watch's four. **Never the iPhone Duo** (`REQUIRED_SHELVES`): a set sent without it on 24 November 2026 emptied its shelf in all 40 locales, so a set without it is refused even with the flag. Capture it with `listing-art/capture.sh` (closed) and `capture-duo-open.py` (open). **The watch is not a version of its own**: its shelf is one more of the iPhone's and iPad's version, in `ios.tar`, since deliver would empty it otherwise |
 
    `--platform ios` or `--platform mac` checks, and sends, one version's folder alone.
 3. **Send it.** `local-set.mjs send` checks the set again, packs each version's folder into an archive, and uploads
@@ -169,7 +170,7 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1        # 4. upload it to 
    | `set` | | The name `send` printed. Blank with `tidy_only` |
    | `ios`, `macos` | on | The iPhone's and iPad's version, the Mac's version: each is a version of its own on App Store Connect |
    | `app_version` | blank | The version to write on, X.Y.Z, created when it is missing. Blank writes on the one open for editing, whatever its number: a release renames it later and keeps its screenshots |
-   | `allow_missing_devices` | off | The set leaves a device out on purpose |
+   | `allow_missing_devices` | off | The set leaves a device out on purpose, never the iPhone Duo |
    | `locales` | blank | Send these locales of the set alone, App Store codes with a space between (`en-US de-DE`): [Repairing shelves](#repairing-shelves) |
    | `tidy_only` | off | Send nothing and fetch no set: only the tidy-up and its check ([Repairing shelves](#repairing-shelves)) |
 

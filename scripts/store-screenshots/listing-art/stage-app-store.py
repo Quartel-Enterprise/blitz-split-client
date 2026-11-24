@@ -14,7 +14,8 @@ into the iPhone's folder as <screen>_watch_ultra_3.png, 01_balances to 04_record
 the iPad's, since deliver replaces every screenshot of a locale. App Store Connect takes one watch size for all of them.
 
 A device left out, by ART_DEVICES or because the art was drawn for none of it (the watch's images made for no language), is not staged: a set without it is
-refused by local-set.mjs unless it says so, and a release uploads what its runners captured.
+refused by local-set.mjs unless it says so, and the iPhone Duo never may: local-set.mjs and the Fastfile refuse a set
+without it, and a release uploads the iPhone's and the iPad's only with the Duo's.
 """
 import json
 import os

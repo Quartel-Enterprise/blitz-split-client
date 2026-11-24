@@ -97,8 +97,8 @@ dispatched behind a waiting one cancels it without a word.
 | `rollout` | `100` | On the production track, the percentage of the users who get the release: under 100 is a staged rollout |
 | `submit_for_review` | on | Sends the iOS and macOS builds to App Store review. Off, they stop at TestFlight |
 | `phased_release` | off | Releases an approved update over seven days, to the people with automatic updates. Off, everyone gets it at once |
-| `screenshots` | off | Makes the store listings' screenshots again and uploads them, with a release ([Screenshots with a release](#screenshots-with-a-release)). The App Store's are captured on the iPhone and the iPad |
-| `screenshots_iphone_duo` | off | With `screenshots`, captures the iPhone Duo too, closed and open. Its captures fail on the runners today ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)) |
+| `screenshots` | off | Makes the store listings' screenshots again and uploads them, with a release ([Screenshots with a release](#screenshots-with-a-release)). The App Store's iPhone and iPad are captured and uploaded only with the iPhone Duo's (`screenshots_iphone_duo`), or captured for the Mac's frames (`screenshots_mac`) |
+| `screenshots_iphone_duo` | off | With `screenshots`, captures the iPhone Duo too, closed and open. Its captures fail on the runners today ([The devices the App Store's captures run on](#the-devices-the-app-stores-captures-run-on)). Without it, the iPhone's and the iPad's aren't uploaded, since that would empty the Duo's shelf |
 | `screenshots_mac` | off | With `screenshots`, captures the Mac too. Its capture fails on the runners today, and the Mac's listing has no screenshots yet, so the Mac can't be submitted until they are uploaded from a Mac |
 
 **A run with nothing changed publishes to everyone, and nothing waits for an approval** (Pierre's calls, as in
@@ -304,8 +304,9 @@ submission goes on with the screenshots the version already has.
 
 #### The devices the App Store's captures run on
 
-With `screenshots` on, the App Store's captures run on the iPhone and the iPad. The iPhone Duo and the Mac are each
-behind a marker of their own, off unless the release asks for it (Pierre's call, November 2026: their captures
+With `screenshots` on, the App Store's captures run on the iPhone and the iPad only beside the iPhone Duo's or the
+Mac's: the iPhone's and the iPad's go up only with the Duo's, and the Mac's frames need them. The iPhone Duo and the
+Mac are each behind a marker of their own, off unless the release asks for it (Pierre's call, November 2026: their captures
 don't work on the runners yet, so a release leaves them out until they do):
 
 | Marker | Default | Slots it captures |
@@ -330,10 +331,13 @@ that started only to stop would hold one.
   App Store screenshot does. `plan` warns about a marker that is on and adds no capture. A run of the Mac alone
   still captures the iPhone and the iPad, for the frames, when `screenshots_mac` is on; without it, it captures
   nothing of the App Store's, and the summary says so.
-- **Without the iPhone Duo**, the iPhone's and the iPad's shelves are the only ones a locale gets: deliver deletes
-  all of a locale's screenshots before it uploads, so a locale that had the Duo's loses them, as it does when both
-  of the Duo's captures fail. No release has uploaded them yet, and App Store Connect only requires the Duo's shelf
-  from April 2027 ([store-listing-screenshots.md](store-listing-screenshots.md#what-the-images-show)).
+- **Without the iPhone Duo, the App Store's upload stops**: deliver deletes all of a locale's screenshots before it
+  uploads, so a set without the Duo's would empty its shelf in every locale, as a set sent from a Mac did on
+  24 November 2026. `upload_store_screenshots` (the Fastfile) refuses an iPhone and iPad upload with no iPhone Duo
+  image staged, so a release with `screenshots` and without `screenshots_iphone_duo`, or whose Duo captures failed,
+  uploads none of the iPhone and iPad version's images and leaves its shelves as they are: it doesn't capture them
+  unless the Mac's frames need them, and the frame job then lists no iOS locale, with a warning, so no upload job runs. The Mac's still go up with `screenshots_mac`. Send the
+  iPhone's and the iPad's from a Mac instead ([Screenshots made on a Mac](#screenshots-made-on-a-mac)).
 - **The Apple Watch's shelf is not captured by a release**, so a release with `screenshots` leaves every locale's
   watch shelf empty, for the same reason. Its four images go up in a set sent from a Mac
   ([store-listing-screenshots.md](store-listing-screenshots.md#the-watches-screenshots)), after such a release.
@@ -366,8 +370,8 @@ What is known of the three captures behind the markers, from the first release t
   script refuses a capture that would reach the listing blurred.
 
 With `screenshots_iphone_duo` on, the Duo's shelf on the App Store holds ten screenshots for both displays, so five
-screens go up open and five closed; when one of the two captures fails, the other fills the shelf, and when both do
-the listing goes without the Duo.
+screens go up open and five closed; when one of the two captures fails, the art leaves the Duo out (`frame-app-store.sh` needs both), and
+the App Store's upload stops rather than empty its shelf.
 
 ### Screenshots made on a Mac
 
@@ -404,7 +408,7 @@ gh workflow run app-store-screenshots.yml -f set=3.0.1             # upload to A
   `--platform ios` and `-f macos=false`). deliver replaces every screenshot of a locale with what it is handed, so
   the iPhone's version always gets the iPhone's, the iPad's, the iPhone Duo's and the Apple Watch's together (the
   watch is not a version of its own), and a set that leaves a device out is refused unless `allow_missing_devices`
-  says it is meant.
+  says it is meant. The iPhone Duo can't be left out, even then: `local-set.mjs` refuses a set without it.
 - **A locale that failed** fails the run and keeps the set: run that locale's job again with its own re-run button,
   while the version is still editable. Dispatch the release once the run's summary says every locale landed **and
   the shelves are as staged**.

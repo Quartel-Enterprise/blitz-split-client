@@ -55,7 +55,7 @@ on:
         type: string
         default: ""
       allow_missing_devices:
-        description: "The set leaves a device out on purpose: its shelf is emptied in every locale"
+        description: "The set leaves a device out on purpose, never the iPhone Duo: its shelf is emptied in every locale"
         type: boolean
         default: false
       locales:
@@ -225,7 +225,7 @@ jobs:
       # The Mac checked it before sending, and this is what decides: a locale of the listing missing, a device with a
       # screen missing, an image of another size, a file that isn't a PNG. deliver replaces every screenshot of a
       # locale with what it is handed, so a set without one of a version's devices would empty that shelf: refused,
-      # unless allow_missing_devices says it is meant.
+      # unless allow_missing_devices says it is meant, and always for the iPhone Duo (REQUIRED_SHELVES).
       - name: Check the set
         if: ${{ !inputs.tidy_only }}
         id: set

@@ -33,7 +33,9 @@ done
 slots=()
 if [ "$IOS" = true ] && [ "$SCREENSHOTS_IPHONE_DUO" = true ]; then slots+=(iphoneduo iphoneduoopen); fi
 if [ "$MACOS" = true ] && [ "$SCREENSHOTS_MAC" = true ]; then slots+=(mac); fi
-if [ "$IOS" = true ] || [ "${#slots[@]}" -gt 0 ]; then slots=(iphone63 iphone67 ipad13 ${slots[@]+"${slots[@]}"}); fi
+# The iPhone's and the iPad's go up only with the iPhone Duo's (a set without it would empty the Duo's shelf), so they
+# are captured only beside the Duo, or for the Mac's frames.
+if [ "${#slots[@]}" -gt 0 ]; then slots=(iphone63 iphone67 ipad13 "${slots[@]}"); fi
 
 if [ "${#slots[@]}" -gt 0 ]; then
   printf '%s\n' "${slots[@]}" | jq -Rcn '[inputs]'

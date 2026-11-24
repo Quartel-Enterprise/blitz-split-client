@@ -48,8 +48,13 @@ draw() { ART_DEVICES="$1" node "$ART/compose.mjs"; }
 
 devices=(iphone_6_7 iphone_6_3 ipad_13 ipad_11)
 draw "$(IFS=,; echo "${devices[*]}")"
+# The App Store's upload refuses a set without the iPhone Duo (local-set.mjs, the Fastfile), so its absence is said here
 if whole iphoneduo && whole iphoneduoopen; then
   if draw iphone_duo; then devices+=(iphone_duo); else echo "Warning: the iPhone Duo's art could not be drawn: it is left out" >&2; fi
+fi
+if [[ " ${devices[*]} " != *" iphone_duo "* ]]; then
+  echo "Warning: no iPhone Duo in this set, so the App Store's upload will refuse it: capture the Duo closed" \
+    "(listing-art/capture.sh) and open (capture-duo-open.py), then run this again" >&2
 fi
 if whole mac; then
   if draw mac; then devices+=(mac); else echo "Warning: the Mac's art could not be drawn: it is left out" >&2; fi

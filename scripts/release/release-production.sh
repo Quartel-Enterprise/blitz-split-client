@@ -63,8 +63,8 @@ elif [ -z "$screenshots" ]; then
 # says screenshots=true wouldn't show. Nothing of the App Store's is captured in a run that doesn't submit, nor a
 # device's in a run without its platform.
 elif [ "$screenshots" = true ] && [ "$submit" != false ]; then
-  if [ -z "$iphone_duo" ] && [ "$ios" != false ]; then
-    echo "The App Store's screenshots leave the iPhone Duo out: screenshots_iphone_duo=true adds it, and its captures fail on the runners today."
+  if [ "$iphone_duo" != true ] && [ "$ios" != false ]; then
+    echo "The App Store's screenshots leave the iPhone Duo out, so the iPhone's and the iPad's aren't uploaded (that would empty the Duo's shelf): screenshots_iphone_duo=true adds it, and its captures fail on the runners today."
   fi
   if [ -z "$mac" ] && [ "$macos" != false ]; then
     echo "The App Store's screenshots leave the Mac out: screenshots_mac=true adds it, and its capture fails on the runners today."
